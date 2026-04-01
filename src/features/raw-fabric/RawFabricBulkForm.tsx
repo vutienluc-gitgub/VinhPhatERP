@@ -290,6 +290,20 @@ export function RawFabricBulkForm({ onClose }: Props) {
                 </select>
               </div>
             </div>
+
+            <div className="form-field">
+              <label htmlFor="bulk_lot_number">Số lô (Lot number)</label>
+              <input
+                id="bulk_lot_number"
+                className="field-input"
+                type="text"
+                placeholder="VD: LOT-2026-001"
+                {...register('lot_number')}
+              />
+              <span className="field-hint" style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.25rem', display: 'block' }}>
+                Áp dụng cho tất cả cuộn trong lô này. Mã vạch sẽ tự sinh riêng theo mã cuộn.
+              </span>
+            </div>
           </fieldset>
 
           {/* ===== CẤU HÌNH MÃ CUỘN ===== */}

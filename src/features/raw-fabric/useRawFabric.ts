@@ -5,7 +5,7 @@ import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination'
 import type { PaginatedResult } from '@/shared/types/pagination'
 
 import type { BulkInputFormValues } from './raw-fabric.module'
-import { findDuplicateRollNumbers } from './raw-fabric.module'
+import { findDuplicateRollNumbers, generateBarcode } from './raw-fabric.module'
 import type { RawFabricFormValues } from './raw-fabric.module'
 import type { RawFabricFilter, RawFabricRoll } from './types'
 
@@ -31,6 +31,8 @@ function toDbRow(values: RawFabricFormValues): Omit<RawFabricRoll, 'id' | 'creat
     warehouse_location: values.warehouse_location?.trim() || null,
     production_date: values.production_date?.trim() || null,
     notes: values.notes?.trim() || null,
+    lot_number: values.lot_number?.trim() || null,
+    barcode: generateBarcode(values.roll_number),
   }
 }
 
@@ -163,6 +165,8 @@ export function useCreateRawFabricBulk() {
         warehouse_location: values.warehouse_location?.trim() || null,
         production_date: values.production_date?.trim() || null,
         notes: row.notes?.trim() || null,
+        lot_number: values.lot_number?.trim() || null,
+        barcode: generateBarcode(row.roll_number.trim()),
       }))
 
       const { data, error } = await supabase

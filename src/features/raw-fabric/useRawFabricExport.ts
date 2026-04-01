@@ -8,7 +8,9 @@ import { QUALITY_GRADE_LABELS, ROLL_STATUS_LABELS } from './raw-fabric.module'
 import type { RawFabricRoll } from './types'
 
 const EXPORT_COLUMNS: ExportColumn[] = [
+  { key: 'lot_number',         label: 'Số lô',            width: 18 },
   { key: 'roll_number',        label: 'Mã cuộn',         width: 18 },
+  { key: 'barcode',            label: 'Mã vạch',         width: 20 },
   { key: 'fabric_type',        label: 'Loại vải',         width: 22 },
   { key: 'color_name',         label: 'Màu vải',          width: 16 },
   { key: 'quality_grade',      label: 'Chất lượng',       width: 12, align: 'center' },
@@ -25,7 +27,9 @@ type RollExportRow = Record<string, string | number>
 
 function toExportRows(rolls: RawFabricRoll[]): RollExportRow[] {
   return rolls.map((roll) => ({
+    lot_number:         roll.lot_number ?? '',
     roll_number:        roll.roll_number,
+    barcode:            roll.barcode ?? '',
     fabric_type:        roll.fabric_type,
     color_name:         roll.color_name ?? '',
     quality_grade:      roll.quality_grade ? QUALITY_GRADE_LABELS[roll.quality_grade] : '',
@@ -51,8 +55,8 @@ export function useRawFabricExport() {
     })
   }, [])
 
-  const exportPdf = useCallback(async (rolls: RawFabricRoll[], filePrefix = 'vai_moc') => {
-    await exportToPdf(toExportRows(rolls), EXPORT_COLUMNS, {
+  const exportPdf = useCallback((rolls: RawFabricRoll[], filePrefix = 'vai_moc') => {
+    exportToPdf(toExportRows(rolls), EXPORT_COLUMNS, {
       fileName: makeFileName(filePrefix),
       title: 'Danh sách cuộn vải mộc',
       subtitle: `Tổng: ${rolls.length} cuộn · ${rolls

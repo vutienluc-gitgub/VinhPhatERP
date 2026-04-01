@@ -35,6 +35,7 @@ function rollToFormValues(roll: RawFabricRoll): RawFabricFormValues {
     notes: roll.notes ?? '',
     yarn_receipt_id: roll.yarn_receipt_id ?? '',
     weaving_partner_id: roll.weaving_partner_id ?? '',
+    lot_number: roll.lot_number ?? '',
   }
 }
 
@@ -101,6 +102,19 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="form-grid">
+            {/* Hàng 0: Số lô */}
+            <div className="form-field">
+              <label htmlFor="lot_number">Số lô (Lot number)</label>
+              <input
+                id="lot_number"
+                className="field-input"
+                type="text"
+                placeholder="VD: LOT-2026-001"
+                {...register('lot_number')}
+              />
+              <span className="field-hint">Nhóm các cuộn cùng lô sản xuất. Bảrcode sẽ tự sinh sau khi nhập mã cuộn.</span>
+            </div>
+
             {/* Hàng 1: Mã cuộn + Loại vải */}
             <div className="form-grid form-grid-2">
               <div className="form-field">

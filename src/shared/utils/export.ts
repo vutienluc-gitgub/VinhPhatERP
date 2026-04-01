@@ -61,8 +61,8 @@ export async function exportToExcel<T extends Record<string, unknown>>(
   saveAs(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), safeFileName)
 }
 
-/** Xuất mảng data ra file PDF (A4 landscape) */
-export async function exportToPdf<T extends Record<string, unknown>>(
+/** Xuất mảng data ra file PDF — dùng browser print dialog để hỗ trợ tiếng Việt */
+export function exportToPdf<T extends Record<string, unknown>>(
   data: T[],
   columns: ExportColumn[],
   options: {
@@ -70,14 +70,7 @@ export async function exportToPdf<T extends Record<string, unknown>>(
     title: string
     subtitle?: string
   },
-): Promise<void> {
-  const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
-    import('jspdf'),
-    import('jspdf-autotable'),
-  ])
-
-  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
-
+): void {
   const generatedAt = new Date().toLocaleString('vi-VN', {
     day: '2-digit',
     month: '2-digit',
@@ -86,68 +79,58 @@ export async function exportToPdf<T extends Record<string, unknown>>(
     minute: '2-digit',
   })
 
-  // Tiêu đề
-  doc.setFontSize(14)
-  doc.setFont('helvetica', 'bold')
-  doc.text(options.title, 14, 16)
+  const headerCells = columns.map((c) => `<th>${c.label}</th>`).join('')
+  const bodyRows = data
+    .map((row) => {
+      const cells = columns
+        .map((c) => {
+          const val = row[c.key]
+          const text = val === null || val === undefined ? '—' : String(val)
+          const align = c.align ?? 'left'
+          return `<td style="text-align:${align}">${text}</td>`
+        })
+        .join('')
+      return `<tr>${cells}</tr>`
+    })
+    .join('')
 
-  if (options.subtitle) {
-    doc.setFontSize(9)
-    doc.setFont('helvetica', 'normal')
-    doc.text(options.subtitle, 14, 22)
-  }
+  const html = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>${options.fileName}</title>
+<style>
+  @page { size: A4 landscape; margin: 16mm 12mm; }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, "Helvetica Neue", sans-serif; font-size: 9pt; color: #111; margin: 0; }
+  h1 { font-size: 13pt; font-weight: 700; margin: 0 0 4px; }
+  .sub { font-size: 9pt; color: #333; margin: 0 0 2px; }
+  .meta { font-size: 7.5pt; color: #888; margin: 0 0 10px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: #0b6bcb; color: #fff; }
+  th { font-size: 7.5pt; font-weight: 700; padding: 4px 5px; text-align: left; border: 1px solid #0b6bcb; }
+  td { font-size: 8pt; padding: 3.5px 5px; border: 1px solid #d0dae8; }
+  tbody tr:nth-child(even) { background: #f5f8fc; }
+  .footer { margin-top: 8px; font-size: 7pt; color: #aaa; text-align: right; }
+</style>
+</head>
+<body>
+<h1>${options.title}</h1>
+${options.subtitle ? `<p class="sub">${options.subtitle}</p>` : ''}
+<p class="meta">Xuất lúc: ${generatedAt}</p>
+<table>
+  <thead><tr>${headerCells}</tr></thead>
+  <tbody>${bodyRows}</tbody>
+</table>
+</body>
+</html>`
 
-  doc.setFontSize(8)
-  doc.setFont('helvetica', 'normal')
-  doc.setTextColor(120)
-  doc.text(`Xuất lúc: ${generatedAt}`, 14, options.subtitle ? 28 : 22)
-  doc.setTextColor(0)
-
-  const tableHead = [columns.map((c) => c.label)]
-  const tableBody = data.map((row) =>
-    columns.map((c) => {
-      const val = row[c.key]
-      return val === null || val === undefined ? '—' : String(val)
-    }),
-  )
-
-  autoTable(doc, {
-    head: tableHead,
-    body: tableBody,
-    startY: options.subtitle ? 32 : 26,
-    styles: { fontSize: 8, cellPadding: 2.5, overflow: 'linebreak' },
-    headStyles: {
-      fillColor: [11, 107, 203],
-      textColor: 255,
-      fontStyle: 'bold',
-      fontSize: 7.5,
-    },
-    alternateRowStyles: { fillColor: [245, 248, 252] },
-    columnStyles: columns.reduce<Record<number, { halign: 'left' | 'right' | 'center' }>>(
-      (acc, col, idx) => {
-        if (col.align && col.align !== 'left') {
-          acc[idx] = { halign: col.align }
-        }
-        return acc
-      },
-      {},
-    ),
-    didDrawPage: (data) => {
-      const pageCount = doc.getNumberOfPages()
-      doc.setFontSize(7)
-      doc.setTextColor(150)
-      doc.text(
-        `Trang ${data.pageNumber} / ${pageCount}`,
-        doc.internal.pageSize.getWidth() - 30,
-        doc.internal.pageSize.getHeight() - 8,
-      )
-      doc.setTextColor(0)
-    },
+  const win = window.open('', '_blank')
+  if (!win) return
+  win.document.write(html)
+  win.document.close()
+  win.addEventListener('load', () => {
+    win.focus()
+    win.print()
   })
-
-  const safeFileName = options.fileName.endsWith('.pdf')
-    ? options.fileName
-    : `${options.fileName}.pdf`
-
-  doc.save(safeFileName)
 }

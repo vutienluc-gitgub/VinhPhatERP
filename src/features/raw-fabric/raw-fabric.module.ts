@@ -27,6 +27,14 @@ export const ROLL_STATUS_LABELS: Record<(typeof ROLL_STATUSES)[number], string> 
 
 const BULK_ROLL_NUMBER_PAD = 3
 
+/**
+ * Tự động sinh mã vạch cho một cuộn vải.
+ * Format: VP-{roll_number} — tương thích Code128, in được bằng máy quét thông thường.
+ */
+export function generateBarcode(rollNumber: string): string {
+  return `VP-${rollNumber.trim().toUpperCase()}`
+}
+
 const optionalPositiveNum = z.preprocess(
   (val) => (val === '' || val === null || val === undefined ? undefined : Number(val)),
   z.number().positive('Giá trị phải lớn hơn 0').optional(),
@@ -47,6 +55,7 @@ export const rawFabricSchema = z.object({
   notes: z.string().trim().optional(),
   yarn_receipt_id: z.string().uuid().optional().or(z.literal('')),
   weaving_partner_id: z.string().uuid().optional().or(z.literal('')),
+  lot_number: z.string().trim().max(60).optional(),
 })
 
 export type RawFabricFormValues = z.infer<typeof rawFabricSchema>
@@ -66,6 +75,7 @@ export const rawFabricDefaults: RawFabricFormValues = {
   notes: '',
   yarn_receipt_id: '',
   weaving_partner_id: '',
+  lot_number: '',
 }
 
 /* ---- Bulk input (nhập nhanh hàng loạt) ---- */
@@ -119,6 +129,7 @@ export const bulkInputSchema = z.object({
   production_date: z.string().optional(),
   weaving_partner_id: z.string().uuid().optional().or(z.literal('')),
   yarn_receipt_id: z.string().uuid().optional().or(z.literal('')),
+  lot_number: z.string().trim().max(60).optional(),
   roll_prefix: z.string().trim().min(1, 'Tiền tố mã cuộn không được trống'),
   start_number: z.preprocess(
     (val) => (val === '' || val === null || val === undefined ? 1 : Number(val)),
@@ -156,6 +167,7 @@ export const bulkInputDefaults: BulkInputFormValues = {
   production_date: '',
   weaving_partner_id: '',
   yarn_receipt_id: '',
+  lot_number: '',
   roll_prefix: 'RM-',
   start_number: 1,
   rolls: [{

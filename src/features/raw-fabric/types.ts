@@ -19,6 +19,8 @@ export type RawFabricRoll = {
   production_date: string | null
   notes: string | null
   weaving_partner_id: string | null
+  lot_number: string | null
+  barcode: string | null
   created_at: string
   updated_at: string
 }

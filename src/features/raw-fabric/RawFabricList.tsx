@@ -174,6 +174,7 @@ export function RawFabricList({ onEdit, onNew, onBulkNew }: RawFabricListProps) 
             <thead>
               <tr>
                 <th>Mã cuộn</th>
+                <th>Số lô</th>
                 <th>Loại vải</th>
                 <th>CL</th>
                 <th>Khổ × Dài</th>
@@ -191,6 +192,9 @@ export function RawFabricList({ onEdit, onNew, onBulkNew }: RawFabricListProps) 
                     {roll.color_name && (
                       <div className="td-muted">{roll.color_name}</div>
                     )}
+                  </td>
+                  <td className="td-muted">
+                    {roll.lot_number ?? <span className="td-muted">—</span>}
                   </td>
                   <td>{roll.fabric_type}</td>
                   <td>
