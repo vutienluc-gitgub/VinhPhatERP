@@ -1,7 +1,8 @@
-import { lazy, Suspense } from 'react'
+import { lazy } from 'react'
 import type { RouteObject } from 'react-router-dom'
 
 import { DashboardPage } from '@/app/router/DashboardPage'
+import { LazyPage } from '@/app/router/LazyPage'
 import type { UserRole } from '@/services/supabase/database.types'
 
 /* ── Lazy-loaded page components (code-split per route) ── */
@@ -18,10 +19,6 @@ const SettingsPage = lazy(() => import('@/features/settings').then((m) => ({ def
 const ShipmentsPage = lazy(() => import('@/features/shipments').then((m) => ({ default: m.ShipmentsPage })))
 const SuppliersPage = lazy(() => import('@/features/suppliers').then((m) => ({ default: m.SuppliersPage })))
 const YarnReceiptsPage = lazy(() => import('@/features/yarn-receipts').then((m) => ({ default: m.YarnReceiptsPage })))
-
-function LazyPage({ children }: { children: React.ReactNode }) {
-  return <Suspense fallback={<div className="table-empty">Đang tải...</div>}>{children}</Suspense>
-}
 
 export type NavigationItem = {
   path: string
