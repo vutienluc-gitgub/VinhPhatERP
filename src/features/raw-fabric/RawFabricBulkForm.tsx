@@ -28,7 +28,7 @@ export function RawFabricBulkForm({ onClose }: Props) {
   const bulkMutation = useCreateRawFabricBulk()
   const { data: weavingPartners = [] } = useWeavingPartners()
   const { data: yarnReceipts = [] } = useYarnReceiptOptions()
-  const lastWeightRef = useRef<HTMLInputElement | null>(null)
+  const weightRefs = useRef<(HTMLInputElement | null)[]>([])
   const [savedRolls, setSavedRolls] = useState<RawFabricRoll[] | null>(null)
   const { exportExcel, exportPdf } = useRawFabricExport()
 
@@ -69,7 +69,7 @@ export function RawFabricBulkForm({ onClose }: Props) {
       notes: '',
     })
     // Focus trọng lượng dòng mới sau khi render
-    requestAnimationFrame(() => lastWeightRef.current?.focus())
+    requestAnimationFrame(() => weightRefs.current[fields.length]?.focus())
   }, [append, rollPrefix, startNumber, fields.length])
 
   function addMultipleRows(count: number) {
@@ -87,10 +87,10 @@ export function RawFabricBulkForm({ onClose }: Props) {
 
   // Tổng hợp
   const totalRolls = rolls?.length ?? 0
-  const totalWeight = (rolls ?? []).reduce(
-    (sum, r) => sum + (typeof r.weight_kg === 'number' && !Number.isNaN(r.weight_kg) ? r.weight_kg : 0),
-    0,
-  )
+  const totalWeight = (rolls ?? []).reduce((sum, r) => {
+    const val = parseFloat(String(r.weight_kg))
+    return sum + (Number.isFinite(val) ? val : 0)
+  }, 0)
 
   async function onSubmit(values: BulkInputFormValues) {
     const saved = await bulkMutation.mutateAsync(values)
@@ -115,14 +115,15 @@ export function RawFabricBulkForm({ onClose }: Props) {
     [setValue],
   )
 
-  // Nhấn Enter trong ô trọng lượng → thêm dòng mới
+  // Nhấn Enter trong ô trọng lượng → focus dòng tiếp theo hoặc thêm dòng mới
   function handleWeightKeyDown(e: React.KeyboardEvent<HTMLInputElement>, index: number) {
-    if (e.key !== 'Enter') {
-      return
-    }
-
+    if (e.key !== 'Enter') return
     e.preventDefault()
-    if (index === fields.length - 1 && e.currentTarget.value.trim()) {
+    if (index < fields.length - 1) {
+      // Còn dòng tiếp theo → focus xuống
+      requestAnimationFrame(() => weightRefs.current[index + 1]?.focus())
+    } else if (e.currentTarget.value.trim()) {
+      // Dòng cuối có giá trị → thêm dòng mới
       addRow()
     }
   }
@@ -379,9 +380,7 @@ export function RawFabricBulkForm({ onClose }: Props) {
                               onKeyDown={(event) => handleWeightKeyDown(event, idx)}
                               ref={(element) => {
                                 weightField.ref(element)
-                                if (idx === fields.length - 1) {
-                                  lastWeightRef.current = element
-                                }
+                                weightRefs.current[idx] = element
                               }}
                             />
                           )
