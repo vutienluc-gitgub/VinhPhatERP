@@ -69,11 +69,10 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
             <p className="eyebrow">Nhà cung cấp</p>
             <h3>Danh sách nhà cung cấp</h3>
           </div>
-          <button 
-            className="primary-button" 
-            type="button" 
-            onClick={onNew}
+          <button
             className="primary-button btn-standard"
+            type="button"
+            onClick={onNew}
           >
             + Thêm NCC mới
           </button>

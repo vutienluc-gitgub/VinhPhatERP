@@ -90,10 +90,9 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
             <h3>Đơn hàng</h3>
           </div>
           <button
-            className="primary-button"
+            className="primary-button btn-standard"
             type="button"
             onClick={onNew}
-            className="primary-button btn-standard"
           >
             + Tạo đơn hàng
           </button>

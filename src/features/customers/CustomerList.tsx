@@ -54,10 +54,9 @@ export function CustomerList({ onEdit, onNew }: CustomerListProps) {
             <h3>Khách hàng</h3>
           </div>
           <button
-            className="primary-button"
+            className="primary-button btn-standard"
             type="button"
             onClick={onNew}
-            className="primary-button btn-standard"
           >
             + Thêm khách hàng
           </button>

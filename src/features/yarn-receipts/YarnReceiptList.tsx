@@ -68,10 +68,9 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
             <h3>Phiếu nhập sợi</h3>
           </div>
           <button
-            className="primary-button"
+            className="primary-button btn-standard"
             type="button"
             onClick={onNew}
-            className="primary-button btn-standard"
           >
             + Tạo phiếu nhập
           </button>

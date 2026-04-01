@@ -678,6 +678,18 @@ export interface Database {
     }
     Views: Record<string, never>
     Functions: {
+      get_debt_summary: {
+        Args: Record<string, never>
+        Returns: {
+          customer_id: string
+          customer_name: string
+          customer_code: string
+          total_ordered: number
+          total_paid: number
+          balance_due: number
+          order_count: number
+        }[]
+      }
       update_supplier: {
         Args: {
           p_id: string
