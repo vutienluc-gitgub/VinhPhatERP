@@ -104,8 +104,17 @@ export function AppShell() {
           onClick={() => setShowMore(true)}
           aria-label="Xem thêm module"
         >
-          <span>···</span>
-          <span>Thêm</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="5" cy="5" r="1.8" />
+            <circle cx="12" cy="5" r="1.8" />
+            <circle cx="19" cy="5" r="1.8" />
+            <circle cx="5" cy="12" r="1.8" />
+            <circle cx="12" cy="12" r="1.8" />
+            <circle cx="19" cy="12" r="1.8" />
+            <circle cx="5" cy="19" r="1.8" />
+            <circle cx="12" cy="19" r="1.8" />
+            <circle cx="19" cy="19" r="1.8" />
+          </svg>
         </button>
       </nav>
 
