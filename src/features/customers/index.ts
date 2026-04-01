@@ -1,0 +1,6 @@
+export * from '@/features/customers/CustomersPage'
+export * from '@/features/customers/CustomerForm'
+export * from '@/features/customers/CustomerList'
+export * from '@/features/customers/customers.module'
+export * from '@/features/customers/types'
+export * from '@/features/customers/useCustomers'

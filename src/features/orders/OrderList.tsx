@@ -1,0 +1,266 @@
+import { useState } from 'react'
+
+import { useConfirm } from '@/shared/components/ConfirmDialog'
+import { Pagination } from '@/shared/components/Pagination'
+import { ORDER_STATUS_LABELS } from './orders.module'
+import type { Order, OrdersFilter, OrderStatus } from './types'
+import { useDeleteOrder, useOrderList } from './useOrders'
+
+type OrderListProps = {
+  onEdit: (order: Order) => void
+  onNew: () => void
+  onView: (order: Order) => void
+}
+
+function formatCurrency(value: number): string {
+  return new Intl.NumberFormat('vi-VN').format(value)
+}
+
+function statusClass(status: OrderStatus): string {
+  switch (status) {
+    case 'confirmed':
+      return 'reserved'
+    case 'in_progress':
+      return 'in_process'
+    case 'completed':
+      return 'in_stock'
+    case 'cancelled':
+      return 'damaged'
+    default:
+      return 'shipped'
+  }
+}
+
+function daysUntilDelivery(deliveryDate: string | null): { text: string; urgent: boolean } | null {
+  if (!deliveryDate) return null
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const delivery = new Date(deliveryDate)
+  const diff = Math.ceil((delivery.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+  if (diff < 0) return { text: `Trễ ${Math.abs(diff)} ngày`, urgent: true }
+  if (diff === 0) return { text: 'Hôm nay', urgent: true }
+  if (diff <= 3) return { text: `Còn ${diff} ngày`, urgent: true }
+  return { text: `Còn ${diff} ngày`, urgent: false }
+}
+
+export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
+  const [searchInput, setSearchInput] = useState('')
+  const [filters, setFilters] = useState<OrdersFilter>({})
+  const [page, setPage] = useState(1)
+
+  const { data: result, isLoading, error } = useOrderList(filters, page)
+  const orders = result?.data ?? []
+  const deleteMutation = useDeleteOrder()
+  const { confirm, alert: showAlert } = useConfirm()
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    setPage(1)
+    setFilters((prev) => ({ ...prev, search: searchInput.trim() || undefined }))
+  }
+
+  function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const val = e.target.value as OrderStatus | ''
+    setPage(1)
+    setFilters((prev) => ({ ...prev, status: val || undefined }))
+  }
+
+  async function handleDelete(order: Order) {
+    if (order.status !== 'draft') {
+      await showAlert('Chỉ có thể xoá đơn hàng ở trạng thái Nháp.')
+      return
+    }
+    const ok = await confirm({
+      message: `Xóa đơn hàng "${order.order_number}"? Hành động này không thể hoàn tác.`,
+      variant: 'danger',
+    })
+    if (!ok) return
+    deleteMutation.mutate(order.id)
+  }
+
+  const hasFilter = !!(filters.search || filters.status)
+
+  return (
+    <div className="panel-card card-flush">
+      {/* Header */}
+      <div className="card-header-area">
+        <div className="page-header">
+          <div>
+            <p className="eyebrow">Bán hàng</p>
+            <h3>Đơn hàng</h3>
+          </div>
+          <button
+            className="primary-button"
+            type="button"
+            onClick={onNew}
+            className="primary-button btn-standard"
+          >
+            + Tạo đơn hàng
+          </button>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div
+        className="filter-bar card-filter-section"
+      >
+        <form
+          className="filter-field"
+          onSubmit={handleSearch}
+          style={{ flex: '1 1 220px' }}
+        >
+          <label htmlFor="filter-search">Tìm kiếm</label>
+          <div style={{ display: 'flex', gap: '0.4rem' }}>
+            <input
+              id="filter-search"
+              className="field-input"
+              type="text"
+              placeholder="Số đơn hàng..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+            <button className="btn-secondary" type="submit" style={{ whiteSpace: 'nowrap' }}>
+              Tìm
+            </button>
+          </div>
+        </form>
+
+        <div className="filter-field">
+          <label htmlFor="filter-status">Trạng thái</label>
+          <select
+            id="filter-status"
+            className="field-select"
+            value={filters.status ?? ''}
+            onChange={handleStatusChange}
+          >
+            <option value="">Tất cả</option>
+            <option value="draft">Nháp</option>
+            <option value="confirmed">Đã xác nhận</option>
+            <option value="in_progress">Đang xử lý</option>
+            <option value="completed">Hoàn thành</option>
+            <option value="cancelled">Đã huỷ</option>
+          </select>
+        </div>
+
+        {hasFilter && (
+          <button
+            className="btn-secondary"
+            type="button"
+            onClick={() => { setFilters({}); setSearchInput('') }}
+            style={{ alignSelf: 'flex-end' }}
+          >
+            ✕ Xóa lọc
+          </button>
+        )}
+      </div>
+
+      {/* Error */}
+      {error && (
+        <p className="error-inline">
+          Lỗi tải dữ liệu: {(error as Error).message}
+        </p>
+      )}
+
+      {/* Table */}
+      <div
+        className="data-table-wrap card-table-section"
+      >
+        {isLoading ? (
+          <p className="table-empty">Đang tải...</p>
+        ) : orders.length === 0 ? (
+          <p className="table-empty">
+            {hasFilter
+              ? 'Không tìm thấy đơn hàng phù hợp.'
+              : 'Chưa có đơn hàng nào. Nhấn "+ Tạo đơn hàng" để bắt đầu.'}
+          </p>
+        ) : (
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Số đơn</th>
+                <th>Khách hàng</th>
+                <th>Ngày đặt</th>
+                <th>Giao hàng</th>
+                <th className="text-right">Tổng tiền</th>
+                <th className="text-right">Còn nợ</th>
+                <th>Trạng thái</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order) => {
+                const due = daysUntilDelivery(order.delivery_date)
+                const balanceDue = order.total_amount - order.paid_amount
+                return (
+                  <tr
+                    key={order.id}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => onView(order)}
+                  >
+                    <td>
+                      <strong>{order.order_number}</strong>
+                    </td>
+                    <td>
+                      {order.customers?.name ?? '—'}
+                      {order.customers?.code && (
+                        <div className="td-muted" style={{ fontSize: '0.8rem' }}>
+                          {order.customers.code}
+                        </div>
+                      )}
+                    </td>
+                    <td className="td-muted">{order.order_date}</td>
+                    <td>
+                      {order.delivery_date ?? '—'}
+                      {due && (
+                        <div style={{ fontSize: '0.78rem', color: due.urgent ? '#c0392b' : 'var(--muted)' }}>
+                          {due.text}
+                        </div>
+                      )}
+                    </td>
+                    <td className="numeric-cell">
+                      {formatCurrency(order.total_amount)}
+                    </td>
+                    <td className={balanceDue > 0 ? 'numeric-debt' : 'numeric-paid'}>
+                      {formatCurrency(balanceDue)}
+                    </td>
+                    <td>
+                      <span className={`roll-status ${statusClass(order.status)}`}>
+                        {ORDER_STATUS_LABELS[order.status]}
+                      </span>
+                    </td>
+                    <td className="td-actions" onClick={(e) => e.stopPropagation()}>
+                      {order.status === 'draft' && (
+                        <>
+                          <button
+                            className="btn-icon"
+                            type="button"
+                            title="Sửa"
+                            onClick={() => onEdit(order)}
+                            style={{ marginRight: 4 }}
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            className="btn-icon danger"
+                            type="button"
+                            title="Xóa"
+                            onClick={() => handleDelete(order)}
+                            disabled={deleteMutation.isPending}
+                          >
+                            🗑
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      <Pagination result={result} onPageChange={setPage} />
+    </div>
+  )
+}

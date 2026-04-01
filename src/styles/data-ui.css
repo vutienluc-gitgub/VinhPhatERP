@@ -1,0 +1,624 @@
+/* ============================================================
+   Data UI — bảng dữ liệu, form, modal
+   Dùng chung cho các màn hình CRUD trong toàn app.
+   ============================================================ */
+
+/* ---- Filter bar ---- */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: flex-end;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1 1 160px;
+}
+
+.filter-field label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+
+.filter-bar .field-input,
+.filter-bar .field-select {
+  min-height: 40px;
+  font-size: 0.9rem;
+}
+
+/* ---- Form fields ---- */
+.form-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.form-field .field-required {
+  color: #c0392b;
+  margin-left: 2px;
+}
+
+.field-input,
+.field-select,
+.field-textarea {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-strong);
+  color: var(--text);
+  font-size: 0.95rem;
+  transition: border-color 160ms ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field-input:focus,
+.field-select:focus,
+.field-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(11, 107, 203, 0.12);
+}
+
+.field-input.is-error,
+.field-select.is-error,
+.field-textarea.is-error {
+  border-color: #c0392b;
+}
+
+.field-error {
+  font-size: 0.78rem;
+  color: #c0392b;
+}
+
+.field-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.field-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2361758f' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  padding-right: 2.2rem;
+}
+
+/* ---- Data table ---- */
+.data-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  background: var(--surface-strong);
+}
+
+.data-table thead th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  background: rgba(16, 35, 61, 0.03);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 120ms ease;
+}
+
+.data-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.data-table tbody tr:hover {
+  background: rgba(11, 107, 203, 0.04);
+}
+
+.data-table td {
+  padding: 0.8rem 1rem;
+  vertical-align: middle;
+  color: var(--text);
+}
+
+.data-table .td-muted {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.data-table .td-actions {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.table-empty {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* ---- Quality & status badges ---- */
+.grade-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 0.78rem;
+}
+
+.grade-A {
+  background: rgba(15, 166, 122, 0.14);
+  color: #0c8f68;
+}
+
+.grade-B {
+  background: rgba(11, 107, 203, 0.12);
+  color: var(--primary);
+}
+
+.grade-C {
+  background: rgba(230, 126, 34, 0.13);
+  color: #c07020;
+}
+
+.roll-status {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.roll-status.in_stock    { background: rgba(15,166,122,0.12); color: #0c8f68; }
+.roll-status.reserved    { background: rgba(11,107,203,0.12); color: var(--primary); }
+.roll-status.in_process  { background: rgba(155,89,182,0.12); color: #7d3c98; }
+.roll-status.shipped     { background: rgba(52,73,94,0.10);   color: #34495e; }
+.roll-status.damaged     { background: rgba(192,57,43,0.12);  color: #c0392b; }
+.roll-status.written_off { background: rgba(16,35,61,0.08);   color: var(--muted); }
+
+/* ---- Action buttons ---- */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-strong);
+  color: var(--muted);
+  font-size: 1rem;
+  transition: all 120ms ease;
+}
+
+.btn-icon:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(11, 107, 203, 0.06);
+}
+
+.btn-icon.danger:hover {
+  border-color: #c0392b;
+  color: #c0392b;
+  background: rgba(192, 57, 43, 0.06);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-strong);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: all 120ms ease;
+}
+
+.btn-secondary:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* ---- Modal overlay ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 20, 40, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+
+@media (min-width: 640px) {
+  .modal-overlay {
+    align-items: center;
+    padding: 1.5rem;
+  }
+}
+
+.modal-sheet {
+  width: 100%;
+  max-width: 600px;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: var(--surface-strong);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 1.5rem;
+  box-shadow: 0 -8px 40px rgba(16, 35, 61, 0.18);
+}
+
+@media (min-width: 640px) {
+  .modal-sheet {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ---- Pagination ---- */
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+
+.pagination-info {
+  color: var(--text-muted, #666);
+}
+
+.pagination-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-current {
+  font-variant-numeric: tabular-nums;
+  min-width: 3.5rem;
+  text-align: center;
+}
+
+/* ---- Responsive 2-column form on wider screens ---- */
+@media (min-width: 480px) {
+  .form-grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---- Page header actions ---- */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.page-header h3 {
+  margin: 0;
+}
+
+/* ---- Bulk input form ---- */
+.bulk-sheet {
+  max-width: 900px;
+}
+
+.bulk-section {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.bulk-section legend {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  padding: 0 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.bulk-summary {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.bulk-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.bulk-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  background: var(--surface-strong);
+}
+
+.bulk-table thead th {
+  padding: 0.5rem 0.6rem;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  background: rgba(16, 35, 61, 0.03);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.bulk-table tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.bulk-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+/* ---- Utility classes (extracted from inline styles) ---- */
+
+/* Card with no padding, overflow hidden — wraps full-width tables */
+.card-flush {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Inner padding for card header area */
+.card-header-area {
+  padding: 1.25rem 1.25rem 0;
+}
+
+/* Filter section inside a card */
+.card-filter-section {
+  margin: 1rem 1.25rem;
+  border-radius: var(--radius-sm);
+}
+
+/* Table wrapper inside a card (no top margin) */
+.card-table-section {
+  margin: 0 1.25rem 1.25rem;
+  border-radius: var(--radius-sm);
+}
+
+/* Flex row for search/filter controls */
+.flex-controls {
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* Standard button sizing for header actions */
+.btn-standard {
+  min-height: 40px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.9rem;
+}
+
+/* Right-aligned text */
+.text-right { text-align: right; }
+
+/* Tabular numeric right-aligned cell */
+.numeric-cell {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Colored numeric cells */
+.numeric-paid {
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #0c8f68;
+}
+
+.numeric-debt {
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #c0392b;
+}
+
+/* Inline error / mutation error */
+.error-inline {
+  color: #c0392b;
+  font-size: 0.9rem;
+  padding: 1rem 1.25rem;
+}
+
+.error-inline-sm {
+  color: #c0392b;
+  font-size: 0.85rem;
+  padding: 0 1.25rem 1rem;
+}
+
+/* Modal sheet max-width variants */
+.modal-sheet-sm  { max-width: 480px; }
+.modal-sheet-md  { max-width: 600px; }
+.modal-sheet-lg  { max-width: 720px; }
+
+/* Form flex column layout */
+.form-column {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Surface background for disabled/readonly inputs */
+.input-surface {
+  background: var(--surface);
+}
+
+/* Small muted label */
+.label-hint {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+/* Debt summary header styling */
+.summary-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.summary-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-value--danger { color: #c0392b; }
+
+/* Info box with surface background */
+.info-box {
+  padding: 0.6rem 0.75rem;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+}
+
+/* Item line with border (for form line items) */
+.form-item-box {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  position: relative;
+}
+
+.bulk-table td {
+  padding: 0.3rem 0.35rem;
+  vertical-align: middle;
+}
+
+.bulk-input {
+  padding: 0.4rem 0.55rem !important;
+  font-size: 0.88rem !important;
+  min-height: 34px !important;
+}
+
+.bulk-input[readonly] {
+  background: rgba(16, 35, 61, 0.04);
+  color: var(--muted);
+  cursor: default;
+}
+
+.bulk-add-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
+.bulk-hint {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ===== BULK SUCCESS STATE ===== */
+.bulk-success {
+  text-align: center;
+  padding: 2.5rem 1rem 2rem;
+}
+.bulk-success-icon {
+  font-size: 2.75rem;
+  color: #0fa67a;
+  margin-bottom: 0.5rem;
+}
+.bulk-success-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 0.35rem;
+}
+.bulk-success-sub {
+  font-size: 0.95rem;
+  color: var(--text);
+  margin: 0 0 0.4rem;
+}
+.bulk-success-hint {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0 0 1.5rem;
+}
+.bulk-success-actions {
+  display: flex;
+  gap: 0.65rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}

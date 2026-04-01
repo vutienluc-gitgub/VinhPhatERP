@@ -1,0 +1,22 @@
+{
+  "name": "vinhphat-agent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "agent": "tsx src/agent.ts",
+    "mcp-server": "tsx src/mcp-server.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@modelcontextprotocol/sdk": "^1.10.1",
+    "@supabase/supabase-js": "^2.50.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.2.2"
+  }
+}

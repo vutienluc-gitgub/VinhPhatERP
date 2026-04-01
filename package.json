@@ -1,0 +1,68 @@
+{
+  "name": "vinhphat-app-v2",
+  "private": true,
+  "version": "2.0.0",
+  "author": "Vũ Tiến Lực",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:server": "cd server && npm run dev",
+    "dev:all": "concurrently \"npm run dev\" \"npm run dev:server\"",
+    "build": "tsc -b && vite build",
+    "build:server": "cd server && npm run build",
+    "build:all": "npm run build && npm run build:server",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
+    "typecheck:server": "cd server && npm run typecheck",
+    "server:install": "cd server && npm install",
+    "db:push": "npx supabase db push",
+    "db:new": "npx supabase migration new",
+    "db:status": "npx supabase migration list",
+    "db:reload": "node scripts/db-reload-schema.mjs",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
+    "@supabase/supabase-js": "^2.100.1",
+    "@tanstack/react-query": "^5.59.0",
+    "clsx": "^2.1.1",
+    "dayjs": "^1.11.13",
+    "exceljs": "^4.4.0",
+    "file-saver": "^2.0.5",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.53.0",
+    "react-router-dom": "^6.28.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/file-saver": "^2.0.7",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^7.15.0",
+    "@typescript-eslint/parser": "^7.15.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^9.2.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.7",
+    "husky": "^9.1.7",
+    "jsdom": "^25.0.1",
+    "lint-staged": "^16.4.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.3.4",
+    "vitest": "^2.1.9"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --max-warnings 0"
+    ]
+  }
+}
