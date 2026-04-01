@@ -85,12 +85,13 @@ export function RawFabricBulkForm({ onClose }: Props) {
     append(newRows)
   }
 
-  // Tổng hợp
-  const totalRolls = rolls?.length ?? 0
-  const totalWeight = (rolls ?? []).reduce((sum, r) => {
+  // Tổng hợp — chỉ đếm dòng có nhập trọng lượng > 0
+  const filledRolls = (rolls ?? []).filter((r) => {
     const val = parseFloat(String(r.weight_kg))
-    return sum + (Number.isFinite(val) ? val : 0)
-  }, 0)
+    return Number.isFinite(val) && val > 0
+  })
+  const totalRolls = filledRolls.length
+  const totalWeight = filledRolls.reduce((sum, r) => sum + parseFloat(String(r.weight_kg)), 0)
 
   async function onSubmit(values: BulkInputFormValues) {
     const saved = await bulkMutation.mutateAsync(values)
