@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 
 import { useAuth } from '@/features/auth/AuthProvider'
 import { navigationItems } from '@/app/router/routes'
 import type { UserRole } from '@/services/supabase/database.types'
+import { MobileMoreDrawer } from './MobileMoreDrawer'
 
 function getCurrentItem(pathname: string) {
   return navigationItems.find((item) => (item.path === '/' ? pathname === '/' : pathname.startsWith(item.path)))
@@ -23,10 +25,16 @@ const roleLabel: Record<UserRole, string> = {
 export function AppShell() {
   const { pathname } = useLocation()
   const { profile, signOut } = useAuth()
+  const [showMore, setShowMore] = useState(false)
   const currentItem = getCurrentItem(pathname)
 
   const userRole = profile?.role
   const visibleNavItems = navigationItems.filter((item) => hasAccess(item.requiredRoles, userRole))
+  const primaryItems = visibleNavItems.filter((item) => item.primaryMobile)
+  const secondaryItems = visibleNavItems.filter((item) => !item.primaryMobile)
+  const isSecondaryActive = secondaryItems.some((item) =>
+    item.path === '/' ? pathname === '/' : pathname.startsWith(item.path)
+  )
 
   return (
     <div className="shell-layout">
@@ -80,7 +88,7 @@ export function AppShell() {
       </div>
 
       <nav className="mobile-nav" aria-label="Bottom navigation">
-        {visibleNavItems.filter((item) => item.primaryMobile).map((item) => (
+        {primaryItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
@@ -90,7 +98,20 @@ export function AppShell() {
             <span>{item.shortLabel}</span>
           </NavLink>
         ))}
+        <button
+          type="button"
+          className={`mobile-nav-link mobile-more-btn${isSecondaryActive ? ' is-active' : ''}`}
+          onClick={() => setShowMore(true)}
+          aria-label="Xem thêm module"
+        >
+          <span>···</span>
+          <span>Thêm</span>
+        </button>
       </nav>
+
+      {showMore && (
+        <MobileMoreDrawer items={secondaryItems} onClose={() => setShowMore(false)} />
+      )}
     </div>
   )
 }

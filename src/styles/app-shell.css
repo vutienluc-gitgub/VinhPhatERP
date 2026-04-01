@@ -223,7 +223,7 @@
   right: 0;
   bottom: 0;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 0.5rem;
   padding: 0.85rem 0.9rem calc(0.85rem + env(safe-area-inset-bottom));
   border-top: 1px solid var(--border);
@@ -320,6 +320,114 @@
   .mobile-nav-link {
     transition: none;
   }
+}
+
+/* ── Mobile More Button ── */
+.mobile-more-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  min-height: 46px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 0;
+}
+
+.mobile-more-btn.is-active {
+  background: rgba(11, 107, 203, 0.12);
+  color: var(--primary);
+}
+
+/* ── Drawer Overlay ── */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  animation: fadeIn 180ms ease;
+}
+
+/* ── Drawer Sheet ── */
+.drawer-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 201;
+  background: #fff;
+  border-radius: 1.5rem 1.5rem 0 0;
+  padding: 0.75rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom));
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
+  animation: slideUp 220ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.drawer-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--border);
+  margin: 0 auto 1rem;
+}
+
+.drawer-title {
+  margin: 0 0 1rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+.drawer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.drawer-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  padding: 0.75rem 0.5rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+  background: var(--surface-strong);
+  transition: 140ms ease;
+  line-height: 1.25;
+}
+
+.drawer-item:hover {
+  border-color: rgba(11, 107, 203, 0.3);
+  background: rgba(255, 255, 255, 0.98);
+}
+
+.drawer-item.is-active {
+  border-color: rgba(11, 107, 203, 0.4);
+  background: rgba(11, 107, 203, 0.08);
+  color: var(--primary);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* ---------------------------------------------------------------------------
