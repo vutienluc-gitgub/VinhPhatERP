@@ -23,7 +23,7 @@ type ShipmentFormProps = {
 
 export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: ShipmentFormProps) {
   const { data: nextNumber } = useNextShipmentNumber()
-  const { data: availableRolls = [] } = useAvailableFinishedRolls()
+  const { data: availableRolls = [] } = useAvailableFinishedRolls(orderId)
   const createMutation = useCreateShipment()
   const availableRollById = new Map(availableRolls.map((roll) => [roll.id, roll]))
 
@@ -130,7 +130,7 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
                     <option value="">— Không chọn —</option>
                     {availableRolls.map((roll) => (
                       <option key={roll.id} value={roll.id}>
-                        {roll.roll_number} — {roll.fabric_type} {roll.color_name ? `(${roll.color_name})` : ''} — {roll.length_m}m
+                        {roll.status === 'reserved' ? '🔒 ' : ''}{roll.roll_number} — {roll.fabric_type} {roll.color_name ? `(${roll.color_name})` : ''} — {roll.length_m}m
                       </option>
                     ))}
                   </select>

@@ -75,3 +75,79 @@ export function useYarnInventory() {
     },
   })
 }
+
+/* ── Aging stock ── */
+
+export type AgingRoll = {
+  id: string
+  roll_number: string
+  fabric_type: string
+  color_name: string | null
+  warehouse_location: string | null
+  status: string
+  age_days: number
+  source: 'raw' | 'finished'
+}
+
+const AGING_THRESHOLD_DAYS = 30
+
+function daysSince(dateStr: string): number {
+  const d = new Date(dateStr)
+  const now = new Date()
+  return Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24))
+}
+
+/** Cuộn vải tồn kho lâu (>30 ngày), sắp xếp theo tuổi giảm dần */
+export function useAgingStock() {
+  return useQuery({
+    queryKey: ['inventory', 'aging-stock'],
+    queryFn: async (): Promise<AgingRoll[]> => {
+      const cutoff = new Date()
+      cutoff.setDate(cutoff.getDate() - AGING_THRESHOLD_DAYS)
+      const cutoffIso = cutoff.toISOString()
+
+      // Fetch raw rolls in_stock created before cutoff
+      const { data: rawData, error: rawErr } = await supabase
+        .from('raw_fabric_rolls')
+        .select('id, roll_number, fabric_type, color_name, warehouse_location, status, created_at, production_date')
+        .eq('status', 'in_stock')
+        .lt('created_at', cutoffIso)
+        .order('created_at', { ascending: true })
+        .limit(100)
+
+      if (rawErr) throw rawErr
+
+      // Fetch finished rolls in_stock created before cutoff
+      const { data: finishedData, error: finishedErr } = await supabase
+        .from('finished_fabric_rolls')
+        .select('id, roll_number, fabric_type, color_name, warehouse_location, status, created_at, production_date')
+        .eq('status', 'in_stock')
+        .lt('created_at', cutoffIso)
+        .order('created_at', { ascending: true })
+        .limit(100)
+
+      if (finishedErr) throw finishedErr
+
+      const toAgingRoll = (row: Record<string, unknown>, source: 'raw' | 'finished'): AgingRoll => ({
+        id: row.id as string,
+        roll_number: row.roll_number as string,
+        fabric_type: row.fabric_type as string,
+        color_name: row.color_name as string | null,
+        warehouse_location: row.warehouse_location as string | null,
+        status: row.status as string,
+        age_days: daysSince((row.production_date as string) ?? (row.created_at as string)),
+        source,
+      })
+
+      const allRolls: AgingRoll[] = [
+        ...(rawData ?? []).map((r) => toAgingRoll(r as Record<string, unknown>, 'raw')),
+        ...(finishedData ?? []).map((r) => toAgingRoll(r as Record<string, unknown>, 'finished')),
+      ]
+
+      // Sort by age descending (oldest first)
+      allRolls.sort((a, b) => b.age_days - a.age_days)
+
+      return allRolls
+    },
+  })
+}

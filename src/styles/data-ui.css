@@ -430,6 +430,136 @@
 
 /* ---- Utility classes (extracted from inline styles) ---- */
 
+/* Tab bar */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--surface-strong);
+}
+
+.tab-item {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.tab-item:not(:last-child) {
+  border-right: 1px solid var(--border);
+}
+
+.tab-item:hover {
+  background: rgba(16, 35, 61, 0.03);
+}
+
+.tab-item.is-active {
+  color: var(--primary);
+  background: rgba(11, 107, 203, 0.06);
+}
+
+/* Dashboard summary row */
+.dashboard-summary-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.dashboard-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 1rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+}
+
+.dashboard-stat-number {
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.dashboard-stat-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.dashboard-stat-danger .dashboard-stat-number { color: #c0392b; }
+.dashboard-stat-success .dashboard-stat-number { color: #0c8f68; }
+.dashboard-stat-primary .dashboard-stat-number { color: var(--primary); }
+
+/* Audit log */
+.audit-log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.audit-log-entry {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+
+.audit-log-entry:last-child {
+  border-bottom: 0;
+}
+
+.audit-log-time {
+  flex-shrink: 0;
+  width: 90px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.audit-log-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.audit-log-order {
+  font-weight: 700;
+  margin-right: 0.2rem;
+}
+
+.audit-log-stage {
+  font-weight: 600;
+}
+
+.audit-log-transition {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.audit-log-arrow {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.audit-log-notes {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
 /* Card with no padding, overflow hidden — wraps full-width tables */
 .card-flush {
   padding: 0;
@@ -887,4 +1017,36 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: var(--text);
+}
+
+/* ---- Aging stock alerts ---- */
+.aging-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.aging-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.aging-critical {
+  background: #fde8e8;
+  color: #c0392b;
+}
+
+.aging-warning {
+  background: #fef3e2;
+  color: #c57600;
+}
+
+.aging-caution {
+  background: #fef9e7;
+  color: #9a7b00;
 }

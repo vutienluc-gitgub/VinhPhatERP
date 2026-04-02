@@ -45,6 +45,7 @@ export const finishedFabricSchema = z.object({
   status: z.enum(ROLL_STATUSES).default('in_stock'),
   warehouse_location: z.string().trim().max(120).optional().or(z.literal('')),
   production_date: z.string().optional().or(z.literal('')),
+  reserved_for_order_id: z.string().uuid().nullable().optional(),
   notes: z.string().trim().optional().or(z.literal('')),
 })
 
@@ -63,6 +64,7 @@ export const finishedFabricDefaults: FinishedFabricFormValues = {
   status: 'in_stock',
   warehouse_location: '',
   production_date: '',
+  reserved_for_order_id: null,
   notes: '',
 }
 

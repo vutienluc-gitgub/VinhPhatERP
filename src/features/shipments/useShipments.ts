@@ -28,7 +28,7 @@ async function fetchReservableRolls(rollIds: string[]): Promise<Map<string, Fini
   const { data, error } = await supabase
     .from('finished_fabric_rolls')
     .select('id, fabric_type, color_name')
-    .eq('status', 'in_stock')
+    .in('status', ['in_stock', 'reserved'])
     .in('id', uniqueRollIds)
 
   if (error) throw error
@@ -183,17 +183,31 @@ export function useNextShipmentNumber() {
 
 /* ── Available finished rolls for picking ── */
 
-export function useAvailableFinishedRolls() {
+export function useAvailableFinishedRolls(orderId?: string) {
   return useQuery({
-    queryKey: ['finished-fabric-rolls', 'available'],
+    queryKey: ['finished-fabric-rolls', 'available', orderId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // 1. Fetch in_stock rolls
+      const { data: inStock, error: e1 } = await supabase
         .from('finished_fabric_rolls')
         .select('id, roll_number, fabric_type, color_name, length_m, weight_kg, status')
         .eq('status', 'in_stock')
         .order('roll_number')
-      if (error) throw error
-      return data ?? []
+      if (e1) throw e1
+
+      // 2. Fetch reserved rolls for this order (prioritized)
+      if (!orderId) return inStock ?? []
+
+      const { data: reserved, error: e2 } = await supabase
+        .from('finished_fabric_rolls')
+        .select('id, roll_number, fabric_type, color_name, length_m, weight_kg, status')
+        .eq('status', 'reserved')
+        .eq('reserved_for_order_id', orderId)
+        .order('roll_number')
+      if (e2) throw e2
+
+      // Reserved rolls first, then in_stock
+      return [...(reserved ?? []), ...(inStock ?? [])]
     },
   })
 }
@@ -249,13 +263,13 @@ export function useCreateShipment() {
         throw itemsErr
       }
 
-      // Mark rolls as reserved if linked
+      // Mark rolls as reserved/preparing if linked
       const rollIds = selectedRollIds
 
       if (rollIds.length > 0) {
         await supabase
           .from('finished_fabric_rolls')
-          .update({ status: 'reserved' })
+          .update({ status: 'reserved', reserved_for_order_id: values.orderId })
           .in('id', rollIds)
       }
 
@@ -265,6 +279,7 @@ export function useCreateShipment() {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
       void queryClient.invalidateQueries({ queryKey: ['orders'] })
       void queryClient.invalidateQueries({ queryKey: ['finished-fabric-rolls'] })
+      void queryClient.invalidateQueries({ queryKey: ['reserve-rolls'] })
     },
   })
 }
@@ -289,7 +304,7 @@ export function useConfirmShipment() {
 
       if (error) throw error
 
-      // Update roll statuses to shipped
+      // Update roll statuses to shipped + clear reservation
       const rollIds = (items ?? [])
         .map((i) => i.finished_roll_id)
         .filter((id): id is string => !!id)
@@ -297,7 +312,7 @@ export function useConfirmShipment() {
       if (rollIds.length > 0) {
         await supabase
           .from('finished_fabric_rolls')
-          .update({ status: 'shipped' })
+          .update({ status: 'shipped', reserved_for_order_id: null })
           .in('id', rollIds)
       }
 
@@ -307,6 +322,7 @@ export function useConfirmShipment() {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
       void queryClient.invalidateQueries({ queryKey: ['orders'] })
       void queryClient.invalidateQueries({ queryKey: ['finished-fabric-rolls'] })
+      void queryClient.invalidateQueries({ queryKey: ['reserve-rolls'] })
     },
   })
 }

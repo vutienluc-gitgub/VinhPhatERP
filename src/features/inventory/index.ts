@@ -4,4 +4,5 @@ export {
   useRawFabricInventory,
   useFinishedFabricInventory,
   useYarnInventory,
+  useAgingStock,
 } from '@/features/inventory/useInventory'

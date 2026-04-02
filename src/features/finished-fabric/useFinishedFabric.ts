@@ -28,6 +28,7 @@ function toDbRow(
     status: values.status,
     warehouse_location: values.warehouse_location?.trim() || null,
     production_date: values.production_date?.trim() || null,
+    reserved_for_order_id: values.reserved_for_order_id ?? null,
     notes: values.notes?.trim() || null,
   }
 }

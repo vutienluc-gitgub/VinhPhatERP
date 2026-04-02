@@ -17,3 +17,19 @@ export type OrderProgress = {
 export type OrderProgressWithOrder = OrderProgress & {
   orders?: { order_number: string; delivery_date: string | null; customers?: { name: string } | null } | null
 }
+
+export type ProgressAuditLog = {
+  id: string
+  progress_id: string
+  order_id: string
+  stage: ProductionStage
+  old_status: StageStatus | null
+  new_status: StageStatus
+  changed_by: string | null
+  notes: string | null
+  created_at: string
+}
+
+export type ProgressAuditLogWithOrder = ProgressAuditLog & {
+  orders?: { order_number: string; customers?: { name: string } | null } | null
+}
