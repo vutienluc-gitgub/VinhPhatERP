@@ -75,6 +75,7 @@ export type Database = {
           production_date: string | null
           quality_grade: string | null
           raw_roll_id: string
+          reserved_for_order_id: string | null
           roll_number: string
           status: Database["public"]["Enums"]["roll_status"]
           updated_at: string
@@ -94,6 +95,7 @@ export type Database = {
           production_date?: string | null
           quality_grade?: string | null
           raw_roll_id: string
+          reserved_for_order_id?: string | null
           roll_number: string
           status?: Database["public"]["Enums"]["roll_status"]
           updated_at?: string
@@ -113,6 +115,7 @@ export type Database = {
           production_date?: string | null
           quality_grade?: string | null
           raw_roll_id?: string
+          reserved_for_order_id?: string | null
           roll_number?: string
           status?: Database["public"]["Enums"]["roll_status"]
           updated_at?: string
@@ -126,6 +129,13 @@ export type Database = {
             columns: ["raw_roll_id"]
             isOneToOne: false
             referencedRelation: "raw_fabric_rolls"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finished_fabric_rolls_reserved_for_order_id_fkey"
+            columns: ["reserved_for_order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
             referencedColumns: ["id"]
           },
         ]

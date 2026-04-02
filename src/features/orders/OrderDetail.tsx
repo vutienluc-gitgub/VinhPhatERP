@@ -11,6 +11,7 @@ type OrderDetailProps = {
   onEdit: (order: Order) => void
   onCreateShipment: (order: Order) => void
   onCreatePayment: (order: Order) => void
+  onReserveRolls: (order: Order) => void
 }
 
 function formatCurrency(value: number): string {
@@ -33,6 +34,7 @@ export function OrderDetail({
   onEdit,
   onCreateShipment,
   onCreatePayment,
+  onReserveRolls,
 }: OrderDetailProps) {
   const { data: order, isLoading, error } = useOrder(orderId)
   const { data: progressStages = [] } = useOrderProgress(orderId)
@@ -156,6 +158,9 @@ export function OrderDetail({
           )}
           {(order.status === 'confirmed' || order.status === 'in_progress') && (
             <>
+              <button className="btn-secondary" type="button" onClick={() => onReserveRolls(order)}>
+                🔒 Giữ cuộn
+              </button>
               <button className="primary-button" type="button" onClick={() => onCreateShipment(order)} style={{ padding: '0.55rem 1rem', fontSize: '0.88rem' }}>
                 📦 Tạo phiếu xuất
               </button>

@@ -807,3 +807,84 @@
   background: var(--border);
   margin-left: 1.65rem;
 }
+
+/* ---- Reserve rolls panel ---- */
+.reserve-item-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.reserve-item-tab {
+  flex: 1 1 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.6rem 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 160ms ease;
+}
+
+.reserve-item-tab:hover {
+  border-color: var(--primary);
+}
+
+.reserve-item-tab.active {
+  border-color: var(--primary);
+  background: rgba(11, 107, 203, 0.04);
+}
+
+.reserve-tab-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+
+.reserve-tab-detail {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.reserve-tab-qty {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.reserve-summary {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  margin-bottom: 1rem;
+}
+
+.reserve-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.reserve-summary-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+
+.reserve-summary-value {
+  font-size: 1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}

@@ -19,6 +19,7 @@ export type FinishedFabricRoll = {
   lot_number: string | null
   production_date: string | null
   notes: string | null
+  reserved_for_order_id: string | null
   created_at: string
   updated_at: string
 }

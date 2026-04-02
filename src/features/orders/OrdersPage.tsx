@@ -5,6 +5,7 @@ import { PaymentForm } from '@/features/payments/PaymentForm'
 import { OrderDetail } from './OrderDetail'
 import { OrderForm } from './OrderForm'
 import { OrderList } from './OrderList'
+import { ReserveRollsPanel } from './ReserveRollsPanel'
 import type { Order } from './types'
 
 type View = { mode: 'list' } | { mode: 'detail'; orderId: string }
@@ -15,6 +16,7 @@ export function OrdersPage() {
   const [showForm, setShowForm] = useState(false)
   const [shipmentOrder, setShipmentOrder] = useState<Order | null>(null)
   const [paymentOrder, setPaymentOrder] = useState<Order | null>(null)
+  const [reserveOrder, setReserveOrder] = useState<Order | null>(null)
 
   function openCreate() {
     setEditOrder(null)
@@ -51,6 +53,7 @@ export function OrdersPage() {
           }}
           onCreateShipment={(order) => setShipmentOrder(order)}
           onCreatePayment={(order) => setPaymentOrder(order)}
+          onReserveRolls={(order) => setReserveOrder(order)}
         />
       )}
 
@@ -83,6 +86,14 @@ export function OrdersPage() {
           orderNumber={paymentOrder.order_number}
           balanceDue={paymentOrder.total_amount - paymentOrder.paid_amount}
           onClose={() => setPaymentOrder(null)}
+        />
+      )}
+
+      {/* Reserve rolls panel */}
+      {reserveOrder && (
+        <ReserveRollsPanel
+          order={reserveOrder}
+          onClose={() => setReserveOrder(null)}
         />
       )}
     </>

@@ -296,6 +296,14 @@ export function useCancelOrder() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (orderId: string) => {
+      // 1. Release all reserved rolls back to in_stock
+      await supabase
+        .from('finished_fabric_rolls')
+        .update({ status: 'in_stock', reserved_for_order_id: null })
+        .eq('reserved_for_order_id', orderId)
+        .eq('status', 'reserved')
+
+      // 2. Cancel the order
       const { error } = await supabase
         .from(HEADER_TABLE)
         .update({ status: 'cancelled' as OrderStatus })
@@ -305,6 +313,8 @@ export function useCancelOrder() {
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: ['reserve-rolls'] })
+      void queryClient.invalidateQueries({ queryKey: ['finished-fabric'] })
     },
   })
 }
