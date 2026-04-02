@@ -176,13 +176,12 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Số đơn</th>
                 <th>Khách hàng</th>
                 <th>Ngày đặt</th>
-                <th>Giao hàng</th>
-                <th className="text-right">Tổng tiền</th>
+                <th className="hide-mobile">Giao hàng</th>
+                <th className="text-right hide-mobile">Tổng tiền</th>
                 <th className="text-right">Còn nợ</th>
-                <th>Trạng thái</th>
+                <th className="hide-mobile">Trạng thái</th>
                 <th></th>
               </tr>
             </thead>
@@ -198,17 +197,17 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
                   >
                     <td>
                       <strong>{order.order_number}</strong>
-                    </td>
-                    <td>
-                      {order.customers?.name ?? '—'}
-                      {order.customers?.code && (
-                        <div className="td-muted" style={{ fontSize: '0.8rem' }}>
-                          {order.customers.code}
-                        </div>
-                      )}
+                      <div>
+                        {order.customers?.name ?? '—'}
+                        {order.customers?.code && (
+                          <span className="td-muted" style={{ fontSize: '0.8rem', marginLeft: '0.3rem' }}>
+                            {order.customers.code}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="td-muted">{order.order_date}</td>
-                    <td>
+                    <td className="hide-mobile">
                       {order.delivery_date ?? '—'}
                       {due && (
                         <div style={{ fontSize: '0.78rem', color: due.urgent ? '#c0392b' : 'var(--muted)' }}>
@@ -216,13 +215,13 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
                         </div>
                       )}
                     </td>
-                    <td className="numeric-cell">
+                    <td className="numeric-cell hide-mobile">
                       {formatCurrency(order.total_amount)}
                     </td>
                     <td className={balanceDue > 0 ? 'numeric-debt' : 'numeric-paid'}>
                       {formatCurrency(balanceDue)}
                     </td>
-                    <td>
+                    <td className="hide-mobile">
                       <span className={`roll-status ${statusClass(order.status)}`}>
                         {ORDER_STATUS_LABELS[order.status]}
                       </span>

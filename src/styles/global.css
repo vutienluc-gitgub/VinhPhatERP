@@ -32,6 +32,7 @@
 
 html {
   font-size: 16px;
+  overflow-x: hidden;
 }
 
 body {
@@ -40,6 +41,7 @@ body {
   min-height: 100vh;
   color: var(--text);
   background-attachment: fixed;
+  overflow-x: hidden;
 }
 
 button,

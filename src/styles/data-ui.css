@@ -583,6 +583,36 @@
   border-radius: var(--radius-sm);
 }
 
+@media (max-width: 639px) {
+  .card-header-area {
+    padding: 1rem 1rem 0;
+  }
+
+  .card-filter-section {
+    margin: 0.75rem 1rem;
+  }
+
+  .card-table-section {
+    margin: 0 0.5rem 0.75rem;
+  }
+
+  .data-table thead th {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.7rem;
+  }
+
+  .data-table td {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.84rem;
+  }
+
+  /* Hide less important columns on mobile */
+  .data-table th.hide-mobile,
+  .data-table td.hide-mobile {
+    display: none;
+  }
+}
+
 /* Flex row for search/filter controls */
 .flex-controls {
   display: flex;
