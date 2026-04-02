@@ -498,6 +498,57 @@
   padding: 1rem 1.25rem;
 }
 
+/* ---- Quick-stats cards ---- */
+.stats-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0 1.25rem;
+  margin: 0.75rem 0 0;
+}
+
+.stat-card {
+  flex: 1 1 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.stat-card .stat-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+
+.stat-card .stat-value {
+  font-size: 1.35rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.stat-card .stat-unit {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-left: 2px;
+}
+
+.stat-card.stat-primary .stat-value {
+  color: var(--primary);
+}
+
+.stat-card.stat-success .stat-value {
+  color: #0c8f68;
+}
+
 .error-inline-sm {
   color: #c0392b;
   font-size: 0.85rem;

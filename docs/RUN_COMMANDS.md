@@ -12,7 +12,7 @@ npm run dev
 
 - `cd d:\hoa-luc\vinhphat-app-v2`: di chuyển terminal vào đúng thư mục dự án.
 - `npm install`: cài đặt toàn bộ thư viện được khai báo trong `package.json`.
-- `npm run dev`: khởi động Vite development server để xem giao diện local.
+- `npm run dev`: khởi động Vite development server để xem giao diện local, kiểm tra debug.
 
 ## Sau khi chạy
 
@@ -39,21 +39,13 @@ npm run dev
 
 ## Một số lệnh hữu ích khác
 
-```powershell
-npm run build
-npm run preview
-npm run test
-npm run test:watch
-npm run typecheck
-npm run lint
-```
-
 - `npm run build`: build bản production.
 - `npm run preview`: chạy bản build để xem gần giống production.
 - `npm run test`: chạy toàn bộ frontend test một lần.
 - `npm run test:watch`: chạy test ở watch mode trong lúc code.
 - `npm run typecheck`: kiểm tra lỗi TypeScript.
 - `npm run lint`: kiểm tra lỗi code style và rule ESLint.
+- `npm run start`: kiểm tra ...
 
 ## Quy trình test sau mỗi lần coding
 

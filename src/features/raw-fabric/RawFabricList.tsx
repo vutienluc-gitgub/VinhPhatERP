@@ -9,7 +9,7 @@ import {
 import { useConfirm } from '@/shared/components/ConfirmDialog'
 import { Pagination } from '@/shared/components/Pagination'
 import type { RawFabricFilter, RawFabricRoll, RollStatus, QualityGrade } from './types'
-import { useDeleteRawFabric, useRawFabricList } from './useRawFabric'
+import { useDeleteRawFabric, useRawFabricList, useRawFabricStats } from './useRawFabric'
 import { useRawFabricExport } from './useRawFabricExport'
 
 type RawFabricListProps = {
@@ -30,6 +30,7 @@ export function RawFabricList({ onEdit, onNew, onBulkNew }: RawFabricListProps) 
 
   const { data: result, isLoading, error } = useRawFabricList(filters, page)
   const rolls = result?.data ?? []
+  const { data: stats } = useRawFabricStats()
   const deleteMutation = useDeleteRawFabric()
   const { confirm } = useConfirm()
   const { exportExcel, exportPdf } = useRawFabricExport()
@@ -96,6 +97,30 @@ export function RawFabricList({ onEdit, onNew, onBulkNew }: RawFabricListProps) 
           </button>
         </div>
       </div>
+
+      {/* Thống kê nhanh */}
+      {stats && (
+        <div className="stats-bar">
+          <div className="stat-card stat-primary">
+            <span className="stat-label">Tổng cuộn</span>
+            <span className="stat-value">{stats.totalRolls.toLocaleString('vi-VN')}</span>
+          </div>
+          <div className="stat-card">
+            <span className="stat-label">Tổng chiều dài</span>
+            <span className="stat-value">
+              {stats.totalLengthM.toLocaleString('vi-VN', { maximumFractionDigits: 1 })}
+              <span className="stat-unit">m</span>
+            </span>
+          </div>
+          <div className="stat-card">
+            <span className="stat-label">Tổng trọng lượng</span>
+            <span className="stat-value">
+              {stats.totalWeightKg.toLocaleString('vi-VN', { maximumFractionDigits: 1 })}
+              <span className="stat-unit">kg</span>
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Bộ lọc */}
       <div className="filter-bar card-filter-section">

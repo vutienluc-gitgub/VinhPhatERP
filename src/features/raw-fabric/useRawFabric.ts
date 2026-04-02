@@ -215,3 +215,28 @@ export function useYarnReceiptOptions() {
     },
   })
 }
+
+export type InventoryStats = {
+  totalRolls: number
+  totalLengthM: number
+  totalWeightKg: number
+}
+
+/** Thống kê nhanh tồn kho vải mộc từ view v_raw_fabric_inventory */
+export function useRawFabricStats() {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'stats'],
+    queryFn: async (): Promise<InventoryStats> => {
+      const { data, error } = await supabase
+        .from('v_raw_fabric_inventory')
+        .select('roll_count, total_length_m, total_weight_kg')
+      if (error) throw error
+      const rows = data ?? []
+      return {
+        totalRolls: rows.reduce((s, r) => s + (r.roll_count ?? 0), 0),
+        totalLengthM: rows.reduce((s, r) => s + (r.total_length_m ?? 0), 0),
+        totalWeightKg: rows.reduce((s, r) => s + (r.total_weight_kg ?? 0), 0),
+      }
+    },
+  })
+}
