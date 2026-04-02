@@ -1,7 +1,8 @@
 import {
   pgTable, pgEnum, uuid, text,
-  timestamptz, index
+  index
 } from 'drizzle-orm/pg-core'
+import { timestamptz } from './helpers.js'
 
 export const supplierCategoryEnum = pgEnum('supplier_category', [
   'yarn', 'dye', 'weaving', 'accessories', 'other',

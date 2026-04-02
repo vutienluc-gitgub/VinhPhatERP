@@ -1,8 +1,9 @@
 import { sql } from 'drizzle-orm'
 import {
   pgTable, pgEnum, uuid, text, date, numeric,
-  smallint, timestamptz, index, unique
+  smallint, index, unique
 } from 'drizzle-orm/pg-core'
+import { timestamptz } from './helpers.js'
 import { customers } from './customers.js'
 import { profiles } from './auth.js'
 import { finishedFabricRolls } from './fabric.js'

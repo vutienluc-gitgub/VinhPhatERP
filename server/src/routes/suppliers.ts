@@ -39,7 +39,8 @@ router.get('/', requireAuth, async (c) => {
 })
 
 router.get('/:id', requireAuth, async (c) => {
-  const [row] = await db.select().from(suppliers).where(eq(suppliers.id, c.req.param('id')))
+  const { id } = c.req.param()
+  const [row] = await db.select().from(suppliers).where(eq(suppliers.id, id))
   if (!row) return c.json({ error: 'Không tìm thấy nhà cung cấp' }, 404)
   return c.json({ data: row })
 })
@@ -50,20 +51,22 @@ router.post('/', requireAuth, zValidator('json', supplierSchema), async (c) => {
 })
 
 router.patch('/:id', requireAuth, zValidator('json', supplierSchema.partial()), async (c) => {
+  const { id } = c.req.param()
   const [updated] = await db
     .update(suppliers)
     .set({ ...c.req.valid('json'), updatedAt: new Date() })
-    .where(eq(suppliers.id, c.req.param('id')))
+    .where(eq(suppliers.id, id))
     .returning()
   if (!updated) return c.json({ error: 'Không tìm thấy nhà cung cấp' }, 404)
   return c.json({ data: updated })
 })
 
 router.delete('/:id', requireAuth, async (c) => {
+  const { id } = c.req.param()
   const [updated] = await db
     .update(suppliers)
     .set({ status: 'inactive', updatedAt: new Date() })
-    .where(eq(suppliers.id, c.req.param('id')))
+    .where(eq(suppliers.id, id))
     .returning()
   if (!updated) return c.json({ error: 'Không tìm thấy nhà cung cấp' }, 404)
   return c.json({ data: updated })

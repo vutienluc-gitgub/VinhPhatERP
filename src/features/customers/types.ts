@@ -7,7 +7,7 @@ export type Customer = {
   address: string | null
   tax_code: string | null
   contact_person: string | null
-  source: 'referral' | 'exhibition' | 'zalo' | 'online' | 'direct' | 'cold_call' | 'other'
+  source: 'referral' | 'exhibition' | 'zalo' | 'facebook' | 'online' | 'direct' | 'cold_call' | 'other'
   notes: string | null
   status: 'active' | 'inactive'
   created_at: string

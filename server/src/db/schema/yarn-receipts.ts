@@ -1,7 +1,8 @@
 import {
   pgTable, pgEnum, uuid, text, date, numeric,
-  smallint, timestamptz, index
+  smallint, index
 } from 'drizzle-orm/pg-core'
+import { timestamptz } from './helpers.js'
 import { suppliers } from './suppliers.js'
 import { profiles } from './auth.js'
 

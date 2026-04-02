@@ -11,7 +11,8 @@ const PRODUCTION_STAGES = [
   'finishing', 'final_check', 'packing',
 ] as const
 
-const router = new Hono()
+type Env = { Variables: { user: { id: string } } }
+const router = new Hono<Env>()
 
 const orderItemSchema = z.object({
   fabricType: z.string().min(1),
@@ -68,7 +69,12 @@ router.post('/', requireAuth, zValidator('json', orderSchema), async (c) => {
 
     const newItems = await tx
       .insert(orderItems)
-      .values(items.map(i => ({ ...i, orderId: newOrder.id })))
+      .values(items.map(i => ({
+        ...i,
+        orderId: newOrder.id,
+        quantity: String(i.quantity),
+        unitPrice: String(i.unitPrice),
+      })))
       .returning()
 
     return { ...newOrder, items: newItems }
@@ -79,10 +85,11 @@ router.post('/', requireAuth, zValidator('json', orderSchema), async (c) => {
 
 // PATCH /orders/:id — cập nhật status/notes
 router.patch('/:id', requireAuth, zValidator('json', orderSchema.partial().omit({ items: true })), async (c) => {
+  const { id } = c.req.param()
   const [updated] = await db
     .update(orders)
     .set({ ...c.req.valid('json'), updatedAt: new Date() })
-    .where(eq(orders.id, c.req.param('id')))
+    .where(eq(orders.id, id))
     .returning()
   if (!updated) return c.json({ error: 'Không tìm thấy đơn hàng' }, 404)
   return c.json({ data: updated })

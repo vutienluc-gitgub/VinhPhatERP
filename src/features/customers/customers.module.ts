@@ -2,12 +2,13 @@ import { z } from 'zod'
 
 import type { FeatureDefinition } from '@/shared/types/feature'
 
-export const CUSTOMER_SOURCES = ['referral', 'exhibition', 'zalo', 'online', 'direct', 'cold_call', 'other'] as const
+export const CUSTOMER_SOURCES = ['referral', 'exhibition', 'zalo', 'facebook', 'online', 'direct', 'cold_call', 'other'] as const
 
 export const CUSTOMER_SOURCE_LABELS: Record<typeof CUSTOMER_SOURCES[number], string> = {
   referral: 'Giới thiệu',
   exhibition: 'Triển lãm/Hội chợ',
   zalo: 'Zalo',
+  facebook: 'Facebook',
   online: 'Online/Website',
   direct: 'Trực tiếp',
   cold_call: 'Telesales',

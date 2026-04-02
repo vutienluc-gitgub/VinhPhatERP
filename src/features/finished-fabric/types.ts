@@ -6,7 +6,7 @@ export type RollStatus = (typeof ROLL_STATUSES)[number]
 export type FinishedFabricRoll = {
   id: string
   roll_number: string
-  raw_roll_id: string | null
+  raw_roll_id: string
   fabric_type: string
   color_name: string | null
   color_code: string | null
@@ -16,6 +16,7 @@ export type FinishedFabricRoll = {
   quality_grade: QualityGrade | null
   status: RollStatus
   warehouse_location: string | null
+  lot_number: string | null
   production_date: string | null
   notes: string | null
   created_at: string
@@ -26,6 +27,7 @@ export type FinishedFabricFilter = {
   status?: RollStatus
   quality_grade?: QualityGrade
   fabric_type?: string
+  lot_number?: string
 }
 
 export type RawRollOption = {
@@ -33,4 +35,5 @@ export type RawRollOption = {
   roll_number: string
   fabric_type: string
   color_name: string | null
+  lot_number: string | null
 }

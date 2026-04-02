@@ -16,7 +16,7 @@ const customerSchema = z.object({
   address:       z.string().optional(),
   taxCode:       z.string().optional(),
   contactPerson: z.string().optional(),
-  source:        z.enum(['referral', 'exhibition', 'zalo', 'online', 'direct', 'cold_call', 'other']).default('other'),
+  source:        z.enum(['referral', 'exhibition', 'zalo', 'facebook', 'online', 'direct', 'cold_call', 'other']).default('other'),
   notes:         z.string().optional(),
   status:        z.enum(['active', 'inactive']).default('active'),
 })

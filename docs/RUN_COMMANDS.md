@@ -28,6 +28,15 @@ cd d:\hoa-luc\vinhphat-app-v2
 npm run dev
 ```
 
+### Tóm tắt 4 lệnh database
+
+| Lệnh                           | Ý nghĩa                                  |
+| ------------------------------ | ---------------------------------------- |
+| `npm run db:new ten_migration` | Tạo file migration mới                   |
+| `npm run db:push`              | Đẩy migration lên Supabase/Postgres thật |
+| `npm run db:reload`            | Cập nhật lại schema cache cho API        |
+| `npm run db:status`            | Kiểm tra migration đã chạy chưa          |
+
 ## Một số lệnh hữu ích khác
 
 ```powershell

@@ -12,10 +12,12 @@ import {
 import type { FinishedFabricFilter, FinishedFabricRoll, QualityGrade, RollStatus } from './types'
 import { useDeleteFinishedFabric, useFinishedFabricList } from './useFinishedFabric'
 import { useFinishedFabricExport } from './useFinishedFabricExport'
+import { canDeleteRoll, canEditRoll, deleteBlockReason, editBlockReason } from './transitions'
 
 type FinishedFabricListProps = {
   onEdit: (roll: FinishedFabricRoll) => void
   onNew: () => void
+  onBulkNew: () => void
 }
 
 function formatNum(val: number | null, unit: string): string {
@@ -23,7 +25,7 @@ function formatNum(val: number | null, unit: string): string {
   return `${val.toLocaleString('vi-VN')} ${unit}`
 }
 
-export function FinishedFabricList({ onEdit, onNew }: FinishedFabricListProps) {
+export function FinishedFabricList({ onEdit, onNew, onBulkNew }: FinishedFabricListProps) {
   const [filters, setFilters] = useState<FinishedFabricFilter>({})
   const [fabricTypeInput, setFabricTypeInput] = useState('')
   const [page, setPage] = useState(1)
@@ -53,6 +55,7 @@ export function FinishedFabricList({ onEdit, onNew }: FinishedFabricListProps) {
   }
 
   async function handleDelete(roll: FinishedFabricRoll) {
+    if (!canDeleteRoll(roll.status)) return
     const ok = await confirm({
       message: `Xóa cuộn "${roll.roll_number}"? Hành động này không thể hoàn tác.`,
       variant: 'danger',
@@ -72,6 +75,9 @@ export function FinishedFabricList({ onEdit, onNew }: FinishedFabricListProps) {
           </div>
           <button className="primary-button btn-standard" type="button" onClick={onNew}>
             + Nhập cuộn mới
+          </button>
+          <button className="btn-secondary btn-standard" type="button" onClick={onBulkNew}>
+            ⚡ Nhập hàng loạt
           </button>
           <button
             className="btn-secondary btn-standard"
@@ -227,8 +233,9 @@ export function FinishedFabricList({ onEdit, onNew }: FinishedFabricListProps) {
                     <button
                       className="btn-icon"
                       type="button"
-                      title="Sửa"
+                      title={editBlockReason(roll.status) ?? 'Sửa'}
                       onClick={() => onEdit(roll)}
+                      disabled={!canEditRoll(roll.status)}
                       style={{ marginRight: 4 }}
                     >
                       ✏️
@@ -236,9 +243,9 @@ export function FinishedFabricList({ onEdit, onNew }: FinishedFabricListProps) {
                     <button
                       className="btn-icon danger"
                       type="button"
-                      title="Xóa"
+                      title={deleteBlockReason(roll.status) ?? 'Xóa'}
                       onClick={() => handleDelete(roll)}
-                      disabled={deleteMutation.isPending}
+                      disabled={deleteMutation.isPending || !canDeleteRoll(roll.status)}
                     >
                       🗑
                     </button>

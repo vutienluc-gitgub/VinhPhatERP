@@ -1,11 +1,12 @@
 import {
   pgTable, pgEnum, uuid, text,
-  timestamptz, index
+  index
 } from 'drizzle-orm/pg-core'
+import { timestamptz } from './helpers.js'
 
 export const activeStatusEnum = pgEnum('active_status', ['active', 'inactive'])
 export const customerSourceEnum = pgEnum('customer_source', [
-  'referral', 'exhibition', 'zalo', 'online', 'direct', 'cold_call', 'other',
+  'referral', 'exhibition', 'zalo', 'facebook', 'online', 'direct', 'cold_call', 'other',
 ])
 
 export const customers = pgTable('customers', {

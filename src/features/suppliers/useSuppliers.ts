@@ -89,12 +89,12 @@ export function useUpdateSupplier() {
         p_code: values.code,
         p_name: values.name,
         p_category: values.category,
-        p_phone: values.phone?.trim() || null,
-        p_email: values.email?.trim() || null,
-        p_address: values.address?.trim() || null,
-        p_tax_code: values.tax_code?.trim() || null,
-        p_contact_person: values.contact_person?.trim() || null,
-        p_notes: values.notes?.trim() || null,
+        p_phone: values.phone?.trim() || undefined,
+        p_email: values.email?.trim() || undefined,
+        p_address: values.address?.trim() || undefined,
+        p_tax_code: values.tax_code?.trim() || undefined,
+        p_contact_person: values.contact_person?.trim() || undefined,
+        p_notes: values.notes?.trim() || undefined,
         p_status: values.status,
       })
       if (error) {
