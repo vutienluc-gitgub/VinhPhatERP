@@ -50,17 +50,10 @@ npm run dev
 ## Quy trình test sau mỗi lần coding
 
 Nếu chỉ sửa frontend:
-
-```powershell
-npm run test
-npm run typecheck
-npm run lint
-npm run build
-```
-
-Nếu có sửa backend trong `server`:
-
-```powershell
-npm run typecheck:server
-npm run build:server
-```
+| Nếu chỉ sửa `frontend` | Nếu có sửa backend trong `server` |
+| ------------------------------ | ---------------------------------------- |
+|```powershell |npm run typecheck:server
+|npm run test |npm run build:server
+|npm run typecheck |  
+|npm run lint |
+|npm run build |
