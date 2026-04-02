@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 
 import {
@@ -15,6 +15,21 @@ import {
   useNextReceiptNumber,
   useUpdateYarnReceipt,
 } from './useYarnReceipts'
+import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm'
+
+/* ── Collapsible form section ── */
+function FormSection({ title, defaultOpen = true, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen)
+  return (
+    <div className="form-section">
+      <div className="form-section-header" onClick={() => setOpen((v) => !v)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setOpen((v) => !v) }}>
+        <span className="form-section-title">{title}</span>
+        <span className="form-section-toggle" data-open={open}>▼</span>
+      </div>
+      {open && <div className="form-section-body">{children}</div>}
+    </div>
+  )
+}
 
 type YarnReceiptFormProps = {
   receipt: YarnReceipt | null
@@ -69,6 +84,7 @@ function LineTotals({ control }: { control: ReturnType<typeof useForm<YarnReceip
 
 export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
   const isEditing = receipt !== null
+  const [showQuickSupplier, setShowQuickSupplier] = useState(false)
   const createMutation = useCreateYarnReceipt()
   const updateMutation = useUpdateYarnReceipt()
   const { data: nextNumber } = useNextReceiptNumber()
@@ -165,72 +181,92 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="form-grid">
-            {/* Số phiếu + Ngày nhập */}
-            <div className="form-grid form-grid-2">
-              <div className="form-field">
-                <label htmlFor="receiptNumber">
-                  Số phiếu <span className="field-required">*</span>
-                </label>
-                <input
-                  id="receiptNumber"
-                  className={`field-input${errors.receiptNumber ? ' is-error' : ''}`}
-                  type="text"
-                  placeholder="VD: NS-001"
-                  readOnly={!isEditing}
-                  {...register('receiptNumber')}
-                />
-                {errors.receiptNumber && (
-                  <span className="field-error">
-                    {errors.receiptNumber.message}
-                  </span>
-                )}
+            {/* ── Section 1: Thông tin phiếu ── */}
+            <FormSection title="Thông tin phiếu" defaultOpen={true}>
+              <div className="form-grid">
+                <div className="form-grid form-grid-2">
+                  <div className="form-field">
+                    <label htmlFor="receiptNumber">
+                      Số phiếu <span className="field-required">*</span>
+                    </label>
+                    <input
+                      id="receiptNumber"
+                      className={`field-input${errors.receiptNumber ? ' is-error' : ''}`}
+                      type="text"
+                      placeholder="VD: NS-001"
+                      readOnly={!isEditing}
+                      {...register('receiptNumber')}
+                    />
+                    {errors.receiptNumber && (
+                      <span className="field-error">
+                        {errors.receiptNumber.message}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="receiptDate">
+                      Ngày nhập <span className="field-required">*</span>
+                    </label>
+                    <input
+                      id="receiptDate"
+                      className={`field-input${errors.receiptDate ? ' is-error' : ''}`}
+                      type="date"
+                      {...register('receiptDate')}
+                    />
+                    {errors.receiptDate && (
+                      <span className="field-error">
+                        {errors.receiptDate.message}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="supplierId">
+                    Nhà cung cấp <span className="field-required">*</span>
+                  </label>
+                  <select
+                    id="supplierId"
+                    className={`field-select${errors.supplierId ? ' is-error' : ''}`}
+                    {...register('supplierId')}
+                  >
+                    <option value="">— Chọn nhà cung cấp —</option>
+                    {suppliers.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.code} — {s.name}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.supplierId && (
+                    <span className="field-error">{errors.supplierId.message}</span>
+                  )}
+                  {!showQuickSupplier && (
+                    <button
+                      className="btn-secondary"
+                      type="button"
+                      onClick={() => setShowQuickSupplier(true)}
+                      style={{ fontSize: '0.8rem', padding: '0.35rem 0.7rem', alignSelf: 'flex-start' }}
+                    >
+                      + Tạo NCC mới
+                    </button>
+                  )}
+                  {showQuickSupplier && (
+                    <QuickSupplierForm
+                      defaultCategory="yarn"
+                      onCreated={(created) => {
+                        setValue('supplierId', created.id)
+                        setShowQuickSupplier(false)
+                      }}
+                      onCancel={() => setShowQuickSupplier(false)}
+                    />
+                  )}
+                </div>
               </div>
+            </FormSection>
 
-              <div className="form-field">
-                <label htmlFor="receiptDate">
-                  Ngày nhập <span className="field-required">*</span>
-                </label>
-                <input
-                  id="receiptDate"
-                  className={`field-input${errors.receiptDate ? ' is-error' : ''}`}
-                  type="date"
-                  {...register('receiptDate')}
-                />
-                {errors.receiptDate && (
-                  <span className="field-error">
-                    {errors.receiptDate.message}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Nhà cung cấp */}
-            <div className="form-field">
-              <label htmlFor="supplierId">
-                Nhà cung cấp <span className="field-required">*</span>
-              </label>
-              <select
-                id="supplierId"
-                className={`field-select${errors.supplierId ? ' is-error' : ''}`}
-                {...register('supplierId')}
-              >
-                <option value="">— Chọn nhà cung cấp —</option>
-                {suppliers.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.code} — {s.name}
-                  </option>
-                ))}
-              </select>
-              {errors.supplierId && (
-                <span className="field-error">{errors.supplierId.message}</span>
-              )}
-            </div>
-
-            {/* Line items */}
-            <div className="form-field">
-              <label>
-                Danh sách sợi <span className="field-required">*</span>
-              </label>
+            {/* ── Section 2: Danh sách sợi ── */}
+            <FormSection title="Danh sách sợi" defaultOpen={true}>
               {errors.items?.root && (
                 <span className="field-error" style={{ marginBottom: '0.5rem', display: 'block' }}>
                   {errors.items.root.message}
@@ -410,20 +446,23 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
               </button>
 
               <LineTotals control={control} />
-            </div>
+            </FormSection>
 
-            {/* Ghi chú */}
-            <div className="form-field">
-              <label htmlFor="notes">Ghi chú</label>
-              <textarea
-                id="notes"
-                className="field-input"
-                rows={3}
-                placeholder="Ghi chú về phiếu nhập..."
-                style={{ resize: 'vertical' }}
-                {...register('notes')}
-              />
-            </div>
+            {/* ── Section 3: Ghi chú ── */}
+            <FormSection title="Ghi chú" defaultOpen={false}>
+              <div className="form-grid">
+                <div className="form-field">
+                  <textarea
+                    id="notes"
+                    className="field-input"
+                    rows={3}
+                    placeholder="Ghi chú về phiếu nhập..."
+                    style={{ resize: 'vertical' }}
+                    {...register('notes')}
+                  />
+                </div>
+              </div>
+            </FormSection>
           </div>
 
           <div className="modal-footer">

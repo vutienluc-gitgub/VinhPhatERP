@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import {
@@ -13,6 +13,21 @@ import {
 import type { RawFabricFormValues } from './raw-fabric.module'
 import type { RawFabricRoll } from './types'
 import { useCreateRawFabric, useUpdateRawFabric, useWeavingPartners, useYarnReceiptOptions } from './useRawFabric'
+import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm'
+
+/* ── Collapsible form section ── */
+function FormSection({ title, defaultOpen = true, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen)
+  return (
+    <div className="form-section">
+      <div className="form-section-header" onClick={() => setOpen((v) => !v)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setOpen((v) => !v) }}>
+        <span className="form-section-title">{title}</span>
+        <span className="form-section-toggle" data-open={open}>▼</span>
+      </div>
+      {open && <div className="form-section-body">{children}</div>}
+    </div>
+  )
+}
 
 type RawFabricFormProps = {
   roll: RawFabricRoll | null
@@ -41,6 +56,7 @@ function rollToFormValues(roll: RawFabricRoll): RawFabricFormValues {
 
 export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
   const isEditing = roll !== null
+  const [showQuickSupplier, setShowQuickSupplier] = useState(false)
   const createMutation = useCreateRawFabric()
   const updateMutation = useUpdateRawFabric()
   const { data: weavingPartners = [] } = useWeavingPartners()
@@ -50,6 +66,7 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<RawFabricFormValues>({
     resolver: zodResolver(rawFabricSchema),
@@ -102,226 +119,252 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="form-grid">
-            {/* Hàng 0: Số lô */}
-            <div className="form-field">
-              <label htmlFor="lot_number">Số lô (Lot number)</label>
-              <input
-                id="lot_number"
-                className="field-input"
-                type="text"
-                placeholder="VD: LOT-2026-001"
-                {...register('lot_number')}
-              />
-              <span className="field-hint">Nhóm các cuộn cùng lô sản xuất. Bảrcode sẽ tự sinh sau khi nhập mã cuộn.</span>
-            </div>
+            {/* ── Section 1: Thông tin cuộn ── */}
+            <FormSection title="Thông tin cuộn" defaultOpen={true}>
+              <div className="form-grid">
+                <div className="form-field">
+                  <label htmlFor="lot_number">Số lô (Lot number)</label>
+                  <input
+                    id="lot_number"
+                    className="field-input"
+                    type="text"
+                    placeholder="VD: LOT-2026-001"
+                    {...register('lot_number')}
+                  />
+                  <span className="field-hint">Nhóm các cuộn cùng lô sản xuất.</span>
+                </div>
 
-            {/* Hàng 1: Mã cuộn + Loại vải */}
-            <div className="form-grid form-grid-2">
-              <div className="form-field">
-                <label htmlFor="roll_number">
-                  Mã cuộn <span className="field-required">*</span>
-                </label>
-                <input
-                  id="roll_number"
-                  className={`field-input${errors.roll_number ? ' is-error' : ''}`}
-                  type="text"
-                  placeholder="VD: RM-2024-001"
-                  {...register('roll_number')}
-                />
-                {errors.roll_number && (
-                  <span className="field-error">{errors.roll_number.message}</span>
+                <div className="form-grid form-grid-2">
+                  <div className="form-field">
+                    <label htmlFor="roll_number">
+                      Mã cuộn <span className="field-required">*</span>
+                    </label>
+                    <input
+                      id="roll_number"
+                      className={`field-input${errors.roll_number ? ' is-error' : ''}`}
+                      type="text"
+                      placeholder="VD: RM-2024-001"
+                      {...register('roll_number')}
+                    />
+                    {errors.roll_number && (
+                      <span className="field-error">{errors.roll_number.message}</span>
+                    )}
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="fabric_type">
+                      Loại vải <span className="field-required">*</span>
+                    </label>
+                    <input
+                      id="fabric_type"
+                      className={`field-input${errors.fabric_type ? ' is-error' : ''}`}
+                      type="text"
+                      placeholder="VD: Dệt thoi 60/40 TC"
+                      {...register('fabric_type')}
+                    />
+                    {errors.fabric_type && (
+                      <span className="field-error">{errors.fabric_type.message}</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="form-grid form-grid-2">
+                  <div className="form-field">
+                    <label htmlFor="color_name">Màu vải</label>
+                    <input
+                      id="color_name"
+                      className="field-input"
+                      type="text"
+                      placeholder="VD: Trắng ngà"
+                      {...register('color_name')}
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="color_code">Mã màu</label>
+                    <input
+                      id="color_code"
+                      className="field-input"
+                      type="text"
+                      placeholder="VD: TC-01"
+                      {...register('color_code')}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-grid form-grid-2">
+                  <div className="form-field">
+                    <label htmlFor="width_cm">Khổ vải (cm)</label>
+                    <input
+                      id="width_cm"
+                      className={`field-input${errors.width_cm ? ' is-error' : ''}`}
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder="VD: 150"
+                      {...register('width_cm')}
+                    />
+                    {errors.width_cm && (
+                      <span className="field-error">{errors.width_cm.message}</span>
+                    )}
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="length_m">Độ dài (m)</label>
+                    <input
+                      id="length_m"
+                      className={`field-input${errors.length_m ? ' is-error' : ''}`}
+                      type="number"
+                      step="0.001"
+                      min="0"
+                      placeholder="VD: 50"
+                      {...register('length_m')}
+                    />
+                    {errors.length_m && (
+                      <span className="field-error">{errors.length_m.message}</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="form-grid form-grid-2">
+                  <div className="form-field">
+                    <label htmlFor="weight_kg">Trọng lượng (kg)</label>
+                    <input
+                      id="weight_kg"
+                      className={`field-input${errors.weight_kg ? ' is-error' : ''}`}
+                      type="number"
+                      step="0.001"
+                      min="0"
+                      placeholder="VD: 25.5"
+                      {...register('weight_kg')}
+                    />
+                    {errors.weight_kg && (
+                      <span className="field-error">{errors.weight_kg.message}</span>
+                    )}
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="quality_grade">Chất lượng</label>
+                    <select
+                      id="quality_grade"
+                      className="field-select"
+                      {...register('quality_grade')}
+                    >
+                      <option value="">Chưa kiểm định</option>
+                      {QUALITY_GRADES.map((g) => (
+                        <option key={g} value={g}>{QUALITY_GRADE_LABELS[g]}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-grid form-grid-2">
+                  <div className="form-field">
+                    <label htmlFor="status">Trạng thái</label>
+                    <select
+                      id="status"
+                      className="field-select"
+                      {...register('status')}
+                    >
+                      {ROLL_STATUSES.map((s) => (
+                        <option key={s} value={s}>{ROLL_STATUS_LABELS[s]}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="production_date">Ngày dệt</label>
+                    <input
+                      id="production_date"
+                      className="field-input"
+                      type="date"
+                      {...register('production_date')}
+                    />
+                  </div>
+                </div>
+              </div>
+            </FormSection>
+
+            {/* ── Section 2: Truy vết nguồn gốc ── */}
+            <FormSection title="Truy vết nguồn gốc" defaultOpen={!isEditing}>
+              <div className="form-grid">
+                <div className="form-grid form-grid-2">
+                  <div className="form-field">
+                    <label htmlFor="weaving_partner_id">Nhà dệt gia công</label>
+                    <select
+                      id="weaving_partner_id"
+                      className="field-select"
+                      {...register('weaving_partner_id')}
+                    >
+                      <option value="">— Chọn nhà dệt —</option>
+                      {weavingPartners.map((s) => (
+                        <option key={s.id} value={s.id}>{s.name} ({s.code})</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="yarn_receipt_id">Phiếu nhập sợi nguồn</label>
+                    <select
+                      id="yarn_receipt_id"
+                      className="field-select"
+                      {...register('yarn_receipt_id')}
+                    >
+                      <option value="">— Chọn phiếu sợi —</option>
+                      {yarnReceipts.map((r) => (
+                        <option key={r.id} value={r.id}>{r.receipt_number} ({r.receipt_date})</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                {!showQuickSupplier && (
+                  <button
+                    className="btn-secondary"
+                    type="button"
+                    onClick={() => setShowQuickSupplier(true)}
+                    style={{ fontSize: '0.8rem', padding: '0.35rem 0.7rem', alignSelf: 'flex-start' }}
+                  >
+                    + Tạo nhà dệt mới
+                  </button>
+                )}
+                {showQuickSupplier && (
+                  <QuickSupplierForm
+                    defaultCategory="weaving"
+                    onCreated={(created) => {
+                      setValue('weaving_partner_id', created.id)
+                      setShowQuickSupplier(false)
+                    }}
+                    onCancel={() => setShowQuickSupplier(false)}
+                  />
                 )}
               </div>
+            </FormSection>
 
-              <div className="form-field">
-                <label htmlFor="fabric_type">
-                  Loại vải <span className="field-required">*</span>
-                </label>
-                <input
-                  id="fabric_type"
-                  className={`field-input${errors.fabric_type ? ' is-error' : ''}`}
-                  type="text"
-                  placeholder="VD: Dệt thoi 60/40 TC"
-                  {...register('fabric_type')}
-                />
-                {errors.fabric_type && (
-                  <span className="field-error">{errors.fabric_type.message}</span>
-                )}
+            {/* ── Section 3: Kho & ghi chú ── */}
+            <FormSection title="Vị trí kho & ghi chú" defaultOpen={!isEditing}>
+              <div className="form-grid">
+                <div className="form-field">
+                  <label htmlFor="warehouse_location">Vị trí kho</label>
+                  <input
+                    id="warehouse_location"
+                    className="field-input"
+                    type="text"
+                    placeholder="VD: A1-R3-S2"
+                    {...register('warehouse_location')}
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="notes">Ghi chú</label>
+                  <textarea
+                    id="notes"
+                    className="field-textarea"
+                    placeholder="Ghi chú thêm về cuộn vải..."
+                    {...register('notes')}
+                  />
+                </div>
               </div>
-            </div>
-
-            {/* Hàng 2: Màu */}
-            <div className="form-grid form-grid-2">
-              <div className="form-field">
-                <label htmlFor="color_name">Màu vải</label>
-                <input
-                  id="color_name"
-                  className="field-input"
-                  type="text"
-                  placeholder="VD: Trắng ngà"
-                  {...register('color_name')}
-                />
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="color_code">Mã màu</label>
-                <input
-                  id="color_code"
-                  className="field-input"
-                  type="text"
-                  placeholder="VD: TC-01"
-                  {...register('color_code')}
-                />
-              </div>
-            </div>
-
-            {/* Hàng 3: Thông số vải */}
-            <div className="form-grid form-grid-2">
-              <div className="form-field">
-                <label htmlFor="width_cm">Khổ vải (cm)</label>
-                <input
-                  id="width_cm"
-                  className={`field-input${errors.width_cm ? ' is-error' : ''}`}
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="VD: 150"
-                  {...register('width_cm')}
-                />
-                {errors.width_cm && (
-                  <span className="field-error">{errors.width_cm.message}</span>
-                )}
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="length_m">Độ dài (m)</label>
-                <input
-                  id="length_m"
-                  className={`field-input${errors.length_m ? ' is-error' : ''}`}
-                  type="number"
-                  step="0.001"
-                  min="0"
-                  placeholder="VD: 50"
-                  {...register('length_m')}
-                />
-                {errors.length_m && (
-                  <span className="field-error">{errors.length_m.message}</span>
-                )}
-              </div>
-            </div>
-
-            {/* Hàng 4: Trọng lượng + Chất lượng */}
-            <div className="form-grid form-grid-2">
-              <div className="form-field">
-                <label htmlFor="weight_kg">Trọng lượng (kg)</label>
-                <input
-                  id="weight_kg"
-                  className={`field-input${errors.weight_kg ? ' is-error' : ''}`}
-                  type="number"
-                  step="0.001"
-                  min="0"
-                  placeholder="VD: 25.5"
-                  {...register('weight_kg')}
-                />
-                {errors.weight_kg && (
-                  <span className="field-error">{errors.weight_kg.message}</span>
-                )}
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="quality_grade">Chất lượng</label>
-                <select
-                  id="quality_grade"
-                  className="field-select"
-                  {...register('quality_grade')}
-                >
-                  <option value="">Chưa kiểm định</option>
-                  {QUALITY_GRADES.map((g) => (
-                    <option key={g} value={g}>{QUALITY_GRADE_LABELS[g]}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Hàng 5: Trạng thái + Ngày dệt */}
-            <div className="form-grid form-grid-2">
-              <div className="form-field">
-                <label htmlFor="status">Trạng thái</label>
-                <select
-                  id="status"
-                  className="field-select"
-                  {...register('status')}
-                >
-                  {ROLL_STATUSES.map((s) => (
-                    <option key={s} value={s}>{ROLL_STATUS_LABELS[s]}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="production_date">Ngày dệt</label>
-                <input
-                  id="production_date"
-                  className="field-input"
-                  type="date"
-                  {...register('production_date')}
-                />
-              </div>
-            </div>
-
-            {/* Truy vết: Nhà dệt + Phiếu nhập sợi */}
-            <div className="form-grid form-grid-2">
-              <div className="form-field">
-                <label htmlFor="weaving_partner_id">Nhà dệt gia công</label>
-                <select
-                  id="weaving_partner_id"
-                  className="field-select"
-                  {...register('weaving_partner_id')}
-                >
-                  <option value="">— Chọn nhà dệt —</option>
-                  {weavingPartners.map((s) => (
-                    <option key={s.id} value={s.id}>{s.name} ({s.code})</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="yarn_receipt_id">Phiếu nhập sợi nguồn</label>
-                <select
-                  id="yarn_receipt_id"
-                  className="field-select"
-                  {...register('yarn_receipt_id')}
-                >
-                  <option value="">— Chọn phiếu sợi —</option>
-                  {yarnReceipts.map((r) => (
-                    <option key={r.id} value={r.id}>{r.receipt_number} ({r.receipt_date})</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Vị trí kho */}
-            <div className="form-field">
-              <label htmlFor="warehouse_location">Vị trí kho</label>
-              <input
-                id="warehouse_location"
-                className="field-input"
-                type="text"
-                placeholder="VD: A1-R3-S2"
-                {...register('warehouse_location')}
-              />
-            </div>
-
-            {/* Ghi chú */}
-            <div className="form-field">
-              <label htmlFor="notes">Ghi chú</label>
-              <textarea
-                id="notes"
-                className="field-textarea"
-                placeholder="Ghi chú thêm về cuộn vải..."
-                {...register('notes')}
-              />
-            </div>
+            </FormSection>
           </div>
 
           <div className="modal-actions">

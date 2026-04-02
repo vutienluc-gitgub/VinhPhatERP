@@ -18,6 +18,7 @@ type FinishedFabricListProps = {
   onEdit: (roll: FinishedFabricRoll) => void
   onNew: () => void
   onBulkNew: () => void
+  onTrace: (roll: FinishedFabricRoll) => void
 }
 
 function formatNum(val: number | null, unit: string): string {
@@ -25,7 +26,7 @@ function formatNum(val: number | null, unit: string): string {
   return `${val.toLocaleString('vi-VN')} ${unit}`
 }
 
-export function FinishedFabricList({ onEdit, onNew, onBulkNew }: FinishedFabricListProps) {
+export function FinishedFabricList({ onEdit, onNew, onBulkNew, onTrace }: FinishedFabricListProps) {
   const [filters, setFilters] = useState<FinishedFabricFilter>({})
   const [fabricTypeInput, setFabricTypeInput] = useState('')
   const [page, setPage] = useState(1)
@@ -255,6 +256,15 @@ export function FinishedFabricList({ onEdit, onNew, onBulkNew }: FinishedFabricL
                   </td>
                   <td className="td-muted">{roll.warehouse_location ?? '—'}</td>
                   <td className="td-actions">
+                    <button
+                      className="btn-icon"
+                      type="button"
+                      title="Truy vết nguồn gốc"
+                      onClick={() => onTrace(roll)}
+                      style={{ marginRight: 4 }}
+                    >
+                      🔗
+                    </button>
                     <button
                       className="btn-icon"
                       type="button"
