@@ -25,6 +25,7 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
   const { data: nextNumber } = useNextShipmentNumber()
   const { data: availableRolls = [] } = useAvailableFinishedRolls()
   const createMutation = useCreateShipment()
+  const availableRollById = new Map(availableRolls.map((roll) => [roll.id, roll]))
 
   const {
     register,
@@ -111,7 +112,21 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
               >
                 <div>
                   {idx === 0 && <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>Cuộn thành phẩm</span>}
-                  <select className="field-select" {...register(`items.${idx}.finishedRollId`)}>
+                  <select
+                    className="field-select"
+                    {...register(`items.${idx}.finishedRollId`, {
+                      onChange: (event) => {
+                        const rollId = event.target.value
+                        const selectedRoll = availableRollById.get(rollId)
+                        if (!selectedRoll) return
+
+                        setValue(`items.${idx}.fabricType`, selectedRoll.fabric_type, {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        })
+                      },
+                    })}
+                  >
                     <option value="">— Không chọn —</option>
                     {availableRolls.map((roll) => (
                       <option key={roll.id} value={roll.id}>

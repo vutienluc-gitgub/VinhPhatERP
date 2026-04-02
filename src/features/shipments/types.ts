@@ -12,6 +12,24 @@ export type ShipmentItem = {
   sort_order: number
 }
 
+export type ShipmentCustomerSummary = {
+  name: string
+  code: string
+  address: string | null
+  phone: string | null
+  contact_person: string | null
+}
+
+export type ShipmentOrderSummary = {
+  order_number: string
+}
+
+export type ShipmentDocumentItem = ShipmentItem & {
+  roll_number: string | null
+  roll_length_m: number | null
+  warehouse_location: string | null
+}
+
 export type Shipment = {
   id: string
   shipment_number: string
@@ -30,6 +48,12 @@ export type Shipment = {
   orders?: { order_number: string } | null
   customers?: { name: string; code: string } | null
   shipment_items?: ShipmentItem[]
+}
+
+export type ShipmentDocument = Omit<Shipment, 'orders' | 'customers' | 'shipment_items'> & {
+  orders?: ShipmentOrderSummary | null
+  customers?: ShipmentCustomerSummary | null
+  shipment_items?: ShipmentDocumentItem[]
 }
 
 export type ShipmentsFilter = {

@@ -1,30 +1,28 @@
-# React + TypeScript + Vite
+## Tổng quan
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**VinhPhat ERP** là hệ thống ERP, quản lý vận hành nội bộ dành cho doanh nghiệp dệt may,
+được xây dựng theo kiến trúc mobile-first với công nghệ hiện đại.
+Ứng dụng số hóa toàn bộ quy trình từ nhập nguyên liệu (sợi), sản xuất vải,
+quản lý đơn hàng, theo dõi tiến độ, đến xuất hàng và thanh toán.
 
-Currently, two official plugins are available:
+## Phân bổ mã nguồn / Code Breakdown
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json', './tsconfig.app.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+| Khu vực | Thư mục | Mục đích chính |
+| --- | --- | --- |
+| Frontend (React + Vite) | `src/` | UI, routing, state, tích hợp API và business logic phía client. |
+| Domain modules | `src/features/` | Mỗi module theo nghiệp vụ (orders, inventory, shipments, ...). |
+| API client | `src/api/` | Định nghĩa gọi API theo module. |
+| Domain models | `src/models/` | Kiểu dữ liệu và cấu trúc nghiệp vụ phía client. |
+| Shared UI & utils | `src/shared/` | Component dùng chung, hooks, lib, types, utils. |
+| Services | `src/services/` | Tầng dịch vụ (business logic), offline, supabase. |
+| Styles & assets | `src/styles/`, `src/assets/` | CSS hệ thống, font/icon/image. |
+| App shell | `src/app/` | Layout, providers, router cấu hình. |
+| Backend (Node) | `server/` | API server, routes, middleware, db, cấu hình Drizzle. |
+| Database & Supabase | `supabase/` | Functions, migrations, seed dữ liệu. |
+| Shared types | `shared/types/` | Kiểu dữ liệu dùng chung giữa client/server. |
+| Tests | `tests/`, `test/` | Integration/unit tests, setup. |
+| Tooling | `scripts/` | Script hỗ trợ dev/ops. |
+| Agent tools | `agent/` | MCP server và agent tooling nội bộ. |
+| Docs | `docs/` | Kiến trúc, quy trình, tài liệu module. |
+| Static public | `public/` | Static assets phục vụ trực tiếp. |
+| Root configs | `package.json`, `vite.config.ts`, `tsconfig*.json` | Cấu hình build, lint, TypeScript. |

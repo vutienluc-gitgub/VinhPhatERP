@@ -4,13 +4,99 @@ import type { Database } from '@/services/supabase/database.types'
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination'
 import type { PaginatedResult } from '@/shared/types/pagination'
 import type { ShipmentsFormValues } from './shipments.module'
-import type { Shipment, ShipmentsFilter, ShipmentStatus } from './types'
+import { exportShipmentToPdf } from './shipment-document'
+import type { Shipment, ShipmentDocument, ShipmentsFilter, ShipmentStatus } from './types'
 
 const HEADER_TABLE = 'shipments'
 const ITEMS_TABLE = 'shipment_items'
 const QUERY_KEY = ['shipments'] as const
 
 type ShipmentHeaderRow = Database['public']['Tables']['shipments']['Row']
+type FinishedRollAvailabilityRow = Pick<
+  Database['public']['Tables']['finished_fabric_rolls']['Row'],
+  'id' | 'fabric_type' | 'color_name'
+>
+type FinishedRollDocumentRow = Pick<
+  Database['public']['Tables']['finished_fabric_rolls']['Row'],
+  'id' | 'roll_number' | 'color_name' | 'length_m' | 'warehouse_location'
+>
+
+async function fetchReservableRolls(rollIds: string[]): Promise<Map<string, FinishedRollAvailabilityRow>> {
+  const uniqueRollIds = Array.from(new Set(rollIds))
+  if (uniqueRollIds.length === 0) return new Map()
+
+  const { data, error } = await supabase
+    .from('finished_fabric_rolls')
+    .select('id, fabric_type, color_name')
+    .eq('status', 'in_stock')
+    .in('id', uniqueRollIds)
+
+  if (error) throw error
+
+  const rows = (data ?? []) as FinishedRollAvailabilityRow[]
+  if (rows.length !== uniqueRollIds.length) {
+    throw new Error('Một hoặc nhiều cuộn thành phẩm không còn sẵn sàng để xuất.')
+  }
+
+  return new Map(rows.map((row) => [row.id, row]))
+}
+
+export async function fetchShipmentDocument(shipmentId: string): Promise<ShipmentDocument> {
+  const { data, error } = await supabase
+    .from(HEADER_TABLE)
+    .select('*, orders(order_number), customers(name, code, address, phone, contact_person), shipment_items(*)')
+    .eq('id', shipmentId)
+    .single()
+
+  if (error) throw error
+
+  const shipment = data as unknown as ShipmentDocument
+  const shipmentItems = shipment.shipment_items ?? []
+  const rollIds = Array.from(
+    new Set(
+      shipmentItems
+        .map((item) => item.finished_roll_id)
+        .filter((rollId): rollId is string => !!rollId),
+    ),
+  )
+
+  if (rollIds.length === 0) {
+    return {
+      ...shipment,
+      shipment_items: shipmentItems.map((item) => ({
+        ...item,
+        roll_number: null,
+        roll_length_m: null,
+        warehouse_location: null,
+      })),
+    }
+  }
+
+  const { data: rolls, error: rollError } = await supabase
+    .from('finished_fabric_rolls')
+    .select('id, roll_number, color_name, length_m, warehouse_location')
+    .in('id', rollIds)
+
+  if (rollError) throw rollError
+
+  const rollMap = new Map(
+    ((rolls ?? []) as FinishedRollDocumentRow[]).map((roll) => [roll.id, roll]),
+  )
+
+  return {
+    ...shipment,
+    shipment_items: shipmentItems.map((item) => {
+      const roll = item.finished_roll_id ? rollMap.get(item.finished_roll_id) : undefined
+      return {
+        ...item,
+        color_name: item.color_name ?? roll?.color_name ?? null,
+        roll_number: roll?.roll_number ?? null,
+        roll_length_m: roll?.length_m ?? null,
+        warehouse_location: roll?.warehouse_location ?? null,
+      }
+    }),
+  }
+}
 
 /* ── Shipment list with filters ── */
 
@@ -58,15 +144,7 @@ export function useShipment(id: string | undefined) {
   return useQuery({
     queryKey: [...QUERY_KEY, id],
     enabled: !!id,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from(HEADER_TABLE)
-        .select('*, orders(order_number), customers(name, code), shipment_items(*)')
-        .eq('id', id!)
-        .single()
-      if (error) throw error
-      return data as unknown as Shipment
-    },
+    queryFn: async () => fetchShipmentDocument(id!),
   })
 }
 
@@ -126,6 +204,11 @@ export function useCreateShipment() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (values: ShipmentsFormValues) => {
+      const selectedRollIds = values.items
+        .map((item) => item.finishedRollId?.trim())
+        .filter((id): id is string => !!id)
+      const selectedRollMap = await fetchReservableRolls(selectedRollIds)
+
       const { data: header, error: headerErr } = await supabase
         .from(HEADER_TABLE)
         .insert({
@@ -144,14 +227,20 @@ export function useCreateShipment() {
       const shipmentHeader = header as ShipmentHeaderRow
       const headerId = shipmentHeader.id
 
-      const items = values.items.map((item, idx) => ({
-        shipment_id: headerId,
-        finished_roll_id: item.finishedRollId?.trim() || null,
-        fabric_type: item.fabricType.trim(),
-        quantity: item.quantity,
-        unit: 'm',
-        sort_order: idx,
-      }))
+      const items = values.items.map((item, idx) => {
+        const finishedRollId = item.finishedRollId?.trim() || null
+        const selectedRoll = finishedRollId ? selectedRollMap.get(finishedRollId) : undefined
+
+        return {
+          shipment_id: headerId,
+          finished_roll_id: finishedRollId,
+          fabric_type: selectedRoll?.fabric_type ?? item.fabricType.trim(),
+          color_name: selectedRoll?.color_name ?? null,
+          quantity: item.quantity,
+          unit: 'm',
+          sort_order: idx,
+        }
+      })
 
       const { error: itemsErr } = await supabase.from(ITEMS_TABLE).insert(items)
 
@@ -161,9 +250,7 @@ export function useCreateShipment() {
       }
 
       // Mark rolls as reserved if linked
-      const rollIds = values.items
-        .map((i) => i.finishedRollId?.trim())
-        .filter((id): id is string => !!id)
+      const rollIds = selectedRollIds
 
       if (rollIds.length > 0) {
         await supabase
@@ -213,11 +300,23 @@ export function useConfirmShipment() {
           .update({ status: 'shipped' })
           .in('id', rollIds)
       }
+
+      return fetchShipmentDocument(shipmentId)
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
       void queryClient.invalidateQueries({ queryKey: ['orders'] })
       void queryClient.invalidateQueries({ queryKey: ['finished-fabric-rolls'] })
+    },
+  })
+}
+
+export function useExportShipmentPdf() {
+  return useMutation({
+    mutationFn: async (shipmentId: string) => {
+      const shipment = await fetchShipmentDocument(shipmentId)
+      exportShipmentToPdf(shipment)
+      return shipment
     },
   })
 }

@@ -1,8 +1,8 @@
-# VinhPhat App V2 — Giới thiệu dự án
+# VinhPhat ERP — Giới thiệu dự án
 
 ## Tổng quan
 
-**VinhPhat App V2** là hệ thống ERP, quản lý vận hành nội bộ dành cho doanh nghiệp dệt may,
+**VinhPhat ERP** là hệ thống ERP, quản lý vận hành nội bộ dành cho doanh nghiệp dệt may,
 được xây dựng theo kiến trúc mobile-first với công nghệ hiện đại.
 Ứng dụng số hóa toàn bộ quy trình từ nhập nguyên liệu (sợi), sản xuất vải,
 quản lý đơn hàng, theo dõi tiến độ, đến xuất hàng và thanh toán.

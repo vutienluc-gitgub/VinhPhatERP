@@ -1,12 +1,14 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 
 import { useConfirm } from '@/shared/components/ConfirmDialog'
 import { Pagination } from '@/shared/components/Pagination'
+import { exportShipmentToPdf } from './shipment-document'
 import { SHIPMENT_STATUS_LABELS } from './shipments.module'
-import type { ShipmentsFilter, ShipmentStatus } from './types'
+import type { Shipment, ShipmentsFilter, ShipmentStatus } from './types'
 import {
   useConfirmShipment,
   useDeleteShipment,
+  useExportShipmentPdf,
   useMarkDelivered,
   useShipmentList,
 } from './useShipments'
@@ -31,7 +33,12 @@ export function ShipmentList() {
   const confirmMutation = useConfirmShipment()
   const deliverMutation = useMarkDelivered()
   const deleteMutation = useDeleteShipment()
-  const { confirm } = useConfirm()
+  const exportPdfMutation = useExportShipmentPdf()
+  const { confirm, alert: showAlert } = useConfirm()
+
+  function getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : 'Đã xảy ra lỗi không xác định.'
+  }
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -45,10 +52,25 @@ export function ShipmentList() {
     setFilters((prev) => ({ ...prev, status: val || undefined }))
   }
 
-  async function handleConfirm(id: string) {
-    const ok = await confirm({ message: 'Xác nhận giao hàng? Cuộn vải sẽ chuyển sang trạng thái đã giao.' })
+  async function handleConfirm(shipment: Shipment) {
+    const ok = await confirm({
+      message: `Xác nhận xuất kho phiếu "${shipment.shipment_number}"? Hệ thống sẽ chuyển trạng thái sang Đã giao và mở phiếu PDF để in hoặc lưu.`,
+    })
     if (!ok) return
-    confirmMutation.mutate(id)
+
+    try {
+      const confirmedShipment = await confirmMutation.mutateAsync(shipment.id)
+      try {
+        exportShipmentToPdf(confirmedShipment)
+      } catch (pdfError) {
+        await showAlert(
+          `Phiếu ${confirmedShipment.shipment_number} đã được xác nhận nhưng không thể mở trình in PDF. ${getErrorMessage(pdfError)}`,
+          'Đã xác nhận shipment',
+        )
+      }
+    } catch (error) {
+      await showAlert(`Không thể xác nhận phiếu xuất. ${getErrorMessage(error)}`)
+    }
   }
 
   async function handleDeliver(id: string) {
@@ -63,20 +85,13 @@ export function ShipmentList() {
     deleteMutation.mutate(id)
   }
 
-  const onConfirmClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    const id = e.currentTarget.dataset.id
-    if (id) void handleConfirm(id)
-  }, [confirm, confirmMutation])
-
-  const onDeliverClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    const id = e.currentTarget.dataset.id
-    if (id) void handleDeliver(id)
-  }, [confirm, deliverMutation])
-
-  const onDeleteClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    const id = e.currentTarget.dataset.id
-    if (id) void handleDelete(id)
-  }, [confirm, deleteMutation])
+  async function handleExportPdf(shipment: Shipment) {
+    try {
+      await exportPdfMutation.mutateAsync(shipment.id)
+    } catch (error) {
+      await showAlert(`Không thể tạo phiếu PDF cho ${shipment.shipment_number}. ${getErrorMessage(error)}`)
+    }
+  }
 
   const hasFilter = !!(filters.search || filters.status)
 
@@ -178,24 +193,23 @@ export function ShipmentList() {
                     </span>
                   </td>
                   <td>
-                    <div style={{ display: 'flex', gap: '0.3rem' }}>
+                    <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                       {s.status === 'preparing' && (
                         <>
                           <button
                             className="btn-secondary"
                             type="button"
-                            data-id={s.id}
-                            onClick={onConfirmClick}
+                            onClick={() => { void handleConfirm(s) }}
                             disabled={confirmMutation.isPending}
                             style={{ fontSize: '0.78rem', padding: '0.2rem 0.5rem' }}
+                            title="Xác nhận xuất kho và mở phiếu PDF"
                           >
-                            📦 Giao
+                            📦 Giao + PDF
                           </button>
                           <button
                             className="btn-secondary"
                             type="button"
-                            data-id={s.id}
-                            onClick={onDeleteClick}
+                            onClick={() => { void handleDelete(s.id) }}
                             disabled={deleteMutation.isPending}
                             style={{ fontSize: '0.78rem', padding: '0.2rem 0.5rem', color: '#c0392b' }}
                           >
@@ -203,12 +217,23 @@ export function ShipmentList() {
                           </button>
                         </>
                       )}
+                      {s.status !== 'preparing' && (
+                        <button
+                          className="btn-secondary"
+                          type="button"
+                          onClick={() => { void handleExportPdf(s) }}
+                          disabled={exportPdfMutation.isPending}
+                          style={{ fontSize: '0.78rem', padding: '0.2rem 0.5rem' }}
+                          title="Mở phiếu xuất để in hoặc lưu PDF"
+                        >
+                          🖨 PDF
+                        </button>
+                      )}
                       {s.status === 'shipped' && (
                         <button
                           className="btn-secondary"
                           type="button"
-                          data-id={s.id}
-                          onClick={onDeliverClick}
+                          onClick={() => { void handleDeliver(s.id) }}
                           disabled={deliverMutation.isPending}
                           style={{ fontSize: '0.78rem', padding: '0.2rem 0.5rem' }}
                         >
@@ -224,9 +249,9 @@ export function ShipmentList() {
         )}
       </div>
 
-      {(confirmMutation.error || deliverMutation.error || deleteMutation.error) && (
+      {(confirmMutation.error || deliverMutation.error || deleteMutation.error || exportPdfMutation.error) && (
         <p className="error-inline-sm">
-          Lỗi: {((confirmMutation.error || deliverMutation.error || deleteMutation.error) as Error).message}
+          Lỗi: {((confirmMutation.error || deliverMutation.error || deleteMutation.error || exportPdfMutation.error) as Error).message}
         </p>
       )}
 
