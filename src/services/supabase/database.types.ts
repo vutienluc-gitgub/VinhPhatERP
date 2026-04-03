@@ -831,6 +831,22 @@ export type Database = {
       }
     }
     Views: {
+      v_debt_aging: {
+        Row: {
+          order_id: string | null
+          order_number: string | null
+          customer_id: string | null
+          customer_name: string | null
+          order_date: string | null
+          delivery_date: string | null
+          total_amount: number | null
+          paid_amount: number | null
+          balance_due: number | null
+          days_since_order: number | null
+          aging_bucket: string | null
+        }
+        Relationships: []
+      }
       v_debt_by_customer: {
         Row: {
           customer_id: string | null
@@ -852,6 +868,40 @@ export type Database = {
           roll_count: number | null
           total_length_m: number | null
           total_weight_kg: number | null
+        }
+        Relationships: []
+      }
+      v_inventory_demand: {
+        Row: {
+          fabric_type: string | null
+          color_name: string | null
+          demanded_qty: number | null
+          unit: string | null
+          available_rolls: number | null
+          available_length_m: number | null
+          reserved_rolls: number | null
+          reserved_length_m: number | null
+        }
+        Relationships: []
+      }
+      v_monthly_revenue: {
+        Row: {
+          month: string | null
+          order_count: number | null
+          total_revenue: number | null
+          total_collected: number | null
+          total_outstanding: number | null
+        }
+        Relationships: []
+      }
+      v_on_time_delivery: {
+        Row: {
+          order_id: string | null
+          order_number: string | null
+          customer_name: string | null
+          delivery_date: string | null
+          status: Database["public"]["Enums"]["order_status"] | null
+          is_on_time: boolean | null
         }
         Relationships: []
       }
@@ -884,6 +934,29 @@ export type Database = {
         }
         Relationships: []
       }
+      v_payment_collection: {
+        Row: {
+          month: string | null
+          payment_method: Database["public"]["Enums"]["payment_method"] | null
+          payment_count: number | null
+          total_collected: number | null
+        }
+        Relationships: []
+      }
+      v_production_efficiency: {
+        Row: {
+          order_id: string | null
+          order_number: string | null
+          customer_name: string | null
+          stage: Database["public"]["Enums"]["production_stage"] | null
+          stage_status: Database["public"]["Enums"]["stage_status"] | null
+          planned_date: string | null
+          actual_date: string | null
+          deviation_days: number | null
+          is_late: boolean | null
+        }
+        Relationships: []
+      }
       v_raw_fabric_inventory: {
         Row: {
           color_code: string | null
@@ -893,6 +966,18 @@ export type Database = {
           roll_count: number | null
           total_length_m: number | null
           total_weight_kg: number | null
+        }
+        Relationships: []
+      }
+      v_revenue_by_fabric: {
+        Row: {
+          fabric_type: string | null
+          color_name: string | null
+          order_count: number | null
+          total_quantity: number | null
+          unit: string | null
+          total_revenue: number | null
+          avg_unit_price: number | null
         }
         Relationships: []
       }
