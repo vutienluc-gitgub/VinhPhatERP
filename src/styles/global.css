@@ -20,6 +20,12 @@
   --primary: #0b6bcb;
   --primary-strong: #084f97;
   --accent: #0fa67a;
+  
+  --warning: #d97706;
+  --danger: #c0392b;
+  --success: #0c8f68;
+  --info: #0b6bcb;
+  
   --shadow: 0 16px 40px rgba(16, 35, 61, 0.08);
   --radius-lg: 24px;
   --radius-md: 18px;
@@ -90,5 +96,11 @@ p {
   --primary: #3b82f6;
   --primary-strong: #60a5fa;
   --accent: #10b981;
+  
+  --warning: #f59e0b;
+  --danger: #f87171;
+  --success: #34d399;
+  --info: #60a5fa;
+
   --shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
 }

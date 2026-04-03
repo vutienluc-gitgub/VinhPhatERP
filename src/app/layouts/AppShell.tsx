@@ -4,6 +4,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { navigationItems } from '@/app/router/routes'
 import { useDashboardStats } from '@/app/router/useDashboardData'
+import { useTheme } from '@/shared/hooks/useTheme'
 import type { UserRole } from '@/services/supabase/database.types'
 import { MobileMoreDrawer } from './MobileMoreDrawer'
 
@@ -52,6 +53,7 @@ export function AppShell() {
   const userMenuRef = useRef<HTMLDivElement>(null)
   const currentItem = getCurrentItem(pathname)
   const { data: stats } = useDashboardStats()
+  const { theme, toggleTheme } = useTheme()
 
   const userRole = profile?.role
   const visibleNavItems = navigationItems.filter((item) => hasAccess(item.requiredRoles, userRole))
@@ -114,7 +116,29 @@ export function AppShell() {
             <p className="eyebrow">{currentItem?.shortLabel ?? 'MVP V2'}</p>
             <h2>{currentItem?.label ?? 'Dashboard'}</h2>
           </div>
-          <div className="topbar-actions" ref={userMenuRef}>
+          <div className="topbar-actions" ref={userMenuRef} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Chế độ Sáng' : 'Chế độ Tối'}
+              aria-label="Toggle Theme"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
+                borderRadius: '50%',
+                width: '38px',
+                height: '38px',
+                cursor: 'pointer',
+                fontSize: '1.15rem',
+                color: 'var(--text)',
+                padding: 0
+              }}
+            >
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </button>
             {profile && (
               <button
                 type="button"
