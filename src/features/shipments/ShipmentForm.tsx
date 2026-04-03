@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 
 import {
@@ -11,8 +11,11 @@ import type { ShipmentsFormValues } from './shipments.module'
 import {
   useAvailableFinishedRolls,
   useCreateShipment,
+  useDeliveryStaffList,
   useNextShipmentNumber,
 } from './useShipments'
+import { useActiveShippingRates } from '@/features/shipping-rates/useShippingRates'
+import type { ShippingRate } from '@/features/shipping-rates/types'
 
 type ShipmentFormProps = {
   orderId: string
@@ -21,11 +24,33 @@ type ShipmentFormProps = {
   onClose: () => void
 }
 
+function computeShippingCost(rate: ShippingRate | undefined, totalMeters: number): { shippingCost: number; loadingFee: number } {
+  if (!rate) return { shippingCost: 0, loadingFee: 0 }
+
+  let cost = 0
+  if (rate.rate_per_trip != null) {
+    cost = rate.rate_per_trip
+  } else if (rate.rate_per_meter != null) {
+    cost = rate.rate_per_meter * totalMeters
+  }
+
+  const total = cost + (rate.loading_fee ?? 0)
+  const finalCost = rate.min_charge > 0 ? Math.max(total, rate.min_charge) : total
+
+  return {
+    shippingCost: Math.round(finalCost - (rate.loading_fee ?? 0)),
+    loadingFee: rate.loading_fee ?? 0,
+  }
+}
+
 export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: ShipmentFormProps) {
   const { data: nextNumber } = useNextShipmentNumber()
   const { data: availableRolls = [] } = useAvailableFinishedRolls(orderId)
+  const { data: shippingRates = [] } = useActiveShippingRates()
+  const { data: deliveryStaff = [] } = useDeliveryStaffList()
   const createMutation = useCreateShipment()
   const availableRollById = new Map(availableRolls.map((roll) => [roll.id, roll]))
+  const shippingRateById = useMemo(() => new Map(shippingRates.map((r) => [r.id, r])), [shippingRates])
 
   const {
     register,
@@ -33,6 +58,7 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ShipmentsFormValues>({
     resolver: zodResolver(shipmentsSchema),
@@ -45,10 +71,23 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
 
   const { fields, append, remove } = useFieldArray({ control, name: 'items' })
 
+  const watchedRateId = watch('shippingRateId')
+  const watchedItems = watch('items')
+
   // Auto-fill shipment number
   useEffect(() => {
     if (nextNumber) setValue('shipmentNumber', nextNumber)
   }, [nextNumber, setValue])
+
+  // Auto-compute shipping cost when rate changes
+  useEffect(() => {
+    if (!watchedRateId) return
+    const rate = shippingRateById.get(watchedRateId)
+    const totalMeters = watchedItems.reduce((sum, item) => sum + (item.quantity || 0), 0)
+    const { shippingCost, loadingFee } = computeShippingCost(rate, totalMeters)
+    setValue('shippingCost', shippingCost)
+    setValue('loadingFee', loadingFee)
+  }, [watchedRateId, watchedItems, setValue, shippingRateById])
 
   async function onSubmit(values: ShipmentsFormValues) {
     await createMutation.mutateAsync(values)
@@ -58,14 +97,14 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 600 }}>
+      <div className="modal-sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 640 }}>
         <div className="modal-header">
           <h3>Tạo phiếu xuất — {orderNumber}</h3>
           <button className="btn-icon" type="button" onClick={onClose}>✕</button>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {/* Shipment number */}
+          {/* Shipment number + date */}
           <div className="form-grid-2">
             <div>
               <label className="form-label">Số phiếu xuất *</label>
@@ -83,6 +122,63 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
           <div>
             <label className="form-label">Địa chỉ giao</label>
             <input className="field-input" {...register('deliveryAddress')} placeholder="Địa chỉ giao hàng..." />
+          </div>
+
+          {/* Delivery staff + vehicle */}
+          <div className="form-grid-2">
+            <div>
+              <label className="form-label">Nhân viên giao hàng</label>
+              <select className="field-select" {...register('deliveryStaffId')}>
+                <option value="">— Chưa phân công —</option>
+                {deliveryStaff.map((staff) => (
+                  <option key={staff.id} value={staff.id}>
+                    {staff.full_name}{staff.phone ? ` (${staff.phone})` : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="form-label">Biển số xe</label>
+              <input className="field-input" {...register('vehicleInfo')} placeholder="VD: 51C-12345" />
+            </div>
+          </div>
+
+          {/* Shipping rate + cost */}
+          <div className="form-grid-2">
+            <div>
+              <label className="form-label">Bảng giá cước</label>
+              <select className="field-select" {...register('shippingRateId')}>
+                <option value="">— Không áp dụng —</option>
+                {shippingRates.map((rate) => (
+                  <option key={rate.id} value={rate.id}>
+                    {rate.name} — {rate.destination_area}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="form-label">Chi phí vận chuyển (VNĐ)</label>
+              <input
+                className="field-input"
+                type="number"
+                {...register('shippingCost', { valueAsNumber: true })}
+                placeholder="0"
+              />
+            </div>
+          </div>
+
+          {/* Loading fee */}
+          <div className="form-grid-2">
+            <div>
+              <label className="form-label">Phí bốc xếp (VNĐ)</label>
+              <input
+                className="field-input"
+                type="number"
+                {...register('loadingFee', { valueAsNumber: true })}
+                placeholder="0"
+              />
+            </div>
+            <div />
           </div>
 
           {/* Items */}

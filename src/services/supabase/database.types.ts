@@ -343,8 +343,114 @@ export type Database = {
           },
         ]
       }
+      expenses: {
+        Row: {
+          id: string
+          expense_number: string
+          category: Database["public"]["Enums"]["expense_category"]
+          amount: number
+          expense_date: string
+          account_id: string | null
+          supplier_id: string | null
+          description: string
+          reference_number: string | null
+          notes: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          expense_number: string
+          category?: Database["public"]["Enums"]["expense_category"]
+          amount: number
+          expense_date?: string
+          account_id?: string | null
+          supplier_id?: string | null
+          description: string
+          reference_number?: string | null
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          expense_number?: string
+          category?: Database["public"]["Enums"]["expense_category"]
+          amount?: number
+          expense_date?: string
+          account_id?: string | null
+          supplier_id?: string | null
+          description?: string
+          reference_number?: string | null
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expenses_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "payment_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_accounts: {
+        Row: {
+          id: string
+          name: string
+          type: Database["public"]["Enums"]["account_type"]
+          bank_name: string | null
+          account_number: string | null
+          initial_balance: number
+          current_balance: number
+          status: string
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          type?: Database["public"]["Enums"]["account_type"]
+          bank_name?: string | null
+          account_number?: string | null
+          initial_balance?: number
+          current_balance?: number
+          status?: string
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          type?: Database["public"]["Enums"]["account_type"]
+          bank_name?: string | null
+          account_number?: string | null
+          initial_balance?: number
+          current_balance?: number
+          status?: string
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
+          account_id: string | null
           amount: number
           created_at: string
           created_by: string | null
@@ -359,6 +465,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          account_id?: string | null
           amount: number
           created_at?: string
           created_by?: string | null
@@ -373,6 +480,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          account_id?: string | null
           amount?: number
           created_at?: string
           created_by?: string | null
@@ -551,6 +659,54 @@ export type Database = {
         }
         Relationships: []
       }
+      shipping_rates: {
+        Row: {
+          id: string
+          name: string
+          destination_area: string
+          rate_per_trip: number | null
+          rate_per_meter: number | null
+          rate_per_kg: number | null
+          loading_fee: number
+          min_charge: number
+          is_active: boolean
+          notes: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          destination_area: string
+          rate_per_trip?: number | null
+          rate_per_meter?: number | null
+          rate_per_kg?: number | null
+          loading_fee?: number
+          min_charge?: number
+          is_active?: boolean
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          destination_area?: string
+          rate_per_trip?: number | null
+          rate_per_meter?: number | null
+          rate_per_kg?: number | null
+          loading_fee?: number
+          min_charge?: number
+          is_active?: boolean
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       shipment_items: {
         Row: {
           color_name: string | null
@@ -608,45 +764,84 @@ export type Database = {
           created_at: string
           created_by: string | null
           customer_id: string
+          delivered_at: string | null
           delivery_address: string | null
+          delivery_proof: string | null
+          delivery_staff_id: string | null
           id: string
+          loading_fee: number
           notes: string | null
           order_id: string
+          prepared_at: string | null
+          receiver_name: string | null
+          receiver_phone: string | null
           shipment_date: string
           shipment_number: string
+          shipped_at: string | null
+          shipping_cost: number
+          shipping_rate_id: string | null
           status: Database["public"]["Enums"]["shipment_status"]
+          total_meters: number | null
+          total_weight_kg: number | null
           tracking_number: string | null
           updated_at: string
+          vehicle_info: string | null
         }
         Insert: {
           carrier?: string | null
           created_at?: string
           created_by?: string | null
           customer_id: string
+          delivered_at?: string | null
           delivery_address?: string | null
+          delivery_proof?: string | null
+          delivery_staff_id?: string | null
           id?: string
+          loading_fee?: number
           notes?: string | null
           order_id: string
+          prepared_at?: string | null
+          receiver_name?: string | null
+          receiver_phone?: string | null
           shipment_date?: string
           shipment_number: string
+          shipped_at?: string | null
+          shipping_cost?: number
+          shipping_rate_id?: string | null
           status?: Database["public"]["Enums"]["shipment_status"]
+          total_meters?: number | null
+          total_weight_kg?: number | null
           tracking_number?: string | null
           updated_at?: string
+          vehicle_info?: string | null
         }
         Update: {
           carrier?: string | null
           created_at?: string
           created_by?: string | null
           customer_id?: string
+          delivered_at?: string | null
           delivery_address?: string | null
+          delivery_proof?: string | null
+          delivery_staff_id?: string | null
           id?: string
+          loading_fee?: number
           notes?: string | null
           order_id?: string
+          prepared_at?: string | null
+          receiver_name?: string | null
+          receiver_phone?: string | null
           shipment_date?: string
           shipment_number?: string
+          shipped_at?: string | null
+          shipping_cost?: number
+          shipping_rate_id?: string | null
           status?: Database["public"]["Enums"]["shipment_status"]
+          total_meters?: number | null
+          total_weight_kg?: number | null
           tracking_number?: string | null
           updated_at?: string
+          vehicle_info?: string | null
         }
         Relationships: [
           {
@@ -720,6 +915,51 @@ export type Database = {
         }
         Relationships: []
       }
+      yarn_catalogs: {
+        Row: {
+          id: string
+          code: string
+          name: string
+          composition: string | null
+          color_name: string | null
+          tensile_strength: string | null
+          origin: string | null
+          unit: string
+          notes: string | null
+          status: Database["public"]["Enums"]["active_status"]
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          code: string
+          name: string
+          composition?: string | null
+          color_name?: string | null
+          tensile_strength?: string | null
+          origin?: string | null
+          unit?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["active_status"]
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          code?: string
+          name?: string
+          composition?: string | null
+          color_name?: string | null
+          tensile_strength?: string | null
+          origin?: string | null
+          unit?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["active_status"]
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       yarn_receipt_items: {
         Row: {
           amount: number | null
@@ -736,6 +976,7 @@ export type Database = {
           tensile_strength: string | null
           unit: string
           unit_price: number
+          yarn_catalog_id: string | null
           yarn_type: string
         }
         Insert: {
@@ -753,6 +994,7 @@ export type Database = {
           tensile_strength?: string | null
           unit?: string
           unit_price?: number
+          yarn_catalog_id?: string | null
           yarn_type: string
         }
         Update: {
@@ -770,6 +1012,7 @@ export type Database = {
           tensile_strength?: string | null
           unit?: string
           unit_price?: number
+          yarn_catalog_id?: string | null
           yarn_type?: string
         }
         Relationships: [
@@ -778,6 +1021,13 @@ export type Database = {
             columns: ["receipt_id"]
             isOneToOne: false
             referencedRelation: "yarn_receipts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "yarn_receipt_items_yarn_catalog_id_fkey"
+            columns: ["yarn_catalog_id"]
+            isOneToOne: false
+            referencedRelation: "yarn_catalogs"
             referencedColumns: ["id"]
           },
         ]
@@ -943,6 +1193,18 @@ export type Database = {
         }
         Relationships: []
       }
+      v_supplier_debt: {
+        Row: {
+          supplier_id: string | null
+          supplier_name: string | null
+          supplier_code: string | null
+          total_purchased: number | null
+          total_paid: number | null
+          balance_due: number | null
+          receipt_count: number | null
+        }
+        Relationships: []
+      }
       v_production_efficiency: {
         Row: {
           order_id: string | null
@@ -987,6 +1249,20 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
       }
+      get_cash_flow_summary: {
+        Args: {
+          p_from?: string
+          p_to?: string
+        }
+        Returns: {
+          period: string
+          total_inflow: number
+          total_outflow: number
+          net_flow: number
+          inflow_count: number
+          outflow_count: number
+        }[]
+      }
       get_debt_summary: {
         Args: never
         Returns: {
@@ -1001,6 +1277,17 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      get_expense_by_category: {
+        Args: {
+          p_from?: string
+          p_to?: string
+        }
+        Returns: {
+          category: Database["public"]["Enums"]["expense_category"]
+          total_amount: number
+          expense_count: number
+        }[]
+      }
       update_supplier: {
         Args: {
           p_address?: string
@@ -1019,6 +1306,7 @@ export type Database = {
       }
     }
     Enums: {
+      account_type: "cash" | "bank"
       active_status: "active" | "inactive"
       adjustment_type: "increase" | "decrease" | "correction"
       customer_source:
@@ -1031,6 +1319,17 @@ export type Database = {
         | "cold_call"
         | "other"
       doc_status: "draft" | "confirmed" | "cancelled"
+      expense_category:
+        | "supplier_payment"
+        | "yarn_purchase"
+        | "weaving_cost"
+        | "dyeing_cost"
+        | "salary"
+        | "rent"
+        | "utilities"
+        | "logistics"
+        | "equipment"
+        | "other"
       inventory_item_type: "yarn" | "raw_fabric" | "finished_fabric"
       order_status:
         | "draft"
@@ -1062,7 +1361,7 @@ export type Database = {
         | "returned"
       stage_status: "pending" | "in_progress" | "done" | "skipped"
       supplier_category: "yarn" | "dye" | "accessories" | "other" | "weaving"
-      user_role: "admin" | "manager" | "staff" | "viewer"
+      user_role: "admin" | "manager" | "staff" | "driver" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1190,6 +1489,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      account_type: ["cash", "bank"],
       active_status: ["active", "inactive"],
       adjustment_type: ["increase", "decrease", "correction"],
       customer_source: [
@@ -1203,6 +1503,18 @@ export const Constants = {
         "other",
       ],
       doc_status: ["draft", "confirmed", "cancelled"],
+      expense_category: [
+        "supplier_payment",
+        "yarn_purchase",
+        "weaving_cost",
+        "dyeing_cost",
+        "salary",
+        "rent",
+        "utilities",
+        "logistics",
+        "equipment",
+        "other",
+      ],
       inventory_item_type: ["yarn", "raw_fabric", "finished_fabric"],
       order_status: [
         "draft",
@@ -1238,7 +1550,7 @@ export const Constants = {
       ],
       stage_status: ["pending", "in_progress", "done", "skipped"],
       supplier_category: ["yarn", "dye", "accessories", "other", "weaving"],
-      user_role: ["admin", "manager", "staff", "viewer"],
+      user_role: ["admin", "manager", "staff", "driver", "viewer"],
     },
   },
 } as const
@@ -1256,5 +1568,7 @@ export type AdjustmentType = Enums<'adjustment_type'>
 export type SupplierCategory = Enums<'supplier_category'>
 export type CustomerSource = Enums<'customer_source'>
 export type InventoryItemType = Enums<'inventory_item_type'>
+export type AccountType = Enums<'account_type'>
+export type ExpenseCategory = Enums<'expense_category'>
 
 export type Profile = Tables<'profiles'>

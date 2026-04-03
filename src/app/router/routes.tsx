@@ -17,7 +17,9 @@ const RawFabricPage = lazy(() => import('@/features/raw-fabric').then((m) => ({ 
 const ReportsPage = lazy(() => import('@/features/reports').then((m) => ({ default: m.ReportsPage })))
 const SettingsPage = lazy(() => import('@/features/settings').then((m) => ({ default: m.SettingsPage })))
 const ShipmentsPage = lazy(() => import('@/features/shipments').then((m) => ({ default: m.ShipmentsPage })))
+const ShippingRatesPage = lazy(() => import('@/features/shipping-rates').then((m) => ({ default: m.ShippingRatesPage })))
 const SuppliersPage = lazy(() => import('@/features/suppliers').then((m) => ({ default: m.SuppliersPage })))
+const YarnCatalogPage = lazy(() => import('@/features/yarn-catalog').then((m) => ({ default: m.YarnCatalogPage })))
 const YarnReceiptsPage = lazy(() => import('@/features/yarn-receipts').then((m) => ({ default: m.YarnReceiptsPage })))
 
 export type NavigationItem = {
@@ -79,6 +81,12 @@ export const navigationItems: NavigationItem[] = [
     description: 'Quản lý nhà cung cấp sợi, dệt, nhuộm và logistics.',
   },
   {
+    path: '/yarn-catalog',
+    label: 'Danh mục sợi',
+    shortLabel: 'Danh mục',
+    description: 'Quản lý danh mục loại sợi — nền cho luồng nhập sợi.',
+  },
+  {
     path: '/yarn-receipts',
     label: 'Nhập sợi',
     shortLabel: 'Yarn',
@@ -98,9 +106,9 @@ export const navigationItems: NavigationItem[] = [
   },
   {
     path: '/payments',
-    label: 'Thu tiền',
-    shortLabel: 'Payments',
-    description: 'Phiếu thu, công nợ và trạng thái thanh toán theo đơn hàng.',
+    label: 'Thu Chi',
+    shortLabel: 'Thu Chi',
+    description: 'Quản lý thu chi, phiếu thu, phiếu chi, dòng tiền và công nợ.',
   },
   {
     path: '/reports',
@@ -108,6 +116,13 @@ export const navigationItems: NavigationItem[] = [
     shortLabel: 'Reports',
     description: 'Dashboard KPI, đơn hàng trễ, doanh thu và sức khoẻ kho.',
     requiredRoles: ['admin', 'manager'],
+  },
+  {
+    path: '/shipping-rates',
+    label: 'Giá cước vận chuyển',
+    shortLabel: 'Cước VC',
+    description: 'Quản lý bảng giá cước vận chuyển theo khu vực.',
+    requiredRoles: ['admin'],
   },
   {
     path: '/settings',
@@ -125,6 +140,7 @@ export const appRoutes: RouteObject[] = [
   { index: true, element: <DashboardPage /> },
   { path: 'customers', element: <LazyPage><CustomersPage /></LazyPage> },
   { path: 'suppliers', element: <LazyPage><SuppliersPage /></LazyPage> },
+  { path: 'yarn-catalog', element: <LazyPage><YarnCatalogPage /></LazyPage> },
   { path: 'yarn-receipts', element: <LazyPage><YarnReceiptsPage /></LazyPage> },
   { path: 'raw-fabric', element: <LazyPage><RawFabricPage /></LazyPage> },
   { path: 'finished-fabric', element: <LazyPage><FinishedFabricPage /></LazyPage> },
@@ -143,4 +159,5 @@ export const managerRoutes: RouteObject[] = [
 /** Routes chỉ dành cho admin */
 export const adminRoutes: RouteObject[] = [
   { path: 'settings', element: <LazyPage><SettingsPage /></LazyPage> },
+  { path: 'shipping-rates', element: <LazyPage><ShippingRatesPage /></LazyPage> },
 ]

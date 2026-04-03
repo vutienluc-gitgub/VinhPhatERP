@@ -30,6 +30,12 @@ export type ShipmentDocumentItem = ShipmentItem & {
   warehouse_location: string | null
 }
 
+export type DeliveryStaffSummary = {
+  id: string
+  full_name: string
+  phone: string | null
+}
+
 export type Shipment = {
   id: string
   shipment_number: string
@@ -41,12 +47,27 @@ export type Shipment = {
   tracking_number: string | null
   status: ShipmentStatus
   notes: string | null
+  // Delivery tracking
+  delivery_staff_id: string | null
+  shipping_rate_id: string | null
+  shipping_cost: number
+  loading_fee: number
+  total_weight_kg: number | null
+  total_meters: number | null
+  vehicle_info: string | null
+  prepared_at: string | null
+  shipped_at: string | null
+  delivered_at: string | null
+  delivery_proof: string | null
+  receiver_name: string | null
+  receiver_phone: string | null
   created_by: string | null
   created_at: string
   updated_at: string
   /** Joined */
   orders?: { order_number: string } | null
   customers?: { name: string; code: string } | null
+  delivery_staff?: { full_name: string; phone: string | null } | null
   shipment_items?: ShipmentItem[]
 }
 
@@ -60,4 +81,5 @@ export type ShipmentsFilter = {
   search?: string
   status?: ShipmentStatus
   orderId?: string
+  deliveryStaffId?: string
 }

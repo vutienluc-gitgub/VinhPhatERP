@@ -14,6 +14,7 @@ import {
   useCreateYarnReceipt,
   useNextReceiptNumber,
   useUpdateYarnReceipt,
+  useYarnCatalogOptions,
 } from './useYarnReceipts'
 import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm'
 
@@ -43,6 +44,7 @@ function receiptToFormValues(receipt: YarnReceipt): YarnReceiptsFormValues {
     receiptDate: receipt.receipt_date,
     notes: receipt.notes ?? '',
     items: (receipt.yarn_receipt_items ?? []).map((it) => ({
+      yarnCatalogId: it.yarn_catalog_id ?? '',
       yarnType: it.yarn_type,
       colorName: it.color_name ?? '',
       quantity: Number(it.quantity),
@@ -89,6 +91,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
   const updateMutation = useUpdateYarnReceipt()
   const { data: nextNumber } = useNextReceiptNumber()
   const { data: suppliers = [] } = useActiveSuppliers()
+  const { data: yarnCatalogs = [] } = useYarnCatalogOptions()
 
   const {
     register,
@@ -306,6 +309,35 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                           ✕
                         </button>
                       )}
+                    </div>
+
+                    <div className="form-grid form-grid-2">
+                      <div className="form-field" style={{ gridColumn: '1 / -1' }}>
+                        <label htmlFor={`items.${index}.yarnCatalogId`}>Chọn từ danh mục sợi</label>
+                        <select
+                          id={`items.${index}.yarnCatalogId`}
+                          className="field-select"
+                          {...register(`items.${index}.yarnCatalogId`)}
+                          onChange={(e) => {
+                            void register(`items.${index}.yarnCatalogId`).onChange(e)
+                            const cat = yarnCatalogs.find((c) => c.id === e.target.value)
+                            if (cat) {
+                              setValue(`items.${index}.yarnType`, cat.name)
+                              setValue(`items.${index}.colorName`, cat.color_name ?? '')
+                              setValue(`items.${index}.composition`, cat.composition ?? '')
+                              setValue(`items.${index}.tensileStrength`, cat.tensile_strength ?? '')
+                              setValue(`items.${index}.origin`, cat.origin ?? '')
+                            }
+                          }}
+                        >
+                          <option value="">— Chọn từ danh mục (tuỳ chọn) —</option>
+                          {yarnCatalogs.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.code} — {c.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
 
                     <div className="form-grid form-grid-2">

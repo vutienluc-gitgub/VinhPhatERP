@@ -5,6 +5,7 @@ import {
 import { timestamptz } from './helpers.js'
 import { suppliers } from './suppliers.js'
 import { profiles } from './auth.js'
+import { yarnCatalogs } from './yarn-catalogs.js'
 
 export const docStatusEnum = pgEnum('doc_status', ['draft', 'confirmed', 'cancelled'])
 
@@ -34,12 +35,14 @@ export const yarnReceiptItems = pgTable('yarn_receipt_items', {
   unit:       text('unit').notNull().default('kg'),
   quantity:   numeric('quantity', { precision: 14, scale: 3 }).notNull(),
   unitPrice:  numeric('unit_price', { precision: 18, scale: 2 }).notNull().default('0'),
-  lotNumber:  text('lot_number'),
+  lotNumber:     text('lot_number'),
   tensileStrength: text('tensile_strength'),
-  composition: text('composition'),
-  origin:     text('origin'),
-  notes:      text('notes'),
-  sortOrder:  smallint('sort_order').notNull().default(0),
+  composition:   text('composition'),
+  origin:        text('origin'),
+  notes:         text('notes'),
+  sortOrder:     smallint('sort_order').notNull().default(0),
+  yarnCatalogId: uuid('yarn_catalog_id').references(() => yarnCatalogs.id, { onDelete: 'set null' }),
 }, (t) => [
   index('idx_yri_receipt').on(t.receiptId),
+  index('idx_yri_catalog').on(t.yarnCatalogId),
 ])

@@ -19,6 +19,7 @@ const roleLabel: Record<UserRole, string> = {
   admin: 'Admin',
   manager: 'Manager',
   staff: 'Staff',
+  driver: 'Tài xế',
   viewer: 'Viewer',
 }
 

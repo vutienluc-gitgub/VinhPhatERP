@@ -119,6 +119,34 @@ export function useActiveSuppliers() {
   })
 }
 
+/* ── Yarn catalog options for picker ── */
+
+export type YarnCatalogOption = {
+  id: string
+  code: string
+  name: string
+  composition: string | null
+  color_name: string | null
+  tensile_strength: string | null
+  origin: string | null
+  unit: string
+}
+
+export function useYarnCatalogOptions() {
+  return useQuery({
+    queryKey: ['yarn-catalog', 'receipt-picker'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('yarn_catalogs')
+        .select('id, code, name, composition, color_name, tensile_strength, origin, unit')
+        .eq('status', 'active')
+        .order('name')
+      if (error) throw error
+      return (data ?? []) as YarnCatalogOption[]
+    },
+  })
+}
+
 /* ── Create receipt (header + items in one transaction) ── */
 
 export function useCreateYarnReceipt() {
@@ -154,6 +182,7 @@ export function useCreateYarnReceipt() {
         tensile_strength: item.tensileStrength?.trim() || null,
         composition: item.composition?.trim() || null,
         origin: item.origin?.trim() || null,
+        yarn_catalog_id: item.yarnCatalogId?.trim() || null,
         sort_order: idx,
       }))
 
@@ -231,6 +260,7 @@ export function useUpdateYarnReceipt() {
         tensile_strength: item.tensileStrength?.trim() || null,
         composition: item.composition?.trim() || null,
         origin: item.origin?.trim() || null,
+        yarn_catalog_id: item.yarnCatalogId?.trim() || null,
         sort_order: idx,
       }))
 

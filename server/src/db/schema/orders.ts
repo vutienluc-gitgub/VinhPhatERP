@@ -7,6 +7,7 @@ import { timestamptz } from './helpers.js'
 import { customers } from './customers.js'
 import { profiles } from './auth.js'
 import { finishedFabricRolls } from './fabric.js'
+import { shippingRates } from './shipping-rates.js'
 
 export const orderStatusEnum = pgEnum('order_status', [
   'draft', 'confirmed', 'in_progress', 'completed', 'cancelled',
@@ -96,6 +97,20 @@ export const shipments = pgTable('shipments', {
   trackingNumber:  text('tracking_number'),
   status:          shipmentStatusEnum('status').notNull().default('preparing'),
   notes:           text('notes'),
+  // Delivery tracking
+  deliveryStaffId: uuid('delivery_staff_id').references(() => profiles.id),
+  shippingRateId:  uuid('shipping_rate_id').references(() => shippingRates.id),
+  shippingCost:    numeric('shipping_cost', { precision: 14, scale: 0 }).notNull().default('0'),
+  loadingFee:      numeric('loading_fee', { precision: 14, scale: 0 }).notNull().default('0'),
+  totalWeightKg:   numeric('total_weight_kg', { precision: 14, scale: 3 }),
+  totalMeters:     numeric('total_meters', { precision: 14, scale: 3 }),
+  vehicleInfo:     text('vehicle_info'),
+  preparedAt:      timestamptz('prepared_at'),
+  shippedAt:       timestamptz('shipped_at'),
+  deliveredAt:     timestamptz('delivered_at'),
+  deliveryProof:   text('delivery_proof'),
+  receiverName:    text('receiver_name'),
+  receiverPhone:   text('receiver_phone'),
   createdBy:       uuid('created_by').references(() => profiles.id),
   createdAt:       timestamptz('created_at').notNull().defaultNow(),
   updatedAt:       timestamptz('updated_at').notNull().defaultNow(),
@@ -104,6 +119,8 @@ export const shipments = pgTable('shipments', {
   index('idx_shipments_customer').on(t.customerId),
   index('idx_shipments_date').on(t.shipmentDate),
   index('idx_shipments_status').on(t.status),
+  index('idx_shipments_delivery_staff').on(t.deliveryStaffId),
+  index('idx_shipments_shipping_rate').on(t.shippingRateId),
 ])
 
 export const shipmentItems = pgTable('shipment_items', {

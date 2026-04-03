@@ -35,6 +35,12 @@ export const shipmentsSchema = z.object({
   customerId: z.string().uuid('Chọn khách hàng'),
   shipmentDate: z.string().trim().min(1, 'Chọn ngày giao'),
   deliveryAddress: z.string().trim().max(255).optional().or(z.literal('')),
+  // Delivery tracking
+  deliveryStaffId: z.string().uuid().optional().or(z.literal('')),
+  shippingRateId: z.string().uuid().optional().or(z.literal('')),
+  shippingCost: z.number().min(0, 'Chi phí phải >= 0'),
+  loadingFee: z.number().min(0, 'Phí bốc xếp phải >= 0'),
+  vehicleInfo: z.string().trim().max(100).optional().or(z.literal('')),
   items: z.array(shipmentItemSchema).min(1, 'Thêm ít nhất 1 dòng hàng'),
 })
 
@@ -46,7 +52,29 @@ export const shipmentsDefaultValues: ShipmentsFormValues = {
   customerId: '',
   shipmentDate: new Date().toISOString().slice(0, 10),
   deliveryAddress: '',
+  deliveryStaffId: '',
+  shippingRateId: '',
+  shippingCost: 0,
+  loadingFee: 0,
+  vehicleInfo: '',
   items: [{ ...emptyShipmentItem }],
+}
+
+/** Schema cho xác nhận giao hàng (driver dùng) */
+export const deliveryConfirmSchema = z.object({
+  receiverName: z.string().trim().min(1, 'Nhập tên người nhận'),
+  receiverPhone: z.string().trim().optional().or(z.literal('')),
+  deliveryProof: z.string().trim().min(1, 'Bắt buộc chụp ảnh biên nhận'),
+  notes: z.string().trim().optional().or(z.literal('')),
+})
+
+export type DeliveryConfirmFormValues = z.infer<typeof deliveryConfirmSchema>
+
+export const deliveryConfirmDefaultValues: DeliveryConfirmFormValues = {
+  receiverName: '',
+  receiverPhone: '',
+  deliveryProof: '',
+  notes: '',
 }
 
 export const shipmentsFeature: FeatureDefinition = {

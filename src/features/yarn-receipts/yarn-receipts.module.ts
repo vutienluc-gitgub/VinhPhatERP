@@ -16,6 +16,7 @@ export const DOC_STATUS_LABELS: Record<DocStatus, string> = {
 /* ── Zod schemas ── */
 
 export const yarnReceiptItemSchema = z.object({
+  yarnCatalogId: z.string().optional().or(z.literal('')),
   yarnType: z.string().trim().min(2, 'Loại sợi tối thiểu 2 ký tự'),
   colorName: z.string().trim().max(120).optional().or(z.literal('')),
   quantity: z.number({ required_error: 'Nhập số lượng' }).positive('Số lượng phải > 0'),
@@ -39,6 +40,7 @@ export const yarnReceiptsSchema = z.object({
 export type YarnReceiptsFormValues = z.infer<typeof yarnReceiptsSchema>
 
 export const emptyItem: YarnReceiptItemFormValues = {
+  yarnCatalogId: '',
   yarnType: '',
   colorName: '',
   quantity: 0,

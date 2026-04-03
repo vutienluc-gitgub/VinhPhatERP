@@ -5,7 +5,7 @@ import {
 import { timestamptz } from './helpers.js'
 
 // Enums
-export const userRoleEnum = pgEnum('user_role', ['admin', 'manager', 'staff', 'viewer'])
+export const userRoleEnum = pgEnum('user_role', ['admin', 'manager', 'staff', 'driver', 'viewer'])
 
 // profiles — mirrors auth.users
 export const profiles = pgTable('profiles', {

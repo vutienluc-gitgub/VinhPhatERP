@@ -3,9 +3,9 @@ import { supabase } from '@/services/supabase/client'
 import type { Database } from '@/services/supabase/database.types'
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination'
 import type { PaginatedResult } from '@/shared/types/pagination'
-import type { ShipmentsFormValues } from './shipments.module'
+import type { ShipmentsFormValues, DeliveryConfirmFormValues } from './shipments.module'
 import { exportShipmentToPdf } from './shipment-document'
-import type { Shipment, ShipmentDocument, ShipmentsFilter, ShipmentStatus } from './types'
+import type { Shipment, ShipmentDocument, ShipmentsFilter, ShipmentStatus, DeliveryStaffSummary } from './types'
 
 const HEADER_TABLE = 'shipments'
 const ITEMS_TABLE = 'shipment_items'
@@ -109,7 +109,7 @@ export function useShipmentList(filters: ShipmentsFilter = {}, page = 1) {
 
       let query = supabase
         .from(HEADER_TABLE)
-        .select('*, orders(order_number), customers(name, code)', { count: 'exact' })
+        .select('*, orders(order_number), customers(name, code), delivery_staff:profiles!shipments_delivery_staff_id_fkey(full_name, phone)', { count: 'exact' })
         .order('shipment_date', { ascending: false })
         .range(from, to)
 
@@ -118,6 +118,9 @@ export function useShipmentList(filters: ShipmentsFilter = {}, page = 1) {
       }
       if (filters.orderId) {
         query = query.eq('order_id', filters.orderId)
+      }
+      if (filters.deliveryStaffId) {
+        query = query.eq('delivery_staff_id', filters.deliveryStaffId)
       }
       if (filters.search?.trim()) {
         const q = filters.search.trim()
@@ -231,6 +234,11 @@ export function useCreateShipment() {
           customer_id: values.customerId,
           shipment_date: values.shipmentDate,
           delivery_address: values.deliveryAddress?.trim() || null,
+          delivery_staff_id: values.deliveryStaffId?.trim() || null,
+          shipping_rate_id: values.shippingRateId?.trim() || null,
+          shipping_cost: values.shippingCost,
+          loading_fee: values.loadingFee,
+          vehicle_info: values.vehicleInfo?.trim() || null,
           status: 'preparing' as const,
         })
         .select()
@@ -298,7 +306,7 @@ export function useConfirmShipment() {
 
       const { error } = await supabase
         .from(HEADER_TABLE)
-        .update({ status: 'shipped' as ShipmentStatus })
+        .update({ status: 'shipped' as ShipmentStatus, shipped_at: new Date().toISOString() })
         .eq('id', shipmentId)
         .eq('status', 'preparing')
 
@@ -337,15 +345,22 @@ export function useExportShipmentPdf() {
   })
 }
 
-/* ── Mark delivered ── */
+/* ── Mark delivered (with proof) ── */
 
 export function useMarkDelivered() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (shipmentId: string) => {
+    mutationFn: async ({ shipmentId, values }: { shipmentId: string; values: DeliveryConfirmFormValues }) => {
       const { error } = await supabase
         .from(HEADER_TABLE)
-        .update({ status: 'delivered' as ShipmentStatus })
+        .update({
+          status: 'delivered' as ShipmentStatus,
+          delivered_at: new Date().toISOString(),
+          receiver_name: values.receiverName.trim(),
+          receiver_phone: values.receiverPhone?.trim() || null,
+          delivery_proof: values.deliveryProof.trim(),
+          notes: values.notes?.trim() || null,
+        })
         .eq('id', shipmentId)
         .eq('status', 'shipped')
 
@@ -354,6 +369,47 @@ export function useMarkDelivered() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
       void queryClient.invalidateQueries({ queryKey: ['orders'] })
+    },
+  })
+}
+
+/* ── Assign delivery staff ── */
+
+export function useAssignDeliveryStaff() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ shipmentId, staffId, vehicleInfo }: { shipmentId: string; staffId: string; vehicleInfo?: string }) => {
+      const { error } = await supabase
+        .from(HEADER_TABLE)
+        .update({
+          delivery_staff_id: staffId,
+          vehicle_info: vehicleInfo?.trim() || null,
+        })
+        .eq('id', shipmentId)
+
+      if (error) throw error
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+    },
+  })
+}
+
+/* ── List delivery staff (role = driver) ── */
+
+export function useDeliveryStaffList() {
+  return useQuery({
+    queryKey: ['delivery-staff'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, phone')
+        .eq('role', 'driver')
+        .eq('is_active', true)
+        .order('full_name')
+
+      if (error) throw error
+      return (data ?? []) as DeliveryStaffSummary[]
     },
   })
 }

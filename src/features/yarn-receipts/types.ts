@@ -16,6 +16,7 @@ export type YarnReceiptItem = {
   origin: string | null
   notes: string | null
   sort_order: number
+  yarn_catalog_id: string | null
 }
 
 export type YarnReceipt = {

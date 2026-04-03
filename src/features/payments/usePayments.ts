@@ -114,6 +114,7 @@ export function useCreatePayment() {
           payment_date: values.paymentDate,
           amount: values.amount,
           payment_method: values.paymentMethod,
+          account_id: values.accountId || null,
           reference_number: values.referenceNumber?.trim() || null,
         })
         .select()

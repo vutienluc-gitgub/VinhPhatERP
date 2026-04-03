@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { useConfirm } from '@/shared/components/ConfirmDialog'
 import { Pagination } from '@/shared/components/Pagination'
+import { DeliveryConfirmForm } from './DeliveryConfirmForm'
 import { exportShipmentToPdf } from './shipment-document'
 import { SHIPMENT_STATUS_LABELS } from './shipments.module'
 import type { Shipment, ShipmentsFilter, ShipmentStatus } from './types'
@@ -9,7 +10,6 @@ import {
   useConfirmShipment,
   useDeleteShipment,
   useExportShipmentPdf,
-  useMarkDelivered,
   useShipmentList,
 } from './useShipments'
 
@@ -23,15 +23,20 @@ function statusClass(status: ShipmentStatus): string {
   }
 }
 
+function formatCost(value: number): string {
+  if (!value) return '—'
+  return new Intl.NumberFormat('vi-VN').format(value) + 'đ'
+}
+
 export function ShipmentList() {
   const [searchInput, setSearchInput] = useState('')
   const [filters, setFilters] = useState<ShipmentsFilter>({})
   const [page, setPage] = useState(1)
+  const [deliveryShipment, setDeliveryShipment] = useState<Shipment | null>(null)
 
   const { data: result, isLoading, error } = useShipmentList(filters, page)
   const shipments = result?.data ?? []
   const confirmMutation = useConfirmShipment()
-  const deliverMutation = useMarkDelivered()
   const deleteMutation = useDeleteShipment()
   const exportPdfMutation = useExportShipmentPdf()
   const { confirm, alert: showAlert } = useConfirm()
@@ -71,12 +76,6 @@ export function ShipmentList() {
     } catch (error) {
       await showAlert(`Không thể xác nhận phiếu xuất. ${getErrorMessage(error)}`)
     }
-  }
-
-  async function handleDeliver(id: string) {
-    const ok = await confirm({ message: 'Xác nhận khách hàng đã nhận hàng?' })
-    if (!ok) return
-    deliverMutation.mutate(id)
   }
 
   async function handleDelete(id: string) {
@@ -175,87 +174,103 @@ export function ShipmentList() {
                 <th>Số phiếu</th>
                 <th>Đơn hàng</th>
                 <th>Khách hàng</th>
+                <th>NV giao hàng</th>
+                <th>Cước VC</th>
                 <th>Ngày giao</th>
                 <th>Trạng thái</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              {shipments.map((s) => (
-                <tr key={s.id}>
-                  <td><strong>{s.shipment_number}</strong></td>
-                  <td className="td-muted">{s.orders?.order_number ?? '—'}</td>
-                  <td>{s.customers?.name ?? '—'}</td>
-                  <td className="td-muted">{s.shipment_date}</td>
-                  <td>
-                    <span className={`roll-status ${statusClass(s.status)}`}>
-                      {SHIPMENT_STATUS_LABELS[s.status]}
-                    </span>
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                      {s.status === 'preparing' && (
-                        <>
+              {shipments.map((s) => {
+                const totalCost = (s.shipping_cost || 0) + (s.loading_fee || 0)
+                return (
+                  <tr key={s.id}>
+                    <td><strong>{s.shipment_number}</strong></td>
+                    <td className="td-muted">{s.orders?.order_number ?? '—'}</td>
+                    <td>{s.customers?.name ?? '—'}</td>
+                    <td className="td-muted">
+                      {s.delivery_staff?.full_name ?? <span style={{ color: 'var(--warning)', fontSize: '0.82rem' }}>Chưa phân công</span>}
+                    </td>
+                    <td className="td-muted">{formatCost(totalCost)}</td>
+                    <td className="td-muted">{s.shipment_date}</td>
+                    <td>
+                      <span className={`roll-status ${statusClass(s.status)}`}>
+                        {SHIPMENT_STATUS_LABELS[s.status]}
+                      </span>
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                        {s.status === 'preparing' && (
+                          <>
+                            <button
+                              className="btn-secondary"
+                              type="button"
+                              onClick={() => { void handleConfirm(s) }}
+                              disabled={confirmMutation.isPending}
+                              style={{ fontSize: '0.78rem', padding: '0.2rem 0.5rem' }}
+                              title="Xác nhận xuất kho và mở phiếu PDF"
+                            >
+                              📦 Giao + PDF
+                            </button>
+                            <button
+                              className="btn-secondary"
+                              type="button"
+                              onClick={() => { void handleDelete(s.id) }}
+                              disabled={deleteMutation.isPending}
+                              style={{ fontSize: '0.78rem', padding: '0.2rem 0.5rem', color: '#c0392b' }}
+                            >
+                              ✕
+                            </button>
+                          </>
+                        )}
+                        {s.status !== 'preparing' && (
                           <button
                             className="btn-secondary"
                             type="button"
-                            onClick={() => { void handleConfirm(s) }}
-                            disabled={confirmMutation.isPending}
+                            onClick={() => { void handleExportPdf(s) }}
+                            disabled={exportPdfMutation.isPending}
                             style={{ fontSize: '0.78rem', padding: '0.2rem 0.5rem' }}
-                            title="Xác nhận xuất kho và mở phiếu PDF"
+                            title="Mở phiếu xuất để in hoặc lưu PDF"
                           >
-                            📦 Giao + PDF
+                            🖨 PDF
                           </button>
+                        )}
+                        {s.status === 'shipped' && (
                           <button
                             className="btn-secondary"
                             type="button"
-                            onClick={() => { void handleDelete(s.id) }}
-                            disabled={deleteMutation.isPending}
-                            style={{ fontSize: '0.78rem', padding: '0.2rem 0.5rem', color: '#c0392b' }}
+                            onClick={() => setDeliveryShipment(s)}
+                            style={{ fontSize: '0.78rem', padding: '0.2rem 0.5rem' }}
                           >
-                            ✕
+                            ✓ Xác nhận nhận hàng
                           </button>
-                        </>
-                      )}
-                      {s.status !== 'preparing' && (
-                        <button
-                          className="btn-secondary"
-                          type="button"
-                          onClick={() => { void handleExportPdf(s) }}
-                          disabled={exportPdfMutation.isPending}
-                          style={{ fontSize: '0.78rem', padding: '0.2rem 0.5rem' }}
-                          title="Mở phiếu xuất để in hoặc lưu PDF"
-                        >
-                          🖨 PDF
-                        </button>
-                      )}
-                      {s.status === 'shipped' && (
-                        <button
-                          className="btn-secondary"
-                          type="button"
-                          onClick={() => { void handleDeliver(s.id) }}
-                          disabled={deliverMutation.isPending}
-                          style={{ fontSize: '0.78rem', padding: '0.2rem 0.5rem' }}
-                        >
-                          ✓ Đã nhận
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         )}
       </div>
 
-      {(confirmMutation.error || deliverMutation.error || deleteMutation.error || exportPdfMutation.error) && (
+      {(confirmMutation.error || deleteMutation.error || exportPdfMutation.error) && (
         <p className="error-inline-sm">
-          Lỗi: {((confirmMutation.error || deliverMutation.error || deleteMutation.error || exportPdfMutation.error) as Error).message}
+          Lỗi: {((confirmMutation.error || deleteMutation.error || exportPdfMutation.error) as Error).message}
         </p>
       )}
 
       <Pagination result={result} onPageChange={setPage} />
+
+      {/* Delivery confirm modal */}
+      {deliveryShipment && (
+        <DeliveryConfirmForm
+          shipment={deliveryShipment}
+          onClose={() => setDeliveryShipment(null)}
+        />
+      )}
     </div>
   )
 }
