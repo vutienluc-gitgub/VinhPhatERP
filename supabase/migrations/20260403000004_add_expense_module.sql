@@ -25,7 +25,7 @@ create type expense_category as enum (
 );
 /* ── 2. Payment Accounts (Tài khoản tiền) ── */
 create table if not exists payment_accounts (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     name text not null,
     type account_type not null default 'cash',
     bank_name text,
@@ -40,7 +40,7 @@ create table if not exists payment_accounts (
 create index if not exists idx_payment_accounts_status on payment_accounts (status);
 /* ── 3. Expenses (Phiếu chi) ── */
 create table if not exists expenses (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     expense_number text not null unique,
     category expense_category not null default 'other',
     amount numeric(18, 2) not null check (amount > 0),
@@ -204,7 +204,7 @@ from suppliers s
             sum(total_amount) as total_amount,
             count(*) as receipt_count
         from yarn_receipts
-        where status in ('confirmed', 'completed')
+        where status = 'confirmed'
         group by supplier_id
     ) yr on yr.supplier_id = s.id
     left join (

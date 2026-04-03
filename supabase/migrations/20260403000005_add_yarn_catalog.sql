@@ -4,7 +4,7 @@
 -- =============================================================================
 -- 1. Tạo bảng danh mục sợi
 create table if not exists yarn_catalogs (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     code text not null unique,
     name text not null,
     composition text,
@@ -21,7 +21,7 @@ create index if not exists idx_yarn_catalogs_status on yarn_catalogs (status);
 create index if not exists idx_yarn_catalogs_code on yarn_catalogs (code);
 -- Trigger update updated_at
 create trigger yarn_catalogs_updated_at before
-update on yarn_catalogs for each row execute procedure update_updated_at_column();
+update on yarn_catalogs for each row execute procedure set_updated_at();
 -- 2. Thêm FK từ yarn_receipt_items sang yarn_catalogs (nullable — snapshot có thể khác catalog)
 alter table yarn_receipt_items
 add column if not exists yarn_catalog_id uuid references yarn_catalogs(id) on delete
