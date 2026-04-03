@@ -290,6 +290,158 @@ export type Database = {
           },
         ]
       }
+      quotation_items: {
+        Row: {
+          id: string
+          quotation_id: string
+          fabric_type: string
+          color_name: string | null
+          color_code: string | null
+          width_cm: number | null
+          quantity: number
+          unit: string
+          unit_price: number
+          amount: number | null
+          lead_time_days: number | null
+          notes: string | null
+          sort_order: number
+        }
+        Insert: {
+          id?: string
+          quotation_id: string
+          fabric_type: string
+          color_name?: string | null
+          color_code?: string | null
+          width_cm?: number | null
+          quantity: number
+          unit?: string
+          unit_price?: number
+          amount?: number | null
+          lead_time_days?: number | null
+          notes?: string | null
+          sort_order?: number
+        }
+        Update: {
+          id?: string
+          quotation_id?: string
+          fabric_type?: string
+          color_name?: string | null
+          color_code?: string | null
+          width_cm?: number | null
+          quantity?: number
+          unit?: string
+          unit_price?: number
+          amount?: number | null
+          lead_time_days?: number | null
+          notes?: string | null
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotation_items_quotation_id_fkey"
+            columns: ["quotation_id"]
+            isOneToOne: false
+            referencedRelation: "quotations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quotations: {
+        Row: {
+          id: string
+          quotation_number: string
+          customer_id: string
+          quotation_date: string
+          valid_until: string | null
+          subtotal: number
+          discount_type: string
+          discount_value: number
+          discount_amount: number
+          total_before_vat: number
+          vat_rate: number
+          vat_amount: number
+          total_amount: number
+          status: Database["public"]["Enums"]["quotation_status"]
+          revision: number
+          parent_quotation_id: string | null
+          converted_order_id: string | null
+          delivery_terms: string | null
+          payment_terms: string | null
+          notes: string | null
+          created_by: string | null
+          confirmed_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          quotation_number: string
+          customer_id: string
+          quotation_date?: string
+          valid_until?: string | null
+          subtotal?: number
+          discount_type?: string
+          discount_value?: number
+          discount_amount?: number
+          total_before_vat?: number
+          vat_rate?: number
+          vat_amount?: number
+          total_amount?: number
+          status?: Database["public"]["Enums"]["quotation_status"]
+          revision?: number
+          parent_quotation_id?: string | null
+          converted_order_id?: string | null
+          delivery_terms?: string | null
+          payment_terms?: string | null
+          notes?: string | null
+          created_by?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          quotation_number?: string
+          customer_id?: string
+          quotation_date?: string
+          valid_until?: string | null
+          subtotal?: number
+          discount_type?: string
+          discount_value?: number
+          discount_amount?: number
+          total_before_vat?: number
+          vat_rate?: number
+          vat_amount?: number
+          total_amount?: number
+          status?: Database["public"]["Enums"]["quotation_status"]
+          revision?: number
+          parent_quotation_id?: string | null
+          converted_order_id?: string | null
+          delivery_terms?: string | null
+          payment_terms?: string | null
+          notes?: string | null
+          created_by?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotations_converted_order_id_fkey"
+            columns: ["converted_order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           created_at: string
@@ -1338,6 +1490,13 @@ export type Database = {
         | "completed"
         | "cancelled"
       payment_method: "cash" | "bank_transfer" | "check" | "other"
+      quotation_status:
+        | "draft"
+        | "sent"
+        | "confirmed"
+        | "rejected"
+        | "expired"
+        | "converted"
       production_stage:
         | "warping"
         | "weaving"
@@ -1361,7 +1520,7 @@ export type Database = {
         | "returned"
       stage_status: "pending" | "in_progress" | "done" | "skipped"
       supplier_category: "yarn" | "dye" | "accessories" | "other" | "weaving"
-      user_role: "admin" | "manager" | "staff" | "driver" | "viewer"
+      user_role: "admin" | "manager" | "staff" | "driver" | "viewer" | "sale"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1523,6 +1682,14 @@ export const Constants = {
         "completed",
         "cancelled",
       ],
+      quotation_status: [
+        "draft",
+        "sent",
+        "confirmed",
+        "rejected",
+        "expired",
+        "converted",
+      ],
       payment_method: ["cash", "bank_transfer", "check", "other"],
       production_stage: [
         "warping",
@@ -1550,7 +1717,7 @@ export const Constants = {
       ],
       stage_status: ["pending", "in_progress", "done", "skipped"],
       supplier_category: ["yarn", "dye", "accessories", "other", "weaving"],
-      user_role: ["admin", "manager", "staff", "driver", "viewer"],
+      user_role: ["admin", "manager", "staff", "driver", "viewer", "sale"],
     },
   },
 } as const
@@ -1570,5 +1737,6 @@ export type CustomerSource = Enums<'customer_source'>
 export type InventoryItemType = Enums<'inventory_item_type'>
 export type AccountType = Enums<'account_type'>
 export type ExpenseCategory = Enums<'expense_category'>
+export type QuotationStatusDb = Enums<'quotation_status'>
 
 export type Profile = Tables<'profiles'>

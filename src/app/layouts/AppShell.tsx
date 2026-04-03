@@ -21,6 +21,7 @@ const roleLabel: Record<UserRole, string> = {
   staff: 'Staff',
   driver: 'Tài xế',
   viewer: 'Viewer',
+  sale: 'Sale',
 }
 
 export function AppShell() {

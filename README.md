@@ -5,6 +5,16 @@
 Ứng dụng số hóa toàn bộ quy trình từ nhập nguyên liệu (sợi), sản xuất vải,
 quản lý đơn hàng, theo dõi tiến độ, đến xuất hàng và thanh toán.
 
+## Tech Stack
+
+| Layer | Công nghệ | Ghi chú |
+| --- | --- | --- |
+| Frontend | React · TypeScript · Vite | SPA, mobile-first |
+| Backend | Hono (Node.js) · Drizzle ORM | API server, type-safe query |
+| Database | Supabase (PostgreSQL) | Auth, RLS, Realtime |
+| Testing | Vitest | Unit & integration |
+| Tooling | ESLint · pnpm / npm | Lint, package manager |
+
 ## Phân bổ mã nguồn / Code Breakdown
 
 | Khu vực | Thư mục | Mục đích chính |

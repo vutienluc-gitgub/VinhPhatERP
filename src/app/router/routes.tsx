@@ -12,6 +12,7 @@ const FinishedFabricPage = lazy(() => import('@/features/finished-fabric').then(
 const InventoryPage = lazy(() => import('@/features/inventory').then((m) => ({ default: m.InventoryPage })))
 const OrderProgressPage = lazy(() => import('@/features/order-progress').then((m) => ({ default: m.OrderProgressPage })))
 const OrdersPage = lazy(() => import('@/features/orders').then((m) => ({ default: m.OrdersPage })))
+const QuotationsPage = lazy(() => import('@/features/quotations').then((m) => ({ default: m.QuotationsPage })))
 const PaymentsPage = lazy(() => import('@/features/payments').then((m) => ({ default: m.PaymentsPage })))
 const RawFabricPage = lazy(() => import('@/features/raw-fabric').then((m) => ({ default: m.RawFabricPage })))
 const ReportsPage = lazy(() => import('@/features/reports').then((m) => ({ default: m.ReportsPage })))
@@ -39,6 +40,14 @@ export const navigationItems: NavigationItem[] = [
     shortLabel: 'Home',
     description: 'Tổng quan scaffold, trạng thái hiện tại và các bước tiếp theo.',
     primaryMobile: true,
+  },
+  {
+    path: '/quotations',
+    label: 'Báo giá',
+    shortLabel: 'Báo giá',
+    description: 'Tạo và quản lý báo giá, VAT, chiết khấu, chuyển thành đơn hàng.',
+    primaryMobile: true,
+    requiredRoles: ['admin', 'manager', 'sale'],
   },
   {
     path: '/orders',
@@ -144,6 +153,7 @@ export const appRoutes: RouteObject[] = [
   { path: 'yarn-receipts', element: <LazyPage><YarnReceiptsPage /></LazyPage> },
   { path: 'raw-fabric', element: <LazyPage><RawFabricPage /></LazyPage> },
   { path: 'finished-fabric', element: <LazyPage><FinishedFabricPage /></LazyPage> },
+  { path: 'quotations', element: <LazyPage><QuotationsPage /></LazyPage> },
   { path: 'orders', element: <LazyPage><OrdersPage /></LazyPage> },
   { path: 'order-progress', element: <LazyPage><OrderProgressPage /></LazyPage> },
   { path: 'shipments', element: <LazyPage><ShipmentsPage /></LazyPage> },
