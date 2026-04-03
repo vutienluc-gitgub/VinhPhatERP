@@ -13,6 +13,7 @@ const InventoryPage = lazy(() => import('@/features/inventory').then((m) => ({ d
 const OrderProgressPage = lazy(() => import('@/features/order-progress').then((m) => ({ default: m.OrderProgressPage })))
 const OrdersPage = lazy(() => import('@/features/orders').then((m) => ({ default: m.OrdersPage })))
 const QuotationsPage = lazy(() => import('@/features/quotations').then((m) => ({ default: m.QuotationsPage })))
+const QuotationPrintPage = lazy(() => import('@/features/quotations').then((m) => ({ default: m.QuotationPrint })))
 const PaymentsPage = lazy(() => import('@/features/payments').then((m) => ({ default: m.PaymentsPage })))
 const RawFabricPage = lazy(() => import('@/features/raw-fabric').then((m) => ({ default: m.RawFabricPage })))
 const ReportsPage = lazy(() => import('@/features/reports').then((m) => ({ default: m.ReportsPage })))
@@ -159,6 +160,10 @@ export const appRoutes: RouteObject[] = [
   { path: 'shipments', element: <LazyPage><ShipmentsPage /></LazyPage> },
   { path: 'payments', element: <LazyPage><PaymentsPage /></LazyPage> },
   { path: 'inventory', element: <LazyPage><InventoryPage /></LazyPage> },
+]
+
+export const printRoutes: RouteObject[] = [
+  { path: 'print/quotation/:id', element: <LazyPage><QuotationPrintPage /></LazyPage> },
 ]
 
 /** Routes chỉ dành cho admin và manager */

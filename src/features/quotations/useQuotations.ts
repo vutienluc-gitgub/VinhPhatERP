@@ -101,22 +101,7 @@ export function useNextQuotationNumber() {
   })
 }
 
-/* ── Active customers for picker ── */
 
-export function useActiveCustomers() {
-  return useQuery({
-    queryKey: ['customers', 'active-list'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('customers')
-        .select('id, code, name')
-        .eq('status', 'active')
-        .order('name')
-      if (error) throw error
-      return data ?? []
-    },
-  })
-}
 
 /* ── Create quotation (header + items) ── */
 

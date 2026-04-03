@@ -1,4 +1,6 @@
+import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { formatCurrency } from '@/shared/utils/format'
 import { useEffect } from 'react'
 import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 
@@ -13,9 +15,7 @@ import {
 } from './quotations.module'
 import type { QuotationsFormValues } from './quotations.module'
 import type { DiscountType, Quotation } from './types'
-import {
-  useActiveCustomers,
-  useCreateQuotation,
+import { useCreateQuotation,
   useNextQuotationNumber,
   useUpdateQuotation,
 } from './useQuotations'
@@ -53,9 +53,7 @@ function quotationToFormValues(q: Quotation): QuotationsFormValues {
   }
 }
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value)
-}
+
 
 /* ── Realtime totals ── */
 

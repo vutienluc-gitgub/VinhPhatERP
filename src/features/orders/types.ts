@@ -6,6 +6,7 @@ export type OrderItem = {
   fabric_type: string
   color_name: string | null
   color_code: string | null
+  width_cm: number | null
   quantity: number
   unit: string
   unit_price: number
@@ -22,6 +23,7 @@ export type Order = {
   delivery_date: string | null
   total_amount: number
   paid_amount: number
+  source_quotation_id: string | null
   status: OrderStatus
   notes: string | null
   confirmed_by: string | null
@@ -31,6 +33,7 @@ export type Order = {
   updated_at: string
   /** Joined from customers table */
   customers?: { name: string; code: string } | null
+  quotations?: { quotation_number: string } | null
   order_items?: OrderItem[]
 }
 

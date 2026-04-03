@@ -1,17 +1,8 @@
 -- =============================================
 -- Migration: Add Quotations feature
 -- Covers: quotation_status enum, quotations, quotation_items tables
--- Also adds 'sale' role to user_role enum
+-- NOTE: 'sale' role added via 20260403000007_add_sale_role.sql
 -- =============================================
-
--- 1. Add 'sale' role to user_role enum
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_enum WHERE enumlabel = 'sale' AND enumtypid = 'user_role'::regtype) THEN
-    ALTER TYPE user_role ADD VALUE 'sale';
-  END IF;
-END
-$$;
 
 -- 2. Create quotation_status enum
 DO $$
@@ -96,7 +87,7 @@ CREATE POLICY "quotations_insert" ON quotations
     EXISTS (
       SELECT 1 FROM profiles
       WHERE id = auth.uid()
-        AND role IN ('admin', 'manager', 'sale')
+        AND role::text IN ('admin', 'manager', 'sale')
         AND is_active = true
     )
   );
@@ -106,7 +97,7 @@ CREATE POLICY "quotations_update" ON quotations
     EXISTS (
       SELECT 1 FROM profiles
       WHERE id = auth.uid()
-        AND role IN ('admin', 'manager', 'sale')
+        AND role::text IN ('admin', 'manager', 'sale')
         AND is_active = true
     )
   );
@@ -130,7 +121,7 @@ CREATE POLICY "quotation_items_insert" ON quotation_items
     EXISTS (
       SELECT 1 FROM profiles
       WHERE id = auth.uid()
-        AND role IN ('admin', 'manager', 'sale')
+        AND role::text IN ('admin', 'manager', 'sale')
         AND is_active = true
     )
   );
@@ -140,7 +131,7 @@ CREATE POLICY "quotation_items_update" ON quotation_items
     EXISTS (
       SELECT 1 FROM profiles
       WHERE id = auth.uid()
-        AND role IN ('admin', 'manager', 'sale')
+        AND role::text IN ('admin', 'manager', 'sale')
         AND is_active = true
     )
   );
@@ -150,7 +141,7 @@ CREATE POLICY "quotation_items_delete" ON quotation_items
     EXISTS (
       SELECT 1 FROM profiles
       WHERE id = auth.uid()
-        AND role IN ('admin', 'manager', 'sale')
+        AND role::text IN ('admin', 'manager', 'sale')
         AND is_active = true
     )
   );

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { formatCurrency } from '@/shared/utils/format'
 import { useConfirm } from '@/shared/components/ConfirmDialog'
 import { Pagination } from '@/shared/components/Pagination'
 import { QUOTATION_STATUS_LABELS, QUOTATION_STATUS_ICONS } from './quotations.module'
@@ -12,9 +13,7 @@ type QuotationListProps = {
   onView: (quotation: Quotation) => void
 }
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value)
-}
+
 
 function statusClass(status: QuotationStatus): string {
   switch (status) {

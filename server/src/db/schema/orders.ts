@@ -45,6 +45,7 @@ export const orders = pgTable('orders', {
   createdBy:    uuid('created_by').references(() => profiles.id),
   createdAt:    timestamptz('created_at').notNull().defaultNow(),
   updatedAt:    timestamptz('updated_at').notNull().defaultNow(),
+  sourceQuotationId: uuid('source_quotation_id'),
 }, (t) => [
   index('idx_orders_customer').on(t.customerId),
   index('idx_orders_date').on(t.orderDate),
@@ -57,6 +58,7 @@ export const orderItems = pgTable('order_items', {
   fabricType: text('fabric_type').notNull(),
   colorName:  text('color_name'),
   colorCode:  text('color_code'),
+  widthCm:    numeric('width_cm', { precision: 7, scale: 2 }),
   quantity:   numeric('quantity', { precision: 14, scale: 3 }).notNull(),
   unit:       text('unit').notNull().default('m'),
   unitPrice:  numeric('unit_price', { precision: 18, scale: 2 }).notNull().default('0'),

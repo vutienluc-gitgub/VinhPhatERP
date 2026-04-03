@@ -12,9 +12,7 @@ type OrderListProps = {
   onView: (order: Order) => void
 }
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value)
-}
+import { formatCurrency } from '@/shared/utils/format'
 
 function statusClass(status: OrderStatus): string {
   switch (status) {

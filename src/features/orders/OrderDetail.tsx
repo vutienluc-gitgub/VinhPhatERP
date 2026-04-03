@@ -1,4 +1,5 @@
 import { ProgressTimeline } from '@/features/order-progress/ProgressTimeline'
+import { formatCurrency } from '@/shared/utils/format'
 import { useOrderProgress } from '@/features/order-progress/useOrderProgress'
 import { ORDER_STATUS_LABELS } from './orders.module'
 import type { Order, OrderStatus } from './types'
@@ -14,9 +15,7 @@ type OrderDetailProps = {
   onReserveRolls: (order: Order) => void
 }
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value)
-}
+
 
 function statusClass(status: OrderStatus): string {
   switch (status) {
@@ -237,7 +236,7 @@ export function OrderDetail({
                     </tr>
                   ))}
                 <tr>
-                  <td colSpan={5} style={{ textAlign: 'right', fontWeight: 700 }}>Tổng cộng</td>
+                  <td colSpan={6} style={{ textAlign: 'right', fontWeight: 700 }}>Tổng cộng</td>
                   <td style={{ textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
                     {formatCurrency(order.total_amount)} đ
                   </td>

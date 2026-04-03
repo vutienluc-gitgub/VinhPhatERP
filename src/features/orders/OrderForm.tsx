@@ -1,4 +1,6 @@
+import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { formatCurrency } from '@/shared/utils/format'
 import { useEffect } from 'react'
 import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 
@@ -10,9 +12,7 @@ import {
 } from './orders.module'
 import type { OrdersFormValues } from './orders.module'
 import type { Order } from './types'
-import {
-  useActiveCustomers,
-  useCreateOrder,
+import { useCreateOrder,
   useNextOrderNumber,
   useUpdateOrder,
 } from './useOrders'
@@ -42,9 +42,7 @@ function orderToFormValues(order: Order): OrdersFormValues {
   }
 }
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value)
-}
+
 
 /* ── Realtime totals ── */
 

@@ -1,4 +1,5 @@
 import { QUOTATION_STATUS_LABELS, QUOTATION_STATUS_ICONS } from './quotations.module'
+import { formatCurrency } from '@/shared/utils/format'
 import type { Quotation, QuotationStatus } from './types'
 import { useConfirm } from '@/shared/components/ConfirmDialog'
 import {
@@ -16,9 +17,7 @@ type QuotationDetailProps = {
   onViewOrder: (orderId: string) => void
 }
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value)
-}
+
 
 function statusClass(status: QuotationStatus): string {
   switch (status) {
@@ -247,6 +246,15 @@ export function QuotationDetail({
               📦 Xem Đơn hàng
             </button>
           )}
+          <button
+            className="btn-secondary"
+            type="button"
+            onClick={() => window.open(`/print/quotation/${quotationId}`, '_blank')}
+            style={{ marginLeft: 'auto' }}
+            title="In Báo giá hoặc lưu PDF"
+          >
+            🖨️ In / PDF
+          </button>
         </div>
 
         {anyMutationError && (

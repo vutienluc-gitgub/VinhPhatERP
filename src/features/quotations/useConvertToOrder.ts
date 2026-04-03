@@ -60,7 +60,13 @@ export function useConvertToOrder() {
       }
 
       // 3. Insert order header
-      // Use total_before_vat as order total (since orders module uses pre-VAT pricing)
+      const combinedNotes = [
+        `Từ BG: ${q.quotation_number}`,
+        q.delivery_terms ? `Giao hàng: ${q.delivery_terms}` : '',
+        q.payment_terms ? `Thanh toán: ${q.payment_terms}` : '',
+        q.notes ? `Ghi chú: ${q.notes}` : ''
+      ].filter(Boolean).join('. ')
+
       const { data: newOrder, error: orderErr } = await supabase
         .from('orders')
         .insert({
@@ -68,9 +74,8 @@ export function useConvertToOrder() {
           customer_id: q.customer_id,
           order_date: now.toISOString().slice(0, 10),
           total_amount: q.total_amount,
-          notes: q.notes
-            ? `Từ BG: ${q.quotation_number}. ${q.notes}`
-            : `Từ BG: ${q.quotation_number}`,
+          source_quotation_id: quotationId,
+          notes: combinedNotes,
           status: 'draft' as const,
         })
         .select()
@@ -87,6 +92,7 @@ export function useConvertToOrder() {
         fabric_type: item.fabric_type,
         color_name: item.color_name,
         color_code: item.color_code,
+        width_cm: item.width_cm,
         unit: item.unit,
         quantity: item.quantity,
         unit_price: item.unit_price,

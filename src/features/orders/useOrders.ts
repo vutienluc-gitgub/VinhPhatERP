@@ -58,7 +58,7 @@ export function useOrder(id: string | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from(HEADER_TABLE)
-        .select('*, customers(name, code), order_items(*)')
+        .select('*, customers(name, code), quotations(quotation_number), order_items(*)')
         .eq('id', id!)
         .single()
       if (error) throw error
@@ -100,22 +100,7 @@ export function useNextOrderNumber() {
   })
 }
 
-/* ── Active customers for picker ── */
 
-export function useActiveCustomers() {
-  return useQuery({
-    queryKey: ['customers', 'active-list'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('customers')
-        .select('id, code, name')
-        .eq('status', 'active')
-        .order('name')
-      if (error) throw error
-      return data ?? []
-    },
-  })
-}
 
 /* ── Create order (header + items) ── */
 

@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import { AppShell } from '@/app/layouts/AppShell'
 import { ProtectedRoute } from '@/app/router/ProtectedRoute'
-import { appRoutes, adminRoutes, authRoute, managerRoutes } from '@/app/router/routes'
+import { appRoutes, adminRoutes, authRoute, managerRoutes, printRoutes } from '@/app/router/routes'
 import { BlockedPage, ProfilePage, UnauthorizedPage } from '@/features/auth'
 
 const router = createBrowserRouter([
@@ -25,6 +25,7 @@ const router = createBrowserRouter([
     path: '/',
     element: <ProtectedRoute />,
     children: [
+      ...printRoutes,
       {
         element: <AppShell />,
         children: [
