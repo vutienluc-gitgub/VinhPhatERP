@@ -21,9 +21,8 @@ export const reportsFeature: FeatureDefinition = {
   key: 'reports',
   route: '/reports',
   title: 'Báo cáo',
-  badge: 'Scaffolded',
   description:
-    'Báo cáo sẽ tổng hợp doanh thu, due orders, inventory health và công nợ trên cùng một dashboard.',
+    'Tổng hợp doanh thu, công nợ, tồn kho và đơn trễ hạn trên một dashboard báo cáo chi tiết.',
   highlights: [
     'KPI cards phải đọc tốt trên mobile.',
     'Chart chỉ dùng cho insight, không thay thế số liệu cốt lõi.',

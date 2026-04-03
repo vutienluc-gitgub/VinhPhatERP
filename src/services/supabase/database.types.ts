@@ -831,6 +831,18 @@ export type Database = {
       }
     }
     Views: {
+      v_debt_by_customer: {
+        Row: {
+          customer_id: string | null
+          customer_name: string | null
+          customer_code: string | null
+          total_orders: number | null
+          total_amount: number | null
+          paid_amount: number | null
+          balance_due: number | null
+        }
+        Relationships: []
+      }
       v_finished_fabric_inventory: {
         Row: {
           color_code: string | null
@@ -854,6 +866,21 @@ export type Database = {
           paid_amount: number | null
           status: Database["public"]["Enums"]["order_status"] | null
           total_amount: number | null
+        }
+        Relationships: []
+      }
+      v_overdue_orders: {
+        Row: {
+          order_id: string | null
+          order_number: string | null
+          customer_name: string | null
+          order_date: string | null
+          delivery_date: string | null
+          days_overdue: number | null
+          total_amount: number | null
+          paid_amount: number | null
+          balance_due: number | null
+          status: Database["public"]["Enums"]["order_status"] | null
         }
         Relationships: []
       }
