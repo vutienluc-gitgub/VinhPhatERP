@@ -1,107 +1,120 @@
-import { useQuery } from '@tanstack/react-query'
-import { supabase } from '@/services/supabase/client'
+import { Link } from 'react-router-dom'
 
-type DashboardStats = {
-  draftOrders: number
-  activeOrders: number
-  overdueOrders: number
-  totalDebt: number
-  recentPayments: number
-  pendingShipments: number
-}
+import { KpiCard, KpiGrid } from '@/shared/components/KpiCard'
+import { useDashboardStats, usePendingTasks, useRecentOrders, useCustomerSources } from './useDashboardData'
+import { PendingTasksCard } from './PendingTasksCard'
+import { RecentOrdersCard } from './RecentOrdersCard'
+import { CustomerSourceChart } from './CustomerSourceChart'
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat('vi-VN').format(value)
 }
 
-function useDashboardStats() {
-  return useQuery({
-    queryKey: ['dashboard-stats'],
-    queryFn: async (): Promise<DashboardStats> => {
-      const today = new Date().toISOString().slice(0, 10)
-
-      const [drafts, active, overdue, debt, payments, shipments] = await Promise.all([
-        supabase.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'draft'),
-        supabase.from('orders').select('id', { count: 'exact', head: true }).in('status', ['confirmed', 'in_progress']),
-        supabase.from('orders').select('id', { count: 'exact', head: true }).in('status', ['confirmed', 'in_progress']).lt('delivery_date', today),
-        supabase.from('orders').select('total_amount, paid_amount').in('status', ['confirmed', 'in_progress', 'completed']),
-        supabase.from('payments').select('amount').gte('payment_date', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)),
-        supabase.from('shipments').select('id', { count: 'exact', head: true }).eq('status', 'preparing'),
-      ])
-
-      const totalDebt = (debt.data ?? []).reduce((sum, o) => sum + (o.total_amount - o.paid_amount), 0)
-      const recentPayments = (payments.data ?? []).reduce((sum, p) => sum + p.amount, 0)
-
-      return {
-        draftOrders: drafts.count ?? 0,
-        activeOrders: active.count ?? 0,
-        overdueOrders: overdue.count ?? 0,
-        totalDebt: Math.max(0, totalDebt),
-        recentPayments,
-        pendingShipments: shipments.count ?? 0,
-      }
-    },
-    refetchInterval: 60_000,
-  })
+function DashboardSkeleton() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <KpiGrid>
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className="skeleton-card" />
+        ))}
+      </KpiGrid>
+      <KpiGrid>
+        {[5, 6, 7, 8].map(i => (
+          <div key={i} className="skeleton-card" />
+        ))}
+      </KpiGrid>
+    </div>
+  )
 }
 
 export function DashboardPage() {
-  const { data: stats, isLoading } = useDashboardStats()
-
-  const cards = [
-    { label: 'Đơn nháp', value: stats?.draftOrders ?? '—', color: '#6b7280' },
-    { label: 'Đang xử lý', value: stats?.activeOrders ?? '—', color: '#0b6bcb' },
-    { label: 'Trễ hạn', value: stats?.overdueOrders ?? '—', color: stats?.overdueOrders ? '#c0392b' : '#0c8f68' },
-    { label: 'Tổng công nợ', value: stats ? `${formatCurrency(stats.totalDebt)} đ` : '—', color: stats && stats.totalDebt > 0 ? '#c0392b' : '#0c8f68' },
-    { label: 'Thu 7 ngày qua', value: stats ? `${formatCurrency(stats.recentPayments)} đ` : '—', color: '#0c8f68' },
-    { label: 'Chờ giao', value: stats?.pendingShipments ?? '—', color: '#d97706' },
-  ]
+  const { data: stats, isLoading: statsLoading } = useDashboardStats()
+  const pendingTasks = usePendingTasks(stats)
+  const { data: recentOrders, isLoading: ordersLoading } = useRecentOrders()
+  const { data: customerSources, isLoading: sourcesLoading } = useCustomerSources()
 
   return (
-    <div className="panel-card" style={{ padding: 0, overflow: 'hidden' }}>
-      <div style={{ padding: '1.25rem' }}>
-        <div className="page-header">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      {/* ── Header ── */}
+      <div className="panel-card" style={{ padding: '1.25rem' }}>
+        <div className="card-header-row">
           <div>
             <p className="eyebrow">Tổng quan</p>
-            <h3>Dashboard</h3>
+            <h3 style={{ margin: 0 }}>Dashboard</h3>
           </div>
+          <Link to="/reports" className="card-action-link">
+            Báo cáo chi tiết →
+          </Link>
         </div>
-
-        {isLoading ? (
-          <p className="table-empty">Đang tải...</p>
-        ) : (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-            gap: '0.75rem',
-            marginTop: '1rem',
-          }}>
-            {cards.map((card) => (
-              <div
-                key={card.label}
-                style={{
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '1rem',
-                  background: 'var(--bg)',
-                }}
-              >
-                <div className="td-muted" style={{ fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 600, marginBottom: '0.25rem' }}>
-                  {card.label}
-                </div>
-                <div style={{
-                  fontSize: '1.25rem',
-                  fontWeight: 700,
-                  fontVariantNumeric: 'tabular-nums',
-                  color: card.color,
-                }}>
-                  {card.value}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
+
+      {/* ── KPI Cards ── */}
+      {statsLoading ? (
+        <DashboardSkeleton />
+      ) : (
+        <>
+          {/* Primary row */}
+          <KpiGrid>
+            <KpiCard
+              icon="📊"
+              label="Đang xử lý"
+              value={String(stats?.activeOrders ?? 0)}
+              color="#0b6bcb"
+            />
+            <KpiCard
+              icon="⚠️"
+              label="Trễ hạn"
+              value={String(stats?.overdueOrders ?? 0)}
+              color={stats?.overdueOrders ? '#c0392b' : '#0c8f68'}
+            />
+            <KpiCard
+              icon="💰"
+              label="Tổng công nợ"
+              value={stats ? `${formatCurrency(stats.totalDebt)} đ` : '—'}
+              color={stats && stats.totalDebt > 0 ? '#c0392b' : '#0c8f68'}
+            />
+            <KpiCard
+              icon="✅"
+              label="Thu 7 ngày qua"
+              value={stats ? `${formatCurrency(stats.recentPayments)} đ` : '—'}
+              color="#0c8f68"
+            />
+          </KpiGrid>
+
+          {/* Secondary row */}
+          <KpiGrid>
+            <KpiCard
+              label="Đơn nháp"
+              value={String(stats?.draftOrders ?? 0)}
+              color="#6b7280"
+            />
+            <KpiCard
+              label="Chờ giao"
+              value={String(stats?.pendingShipments ?? 0)}
+              color="#d97706"
+            />
+            <KpiCard
+              label="Tỷ lệ chốt đơn"
+              value={stats?.conversionRate !== null && stats?.conversionRate !== undefined ? `${stats.conversionRate}%` : '—'}
+              color="#0b6bcb"
+            />
+            <KpiCard
+              label="BG sắp hết hạn"
+              value={String(stats?.expiringQuotations ?? 0)}
+              color={stats?.expiringQuotations ? '#c0392b' : '#6b7280'}
+            />
+          </KpiGrid>
+        </>
+      )}
+
+      {/* ── Two-column widgets ── */}
+      <div className="dashboard-grid dashboard-grid--2col">
+        <PendingTasksCard tasks={pendingTasks} />
+        <RecentOrdersCard orders={recentOrders ?? []} isLoading={ordersLoading} />
+      </div>
+
+      {/* ── Customer Sources ── */}
+      <CustomerSourceChart sources={customerSources ?? []} isLoading={sourcesLoading} />
     </div>
   )
 }

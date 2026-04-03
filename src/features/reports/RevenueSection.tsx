@@ -1,4 +1,5 @@
 import type { RevenueRow } from '@/api/reports.api'
+import { KpiCard, KpiGrid } from '@/shared/components/KpiCard'
 
 type RevenueSectionProps = {
   data: RevenueRow[]
@@ -27,16 +28,12 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
 
       {/* KPI cards */}
       <div style={{ padding: '0 1.25rem 1rem' }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-          gap: '0.75rem',
-        }}>
+        <KpiGrid>
           <KpiCard label="Tổng doanh thu" value={`${formatCurrency(totalRevenue)} đ`} color="#0b6bcb" />
           <KpiCard label="Đã thu" value={`${formatCurrency(totalPaid)} đ`} color="#0c8f68" />
           <KpiCard label="Còn nợ" value={`${formatCurrency(totalBalance)} đ`} color={totalBalance > 0 ? '#c0392b' : '#0c8f68'} />
           <KpiCard label="Số đơn hàng" value={String(data.length)} color="#6b7280" />
-        </div>
+        </KpiGrid>
       </div>
 
       {/* Table */}
@@ -83,24 +80,6 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
             </tfoot>
           </table>
         )}
-      </div>
-    </div>
-  )
-}
-
-function KpiCard({ label, value, color }: { label: string; value: string; color: string }) {
-  return (
-    <div style={{
-      border: '1px solid var(--border)',
-      borderRadius: 'var(--radius-sm)',
-      padding: '1rem',
-      background: 'var(--bg)',
-    }}>
-      <div className="td-muted" style={{ fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 600, marginBottom: '0.25rem' }}>
-        {label}
-      </div>
-      <div style={{ fontSize: '1.25rem', fontWeight: 700, fontVariantNumeric: 'tabular-nums', color }}>
-        {value}
       </div>
     </div>
   )

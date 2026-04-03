@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/services/supabase/client', () => ({
@@ -14,6 +15,9 @@ vi.mock('@/services/supabase/client', () => ({
           error: null,
         }),
         gte: () => ({ data: [], error: null }),
+        order: () => ({
+          limit: () => ({ data: [], error: null }),
+        }),
         count: 0,
         data: [],
         error: null,
@@ -30,7 +34,11 @@ function renderWithProviders(ui: React.ReactElement) {
     defaultOptions: { queries: { retry: false } },
   })
   return render(
-    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>
+        {ui}
+      </MemoryRouter>
+    </QueryClientProvider>,
   )
 }
 

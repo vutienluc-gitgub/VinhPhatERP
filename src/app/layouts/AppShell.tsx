@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom'
 
 import { useAuth } from '@/features/auth/AuthProvider'
 import { navigationItems } from '@/app/router/routes'
+import { useDashboardStats } from '@/app/router/useDashboardData'
 import type { UserRole } from '@/services/supabase/database.types'
 import { MobileMoreDrawer } from './MobileMoreDrawer'
 
@@ -24,6 +25,25 @@ const roleLabel: Record<UserRole, string> = {
   sale: 'Sale',
 }
 
+const ROUTE_ICONS: Record<string, string> = {
+  '/': '📊',
+  '/quotations': '📋',
+  '/orders': '📦',
+  '/order-progress': '⏱️',
+  '/shipments': '🚚',
+  '/inventory': '🏭',
+  '/customers': '👥',
+  '/suppliers': '🤝',
+  '/yarn-catalog': '🧵',
+  '/yarn-receipts': '📥',
+  '/raw-fabric': '🧶',
+  '/finished-fabric': '✨',
+  '/payments': '💰',
+  '/reports': '📈',
+  '/shipping-rates': '💵',
+  '/settings': '⚙️',
+}
+
 export function AppShell() {
   const { pathname } = useLocation()
   const { profile, signOut } = useAuth()
@@ -31,6 +51,7 @@ export function AppShell() {
   const [showUserMenu, setShowUserMenu] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
   const currentItem = getCurrentItem(pathname)
+  const { data: stats } = useDashboardStats()
 
   const userRole = profile?.role
   const visibleNavItems = navigationItems.filter((item) => hasAccess(item.requiredRoles, userRole))
@@ -61,11 +82,8 @@ export function AppShell() {
     <div className="shell-layout">
       <aside className="sidebar-nav">
         <div className="brand-block">
-          <p className="eyebrow">Vinh Phát App V2</p>
-          <h1>Vận hành dệt may mobile-first</h1>
-          <p className="brand-copy">
-            React, TypeScript, Supabase và route skeleton theo feature cho MVP V2.
-          </p>
+          <p className="eyebrow">Vĩnh Phát</p>
+          <h1>ERP Sản xuất</h1>
         </div>
 
         <nav className="nav-stack" aria-label="Main navigation">
@@ -76,8 +94,15 @@ export function AppShell() {
               className={({ isActive }) => `nav-link${isActive ? ' is-active' : ''}`}
               end={item.path === '/'}
             >
-              <span className="nav-link-title">{item.label}</span>
-              <span className="nav-link-meta">{item.shortLabel}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <span className="nav-icon" aria-hidden="true">{ROUTE_ICONS[item.path] ?? '📌'}</span>
+                <span className="nav-link-title">{item.label}</span>
+              </div>
+              {item.path === '/orders' && stats?.overdueOrders ? (
+                <span className="nav-badge danger">{stats.overdueOrders}</span>
+              ) : item.path === '/quotations' && stats?.expiringQuotations ? (
+                <span className="nav-badge warning">{stats.expiringQuotations}</span>
+              ) : null}
             </NavLink>
           ))}
         </nav>
@@ -88,7 +113,6 @@ export function AppShell() {
           <div>
             <p className="eyebrow">{currentItem?.shortLabel ?? 'MVP V2'}</p>
             <h2>{currentItem?.label ?? 'Dashboard'}</h2>
-            <p className="topbar-subtitle">{currentItem?.description ?? 'Scaffold cho nghiep vu va trai nghiem mobile-first.'}</p>
           </div>
           <div className="topbar-actions" ref={userMenuRef}>
             {profile && (

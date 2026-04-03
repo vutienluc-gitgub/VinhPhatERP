@@ -71,3 +71,24 @@ ul {
 p {
   margin: 0;
 }
+
+/* ============================================================
+   Dark Mode Foundation
+   ============================================================ */
+[data-theme='dark'] {
+  color-scheme: dark;
+  color: #eef7ff;
+  background:
+    radial-gradient(circle at top left, rgba(11, 107, 203, 0.15), transparent 28%),
+    linear-gradient(180deg, #091524 0%, #060e18 100%);
+  
+  --surface: rgba(16, 35, 61, 0.86);
+  --surface-strong: #0d1e34;
+  --border: rgba(255, 255, 255, 0.12);
+  --text: #eef7ff;
+  --muted: #94a3b8;
+  --primary: #3b82f6;
+  --primary-strong: #60a5fa;
+  --accent: #10b981;
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}

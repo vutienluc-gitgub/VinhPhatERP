@@ -2,6 +2,8 @@ import { useState } from 'react'
 
 import { useConfirm } from '@/shared/components/ConfirmDialog'
 import { Pagination } from '@/shared/components/Pagination'
+import { TableSkeleton } from '@/shared/components/TableSkeleton'
+import { EmptyState } from '@/shared/components/EmptyState'
 import { DeliveryConfirmForm } from './DeliveryConfirmForm'
 import { exportShipmentToPdf } from './shipment-document'
 import { SHIPMENT_STATUS_LABELS } from './shipments.module'
@@ -160,13 +162,18 @@ export function ShipmentList() {
       )}
 
       {/* Table */}
-      <div className="data-table-wrap card-table-section">
+      <div 
+        className="data-table-wrap card-table-section"
+        style={isLoading || shipments.length === 0 ? { border: 'none' } : undefined}
+      >
         {isLoading ? (
-          <p className="table-empty">Đang tải...</p>
+          <TableSkeleton rows={5} columns={8} />
         ) : shipments.length === 0 ? (
-          <p className="table-empty">
-            {hasFilter ? 'Không tìm thấy phiếu xuất phù hợp.' : 'Chưa có phiếu xuất nào.'}
-          </p>
+          <EmptyState 
+            icon={hasFilter ? '🔍' : '🚚'}
+            title={hasFilter ? 'Không tìm thấy phiếu xuất' : 'Chưa có phiếu xuất kho'}
+            description={hasFilter ? 'Hãy thử thay đổi tiêu chí tìm kiếm.' : 'Sẽ có dữ liệu ở đây khi có yêu cầu chuyển hàng hoặc đơn giao cần xử lý.'}
+          />
         ) : (
           <table className="data-table">
             <thead>

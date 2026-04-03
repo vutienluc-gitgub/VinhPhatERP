@@ -2,6 +2,8 @@ import { useState } from 'react'
 
 import { useConfirm } from '@/shared/components/ConfirmDialog'
 import { Pagination } from '@/shared/components/Pagination'
+import { TableSkeleton } from '@/shared/components/TableSkeleton'
+import { EmptyState } from '@/shared/components/EmptyState'
 import { CUSTOMER_SOURCE_LABELS, CUSTOMER_STATUS_LABELS } from './customers.module'
 import type { Customer, CustomersFilter } from './types'
 import { useCustomerList, useDeleteCustomer } from './useCustomers'
@@ -129,17 +131,20 @@ export function CustomerList({ onEdit, onNew }: CustomerListProps) {
       )}
 
       {/* Bảng */}
-      <div
+      <div 
         className="data-table-wrap card-table-section"
+        style={isLoading || customers.length === 0 ? { border: 'none' } : undefined}
       >
         {isLoading ? (
-          <p className="table-empty">Đang tải...</p>
+          <TableSkeleton rows={5} columns={6} />
         ) : customers.length === 0 ? (
-          <p className="table-empty">
-            {hasFilter
-              ? 'Không tìm thấy khách hàng phù hợp.'
-              : 'Chưa có khách hàng nào. Nhấn "+ Thêm khách hàng" để bắt đầu.'}
-          </p>
+          <EmptyState 
+            icon={hasFilter ? '🔍' : '👥'}
+            title={hasFilter ? 'Không tìm thấy khách hàng' : 'Chưa có thông tin khách hàng'}
+            description={hasFilter ? 'Vui lòng thử điều chỉnh lại bộ lọc.' : 'Nhấn nút thêm khách hàng mới để quản lý thông tin liên hệ và công nợ.'}
+            actionLabel={!hasFilter ? '+ Thêm khách hàng' : undefined}
+            actionClick={!hasFilter ? onNew : undefined}
+          />
         ) : (
           <table className="data-table">
             <thead>

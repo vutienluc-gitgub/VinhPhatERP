@@ -2,6 +2,8 @@ import { useState } from 'react'
 
 import { useConfirm } from '@/shared/components/ConfirmDialog'
 import { Pagination } from '@/shared/components/Pagination'
+import { TableSkeleton } from '@/shared/components/TableSkeleton'
+import { EmptyState } from '@/shared/components/EmptyState'
 import { ORDER_STATUS_LABELS } from './orders.module'
 import type { Order, OrdersFilter, OrderStatus } from './types'
 import { useDeleteOrder, useOrderList } from './useOrders'
@@ -161,15 +163,18 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
       {/* Table */}
       <div
         className="data-table-wrap card-table-section"
+        style={isLoading || orders.length === 0 ? { border: 'none' } : undefined}
       >
         {isLoading ? (
-          <p className="table-empty">Đang tải...</p>
+          <TableSkeleton rows={5} columns={7} />
         ) : orders.length === 0 ? (
-          <p className="table-empty">
-            {hasFilter
-              ? 'Không tìm thấy đơn hàng phù hợp.'
-              : 'Chưa có đơn hàng nào. Nhấn "+ Tạo đơn hàng" để bắt đầu.'}
-          </p>
+          <EmptyState 
+            icon={hasFilter ? '🔍' : '📦'}
+            title={hasFilter ? 'Không tìm thấy đơn hàng' : 'Chưa có đơn hàng nào'}
+            description={hasFilter ? 'Hãy thử thay đổi điều kiện lọc.' : 'Nhấn nút tạo đơn để bắt đầu quy trình bán hàng mới.'}
+            actionLabel={!hasFilter ? '+ Tạo đơn hàng' : undefined}
+            actionClick={!hasFilter ? onNew : undefined}
+          />
         ) : (
           <table className="data-table">
             <thead>

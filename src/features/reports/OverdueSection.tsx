@@ -1,4 +1,5 @@
 import type { OverdueOrderRow } from '@/api/reports.api'
+import { KpiCard, KpiGrid } from '@/shared/components/KpiCard'
 
 type OverdueSectionProps = {
   data: OverdueOrderRow[]
@@ -25,11 +26,7 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
 
       {/* KPI cards */}
       <div style={{ padding: '0 1.25rem 1rem' }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-          gap: '0.75rem',
-        }}>
+        <KpiGrid>
           <KpiCard
             label="Tổng đơn trễ"
             value={String(data.length)}
@@ -45,7 +42,7 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
             value={`${formatCurrency(data.reduce((s, r) => s + r.balance_due, 0))} đ`}
             color="#d97706"
           />
-        </div>
+        </KpiGrid>
       </div>
 
       {/* Table */}
@@ -87,24 +84,6 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
             </tbody>
           </table>
         )}
-      </div>
-    </div>
-  )
-}
-
-function KpiCard({ label, value, color }: { label: string; value: string; color: string }) {
-  return (
-    <div style={{
-      border: '1px solid var(--border)',
-      borderRadius: 'var(--radius-sm)',
-      padding: '1rem',
-      background: 'var(--bg)',
-    }}>
-      <div className="td-muted" style={{ fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 600, marginBottom: '0.25rem' }}>
-        {label}
-      </div>
-      <div style={{ fontSize: '1.25rem', fontWeight: 700, fontVariantNumeric: 'tabular-nums', color }}>
-        {value}
       </div>
     </div>
   )

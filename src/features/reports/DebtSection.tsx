@@ -1,4 +1,5 @@
 import type { DebtByCustomerRow } from '@/api/reports.api'
+import { KpiCard, KpiGrid } from '@/shared/components/KpiCard'
 
 type DebtSectionProps = {
   data: DebtByCustomerRow[]
@@ -26,18 +27,14 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
 
       {/* KPI cards */}
       <div style={{ padding: '0 1.25rem 1rem' }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-          gap: '0.75rem',
-        }}>
+        <KpiGrid>
           <KpiCard
             label="Tổng công nợ"
             value={`${formatCurrency(totalDebt)} đ`}
             color={totalDebt > 0 ? '#c0392b' : '#0c8f68'}
           />
           <KpiCard label="Khách còn nợ" value={String(customerCount)} color="#d97706" />
-        </div>
+        </KpiGrid>
       </div>
 
       {/* Table */}
@@ -86,24 +83,6 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
             </tfoot>
           </table>
         )}
-      </div>
-    </div>
-  )
-}
-
-function KpiCard({ label, value, color }: { label: string; value: string; color: string }) {
-  return (
-    <div style={{
-      border: '1px solid var(--border)',
-      borderRadius: 'var(--radius-sm)',
-      padding: '1rem',
-      background: 'var(--bg)',
-    }}>
-      <div className="td-muted" style={{ fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 600, marginBottom: '0.25rem' }}>
-        {label}
-      </div>
-      <div style={{ fontSize: '1.25rem', fontWeight: 700, fontVariantNumeric: 'tabular-nums', color }}>
-        {value}
       </div>
     </div>
   )

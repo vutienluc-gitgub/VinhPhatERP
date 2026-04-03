@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { formatCurrency } from '@/shared/utils/format'
 import { useConfirm } from '@/shared/components/ConfirmDialog'
 import { Pagination } from '@/shared/components/Pagination'
+import { TableSkeleton } from '@/shared/components/TableSkeleton'
+import { EmptyState } from '@/shared/components/EmptyState'
 import { QUOTATION_STATUS_LABELS, QUOTATION_STATUS_ICONS } from './quotations.module'
 import type { Quotation, QuotationsFilter, QuotationStatus } from './types'
 import { useDeleteQuotation, useExpiringQuotationsCount, useQuotationList } from './useQuotations'
@@ -203,15 +205,20 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
       )}
 
       {/* Table */}
-      <div className="data-table-wrap card-table-section">
+      <div 
+        className="data-table-wrap card-table-section"
+        style={isLoading || quotations.length === 0 ? { border: 'none' } : undefined}
+      >
         {isLoading ? (
-          <p className="table-empty">Đang tải...</p>
+          <TableSkeleton rows={5} columns={6} />
         ) : quotations.length === 0 ? (
-          <p className="table-empty">
-            {hasFilter
-              ? 'Không tìm thấy báo giá phù hợp.'
-              : 'Chưa có báo giá nào. Nhấn "+ Tạo báo giá" để bắt đầu.'}
-          </p>
+          <EmptyState 
+            icon={hasFilter ? '🔍' : '📋'}
+            title={hasFilter ? 'Không tìm thấy báo giá' : 'Chưa có báo giá nào'}
+            description={hasFilter ? 'Hãy thử thay đổi điều kiện lọc.' : 'Nhấn nút tạo báo giá để giới thiệu sản phẩm cho khách hàng.'}
+            actionLabel={!hasFilter ? '+ Tạo báo giá' : undefined}
+            actionClick={!hasFilter ? onNew : undefined}
+          />
         ) : (
           <table className="data-table">
             <thead>

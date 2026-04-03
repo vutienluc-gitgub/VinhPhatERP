@@ -8,6 +8,8 @@ import {
 } from './suppliers.module'
 import { useConfirm } from '@/shared/components/ConfirmDialog'
 import { Pagination } from '@/shared/components/Pagination'
+import { TableSkeleton } from '@/shared/components/TableSkeleton'
+import { EmptyState } from '@/shared/components/EmptyState'
 import type { Supplier, SupplierCategory, SupplierFilter } from './types'
 import { useDeleteSupplier, useSuppliersList } from './useSuppliers'
 
@@ -152,17 +154,20 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
       )}
 
       {/* Table */}
-      <div
+      <div 
         className="data-table-wrap card-table-section"
+        style={isLoading || suppliers.length === 0 ? { border: 'none' } : undefined}
       >
         {isLoading ? (
-          <p className="table-empty">Đang tải...</p>
+          <TableSkeleton rows={5} columns={7} />
         ) : suppliers.length === 0 ? (
-          <p className="table-empty">
-            {hasFilter
-              ? 'Không tìm thấy nhà cung cấp phù hợp.'
-              : 'Chưa có nhà cung cấp nào. Nhấn "+ Thêm NCC mới" để bắt đầu.'}
-          </p>
+          <EmptyState 
+            icon={hasFilter ? '🔍' : '🤝'}
+            title={hasFilter ? 'Không tìm thấy nhà cung cấp' : 'Chưa có nhà cung cấp'}
+            description={hasFilter ? 'Vui lòng thử điều chỉnh lại bộ lọc.' : 'Nhấn nút thêm nhà cung cấp mới để lưu trữ thông tin liên hệ.'}
+            actionLabel={!hasFilter ? '+ Thêm NCC mới' : undefined}
+            actionClick={!hasFilter ? onNew : undefined}
+          />
         ) : (
           <table className="data-table" style={{ width: '100%' }}>
             <thead>
