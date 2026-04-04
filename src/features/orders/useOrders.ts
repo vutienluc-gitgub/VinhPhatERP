@@ -20,7 +20,7 @@ export function useOrderList(filters: OrdersFilter = {}, page = 1) {
 
       let query = supabase
         .from(HEADER_TABLE)
-        .select('*, customers(name, code)', { count: 'exact' })
+        .select('*, customers(name, code), quotations!source_quotation_id(quotation_number)', { count: 'exact' })
         .order('order_date', { ascending: false })
         .range(from, to)
 
@@ -58,7 +58,7 @@ export function useOrder(id: string | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from(HEADER_TABLE)
-        .select('*, customers(name, code), quotations(quotation_number), order_items(*)')
+        .select('*, customers(name, code), quotations!source_quotation_id(quotation_number), order_items(*)')
         .eq('id', id!)
         .single()
       if (error) throw error
