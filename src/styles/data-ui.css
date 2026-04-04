@@ -573,7 +573,9 @@
 
 .audit-log-time {
   flex-shrink: 0;
-  width: 90px;
+  min-width: 80px;
+  width: max-content;
+  white-space: nowrap;
   font-size: 0.78rem;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
