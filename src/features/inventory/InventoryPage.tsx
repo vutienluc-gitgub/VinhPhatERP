@@ -1,6 +1,5 @@
 import { useRawFabricInventory, useFinishedFabricInventory, useYarnInventory, useAgingStock } from './useInventory'
 import type { InventoryBreakdownRow, AgingRoll } from './useInventory'
-import './inventory.css'
 
 function fmt(val: number, decimals = 1): string {
   return val.toLocaleString('vi-VN', { maximumFractionDigits: decimals })
@@ -42,8 +41,8 @@ function AgingStockTable({ rolls }: { rolls: AgingRoll[] }) {
           <span className="aging-badge aging-caution">🟡 {caution} cuộn 30–60 ngày</span>
         )}
       </div>
-      <div className="data-table-wrap responsive-table-wrap">
-        <table className="data-table responsive-table">
+      <div className="data-table-wrap">
+        <table className="data-table">
           <thead>
             <tr>
               <th>Mã cuộn</th>
@@ -60,15 +59,15 @@ function AgingStockTable({ rolls }: { rolls: AgingRoll[] }) {
               const sev = agingSeverity(roll.age_days)
               return (
                 <tr key={roll.id}>
-                  <td data-label="Mã cuộn"><strong>{roll.roll_number}</strong></td>
-                  <td data-label="Loại" className="td-muted">{roll.source === 'raw' ? 'Mộc' : 'TP'}</td>
-                  <td data-label="Loại vải">{roll.fabric_type}</td>
-                  <td data-label="Màu" className="td-muted">{roll.color_name ?? '—'}</td>
-                  <td data-label="Vị trí" className="td-muted">{roll.warehouse_location ?? '—'}</td>
-                  <td data-label="Ngày tồn" style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
+                  <td><strong>{roll.roll_number}</strong></td>
+                  <td className="td-muted">{roll.source === 'raw' ? 'Mộc' : 'TP'}</td>
+                  <td>{roll.fabric_type}</td>
+                  <td className="td-muted">{roll.color_name ?? '—'}</td>
+                  <td className="td-muted">{roll.warehouse_location ?? '—'}</td>
+                  <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
                     {roll.age_days} ngày
                   </td>
-                  <td data-label="Mức">
+                  <td>
                     <span className={`aging-badge ${sev.cls}`}>{sev.label}</span>
                   </td>
                 </tr>
@@ -91,8 +90,8 @@ function BreakdownTable({ rows, title }: { rows: InventoryBreakdownRow[]; title:
   }
 
   return (
-    <div className="data-table-wrap responsive-table-wrap">
-      <table className="data-table responsive-table">
+    <div className="data-table-wrap">
+      <table className="data-table">
         <thead>
           <tr>
             <th>Loại vải</th>
@@ -106,18 +105,18 @@ function BreakdownTable({ rows, title }: { rows: InventoryBreakdownRow[]; title:
         <tbody>
           {rows.map((row, i) => (
             <tr key={i}>
-              <td data-label="Loại vải">{row.fabric_type ?? '—'}</td>
-              <td data-label="Màu" className="td-muted">{row.color_name ?? '—'}</td>
-              <td data-label="Chất lượng">
+              <td>{row.fabric_type ?? '—'}</td>
+              <td className="td-muted">{row.color_name ?? '—'}</td>
+              <td>
                 {row.quality_grade ? (
                   <span className={`grade-badge grade-${row.quality_grade}`}>
                     {row.quality_grade}
                   </span>
                 ) : '—'}
               </td>
-              <td data-label="Cuộn" style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{row.roll_count ?? 0}</td>
-              <td data-label="Dài (m)" style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{fmt(row.total_length_m ?? 0)}</td>
-              <td data-label="Nặng (kg)" style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{fmt(row.total_weight_kg ?? 0)}</td>
+              <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{row.roll_count ?? 0}</td>
+              <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{fmt(row.total_length_m ?? 0)}</td>
+              <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{fmt(row.total_weight_kg ?? 0)}</td>
             </tr>
           ))}
         </tbody>
