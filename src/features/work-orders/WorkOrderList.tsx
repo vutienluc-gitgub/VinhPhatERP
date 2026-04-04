@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Eye, Play } from 'lucide-react';
+import { Eye, Play } from 'lucide-react';
 import { useWorkOrders, useStartWorkOrder } from './useWorkOrders';
 import { WORK_ORDER_STATUSES } from './work-orders.module';
 import type { WorkOrderFilter, WorkOrderStatus } from './types';
@@ -18,30 +18,31 @@ export function WorkOrderList({ onView }: WorkOrderListProps) {
   const getStatusBadge = (status: WorkOrderStatus) => {
     const config = WORK_ORDER_STATUSES[status];
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${config?.color}`}>
+      <span className={`roll-status ${status}`}>
         {config?.label || status}
       </span>
     );
   };
 
   return (
-    <div className="bg-white shadow rounded-lg overflow-hidden flex flex-col h-full">
+    <div className="panel-card card-flush flex flex-col h-full bg-white shadow-sm">
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 p-4 border-b border-gray-200">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-500" />
+      <div className="filter-bar" style={{ border: 'none', borderBottom: '1px solid var(--border)', borderRadius: 0, background: 'transparent' }}>
+        <div className="filter-field" style={{ flex: '2 1 300px' }}>
+          <label>Tìm theo mã lệnh...</label>
           <input
-            placeholder="Tìm theo mã lệnh..."
+            placeholder="Nhập mã lệnh dệt để tìm..."
             value={filter.search}
             onChange={(e) => setFilter(f => ({ ...f, search: e.target.value }))}
-            className="pl-9 block w-full border border-gray-300 rounded-md py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="field-input"
           />
         </div>
-        <div className="w-full sm:w-48">
+        <div className="filter-field" style={{ flex: '1 1 180px' }}>
+          <label>Lọc trạng thái</label>
           <select
             value={filter.status || 'all'}
             onChange={(e) => setFilter(f => ({ ...f, status: e.target.value as WorkOrderStatus | 'all'}))}
-            className="block w-full border border-gray-300 rounded-md py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="field-select"
           >
             <option value="all">Tất cả trạng thái</option>
             <option value="draft">Bản nháp</option>
@@ -53,62 +54,62 @@ export function WorkOrderList({ onView }: WorkOrderListProps) {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="data-table-wrap" style={{ border: 'none', borderRadius: 0 }}>
+        <table className="data-table">
+          <thead>
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã Lệnh</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Công Thức (BOM)</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mục Tiêu</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng Thái</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày Bắt Đầu</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+              <th>Mã Lệnh</th>
+              <th>Công Thức (BOM)</th>
+              <th className="text-right">Mục Tiêu</th>
+              <th>Trạng Thái</th>
+              <th>Ngày Bắt Đầu</th>
+              <th className="td-actions">Thao tác</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={6} className="text-center py-8 text-sm text-gray-500">
+                <td colSpan={6} className="table-empty">
                   Đang tải dữ liệu...
                 </td>
               </tr>
             ) : data?.data?.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-8 text-neutral-500 text-sm">
+                <td colSpan={6} className="table-empty">
                   Không tìm thấy lệnh sản xuất nào.
                 </td>
               </tr>
             ) : (
               data?.data.map((wo) => (
-                <tr key={wo.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-medium text-emerald-700">{wo.work_order_number}</div>
+                <tr key={wo.id}>
+                  <td>
+                    <div style={{ fontWeight: 700, color: 'var(--primary)' }}>{wo.work_order_number}</div>
                     {wo.order && (
-                      <div className="text-xs text-neutral-500 mt-1">
-                        ĐH: {wo.order.order_number}
+                      <div className="td-muted" style={{ fontSize: '0.75rem', marginTop: '2px' }}>
+                        DH: {wo.order.order_number}
                       </div>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-medium text-sm">{wo.bom_template?.code}</div>
-                    <div className="text-xs text-neutral-600">V{wo.bom_version}</div>
+                  <td>
+                    <div style={{ fontWeight: 600 }}>{wo.bom_template?.code}</div>
+                    <div className="td-muted">V{wo.bom_version}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <div className="font-medium">{wo.target_quantity_m.toLocaleString()} m</div>
+                  <td className="text-right">
+                    <div style={{ fontWeight: 700 }}>{wo.target_quantity_m.toLocaleString()} m</div>
                     {wo.target_weight_kg && (
-                      <div className="text-xs text-neutral-600">~{wo.target_weight_kg.toLocaleString()} kg</div>
+                      <div className="td-muted">~{wo.target_weight_kg.toLocaleString()} kg</div>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td>
                     {getStatusBadge(wo.status)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="td-muted">
                     {wo.start_date ? new Date(wo.start_date).toLocaleDateString('vi-VN') : '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                  <td className="td-actions">
                     <div className="flex justify-end gap-2">
-                      <button
-                        className="p-1 hover:bg-gray-100 rounded text-gray-600"
+                       <button
+                        className="btn-icon"
                         onClick={() => onView(wo.id)}
                         title="Chi tiết"
                       >
@@ -116,7 +117,8 @@ export function WorkOrderList({ onView }: WorkOrderListProps) {
                       </button>
                       {wo.status === 'draft' && (
                          <button
-                          className="p-1 hover:bg-blue-50 text-blue-600 rounded"
+                          className="btn-icon"
+                          style={{ color: 'var(--accent)' }}
                           onClick={() => {
                             if (confirm('Bắt đầu lệnh dệt này?')) startMutation.mutate(wo.id);
                           }}
@@ -135,18 +137,20 @@ export function WorkOrderList({ onView }: WorkOrderListProps) {
       </div>
 
       {/* Pagination */}
-      <div className="p-4 border-t border-gray-200 flex items-center justify-between text-sm text-neutral-500 bg-white">
-        <div>Trang {page} / {Math.ceil((data?.count || 0) / 20) || 1}</div>
-        <div className="flex gap-2">
+      <div className="pagination-bar">
+        <div className="pagination-info">Trang {page} / {Math.ceil((data?.count || 0) / 20) || 1}</div>
+        <div className="pagination-buttons">
           <button
-            className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
+            className="btn-secondary"
+            style={{ padding: '0.4rem 0.8rem', minHeight: 'auto' }}
             disabled={page === 1}
             onClick={() => setPage((p) => p - 1)}
           >
             Trước
           </button>
           <button
-            className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
+            className="btn-secondary"
+            style={{ padding: '0.4rem 0.8rem', minHeight: 'auto' }}
             disabled={!data?.data || data.data.length < 20}
             onClick={() => setPage((p) => p + 1)}
           >
