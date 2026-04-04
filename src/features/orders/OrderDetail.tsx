@@ -15,8 +15,6 @@ type OrderDetailProps = {
   onReserveRolls: (order: Order) => void
 }
 
-
-
 function statusClass(status: OrderStatus): string {
   switch (status) {
     case 'confirmed': return 'reserved'
@@ -236,7 +234,7 @@ export function OrderDetail({
                     </tr>
                   ))}
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'right', fontWeight: 700 }}>Tổng cộng</td>
+                  <td colSpan={5} style={{ textAlign: 'right', fontWeight: 700 }}>Tổng cộng</td>
                   <td style={{ textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
                     {formatCurrency(order.total_amount)} đ
                   </td>

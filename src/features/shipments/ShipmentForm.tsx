@@ -200,13 +200,13 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
                 key={field.id}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '1fr 1fr 80px 36px',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
                   gap: '0.4rem',
                   alignItems: 'start',
                   marginBottom: '0.4rem',
                 }}
               >
-                <div>
+                <div style={{ gridColumn: 'span 1' }}>
                   {idx === 0 && <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>Cuộn thành phẩm</span>}
                   <select
                     className="field-select"
@@ -231,14 +231,14 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
                     ))}
                   </select>
                 </div>
-                <div>
+                <div style={{ gridColumn: 'span 1' }}>
                   {idx === 0 && <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>Loại vải *</span>}
                   <input className="field-input" {...register(`items.${idx}.fabricType`)} placeholder="Loại vải" />
                   {errors.items?.[idx]?.fabricType && (
                     <p className="field-error">{errors.items[idx]?.fabricType?.message}</p>
                   )}
                 </div>
-                <div>
+                <div style={{ minWidth: 80 }}>
                   {idx === 0 && <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>SL (m) *</span>}
                   <input
                     className="field-input"
@@ -251,7 +251,7 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
                     <p className="field-error">{errors.items[idx]?.quantity?.message}</p>
                   )}
                 </div>
-                <div style={{ paddingTop: idx === 0 ? 16 : 0 }}>
+                <div style={{ paddingTop: idx === 0 ? 16 : 0, minWidth: 36, flexShrink: 0 }}>
                   {fields.length > 1 && (
                     <button
                       className="btn-icon"
