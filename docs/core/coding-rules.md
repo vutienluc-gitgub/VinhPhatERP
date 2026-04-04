@@ -1,9 +1,18 @@
+# Coding Rules (Single Source of Truth)
+
+This is the ONLY file that defines coding standards.
+Do not use any other file for code rules.
 # VinhPhat App V2 — Quy tắc lập trình
 
 > Tài liệu này định nghĩa các quy tắc bắt buộc và khuyến nghị cho dự án.
 > Mọi thành viên và AI assistant đều phải tuân theo.
 
 ---
+## Priority
+
+This file has higher priority than any other coding-related document.
+
+All code must follow this file strictly.
 
 ## 1. TypeScript — tránh lỗi kiểu dữ liệu
 

@@ -10,7 +10,7 @@ type KpiCardProps = {
 
 export function KpiCard({ label, value, color, icon }: KpiCardProps) {
   return (
-    <div className="kpi-card">
+    <div className="kpi-card w-full max-w-full p-4 rounded-xl bg-white shadow flex flex-col items-center">
       {icon && <span className="kpi-card-icon" aria-hidden="true">{icon}</span>}
       <div className="kpi-card-label">{label}</div>
       <div className="kpi-card-value" style={color ? { color } : undefined}>
@@ -26,5 +26,5 @@ type KpiGridProps = {
 
 /** Responsive grid wrapper for KpiCard items */
 export function KpiGrid({ children }: KpiGridProps) {
-  return <div className="kpi-grid">{children}</div>
+  return <div className="kpi-grid w-full max-w-full">{children}</div>
 }

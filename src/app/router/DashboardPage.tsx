@@ -34,17 +34,15 @@ export function DashboardPage() {
   const { data: customerSources, isLoading: sourcesLoading } = useCustomerSources()
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    <div className="flex flex-col gap-4 w-full max-w-full">
       {/* ── Header ── */}
-      <div className="panel-card" style={{ padding: '1.25rem' }}>
-        <div className="card-header-row">
+      <div className="w-full max-w-full p-5 rounded-xl bg-white shadow">
+        <div className="flex items-center justify-between">
           <div>
-            <p className="eyebrow">Tổng quan</p>
-            <h3 style={{ margin: 0 }}>Dashboard</h3>
+            <p className="text-xs uppercase text-primary">Tổng quan</p>
+            <h3 className="m-0 text-lg font-semibold">Dashboard</h3>
           </div>
-          <Link to="/reports" className="card-action-link">
-            Báo cáo chi tiết →
-          </Link>
+          <Link to="/reports" className="text-primary underline">Báo cáo chi tiết →</Link>
         </div>
       </div>
 
