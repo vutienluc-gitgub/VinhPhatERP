@@ -27,8 +27,8 @@
 .content-shell {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  padding: 1rem 0.75rem 5.5rem;
+  gap: 1.5rem;
+  padding: 1rem 1.25rem 5.5rem;
   min-width: 0;
 }
 
@@ -142,7 +142,7 @@
 
 .route-content {
   display: grid;
-  gap: 1rem;
+  gap: 1.5rem;
   min-width: 0;
   /* clip any overflowing content from child cards */
   overflow-x: clip;
