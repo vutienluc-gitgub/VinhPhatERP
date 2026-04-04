@@ -153,7 +153,7 @@ export function QuotationDetail({
 
         {/* Terms */}
         {(quotation.delivery_terms || quotation.payment_terms) && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.75rem', marginBottom: '1rem' }}>
             {quotation.delivery_terms && (
               <div style={{ padding: '0.6rem', background: 'var(--surface)', borderRadius: 'var(--radius-sm)', fontSize: '0.88rem' }}>
                 <strong>ĐK giao hàng:</strong> {quotation.delivery_terms}

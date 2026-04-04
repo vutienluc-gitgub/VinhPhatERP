@@ -26,6 +26,7 @@
 
 .content-shell {
   padding: 1rem 0 5.5rem;
+  min-width: 0;
 }
 
 .brand-block {
@@ -139,6 +140,9 @@
 .route-content {
   display: grid;
   gap: 1rem;
+  min-width: 0;
+  /* clip any overflowing content from child cards */
+  overflow-x: clip;
   animation: pageEnter 0.25s ease forwards;
 }
 
@@ -162,6 +166,9 @@
   background: var(--surface-strong);
   padding: 1.25rem;
   box-shadow: var(--shadow);
+  /* prevent children (tables, grids) from overflowing horizontally */
+  overflow: hidden;
+  min-width: 0;
 }
 
 .hero-card p,
