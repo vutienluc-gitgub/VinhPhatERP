@@ -25,7 +25,10 @@
 }
 
 .content-shell {
-  padding: 1rem 0 5.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1rem 0.75rem 5.5rem;
   min-width: 0;
 }
 

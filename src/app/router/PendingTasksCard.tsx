@@ -7,7 +7,7 @@ type PendingTasksCardProps = {
 }
 
 export function PendingTasksCard({ tasks }: PendingTasksCardProps) {
-  const totalAlerts = tasks.filter(t => t.isAlert).length
+  const totalTasks = tasks.length
 
   return (
     <div className="panel-card" style={{ padding: 0, overflow: 'hidden' }}>
@@ -17,9 +17,9 @@ export function PendingTasksCard({ tasks }: PendingTasksCardProps) {
             <p className="eyebrow">Hành động</p>
             <h3 style={{ margin: 0 }}>
               Nhiệm vụ cần xử lý
-              {totalAlerts > 0 && (
+              {totalTasks > 0 && (
                 <span className="roll-status reserved" style={{ marginLeft: '0.5rem', fontSize: '0.75rem' }}>
-                  {totalAlerts}
+                  {totalTasks}
                 </span>
               )}
             </h3>
