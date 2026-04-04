@@ -16,6 +16,23 @@ export const authDefaultValues: AuthFormValues = {
   rememberMe: true,
 }
 
+export const registerSchema = z.object({
+  email: z.string().trim().email('Email không hợp lệ'),
+  password: z.string().min(8, 'Mật khẩu phải từ 8 ký tự trở lên'),
+  confirmPassword: z.string().min(8, 'Vui lòng xác nhận mật khẩu'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Mật khẩu xác nhận không khớp",
+  path: ["confirmPassword"],
+});
+
+export type RegisterFormValues = z.infer<typeof registerSchema>
+
+export const registerDefaultValues: RegisterFormValues = {
+  email: '',
+  password: '',
+  confirmPassword: '',
+}
+
 export const authFeature: FeatureDefinition = {
   key: 'auth',
   route: '/auth',
@@ -29,7 +46,7 @@ export const authFeature: FeatureDefinition = {
     { label: 'Guards', value: 'Planned' },
   ],
   highlights: [
-    'Login mobile-first với email, password và remember me.',
+    'Login & Sign Up mobile-first với email, password.',
     'Role map theo profiles: admin, manager, staff, viewer.',
     'Bảo vệ route và ẩn hiện navigation theo quyền.',
   ],

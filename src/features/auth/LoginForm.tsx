@@ -45,61 +45,59 @@ export function LoginForm() {
   }
 
   return (
-    <form className="login-form" onSubmit={handleSubmit(onSubmit)} noValidate>
-      <div className="login-form-header">
-        <p className="eyebrow">Vinh Phat V2</p>
-        <h2>Đăng nhập</h2>
+    <form className="auth-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <div className="auth-header">
+        <span className="logo-text">Vinh Phat V2</span>
+        <h2>Chào mừng trở lại</h2>
       </div>
 
-      <div className="form-field">
+      <div className="form-group">
         <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          autoComplete="email"
-          placeholder="admin@vinhphat.vn"
-          aria-invalid={Boolean(errors.email)}
-          {...register('email')}
-        />
-        {errors.email && <span className="field-error">{errors.email.message}</span>}
+        <div className="input-wrapper">
+          <input
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="admin@vinhphat.vn"
+            aria-invalid={Boolean(errors.email)}
+            {...register('email')}
+          />
+        </div>
+        {errors.email && <span className="error-message">{errors.email.message}</span>}
       </div>
 
-      <div className="form-field">
+      <div className="form-group">
         <label htmlFor="password">Mật khẩu</label>
-        <input
-          id="password"
-          type="password"
-          autoComplete="current-password"
-          placeholder="••••••••"
-          aria-invalid={Boolean(errors.password)}
-          {...register('password')}
-        />
-        {errors.password && <span className="field-error">{errors.password.message}</span>}
+        <div className="input-wrapper">
+          <input
+            id="password"
+            type="password"
+            autoComplete="current-password"
+            placeholder="••••••••"
+            aria-invalid={Boolean(errors.password)}
+            {...register('password')}
+          />
+        </div>
+        {errors.password && <span className="error-message">{errors.password.message}</span>}
       </div>
 
-      <div className="form-field form-field--checkbox">
-        <label>
-          <input type="checkbox" {...register('rememberMe')} />
-          Ghi nhớ đăng nhập
-        </label>
+      <div className="form-group row" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <input type="checkbox" id="rememberMe" {...register('rememberMe')} />
+        <label htmlFor="rememberMe" style={{ margin: 0, fontSize: '0.8rem' }}>Ghi nhớ đăng nhập</label>
       </div>
 
       {serverError && <p className="form-error-banner">{serverError}</p>}
 
       <button
         type="submit"
-        className="primary-button login-submit"
+        className="auth-submit-btn"
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Đang đăng nhập…' : 'Đăng nhập'}
+        {isSubmitting ? 'Đang truy cập…' : 'Đăng nhập'}
       </button>
     </form>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 function vietnameseAuthError(message: string): string {
   if (/invalid login credentials/i.test(message)) return 'Email hoặc mật khẩu không đúng.'
