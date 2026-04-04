@@ -111,6 +111,8 @@
   overflow-x: auto;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
+  width: 100%;
+  max-width: 100%;
 }
 
 .data-table {
