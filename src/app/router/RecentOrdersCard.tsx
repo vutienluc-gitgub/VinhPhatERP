@@ -16,11 +16,11 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 const STATUS_CSS: Record<string, string> = {
-  draft: 'in_stock',
+  draft: 'draft',
   confirmed: 'reserved',
   in_progress: 'in_process',
-  completed: 'shipped',
-  cancelled: 'damaged',
+  completed: 'completed',
+  cancelled: 'cancelled',
 }
 
 function formatCurrency(value: number): string {

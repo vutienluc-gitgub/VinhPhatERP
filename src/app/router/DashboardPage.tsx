@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom'
-
 import { KpiCard, KpiGrid } from '@/shared/components/KpiCard'
 import { useDashboardStats, usePendingTasks, useRecentOrders, useCustomerSources } from './useDashboardData'
 import { PendingTasksCard } from './PendingTasksCard'
@@ -35,17 +33,6 @@ export function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-4 w-full max-w-full">
-      {/* ── Header ── */}
-      <div className="w-full max-w-full p-5 rounded-xl bg-white shadow">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs uppercase text-primary">Tổng quan</p>
-            <h3 className="m-0 text-lg font-semibold">Dashboard</h3>
-          </div>
-          <Link to="/reports" className="text-primary underline">Báo cáo chi tiết →</Link>
-        </div>
-      </div>
-
       {/* ── KPI Cards ── */}
       {statsLoading ? (
         <DashboardSkeleton />
@@ -82,21 +69,25 @@ export function DashboardPage() {
           {/* Secondary row */}
           <KpiGrid>
             <KpiCard
+              icon="📝"
               label="Đơn nháp"
               value={String(stats?.draftOrders ?? 0)}
               color="#6b7280"
             />
             <KpiCard
+              icon="🚚"
               label="Chờ giao"
               value={String(stats?.pendingShipments ?? 0)}
               color="#d97706"
             />
             <KpiCard
+              icon="📊"
               label="Tỷ lệ chốt đơn"
               value={stats?.conversionRate !== null && stats?.conversionRate !== undefined ? `${stats.conversionRate}%` : '—'}
               color="#0b6bcb"
             />
             <KpiCard
+              icon="📋"
               label="BG sắp hết hạn"
               value={String(stats?.expiringQuotations ?? 0)}
               color={stats?.expiringQuotations ? '#c0392b' : '#6b7280'}

@@ -148,7 +148,7 @@ export function AppShell() {
                 aria-haspopup="true"
               >
                 <span className="user-avatar">{initials}</span>
-                <span className="user-name">{profile.full_name || profile.id}</span>
+                <span className="user-name">{profile.full_name || profile.id.slice(0, 8)}</span>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>

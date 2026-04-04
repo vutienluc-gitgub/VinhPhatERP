@@ -234,6 +234,12 @@
   color: var(--muted);
 }
 
+/* Common aliases for work orders & orders */
+.roll-status.draft { background: rgba(11, 107, 203, 0.12); color: var(--primary); }
+.roll-status.in_progress { background: rgba(155, 89, 182, 0.12); color: #7d3c98; }
+.roll-status.completed { background: rgba(15, 166, 122, 0.12); color: #0c8f68; }
+.roll-status.cancelled { background: rgba(192, 57, 43, 0.12); color: #c0392b; }
+
 /* ---- Action buttons ---- */
 .btn-icon {
   display: inline-flex;
