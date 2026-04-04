@@ -1,0 +1,108 @@
+
+@media (max-width: 639px) {
+  /* KPI stats items sizing on mobile to avoid overflow and look premium */
+  .stats-bar {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    padding: 0 1rem !important;
+    gap: 0.75rem !important;
+  }
+
+  .stat-card {
+    flex: none !important;
+    width: 100% !important;
+    padding: 1rem !important;
+  }
+
+  .stat-value {
+    font-size: 1.25rem !important;
+  }
+
+  /* Responsive Table: Transform to Cards */
+  .responsive-table-wrap {
+    border: none !important;
+    overflow: visible !important;
+  }
+
+  .responsive-table {
+    display: block !important;
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .responsive-table thead {
+    display: none !important;
+  }
+
+  .responsive-table tbody {
+    display: block !important;
+  }
+
+  .responsive-table tr {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    background: var(--surface-strong);
+    margin-bottom: 1rem;
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(16, 35, 61, 0.05);
+    position: relative;
+  }
+
+  /* Make the first column (Fabric Type) span full width */
+  .responsive-table tr td:first-child {
+    grid-column: span 2;
+    padding: 0 0 0.5rem 0 !important;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.25rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-align: left !important;
+  }
+
+  .responsive-table tr td:first-child::before {
+    content: none !important;
+  }
+
+  .responsive-table td {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.25rem;
+    padding: 0 !important;
+    text-align: left !important;
+    border: none !important;
+    min-height: auto !important;
+  }
+
+  .responsive-table td::before {
+    content: attr(data-label);
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+
+  .responsive-table td.td-muted {
+    font-size: 0.9rem !important;
+    color: var(--text) !important;
+  }
+
+  .panel-card > div:last-child {
+    padding: 0.5rem 1rem 1rem !important;
+  }
+}
+
+/* Animations for premium feel */
+.stat-card, .panel-card, .responsive-table tr {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (min-width: 640px) {
+  .stat-card:hover, .panel-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(16, 35, 61, 0.1);
+  }
+}
