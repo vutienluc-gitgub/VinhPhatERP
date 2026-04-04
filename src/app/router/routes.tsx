@@ -23,6 +23,8 @@ const ShippingRatesPage = lazy(() => import('@/features/shipping-rates').then((m
 const SuppliersPage = lazy(() => import('@/features/suppliers').then((m) => ({ default: m.SuppliersPage })))
 const YarnCatalogPage = lazy(() => import('@/features/yarn-catalog').then((m) => ({ default: m.YarnCatalogPage })))
 const YarnReceiptsPage = lazy(() => import('@/features/yarn-receipts').then((m) => ({ default: m.YarnReceiptsPage })))
+const BomPage = lazy(() => import('@/features/bom').then((m) => ({ default: m.BomPage })))
+const WorkOrdersPage = lazy(() => import('@/features/work-orders').then((m) => ({ default: m.WorkOrdersPage })))
 
 export type NavigationItem = {
   path: string
@@ -103,6 +105,19 @@ export const navigationItems: NavigationItem[] = [
     description: 'Nhập nguyên liệu sợi và tạo phiếu nhập kho.',
   },
   {
+    path: '/bom',
+    label: 'Định mức (BOM)',
+    shortLabel: 'BOM',
+    description: 'Cấu hình định mức nguyên vật liệu sợi cho từng mã vải mộc.',
+    requiredRoles: ['admin', 'manager'],
+  },
+  {
+    path: '/work-orders',
+    label: 'Lệnh sản xuất',
+    shortLabel: 'Lệnh SX',
+    description: 'Chỉ đạo sản xuất và tự động phân bổ nguồn lực sợi.',
+  },
+  {
     path: '/raw-fabric',
     label: 'Nhập vải mộc',
     shortLabel: 'Raw',
@@ -160,6 +175,7 @@ export const appRoutes: RouteObject[] = [
   { path: 'shipments', element: <LazyPage><ShipmentsPage /></LazyPage> },
   { path: 'payments', element: <LazyPage><PaymentsPage /></LazyPage> },
   { path: 'inventory', element: <LazyPage><InventoryPage /></LazyPage> },
+  { path: 'work-orders', element: <LazyPage><WorkOrdersPage /></LazyPage> },
 ]
 
 export const printRoutes: RouteObject[] = [
@@ -168,6 +184,7 @@ export const printRoutes: RouteObject[] = [
 
 /** Routes chỉ dành cho admin và manager */
 export const managerRoutes: RouteObject[] = [
+  { path: 'bom', element: <LazyPage><BomPage /></LazyPage> },
   { path: 'reports', element: <LazyPage><ReportsPage /></LazyPage> },
 ]
 

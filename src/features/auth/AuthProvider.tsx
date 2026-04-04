@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   useCallback,
@@ -28,6 +29,7 @@ export interface AuthState {
 
 export interface AuthActions {
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
+  signUp: (email: string, password: string) => Promise<{ data: { user: User | null; session: Session | null }; error: AuthError | null }>
   signOut: () => Promise<void>
 }
 
@@ -90,6 +92,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
     return { error }
   }, [])
 
+  const signUp = useCallback(async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signUp({ email, password })
+    return { data, error }
+  }, [])
+
   const signOut = useCallback(async () => {
     await supabase.auth.signOut()
   }, [])
@@ -97,8 +104,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const isBlocked = profile !== null && !profile.is_active
 
   const value = useMemo<AuthContextValue>(
-    () => ({ session, user, profile, loading, isBlocked, signIn, signOut }),
-    [session, user, profile, loading, isBlocked, signIn, signOut],
+    () => ({ session, user, profile, loading, isBlocked, signIn, signUp, signOut }),
+    [session, user, profile, loading, isBlocked, signIn, signUp, signOut],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

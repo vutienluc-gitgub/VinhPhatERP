@@ -12,6 +12,7 @@ let mockAuth: AuthContextValue = {
   loading: false,
   isBlocked: false,
   signIn: vi.fn(),
+  signUp: vi.fn(),
   signOut: vi.fn(),
 }
 

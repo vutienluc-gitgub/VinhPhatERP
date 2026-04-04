@@ -12,10 +12,14 @@ import {
 } from './orders.module'
 import type { OrdersFormValues } from './orders.module'
 import type { Order } from './types'
-import { useCreateOrder,
+import {
   useNextOrderNumber,
   useUpdateOrder,
 } from './useOrders'
+import { useCreateOrderV2, isCreditWarning, type CreateOrderError, type CreateOrderInput } from './useCreateOrderV2'
+import { CreditOverrideDialog } from './CreditOverrideDialog'
+import { useState } from 'react'
+import { useAuth } from '@/features/auth/AuthProvider'
 
 const UNIT_LABELS: Record<string, string> = { m: 'm', kg: 'kg' }
 
@@ -127,7 +131,10 @@ function ItemQuantityFields({ control, index, register, errors }: ItemFieldsProp
 
 export function OrderForm({ order, onClose }: OrderFormProps) {
   const isEditing = order !== null
-  const createMutation = useCreateOrder()
+  const { profile } = useAuth()
+  const [overrideWarning, setOverrideWarning] = useState<CreateOrderError | null>(null)
+
+  const createMutationV2 = useCreateOrderV2()
   const updateMutation = useUpdateOrder()
   const { data: nextNumber } = useNextOrderNumber()
   const { data: customers = [] } = useActiveCustomers()
@@ -165,18 +172,39 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
     try {
       if (isEditing) {
         await updateMutation.mutateAsync({ id: order.id, values })
+        onClose()
       } else {
-        await createMutation.mutateAsync(values)
+        await createMutationV2.mutateAsync(values)
+        onClose()
       }
-      onClose()
-    } catch {
-      // Error displayed via mutationError below
+    } catch (err) {
+      if (!isEditing && err && typeof err === 'object' && 'code' in err) {
+        const e = err as CreateOrderError
+        if (isCreditWarning(e.code)) {
+          setOverrideWarning(e)
+        } else {
+          // Error handled via mutationError
+        }
+      }
     }
   }
 
-  const mutationError = isEditing ? updateMutation.error : createMutation.error
+  async function handleOverride() {
+    try {
+      if (overrideWarning) {
+        const values = control._formValues as OrdersFormValues
+        await createMutationV2.mutateAsync({ ...values, managerOverride: true } as CreateOrderInput)
+        setOverrideWarning(null)
+        onClose()
+      }
+    } catch (err) {
+      // Error handled via mutationError
+    }
+  }
+
+  const mutationError = isEditing ? updateMutation.error : createMutationV2.error
   const isPending =
-    isSubmitting || createMutation.isPending || updateMutation.isPending
+    isSubmitting || createMutationV2.isPending || updateMutation.isPending
 
   return (
     <div
@@ -442,6 +470,17 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
           </div>
         </form>
       </div>
+
+      <CreditOverrideDialog
+        open={!!overrideWarning}
+        code={overrideWarning?.code || 'CREDIT_LIMIT_EXCEEDED'}
+        message={overrideWarning?.message || ''}
+        detail={overrideWarning?.detail}
+        userRole={profile?.role || 'staff'}
+        onConfirm={handleOverride}
+        onCancel={() => setOverrideWarning(null)}
+        isLoading={createMutationV2.isPending}
+      />
     </div>
   )
 }
