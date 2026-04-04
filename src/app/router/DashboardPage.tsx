@@ -32,12 +32,12 @@ export function DashboardPage() {
   const { data: customerSources, isLoading: sourcesLoading } = useCustomerSources()
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-full">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', padding: '0 0.5rem' }}>
       {/* ── KPI Cards ── */}
       {statsLoading ? (
         <DashboardSkeleton />
       ) : (
-        <>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {/* Primary row */}
           <KpiGrid>
             <KpiCard
@@ -93,17 +93,19 @@ export function DashboardPage() {
               color={stats?.expiringQuotations ? '#c0392b' : '#6b7280'}
             />
           </KpiGrid>
-        </>
+        </div>
       )}
 
       {/* ── Two-column widgets ── */}
-      <div className="dashboard-grid dashboard-grid--2col">
+      <div className="dashboard-grid dashboard-grid--2col" style={{ gap: '1.5rem' }}>
         <PendingTasksCard tasks={pendingTasks} />
         <RecentOrdersCard orders={recentOrders ?? []} isLoading={ordersLoading} />
       </div>
 
       {/* ── Customer Sources ── */}
-      <CustomerSourceChart sources={customerSources ?? []} isLoading={sourcesLoading} />
+      <div style={{ marginTop: '0.5rem' }}>
+        <CustomerSourceChart sources={customerSources ?? []} isLoading={sourcesLoading} />
+      </div>
     </div>
   )
 }
