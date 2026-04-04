@@ -111,8 +111,6 @@
   overflow-x: auto;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
-  width: 100%;
-  max-width: 100%;
 }
 
 .data-table {
@@ -206,12 +204,35 @@
   white-space: nowrap;
 }
 
-.roll-status.in_stock    { background: rgba(15,166,122,0.12); color: #0c8f68; }
-.roll-status.reserved    { background: rgba(11,107,203,0.12); color: var(--primary); }
-.roll-status.in_process  { background: rgba(155,89,182,0.12); color: #7d3c98; }
-.roll-status.shipped     { background: rgba(52,73,94,0.10);   color: #34495e; }
-.roll-status.damaged     { background: rgba(192,57,43,0.12);  color: #c0392b; }
-.roll-status.written_off { background: rgba(16,35,61,0.08);   color: var(--muted); }
+.roll-status.in_stock {
+  background: rgba(15, 166, 122, 0.12);
+  color: #0c8f68;
+}
+
+.roll-status.reserved {
+  background: rgba(11, 107, 203, 0.12);
+  color: var(--primary);
+}
+
+.roll-status.in_process {
+  background: rgba(155, 89, 182, 0.12);
+  color: #7d3c98;
+}
+
+.roll-status.shipped {
+  background: rgba(52, 73, 94, 0.10);
+  color: #34495e;
+}
+
+.roll-status.damaged {
+  background: rgba(192, 57, 43, 0.12);
+  color: #c0392b;
+}
+
+.roll-status.written_off {
+  background: rgba(16, 35, 61, 0.08);
+  color: var(--muted);
+}
 
 /* ---- Action buttons ---- */
 .btn-icon {
@@ -490,7 +511,8 @@
 /* Dashboard summary row */
 .dashboard-summary-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* Auto-fit to screen: creates as many 140px-minimum columns as possible, otherwise wraps */
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 0.75rem;
 }
 
@@ -518,9 +540,17 @@
   color: var(--muted);
 }
 
-.dashboard-stat-danger .dashboard-stat-number { color: #c0392b; }
-.dashboard-stat-success .dashboard-stat-number { color: #0c8f68; }
-.dashboard-stat-primary .dashboard-stat-number { color: var(--primary); }
+.dashboard-stat-danger .dashboard-stat-number {
+  color: #c0392b;
+}
+
+.dashboard-stat-success .dashboard-stat-number {
+  color: #0c8f68;
+}
+
+.dashboard-stat-primary .dashboard-stat-number {
+  color: var(--primary);
+}
 
 /* Audit log */
 .audit-log-list {
@@ -649,7 +679,9 @@
 }
 
 /* Right-aligned text */
-.text-right { text-align: right; }
+.text-right {
+  text-align: right;
+}
 
 /* Tabular numeric right-aligned cell */
 .numeric-cell {
@@ -793,9 +825,17 @@
 }
 
 /* Modal sheet max-width variants */
-.modal-sheet-sm  { max-width: 480px; }
-.modal-sheet-md  { max-width: 600px; }
-.modal-sheet-lg  { max-width: 720px; }
+.modal-sheet-sm {
+  max-width: 480px;
+}
+
+.modal-sheet-md {
+  max-width: 600px;
+}
+
+.modal-sheet-lg {
+  max-width: 720px;
+}
 
 /* Form flex column layout */
 .form-column {
@@ -829,7 +869,9 @@
   font-variant-numeric: tabular-nums;
 }
 
-.summary-value--danger { color: #c0392b; }
+.summary-value--danger {
+  color: #c0392b;
+}
 
 /* Info box with surface background */
 .info-box {
@@ -883,27 +925,32 @@
   text-align: center;
   padding: 2.5rem 1rem 2rem;
 }
+
 .bulk-success-icon {
   font-size: 2.75rem;
   color: #0fa67a;
   margin-bottom: 0.5rem;
 }
+
 .bulk-success-title {
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--text);
   margin: 0 0 0.35rem;
 }
+
 .bulk-success-sub {
   font-size: 0.95rem;
   color: var(--text);
   margin: 0 0 0.4rem;
 }
+
 .bulk-success-hint {
   font-size: 0.82rem;
   color: var(--muted);
   margin: 0 0 1.5rem;
 }
+
 .bulk-success-actions {
   display: flex;
   gap: 0.65rem;
@@ -1297,14 +1344,19 @@
 
 /* Dashboard skeleton shimmer */
 @keyframes shimmer {
-  0% { background-position: -200px 0; }
-  100% { background-position: calc(200px + 100%) 0; }
+  0% {
+    background-position: -200px 0;
+  }
+
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
 }
 
 .skeleton-block {
   height: 1rem;
   border-radius: var(--radius-sm);
-  background: linear-gradient(90deg, rgba(16,35,61,0.06) 0px, rgba(16,35,61,0.1) 40px, rgba(16,35,61,0.06) 80px);
+  background: linear-gradient(90deg, rgba(16, 35, 61, 0.06) 0px, rgba(16, 35, 61, 0.1) 40px, rgba(16, 35, 61, 0.06) 80px);
   background-size: 200px 100%;
   animation: shimmer 1.5s infinite linear;
 }
@@ -1313,7 +1365,7 @@
   height: 72px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: linear-gradient(90deg, rgba(16,35,61,0.04) 0px, rgba(16,35,61,0.07) 40px, rgba(16,35,61,0.04) 80px);
+  background: linear-gradient(90deg, rgba(16, 35, 61, 0.04) 0px, rgba(16, 35, 61, 0.07) 40px, rgba(16, 35, 61, 0.04) 80px);
   background-size: 200px 100%;
   animation: shimmer 1.5s infinite linear;
 }
