@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { Combobox } from '@/shared/components/Combobox'
 
 import {
   QUALITY_GRADE_LABELS,
@@ -58,6 +59,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
   const {
     register,
     handleSubmit,
+    control,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<FinishedFabricFormValues>({
@@ -160,20 +162,22 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
               <label htmlFor="raw_roll_id">
                 Cuộn vải mộc nguồn <span className="field-required">*</span>
               </label>
-              <select
-                id="raw_roll_id"
-                className={`field-select${errors.raw_roll_id ? ' is-error' : ''}`}
-                {...register('raw_roll_id')}
-              >
-                <option value="">— Chọn cuộn mộc —</option>
-                {rawRollOptions.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.roll_number} — {r.fabric_type}
-                    {r.color_name ? ` (${r.color_name})` : ''}
-                    {r.lot_number ? ` [Lô: ${r.lot_number}]` : ''}
-                  </option>
-                ))}
-              </select>
+              <Controller
+                name="raw_roll_id"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={rawRollOptions.map((r) => ({
+                      value: r.id,
+                      label: `${r.roll_number} — ${r.fabric_type}${r.color_name ? ` (${r.color_name})` : ''}${r.lot_number ? ` [Lô: ${r.lot_number}]` : ''}`
+                    }))}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="— Chọn cuộn mộc —"
+                    hasError={!!errors.raw_roll_id}
+                  />
+                )}
+              />
               {errors.raw_roll_id && (
                 <span className="field-error">{errors.raw_roll_id.message}</span>
               )}
@@ -260,18 +264,23 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
 
               <div className="form-field">
                 <label htmlFor="quality_grade">Chất lượng</label>
-                <select
-                  id="quality_grade"
-                  className="field-select"
-                  {...register('quality_grade')}
-                >
-                  <option value="">Chưa kiểm định</option>
-                  {QUALITY_GRADES.map((g) => (
-                    <option key={g} value={g}>
-                      {QUALITY_GRADE_LABELS[g]}
-                    </option>
-                  ))}
-                </select>
+                <Controller
+                  name="quality_grade"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={[
+                        { value: '', label: 'Chưa kiểm định' },
+                        ...QUALITY_GRADES.map((g) => ({
+                          value: g,
+                          label: QUALITY_GRADE_LABELS[g]
+                        }))
+                      ]}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
               </div>
             </div>
 
@@ -279,17 +288,20 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
             <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
               <div className="form-field">
                 <label htmlFor="status">Trạng thái</label>
-                <select
-                  id="status"
-                  className="field-select"
-                  {...register('status')}
-                >
-                  {allowedStatuses.map((s) => (
-                    <option key={s} value={s}>
-                      {ROLL_STATUS_LABELS[s]}
-                    </option>
-                  ))}
-                </select>
+                <Controller
+                  name="status"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={allowedStatuses.map((s) => ({
+                        value: s,
+                        label: ROLL_STATUS_LABELS[s]
+                      }))}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
               </div>
 
               <div className="form-field">

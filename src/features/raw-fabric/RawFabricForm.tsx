@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { Combobox } from '@/shared/components/Combobox'
 import { useStepper } from '@/shared/hooks/useStepper'
 
 import {
@@ -58,6 +59,7 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
   const {
     register,
     handleSubmit,
+    control,
     reset,
     setValue,
     trigger,
@@ -264,29 +266,41 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
               <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                 <div className="form-field">
                   <label htmlFor="quality_grade">Chất lượng</label>
-                  <select
-                    id="quality_grade"
-                    className="field-select"
-                    {...register('quality_grade')}
-                  >
-                    <option value="">Chưa kiểm định</option>
-                    {QUALITY_GRADES.map((g) => (
-                      <option key={g} value={g}>{QUALITY_GRADE_LABELS[g]}</option>
-                    ))}
-                  </select>
+                  <Controller
+                    name="quality_grade"
+                    control={control}
+                    render={({ field }) => (
+                      <Combobox
+                        options={[
+                          { value: '', label: 'Chưa kiểm định' },
+                          ...QUALITY_GRADES.map((g) => ({
+                            value: g,
+                            label: QUALITY_GRADE_LABELS[g],
+                          }))
+                        ]}
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
                 </div>
 
                 <div className="form-field">
                   <label htmlFor="status">Trạng thái</label>
-                  <select
-                    id="status"
-                    className="field-select"
-                    {...register('status')}
-                  >
-                    {ROLL_STATUSES.map((s) => (
-                      <option key={s} value={s}>{ROLL_STATUS_LABELS[s]}</option>
-                    ))}
-                  </select>
+                  <Controller
+                    name="status"
+                    control={control}
+                    render={({ field }) => (
+                      <Combobox
+                        options={ROLL_STATUSES.map((s) => ({
+                          value: s,
+                          label: ROLL_STATUS_LABELS[s],
+                        }))}
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
                 </div>
               </div>
 
@@ -319,33 +333,41 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
             <div className="form-grid">
               <div className="form-field">
                 <label htmlFor="work_order_id">Lệnh sản xuất (Work Order)</label>
-                <select
-                  id="work_order_id"
-                  className="field-select"
-                  {...register('work_order_id')}
-                >
-                  <option value="">— Không liên kết lệnh (Dự trữ) —</option>
-                  {workOrders.map((wo) => (
-                    <option key={wo.id} value={wo.id}>
-                      {wo.work_order_number} ({wo.bom_template?.name})
-                    </option>
-                  ))}
-                </select>
+                <Controller
+                  name="work_order_id"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={workOrders.map((wo) => ({
+                        value: wo.id,
+                        label: `${wo.work_order_number} (${wo.bom_template?.name})`
+                      }))}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="— Không liên kết lệnh (Dự trữ) —"
+                    />
+                  )}
+                />
                 <span className="field-hint">Liên kết cuộn này với lệnh sản xuất để theo dõi tiến độ.</span>
               </div>
 
               <div className="form-field">
                 <label htmlFor="weaving_partner_id">Nhà dệt gia công</label>
-                <select
-                  id="weaving_partner_id"
-                  className="field-select"
-                  {...register('weaving_partner_id')}
-                >
-                  <option value="">— Chọn nhà dệt —</option>
-                  {weavingPartners.map((s) => (
-                    <option key={s.id} value={s.id}>{s.name} ({s.code})</option>
-                  ))}
-                </select>
+                <Controller
+                  name="weaving_partner_id"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={weavingPartners.map((s) => ({
+                        value: s.id,
+                        label: `${s.name} (${s.code})`
+                      }))}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="— Chọn nhà dệt —"
+                    />
+                  )}
+                />
               </div>
 
               {!showQuickSupplier && (
@@ -373,16 +395,21 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
 
               <div className="form-field">
                 <label htmlFor="yarn_receipt_id">Phiếu nhập sợi nguồn</label>
-                <select
-                  id="yarn_receipt_id"
-                  className="field-select"
-                  {...register('yarn_receipt_id')}
-                >
-                  <option value="">— Chọn phiếu sợi —</option>
-                  {yarnReceipts.map((r) => (
-                    <option key={r.id} value={r.id}>{r.receipt_number} ({r.receipt_date})</option>
-                  ))}
-                </select>
+                <Controller
+                  name="yarn_receipt_id"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={yarnReceipts.map((r) => ({
+                        value: r.id,
+                        label: `${r.receipt_number} (${r.receipt_date})`
+                      }))}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="— Chọn phiếu sợi —"
+                    />
+                  )}
+                />
                 <span className="field-hint">Chỉ định sợi nguồn dùng để dệt nên cuộn mộc này.</span>
               </div>
             </div>

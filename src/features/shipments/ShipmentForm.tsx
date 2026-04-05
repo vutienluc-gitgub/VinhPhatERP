@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useMemo } from 'react'
-import { useFieldArray, useForm } from 'react-hook-form'
+import { useFieldArray, useForm, Controller } from 'react-hook-form'
 
+import { Combobox } from '@/shared/components/Combobox'
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import {
   emptyShipmentItem,
@@ -130,14 +131,25 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
           <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
             <div className="form-field">
               <label>Nhân viên giao hàng</label>
-              <select className="field-select" {...register('deliveryStaffId')}>
-                <option value="">— Chưa phân công —</option>
-                {deliveryStaff.map((staff) => (
-                  <option key={staff.id} value={staff.id}>
-                    {staff.full_name}{staff.phone ? ` (${staff.phone})` : ''}
-                  </option>
-                ))}
-              </select>
+              <Controller
+                name="deliveryStaffId"
+                control={control}
+                render={({ field }) => {
+                  const staffOptions = deliveryStaff.map((staff) => ({
+                    value: staff.id,
+                    label: staff.full_name,
+                    phone: staff.phone || undefined,
+                  }))
+                  return (
+                    <Combobox
+                      options={staffOptions}
+                      value={field.value || ''}
+                      onChange={field.onChange}
+                      placeholder="— Chưa phân công —"
+                    />
+                  )
+                }}
+              />
             </div>
             <div className="form-field">
               <label>Biển số xe</label>
@@ -149,14 +161,21 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
           <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
             <div className="form-field">
               <label>Bảng giá cước</label>
-              <select className="field-select" {...register('shippingRateId')}>
-                <option value="">— Không áp dụng —</option>
-                {shippingRates.map((rate) => (
-                  <option key={rate.id} value={rate.id}>
-                    {rate.name} — {rate.destination_area}
-                  </option>
-                ))}
-              </select>
+              <Controller
+                name="shippingRateId"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={shippingRates.map((rate) => ({
+                      value: rate.id,
+                      label: `${rate.name} — ${rate.destination_area}`
+                    }))}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="— Không áp dụng —"
+                  />
+                )}
+              />
             </div>
             <div className="form-field">
               <label>Chi phí vận chuyển (VNĐ)</label>
@@ -223,28 +242,30 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
 
                 <div style={{ gridColumn: 'span 2' }}>
                   <span style={{ fontSize: '0.8rem', color: 'var(--muted)', display: 'block', marginBottom: '0.2rem' }}>Cuộn thành phẩm</span>
-                  <select
-                    className="field-select"
-                    {...register(`items.${idx}.finishedRollId`, {
-                      onChange: (event) => {
-                        const rollId = event.target.value
-                        const selectedRoll = availableRollById.get(rollId)
-                        if (!selectedRoll) return
-
-                        setValue(`items.${idx}.fabricType`, selectedRoll.fabric_type, {
-                          shouldDirty: true,
-                          shouldValidate: true,
-                        })
-                      },
-                    })}
-                  >
-                    <option value="">— Không chọn —</option>
-                    {availableRolls.map((roll) => (
-                      <option key={roll.id} value={roll.id}>
-                        {roll.status === 'reserved' ? '🔒 ' : ''}{roll.roll_number} — {roll.fabric_type} {roll.color_name ? `(${roll.color_name})` : ''} — {roll.length_m}m
-                      </option>
-                    ))}
-                  </select>
+                  <Controller
+                    name={`items.${idx}.finishedRollId` as const}
+                    control={control}
+                    render={({ field }) => (
+                      <Combobox
+                        options={availableRolls.map((roll) => ({
+                          value: roll.id,
+                          label: `${roll.status === 'reserved' ? '🔒 ' : ''}${roll.roll_number} — ${roll.fabric_type} ${roll.color_name ? `(${roll.color_name})` : ''} — ${roll.length_m}m`
+                        }))}
+                        value={field.value}
+                        onChange={(val) => {
+                          field.onChange(val)
+                          const selectedRoll = availableRollById.get(val || '')
+                          if (selectedRoll) {
+                            setValue(`items.${idx}.fabricType`, selectedRoll.fabric_type, {
+                              shouldDirty: true,
+                              shouldValidate: true,
+                            })
+                          }
+                        }}
+                        placeholder="— Không chọn —"
+                      />
+                    )}
+                  />
                 </div>
                 
                 <div style={{ gridColumn: 'span 2' }}>

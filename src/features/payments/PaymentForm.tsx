@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { Combobox } from '@/shared/components/Combobox'
 
 import {
   PAYMENT_METHOD_LABELS,
@@ -32,6 +33,7 @@ export function PaymentForm({ orderId, customerId, orderNumber, balanceDue, onCl
   const {
     register,
     handleSubmit,
+    control,
     reset,
     setValue,
     formState: { errors, isSubmitting },
@@ -102,13 +104,20 @@ export function PaymentForm({ orderId, customerId, orderNumber, balanceDue, onCl
             </div>
             <div className="form-field">
               <label>Hình thức <span className="field-required">*</span></label>
-              <select className={`field-select${errors.paymentMethod ? ' is-error' : ''}`} {...register('paymentMethod')}>
-                {(Object.entries(PAYMENT_METHOD_LABELS) as [PaymentMethod, string][]).map(
-                  ([value, label]) => (
-                    <option key={value} value={value}>{label}</option>
-                  ),
+              <Controller
+                name="paymentMethod"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={(Object.entries(PAYMENT_METHOD_LABELS) as [PaymentMethod, string][]).map(
+                      ([value, label]) => ({ value, label })
+                    )}
+                    value={field.value}
+                    onChange={field.onChange}
+                    hasError={!!errors.paymentMethod}
+                  />
                 )}
-              </select>
+              />
             </div>
           </div>
 

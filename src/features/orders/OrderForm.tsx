@@ -2,8 +2,9 @@ import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { formatCurrency } from '@/shared/utils/format'
 import { useEffect, useState } from 'react'
-import { useFieldArray, useForm, useWatch } from 'react-hook-form'
+import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form'
 
+import { Combobox } from '@/shared/components/Combobox'
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { useStepper } from '@/shared/hooks/useStepper'
 
@@ -280,18 +281,26 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                     <label htmlFor="customerId">
                       Khách hàng <span className="field-required">*</span>
                     </label>
-                    <select
-                      id="customerId"
-                      className={`field-select${errors.customerId ? ' is-error' : ''}`}
-                      {...register('customerId')}
-                    >
-                      <option value="">— Chọn khách hàng —</option>
-                      {customers.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.code} — {c.name}
-                        </option>
-                      ))}
-                    </select>
+                    <Controller
+                      name="customerId"
+                      control={control}
+                      render={({ field }) => {
+                        const customerOptions = customers.map((c) => ({
+                          value: c.id,
+                          label: c.name,
+                          code: c.code,
+                        }))
+                        return (
+                          <Combobox
+                            options={customerOptions}
+                            value={field.value}
+                            onChange={field.onChange}
+                            placeholder="— Chọn khách hàng —"
+                            hasError={!!errors.customerId}
+                          />
+                        )
+                      }}
+                    />
                     {errors.customerId && (
                       <span className="field-error">{errors.customerId.message}</span>
                     )}
@@ -418,17 +427,20 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                           </div>
                           <div className="form-field">
                             <label htmlFor={`items.${index}.unit`}>Đơn vị</label>
-                            <select
-                              id={`items.${index}.unit`}
-                              className="field-select"
-                              {...register(`items.${index}.unit`)}
-                            >
-                              {UNIT_OPTIONS.map((opt) => (
-                                <option key={opt.value} value={opt.value}>
-                                  {opt.label}
-                                </option>
-                              ))}
-                            </select>
+                            <Controller
+                              name={`items.${index}.unit` as const}
+                              control={control}
+                              render={({ field }) => (
+                                <Combobox
+                                  options={UNIT_OPTIONS.map((opt) => ({
+                                    value: opt.value,
+                                    label: opt.label,
+                                  }))}
+                                  value={field.value}
+                                  onChange={field.onChange}
+                                />
+                              )}
+                            />
                           </div>
                         </div>
 

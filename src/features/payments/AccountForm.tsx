@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { Combobox } from '@/shared/components/Combobox'
 
 import {
   ACCOUNT_TYPES,
@@ -39,6 +40,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
   const {
     register,
     handleSubmit,
+    control,
     reset,
     watch,
     formState: { errors, isSubmitting },
@@ -94,11 +96,20 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
             </div>
             <div className="form-field">
               <label htmlFor="type">Loại tài khoản <span className="field-required">*</span></label>
-              <select id="type" className="field-select" {...register('type')}>
-                {ACCOUNT_TYPES.map((t) => (
-                  <option key={t} value={t}>{ACCOUNT_TYPE_LABELS[t]}</option>
-                ))}
-              </select>
+              <Controller
+                name="type"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={ACCOUNT_TYPES.map((t) => ({
+                      value: t,
+                      label: ACCOUNT_TYPE_LABELS[t]
+                    }))}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
             </div>
           </div>
 
@@ -149,10 +160,20 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
             </div>
             <div className="form-field">
               <label htmlFor="status">Trạng thái</label>
-              <select id="status" className="field-select" {...register('status')}>
-                <option value="active">Hoạt động</option>
-                <option value="inactive">Ngừng sử dụng</option>
-              </select>
+              <Controller
+                name="status"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={[
+                      { value: 'active', label: 'Hoạt động' },
+                      { value: 'inactive', label: 'Ngừng sử dụng' }
+                    ]}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
             </div>
           </div>
 

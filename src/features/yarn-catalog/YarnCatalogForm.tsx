@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { Combobox } from '@/shared/components/Combobox'
 
 import {
   yarnCatalogDefaultValues,
@@ -44,6 +45,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     setValue,
@@ -181,29 +183,44 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
               <label htmlFor="unit">
                 Đơn vị <span className="field-required">*</span>
               </label>
-              <select
-                id="unit"
-                className={`field-select${errors.unit ? ' is-error' : ''}`}
-                {...register('unit')}
-              >
-                <option value="kg">kg</option>
-                <option value="cuộn">cuộn</option>
-                <option value="tấn">tấn</option>
-              </select>
+              <Controller
+                name="unit"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={[
+                      { value: 'kg', label: 'kg' },
+                      { value: 'cuộn', label: 'cuộn' },
+                      { value: 'tấn', label: 'tấn' },
+                    ]}
+                    value={field.value}
+                    onChange={field.onChange}
+                    hasError={!!errors.unit}
+                    placeholder="Chọn..."
+                  />
+                )}
+              />
               {errors.unit && (
                 <span className="field-error">{errors.unit.message}</span>
               )}
             </div>
 
             <div className="form-field">
-              <label htmlFor="status">Trạng thái</label>
-              <select id="status" className="field-select" {...register('status')}>
-                {(['active', 'inactive'] as const).map((s) => (
-                  <option key={s} value={s}>
-                    {YARN_CATALOG_STATUS_LABELS[s]}
-                  </option>
-                ))}
-              </select>
+              <Controller
+                name="status"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={(['active', 'inactive'] as const).map((s) => ({
+                      value: s,
+                      label: YARN_CATALOG_STATUS_LABELS[s],
+                    }))}
+                    value={field.value}
+                    onChange={field.onChange}
+                    hasError={!!errors.status}
+                  />
+                )}
+              />
             </div>
           </div>
 

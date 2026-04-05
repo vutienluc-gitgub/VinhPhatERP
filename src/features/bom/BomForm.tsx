@@ -1,9 +1,10 @@
-import { useForm, useFieldArray } from 'react-hook-form'
+import { useForm, useFieldArray, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react'
 import { bomTemplateSchema, BomTemplateFormData } from './bom.module'
 import { BomTemplate } from './types'
 import { useFabricCatalogs, useYarnCatalogs, useDraftBom, useUpdateDraftBom } from './useBom'
+import { Combobox } from '@/shared/components/Combobox'
 
 interface BomFormProps {
   initialData?: BomTemplate
@@ -126,17 +127,22 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
             <label>
               Sản phẩm mộc <span className="field-required">*</span>
             </label>
-            <select
-              {...register('target_fabric_id')}
-              className={`field-select${errors.target_fabric_id ? ' is-error' : ''}`}
-            >
-              <option value="">-- Chọn sản phẩm mộc --</option>
-              {fabricCatalogs.map((fb) => (
-                <option key={fb.id} value={fb.id}>
-                  {fb.code} — {fb.name}
-                </option>
-              ))}
-            </select>
+            <Controller
+              name="target_fabric_id"
+              control={control}
+              render={({ field }) => (
+                <Combobox
+                  options={fabricCatalogs.map((fb) => ({
+                    value: fb.id,
+                    label: `${fb.code} — ${fb.name}`
+                  }))}
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="-- Chọn sản phẩm mộc --"
+                  hasError={!!errors.target_fabric_id}
+                />
+              )}
+            />
             {errors.target_fabric_id && (
               <span className="field-error">{errors.target_fabric_id.message}</span>
             )}
@@ -228,17 +234,22 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
                 <div className="form-grid" style={{ flex: 1, gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.5rem' }}>
                   <div className="form-field">
                     <label>Loại sợi</label>
-                    <select
-                      {...register(`bom_yarn_items.${index}.yarn_catalog_id`)}
-                      className={`field-select${errors.bom_yarn_items?.[index]?.yarn_catalog_id ? ' is-error' : ''}`}
-                    >
-                      <option value="">— Chọn sợi —</option>
-                      {yarnCatalogs.map((y) => (
-                        <option key={y.id} value={y.id}>
-                          {y.code} — {y.name} ({y.composition})
-                        </option>
-                      ))}
-                    </select>
+                    <Controller
+                      name={`bom_yarn_items.${index}.yarn_catalog_id` as const}
+                      control={control}
+                      render={({ field }) => (
+                        <Combobox
+                          options={yarnCatalogs.map((y) => ({
+                            value: y.id,
+                            label: `${y.code} — ${y.name} (${y.composition})`
+                          }))}
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="— Chọn sợi —"
+                          hasError={!!errors.bom_yarn_items?.[index]?.yarn_catalog_id}
+                        />
+                      )}
+                    />
                     {errors.bom_yarn_items?.[index]?.yarn_catalog_id && (
                       <span className="field-error">{errors.bom_yarn_items[index]?.yarn_catalog_id?.message}</span>
                     )}

@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import {
@@ -8,6 +8,7 @@ import {
 import type { ShippingRateFormValues } from './shipping-rates.module'
 import type { ShippingRate } from './types'
 import { useCreateShippingRate, useUpdateShippingRate } from './useShippingRates'
+import { Combobox } from '@/shared/components/Combobox'
 
 type Props = {
   item: ShippingRate | null
@@ -21,6 +22,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<ShippingRateFormValues>({
     resolver: zodResolver(shippingRatesSchema),
@@ -153,10 +155,20 @@ export function ShippingRateForm({ item, onClose }: Props) {
         {/* Active status */}
         <div className="form-field">
           <label>Trạng thái</label>
-          <select className="field-select" {...register('isActive', { setValueAs: (v) => v === 'true' || v === true })}>
-            <option value="true">Đang dùng</option>
-            <option value="false">Ngừng dùng</option>
-          </select>
+          <Controller
+            name="isActive"
+            control={control}
+            render={({ field }) => (
+              <Combobox
+                options={[
+                  { value: 'true', label: 'Đang dùng' },
+                  { value: 'false', label: 'Ngừng dùng' }
+                ]}
+                value={String(field.value)}
+                onChange={(val) => field.onChange(val === 'true')}
+              />
+            )}
+          />
         </div>
       </div>
 
