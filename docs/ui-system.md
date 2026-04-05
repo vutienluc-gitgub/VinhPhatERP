@@ -42,6 +42,8 @@
   - grid-cols-1 md:grid-cols-2
 
 ### Table
+- must wrap in overflow-x-auto
+- no fixed width larger than screen
 - Table phải luôn được bọc bởi container:
 
 <div class="overflow-x-auto w-full">
@@ -52,6 +54,25 @@
 - colSpan phải:
   - đúng số cột thực tế
   - hoặc dùng biến (columns.length)
+
+## Modal / Popup Rules
+
+- Mobile: use bottom sheet
+- Desktop: use centered dialog
+
+### Bottom Sheet
+- position: fixed bottom
+- rounded top
+- max-height: 90vh
+- overflow-y-auto
+
+### Required
+- sticky action button at bottom
+- content scroll inside
+
+### Forbidden
+- fixed height modal
+- content overflow outside screen
 
 ### Text Overflow
 - Text dài phải xử lý:

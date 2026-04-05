@@ -1,22 +1,20 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { createWorkOrderSchema, type CreateWorkOrderInput } from './work-orders.module';
-import { useCreateWorkOrder } from './useWorkOrders';
-import { useBomList } from '../bom/useBom';
-import { useOrderList } from '../orders/useOrders';
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { createWorkOrderSchema, type CreateWorkOrderInput } from './work-orders.module'
+import { useCreateWorkOrder } from './useWorkOrders'
+import { useBomList } from '../bom/useBom'
+import { useOrderList } from '../orders/useOrders'
 
 interface WorkOrderFormProps {
-  onSuccess?: () => void;
-  onCancel?: () => void;
+  onSuccess?: () => void
+  onCancel?: () => void
 }
 
 export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
-  const createMutation = useCreateWorkOrder();
+  const createMutation = useCreateWorkOrder()
 
-  // Load active approved BOMs for dropdown
-  const { data: boms } = useBomList({ status: 'approved' });
-  // Load draft/confirmed orders for selection (MTO)
-  const { data: orders } = useOrderList({ status: 'confirmed' }, 1);
+  const { data: boms } = useBomList({ status: 'approved' })
+  const { data: orders } = useOrderList({ status: 'confirmed' }, 1)
 
   const { register, handleSubmit, formState: { errors } } = useForm<CreateWorkOrderInput>({
     resolver: zodResolver(createWorkOrderSchema),
@@ -30,123 +28,113 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
       end_date: '',
       notes: '',
     },
-  });
+  })
 
   const onSubmit = async (values: CreateWorkOrderInput) => {
     try {
       await createMutation.mutateAsync({
         ...values,
-        order_id: values.order_id === 'none' ? null : values.order_id
-      } as CreateWorkOrderInput);
-      if (onSuccess) onSuccess();
+        order_id: values.order_id === 'none' ? null : values.order_id,
+      } as CreateWorkOrderInput)
+      if (onSuccess) onSuccess()
     } catch (error) {
-      console.error('Failed to create work order:', error);
-      alert('Có lỗi xảy ra: ' + (error as Error).message);
+      console.error('Failed to create work order:', error)
+      alert('Có lỗi xảy ra: ' + (error as Error).message)
     }
-  };
+  }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full min-h-0">
+    <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
       {/* Scrollable Content Area */}
       <div className="modal-content">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* Work Order Number */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Mã Lệnh Sản Xuất <span className="text-red-500">*</span></label>
+        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+
+          <div className="form-field">
+            <label>Mã Lệnh Sản Xuất <span className="field-required">*</span></label>
             <input
               {...register('work_order_number')}
               placeholder="Ví dụ: WO-2024-001"
-              className={`field-input w-full min-h-[44px] ${errors.work_order_number ? 'is-error' : ''}`}
+              className={`field-input${errors.work_order_number ? ' is-error' : ''}`}
             />
-            {errors.work_order_number && (
-               <p className="text-xs text-red-500 font-medium">{errors.work_order_number.message}</p>
-            )}
+            {errors.work_order_number && <span className="field-error">{errors.work_order_number.message}</span>}
           </div>
 
-          {/* Order ID */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Liên kết Đơn Hàng (ĐH)</label>
+          <div className="form-field">
+            <label>Liên kết Đơn Hàng (ĐH)</label>
             <select
               {...register('order_id')}
-              className={`field-select w-full min-h-[44px] ${errors.order_id ? 'is-error' : ''}`}
+              className={`field-select${errors.order_id ? ' is-error' : ''}`}
             >
-              <option value="none">-- Sản xuất dự trữ (Không ĐH) --</option>
+              <option value="none">— Sản xuất dự trữ (Không ĐH) —</option>
               {orders?.data?.map((o) => (
                 <option key={o.id} value={o.id}>
                   {o.order_number} — {o.customers?.name}
                 </option>
               ))}
             </select>
-            <p className="text-[0.7rem] text-neutral-400 italic">Chọn đơn hàng nếu sản xuất theo yêu cầu (MTO)</p>
-            {errors.order_id && (
-              <p className="text-xs text-red-500 font-medium">{errors.order_id.message}</p>
-            )}
+            <span style={{ fontSize: '0.72rem', color: 'var(--muted)', fontStyle: 'italic' }}>
+              Chọn đơn hàng nếu sản xuất theo yêu cầu (MTO)
+            </span>
+            {errors.order_id && <span className="field-error">{errors.order_id.message}</span>}
           </div>
 
-          {/* BOM Template ID */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Công thức BOM định mức <span className="text-red-500">*</span></label>
+          <div className="form-field">
+            <label>Công thức BOM định mức <span className="field-required">*</span></label>
             <select
               {...register('bom_template_id')}
-              className={`field-select w-full min-h-[44px] ${errors.bom_template_id ? 'is-error' : ''}`}
+              className={`field-select${errors.bom_template_id ? ' is-error' : ''}`}
             >
-              <option value="">-- Chọn công thức dệt --</option>
+              <option value="">— Chọn công thức dệt —</option>
               {boms?.map((b) => (
                 <option key={b.id} value={b.id}>
                   {b.code} — {b.name} (V{b.active_version})
                 </option>
               ))}
             </select>
-            {errors.bom_template_id && (
-              <p className="text-xs text-red-500 font-medium">{errors.bom_template_id.message}</p>
-            )}
+            {errors.bom_template_id && <span className="field-error">{errors.bom_template_id.message}</span>}
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Ngày bắt đầu dự kiến</label>
+          <div className="form-field">
+            <label>Ngày bắt đầu dự kiến</label>
             <input
               type="date"
               {...register('start_date')}
-              className="field-input w-full min-h-[44px]"
+              className="field-input"
             />
           </div>
 
-          {/* Targets */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Sản lượng mục tiêu (m) <span className="text-red-500">*</span></label>
+          <div className="form-field">
+            <label>Sản lượng mục tiêu (m) <span className="field-required">*</span></label>
             <input
               type="number"
               step="0.01"
               {...register('target_quantity_m', { valueAsNumber: true })}
-              className={`field-input w-full min-h-[44px] ${errors.target_quantity_m ? 'is-error' : ''}`}
+              className={`field-input${errors.target_quantity_m ? ' is-error' : ''}`}
             />
-            {errors.target_quantity_m && (
-              <p className="text-xs text-red-500 font-medium">{errors.target_quantity_m.message}</p>
-            )}
+            {errors.target_quantity_m && <span className="field-error">{errors.target_quantity_m.message}</span>}
           </div>
 
-          {/* Target Weight */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Khối lượng dự kiến (kg)</label>
+          <div className="form-field">
+            <label>Khối lượng dự kiến (kg)</label>
             <input
               type="number"
               step="0.01"
               {...register('target_weight_kg', { valueAsNumber: true })}
-              className={`field-input w-full min-h-[44px] ${errors.target_weight_kg ? 'is-error' : ''}`}
+              className={`field-input${errors.target_weight_kg ? ' is-error' : ''}`}
             />
-            <p className="text-[0.7rem] text-neutral-400 italic">Hệ thống sẽ tự tính từ BOM nếu để trống</p>
-            {errors.target_weight_kg && (
-              <p className="text-xs text-red-500 font-medium">{errors.target_weight_kg.message}</p>
-            )}
+            <span style={{ fontSize: '0.72rem', color: 'var(--muted)', fontStyle: 'italic' }}>
+              Hệ thống sẽ tự tính từ BOM nếu để trống
+            </span>
+            {errors.target_weight_kg && <span className="field-error">{errors.target_weight_kg.message}</span>}
           </div>
 
-          <div className="flex flex-col gap-1.5 md:col-span-2">
-            <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Ghi chú sản xuất</label>
+          <div className="form-field" style={{ gridColumn: '1 / -1' }}>
+            <label>Ghi chú sản xuất</label>
             <textarea
               {...register('notes')}
               rows={3}
               placeholder="Hướng dẫn kỹ thuật hoặc ghi chú đặc biệt cho xưởng..."
-              className="field-textarea w-full p-3 text-sm min-h-[100px]"
+              className="field-textarea"
             />
           </div>
         </div>
@@ -157,19 +145,19 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
         <button
           type="button"
           onClick={onCancel}
-          className="btn-secondary flex-1 sm:flex-none h-12 min-w-[120px] order-2 sm:order-1"
+          className="btn-secondary"
           disabled={createMutation.isPending}
         >
           Hủy bỏ
         </button>
         <button
           type="submit"
-          className="btn-primary flex-1 sm:flex-none h-12 min-w-[200px] order-1 sm:order-2"
+          className="primary-button btn-standard"
           disabled={createMutation.isPending}
         >
           {createMutation.isPending ? 'Đang tạo...' : 'Xác nhận tạo Lệnh SX'}
         </button>
       </div>
     </form>
-  );
+  )
 }

@@ -1,156 +1,213 @@
-import { ArrowLeft, CheckCircle, FileX, GitMerge } from 'lucide-react';
-import { BomTemplate, BomStatus } from './types';
-import { useBomVersions } from './useBom';
-import { BOM_STATUS_LABELS, BOM_STATUS_COLORS } from './bom.module';
+import { ArrowLeft, CheckCircle, FileX, GitMerge } from 'lucide-react'
+import { BomTemplate, BomStatus } from './types'
+import { useBomVersions } from './useBom'
+import { BOM_STATUS_LABELS } from './bom.module'
 
 interface BomDetailProps {
-  bom: BomTemplate;
-  onBack: () => void;
-  onApprove: () => void;
-  onDeprecate: () => void;
-  onRevise: () => void;
-  isSaving: boolean;
+  bom: BomTemplate
+  onBack: () => void
+  onApprove: () => void
+  onDeprecate: () => void
+  onRevise: () => void
+  isSaving: boolean
 }
 
 export function BomDetail({ bom, onBack, onApprove, onDeprecate, onRevise, isSaving }: BomDetailProps) {
-  const { data: versions = [] } = useBomVersions(bom.id);
-  const statusLabel = BOM_STATUS_LABELS[bom.status as BomStatus] || bom.status;
-  const statusColor = BOM_STATUS_COLORS[bom.status as BomStatus] || 'slate';
+  const { data: versions = [] } = useBomVersions(bom.id)
+  const statusLabel = BOM_STATUS_LABELS[bom.status as BomStatus] || bom.status
 
   return (
-    <div className="bg-white px-4 py-5 shadow sm:rounded-lg sm:p-6 mb-8">
+    <div className="panel-card card-flush">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-5">
-        <div className="flex items-center gap-4">
-          <button onClick={onBack} className="p-2 -ml-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100">
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div>
-            <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-              {bom.code}
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${statusColor}-100 text-${statusColor}-800`}>
-                {statusLabel}
-              </span>
-            </h3>
-            <p className="text-sm text-gray-500 mt-1">{bom.name}</p>
-          </div>
-        </div>
-
-        {/* Task-Based Actions */}
-        <div className="flex items-center gap-3">
-          {bom.status === 'draft' && (
+      <div className="card-header-area">
+        <div className="page-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <button
-              onClick={onApprove}
-              disabled={isSaving}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:opacity-50"
+              className="btn-icon"
+              type="button"
+              onClick={onBack}
+              title="Quay lại"
             >
-              <CheckCircle className="w-4 h-4 mr-2" />
-              Phê Duyệt
+              <ArrowLeft style={{ width: 18, height: 18 }} />
             </button>
-          )}
+            <div>
+              <p className="eyebrow">Chi tiết định mức</p>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                {bom.code}
+                <span className={`roll-status ${bom.status}`}>{statusLabel}</span>
+              </h3>
+            </div>
+          </div>
 
-          {bom.status === 'approved' && (
-             <>
+          {/* Actions */}
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            {bom.status === 'draft' && (
               <button
-                onClick={onRevise}
+                className="primary-button btn-standard"
+                type="button"
+                onClick={onApprove}
                 disabled={isSaving}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
               >
-                <GitMerge className="w-4 h-4 mr-2 text-indigo-500" />
-                Tạo Revision (Bản mới)
+                <CheckCircle style={{ width: 16, height: 16 }} />
+                Phê duyệt
               </button>
-              <button
-                onClick={onDeprecate}
-                disabled={isSaving}
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50"
-              >
-                <FileX className="w-4 h-4 mr-2" />
-                Báo Phế
-              </button>
-             </>
-          )}
+            )}
+
+            {bom.status === 'approved' && (
+              <>
+                <button
+                  className="btn-secondary"
+                  type="button"
+                  onClick={onRevise}
+                  disabled={isSaving}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                  <GitMerge style={{ width: 16, height: 16 }} />
+                  Tạo Revision
+                </button>
+                <button
+                  className="btn-secondary"
+                  type="button"
+                  onClick={onDeprecate}
+                  disabled={isSaving}
+                  style={{ color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                  <FileX style={{ width: 16, height: 16 }} />
+                  Báo phế
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Main Info */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-6">
-          <div className="sm:col-span-1">
-            <dt className="text-sm font-medium text-gray-500">Mã sản phẩm mộc</dt>
-            <dd className="mt-1 text-sm text-gray-900 font-semibold">{bom.fabric_catalogs?.code} - {bom.fabric_catalogs?.name}</dd>
+      {/* Info Section */}
+      <div style={{ padding: '1.25rem' }}>
+        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
+          <div className="form-field">
+            <label>Tên công thức</label>
+            <p style={{ fontWeight: 600, margin: 0 }}>{bom.name}</p>
           </div>
-          <div className="sm:col-span-1">
-            <dt className="text-sm font-medium text-gray-500">Quy cách đầu ra</dt>
-            <dd className="mt-1 text-sm text-gray-900">
-              {bom.target_width_cm ? `${bom.target_width_cm}cm` : '--'} / {bom.target_gsm ? `${bom.target_gsm}gsm` : '--'}
-            </dd>
+          <div className="form-field">
+            <label>Sản phẩm mộc</label>
+            <p style={{ fontWeight: 600, margin: 0 }}>
+              {bom.fabric_catalogs?.code} — {bom.fabric_catalogs?.name ?? 'N/A'}
+            </p>
           </div>
-          <div className="sm:col-span-1">
-            <dt className="text-sm font-medium text-gray-500">Phiên bản hiện tại</dt>
-            <dd className="mt-1 text-sm text-gray-900">v{bom.active_version}</dd>
+          <div className="form-field">
+            <label>Quy cách (Width / GSM)</label>
+            <p style={{ margin: 0 }}>
+              {bom.target_width_cm ? `${bom.target_width_cm} cm` : '—'} / {bom.target_gsm ? `${bom.target_gsm} gsm` : '—'}
+            </p>
           </div>
-          <div className="sm:col-span-1">
-            <dt className="text-sm font-medium text-gray-500">Hao hụt mặc định</dt>
-            <dd className="mt-1 text-sm text-gray-900">{bom.standard_loss_pct}%</dd>
+          <div className="form-field">
+            <label>Hao hụt mặc định</label>
+            <p style={{ margin: 0, fontWeight: 700 }}>{bom.standard_loss_pct}%</p>
           </div>
-        </dl>
+          <div className="form-field">
+            <label>Phiên bản</label>
+            <p style={{ margin: 0 }}>v{bom.active_version}</p>
+          </div>
+        </div>
+
+        {bom.notes && (
+          <p style={{ marginTop: '1rem', fontStyle: 'italic', color: 'var(--muted)', fontSize: '0.88rem' }}>
+            {bom.notes}
+          </p>
+        )}
       </div>
 
-      {/* Ingredients */}
-      <div className="mb-10">
-        <h4 className="text-base font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">Thành Phần Nguyên Liệu (v{bom.active_version})</h4>
-        <div className="bg-slate-50 rounded-lg p-1 border border-slate-200">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-slate-100 text-slate-600 font-medium">
-              <tr>
-                <th className="py-2 px-4 rounded-tl-lg">Loại Sợi</th>
-                <th className="py-2 px-4">Thành phần</th>
-                <th className="py-2 px-4 text-center">Tỉ lệ (%)</th>
-                <th className="py-2 px-4 text-right rounded-tr-lg">Tiêu hao (kg/m)</th>
+      {/* Yarn Items Table */}
+      <div style={{ padding: '0 1.25rem' }}>
+        <p className="eyebrow" style={{ marginBottom: '0.5rem' }}>
+          Thành phần nguyên liệu (v{bom.active_version})
+        </p>
+      </div>
+      <div className="data-table-wrap card-table-section">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Loại Sợi</th>
+              <th className="hide-mobile">Thành phần</th>
+              <th className="text-right">Tỉ lệ (%)</th>
+              <th className="text-right">Tiêu hao (kg/m)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {bom.bom_yarn_items?.map((item) => (
+              <tr key={item.id}>
+                <td>
+                  <strong>{item.yarn_catalogs?.code}</strong>
+                  <div className="td-muted" style={{ fontSize: '0.8rem' }}>
+                    {item.yarn_catalogs?.name}
+                  </div>
+                </td>
+                <td className="hide-mobile td-muted">
+                  {item.yarn_catalogs?.composition || '—'}
+                </td>
+                <td className="text-right" style={{ fontWeight: 700 }}>
+                  {item.ratio_pct}%
+                </td>
+                <td className="text-right td-muted">
+                  {item.consumption_kg_per_m} kg/m
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200">
-              {bom.bom_yarn_items?.map((item) => (
-                <tr key={item.id} className="bg-white">
-                  <td className="py-3 px-4 font-medium text-gray-800">{item.yarn_catalogs?.code} - {item.yarn_catalogs?.name}</td>
-                  <td className="py-3 px-4 text-gray-600">{item.yarn_catalogs?.composition || '--'}</td>
-                  <td className="py-3 px-4 text-center text-blue-700 font-semibold">{item.ratio_pct}%</td>
-                  <td className="py-3 px-4 text-right text-gray-700">{item.consumption_kg_per_m} kg/m</td>
-                </tr>
-              ))}
-              {(!bom.bom_yarn_items || bom.bom_yarn_items.length === 0) && (
-                <tr><td colSpan={4} className="py-4 text-center text-gray-500">Chưa có dữ liệu nguyên liệu</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+            ))}
+            {(!bom.bom_yarn_items || bom.bom_yarn_items.length === 0) && (
+              <tr>
+                <td colSpan={4}>
+                  <div className="table-empty" style={{ padding: '2rem' }}>
+                    Chưa có dữ liệu nguyên liệu
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
       {/* Version History */}
-      <div>
-        <h4 className="text-base font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">Lịch Sử Phiên Bản (Immutable Ledger)</h4>
-        <ul className="space-y-4">
-          {versions.map((ver) => (
-            <li key={ver.id} className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 relative">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-slate-100 text-slate-600 font-mono text-sm font-bold border border-slate-200">
-                    v{ver.version}
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{ver.change_reason}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">Tạo bởi: {ver.created_by_profile?.full_name} • {new Date(ver.created_at).toLocaleString('vi-VN')}</p>
-                  </div>
+      <div style={{ padding: '1.25rem' }}>
+        <p className="eyebrow" style={{ marginBottom: '0.75rem' }}>Lịch sử phiên bản</p>
+        {versions.length === 0 ? (
+          <p className="td-muted" style={{ fontStyle: 'italic', fontSize: '0.85rem' }}>
+            Chưa có lịch sử (chưa từng được duyệt).
+          </p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {versions.map((ver) => (
+              <div
+                key={ver.id}
+                style={{
+                  display: 'flex',
+                  gap: '0.75rem',
+                  padding: '0.75rem',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-sm)',
+                  alignItems: 'flex-start',
+                }}
+              >
+                <span
+                  className="roll-status in_stock"
+                  style={{ flexShrink: 0, fontSize: '0.7rem' }}
+                >
+                  v{ver.version}
+                </span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: 600 }}>
+                    {ver.change_reason || 'Phê duyệt ban đầu'}
+                  </p>
+                  <p className="td-muted" style={{ margin: 0, fontSize: '0.78rem', marginTop: '0.2rem' }}>
+                    {ver.created_by_profile?.full_name ?? 'N/A'} •{' '}
+                    {new Date(ver.created_at).toLocaleString('vi-VN')}
+                  </p>
                 </div>
               </div>
-            </li>
-          ))}
-          {versions.length === 0 && (
-             <p className="text-sm text-gray-500 italic pb-2">Chưa có ảnh chụp lịch sử nào (chưa từng được duyệt).</p>
-          )}
-        </ul>
+            ))}
+          </div>
+        )}
       </div>
-
     </div>
-  );
+  )
 }

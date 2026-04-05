@@ -48,9 +48,9 @@ function AgingStockTable({ rolls }: { rolls: AgingRoll[] }) {
               <th>Mã cuộn</th>
               <th>Loại</th>
               <th>Loại vải</th>
-              <th>Màu</th>
-              <th>Vị trí</th>
-              <th style={{ textAlign: 'right' }}>Ngày tồn</th>
+              <th className="hide-mobile">Màu</th>
+              <th className="hide-mobile">Vị trí</th>
+              <th className="text-right">Ngày tồn</th>
               <th>Mức</th>
             </tr>
           </thead>
@@ -62,9 +62,9 @@ function AgingStockTable({ rolls }: { rolls: AgingRoll[] }) {
                   <td><strong>{roll.roll_number}</strong></td>
                   <td className="td-muted">{roll.source === 'raw' ? 'Mộc' : 'TP'}</td>
                   <td>{roll.fabric_type}</td>
-                  <td className="td-muted">{roll.color_name ?? '—'}</td>
-                  <td className="td-muted">{roll.warehouse_location ?? '—'}</td>
-                  <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
+                  <td className="td-muted hide-mobile">{roll.color_name ?? '—'}</td>
+                  <td className="td-muted hide-mobile">{roll.warehouse_location ?? '—'}</td>
+                  <td className="text-right" style={{ fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
                     {roll.age_days} ngày
                   </td>
                   <td>
@@ -95,18 +95,18 @@ function BreakdownTable({ rows, title }: { rows: InventoryBreakdownRow[]; title:
         <thead>
           <tr>
             <th>Loại vải</th>
-            <th>Màu</th>
+            <th className="hide-mobile">Màu</th>
             <th>Chất lượng</th>
-            <th style={{ textAlign: 'right' }}>Cuộn</th>
-            <th style={{ textAlign: 'right' }}>Dài (m)</th>
-            <th style={{ textAlign: 'right' }}>Nặng (kg)</th>
+            <th className="text-right">Cuộn</th>
+            <th className="text-right hide-mobile">Dài (m)</th>
+            <th className="text-right">Nặng (kg)</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((row, i) => (
             <tr key={i}>
               <td>{row.fabric_type ?? '—'}</td>
-              <td className="td-muted">{row.color_name ?? '—'}</td>
+              <td className="td-muted hide-mobile">{row.color_name ?? '—'}</td>
               <td>
                 {row.quality_grade ? (
                   <span className={`grade-badge grade-${row.quality_grade}`}>
@@ -114,9 +114,9 @@ function BreakdownTable({ rows, title }: { rows: InventoryBreakdownRow[]; title:
                   </span>
                 ) : '—'}
               </td>
-              <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{row.roll_count ?? 0}</td>
-              <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{fmt(row.total_length_m ?? 0)}</td>
-              <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{fmt(row.total_weight_kg ?? 0)}</td>
+              <td className="text-right" style={{ fontVariantNumeric: 'tabular-nums' }}>{row.roll_count ?? 0}</td>
+              <td className="text-right hide-mobile" style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(row.total_length_m ?? 0)}</td>
+              <td className="text-right" style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(row.total_weight_kg ?? 0)}</td>
             </tr>
           ))}
         </tbody>
@@ -140,32 +140,31 @@ export function InventoryPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Page header */}
-      <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Tồn kho</p>
-            <h3>Dashboard tồn kho tổng hợp</h3>
+      {/* Dashboard Card — header + KPI */}
+      <div className="panel-card card-flush">
+        <div className="card-header-area">
+          <div className="page-header">
+            <div>
+              <p className="eyebrow">Tồn kho</p>
+              <h3>Dashboard tồn kho tổng hợp</h3>
+            </div>
           </div>
         </div>
-      </div>
 
-      {isLoading && (
-        <p style={{ padding: '2rem 1.25rem', color: 'var(--muted)', textAlign: 'center' }}>
-          Đang tải dữ liệu tồn kho…
-        </p>
-      )}
+        {isLoading && (
+          <p style={{ padding: '2rem 1.25rem', color: 'var(--muted)', textAlign: 'center' }}>
+            Đang tải dữ liệu tồn kho…
+          </p>
+        )}
 
-      {hasError && (
-        <p className="error-inline">
-          Lỗi tải dữ liệu: {((rawQuery.error ?? finishedQuery.error ?? yarnQuery.error) as Error)?.message}
-        </p>
-      )}
+        {hasError && (
+          <p className="error-inline">
+            Lỗi tải dữ liệu: {((rawQuery.error ?? finishedQuery.error ?? yarnQuery.error) as Error)?.message}
+          </p>
+        )}
 
-      {!isLoading && !hasError && (
-        <>
-          {/* ── KPI Cards ── */}
-          <div className="stats-bar" style={{ padding: '0 1.25rem' }}>
+        {!isLoading && !hasError && (
+          <div className="stats-bar" style={{ padding: '0.75rem 1.25rem 1.25rem' }}>
             <div className="stat-card stat-primary">
               <span className="stat-label">Sợi — Phiếu nhập</span>
               <span className="stat-value">{yarnStats?.totalReceipts ?? 0}</span>
@@ -200,8 +199,11 @@ export function InventoryPage() {
               </span>
             </div>
           </div>
+        )}
+      </div>
 
-          {/* ── Raw Fabric Breakdown ── */}
+      {!isLoading && !hasError && (
+        <>
           <div className="panel-card card-flush">
             <div className="card-header-area" style={{ paddingBottom: 0 }}>
               <div className="page-header">

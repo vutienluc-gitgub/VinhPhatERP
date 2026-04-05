@@ -1,48 +1,78 @@
-import { useState } from 'react';
-import { Eye, Play } from 'lucide-react';
-import { useWorkOrders, useStartWorkOrder } from './useWorkOrders';
-import { WORK_ORDER_STATUSES } from './work-orders.module';
-import type { WorkOrderFilter, WorkOrderStatus } from './types';
+import { useState } from 'react'
+import { useWorkOrders, useStartWorkOrder } from './useWorkOrders'
+import { WORK_ORDER_STATUSES } from './work-orders.module'
+import { EmptyState } from '@/shared/components/EmptyState'
+import { TableSkeleton } from '@/shared/components/TableSkeleton'
+import { useConfirm } from '@/shared/components/ConfirmDialog'
+import type { WorkOrderFilter, WorkOrderStatus } from './types'
 
 interface WorkOrderListProps {
-  onView: (id: string) => void;
+  onView: (id: string) => void
+  onCreate: () => void
 }
 
-export function WorkOrderList({ onView }: WorkOrderListProps) {
-  const [filter, setFilter] = useState<WorkOrderFilter>({ status: 'all', search: '' });
-  const [page, setPage] = useState(1);
+export function WorkOrderList({ onView, onCreate }: WorkOrderListProps) {
+  const [filter, setFilter] = useState<WorkOrderFilter>({ status: 'all', search: '' })
+  const [page, setPage] = useState(1)
 
-  const { data, isLoading } = useWorkOrders(filter, page, 20);
-  const startMutation = useStartWorkOrder();
+  const { data, isLoading } = useWorkOrders(filter, page, 20)
+  const startMutation = useStartWorkOrder()
+  const { confirm } = useConfirm()
 
-  const getStatusBadge = (status: WorkOrderStatus) => {
-    const config = WORK_ORDER_STATUSES[status];
-    return (
-      <span className={`roll-status ${status}`}>
-        {config?.label || status}
-      </span>
-    );
-  };
+  const orders = data?.data ?? []
+  const hasFilter = !!(filter.search || (filter.status && filter.status !== 'all'))
+
+  const handleStart = async (id: string) => {
+    const ok = await confirm({
+      message: 'Bắt đầu lệnh dệt này?',
+      variant: 'danger',
+    })
+    if (ok) startMutation.mutate(id)
+  }
 
   return (
-    <div className="panel-card card-flush flex flex-col h-full bg-white shadow-sm overflow-hidden">
-      {/* Filters - Responsive Grid */}
-      <div className="filter-bar grid grid-cols-1 sm:flex sm:items-end gap-3 p-4 bg-neutral-50/50 border-b border-neutral-100">
-        <div className="flex-1 min-w-0">
-          <label className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-1.5 block">Tìm theo mã lệnh...</label>
+    <div className="panel-card card-flush">
+      {/* Header */}
+      <div className="card-header-area">
+        <div className="page-header">
+          <div>
+            <p className="eyebrow">Dây chuyền sản xuất</p>
+            <h3>Quản Lý Lệnh Sản Xuất</h3>
+            <p style={{ fontSize: '0.82rem', color: 'var(--muted)', marginTop: '0.25rem' }}>
+              Điều phối quy trình dệt mộc và tự động cấp phát định mức nguyên liệu theo BOM
+            </p>
+          </div>
+          <button
+            className="primary-button btn-standard"
+            type="button"
+            onClick={onCreate}
+          >
+            + Kiến tạo Lệnh Sản Xuất
+          </button>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="filter-bar card-filter-section">
+        <div className="filter-field" style={{ flex: '1 1 220px' }}>
+          <label htmlFor="wo-search">Tìm theo mã lệnh</label>
           <input
+            id="wo-search"
+            className="field-input"
+            type="text"
             placeholder="Nhập mã lệnh dệt để tìm..."
             value={filter.search}
-            onChange={(e) => setFilter(f => ({ ...f, search: e.target.value }))}
-            className="field-input w-full"
+            onChange={(e) => setFilter((f) => ({ ...f, search: e.target.value }))}
           />
         </div>
-        <div className="w-full sm:w-48">
-          <label className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-1.5 block">Lọc trạng thái</label>
+
+        <div className="filter-field">
+          <label htmlFor="wo-status">Lọc trạng thái</label>
           <select
+            id="wo-status"
+            className="field-select"
             value={filter.status || 'all'}
-            onChange={(e) => setFilter(f => ({ ...f, status: e.target.value as WorkOrderStatus | 'all'}))}
-            className="field-select w-full"
+            onChange={(e) => setFilter((f) => ({ ...f, status: e.target.value as WorkOrderStatus | 'all' }))}
           >
             <option value="all">Tất cả</option>
             <option value="draft">Bản nháp</option>
@@ -51,118 +81,140 @@ export function WorkOrderList({ onView }: WorkOrderListProps) {
             <option value="cancelled">Đã hủy</option>
           </select>
         </div>
+
+        {hasFilter && (
+          <button
+            className="btn-secondary"
+            type="button"
+            onClick={() => setFilter({ status: 'all', search: '' })}
+            style={{ alignSelf: 'flex-end' }}
+          >
+            ✕ Xóa lọc
+          </button>
+        )}
       </div>
 
-      {/* Table Wrapper for Horizontal Scroll */}
-      <div className="overflow-x-auto w-full">
-        <table className="data-table min-w-full">
-          <thead>
-            <tr>
-              <th className="min-w-[120px]">Mã Lệnh</th>
-              <th className="min-w-[150px]">Công Thức (BOM)</th>
-              <th className="text-right min-w-[100px]">Mục Tiêu</th>
-              <th className="min-w-[120px]">Trạng Thái</th>
-              <th className="min-w-[110px]">Bắt Đầu</th>
-              <th className="td-actions">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
+      {/* Table */}
+      <div
+        className="data-table-wrap card-table-section"
+        style={isLoading || orders.length === 0 ? { border: 'none' } : undefined}
+      >
+        {isLoading ? (
+          <TableSkeleton rows={5} columns={6} />
+        ) : orders.length === 0 ? (
+          <EmptyState
+            icon={hasFilter ? '🔍' : '🏭'}
+            title={hasFilter ? 'Không tìm thấy lệnh sản xuất' : 'Chưa có lệnh sản xuất nào'}
+            description={hasFilter ? 'Thử thay đổi điều kiện lọc.' : 'Nhấn nút "Kiến tạo" để bắt đầu.'}
+            actionLabel={!hasFilter ? '+ Kiến tạo Lệnh SX' : undefined}
+            actionClick={!hasFilter ? onCreate : undefined}
+          />
+        ) : (
+          <table className="data-table">
+            <thead>
               <tr>
-                <td colSpan={6} className="table-empty py-12">
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="skeleton-block w-8 h-8 rounded-full" />
-                    <span className="text-sm text-neutral-400">Đang tải dữ liệu...</span>
-                  </div>
-                </td>
+                <th>Mã Lệnh</th>
+                <th className="hide-mobile">Công Thức (BOM)</th>
+                <th className="text-right">Mục Tiêu</th>
+                <th>Trạng Thái</th>
+                <th className="hide-mobile">Bắt Đầu</th>
+                <th></th>
               </tr>
-            ) : data?.data?.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="table-empty py-12 text-center text-neutral-400">
-                  Không tìm thấy lệnh sản xuất nào.
-                </td>
-              </tr>
-            ) : (
-              data?.data.map((wo) => (
-                <tr key={wo.id}>
-                  <td>
-                    <div className="font-bold text-primary truncate max-w-[140px]">{wo.work_order_number}</div>
-                    {wo.order && (
-                      <div className="td-muted text-[0.7rem] sm:text-xs">
-                        {wo.order.order_number}
-                      </div>
-                    )}
-                  </td>
-                  <td>
-                    <div className="font-semibold text-sm truncate max-w-[180px]">{wo.bom_template?.code}</div>
-                    <div className="td-muted text-xs">V{wo.bom_version}</div>
-                  </td>
-                  <td className="text-right whitespace-nowrap">
-                    <div className="font-bold">{wo.target_quantity_m.toLocaleString()} m</div>
-                    {wo.target_weight_kg && (
-                      <div className="td-muted text-xs">~{wo.target_weight_kg.toLocaleString()} kg</div>
-                    )}
-                  </td>
-                  <td>
-                    {getStatusBadge(wo.status)}
-                  </td>
-                  <td className="td-muted whitespace-nowrap text-sm">
-                    {wo.start_date ? new Date(wo.start_date).toLocaleDateString('vi-VN') : '-'}
-                  </td>
-                  <td className="td-actions">
-                    <div className="flex justify-end gap-1.5">
-                       <button
-                        className="btn-icon w-8 h-8 sm:w-10 sm:h-10 border border-neutral-100"
+            </thead>
+            <tbody>
+              {orders.map((wo) => {
+                const statusConfig = WORK_ORDER_STATUSES[wo.status]
+                return (
+                  <tr
+                    key={wo.id}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => onView(wo.id)}
+                  >
+                    <td>
+                      <strong>{wo.work_order_number}</strong>
+                      {wo.order && (
+                        <div className="td-muted" style={{ fontSize: '0.78rem' }}>
+                          {wo.order.order_number}
+                        </div>
+                      )}
+                    </td>
+                    <td className="hide-mobile">
+                      <strong>{wo.bom_template?.code}</strong>
+                      <div className="td-muted" style={{ fontSize: '0.78rem' }}>V{wo.bom_version}</div>
+                    </td>
+                    <td className="text-right" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                      <strong>{wo.target_quantity_m.toLocaleString()} m</strong>
+                      {wo.target_weight_kg && (
+                        <div className="td-muted" style={{ fontSize: '0.78rem' }}>
+                          ~{wo.target_weight_kg.toLocaleString()} kg
+                        </div>
+                      )}
+                    </td>
+                    <td>
+                      <span className={`roll-status ${wo.status}`}>
+                        {statusConfig?.label || wo.status}
+                      </span>
+                    </td>
+                    <td className="hide-mobile td-muted">
+                      {wo.start_date ? new Date(wo.start_date).toLocaleDateString('vi-VN') : '—'}
+                    </td>
+                    <td className="td-actions" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        className="btn-icon"
+                        type="button"
                         onClick={() => onView(wo.id)}
                         title="Chi tiết"
                       >
-                        <Eye className="h-4 w-4" />
+                        👁
                       </button>
                       {wo.status === 'draft' && (
-                         <button
-                          className="btn-icon w-8 h-8 sm:w-10 sm:h-10 border border-neutral-100 bg-accent/5"
+                        <button
+                          className="btn-icon"
+                          type="button"
                           style={{ color: 'var(--accent)' }}
-                          onClick={() => {
-                            if (confirm('Bắt đầu lệnh dệt này?')) startMutation.mutate(wo.id);
-                          }}
+                          onClick={() => handleStart(wo.id)}
                           title="Bắt đầu sản xuất"
+                          disabled={startMutation.isPending}
                         >
-                         <Play className="h-4 w-4" />
-                       </button>
+                          ▶
+                        </button>
                       )}
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
 
-      {/* Responsive Pagination */}
-      <div className="pagination-bar p-4 border-t border-neutral-100 bg-neutral-50/30 flex flex-col sm:flex-row items-center gap-3">
-        <div className="pagination-info text-xs sm:text-sm font-medium text-neutral-500">
-          Hiển thị {data?.data?.length || 0} / {data?.count || 0} lệnh
+      {/* Pagination */}
+      {orders.length > 0 && (
+        <div className="pagination-bar" style={{ padding: '0.75rem 1.25rem' }}>
+          <span className="pagination-info">
+            Hiển thị {orders.length} / {data?.count ?? 0} lệnh
+          </span>
+          <div className="pagination-buttons">
+            <button
+              className="btn-secondary"
+              type="button"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => p - 1)}
+            >
+              ←
+            </button>
+            <span className="pagination-current">{page}</span>
+            <button
+              className="btn-secondary"
+              type="button"
+              disabled={orders.length < 20}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              →
+            </button>
+          </div>
         </div>
-        <div className="pagination-buttons flex items-center gap-2 w-full sm:w-auto">
-          <button
-            className="btn-secondary flex-1 sm:flex-none py-2 h-10 px-4 min-w-[80px]"
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
-          >
-            Trước
-          </button>
-          <span className="text-sm font-bold px-2 whitespace-nowrap">{page}</span>
-          <button
-            className="btn-secondary flex-1 sm:flex-none py-2 h-10 px-4 min-w-[80px]"
-            disabled={!data?.data || data.data.length < 20}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            Sau
-          </button>
-        </div>
-      </div>
+      )}
     </div>
-  );
+  )
 }
-
