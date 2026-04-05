@@ -20,14 +20,14 @@
   --surface-strong: #ffffff;
   --border: rgba(16, 35, 61, 0.1);
   --text: #10233d;
-  --muted: #61758f;
+  --muted: #5c6f88; /* Tối ưu tương phản 4.7:1 */
   --primary: #0b6bcb;
   --primary-strong: #084f97;
   --accent: #0fa67a;
   
   --warning: #d97706;
   --danger: #c0392b;
-  --success: #0c8f68;
+  --success: #0a805c; /* Tối ưu tương phản 4.8:1 */
   --info: #0b6bcb;
   
   --shadow: 0 16px 40px rgba(16, 35, 61, 0.08);

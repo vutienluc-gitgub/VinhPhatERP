@@ -7,5 +7,10 @@ export default {
   theme: {
     extend: {},
   },
+  safelist: [
+    {
+      pattern: /^(bg|text)-(slate|green|red|blue)-(100|700|800)$/,
+    },
+  ],
   plugins: [],
 }

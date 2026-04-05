@@ -3,26 +3,33 @@ name: ui-ux-designer
 description: UI/UX design rules cho VinhPhat App V2. Invoke khi: thiết kế UI, tạo component mới, viết CSS, đánh giá UX, hỏi về design system, accessibility.
 ---
 
-# UI/UX Design — VinhPhat App V2
+# UI/UX Design — VinhPhat ERP
 
-File duy nhất, chuẩn mực cho mọi quyết định thiết kế trong dự án.
-Áp dụng cho mọi `component`, `page`, `form`, `modal` trong `src/`.
+# VinhPhat ERP — UI/UX Rules (Mobile-first App System)
+
+> Mục tiêu: đảm bảo toàn bộ UI/UX giống app thực sự (nhanh, rõ, dễ dùng),
+> tối ưu cho nhân viên vận hành trên mobile.
 
 ---
 
-## Nguyên tắc cốt lõi
+## Rules
 
+- **No overflow** — Tuyệt đối không cuộn ngang, không vỡ layout trên mọi màn hình.
+- **Must be mobile-first** — Mọi thiết kế bắt đầu từ màn hình nhỏ nhất (320px).
+- **Must use bottom sheet** — Dùng mô hình trượt từ đáy thay cho Modal truyền thống trên mobile.
 - **User first** — mọi quyết định phải có lý do từ lợi ích người dùng
 - **Accessible** — WCAG 2.1 AA tối thiểu, không thương lượng
-- **Mobile-first** — thiết kế cho màn nhỏ trước, mở rộng ra desktop
-- **Dệt may thực tế** — ưu tiên mật độ thông tin và đọc tốt dưới ánh sáng xưởng, không ưu tiên thẩm mỹ
-- **Consistent** — dùng design system có sẵn, không tạo style một lần
+- **Dệt may thực tế** — ưu tiên mật độ thông tin và đọc tốt dưới ánh sáng xưởng.
+- **Consistent** — dùng design system có sẵn, không tạo style một lần.
 
----
+## Design Tokens — CSS Variables & Tailwind CSS (Hybrid)
 
-## Design Tokens — CSS Variables (KHÔNG dùng Tailwind)
+Dự án sử dụng mô hình **Hybrid**:
+- **CSS Variables (Source of Truth)**: Định nghĩa các giá trị cốt lõi (màu sắc, bo góc, bóng) trong `src/styles/global.css`.
+- **Tailwind CSS (Utilities)**: Dùng cho layout (flex, grid), spacing (padding, margin) và các tinh chỉnh nhanh.
 
-Dự án dùng **thuần CSS variables**, định nghĩa trong `src/styles/global.css`.
+### 1. CSS Variables (Design Tokens)
+Định nghĩa trong `src/styles/global.css`:
 
 ```css
 :root {
@@ -51,15 +58,28 @@ Dự án dùng **thuần CSS variables**, định nghĩa trong `src/styles/globa
 }
 ```
 
-### Quy tắc bắt buộc khi dùng token
+### 2. Tailwind CSS Usage Guidelines
+
+Dùng Tailwind để tăng tốc độ phát triển nhưng phải tuân thủ token hệ thống:
+
+```tsx
+// ✅ Đúng — Dùng tiện ích layout/spacing của Tailwind
+<div className="flex flex-col gap-4 p-6 bg-[var(--surface-strong)]">
+
+// ✅ Đúng — Dùng màu từ CSS variable qua bracket notation nếu cần màu cụ thể
+<span className="text-[var(--primary)] font-semibold">
+
+// ❌ Sai — Không dùng màu hex ngẫu nhiên của Tailwind hoặc hardcode
+<div className="bg-blue-500 text-[#0b6bcb]">
+```
+
+### 3. Quy tắc bắt buộc khi dùng token
+Dù dùng CSS thuần hay Tailwind, luôn phải tham chiếu đến Variable:
 
 ```css
-/* ✅ Đúng */
+/* ✅ Đúng trong file .css */
 color: var(--primary);
 background: var(--surface-strong);
-
-/* ❌ Sai — không hardcode màu hex trong component/feature */
-color: #0b6bcb;
 ```
 
 ---
@@ -101,7 +121,8 @@ Các class chính:
 | `.field-error` | Thông báo lỗi dưới field |
 | `.data-table` / `.data-table-wrap` | Bảng dữ liệu |
 | `.filter-bar` | Thanh bộ lọc |
-| `.modal-overlay` / `.modal-sheet` | Modal |
+| `.modal-overlay` / `.modal-sheet` | Bottom Sheet (Mobile) / Modal (Desktop) |
+| `.sheet-header` / `.sheet-body` / `.sheet-footer` | Cấu trúc Bottom Sheet |
 | `.panel-card` | Card nội dung chính |
 | `.table-empty` | Trạng thái rỗng / loading |
 
@@ -184,6 +205,62 @@ Vùng chạm tối thiểu **44×44px**:
 } /* ✅ bắt buộc */
 ```
 
+- **Khoảng cách an toàn**: Mọi phần tử click được (button, input) phải cách nhau tối thiểu **8px** (`gap: 0.5rem`) để tránh bấm nhầm khi tay to hoặc đang đeo găng tay.
+
+---
+
+## Form & Input (Step-based & Bottom Sheet)
+
+### Quy tắc cơ bản
+- **Bắt buộc dùng Bottom Sheet**: Đối với mọi phân hệ nhập liệu trên mobile.
+- **Giới hạn 1 màn hình**: Form không được dài quá chiều cao màn hình di động. 
+- **Chia để trị (Divide & Conquer)**: Form nhiều dữ liệu PHẢI chia thành các bước (VD: Bước 1: Thông tin chung; Bước 2: Kỹ thuật; Bước 3: Nguồn gốc).
+
+### Tương tác Phân bước (Step-based Interaction)
+- **Nút "Tiếp tục" (Next)**: Dùng cho các bước trung gian (`btn-primary` ở góc phải).
+- **Nút "Quay lại" (Back)**: Luôn hiển thị ở bên trái (`btn-secondary`) khi từ Bước 2 trở đi.
+- **Nút "Lưu/Xác nhận"**: Chỉ xuất hiện ở bước cuối cùng để hoàn tất giao dịch.
+- **Xác thực từng bước**: Phải kiểm tra lỗi (validation) của bước hiện tại TRƯỚC KHI cho phép nhấn "Tiếp tục".
+- **Chỉ báo tiến trình (Progress Indicator)**: Bắt buộc có (Ví dụ: "Bước 2/3" hoặc thanh Progress Bar mỏng trên đỉnh Sheet).
+
+---
+
+## Select & Dropdown (Searchable Combobox)
+
+### Nguyên tắc bắt buộc
+- **Cấm dùng `<select>` HTML**: Trừ phi tập dữ liệu cực kỳ nhỏ (< 5 mục ổn định như Yes/No, Gender).
+- **Phải có Tìm kiếm (Searchable)**: Mọi dropdown chứa dữ liệu nghiệp vụ (Khách hàng, Sợi, Vải...) đều phải có ô tìm kiếm.
+- **Thư viện tiêu chuẩn**: Sử dụng **shadcn/ui Combobox** (kết hợp Radix UI Popover + Command).
+
+### Quy tắc Tìm kiếm (Filtering)
+Lọc kết quả ĐỒNG THỜI theo:
+- **Tên** (Name)
+- **Mã** (Code / ID)
+- **Số điện thoại** (Phone) — nếu là khách hàng/nhà cung cấp.
+- **Highlight**: In đậm các ký tự khớp với từ khóa trong danh sách kết quả.
+
+### Tương tác & Mobile
+- **Quick Create**: Nếu tìm kiếm không ra kết quả (`No results found`), hiển thị nút **"+ Thêm mới [Tên đang gõ]"** ngay dưới đáy để mở Bottom Sheet tạo nhanh.
+- **Mobile optimization**: Trên màn hình nhỏ, Combobox Popover phải hành xử như một **Bottom Sheet** (trượt từ đáy lên) để dễ dàng thao tác bằng một tay, thay vì treo lơ lửng giữa màn hình.
+
+---
+
+## ADVANCED — Mobile Interaction (App-like Experience)
+
+### Swipe & Pull Gestures
+- **Pull-to-refresh**: Phải có trên mọi danh sách dữ liệu quan trọng (Đơn hàng, Kho).
+- **Swipe Actions**: Hỗ trợ vuốt trái/phải trên các thẻ danh sách (List items) cho các hành động nhanh.
+
+### Visual States
+- **Skeleton Screens (Shimmer)**: Dùng thay cho icon loading xoay tròn truyền thống. Phải mô phỏng được cấu trúc của nội dung thật.
+- **Empty States**: Không hiển thị màn hình trống không; phải có icon minh họa và một nút hành động kèm theo.
+
+### Feedback
+- **Haptic Feedback**: Sử dụng bộ rung hệ thống (Vibration API) để xác nhận khi quét mã vạch đúng hoặc lưu form thành công.
+- **Infinite Scroll**: Ưu tiên tải dữ liệu tự động thay cho phân trang kiểu cũ khi chạm đáy màn hình.
+
+---
+
 ### cursor-pointer
 
 Mọi phần tử click được phải có `cursor: pointer`. Button HTML tự có — cần thêm cho `div`/`span` click được.
@@ -248,11 +325,20 @@ Mọi async UI cần 3 trạng thái:
 }
 ```
 
-### Navigation
+---
 
-- Max **7 items** trên nav (Miller's Law) — hiện tại đã đạt giới hạn
-- Mobile: bottom tab bar — đang dùng `.mobile-nav`
-- Active state: class `.is-active` trên `.nav-link` / `.mobile-nav-link`
+## Navigation
+
+### Mobile (📱)
+- **Bắt buộc dùng Bottom Navigation**: Luôn hiển thị ở đáy màn hình cho các mục chính.
+- **Fixed bottom**: Vị trí luôn cố định, không trôi theo nội dung.
+- **Không dùng top menu**: Header chỉ dành cho tên trang và các hành động ngữ cảnh (Contextual actions).
+- **Z-Index**: Phải cao hơn mọi nội dung khác (`z-index: 100`).
+
+### Desktop (💻)
+- **Sidebar bên trái**: Chứa danh mục chức năng phân tầng.
+- **Có thể collapse**: Thu gọn sidebar để tối ưu không gian cho các bảng dữ liệu chuyên sâu.
+- **Micro-animations**: Hiển thị text nhãn khi rê chuột qua (tooltip) nếu sidebar đang ở trạng thái thu gọn.
 
 ---
 
@@ -288,7 +374,7 @@ Body:          font-weight: 400
 ### duration
 
 - Micro-interaction (hover, focus): **150–200ms**
-- Modal/drawer mở: **200–280ms**
+- Bottom Sheet / Modal mở: **250–320ms** (dùng `cubic-bezier(0.16, 1, 0.3, 1)`)
 - Không vượt **350ms** cho animation UI thường
 
 ### transform-only
@@ -345,12 +431,8 @@ height: 0 → height: auto;
 
 ---
 
-## Quy tắc cấm tuyệt đối
-
-| Cấm                                     | Lý do                          |
-| --------------------------------------- | ------------------------------ |
 | `backdrop-filter: blur()`               | Tốn CPU — máy cũ tại xưởng dệt |
-| Hardcode màu hex trong component        | Phá vỡ design system           |
+| Hardcode màu hex (ngoài token)         | Phá vỡ design system           |
 | `outline: none` không có focus thay thế | Vi phạm accessibility          |
 | Cuộn ngang trên mobile                  | Trải nghiệm người dùng tệ      |
 | Animate `width`/`height`/`margin`       | Gây reflow, giật               |
@@ -361,6 +443,11 @@ height: 0 → height: auto;
 
 ## Checklist trước khi commit UI mới
 
+- [ ] Không tràn ngang
+- [ ] Dùng được bằng 1 tay
+- [ ] Có feedback cho mọi action
+- [ ] Form không quá dài
+- [ ] UI rõ ràng, không gây nhầm lẫn
 - [ ] Mọi input có `<label htmlFor>` kèm
 - [ ] Nút submit có `disabled={isPending}` và text loading
 - [ ] Lỗi validation hiện dưới field, không phải toast

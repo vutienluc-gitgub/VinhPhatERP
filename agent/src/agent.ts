@@ -130,7 +130,6 @@ console.log('\n╔════════════════════�
 console.log('║   Vịnh Phát AI Agent  (gõ /exit)    ║')
 console.log('╚══════════════════════════════════════╝\n')
 
-// eslint-disable-next-line no-constant-condition
 for (;;) {
   const input = await rl.question('Bạn: ')
 

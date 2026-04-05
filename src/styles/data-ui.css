@@ -181,8 +181,8 @@
 }
 
 .grade-A {
-  background: rgba(15, 166, 122, 0.14);
-  color: #0c8f68;
+  background: rgba(10, 128, 92, 0.14);
+  color: var(--success);
 }
 
 .grade-B {
@@ -205,8 +205,8 @@
 }
 
 .roll-status.in_stock {
-  background: rgba(15, 166, 122, 0.12);
-  color: #0c8f68;
+  background: rgba(10, 128, 92, 0.12);
+  color: var(--success);
 }
 
 .roll-status.reserved {
@@ -246,8 +246,8 @@
 }
 
 .roll-status.completed {
-  background: rgba(15, 166, 122, 0.12);
-  color: #0c8f68;
+  background: rgba(10, 128, 92, 0.12);
+  color: var(--success);
 }
 
 .roll-status.cancelled {
@@ -334,42 +334,86 @@
   transform: none;
 }
 
-/* ---- Modal overlay ---- */
+/* ---- Modal / AdaptiveSheet overlay ---- */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(10, 20, 40, 0.45);
-  z-index: 100;
+  background: rgba(10, 20, 30, 0.5);
+  z-index: 1000;
   display: flex;
-  align-items: flex-end;
+  align-items: flex-end; /* Mobile: trượt từ đáy */
   justify-content: center;
   padding: 0;
+  pointer-events: auto;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Thêm thanh Handle Bar cho cảm giác kéo (Native Look) */
+.modal-sheet::before {
+  content: "";
+  display: block;
+  width: 36px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 10px auto 4px;
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .modal-sheet::before {
+    display: none;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
 @media (min-width: 640px) {
   .modal-overlay {
     align-items: center;
-    padding: 1.5rem;
+    padding: 2rem;
   }
 }
 
 .modal-sheet {
   width: 100%;
   max-width: 600px;
-  max-height: 92vh;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
   background: var(--surface-strong);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  box-shadow: 0 -8px 40px rgba(16, 35, 61, 0.18);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: 0 -8px 40px rgba(16, 35, 61, 0.2);
   padding: 0;
+  z-index: 1001;
+  pointer-events: auto;
+  overflow: hidden;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @media (min-width: 640px) {
   .modal-sheet {
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow);
+    border-radius: var(--radius-xl);
+    animation: fadeIn 0.2s ease-out;
   }
+}
+
+.modal-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-strong);
+  flex-shrink: 0;
 }
 
 .modal-content {
@@ -377,25 +421,23 @@
   min-height: 0;
   overflow-y: auto;
   padding: 1.5rem;
+  background: var(--surface);
 }
 
-.modal-header {
-  padding: 1.5rem 1.5rem 0.5rem 1.5rem;
-}
-
-.modal-footer {
-  padding: 1rem 1.5rem 1.5rem 1.5rem;
+.modal-footer,
+.sheet-footer {
+  padding: 1.25rem 1.5rem;
   border-top: 1px solid var(--border);
   display: flex;
   gap: 0.75rem;
   justify-content: flex-end;
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.25rem;
+  background: var(--surface-strong);
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  /* Chống bị vỡ trên Mobile khi dùng Bottom Sheet */
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
 }
 
 .modal-header h3 {
@@ -410,6 +452,26 @@
   margin-top: 1.5rem;
   padding-top: 1rem;
   border-top: 1px solid var(--border);
+}
+
+/* ---- Step-based Form (AdaptiveSheet) ---- */
+.sheet-step-indicator {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.sheet-progress {
+  height: 3px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.sheet-progress-bar {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 0 2px 2px 0;
+  transition: width 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ---- Pagination ---- */

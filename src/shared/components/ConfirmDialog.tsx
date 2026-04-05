@@ -1,4 +1,6 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type PropsWithChildren } from 'react'
+import { AdaptiveSheet } from './AdaptiveSheet'
 
 type ConfirmOptions = {
   title?: string
@@ -8,18 +10,12 @@ type ConfirmOptions = {
   variant?: 'danger' | 'default'
 }
 
-type ConfirmContextValue = {
+export type ConfirmContextValue = {
   confirm: (options: ConfirmOptions) => Promise<boolean>
   alert: (message: string, title?: string) => Promise<void>
 }
 
-const ConfirmContext = createContext<ConfirmContextValue | null>(null)
-
-export function useConfirm() {
-  const ctx = useContext(ConfirmContext)
-  if (!ctx) throw new Error('useConfirm must be used within ConfirmProvider')
-  return ctx
-}
+export const ConfirmContext = createContext<ConfirmContextValue | null>(null)
 
 export function ConfirmProvider({ children }: PropsWithChildren) {
   const [open, setOpen] = useState(false)
@@ -61,43 +57,41 @@ export function ConfirmProvider({ children }: PropsWithChildren) {
   return (
     <ConfirmContext.Provider value={value}>
       {children}
-      {open && (
-        <div className="modal-overlay" onClick={handleCancel}>
-          <div
-            className="modal-sheet"
-            style={{ maxWidth: 420 }}
-            onClick={(e) => e.stopPropagation()}
-            role="alertdialog"
-            aria-modal="true"
-            aria-labelledby="confirm-dialog-title"
-            aria-describedby="confirm-dialog-message"
-          >
-            <div className="modal-header">
-              <h3 id="confirm-dialog-title">{options.title ?? 'Xác nhận'}</h3>
-            </div>
-            <p id="confirm-dialog-message" style={{ margin: '0 0 0.5rem', lineHeight: 1.5 }}>
-              {options.message}
-            </p>
-            <div className="modal-actions">
-              {!options.isAlert && (
-                <button className="secondary-button" type="button" onClick={handleCancel}>
-                  {options.cancelLabel ?? 'Huỷ'}
-                </button>
-              )}
-              <button
-                className={options.variant === 'danger' ? 'danger-button' : 'primary-button'}
-                type="button"
-                onClick={handleConfirm}
-                autoFocus
-              >
-                {options.isAlert
-                  ? 'OK'
-                  : (options.confirmLabel ?? 'Xác nhận')}
+      <AdaptiveSheet
+        open={open}
+        onClose={handleCancel}
+        title={options.title ?? 'Xác nhận'}
+        titleId="confirm-dialog-title"
+        footer={
+          <>
+            {!options.isAlert && (
+              <button className="btn-secondary" type="button" onClick={handleCancel}>
+                {options.cancelLabel ?? 'Huỷ'}
               </button>
-            </div>
-          </div>
-        </div>
-      )}
+            )}
+            <button
+              className={options.variant === 'danger' ? 'btn-danger' : 'btn-primary'}
+              type="button"
+              onClick={handleConfirm}
+              autoFocus
+            >
+              {options.isAlert
+                ? 'OK'
+                : (options.confirmLabel ?? 'Xác nhận')}
+            </button>
+          </>
+        }
+      >
+        <p id="confirm-dialog-message" style={{ lineHeight: 1.5 }}>
+          {options.message}
+        </p>
+      </AdaptiveSheet>
     </ConfirmContext.Provider>
   )
+}
+
+export function useConfirm() {
+  const ctx = useContext(ConfirmContext)
+  if (!ctx) throw new Error('useConfirm must be used within ConfirmProvider')
+  return ctx
 }

@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import { WorkOrderList } from './WorkOrderList';
 import { WorkOrderForm } from './WorkOrderForm';
 import { WorkOrderDetail } from './WorkOrderDetail';
+import { Portal } from '@/shared/components/Portal';
 
 export function WorkOrdersPage() {
   const [view, setView] = useState<'list' | 'detail'>('list');
@@ -58,20 +59,25 @@ export function WorkOrdersPage() {
       </div>
 
       {isFormOpen && (
-        <div className="modal-overlay">
-          <div className="modal-sheet" style={{ maxWidth: '800px' }}>
-            <div className="modal-header">
-              <h3>Kiến tạo Lệnh Sản Xuất Mới</h3>
-              <button onClick={() => setIsFormOpen(false)} className="btn-icon">×</button>
-            </div>
-            <div className="modal-content">
-               <WorkOrderForm 
-                  onSuccess={handleFormSuccess} 
-                  onCancel={() => setIsFormOpen(false)} 
-               />
+        <Portal>
+          <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setIsFormOpen(false)}>
+            <div className="modal-sheet" style={{ maxWidth: '800px' }}>
+              <div className="modal-header">
+                <h3 className="text-lg font-bold">Kiến tạo Lệnh Sản Xuất Mới</h3>
+                <button 
+                  onClick={() => setIsFormOpen(false)} 
+                  className="btn-icon p-2 hover:bg-neutral-100 rounded-full transition-colors"
+                >
+                  <span className="text-2xl leading-none">×</span>
+                </button>
+              </div>
+              <WorkOrderForm 
+                onSuccess={handleFormSuccess} 
+                onCancel={() => setIsFormOpen(false)} 
+              />
             </div>
           </div>
-        </div>
+        </Portal>
       )}
     </div>
   );
