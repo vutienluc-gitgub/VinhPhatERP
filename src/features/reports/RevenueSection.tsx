@@ -27,14 +27,12 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
       </div>
 
       {/* KPI cards */}
-      <div style={{ padding: '0 1.25rem 1rem' }}>
-        <KpiGrid>
-          <KpiCard label="Tổng doanh thu" value={`${formatCurrency(totalRevenue)} đ`} color="#0b6bcb" />
-          <KpiCard label="Đã thu" value={`${formatCurrency(totalPaid)} đ`} color="#0c8f68" />
-          <KpiCard label="Còn nợ" value={`${formatCurrency(totalBalance)} đ`} color={totalBalance > 0 ? '#c0392b' : '#0c8f68'} />
-          <KpiCard label="Số đơn hàng" value={String(data.length)} color="#6b7280" />
-        </KpiGrid>
-      </div>
+      <KpiGrid>
+        <KpiCard label="Tổng doanh thu" value={`${formatCurrency(totalRevenue)} đ`} color="var(--primary)" />
+        <KpiCard label="Đã thu" value={`${formatCurrency(totalPaid)} đ`} color="var(--success)" />
+        <KpiCard label="Còn nợ" value={`${formatCurrency(totalBalance)} đ`} color={totalBalance > 0 ? 'var(--warning)' : 'var(--success)'} />
+        <KpiCard label="Số đơn hàng" value={String(data.length)} />
+      </KpiGrid>
 
       {/* Table */}
       <div className="data-table-wrap card-table-section">

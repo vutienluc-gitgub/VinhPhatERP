@@ -1,4 +1,5 @@
 import type { ProductionEfficiencyRow, OnTimeDeliveryRow } from '@/api/reports.api'
+import { KpiCard, KpiGrid } from '@/shared/components/KpiCard'
 
 type ProductionSectionProps = {
   efficiencyData: ProductionEfficiencyRow[]
@@ -55,25 +56,6 @@ function computeStages(data: ProductionEfficiencyRow[]): StageSummary[] {
   })
 }
 
-function KpiCard({ label, value, sub, color }: { label: string; value: string; sub?: string; color?: string }) {
-  return (
-    <div style={{
-      background: 'var(--bg)',
-      border: '1px solid var(--border)',
-      borderRadius: 'var(--radius-sm)',
-      padding: '0.75rem 1rem',
-    }}>
-      <div className="td-muted" style={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase' }}>
-        {label}
-      </div>
-      <div style={{ fontSize: '1.3rem', fontWeight: 700, fontVariantNumeric: 'tabular-nums', color }}>
-        {value}
-      </div>
-      {sub && <div className="td-muted" style={{ fontSize: '0.75rem' }}>{sub}</div>}
-    </div>
-  )
-}
-
 export function ProductionSection({ efficiencyData, onTimeData, isLoading }: ProductionSectionProps) {
   const stages = computeStages(efficiencyData)
 
@@ -103,35 +85,28 @@ export function ProductionSection({ efficiencyData, onTimeData, isLoading }: Pro
         <p className="table-empty">Chưa có dữ liệu tiến độ.</p>
       ) : (
         <>
-          {/* KPI row */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-            gap: '0.75rem',
-            padding: '0 1.25rem 1rem',
-          }}>
+          {/* KPI columns */}
+          <KpiGrid>
             <KpiCard
               label="Giao đúng hạn"
               value={`${onTimePct}%`}
-              sub={`${onTimeCount}/${totalDeliveries} đơn`}
-              color={onTimePct >= 80 ? '#0c8f68' : onTimePct >= 60 ? '#d97706' : '#c0392b'}
+              icon="✅"
+              color={onTimePct >= 80 ? 'var(--success)' : onTimePct >= 60 ? 'var(--warning)' : 'var(--danger)'}
             />
             <KpiCard
-              label="Trung bình trễ"
-              value={`${formatNum(avgOverallDeviation)} ngày`}
-              sub="trung bình tất cả công đoạn"
-              color={avgOverallDeviation <= 2 ? '#0c8f68' : '#c0392b'}
+              label="TB trễ (ngày)"
+              value={formatNum(avgOverallDeviation)}
+              color={avgOverallDeviation <= 2 ? 'var(--success)' : 'var(--danger)'}
             />
             {worstStage && worstStage.latePct > 0 && (
               <KpiCard
-                label="Công đoạn yếu nhất"
+                label="Mắc xích yếu"
                 value={STAGE_LABELS[worstStage.stage] ?? worstStage.stage}
-                sub={`${worstStage.latePct}% trễ (${worstStage.lateCount}/${worstStage.totalOrders})`}
-                color="#c0392b"
+                color="var(--danger)"
               />
             )}
-            <KpiCard label="Tổng đơn theo dõi" value={String(totalDeliveries)} />
-          </div>
+            <KpiCard label="Đơn theo dõi" value={String(totalDeliveries)} />
+          </KpiGrid>
 
           {/* Stage breakdown table */}
           <div className="data-table-wrap card-table-section">
@@ -151,8 +126,8 @@ export function ProductionSection({ efficiencyData, onTimeData, isLoading }: Pro
                   <tr key={st.stage}>
                     <td><strong>{STAGE_LABELS[st.stage] ?? st.stage}</strong></td>
                     <td className="numeric-cell">{st.totalOrders}</td>
-                    <td className="numeric-cell" style={{ color: '#0c8f68' }}>{st.onTimeCount}</td>
-                    <td className="numeric-cell" style={{ color: st.lateCount > 0 ? '#c0392b' : undefined }}>
+                    <td className="numeric-cell" style={{ color: 'var(--success)' }}>{st.onTimeCount}</td>
+                    <td className="numeric-cell" style={{ color: st.lateCount > 0 ? 'var(--danger)' : undefined }}>
                       {st.lateCount}
                     </td>
                     <td className="numeric-cell">
@@ -162,8 +137,10 @@ export function ProductionSection({ efficiencyData, onTimeData, isLoading }: Pro
                         borderRadius: '4px',
                         fontSize: '0.8rem',
                         fontWeight: 700,
-                        background: st.latePct > 30 ? '#fdecea' : st.latePct > 10 ? '#fff3cd' : '#e8f5e9',
-                        color: st.latePct > 30 ? '#c0392b' : st.latePct > 10 ? '#856404' : '#0c8f68',
+                        background: st.latePct > 30 ? 'var(--surface-danger)' : st.latePct > 10 ? 'var(--surface-warning)' : 'var(--surface-success)',
+                        color: st.latePct > 30 ? 'var(--danger)' : st.latePct > 10 ? 'var(--warning-strong)' : 'var(--success)',
+                        border: '1px solid currentColor',
+                        opacity: 0.8,
                       }}>
                         {st.latePct}%
                       </span>

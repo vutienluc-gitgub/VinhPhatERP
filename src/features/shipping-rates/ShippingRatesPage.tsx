@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { ShippingRateForm } from './ShippingRateForm'
 import { ShippingRateList } from './ShippingRateList'
 import type { ShippingRate } from './types'
@@ -26,7 +27,14 @@ export function ShippingRatesPage() {
   return (
     <>
       <ShippingRateList onEdit={openEdit} onNew={openCreate} />
-      {showForm && <ShippingRateForm item={editItem} onClose={closeForm} />}
+      
+      <AdaptiveSheet
+        open={showForm}
+        onClose={closeForm}
+        title={editItem ? 'Sửa bảng giá cước' : 'Thêm bảng giá cước'}
+      >
+        <ShippingRateForm item={editItem} onClose={closeForm} />
+      </AdaptiveSheet>
     </>
   )
 }

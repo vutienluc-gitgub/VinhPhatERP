@@ -24,14 +24,12 @@ export function InventorySection({ data, isLoading }: InventorySectionProps) {
       </div>
 
       {/* KPI cards */}
-      <div style={{ padding: '0 1.25rem 1rem' }}>
-        <KpiGrid>
-          <KpiCard label="Cuộn vải mộc" value={String(rawRolls)} color="#0b6bcb" />
-          <KpiCard label="Mét vải mộc" value={formatNumber(rawLength)} color="#0b6bcb" />
-          <KpiCard label="Cuộn thành phẩm" value={String(finishedRolls)} color="#0c8f68" />
-          <KpiCard label="Mét thành phẩm" value={formatNumber(finishedLength)} color="#0c8f68" />
-        </KpiGrid>
-      </div>
+      <KpiGrid>
+        <KpiCard label="Cuộn mộc" value={String(rawRolls)} color="var(--primary)" />
+        <KpiCard label="Mét mộc" value={formatNumber(rawLength)} color="var(--primary)" />
+        <KpiCard label="Cuộn TP" value={String(finishedRolls)} color="var(--success)" />
+        <KpiCard label="Mét TP" value={formatNumber(finishedLength)} color="var(--success)" />
+      </KpiGrid>
 
       {isLoading ? (
         <p className="table-empty">Đang tải...</p>
@@ -59,7 +57,7 @@ function InventoryTable({ title, rows }: { title: string; rows: InventoryRow[] }
   return (
     <div className="data-table-wrap card-table-section">
       <div style={{ padding: '0.5rem 1.25rem 0' }}>
-        <strong style={{ fontSize: '0.85rem' }}>{title}</strong>
+        <strong style={{ fontSize: '0.82rem', color: 'var(--fg-muted)', textTransform: 'uppercase' }}>{title}</strong>
       </div>
       {rows.length === 0 ? (
         <p className="table-empty">Không có tồn kho.</p>

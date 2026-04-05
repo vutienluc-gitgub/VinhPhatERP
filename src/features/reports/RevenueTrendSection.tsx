@@ -1,4 +1,5 @@
 import type { MonthlyRevenueRow, RevenueByFabricRow, PaymentCollectionRow } from '@/api/reports.api'
+import { KpiCard, KpiGrid } from '@/shared/components/KpiCard'
 
 type RevenueTrendSectionProps = {
   monthlyData: MonthlyRevenueRow[]
@@ -18,25 +19,6 @@ function formatShortCurrency(value: number): string {
   return String(value)
 }
 
-function KpiCard({ label, value, sub, color }: { label: string; value: string; sub?: string; color?: string }) {
-  return (
-    <div style={{
-      background: 'var(--bg)',
-      border: '1px solid var(--border)',
-      borderRadius: 'var(--radius-sm)',
-      padding: '0.75rem 1rem',
-    }}>
-      <div className="td-muted" style={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase' }}>
-        {label}
-      </div>
-      <div style={{ fontSize: '1.3rem', fontWeight: 700, fontVariantNumeric: 'tabular-nums', color }}>
-        {value}
-      </div>
-      {sub && <div className="td-muted" style={{ fontSize: '0.75rem' }}>{sub}</div>}
-    </div>
-  )
-}
-
 function computeGrowth(data: MonthlyRevenueRow[]): { pct: number; label: string } | null {
   if (data.length < 2) return null
   const current = data[0]!.total_revenue
@@ -46,24 +28,26 @@ function computeGrowth(data: MonthlyRevenueRow[]): { pct: number; label: string 
   return { pct, label: pct >= 0 ? `+${pct}%` : `${pct}%` }
 }
 
-/** Simple inline bar chart using CSS */
+/** Simple inline bar chart using CSS standard tokens */
 function MiniBarChart({ data, maxValue }: { data: { label: string; value: number; color?: string }[]; maxValue: number }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
       {data.map((d, i) => (
         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span className="td-muted" style={{ fontSize: '0.75rem', minWidth: '5rem', textAlign: 'right' }}>
+          <span className="td-muted" style={{ fontSize: '0.7rem', minWidth: '5rem', textAlign: 'right', fontWeight: 600 }}>
             {d.label}
           </span>
-          <div style={{ flex: 1, height: '1.2rem', background: 'var(--border)', borderRadius: '3px', overflow: 'hidden' }}>
+          <div style={{ flex: 1, height: '1.2rem', background: 'var(--border)', borderRadius: '4px', overflow: 'hidden' }}>
             <div style={{
               width: maxValue > 0 ? `${Math.max((d.value / maxValue) * 100, 1)}%` : '0%',
               height: '100%',
-              background: d.color ?? '#3b82f6',
-              borderRadius: '3px',
+              background: d.color ?? 'var(--primary)',
+              borderRadius: '4px',
               display: 'flex',
               alignItems: 'center',
               paddingLeft: '0.35rem',
+              transition: 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+              opacity: 0.9,
             }}>
               {d.value / maxValue > 0.2 && (
                 <span style={{ color: '#fff', fontSize: '0.65rem', fontWeight: 700 }}>
@@ -117,48 +101,44 @@ export function RevenueTrendSection({ monthlyData, fabricData, paymentData, isLo
       ) : (
         <>
           {/* KPIs */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-            gap: '0.75rem',
-            padding: '0 1.25rem 1rem',
-          }}>
+          <KpiGrid>
             <KpiCard
               label="Tổng doanh thu"
               value={`${formatCurrency(totalRevenue)} đ`}
-              sub={`${monthlyData.length} tháng gần nhất`}
+              icon="💰"
             />
             <KpiCard
               label="Đã thu"
               value={`${formatCurrency(totalCollected)} đ`}
-              sub={`Tỷ lệ thu: ${collectionRate}%`}
-              color={collectionRate >= 80 ? '#0c8f68' : '#d97706'}
+              color="var(--success)"
+              icon={`${collectionRate}%`}
             />
             {growth && (
               <KpiCard
-                label="So với tháng trước"
+                label="Tăng trưởng"
                 value={growth.label}
-                sub="tăng trưởng doanh thu"
-                color={growth.pct >= 0 ? '#0c8f68' : '#c0392b'}
+                color={growth.pct >= 0 ? 'var(--success)' : 'var(--danger)'}
+                icon="📈"
               />
             )}
             <KpiCard
               label="Còn phải thu"
               value={`${formatCurrency(totalRevenue - totalCollected)} đ`}
-              color={totalRevenue - totalCollected > 0 ? '#d97706' : '#0c8f68'}
+              color="var(--warning)"
+              icon="⏳"
             />
-          </div>
+          </KpiGrid>
 
           {/* Monthly revenue trend */}
           <div style={{ padding: '0 1.25rem 1rem' }}>
-            <div className="td-muted" style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+            <div className="td-muted" style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '1rem' }}>
               Doanh thu theo tháng
             </div>
             <MiniBarChart
               data={[...monthlyData].reverse().map((r) => ({
                 label: r.month,
                 value: r.total_revenue,
-                color: '#3b82f6',
+                color: 'var(--primary)',
               }))}
               maxValue={maxMonthlyRevenue}
             />
@@ -166,15 +146,15 @@ export function RevenueTrendSection({ monthlyData, fabricData, paymentData, isLo
 
           {/* Revenue by fabric type */}
           {fabricData.length > 0 && (
-            <div style={{ padding: '0 1.25rem 1rem' }}>
-              <div className="td-muted" style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+            <div style={{ padding: '0 1.25rem 1.5rem' }}>
+              <div className="td-muted" style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '1rem' }}>
                 Doanh thu theo loại vải (Top 10)
               </div>
               <MiniBarChart
                 data={fabricData.slice(0, 10).map((r) => ({
                   label: `${r.fabric_type}${r.color_name ? ` (${r.color_name})` : ''}`,
                   value: r.total_revenue,
-                  color: '#10b981',
+                  color: 'var(--accent)',
                 }))}
                 maxValue={maxFabricRevenue}
               />
@@ -184,10 +164,13 @@ export function RevenueTrendSection({ monthlyData, fabricData, paymentData, isLo
           {/* Payment method breakdown */}
           {paymentMethods.length > 0 && (
             <div className="data-table-wrap card-table-section">
+              <div style={{ padding: '0.5rem 1.25rem 0' }}>
+                <strong style={{ fontSize: '0.8rem', color: 'var(--fg-muted)' }}>Phân bổ phương thức thanh toán</strong>
+              </div>
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>Phương thức thanh toán</th>
+                    <th>Phương thức</th>
                     <th className="text-right">Số tiền thu</th>
                     <th className="text-right">Tỷ lệ</th>
                   </tr>
@@ -203,13 +186,6 @@ export function RevenueTrendSection({ monthlyData, fabricData, paymentData, isLo
                     </tr>
                   ))}
                 </tbody>
-                <tfoot>
-                  <tr>
-                    <td><strong>Tổng</strong></td>
-                    <td className="numeric-cell"><strong>{formatCurrency(totalCollected)} đ</strong></td>
-                    <td className="numeric-cell"><strong>100%</strong></td>
-                  </tr>
-                </tfoot>
               </table>
             </div>
           )}

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Edit2, Trash2 } from 'lucide-react'
 
 import { useConfirm } from '@/shared/components/ConfirmDialog'
 import { formatCurrency } from './shipping-rates.module'
@@ -52,7 +53,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
             <p className="eyebrow">Quản trị</p>
             <h3>Giá cước vận chuyển</h3>
           </div>
-          <button className="primary-button" type="button" onClick={onNew}>
+          <button className="primary-button btn-standard" type="button" onClick={onNew}>
             + Thêm bảng giá
           </button>
         </div>
@@ -62,7 +63,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
       <div className="filter-bar card-filter-section">
         <form className="filter-field" onSubmit={handleSearch} style={{ flex: '1 1 220px' }}>
           <label htmlFor="filter-search">Tìm kiếm</label>
-          <div className="flex-controls">
+          <div style={{ display: 'flex', gap: '0.4rem' }}>
             <input
               id="filter-search"
               className="field-input"
@@ -109,41 +110,41 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
                 <th>Tên bảng giá</th>
                 <th>Khu vực</th>
                 <th>Giá cước</th>
-                <th>Phí tối thiểu</th>
+                <th className="hide-mobile">Phí tối thiểu</th>
                 <th>Trạng thái</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {data.map((item) => (
-                <tr key={item.id}>
+                <tr key={item.id} style={{ cursor: 'pointer' }} onClick={() => onEdit(item)}>
                   <td><strong>{item.name}</strong></td>
                   <td>{item.destination_area}</td>
                   <td className="td-muted" style={{ fontSize: '0.85rem' }}>{rateDescription(item)}</td>
-                  <td>{item.min_charge > 0 ? formatCurrency(item.min_charge) : '—'}</td>
+                  <td className="hide-mobile">{item.min_charge > 0 ? formatCurrency(item.min_charge) : '—'}</td>
                   <td>
                     <span className={`roll-status ${item.is_active ? 'in_stock' : 'damaged'}`}>
                       {item.is_active ? 'Đang dùng' : 'Ngừng'}
                     </span>
                   </td>
-                  <td>
+                  <td className="td-actions" onClick={(e) => e.stopPropagation()}>
                     <div style={{ display: 'flex', gap: '0.3rem', justifyContent: 'flex-end' }}>
                       <button
-                        className="btn-secondary"
+                        className="btn-icon"
                         type="button"
+                        title="Sửa"
                         onClick={() => onEdit(item)}
-                        style={{ fontSize: '0.78rem', padding: '0.2rem 0.5rem' }}
                       >
-                        Sửa
+                        <Edit2 style={{ width: 14, height: 14 }} />
                       </button>
                       <button
-                        className="btn-secondary"
+                        className="btn-icon danger"
                         type="button"
+                        title="Xoá"
                         onClick={() => { void handleDelete(item) }}
                         disabled={deleteMutation.isPending}
-                        style={{ fontSize: '0.78rem', padding: '0.2rem 0.5rem', color: '#c0392b' }}
                       >
-                        ✕
+                        <Trash2 style={{ width: 14, height: 14 }} />
                       </button>
                     </div>
                   </td>

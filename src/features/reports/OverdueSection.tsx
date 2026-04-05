@@ -25,25 +25,23 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
       </div>
 
       {/* KPI cards */}
-      <div style={{ padding: '0 1.25rem 1rem' }}>
-        <KpiGrid>
-          <KpiCard
-            label="Tổng đơn trễ"
-            value={String(data.length)}
-            color={data.length > 0 ? '#c0392b' : '#0c8f68'}
-          />
-          <KpiCard
-            label="Trễ > 7 ngày"
-            value={String(severeCount)}
-            color={severeCount > 0 ? '#c0392b' : '#0c8f68'}
-          />
-          <KpiCard
-            label="Tổng nợ đơn trễ"
-            value={`${formatCurrency(data.reduce((s, r) => s + r.balance_due, 0))} đ`}
-            color="#d97706"
-          />
-        </KpiGrid>
-      </div>
+      <KpiGrid>
+        <KpiCard
+          label="Tổng đơn trễ"
+          value={String(data.length)}
+          color={data.length > 0 ? 'var(--danger)' : 'var(--success)'}
+        />
+        <KpiCard
+          label="Trễ > 7 ngày"
+          value={String(severeCount)}
+          color={severeCount > 0 ? 'var(--danger)' : 'var(--success)'}
+        />
+        <KpiCard
+          label="Tổng nợ đơn trễ"
+          value={`${formatCurrency(data.reduce((s, r) => s + r.balance_due, 0))} đ`}
+          color="var(--warning-strong)"
+        />
+      </KpiGrid>
 
       {/* Table */}
       <div className="data-table-wrap card-table-section">
@@ -70,8 +68,8 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
                   <td className="hide-mobile">{row.customer_name}</td>
                   <td className="td-muted">{row.delivery_date}</td>
                   <td className="numeric-cell" style={{
-                    color: row.days_overdue > 7 ? '#c0392b' : '#d97706',
-                    fontWeight: row.days_overdue > 7 ? 700 : 400,
+                    color: row.days_overdue > 7 ? 'var(--danger)' : 'var(--warning-strong)',
+                    fontWeight: row.days_overdue > 7 ? 700 : 600,
                   }}>
                     {row.days_overdue} ngày
                   </td>

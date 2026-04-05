@@ -40,137 +40,150 @@ export function ShippingRateForm({ item, onClose }: Props) {
   })
 
   async function onSubmit(values: ShippingRateFormValues) {
-    if (item) {
-      await update.mutateAsync({ id: item.id, values })
-    } else {
-      await create.mutateAsync(values)
+    try {
+      if (item) {
+        await update.mutateAsync({ id: item.id, values })
+      } else {
+        await create.mutateAsync(values)
+      }
+      onClose()
+    } catch (err) {
+      console.error(err)
     }
-    onClose()
   }
 
   const mutationError = create.error || update.error
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560 }}>
-        <div className="modal-header">
-          <h3>{item ? 'Sửa bảng giá cước' : 'Thêm bảng giá cước'}</h3>
-          <button className="btn-icon" type="button" onClick={onClose}>✕</button>
+    <form id="shipping-rate-form" onSubmit={handleSubmit(onSubmit)}>
+      <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+        {/* Name */}
+        <div className="form-field">
+          <label>Tên bảng giá <span className="field-required">*</span></label>
+          <input 
+            className={`field-input${errors.name ? ' is-error' : ''}`} 
+            {...register('name')} 
+            placeholder="VD: Tuyến HCM - Bình Dương" 
+          />
+          {errors.name && <p className="field-error">{errors.name.message}</p>}
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {/* Name + Area */}
-          <div className="form-grid-2">
-            <div>
-              <label className="form-label">Tên bảng giá *</label>
-              <input className="field-input" {...register('name')} placeholder="VD: Tuyến HCM - Bình Dương" />
-              {errors.name && <p className="field-error">{errors.name.message}</p>}
-            </div>
-            <div>
-              <label className="form-label">Khu vực giao *</label>
-              <input className="field-input" {...register('destinationArea')} placeholder="VD: Bình Dương" />
-              {errors.destinationArea && <p className="field-error">{errors.destinationArea.message}</p>}
-            </div>
-          </div>
+        {/* Area */}
+        <div className="form-field">
+          <label>Khu vực giao <span className="field-required">*</span></label>
+          <input 
+            className={`field-input${errors.destinationArea ? ' is-error' : ''}`} 
+            {...register('destinationArea')} 
+            placeholder="VD: Bình Dương" 
+          />
+          {errors.destinationArea && <p className="field-error">{errors.destinationArea.message}</p>}
+        </div>
 
-          {/* Rate per trip */}
-          <div className="form-grid-2">
-            <div>
-              <label className="form-label">Giá cố định/chuyến (VNĐ)</label>
-              <input
-                className="field-input"
-                type="number"
-                {...register('ratePerTrip', { valueAsNumber: true, setValueAs: (v) => (v === '' ? null : Number(v)) })}
-                placeholder="0"
-              />
-              {errors.ratePerTrip && <p className="field-error">{errors.ratePerTrip.message}</p>}
-            </div>
-            <div>
-              <label className="form-label">Giá theo mét (VNĐ/m)</label>
-              <input
-                className="field-input"
-                type="number"
-                step="0.001"
-                {...register('ratePerMeter', { valueAsNumber: true, setValueAs: (v) => (v === '' ? null : Number(v)) })}
-                placeholder="0"
-              />
-              {errors.ratePerMeter && <p className="field-error">{errors.ratePerMeter.message}</p>}
-            </div>
-          </div>
+        {/* Rate per trip */}
+        <div className="form-field">
+          <label>Giá cố định/chuyến (VNĐ)</label>
+          <input
+            className={`field-input${errors.ratePerTrip ? ' is-error' : ''}`}
+            type="number"
+            {...register('ratePerTrip', { 
+              valueAsNumber: true, 
+              setValueAs: (v) => (v === '' ? null : Number(v)) 
+            })}
+            placeholder="0"
+          />
+          {errors.ratePerTrip && <p className="field-error">{errors.ratePerTrip.message}</p>}
+        </div>
 
-          {/* Rate per kg + loading fee */}
-          <div className="form-grid-2">
-            <div>
-              <label className="form-label">Giá theo kg (VNĐ/kg)</label>
-              <input
-                className="field-input"
-                type="number"
-                step="0.001"
-                {...register('ratePerKg', { valueAsNumber: true, setValueAs: (v) => (v === '' ? null : Number(v)) })}
-                placeholder="0"
-              />
-              {errors.ratePerKg && <p className="field-error">{errors.ratePerKg.message}</p>}
-            </div>
-            <div>
-              <label className="form-label">Phí bốc xếp (VNĐ) *</label>
-              <input
-                className="field-input"
-                type="number"
-                {...register('loadingFee', { valueAsNumber: true })}
-                placeholder="0"
-              />
-              {errors.loadingFee && <p className="field-error">{errors.loadingFee.message}</p>}
-            </div>
-          </div>
+        {/* Rate per meter */}
+        <div className="form-field">
+          <label>Giá theo mét (VNĐ/m)</label>
+          <input
+            className={`field-input${errors.ratePerMeter ? ' is-error' : ''}`}
+            type="number"
+            step="0.001"
+            {...register('ratePerMeter', { 
+              valueAsNumber: true, 
+              setValueAs: (v) => (v === '' ? null : Number(v)) 
+            })}
+            placeholder="0"
+          />
+          {errors.ratePerMeter && <p className="field-error">{errors.ratePerMeter.message}</p>}
+        </div>
 
-          {/* Min charge + active */}
-          <div className="form-grid-2">
-            <div>
-              <label className="form-label">Phí tối thiểu (VNĐ)</label>
-              <input
-                className="field-input"
-                type="number"
-                {...register('minCharge', { valueAsNumber: true })}
-                placeholder="0"
-              />
-              {errors.minCharge && <p className="field-error">{errors.minCharge.message}</p>}
-            </div>
-            <div>
-              <label className="form-label">Trạng thái</label>
-              <select className="field-select" {...register('isActive', { setValueAs: (v) => v === 'true' || v === true })}>
-                <option value="true">Đang dùng</option>
-                <option value="false">Ngừng dùng</option>
-              </select>
-            </div>
-          </div>
+        {/* Rate per kg */}
+        <div className="form-field">
+          <label>Giá theo kg (VNĐ/kg)</label>
+          <input
+            className={`field-input${errors.ratePerKg ? ' is-error' : ''}`}
+            type="number"
+            step="0.001"
+            {...register('ratePerKg', { 
+              valueAsNumber: true, 
+              setValueAs: (v) => (v === '' ? null : Number(v)) 
+            })}
+            placeholder="0"
+          />
+          {errors.ratePerKg && <p className="field-error">{errors.ratePerKg.message}</p>}
+        </div>
 
-          {/* Notes */}
-          <div>
-            <label className="form-label">Ghi chú</label>
-            <textarea className="field-input" rows={2} {...register('notes')} placeholder="Ghi chú thêm..." />
-          </div>
+        {/* Loading fee */}
+        <div className="form-field">
+          <label>Phí bốc xếp (VNĐ) <span className="field-required">*</span></label>
+          <input
+            className={`field-input${errors.loadingFee ? ' is-error' : ''}`}
+            type="number"
+            {...register('loadingFee', { valueAsNumber: true })}
+            placeholder="0"
+          />
+          {errors.loadingFee && <p className="field-error">{errors.loadingFee.message}</p>}
+        </div>
 
-          {/* Error */}
-          {mutationError && (
-            <p style={{ color: '#c0392b', fontSize: '0.88rem' }}>
-              Lỗi: {(mutationError as Error).message}
-            </p>
-          )}
+        {/* Min charge */}
+        <div className="form-field">
+          <label>Phí tối thiểu (VNĐ)</label>
+          <input
+            className={`field-input${errors.minCharge ? ' is-error' : ''}`}
+            type="number"
+            {...register('minCharge', { valueAsNumber: true })}
+            placeholder="0"
+          />
+          {errors.minCharge && <p className="field-error">{errors.minCharge.message}</p>}
+        </div>
 
-          {/* Actions */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', paddingTop: '0.5rem' }}>
-            <button className="btn-secondary" type="button" onClick={onClose}>Huỷ</button>
-            <button
-              className="primary-button"
-              type="submit"
-              disabled={isSubmitting}
-              style={{ padding: '0.55rem 1.2rem', fontSize: '0.9rem' }}
-            >
-              {isSubmitting ? 'Đang lưu...' : item ? 'Cập nhật' : 'Tạo mới'}
-            </button>
-          </div>
-        </form>
+        {/* Active status */}
+        <div className="form-field">
+          <label>Trạng thái</label>
+          <select className="field-select" {...register('isActive', { setValueAs: (v) => v === 'true' || v === true })}>
+            <option value="true">Đang dùng</option>
+            <option value="false">Ngừng dùng</option>
+          </select>
+        </div>
       </div>
-    </div>
+
+      {/* Notes */}
+      <div className="form-field" style={{ marginTop: '1rem' }}>
+        <label>Ghi chú</label>
+        <textarea className="field-textarea" rows={2} {...register('notes')} placeholder="Ghi chú thêm..." />
+      </div>
+
+      {/* Error display */}
+      {mutationError && (
+        <p className="error-inline" style={{ marginTop: '1rem' }}>
+          Lỗi: {(mutationError as Error).message}
+        </p>
+      )}
+
+      {/* Footer is handled by AdaptiveSheet via portal props, but we keep buttons for convenience if not using footer prop */}
+      <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none' }}>
+        <button className="btn-secondary" type="button" onClick={onClose}>Huỷ</button>
+        <button
+          className="primary-button btn-standard"
+          type="submit"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Đang lưu...' : item ? 'Cập nhật' : 'Tạo mới'}
+        </button>
+      </div>
+    </form>
   )
 }
