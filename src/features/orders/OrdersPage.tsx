@@ -57,13 +57,10 @@ export function OrdersPage() {
         />
       )}
 
+      {/* Order Form Modal */}
       {showForm && (
         <OrderForm
-          order={
-            editOrder
-              ? editOrder
-              : null
-          }
+          order={editOrder ? editOrder : null}
           onClose={closeForm}
         />
       )}

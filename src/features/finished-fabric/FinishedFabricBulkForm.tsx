@@ -2,6 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+
 import {
   QUALITY_GRADE_LABELS,
   QUALITY_GRADES,
@@ -302,382 +304,376 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
   const isPending = isSubmitting || bulkMutation.isPending
 
   return (
-    <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
-      <div className="modal-sheet bulk-sheet" role="dialog" aria-modal="true" aria-labelledby="bulk-title">
-        <div className="modal-header">
-          <h3 id="bulk-title">Nhập hàng loạt cuộn vải thành phẩm</h3>
-          <button className="btn-icon" type="button" onClick={onClose} aria-label="Đóng" style={{ fontSize: '1.1rem' }}>
-            ✕
-          </button>
-        </div>
-
-        {/* ===== SUCCESS STATE ===== */}
-        {savedRolls !== null ? (
-          <div className="bulk-success">
-            <div className="bulk-success-icon">✓</div>
-            <p className="bulk-success-title">Nhập kho thành công</p>
-            <p className="bulk-success-sub">
-              Đã lưu <strong>{savedRolls.length} cuộn</strong> ·{' '}
-              <strong>
-                {savedRolls
-                  .reduce((sum, r) => sum + (r.weight_kg ?? 0), 0)
-                  .toLocaleString('vi-VN', { maximumFractionDigits: 2 })}{' '}
-                kg
-              </strong>
-            </p>
-            <p className="bulk-success-hint">Tùy chọn: xuất danh sách vừa nhập ra file</p>
-            <div className="bulk-success-actions">
-              <button
-                className="btn-secondary"
-                type="button"
-                onClick={() => exportExcel(savedRolls, 'bien_ban_nhap_kho_tp')}
-              >
-                📊 Xuất Excel
-              </button>
-              <button
-                className="btn-secondary"
-                type="button"
-                onClick={() => exportPdf(savedRolls, 'bien_ban_nhap_kho_tp')}
-              >
-                🖨 Xuất PDF
-              </button>
-              <button className="primary-button" type="button" onClick={onClose} style={{ minHeight: 40 }}>
-                Đóng
-              </button>
-            </div>
+    <AdaptiveSheet open={true} onClose={onClose} title="Nhập hàng loạt cuộn vải thành phẩm" maxWidth={900}>
+      {/* ===== SUCCESS STATE ===== */}
+      {savedRolls !== null ? (
+        <div className="bulk-success">
+          <div className="bulk-success-icon">✓</div>
+          <p className="bulk-success-title">Nhập kho thành công</p>
+          <p className="bulk-success-sub">
+            Đã lưu <strong>{savedRolls.length} cuộn</strong> ·{' '}
+            <strong>
+              {savedRolls
+                .reduce((sum, r) => sum + (r.weight_kg ?? 0), 0)
+                .toLocaleString('vi-VN', { maximumFractionDigits: 2 })}{' '}
+              kg
+            </strong>
+          </p>
+          <p className="bulk-success-hint">Tùy chọn: xuất danh sách vừa nhập ra file</p>
+          <div className="bulk-success-actions">
+            <button
+              className="btn-secondary"
+              type="button"
+              onClick={() => exportExcel(savedRolls, 'bien_ban_nhap_kho_tp')}
+            >
+              📊 Xuất Excel
+            </button>
+            <button
+              className="btn-secondary"
+              type="button"
+              onClick={() => exportPdf(savedRolls, 'bien_ban_nhap_kho_tp')}
+            >
+              🖨 Xuất PDF
+            </button>
+            <button className="primary-button btn-standard" type="button" onClick={onClose}>
+              Đóng
+            </button>
           </div>
-        ) : (
-          <>
-            {bulkMutation.error && (
-              <p style={{ color: '#c0392b', fontSize: '0.88rem', marginBottom: '0.75rem', whiteSpace: 'pre-line' }}>
-                Lỗi: {(bulkMutation.error as Error).message}
-              </p>
-            )}
+        </div>
+      ) : (
+        <>
+          {bulkMutation.error && (
+            <p className="error-inline" style={{ marginBottom: '1rem', whiteSpace: 'pre-line' }}>
+              Lỗi: {(bulkMutation.error as Error).message}
+            </p>
+          )}
 
-            <form onSubmit={handleSubmit(onSubmit)} noValidate>
-              {/* ===== THÔNG TIN LÔ + CHUNG ===== */}
-              <fieldset className="bulk-section">
-                <legend>Thông tin lô & chung (áp dụng cho tất cả cuộn)</legend>
+          <form id="finished-fabric-bulk-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+            {/* ===== THÔNG TIN LÔ + CHUNG ===== */}
+            <fieldset className="bulk-section">
+              <legend>Thông tin lô & chung (áp dụng cho tất cả cuộn)</legend>
 
-                <div className="form-grid form-grid-2">
-                  <div className="form-field">
-                    <label htmlFor="bulk_lot_number">
-                      Số lô (Lot number) <span className="field-required">*</span>
-                    </label>
-                    <input
-                      id="bulk_lot_number"
-                      className={`field-input${errors.lot_number ? ' is-error' : ''}`}
-                      type="text"
-                      placeholder="VD: LOT-2026-001"
-                      {...register('lot_number')}
-                    />
-                    {errors.lot_number && <span className="field-error">{errors.lot_number.message}</span>}
-                    <span className="field-hint" style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.25rem', display: 'block' }}>
-                      Bắt buộc. Hệ thống sẽ đối chiếu với lô cuộn mộc nguồn.
-                      {rawRollsForLot.length > 0 && (
-                        <strong> — Tìm thấy {rawRollsForLot.length} cuộn mộc trong lô này.</strong>
-                      )}
-                    </span>
-                  </div>
-
-                  <div className="form-field">
-                    <label htmlFor="bulk_fabric_type">
-                      Loại vải <span className="field-required">*</span>
-                    </label>
-                    <input
-                      id="bulk_fabric_type"
-                      className={`field-input${errors.fabric_type ? ' is-error' : ''}`}
-                      type="text"
-                      placeholder="VD: Dệt thoi 60/40 TC"
-                      {...register('fabric_type')}
-                    />
-                    {errors.fabric_type && <span className="field-error">{errors.fabric_type.message}</span>}
-                  </div>
-                </div>
-
-                <div className="form-grid form-grid-2">
-                  <div className="form-field">
-                    <label htmlFor="bulk_color_name">Màu vải</label>
-                    <input id="bulk_color_name" className="field-input" type="text" placeholder="VD: Trắng ngà" {...register('color_name')} />
-                  </div>
-                  <div className="form-field">
-                    <label htmlFor="bulk_color_code">Mã màu</label>
-                    <input id="bulk_color_code" className="field-input" type="text" placeholder="VD: TC-01" {...register('color_code')} />
-                  </div>
-                </div>
-
-                <div className="form-grid form-grid-2">
-                  <div className="form-field">
-                    <label htmlFor="bulk_width_cm">Khổ vải (cm)</label>
-                    <input
-                      id="bulk_width_cm"
-                      className={`field-input${errors.width_cm ? ' is-error' : ''}`}
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="VD: 150"
-                      {...register('width_cm')}
-                    />
-                    {errors.width_cm && <span className="field-error">{errors.width_cm.message}</span>}
-                  </div>
-
-                  <div className="form-field">
-                    <label htmlFor="bulk_quality_grade">Chất lượng mặc định</label>
-                    <select id="bulk_quality_grade" className="field-select" {...register('quality_grade')}>
-                      <option value="">Chưa kiểm định</option>
-                      {QUALITY_GRADES.map((g) => (
-                        <option key={g} value={g}>{QUALITY_GRADE_LABELS[g]}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="form-grid form-grid-2">
-                  <div className="form-field">
-                    <label htmlFor="bulk_status">Trạng thái</label>
-                    <select id="bulk_status" className="field-select" {...register('status')}>
-                      {ROLL_STATUSES.map((s) => (
-                        <option key={s} value={s}>{ROLL_STATUS_LABELS[s]}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="form-field">
-                    <label htmlFor="bulk_production_date">Ngày hoàn thành</label>
-                    <input id="bulk_production_date" className="field-input" type="date" {...register('production_date')} />
-                  </div>
-                </div>
-
+              <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                 <div className="form-field">
-                  <label htmlFor="bulk_warehouse_location">Vị trí kho</label>
+                  <label htmlFor="bulk_lot_number">
+                    Số lô (Lot number) <span className="field-required">*</span>
+                  </label>
                   <input
-                    id="bulk_warehouse_location"
-                    className="field-input"
+                    id="bulk_lot_number"
+                    className={`field-input${errors.lot_number ? ' is-error' : ''}`}
                     type="text"
-                    placeholder="VD: B2-R1-S4"
-                    {...register('warehouse_location')}
+                    placeholder="VD: LOT-2026-001"
+                    {...register('lot_number')}
                   />
-                </div>
-              </fieldset>
-
-              {/* ===== CẤU HÌNH MÃ CUỘN ===== */}
-              <fieldset className="bulk-section">
-                <legend>Cấu hình mã cuộn tự động</legend>
-                <div className="form-grid form-grid-2">
-                  <div className="form-field">
-                    <label htmlFor="bulk_roll_prefix">
-                      Tiền tố mã cuộn <span className="field-required">*</span>
-                    </label>
-                    <input
-                      id="bulk_roll_prefix"
-                      className={`field-input${errors.roll_prefix ? ' is-error' : ''}`}
-                      type="text"
-                      placeholder="VD: FN-"
-                      {...register('roll_prefix')}
-                    />
-                    {errors.roll_prefix && <span className="field-error">{errors.roll_prefix.message}</span>}
-                  </div>
-
-                  <div className="form-field">
-                    <label htmlFor="bulk_start_number">Số bắt đầu</label>
-                    <input
-                      id="bulk_start_number"
-                      className={`field-input${errors.start_number ? ' is-error' : ''}`}
-                      type="number"
-                      min="1"
-                      step="1"
-                      {...register('start_number')}
-                    />
-                    {errors.start_number && <span className="field-error">{errors.start_number.message}</span>}
-                  </div>
-                </div>
-              </fieldset>
-
-              {/* ===== IMPORT FILE ===== */}
-              <fieldset className="bulk-section">
-                <legend>Import từ Excel / CSV</legend>
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".xlsx,.xls,.csv"
-                    onChange={handleFileImport}
-                    style={{ fontSize: '0.88rem' }}
-                  />
-                  <span className="bulk-hint">
-                    Header: Mã cuộn, Cuộn mộc, Cân, Dài, CL, Ghi chú.
-                    {lotNumber && rawRollsForLot.length === 0 && (
-                      <strong style={{ color: '#c0392b' }}> Chưa tìm thấy cuộn mộc nào trong lô "{lotNumber}" — hãy kiểm tra lại số lô.</strong>
+                  {errors.lot_number && <span className="field-error">{errors.lot_number.message}</span>}
+                  <span className="field-hint" style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.25rem', display: 'block' }}>
+                    Bắt buộc. Hệ thống sẽ đối chiếu với lô cuộn mộc nguồn.
+                    {rawRollsForLot.length > 0 && (
+                      <strong> — Tìm thấy {rawRollsForLot.length} cuộn mộc trong lô này.</strong>
                     )}
                   </span>
                 </div>
-                {importError && (
-                  <p style={{ color: '#c07020', fontSize: '0.85rem', marginTop: '0.5rem' }}>{importError}</p>
-                )}
-              </fieldset>
 
-              {/* ===== BẢNG NHẬP CUỘN ===== */}
-              <fieldset className="bulk-section">
-                <legend>
-                  Danh sách cuộn
-                  <span className="bulk-summary">
-                    {totalRolls} cuộn · {totalWeight.toLocaleString('vi-VN', { maximumFractionDigits: 2 })} kg
-                  </span>
-                </legend>
-
-                <div className="bulk-table-wrap">
-                  <table className="bulk-table">
-                    <thead>
-                      <tr>
-                        <th style={{ width: 40 }}>#</th>
-                        <th>Mã cuộn</th>
-                        <th>Cuộn mộc nguồn <span className="field-required">*</span></th>
-                        <th>Trọng lượng (kg) <span className="field-required">*</span></th>
-                        <th>Dài (m)</th>
-                        <th>CL</th>
-                        <th>Ghi chú</th>
-                        <th style={{ width: 40 }}></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {fields.map((field, idx) => (
-                        <tr key={field.id}>
-                          <td className="td-muted">{idx + 1}</td>
-                          <td>
-                            <input
-                              className={`field-input bulk-input${errors.rolls?.[idx]?.roll_number ? ' is-error' : ''}`}
-                              type="text"
-                              readOnly
-                              title="Mã cuộn được tạo theo tiền tố và số bắt đầu"
-                              {...register(`rolls.${idx}.roll_number`)}
-                            />
-                            {errors.rolls?.[idx]?.roll_number && (
-                              <span className="field-error">{errors.rolls[idx]?.roll_number?.message}</span>
-                            )}
-                          </td>
-                          <td>
-                            <select
-                              className={`field-select bulk-input${errors.rolls?.[idx]?.raw_roll_id ? ' is-error' : ''}`}
-                              {...register(`rolls.${idx}.raw_roll_id`)}
-                            >
-                              <option value="">— Chọn —</option>
-                              {rawRollsForLot.map((r) => (
-                                <option key={r.id} value={r.id}>
-                                  {r.roll_number}
-                                </option>
-                              ))}
-                            </select>
-                            {errors.rolls?.[idx]?.raw_roll_id && (
-                              <span className="field-error">{errors.rolls[idx]?.raw_roll_id?.message}</span>
-                            )}
-                          </td>
-                          <td>
-                            {(() => {
-                              const weightField = register(`rolls.${idx}.weight_kg`)
-                              return (
-                                <input
-                                  className={`field-input bulk-input${errors.rolls?.[idx]?.weight_kg ? ' is-error' : ''}`}
-                                  type="text"
-                                  inputMode="decimal"
-                                  placeholder="0.0"
-                                  {...weightField}
-                                  onBlur={(e) => handleWeightBlur(e, idx, weightField.onBlur)}
-                                  onKeyDown={(event) => handleWeightKeyDown(event, idx)}
-                                  ref={(element) => {
-                                    weightField.ref(element)
-                                    weightRefs.current[idx] = element
-                                  }}
-                                />
-                              )
-                            })()}
-                            {errors.rolls?.[idx]?.weight_kg && (
-                              <span className="field-error">{errors.rolls[idx]?.weight_kg?.message}</span>
-                            )}
-                          </td>
-                          <td>
-                            <input
-                              className="field-input bulk-input"
-                              type="number"
-                              step="0.001"
-                              min="0"
-                              placeholder="—"
-                              {...register(`rolls.${idx}.length_m`)}
-                            />
-                          </td>
-                          <td>
-                            <select className="field-select bulk-input" {...register(`rolls.${idx}.quality_grade`)}>
-                              <option value="">—</option>
-                              {QUALITY_GRADES.map((g) => (
-                                <option key={g} value={g}>{g}</option>
-                              ))}
-                            </select>
-                          </td>
-                          <td>
-                            <input
-                              className="field-input bulk-input"
-                              type="text"
-                              placeholder="—"
-                              {...register(`rolls.${idx}.notes`)}
-                            />
-                          </td>
-                          <td>
-                            {fields.length > 1 && (
-                              <button
-                                className="btn-icon danger"
-                                type="button"
-                                title="Xóa dòng"
-                                onClick={() => remove(idx)}
-                              >
-                                ✕
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="form-field">
+                  <label htmlFor="bulk_fabric_type">
+                    Loại vải <span className="field-required">*</span>
+                  </label>
+                  <input
+                    id="bulk_fabric_type"
+                    className={`field-input${errors.fabric_type ? ' is-error' : ''}`}
+                    type="text"
+                    placeholder="VD: Dệt thoi 60/40 TC"
+                    {...register('fabric_type')}
+                  />
+                  {errors.fabric_type && <span className="field-error">{errors.fabric_type.message}</span>}
                 </div>
-
-                {errors.rolls?.message && (
-                  <span className="field-error" style={{ marginTop: '0.5rem', display: 'block' }}>
-                    {errors.rolls.message}
-                  </span>
-                )}
-
-                <div className="bulk-add-actions">
-                  <button className="btn-secondary" type="button" onClick={addRow}>
-                    + Thêm 1 cuộn
-                  </button>
-                  <button className="btn-secondary" type="button" onClick={() => addMultipleRows(5)}>
-                    + Thêm 5 cuộn
-                  </button>
-                  <button className="btn-secondary" type="button" onClick={() => addMultipleRows(10)}>
-                    + Thêm 10 cuộn
-                  </button>
-                  <span className="bulk-hint">Nhấn Enter trong ô trọng lượng để thêm dòng mới</span>
-                </div>
-              </fieldset>
-
-              {/* ===== ACTIONS ===== */}
-              <div className="modal-actions">
-                <button className="btn-secondary" type="button" onClick={onClose} disabled={isPending}>
-                  Hủy
-                </button>
-                <button
-                  className="primary-button"
-                  type="submit"
-                  disabled={isPending}
-                  style={{ minHeight: 40, padding: '0.6rem 1.25rem', fontSize: '0.9rem' }}
-                >
-                  {isPending
-                    ? 'Đang lưu...'
-                    : `Nhập kho ${totalRolls} cuộn (${totalWeight.toLocaleString('vi-VN', { maximumFractionDigits: 2 })} kg)`}
-                </button>
               </div>
-            </form>
-          </>
-        )}
-      </div>
-    </div>
+
+              <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                <div className="form-field">
+                  <label htmlFor="bulk_color_name">Màu vải</label>
+                  <input id="bulk_color_name" className="field-input" type="text" placeholder="VD: Trắng ngà" {...register('color_name')} />
+                </div>
+                <div className="form-field">
+                  <label htmlFor="bulk_color_code">Mã màu</label>
+                  <input id="bulk_color_code" className="field-input" type="text" placeholder="VD: TC-01" {...register('color_code')} />
+                </div>
+              </div>
+
+              <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                <div className="form-field">
+                  <label htmlFor="bulk_width_cm">Khổ vải (cm)</label>
+                  <input
+                    id="bulk_width_cm"
+                    className={`field-input${errors.width_cm ? ' is-error' : ''}`}
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="VD: 150"
+                    {...register('width_cm')}
+                  />
+                  {errors.width_cm && <span className="field-error">{errors.width_cm.message}</span>}
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="bulk_quality_grade">Chất lượng mặc định</label>
+                  <select id="bulk_quality_grade" className="field-select" {...register('quality_grade')}>
+                    <option value="">Chưa kiểm định</option>
+                    {QUALITY_GRADES.map((g) => (
+                      <option key={g} value={g}>{QUALITY_GRADE_LABELS[g]}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                <div className="form-field">
+                  <label htmlFor="bulk_status">Trạng thái</label>
+                  <select id="bulk_status" className="field-select" {...register('status')}>
+                    {ROLL_STATUSES.map((s) => (
+                      <option key={s} value={s}>{ROLL_STATUS_LABELS[s]}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="bulk_production_date">Ngày hoàn thành</label>
+                  <input id="bulk_production_date" className="field-input" type="date" {...register('production_date')} />
+                </div>
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="bulk_warehouse_location">Vị trí kho</label>
+                <input
+                  id="bulk_warehouse_location"
+                  className="field-input"
+                  type="text"
+                  placeholder="VD: B2-R1-S4"
+                  {...register('warehouse_location')}
+                />
+              </div>
+            </fieldset>
+
+            {/* ===== CẤU HÌNH MÃ CUỘN ===== */}
+            <fieldset className="bulk-section">
+              <legend>Cấu hình mã cuộn tự động</legend>
+              <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                <div className="form-field">
+                  <label htmlFor="bulk_roll_prefix">
+                    Tiền tố mã cuộn <span className="field-required">*</span>
+                  </label>
+                  <input
+                    id="bulk_roll_prefix"
+                    className={`field-input${errors.roll_prefix ? ' is-error' : ''}`}
+                    type="text"
+                    placeholder="VD: FN-"
+                    {...register('roll_prefix')}
+                  />
+                  {errors.roll_prefix && <span className="field-error">{errors.roll_prefix.message}</span>}
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="bulk_start_number">Số bắt đầu</label>
+                  <input
+                    id="bulk_start_number"
+                    className={`field-input${errors.start_number ? ' is-error' : ''}`}
+                    type="number"
+                    min="1"
+                    step="1"
+                    {...register('start_number')}
+                  />
+                  {errors.start_number && <span className="field-error">{errors.start_number.message}</span>}
+                </div>
+              </div>
+            </fieldset>
+
+            {/* ===== IMPORT FILE ===== */}
+            <fieldset className="bulk-section">
+              <legend>Import từ Excel / CSV</legend>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                <input
+                  className="field-input"
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  onChange={handleFileImport}
+                  style={{ fontSize: '0.88rem' }}
+                />
+                <span className="bulk-hint">
+                  Header: Mã cuộn, Cuộn mộc, Cân, Dài, CL, Ghi chú.
+                  {lotNumber && rawRollsForLot.length === 0 && (
+                    <strong style={{ color: '#c0392b' }}> Chưa tìm thấy cuộn mộc nào trong lô "{lotNumber}" — hãy kiểm tra lại số lô.</strong>
+                  )}
+                </span>
+              </div>
+              {importError && (
+                <p style={{ color: '#c07020', fontSize: '0.85rem', marginTop: '0.5rem' }}>{importError}</p>
+              )}
+            </fieldset>
+
+            {/* ===== BẢNG NHẬP CUỘN ===== */}
+            <fieldset className="bulk-section">
+              <legend>
+                Danh sách cuộn
+                <span className="bulk-summary" style={{ marginLeft: '1rem', background: 'var(--primary-subtle)', color: 'var(--primary)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.85rem' }}>
+                  {totalRolls} cuộn · {totalWeight.toLocaleString('vi-VN', { maximumFractionDigits: 2 })} kg
+                </span>
+              </legend>
+
+              <div className="data-table-wrap" style={{ marginTop: '0.5rem' }}>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: 40 }}>#</th>
+                      <th>Mã cuộn</th>
+                      <th>Cuộn mộc nguồn <span className="field-required">*</span></th>
+                      <th>Trọng lượng (kg) <span className="field-required">*</span></th>
+                      <th className="hide-mobile">Dài (m)</th>
+                      <th className="hide-mobile">CL</th>
+                      <th className="hide-mobile">Ghi chú</th>
+                      <th style={{ width: 40 }}></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {fields.map((field, idx) => (
+                      <tr key={field.id}>
+                        <td className="td-muted">{idx + 1}</td>
+                        <td>
+                          <input
+                            className={`field-input bulk-input${errors.rolls?.[idx]?.roll_number ? ' is-error' : ''}`}
+                            type="text"
+                            readOnly
+                            title="Mã cuộn được tạo theo tiền tố và số bắt đầu"
+                            {...register(`rolls.${idx}.roll_number`)}
+                            style={{ minWidth: '110px' }}
+                          />
+                          {errors.rolls?.[idx]?.roll_number && (
+                            <span className="field-error">{errors.rolls[idx]?.roll_number?.message}</span>
+                          )}
+                        </td>
+                        <td>
+                          <select
+                            className={`field-select bulk-input${errors.rolls?.[idx]?.raw_roll_id ? ' is-error' : ''}`}
+                            {...register(`rolls.${idx}.raw_roll_id`)}
+                            style={{ minWidth: '130px' }}
+                          >
+                            <option value="">— Chọn —</option>
+                            {rawRollsForLot.map((r) => (
+                              <option key={r.id} value={r.id}>
+                                {r.roll_number}
+                              </option>
+                            ))}
+                          </select>
+                          {errors.rolls?.[idx]?.raw_roll_id && (
+                            <span className="field-error">{errors.rolls[idx]?.raw_roll_id?.message}</span>
+                          )}
+                        </td>
+                        <td>
+                          {(() => {
+                            const weightField = register(`rolls.${idx}.weight_kg`)
+                            return (
+                              <input
+                                className={`field-input bulk-input${errors.rolls?.[idx]?.weight_kg ? ' is-error' : ''}`}
+                                type="text"
+                                inputMode="decimal"
+                                placeholder="0.0"
+                                {...weightField}
+                                onBlur={(e) => handleWeightBlur(e, idx, weightField.onBlur)}
+                                onKeyDown={(event) => handleWeightKeyDown(event, idx)}
+                                ref={(element) => {
+                                  weightField.ref(element)
+                                  weightRefs.current[idx] = element
+                                }}
+                                style={{ minWidth: '80px' }}
+                              />
+                            )
+                          })()}
+                          {errors.rolls?.[idx]?.weight_kg && (
+                            <span className="field-error">{errors.rolls[idx]?.weight_kg?.message}</span>
+                          )}
+                        </td>
+                        <td className="hide-mobile">
+                          <input
+                            className="field-input bulk-input"
+                            type="number"
+                            step="0.001"
+                            min="0"
+                            placeholder="—"
+                            {...register(`rolls.${idx}.length_m`)}
+                          />
+                        </td>
+                        <td className="hide-mobile">
+                          <select className="field-select bulk-input" {...register(`rolls.${idx}.quality_grade`)}>
+                            <option value="">—</option>
+                            {QUALITY_GRADES.map((g) => (
+                              <option key={g} value={g}>{g}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="hide-mobile">
+                          <input
+                            className="field-input bulk-input"
+                            type="text"
+                            placeholder="—"
+                            {...register(`rolls.${idx}.notes`)}
+                          />
+                        </td>
+                        <td>
+                          {fields.length > 1 && (
+                            <button
+                              className="btn-icon danger"
+                              type="button"
+                              title="Xóa dòng"
+                              onClick={() => remove(idx)}
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {errors.rolls?.message && (
+                <span className="field-error" style={{ marginTop: '0.5rem', display: 'block' }}>
+                  {errors.rolls.message}
+                </span>
+              )}
+
+              <div className="bulk-add-actions" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '1rem' }}>
+                <button className="btn-secondary" type="button" onClick={addRow}>
+                  + 1 cuộn
+                </button>
+                <button className="btn-secondary hide-mobile" type="button" onClick={() => addMultipleRows(5)}>
+                  + 5 cuộn
+                </button>
+                <button className="btn-secondary hide-mobile" type="button" onClick={() => addMultipleRows(10)}>
+                  + 10 cuộn
+                </button>
+                <span className="bulk-hint hide-mobile" style={{ marginLeft: 'auto', alignSelf: 'center', fontSize: '0.8rem', color: 'var(--muted)' }}>Nhấn Enter trong ô trọng lượng để thêm dòng mới</span>
+              </div>
+            </fieldset>
+
+            {/* ===== ACTIONS ===== */}
+            <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none' }}>
+              <button className="btn-secondary" type="button" onClick={onClose} disabled={isPending}>
+                Hủy
+              </button>
+              <button
+                className="primary-button btn-standard"
+                type="submit"
+                disabled={isPending}
+              >
+                {isPending
+                  ? 'Đang lưu...'
+                  : `Nhập ${totalRolls} cuộn`}
+              </button>
+            </div>
+          </form>
+        </>
+      )}
+    </AdaptiveSheet>
   )
 }

@@ -16,6 +16,8 @@ type AdaptiveSheetProps = {
   stepInfo?: { current: number; total: number }
   /** ID cho aria-labelledby */
   titleId?: string
+  /** Độ rộng tối đa của modal trên Desktop */
+  maxWidth?: number | string
 }
 
 /**
@@ -35,6 +37,7 @@ export function AdaptiveSheet({
   footer,
   stepInfo,
   titleId = 'adaptive-sheet-title',
+  maxWidth,
 }: AdaptiveSheetProps) {
   const sheetRef = useRef<HTMLDivElement>(null)
 
@@ -112,6 +115,7 @@ export function AdaptiveSheet({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        style={maxWidth ? { maxWidth } : undefined}
       >
         {/* Header */}
         <div className="modal-header">

@@ -2,6 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+
 import {
   PAYMENT_METHOD_LABELS,
   paymentsDefaultValues,
@@ -54,41 +56,42 @@ export function PaymentForm({ orderId, customerId, orderNumber, balanceDue, onCl
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
-        <div className="modal-header">
-          <h3>Thu tiền — {orderNumber}</h3>
-          <button className="btn-icon" type="button" onClick={onClose}>✕</button>
-        </div>
+    <AdaptiveSheet open={true} onClose={onClose} title={`Thu tiền — ${orderNumber}`}>
+      <form id="payment-form" onSubmit={handleSubmit(onSubmit)}>
+        {/* Balance due info */}
+        {balanceDue > 0 && (
+          <div style={{ padding: '0.75rem', background: 'var(--surface-warning)', color: 'var(--warning-strong)', borderRadius: 'var(--radius)', fontSize: '0.88rem', border: '1px solid var(--warning)', marginBottom: '1rem' }}>
+            Còn nợ: <strong>{formatCurrency(balanceDue)} đ</strong>
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit(onSubmit)} style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {/* Balance due info */}
-          {balanceDue > 0 && (
-            <div style={{ padding: '0.6rem 0.75rem', background: 'var(--surface)', borderRadius: 'var(--radius-sm)', fontSize: '0.88rem' }}>
-              Còn nợ: <strong style={{ color: '#c0392b' }}>{formatCurrency(balanceDue)} đ</strong>
-            </div>
-          )}
+        {createMutation.error && (
+          <p className="error-inline" style={{ marginBottom: '1rem' }}>
+            Lỗi: {(createMutation.error as Error).message}
+          </p>
+        )}
 
+        <div className="form-grid">
           {/* Payment number + date */}
-          <div className="form-grid-2">
-            <div>
-              <label className="form-label">Số phiếu thu *</label>
-              <input className="field-input" {...register('paymentNumber')} readOnly style={{ background: 'var(--surface)' }} />
+          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+            <div className="form-field">
+              <label>Số phiếu thu <span className="field-required">*</span></label>
+              <input className={`field-input${errors.paymentNumber ? ' is-error' : ''}`} {...register('paymentNumber')} readOnly style={{ background: 'var(--surface-disabled)' }} />
               {errors.paymentNumber && <p className="field-error">{errors.paymentNumber.message}</p>}
             </div>
-            <div>
-              <label className="form-label">Ngày thu *</label>
-              <input className="field-input" type="date" {...register('paymentDate')} />
+            <div className="form-field">
+              <label>Ngày thu <span className="field-required">*</span></label>
+              <input className={`field-input${errors.paymentDate ? ' is-error' : ''}`} type="date" {...register('paymentDate')} />
               {errors.paymentDate && <p className="field-error">{errors.paymentDate.message}</p>}
             </div>
           </div>
 
           {/* Amount + method */}
-          <div className="form-grid-2">
-            <div>
-              <label className="form-label">Số tiền (đ) *</label>
+          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+            <div className="form-field">
+              <label>Số tiền (đ) <span className="field-required">*</span></label>
               <input
-                className="field-input"
+                className={`field-input${errors.amount ? ' is-error' : ''}`}
                 type="number"
                 step="1000"
                 inputMode="numeric"
@@ -97,9 +100,9 @@ export function PaymentForm({ orderId, customerId, orderNumber, balanceDue, onCl
               />
               {errors.amount && <p className="field-error">{errors.amount.message}</p>}
             </div>
-            <div>
-              <label className="form-label">Hình thức *</label>
-              <select className="field-select" {...register('paymentMethod')}>
+            <div className="form-field">
+              <label>Hình thức <span className="field-required">*</span></label>
+              <select className={`field-select${errors.paymentMethod ? ' is-error' : ''}`} {...register('paymentMethod')}>
                 {(Object.entries(PAYMENT_METHOD_LABELS) as [PaymentMethod, string][]).map(
                   ([value, label]) => (
                     <option key={value} value={value}>{label}</option>
@@ -110,34 +113,26 @@ export function PaymentForm({ orderId, customerId, orderNumber, balanceDue, onCl
           </div>
 
           {/* Reference */}
-          <div>
-            <label className="form-label">Số chứng từ / mã giao dịch</label>
+          <div className="form-field">
+            <label>Số chứng từ / mã giao dịch</label>
             <input className="field-input" {...register('referenceNumber')} placeholder="Số séc, mã giao dịch..." />
           </div>
+        </div>
 
-          {/* Error */}
-          {createMutation.error && (
-            <p style={{ color: '#c0392b', fontSize: '0.88rem' }}>
-              Lỗi: {(createMutation.error as Error).message}
-            </p>
-          )}
-
-          {/* Actions */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', paddingTop: '0.5rem' }}>
-            <button className="btn-secondary" type="button" onClick={onClose}>
-              Huỷ
-            </button>
-            <button
-              className="primary-button"
-              type="submit"
-              disabled={isSubmitting || createMutation.isPending}
-              style={{ padding: '0.55rem 1.2rem', fontSize: '0.9rem' }}
-            >
-              {createMutation.isPending ? 'Đang lưu...' : '💰 Xác nhận thu'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        {/* Actions */}
+        <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none' }}>
+          <button className="btn-secondary" type="button" onClick={onClose} disabled={isSubmitting || createMutation.isPending}>
+            Huỷ
+          </button>
+          <button
+            className="primary-button btn-standard"
+            type="submit"
+            disabled={isSubmitting || createMutation.isPending}
+          >
+            {createMutation.isPending ? 'Đang lưu...' : '💰 Xác nhận thu'}
+          </button>
+        </div>
+      </form>
+    </AdaptiveSheet>
   )
 }

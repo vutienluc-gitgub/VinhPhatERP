@@ -4,6 +4,8 @@ import { createWorkOrderSchema, type CreateWorkOrderInput } from './work-orders.
 import { useCreateWorkOrder } from './useWorkOrders'
 import { useBomList } from '../bom/useBom'
 import { useOrderList } from '../orders/useOrders'
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { useStepper } from '@/shared/hooks/useStepper'
 
 interface WorkOrderFormProps {
   onSuccess?: () => void
@@ -16,7 +18,9 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
   const { data: boms } = useBomList({ status: 'approved' })
   const { data: orders } = useOrderList({ status: 'confirmed' }, 1)
 
-  const { register, handleSubmit, formState: { errors } } = useForm<CreateWorkOrderInput>({
+  const stepper = useStepper({ totalSteps: 2 })
+
+  const { register, handleSubmit, trigger, formState: { errors, isValid } } = useForm<CreateWorkOrderInput>({
     resolver: zodResolver(createWorkOrderSchema),
     defaultValues: {
       work_order_number: `WO-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}-${Math.floor(Math.random() * 1000)}`,
@@ -28,9 +32,12 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
       end_date: '',
       notes: '',
     },
+    mode: 'onTouched',
   })
 
   const onSubmit = async (values: CreateWorkOrderInput) => {
+    if (!stepper.isLast) return
+
     try {
       await createMutation.mutateAsync({
         ...values,
@@ -43,121 +50,175 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
     }
   }
 
+  async function handleNextStep() {
+    if (stepper.currentStep === 0) {
+      const stepValid = await trigger(['work_order_number', 'order_id', 'start_date'])
+      if (stepValid) stepper.next()
+    }
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
-      {/* Scrollable Content Area */}
-      <div className="modal-content">
-        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+    <AdaptiveSheet
+      open={true}
+      onClose={onCancel || (() => {})}
+      title="Kiến tạo Lệnh Sản Xuất Mới"
+      stepInfo={{ current: stepper.currentStep, total: stepper.totalSteps }}
+      maxWidth={720}
+    >
+      <form id="work-order-form" onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }} noValidate>
+        {/* Scrollable Content Area */}
+        <div className="form-grid">
+          
+          {/* ── BƯỚC 1: THÔNG TIN CƠ BẢN ── */}
+          <div style={{ display: stepper.currentStep === 0 ? 'block' : 'none' }}>
+            <div className="form-grid">
+              <div className="form-field">
+                <label>Mã Lệnh Sản Xuất <span className="field-required">*</span></label>
+                <input
+                  {...register('work_order_number')}
+                  placeholder="Ví dụ: WO-2024-001"
+                  className={`field-input${errors.work_order_number ? ' is-error' : ''}`}
+                />
+                {errors.work_order_number && <span className="field-error">{errors.work_order_number.message}</span>}
+              </div>
 
-          <div className="form-field">
-            <label>Mã Lệnh Sản Xuất <span className="field-required">*</span></label>
-            <input
-              {...register('work_order_number')}
-              placeholder="Ví dụ: WO-2024-001"
-              className={`field-input${errors.work_order_number ? ' is-error' : ''}`}
-            />
-            {errors.work_order_number && <span className="field-error">{errors.work_order_number.message}</span>}
+              <div className="form-field">
+                <label>Liên kết Đơn Hàng (ĐH)</label>
+                <select
+                  {...register('order_id')}
+                  className={`field-select${errors.order_id ? ' is-error' : ''}`}
+                >
+                  <option value="none">— Sản xuất dự trữ (Không ĐH) —</option>
+                  {orders?.data?.map((o) => (
+                    <option key={o.id} value={o.id}>
+                      {o.order_number} — {o.customers?.name}
+                    </option>
+                  ))}
+                </select>
+                <span className="field-hint">
+                  Chọn đơn hàng nếu sản xuất theo yêu cầu (MTO)
+                </span>
+                {errors.order_id && <span className="field-error">{errors.order_id.message}</span>}
+              </div>
+
+              <div className="form-field">
+                <label>Ngày bắt đầu dự kiến</label>
+                <input
+                  type="date"
+                  {...register('start_date')}
+                  className="field-input"
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="form-field">
-            <label>Liên kết Đơn Hàng (ĐH)</label>
-            <select
-              {...register('order_id')}
-              className={`field-select${errors.order_id ? ' is-error' : ''}`}
-            >
-              <option value="none">— Sản xuất dự trữ (Không ĐH) —</option>
-              {orders?.data?.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.order_number} — {o.customers?.name}
-                </option>
-              ))}
-            </select>
-            <span style={{ fontSize: '0.72rem', color: 'var(--muted)', fontStyle: 'italic' }}>
-              Chọn đơn hàng nếu sản xuất theo yêu cầu (MTO)
-            </span>
-            {errors.order_id && <span className="field-error">{errors.order_id.message}</span>}
+          {/* ── BƯỚC 2: MỤC TIÊU SẢN XUẤT ── */}
+          <div style={{ display: stepper.currentStep === 1 ? 'block' : 'none' }}>
+            <div className="form-grid">
+              <div className="form-field">
+                <label>Công thức BOM định mức <span className="field-required">*</span></label>
+                <select
+                  {...register('bom_template_id')}
+                  className={`field-select${errors.bom_template_id ? ' is-error' : ''}`}
+                >
+                  <option value="">— Chọn công thức dệt —</option>
+                  {boms?.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.code} — {b.name} (V{b.active_version})
+                    </option>
+                  ))}
+                </select>
+                {errors.bom_template_id && <span className="field-error">{errors.bom_template_id.message}</span>}
+              </div>
+
+              <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                <div className="form-field">
+                  <label>Sản lượng mục tiêu (m) <span className="field-required">*</span></label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    {...register('target_quantity_m', { valueAsNumber: true })}
+                    className={`field-input${errors.target_quantity_m ? ' is-error' : ''}`}
+                  />
+                  {errors.target_quantity_m && <span className="field-error">{errors.target_quantity_m.message}</span>}
+                </div>
+
+                <div className="form-field">
+                  <label>Khối lượng dự kiến (kg)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    {...register('target_weight_kg', { valueAsNumber: true })}
+                    className={`field-input${errors.target_weight_kg ? ' is-error' : ''}`}
+                  />
+                  <span className="field-hint">
+                    Hệ thống sẽ tự tính từ BOM nếu để trống
+                  </span>
+                  {errors.target_weight_kg && <span className="field-error">{errors.target_weight_kg.message}</span>}
+                </div>
+              </div>
+
+              <div className="form-field">
+                <label>Ghi chú sản xuất</label>
+                <textarea
+                  {...register('notes')}
+                  rows={3}
+                  placeholder="Hướng dẫn kỹ thuật hoặc ghi chú đặc biệt cho xưởng..."
+                  className="field-textarea"
+                />
+              </div>
+            </div>
+          </div>
+          
+        </div>
+
+        {/* Sticky Footer */}
+        <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none', justifyContent: 'space-between' }}>
+          <div>
+            {!stepper.isFirst && (
+              <button
+                className="btn-secondary"
+                type="button"
+                onClick={stepper.prev}
+                disabled={createMutation.isPending}
+              >
+                Quay lại
+              </button>
+            )}
+            {stepper.isFirst && (
+              <button
+                className="btn-secondary"
+                type="button"
+                onClick={onCancel}
+                disabled={createMutation.isPending}
+              >
+                Hủy bỏ
+              </button>
+            )}
           </div>
 
-          <div className="form-field">
-            <label>Công thức BOM định mức <span className="field-required">*</span></label>
-            <select
-              {...register('bom_template_id')}
-              className={`field-select${errors.bom_template_id ? ' is-error' : ''}`}
-            >
-              <option value="">— Chọn công thức dệt —</option>
-              {boms?.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.code} — {b.name} (V{b.active_version})
-                </option>
-              ))}
-            </select>
-            {errors.bom_template_id && <span className="field-error">{errors.bom_template_id.message}</span>}
-          </div>
-
-          <div className="form-field">
-            <label>Ngày bắt đầu dự kiến</label>
-            <input
-              type="date"
-              {...register('start_date')}
-              className="field-input"
-            />
-          </div>
-
-          <div className="form-field">
-            <label>Sản lượng mục tiêu (m) <span className="field-required">*</span></label>
-            <input
-              type="number"
-              step="0.01"
-              {...register('target_quantity_m', { valueAsNumber: true })}
-              className={`field-input${errors.target_quantity_m ? ' is-error' : ''}`}
-            />
-            {errors.target_quantity_m && <span className="field-error">{errors.target_quantity_m.message}</span>}
-          </div>
-
-          <div className="form-field">
-            <label>Khối lượng dự kiến (kg)</label>
-            <input
-              type="number"
-              step="0.01"
-              {...register('target_weight_kg', { valueAsNumber: true })}
-              className={`field-input${errors.target_weight_kg ? ' is-error' : ''}`}
-            />
-            <span style={{ fontSize: '0.72rem', color: 'var(--muted)', fontStyle: 'italic' }}>
-              Hệ thống sẽ tự tính từ BOM nếu để trống
-            </span>
-            {errors.target_weight_kg && <span className="field-error">{errors.target_weight_kg.message}</span>}
-          </div>
-
-          <div className="form-field" style={{ gridColumn: '1 / -1' }}>
-            <label>Ghi chú sản xuất</label>
-            <textarea
-              {...register('notes')}
-              rows={3}
-              placeholder="Hướng dẫn kỹ thuật hoặc ghi chú đặc biệt cho xưởng..."
-              className="field-textarea"
-            />
+          <div>
+            {!stepper.isLast ? (
+              <button
+                className="primary-button btn-standard"
+                type="button"
+                onClick={handleNextStep}
+                disabled={createMutation.isPending}
+              >
+                Tiếp tục
+              </button>
+            ) : (
+              <button
+                className="primary-button btn-standard"
+                type="submit"
+                disabled={createMutation.isPending || !isValid}
+              >
+                {createMutation.isPending ? 'Đang tạo...' : 'Xác nhận lệnh SX'}
+              </button>
+            )}
           </div>
         </div>
-      </div>
-
-      {/* Sticky Footer */}
-      <div className="modal-footer">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="btn-secondary"
-          disabled={createMutation.isPending}
-        >
-          Hủy bỏ
-        </button>
-        <button
-          type="submit"
-          className="primary-button btn-standard"
-          disabled={createMutation.isPending}
-        >
-          {createMutation.isPending ? 'Đang tạo...' : 'Xác nhận tạo Lệnh SX'}
-        </button>
-      </div>
-    </form>
+      </form>
+    </AdaptiveSheet>
   )
 }

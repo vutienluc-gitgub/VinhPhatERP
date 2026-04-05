@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { WorkOrderList } from './WorkOrderList'
 import { WorkOrderForm } from './WorkOrderForm'
 import { WorkOrderDetail } from './WorkOrderDetail'
-import { Portal } from '@/shared/components/Portal'
 
 export function WorkOrdersPage() {
   const [view, setView] = useState<'list' | 'detail'>('list')
@@ -34,27 +33,12 @@ export function WorkOrdersPage() {
         onCreate={() => setIsFormOpen(true)}
       />
 
+      {/* Work Order Form Modal */}
       {isFormOpen && (
-        <Portal>
-          <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setIsFormOpen(false)}>
-            <div className="modal-sheet" style={{ maxWidth: '800px' }}>
-              <div className="modal-header">
-                <h3>Kiến tạo Lệnh Sản Xuất Mới</h3>
-                <button
-                  onClick={() => setIsFormOpen(false)}
-                  className="btn-icon"
-                  type="button"
-                >
-                  ✕
-                </button>
-              </div>
-              <WorkOrderForm
-                onSuccess={handleFormSuccess}
-                onCancel={() => setIsFormOpen(false)}
-              />
-            </div>
-          </div>
-        </Portal>
+        <WorkOrderForm
+          onSuccess={handleFormSuccess}
+          onCancel={() => setIsFormOpen(false)}
+        />
       )}
     </>
   )

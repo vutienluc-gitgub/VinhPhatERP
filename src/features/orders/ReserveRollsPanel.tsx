@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import type { Order, OrderItem } from './types'
 import {
   useAvailableRolls,
@@ -51,16 +52,8 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div
-        className="modal-sheet modal-sheet-lg"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="modal-header">
-          <h3>🔒 Giữ cuộn — {order.order_number}</h3>
-          <button className="btn-icon" type="button" onClick={onClose}>✕</button>
-        </div>
-
+    <AdaptiveSheet open={true} onClose={onClose} title={`🔒 Giữ cuộn — ${order.order_number}`}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {/* Order items as filter tabs */}
         {items.length > 1 && (
           <div className="reserve-item-tabs">
@@ -86,7 +79,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
 
         {/* Single item info */}
         {items.length === 1 && selectedItem && (
-          <div className="info-box" style={{ margin: '0 0 1rem' }}>
+          <div className="info-box">
             <strong>{selectedItem.fabric_type}</strong>
             {selectedItem.color_name && <span> · {selectedItem.color_name}</span>}
             <span className="td-muted"> — Cần: {new Intl.NumberFormat('vi-VN').format(selectedItem.quantity)} {selectedItem.unit}</span>
@@ -111,7 +104,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
 
         {/* Reserved rolls table */}
         {reservedRolls.length > 0 && (
-          <div style={{ marginBottom: '1rem' }}>
+          <div>
             <h4 style={{ fontSize: '0.88rem', marginBottom: '0.5rem' }}>
               Cuộn đang giữ ({reservedRolls.length})
             </h4>
@@ -141,7 +134,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                           </span>
                         ) : '—'}
                       </td>
-                      <td>
+                      <td className="td-actions">
                         <button
                           className="btn-secondary"
                           type="button"
@@ -181,11 +174,11 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                 <thead>
                   <tr>
                     <th>Mã cuộn</th>
-                    <th>Màu</th>
+                    <th className="hide-mobile">Màu</th>
                     <th>Dài</th>
                     <th>Nặng</th>
-                    <th>CL</th>
-                    <th>Vị trí</th>
+                    <th className="hide-mobile">CL</th>
+                    <th className="hide-mobile">Vị trí</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -193,18 +186,18 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                   {filteredAvailable.map((roll) => (
                     <tr key={roll.id}>
                       <td><strong>{roll.roll_number}</strong></td>
-                      <td className="td-muted">{roll.color_name ?? '—'}</td>
+                      <td className="td-muted hide-mobile">{roll.color_name ?? '—'}</td>
                       <td className="td-muted">{fmtNum(roll.length_m, 'm')}</td>
                       <td className="td-muted">{fmtNum(roll.weight_kg, 'kg')}</td>
-                      <td>
+                      <td className="hide-mobile">
                         {roll.quality_grade ? (
                           <span className={`grade-badge grade-${roll.quality_grade}`}>
                             {roll.quality_grade}
                           </span>
                         ) : '—'}
                       </td>
-                      <td className="td-muted">{roll.warehouse_location ?? '—'}</td>
-                      <td>
+                      <td className="td-muted hide-mobile">{roll.warehouse_location ?? '—'}</td>
+                      <td className="td-actions">
                         <button
                           className="primary-button"
                           type="button"
@@ -228,13 +221,14 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
             Lỗi: {((reserveMutation.error ?? unreserveMutation.error) as Error).message}
           </p>
         )}
-
-        <div className="modal-actions">
-          <button className="btn-secondary btn-standard" type="button" onClick={onClose}>
-            Đóng
-          </button>
-        </div>
       </div>
-    </div>
+
+      {/* Footer using modal-footer convention inside sheet */}
+      <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none' }}>
+        <button className="btn-secondary btn-standard" type="button" onClick={onClose}>
+          Đóng
+        </button>
+      </div>
+    </AdaptiveSheet>
   )
 }
