@@ -1,9 +1,10 @@
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createWorkOrderSchema, type CreateWorkOrderInput } from './work-orders.module'
 import { useCreateWorkOrder } from './useWorkOrders'
 import { useBomList } from '../bom/useBom'
 import { useOrderList } from '../orders/useOrders'
+import { Combobox } from '@/shared/components/Combobox'
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { useStepper } from '@/shared/hooks/useStepper'
 
@@ -20,7 +21,7 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
 
   const stepper = useStepper({ totalSteps: 2 })
 
-  const { register, handleSubmit, trigger, formState: { errors, isValid } } = useForm<CreateWorkOrderInput>({
+  const { register, handleSubmit, trigger, control, formState: { errors, isValid } } = useForm<CreateWorkOrderInput>({
     resolver: zodResolver(createWorkOrderSchema),
     defaultValues: {
       work_order_number: `WO-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}-${Math.floor(Math.random() * 1000)}`,
@@ -84,17 +85,22 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
 
               <div className="form-field">
                 <label>Liên kết Đơn Hàng (ĐH)</label>
-                <select
-                  {...register('order_id')}
-                  className={`field-select${errors.order_id ? ' is-error' : ''}`}
-                >
-                  <option value="none">— Sản xuất dự trữ (Không ĐH) —</option>
-                  {orders?.data?.map((o) => (
-                    <option key={o.id} value={o.id}>
-                      {o.order_number} — {o.customers?.name}
-                    </option>
-                  ))}
-                </select>
+                <Controller
+                  name="order_id"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={[...orders?.data?.map((o) => ({
+                        value: o.id,
+                        label: `${o.order_number} — ${o.customers?.name}`
+                      })) || []]}
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      placeholder="— Sản xuất dự trữ (Không ĐH) —"
+                      hasError={!!errors.order_id}
+                    />
+                  )}
+                />
                 <span className="field-hint">
                   Chọn đơn hàng nếu sản xuất theo yêu cầu (MTO)
                 </span>
@@ -117,17 +123,22 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
             <div className="form-grid">
               <div className="form-field">
                 <label>Công thức BOM định mức <span className="field-required">*</span></label>
-                <select
-                  {...register('bom_template_id')}
-                  className={`field-select${errors.bom_template_id ? ' is-error' : ''}`}
-                >
-                  <option value="">— Chọn công thức dệt —</option>
-                  {boms?.map((b) => (
-                    <option key={b.id} value={b.id}>
-                      {b.code} — {b.name} (V{b.active_version})
-                    </option>
-                  ))}
-                </select>
+                <Controller
+                  name="bom_template_id"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={boms?.map((b) => ({
+                        value: b.id,
+                        label: `${b.code} — ${b.name} (V${b.active_version})`
+                      })) || []}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="— Chọn công thức dệt —"
+                      hasError={!!errors.bom_template_id}
+                    />
+                  )}
+                />
                 {errors.bom_template_id && <span className="field-error">{errors.bom_template_id.message}</span>}
               </div>
 

@@ -1,6 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
+
+import { Combobox } from '@/shared/components/Combobox'
 
 import {
   customersDefaultValues,
@@ -41,6 +43,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
   const {
     register,
     handleSubmit,
+    control,
     reset,
     setValue,
     formState: { errors, isSubmitting },
@@ -200,19 +203,38 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
           <div className="form-field">
             <label htmlFor="source">Nguồn khách hàng</label>
-            <select id="source" className="field-select" {...register('source')}>
-              {CUSTOMER_SOURCES.map((s) => (
-                <option key={s} value={s}>{CUSTOMER_SOURCE_LABELS[s]}</option>
-              ))}
-            </select>
+            <Controller
+              name="source"
+              control={control}
+              render={({ field }) => (
+                <Combobox
+                  options={CUSTOMER_SOURCES.map((s) => ({
+                    value: s,
+                    label: CUSTOMER_SOURCE_LABELS[s]
+                  }))}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
           </div>
 
           <div className="form-field">
             <label htmlFor="status">Trạng thái</label>
-            <select id="status" className="field-select" {...register('status')}>
-              <option value="active">Hoạt động</option>
-              <option value="inactive">Ngừng hoạt động</option>
-            </select>
+            <Controller
+              name="status"
+              control={control}
+              render={({ field }) => (
+                <Combobox
+                  options={[
+                    { value: 'active', label: 'Hoạt động' },
+                    { value: 'inactive', label: 'Ngừng hoạt động' }
+                  ]}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
           </div>
         </div>
 

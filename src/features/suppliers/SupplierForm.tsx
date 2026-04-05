@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 
 import {
   SUPPLIER_CATEGORIES,
@@ -14,6 +14,7 @@ import type { SupplierFormValues } from './suppliers.module'
 import type { Supplier } from './types'
 import { useCreateSupplier, useNextSupplierCode, useUpdateSupplier } from './useSuppliers'
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { Combobox } from '@/shared/components/Combobox'
 
 type SupplierFormProps = {
   supplier: Supplier | null
@@ -44,6 +45,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
   const {
     register,
     handleSubmit,
+    control,
     reset,
     setValue,
     formState: { errors, isSubmitting },
@@ -205,25 +207,40 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
               <label htmlFor="category">
                 Danh mục <span className="field-required">*</span>
               </label>
-              <select id="category" className="field-select" {...register('category')}>
-                {SUPPLIER_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {SUPPLIER_CATEGORY_LABELS[cat]}
-                  </option>
-                ))}
-              </select>
+              <Controller
+                name="category"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={SUPPLIER_CATEGORIES.map((cat) => ({
+                      value: cat,
+                      label: SUPPLIER_CATEGORY_LABELS[cat]
+                    }))}
+                    value={field.value}
+                    onChange={field.onChange}
+                    hasError={!!errors.category}
+                  />
+                )}
+              />
               {errors.category && <span className="field-error">{errors.category.message}</span>}
             </div>
 
             <div className="form-field">
               <label htmlFor="status">Trạng thái</label>
-              <select id="status" className="field-select" {...register('status')}>
-                {SUPPLIER_STATUSES.map((st) => (
-                  <option key={st} value={st}>
-                    {SUPPLIER_STATUS_LABELS[st]}
-                  </option>
-                ))}
-              </select>
+              <Controller
+                name="status"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={SUPPLIER_STATUSES.map((st) => ({
+                      value: st,
+                      label: SUPPLIER_STATUS_LABELS[st]
+                    }))}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
             </div>
           </div>
 

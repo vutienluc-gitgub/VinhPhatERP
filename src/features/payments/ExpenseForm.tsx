@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { Combobox } from '@/shared/components/Combobox'
 
 import {
   EXPENSE_CATEGORIES,
@@ -48,6 +49,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
   const {
     register,
     handleSubmit,
+    control,
     reset,
     setValue,
     formState: { errors, isSubmitting },
@@ -122,11 +124,20 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
           <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
             <div className="form-field">
               <label htmlFor="category">Danh mục <span className="field-required">*</span></label>
-              <select id="category" className="field-select" {...register('category')}>
-                {EXPENSE_CATEGORIES.map((c) => (
-                  <option key={c} value={c}>{EXPENSE_CATEGORY_LABELS[c]}</option>
-                ))}
-              </select>
+              <Controller
+                name="category"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={EXPENSE_CATEGORIES.map((c) => ({
+                      value: c,
+                      label: EXPENSE_CATEGORY_LABELS[c]
+                    }))}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
             </div>
             <div className="form-field">
               <label htmlFor="amount">Số tiền (đ) <span className="field-required">*</span></label>
@@ -161,14 +172,21 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
           <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
             <div className="form-field">
               <label htmlFor="accountId">Tài khoản chi</label>
-              <select id="accountId" className="field-select" {...register('accountId')}>
-                <option value="">— Không chọn —</option>
-                {accounts.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.name} ({formatCurrency(a.current_balance)} đ)
-                  </option>
-                ))}
-              </select>
+              <Controller
+                name="accountId"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={accounts.map((a) => ({
+                      value: a.id,
+                      label: `${a.name} (${formatCurrency(a.current_balance)} đ)`
+                    }))}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="— Không chọn —"
+                  />
+                )}
+              />
             </div>
             <div className="form-field">
               <label htmlFor="referenceNumber">Số chứng từ</label>

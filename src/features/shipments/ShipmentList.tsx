@@ -4,6 +4,7 @@ import { useConfirm } from '@/shared/components/ConfirmDialog'
 import { Pagination } from '@/shared/components/Pagination'
 import { TableSkeleton } from '@/shared/components/TableSkeleton'
 import { EmptyState } from '@/shared/components/EmptyState'
+import { Combobox } from '@/shared/components/Combobox'
 import { DeliveryConfirmForm } from './DeliveryConfirmForm'
 import { exportShipmentToPdf } from './shipment-document'
 import { SHIPMENT_STATUS_LABELS } from './shipments.module'
@@ -53,10 +54,9 @@ export function ShipmentList() {
     setFilters((prev) => ({ ...prev, search: searchInput.trim() || undefined }))
   }
 
-  function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as ShipmentStatus | ''
+  function handleStatusChange(val: string) {
     setPage(1)
-    setFilters((prev) => ({ ...prev, status: val || undefined }))
+    setFilters((prev) => ({ ...prev, status: (val as ShipmentStatus) || undefined }))
   }
 
   async function handleConfirm(shipment: Shipment) {
@@ -129,17 +129,16 @@ export function ShipmentList() {
 
         <div className="filter-field">
           <label htmlFor="filter-status">Trạng thái</label>
-          <select
-            id="filter-status"
-            className="field-select"
+          <Combobox
+            options={[
+              { value: '', label: 'Tất cả' },
+              { value: 'preparing', label: 'Đang chuẩn bị' },
+              { value: 'shipped', label: 'Đã giao' },
+              { value: 'delivered', label: 'Đã nhận' },
+            ]}
             value={filters.status ?? ''}
             onChange={handleStatusChange}
-          >
-            <option value="">Tất cả</option>
-            <option value="preparing">Đang chuẩn bị</option>
-            <option value="shipped">Đã giao</option>
-            <option value="delivered">Đã nhận</option>
-          </select>
+          />
         </div>
 
         {hasFilter && (

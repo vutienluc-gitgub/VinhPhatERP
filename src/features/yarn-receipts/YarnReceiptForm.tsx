@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
-import { useFieldArray, useForm, useWatch } from 'react-hook-form'
+import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form'
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { Combobox } from '@/shared/components/Combobox'
 
 import {
   emptyItem,
@@ -196,18 +197,23 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                 <label htmlFor="supplierId">
                   Nhà cung cấp <span className="field-required">*</span>
                 </label>
-                <select
-                  id="supplierId"
-                  className={`field-select${errors.supplierId ? ' is-error' : ''}`}
-                  {...register('supplierId')}
-                >
-                  <option value="">— Chọn nhà cung cấp —</option>
-                  {suppliers.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.code} — {s.name}
-                    </option>
-                  ))}
-                </select>
+                <Controller
+                  name="supplierId"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={suppliers.map((s) => ({
+                        value: s.id,
+                        label: s.name,
+                        code: s.code,
+                      }))}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="— Chọn nhà cung cấp —"
+                      hasError={!!errors.supplierId}
+                    />
+                  )}
+                />
                 {errors.supplierId && (
                   <span className="field-error">{errors.supplierId.message}</span>
                 )}
@@ -284,29 +290,32 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                   <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                     <div className="form-field" style={{ gridColumn: '1 / -1' }}>
                       <label htmlFor={`items.${index}.yarnCatalogId`}>Chọn từ danh mục sợi</label>
-                      <select
-                        id={`items.${index}.yarnCatalogId`}
-                        className="field-select"
-                        {...register(`items.${index}.yarnCatalogId`)}
-                        onChange={(e) => {
-                          void register(`items.${index}.yarnCatalogId`).onChange(e)
-                          const cat = yarnCatalogs.find((c) => c.id === e.target.value)
-                          if (cat) {
-                            setValue(`items.${index}.yarnType`, cat.name)
-                            setValue(`items.${index}.colorName`, cat.color_name ?? '')
-                            setValue(`items.${index}.composition`, cat.composition ?? '')
-                            setValue(`items.${index}.tensileStrength`, cat.tensile_strength ?? '')
-                            setValue(`items.${index}.origin`, cat.origin ?? '')
-                          }
-                        }}
-                      >
-                        <option value="">— Chọn từ danh mục (tuỳ chọn) —</option>
-                        {yarnCatalogs.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.code} — {c.name}
-                          </option>
-                        ))}
-                      </select>
+                      <Controller
+                        name={`items.${index}.yarnCatalogId` as const}
+                        control={control}
+                        render={({ field }) => (
+                          <Combobox
+                            options={yarnCatalogs.map((c) => ({
+                              value: c.id,
+                              label: c.name,
+                              code: c.code,
+                            }))}
+                            value={field.value}
+                            onChange={(val) => {
+                              field.onChange(val)
+                              const cat = yarnCatalogs.find((c) => c.id === val)
+                              if (cat) {
+                                setValue(`items.${index}.yarnType`, cat.name)
+                                setValue(`items.${index}.colorName`, cat.color_name ?? '')
+                                setValue(`items.${index}.composition`, cat.composition ?? '')
+                                setValue(`items.${index}.tensileStrength`, cat.tensile_strength ?? '')
+                                setValue(`items.${index}.origin`, cat.origin ?? '')
+                              }
+                            }}
+                            placeholder="— Chọn từ danh mục (tuỳ chọn) —"
+                          />
+                        )}
+                      />
                     </div>
                   </div>
 
