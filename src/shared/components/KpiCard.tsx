@@ -8,12 +8,18 @@ type KpiCardProps = {
   href?: string
 }
 
+/** 
+ * Standardized KPI Card using project CSS system (.stat-card)
+ * This replaces raw Tailwind with consistent design system tokens.
+ */
 export function KpiCard({ label, value, color, icon }: KpiCardProps) {
   return (
-    <div className="kpi-card w-full max-w-full p-4 rounded-xl bg-white shadow flex flex-col items-center">
-      {icon && <span className="kpi-card-icon" aria-hidden="true">{icon}</span>}
-      <div className="kpi-card-label">{label}</div>
-      <div className="kpi-card-value" style={color ? { color } : undefined}>
+    <div className="stat-card">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+        {icon && <span className="stat-icon" aria-hidden="true" style={{ fontSize: '1rem' }}>{icon}</span>}
+        <span className="stat-label">{label}</span>
+      </div>
+      <div className="stat-value" style={color ? { color } : undefined}>
         {value}
       </div>
     </div>
@@ -24,7 +30,13 @@ type KpiGridProps = {
   children: React.ReactNode
 }
 
-/** Responsive grid wrapper for KpiCard items */
+/** 
+ * Responsive grid wrapper for KpiCard items using .stats-bar
+ */
 export function KpiGrid({ children }: KpiGridProps) {
-  return <div className="kpi-grid w-full max-w-full">{children}</div>
+  return (
+    <div className="stats-bar" style={{ padding: '0.75rem 0', background: 'transparent', border: 'none' }}>
+      {children}
+    </div>
+  )
 }

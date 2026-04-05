@@ -26,16 +26,14 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
       </div>
 
       {/* KPI cards */}
-      <div style={{ padding: '0 1.25rem 1rem' }}>
-        <KpiGrid>
-          <KpiCard
-            label="Tổng công nợ"
-            value={`${formatCurrency(totalDebt)} đ`}
-            color={totalDebt > 0 ? '#c0392b' : '#0c8f68'}
-          />
-          <KpiCard label="Khách còn nợ" value={String(customerCount)} color="#d97706" />
-        </KpiGrid>
-      </div>
+      <KpiGrid>
+        <KpiCard
+          label="Tổng công nợ"
+          value={`${formatCurrency(totalDebt)} đ`}
+          color={totalDebt > 0 ? 'var(--danger)' : 'var(--success)'}
+        />
+        <KpiCard label="Khách còn nợ" value={String(customerCount)} color="var(--warning-strong)" />
+      </KpiGrid>
 
       {/* Table */}
       <div className="data-table-wrap card-table-section">
