@@ -148,8 +148,12 @@ features/customers/
 - **Không copy khối code lớn mà không hiểu** — chia nhỏ, kiểm tra từng phần
 - **Yêu cầu AI giải thích** nếu có đoạn không rõ trước khi chạy
 - **AI không được phép xoá file hoặc thay đổi schema** mà không có xác nhận rõ ràng
-- **Luôn trả lời và ghi vào các file trong docs bằng tiếng việt có dấu**
+- **Luôn trả lời và ghi vào các file trong docs bằng tiếng việt có dấu và phong cách dễ hiểu cho người non-tech**
 - **Luôn suy luận logic theo flow, theo nghiệp vụ sản xuất, thương mại B2B ngành dệt may**
+- **Không dùng màu Tailwind trực tiếp (gray-*, blue-*)**
+- **Chỉ dùng design token (border-border, bg-background…)**
+- **Không viết raw input/button → dùng component system**
+- **Mọi UI phải mobile-first**
 
 ---
 
