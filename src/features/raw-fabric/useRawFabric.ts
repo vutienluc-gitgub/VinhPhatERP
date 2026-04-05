@@ -11,6 +11,7 @@ import type { RawFabricFilter, RawFabricRoll } from './types'
 
 export type SupplierOption = { id: string; code: string; name: string }
 export type YarnReceiptOption = { id: string; receipt_number: string; receipt_date: string }
+export type WorkOrderOption = { id: string; work_order_number: string; status: string; bom_template: { name: string } | null }
 
 const TABLE = 'raw_fabric_rolls'
 const QUERY_KEY = ['raw-fabric'] as const
@@ -33,6 +34,7 @@ function toDbRow(values: RawFabricFormValues): Omit<RawFabricRoll, 'id' | 'creat
     notes: values.notes?.trim() || null,
     lot_number: values.lot_number?.trim() || null,
     barcode: generateBarcode(values.roll_number),
+    work_order_id: values.work_order_id?.trim() || null,
   }
 }
 
@@ -167,6 +169,7 @@ export function useCreateRawFabricBulk() {
         notes: row.notes?.trim() || null,
         lot_number: values.lot_number?.trim() || null,
         barcode: generateBarcode(row.roll_number.trim()),
+        work_order_id: values.work_order_id?.trim() || null,
       }))
 
       const { data, error } = await supabase
@@ -212,6 +215,23 @@ export function useYarnReceiptOptions() {
         .limit(200)
       if (error) throw error
       return (data ?? []) as YarnReceiptOption[]
+    },
+  })
+}
+
+/** Lấy danh sách lệnh sản xuất để liên kết đầu ra vải mộc */
+export function useWorkOrderOptions() {
+  return useQuery({
+    queryKey: ['work-orders', 'options'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('work_orders')
+        .select('id, work_order_number, status, bom_template:bom_templates(name)')
+        .in('status', ['in_progress', 'completed']) // Chỉ cho chọn lệnh đang chạy hoặc vừa xong
+        .order('created_at', { ascending: false })
+        .limit(100)
+      if (error) throw error
+      return (data ?? []) as unknown as WorkOrderOption[]
     },
   })
 }

@@ -122,7 +122,13 @@ export function useCreateWorkOrder() {
       if (!bomYarns || bomYarns.length === 0) throw new Error('BOM không có định mức sợi nào.');
 
       // 3. Create the Work Order
-      const targetKg = input.target_weight_kg || 0;
+      let targetKg = input.target_weight_kg || 0;
+
+      // If weight is not provided, calculate from BOM consumption
+      if (targetKg === 0 && input.target_quantity_m > 0) {
+        const totalConsumptionPerM = bomYarns.reduce((sum, item) => sum + (item.consumption_kg_per_m || 0), 0);
+        targetKg = input.target_quantity_m * totalConsumptionPerM;
+      }
 
       const { data: workOrder, error: createError } = await supabase
         .from('work_orders')

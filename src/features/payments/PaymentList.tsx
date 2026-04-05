@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 
 import { PAYMENT_METHOD_LABELS } from './payments.module'
 import { useConfirm } from '@/shared/components/ConfirmDialog'
@@ -34,10 +34,10 @@ export function PaymentList() {
 
   const hasFilter = !!filters.search
 
-  const onDeleteClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+  function onDeleteClick(e: React.MouseEvent<HTMLButtonElement>) {
     const id = e.currentTarget.dataset.id
     if (id) void handleDelete(id)
-  }, [confirm, deleteMutation])
+  }
 
   return (
     <div className="panel-card card-flush">

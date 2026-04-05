@@ -1349,6 +1349,7 @@ export type Database = {
           weight_kg: number | null
           width_cm: number | null
           yarn_receipt_id: string | null
+          work_order_id: string | null
         }
         Insert: {
           barcode?: string | null
@@ -1370,6 +1371,7 @@ export type Database = {
           weight_kg?: number | null
           width_cm?: number | null
           yarn_receipt_id?: string | null
+          work_order_id?: string | null
         }
         Update: {
           barcode?: string | null
@@ -1391,6 +1393,7 @@ export type Database = {
           weight_kg?: number | null
           width_cm?: number | null
           yarn_receipt_id?: string | null
+          work_order_id?: string | null
         }
         Relationships: [
           {

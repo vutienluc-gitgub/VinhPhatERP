@@ -54,6 +54,7 @@ export const rawFabricSchema = z.object({
   production_date: z.string().optional(),
   notes: z.string().trim().optional(),
   yarn_receipt_id: z.string().uuid().optional().or(z.literal('')),
+  work_order_id: z.string().uuid().optional().or(z.literal('')),
   weaving_partner_id: z.string().uuid().optional().or(z.literal('')),
   lot_number: z.string().trim().max(60).optional(),
 })
@@ -74,6 +75,7 @@ export const rawFabricDefaults: RawFabricFormValues = {
   production_date: '',
   notes: '',
   yarn_receipt_id: '',
+  work_order_id: '',
   weaving_partner_id: '',
   lot_number: '',
 }
@@ -129,6 +131,7 @@ export const bulkInputSchema = z.object({
   production_date: z.string().optional(),
   weaving_partner_id: z.string().uuid().optional().or(z.literal('')),
   yarn_receipt_id: z.string().uuid().optional().or(z.literal('')),
+  work_order_id: z.string().uuid().optional().or(z.literal('')),
   lot_number: z.string().trim().max(60).optional(),
   roll_prefix: z.string().trim().min(1, 'Tiền tố mã cuộn không được trống'),
   start_number: z.preprocess(
@@ -167,6 +170,7 @@ export const bulkInputDefaults: BulkInputFormValues = {
   production_date: '',
   weaving_partner_id: '',
   yarn_receipt_id: '',
+  work_order_id: '',
   lot_number: '',
   roll_prefix: 'RM-',
   start_number: 1,

@@ -12,7 +12,7 @@ import {
 } from './raw-fabric.module'
 import type { RawFabricFormValues } from './raw-fabric.module'
 import type { RawFabricRoll } from './types'
-import { useCreateRawFabric, useUpdateRawFabric, useWeavingPartners, useYarnReceiptOptions } from './useRawFabric'
+import { useCreateRawFabric, useUpdateRawFabric, useWeavingPartners, useWorkOrderOptions, useYarnReceiptOptions } from './useRawFabric'
 import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm'
 
 /* ── Collapsible form section ── */
@@ -50,6 +50,7 @@ function rollToFormValues(roll: RawFabricRoll): RawFabricFormValues {
     notes: roll.notes ?? '',
     yarn_receipt_id: roll.yarn_receipt_id ?? '',
     weaving_partner_id: roll.weaving_partner_id ?? '',
+    work_order_id: roll.work_order_id ?? '',
     lot_number: roll.lot_number ?? '',
   }
 }
@@ -61,6 +62,7 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
   const updateMutation = useUpdateRawFabric()
   const { data: weavingPartners = [] } = useWeavingPartners()
   const { data: yarnReceipts = [] } = useYarnReceiptOptions()
+  const { data: workOrders = [] } = useWorkOrderOptions()
 
   const {
     register,
@@ -105,19 +107,19 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
             type="button"
             onClick={onClose}
             aria-label="Đóng"
-            style={{ fontSize: '1.1rem' }}
           >
             ✕
           </button>
         </div>
 
-        {mutationError && (
-          <p style={{ color: '#c0392b', fontSize: '0.88rem', marginBottom: '0.75rem' }}>
-            Lỗi: {(mutationError as Error).message}
-          </p>
-        )}
+        <div className="modal-content">
+          {mutationError && (
+            <p className="field-error" style={{ marginBottom: '1rem' }}>
+              Lỗi: {(mutationError as Error).message}
+            </p>
+          )}
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <form id="raw-fabric-form" onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="form-grid">
             {/* ── Section 1: Thông tin cuộn ── */}
             <FormSection title="Thông tin cuộn" defaultOpen={true}>
@@ -286,8 +288,25 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
             </FormSection>
 
             {/* ── Section 2: Truy vết nguồn gốc ── */}
-            <FormSection title="Truy vết nguồn gốc" defaultOpen={!isEditing}>
+            <FormSection title="Truy vết nguồn gốc & Lệnh sản xuất" defaultOpen={!isEditing}>
               <div className="form-grid">
+                <div className="form-field">
+                  <label htmlFor="work_order_id">Lệnh sản xuất (Work Order)</label>
+                  <select
+                    id="work_order_id"
+                    className="field-select"
+                    {...register('work_order_id')}
+                  >
+                    <option value="">— Không liên kết lệnh (Dự trữ) —</option>
+                    {workOrders.map((wo) => (
+                      <option key={wo.id} value={wo.id}>
+                        {wo.work_order_number} ({wo.bom_template?.name})
+                      </option>
+                    ))}
+                  </select>
+                  <span className="field-hint">Liên kết cuộn này với lệnh sản xuất để theo dõi tiến độ dệt.</span>
+                </div>
+
                 <div className="form-grid form-grid-2">
                   <div className="form-field">
                     <label htmlFor="weaving_partner_id">Nhà dệt gia công</label>
@@ -322,7 +341,6 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
                     className="btn-secondary"
                     type="button"
                     onClick={() => setShowQuickSupplier(true)}
-                    style={{ fontSize: '0.8rem', padding: '0.35rem 0.7rem', alignSelf: 'flex-start' }}
                   >
                     + Tạo nhà dệt mới
                   </button>
@@ -366,26 +384,27 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
               </div>
             </FormSection>
           </div>
-
-          <div className="modal-actions">
-            <button
-              className="btn-secondary"
-              type="button"
-              onClick={onClose}
-              disabled={isPending}
-            >
-              Hủy
-            </button>
-            <button
-              className="primary-button"
-              type="submit"
-              disabled={isPending}
-              style={{ minHeight: 40, padding: '0.6rem 1.25rem', fontSize: '0.9rem' }}
-            >
-              {isPending ? 'Đang lưu...' : isEditing ? 'Lưu thay đổi' : 'Nhập kho'}
-            </button>
-          </div>
         </form>
+      </div>
+
+        <div className="modal-footer">
+          <button
+            className="btn-secondary"
+            type="button"
+            onClick={onClose}
+            disabled={isPending}
+          >
+            Hủy
+          </button>
+          <button
+            className="btn-primary"
+            type="submit"
+            form="raw-fabric-form"
+            disabled={isPending}
+          >
+            {isPending ? 'Đang lưu...' : isEditing ? 'Lưu thay đổi' : 'Nhập kho'}
+          </button>
+        </div>
       </div>
     </div>
   )

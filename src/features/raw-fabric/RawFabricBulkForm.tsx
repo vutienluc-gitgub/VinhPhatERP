@@ -15,6 +15,7 @@ import type { BulkInputFormValues } from './raw-fabric.module'
 import {
   useCreateRawFabricBulk,
   useWeavingPartners,
+  useWorkOrderOptions,
   useYarnReceiptOptions,
 } from './useRawFabric'
 import { useRawFabricExport } from './useRawFabricExport'
@@ -28,6 +29,7 @@ export function RawFabricBulkForm({ onClose }: Props) {
   const bulkMutation = useCreateRawFabricBulk()
   const { data: weavingPartners = [] } = useWeavingPartners()
   const { data: yarnReceipts = [] } = useYarnReceiptOptions()
+  const { data: workOrders = [] } = useWorkOrderOptions()
   const weightRefs = useRef<(HTMLInputElement | null)[]>([])
   const [savedRolls, setSavedRolls] = useState<RawFabricRoll[] | null>(null)
   const { exportExcel, exportPdf } = useRawFabricExport()
@@ -271,6 +273,18 @@ export function RawFabricBulkForm({ onClose }: Props) {
 
             <div className="form-grid form-grid-2">
               <div className="form-field">
+                <label htmlFor="bulk_work_order_id">Lệnh sản xuất (Work Order)</label>
+                <select id="bulk_work_order_id" className="field-select" {...register('work_order_id')}>
+                  <option value="">— Không liên kết lệnh (Dự trữ) —</option>
+                  {workOrders.map((wo) => (
+                    <option key={wo.id} value={wo.id}>
+                      {wo.work_order_number} ({wo.bom_template?.name})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-field">
                 <label htmlFor="bulk_weaving_partner_id">Nhà dệt gia công</label>
                 <select id="bulk_weaving_partner_id" className="field-select" {...register('weaving_partner_id')}>
                   <option value="">— Chọn nhà dệt —</option>
@@ -279,16 +293,16 @@ export function RawFabricBulkForm({ onClose }: Props) {
                   ))}
                 </select>
               </div>
+            </div>
 
-              <div className="form-field">
-                <label htmlFor="bulk_yarn_receipt_id">Phiếu nhập sợi nguồn</label>
-                <select id="bulk_yarn_receipt_id" className="field-select" {...register('yarn_receipt_id')}>
-                  <option value="">— Chọn phiếu sợi —</option>
-                  {yarnReceipts.map((r) => (
-                    <option key={r.id} value={r.id}>{r.receipt_number} ({r.receipt_date})</option>
-                  ))}
-                </select>
-              </div>
+            <div className="form-field">
+              <label htmlFor="bulk_yarn_receipt_id">Phiếu nhập sợi nguồn</label>
+              <select id="bulk_yarn_receipt_id" className="field-select" {...register('yarn_receipt_id')}>
+                <option value="">— Chọn phiếu sợi —</option>
+                {yarnReceipts.map((r) => (
+                  <option key={r.id} value={r.id}>{r.receipt_number} ({r.receipt_date})</option>
+                ))}
+              </select>
             </div>
 
             <div className="form-field">
