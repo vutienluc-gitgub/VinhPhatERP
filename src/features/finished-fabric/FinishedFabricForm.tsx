@@ -2,6 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+
 import {
   QUALITY_GRADE_LABELS,
   QUALITY_GRADES,
@@ -84,28 +86,12 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
   const isPending = isSubmitting || createMutation.isPending || updateMutation.isPending
 
   return (
-    <div
-      className="modal-overlay"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose()
-      }}
+    <AdaptiveSheet
+      open={true}
+      onClose={onClose}
+      title={isEditing ? `Sửa cuộn: ${roll.roll_number}` : 'Nhập cuộn vải thành phẩm mới'}
     >
-      <div className="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <div className="modal-header">
-          <h3 id="modal-title">
-            {isEditing ? `Sửa cuộn: ${roll.roll_number}` : 'Nhập cuộn vải thành phẩm mới'}
-          </h3>
-          <button
-            className="btn-icon"
-            type="button"
-            onClick={onClose}
-            aria-label="Đóng"
-            style={{ fontSize: '1.1rem' }}
-          >
-            ✕
-          </button>
-        </div>
-
+      <form id="finished-fabric-form" onSubmit={handleSubmit(onSubmit)} noValidate>
         {lockReason && (
           <div
             role="alert"
@@ -114,7 +100,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
               border: '1px solid #ffc107',
               borderRadius: 6,
               padding: '0.6rem 0.9rem',
-              marginBottom: '0.75rem',
+              marginBottom: '1rem',
               fontSize: '0.875rem',
               color: '#856404',
               display: 'flex',
@@ -127,244 +113,241 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
         )}
 
         {mutationError && (
-          <p style={{ color: '#c0392b', fontSize: '0.88rem', marginBottom: '0.75rem' }}>
+          <p className="error-inline" style={{ marginBottom: '1rem' }}>
             Lỗi: {(mutationError as Error).message}
           </p>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <fieldset disabled={isLocked} style={{ border: 'none', padding: 0, margin: 0 }}>
-            <div className="form-grid">
-              {/* Hàng 1: Mã cuộn + Loại vải */}
-              <div className="form-grid form-grid-2">
-                <div className="form-field">
-                  <label htmlFor="roll_number">
-                    Mã cuộn <span className="field-required">*</span>
-                  </label>
-                  <input
-                    id="roll_number"
-                    className={`field-input${errors.roll_number ? ' is-error' : ''}`}
-                    type="text"
-                    placeholder="VD: FN-2026-001"
-                    {...register('roll_number')}
-                  />
-                  {errors.roll_number && (
-                    <span className="field-error">{errors.roll_number.message}</span>
-                  )}
-                </div>
-
-                <div className="form-field">
-                  <label htmlFor="fabric_type">
-                    Loại vải <span className="field-required">*</span>
-                  </label>
-                  <input
-                    id="fabric_type"
-                    className={`field-input${errors.fabric_type ? ' is-error' : ''}`}
-                    type="text"
-                    placeholder="VD: Dệt thoi 60/40 TC"
-                    {...register('fabric_type')}
-                  />
-                  {errors.fabric_type && (
-                    <span className="field-error">{errors.fabric_type.message}</span>
-                  )}
-                </div>
-              </div>
-
-              {/* Cuộn mộc nguồn — bắt buộc */}
+        <fieldset disabled={isLocked} style={{ border: 'none', padding: 0, margin: 0 }}>
+          <div className="form-grid">
+            {/* Hàng 1: Mã cuộn + Loại vải */}
+            <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
               <div className="form-field">
-                <label htmlFor="raw_roll_id">
-                  Cuộn vải mộc nguồn <span className="field-required">*</span>
+                <label htmlFor="roll_number">
+                  Mã cuộn <span className="field-required">*</span>
                 </label>
-                <select
-                  id="raw_roll_id"
-                  className={`field-select${errors.raw_roll_id ? ' is-error' : ''}`}
-                  {...register('raw_roll_id')}
-                >
-                  <option value="">— Chọn cuộn mộc —</option>
-                  {rawRollOptions.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.roll_number} — {r.fabric_type}
-                      {r.color_name ? ` (${r.color_name})` : ''}
-                      {r.lot_number ? ` [Lô: ${r.lot_number}]` : ''}
-                    </option>
-                  ))}
-                </select>
-                {errors.raw_roll_id && (
-                  <span className="field-error">{errors.raw_roll_id.message}</span>
-                )}
-                <span className="field-hint">Bắt buộc liên kết cuộn mộc để truy vết nguồn gốc và đối chiếu lô.</span>
-              </div>
-
-              {/* Hàng 2: Màu */}
-              <div className="form-grid form-grid-2">
-                <div className="form-field">
-                  <label htmlFor="color_name">Màu vải</label>
-                  <input
-                    id="color_name"
-                    className="field-input"
-                    type="text"
-                    placeholder="VD: Trắng ngà"
-                    {...register('color_name')}
-                  />
-                </div>
-
-                <div className="form-field">
-                  <label htmlFor="color_code">Mã màu</label>
-                  <input
-                    id="color_code"
-                    className="field-input"
-                    type="text"
-                    placeholder="VD: TC-01"
-                    {...register('color_code')}
-                  />
-                </div>
-              </div>
-
-              {/* Hàng 3: Khổ + Dài */}
-              <div className="form-grid form-grid-2">
-                <div className="form-field">
-                  <label htmlFor="width_cm">Khổ vải (cm)</label>
-                  <input
-                    id="width_cm"
-                    className={`field-input${errors.width_cm ? ' is-error' : ''}`}
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="VD: 150"
-                    {...register('width_cm')}
-                  />
-                  {errors.width_cm && (
-                    <span className="field-error">{errors.width_cm.message}</span>
-                  )}
-                </div>
-
-                <div className="form-field">
-                  <label htmlFor="length_m">Độ dài (m)</label>
-                  <input
-                    id="length_m"
-                    className={`field-input${errors.length_m ? ' is-error' : ''}`}
-                    type="number"
-                    step="0.001"
-                    min="0"
-                    placeholder="VD: 50"
-                    {...register('length_m')}
-                  />
-                  {errors.length_m && (
-                    <span className="field-error">{errors.length_m.message}</span>
-                  )}
-                </div>
-              </div>
-
-              {/* Hàng 4: Trọng lượng + Chất lượng */}
-              <div className="form-grid form-grid-2">
-                <div className="form-field">
-                  <label htmlFor="weight_kg">Trọng lượng (kg)</label>
-                  <input
-                    id="weight_kg"
-                    className={`field-input${errors.weight_kg ? ' is-error' : ''}`}
-                    type="number"
-                    step="0.001"
-                    min="0"
-                    placeholder="VD: 25.5"
-                    {...register('weight_kg')}
-                  />
-                  {errors.weight_kg && (
-                    <span className="field-error">{errors.weight_kg.message}</span>
-                  )}
-                </div>
-
-                <div className="form-field">
-                  <label htmlFor="quality_grade">Chất lượng</label>
-                  <select
-                    id="quality_grade"
-                    className="field-select"
-                    {...register('quality_grade')}
-                  >
-                    <option value="">Chưa kiểm định</option>
-                    {QUALITY_GRADES.map((g) => (
-                      <option key={g} value={g}>
-                        {QUALITY_GRADE_LABELS[g]}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Hàng 5: Trạng thái + Ngày sản xuất */}
-              <div className="form-grid form-grid-2">
-                <div className="form-field">
-                  <label htmlFor="status">Trạng thái</label>
-                  <select
-                    id="status"
-                    className="field-select"
-                    {...register('status')}
-                  >
-                    {allowedStatuses.map((s) => (
-                      <option key={s} value={s}>
-                        {ROLL_STATUS_LABELS[s]}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-field">
-                  <label htmlFor="production_date">Ngày hoàn thành</label>
-                  <input
-                    id="production_date"
-                    className="field-input"
-                    type="date"
-                    {...register('production_date')}
-                  />
-                </div>
-              </div>
-
-              {/* Vị trí kho */}
-              <div className="form-field">
-                <label htmlFor="warehouse_location">Vị trí kho</label>
                 <input
-                  id="warehouse_location"
+                  id="roll_number"
+                  className={`field-input${errors.roll_number ? ' is-error' : ''}`}
+                  type="text"
+                  placeholder="VD: FN-2026-001"
+                  {...register('roll_number')}
+                />
+                {errors.roll_number && (
+                  <span className="field-error">{errors.roll_number.message}</span>
+                )}
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="fabric_type">
+                  Loại vải <span className="field-required">*</span>
+                </label>
+                <input
+                  id="fabric_type"
+                  className={`field-input${errors.fabric_type ? ' is-error' : ''}`}
+                  type="text"
+                  placeholder="VD: Dệt thoi 60/40 TC"
+                  {...register('fabric_type')}
+                />
+                {errors.fabric_type && (
+                  <span className="field-error">{errors.fabric_type.message}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Cuộn mộc nguồn — bắt buộc */}
+            <div className="form-field">
+              <label htmlFor="raw_roll_id">
+                Cuộn vải mộc nguồn <span className="field-required">*</span>
+              </label>
+              <select
+                id="raw_roll_id"
+                className={`field-select${errors.raw_roll_id ? ' is-error' : ''}`}
+                {...register('raw_roll_id')}
+              >
+                <option value="">— Chọn cuộn mộc —</option>
+                {rawRollOptions.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.roll_number} — {r.fabric_type}
+                    {r.color_name ? ` (${r.color_name})` : ''}
+                    {r.lot_number ? ` [Lô: ${r.lot_number}]` : ''}
+                  </option>
+                ))}
+              </select>
+              {errors.raw_roll_id && (
+                <span className="field-error">{errors.raw_roll_id.message}</span>
+              )}
+              <span className="field-hint">Bắt buộc liên kết cuộn mộc để truy vết nguồn gốc và đối chiếu lô.</span>
+            </div>
+
+            {/* Hàng 2: Màu */}
+            <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+              <div className="form-field">
+                <label htmlFor="color_name">Màu vải</label>
+                <input
+                  id="color_name"
                   className="field-input"
                   type="text"
-                  placeholder="VD: B2-R1-S4"
-                  {...register('warehouse_location')}
+                  placeholder="VD: Trắng ngà"
+                  {...register('color_name')}
                 />
               </div>
 
-              {/* Ghi chú */}
               <div className="form-field">
-                <label htmlFor="notes">Ghi chú</label>
-                <textarea
-                  id="notes"
-                  className="field-textarea"
-                  placeholder="Ghi chú thêm về cuộn thành phẩm..."
-                  {...register('notes')}
+                <label htmlFor="color_code">Mã màu</label>
+                <input
+                  id="color_code"
+                  className="field-input"
+                  type="text"
+                  placeholder="VD: TC-01"
+                  {...register('color_code')}
                 />
               </div>
             </div>
-          </fieldset>
 
-          <div className="modal-actions">
+            {/* Hàng 3: Khổ + Dài */}
+            <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+              <div className="form-field">
+                <label htmlFor="width_cm">Khổ vải (cm)</label>
+                <input
+                  id="width_cm"
+                  className={`field-input${errors.width_cm ? ' is-error' : ''}`}
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="VD: 150"
+                  {...register('width_cm')}
+                />
+                {errors.width_cm && (
+                  <span className="field-error">{errors.width_cm.message}</span>
+                )}
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="length_m">Độ dài (m)</label>
+                <input
+                  id="length_m"
+                  className={`field-input${errors.length_m ? ' is-error' : ''}`}
+                  type="number"
+                  step="0.001"
+                  min="0"
+                  placeholder="VD: 50"
+                  {...register('length_m')}
+                />
+                {errors.length_m && (
+                  <span className="field-error">{errors.length_m.message}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Hàng 4: Trọng lượng + Chất lượng */}
+            <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+              <div className="form-field">
+                <label htmlFor="weight_kg">Trọng lượng (kg)</label>
+                <input
+                  id="weight_kg"
+                  className={`field-input${errors.weight_kg ? ' is-error' : ''}`}
+                  type="number"
+                  step="0.001"
+                  min="0"
+                  placeholder="VD: 25.5"
+                  {...register('weight_kg')}
+                />
+                {errors.weight_kg && (
+                  <span className="field-error">{errors.weight_kg.message}</span>
+                )}
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="quality_grade">Chất lượng</label>
+                <select
+                  id="quality_grade"
+                  className="field-select"
+                  {...register('quality_grade')}
+                >
+                  <option value="">Chưa kiểm định</option>
+                  {QUALITY_GRADES.map((g) => (
+                    <option key={g} value={g}>
+                      {QUALITY_GRADE_LABELS[g]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Hàng 5: Trạng thái + Ngày sản xuất */}
+            <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+              <div className="form-field">
+                <label htmlFor="status">Trạng thái</label>
+                <select
+                  id="status"
+                  className="field-select"
+                  {...register('status')}
+                >
+                  {allowedStatuses.map((s) => (
+                    <option key={s} value={s}>
+                      {ROLL_STATUS_LABELS[s]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="production_date">Ngày hoàn thành</label>
+                <input
+                  id="production_date"
+                  className="field-input"
+                  type="date"
+                  {...register('production_date')}
+                />
+              </div>
+            </div>
+
+            {/* Vị trí kho */}
+            <div className="form-field">
+              <label htmlFor="warehouse_location">Vị trí kho</label>
+              <input
+                id="warehouse_location"
+                className="field-input"
+                type="text"
+                placeholder="VD: B2-R1-S4"
+                {...register('warehouse_location')}
+              />
+            </div>
+
+            {/* Ghi chú */}
+            <div className="form-field">
+              <label htmlFor="notes">Ghi chú</label>
+              <textarea
+                id="notes"
+                className="field-textarea"
+                placeholder="Ghi chú thêm về cuộn thành phẩm..."
+                {...register('notes')}
+              />
+            </div>
+          </div>
+        </fieldset>
+
+        <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none' }}>
+          <button
+            className="btn-secondary"
+            type="button"
+            onClick={onClose}
+            disabled={isPending}
+          >
+            Đóng
+          </button>
+          {!isLocked && (
             <button
-              className="btn-secondary"
-              type="button"
-              onClick={onClose}
+              className="primary-button btn-standard"
+              type="submit"
               disabled={isPending}
             >
-              Đóng
+              {isPending ? 'Đang lưu...' : isEditing ? 'Lưu thay đổi' : 'Nhập kho'}
             </button>
-            {!isLocked && (
-              <button
-                className="primary-button"
-                type="submit"
-                disabled={isPending}
-                style={{ minHeight: 40, padding: '0.6rem 1.25rem', fontSize: '0.9rem' }}
-              >
-                {isPending ? 'Đang lưu...' : isEditing ? 'Lưu thay đổi' : 'Nhập kho'}
-              </button>
-            )}
-          </div>
-        </form>
-      </div>
-    </div>
+          )}
+        </div>
+      </form>
+    </AdaptiveSheet>
   )
 }

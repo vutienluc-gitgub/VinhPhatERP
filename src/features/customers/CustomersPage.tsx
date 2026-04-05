@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { CustomerForm } from './CustomerForm'
 import { CustomerList } from './CustomerList'
 import type { Customer } from './types'
@@ -26,7 +27,14 @@ export function CustomersPage() {
   return (
     <>
       <CustomerList onEdit={openEdit} onNew={openCreate} />
-      {showForm && <CustomerForm customer={editCustomer} onClose={closeForm} />}
+      
+      <AdaptiveSheet
+        open={showForm}
+        onClose={closeForm}
+        title={editCustomer ? `Sửa: ${editCustomer.name}` : 'Thêm khách hàng mới'}
+      >
+        <CustomerForm customer={editCustomer} onClose={closeForm} />
+      </AdaptiveSheet>
     </>
   )
 }

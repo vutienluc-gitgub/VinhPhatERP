@@ -2,6 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+
 import {
   ACCOUNT_TYPES,
   ACCOUNT_TYPE_LABELS,
@@ -68,127 +70,114 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
   const isPending = isSubmitting || createMutation.isPending || updateMutation.isPending
 
   return (
-    <div
-      className="modal-overlay"
-      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
-    >
-      <div className="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="account-modal-title">
-        <div className="modal-header">
-          <h3 id="account-modal-title">
-            {isEditing ? `Sửa: ${account.name}` : 'Thêm tài khoản mới'}
-          </h3>
-          <button className="btn-icon" type="button" onClick={onClose} aria-label="Đóng">✕</button>
+    <AdaptiveSheet open={true} onClose={onClose} title={isEditing ? `Sửa: ${account.name}` : 'Thêm tài khoản mới'}>
+      {mutationError && (
+        <p className="error-inline" style={{ marginBottom: '1rem' }}>
+          Lỗi: {(mutationError as Error).message}
+        </p>
+      )}
+
+      <form id="account-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <div className="form-grid">
+          {/* Tên + Loại */}
+          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+            <div className="form-field">
+              <label htmlFor="name">Tên tài khoản <span className="field-required">*</span></label>
+              <input
+                id="name"
+                className={`field-input${errors.name ? ' is-error' : ''}`}
+                type="text"
+                placeholder="VD: VCB - Vĩnh Phát"
+                {...register('name')}
+              />
+              {errors.name && <span className="field-error">{errors.name.message}</span>}
+            </div>
+            <div className="form-field">
+              <label htmlFor="type">Loại tài khoản <span className="field-required">*</span></label>
+              <select id="type" className="field-select" {...register('type')}>
+                {ACCOUNT_TYPES.map((t) => (
+                  <option key={t} value={t}>{ACCOUNT_TYPE_LABELS[t]}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Bank info - only for bank accounts */}
+          {accountType === 'bank' && (
+            <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+              <div className="form-field">
+                <label htmlFor="bankName">Tên ngân hàng</label>
+                <input
+                  id="bankName"
+                  className="field-input"
+                  type="text"
+                  placeholder="VD: Vietcombank"
+                  {...register('bankName')}
+                />
+              </div>
+              <div className="form-field">
+                <label htmlFor="accountNumber">Số tài khoản</label>
+                <input
+                  id="accountNumber"
+                  className="field-input"
+                  type="text"
+                  placeholder="VD: 1234567890"
+                  {...register('accountNumber')}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Số dư ban đầu + Trạng thái */}
+          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+            <div className="form-field">
+              <label htmlFor="initialBalance">
+                Số dư ban đầu (đ) {!isEditing && <span className="field-required">*</span>}
+              </label>
+              <input
+                id="initialBalance"
+                className={`field-input${errors.initialBalance ? ' is-error' : ''}`}
+                type="number"
+                step="1000"
+                inputMode="numeric"
+                placeholder="0"
+                style={{ fontVariantNumeric: 'tabular-nums' }}
+                readOnly={isEditing}
+                {...register('initialBalance', { valueAsNumber: true })}
+              />
+              {errors.initialBalance && <span className="field-error">{errors.initialBalance.message}</span>}
+            </div>
+            <div className="form-field">
+              <label htmlFor="status">Trạng thái</label>
+              <select id="status" className="field-select" {...register('status')}>
+                <option value="active">Hoạt động</option>
+                <option value="inactive">Ngừng sử dụng</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Ghi chú */}
+          <div className="form-field">
+            <label htmlFor="notes">Ghi chú</label>
+            <textarea
+              id="notes"
+              className="field-textarea"
+              rows={2}
+              placeholder="Ghi chú thêm..."
+              {...register('notes')}
+            />
+          </div>
         </div>
 
-        {mutationError && (
-          <p style={{ color: '#c0392b', fontSize: '0.88rem', marginBottom: '0.75rem', padding: '0 1rem' }}>
-            Lỗi: {(mutationError as Error).message}
-          </p>
-        )}
-
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <div className="form-grid">
-            {/* Tên + Loại */}
-            <div className="form-grid form-grid-2">
-              <div className="form-field">
-                <label htmlFor="name">Tên tài khoản <span className="field-required">*</span></label>
-                <input
-                  id="name"
-                  className={`field-input${errors.name ? ' is-error' : ''}`}
-                  type="text"
-                  placeholder="VD: VCB - Vĩnh Phát"
-                  {...register('name')}
-                />
-                {errors.name && <span className="field-error">{errors.name.message}</span>}
-              </div>
-              <div className="form-field">
-                <label htmlFor="type">Loại tài khoản <span className="field-required">*</span></label>
-                <select id="type" className="field-select" {...register('type')}>
-                  {ACCOUNT_TYPES.map((t) => (
-                    <option key={t} value={t}>{ACCOUNT_TYPE_LABELS[t]}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Bank info - only for bank accounts */}
-            {accountType === 'bank' && (
-              <div className="form-grid form-grid-2">
-                <div className="form-field">
-                  <label htmlFor="bankName">Tên ngân hàng</label>
-                  <input
-                    id="bankName"
-                    className="field-input"
-                    type="text"
-                    placeholder="VD: Vietcombank"
-                    {...register('bankName')}
-                  />
-                </div>
-                <div className="form-field">
-                  <label htmlFor="accountNumber">Số tài khoản</label>
-                  <input
-                    id="accountNumber"
-                    className="field-input"
-                    type="text"
-                    placeholder="VD: 1234567890"
-                    {...register('accountNumber')}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Số dư ban đầu + Trạng thái */}
-            <div className="form-grid form-grid-2">
-              <div className="form-field">
-                <label htmlFor="initialBalance">
-                  Số dư ban đầu (đ) {!isEditing && <span className="field-required">*</span>}
-                </label>
-                <input
-                  id="initialBalance"
-                  className={`field-input${errors.initialBalance ? ' is-error' : ''}`}
-                  type="number"
-                  step="1000"
-                  inputMode="numeric"
-                  placeholder="0"
-                  style={{ fontVariantNumeric: 'tabular-nums' }}
-                  readOnly={isEditing}
-                  {...register('initialBalance', { valueAsNumber: true })}
-                />
-                {errors.initialBalance && <span className="field-error">{errors.initialBalance.message}</span>}
-              </div>
-              <div className="form-field">
-                <label htmlFor="status">Trạng thái</label>
-                <select id="status" className="field-select" {...register('status')}>
-                  <option value="active">Hoạt động</option>
-                  <option value="inactive">Ngừng sử dụng</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Ghi chú */}
-            <div className="form-field">
-              <label htmlFor="notes">Ghi chú</label>
-              <textarea
-                id="notes"
-                className="field-input"
-                rows={2}
-                placeholder="Ghi chú thêm..."
-                style={{ resize: 'vertical' }}
-                {...register('notes')}
-              />
-            </div>
-          </div>
-
-          <div className="modal-footer">
-            <button className="btn-secondary" type="button" onClick={onClose} disabled={isPending}>
-              Hủy
-            </button>
-            <button className="primary-button" type="submit" disabled={isPending}>
-              {isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo tài khoản'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none' }}>
+          <button className="btn-secondary" type="button" onClick={onClose} disabled={isPending}>
+            Hủy
+          </button>
+          <button className="primary-button btn-standard" type="submit" disabled={isPending}>
+            {isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo tài khoản'}
+          </button>
+        </div>
+      </form>
+    </AdaptiveSheet>
   )
 }

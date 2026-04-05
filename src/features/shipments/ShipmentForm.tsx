@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useMemo } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import {
   emptyShipmentItem,
   shipmentsDefaultValues,
@@ -96,38 +97,39 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 640 }}>
-        <div className="modal-header">
-          <h3>Tạo phiếu xuất — {orderNumber}</h3>
-          <button className="btn-icon" type="button" onClick={onClose}>✕</button>
-        </div>
+    <AdaptiveSheet open={true} onClose={onClose} title={`Tạo phiếu xuất — ${orderNumber}`}>
+      <form id="shipment-form" onSubmit={handleSubmit(onSubmit)}>
+        {createMutation.error && (
+          <p className="error-inline" style={{ marginBottom: '1rem' }}>
+            Lỗi: {(createMutation.error as Error).message}
+          </p>
+        )}
 
-        <form onSubmit={handleSubmit(onSubmit)} style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div className="form-grid">
           {/* Shipment number + date */}
-          <div className="form-grid-2">
-            <div>
-              <label className="form-label">Số phiếu xuất *</label>
-              <input className="field-input" {...register('shipmentNumber')} readOnly style={{ background: 'var(--surface)' }} />
+          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+            <div className="form-field">
+              <label>Số phiếu xuất <span className="field-required">*</span></label>
+              <input className={`field-input${errors.shipmentNumber ? ' is-error' : ''}`} {...register('shipmentNumber')} readOnly style={{ background: 'var(--surface-disabled)' }} />
               {errors.shipmentNumber && <p className="field-error">{errors.shipmentNumber.message}</p>}
             </div>
-            <div>
-              <label className="form-label">Ngày giao *</label>
-              <input className="field-input" type="date" {...register('shipmentDate')} />
+            <div className="form-field">
+              <label>Ngày giao <span className="field-required">*</span></label>
+              <input className={`field-input${errors.shipmentDate ? ' is-error' : ''}`} type="date" {...register('shipmentDate')} />
               {errors.shipmentDate && <p className="field-error">{errors.shipmentDate.message}</p>}
             </div>
           </div>
 
           {/* Delivery address */}
-          <div>
-            <label className="form-label">Địa chỉ giao</label>
+          <div className="form-field">
+            <label>Địa chỉ giao</label>
             <input className="field-input" {...register('deliveryAddress')} placeholder="Địa chỉ giao hàng..." />
           </div>
 
           {/* Delivery staff + vehicle */}
-          <div className="form-grid-2">
-            <div>
-              <label className="form-label">Nhân viên giao hàng</label>
+          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+            <div className="form-field">
+              <label>Nhân viên giao hàng</label>
               <select className="field-select" {...register('deliveryStaffId')}>
                 <option value="">— Chưa phân công —</option>
                 {deliveryStaff.map((staff) => (
@@ -137,16 +139,16 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
                 ))}
               </select>
             </div>
-            <div>
-              <label className="form-label">Biển số xe</label>
+            <div className="form-field">
+              <label>Biển số xe</label>
               <input className="field-input" {...register('vehicleInfo')} placeholder="VD: 51C-12345" />
             </div>
           </div>
 
           {/* Shipping rate + cost */}
-          <div className="form-grid-2">
-            <div>
-              <label className="form-label">Bảng giá cước</label>
+          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+            <div className="form-field">
+              <label>Bảng giá cước</label>
               <select className="field-select" {...register('shippingRateId')}>
                 <option value="">— Không áp dụng —</option>
                 {shippingRates.map((rate) => (
@@ -156,8 +158,8 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
                 ))}
               </select>
             </div>
-            <div>
-              <label className="form-label">Chi phí vận chuyển (VNĐ)</label>
+            <div className="form-field">
+              <label>Chi phí vận chuyển (VNĐ)</label>
               <input
                 className="field-input"
                 type="number"
@@ -168,9 +170,9 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
           </div>
 
           {/* Loading fee */}
-          <div className="form-grid-2">
-            <div>
-              <label className="form-label">Phí bốc xếp (VNĐ)</label>
+          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+            <div className="form-field">
+              <label>Phí bốc xếp (VNĐ)</label>
               <input
                 className="field-input"
                 type="number"
@@ -182,17 +184,9 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
           </div>
 
           {/* Items */}
-          <div>
+          <div className="form-field">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <label className="form-label" style={{ margin: 0 }}>Dòng hàng *</label>
-              <button
-                className="btn-secondary"
-                type="button"
-                onClick={() => append({ ...emptyShipmentItem })}
-                style={{ fontSize: '0.82rem' }}
-              >
-                + Thêm dòng
-              </button>
+              <label style={{ margin: 0 }}>Dòng hàng <span className="field-required">*</span></label>
             </div>
 
             {fields.map((field, idx) => (
@@ -200,14 +194,35 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
                 key={field.id}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-                  gap: '0.4rem',
+                  gridTemplateColumns: '1fr 1fr 100px 40px',
+                  gap: '0.5rem',
                   alignItems: 'start',
-                  marginBottom: '0.4rem',
+                  marginBottom: '1rem',
+                  border: '1px solid var(--border)',
+                  padding: '1rem',
+                  borderRadius: 'var(--radius)',
+                  background: 'var(--surface)'
                 }}
               >
-                <div style={{ gridColumn: 'span 1' }}>
-                  {idx === 0 && <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>Cuộn thành phẩm</span>}
+                <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                    Dòng {idx + 1}
+                  </span>
+                  {fields.length > 1 && (
+                    <button
+                      className="btn-icon danger"
+                      type="button"
+                      title="Xóa dòng"
+                      onClick={() => remove(idx)}
+                      style={{ fontSize: '0.85rem' }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                <div style={{ gridColumn: 'span 2' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--muted)', display: 'block', marginBottom: '0.2rem' }}>Cuộn thành phẩm</span>
                   <select
                     className="field-select"
                     {...register(`items.${idx}.finishedRollId`, {
@@ -231,15 +246,17 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
                     ))}
                   </select>
                 </div>
-                <div style={{ gridColumn: 'span 1' }}>
-                  {idx === 0 && <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>Loại vải *</span>}
+                
+                <div style={{ gridColumn: 'span 2' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--muted)', display: 'block', marginBottom: '0.2rem' }}>Loại vải *</span>
                   <input className="field-input" {...register(`items.${idx}.fabricType`)} placeholder="Loại vải" />
                   {errors.items?.[idx]?.fabricType && (
                     <p className="field-error">{errors.items[idx]?.fabricType?.message}</p>
                   )}
                 </div>
-                <div style={{ minWidth: 80 }}>
-                  {idx === 0 && <span style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>SL (m) *</span>}
+
+                <div style={{ gridColumn: 'span 2' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--muted)', display: 'block', marginBottom: '0.2rem' }}>SL (m) *</span>
                   <input
                     className="field-input"
                     type="number"
@@ -251,47 +268,35 @@ export function ShipmentForm({ orderId, customerId, orderNumber, onClose }: Ship
                     <p className="field-error">{errors.items[idx]?.quantity?.message}</p>
                   )}
                 </div>
-                <div style={{ paddingTop: idx === 0 ? 16 : 0, minWidth: 36, flexShrink: 0 }}>
-                  {fields.length > 1 && (
-                    <button
-                      className="btn-icon"
-                      type="button"
-                      onClick={() => remove(idx)}
-                      title="Xóa dòng"
-                      style={{ color: '#c0392b' }}
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
               </div>
             ))}
+            
+            <button
+              className="btn-secondary"
+              type="button"
+              onClick={() => append({ ...emptyShipmentItem })}
+              style={{ width: '100%', marginTop: '0.5rem' }}
+            >
+              + Thêm dòng
+            </button>
+            
             {errors.items?.root && <p className="field-error">{errors.items.root.message}</p>}
           </div>
 
-          {/* Error */}
-          {createMutation.error && (
-            <p style={{ color: '#c0392b', fontSize: '0.88rem' }}>
-              Lỗi: {(createMutation.error as Error).message}
-            </p>
-          )}
-
-          {/* Actions */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', paddingTop: '0.5rem' }}>
-            <button className="btn-secondary" type="button" onClick={onClose}>
-              Huỷ
-            </button>
-            <button
-              className="primary-button"
-              type="submit"
-              disabled={isSubmitting || createMutation.isPending}
-              style={{ padding: '0.55rem 1.2rem', fontSize: '0.9rem' }}
-            >
-              {createMutation.isPending ? 'Đang lưu...' : 'Tạo phiếu xuất'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        </div>
+        <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none' }}>
+          <button className="btn-secondary" type="button" onClick={onClose} disabled={isSubmitting || createMutation.isPending}>
+            Huỷ
+          </button>
+          <button
+            className="primary-button btn-standard"
+            type="submit"
+            disabled={isSubmitting || createMutation.isPending}
+          >
+            {createMutation.isPending ? 'Đang lưu...' : 'Tạo phiếu xuất'}
+          </button>
+        </div>
+      </form>
+    </AdaptiveSheet>
   )
 }

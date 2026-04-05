@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 
 import { QuotationDetail } from './QuotationDetail'
 import { QuotationForm } from './QuotationForm'
@@ -50,12 +51,17 @@ export function QuotationsPage() {
         />
       )}
 
-      {showForm && (
+      <AdaptiveSheet
+        open={showForm}
+        onClose={closeForm}
+        title={editQuotation ? `Sửa báo giá: ${editQuotation.quotation_number}` : 'Tạo báo giá mới'}
+        maxWidth={780}
+      >
         <QuotationForm
           quotation={editQuotation}
           onClose={closeForm}
         />
-      )}
+      </AdaptiveSheet>
     </>
   )
 }

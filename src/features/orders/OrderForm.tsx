@@ -1,8 +1,11 @@
 import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { formatCurrency } from '@/shared/utils/format'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useFieldArray, useForm, useWatch } from 'react-hook-form'
+
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { useStepper } from '@/shared/hooks/useStepper'
 
 import {
   emptyOrderItem,
@@ -18,7 +21,6 @@ import {
 } from './useOrders'
 import { useCreateOrderV2, isCreditWarning, type CreateOrderError, type CreateOrderInput } from './useCreateOrderV2'
 import { CreditOverrideDialog } from './CreditOverrideDialog'
-import { useState } from 'react'
 import { useAuth } from '@/features/auth/AuthProvider'
 
 const UNIT_LABELS: Record<string, string> = { m: 'm', kg: 'kg' }
@@ -46,8 +48,6 @@ function orderToFormValues(order: Order): OrdersFormValues {
   }
 }
 
-
-
 /* ── Realtime totals ── */
 
 function LineTotals({ control }: { control: ReturnType<typeof useForm<OrdersFormValues>>['control'] }) {
@@ -64,6 +64,7 @@ function LineTotals({ control }: { control: ReturnType<typeof useForm<OrdersForm
         fontSize: '1rem',
         padding: '0.6rem 0',
         borderTop: '2px solid var(--border)',
+        marginTop: '0.75rem',
       }}
     >
       Tổng cộng: {formatCurrency(total)} đ
@@ -139,12 +140,15 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
   const { data: nextNumber } = useNextOrderNumber()
   const { data: customers = [] } = useActiveCustomers()
 
+  const stepper = useStepper({ totalSteps: 2 })
+
   const {
     register,
     handleSubmit,
     control,
     reset,
     setValue,
+    trigger,
     formState: { errors, isSubmitting },
   } = useForm<OrdersFormValues>({
     resolver: zodResolver(ordersSchema),
@@ -168,7 +172,18 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
     }
   }, [isEditing, nextNumber, setValue])
 
+  async function handleNextStep() {
+    if (stepper.currentStep === 0) {
+      const isValid = await trigger(['orderNumber', 'orderDate', 'customerId', 'deliveryDate', 'notes'])
+      if (isValid) {
+        stepper.next()
+      }
+    }
+  }
+
   async function onSubmit(values: OrdersFormValues) {
+    if (!stepper.isLast) return
+
     try {
       if (isEditing) {
         await updateMutation.mutateAsync({ id: order.id, values })
@@ -207,269 +222,285 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
     isSubmitting || createMutationV2.isPending || updateMutation.isPending
 
   return (
-    <div
-      className="modal-overlay"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose()
-      }}
-    >
-      <div
-        className="modal-sheet"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-        style={{ maxWidth: 720 }}
+    <>
+      <AdaptiveSheet
+        open={true}
+        onClose={onClose}
+        title={isEditing ? `Sửa đơn: ${order.order_number}` : 'Tạo đơn hàng mới'}
+        stepInfo={{ current: stepper.currentStep, total: stepper.totalSteps }}
+        maxWidth={720}
       >
-        <div className="modal-header">
-          <h3 id="modal-title">
-            {isEditing
-              ? `Sửa đơn: ${order.order_number}`
-              : 'Tạo đơn hàng mới'}
-          </h3>
-          <button
-            className="btn-icon"
-            type="button"
-            onClick={onClose}
-            aria-label="Đóng"
-            style={{ fontSize: '1.1rem' }}
-          >
-            ✕
-          </button>
-        </div>
+        <form id="order-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+          {mutationError && (
+            <p className="error-inline" style={{ marginBottom: '1rem' }}>
+              Lỗi: {(mutationError as Error).message}
+            </p>
+          )}
 
-        {mutationError && (
-          <p style={{ color: '#c0392b', fontSize: '0.88rem', marginBottom: '0.75rem' }}>
-            Lỗi: {(mutationError as Error).message}
-          </p>
-        )}
-
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="form-grid">
-            {/* Số đơn + Ngày đặt */}
-            <div className="form-grid form-grid-2">
-              <div className="form-field">
-                <label htmlFor="orderNumber">
-                  Số đơn hàng <span className="field-required">*</span>
-                </label>
-                <input
-                  id="orderNumber"
-                  className={`field-input${errors.orderNumber ? ' is-error' : ''}`}
-                  type="text"
-                  readOnly={!isEditing}
-                  {...register('orderNumber')}
-                />
-                {errors.orderNumber && (
-                  <span className="field-error">{errors.orderNumber.message}</span>
-                )}
+            {/* ── BƯỚC 1: THÔNG TIN CHUNG ── */}
+            <div style={{ display: stepper.currentStep === 0 ? 'block' : 'none' }}>
+              <div className="form-grid">
+                <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                  <div className="form-field">
+                    <label htmlFor="orderNumber">
+                      Số đơn hàng <span className="field-required">*</span>
+                    </label>
+                    <input
+                      id="orderNumber"
+                      className={`field-input${errors.orderNumber ? ' is-error' : ''}`}
+                      type="text"
+                      readOnly={!isEditing}
+                      style={!isEditing ? { background: 'var(--surface)' } : undefined}
+                      {...register('orderNumber')}
+                    />
+                    {errors.orderNumber && (
+                      <span className="field-error">{errors.orderNumber.message}</span>
+                    )}
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="orderDate">
+                      Ngày đặt hàng <span className="field-required">*</span>
+                    </label>
+                    <input
+                      id="orderDate"
+                      className={`field-input${errors.orderDate ? ' is-error' : ''}`}
+                      type="date"
+                      {...register('orderDate')}
+                    />
+                    {errors.orderDate && (
+                      <span className="field-error">{errors.orderDate.message}</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                  <div className="form-field">
+                    <label htmlFor="customerId">
+                      Khách hàng <span className="field-required">*</span>
+                    </label>
+                    <select
+                      id="customerId"
+                      className={`field-select${errors.customerId ? ' is-error' : ''}`}
+                      {...register('customerId')}
+                    >
+                      <option value="">— Chọn khách hàng —</option>
+                      {customers.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.code} — {c.name}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.customerId && (
+                      <span className="field-error">{errors.customerId.message}</span>
+                    )}
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="deliveryDate">Ngày giao dự kiến</label>
+                    <input
+                      id="deliveryDate"
+                      className={`field-input${errors.deliveryDate ? ' is-error' : ''}`}
+                      type="date"
+                      {...register('deliveryDate')}
+                    />
+                    {errors.deliveryDate && (
+                      <span className="field-error">{errors.deliveryDate.message}</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="notes">Ghi chú đơn hàng</label>
+                  <textarea
+                    id="notes"
+                    className="field-textarea"
+                    rows={3}
+                    placeholder="Ghi chú về đơn hàng..."
+                    {...register('notes')}
+                  />
+                </div>
               </div>
+            </div>
 
+            {/* ── BƯỚC 2: CHI TIẾT HÀNG HÓA ── */}
+            <div style={{ display: stepper.currentStep === 1 ? 'block' : 'none' }}>
               <div className="form-field">
-                <label htmlFor="orderDate">
-                  Ngày đặt hàng <span className="field-required">*</span>
+                <label>
+                  Dòng hàng <span className="field-required">*</span>
                 </label>
-                <input
-                  id="orderDate"
-                  className={`field-input${errors.orderDate ? ' is-error' : ''}`}
-                  type="date"
-                  {...register('orderDate')}
-                />
-                {errors.orderDate && (
-                  <span className="field-error">{errors.orderDate.message}</span>
+                {errors.items?.root && (
+                  <span className="field-error" style={{ marginBottom: '0.5rem', display: 'block' }}>
+                    {errors.items.root.message}
+                  </span>
                 )}
-              </div>
-            </div>
 
-            {/* Khách hàng */}
-            <div className="form-field">
-              <label htmlFor="customerId">
-                Khách hàng <span className="field-required">*</span>
-              </label>
-              <select
-                id="customerId"
-                className={`field-select${errors.customerId ? ' is-error' : ''}`}
-                {...register('customerId')}
-              >
-                <option value="">— Chọn khách hàng —</option>
-                {customers.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.code} — {c.name}
-                  </option>
-                ))}
-              </select>
-              {errors.customerId && (
-                <span className="field-error">{errors.customerId.message}</span>
-              )}
-            </div>
-
-            {/* Ngày giao dự kiến */}
-            <div className="form-field">
-              <label htmlFor="deliveryDate">Ngày giao dự kiến</label>
-              <input
-                id="deliveryDate"
-                className={`field-input${errors.deliveryDate ? ' is-error' : ''}`}
-                type="date"
-                {...register('deliveryDate')}
-              />
-              {errors.deliveryDate && (
-                <span className="field-error">{errors.deliveryDate.message}</span>
-              )}
-            </div>
-
-            {/* Line items */}
-            <div className="form-field">
-              <label>
-                Dòng hàng <span className="field-required">*</span>
-              </label>
-              {errors.items?.root && (
-                <span className="field-error" style={{ marginBottom: '0.5rem', display: 'block' }}>
-                  {errors.items.root.message}
-                </span>
-              )}
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {fields.map((field, index) => (
-                  <div
-                    key={field.id}
-                    style={{
-                      border: '1px solid var(--border)',
-                      borderRadius: 'var(--radius-sm)',
-                      padding: '0.75rem',
-                    }}
-                  >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.5rem' }}>
+                  {fields.map((field, index) => (
                     <div
+                      key={field.id}
                       style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '0.5rem',
+                        border: '1px solid var(--border)',
+                        borderRadius: 'var(--radius-md)',
+                        padding: '1rem',
+                        background: 'var(--surface)'
                       }}
                     >
-                      <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                        Dòng {index + 1}
-                      </span>
-                      {fields.length > 1 && (
-                        <button
-                          className="btn-icon danger"
-                          type="button"
-                          title="Xóa dòng"
-                          onClick={() => remove(index)}
-                          style={{ fontSize: '0.85rem' }}
-                        >
-                          ✕
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="form-grid form-grid-2">
-                      <div className="form-field">
-                        <label htmlFor={`items.${index}.fabricType`}>
-                          Loại vải <span className="field-required">*</span>
-                        </label>
-                        <input
-                          id={`items.${index}.fabricType`}
-                          className={`field-input${errors.items?.[index]?.fabricType ? ' is-error' : ''}`}
-                          type="text"
-                          placeholder="VD: Cotton 60/40"
-                          {...register(`items.${index}.fabricType`)}
-                        />
-                        {errors.items?.[index]?.fabricType && (
-                          <span className="field-error">
-                            {errors.items[index].fabricType.message}
-                          </span>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: '0.75rem',
+                          borderBottom: '1px solid var(--border)',
+                          paddingBottom: '0.5rem'
+                        }}
+                      >
+                        <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                          Dòng Hàng #{index + 1}
+                        </span>
+                        {fields.length > 1 && (
+                          <button
+                            className="btn-icon danger"
+                            type="button"
+                            title="Xóa dòng"
+                            onClick={() => remove(index)}
+                            style={{ fontSize: '0.9rem' }}
+                          >
+                            Xóa ✕
+                          </button>
                         )}
                       </div>
 
-                      <div className="form-field">
-                        <label htmlFor={`items.${index}.colorName`}>Màu</label>
-                        <input
-                          id={`items.${index}.colorName`}
-                          className="field-input"
-                          type="text"
-                          placeholder="VD: Trắng"
-                          {...register(`items.${index}.colorName`)}
-                        />
-                      </div>
-                    </div>
+                      <div className="form-grid">
+                        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                          <div className="form-field">
+                            <label htmlFor={`items.${index}.fabricType`}>
+                              Loại vải <span className="field-required">*</span>
+                            </label>
+                            <input
+                              id={`items.${index}.fabricType`}
+                              className={`field-input${errors.items?.[index]?.fabricType ? ' is-error' : ''}`}
+                              type="text"
+                              placeholder="VD: Cotton 60/40"
+                              {...register(`items.${index}.fabricType`)}
+                            />
+                            {errors.items?.[index]?.fabricType && (
+                              <span className="field-error">
+                                {errors.items[index].fabricType.message}
+                              </span>
+                            )}
+                          </div>
 
-                    <div className="form-grid form-grid-2">
-                      <div className="form-field">
-                        <label htmlFor={`items.${index}.colorCode`}>Mã màu</label>
-                        <input
-                          id={`items.${index}.colorCode`}
-                          className="field-input"
-                          type="text"
-                          placeholder="VD: TC-01"
-                          {...register(`items.${index}.colorCode`)}
-                        />
-                      </div>
-                      <div className="form-field">
-                        <label htmlFor={`items.${index}.unit`}>Đơn vị</label>
-                        <select
-                          id={`items.${index}.unit`}
-                          className="field-select"
-                          {...register(`items.${index}.unit`)}
-                        >
-                          {UNIT_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
+                          <div className="form-field">
+                            <label htmlFor={`items.${index}.colorName`}>Màu</label>
+                            <input
+                              id={`items.${index}.colorName`}
+                              className="field-input"
+                              type="text"
+                              placeholder="VD: Trắng"
+                              {...register(`items.${index}.colorName`)}
+                            />
+                          </div>
+                        </div>
 
-                    <div className="form-grid form-grid-2">
-                      <ItemQuantityFields control={control} index={index} register={register} errors={errors} />
+                        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' }}>
+                          <div className="form-field">
+                            <label htmlFor={`items.${index}.colorCode`}>Mã màu</label>
+                            <input
+                              id={`items.${index}.colorCode`}
+                              className="field-input"
+                              type="text"
+                              placeholder="VD: TC-01"
+                              {...register(`items.${index}.colorCode`)}
+                            />
+                          </div>
+                          <div className="form-field">
+                            <label htmlFor={`items.${index}.unit`}>Đơn vị</label>
+                            <select
+                              id={`items.${index}.unit`}
+                              className="field-select"
+                              {...register(`items.${index}.unit`)}
+                            >
+                              {UNIT_OPTIONS.map((opt) => (
+                                <option key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
+                          <ItemQuantityFields control={control} index={index} register={register} errors={errors} />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+
+                <button
+                  className="btn-secondary"
+                  type="button"
+                  onClick={() => append({ ...emptyOrderItem })}
+                  style={{ marginTop: '1rem', width: '100%' }}
+                >
+                  + Thêm dòng hàng mới
+                </button>
+
+                <LineTotals control={control} />
               </div>
-
-              <button
-                className="btn-secondary"
-                type="button"
-                onClick={() => append({ ...emptyOrderItem })}
-                style={{ marginTop: '0.5rem', width: '100%' }}
-              >
-                + Thêm dòng hàng
-              </button>
-
-              <LineTotals control={control} />
-            </div>
-
-            {/* Ghi chú */}
-            <div className="form-field">
-              <label htmlFor="notes">Ghi chú</label>
-              <textarea
-                id="notes"
-                className="field-input"
-                rows={3}
-                placeholder="Ghi chú về đơn hàng..."
-                style={{ resize: 'vertical' }}
-                {...register('notes')}
-              />
             </div>
           </div>
 
-          <div className="modal-footer">
-            <button
-              className="btn-secondary"
-              type="button"
-              onClick={onClose}
-              disabled={isPending}
-            >
-              Hủy
-            </button>
-            <button
-              className="primary-button"
-              type="submit"
-              disabled={isPending}
-            >
-              {isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo đơn'}
-            </button>
+          <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none', justifyContent: 'space-between' }}>
+            <div>
+              {!stepper.isFirst && (
+                <button
+                  className="btn-secondary"
+                  type="button"
+                  onClick={stepper.prev}
+                  disabled={isPending}
+                >
+                  Quay lại
+                </button>
+              )}
+              {stepper.isFirst && (
+                <button
+                  className="btn-secondary"
+                  type="button"
+                  onClick={onClose}
+                  disabled={isPending}
+                >
+                  Hủy
+                </button>
+              )}
+            </div>
+            
+            <div>
+              {!stepper.isLast ? (
+                <button
+                  className="primary-button btn-standard"
+                  type="button"
+                  onClick={handleNextStep}
+                  disabled={isPending}
+                >
+                  Tiếp tục
+                </button>
+              ) : (
+                <button
+                  className="primary-button btn-standard"
+                  type="submit"
+                  disabled={isPending}
+                >
+                  {isPending ? 'Đang lưu...' : isEditing ? 'Lưu thay đổi' : 'Tạo đơn mới'}
+                </button>
+              )}
+            </div>
           </div>
         </form>
-      </div>
+      </AdaptiveSheet>
 
       <CreditOverrideDialog
         open={!!overrideWarning}
@@ -481,6 +512,6 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
         onCancel={() => setOverrideWarning(null)}
         isLoading={createMutationV2.isPending}
       />
-    </div>
+    </>
   )
 }
