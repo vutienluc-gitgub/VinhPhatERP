@@ -195,7 +195,7 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
                       className="btn-icon"
                       type="button"
                       title="Sửa"
-                      onClick={() => onEdit(receipt)}
+                      onClick={() => onEdit(receipt as unknown as YarnReceipt)}
                       style={{ marginRight: 4 }}
                     >
                       ✏️
@@ -204,7 +204,7 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
                       className="btn-icon danger"
                       type="button"
                       title="Xóa"
-                      onClick={() => handleDelete(receipt)}
+                      onClick={() => handleDelete(receipt as unknown as YarnReceipt)}
                       disabled={deleteMutation.isPending}
                     >
                       🗑

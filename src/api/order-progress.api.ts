@@ -1,41 +1,166 @@
 import { supabase } from '@/services/supabase/client'
-import type { OrderProgress, OrderProgressInsert, OrderProgressUpdate, OrderProgressWithOrder } from '@/models'
+import type {
+  OrderProgress,
+  OrderProgressInsert,
+  OrderProgressUpdate,
+  OrderProgressWithOrder,
+} from '@/models'
+import type { ProgressAuditLog, ProgressAuditLogWithOrder, StageStatus } from '@/features/order-progress/types'
 
 const TABLE = 'order_progress'
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const auditTable = () => (supabase as any).from('progress_audit_log')
 
-export async function fetchOrderProgress(orderId?: string): Promise<OrderProgressWithOrder[]> {
-  let query = supabase
+export async function fetchOrderProgressByOrder(orderId: string): Promise<OrderProgress[]> {
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select('*')
+    .eq('order_id', orderId)
+    .order('created_at')
+  if (error) throw error
+  return (data ?? []) as OrderProgress[]
+}
+
+export async function fetchProgressBoard(): Promise<OrderProgressWithOrder[]> {
+  const { data, error } = await supabase
     .from(TABLE)
     .select('*, orders(order_number, delivery_date, customers(name))')
-    .order('created_at', { ascending: false })
-
-  if (orderId) query = query.eq('order_id', orderId)
-
-  const { data, error } = await query
+    .order('created_at')
   if (error) throw error
   return (data ?? []) as unknown as OrderProgressWithOrder[]
 }
 
-export async function createOrderProgress(row: OrderProgressInsert): Promise<OrderProgress> {
+export async function updateStageStatus(
+  progressId: string,
+  status: StageStatus,
+  notes?: string,
+): Promise<void> {
+  const { data: current, error: fetchErr } = await supabase
+    .from(TABLE)
+    .select('order_id, stage, status')
+    .eq('id', progressId)
+    .single()
+  if (fetchErr) throw fetchErr
+
+  const oldStatus = current.status as StageStatus
+
+  const update: Record<string, unknown> = { status }
+  if (status === 'in_progress' || status === 'done') {
+    update.actual_date = new Date().toISOString().slice(0, 10)
+  }
+  if (notes !== undefined) {
+    update.notes = notes.trim() || null
+  }
+
+  const { error } = await supabase.from(TABLE).update(update).eq('id', progressId)
+  if (error) throw error
+
+  const { data: userData } = await supabase.auth.getUser()
+  await auditTable().insert({
+    progress_id: progressId,
+    order_id: current.order_id,
+    stage: current.stage,
+    old_status: oldStatus,
+    new_status: status,
+    changed_by: userData.user?.id ?? null,
+    notes: notes?.trim() || null,
+  })
+}
+
+export async function updatePlannedDate(progressId: string, plannedDate: string | null): Promise<void> {
+  const { error } = await supabase
+    .from(TABLE)
+    .update({ planned_date: plannedDate })
+    .eq('id', progressId)
+  if (error) throw error
+}
+
+export async function fetchProgressAuditLog(orderId: string): Promise<ProgressAuditLog[]> {
+  const { data, error } = await auditTable()
+    .select('*')
+    .eq('order_id', orderId)
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return (data ?? []) as ProgressAuditLog[]
+}
+
+export async function fetchRecentAuditLog(limit = 50): Promise<ProgressAuditLogWithOrder[]> {
+  const { data, error } = await auditTable()
+    .select('*, orders(order_number, customers(name))')
+    .order('created_at', { ascending: false })
+    .limit(limit)
+  if (error) throw error
+  return (data ?? []) as ProgressAuditLogWithOrder[]
+}
+
+export async function fetchProgressDashboard() {
   const { data, error } = await supabase
     .from(TABLE)
-    .insert([row])
-    .select()
-    .single()
+    .select('*, orders(id, order_number, delivery_date, status, customers(name))')
+    .order('created_at')
+  if (error) throw error
+
+  const rows = (data ?? []) as unknown as OrderProgressWithOrder[]
+  const today = new Date().toISOString().slice(0, 10)
+
+  const orderMap = new Map<
+    string,
+    {
+      orderId: string
+      orderNumber: string
+      customerName: string
+      deliveryDate: string | null
+      orderStatus: string
+      stages: OrderProgressWithOrder[]
+    }
+  >()
+
+  for (const row of rows) {
+    let group = orderMap.get(row.order_id)
+    if (!group) {
+      group = {
+        orderId: row.order_id,
+        orderNumber: row.orders?.order_number ?? '—',
+        customerName: row.orders?.customers?.name ?? '—',
+        deliveryDate: row.orders?.delivery_date ?? null,
+        orderStatus: (row.orders as Record<string, unknown>)?.status as string ?? '',
+        stages: [],
+      }
+      orderMap.set(row.order_id, group)
+    }
+    group.stages.push(row)
+  }
+
+  const allOrders = Array.from(orderMap.values())
+
+  const overdue = allOrders.filter((o) => {
+    if (!o.deliveryDate || o.deliveryDate >= today) return false
+    if (o.orderStatus === 'completed' || o.orderStatus === 'cancelled') return false
+    return !o.stages.every((s) => s.status === 'done' || s.status === 'skipped')
+  })
+
+  const readyToShip = allOrders.filter((o) => {
+    if (o.orderStatus === 'completed' || o.orderStatus === 'cancelled') return false
+    const nonSkipped = o.stages.filter((s) => s.status !== 'skipped')
+    return nonSkipped.length > 0 && nonSkipped.every((s) => s.status === 'done')
+  })
+
+  const inProgress = allOrders.filter((o) => {
+    if (o.orderStatus === 'completed' || o.orderStatus === 'cancelled') return false
+    return o.stages.some((s) => s.status === 'in_progress')
+  })
+
+  return { overdue, readyToShip, inProgress, totalOrders: allOrders.length }
+}
+
+export async function createOrderProgress(row: OrderProgressInsert): Promise<OrderProgress> {
+  const { data, error } = await supabase.from(TABLE).insert([row]).select().single()
   if (error) throw error
   return data as OrderProgress
 }
 
-export async function updateOrderProgress(
-  id: string,
-  row: OrderProgressUpdate,
-): Promise<OrderProgress> {
-  const { data, error } = await supabase
-    .from(TABLE)
-    .update(row)
-    .eq('id', id)
-    .select()
-    .single()
+export async function updateOrderProgress(id: string, row: OrderProgressUpdate): Promise<OrderProgress> {
+  const { data, error } = await supabase.from(TABLE).update(row).eq('id', id).select().single()
   if (error) throw error
   return data as OrderProgress
 }
