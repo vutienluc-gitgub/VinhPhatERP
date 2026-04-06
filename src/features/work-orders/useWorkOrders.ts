@@ -8,6 +8,7 @@ import {
   startWorkOrder,
   completeWorkOrder,
   cancelWorkOrder,
+  fetchUnitOptions,
 } from '@/api/work-orders.api'
 import type {
   WorkOrder,
@@ -83,5 +84,13 @@ export function useCancelWorkOrder() {
       queryClient.invalidateQueries({ queryKey: ['work_orders'] })
       queryClient.invalidateQueries({ queryKey: ['work_order', data.id] })
     },
+  })
+}
+
+export function useUnitOptions() {
+  return useQuery({
+    queryKey: ['available_units'],
+    queryFn: fetchUnitOptions,
+    staleTime: 1000 * 60 * 60, // 1 hour
   })
 }

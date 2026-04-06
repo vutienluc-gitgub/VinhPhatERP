@@ -103,10 +103,35 @@ export async function createBomDraft(formData: BomTemplateFormData): Promise<{ i
 
   const { bom_yarn_items, ...headerData } = formData
 
+  // Tự sinh mã BOM nếu chưa có: BOM-<mã sản phẩm mộc>-<mã sợi đầu tiên>
+  let finalCode = headerData.code?.trim() || ''
+  if (!finalCode) {
+    const { data: fabric } = await supabase
+      .from('fabric_catalogs')
+      .select('code')
+      .eq('id', headerData.target_fabric_id)
+      .single()
+
+    const firstYarnId = bom_yarn_items?.[0]?.yarn_catalog_id
+    let yarnCode = ''
+    if (firstYarnId) {
+      const { data: yarn } = await supabase
+        .from('yarn_catalogs')
+        .select('code')
+        .eq('id', firstYarnId)
+        .single()
+      yarnCode = yarn?.code ?? ''
+    }
+
+    const parts = ['BOM', fabric?.code ?? 'XX', yarnCode].filter(Boolean)
+    finalCode = parts.join('-')
+  }
+
   const { data: header, error: headerError } = await supabase
     .from('bom_templates')
     .insert([{
       ...headerData,
+      code: finalCode,
       status: 'draft',
       active_version: 1,
       created_by: userId,

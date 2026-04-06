@@ -28,7 +28,8 @@ export async function fetchWorkOrders(
       order:orders(
         id, order_number,
         customer:customers(id, name)
-      )
+      ),
+      supplier:suppliers(id, code, name)
     `, { count: 'exact' })
 
   if (filter?.status && filter.status !== 'all') {
@@ -63,7 +64,8 @@ export async function fetchWorkOrderById(id: string): Promise<WorkOrderWithRelat
       order:orders(
         id, order_number,
         customer:customers(id, name)
-      )
+      ),
+      supplier:suppliers(id, code, name)
     `)
     .eq('id', id)
     .single()
@@ -127,11 +129,14 @@ export async function createWorkOrder(input: CreateWorkOrderInput): Promise<Work
       bom_template_id: input.bom_template_id,
       bom_version: bomVersion,
       target_quantity_m: input.target_quantity_m,
+      target_unit: input.target_unit || 'm',
       target_weight_kg: targetKg,
       standard_loss_pct: lossPct,
       status: 'draft',
       start_date: input.start_date || null,
       end_date: input.end_date || null,
+      supplier_id: input.supplier_id,
+      weaving_unit_price: input.weaving_unit_price || 0,
       notes: input.notes || null,
     })
     .select()
@@ -199,4 +204,20 @@ export async function cancelWorkOrder(id: string): Promise<WorkOrder> {
     .single()
   if (error) throw error
   return data as WorkOrder
+}
+
+export async function fetchUnitOptions(): Promise<string[]> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const supa = supabase as any
+  const { data, error } = await supa
+    .from('v_available_units')
+    .select('unit')
+    .order('unit', { ascending: true })
+  
+  if (error) {
+    console.error('Error fetching units:', error)
+    return ['m', 'kg', 'yard'] // Fallback
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data || []).map((u: any) => u.unit)
 }

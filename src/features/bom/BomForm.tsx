@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useForm, useFieldArray, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, Plus, Trash2 } from '@/shared/icons'
@@ -45,6 +46,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
     control,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<BomTemplateFormData>({
     resolver: zodResolver(bomTemplateSchema),
@@ -58,6 +60,25 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
 
   const watchItems = watch('bom_yarn_items')
   const totalRatio = watchItems.reduce((acc, curr) => acc + (Number(curr.ratio_pct) || 0), 0)
+
+  // ── Tự sinh mã BOM: BOM-<mã sản phẩm mộc>-<mã sợi đầu tiên> ──
+  const watchFabricId = watch('target_fabric_id')
+  const watchFirstYarnId = watchItems?.[0]?.yarn_catalog_id
+
+  useEffect(() => {
+    if (isEdit) return // Không đổi mã khi sửa
+
+    const fabric = fabricCatalogs.find((f) => f.id === watchFabricId)
+    const yarn = yarnCatalogs.find((y) => y.id === watchFirstYarnId)
+
+    const fabricCode = fabric?.code ?? ''
+    const yarnCode = yarn?.code ?? ''
+
+    if (fabricCode || yarnCode) {
+      const parts = ['BOM', fabricCode, yarnCode].filter(Boolean)
+      setValue('code', parts.join('-'), { shouldValidate: true })
+    }
+  }, [watchFabricId, watchFirstYarnId, fabricCatalogs, yarnCatalogs, isEdit, setValue])
 
   const onSubmit = async (data: BomTemplateFormData) => {
     try {
@@ -99,15 +120,17 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
         >
           <div className="form-field">
             <label>
-              Mã BOM <span className="field-required">*</span>
+              Mã BOM <span style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>(tự sinh)</span>
             </label>
             <input
               type="text"
               {...register('code')}
-              className={`field-input${errors.code ? ' is-error' : ''}`}
-              placeholder="VD: BOM-CT160-001"
+              readOnly
+              className="field-input"
+              placeholder="Chọn sản phẩm mộc + sợi → tự sinh"
+              style={{ backgroundColor: 'var(--surface-raised)', cursor: 'default' }}
             />
-            {errors.code && <span className="field-error">{errors.code.message}</span>}
+            <span className="field-hint">Mã tự động: BOM‑&lt;mã vải mộc&gt;‑&lt;mã sợi&gt;</span>
           </div>
 
           <div className="form-field">
@@ -134,7 +157,8 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
                 <Combobox
                   options={fabricCatalogs.map((fb) => ({
                     value: fb.id,
-                    label: `${fb.code} — ${fb.name}`
+                    label: `${fb.code} — ${fb.name}`,
+                    code: fb.code,
                   }))}
                   value={field.value}
                   onChange={field.onChange}
@@ -241,7 +265,8 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
                         <Combobox
                           options={yarnCatalogs.map((y) => ({
                             value: y.id,
-                            label: `${y.code} — ${y.name} (${y.composition})`
+                            label: `${y.code} — ${y.name} (${y.composition})`,
+                            code: y.code,
                           }))}
                           value={field.value}
                           onChange={field.onChange}

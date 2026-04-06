@@ -28,7 +28,7 @@ export const bomYarnItemSchema = z.object({
 });
 
 export const bomTemplateSchema = z.object({
-  code: z.string().min(1, 'Vui lòng nhập mã BOM'),
+  code: z.string().optional().default(''), // Tự sinh từ mã sản phẩm mộc + mã sợi
   name: z.string().min(1, 'Vui lòng nhập tên BOM'),
   target_fabric_id: z.string({ required_error: 'Vui lòng chọn mã vải mộc mục tiêu' }).min(1, 'Vui lòng chọn mã vải mộc mục tiêu'),
   target_width_cm: z.number().nullable().optional(),

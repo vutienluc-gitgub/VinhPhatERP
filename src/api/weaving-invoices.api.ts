@@ -101,9 +101,19 @@ export async function createWeavingInvoice(values: WeavingInvoiceFormValues): Pr
 
   if (headerErr) throw headerErr
 
+  // Fetch supplier code for prefix
+  const { data: supplierData, error: supplierErr } = await supabase
+    .from('suppliers')
+    .select('code')
+    .eq('id', values.supplier_id)
+    .single()
+  if (supplierErr) throw supplierErr
+  const supplierCode = supplierData?.code ?? 'SUP'
+
   const rolls = values.rolls.map((r, idx) => ({
     invoice_id: header.id,
-    roll_number: r.roll_number.trim(),
+    // Auto‑generate roll number if not provided
+    roll_number: r.roll_number?.trim() || `${supplierCode}-${Date.now()}-${idx + 1}`,
     weight_kg: r.weight_kg,
     length_m: r.length_m ?? null,
     quality_grade: r.quality_grade ?? null,
