@@ -15,8 +15,11 @@ export const WORK_ORDER_STATUSES: Record<WorkOrderStatus, { label: string; color
 export const createWorkOrderSchema = z.object({
   work_order_number: z.string().min(1, 'Mã lệnh sản xuất là bắt buộc'),
   order_id: z.string().nullable().optional(),
+  supplier_id: z.string().min(1, 'Vui lòng chọn nhà dệt gia công'), // Phải chọn nhà dệt
   bom_template_id: z.string().min(1, 'Cần chọn BOM để sản xuất'),
-  target_quantity_m: z.number().positive('Số lượng (m) phải lớn hơn 0'),
+  weaving_unit_price: z.number().min(0, 'Đơn giá không được âm').default(0), // Đơn giá gia công
+  target_quantity_m: z.number().positive('Sản lượng mục tiêu phải lớn hơn 0'),
+  target_unit: z.string().default('m'),
   target_weight_kg: z.number().nullable().optional(),
   start_date: z.string().nullable().optional(),
   end_date: z.string().nullable().optional(),

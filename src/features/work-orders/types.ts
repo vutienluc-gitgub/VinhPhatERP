@@ -14,6 +14,8 @@ export interface WorkOrder {
   status: WorkOrderStatus;
   start_date: string | null;
   end_date: string | null;
+  supplier_id: string; // Nhà dệt gia công
+  weaving_unit_price: number; // Đơn giá gia công (khoán/m)
   notes: string | null;
   created_by: string | null;
   updated_by: string | null;
@@ -51,6 +53,11 @@ export interface WorkOrderWithRelations extends WorkOrder {
       id: string;
       name: string;
     };
+  };
+  supplier?: {
+    id: string;
+    code: string;
+    name: string;
   };
 }
 

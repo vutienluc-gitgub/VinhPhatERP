@@ -139,6 +139,10 @@ $$;
 
 grant execute on function confirm_weaving_invoice(uuid) to authenticated;
 
+-- Drop old supplier debt view (from expense module) before redefining
+DROP VIEW IF EXISTS v_supplier_debt CASCADE;
+
+
 /* ── 5. View: supplier debt including weaving invoices ── */
 
 create or replace view v_supplier_debt as

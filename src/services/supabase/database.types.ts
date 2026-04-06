@@ -1811,10 +1811,13 @@ export type Database = {
           standard_loss_pct: number
           start_date: string | null
           status: Database["public"]["Enums"]["work_order_status"]
+          supplier_id: string | null
           target_quantity_m: number
+          target_unit: string | null
           target_weight_kg: number | null
           updated_at: string
           updated_by: string | null
+          weaving_unit_price: number
           work_order_number: string
         }
         Insert: {
@@ -1835,6 +1838,8 @@ export type Database = {
           target_weight_kg?: number | null
           updated_at?: string
           updated_by?: string | null
+          weaving_unit_price?: number
+          supplier_id: string
           work_order_number: string
         }
         Update: {
@@ -1863,6 +1868,13 @@ export type Database = {
             columns: ["bom_template_id"]
             isOneToOne: false
             referencedRelation: "bom_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
             referencedColumns: ["id"]
           },
           {

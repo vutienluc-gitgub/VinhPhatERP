@@ -1,9 +1,10 @@
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createWorkOrderSchema, type CreateWorkOrderInput } from './work-orders.module'
-import { useCreateWorkOrder } from './useWorkOrders'
+import { useCreateWorkOrder, useUnitOptions } from './useWorkOrders'
 import { useBomList } from '../bom/useBom'
 import { useOrderList } from '../orders/useOrders'
+import { useSuppliersList } from '../suppliers/useSuppliers'
 import { Combobox } from '@/shared/components/Combobox'
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { useStepper } from '@/shared/hooks/useStepper'
@@ -18,6 +19,9 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
 
   const { data: boms } = useBomList({ status: 'approved' })
   const { data: orders } = useOrderList({ status: 'confirmed' }, 1)
+  const { data: suppliersData } = useSuppliersList({ category: 'weaving', status: 'active' })
+  const { data: units = [] } = useUnitOptions()
+  const suppliers = suppliersData?.data || []
 
   const stepper = useStepper({ totalSteps: 2 })
 
@@ -26,8 +30,11 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
     defaultValues: {
       work_order_number: `WO-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}-${Math.floor(Math.random() * 1000)}`,
       order_id: null,
+      supplier_id: '',
+      weaving_unit_price: 0,
       bom_template_id: '',
       target_quantity_m: 0,
+      target_unit: 'm',
       target_weight_kg: 0,
       start_date: new Date().toISOString().split('T')[0],
       end_date: '',
@@ -53,7 +60,7 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
 
   async function handleNextStep() {
     if (stepper.currentStep === 0) {
-      const stepValid = await trigger(['work_order_number', 'order_id', 'start_date'])
+      const stepValid = await trigger(['work_order_number', 'order_id', 'supplier_id', 'start_date'])
       if (stepValid) stepper.next()
     }
   }
@@ -108,6 +115,28 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
               </div>
 
               <div className="form-field">
+                <label>Đối tác dệt gia công <span className="field-required">*</span></label>
+                <Controller
+                  name="supplier_id"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={suppliers.map((s) => ({
+                        value: s.id,
+                        label: s.name,
+                        code: s.code
+                      }))}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="— Chọn nhà dệt —"
+                      hasError={!!errors.supplier_id}
+                    />
+                  )}
+                />
+                {errors.supplier_id && <span className="field-error">{errors.supplier_id.message}</span>}
+              </div>
+
+              <div className="form-field">
                 <label>Ngày bắt đầu dự kiến</label>
                 <input
                   type="date"
@@ -142,15 +171,42 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
                 {errors.bom_template_id && <span className="field-error">{errors.bom_template_id.message}</span>}
               </div>
 
-              <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-                <div className="form-field">
-                  <label>Sản lượng mục tiêu (m) <span className="field-required">*</span></label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    {...register('target_quantity_m', { valueAsNumber: true })}
-                    className={`field-input${errors.target_quantity_m ? ' is-error' : ''}`}
-                  />
+              <div className="form-field">
+                <label>Đơn giá gia công (đ/m)</label>
+                <input
+                  type="number"
+                  {...register('weaving_unit_price', { valueAsNumber: true })}
+                  className={`field-input${errors.weaving_unit_price ? ' is-error' : ''}`}
+                  placeholder="Ví dụ: 3500"
+                />
+                {errors.weaving_unit_price && <span className="field-error">{errors.weaving_unit_price.message}</span>}
+              </div>
+
+              <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+                <div className="form-field" style={{ gridColumn: 'span 2' }}>
+                  <label>Sản lượng mục tiêu <span className="field-required">*</span></label>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <input
+                      type="number"
+                      step="0.01"
+                      {...register('target_quantity_m', { valueAsNumber: true })}
+                      className={`field-input${errors.target_quantity_m ? ' is-error' : ''}`}
+                      style={{ flex: 1 }}
+                    />
+                    <div style={{ width: '100px' }}>
+                      <Controller
+                        name="target_unit"
+                        control={control}
+                        render={({ field }) => (
+                          <Combobox
+                            options={units.map((u) => ({ value: u, label: u }))}
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                        )}
+                      />
+                    </div>
+                  </div>
                   {errors.target_quantity_m && <span className="field-error">{errors.target_quantity_m.message}</span>}
                 </div>
 
@@ -162,8 +218,8 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
                     {...register('target_weight_kg', { valueAsNumber: true })}
                     className={`field-input${errors.target_weight_kg ? ' is-error' : ''}`}
                   />
-                  <span className="field-hint">
-                    Hệ thống sẽ tự tính từ BOM nếu để trống
+                  <span className="field-hint" style={{ whiteSpace: 'nowrap' }}>
+                    Tự tính từ BOM nếu trống
                   </span>
                   {errors.target_weight_kg && <span className="field-error">{errors.target_weight_kg.message}</span>}
                 </div>

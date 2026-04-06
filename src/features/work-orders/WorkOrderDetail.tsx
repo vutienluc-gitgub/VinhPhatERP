@@ -96,7 +96,21 @@ export function WorkOrderDetail({ id, onBack }: WorkOrderDetailProps) {
             </div>
             <div className="form-field">
               <label>Đơn hàng liên kết</label>
-              <p style={{ margin: 0 }}>{wo.order?.order_number || 'Không'}</p>
+              <p style={{ margin: 0 }}>{wo.order?.order_number || 'Sản xuất dự trữ'}</p>
+            </div>
+            <div className="form-field">
+              <label>Đối tác dệt</label>
+              <p style={{ fontWeight: 700, color: 'var(--accent)', margin: 0 }}>{wo.supplier?.name || '—'}</p>
+            </div>
+            <div className="form-field">
+              <label>Đơn giá dệt</label>
+              <p style={{ fontWeight: 600, margin: 0 }}>{wo.weaving_unit_price.toLocaleString()}đ/m</p>
+            </div>
+            <div className="form-field">
+              <label>Tổng phí dự kiến</label>
+              <p style={{ fontWeight: 700, color: 'var(--success)', margin: 0 }}>
+                {(wo.target_quantity_m * wo.weaving_unit_price).toLocaleString()}đ
+              </p>
             </div>
           </div>
         </div>

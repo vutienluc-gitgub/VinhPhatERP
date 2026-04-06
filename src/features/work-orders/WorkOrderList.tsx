@@ -115,6 +115,7 @@ export function WorkOrderList({ onView, onCreate }: WorkOrderListProps) {
               <tr>
                 <th>Mã Lệnh</th>
                 <th className="hide-mobile">Công Thức (BOM)</th>
+                <th>Đối tác dệt</th>
                 <th className="text-right">Mục Tiêu</th>
                 <th>Trạng Thái</th>
                 <th className="hide-mobile">Bắt Đầu</th>
@@ -141,6 +142,12 @@ export function WorkOrderList({ onView, onCreate }: WorkOrderListProps) {
                     <td className="hide-mobile">
                       <strong>{wo.bom_template?.code}</strong>
                       <div className="td-muted" style={{ fontSize: '0.78rem' }}>V{wo.bom_version}</div>
+                    </td>
+                    <td>
+                      <div style={{ fontWeight: 500 }}>{wo.supplier?.name}</div>
+                      <div className="td-muted" style={{ fontSize: '0.78rem' }}>
+                        {wo.weaving_unit_price.toLocaleString()}đ/m
+                      </div>
                     </td>
                     <td className="text-right" style={{ fontVariantNumeric: 'tabular-nums' }}>
                       <strong>{wo.target_quantity_m.toLocaleString()} m</strong>

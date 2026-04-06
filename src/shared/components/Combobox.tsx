@@ -65,13 +65,16 @@ export function Combobox({
   }, [value, options, allowInput])
 
   const filteredOptions = useMemo(() => {
-    const q = search.toLowerCase()
+    // Normalizer: lowercase and remove common separators like -, ., space, /, _
+    const normalize = (s: string) => s.toLowerCase().replace(/[-. /_]/g, '')
+    const q = normalize(search)
     if (!q) return options
+    
     return options.filter(
       (opt) =>
-        opt.label.toLowerCase().includes(q) ||
-        (opt.code && opt.code.toLowerCase().includes(q)) ||
-        (opt.phone && opt.phone.toLowerCase().includes(q))
+        normalize(opt.label).includes(q) ||
+        (opt.code && normalize(opt.code).includes(q)) ||
+        (opt.phone && normalize(opt.phone).includes(q))
     )
   }, [options, search])
 

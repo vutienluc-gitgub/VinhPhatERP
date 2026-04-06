@@ -4,10 +4,11 @@ Sơ đồ nghiệp vụ quản lý công nợ nhà cung cấp. Dễ dàng chỉn
 
 ```mermaid
 flowchart TD
-    A[1. Tạo nhà cung cấp] --> B[2. Nhập hàng từ nhà cung cấp]
-    B --> C[3. Ghi nhận công nợ]
-    C --> D[4. Thanh toán công nợ]
-    D --> E[5. Báo cáo & Đối chiếu công nợ]
+    A[1. Tạo nhà cung cấp] --> B[2. Tạo định mức BOM]
+    B --> F[3. Tạo phiếu gia công]
+    F --> C[4. Tạo phiếu nhập mộc hàng loạt ( đã có)]
+    C --> D[5. Gắn với đớn giá gia công theo lô mộc]
+    D --> E[6. Báo cáo & Đối chiếu công nợ]
     E -->|Phát hiện sai lệch| C
     C -->|Kiểm tra số dư| D
     B -->|Chứng từ nhập kho| C
@@ -17,4 +18,4 @@ flowchart TD
     style C fill:#ffe0b2,stroke:#f57c00
     style D fill:#c8e6c9,stroke:#388e3c
     style E fill:#bbdefb,stroke:#1976d2
-```
+``
