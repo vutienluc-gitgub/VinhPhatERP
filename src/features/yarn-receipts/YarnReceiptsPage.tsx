@@ -30,7 +30,7 @@ export function YarnReceiptsPage() {
       <YarnReceiptList onEdit={openEdit} onNew={openCreate} />
       {showForm && (
         <YarnReceiptForm
-          receipt={editId && editReceipt ? editReceipt : null}
+          receipt={editId && editReceipt ? (editReceipt as unknown as YarnReceipt) : null}
           onClose={closeForm}
         />
       )}
