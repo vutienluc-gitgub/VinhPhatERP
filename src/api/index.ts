@@ -13,3 +13,7 @@ export * from './shipping-rates.api'
 export * from './work-orders.api'
 export * from './bom.api'
 export * from './reserve-rolls.api'
+export * from './fabric-catalog.api'
+export * from './yarn-catalog.api'
+// raw-fabric.api and finished-fabric.api excluded from barrel (InventoryStats name conflict)
+export * from './settings.api'
