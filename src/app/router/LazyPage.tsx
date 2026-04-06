@@ -5,11 +5,16 @@ class ChunkErrorBoundary extends Component<{ children: ReactNode }, { hasError: 
   state = { hasError: false }
 
   static getDerivedStateFromError(error: unknown) {
+    const errorString = error instanceof Error ? error.message : String(error)
     const isChunkError =
       error instanceof Error &&
-      (error.message.includes('dynamically imported') ||
-        error.message.includes('Failed to fetch') ||
+      (errorString.includes('dynamically imported') ||
+        errorString.includes('Failed to fetch') ||
+        errorString.includes('text/html') ||
+        errorString.includes('valid JavaScript') ||
+        errorString.includes('valid JavaScript MIME type') ||
         error.name === 'ChunkLoadError')
+        
     return { hasError: isChunkError }
   }
 

@@ -90,10 +90,10 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
                   control={control}
                   render={({ field }) => (
                     <Combobox
-                      options={[...orders?.data?.map((o) => ({
+                       options={[...(orders?.data ?? []).map((o) => ({
                         value: o.id,
-                        label: `${o.order_number} — ${o.customers?.name}`
-                      })) || []]}
+                        label: `${o.order_number} — ${(o as { customers?: { name: string } }).customers?.name ?? ''}`
+                      }))]}
                       value={field.value ?? ''}
                       onChange={field.onChange}
                       placeholder="— Sản xuất dự trữ (Không ĐH) —"

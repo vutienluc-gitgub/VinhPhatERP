@@ -14,7 +14,7 @@ export type OrderItem = {
   quantity: number
   unit: string
   unit_price: number
-  amount: number
+  amount: number | null
   notes: string | null
   sort_order: number
 }
@@ -30,8 +30,6 @@ export type Order = {
   source_quotation_id: string | null
   status: OrderStatus
   notes: string | null
-  confirmed_by: string | null
-  confirmed_at: string | null
   created_by: string | null
   created_at: string
   updated_at: string
