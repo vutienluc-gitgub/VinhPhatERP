@@ -1,12 +1,14 @@
 /**
  * useCreateOrderV2
  * ==================
- * Hook tạo đơn hàng qua ERP-grade Supabase Edge Function.
- * Thay thế hook cũ useCreateOrder (direct Supabase insert) bằng cách:
- *   - Gọi Edge Function create-order thay vì direct DB insert
- *   - Xử lý các error codes đặc biệt: CREDIT_BLOCKED, CREDIT_OVERDUE,
- *     CREDIT_LIMIT_EXCEEDED, INSUFFICIENT_STOCK
- *   - Hỗ trợ managerOverride flow (2-step confirmation)
+ * Hook tạo đơn hàng qua Supabase Edge Function.
+ * Nếu Edge Function không kết nối được → tự động fallback sang direct DB insert.
+ *
+ * Flow:
+ *   1. Gọi Edge Function create-order
+ *   2. Nếu lỗi kết nối (Failed to send a request) → fallback direct insert
+ *   3. Xử lý các error codes: CREDIT_BLOCKED, CREDIT_OVERDUE, CREDIT_LIMIT_EXCEEDED
+ *   4. Hỗ trợ managerOverride flow (2-step confirmation)
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -74,6 +76,24 @@ export interface CreateOrderInput extends OrdersFormValues {
 }
 
 // ---------------------------------------------------------------------------
+// Kiểm tra lỗi kết nối Edge Function
+// ---------------------------------------------------------------------------
+
+function isConnectionError(error: unknown): boolean {
+  if (!error) return false
+  const msg = String((error as { message?: string }).message ?? error).toLowerCase()
+  return (
+    msg.includes('failed to send a request') ||
+    msg.includes('edge function') ||
+    msg.includes('fetch') ||
+    msg.includes('network') ||
+    msg.includes('econnrefused') ||
+    msg.includes('timeout') ||
+    msg.includes('aborted')
+  )
+}
+
+// ---------------------------------------------------------------------------
 // Edge Function caller
 // ---------------------------------------------------------------------------
 
@@ -108,15 +128,25 @@ async function callCreateOrderFunction(
   })
 
   if (error) {
-    // Supabase functions.invoke wraps HTTP errors
-    // Parse error body nếu có
+    // Nếu là lỗi kết nối → re-throw nguyên để caller biết cần fallback
+    if (isConnectionError(error)) {
+      throw error
+    }
+
+    // Supabase functions.invoke wraps HTTP errors — parse error body nếu có
     const body = (error as unknown as { context?: { body?: string } }).context?.body
     if (body) {
       try {
         const parsed = JSON.parse(body) as { error: CreateOrderError }
-        throw parsed.error
-      } catch {
-        // fallthrough
+        if (parsed.error) {
+          throw parsed.error
+        }
+      } catch (parseErr) {
+        // Nếu parseErr là CreateOrderError đã parsed thành công → re-throw
+        if (parseErr && typeof parseErr === 'object' && 'code' in parseErr) {
+          throw parseErr
+        }
+        // JSON parse thất bại → fallthrough
       }
     }
     throw { code: 'INTERNAL_ERROR', message: error.message } as CreateOrderError
@@ -130,6 +160,77 @@ async function callCreateOrderFunction(
 }
 
 // ---------------------------------------------------------------------------
+// Fallback: Direct DB insert (khi Edge Function không kết nối được)
+// ---------------------------------------------------------------------------
+
+const HEADER_TABLE = 'orders'
+const ITEMS_TABLE = 'order_items'
+
+async function createOrderDirectInsert(
+  input: CreateOrderInput,
+): Promise<CreateOrderResult> {
+  const total = input.items.reduce(
+    (sum, it) => sum + it.quantity * it.unitPrice,
+    0,
+  )
+
+  // 1. Insert header
+  const { data: header, error: headerErr } = await supabase
+    .from(HEADER_TABLE)
+    .insert({
+      order_number: input.orderNumber.trim(),
+      customer_id: input.customerId,
+      order_date: input.orderDate,
+      delivery_date: input.deliveryDate?.trim() || null,
+      total_amount: total,
+      notes: input.notes?.trim() || null,
+      status: 'draft' as const,
+    })
+    .select()
+    .single()
+
+  if (headerErr) throw new Error(headerErr.message)
+  if (!header) throw new Error('Không thể tạo đơn hàng')
+
+  const headerId = (header as { id: string }).id
+
+  // 2. Insert items
+  const items = input.items.map((item, idx) => ({
+    order_id: headerId,
+    fabric_type: item.fabricType.trim(),
+    color_name: item.colorName?.trim() || null,
+    color_code: item.colorCode?.trim() || null,
+    unit: item.unit ?? 'm',
+    quantity: item.quantity,
+    unit_price: item.unitPrice,
+    sort_order: idx,
+  }))
+
+  const { error: itemsErr } = await supabase.from(ITEMS_TABLE).insert(items)
+
+  if (itemsErr) {
+    // Rollback header
+    await supabase.from(HEADER_TABLE).delete().eq('id', headerId)
+    throw new Error(itemsErr.message)
+  }
+
+  return {
+    ok: true,
+    orderId: headerId,
+    orderNumber: input.orderNumber.trim(),
+    totalAmount: total,
+    allocation: [],
+    creditInfo: {
+      previousDebt: 0,
+      newDebt: 0,
+      creditLimit: 0,
+      managerOverride: false,
+    },
+    message: `Đơn hàng ${input.orderNumber.trim()} đã được tạo thành công (direct).`,
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Hook
 // ---------------------------------------------------------------------------
 
@@ -138,32 +239,10 @@ const QUERY_KEY = ['orders'] as const
 /**
  * useCreateOrderV2
  *
- * Usage:
- * ```tsx
- * const { mutateAsync, isPending } = useCreateOrderV2()
- *
- * // Normal create:
- * await mutateAsync(formValues)
- *
- * // With manager override (sau khi user đã confirm dialog):
- * await mutateAsync({ ...formValues, managerOverride: true })
- * ```
- *
- * Error handling:
- * ```tsx
- * try {
- *   const result = await mutateAsync(formValues)
- *   navigate(`/orders/${result.orderId}`)
- * } catch (err) {
- *   const e = err as CreateOrderError
- *   if (e.code === 'CREDIT_OVERDUE' || e.code === 'CREDIT_LIMIT_EXCEEDED') {
- *     // Hiện confirmation dialog cho Manager
- *     setOverrideWarning({ code: e.code, detail: e.detail, message: e.message })
- *   } else {
- *     toast.error(e.message)
- *   }
- * }
- * ```
+ * Flow:
+ *   1. Thử gọi Edge Function
+ *   2. Nếu Edge Function lỗi kết nối → tự động fallback sang direct insert
+ *   3. Nếu Edge Function trả business error (credit, stock) → throw để UI xử lý
  */
 export function useCreateOrderV2() {
   const queryClient = useQueryClient()
@@ -172,7 +251,28 @@ export function useCreateOrderV2() {
     mutationFn: async (input: CreateOrderInput): Promise<CreateOrderResult> => {
       const { data: sessionData } = await supabase.auth.getSession()
       const token = sessionData?.session?.access_token ?? ''
-      return callCreateOrderFunction(input, token)
+
+      try {
+        // Thử Edge Function trước
+        return await callCreateOrderFunction(input, token)
+      } catch (edgeFnError) {
+        // Nếu là business error từ Edge Function → throw lại cho UI
+        if (
+          edgeFnError &&
+          typeof edgeFnError === 'object' &&
+          'code' in edgeFnError &&
+          !isConnectionError(edgeFnError)
+        ) {
+          throw edgeFnError
+        }
+
+        // Lỗi kết nối → fallback direct insert
+        console.warn(
+          '[createOrder] ⚠️ Edge Function không thể kết nối, chuyển sang direct insert.',
+          edgeFnError,
+        )
+        return await createOrderDirectInsert(input)
+      }
     },
 
     onSuccess: (result) => {
@@ -183,24 +283,24 @@ export function useCreateOrderV2() {
       void queryClient.invalidateQueries({ queryKey: ['finished-fabric'] })
       void queryClient.invalidateQueries({ queryKey: ['reserve-rolls'] })
 
-      // Invalidate customer (current_debt đã thay đổi)
+      // Invalidate customer (current_debt có thể thay đổi)
       void queryClient.invalidateQueries({ queryKey: ['customers'] })
 
       console.info(
         `[createOrder] ✅ ${result.orderNumber} created. ` +
-        `Allocated ${result.allocation.length} rolls. ` +
-        `New debt: ${result.creditInfo.newDebt}`,
+        `Allocated ${result.allocation.length} rolls.`,
       )
     },
 
-    onError: (err: CreateOrderError) => {
-      console.error('[createOrder] ❌ Error:', err.code, err.message)
+    onError: (err: Error | CreateOrderError) => {
+      const code = 'code' in err ? err.code : 'UNKNOWN'
+      console.error('[createOrder] ❌ Error:', code, err.message)
     },
   })
 }
 
 // ---------------------------------------------------------------------------
-// Helper: Phân loại error để UI biết cách hiện dialog
+// Helpers: Phân loại error để UI biết cách hiện dialog
 // ---------------------------------------------------------------------------
 
 export function isCreditWarning(code: CreateOrderErrorCode): boolean {

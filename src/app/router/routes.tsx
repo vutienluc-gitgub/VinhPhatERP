@@ -22,6 +22,7 @@ const ShipmentsPage = lazy(() => import('@/features/shipments').then((m) => ({ d
 const ShippingRatesPage = lazy(() => import('@/features/shipping-rates').then((m) => ({ default: m.ShippingRatesPage })))
 const SuppliersPage = lazy(() => import('@/features/suppliers').then((m) => ({ default: m.SuppliersPage })))
 const YarnCatalogPage = lazy(() => import('@/features/yarn-catalog').then((m) => ({ default: m.YarnCatalogPage })))
+const FabricCatalogPage = lazy(() => import('@/features/fabric-catalog').then((m) => ({ default: m.FabricCatalogPage })))
 const YarnReceiptsPage = lazy(() => import('@/features/yarn-receipts').then((m) => ({ default: m.YarnReceiptsPage })))
 const BomPage = lazy(() => import('@/features/bom').then((m) => ({ default: m.BomPage })))
 const WorkOrdersPage = lazy(() => import('@/features/work-orders').then((m) => ({ default: m.WorkOrdersPage })))
@@ -99,6 +100,12 @@ export const navigationItems: NavigationItem[] = [
     description: 'Quản lý danh mục loại sợi — nền cho luồng nhập sợi.',
   },
   {
+    path: '/fabric-catalog',
+    label: 'Danh mục vải',
+    shortLabel: 'Vải',
+    description: 'Quản lý danh mục loại vải — dùng chung cho vải mộc và thành phẩm.',
+  },
+  {
     path: '/yarn-receipts',
     label: 'Nhập sợi',
     shortLabel: 'Yarn',
@@ -166,6 +173,7 @@ export const appRoutes: RouteObject[] = [
   { path: 'customers', element: <LazyPage><CustomersPage /></LazyPage> },
   { path: 'suppliers', element: <LazyPage><SuppliersPage /></LazyPage> },
   { path: 'yarn-catalog', element: <LazyPage><YarnCatalogPage /></LazyPage> },
+  { path: 'fabric-catalog', element: <LazyPage><FabricCatalogPage /></LazyPage> },
   { path: 'yarn-receipts', element: <LazyPage><YarnReceiptsPage /></LazyPage> },
   { path: 'raw-fabric', element: <LazyPage><RawFabricPage /></LazyPage> },
   { path: 'finished-fabric', element: <LazyPage><FinishedFabricPage /></LazyPage> },

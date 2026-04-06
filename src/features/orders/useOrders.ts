@@ -237,13 +237,12 @@ export function useConfirmOrder() {
         0,
       )
 
-      // 2. Update status + recalculate total + log confirmed_at
+      // 2. Update status + recalculate total
       const { error: statusErr } = await supabase
         .from(HEADER_TABLE)
         .update({
           status: 'confirmed' as OrderStatus,
           total_amount: newTotal,
-          confirmed_at: new Date().toISOString(),
         })
         .eq('id', orderId)
         .eq('status', 'draft')

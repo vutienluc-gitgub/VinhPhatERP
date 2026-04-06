@@ -4,9 +4,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import {
   shippingRatesSchema,
   shippingRatesDefaultValues,
-} from './shipping-rates.module'
-import type { ShippingRateFormValues } from './shipping-rates.module'
-import type { ShippingRate } from './types'
+  type ShippingRateFormValues,
+  type ShippingRate
+} from '@/schema'
 import { useCreateShippingRate, useUpdateShippingRate } from './useShippingRates'
 import { Combobox } from '@/shared/components/Combobox'
 
