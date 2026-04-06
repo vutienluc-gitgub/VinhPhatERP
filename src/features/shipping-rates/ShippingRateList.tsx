@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Edit2, Trash2 } from 'lucide-react'
+import { Edit2, Trash2 } from '@/shared/icons'
 
 import { useConfirm } from '@/shared/components/ConfirmDialog'
 import { formatCurrency } from './shipping-rates.module'

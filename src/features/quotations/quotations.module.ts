@@ -46,8 +46,8 @@ export const VAT_RATE_OPTIONS = [
 /* ── Units ── */
 
 export const UNIT_OPTIONS = [
-  { value: 'm', label: 'Mét (m)' },
   { value: 'kg', label: 'Kg' },
+  { value: 'm', label: 'Mét (m)' },
 ] as const
 
 export type UnitType = (typeof UNIT_OPTIONS)[number]['value']
@@ -59,7 +59,7 @@ export const quotationItemSchema = z.object({
   colorName: z.string().trim().max(120).optional().or(z.literal('')),
   colorCode: z.string().trim().max(20).optional().or(z.literal('')),
   widthCm: z.number().min(0).optional().or(z.literal(0)),
-  unit: z.enum(['m', 'kg']).default('m'),
+  unit: z.enum(['m', 'kg']).default('kg'),
   quantity: z.number({ required_error: 'Nhập số lượng' }).positive('Số lượng phải > 0'),
   unitPrice: z.number({ required_error: 'Nhập đơn giá' }).min(0, 'Đơn giá >= 0'),
   leadTimeDays: z.number().int().min(0).optional().or(z.literal(0)),
@@ -92,10 +92,10 @@ export type QuotationsFormValues = z.infer<typeof quotationsSchema>
 
 export const emptyQuotationItem: QuotationItemFormValues = {
   fabricType: '',
-  colorName: '',
+  colorName: 'Mộc (Raw)',
   colorCode: '',
   widthCm: 0,
-  unit: 'm',
+  unit: 'kg',
   quantity: 0,
   unitPrice: 0,
   leadTimeDays: 0,

@@ -64,7 +64,7 @@ export type RawFabricFormValues = z.infer<typeof rawFabricSchema>
 export const rawFabricDefaults: RawFabricFormValues = {
   roll_number: '',
   fabric_type: '',
-  color_name: '',
+  color_name: 'Mộc (Raw)',
   color_code: '',
   width_cm: undefined,
   length_m: undefined,
@@ -161,7 +161,7 @@ export type BulkInputFormValues = z.infer<typeof bulkInputSchema>
 
 export const bulkInputDefaults: BulkInputFormValues = {
   fabric_type: '',
-  color_name: '',
+  color_name: 'Mộc (Raw)',
   color_code: '',
   width_cm: undefined,
   quality_grade: undefined,

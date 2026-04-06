@@ -5,7 +5,7 @@ import {
   CUSTOMER_STATUS_LABELS,
   customersDefaultValues,
   customersSchema,
-} from '@/features/customers/customers.module'
+} from '@/schema/customer.schema'
 
 describe('customers.module', () => {
   it('trims required fields and accepts empty optional fields', () => {

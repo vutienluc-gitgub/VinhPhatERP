@@ -4,6 +4,7 @@ import { useForm, Controller } from 'react-hook-form'
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { Combobox } from '@/shared/components/Combobox'
+import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
 
 import {
   yarnCatalogDefaultValues,
@@ -42,6 +43,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
   const createMutation = useCreateYarnCatalog()
   const updateMutation = useUpdateYarnCatalog()
   const { data: nextCode } = useNextYarnCatalogCode()
+  const { data: colorOptions = [] } = useColorOptions()
 
   const {
     register,
@@ -142,12 +144,17 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
 
             <div className="form-field">
               <label htmlFor="color_name">Màu mặc định</label>
-              <input
-                id="color_name"
-                className="field-input"
-                type="text"
-                placeholder="VD: Trắng ngà"
-                {...register('color_name')}
+              <Controller
+                name="color_name"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={toColorComboboxOptions(colorOptions)}
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    placeholder="Chọn hoặc nhập màu..."
+                  />
+                )}
               />
             </div>
           </div>

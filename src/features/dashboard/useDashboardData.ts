@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/services/supabase/client'
 
+import { formatCurrency } from '@/shared/utils/format'
 // ── Types ──────────────────────────────────────────────
 
 export type DashboardStats = {
@@ -38,10 +39,6 @@ export type CustomerSourceItem = {
 }
 
 // ── Helpers ────────────────────────────────────────────
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value)
-}
 
 const SOURCE_COLORS: Record<string, string> = {
   referral: '#0b6bcb',

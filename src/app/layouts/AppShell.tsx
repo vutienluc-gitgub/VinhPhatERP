@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import { Home, FileText, Package, Activity, Truck, Layers, Users, CircleDollarSign, Component, Settings, AlignJustify, type LucideIcon } from 'lucide-react'
+import { Home, FileText, Package, Activity, Truck, Layers, Users, CircleDollarSign, Component, Settings, AlignJustify } from '@/shared/icons'
+import type { LucideIcon } from 'lucide-react'
 
 import { useAuth } from '@/features/auth/AuthProvider'
 import { navigationItems } from '@/app/router/routes'
-import { useDashboardStats } from '@/app/router/useDashboardData'
+import { useDashboardStats } from '@/features/dashboard/useDashboardData'
 import { useTheme } from '@/shared/hooks/useTheme'
 import type { UserRole } from '@/services/supabase/database.types'
 import { MobileMoreDrawer } from './MobileMoreDrawer'

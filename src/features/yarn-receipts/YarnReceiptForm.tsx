@@ -4,6 +4,7 @@ import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form'
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { Combobox } from '@/shared/components/Combobox'
+import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
 
 import {
   emptyItem,
@@ -95,6 +96,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
   const { data: nextNumber } = useNextReceiptNumber()
   const { data: suppliers = [] } = useActiveSuppliers()
   const { data: yarnCatalogs = [] } = useYarnCatalogOptions()
+  const { data: colorOptions = [] } = useColorOptions()
 
   const {
     register,
@@ -340,12 +342,17 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
 
                     <div className="form-field">
                       <label htmlFor={`items.${index}.colorName`}>Màu sợi</label>
-                      <input
-                        id={`items.${index}.colorName`}
-                        className="field-input"
-                        type="text"
-                        placeholder="VD: Trắng ngà"
-                        {...register(`items.${index}.colorName`)}
+                      <Controller
+                        name={`items.${index}.colorName` as const}
+                        control={control}
+                        render={({ field }) => (
+                          <Combobox
+                            options={toColorComboboxOptions(colorOptions)}
+                            value={field.value ?? ''}
+                            onChange={field.onChange}
+                            placeholder="Chọn hoặc nhập màu..."
+                          />
+                        )}
                       />
                     </div>
                   </div>

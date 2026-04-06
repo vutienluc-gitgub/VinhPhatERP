@@ -6,11 +6,11 @@ import { Combobox } from '@/shared/components/Combobox'
 
 import {
   customersDefaultValues,
-  customersSchema,
   CUSTOMER_SOURCES,
   CUSTOMER_SOURCE_LABELS,
-  type CustomersFormValues
 } from '@/schema'
+import { customersSchema } from '@/schema/customer.schema'
+import type { CustomersFormValues } from '@/schema/customer.schema'
 
 import type { Customer } from './types'
 import { useCreateCustomer, useNextCustomerCode, useUpdateCustomer } from './useCustomers'

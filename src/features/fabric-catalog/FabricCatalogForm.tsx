@@ -147,8 +147,8 @@ export function FabricCatalogForm({ catalog, onClose }: FabricCatalogFormProps) 
                 render={({ field }) => (
                   <Combobox
                     options={[
-                      { value: 'm', label: 'mét (m)' },
                       { value: 'kg', label: 'kg' },
+                      { value: 'm', label: 'mét (m)' },
                       { value: 'cuộn', label: 'cuộn' },
                     ]}
                     value={field.value}

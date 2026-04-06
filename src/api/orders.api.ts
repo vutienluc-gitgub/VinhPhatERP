@@ -6,9 +6,21 @@ import type {
   OrderItemInsert,
   OrdersFilter,
 } from '@/models'
+import type { Database } from '@/services/supabase/database.types'
 
 const HEADER_TABLE = 'orders'
 const ITEMS_TABLE = 'order_items'
+
+type OrderStatus = Database['public']['Enums']['order_status']
+
+// Cập nhật trạng thái đơn hàng cho Kanban
+export async function updateOrderStatus(id: string, status: OrderStatus): Promise<void> {
+  const { error } = await supabase
+    .from(HEADER_TABLE)
+    .update({ status })
+    .eq('id', id)
+  if (error) throw error
+}
 
 export async function fetchOrders(filters: OrdersFilter = {}): Promise<Order[]> {
   let query = supabase

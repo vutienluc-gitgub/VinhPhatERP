@@ -4,9 +4,7 @@ import { PendingTasksCard } from './PendingTasksCard'
 import { RecentOrdersCard } from './RecentOrdersCard'
 import { CustomerSourceChart } from './CustomerSourceChart'
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value)
-}
+import { formatCurrency } from '@/shared/utils/format'
 
 function DashboardSkeleton() {
   return (

@@ -1,44 +1,28 @@
-import { z } from 'zod'
-
 import type { FeatureDefinition } from '@/shared/types/feature'
-
-export const settingsSchema = z.object({
-  companyName: z.string().trim().min(2),
-  companyPhone: z.string().trim().max(20).optional().or(z.literal('')),
-  currency: z.string().trim().min(3),
-  orderPrefix: z.string().trim().min(1),
-  shipmentPrefix: z.string().trim().min(1),
-  paymentPrefix: z.string().trim().min(1),
-})
-
-export type SettingsFormValues = z.infer<typeof settingsSchema>
 
 export const settingsFeature: FeatureDefinition = {
   key: 'settings',
   route: '/settings',
   title: 'Cài đặt',
-  badge: 'Scaffolded',
+  badge: 'Active',
   description:
-    'Trang config cho env, auth settings và rollout theo từng phase của V2.',
+    'Quản lý thông tin công ty, hiển thị trên báo giá và các chứng từ. Chỉ admin truy cập được.',
   summary: [
-    { label: 'Supabase', value: 'Env check' },
-    { label: 'Roles', value: '4 roles' },
-    { label: 'Offline', value: 'Foundation' },
+    { label: 'Bảng', value: 'company_settings' },
+    { label: 'Quyền', value: 'Admin only' },
   ],
   highlights: [
     'Chỉ admin mới được xem và sửa.',
-    'Đánh dấu rõ các config bắt buộc trước khi deploy.',
-    'Dùng để kiểm tra env và rollout guardrails.',
+    'Thông tin tự động chèn vào báo giá khi in.',
+    'Hỗ trợ logo, MST, ngân hàng, email.',
   ],
   resources: [
-    'Ho tro env validation va health checks.',
-    'Bao gom auth config va feature flags sau nay.',
-    'Them diagnostics cho queue va sync.',
+    'Bảng company_settings (key-value).',
+    'RLS: đọc mọi người, ghi admin.',
   ],
-  entities: ['Company profile', 'Document prefix', 'Feature flag', 'Diagnostics'],
+  entities: ['CompanySetting'],
   nextMilestones: [
-    'Load settings tu bang settings cua Supabase.',
-    'Tach diagnostics cho env, queue va auth.',
-    'Them guard chi admin cho route nay.',
+    'Upload logo trực tiếp.',
+    'Config document prefixes.',
   ],
 }

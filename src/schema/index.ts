@@ -1,3 +1,4 @@
+export * from "./company-settings.schema"
 export * from "./customer.schema"
 export * from "./order.schema"
 export * from "./product.schema"

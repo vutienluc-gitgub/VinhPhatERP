@@ -1,6 +1,6 @@
 import { useForm, useFieldArray, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react'
+import { ArrowLeft, Plus, Trash2 } from '@/shared/icons'
 import { bomTemplateSchema, BomTemplateFormData } from './bom.module'
 import { BomTemplate } from './types'
 import { useFabricCatalogs, useYarnCatalogs, useDraftBom, useUpdateDraftBom } from './useBom'

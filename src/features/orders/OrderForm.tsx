@@ -1,4 +1,6 @@
 import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers'
+import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
+import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { formatCurrency } from '@/shared/utils/format'
 import { useEffect, useState } from 'react'
@@ -42,7 +44,7 @@ function orderToFormValues(order: Order): OrdersFormValues {
       fabricType: it.fabric_type,
       colorName: it.color_name ?? '',
       colorCode: it.color_code ?? '',
-      unit: (it.unit === 'kg' ? 'kg' : 'm') as 'm' | 'kg',
+      unit: (it.unit === 'm' ? 'm' : 'kg') as 'm' | 'kg',
       quantity: Number(it.quantity),
       unitPrice: Number(it.unit_price),
     })),
@@ -140,6 +142,8 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
   const updateMutation = useUpdateOrder()
   const { data: nextNumber } = useNextOrderNumber()
   const { data: customers = [] } = useActiveCustomers()
+  const { data: fabricOptions = [] } = useFabricCatalogOptions()
+  const { data: colorOptions = [] } = useColorOptions()
 
   const stepper = useStepper({ totalSteps: 2 })
 
@@ -388,12 +392,28 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                             <label htmlFor={`items.${index}.fabricType`}>
                               Loại vải <span className="field-required">*</span>
                             </label>
-                            <input
-                              id={`items.${index}.fabricType`}
-                              className={`field-input${errors.items?.[index]?.fabricType ? ' is-error' : ''}`}
-                              type="text"
-                              placeholder="VD: Cotton 60/40"
-                              {...register(`items.${index}.fabricType`)}
+                            <Controller
+                              name={`items.${index}.fabricType` as const}
+                              control={control}
+                              render={({ field }) => (
+                                <Combobox
+                                  options={fabricOptions.map((f) => ({
+                                    value: f.name,
+                                    label: f.name,
+                                    code: f.code,
+                                  }))}
+                                  value={field.value}
+                                  onChange={(val) => {
+                                    field.onChange(val)
+                                    const selected = fabricOptions.find((f) => f.name === val)
+                                    if (selected?.unit) {
+                                      setValue(`items.${index}.unit`, selected.unit as 'm' | 'kg')
+                                    }
+                                  }}
+                                  placeholder="Chọn hoặc nhập loại vải"
+                                  hasError={!!errors.items?.[index]?.fabricType}
+                                />
+                              )}
                             />
                             {errors.items?.[index]?.fabricType && (
                               <span className="field-error">
@@ -404,12 +424,17 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
 
                           <div className="form-field">
                             <label htmlFor={`items.${index}.colorName`}>Màu</label>
-                            <input
-                              id={`items.${index}.colorName`}
-                              className="field-input"
-                              type="text"
-                              placeholder="VD: Trắng"
-                              {...register(`items.${index}.colorName`)}
+                            <Controller
+                              name={`items.${index}.colorName` as const}
+                              control={control}
+                              render={({ field }) => (
+                                <Combobox
+                                  options={toColorComboboxOptions(colorOptions)}
+                                  value={field.value ?? ''}
+                                  onChange={field.onChange}
+                                  placeholder="Chọn hoặc nhập màu..."
+                                />
+                              )}
                             />
                           </div>
                         </div>
