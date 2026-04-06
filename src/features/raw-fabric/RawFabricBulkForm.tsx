@@ -17,7 +17,7 @@ import {
   formatBulkRollNumber,
 } from './raw-fabric.module'
 import type { BulkInputFormValues } from './raw-fabric.module'
-import { products as fabricProducts } from '@/models/products'
+import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
 import {
   useCreateRawFabricBulk,
   useWeavingPartners,
@@ -37,6 +37,7 @@ export function RawFabricBulkForm({ onClose }: Props) {
   const { data: yarnReceipts = [] } = useYarnReceiptOptions()
   const { data: workOrders = [] } = useWorkOrderOptions()
   const { data: colorOptions = [] } = useColorOptions()
+  const { data: fabricCatalogOptions = [] } = useFabricCatalogOptions()
   const weightRefs = useRef<(HTMLInputElement | null)[]>([])
   const [savedRolls, setSavedRolls] = useState<RawFabricRoll[] | null>(null)
   const { exportExcel, exportPdf } = useRawFabricExport()
@@ -212,19 +213,19 @@ export function RawFabricBulkForm({ onClose }: Props) {
 
                 <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                   <div className="form-field">
-                    <label htmlFor="bulk_fabric_type">
-                      Loại vải <span className="field-required">*</span>
-                    </label>
+                    <label>Loại vải <span className="field-required">*</span></label>
                     <Controller
                       control={control}
                       name="fabric_type"
                       render={({ field }) => (
                         <Combobox
-                          options={fabricProducts.map((p) => ({ label: p.name, value: p.name }))}
+                          options={fabricCatalogOptions.map((c) => ({ label: c.name, value: c.name, code: c.code }))}
                           value={field.value || ''}
                           onChange={field.onChange}
-                          placeholder="Chọn loại vải..."
+                          onBlur={field.onBlur}
+                          placeholder="Chọn hoặc nhập loại vải..."
                           hasError={!!errors.fabric_type}
+                          allowInput
                         />
                       )}
                     />
