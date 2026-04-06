@@ -17,6 +17,7 @@ import {
   formatBulkRollNumber,
 } from './raw-fabric.module'
 import type { BulkInputFormValues } from './raw-fabric.module'
+import { products as fabricProducts } from '@/models/products'
 import {
   useCreateRawFabricBulk,
   useWeavingPartners,
@@ -214,12 +215,18 @@ export function RawFabricBulkForm({ onClose }: Props) {
                     <label htmlFor="bulk_fabric_type">
                       Loại vải <span className="field-required">*</span>
                     </label>
-                    <input
-                      id="bulk_fabric_type"
-                      className={`field-input${errors.fabric_type ? ' is-error' : ''}`}
-                      type="text"
-                      placeholder="VD: Dệt thoi 60/40 TC"
-                      {...register('fabric_type')}
+                    <Controller
+                      control={control}
+                      name="fabric_type"
+                      render={({ field }) => (
+                        <Combobox
+                          options={fabricProducts.map((p) => ({ label: p.name, value: p.name }))}
+                          value={field.value || ''}
+                          onChange={field.onChange}
+                          placeholder="Chọn loại vải..."
+                          hasError={!!errors.fabric_type}
+                        />
+                      )}
                     />
                     {errors.fabric_type && <span className="field-error">{errors.fabric_type.message}</span>}
                   </div>
