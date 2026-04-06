@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 import { useEffect } from 'react'
 import { formatCurrency } from '@/shared/utils/format'
 import { useQuotation } from './useQuotations'
+import { useCompanySettings } from '@/features/settings/useCompanySettings'
 
 function formatDateLong(dateStr: string | null): string {
   if (!dateStr) return ''
@@ -12,22 +13,31 @@ function formatDateLong(dateStr: string | null): string {
 export default function QuotationPrint() {
   const { id } = useParams()
   const { data: quotation, isLoading, error } = useQuotation(id)
+  const { data: company } = useCompanySettings()
 
   useEffect(() => {
     // Automatically trigger print dialog when loaded
-    if (quotation) {
+    if (quotation && company) {
       setTimeout(() => {
         window.print()
       }, 500)
     }
-  }, [quotation])
+  }, [quotation, company])
 
   if (isLoading) return <div style={{ padding: '2rem' }}>Đang tải báo giá...</div>
-  // Use explicit error typing or bypass if any error is just rendered
   if (error) return <div style={{ padding: '2rem' }}>Lỗi tải báo giá</div>
   if (!quotation) return <div style={{ padding: '2rem' }}>Không tìm thấy báo giá.</div>
 
   const items = quotation.quotation_items ?? []
+
+  // Fallback nếu chưa có company settings
+  const companyName = company?.company_name || 'Công Ty TNHH Dệt May Vĩnh Phát'
+  const companyAddress = company?.address || ''
+  const companyPhone = company?.phone || ''
+  const companyTaxCode = company?.tax_code || ''
+  const companyLogo = company?.logo_url || '/vite.svg'
+  const companyBankName = company?.bank_name || ''
+  const companyBankAccount = company?.bank_account || ''
 
   return (
     <div style={{ background: '#fff', color: '#000', minHeight: '100vh', padding: '2rem 1rem' }}>
@@ -70,12 +80,18 @@ export default function QuotationPrint() {
       <div className="print-wrapper">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <h1 style={{ margin: 0, fontSize: '1.5rem', textTransform: 'uppercase' }}>Công Ty TNHH Dệt May Vĩnh Phát</h1>
-            <p style={{ margin: '0.25rem 0 0 0' }}>Địa chỉ: 123 Đường Vĩnh Phát, Quận Tân Bình, TP.HCM</p>
-            <p style={{ margin: 0 }}>SĐT: 0909 123 456 - MST: 0312012012</p>
+            <h1 style={{ margin: 0, fontSize: '1.5rem', textTransform: 'uppercase' }}>{companyName}</h1>
+            {companyAddress && (
+              <p style={{ margin: '0.25rem 0 0 0' }}>Địa chỉ: {companyAddress}</p>
+            )}
+            <p style={{ margin: 0 }}>
+              {companyPhone && `SĐT: ${companyPhone}`}
+              {companyPhone && companyTaxCode && ' - '}
+              {companyTaxCode && `MST: ${companyTaxCode}`}
+            </p>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <img src="/vite.svg" alt="Logo" style={{ width: 80, height: 80, objectFit: 'contain' }} />
+            <img src={companyLogo} alt="Logo" style={{ width: 80, height: 80, objectFit: 'contain' }} />
           </div>
         </div>
 
@@ -90,7 +106,7 @@ export default function QuotationPrint() {
         <div>
           <p><strong>Kính gửi:</strong> {quotation.customers?.name ?? '—'}</p>
           {quotation.customers?.code && <p><strong>Mã KH:</strong> {quotation.customers.code}</p>}
-          <p>Công ty Dệt May Vĩnh Phát trân trọng gửi đến Quý Khách hàng báo giá sản phẩm như sau:</p>
+          <p>Công ty {companyName} trân trọng gửi đến Quý Khách hàng báo giá sản phẩm như sau:</p>
         </div>
 
         <table className="print-table">
@@ -142,6 +158,16 @@ export default function QuotationPrint() {
           </tfoot>
         </table>
 
+        {/* Thông tin ngân hàng (nếu có) */}
+        {(companyBankName || companyBankAccount) && (
+          <div style={{ margin: '1rem 0', padding: '0.75rem 1rem', border: '1px solid #ccc', borderRadius: 4 }}>
+            <strong>Thông tin thanh toán:</strong>
+            {companyBankName && <p style={{ margin: '0.25rem 0 0 0' }}>Ngân hàng: {companyBankName}</p>}
+            {companyBankAccount && <p style={{ margin: 0 }}>Số TK: {companyBankAccount}</p>}
+            <p style={{ margin: 0 }}>Chủ TK: {companyName}</p>
+          </div>
+        )}
+
         <div style={{ marginTop: '2rem' }}>
           <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Điều khoản thương mại:</h3>
           <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
@@ -158,7 +184,7 @@ export default function QuotationPrint() {
             <p style={{ marginTop: '4rem', fontStyle: 'italic' }}>(Ký, đóng dấu)</p>
           </div>
           <div className="text-center" style={{ width: '40%' }}>
-            <strong>ĐẠI DIỆN VĨNH PHÁT</strong>
+            <strong>ĐẠI DIỆN {companyName.toUpperCase()}</strong>
             <p style={{ marginTop: '4rem', fontStyle: 'italic' }}>(Ký, ghi rõ họ tên)</p>
           </div>
         </div>

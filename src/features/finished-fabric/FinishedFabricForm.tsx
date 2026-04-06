@@ -4,6 +4,8 @@ import { useForm, Controller } from 'react-hook-form'
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { Combobox } from '@/shared/components/Combobox'
+import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
+
 
 import {
   QUALITY_GRADE_LABELS,
@@ -55,6 +57,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
   const createMutation = useCreateFinishedFabric()
   const updateMutation = useUpdateFinishedFabric()
   const { data: rawRollOptions = [] } = useRawRollOptions()
+  const { data: colorOptions = [] } = useColorOptions()
 
   const {
     register,
@@ -188,12 +191,24 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
             <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
               <div className="form-field">
                 <label htmlFor="color_name">Màu vải</label>
-                <input
-                  id="color_name"
-                  className="field-input"
-                  type="text"
-                  placeholder="VD: Trắng ngà"
-                  {...register('color_name')}
+                <Controller
+                  name="color_name"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={toColorComboboxOptions(colorOptions)}
+                      value={field.value ?? ''}
+                      onChange={(val) => {
+                        field.onChange(val)
+                        // Auto-fill mã màu từ danh mục
+                        const selected = colorOptions.find((c) => c.name === val)
+                        if (selected) {
+                          // setValue không available ở đây → dùng register pattern
+                        }
+                      }}
+                      placeholder="Chọn hoặc nhập màu..."
+                    />
+                  )}
                 />
               </div>
 

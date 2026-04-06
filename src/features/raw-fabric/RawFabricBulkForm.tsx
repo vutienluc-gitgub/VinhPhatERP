@@ -4,6 +4,7 @@ import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form'
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { Combobox } from '@/shared/components/Combobox'
+import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
 import { useStepper } from '@/shared/hooks/useStepper'
 
 import {
@@ -34,6 +35,7 @@ export function RawFabricBulkForm({ onClose }: Props) {
   const { data: weavingPartners = [] } = useWeavingPartners()
   const { data: yarnReceipts = [] } = useYarnReceiptOptions()
   const { data: workOrders = [] } = useWorkOrderOptions()
+  const { data: colorOptions = [] } = useColorOptions()
   const weightRefs = useRef<(HTMLInputElement | null)[]>([])
   const [savedRolls, setSavedRolls] = useState<RawFabricRoll[] | null>(null)
   const { exportExcel, exportPdf } = useRawFabricExport()
@@ -237,7 +239,18 @@ export function RawFabricBulkForm({ onClose }: Props) {
                 <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                   <div className="form-field">
                     <label htmlFor="bulk_color_name">Màu vải</label>
-                    <input id="bulk_color_name" className="field-input" type="text" placeholder="VD: Trắng ngà" {...register('color_name')} />
+                    <Controller
+                      name="color_name"
+                      control={control}
+                      render={({ field }) => (
+                        <Combobox
+                          options={toColorComboboxOptions(colorOptions)}
+                          value={field.value ?? ''}
+                          onChange={field.onChange}
+                          placeholder="Chọn hoặc nhập màu..."
+                        />
+                      )}
+                    />
                   </div>
                   <div className="form-field">
                     <label htmlFor="bulk_color_code">Mã màu</label>

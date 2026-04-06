@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCircle, Play, Scissors, Package } from 'lucide-react'
+import { ArrowLeft, CheckCircle, Play, Scissors, Package } from '@/shared/icons'
 import { useWorkOrderDetail, useWorkOrderRequirements, useStartWorkOrder, useCompleteWorkOrder } from './useWorkOrders'
 import { WORK_ORDER_STATUSES } from './work-orders.module'
 

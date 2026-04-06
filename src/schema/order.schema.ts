@@ -59,8 +59,8 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
 }
 
 export const UNIT_OPTIONS = [
-  { value: 'm', label: 'Mét (m)' },
   { value: 'kg', label: 'Kg' },
+  { value: 'm', label: 'Mét (m)' },
 ] as const
 
 export type UnitType = (typeof UNIT_OPTIONS)[number]['value']
@@ -71,7 +71,7 @@ export const orderItemSchema = z.object({
   fabricType: z.string().trim().min(2, 'Loại vải tối thiểu 2 ký tự'),
   colorName: z.string().trim().max(120).optional().or(z.literal('')),
   colorCode: z.string().trim().max(20).optional().or(z.literal('')),
-  unit: z.enum(['m', 'kg']).default('m'),
+  unit: z.enum(['m', 'kg']).default('kg'),
   quantity: z.number({ required_error: 'Nhập số lượng' }).positive('Số lượng phải > 0'),
   unitPrice: z.number({ required_error: 'Nhập đơn giá' }).min(0, 'Đơn giá >= 0'),
 })
@@ -97,9 +97,9 @@ export type OrdersFormValues = z.infer<typeof ordersSchema>
 
 export const emptyOrderItem: OrderItemFormValues = {
   fabricType: '',
-  colorName: '',
+  colorName: 'Mộc (Raw)',
   colorCode: '',
-  unit: 'm',
+  unit: 'kg',
   quantity: 0,
   unitPrice: 0,
 }

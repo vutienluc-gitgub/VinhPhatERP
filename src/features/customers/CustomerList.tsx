@@ -4,7 +4,7 @@ import { useConfirm } from '@/shared/components/ConfirmDialog'
 import { Pagination } from '@/shared/components/Pagination'
 import { TableSkeleton } from '@/shared/components/TableSkeleton'
 import { EmptyState } from '@/shared/components/EmptyState'
-import { CUSTOMER_SOURCE_LABELS, CUSTOMER_STATUS_LABELS } from './customers.module'
+import { CUSTOMER_SOURCE_LABELS, CUSTOMER_STATUS_LABELS } from '@/schema/customer.schema'
 import type { Customer, CustomersFilter } from './types'
 import { useCustomerList, useDeleteCustomer } from './useCustomers'
 
@@ -174,7 +174,7 @@ export function CustomerList({ onEdit, onNew }: CustomerListProps) {
                   <td className="td-muted">{customer.phone ?? '—'}</td>
                   <td>
                     <span className="roll-status in_stock" style={{ fontSize: '0.78rem' }}>
-                      {CUSTOMER_SOURCE_LABELS[customer.source] ?? 'Khác'}
+                      {CUSTOMER_SOURCE_LABELS[customer.source || 'other'] ?? 'Khác'}
                     </span>
                   </td>
                   <td>

@@ -22,6 +22,8 @@ import {
   usePaymentCollection,
 } from './useReports'
 
+import styles from './reports.module.css';
+
 function defaultDateFrom(): string {
   const d = new Date()
   d.setDate(1)
@@ -82,33 +84,13 @@ export function ReportsPage() {
         <ReportsFilterBar filter={filter} onChange={setFilter} />
 
         {/* Tab switcher using project style (bottom border on active) */}
-        <div 
-          className="tab-bar-container"
-          style={{
-            display: 'flex',
-            overflowX: 'auto',
-            borderTop: '1px solid var(--border)',
-            padding: '0 0.5rem',
-            background: 'var(--surface-strong)',
-          }}
-        >
+        <div className={styles.tabBar}>
           {TABS.map((tab) => (
             <button
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key)}
-              style={{
-                padding: '0.85rem 1rem',
-                fontSize: '0.82rem',
-                fontWeight: activeTab === tab.key ? 700 : 500,
-                color: activeTab === tab.key ? 'var(--primary)' : 'var(--fg-muted)',
-                background: 'transparent',
-                border: 'none',
-                borderBottom: activeTab === tab.key ? '2px solid var(--primary)' : '2px solid transparent',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                transition: 'all 0.2s ease',
-              }}
+              className={`${styles.tabButton} ${activeTab === tab.key ? styles.tabButtonActive : ''}`}
             >
               {tab.label}
             </button>

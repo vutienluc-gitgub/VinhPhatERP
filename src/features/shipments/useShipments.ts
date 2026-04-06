@@ -259,7 +259,7 @@ export function useCreateShipment() {
           fabric_type: selectedRoll?.fabric_type ?? item.fabricType.trim(),
           color_name: selectedRoll?.color_name ?? null,
           quantity: item.quantity,
-          unit: 'm',
+          unit: 'kg',
           sort_order: idx,
         }
       })

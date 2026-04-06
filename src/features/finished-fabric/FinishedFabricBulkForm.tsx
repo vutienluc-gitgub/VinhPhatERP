@@ -4,6 +4,7 @@ import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form'
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { Combobox } from '@/shared/components/Combobox'
+import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
 import { useStepper } from '@/shared/hooks/useStepper'
 
 import {
@@ -161,6 +162,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
 
   // Lấy danh sách cuộn mộc theo lot_number đã nhập
   const { data: rawRollsForLot = [] } = useRawRollsByLot(lotNumber ?? '')
+  const { data: colorOptions = [] } = useColorOptions()
 
   // Auto-generate roll numbers khi prefix hoặc start_number thay đổi
   useEffect(() => {
@@ -414,7 +416,18 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                 <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                   <div className="form-field">
                     <label htmlFor="bulk_color_name">Màu vải</label>
-                    <input id="bulk_color_name" className="field-input" type="text" placeholder="VD: Trắng ngà" {...register('color_name')} />
+                    <Controller
+                      name="color_name"
+                      control={control}
+                      render={({ field }) => (
+                        <Combobox
+                          options={toColorComboboxOptions(colorOptions)}
+                          value={field.value ?? ''}
+                          onChange={field.onChange}
+                          placeholder="Chọn hoặc nhập màu..."
+                        />
+                      )}
+                    />
                   </div>
                   <div className="form-field">
                     <label htmlFor="bulk_color_code">Mã màu</label>

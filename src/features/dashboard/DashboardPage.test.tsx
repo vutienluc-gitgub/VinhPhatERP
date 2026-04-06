@@ -27,7 +27,7 @@ vi.mock('@/services/supabase/client', () => ({
   hasSupabaseEnv: () => true,
 }))
 
-import { DashboardPage } from '@/app/router/DashboardPage'
+import { DashboardPage } from '@/features/dashboard/DashboardPage'
 
 function renderWithProviders(ui: React.ReactElement) {
   const queryClient = new QueryClient({

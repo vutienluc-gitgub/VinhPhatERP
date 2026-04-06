@@ -4,6 +4,7 @@ import { useForm, Controller } from 'react-hook-form'
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { Combobox } from '@/shared/components/Combobox'
+import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
 import { useStepper } from '@/shared/hooks/useStepper'
 
 import {
@@ -53,6 +54,7 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
   const { data: weavingPartners = [] } = useWeavingPartners()
   const { data: yarnReceipts = [] } = useYarnReceiptOptions()
   const { data: workOrders = [] } = useWorkOrderOptions()
+  const { data: colorOptions = [] } = useColorOptions()
 
   const stepper = useStepper({ totalSteps: 3 })
 
@@ -175,12 +177,17 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
               <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                 <div className="form-field">
                   <label htmlFor="color_name">Màu vải</label>
-                  <input
-                    id="color_name"
-                    className="field-input"
-                    type="text"
-                    placeholder="VD: Trắng ngà"
-                    {...register('color_name')}
+                  <Controller
+                    name="color_name"
+                    control={control}
+                    render={({ field }) => (
+                      <Combobox
+                        options={toColorComboboxOptions(colorOptions)}
+                        value={field.value ?? ''}
+                        onChange={field.onChange}
+                        placeholder="Chọn hoặc nhập màu..."
+                      />
+                    )}
                   />
                 </div>
 

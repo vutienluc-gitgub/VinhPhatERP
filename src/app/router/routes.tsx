@@ -1,11 +1,11 @@
 import { lazy } from 'react'
 import type { RouteObject } from 'react-router-dom'
 
-import { DashboardPage } from '@/app/router/DashboardPage'
 import { LazyPage } from '@/app/router/LazyPage'
 import type { UserRole } from '@/services/supabase/database.types'
 
 /* ── Lazy-loaded page components (code-split per route) ── */
+const DashboardPage = lazy(() => import('@/features/dashboard/DashboardPage').then((m) => ({ default: m.DashboardPage })))
 const AuthPage = lazy(() => import('@/features/auth').then((m) => ({ default: m.AuthPage })))
 const CustomersPage = lazy(() => import('@/features/customers').then((m) => ({ default: m.CustomersPage })))
 const FinishedFabricPage = lazy(() => import('@/features/finished-fabric').then((m) => ({ default: m.FinishedFabricPage })))
@@ -26,6 +26,7 @@ const FabricCatalogPage = lazy(() => import('@/features/fabric-catalog').then((m
 const YarnReceiptsPage = lazy(() => import('@/features/yarn-receipts').then((m) => ({ default: m.YarnReceiptsPage })))
 const BomPage = lazy(() => import('@/features/bom').then((m) => ({ default: m.BomPage })))
 const WorkOrdersPage = lazy(() => import('@/features/work-orders').then((m) => ({ default: m.WorkOrdersPage })))
+const OrderKanbanPage = lazy(() => import('@/features/order-kanban').then((m) => ({ default: m.OrderKanbanPage })))
 
 export type NavigationItem = {
   path: string
@@ -163,6 +164,13 @@ export const navigationItems: NavigationItem[] = [
     description: 'Cấu hình môi trường, phân quyền, đồng bộ và triển khai.',
     requiredRoles: ['admin'],
   },
+  {
+    path: '/order-kanban',
+    label: 'Kanban Đơn Hàng',
+    shortLabel: 'Kanban',
+    description: 'Quản lý đơn hàng theo trạng thái trực quan.',
+    requiredRoles: ['admin', 'manager', 'sale'],
+  },
 ]
 
 export const authRoute: RouteObject = { path: 'auth', element: <LazyPage><AuthPage /></LazyPage> }
@@ -184,6 +192,7 @@ export const appRoutes: RouteObject[] = [
   { path: 'payments', element: <LazyPage><PaymentsPage /></LazyPage> },
   { path: 'inventory', element: <LazyPage><InventoryPage /></LazyPage> },
   { path: 'work-orders', element: <LazyPage><WorkOrdersPage /></LazyPage> },
+  { path: 'order-kanban', element: <LazyPage><OrderKanbanPage /></LazyPage> },
 ]
 
 export const printRoutes: RouteObject[] = [
