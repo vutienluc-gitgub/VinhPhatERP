@@ -13,6 +13,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/services/supabase/client'
+import { createOrder } from '@/api/orders.api'
 import type { OrdersFormValues } from './orders.module'
 
 // ---------------------------------------------------------------------------
@@ -161,10 +162,8 @@ async function callCreateOrderFunction(
 
 // ---------------------------------------------------------------------------
 // Fallback: Direct DB insert (khi Edge Function không kết nối được)
+// Uses orders.api.ts createOrder
 // ---------------------------------------------------------------------------
-
-const HEADER_TABLE = 'orders'
-const ITEMS_TABLE = 'order_items'
 
 async function createOrderDirectInsert(
   input: CreateOrderInput,
@@ -174,10 +173,8 @@ async function createOrderDirectInsert(
     0,
   )
 
-  // 1. Insert header
-  const { data: header, error: headerErr } = await supabase
-    .from(HEADER_TABLE)
-    .insert({
+  const order = await createOrder(
+    {
       order_number: input.orderNumber.trim(),
       customer_id: input.customerId,
       order_date: input.orderDate,
@@ -185,38 +182,21 @@ async function createOrderDirectInsert(
       total_amount: total,
       notes: input.notes?.trim() || null,
       status: 'draft' as const,
-    })
-    .select()
-    .single()
-
-  if (headerErr) throw new Error(headerErr.message)
-  if (!header) throw new Error('Không thể tạo đơn hàng')
-
-  const headerId = (header as { id: string }).id
-
-  // 2. Insert items
-  const items = input.items.map((item, idx) => ({
-    order_id: headerId,
-    fabric_type: item.fabricType.trim(),
-    color_name: item.colorName?.trim() || null,
-    color_code: item.colorCode?.trim() || null,
-    unit: item.unit ?? 'kg',
-    quantity: item.quantity,
-    unit_price: item.unitPrice,
-    sort_order: idx,
-  }))
-
-  const { error: itemsErr } = await supabase.from(ITEMS_TABLE).insert(items)
-
-  if (itemsErr) {
-    // Rollback header
-    await supabase.from(HEADER_TABLE).delete().eq('id', headerId)
-    throw new Error(itemsErr.message)
-  }
+    },
+    input.items.map((item, idx) => ({
+      fabric_type: item.fabricType.trim(),
+      color_name: item.colorName?.trim() || null,
+      color_code: item.colorCode?.trim() || null,
+      unit: item.unit ?? 'kg',
+      quantity: item.quantity,
+      unit_price: item.unitPrice,
+      sort_order: idx,
+    })),
+  )
 
   return {
     ok: true,
-    orderId: headerId,
+    orderId: order.id,
     orderNumber: input.orderNumber.trim(),
     totalAmount: total,
     allocation: [],

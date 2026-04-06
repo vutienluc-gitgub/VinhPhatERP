@@ -229,7 +229,7 @@ export function OrderDetail({
                         {formatCurrency(item.unit_price)}
                       </td>
                       <td style={{ textAlign: 'right', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-                        {formatCurrency(item.amount)}
+                        {formatCurrency(item.amount ?? 0)}
                       </td>
                     </tr>
                   ))}
