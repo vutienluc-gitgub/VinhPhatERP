@@ -27,6 +27,7 @@ const YarnReceiptsPage = lazy(() => import('@/features/yarn-receipts').then((m) 
 const BomPage = lazy(() => import('@/features/bom').then((m) => ({ default: m.BomPage })))
 const WorkOrdersPage = lazy(() => import('@/features/work-orders').then((m) => ({ default: m.WorkOrdersPage })))
 const OrderKanbanPage = lazy(() => import('@/features/order-kanban').then((m) => ({ default: m.OrderKanbanPage })))
+const WeavingInvoicesPage = lazy(() => import('@/features/weaving-invoices/WeavingInvoicesPage').then((m) => ({ default: m.WeavingInvoicesPage })))
 
 export type NavigationItem = {
   path: string
@@ -132,6 +133,12 @@ export const navigationItems: NavigationItem[] = [
     description: 'Theo dõi lô vải mộc và mapping với nguyên liệu, nhà dệt.',
   },
   {
+    path: '/weaving-invoices',
+    label: 'Phiếu gia công',
+    shortLabel: 'Gia công',
+    description: 'Quản lý phiếu gia công dệt theo lô — tính công nợ nhà dệt tự động.',
+  },
+  {
     path: '/finished-fabric',
     label: 'Vải thành phẩm',
     shortLabel: 'Finished',
@@ -193,6 +200,7 @@ export const appRoutes: RouteObject[] = [
   { path: 'inventory', element: <LazyPage><InventoryPage /></LazyPage> },
   { path: 'work-orders', element: <LazyPage><WorkOrdersPage /></LazyPage> },
   { path: 'order-kanban', element: <LazyPage><OrderKanbanPage /></LazyPage> },
+  { path: 'weaving-invoices', element: <LazyPage><WeavingInvoicesPage /></LazyPage> },
 ]
 
 export const printRoutes: RouteObject[] = [
