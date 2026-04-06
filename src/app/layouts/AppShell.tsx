@@ -36,6 +36,7 @@ const ROUTE_ICONS: Record<string, string> = {
   '/customers': '👥',
   '/suppliers': '🤝',
   '/yarn-catalog': '🧵',
+  '/fabric-catalog': '🪡',
   '/yarn-receipts': '📥',
   '/raw-fabric': '🧶',
   '/finished-fabric': '✨',

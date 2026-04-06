@@ -18,7 +18,7 @@ export const BOM_STATUS_COLORS: Record<BomStatus, string> = {
 
 export const bomYarnItemSchema = z.object({
   id: z.string().optional(),
-  yarn_catalog_id: z.string({ required_error: 'Vui lòng chọn loại sợi' }),
+  yarn_catalog_id: z.string({ required_error: 'Vui lòng chọn loại sợi' }).min(1, 'Vui lòng chọn loại sợi'),
   ratio_pct: z.number()
     .min(0.01, 'Tỉ lệ phải lớn hơn 0')
     .max(100, 'Tỉ lệ không được quá 100%'),
@@ -30,7 +30,7 @@ export const bomYarnItemSchema = z.object({
 export const bomTemplateSchema = z.object({
   code: z.string().min(1, 'Vui lòng nhập mã BOM'),
   name: z.string().min(1, 'Vui lòng nhập tên BOM'),
-  target_fabric_id: z.string({ required_error: 'Vui lòng chọn mã vải mộc mục tiêu' }),
+  target_fabric_id: z.string({ required_error: 'Vui lòng chọn mã vải mộc mục tiêu' }).min(1, 'Vui lòng chọn mã vải mộc mục tiêu'),
   target_width_cm: z.number().nullable().optional(),
   target_gsm: z.number().nullable().optional(),
   standard_loss_pct: z.number().min(0, 'Hao hụt không được âm').max(100, 'Hao hụt không được quá 100%').default(5),

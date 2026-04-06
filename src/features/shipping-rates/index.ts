@@ -1,5 +1,5 @@
 export * from './shipping-rates.module'
-export * from './types'
+
 export * from './useShippingRates'
 export * from './ShippingRateForm'
 export * from './ShippingRateList'

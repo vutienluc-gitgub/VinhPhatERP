@@ -21,7 +21,7 @@ export const bomKeys = {
 
 export function useFabricCatalogs() {
   return useQuery({
-    queryKey: bomKeys.fabricCatalogs(),
+    queryKey: ['fabric-catalog', 'options'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('fabric_catalogs')

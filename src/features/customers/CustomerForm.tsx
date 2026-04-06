@@ -9,8 +9,9 @@ import {
   customersSchema,
   CUSTOMER_SOURCES,
   CUSTOMER_SOURCE_LABELS,
-} from './customers.module'
-import type { CustomersFormValues } from './customers.module'
+  type CustomersFormValues
+} from '@/schema'
+
 import type { Customer } from './types'
 import { useCreateCustomer, useNextCustomerCode, useUpdateCustomer } from './useCustomers'
 
