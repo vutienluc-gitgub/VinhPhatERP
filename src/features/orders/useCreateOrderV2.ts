@@ -12,8 +12,11 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { supabase } from '@/services/supabase/client'
-import { createOrder } from '@/api/orders.api'
+import {
+  createOrder,
+  getAccessToken,
+  invokeCreateOrderFunction,
+} from '@/api/orders.api'
 import type { OrdersFormValues } from './orders.module'
 
 // ---------------------------------------------------------------------------
@@ -100,11 +103,8 @@ function isConnectionError(error: unknown): boolean {
 
 async function callCreateOrderFunction(
   input: CreateOrderInput,
-  accessToken: string,
+  token: string,
 ): Promise<CreateOrderResult> {
-  const { data: sessionData } = await supabase.auth.getSession()
-  const token = accessToken || sessionData?.session?.access_token
-
   const payload = {
     orderNumber:       input.orderNumber.trim(),
     customerId:        input.customerId,
@@ -123,46 +123,34 @@ async function callCreateOrderFunction(
     })),
   }
 
-  const { data, error } = await supabase.functions.invoke<CreateOrderResult>('create-order', {
-    body: payload,
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-  })
-
-  if (error) {
-    // Nếu là lỗi kết nối → re-throw nguyên để caller biết cần fallback
-    if (isConnectionError(error)) {
-      throw error
+  try {
+    const data = await invokeCreateOrderFunction<CreateOrderResult>(payload, token)
+    if (!data?.ok) {
+      throw { code: 'INTERNAL_ERROR', message: 'Không nhận được phản hồi từ server' } as CreateOrderError
     }
+    return data
+  } catch (error) {
+    // Re-throw connection errors for fallback
+    if (isConnectionError(error)) throw error
 
-    // Supabase functions.invoke wraps HTTP errors — parse error body nếu có
+    // Parse business errors from Edge Function body
     const body = (error as unknown as { context?: { body?: string } }).context?.body
     if (body) {
       try {
         const parsed = JSON.parse(body) as { error: CreateOrderError }
-        if (parsed.error) {
-          throw parsed.error
-        }
+        if (parsed.error) throw parsed.error
       } catch (parseErr) {
-        // Nếu parseErr là CreateOrderError đã parsed thành công → re-throw
         if (parseErr && typeof parseErr === 'object' && 'code' in parseErr) {
           throw parseErr
         }
-        // JSON parse thất bại → fallthrough
       }
     }
-    throw { code: 'INTERNAL_ERROR', message: error.message } as CreateOrderError
+    throw { code: 'INTERNAL_ERROR', message: (error as Error).message } as CreateOrderError
   }
-
-  if (!data?.ok) {
-    throw { code: 'INTERNAL_ERROR', message: 'Không nhận được phản hồi từ server' } as CreateOrderError
-  }
-
-  return data
 }
 
 // ---------------------------------------------------------------------------
 // Fallback: Direct DB insert (khi Edge Function không kết nối được)
-// Uses orders.api.ts createOrder
 // ---------------------------------------------------------------------------
 
 async function createOrderDirectInsert(
@@ -216,27 +204,17 @@ async function createOrderDirectInsert(
 
 const QUERY_KEY = ['orders'] as const
 
-/**
- * useCreateOrderV2
- *
- * Flow:
- *   1. Thử gọi Edge Function
- *   2. Nếu Edge Function lỗi kết nối → tự động fallback sang direct insert
- *   3. Nếu Edge Function trả business error (credit, stock) → throw để UI xử lý
- */
 export function useCreateOrderV2() {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (input: CreateOrderInput): Promise<CreateOrderResult> => {
-      const { data: sessionData } = await supabase.auth.getSession()
-      const token = sessionData?.session?.access_token ?? ''
+      const token = await getAccessToken()
 
       try {
-        // Thử Edge Function trước
         return await callCreateOrderFunction(input, token)
       } catch (edgeFnError) {
-        // Nếu là business error từ Edge Function → throw lại cho UI
+        // Business error from Edge Function → throw for UI to handle
         if (
           edgeFnError &&
           typeof edgeFnError === 'object' &&
@@ -246,7 +224,7 @@ export function useCreateOrderV2() {
           throw edgeFnError
         }
 
-        // Lỗi kết nối → fallback direct insert
+        // Connection error → fallback direct insert
         console.warn(
           '[createOrder] ⚠️ Edge Function không thể kết nối, chuyển sang direct insert.',
           edgeFnError,
@@ -256,16 +234,10 @@ export function useCreateOrderV2() {
     },
 
     onSuccess: (result) => {
-      // Invalidate order list
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
-
-      // Invalidate inventory views
       void queryClient.invalidateQueries({ queryKey: ['finished-fabric'] })
       void queryClient.invalidateQueries({ queryKey: ['reserve-rolls'] })
-
-      // Invalidate customer (current_debt có thể thay đổi)
       void queryClient.invalidateQueries({ queryKey: ['customers'] })
-
       console.info(
         `[createOrder] ✅ ${result.orderNumber} created. ` +
         `Allocated ${result.allocation.length} rolls.`,
@@ -280,7 +252,7 @@ export function useCreateOrderV2() {
 }
 
 // ---------------------------------------------------------------------------
-// Helpers: Phân loại error để UI biết cách hiện dialog
+// Helpers
 // ---------------------------------------------------------------------------
 
 export function isCreditWarning(code: CreateOrderErrorCode): boolean {
