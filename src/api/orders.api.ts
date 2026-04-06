@@ -268,3 +268,24 @@ export async function completeOrder(orderId: string): Promise<void> {
     .eq('id', orderId)
   if (error) throw error
 }
+
+/* ── Edge Function: get session token ── */
+
+export async function getAccessToken(): Promise<string> {
+  const { data } = await supabase.auth.getSession()
+  return data?.session?.access_token ?? ''
+}
+
+/* ── Edge Function: invoke create-order ── */
+
+export async function invokeCreateOrderFunction<TResult>(
+  payload: Record<string, unknown>,
+  token: string,
+): Promise<TResult> {
+  const { data, error } = await supabase.functions.invoke<TResult>('create-order', {
+    body: payload,
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  })
+  if (error) throw error
+  return data as TResult
+}
