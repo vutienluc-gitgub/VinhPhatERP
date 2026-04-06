@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Home, FileText, Package, Activity, Truck, Layers, Users, CircleDollarSign, Component, Settings, AlignJustify, type LucideIcon } from 'lucide-react'
 
 import { useAuth } from '@/features/auth/AuthProvider'
 import { navigationItems } from '@/app/router/routes'
@@ -44,6 +45,18 @@ const ROUTE_ICONS: Record<string, string> = {
   '/reports': '📈',
   '/shipping-rates': '💵',
   '/settings': '⚙️',
+}
+
+const LUCIDE_ICONS: Record<string, LucideIcon> = {
+  '/': Home,
+  '/quotations': FileText,
+  '/orders': Package,
+  '/order-progress': Activity,
+  '/shipments': Truck,
+  '/inventory': Layers,
+  '/customers': Users,
+  '/payments': CircleDollarSign,
+  '/settings': Settings,
 }
 
 export function AppShell() {
@@ -185,23 +198,41 @@ export function AppShell() {
       </div>
 
       <nav className="mobile-nav" aria-label="Bottom navigation">
-        {primaryItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) => `mobile-nav-link${isActive ? ' is-active' : ''}`}
-            end={item.path === '/'}
-          >
-            <span>{item.shortLabel}</span>
-          </NavLink>
-        ))}
+        {primaryItems.slice(0, 5).map((item) => {
+          const IconObj = LUCIDE_ICONS[item.path] || Component
+          return (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) => `mobile-nav-link${isActive ? ' is-active' : ''}`}
+              end={item.path === '/'}
+            >
+              {({ isActive }) => (
+                <>
+                  <IconObj size={24} strokeWidth={isActive ? 2.5 : 1.8} fill={isActive ? 'currentColor' : 'none'} fillOpacity={isActive ? 0.15 : 0} />
+                  <span>{item.shortLabel}</span>
+                </>
+              )}
+            </NavLink>
+          )
+        })}
         <button
           type="button"
-          className={`mobile-nav-link mobile-more-btn${isSecondaryActive ? ' is-active' : ''}`}
+          className={`mobile-more-btn${isSecondaryActive ? ' is-active' : ''}`}
           onClick={() => setShowMore(true)}
-          aria-label="Xem thêm module"
+          aria-label="Menu"
         >
-          <span>···</span>
+          <div style={{ position: 'relative', display: 'flex' }}>
+            <span className="user-avatar" style={{ width: 26, height: 26, fontSize: '0.65rem' }}>
+              {initials}
+            </span>
+            <div style={{ position: 'absolute', bottom: -2, right: -4, background: 'var(--surface-strong)', borderRadius: '50%', padding: '1px' }}>
+              <div style={{ background: 'var(--muted)', borderRadius: '50%', width: 12, height: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <AlignJustify className="hamburger-badge" size={8} color="#fff" strokeWidth={3} />
+              </div>
+            </div>
+          </div>
+          <span>Menu</span>
         </button>
       </nav>
 
