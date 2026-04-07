@@ -3,9 +3,12 @@ import type { PropsWithChildren } from 'react'
 import { useState } from 'react'
 
 import { AuthProvider } from '@/features/auth/AuthProvider'
-
 import { ConfirmProvider } from '@/shared/components/ConfirmDialog'
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary'
+import { TenantProvider } from '@/shared/context/TenantContext'
+
+// Trigger plugin registration on app startup
+import '@/app/plugins'
 
 export function AppProviders({ children }: PropsWithChildren) {
   const [queryClient] = useState(
@@ -23,11 +26,13 @@ export function AppProviders({ children }: PropsWithChildren) {
 
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <ConfirmProvider>{children}</ConfirmProvider>
-        </AuthProvider>
-      </QueryClientProvider>
+      <TenantProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <ConfirmProvider>{children}</ConfirmProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </TenantProvider>
     </ErrorBoundary>
   )
 }

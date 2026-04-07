@@ -1,5 +1,5 @@
-export type ProductionStage = 'warping' | 'weaving' | 'greige_check' | 'dyeing' | 'finishing' | 'final_check' | 'packing'
-export type StageStatus = 'pending' | 'in_progress' | 'done' | 'skipped'
+import type { ProductionStage, StageStatus } from '@/schema/order-progress.schema'
+export type { ProductionStage, StageStatus }
 
 export type OrderProgress = {
   id: string

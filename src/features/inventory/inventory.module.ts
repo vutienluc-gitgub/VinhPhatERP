@@ -1,17 +1,9 @@
-import { z } from 'zod'
-
 import type { FeatureDefinition } from '@/shared/types/feature'
 
-export const inventoryAdjustmentSchema = z.object({
-  adjustmentDate: z.string().trim().min(1),
-  itemType: z.enum(['yarn', 'raw_fabric', 'finished_fabric']),
-  referenceId: z.string().uuid().optional().or(z.literal('')),
-  adjustmentType: z.enum(['increase', 'decrease', 'correction']),
-  quantityDelta: z.number(),
-  reason: z.string().trim().min(3),
-})
-
-export type InventoryAdjustmentFormValues = z.infer<typeof inventoryAdjustmentSchema>
+export {
+  inventoryAdjustmentSchema,
+} from '@/schema/inventory.schema'
+export type { InventoryAdjustmentFormValues } from '@/schema/inventory.schema'
 
 export const inventoryFeature: FeatureDefinition = {
   key: 'inventory',

@@ -104,20 +104,19 @@ export async function createWorkOrder(input: CreateWorkOrderInput): Promise<Work
   if (bom.status !== 'approved') throw new Error('Chỉ được phép dùng BOM đã được duyệt (Approved).')
 
   const bomVersion = bom.active_version
-  const lossPct = bom.standard_loss_pct || 0
+  const lossPct = input.standard_loss_pct ?? bom.standard_loss_pct ?? 0
 
-  // 2. Fetch Yarn Items in that BOM Version
+  // 2. Fetch Yarn Items in that BOM Version (for fallback calc)
   const { data: bomYarns, error: yarnError } = await supabase
     .from('bom_yarn_items')
     .select('*')
     .eq('bom_template_id', input.bom_template_id)
     .eq('version', bomVersion)
   if (yarnError) throw yarnError
-  if (!bomYarns || bomYarns.length === 0) throw new Error('BOM không có định mức sợi nào.')
 
   // 3. Create the Work Order
   let targetKg = input.target_weight_kg || 0
-  if (targetKg === 0 && input.target_quantity_m > 0) {
+  if (targetKg === 0 && input.target_quantity_m > 0 && bomYarns) {
     const totalConsumptionPerM = bomYarns.reduce((sum, item) => sum + (item.consumption_kg_per_m || 0), 0)
     targetKg = input.target_quantity_m * totalConsumptionPerM
   }
@@ -144,10 +143,22 @@ export async function createWorkOrder(input: CreateWorkOrderInput): Promise<Work
     .single()
   if (createError) throw createError
 
-  // 4. Calculate and generate Yarn Requirements
-  if (targetKg > 0) {
+  // 4. Generate Yarn Requirements (using Table Data if provided)
+  const yarnReqsFromInput = input.yarn_requirements || []
+  
+  if (yarnReqsFromInput.length > 0) {
+    // USE TABLE DATA FROM UI
+    const reqInserts = yarnReqsFromInput.map((req) => ({
+      work_order_id: workOrder.id,
+      yarn_catalog_id: req.yarn_catalog_id,
+      bom_ratio_pct: req.bom_ratio_pct,
+      required_kg: req.required_kg,
+      allocated_kg: 0,
+    }))
+    await supabase.from('work_order_y_requirements').insert(reqInserts)
+  } else if (targetKg > 0 && bomYarns) {
+    // FALLBACK TO AUTO-CALCULATION
     const totalRequiredYarnKg = targetKg / (1 - lossPct / 100)
-
     const reqInserts = (bomYarns as BomYarnItem[]).map((yarn) => ({
       work_order_id: workOrder.id,
       yarn_catalog_id: yarn.yarn_catalog_id,
@@ -155,14 +166,7 @@ export async function createWorkOrder(input: CreateWorkOrderInput): Promise<Work
       required_kg: totalRequiredYarnKg * (yarn.ratio_pct / 100),
       allocated_kg: 0,
     }))
-
-    const { error: reqError } = await supabase
-      .from('work_order_y_requirements')
-      .insert(reqInserts)
-
-    if (reqError) {
-      console.error('Failed to allocate yarn requirements', reqError)
-    }
+    await supabase.from('work_order_y_requirements').insert(reqInserts)
   }
 
   // 5. Auto-create progress rows for standalone work orders (no order linked)
@@ -213,35 +217,27 @@ export async function updateWorkOrder(id: string, input: Partial<CreateWorkOrder
     supplier_id: input.supplier_id || current.supplier_id,
     weaving_unit_price: input.weaving_unit_price ?? current.weaving_unit_price,
     notes: input.notes !== undefined ? input.notes : current.notes,
+    standard_loss_pct: input.standard_loss_pct ?? current.standard_loss_pct,
   }
 
-  // 2. If BOM or Quantity changed, we need to recalculate
+  // 2. Determine if recalculation is needed
   const bomChanged = input.bom_template_id && input.bom_template_id !== current.bom_template_id
   const qtyChanged = input.target_quantity_m !== undefined && input.target_quantity_m !== current.target_quantity_m
+  const yarnsProvided = input.yarn_requirements && input.yarn_requirements.length > 0
 
-  if (bomChanged || qtyChanged) {
+  if (bomChanged || qtyChanged || yarnsProvided) {
     const bomId = update.bom_template_id
     
-    // Fetch BOM details
-    const { data: bom, error: bomErr } = await supabase
-      .from('bom_templates')
-      .select('*')
-      .eq('id', bomId)
-      .single()
-    if (bomErr) throw bomErr
+    // Fetch BOM for versioning if changed or for totalConsumption fallback
+    const { data: bom } = await supabase.from('bom_templates').select('*').eq('id', bomId).single()
+    const { data: bomYarns } = await supabase.from('bom_yarn_items').select('*').eq('bom_template_id', bomId).eq('version', bom?.active_version || current.bom_version)
 
-    const bomVersion = bom.active_version
-    const lossPct = bom.standard_loss_pct || 0
-    update.bom_version = bomVersion
-    update.standard_loss_pct = lossPct
-
-    // Fetch Yarn Items
-    const { data: bomYarns, error: yarnErr } = await supabase
-      .from('bom_yarn_items')
-      .select('*')
-      .eq('bom_template_id', bomId)
-      .eq('version', bomVersion)
-    if (yarnErr) throw yarnErr
+    if (bomChanged && bom) {
+      update.bom_version = bom.active_version
+      if (input.standard_loss_pct === undefined) {
+        update.standard_loss_pct = bom.standard_loss_pct
+      }
+    }
 
     // Calculate target weight
     let targetKg: number = (input.target_weight_kg ?? current.target_weight_kg) || 0
@@ -258,9 +254,20 @@ export async function updateWorkOrder(id: string, input: Partial<CreateWorkOrder
     // Update requirements: Delete and re-create
     await supabase.from('work_order_y_requirements').delete().eq('work_order_id', id)
 
-    if (targetKg > 0) {
-      const totalRequiredYarnKg = targetKg / (1 - lossPct / 100)
-      const reqInserts = (bomYarns as BomYarnItem[]).map((yarn) => ({
+    const yarnReqsFromInput = input.yarn_requirements || []
+    if (yarnReqsFromInput.length > 0) {
+      const reqInserts = yarnReqsFromInput.map((req) => ({
+        work_order_id: id,
+        yarn_catalog_id: req.yarn_catalog_id,
+        bom_ratio_pct: req.bom_ratio_pct,
+        required_kg: req.required_kg,
+        allocated_kg: 0,
+      }))
+      await supabase.from('work_order_y_requirements').insert(reqInserts)
+    } else if (targetKg > 0 && bomYarns) {
+      const loss = update.standard_loss_pct || 0
+      const totalRequiredYarnKg = targetKg / (1 - loss / 100)
+      const reqInserts = bomYarns.map((yarn) => ({
         work_order_id: id,
         yarn_catalog_id: yarn.yarn_catalog_id,
         bom_ratio_pct: yarn.ratio_pct,
@@ -292,7 +299,7 @@ export async function startWorkOrder(id: string): Promise<WorkOrder> {
 
   const today = new Date().toISOString().slice(0, 10)
 
-  // Sync to order_progress — works for both order-linked and standalone work orders
+  // Sync to order_progress
   if (wo.order_id) {
     await supabase
       .from('order_progress')
@@ -301,7 +308,7 @@ export async function startWorkOrder(id: string): Promise<WorkOrder> {
       .eq('stage', 'weaving')
       .eq('status', 'pending')
   } else {
-    // Standalone work order — update by work_order_id
+    // Standalone work order
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase as any)
       .from('order_progress')
@@ -330,7 +337,6 @@ export async function completeWorkOrder(id: string, input: CompleteWorkOrderInpu
 
   const today = new Date().toISOString().slice(0, 10)
 
-  // Sync to order_progress — works for both order-linked and standalone work orders
   if (wo.order_id) {
     await supabase
       .from('order_progress')
@@ -370,7 +376,7 @@ export async function fetchUnitOptions(): Promise<string[]> {
   
   if (error) {
     console.error('Error fetching units:', error)
-    return ['m', 'kg', 'yard'] // Fallback
+    return ['m', 'kg', 'yard']
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (data || []).map((u: any) => u.unit)

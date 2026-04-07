@@ -1,4 +1,5 @@
-export type ShipmentStatus = 'preparing' | 'shipped' | 'delivered' | 'partially_returned' | 'returned'
+import type { ShipmentStatus } from '@/schema/shipment.schema'
+export type { ShipmentStatus }
 
 export type ShipmentItem = {
   id: string

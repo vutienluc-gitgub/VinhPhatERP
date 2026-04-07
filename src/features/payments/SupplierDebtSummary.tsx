@@ -63,7 +63,7 @@ export function SupplierDebtSummary() {
                       </div>
                     )}
                   </td>
-                  <td className="numeric-cell">{d.receipt_count}</td>
+                  <td className="numeric-cell">{d.document_count}</td>
                   <td className="numeric-cell">{formatCurrency(d.total_purchased)} đ</td>
                   <td className="numeric-paid">{formatCurrency(d.total_paid)} đ</td>
                   <td className="numeric-debt">{formatCurrency(d.balance_due)} đ</td>

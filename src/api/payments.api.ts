@@ -245,5 +245,5 @@ export async function fetchExpenseByCategory(fromDate: string, toDate: string): 
 export async function fetchSupplierDebt(): Promise<SupplierDebtRow[]> {
   const { data, error } = await supabase.from('v_supplier_debt').select('*')
   if (error) throw error
-  return (data ?? []) as SupplierDebtRow[]
+  return (data ?? []) as unknown as SupplierDebtRow[]
 }
