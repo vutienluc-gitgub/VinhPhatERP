@@ -12,8 +12,8 @@ import {
 } from '@/api/yarn-receipts.api'
 import type { YarnSupplierOption, YarnCatalogOption } from '@/api/yarn-receipts.api'
 
-import type { YarnReceiptsFormValues } from './yarn-receipts.module'
 import type { YarnReceipt, YarnReceiptsFilter } from './types'
+import type { YarnReceiptsFormValues } from './yarn-receipts.module'
 
 export type { YarnSupplierOption, YarnCatalogOption }
 

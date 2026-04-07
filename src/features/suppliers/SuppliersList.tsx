@@ -1,9 +1,9 @@
 import { useState } from 'react'
 
 import { useConfirm } from '@/shared/components/ConfirmDialog'
+import { EmptyState } from '@/shared/components/EmptyState'
 import { Pagination } from '@/shared/components/Pagination'
 import { TableSkeleton } from '@/shared/components/TableSkeleton'
-import { EmptyState } from '@/shared/components/EmptyState'
 
 import {
   SUPPLIER_CATEGORIES,

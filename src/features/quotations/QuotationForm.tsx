@@ -2,11 +2,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form'
 
-import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers'
 import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
+
+import { Combobox } from '@/shared/components/Combobox'
+import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers'
 import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
 import { formatCurrency } from '@/shared/utils/format'
-import { Combobox } from '@/shared/components/Combobox'
 
 import {
   calculateQuotationTotals,

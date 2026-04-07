@@ -1,4 +1,5 @@
 import type { InventorySummary } from '@/api/reports.api'
+
 import { KpiCard, KpiGrid } from '@/shared/components/KpiCard'
 
 type InventorySectionProps = {

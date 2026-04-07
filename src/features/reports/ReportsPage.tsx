@@ -7,6 +7,7 @@ import { DebtSection } from './DebtSection'
 import { InventorySection } from './InventorySection'
 import { OverdueSection } from './OverdueSection'
 import { ProductionSection } from './ProductionSection'
+import styles from './reports.module.css';
 import { ReportsFilterBar } from './ReportsFilter'
 import { RevenueSection } from './RevenueSection'
 import { RevenueTrendSection } from './RevenueTrendSection'
@@ -22,7 +23,6 @@ import {
   useRevenueByFabric,
   usePaymentCollection,
 } from './useReports'
-import styles from './reports.module.css';
 
 function defaultDateFrom(): string {
   const d = new Date()

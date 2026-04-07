@@ -1,8 +1,8 @@
 import { ArrowLeft, CheckCircle, Play, Scissors, Package, Edit2 } from '@/shared/icons'
 
+import type { WorkOrder } from './types'
 import { useWorkOrderDetail, useWorkOrderRequirements, useStartWorkOrder, useCompleteWorkOrder } from './useWorkOrders'
 import { WORK_ORDER_STATUSES } from './work-orders.module'
-import type { WorkOrder } from './types'
 
 interface WorkOrderDetailProps {
   id: string

@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react'
 
-import { useOrderKanban, useUpdateOrderStatus } from './useOrderKanban'
+import styles from './kanban.module.css'
 import { KanbanColumn } from './OrderKanbanList'
 import type { OrderKanbanStatus } from './types'
-import styles from './kanban.module.css'
+import { useOrderKanban, useUpdateOrderStatus } from './useOrderKanban'
 
 const COLUMNS: { status: OrderKanbanStatus; label: string; emoji: string }[] = [
   { status: 'draft', label: 'Bản nháp', emoji: '📝' },

@@ -3,8 +3,8 @@ import {
   index
 } from 'drizzle-orm/pg-core'
 
-import { timestamptz } from './helpers.js'
 import { profiles } from './auth.js'
+import { timestamptz } from './helpers.js'
 
 export const inventoryItemTypeEnum = pgEnum('inventory_item_type', [
   'yarn', 'raw_fabric', 'finished_fabric',

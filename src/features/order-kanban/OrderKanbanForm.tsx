@@ -2,8 +2,8 @@ import { useNavigate } from 'react-router-dom'
 
 import { formatCurrency } from '@/shared/utils/format'
 
-import type { OrderKanbanItem, OrderKanbanStatus } from './types'
 import styles from './kanban.module.css'
+import type { OrderKanbanItem, OrderKanbanStatus } from './types'
 
 const NEXT_STATUS: Partial<Record<OrderKanbanStatus, { label: string; next: OrderKanbanStatus }>> = {
   draft: { label: '✓ Xác nhận', next: 'confirmed' },

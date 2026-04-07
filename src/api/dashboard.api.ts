@@ -1,4 +1,5 @@
 import { supabase } from '@/services/supabase/client'
+
 import { formatCurrency } from '@/shared/utils/format'
 
 export type DashboardStats = {

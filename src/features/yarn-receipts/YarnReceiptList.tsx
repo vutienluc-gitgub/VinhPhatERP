@@ -3,9 +3,9 @@ import { useState } from 'react'
 import { useConfirm } from '@/shared/components/ConfirmDialog'
 import { Pagination } from '@/shared/components/Pagination'
 
-import { DOC_STATUS_LABELS } from './yarn-receipts.module'
 import type { DocStatus, YarnReceipt, YarnReceiptsFilter } from './types'
 import { useDeleteYarnReceipt, useYarnReceiptList } from './useYarnReceipts'
+import { DOC_STATUS_LABELS } from './yarn-receipts.module'
 
 type YarnReceiptListProps = {
   onEdit: (receipt: YarnReceipt) => void

@@ -1,10 +1,10 @@
 import { KpiCard, KpiGrid } from '@/shared/components/KpiCard'
 import { formatCurrency } from '@/shared/utils/format'
 
-import { useDashboardStats, usePendingTasks, useRecentOrders, useCustomerSources } from './useDashboardData'
+import { CustomerSourceChart } from './CustomerSourceChart'
 import { PendingTasksCard } from './PendingTasksCard'
 import { RecentOrdersCard } from './RecentOrdersCard'
-import { CustomerSourceChart } from './CustomerSourceChart'
+import { useDashboardStats, usePendingTasks, useRecentOrders, useCustomerSources } from './useDashboardData'
 
 
 function DashboardSkeleton() {

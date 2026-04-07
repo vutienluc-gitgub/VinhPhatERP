@@ -3,9 +3,9 @@ import {
   smallint, index
 } from 'drizzle-orm/pg-core'
 
+import { profiles } from './auth.js'
 import { timestamptz } from './helpers.js'
 import { suppliers } from './suppliers.js'
-import { profiles } from './auth.js'
 import { yarnCatalogs } from './yarn-catalogs.js'
 
 export const docStatusEnum = pgEnum('doc_status', ['draft', 'confirmed', 'cancelled'])

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
+import type { YarnCatalog } from './types'
 import { YarnCatalogForm } from './YarnCatalogForm'
 import { YarnCatalogList } from './YarnCatalogList'
-import type { YarnCatalog } from './types'
 
 export function YarnCatalogPage() {
   const [editItem, setEditItem] = useState<YarnCatalog | null>(null)

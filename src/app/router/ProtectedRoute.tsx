@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom'
 
 import { useAuth } from '@/features/auth/AuthProvider'
+
 import type { UserRole } from '@/services/supabase/database.types'
 
 interface ProtectedRouteProps {

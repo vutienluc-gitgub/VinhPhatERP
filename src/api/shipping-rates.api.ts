@@ -1,5 +1,6 @@
-import { supabase } from '@/services/supabase/client'
 import type { ShippingRate, ShippingRateFilter } from '@/features/shipping-rates/types'
+
+import { supabase } from '@/services/supabase/client'
 
 const TABLE = 'shipping_rates'
 

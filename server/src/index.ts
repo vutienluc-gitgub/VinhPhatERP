@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
-import { secureHeaders } from 'hono/secure-headers'
 import { prettyJSON } from 'hono/pretty-json'
+import { secureHeaders } from 'hono/secure-headers'
 
 import customersRouter    from './routes/customers.js'
-import suppliersRouter    from './routes/suppliers.js'
 import ordersRouter       from './routes/orders.js'
+import suppliersRouter    from './routes/suppliers.js'
 
 const app = new Hono()
 

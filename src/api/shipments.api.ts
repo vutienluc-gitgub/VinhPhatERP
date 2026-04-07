@@ -1,7 +1,3 @@
-import { supabase } from '@/services/supabase/client'
-import type { Database } from '@/services/supabase/database.types'
-import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination'
-import type { PaginatedResult } from '@/shared/types/pagination'
 import type {
   Shipment,
   ShipmentDocument,
@@ -9,6 +5,12 @@ import type {
   ShipmentStatus,
   DeliveryStaffSummary,
 } from '@/features/shipments/types'
+
+import { supabase } from '@/services/supabase/client'
+import type { Database } from '@/services/supabase/database.types'
+
+import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination'
+import type { PaginatedResult } from '@/shared/types/pagination'
 
 const HEADER_TABLE = 'shipments'
 const ITEMS_TABLE = 'shipment_items'

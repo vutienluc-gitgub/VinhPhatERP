@@ -14,8 +14,8 @@ import {
 } from '@/api/weaving-invoices.api'
 
 export type { WeavingSupplierDebtRow } from '@/api/weaving-invoices.api'
-import type { WeavingInvoiceFormValues } from './weaving-invoices.module'
 import type { WeavingInvoice, WeavingInvoiceFilter } from './types'
+import type { WeavingInvoiceFormValues } from './weaving-invoices.module'
 
 export type { WeavingInvoice, WeavingInvoiceFilter }
 

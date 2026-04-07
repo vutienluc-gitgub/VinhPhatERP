@@ -2,10 +2,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useMemo } from 'react'
 import { useFieldArray, useForm, Controller } from 'react-hook-form'
 
-import { Combobox } from '@/shared/components/Combobox'
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
-import { useActiveShippingRates } from '@/features/shipping-rates/useShippingRates'
 import type { ShippingRate } from '@/features/shipping-rates/types'
+import { useActiveShippingRates } from '@/features/shipping-rates/useShippingRates'
+
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { Combobox } from '@/shared/components/Combobox'
 
 import {
   emptyShipmentItem,

@@ -1,7 +1,9 @@
+import type { YarnCatalog, YarnCatalogFilter } from '@/features/yarn-catalog/types'
+
 import { supabase } from '@/services/supabase/client'
+
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination'
 import type { PaginatedResult } from '@/shared/types/pagination'
-import type { YarnCatalog, YarnCatalogFilter } from '@/features/yarn-catalog/types'
 
 const TABLE = 'yarn_catalogs'
 

@@ -1,7 +1,9 @@
+import type { FabricCatalog, FabricCatalogFilter } from '@/features/fabric-catalog/types'
+
 import { supabase } from '@/services/supabase/client'
+
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination'
 import type { PaginatedResult } from '@/shared/types/pagination'
-import type { FabricCatalog, FabricCatalogFilter } from '@/features/fabric-catalog/types'
 
 const TABLE = 'fabric_catalogs'
 

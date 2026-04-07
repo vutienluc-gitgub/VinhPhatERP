@@ -1,5 +1,5 @@
-import { supabase } from '@/services/supabase/client'
 import type { InventoryAdjustment, InventoryAdjustmentInsert } from '@/models'
+import { supabase } from '@/services/supabase/client'
 
 const TABLE = 'inventory_adjustments'
 

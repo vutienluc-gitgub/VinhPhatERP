@@ -2,15 +2,17 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form'
 
-import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers'
-import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
-import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
-import { formatCurrency } from '@/shared/utils/format'
-import { Combobox } from '@/shared/components/Combobox'
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
-import { useStepper } from '@/shared/hooks/useStepper'
 import { useAuth } from '@/features/auth/AuthProvider'
+import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
 
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { Combobox } from '@/shared/components/Combobox'
+import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers'
+import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
+import { useStepper } from '@/shared/hooks/useStepper'
+import { formatCurrency } from '@/shared/utils/format'
+
+import { CreditOverrideDialog } from './CreditOverrideDialog'
 import {
   emptyOrderItem,
   ordersDefaultValues,
@@ -19,12 +21,11 @@ import {
 } from './orders.module'
 import type { OrdersFormValues } from './orders.module'
 import type { Order } from './types'
+import { useCreateOrderV2, isCreditWarning, type CreateOrderError, type CreateOrderInput } from './useCreateOrderV2'
 import {
   useNextOrderNumber,
   useUpdateOrder,
 } from './useOrders'
-import { useCreateOrderV2, isCreditWarning, type CreateOrderError, type CreateOrderInput } from './useCreateOrderV2'
-import { CreditOverrideDialog } from './CreditOverrideDialog'
 
 const UNIT_LABELS: Record<string, string> = { m: 'm', kg: 'kg' }
 

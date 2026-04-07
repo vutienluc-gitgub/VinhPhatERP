@@ -1,6 +1,7 @@
-import { supabase } from '@/services/supabase/client'
-import type { BomTemplate, BomVersion, BomFilter, FabricCatalog, BomYarnItem } from '@/features/bom/types'
 import type { BomTemplateFormData } from '@/features/bom/bom.module'
+import type { BomTemplate, BomVersion, BomFilter, FabricCatalog, BomYarnItem } from '@/features/bom/types'
+
+import { supabase } from '@/services/supabase/client'
 
 /* ── Reference data for BOM forms ── */
 

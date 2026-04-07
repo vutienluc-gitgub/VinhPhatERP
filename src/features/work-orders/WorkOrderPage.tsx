@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
-import { WorkOrderList } from './WorkOrderList'
-import { WorkOrderForm } from './WorkOrderForm'
 import { WorkOrderDetail } from './WorkOrderDetail'
+import { WorkOrderForm } from './WorkOrderForm'
+import { WorkOrderList } from './WorkOrderList'
 
 export function WorkOrdersPage() {
   const [view, setView] = useState<'list' | 'detail'>('list')

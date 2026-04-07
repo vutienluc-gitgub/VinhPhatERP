@@ -1,4 +1,4 @@
-import { supabase } from '@/services/supabase/client'
+import type { BomYarnItem } from '@/features/bom/types'
 import type {
   WorkOrder,
   WorkOrderWithRelations,
@@ -6,7 +6,8 @@ import type {
   WorkOrderYarnRequirementWithRelations,
 } from '@/features/work-orders/types'
 import type { CreateWorkOrderInput, CompleteWorkOrderInput } from '@/features/work-orders/work-orders.module'
-import type { BomYarnItem } from '@/features/bom/types'
+
+import { supabase } from '@/services/supabase/client'
 
 const TABLE = 'work_orders'
 

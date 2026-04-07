@@ -1,5 +1,6 @@
-import { supabase } from '@/services/supabase/client'
 import type { FinishedFabricRoll } from '@/features/finished-fabric/types'
+
+import { supabase } from '@/services/supabase/client'
 
 const TABLE = 'finished_fabric_rolls'
 

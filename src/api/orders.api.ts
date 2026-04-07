@@ -1,4 +1,3 @@
-import { supabase } from '@/services/supabase/client'
 import type {
   Order,
   OrderInsert,
@@ -7,7 +6,9 @@ import type {
   OrdersFilter,
   OrderStatus,
 } from '@/models'
+import { supabase } from '@/services/supabase/client'
 import type { Database } from '@/services/supabase/database.types'
+
 import type { PaginatedResult } from '@/shared/types/pagination'
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination'
 

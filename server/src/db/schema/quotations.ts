@@ -4,9 +4,9 @@ import {
   smallint, index, check, type AnyPgColumn
 } from 'drizzle-orm/pg-core'
 
-import { timestamptz } from './helpers.js'
-import { customers } from './customers.js'
 import { profiles } from './auth.js'
+import { customers } from './customers.js'
+import { timestamptz } from './helpers.js'
 import { orders } from './orders.js'
 
 export const quotationStatusEnum = pgEnum('quotation_status', [

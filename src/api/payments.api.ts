@@ -1,7 +1,3 @@
-import { supabase } from '@/services/supabase/client'
-import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination'
-import type { PaginatedResult } from '@/shared/types/pagination'
-import type { Payment, PaymentInsert } from '@/models'
 import type {
   PaymentAccount,
   PaymentsFilter,
@@ -13,6 +9,12 @@ import type {
   DebtSummaryRow,
   ExpenseCategory,
 } from '@/features/payments/types'
+
+import type { Payment, PaymentInsert } from '@/models'
+import { supabase } from '@/services/supabase/client'
+
+import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination'
+import type { PaginatedResult } from '@/shared/types/pagination'
 
 /* ─── Payments ─────────────────────────────────── */
 

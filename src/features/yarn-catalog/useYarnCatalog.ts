@@ -9,8 +9,8 @@ import {
   deleteYarnCatalog,
 } from '@/api/yarn-catalog.api'
 
-import type { YarnCatalogFormValues } from './yarn-catalog.module'
 import type { YarnCatalog, YarnCatalogFilter } from './types'
+import type { YarnCatalogFormValues } from './yarn-catalog.module'
 
 const QUERY_KEY = ['yarn-catalog'] as const
 

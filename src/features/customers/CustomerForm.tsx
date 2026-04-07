@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 
-import { Combobox } from '@/shared/components/Combobox'
 import {
   customersDefaultValues,
   CUSTOMER_SOURCES,
@@ -10,6 +9,8 @@ import {
 } from '@/schema'
 import { customersSchema } from '@/schema/customer.schema'
 import type { CustomersFormValues } from '@/schema/customer.schema'
+
+import { Combobox } from '@/shared/components/Combobox'
 
 import type { Customer } from './types'
 import { useCreateCustomer, useNextCustomerCode, useUpdateCustomer } from './useCustomers'

@@ -16,13 +16,13 @@ import {
   finishedFabricSchema,
 } from './finished-fabric.module'
 import type { FinishedFabricFormValues } from './finished-fabric.module'
+import { editBlockReason, getAllowedStatusTransitions } from './transitions'
 import type { FinishedFabricRoll, RollStatus } from './types'
 import {
   useCreateFinishedFabric,
   useRawRollOptions,
   useUpdateFinishedFabric,
 } from './useFinishedFabric'
-import { editBlockReason, getAllowedStatusTransitions } from './transitions'
 
 type FinishedFabricFormProps = {
   roll: FinishedFabricRoll | null

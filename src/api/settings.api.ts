@@ -1,4 +1,3 @@
-import { supabase } from '@/services/supabase/client'
 import type {
   CompanySettingRow,
   CompanySettingsFormValues,
@@ -8,6 +7,7 @@ import {
   rowsToSettingsMap,
   settingsMapToUpsertRows,
 } from '@/schema/company-settings.schema'
+import { supabase } from '@/services/supabase/client'
 
 const TABLE = 'company_settings'
 
