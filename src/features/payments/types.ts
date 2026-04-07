@@ -1,18 +1,5 @@
-export type PaymentMethod = 'cash' | 'bank_transfer' | 'check' | 'other'
-
-export type AccountType = 'cash' | 'bank'
-
-export type ExpenseCategory =
-  | 'supplier_payment'
-  | 'yarn_purchase'
-  | 'weaving_cost'
-  | 'dyeing_cost'
-  | 'salary'
-  | 'rent'
-  | 'utilities'
-  | 'logistics'
-  | 'equipment'
-  | 'other'
+import type { PaymentMethod, AccountType, ExpenseCategory } from '@/schema/payment.schema'
+export type { PaymentMethod, AccountType, ExpenseCategory }
 
 /* ── Payment (Phiếu thu) ── */
 
@@ -103,7 +90,9 @@ export type SupplierDebtRow = {
   total_purchased: number
   total_paid: number
   balance_due: number
-  receipt_count: number
+  supplier_category?: string | null
+  pending_work_value?: number | null
+  document_count: number
 }
 
 /* ── Cash Flow ── */

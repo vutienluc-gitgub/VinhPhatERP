@@ -1,44 +1,20 @@
-import { z } from 'zod'
-
 import type { FeatureDefinition } from '@/shared/types/feature'
 
-import type { ProductionStage, StageStatus } from './types'
+// Re-export schema & constants from centralized schema
+export {
+  PRODUCTION_STAGES,
+  STAGE_LABELS,
+  STAGE_STATUS_LABELS,
+  orderProgressSchema,
+} from '@/schema/order-progress.schema'
+export type {
+  ProductionStage,
+  StageStatus,
+  OrderProgressFormValues,
+} from '@/schema/order-progress.schema'
 
-/* ── Constants ── */
-
-export const PRODUCTION_STAGES: ProductionStage[] = [
-  'warping', 'weaving', 'greige_check', 'dyeing', 'finishing', 'final_check', 'packing',
-]
-
-export const STAGE_LABELS: Record<ProductionStage, string> = {
-  warping: 'Mắc sợi',
-  weaving: 'Dệt',
-  greige_check: 'Kiểm vải mộc',
-  dyeing: 'Nhuộm',
-  finishing: 'Hoàn tất',
-  final_check: 'Kiểm thành phẩm',
-  packing: 'Đóng gói',
-}
-
-export const STAGE_STATUS_LABELS: Record<StageStatus, string> = {
-  pending: 'Chờ xử lý',
-  in_progress: 'Đang làm',
-  done: 'Hoàn thành',
-  skipped: 'Bỏ qua',
-}
-
-/* ── Zod schemas ── */
-
-export const orderProgressSchema = z.object({
-  orderId: z.string().uuid(),
-  stage: z.enum(['warping', 'weaving', 'greige_check', 'dyeing', 'finishing', 'final_check', 'packing']),
-  status: z.enum(['pending', 'in_progress', 'done', 'skipped']),
-  plannedDate: z.string().trim().optional().or(z.literal('')),
-  actualDate: z.string().trim().optional().or(z.literal('')),
-  notes: z.string().trim().max(500).optional().or(z.literal('')),
-})
-
-export type OrderProgressFormValues = z.infer<typeof orderProgressSchema>
+// Domain types stay in feature (tightly coupled to DB shape)
+export type { OrderProgress, OrderProgressWithOrder, ProgressAuditLog, ProgressAuditLogWithOrder } from './types'
 
 export const orderProgressFeature: FeatureDefinition = {
   key: 'order-progress',

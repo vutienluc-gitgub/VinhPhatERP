@@ -1,4 +1,6 @@
-export type WorkOrderStatus = 'draft' | 'in_progress' | 'completed' | 'cancelled';
+import type { WorkOrderStatus } from '@/schema/work-order.schema'
+export type { WorkOrderStatus }
+
 
 export interface WorkOrder {
   id: string;

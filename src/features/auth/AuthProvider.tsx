@@ -12,6 +12,7 @@ import {
 
 import { supabase } from '@/services/supabase/client'
 import type { Profile } from '@/services/supabase/database.types'
+import { getTenantId, resetTenantCache } from '@/services/supabase/tenant'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -56,8 +57,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
       .select('*')
       .eq('id', userId)
       .single()
-    if (!error && data) setProfile(data as Profile)
-    else setProfile(null)
+    if (!error && data) {
+      setProfile(data as Profile)
+      // Pre-load tenant_id cache for withTenantId() helper
+      getTenantId().catch(() => { /* silent — tenant table may not exist yet */ })
+    } else {
+      setProfile(null)
+    }
   }, [])
 
   useEffect(() => {
@@ -97,6 +103,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, [])
 
   const signOut = useCallback(async () => {
+    resetTenantCache()
     await supabase.auth.signOut()
   }, [])
 

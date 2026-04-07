@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.4"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       bom_templates: {
@@ -55,6 +30,7 @@ export type Database = {
           target_fabric_id: string
           target_gsm: number | null
           target_width_cm: number | null
+          tenant_id: string | null
           updated_at: string
         }
         Insert: {
@@ -72,6 +48,7 @@ export type Database = {
           target_fabric_id: string
           target_gsm?: number | null
           target_width_cm?: number | null
+          tenant_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -89,6 +66,7 @@ export type Database = {
           target_fabric_id?: string
           target_gsm?: number | null
           target_width_cm?: number | null
+          tenant_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -113,6 +91,13 @@ export type Database = {
             referencedRelation: "fabric_catalogs"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "bom_templates_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
         ]
       }
       bom_versions: {
@@ -123,6 +108,7 @@ export type Database = {
           created_by: string | null
           id: string
           snapshot: Json
+          tenant_id: string | null
           version: number
         }
         Insert: {
@@ -132,6 +118,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           snapshot: Json
+          tenant_id?: string | null
           version: number
         }
         Update: {
@@ -141,6 +128,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           snapshot?: Json
+          tenant_id?: string | null
           version?: number
         }
         Relationships: [
@@ -158,6 +146,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "bom_versions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
         ]
       }
       bom_yarn_items: {
@@ -169,6 +164,7 @@ export type Database = {
           notes: string | null
           ratio_pct: number
           sort_order: number
+          tenant_id: string | null
           version: number
           yarn_catalog_id: string
         }
@@ -180,6 +176,7 @@ export type Database = {
           notes?: string | null
           ratio_pct: number
           sort_order?: number
+          tenant_id?: string | null
           version?: number
           yarn_catalog_id: string
         }
@@ -191,6 +188,7 @@ export type Database = {
           notes?: string | null
           ratio_pct?: number
           sort_order?: number
+          tenant_id?: string | null
           version?: number
           yarn_catalog_id?: string
         }
@@ -200,6 +198,13 @@ export type Database = {
             columns: ["bom_template_id"]
             isOneToOne: false
             referencedRelation: "bom_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bom_yarn_items_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
           {
@@ -249,6 +254,62 @@ export type Database = {
           },
         ]
       }
+      colors: {
+        Row: {
+          code: string
+          name: string
+          note: string | null
+          trend_year: number | null
+        }
+        Insert: {
+          code: string
+          name: string
+          note?: string | null
+          trend_year?: number | null
+        }
+        Update: {
+          code?: string
+          name?: string
+          note?: string | null
+          trend_year?: number | null
+        }
+        Relationships: []
+      }
+      company_settings: {
+        Row: {
+          description: string | null
+          id: string
+          key: string
+          tenant_id: string | null
+          updated_at: string | null
+          value: string
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          key: string
+          tenant_id?: string | null
+          updated_at?: string | null
+          value?: string
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          key?: string
+          tenant_id?: string | null
+          updated_at?: string | null
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_settings_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           address: string | null
@@ -268,6 +329,7 @@ export type Database = {
           source: Database["public"]["Enums"]["customer_source"] | null
           status: Database["public"]["Enums"]["active_status"]
           tax_code: string | null
+          tenant_id: string | null
           updated_at: string
         }
         Insert: {
@@ -288,6 +350,7 @@ export type Database = {
           source?: Database["public"]["Enums"]["customer_source"] | null
           status?: Database["public"]["Enums"]["active_status"]
           tax_code?: string | null
+          tenant_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -308,9 +371,18 @@ export type Database = {
           source?: Database["public"]["Enums"]["customer_source"] | null
           status?: Database["public"]["Enums"]["active_status"]
           tax_code?: string | null
+          tenant_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "customers_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       expenses: {
         Row: {
@@ -326,6 +398,7 @@ export type Database = {
           notes: string | null
           reference_number: string | null
           supplier_id: string | null
+          tenant_id: string | null
           updated_at: string
         }
         Insert: {
@@ -341,6 +414,7 @@ export type Database = {
           notes?: string | null
           reference_number?: string | null
           supplier_id?: string | null
+          tenant_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -356,6 +430,7 @@ export type Database = {
           notes?: string | null
           reference_number?: string | null
           supplier_id?: string | null
+          tenant_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -387,6 +462,13 @@ export type Database = {
             referencedRelation: "v_supplier_debt"
             referencedColumns: ["supplier_id"]
           },
+          {
+            foreignKeyName: "expenses_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
         ]
       }
       fabric_catalogs: {
@@ -398,6 +480,7 @@ export type Database = {
           name: string
           notes: string | null
           status: Database["public"]["Enums"]["active_status"]
+          tenant_id: string | null
           unit: string
           updated_at: string
         }
@@ -409,6 +492,7 @@ export type Database = {
           name: string
           notes?: string | null
           status?: Database["public"]["Enums"]["active_status"]
+          tenant_id?: string | null
           unit?: string
           updated_at?: string
         }
@@ -420,27 +504,40 @@ export type Database = {
           name?: string
           notes?: string | null
           status?: Database["public"]["Enums"]["active_status"]
+          tenant_id?: string | null
           unit?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fabric_catalogs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       finished_fabric_rolls: {
         Row: {
           color_code: string | null
           color_name: string | null
+          composition: string | null
           created_at: string
           fabric_type: string
+          gsm: number | null
           id: string
           length_m: number | null
           lot_number: string | null
           notes: string | null
+          price_tier: Json | null
           production_date: string | null
           quality_grade: string | null
           raw_roll_id: string
           reserved_for_order_id: string | null
           roll_number: string
           status: Database["public"]["Enums"]["roll_status"]
+          tenant_id: string | null
           updated_at: string
           warehouse_location: string | null
           weight_kg: number | null
@@ -449,18 +546,22 @@ export type Database = {
         Insert: {
           color_code?: string | null
           color_name?: string | null
+          composition?: string | null
           created_at?: string
           fabric_type: string
+          gsm?: number | null
           id?: string
           length_m?: number | null
           lot_number?: string | null
           notes?: string | null
+          price_tier?: Json | null
           production_date?: string | null
           quality_grade?: string | null
           raw_roll_id: string
           reserved_for_order_id?: string | null
           roll_number: string
           status?: Database["public"]["Enums"]["roll_status"]
+          tenant_id?: string | null
           updated_at?: string
           warehouse_location?: string | null
           weight_kg?: number | null
@@ -469,18 +570,22 @@ export type Database = {
         Update: {
           color_code?: string | null
           color_name?: string | null
+          composition?: string | null
           created_at?: string
           fabric_type?: string
+          gsm?: number | null
           id?: string
           length_m?: number | null
           lot_number?: string | null
           notes?: string | null
+          price_tier?: Json | null
           production_date?: string | null
           quality_grade?: string | null
           raw_roll_id?: string
           reserved_for_order_id?: string | null
           roll_number?: string
           status?: Database["public"]["Enums"]["roll_status"]
+          tenant_id?: string | null
           updated_at?: string
           warehouse_location?: string | null
           weight_kg?: number | null
@@ -528,6 +633,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_overdue_orders"
             referencedColumns: ["order_id"]
+          },
+          {
+            foreignKeyName: "finished_fabric_rolls_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -581,6 +693,7 @@ export type Database = {
           order_id: string
           quantity: number
           sort_order: number
+          tenant_id: string | null
           unit: string
           unit_price: number
           width_cm: number | null
@@ -595,6 +708,7 @@ export type Database = {
           order_id: string
           quantity: number
           sort_order?: number
+          tenant_id?: string | null
           unit?: string
           unit_price?: number
           width_cm?: number | null
@@ -609,6 +723,7 @@ export type Database = {
           order_id?: string
           quantity?: number
           sort_order?: number
+          tenant_id?: string | null
           unit?: string
           unit_price?: number
           width_cm?: number | null
@@ -648,6 +763,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_overdue_orders"
             referencedColumns: ["order_id"]
+          },
+          {
+            foreignKeyName: "order_items_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -743,36 +865,42 @@ export type Database = {
           created_at: string
           id: string
           notes: string | null
-          order_id: string
+          order_id: string | null
           planned_date: string | null
           stage: Database["public"]["Enums"]["production_stage"]
           status: Database["public"]["Enums"]["stage_status"]
+          tenant_id: string | null
           updated_at: string
           updated_by: string | null
+          work_order_id: string | null
         }
         Insert: {
           actual_date?: string | null
           created_at?: string
           id?: string
           notes?: string | null
-          order_id: string
+          order_id?: string | null
           planned_date?: string | null
           stage: Database["public"]["Enums"]["production_stage"]
           status?: Database["public"]["Enums"]["stage_status"]
+          tenant_id?: string | null
           updated_at?: string
           updated_by?: string | null
+          work_order_id?: string | null
         }
         Update: {
           actual_date?: string | null
           created_at?: string
           id?: string
           notes?: string | null
-          order_id?: string
+          order_id?: string | null
           planned_date?: string | null
           stage?: Database["public"]["Enums"]["production_stage"]
           status?: Database["public"]["Enums"]["stage_status"]
+          tenant_id?: string | null
           updated_at?: string
           updated_by?: string | null
+          work_order_id?: string | null
         }
         Relationships: [
           {
@@ -810,6 +938,20 @@ export type Database = {
             referencedRelation: "v_overdue_orders"
             referencedColumns: ["order_id"]
           },
+          {
+            foreignKeyName: "order_progress_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_progress_work_order_id_fkey"
+            columns: ["work_order_id"]
+            isOneToOne: false
+            referencedRelation: "work_orders"
+            referencedColumns: ["id"]
+          },
         ]
       }
       orders: {
@@ -825,6 +967,7 @@ export type Database = {
           paid_amount: number
           source_quotation_id: string | null
           status: Database["public"]["Enums"]["order_status"]
+          tenant_id: string | null
           total_amount: number
           updated_at: string
         }
@@ -840,6 +983,7 @@ export type Database = {
           paid_amount?: number
           source_quotation_id?: string | null
           status?: Database["public"]["Enums"]["order_status"]
+          tenant_id?: string | null
           total_amount?: number
           updated_at?: string
         }
@@ -855,6 +999,7 @@ export type Database = {
           paid_amount?: number
           source_quotation_id?: string | null
           status?: Database["public"]["Enums"]["order_status"]
+          tenant_id?: string | null
           total_amount?: number
           updated_at?: string
         }
@@ -871,6 +1016,13 @@ export type Database = {
             columns: ["source_quotation_id"]
             isOneToOne: false
             referencedRelation: "quotations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -931,6 +1083,7 @@ export type Database = {
           payment_method: Database["public"]["Enums"]["payment_method"]
           payment_number: string
           reference_number: string | null
+          tenant_id: string | null
           updated_at: string
         }
         Insert: {
@@ -946,6 +1099,7 @@ export type Database = {
           payment_method?: Database["public"]["Enums"]["payment_method"]
           payment_number: string
           reference_number?: string | null
+          tenant_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -961,6 +1115,7 @@ export type Database = {
           payment_method?: Database["public"]["Enums"]["payment_method"]
           payment_number?: string
           reference_number?: string | null
+          tenant_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1013,6 +1168,13 @@ export type Database = {
             referencedRelation: "v_overdue_orders"
             referencedColumns: ["order_id"]
           },
+          {
+            foreignKeyName: "payments_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profiles: {
@@ -1024,6 +1186,7 @@ export type Database = {
           is_active: boolean
           phone: string | null
           role: Database["public"]["Enums"]["user_role"]
+          tenant_id: string | null
           updated_at: string
         }
         Insert: {
@@ -1034,6 +1197,7 @@ export type Database = {
           is_active?: boolean
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
+          tenant_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -1044,9 +1208,18 @@ export type Database = {
           is_active?: boolean
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
+          tenant_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       progress_audit_log: {
         Row: {
@@ -1146,6 +1319,7 @@ export type Database = {
           quantity: number
           quotation_id: string
           sort_order: number
+          tenant_id: string | null
           unit: string
           unit_price: number
           width_cm: number | null
@@ -1161,6 +1335,7 @@ export type Database = {
           quantity: number
           quotation_id: string
           sort_order?: number
+          tenant_id?: string | null
           unit?: string
           unit_price?: number
           width_cm?: number | null
@@ -1176,6 +1351,7 @@ export type Database = {
           quantity?: number
           quotation_id?: string
           sort_order?: number
+          tenant_id?: string | null
           unit?: string
           unit_price?: number
           width_cm?: number | null
@@ -1186,6 +1362,13 @@ export type Database = {
             columns: ["quotation_id"]
             isOneToOne: false
             referencedRelation: "quotations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotation_items_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -1210,6 +1393,7 @@ export type Database = {
           revision: number
           status: Database["public"]["Enums"]["quotation_status"]
           subtotal: number
+          tenant_id: string | null
           total_amount: number
           total_before_vat: number
           updated_at: string
@@ -1236,6 +1420,7 @@ export type Database = {
           revision?: number
           status?: Database["public"]["Enums"]["quotation_status"]
           subtotal?: number
+          tenant_id?: string | null
           total_amount?: number
           total_before_vat?: number
           updated_at?: string
@@ -1262,6 +1447,7 @@ export type Database = {
           revision?: number
           status?: Database["public"]["Enums"]["quotation_status"]
           subtotal?: number
+          tenant_id?: string | null
           total_amount?: number
           total_before_vat?: number
           updated_at?: string
@@ -1326,6 +1512,13 @@ export type Database = {
             referencedRelation: "quotations"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "quotations_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
         ]
       }
       raw_fabric_rolls: {
@@ -1333,69 +1526,88 @@ export type Database = {
           barcode: string | null
           color_code: string | null
           color_name: string | null
+          composition: string | null
           created_at: string
           fabric_type: string
+          gsm: number | null
           id: string
           length_m: number | null
           lot_number: string | null
           notes: string | null
+          price_tier: Json | null
           production_date: string | null
           quality_grade: string | null
           roll_number: string
           status: Database["public"]["Enums"]["roll_status"]
+          tenant_id: string | null
           updated_at: string
           warehouse_location: string | null
           weaving_partner_id: string | null
           weight_kg: number | null
           width_cm: number | null
-          yarn_receipt_id: string | null
           work_order_id: string | null
+          yarn_receipt_id: string | null
         }
         Insert: {
           barcode?: string | null
           color_code?: string | null
           color_name?: string | null
+          composition?: string | null
           created_at?: string
           fabric_type: string
+          gsm?: number | null
           id?: string
           length_m?: number | null
           lot_number?: string | null
           notes?: string | null
+          price_tier?: Json | null
           production_date?: string | null
           quality_grade?: string | null
           roll_number: string
           status?: Database["public"]["Enums"]["roll_status"]
+          tenant_id?: string | null
           updated_at?: string
           warehouse_location?: string | null
           weaving_partner_id?: string | null
           weight_kg?: number | null
           width_cm?: number | null
-          yarn_receipt_id?: string | null
           work_order_id?: string | null
+          yarn_receipt_id?: string | null
         }
         Update: {
           barcode?: string | null
           color_code?: string | null
           color_name?: string | null
+          composition?: string | null
           created_at?: string
           fabric_type?: string
+          gsm?: number | null
           id?: string
           length_m?: number | null
           lot_number?: string | null
           notes?: string | null
+          price_tier?: Json | null
           production_date?: string | null
           quality_grade?: string | null
           roll_number?: string
           status?: Database["public"]["Enums"]["roll_status"]
+          tenant_id?: string | null
           updated_at?: string
           warehouse_location?: string | null
           weaving_partner_id?: string | null
           weight_kg?: number | null
           width_cm?: number | null
-          yarn_receipt_id?: string | null
           work_order_id?: string | null
+          yarn_receipt_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "raw_fabric_rolls_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "raw_fabric_rolls_weaving_partner_id_fkey"
             columns: ["weaving_partner_id"]
@@ -1409,6 +1621,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_supplier_debt"
             referencedColumns: ["supplier_id"]
+          },
+          {
+            foreignKeyName: "raw_fabric_rolls_work_order_id_fkey"
+            columns: ["work_order_id"]
+            isOneToOne: false
+            referencedRelation: "work_orders"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "raw_fabric_rolls_yarn_receipt_id_fkey"
@@ -1456,6 +1675,7 @@ export type Database = {
           quantity: number
           shipment_id: string
           sort_order: number
+          tenant_id: string | null
           unit: string
         }
         Insert: {
@@ -1467,6 +1687,7 @@ export type Database = {
           quantity: number
           shipment_id: string
           sort_order?: number
+          tenant_id?: string | null
           unit?: string
         }
         Update: {
@@ -1478,6 +1699,7 @@ export type Database = {
           quantity?: number
           shipment_id?: string
           sort_order?: number
+          tenant_id?: string | null
           unit?: string
         }
         Relationships: [
@@ -1493,6 +1715,13 @@ export type Database = {
             columns: ["shipment_id"]
             isOneToOne: false
             referencedRelation: "shipments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipment_items_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -1520,6 +1749,7 @@ export type Database = {
           shipping_cost: number
           shipping_rate_id: string | null
           status: Database["public"]["Enums"]["shipment_status"]
+          tenant_id: string | null
           total_meters: number | null
           total_weight_kg: number | null
           tracking_number: string | null
@@ -1548,6 +1778,7 @@ export type Database = {
           shipping_cost?: number
           shipping_rate_id?: string | null
           status?: Database["public"]["Enums"]["shipment_status"]
+          tenant_id?: string | null
           total_meters?: number | null
           total_weight_kg?: number | null
           tracking_number?: string | null
@@ -1576,6 +1807,7 @@ export type Database = {
           shipping_cost?: number
           shipping_rate_id?: string | null
           status?: Database["public"]["Enums"]["shipment_status"]
+          tenant_id?: string | null
           total_meters?: number | null
           total_weight_kg?: number | null
           tracking_number?: string | null
@@ -1639,6 +1871,13 @@ export type Database = {
             referencedRelation: "shipping_rates"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "shipments_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
         ]
       }
       shipping_rates: {
@@ -1655,6 +1894,7 @@ export type Database = {
           rate_per_kg: number | null
           rate_per_meter: number | null
           rate_per_trip: number | null
+          tenant_id: string | null
           updated_at: string
         }
         Insert: {
@@ -1670,6 +1910,7 @@ export type Database = {
           rate_per_kg?: number | null
           rate_per_meter?: number | null
           rate_per_trip?: number | null
+          tenant_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -1685,6 +1926,7 @@ export type Database = {
           rate_per_kg?: number | null
           rate_per_meter?: number | null
           rate_per_trip?: number | null
+          tenant_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1693,6 +1935,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipping_rates_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -1711,6 +1960,7 @@ export type Database = {
           phone: string | null
           status: Database["public"]["Enums"]["active_status"]
           tax_code: string | null
+          tenant_id: string | null
           updated_at: string
         }
         Insert: {
@@ -1726,6 +1976,7 @@ export type Database = {
           phone?: string | null
           status?: Database["public"]["Enums"]["active_status"]
           tax_code?: string | null
+          tenant_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -1741,9 +1992,201 @@ export type Database = {
           phone?: string | null
           status?: Database["public"]["Enums"]["active_status"]
           tax_code?: string | null
+          tenant_id?: string | null
           updated_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "suppliers_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenants: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          settings: Json | null
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          settings?: Json | null
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          settings?: Json | null
+          slug?: string
+          updated_at?: string | null
+        }
         Relationships: []
+      }
+      weaving_invoice_rolls: {
+        Row: {
+          created_at: string
+          id: string
+          invoice_id: string
+          length_m: number | null
+          lot_number: string | null
+          notes: string | null
+          quality_grade: string | null
+          raw_fabric_roll_id: string | null
+          roll_number: string
+          sort_order: number
+          tenant_id: string | null
+          warehouse_location: string | null
+          weight_kg: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invoice_id: string
+          length_m?: number | null
+          lot_number?: string | null
+          notes?: string | null
+          quality_grade?: string | null
+          raw_fabric_roll_id?: string | null
+          roll_number: string
+          sort_order?: number
+          tenant_id?: string | null
+          warehouse_location?: string | null
+          weight_kg: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invoice_id?: string
+          length_m?: number | null
+          lot_number?: string | null
+          notes?: string | null
+          quality_grade?: string | null
+          raw_fabric_roll_id?: string | null
+          roll_number?: string
+          sort_order?: number
+          tenant_id?: string | null
+          warehouse_location?: string | null
+          weight_kg?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weaving_invoice_rolls_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "weaving_invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "weaving_invoice_rolls_raw_fabric_roll_id_fkey"
+            columns: ["raw_fabric_roll_id"]
+            isOneToOne: false
+            referencedRelation: "raw_fabric_rolls"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "weaving_invoice_rolls_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      weaving_invoices: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          fabric_type: string
+          id: string
+          invoice_date: string
+          invoice_number: string
+          notes: string | null
+          paid_amount: number
+          status: string
+          supplier_id: string
+          tenant_id: string | null
+          total_amount: number
+          total_weight_kg: number
+          unit_price_per_kg: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          fabric_type: string
+          id?: string
+          invoice_date?: string
+          invoice_number: string
+          notes?: string | null
+          paid_amount?: number
+          status?: string
+          supplier_id: string
+          tenant_id?: string | null
+          total_amount?: number
+          total_weight_kg?: number
+          unit_price_per_kg?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          fabric_type?: string
+          id?: string
+          invoice_date?: string
+          invoice_number?: string
+          notes?: string | null
+          paid_amount?: number
+          status?: string
+          supplier_id?: string
+          tenant_id?: string | null
+          total_amount?: number
+          total_weight_kg?: number
+          unit_price_per_kg?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weaving_invoices_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "weaving_invoices_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "weaving_invoices_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "v_supplier_debt"
+            referencedColumns: ["supplier_id"]
+          },
+          {
+            foreignKeyName: "weaving_invoices_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       work_order_y_requirements: {
         Row: {
@@ -1753,6 +2196,7 @@ export type Database = {
           id: string
           notes: string | null
           required_kg: number
+          tenant_id: string | null
           updated_at: string
           work_order_id: string
           yarn_catalog_id: string
@@ -1764,6 +2208,7 @@ export type Database = {
           id?: string
           notes?: string | null
           required_kg: number
+          tenant_id?: string | null
           updated_at?: string
           work_order_id: string
           yarn_catalog_id: string
@@ -1775,11 +2220,19 @@ export type Database = {
           id?: string
           notes?: string | null
           required_kg?: number
+          tenant_id?: string | null
           updated_at?: string
           work_order_id?: string
           yarn_catalog_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "work_order_y_requirements_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "work_order_y_requirements_work_order_id_fkey"
             columns: ["work_order_id"]
@@ -1815,9 +2268,10 @@ export type Database = {
           target_quantity_m: number
           target_unit: string | null
           target_weight_kg: number | null
+          tenant_id: string | null
           updated_at: string
           updated_by: string | null
-          weaving_unit_price: number
+          weaving_unit_price: number | null
           work_order_number: string
         }
         Insert: {
@@ -1834,12 +2288,14 @@ export type Database = {
           standard_loss_pct?: number
           start_date?: string | null
           status?: Database["public"]["Enums"]["work_order_status"]
+          supplier_id?: string | null
           target_quantity_m: number
+          target_unit?: string | null
           target_weight_kg?: number | null
+          tenant_id?: string | null
           updated_at?: string
           updated_by?: string | null
-          weaving_unit_price?: number
-          supplier_id: string
+          weaving_unit_price?: number | null
           work_order_number: string
         }
         Update: {
@@ -1856,10 +2312,14 @@ export type Database = {
           standard_loss_pct?: number
           start_date?: string | null
           status?: Database["public"]["Enums"]["work_order_status"]
+          supplier_id?: string | null
           target_quantity_m?: number
+          target_unit?: string | null
           target_weight_kg?: number | null
+          tenant_id?: string | null
           updated_at?: string
           updated_by?: string | null
+          weaving_unit_price?: number | null
           work_order_number?: string
         }
         Relationships: [
@@ -1868,13 +2328,6 @@ export type Database = {
             columns: ["bom_template_id"]
             isOneToOne: false
             referencedRelation: "bom_templates"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "work_orders_supplier_id_fkey"
-            columns: ["supplier_id"]
-            isOneToOne: false
-            referencedRelation: "suppliers"
             referencedColumns: ["id"]
           },
           {
@@ -1920,6 +2373,27 @@ export type Database = {
             referencedColumns: ["order_id"]
           },
           {
+            foreignKeyName: "work_orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "v_supplier_debt"
+            referencedColumns: ["supplier_id"]
+          },
+          {
+            foreignKeyName: "work_orders_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "work_orders_updated_by_fkey"
             columns: ["updated_by"]
             isOneToOne: false
@@ -1939,6 +2413,7 @@ export type Database = {
           notes: string | null
           origin: string | null
           status: Database["public"]["Enums"]["active_status"]
+          tenant_id: string | null
           tensile_strength: string | null
           unit: string
           updated_at: string
@@ -1953,6 +2428,7 @@ export type Database = {
           notes?: string | null
           origin?: string | null
           status?: Database["public"]["Enums"]["active_status"]
+          tenant_id?: string | null
           tensile_strength?: string | null
           unit?: string
           updated_at?: string
@@ -1967,11 +2443,20 @@ export type Database = {
           notes?: string | null
           origin?: string | null
           status?: Database["public"]["Enums"]["active_status"]
+          tenant_id?: string | null
           tensile_strength?: string | null
           unit?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "yarn_catalogs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       yarn_receipt_items: {
         Row: {
@@ -1986,6 +2471,7 @@ export type Database = {
           quantity: number
           receipt_id: string
           sort_order: number
+          tenant_id: string | null
           tensile_strength: string | null
           unit: string
           unit_price: number
@@ -2004,6 +2490,7 @@ export type Database = {
           quantity: number
           receipt_id: string
           sort_order?: number
+          tenant_id?: string | null
           tensile_strength?: string | null
           unit?: string
           unit_price?: number
@@ -2022,6 +2509,7 @@ export type Database = {
           quantity?: number
           receipt_id?: string
           sort_order?: number
+          tenant_id?: string | null
           tensile_strength?: string | null
           unit?: string
           unit_price?: number
@@ -2034,6 +2522,13 @@ export type Database = {
             columns: ["receipt_id"]
             isOneToOne: false
             referencedRelation: "yarn_receipts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "yarn_receipt_items_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
           {
@@ -2055,6 +2550,7 @@ export type Database = {
           receipt_number: string
           status: Database["public"]["Enums"]["doc_status"]
           supplier_id: string
+          tenant_id: string | null
           total_amount: number
           updated_at: string
         }
@@ -2067,6 +2563,7 @@ export type Database = {
           receipt_number: string
           status?: Database["public"]["Enums"]["doc_status"]
           supplier_id: string
+          tenant_id?: string | null
           total_amount?: number
           updated_at?: string
         }
@@ -2079,6 +2576,7 @@ export type Database = {
           receipt_number?: string
           status?: Database["public"]["Enums"]["doc_status"]
           supplier_id?: string
+          tenant_id?: string | null
           total_amount?: number
           updated_at?: string
         }
@@ -2097,10 +2595,23 @@ export type Database = {
             referencedRelation: "v_supplier_debt"
             referencedColumns: ["supplier_id"]
           },
+          {
+            foreignKeyName: "yarn_receipts_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
+      v_available_units: {
+        Row: {
+          unit: string | null
+        }
+        Relationships: []
+      }
       v_debt_aging: {
         Row: {
           aging_bucket: string | null
@@ -2306,7 +2817,11 @@ export type Database = {
       v_supplier_debt: {
         Row: {
           balance_due: number | null
-          receipt_count: number | null
+          document_count: number | null
+          pending_work_value: number | null
+          supplier_category:
+            | Database["public"]["Enums"]["supplier_category"]
+            | null
           supplier_code: string | null
           supplier_id: string | null
           supplier_name: string | null
@@ -2317,6 +2832,11 @@ export type Database = {
       }
     }
     Functions: {
+      confirm_weaving_invoice: {
+        Args: { p_invoice_id: string }
+        Returns: undefined
+      }
+      current_tenant_id: { Args: never; Returns: string }
       current_user_role: {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
@@ -2369,6 +2889,7 @@ export type Database = {
           total_amount: number
         }[]
       }
+      next_weaving_invoice_number: { Args: never; Returns: string }
       release_order_allocations: {
         Args: { p_order_id: string; p_reason: string }
         Returns: undefined
@@ -2584,9 +3105,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       account_type: ["cash", "bank"],
@@ -2666,23 +3184,5 @@ export const Constants = {
   },
 } as const
 
-export type UserRole = Enums<'user_role'>
-export type ActiveStatus = Enums<'active_status'>
-export type DocStatus = Enums<'doc_status'>
-export type OrderStatus = Enums<'order_status'>
-export type ProductionStage = Enums<'production_stage'>
-export type StageStatus = Enums<'stage_status'>
-export type RollStatus = Enums<'roll_status'>
-export type ShipmentStatus = Enums<'shipment_status'>
-export type PaymentMethod = Enums<'payment_method'>
-export type AdjustmentType = Enums<'adjustment_type'>
-export type SupplierCategory = Enums<'supplier_category'>
-export type CustomerSource = Enums<'customer_source'>
-export type InventoryItemType = Enums<'inventory_item_type'>
-export type AccountType = Enums<'account_type'>
-export type ExpenseCategory = Enums<'expense_category'>
-export type QuotationStatusDb = Enums<'quotation_status'>
-export type BomStatus = Enums<'bom_status'>
-export type WorkOrderStatusDb = Enums<'work_order_status'>
-
-export type Profile = Tables<'profiles'>
+export type UserRole = Database['public']['Enums']['user_role'];
+export type Profile = Database['public']['Tables']['profiles']['Row'];

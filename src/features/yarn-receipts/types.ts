@@ -1,4 +1,5 @@
-export type DocStatus = 'draft' | 'confirmed' | 'cancelled'
+import type { DocStatus } from '@/schema/yarn-receipt.schema'
+export type { DocStatus }
 
 export type YarnReceiptItem = {
   id: string

@@ -1,6 +1,5 @@
-export type QuotationStatus = 'draft' | 'sent' | 'confirmed' | 'rejected' | 'expired' | 'converted'
-
-export type DiscountType = 'percent' | 'amount'
+import type { QuotationStatus, DiscountType } from '@/schema/quotation.schema'
+export type { QuotationStatus, DiscountType }
 
 export type QuotationItem = {
   id: string
