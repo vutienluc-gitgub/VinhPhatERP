@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { eq, ilike, and } from 'drizzle-orm'
 import { z } from 'zod'
+
 import { db } from '../db/client.js'
 import { suppliers } from '../db/schema/index.js'
 import { requireAuth } from '../middleware/auth.js'

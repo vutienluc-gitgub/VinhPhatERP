@@ -1,14 +1,15 @@
-import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers'
-import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
-import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { formatCurrency } from '@/shared/utils/format'
 import { useEffect, useState } from 'react'
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form'
 
+import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers'
+import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
+import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
+import { formatCurrency } from '@/shared/utils/format'
 import { Combobox } from '@/shared/components/Combobox'
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { useStepper } from '@/shared/hooks/useStepper'
+import { useAuth } from '@/features/auth/AuthProvider'
 
 import {
   emptyOrderItem,
@@ -24,7 +25,6 @@ import {
 } from './useOrders'
 import { useCreateOrderV2, isCreditWarning, type CreateOrderError, type CreateOrderInput } from './useCreateOrderV2'
 import { CreditOverrideDialog } from './CreditOverrideDialog'
-import { useAuth } from '@/features/auth/AuthProvider'
 
 const UNIT_LABELS: Record<string, string> = { m: 'm', kg: 'kg' }
 

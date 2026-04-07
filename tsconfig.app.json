@@ -27,7 +27,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
-    "noImplicitReturns": true
+    "noImplicitReturns": true,
+    "types": ["@testing-library/jest-dom"]
   },
   "include": ["src", "src/**/*.ts", "src/**/*.tsx"]
 }

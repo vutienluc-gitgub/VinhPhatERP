@@ -6,6 +6,7 @@ import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { Combobox } from '@/shared/components/Combobox'
 import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
 import { useStepper } from '@/shared/hooks/useStepper'
+import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm'
 
 import {
   QUALITY_GRADE_LABELS,
@@ -18,7 +19,6 @@ import {
 import type { RawFabricFormValues } from './raw-fabric.module'
 import type { RawFabricRoll } from './types'
 import { useCreateRawFabric, useUpdateRawFabric, useWeavingPartners, useWorkOrderOptions, useYarnReceiptOptions } from './useRawFabric'
-import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm'
 
 type RawFabricFormProps = {
   roll: RawFabricRoll | null

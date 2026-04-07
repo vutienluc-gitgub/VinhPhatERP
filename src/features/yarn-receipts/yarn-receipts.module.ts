@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import type { FeatureDefinition } from '@/shared/types/feature'
+
 import type { DocStatus } from './types'
 
 /* ── Status labels ── */

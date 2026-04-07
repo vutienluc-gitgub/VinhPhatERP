@@ -3,9 +3,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from 'react-router-dom'
 
+import { hasSupabaseEnv } from '@/services/supabase/client'
+
 import { authSchema, authDefaultValues, type AuthFormValues } from './auth.module'
 import { useAuth } from './AuthProvider'
-import { hasSupabaseEnv } from '@/services/supabase/client'
 
 export function LoginForm() {
   const { signIn } = useAuth()

@@ -5,6 +5,7 @@ import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form'
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { Combobox } from '@/shared/components/Combobox'
 import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
+import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm'
 
 import {
   emptyItem,
@@ -20,7 +21,6 @@ import {
   useUpdateYarnReceipt,
   useYarnCatalogOptions,
 } from './useYarnReceipts'
-import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm'
 
 /* ── Collapsible form section ── */
 function FormSection({ title, defaultOpen = true, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {

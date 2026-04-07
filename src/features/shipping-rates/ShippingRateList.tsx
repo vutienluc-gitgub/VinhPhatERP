@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Edit2, Trash2 } from '@/shared/icons'
 
+import { Edit2, Trash2 } from '@/shared/icons'
 import { useConfirm } from '@/shared/components/ConfirmDialog'
+
 import { formatCurrency } from './shipping-rates.module'
 import type { ShippingRate, ShippingRateFilter } from './types'
 import { useDeleteShippingRate, useShippingRateList } from './useShippingRates'

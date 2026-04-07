@@ -8,7 +8,6 @@ import {
   useState,
   type PropsWithChildren,
 } from 'react'
-
 import type { Session, User, AuthError } from '@supabase/supabase-js'
 
 import { supabase } from '@/services/supabase/client'

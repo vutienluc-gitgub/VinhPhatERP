@@ -1,8 +1,9 @@
 import { useState } from 'react'
 
-import { PAYMENT_METHOD_LABELS } from './payments.module'
 import { useConfirm } from '@/shared/components/ConfirmDialog'
 import { Pagination } from '@/shared/components/Pagination'
+
+import { PAYMENT_METHOD_LABELS } from './payments.module'
 import type { PaymentsFilter } from './types'
 import { useDeletePayment, usePaymentList } from './usePayments'
 

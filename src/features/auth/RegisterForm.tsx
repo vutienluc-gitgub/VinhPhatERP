@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+import { hasSupabaseEnv } from '@/services/supabase/client'
+
 import { registerSchema, registerDefaultValues, type RegisterFormValues } from './auth.module'
 import { useAuth } from './AuthProvider'
-import { hasSupabaseEnv } from '@/services/supabase/client'
 
 interface RegisterFormProps {
   onSuccess: () => void

@@ -164,24 +164,157 @@ export async function createWorkOrder(input: CreateWorkOrderInput): Promise<Work
     }
   }
 
+  // 5. Auto-create progress rows for standalone work orders (no order linked)
+  if (!input.order_id) {
+    const stages = [
+      'warping', 'weaving', 'greige_check', 'dyeing',
+      'finishing', 'final_check', 'packing',
+    ] as const
+    const progressRows = stages.map(stage => ({
+      work_order_id: workOrder.id,
+      order_id: null as string | null,
+      stage,
+      status: 'pending' as const,
+    }))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: progressErr } = await (supabase as any)
+      .from('order_progress')
+      .insert(progressRows)
+    if (progressErr) {
+      console.error('Failed to create progress rows for work order', progressErr)
+    }
+  }
+
   return workOrder as WorkOrder
+}
+
+/* ── Update work order ── */
+
+export async function updateWorkOrder(id: string, input: Partial<CreateWorkOrderInput>): Promise<WorkOrder> {
+  const { data: current, error: fetchErr } = await supabase
+    .from(TABLE)
+    .select('*')
+    .eq('id', id)
+    .single()
+  
+  if (fetchErr) throw fetchErr
+  if (current.status !== 'draft') throw new Error('Chỉ được phép sửa lệnh dệt ở trạng thái Bản nháp (Draft).')
+
+  // 1. Prepare update object
+  const update: Record<string, any> = {
+    work_order_number: input.work_order_number,
+    order_id: input.order_id === 'none' ? null : (input.order_id || current.order_id),
+    bom_template_id: input.bom_template_id || current.bom_template_id,
+    target_quantity_m: input.target_quantity_m ?? current.target_quantity_m,
+    target_unit: input.target_unit || current.target_unit,
+    start_date: input.start_date || current.start_date,
+    end_date: input.end_date || current.end_date,
+    supplier_id: input.supplier_id || current.supplier_id,
+    weaving_unit_price: input.weaving_unit_price ?? current.weaving_unit_price,
+    notes: input.notes !== undefined ? input.notes : current.notes,
+  }
+
+  // 2. If BOM or Quantity changed, we need to recalculate
+  const bomChanged = input.bom_template_id && input.bom_template_id !== current.bom_template_id
+  const qtyChanged = input.target_quantity_m !== undefined && input.target_quantity_m !== current.target_quantity_m
+
+  if (bomChanged || qtyChanged) {
+    const bomId = update.bom_template_id
+    
+    // Fetch BOM details
+    const { data: bom, error: bomErr } = await supabase
+      .from('bom_templates')
+      .select('*')
+      .eq('id', bomId)
+      .single()
+    if (bomErr) throw bomErr
+
+    const bomVersion = bom.active_version
+    const lossPct = bom.standard_loss_pct || 0
+    update.bom_version = bomVersion
+    update.standard_loss_pct = lossPct
+
+    // Fetch Yarn Items
+    const { data: bomYarns, error: yarnErr } = await supabase
+      .from('bom_yarn_items')
+      .select('*')
+      .eq('bom_template_id', bomId)
+      .eq('version', bomVersion)
+    if (yarnErr) throw yarnErr
+
+    // Calculate target weight
+    let targetKg: number = (input.target_weight_kg ?? current.target_weight_kg) || 0
+    if (targetKg === 0 || qtyChanged || bomChanged) {
+      const totalConsumptionPerM = (bomYarns || []).reduce((sum, item) => sum + (item.consumption_kg_per_m || 0), 0)
+      targetKg = update.target_quantity_m * totalConsumptionPerM
+    }
+    update.target_weight_kg = targetKg
+
+    // Save WO update
+    const { error: woUpdateErr } = await supabase.from(TABLE).update(update).eq('id', id)
+    if (woUpdateErr) throw woUpdateErr
+
+    // Update requirements: Delete and re-create
+    await supabase.from('work_order_y_requirements').delete().eq('work_order_id', id)
+
+    if (targetKg > 0) {
+      const totalRequiredYarnKg = targetKg / (1 - lossPct / 100)
+      const reqInserts = (bomYarns as BomYarnItem[]).map((yarn) => ({
+        work_order_id: id,
+        yarn_catalog_id: yarn.yarn_catalog_id,
+        bom_ratio_pct: yarn.ratio_pct,
+        required_kg: totalRequiredYarnKg * (yarn.ratio_pct / 100),
+        allocated_kg: 0,
+      }))
+      await supabase.from('work_order_y_requirements').insert(reqInserts)
+    }
+  } else {
+    // Basic update
+    const { error: woUpdateErr } = await supabase.from(TABLE).update(update).eq('id', id)
+    if (woUpdateErr) throw woUpdateErr
+  }
+
+  return fetchWorkOrderById(id)
 }
 
 /* ── Status transitions ── */
 
 export async function startWorkOrder(id: string): Promise<WorkOrder> {
-  const { data, error } = await supabase
+  const { data: wo, error: woError } = await supabase
     .from(TABLE)
     .update({ status: 'in_progress', start_date: new Date().toISOString() })
     .eq('id', id)
-    .select()
+    .select('id, order_id')
     .single()
-  if (error) throw error
-  return data as WorkOrder
+  
+  if (woError) throw woError
+
+  const today = new Date().toISOString().slice(0, 10)
+
+  // Sync to order_progress — works for both order-linked and standalone work orders
+  if (wo.order_id) {
+    await supabase
+      .from('order_progress')
+      .update({ status: 'in_progress', actual_date: today })
+      .eq('order_id', wo.order_id)
+      .eq('stage', 'weaving')
+      .eq('status', 'pending')
+  } else {
+    // Standalone work order — update by work_order_id
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any)
+      .from('order_progress')
+      .update({ status: 'in_progress', actual_date: today })
+      .eq('work_order_id', id)
+      .eq('stage', 'weaving')
+      .eq('status', 'pending')
+  }
+
+  return fetchWorkOrderById(id)
 }
 
 export async function completeWorkOrder(id: string, input: CompleteWorkOrderInput): Promise<WorkOrder> {
-  const { data, error } = await supabase
+  const { data: wo, error: woError } = await supabase
     .from(TABLE)
     .update({
       status: 'completed',
@@ -189,10 +322,30 @@ export async function completeWorkOrder(id: string, input: CompleteWorkOrderInpu
       end_date: new Date().toISOString(),
     })
     .eq('id', id)
-    .select()
+    .select('id, order_id')
     .single()
-  if (error) throw error
-  return data as WorkOrder
+
+  if (woError) throw woError
+
+  const today = new Date().toISOString().slice(0, 10)
+
+  // Sync to order_progress — works for both order-linked and standalone work orders
+  if (wo.order_id) {
+    await supabase
+      .from('order_progress')
+      .update({ status: 'done', actual_date: today })
+      .eq('order_id', wo.order_id)
+      .eq('stage', 'weaving')
+  } else {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any)
+      .from('order_progress')
+      .update({ status: 'done', actual_date: today })
+      .eq('work_order_id', id)
+      .eq('stage', 'weaving')
+  }
+
+  return fetchWorkOrderById(id)
 }
 
 export async function cancelWorkOrder(id: string): Promise<WorkOrder> {

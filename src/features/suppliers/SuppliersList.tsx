@@ -1,15 +1,16 @@
 import { useState } from 'react'
 
+import { useConfirm } from '@/shared/components/ConfirmDialog'
+import { Pagination } from '@/shared/components/Pagination'
+import { TableSkeleton } from '@/shared/components/TableSkeleton'
+import { EmptyState } from '@/shared/components/EmptyState'
+
 import {
   SUPPLIER_CATEGORIES,
   SUPPLIER_CATEGORY_LABELS,
   SUPPLIER_STATUSES,
   SUPPLIER_STATUS_LABELS,
 } from './suppliers.module'
-import { useConfirm } from '@/shared/components/ConfirmDialog'
-import { Pagination } from '@/shared/components/Pagination'
-import { TableSkeleton } from '@/shared/components/TableSkeleton'
-import { EmptyState } from '@/shared/components/EmptyState'
 import type { Supplier, SupplierCategory, SupplierFilter } from './types'
 import { useDeleteSupplier, useSuppliersList } from './useSuppliers'
 

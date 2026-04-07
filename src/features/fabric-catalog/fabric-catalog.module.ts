@@ -1,4 +1,5 @@
 import { z } from 'zod'
+
 import type { FeatureDefinition } from '@/shared/types/feature'
 
 export const FABRIC_CATALOG_STATUSES = ['active', 'inactive'] as const

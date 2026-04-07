@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+
 import { CustomerForm } from './CustomerForm'
 import { CustomerList } from './CustomerList'
 import type { Customer } from './types'

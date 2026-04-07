@@ -22,9 +22,14 @@ export async function fetchOrderProgressByOrder(orderId: string): Promise<OrderP
 }
 
 export async function fetchProgressBoard(): Promise<OrderProgressWithOrder[]> {
-  const { data, error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
     .from(TABLE)
-    .select('*, orders(order_number, delivery_date, customers(name))')
+    .select(`
+      *,
+      orders(order_number, delivery_date, customers(name)),
+      work_orders(work_order_number, status, supplier:suppliers(name), bom_template:bom_templates(name))
+    `)
     .order('created_at')
   if (error) throw error
   return (data ?? []) as unknown as OrderProgressWithOrder[]
@@ -94,16 +99,22 @@ export async function fetchRecentAuditLog(limit = 50): Promise<ProgressAuditLogW
 }
 
 export async function fetchProgressDashboard() {
-  const { data, error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
     .from(TABLE)
-    .select('*, orders(id, order_number, delivery_date, status, customers(name))')
+    .select(`
+      *,
+      orders(id, order_number, delivery_date, status, customers(name)),
+      work_orders(id, work_order_number, status, end_date, supplier:suppliers(name), bom_template:bom_templates(name))
+    `)
     .order('created_at')
   if (error) throw error
 
   const rows = (data ?? []) as unknown as OrderProgressWithOrder[]
   const today = new Date().toISOString().slice(0, 10)
 
-  const orderMap = new Map<
+  // Group key: order_id or work_order_id (for standalone)
+  const groupMap = new Map<
     string,
     {
       orderId: string
@@ -116,22 +127,33 @@ export async function fetchProgressDashboard() {
   >()
 
   for (const row of rows) {
-    let group = orderMap.get(row.order_id)
+    const groupKey = row.order_id ?? row.work_order_id ?? row.id
+    let group = groupMap.get(groupKey)
     if (!group) {
+      // Determine display info: from order or from work_order
+      const isStandalone = !row.order_id && row.work_order_id
       group = {
-        orderId: row.order_id,
-        orderNumber: row.orders?.order_number ?? '—',
-        customerName: row.orders?.customers?.name ?? '—',
-        deliveryDate: row.orders?.delivery_date ?? null,
-        orderStatus: (row.orders as Record<string, unknown>)?.status as string ?? '',
+        orderId: groupKey,
+        orderNumber: isStandalone
+          ? (row.work_orders?.work_order_number ?? '—')
+          : (row.orders?.order_number ?? '—'),
+        customerName: isStandalone
+          ? (row.work_orders?.supplier?.name ?? 'LSX độc lập')
+          : (row.orders?.customers?.name ?? '—'),
+        deliveryDate: isStandalone
+          ? (row.work_orders?.end_date ?? null)
+          : (row.orders?.delivery_date ?? null),
+        orderStatus: isStandalone
+          ? (row.work_orders?.status ?? '')
+          : ((row.orders as Record<string, unknown>)?.status as string ?? ''),
         stages: [],
       }
-      orderMap.set(row.order_id, group)
+      groupMap.set(groupKey, group)
     }
     group.stages.push(row)
   }
 
-  const allOrders = Array.from(orderMap.values())
+  const allOrders = Array.from(groupMap.values())
 
   const overdue = allOrders.filter((o) => {
     if (!o.deliveryDate || o.deliveryDate >= today) return false
@@ -150,7 +172,13 @@ export async function fetchProgressDashboard() {
     return o.stages.some((s) => s.status === 'in_progress')
   })
 
-  return { overdue, readyToShip, inProgress, totalOrders: allOrders.length }
+  // Orders/WOs that have progress rows but haven't started any stage yet
+  const waitingToStart = allOrders.filter((o) => {
+    if (o.orderStatus === 'completed' || o.orderStatus === 'cancelled') return false
+    return o.stages.every((s) => s.status === 'pending' || s.status === 'skipped')
+  })
+
+  return { overdue, readyToShip, inProgress, waitingToStart, totalOrders: allOrders.length }
 }
 
 export async function createOrderProgress(row: OrderProgressInsert): Promise<OrderProgress> {

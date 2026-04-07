@@ -27,7 +27,8 @@ export function ProgressDashboard() {
     return <div className="panel-card"><p className="table-empty">Đang tải...</p></div>
   }
 
-  const { overdue = [], readyToShip = [], inProgress = [] } = data ?? {}
+  const { overdue = [], readyToShip = [], inProgress = [], waitingToStart = [] } = data ?? {}
+
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -44,6 +45,10 @@ export function ProgressDashboard() {
         <div className="dashboard-stat-card dashboard-stat-primary">
           <span className="dashboard-stat-number">{inProgress.length}</span>
           <span className="dashboard-stat-label">Đang sản xuất</span>
+        </div>
+        <div className="dashboard-stat-card" style={{ borderColor: '#9ca3af44', background: 'rgba(156,163,175,0.05)' }}>
+          <span className="dashboard-stat-number">{waitingToStart.length}</span>
+          <span className="dashboard-stat-label">Chờ sản xuất</span>
         </div>
       </div>
 
@@ -80,7 +85,19 @@ export function ProgressDashboard() {
         />
       )}
 
-      {overdue.length === 0 && readyToShip.length === 0 && inProgress.length === 0 && (
+      {/* Waiting to start section */}
+      {waitingToStart.length > 0 && (
+        <DashboardSection
+          title="Chờ bắt đầu sản xuất"
+          eyebrow="Chưa khởi động"
+          orders={waitingToStart}
+          variant="muted"
+          updateMutation={updateMutation}
+        />
+      )}
+
+      {overdue.length === 0 && readyToShip.length === 0 && inProgress.length === 0 && waitingToStart.length === 0 && (
+
         <div className="panel-card">
           <p className="table-empty">Không có đơn hàng nào đang hoạt động.</p>
         </div>
@@ -99,10 +116,12 @@ function DashboardSection({
   title: string
   eyebrow: string
   orders: DashboardOrder[]
-  variant: 'danger' | 'success' | 'primary'
+  variant: 'danger' | 'success' | 'primary' | 'muted'
+
   updateMutation: ReturnType<typeof useUpdateStageStatus>
 }) {
-  const borderColor = variant === 'danger' ? '#e74c3c44' : variant === 'success' ? '#0c8f6844' : '#0b6bcb44'
+  const borderColor = variant === 'danger' ? '#e74c3c44' : variant === 'success' ? '#0c8f6844' : variant === 'primary' ? '#0b6bcb44' : '#9ca3af33'
+
 
   return (
     <div className="panel-card card-flush">

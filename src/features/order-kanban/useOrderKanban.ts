@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+
 import { updateOrderStatus, fetchOrders } from '@/api/orders.api'
-import type { OrderKanbanItem, OrderKanbanStatus } from './types'
 import type { Database } from '@/services/supabase/database.types'
+
+import type { OrderKanbanItem, OrderKanbanStatus } from './types'
 
 type DbOrderStatus = Database['public']['Enums']['order_status']
 

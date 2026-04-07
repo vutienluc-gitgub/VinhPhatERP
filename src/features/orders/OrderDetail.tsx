@@ -1,9 +1,10 @@
 import { ProgressTimeline } from '@/features/order-progress/ProgressTimeline'
 import { formatCurrency } from '@/shared/utils/format'
 import { useOrderProgress } from '@/features/order-progress/useOrderProgress'
+import { useConfirm } from '@/shared/components/ConfirmDialog'
+
 import { ORDER_STATUS_LABELS } from './orders.module'
 import type { Order, OrderStatus } from './types'
-import { useConfirm } from '@/shared/components/ConfirmDialog'
 import { useCancelOrder, useCompleteOrder, useConfirmOrder, useOrder } from './useOrders'
 
 type OrderDetailProps = {

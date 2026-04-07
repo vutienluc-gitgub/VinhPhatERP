@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
+
 import { formatCurrency } from '@/shared/utils/format'
+
 import type { OrderKanbanItem, OrderKanbanStatus } from './types'
 import styles from './kanban.module.css'
 

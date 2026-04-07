@@ -2,6 +2,7 @@ import {
   pgTable, pgEnum, uuid, text,
   index
 } from 'drizzle-orm/pg-core'
+
 import { timestamptz } from './helpers.js'
 
 export const activeStatusEnum = pgEnum('active_status', ['active', 'inactive'])

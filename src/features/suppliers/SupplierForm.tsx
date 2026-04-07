@@ -2,6 +2,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { Combobox } from '@/shared/components/Combobox'
+
 import {
   SUPPLIER_CATEGORIES,
   SUPPLIER_CATEGORY_LABELS,
@@ -13,8 +16,6 @@ import {
 import type { SupplierFormValues } from './suppliers.module'
 import type { Supplier } from './types'
 import { useCreateSupplier, useNextSupplierCode, useUpdateSupplier } from './useSuppliers'
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
-import { Combobox } from '@/shared/components/Combobox'
 
 type SupplierFormProps = {
   supplier: Supplier | null

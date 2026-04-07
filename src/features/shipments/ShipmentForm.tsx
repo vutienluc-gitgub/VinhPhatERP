@@ -4,6 +4,9 @@ import { useFieldArray, useForm, Controller } from 'react-hook-form'
 
 import { Combobox } from '@/shared/components/Combobox'
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { useActiveShippingRates } from '@/features/shipping-rates/useShippingRates'
+import type { ShippingRate } from '@/features/shipping-rates/types'
+
 import {
   emptyShipmentItem,
   shipmentsDefaultValues,
@@ -16,8 +19,6 @@ import {
   useDeliveryStaffList,
   useNextShipmentNumber,
 } from './useShipments'
-import { useActiveShippingRates } from '@/features/shipping-rates/useShippingRates'
-import type { ShippingRate } from '@/features/shipping-rates/types'
 
 type ShipmentFormProps = {
   orderId: string

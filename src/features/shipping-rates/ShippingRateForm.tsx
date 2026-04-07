@@ -7,8 +7,9 @@ import {
   type ShippingRateFormValues,
   type ShippingRate
 } from '@/schema'
-import { useCreateShippingRate, useUpdateShippingRate } from './useShippingRates'
 import { Combobox } from '@/shared/components/Combobox'
+
+import { useCreateShippingRate, useUpdateShippingRate } from './useShippingRates'
 
 type Props = {
   item: ShippingRate | null

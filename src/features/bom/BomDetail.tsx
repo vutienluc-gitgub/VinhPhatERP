@@ -1,4 +1,5 @@
 import { ArrowLeft, CheckCircle, FileX, GitMerge } from '@/shared/icons'
+
 import { BomTemplate, BomStatus } from './types'
 import { useBomVersions } from './useBom'
 import { BOM_STATUS_LABELS } from './bom.module'

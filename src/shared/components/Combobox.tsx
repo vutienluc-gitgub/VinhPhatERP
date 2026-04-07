@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
+
 import { Search, ChevronDown, Check } from '@/shared/icons'
 
 export type ComboboxOption = {
