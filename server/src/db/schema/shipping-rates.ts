@@ -3,8 +3,8 @@ import {
   index
 } from 'drizzle-orm/pg-core'
 
-import { timestamptz } from './helpers.js'
 import { profiles } from './auth.js'
+import { timestamptz } from './helpers.js'
 
 // Shipping Rates — Bảng giá cước vận chuyển
 export const shippingRates = pgTable('shipping_rates', {

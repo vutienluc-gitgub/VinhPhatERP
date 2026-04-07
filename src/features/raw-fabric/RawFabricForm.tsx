@@ -4,9 +4,9 @@ import { useForm, Controller } from 'react-hook-form'
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { Combobox } from '@/shared/components/Combobox'
+import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm'
 import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
 import { useStepper } from '@/shared/hooks/useStepper'
-import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm'
 
 import {
   QUALITY_GRADE_LABELS,

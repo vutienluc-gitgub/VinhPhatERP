@@ -2,11 +2,19 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form'
 
+import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
+
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { Combobox } from '@/shared/components/Combobox'
 import { useStepper } from '@/shared/hooks/useStepper'
-import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
 
+import type { WeavingInvoice } from './types'
+import {
+  useCreateWeavingInvoice,
+  useUpdateWeavingInvoice,
+  useNextWeavingInvoiceNumber,
+  useWeavingSuppliers,
+} from './useWeavingInvoices'
 import {
   weavingInvoiceFormSchema,
   weavingInvoiceDefaults,
@@ -14,13 +22,6 @@ import {
   QUALITY_GRADES,
 } from './weaving-invoices.module'
 import type { WeavingInvoiceFormValues } from './weaving-invoices.module'
-import {
-  useCreateWeavingInvoice,
-  useUpdateWeavingInvoice,
-  useNextWeavingInvoiceNumber,
-  useWeavingSuppliers,
-} from './useWeavingInvoices'
-import type { WeavingInvoice } from './types'
 
 type Props = {
   invoice?: WeavingInvoice | null

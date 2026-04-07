@@ -13,8 +13,8 @@ import {
   reviseBom,
 } from '@/api/bom.api'
 
-import type { BomTemplate, BomVersion, BomFilter, FabricCatalog } from './types'
 import type { BomTemplateFormData } from './bom.module'
+import type { BomTemplate, BomVersion, BomFilter, FabricCatalog } from './types'
 
 // Query keys
 export const bomKeys = {

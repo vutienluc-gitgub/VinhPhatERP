@@ -1,9 +1,9 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm, useFieldArray, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 
-import { ArrowLeft, Plus, Trash2 } from '@/shared/icons'
 import { Combobox } from '@/shared/components/Combobox'
+import { ArrowLeft, Plus, Trash2 } from '@/shared/icons'
 
 import { bomTemplateSchema, BomTemplateFormData } from './bom.module'
 import { BomTemplate } from './types'

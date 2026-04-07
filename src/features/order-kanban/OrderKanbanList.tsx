@@ -1,6 +1,6 @@
-import type { OrderKanbanItem, OrderKanbanStatus } from './types'
-import { KanbanCard } from './OrderKanbanForm'
 import styles from './kanban.module.css'
+import { KanbanCard } from './OrderKanbanForm'
+import type { OrderKanbanItem, OrderKanbanStatus } from './types'
 
 type KanbanColumnProps = {
   status: OrderKanbanStatus

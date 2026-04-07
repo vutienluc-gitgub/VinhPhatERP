@@ -1,5 +1,5 @@
-import type { Context, Next } from 'hono'
 import { createClient } from '@supabase/supabase-js'
+import type { Context, Next } from 'hono'
 
 const supabaseUrl  = process.env.SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!

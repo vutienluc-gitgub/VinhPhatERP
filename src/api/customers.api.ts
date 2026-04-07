@@ -1,5 +1,5 @@
-import { supabase } from '@/services/supabase/client'
 import type { Customer, CustomerInsert, CustomerUpdate, CustomersFilter } from '@/models'
+import { supabase } from '@/services/supabase/client'
 
 const TABLE = 'customers'
 

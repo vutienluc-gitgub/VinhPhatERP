@@ -4,10 +4,10 @@ import {
   smallint, index, unique
 } from 'drizzle-orm/pg-core'
 
-import { timestamptz } from './helpers.js'
-import { customers } from './customers.js'
 import { profiles } from './auth.js'
+import { customers } from './customers.js'
 import { finishedFabricRolls } from './fabric.js'
+import { timestamptz } from './helpers.js'
 import { shippingRates } from './shipping-rates.js'
 
 export const orderStatusEnum = pgEnum('order_status', [

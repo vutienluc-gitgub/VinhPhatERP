@@ -1,5 +1,5 @@
-import { BomTemplate, BomStatus } from './types'
 import { BOM_STATUS_LABELS } from './bom.module'
+import { BomTemplate, BomStatus } from './types'
 
 interface BomListProps {
   boms: BomTemplate[]

@@ -13,8 +13,8 @@ import {
 } from '@/api/raw-fabric.api'
 import type { SupplierOption, YarnReceiptOption, WorkOrderOption, InventoryStats } from '@/api/raw-fabric.api'
 
-import type { BulkInputFormValues } from './raw-fabric.module'
 import { findDuplicateRollNumbers, generateBarcode } from './raw-fabric.module'
+import type { BulkInputFormValues } from './raw-fabric.module'
 import type { RawFabricFormValues } from './raw-fabric.module'
 import type { RawFabricFilter, RawFabricRoll } from './types'
 

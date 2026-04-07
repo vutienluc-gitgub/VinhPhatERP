@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+import type { Session, User, AuthError } from '@supabase/supabase-js'
 import {
   createContext,
   useCallback,
@@ -8,7 +9,6 @@ import {
   useState,
   type PropsWithChildren,
 } from 'react'
-import type { Session, User, AuthError } from '@supabase/supabase-js'
 
 import { supabase } from '@/services/supabase/client'
 import type { Profile } from '@/services/supabase/database.types'

@@ -2,11 +2,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form'
 
+import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
+
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { Combobox } from '@/shared/components/Combobox'
 import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
 import { useStepper } from '@/shared/hooks/useStepper'
-import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
 
 import {
   QUALITY_GRADE_LABELS,
@@ -18,6 +19,7 @@ import {
   formatBulkRollNumber,
 } from './raw-fabric.module'
 import type { BulkInputFormValues } from './raw-fabric.module'
+import type { RawFabricRoll } from './types'
 import {
   useCreateRawFabricBulk,
   useWeavingPartners,
@@ -25,7 +27,6 @@ import {
   useYarnReceiptOptions,
 } from './useRawFabric'
 import { useRawFabricExport } from './useRawFabricExport'
-import type { RawFabricRoll } from './types'
 
 type Props = {
   onClose: () => void

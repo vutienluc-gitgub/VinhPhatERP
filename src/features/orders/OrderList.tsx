@@ -1,9 +1,9 @@
 import { useState } from 'react'
 
 import { useConfirm } from '@/shared/components/ConfirmDialog'
+import { EmptyState } from '@/shared/components/EmptyState'
 import { Pagination } from '@/shared/components/Pagination'
 import { TableSkeleton } from '@/shared/components/TableSkeleton'
-import { EmptyState } from '@/shared/components/EmptyState'
 
 import { ORDER_STATUS_LABELS } from './orders.module'
 import type { Order, OrdersFilter, OrderStatus } from './types'
@@ -169,7 +169,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
         {isLoading ? (
           <TableSkeleton rows={5} columns={7} />
         ) : orders.length === 0 ? (
-          <EmptyState 
+          <EmptyState
             icon={hasFilter ? '🔍' : '📦'}
             title={hasFilter ? 'Không tìm thấy đơn hàng' : 'Chưa có đơn hàng nào'}
             description={hasFilter ? 'Hãy thử thay đổi điều kiện lọc.' : 'Nhấn nút tạo đơn để bắt đầu quy trình bán hàng mới.'}

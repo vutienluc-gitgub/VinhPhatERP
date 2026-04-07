@@ -4,15 +4,9 @@ import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form'
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { Combobox } from '@/shared/components/Combobox'
-import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
 import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm'
+import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
 
-import {
-  emptyItem,
-  yarnReceiptsDefaultValues,
-  yarnReceiptsSchema,
-} from './yarn-receipts.module'
-import type { YarnReceiptsFormValues } from './yarn-receipts.module'
 import type { YarnReceipt } from './types'
 import {
   useActiveSuppliers,
@@ -21,6 +15,12 @@ import {
   useUpdateYarnReceipt,
   useYarnCatalogOptions,
 } from './useYarnReceipts'
+import {
+  emptyItem,
+  yarnReceiptsDefaultValues,
+  yarnReceiptsSchema,
+} from './yarn-receipts.module'
+import type { YarnReceiptsFormValues } from './yarn-receipts.module'
 
 /* ── Collapsible form section ── */
 function FormSection({ title, defaultOpen = true, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {

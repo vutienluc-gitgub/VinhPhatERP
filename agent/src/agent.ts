@@ -4,14 +4,14 @@
  *
  * Khởi động: npm run agent  (từ thư mục agent/)
  */
-import * as readline from 'node:readline/promises'
-import { stdin, stdout } from 'node:process'
-import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+import { stdin, stdout } from 'node:process'
+import * as readline from 'node:readline/promises'
+import { fileURLToPath } from 'node:url'
 
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
-import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import Anthropic from '@anthropic-ai/sdk'
+import { Client } from '@modelcontextprotocol/sdk/client/index.js'
+import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 
 // ---- Kiểm tra env ----
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
