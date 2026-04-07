@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import type { FeatureDefinition } from '@/shared/types/feature'
+
 import type { ShipmentStatus } from './types'
 
 /* ── Constants ── */

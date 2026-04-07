@@ -6,6 +6,7 @@ import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { Combobox } from '@/shared/components/Combobox'
 import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
 import { useStepper } from '@/shared/hooks/useStepper'
+import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
 
 import {
   QUALITY_GRADE_LABELS,
@@ -17,7 +18,6 @@ import {
   formatBulkRollNumber,
 } from './raw-fabric.module'
 import type { BulkInputFormValues } from './raw-fabric.module'
-import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
 import {
   useCreateRawFabricBulk,
   useWeavingPartners,

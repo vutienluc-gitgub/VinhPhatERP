@@ -3,7 +3,8 @@ export type StageStatus = 'pending' | 'in_progress' | 'done' | 'skipped'
 
 export type OrderProgress = {
   id: string
-  order_id: string
+  order_id: string | null
+  work_order_id: string | null
   stage: ProductionStage
   status: StageStatus
   planned_date: string | null
@@ -15,13 +16,14 @@ export type OrderProgress = {
 }
 
 export type OrderProgressWithOrder = OrderProgress & {
-  orders?: { order_number: string; delivery_date: string | null; customers?: { name: string } | null } | null
+  orders?: { order_number: string; delivery_date: string | null; status?: string; customers?: { name: string } | null } | null
+  work_orders?: { work_order_number: string; status: string; supplier?: { name: string } | null; bom_template?: { name: string } | null } | null
 }
 
 export type ProgressAuditLog = {
   id: string
   progress_id: string
-  order_id: string
+  order_id: string | null
   stage: ProductionStage
   old_status: StageStatus | null
   new_status: StageStatus

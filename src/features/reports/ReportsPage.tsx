@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import type { ReportsFilter } from '@/api/reports.api'
+
 import { DebtAgingSection } from './DebtAgingSection'
 import { DebtSection } from './DebtSection'
 import { InventorySection } from './InventorySection'
@@ -21,7 +22,6 @@ import {
   useRevenueByFabric,
   usePaymentCollection,
 } from './useReports'
-
 import styles from './reports.module.css';
 
 function defaultDateFrom(): string {

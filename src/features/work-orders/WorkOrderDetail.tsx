@@ -1,20 +1,23 @@
-import { ArrowLeft, CheckCircle, Play, Scissors, Package } from '@/shared/icons'
+import { ArrowLeft, CheckCircle, Play, Scissors, Package, Edit2 } from '@/shared/icons'
+
 import { useWorkOrderDetail, useWorkOrderRequirements, useStartWorkOrder, useCompleteWorkOrder } from './useWorkOrders'
 import { WORK_ORDER_STATUSES } from './work-orders.module'
+import type { WorkOrder } from './types'
 
 interface WorkOrderDetailProps {
   id: string
   onBack: () => void
+  onEdit: (wo: WorkOrder) => void
 }
 
-export function WorkOrderDetail({ id, onBack }: WorkOrderDetailProps) {
+export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
   const { data: wo, isLoading } = useWorkOrderDetail(id)
   const { data: requirements, isLoading: isLoadingReq } = useWorkOrderRequirements(id)
   const startMutation = useStartWorkOrder()
   const completeMutation = useCompleteWorkOrder()
 
   if (isLoading) return <div className="table-empty" style={{ padding: '3rem' }}>Đang tải chi tiết lệnh...</div>
-  if (!wo) return <p className="error-inline">Lệnh sản xuất không tồn tại</p>
+  if (!wo) return <p className="error-inline" style={{ padding: '2rem' }}>Lệnh sản xuất không tồn tại hoặc bạn không có quyền xem.</p>
 
   const statusConfig = WORK_ORDER_STATUSES[wo.status]
 
@@ -43,6 +46,17 @@ export function WorkOrderDetail({ id, onBack }: WorkOrderDetailProps) {
             </div>
 
             <div style={{ display: 'flex', gap: '0.5rem' }}>
+              {wo.status === 'draft' && (
+                <button
+                  className="btn-secondary btn-standard"
+                  type="button"
+                  onClick={() => onEdit(wo)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                  <Edit2 style={{ width: 16, height: 16 }} />
+                  Sửa lệnh
+                </button>
+              )}
               {wo.status === 'draft' && (
                 <button
                   className="primary-button btn-standard"

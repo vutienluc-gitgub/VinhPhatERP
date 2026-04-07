@@ -15,16 +15,22 @@ type GroupedByOrder = {
 function groupByOrder(rows: OrderProgressWithOrder[]): GroupedByOrder[] {
   const map = new Map<string, GroupedByOrder>()
   for (const row of rows) {
-    let group = map.get(row.order_id)
+    const groupKey = row.order_id ?? row.work_order_id ?? row.id
+    let group = map.get(groupKey)
     if (!group) {
+      const isStandalone = !row.order_id && row.work_order_id
       group = {
-        orderId: row.order_id,
-        orderNumber: row.orders?.order_number ?? '—',
-        customerName: row.orders?.customers?.name ?? '—',
-        deliveryDate: row.orders?.delivery_date ?? null,
+        orderId: groupKey,
+        orderNumber: isStandalone
+          ? (row.work_orders?.work_order_number ?? '—')
+          : (row.orders?.order_number ?? '—'),
+        customerName: isStandalone
+          ? (row.work_orders?.supplier?.name ?? 'LSX độc lập')
+          : (row.orders?.customers?.name ?? '—'),
+        deliveryDate: isStandalone ? null : (row.orders?.delivery_date ?? null),
         stages: [],
       }
-      map.set(row.order_id, group)
+      map.set(groupKey, group)
     }
     group.stages.push(row)
   }

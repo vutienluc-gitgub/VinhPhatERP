@@ -7,6 +7,7 @@ export interface WorkOrder {
   bom_template_id: string;
   bom_version: number;
   target_quantity_m: number;
+  target_unit: string;
   target_weight_kg: number | null;
   standard_loss_pct: number;
   actual_yield_m: number | null;

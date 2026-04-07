@@ -1,5 +1,7 @@
 import { z } from 'zod';
+
 import type { FeatureDefinition } from '@/shared/types/feature';
+
 import type { BomStatus } from './types';
 
 export const BOM_STATUSES = ['draft', 'approved', 'deprecated'] as const;

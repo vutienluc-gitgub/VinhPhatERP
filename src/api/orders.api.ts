@@ -200,17 +200,18 @@ export async function updateOrderStatus(id: string, status: DbOrderStatus): Prom
 /* ── Confirm order: recalculate total, update status, create progress rows ── */
 
 export async function confirmOrder(orderId: string): Promise<void> {
+  // Existing logic unchanged – kept for reference
   // 1. Fetch items to recalculate total
   const { data: items, error: itemsErr } = await supabase
     .from(ITEMS_TABLE)
     .select('quantity, unit_price')
-    .eq('order_id', orderId)
-  if (itemsErr) throw itemsErr
+    .eq('order_id', orderId);
+  if (itemsErr) throw itemsErr;
 
   const newTotal = (items ?? []).reduce(
     (sum, it) => sum + Number(it.quantity) * Number(it.unit_price),
     0,
-  )
+  );
 
   // 2. Update status + recalculate total
   const { error: statusErr } = await supabase
@@ -220,25 +221,36 @@ export async function confirmOrder(orderId: string): Promise<void> {
       total_amount: newTotal,
     })
     .eq('id', orderId)
-    .eq('status', 'draft')
-  if (statusErr) throw statusErr
+    .eq('status', 'draft');
+  if (statusErr) throw statusErr;
 
-  // 3. Create 7 progress rows
+  // 3. Create 7 progress rows (unchanged)
   const stages = [
     'warping', 'weaving', 'greige_check', 'dyeing',
     'finishing', 'final_check', 'packing',
-  ] as const
+  ] as const;
 
-  const progressRows = stages.map((stage) => ({
+  const progressRows = stages.map(stage => ({
     order_id: orderId,
     stage,
     status: 'pending' as const,
-  }))
+  }));
 
   const { error: progressErr } = await supabase
     .from('order_progress')
-    .insert(progressRows)
-  if (progressErr) throw progressErr
+    .insert(progressRows);
+  if (progressErr) throw progressErr;
+}
+
+/* ── Create and confirm order ── */
+
+export async function createAndConfirmOrder(
+  header: OrderInsert,
+  items: Omit<OrderItemInsert, 'order_id'>[],
+): Promise<Order> {
+  const order = await createOrder({ ...header, status: 'draft' }, items)
+  await confirmOrder(order.id)
+  return order
 }
 
 /* ── Cancel order: release reserved rolls → cancel ── */

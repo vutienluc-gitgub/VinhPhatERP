@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+
 import {
   fetchShippingRates,
   fetchActiveShippingRates,
@@ -6,6 +7,7 @@ import {
   updateShippingRate,
   deleteShippingRate,
 } from '@/api/shipping-rates.api'
+
 import type { ShippingRateFormValues } from './shipping-rates.module'
 import type { ShippingRateFilter } from './types'
 

@@ -3,7 +3,6 @@ import { useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 
 import { Combobox } from '@/shared/components/Combobox'
-
 import {
   customersDefaultValues,
   CUSTOMER_SOURCES,

@@ -7,10 +7,8 @@ import {
   deleteCustomer,
   fetchNextCustomerCode
 } from '@/api/customers.api'
-
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination'
 import type { PaginatedResult } from '@/shared/types/pagination'
-
 import type { CustomersFormValues } from '@/schema/customer.schema'
 import type { Customer, CustomerInsert, CustomersFilter } from '@/models'
 

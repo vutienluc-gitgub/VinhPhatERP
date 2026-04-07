@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+
 import { supabase } from '@/services/supabase/client'
 
 /**

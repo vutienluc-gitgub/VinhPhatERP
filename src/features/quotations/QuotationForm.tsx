@@ -1,11 +1,11 @@
-import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers'
-import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
-import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { formatCurrency } from '@/shared/utils/format'
 import { useEffect } from 'react'
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form'
 
+import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers'
+import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
+import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
+import { formatCurrency } from '@/shared/utils/format'
 import { Combobox } from '@/shared/components/Combobox'
 
 import {

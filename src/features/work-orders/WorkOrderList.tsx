@@ -1,17 +1,20 @@
 import { useState } from 'react'
-import { useWorkOrders, useStartWorkOrder } from './useWorkOrders'
-import { WORK_ORDER_STATUSES } from './work-orders.module'
+
 import { EmptyState } from '@/shared/components/EmptyState'
 import { TableSkeleton } from '@/shared/components/TableSkeleton'
 import { useConfirm } from '@/shared/components/ConfirmDialog'
+
+import { WORK_ORDER_STATUSES } from './work-orders.module'
+import { useWorkOrders, useStartWorkOrder } from './useWorkOrders'
 import type { WorkOrderFilter, WorkOrderStatus } from './types'
 
 interface WorkOrderListProps {
   onView: (id: string) => void
+  onEdit: (wo: any) => void
   onCreate: () => void
 }
 
-export function WorkOrderList({ onView, onCreate }: WorkOrderListProps) {
+export function WorkOrderList({ onView, onEdit, onCreate }: WorkOrderListProps) {
   const [filter, setFilter] = useState<WorkOrderFilter>({ status: 'all', search: '' })
   const [page, setPage] = useState(1)
 
@@ -174,6 +177,16 @@ export function WorkOrderList({ onView, onCreate }: WorkOrderListProps) {
                       >
                         👁
                       </button>
+                      {wo.status === 'draft' && (
+                        <button
+                          className="btn-icon"
+                          type="button"
+                          onClick={() => onEdit(wo)}
+                          title="Sửa lệnh"
+                        >
+                          ✏️
+                        </button>
+                      )}
                       {wo.status === 'draft' && (
                         <button
                           className="btn-icon"

@@ -1,21 +1,27 @@
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createWorkOrderSchema, type CreateWorkOrderInput } from './work-orders.module'
-import { useCreateWorkOrder, useUnitOptions } from './useWorkOrders'
-import { useBomList } from '../bom/useBom'
-import { useOrderList } from '../orders/useOrders'
-import { useSuppliersList } from '../suppliers/useSuppliers'
+
 import { Combobox } from '@/shared/components/Combobox'
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
 import { useStepper } from '@/shared/hooks/useStepper'
+import { useBomList } from '@/features/bom/useBom'
+import { useOrderList } from '@/features/orders/useOrders'
+import { useSuppliersList } from '@/features/suppliers/useSuppliers'
+
+import { createWorkOrderSchema, type CreateWorkOrderInput } from './work-orders.module'
+import { useCreateWorkOrder, useUpdateWorkOrder, useUnitOptions } from './useWorkOrders'
+import type { WorkOrder } from './types'
 
 interface WorkOrderFormProps {
+  initialData?: WorkOrder
   onSuccess?: () => void
   onCancel?: () => void
 }
 
-export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
+export function WorkOrderForm({ initialData, onSuccess, onCancel }: WorkOrderFormProps) {
   const createMutation = useCreateWorkOrder()
+  const updateMutation = useUpdateWorkOrder()
+  const isEditing = !!initialData
 
   const { data: boms } = useBomList({ status: 'approved' })
   const { data: orders } = useOrderList({ status: 'confirmed' }, 1)
@@ -27,7 +33,19 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
 
   const { register, handleSubmit, trigger, control, formState: { errors, isValid } } = useForm<CreateWorkOrderInput>({
     resolver: zodResolver(createWorkOrderSchema),
-    defaultValues: {
+    defaultValues: initialData ? {
+      work_order_number: initialData.work_order_number,
+      order_id: initialData.order_id,
+      supplier_id: initialData.supplier_id,
+      weaving_unit_price: initialData.weaving_unit_price,
+      bom_template_id: initialData.bom_template_id,
+      target_quantity_m: initialData.target_quantity_m,
+      target_unit: initialData.target_unit,
+      target_weight_kg: initialData.target_weight_kg,
+      start_date: initialData.start_date ? new Date(initialData.start_date).toISOString().split('T')[0] : '',
+      end_date: initialData.end_date ? new Date(initialData.end_date).toISOString().split('T')[0] : '',
+      notes: initialData.notes ?? '',
+    } : {
       work_order_number: `WO-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}-${Math.floor(Math.random() * 1000)}`,
       order_id: null,
       supplier_id: '',
@@ -47,13 +65,23 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
     if (!stepper.isLast) return
 
     try {
-      await createMutation.mutateAsync({
-        ...values,
-        order_id: values.order_id === 'none' ? null : values.order_id,
-      } as CreateWorkOrderInput)
+      if (isEditing && initialData) {
+        await updateMutation.mutateAsync({
+          id: initialData.id,
+          input: {
+            ...values,
+            order_id: values.order_id === 'none' ? null : values.order_id,
+          },
+        })
+      } else {
+        await createMutation.mutateAsync({
+          ...values,
+          order_id: values.order_id === 'none' ? null : values.order_id,
+        } as CreateWorkOrderInput)
+      }
       if (onSuccess) onSuccess()
     } catch (error) {
-      console.error('Failed to create work order:', error)
+      console.error('Failed to save work order:', error)
       alert('Có lỗi xảy ra: ' + (error as Error).message)
     }
   }
@@ -69,7 +97,7 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
     <AdaptiveSheet
       open={true}
       onClose={onCancel || (() => {})}
-      title="Kiến tạo Lệnh Sản Xuất Mới"
+      title={isEditing ? 'Chỉnh sửa Lệnh Sản Xuất' : 'Kiến tạo Lệnh Sản Xuất Mới'}
       stepInfo={{ current: stepper.currentStep, total: stepper.totalSteps }}
       maxWidth={720}
     >
@@ -278,9 +306,11 @@ export function WorkOrderForm({ onSuccess, onCancel }: WorkOrderFormProps) {
               <button
                 className="primary-button btn-standard"
                 type="submit"
-                disabled={createMutation.isPending || !isValid}
+                disabled={createMutation.isPending || updateMutation.isPending || !isValid}
               >
-                {createMutation.isPending ? 'Đang tạo...' : 'Xác nhận lệnh SX'}
+                {createMutation.isPending || updateMutation.isPending 
+                  ? 'Đang lưu...' 
+                  : isEditing ? 'Cập nhật lệnh SX' : 'Xác nhận lệnh SX'}
               </button>
             )}
           </div>

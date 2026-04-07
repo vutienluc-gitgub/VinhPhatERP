@@ -1,15 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { PostgrestError } from '@supabase/supabase-js'
+
 import {
   fetchWorkOrders,
   fetchWorkOrderById,
   fetchWorkOrderRequirements,
   createWorkOrder,
+  updateWorkOrder,
   startWorkOrder,
   completeWorkOrder,
   cancelWorkOrder,
   fetchUnitOptions,
 } from '@/api/work-orders.api'
+
 import type {
   WorkOrder,
   WorkOrderWithRelations,
@@ -47,6 +50,18 @@ export function useCreateWorkOrder() {
     mutationFn: createWorkOrder,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work_orders'] })
+    },
+  })
+}
+
+export function useUpdateWorkOrder() {
+  const queryClient = useQueryClient()
+
+  return useMutation<WorkOrder, PostgrestError, { id: string; input: Partial<CreateWorkOrderInput> }>({
+    mutationFn: ({ id, input }) => updateWorkOrder(id, input),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['work_orders'] })
+      queryClient.invalidateQueries({ queryKey: ['work_order', data.id] })
     },
   })
 }

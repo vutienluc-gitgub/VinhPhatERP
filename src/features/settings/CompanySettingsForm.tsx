@@ -7,6 +7,7 @@ import {
   companySettingsDefaultValues,
   type CompanySettingsFormValues,
 } from '@/schema/company-settings.schema'
+
 import { useCompanySettings, useUpdateCompanySettings } from './useCompanySettings'
 
 export function CompanySettingsForm() {

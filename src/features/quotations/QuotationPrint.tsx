@@ -1,8 +1,10 @@
 import { useParams } from 'react-router-dom'
 import { useEffect } from 'react'
+
 import { formatCurrency } from '@/shared/utils/format'
-import { useQuotation } from './useQuotations'
 import { useCompanySettings } from '@/features/settings/useCompanySettings'
+
+import { useQuotation } from './useQuotations'
 
 function formatDateLong(dateStr: string | null): string {
   if (!dateStr) return ''

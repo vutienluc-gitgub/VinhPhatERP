@@ -5,6 +5,7 @@ import { Pagination } from '@/shared/components/Pagination'
 import { TableSkeleton } from '@/shared/components/TableSkeleton'
 import { EmptyState } from '@/shared/components/EmptyState'
 import { CUSTOMER_SOURCE_LABELS, CUSTOMER_STATUS_LABELS } from '@/schema/customer.schema'
+
 import type { Customer, CustomersFilter } from './types'
 import { useCustomerList, useDeleteCustomer } from './useCustomers'
 
