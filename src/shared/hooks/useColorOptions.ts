@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { supabase } from '@/services/supabase/client';
+import { untypedDb } from '@/services/supabase/untyped';
 
 export type ColorOption = {
   code: string;
@@ -18,9 +18,8 @@ export function useColorOptions() {
   return useQuery({
     queryKey: QUERY_KEY,
     queryFn: async (): Promise<ColorOption[]> => {
-      // cast as any vì bảng `colors` chưa có trong database.types.ts
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      // Dùng untypedDb theo quy định Level 7 Architecture
+      const { data, error } = await untypedDb
         .from('colors')
         .select('code, name')
         .order('name');

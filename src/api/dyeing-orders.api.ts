@@ -1,14 +1,12 @@
 import type { DyeingOrderFormValues } from '@/schema/dyeing-order.schema';
 import { supabase } from '@/services/supabase/client';
+import { untypedDb as db } from '@/services/supabase/untyped';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import type {
   DyeingOrder,
   DyeingOrderFilter,
 } from '@/features/dyeing-orders/types';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db = () => supabase as any;
 
 const TABLE = 'dyeing_orders';
 const ITEMS_TABLE = 'dyeing_order_items';
@@ -22,7 +20,7 @@ export async function fetchDyeingOrdersPaginated(
   const from = (page - 1) * DEFAULT_PAGE_SIZE;
   const to = from + DEFAULT_PAGE_SIZE - 1;
 
-  let query = db()
+  let query = db
     .from(TABLE)
     .select('*, suppliers(name, code)', { count: 'exact' })
     .order('order_date', { ascending: false })
@@ -48,7 +46,7 @@ export async function fetchDyeingOrdersPaginated(
 /* ── Single with items ── */
 
 export async function fetchDyeingOrderById(id: string): Promise<DyeingOrder> {
-  const { data, error } = await db()
+  const { data, error } = await db
     .from(TABLE)
     .select(
       '*, suppliers(name, code), dyeing_order_items(*, raw_fabric_roll:raw_fabric_rolls(roll_number, fabric_type))',
@@ -67,7 +65,7 @@ export async function fetchNextDyeingOrderNumber(): Promise<string> {
   const mm = String(now.getMonth() + 1).padStart(2, '0');
   const prefix = `DN${yy}${mm}-`;
 
-  const { data, error } = await db()
+  const { data, error } = await db
     .from(TABLE)
     .select('dyeing_order_number')
     .ilike('dyeing_order_number', `${prefix}%`)
@@ -104,7 +102,7 @@ export async function createDyeingOrder(
 ): Promise<DyeingOrder> {
   const { data: userData } = await supabase.auth.getUser();
 
-  const { data: header, error: headerErr } = await db()
+  const { data: header, error: headerErr } = await db
     .from(TABLE)
     .insert({
       dyeing_order_number: values.dyeing_order_number.trim(),
@@ -135,9 +133,9 @@ export async function createDyeingOrder(
     }),
   );
 
-  const { error: itemsErr } = await db().from(ITEMS_TABLE).insert(items);
+  const { error: itemsErr } = await db.from(ITEMS_TABLE).insert(items);
   if (itemsErr) {
-    await db().from(TABLE).delete().eq('id', header.id);
+    await db.from(TABLE).delete().eq('id', header.id);
     throw itemsErr;
   }
 
@@ -150,7 +148,7 @@ export async function updateDyeingOrder(
   id: string,
   values: DyeingOrderFormValues,
 ): Promise<void> {
-  const { error: headerErr } = await db()
+  const { error: headerErr } = await db
     .from(TABLE)
     .update({
       dyeing_order_number: values.dyeing_order_number.trim(),
@@ -167,7 +165,7 @@ export async function updateDyeingOrder(
   if (headerErr) throw headerErr;
 
   // Replace items
-  const { error: delErr } = await db()
+  const { error: delErr } = await db
     .from(ITEMS_TABLE)
     .delete()
     .eq('dyeing_order_id', id);
@@ -186,14 +184,14 @@ export async function updateDyeingOrder(
     }),
   );
 
-  const { error: insertErr } = await db().from(ITEMS_TABLE).insert(items);
+  const { error: insertErr } = await db.from(ITEMS_TABLE).insert(items);
   if (insertErr) throw insertErr;
 }
 
 /* ── Send to dyeing (draft → sent) ── */
 
 export async function sendDyeingOrder(id: string): Promise<void> {
-  const { error } = await db()
+  const { error } = await db
     .from(TABLE)
     .update({ status: 'sent' })
     .eq('id', id)
@@ -207,7 +205,7 @@ export async function completeDyeingOrder(
   id: string,
   actualReturnDate: string,
 ): Promise<void> {
-  const { error } = await db().rpc('complete_dyeing_order', {
+  const { error } = await db.rpc('complete_dyeing_order', {
     p_dyeing_order_id: id,
     p_actual_return_date: actualReturnDate,
   });
@@ -230,7 +228,7 @@ export async function markDyeingOrderPaid(
   id: string,
   paidAmount: number,
 ): Promise<void> {
-  const { error } = await db()
+  const { error } = await db
     .from(TABLE)
     .update({ paid_amount: paidAmount })
     .eq('id', id);
@@ -240,6 +238,6 @@ export async function markDyeingOrderPaid(
 /* ── Delete (draft only) ── */
 
 export async function deleteDyeingOrder(id: string): Promise<void> {
-  const { error } = await db().from(TABLE).delete().eq('id', id);
+  const { error } = await db.from(TABLE).delete().eq('id', id);
   if (error) throw error;
 }

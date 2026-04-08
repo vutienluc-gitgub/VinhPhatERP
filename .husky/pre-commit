@@ -7,8 +7,8 @@ echo "🛡️ Level 7 Defense: Pre-commit checks starting..."
 echo "⚡ Running lint-staged (Fix & Format)..."
 npx lint-staged || exit 1
 
-# 2. Run full type check to ensure no boundary breaking
-echo "🏗️ Running full Type Check..."
-npm run typecheck || exit 1
+# 2. Run AI Audit for Architecture & Type Safety
+echo "🤖 Running AI Audit (Level 7 Standards)..."
+npm run ai:audit || exit 1
 
 echo "✅ All checks passed. Committing safe code."
