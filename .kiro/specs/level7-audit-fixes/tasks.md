@@ -72,9 +72,9 @@
 
 ## Task 8: [MAJOR-03] Validate overpayment trong payment schema và form
 
-- [ ] 8.1 Thêm factory function `createPaymentsSchema(balanceDue?: number)` vào `src/schema/payment.schema.ts` dùng `.superRefine()` để validate `amount <= balanceDue`
-- [ ] 8.2 Cập nhật `src/features/payments/PaymentForm.tsx`: dùng `createPaymentsSchema(balanceDue)` thay vì `paymentsSchema`
-- [ ] 8.3 Thêm UI block trong `PaymentForm.tsx`: nếu `balanceDue <= 0` thì hiển thị thông báo "Đơn hàng đã thanh toán đầy đủ" và không render form
+- [x] 8.1 Thêm factory function `createPaymentsSchema(balanceDue?: number)` vào `src/schema/payment.schema.ts` dùng `.superRefine()` để validate `amount <= balanceDue`
+- [x] 8.2 Cập nhật `src/features/payments/PaymentForm.tsx`: dùng `createPaymentsSchema(balanceDue)` thay vì `paymentsSchema`
+- [-] 8.3 Thêm UI block trong `PaymentForm.tsx`: nếu `balanceDue <= 0` thì hiển thị thông báo "Đơn hàng đã thanh toán đầy đủ" và không render form
 - [ ] 8.4 Viết property-based test cho `createPaymentsSchema` trong `src/schema/payment.schema.test.ts` (dùng fast-check): Property 1 — overpayment luôn bị từ chối; Property 2 — payment hợp lệ luôn được chấp nhận
 - [ ] 8.5 Chạy `npm run test` và xác nhận property tests pass
 - [ ] 8.6\* (Optional — cần confirm) Tạo migration DB: `supabase/migrations/YYYYMMDD_add_overpayment_constraint.sql` với CHECK constraint ngăn `amount > balance_due`
