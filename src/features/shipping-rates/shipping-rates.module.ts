@@ -1,5 +1,10 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
+import { formatCurrency } from '@/shared/utils/format';
+import type { ShippingRateFormValues } from '@/schema/shipping-rate.schema';
+
+export { formatCurrency };
+export type { ShippingRateFormValues };
 
 export const shippingRatesFeature: FeatureDefinition = {
   key: 'shipping-rates',
@@ -37,7 +42,7 @@ export const shippingRatesPlugin: FeaturePlugin = {
     'Cấu hình đơn giá vận chuyển cho các khu vực và đối tác khác nhau.',
   icon: 'package',
   requiredRoles: ['admin', 'manager'],
-  group: 'admin',
+  group: 'system',
   order: 110,
   component: () =>
     import('./ShippingRatesPage').then((m) => ({

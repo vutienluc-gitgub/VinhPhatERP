@@ -1,5 +1,31 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
+import {
+  deliveryConfirmSchema,
+  deliveryConfirmDefaultValues,
+  emptyShipmentItem,
+  shipmentsDefaultValues,
+  shipmentsSchema,
+  SHIPMENT_STATUS_LABELS,
+  type ShipmentsFormValues,
+  type DeliveryConfirmFormValues,
+  type ShipmentItemFormValues,
+} from '@/schema/shipment.schema';
+
+export {
+  deliveryConfirmSchema,
+  deliveryConfirmDefaultValues,
+  emptyShipmentItem,
+  shipmentsDefaultValues,
+  shipmentsSchema,
+  SHIPMENT_STATUS_LABELS,
+};
+
+export type {
+  ShipmentsFormValues,
+  DeliveryConfirmFormValues,
+  ShipmentItemFormValues,
+};
 
 export const shipmentsFeature: FeatureDefinition = {
   key: 'shipments',
@@ -40,7 +66,7 @@ export const shipmentsPlugin: FeaturePlugin = {
     'Quản lý quy trình đóng gói và giao nhận hàng hóa tới khách hàng.',
   icon: 'package',
   requiredRoles: ['admin', 'manager', 'staff'],
-  group: 'logistics',
+  group: 'sales',
   order: 70,
   component: () =>
     import('./ShipmentsPage').then((m) => ({ default: m.ShipmentsPage })),

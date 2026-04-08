@@ -47,8 +47,7 @@ export const settingsPlugin: FeaturePlugin = {
   description: 'Cài đặt thông tin công ty và các tham số vận hành hệ thống.',
   icon: 'package',
   requiredRoles: ['admin'],
-  group: 'admin',
-  order: 999,
+  group: 'system',
   component: () =>
     import('./SettingsPage').then((m) => ({ default: m.SettingsPage })),
 };

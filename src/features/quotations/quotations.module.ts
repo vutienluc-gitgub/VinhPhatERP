@@ -1,5 +1,31 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
+import {
+  QUOTATION_STATUS_LABELS,
+  QUOTATION_STATUS_ICONS,
+  calculateQuotationTotals,
+  DISCOUNT_TYPE_OPTIONS,
+  emptyQuotationItem,
+  quotationsDefaultValues,
+  quotationsSchema,
+  quotationItemSchema,
+  UNIT_OPTIONS,
+  VAT_RATE_OPTIONS,
+} from '@/schema/quotation.schema';
+
+export {
+  QUOTATION_STATUS_LABELS,
+  QUOTATION_STATUS_ICONS,
+  calculateQuotationTotals,
+  DISCOUNT_TYPE_OPTIONS,
+  emptyQuotationItem,
+  quotationsDefaultValues,
+  quotationsSchema,
+  quotationItemSchema,
+  UNIT_OPTIONS,
+  VAT_RATE_OPTIONS,
+};
+export type { QuotationsFormValues } from '@/schema/quotation.schema';
 
 export const quotationsFeature: FeatureDefinition = {
   key: 'quotations',

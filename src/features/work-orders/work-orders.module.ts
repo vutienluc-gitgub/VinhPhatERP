@@ -1,18 +1,22 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
+import {
+  WORK_ORDER_STATUSES,
+  createWorkOrderSchema,
+} from '@/schema/work-order.schema';
 import type {
   WorkOrder,
-  WorkOrderItem,
   WorkOrderStatus,
   WorkOrderWithRelations,
 } from '@/features/work-orders/types';
 
+export type { WorkOrder, WorkOrderStatus, WorkOrderWithRelations };
+
+export { WORK_ORDER_STATUSES, createWorkOrderSchema };
 export type {
-  WorkOrder,
-  WorkOrderItem,
-  WorkOrderStatus,
-  WorkOrderWithRelations,
-};
+  CreateWorkOrderInput,
+  CompleteWorkOrderInput,
+} from '@/schema/work-order.schema';
 
 export const workOrdersFeature: FeatureDefinition = {
   key: 'work-orders',
@@ -55,7 +59,7 @@ export const workOrdersPlugin: FeaturePlugin = {
   group: 'production',
   order: 20,
   component: () =>
-    import('./WorkOrdersPage').then((m) => ({ default: m.WorkOrdersPage })),
+    import('./WorkOrderPage').then((m) => ({ default: m.WorkOrdersPage })),
 };
 
 export default createModule(workOrdersFeature);

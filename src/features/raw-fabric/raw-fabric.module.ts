@@ -1,5 +1,36 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
+import {
+  QUALITY_GRADE_LABELS,
+  QUALITY_GRADES,
+  ROLL_STATUS_LABELS,
+  ROLL_STATUSES,
+  bulkInputDefaults,
+  bulkInputSchema,
+  formatBulkRollNumber,
+  rawFabricDefaults,
+  rawFabricSchema,
+  findDuplicateRollNumbers,
+  generateBarcode,
+} from '@/schema/raw-fabric.schema';
+
+export {
+  QUALITY_GRADE_LABELS,
+  QUALITY_GRADES,
+  ROLL_STATUS_LABELS,
+  ROLL_STATUSES,
+  bulkInputDefaults,
+  bulkInputSchema,
+  formatBulkRollNumber,
+  rawFabricDefaults,
+  rawFabricSchema,
+  findDuplicateRollNumbers,
+  generateBarcode,
+};
+export type {
+  RawFabricFormValues,
+  BulkInputFormValues,
+} from '@/schema/raw-fabric.schema';
 
 export const rawFabricFeature: FeatureDefinition = {
   key: 'raw-fabric',
@@ -39,7 +70,7 @@ export const rawFabricPlugin: FeaturePlugin = {
   description: 'Quản lý vải mộc từ lệnh dệt về kho và xuất đi nhuộm.',
   icon: 'layers',
   requiredRoles: ['admin', 'manager', 'staff'],
-  group: 'inventory',
+  group: 'production',
   order: 25,
   component: () =>
     import('./RawFabricPage').then((m) => ({ default: m.RawFabricPage })),

@@ -79,6 +79,8 @@ export interface CreateOrderResult {
 export interface CreateOrderInput extends OrdersFormValues {
   /** Set true khi Manager đã xác nhận override credit warning */
   managerOverride?: boolean;
+  /** Optional: ID của báo giá nguồn để liên kết */
+  sourceQuotationId?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -115,9 +117,7 @@ async function callCreateOrderFunction(
     orderDate: input.orderDate,
     deliveryDate: input.deliveryDate?.trim() || undefined,
     notes: input.notes?.trim() || undefined,
-    sourceQuotationId: (
-      input as CreateOrderInput & { sourceQuotationId?: string }
-    ).sourceQuotationId,
+    sourceQuotationId: input.sourceQuotationId,
     managerOverride: input.managerOverride ?? false,
     items: input.items.map((item) => ({
       fabricType: item.fabricType.trim(),

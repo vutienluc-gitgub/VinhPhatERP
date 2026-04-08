@@ -1,11 +1,25 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import type { Supplier, SupplierInsert, SupplierUpdate } from '@/models';
+import {
+  SUPPLIER_CATEGORIES,
+  SUPPLIER_CATEGORY_LABELS,
+  SUPPLIER_STATUSES,
+  SUPPLIER_STATUS_LABELS,
+  supplierDefaults,
+  supplierSchema,
+} from '@/schema/supplier.schema';
 
-import { suppliersFeature as suppliersFeatureExport } from './suppliers.feature';
-
-export { suppliersFeatureExport };
+export {
+  SUPPLIER_CATEGORIES,
+  SUPPLIER_CATEGORY_LABELS,
+  SUPPLIER_STATUSES,
+  SUPPLIER_STATUS_LABELS,
+  supplierDefaults,
+  supplierSchema,
+};
 export type { Supplier, SupplierInsert, SupplierUpdate };
+export type { SupplierFormValues } from '@/schema/supplier.schema';
 
 export const suppliersFeature: FeatureDefinition = {
   key: 'suppliers',
@@ -45,7 +59,7 @@ export const suppliersPlugin: FeaturePlugin = {
   description: 'Tra cứu và quản lý danh sách nhà cung cấp, đối tác gia công.',
   icon: 'users',
   requiredRoles: ['admin', 'manager'],
-  group: 'partners',
+  group: 'master-data',
   order: 50,
   component: () =>
     import('./SuppliersPage').then((m) => ({ default: m.SuppliersPage })),

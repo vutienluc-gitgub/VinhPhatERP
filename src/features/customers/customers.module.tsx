@@ -1,8 +1,5 @@
-import { lazy } from 'react';
-
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
-import { LazyPage } from '@/app/router/LazyPage';
 
 export const customersFeature: FeatureDefinition = {
   key: 'customers',
@@ -42,7 +39,7 @@ export const customersPlugin: FeaturePlugin = {
   description: 'Danh mục khách hàng và quản lý công nợ khách hàng.',
   icon: 'users',
   requiredRoles: ['admin', 'manager', 'staff'],
-  group: 'partners',
+  group: 'sales',
   order: 60,
   component: () =>
     import('./CustomersPage').then((m) => ({ default: m.CustomersPage })),

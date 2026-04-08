@@ -1,20 +1,19 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import {
-  FABRIC_CATALOG_STATUS_COLORS,
   FABRIC_CATALOG_STATUS_LABELS,
   FABRIC_CATALOG_STATUSES,
-  fabricTemplateSchema,
-  yarnRequirementSchema,
+  fabricCatalogSchema,
+  fabricCatalogDefaultValues,
 } from '@/schema/fabric-catalog.schema';
 
 export {
-  FABRIC_CATALOG_STATUS_COLORS,
   FABRIC_CATALOG_STATUS_LABELS,
   FABRIC_CATALOG_STATUSES,
-  fabricTemplateSchema,
-  yarnRequirementSchema,
+  fabricCatalogSchema,
+  fabricCatalogDefaultValues,
 };
+export type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 
 export const fabricCatalogFeature: FeatureDefinition = {
   key: 'fabric-catalog',

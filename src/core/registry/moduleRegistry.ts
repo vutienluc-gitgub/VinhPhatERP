@@ -22,7 +22,7 @@ export type AppModule = {
   permissions?: UserRole[];
 };
 
-export function createModule(config: AppModule): AppModule {
+export function createModule<T>(config: T): T {
   return config;
 }
 

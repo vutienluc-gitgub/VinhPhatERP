@@ -40,7 +40,7 @@ export const reportsPlugin: FeaturePlugin = {
     'Tổng hợp số liệu sản xuất, kinh doanh và tài chính toàn công ty.',
   icon: 'package',
   requiredRoles: ['admin', 'manager'],
-  group: 'admin',
+  group: 'system',
   order: 100,
   component: () =>
     import('./ReportsPage').then((m) => ({ default: m.ReportsPage })),
