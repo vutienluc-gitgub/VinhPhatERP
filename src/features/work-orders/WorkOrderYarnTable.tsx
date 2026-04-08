@@ -8,9 +8,9 @@ import {
 
 import { Plus, Trash2 } from '@/shared/icons';
 import { Combobox } from '@/shared/components/Combobox';
+import { useYarnCatalogOptions } from '@/features/yarn-catalog/useYarnCatalog';
 
 import type { CreateWorkOrderInput } from './work-orders.module';
-import { useYarnCatalogOptions } from '../yarn-catalog/useYarnCatalog';
 
 interface WorkOrderYarnTableProps {
   control: Control<CreateWorkOrderInput>;

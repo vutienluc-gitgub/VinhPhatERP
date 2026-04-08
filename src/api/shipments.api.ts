@@ -9,9 +9,7 @@ import { supabase } from '@/services/supabase/client';
 import type { Database } from '@/services/supabase/database.types';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db = () => supabase as any;
+import { untypedDb } from '@/services/supabase/untyped';
 
 const HEADER_TABLE = 'shipments';
 const ITEMS_TABLE = 'shipment_items';
@@ -439,7 +437,7 @@ export async function createShipmentFromFinishedFabric(input: {
   shipmentDate: string;
   rollIds: string[];
 }): Promise<string> {
-  const { data, error } = await db().rpc(
+  const { data, error } = await untypedDb.rpc(
     'create_shipment_from_finished_fabric',
     {
       p_customer_id: input.customerId,
@@ -455,8 +453,9 @@ export async function createShipmentFromFinishedFabric(input: {
     throw error;
   }
 
-  // RPC returns SEFURI TABLE, so data is an array of records
-  const result = (data as any)?.[0];
+  // RPC returns SETOF TABLE, so data is an array of records
+  const rows = data as Array<{ shipment_id: string }> | null;
+  const result = rows?.[0];
   if (!result?.shipment_id) {
     throw new Error('Không nhận được mã phiếu xuất từ hệ thống');
   }

@@ -117,7 +117,7 @@ export async function createBomDraft(
   const auth = await supabase.auth.getUser();
   const userId = auth.data.user?.id;
 
-  const { bom_yarn_items, ...headerData } = formData;
+  const { bom_yarn_items: bomYarnItems, ...headerData } = formData;
 
   // Tự sinh mã BOM nếu chưa có: BOM-<mã sản phẩm mộc>-<mã sợi đầu tiên>
   let finalCode = headerData.code?.trim() || '';
@@ -128,7 +128,7 @@ export async function createBomDraft(
       .eq('id', headerData.target_fabric_id)
       .single();
 
-    const firstYarnId = bom_yarn_items?.[0]?.yarn_catalog_id;
+    const firstYarnId = bomYarnItems?.[0]?.yarn_catalog_id;
     let yarnCode = '';
     if (firstYarnId) {
       const { data: yarn } = await supabase
@@ -159,8 +159,8 @@ export async function createBomDraft(
 
   if (headerError) throw headerError;
 
-  if (bom_yarn_items && bom_yarn_items.length > 0) {
-    const itemsToInsert = bom_yarn_items.map((item, index) => ({
+  if (bomYarnItems && bomYarnItems.length > 0) {
+    const itemsToInsert = bomYarnItems.map((item, index) => ({
       bom_template_id: header.id,
       version: 1,
       yarn_catalog_id: item.yarn_catalog_id,
@@ -199,7 +199,7 @@ export async function updateBomDraft(
     throw new Error('Chỉ có thể sửa khi BOM đang ở trạng thái Nháp (Draft).');
   }
 
-  const { bom_yarn_items, ...headerData } = formData;
+  const { bom_yarn_items: bomYarnItems, ...headerData } = formData;
 
   const { error: updateErr } = await supabase
     .from('bom_templates')
@@ -216,8 +216,8 @@ export async function updateBomDraft(
     .eq('bom_template_id', id);
   if (delErr) throw delErr;
 
-  if (bom_yarn_items && bom_yarn_items.length > 0) {
-    const itemsToInsert = bom_yarn_items.map((item, index) => ({
+  if (bomYarnItems && bomYarnItems.length > 0) {
+    const itemsToInsert = bomYarnItems.map((item, index) => ({
       bom_template_id: id,
       version: 1,
       yarn_catalog_id: item.yarn_catalog_id,

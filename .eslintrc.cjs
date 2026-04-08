@@ -29,7 +29,7 @@ module.exports = {
     // 🔒 IMPORT GUARD (ICON + STRUCTURE)
     // ========================
     'no-restricted-imports': [
-      'warn',
+      'error',
       {
         paths: [
           {
@@ -103,7 +103,7 @@ module.exports = {
         caughtErrorsIgnorePattern: '^_',
       },
     ],
-    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/no-explicit-any': 'error',
 
     // ========================
     // 📐 VERTICAL FORMATTING (Trick tránh lỗi ngoặc)

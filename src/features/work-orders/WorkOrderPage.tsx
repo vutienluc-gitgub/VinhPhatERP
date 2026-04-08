@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import type { WorkOrderWithRelations } from './types';
 import { WorkOrderDetail } from './WorkOrderDetail';
 import { WorkOrderForm } from './WorkOrderForm';
 import { WorkOrderList } from './WorkOrderList';
@@ -8,7 +9,9 @@ export function WorkOrdersPage() {
   const [view, setView] = useState<'list' | 'detail'>('list');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [editingData, setEditingData] = useState<any>(null);
+  const [editingData, setEditingData] = useState<WorkOrderWithRelations | null>(
+    null,
+  );
 
   const handleView = (id: string) => {
     setSelectedId(id);
@@ -21,7 +24,7 @@ export function WorkOrdersPage() {
     setEditingData(null);
   };
 
-  const handleEdit = (wo: any) => {
+  const handleEdit = (wo: WorkOrderWithRelations) => {
     setEditingData(wo);
     setIsFormOpen(true);
   };
@@ -52,7 +55,7 @@ export function WorkOrdersPage() {
       {/* Work Order Form Modal */}
       {isFormOpen && (
         <WorkOrderForm
-          initialData={editingData}
+          initialData={editingData ?? undefined}
           onSuccess={handleFormSuccess}
           onCancel={() => {
             setIsFormOpen(false);

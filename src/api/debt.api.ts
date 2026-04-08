@@ -1,5 +1,5 @@
-import { supabase } from '@/services/supabase/client';
 import type { CustomerDebt, DebtTransaction } from '@/schema';
+import { untypedDb } from '@/services/supabase/untyped';
 
 /**
  * Fetch a customer's overall debt status
@@ -7,7 +7,7 @@ import type { CustomerDebt, DebtTransaction } from '@/schema';
 export async function fetchCustomerDebt(
   customerId: string,
 ): Promise<CustomerDebt | null> {
-  const { data, error } = await (supabase as any)
+  const { data, error } = await untypedDb
     .from('customer_debt')
     .select('*')
     .eq('customer_id', customerId)
@@ -23,7 +23,7 @@ export async function fetchCustomerDebt(
 export async function fetchDebtTransactions(
   customerId: string,
 ): Promise<DebtTransaction[]> {
-  const { data, error } = await (supabase as any)
+  const { data, error } = await untypedDb
     .from('debt_transactions')
     .select(
       `
@@ -42,7 +42,7 @@ export async function fetchDebtTransactions(
  * Manual sync debt for a shipment (rarely used due to DB trigger)
  */
 export async function syncShipmentDebtRPC(shipmentId: string): Promise<void> {
-  const { error } = await (supabase as any).rpc('sync_shipment_debt', {
+  const { error } = await untypedDb.rpc('sync_shipment_debt', {
     p_shipment_id: shipmentId,
   });
 
@@ -54,7 +54,8 @@ export async function payCustomerDebt(
   amount: number,
   notes: string,
 ): Promise<void> {
-  const { error } = await (supabase as any).rpc('pay_customer_debt', {
+  if (amount <= 0) throw new Error('Số tiền thanh toán phải lớn hơn 0');
+  const { error } = await untypedDb.rpc('pay_customer_debt', {
     p_customer_id: customerId,
     p_amount: amount,
     p_notes: notes,

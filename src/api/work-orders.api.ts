@@ -10,6 +10,7 @@ import type {
   CompleteWorkOrderInput,
 } from '@/features/work-orders/work-orders.module';
 import { supabase } from '@/services/supabase/client';
+import { untypedDb } from '@/services/supabase/untyped';
 
 const TABLE = 'work_orders';
 
@@ -20,8 +21,7 @@ export async function fetchWorkOrders(
   page = 1,
   pageSize = 20,
 ): Promise<{ data: WorkOrderWithRelations[]; count: number }> {
-  let query = supabase.from(TABLE).select(
-    `
+  const selectStr = `
       *,
       bom_template:bom_templates(
         id, code, name,
@@ -32,13 +32,17 @@ export async function fetchWorkOrders(
         customer:customers(id, name)
       ),
       supplier:suppliers(id, code, name)
-    `,
-    { count: 'exact' },
-  );
+    `;
+
+  // yarn_issued is not in the DB enum type — use untypedDb when filtering by it
+  const useUntyped = filter?.status === 'yarn_issued';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let query: any = useUntyped
+    ? untypedDb.from(TABLE).select(selectStr, { count: 'exact' })
+    : supabase.from(TABLE).select(selectStr, { count: 'exact' });
 
   if (filter?.status && filter.status !== 'all') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    query = query.eq('status', filter.status as any);
+    query = query.eq('status', filter.status);
   }
   if (filter?.search) {
     query = query.ilike('work_order_number', `%${filter.search}%`);
@@ -205,8 +209,7 @@ export async function createWorkOrder(
       stage,
       status: 'pending' as const,
     }));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: progressErr } = await (supabase as any)
+    const { error: progressErr } = await untypedDb
       .from('order_progress')
       .insert(progressRows);
     if (progressErr) {
@@ -238,20 +241,38 @@ export async function updateWorkOrder(
       'Chỉ được phép sửa lệnh dệt ở trạng thái Bản nháp (Draft).',
     );
 
-  // 1. Prepare update object
-  const update: Record<string, any> = {
+  // 1. Prepare update object — using typed interface to avoid generic Record
+  interface WorkOrderUpdateData {
+    work_order_number: string | undefined;
+    order_id: string | null;
+    bom_template_id: string;
+    target_quantity_m: number;
+    target_unit: string;
+    start_date: string | null;
+    end_date: string | null;
+    supplier_id: string;
+    weaving_unit_price: number;
+    notes: string | null | undefined;
+    standard_loss_pct: number;
+    bom_version?: number;
+    target_weight_kg?: number | null;
+  }
+
+  const update: WorkOrderUpdateData = {
     work_order_number: input.work_order_number,
     order_id:
       input.order_id === 'none' ? null : input.order_id || current.order_id,
     bom_template_id: input.bom_template_id || current.bom_template_id,
     target_quantity_m: input.target_quantity_m ?? current.target_quantity_m,
-    target_unit: input.target_unit || current.target_unit,
+    target_unit: input.target_unit || current.target_unit || 'm',
     start_date: input.start_date || current.start_date,
     end_date: input.end_date || current.end_date,
-    supplier_id: input.supplier_id || current.supplier_id,
-    weaving_unit_price: input.weaving_unit_price ?? current.weaving_unit_price,
+    supplier_id: input.supplier_id || current.supplier_id || '',
+    weaving_unit_price:
+      input.weaving_unit_price ?? (current.weaving_unit_price || 0),
     notes: input.notes !== undefined ? input.notes : current.notes,
-    standard_loss_pct: input.standard_loss_pct ?? current.standard_loss_pct,
+    standard_loss_pct:
+      input.standard_loss_pct ?? (current.standard_loss_pct || 0),
   };
 
   // 2. Determine if recalculation is needed
@@ -281,7 +302,7 @@ export async function updateWorkOrder(
     if (bomChanged && bom) {
       update.bom_version = bom.active_version;
       if (input.standard_loss_pct === undefined) {
-        update.standard_loss_pct = bom.standard_loss_pct;
+        update.standard_loss_pct = bom.standard_loss_pct ?? 0;
       }
     }
 
@@ -347,10 +368,10 @@ export async function updateWorkOrder(
 /* ── Issue yarn (draft → yarn_issued) ── */
 
 export async function issueYarn(id: string): Promise<WorkOrder> {
-  const { error } = await supabase
+  // yarn_issued is an app-level status not in the generated DB enum — use untypedDb
+  const { error } = await untypedDb
     .from(TABLE)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .update({ status: 'yarn_issued' as any })
+    .update({ status: 'yarn_issued' })
     .eq('id', id)
     .eq('status', 'draft');
   if (error) throw error;
@@ -385,8 +406,7 @@ export async function startWorkOrder(id: string): Promise<WorkOrder> {
       .eq('status', 'pending');
   } else {
     // Standalone work order
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase as any)
+    await untypedDb
       .from('order_progress')
       .update({
         status: 'in_progress',
@@ -429,8 +449,7 @@ export async function completeWorkOrder(
       .eq('order_id', wo.order_id)
       .eq('stage', 'weaving');
   } else {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase as any)
+    await untypedDb
       .from('order_progress')
       .update({
         status: 'done',
@@ -455,9 +474,7 @@ export async function cancelWorkOrder(id: string): Promise<WorkOrder> {
 }
 
 export async function fetchUnitOptions(): Promise<string[]> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const supa = supabase as any;
-  const { data, error } = await supa
+  const { data, error } = await untypedDb
     .from('v_available_units')
     .select('unit')
     .order('unit', { ascending: true });
@@ -466,6 +483,5 @@ export async function fetchUnitOptions(): Promise<string[]> {
     console.error('Error fetching units:', error);
     return ['m', 'kg', 'yard'];
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (data || []).map((u: any) => u.unit);
+  return (data || []).map((u: { unit: string }) => u.unit);
 }

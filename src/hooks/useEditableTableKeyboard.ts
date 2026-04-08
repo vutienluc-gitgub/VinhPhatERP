@@ -1,6 +1,6 @@
 import { useRef, useCallback } from 'react';
 
-import { getFocusableElements, moveFocus } from '../utils/focusManager';
+import { getFocusableElements, moveFocus } from '@/utils/focusManager';
 
 /**
  * useEditableTableKeyboard
