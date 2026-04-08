@@ -11,6 +11,7 @@ import type {
 } from '@/features/payments/types';
 import type { Payment, PaymentInsert } from '@/models';
 import { supabase } from '@/services/supabase/client';
+import { untypedDb } from '@/services/supabase/untyped';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 
@@ -123,8 +124,8 @@ export type AccountInsertRow = {
 export async function fetchPaymentAccounts(
   showInactive = false,
 ): Promise<PaymentAccount[]> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let query = (supabase as any)
+  // untypedDb because payment_accounts might not be in the generated types yet
+  let query = untypedDb
     .from('payment_accounts')
     .select('*')
     .order('name', { ascending: true });
@@ -137,8 +138,7 @@ export async function fetchPaymentAccounts(
 export async function createPaymentAccount(
   row: AccountInsertRow,
 ): Promise<PaymentAccount> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const { data, error } = await untypedDb
     .from('payment_accounts')
     .insert(row)
     .select()
@@ -151,8 +151,7 @@ export async function updatePaymentAccount(
   id: string,
   row: Omit<AccountInsertRow, 'current_balance'>,
 ): Promise<PaymentAccount> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const { data, error } = await untypedDb
     .from('payment_accounts')
     .update(row)
     .eq('id', id)
@@ -163,8 +162,7 @@ export async function updatePaymentAccount(
 }
 
 export async function deletePaymentAccount(id: string): Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any)
+  const { error } = await untypedDb
     .from('payment_accounts')
     .delete()
     .eq('id', id);
@@ -194,8 +192,8 @@ export async function fetchExpensesPaginated(
   const from = (page - 1) * DEFAULT_PAGE_SIZE;
   const to = from + DEFAULT_PAGE_SIZE - 1;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let query = (supabase as any)
+  // untypedDb because expenses table structure might change rapidly
+  let query = untypedDb
     .from('expenses')
     .select('*, suppliers(name, code), payment_accounts(name)', {
       count: 'exact',
@@ -244,8 +242,7 @@ export async function fetchNextExpenseNumber(): Promise<string> {
 }
 
 export async function createExpense(row: ExpenseInsertRow): Promise<Expense> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const { data, error } = await untypedDb
     .from('expenses')
     .insert(row)
     .select()
@@ -258,8 +255,7 @@ export async function updateExpense(
   id: string,
   row: ExpenseInsertRow,
 ): Promise<Expense> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const { data, error } = await untypedDb
     .from('expenses')
     .update(row)
     .eq('id', id)

@@ -1,5 +1,6 @@
 import type { Supplier, SupplierInsert, SupplierUpdate } from '@/models';
 import { supabase } from '@/services/supabase/client';
+import { untypedDb } from '@/services/supabase/untyped';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 
@@ -18,8 +19,7 @@ export async function fetchSuppliersPaginated(
   const from = (page - 1) * DEFAULT_PAGE_SIZE;
   const to = from + DEFAULT_PAGE_SIZE - 1;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let query = (supabase as any)
+  let query = untypedDb
     .from(TABLE)
     .select('*', { count: 'exact' })
     .order('created_at', { ascending: false })
@@ -48,8 +48,7 @@ export async function fetchSuppliersPaginated(
 export async function fetchSuppliers(
   filters: { status?: string; category?: string; search?: string } = {},
 ): Promise<Supplier[]> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let query = (supabase as any)
+  let query = untypedDb
     .from(TABLE)
     .select('*')
     .order('name', { ascending: true });
@@ -94,8 +93,7 @@ export async function updateSupplierRpc(
   id: string,
   row: Record<string, unknown>,
 ): Promise<unknown> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any).rpc('update_supplier', {
+  const { data, error } = await untypedDb.rpc('update_supplier', {
     p_id: id,
     ...row,
   });

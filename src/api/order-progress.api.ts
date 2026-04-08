@@ -10,10 +10,10 @@ import type {
   OrderProgressWithOrder,
 } from '@/models';
 import { supabase } from '@/services/supabase/client';
+import { untypedDb } from '@/services/supabase/untyped';
 
 const TABLE = 'order_progress';
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const auditTable = () => (supabase as any).from('progress_audit_log');
+const auditTable = () => untypedDb.from('progress_audit_log');
 
 export async function fetchOrderProgressByOrder(
   orderId: string,
@@ -28,8 +28,7 @@ export async function fetchOrderProgressByOrder(
 }
 
 export async function fetchProgressBoard(): Promise<OrderProgressWithOrder[]> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const { data, error } = await untypedDb
     .from(TABLE)
     .select(
       `
@@ -117,8 +116,7 @@ export async function fetchRecentAuditLog(
 }
 
 export async function fetchProgressDashboard() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const { data, error } = await untypedDb
     .from(TABLE)
     .select(
       `
@@ -199,7 +197,7 @@ export async function fetchProgressDashboard() {
     return o.stages.some((s) => s.status === 'in_progress');
   });
 
-  // Orders/WOs that have progress rows but haven't started any stage yet
+  // Orders/WOs that have progress rows but haven't started some stage yet
   const waitingToStart = allOrders.filter((o) => {
     if (o.orderStatus === 'completed' || o.orderStatus === 'cancelled')
       return false;

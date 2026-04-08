@@ -7,13 +7,9 @@ import {
   rowsToSettingsMap,
   settingsMapToUpsertRows,
 } from '@/schema/company-settings.schema';
-import { supabase } from '@/services/supabase/client';
+import { untypedDb as supa } from '@/services/supabase/untyped';
 
 const TABLE = 'company_settings';
-
-// supabase typed client doesn't know about company_settings yet (types not regenerated)
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const supa = supabase as any;
 
 export async function fetchCompanySettings(): Promise<CompanySettingsMap> {
   const { data, error } = await supa.from(TABLE).select('*').order('key');

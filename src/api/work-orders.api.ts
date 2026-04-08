@@ -36,8 +36,7 @@ export async function fetchWorkOrders(
 
   // yarn_issued is not in the DB enum type — use untypedDb when filtering by it
   const useUntyped = filter?.status === 'yarn_issued';
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let query: any = useUntyped
+  let query = useUntyped
     ? untypedDb.from(TABLE).select(selectStr, { count: 'exact' })
     : supabase.from(TABLE).select(selectStr, { count: 'exact' });
 

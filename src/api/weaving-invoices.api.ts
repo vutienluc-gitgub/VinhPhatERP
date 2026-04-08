@@ -4,11 +4,9 @@ import type {
 } from '@/features/weaving-invoices/types';
 import type { WeavingInvoiceFormValues } from '@/schema/weaving-invoice.schema';
 import { supabase } from '@/services/supabase/client';
+import { untypedDb as db } from '@/services/supabase/untyped';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db = () => supabase as any;
 
 const TABLE = 'weaving_invoices';
 const ROLLS_TABLE = 'weaving_invoice_rolls';
@@ -22,7 +20,7 @@ export async function fetchWeavingInvoicesPaginated(
   const from = (page - 1) * DEFAULT_PAGE_SIZE;
   const to = from + DEFAULT_PAGE_SIZE - 1;
 
-  let query = db()
+  let query = db
     .from(TABLE)
     .select('*, suppliers(name, code)', { count: 'exact' })
     .order('invoice_date', { ascending: false })
@@ -50,7 +48,7 @@ export async function fetchWeavingInvoicesPaginated(
 export async function fetchWeavingInvoiceById(
   id: string,
 ): Promise<WeavingInvoice> {
-  const { data, error } = await db()
+  const { data, error } = await db
     .from(TABLE)
     .select('*, suppliers(name, code), weaving_invoice_rolls(*)')
     .eq('id', id)
@@ -62,7 +60,7 @@ export async function fetchWeavingInvoiceById(
 /* ── Next invoice number ── */
 
 export async function fetchNextWeavingInvoiceNumber(): Promise<string> {
-  const { data, error } = await db().rpc('next_weaving_invoice_number');
+  const { data, error } = await db.rpc('next_weaving_invoice_number');
   if (error) {
     const now = new Date();
     const yy = String(now.getFullYear()).slice(-2);
@@ -94,7 +92,7 @@ export async function createWeavingInvoice(
 ): Promise<WeavingInvoice> {
   const { data: userData } = await supabase.auth.getUser();
 
-  const { data: header, error: headerErr } = await db()
+  const { data: header, error: headerErr } = await db
     .from(TABLE)
     .insert({
       invoice_number: values.invoice_number.trim(),
@@ -134,9 +132,9 @@ export async function createWeavingInvoice(
     sort_order: idx,
   }));
 
-  const { error: rollsErr } = await db().from(ROLLS_TABLE).insert(rolls);
+  const { error: rollsErr } = await db.from(ROLLS_TABLE).insert(rolls);
   if (rollsErr) {
-    await db().from(TABLE).delete().eq('id', header.id);
+    await db.from(TABLE).delete().eq('id', header.id);
     throw rollsErr;
   }
 
@@ -149,7 +147,7 @@ export async function updateWeavingInvoice(
   id: string,
   values: WeavingInvoiceFormValues,
 ): Promise<void> {
-  const { error: headerErr } = await db()
+  const { error: headerErr } = await db
     .from(TABLE)
     .update({
       invoice_number: values.invoice_number.trim(),
@@ -164,7 +162,7 @@ export async function updateWeavingInvoice(
 
   if (headerErr) throw headerErr;
 
-  const { error: delErr } = await db()
+  const { error: delErr } = await db
     .from(ROLLS_TABLE)
     .delete()
     .eq('invoice_id', id);
@@ -182,14 +180,14 @@ export async function updateWeavingInvoice(
     sort_order: idx,
   }));
 
-  const { error: insertErr } = await db().from(ROLLS_TABLE).insert(rolls);
+  const { error: insertErr } = await db.from(ROLLS_TABLE).insert(rolls);
   if (insertErr) throw insertErr;
 }
 
 /* ── Confirm invoice → trigger insert to raw_fabric_rolls ── */
 
 export async function confirmWeavingInvoice(id: string): Promise<void> {
-  const { error } = await db().rpc('confirm_weaving_invoice', {
+  const { error } = await db.rpc('confirm_weaving_invoice', {
     p_invoice_id: id,
   });
   if (error) {
@@ -207,7 +205,7 @@ export async function markWeavingInvoicePaid(
   id: string,
   paidAmount: number,
 ): Promise<void> {
-  const { error } = await db()
+  const { error } = await db
     .from(TABLE)
     .update({
       paid_amount: paidAmount,
@@ -220,7 +218,7 @@ export async function markWeavingInvoicePaid(
 /* ── Delete (draft only) ── */
 
 export async function deleteWeavingInvoice(id: string): Promise<void> {
-  const { error } = await db().from(TABLE).delete().eq('id', id);
+  const { error } = await db.from(TABLE).delete().eq('id', id);
   if (error) throw error;
 }
 
@@ -240,7 +238,7 @@ export type WeavingSupplierDebtRow = {
 export async function fetchWeavingSupplierDebt(): Promise<
   WeavingSupplierDebtRow[]
 > {
-  const { data, error } = await db().from('v_supplier_debt').select('*');
+  const { data, error } = await db.from('v_supplier_debt').select('*');
   if (error) throw error;
   return (data ?? []) as WeavingSupplierDebtRow[];
 }
