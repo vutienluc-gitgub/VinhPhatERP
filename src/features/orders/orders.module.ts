@@ -1,3 +1,4 @@
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import {
@@ -52,7 +53,6 @@ export const ordersFeature: FeatureDefinition = {
   ],
 };
 
-import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const ordersPlugin: FeaturePlugin = {
   key: 'orders',
   route: 'orders',

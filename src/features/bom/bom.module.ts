@@ -1,3 +1,4 @@
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import type { BomStatus, BomTemplateFormData } from '@/schema/bom.schema';
@@ -42,7 +43,6 @@ export const bomFeature: FeatureDefinition = {
   ],
 };
 
-import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const bomPlugin: FeaturePlugin = {
   key: 'bom',
   route: 'bom',

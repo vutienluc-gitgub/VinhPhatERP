@@ -1,3 +1,4 @@
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export {
   WEAVING_STATUS_LABELS,
   QUALITY_GRADES,
@@ -13,7 +14,6 @@ export type {
   WeavingInvoiceFormValues,
 } from '@/schema/weaving-invoice.schema';
 
-import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const weavingInvoicesPlugin: FeaturePlugin = {
   key: 'weaving-invoices',
   route: 'weaving-invoices',

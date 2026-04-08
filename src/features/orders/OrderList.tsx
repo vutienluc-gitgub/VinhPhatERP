@@ -4,6 +4,7 @@ import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { Pagination } from '@/shared/components/Pagination';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
+import { formatCurrency } from '@/shared/utils/format';
 
 import { ORDER_STATUS_LABELS } from './orders.module';
 import type { Order, OrdersFilter, OrderStatus } from './types';
@@ -14,8 +15,6 @@ type OrderListProps = {
   onNew: () => void;
   onView: (order: Order) => void;
 };
-
-import { formatCurrency } from '@/shared/utils/format';
 
 function statusClass(status: OrderStatus): string {
   switch (status) {

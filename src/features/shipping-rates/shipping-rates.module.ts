@@ -1,3 +1,4 @@
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import { formatCurrency } from '@/shared/utils/format';
@@ -32,7 +33,6 @@ export const shippingRatesFeature: FeatureDefinition = {
   nextMilestones: ['Tự động cập nhật bảng giá từ API đối tác.'],
 };
 
-import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const shippingRatesPlugin: FeaturePlugin = {
   key: 'shipping-rates',
   route: 'shipping-rates',

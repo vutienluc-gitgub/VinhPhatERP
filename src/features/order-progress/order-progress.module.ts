@@ -1,3 +1,4 @@
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import type { OrderProgress, OrderProgressWithOrder } from '@/models';
@@ -36,7 +37,6 @@ export const orderProgressFeature: FeatureDefinition = {
   nextMilestones: ['Dự báo ngày hoàn thiện dựa trên hiệu suất quá khứ.'],
 };
 
-import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const orderProgressPlugin: FeaturePlugin = {
   key: 'order-progress',
   route: 'order-progress',

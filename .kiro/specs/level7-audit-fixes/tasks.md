@@ -109,7 +109,7 @@
 
 ## Task 12: [MINOR-02] Xử lý ESLint warnings
 
-- [ ] 12.1 Xóa unused imports `lazy` và `LazyPage` trong `src/features/customers/customers.module.tsx` (nếu chưa xử lý ở Task 2.1)
-- [ ] 12.2 Fix `import/order` warnings trong tất cả module files: sắp xếp lại thứ tự import (builtin → external → internal)
-- [ ] 12.3 Fix `react-refresh/only-export-components` warnings trong `inventory.module.tsx` và các files liên quan
-- [ ] 12.4 Chạy `npm run lint` và xác nhận 0 warnings trong các files đã fix
+- [x] 12.1 Xóa unused imports `lazy` và `LazyPage` trong `src/features/customers/customers.module.tsx` (nếu chưa xử lý ở Task 2.1)
+- [x] 12.2 Fix `import/order` warnings trong tất cả module files: sắp xếp lại thứ tự import (builtin → external → internal)
+- [x] 12.3 Fix `react-refresh/only-export-components` warnings trong `inventory.module.tsx` và các files liên quan
+- [x] 12.4 Chạy `npm run lint` và xác nhận 0 warnings trong các files đã fix

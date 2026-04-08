@@ -1,3 +1,4 @@
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import type { Supplier, SupplierInsert, SupplierUpdate } from '@/models';
@@ -50,7 +51,6 @@ export const suppliersFeature: FeatureDefinition = {
   ],
 };
 
-import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const suppliersPlugin: FeaturePlugin = {
   key: 'suppliers',
   route: 'suppliers',

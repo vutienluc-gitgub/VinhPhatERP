@@ -1,3 +1,4 @@
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import type {
@@ -38,7 +39,6 @@ export const settingsFeature: FeatureDefinition = {
   nextMilestones: ['Tích hợp nhật ký hoạt động hệ thống (System Audit Logs).'],
 };
 
-import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const settingsPlugin: FeaturePlugin = {
   key: 'settings',
   route: 'settings',

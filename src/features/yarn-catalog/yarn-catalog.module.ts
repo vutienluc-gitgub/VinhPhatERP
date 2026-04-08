@@ -1,3 +1,4 @@
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import {
@@ -39,7 +40,6 @@ export const yarnCatalogFeature: FeatureDefinition = {
   nextMilestones: ['Quản lý chứng chỉ chất lượng sợi (OEKO-TEX...).'],
 };
 
-import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const yarnCatalogPlugin: FeaturePlugin = {
   key: 'yarn-catalog',
   route: 'yarn-catalog',
