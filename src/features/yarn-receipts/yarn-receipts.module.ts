@@ -1,5 +1,19 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
+import {
+  emptyYarnReceiptItem as emptyItem,
+  yarnReceiptsDefaultValues,
+  yarnReceiptsSchema,
+  DOC_STATUS_LABELS,
+} from '@/schema/yarn-receipt.schema';
+
+export {
+  emptyItem,
+  yarnReceiptsDefaultValues,
+  yarnReceiptsSchema,
+  DOC_STATUS_LABELS,
+};
+export type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
 
 export const yarnReceiptsFeature: FeatureDefinition = {
   key: 'yarn-receipts',
@@ -36,7 +50,7 @@ export const yarnReceiptsPlugin: FeaturePlugin = {
   description: 'Quản lý phiếu nhập kho sợi từ nhà cung cấp về kho nguyên liệu.',
   icon: 'package',
   requiredRoles: ['admin', 'manager', 'staff'],
-  group: 'inventory',
+  group: 'production',
   order: 10,
   component: () =>
     import('./YarnReceiptsPage').then((m) => ({ default: m.YarnReceiptsPage })),

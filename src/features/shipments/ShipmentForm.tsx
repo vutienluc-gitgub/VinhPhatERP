@@ -370,6 +370,16 @@ export function ShipmentForm({
                                 shouldValidate: true,
                               },
                             );
+                            const defaultQty =
+                              selectedRoll.weight_kg ||
+                              selectedRoll.length_m ||
+                              0;
+                            if (defaultQty > 0) {
+                              setValue(`items.${idx}.quantity`, defaultQty, {
+                                shouldDirty: true,
+                                shouldValidate: true,
+                              });
+                            }
                           }
                         }}
                         placeholder="— Không chọn —"
@@ -410,7 +420,7 @@ export function ShipmentForm({
                       marginBottom: '0.2rem',
                     }}
                   >
-                    SL (m) *
+                    Số lượng *
                   </span>
                   <input
                     className="field-input"

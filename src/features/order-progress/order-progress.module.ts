@@ -2,12 +2,13 @@ import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import type { OrderProgress, OrderProgressWithOrder } from '@/models';
 import {
-  PRODUCTION_STAGE_LABELS,
   PRODUCTION_STAGES,
+  STAGE_LABELS,
+  STAGE_STATUS_LABELS,
 } from '@/schema/order-progress.schema';
 
 export type { OrderProgress, OrderProgressWithOrder };
-export { PRODUCTION_STAGE_LABELS, PRODUCTION_STAGES };
+export { PRODUCTION_STAGES, STAGE_LABELS, STAGE_STATUS_LABELS };
 
 export const orderProgressFeature: FeatureDefinition = {
   key: 'order-progress',

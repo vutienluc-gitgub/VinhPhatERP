@@ -9,35 +9,30 @@ import type { AuthContextValue } from '@/features/auth/AuthProvider';
 const mockAuth: AuthContextValue = {
   user: null,
   session: null,
+  profile: null,
   loading: false,
+  isBlocked: false,
   signIn: vi.fn(),
   signOut: vi.fn(),
   signUp: vi.fn(),
-  isAdmin: false,
-  isManager: false,
-  isStaff: false,
 };
 
-vi.mock('@/features/auth/useAuth', () => ({
+vi.mock('@/features/auth/AuthProvider', () => ({
   useAuth: () => mockAuth,
 }));
 
 describe('ProtectedRoute', () => {
   it('redirects to login when user is not authenticated', () => {
     mockAuth.user = null;
+    mockAuth.session = null;
 
     render(
       <MemoryRouter initialEntries={['/protected']}>
         <Routes>
-          <Route path="/login" element={<div>Login Page</div>} />
-          <Route
-            path="/protected"
-            element={
-              <ProtectedRoute>
-                <div>Protected Content</div>
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/auth" element={<div>Login Page</div>} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/protected" element={<div>Protected Content</div>} />
+          </Route>
         </Routes>
       </MemoryRouter>,
     );
@@ -47,24 +42,21 @@ describe('ProtectedRoute', () => {
   });
 
   it('renders content when user is authenticated', () => {
-    // Correctly cast without using 'any' directly where forbidden
     const mockUser = {
       id: '123',
       email: 'test@example.com',
     };
     mockAuth.user = mockUser as unknown as AuthContextValue['user'];
+    mockAuth.session = {
+      user: mockUser,
+    } as unknown as AuthContextValue['session'];
 
     render(
       <MemoryRouter initialEntries={['/protected']}>
         <Routes>
-          <Route
-            path="/protected"
-            element={
-              <ProtectedRoute>
-                <div>Protected Content</div>
-              </ProtectedRoute>
-            }
-          />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/protected" element={<div>Protected Content</div>} />
+          </Route>
         </Routes>
       </MemoryRouter>,
     );

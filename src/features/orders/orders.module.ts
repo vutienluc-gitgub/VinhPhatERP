@@ -1,22 +1,27 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import {
-  ORDER_STATUS_COLORS,
   ORDER_STATUS_LABELS,
   ORDER_STATUSES,
   orderItemSchema,
-  orderSchema,
+  ordersSchema,
+  ordersDefaultValues,
+  emptyOrderItem,
+  UNIT_OPTIONS,
 } from '@/schema/order.schema';
 import type { OrderStatus } from '@/schema/order.schema';
 
 export {
-  ORDER_STATUS_COLORS,
   ORDER_STATUS_LABELS,
   ORDER_STATUSES,
   orderItemSchema,
-  orderSchema,
+  ordersSchema,
+  ordersDefaultValues,
+  emptyOrderItem,
+  UNIT_OPTIONS,
 };
 export type { OrderStatus };
+export type { OrdersFormValues } from '@/schema/order.schema';
 
 export const ordersFeature: FeatureDefinition = {
   key: 'orders',
@@ -60,7 +65,7 @@ export const ordersPlugin: FeaturePlugin = {
   group: 'sales',
   order: 10,
   component: () =>
-    import('./OrderList').then((m) => ({ default: m.OrderList })),
+    import('./OrdersPage').then((m) => ({ default: m.OrdersPage })),
 };
 
 export default createModule(ordersFeature);

@@ -1,20 +1,34 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import {
-  FINISHED_FABRIC_STATUS_COLORS,
-  FINISHED_FABRIC_STATUS_LABELS,
-  FINISHED_FABRIC_STATUSES,
   QUALITY_GRADES,
   ROLL_STATUSES,
+  QUALITY_GRADE_LABELS,
+  ROLL_STATUS_LABELS,
+  finishedFabricSchema,
+  finishedFabricDefaults,
+  bulkFinishedInputSchema,
+  bulkFinishedInputDefaults,
+  formatBulkRollNumber,
+  findDuplicateRollNumbers,
 } from '@/schema/finished-fabric.schema';
 
 export {
-  FINISHED_FABRIC_STATUS_COLORS,
-  FINISHED_FABRIC_STATUS_LABELS,
-  FINISHED_FABRIC_STATUSES,
   QUALITY_GRADES,
   ROLL_STATUSES,
+  QUALITY_GRADE_LABELS,
+  ROLL_STATUS_LABELS,
+  finishedFabricSchema,
+  finishedFabricDefaults,
+  bulkFinishedInputSchema,
+  bulkFinishedInputDefaults,
+  formatBulkRollNumber,
+  findDuplicateRollNumbers,
 };
+export type {
+  FinishedFabricFormValues,
+  BulkFinishedInputFormValues,
+} from '@/schema/finished-fabric.schema';
 
 export const finishedFabricFeature: FeatureDefinition = {
   key: 'finished-fabric',
@@ -54,7 +68,7 @@ export const finishedFabricPlugin: FeaturePlugin = {
   description: 'Theo dõi tồn kho vải đã nhuộm, nhập kho và xuất kho giao hàng.',
   icon: 'layers',
   requiredRoles: ['admin', 'manager', 'staff'],
-  group: 'inventory',
+  group: 'production',
   order: 30,
   component: () =>
     import('./FinishedFabricPage').then((m) => ({

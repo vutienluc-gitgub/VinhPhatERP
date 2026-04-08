@@ -10,8 +10,8 @@ export type FeatureDefinition = {
   badge?: string;
   description: string;
   summary?: FeatureMetric[];
-  highlights: string[];
-  resources: string[];
-  entities: string[];
-  nextMilestones: string[];
+  highlights?: string[];
+  resources?: string[];
+  entities?: string[];
+  nextMilestones?: string[];
 };

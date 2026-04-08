@@ -1,5 +1,17 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
+import {
+  yarnCatalogDefaultValues,
+  yarnCatalogSchema,
+  YARN_CATALOG_STATUS_LABELS,
+} from '@/schema/yarn-catalog.schema';
+
+export {
+  yarnCatalogDefaultValues,
+  yarnCatalogSchema,
+  YARN_CATALOG_STATUS_LABELS,
+};
+export type { YarnCatalogFormValues } from '@/schema/yarn-catalog.schema';
 
 export const yarnCatalogFeature: FeatureDefinition = {
   key: 'yarn-catalog',

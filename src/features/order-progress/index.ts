@@ -1,6 +1,11 @@
 export * from '@/features/order-progress/OrderProgressPage';
 export * from '@/features/order-progress/order-progress.module';
-export * from '@/features/order-progress/types';
+export type {
+  ProductionStage,
+  StageStatus,
+  ProgressAuditLog,
+  ProgressAuditLogWithOrder,
+} from '@/features/order-progress/types';
 export {
   useOrderProgress,
   useProgressBoard,
