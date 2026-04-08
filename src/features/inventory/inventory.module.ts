@@ -1,8 +1,8 @@
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import { inventoryAdjustmentSchema } from '@/schema/inventory.schema';
 import type { InventoryAdjustmentFormValues } from '@/schema/inventory.schema';
-import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 
 export { inventoryAdjustmentSchema };
 export type { InventoryAdjustmentFormValues };

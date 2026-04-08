@@ -1,3 +1,4 @@
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import {
@@ -59,7 +60,6 @@ export const finishedFabricFeature: FeatureDefinition = {
   ],
 };
 
-import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const finishedFabricPlugin: FeaturePlugin = {
   key: 'finished-fabric',
   route: 'finished-fabric',

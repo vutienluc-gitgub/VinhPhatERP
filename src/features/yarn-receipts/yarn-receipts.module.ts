@@ -1,3 +1,4 @@
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import {
@@ -41,7 +42,6 @@ export const yarnReceiptsFeature: FeatureDefinition = {
   nextMilestones: ['Tích hợp cân điện tử tự động nhập khối lượng.'],
 };
 
-import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const yarnReceiptsPlugin: FeaturePlugin = {
   key: 'yarn-receipts',
   route: 'yarn-receipts',

@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Lint After Task",
+  "description": "Chạy npm run lint tự động sau mỗi spec task hoàn thành",
+  "version": "1",
+  "when": {
+    "type": "postTaskExecution"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "npm run lint",
+    "timeout": 60
+  }
+}
