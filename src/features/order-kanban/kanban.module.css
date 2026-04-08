@@ -118,6 +118,14 @@
   border-left: 3px solid var(--danger);
 }
 
+.kanban-card.in-progress {
+  border: 1px solid var(--primary);
+  background: #eff6ff;
+  box-shadow:
+    0 4px 6px -1px rgba(11, 107, 203, 0.08),
+    0 2px 4px -1px rgba(11, 107, 203, 0.04);
+}
+
 .kanban-card-header {
   display: flex;
   align-items: flex-start;

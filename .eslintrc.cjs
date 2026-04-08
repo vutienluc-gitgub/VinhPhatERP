@@ -14,7 +14,7 @@ module.exports = {
 
   parser: '@typescript-eslint/parser',
 
-  plugins: ['@typescript-eslint', 'react-refresh', 'import'],
+  plugins: ['@typescript-eslint', 'react-refresh', 'import', 'boundaries'],
 
   ignorePatterns: ['dist', 'node_modules'],
 
@@ -22,9 +22,34 @@ module.exports = {
     'import/resolver': {
       typescript: {},
     },
+    'boundaries/elements': [
+      { type: 'feature', pattern: 'src/features/*' },
+      { type: 'shared', pattern: 'src/shared/*' },
+      { type: 'api', pattern: 'src/api/*' },
+      { type: 'schema', pattern: 'src/schema/*' },
+      { type: 'models', pattern: 'src/models/*' },
+    ],
   },
 
   rules: {
+    // ========================
+    // 🏗️ ARCHITECTURE BOUNDARIES
+    // ========================
+    'boundaries/dependencies': [
+      'error',
+      {
+        default: 'allow',
+        rules: [
+          {
+            from: ['feature'],
+            disallow: ['feature'],
+            message:
+              'Cross-feature imports are not allowed. Use @/shared/, @/api/, or @/models/ instead.',
+          },
+        ],
+      },
+    ],
+
     // ========================
     // 🔒 IMPORT GUARD (ICON + STRUCTURE)
     // ========================
@@ -126,6 +151,13 @@ module.exports = {
       rules: {
         'no-restricted-imports': 'off',
         '@typescript-eslint/naming-convention': 'off',
+      },
+    },
+    {
+      // Page-level orchestrators may compose multiple features
+      files: ['**/*Page.tsx', '**/*Detail.tsx'],
+      rules: {
+        'boundaries/dependencies': 'off',
       },
     },
   ],

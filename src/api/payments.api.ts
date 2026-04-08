@@ -14,6 +14,7 @@ import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
+import { paymentResponseSchema } from '@/schema/payment.schema';
 
 /* ─── Payments ─────────────────────────────────── */
 
@@ -44,7 +45,7 @@ export async function fetchPaymentsPaginated(
   if (error) throw error;
   const total = count ?? 0;
   return {
-    data: (data ?? []) as unknown as Payment[],
+    data: paymentResponseSchema.array().parse(data ?? []) as Payment[],
     total,
     page,
     pageSize: DEFAULT_PAGE_SIZE,
@@ -61,7 +62,7 @@ export async function fetchPaymentsByOrder(
     .eq('order_id', orderId)
     .order('payment_date', { ascending: false });
   if (error) throw error;
-  return (data ?? []) as Payment[];
+  return paymentResponseSchema.array().parse(data ?? []) as Payment[];
 }
 
 export async function fetchNextPaymentNumber(): Promise<string> {

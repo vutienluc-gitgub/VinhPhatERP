@@ -10,6 +10,7 @@ import type { Database } from '@/services/supabase/database.types';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import { untypedDb } from '@/services/supabase/untyped';
+import { shipmentResponseSchema } from '@/schema/shipment.schema';
 
 const HEADER_TABLE = 'shipments';
 const ITEMS_TABLE = 'shipment_items';
@@ -145,7 +146,7 @@ export async function fetchShipmentsPaginated(
   if (error) throw error;
   const total = count ?? 0;
   return {
-    data: (data ?? []) as unknown as Shipment[],
+    data: shipmentResponseSchema.array().parse(data ?? []) as Shipment[],
     total,
     page,
     pageSize: DEFAULT_PAGE_SIZE,
@@ -164,7 +165,7 @@ export async function fetchShipmentsByOrder(
     .eq('order_id', orderId)
     .order('shipment_date', { ascending: false });
   if (error) throw error;
-  return (data ?? []) as unknown as Shipment[];
+  return shipmentResponseSchema.array().parse(data ?? []) as Shipment[];
 }
 
 /* ── Generate next shipment number ── */
@@ -231,6 +232,7 @@ export type ShipmentCreateInput = {
   shipmentDate: string;
   deliveryAddress: string | null;
   deliveryStaffId: string | null;
+  employeeId: string | null;
   shippingRateId: string | null;
   shippingCost: number;
   loadingFee: number;
@@ -259,6 +261,7 @@ export async function createShipmentFull(
       shipment_date: input.shipmentDate,
       delivery_address: input.deliveryAddress,
       delivery_staff_id: input.deliveryStaffId,
+      employee_id: input.employeeId,
       shipping_rate_id: input.shippingRateId,
       shipping_cost: input.shippingCost,
       loading_fee: input.loadingFee,

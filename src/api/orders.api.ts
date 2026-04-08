@@ -10,6 +10,7 @@ import { supabase } from '@/services/supabase/client';
 import type { Database } from '@/services/supabase/database.types';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
+import { orderResponseSchema } from '@/schema/order.schema';
 
 const HEADER_TABLE = 'orders';
 const ITEMS_TABLE = 'order_items';
@@ -44,7 +45,7 @@ export async function fetchOrdersPaginated(
   if (error) throw error;
   const total = count ?? 0;
   return {
-    data: (data ?? []) as unknown as Order[],
+    data: orderResponseSchema.array().parse(data ?? []) as Order[],
     total,
     page,
     pageSize: DEFAULT_PAGE_SIZE,
@@ -70,7 +71,7 @@ export async function fetchOrders(
 
   const { data, error } = await query;
   if (error) throw error;
-  return (data ?? []) as unknown as Order[];
+  return orderResponseSchema.array().parse(data ?? []) as Order[];
 }
 
 /* ── Single order by ID ── */
@@ -84,7 +85,7 @@ export async function fetchOrderById(id: string): Promise<Order> {
     .eq('id', id)
     .single();
   if (error) throw error;
-  return data as unknown as Order;
+  return orderResponseSchema.parse(data) as Order;
 }
 
 /* ── Generate next order number ── */

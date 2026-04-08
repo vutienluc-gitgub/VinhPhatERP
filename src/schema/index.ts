@@ -23,6 +23,7 @@ export * from './order-progress.schema';
 export * from './payment.schema';
 export * from './debt.schema';
 export * from './dyeing-order.schema';
+export * from './employee.schema';
 export {
   QUOTATION_STATUSES,
   QUOTATION_STATUS_LABELS,

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { Icon } from '@/shared/components/Icon';
+
 import {
   PRODUCTION_STAGES,
   STAGE_LABELS,
@@ -125,8 +127,8 @@ export function ProgressTimeline({
               key={row.id}
               style={{
                 display: 'flex',
-                gap: '0.75rem',
-                minHeight: 56,
+                gap: '1rem',
+                minHeight: 64,
               }}
             >
               {/* Timeline node + connector line */}
@@ -140,22 +142,58 @@ export function ProgressTimeline({
               >
                 <div
                   style={{
-                    width: 16,
-                    height: 16,
+                    width:
+                      row.status === 'in_progress' || row.status === 'done'
+                        ? 24
+                        : 16,
+                    height:
+                      row.status === 'in_progress' || row.status === 'done'
+                        ? 24
+                        : 16,
                     borderRadius: '50%',
-                    background: row.status === 'done' ? color : 'var(--bg)',
-                    border: `2.5px solid ${color}`,
+                    background:
+                      row.status === 'done'
+                        ? color
+                        : row.status === 'in_progress'
+                          ? '#eff6ff'
+                          : 'var(--bg)',
+                    border:
+                      row.status === 'in_progress'
+                        ? `2px solid ${color}`
+                        : `2.5px solid ${color}`,
                     flexShrink: 0,
-                    marginTop: 4,
+                    marginTop:
+                      row.status === 'in_progress' || row.status === 'done'
+                        ? 0
+                        : 4,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: color,
+                    boxShadow:
+                      row.status === 'in_progress'
+                        ? `0 0 0 4px #eff6ff`
+                        : 'none',
                   }}
-                />
+                >
+                  {row.status === 'in_progress' && (
+                    <Icon name="loader-2" size={14} className="animate-spin" />
+                  )}
+                  {row.status === 'done' && (
+                    <Icon name="check" size={14} color="#fff" strokeWidth={3} />
+                  )}
+                </div>
                 {!isLast && (
                   <div
                     style={{
                       width: 2,
                       flex: 1,
-                      background: 'var(--border)',
-                      marginTop: 2,
+                      background:
+                        row.status === 'done' ? color : 'var(--border)',
+                      marginTop:
+                        row.status === 'in_progress' || row.status === 'done'
+                          ? 4
+                          : 2,
                     }}
                   />
                 )}
@@ -165,7 +203,15 @@ export function ProgressTimeline({
               <div
                 style={{
                   flex: 1,
-                  paddingBottom: isLast ? 0 : '0.5rem',
+                  paddingBottom: isLast ? 0 : '1.25rem',
+                  ...(row.status === 'in_progress' && {
+                    background: '#f8fafc',
+                    border: `1px solid ${color}`,
+                    borderRadius: 'var(--radius)',
+                    padding: '0.75rem',
+                    marginBottom: isLast ? 0 : '0.75rem',
+                    boxShadow: '0 2px 4px rgba(11, 107, 203, 0.05)',
+                  }),
                 }}
               >
                 <div

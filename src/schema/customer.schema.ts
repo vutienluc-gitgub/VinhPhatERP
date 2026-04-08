@@ -144,3 +144,11 @@ export const customerTableColumns = [
     label: 'Địa chỉ',
   },
 ];
+
+export const customerResponseSchema = z
+  .object({
+    id: z.string().uuid(),
+    code: z.string(),
+    name: z.string(),
+  })
+  .passthrough();

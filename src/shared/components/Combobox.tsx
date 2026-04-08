@@ -159,82 +159,51 @@ export function Combobox({
 
         {isOpen && filteredOptions.length > 0 && (
           <div
-            style={{
-              position: 'absolute',
-              zIndex: 50,
-              width: '100%',
-              marginTop: '4px',
-              backgroundColor: 'var(--surface)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius)',
-              boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
-              maxHeight: '240px',
-              overflowY: 'auto',
-            }}
+            className="absolute z-50 w-full mt-1 bg-white border border-[var(--border)] rounded-lg shadow-lg max-h-[240px] overflow-y-auto"
+            style={{ backgroundColor: 'var(--surface)' }}
           >
-            {filteredOptions.map((opt) => (
-              <button
-                key={opt.value}
-                type="button"
-                onMouseDown={(e) => {
-                  e.preventDefault(); // Prevent blur before click
-                  onChange(opt.value);
-                  setSearch(opt.label);
-                  setIsOpen(false);
-                }}
-                style={{
-                  width: '100%',
-                  textAlign: 'left',
-                  padding: '0.5rem 0.75rem',
-                  fontSize: '0.875rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  backgroundColor:
-                    value === opt.value
-                      ? 'var(--primary-light, rgba(0,123,255,0.1))'
-                      : 'transparent',
-                  color:
-                    value === opt.value
-                      ? 'var(--primary)'
-                      : 'var(--text-primary)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  minHeight: '40px',
-                }}
-              >
-                <div
+            {filteredOptions.map((opt) => {
+              const isSelected = value === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault(); // Prevent blur before click
+                    onChange(opt.value);
+                    setSearch(opt.label);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 text-sm flex items-center justify-between min-h-[40px] transition-colors cursor-pointer border-none outline-none ${
+                    isSelected
+                      ? 'bg-blue-50 text-[var(--primary)]'
+                      : 'bg-transparent text-[var(--text-primary)] hover:bg-slate-50'
+                  }`}
                   style={{
-                    display: 'flex',
-                    flexDirection: 'column',
+                    backgroundColor: isSelected
+                      ? 'var(--primary-light, #eff6ff)'
+                      : undefined,
                   }}
                 >
-                  <span style={{ fontWeight: value === opt.value ? 500 : 400 }}>
-                    {opt.label}
-                  </span>
-                  {opt.code && (
-                    <span
-                      style={{
-                        fontSize: '0.75rem',
-                        color: 'var(--text-secondary)',
-                        marginTop: '2px',
-                      }}
-                    >
-                      Mã: {opt.code}
+                  <div className="flex flex-col">
+                    <span style={{ fontWeight: isSelected ? 600 : 400 }}>
+                      {opt.label}
                     </span>
+                    {opt.code && (
+                      <span className="text-xs text-[var(--text-secondary)] mt-[2px]">
+                        Mã: {opt.code}
+                      </span>
+                    )}
+                  </div>
+                  {isSelected && (
+                    <Check
+                      className="w-4 h-4 shrink-0"
+                      color="var(--primary)"
+                    />
                   )}
-                </div>
-                {value === opt.value && (
-                  <Check
-                    style={{
-                      width: '1rem',
-                      height: '1rem',
-                      flexShrink: 0,
-                    }}
-                  />
-                )}
-              </button>
-            ))}
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
@@ -285,136 +254,72 @@ export function Combobox({
 
       {isOpen && (
         <div
-          style={{
-            position: 'absolute',
-            zIndex: 50,
-            width: '100%',
-            marginTop: '4px',
-            backgroundColor: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius)',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-            maxHeight: '240px',
-            overflowY: 'auto',
-          }}
+          className="absolute z-50 w-full mt-1 bg-white border border-[var(--border)] rounded-lg shadow-lg max-h-[240px] overflow-y-auto"
+          style={{ backgroundColor: 'var(--surface)' }}
         >
           <div
-            style={{
-              position: 'sticky',
-              top: 0,
-              backgroundColor: 'var(--surface)',
-              padding: '0.5rem',
-              borderBottom: '1px solid var(--border-light)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              zIndex: 2,
-            }}
+            className="sticky top-0 bg-white p-2 border-b border-[var(--border-light)] flex flex-row items-center gap-2 z-10"
+            style={{ backgroundColor: 'var(--surface)' }}
           >
-            <Search
-              style={{
-                width: '1rem',
-                height: '1rem',
-                color: 'var(--text-secondary)',
-              }}
-            />
+            <Search className="w-4 h-4 text-[var(--text-secondary)]" />
             <input
               type="text"
-              style={{
-                width: '100%',
-                fontSize: '0.875rem',
-                outline: 'none',
-                background: 'transparent',
-                color: 'var(--text-primary)',
-                border: 'none',
-                minHeight: '32px',
-              }}
+              className="w-full text-sm outline-none bg-transparent text-[var(--text-primary)] border-none min-h-[32px]"
               placeholder="Tìm kiếm..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onClick={(e) => e.stopPropagation()}
             />
           </div>
-          <div style={{ padding: '0.25rem' }}>
+          <div className="p-1">
             {filteredOptions.length === 0 ? (
-              <div
-                style={{
-                  padding: '0.5rem',
-                  fontSize: '0.875rem',
-                  color: 'var(--text-secondary)',
-                  textAlign: 'center',
-                }}
-              >
+              <div className="p-2 text-sm text-center text-[var(--text-secondary)]">
                 Không tìm thấy kết quả
               </div>
             ) : (
-              filteredOptions.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => {
-                    onChange(opt.value);
-                    setIsOpen(false);
-                    setSearch('');
-                    onBlur?.();
-                  }}
-                  style={{
-                    width: '100%',
-                    textAlign: 'left',
-                    padding: '0.5rem',
-                    fontSize: '0.875rem',
-                    borderRadius: 'calc(var(--radius) - 2px)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    backgroundColor:
-                      value === opt.value
-                        ? 'var(--primary-light, rgba(0,123,255,0.1))'
-                        : 'transparent',
-                    color:
-                      value === opt.value
-                        ? 'var(--primary)'
-                        : 'var(--text-primary)',
-                    border: 'none',
-                    cursor: 'pointer',
-                    minHeight: '40px',
-                  }}
-                >
-                  <div
+              filteredOptions.map((opt) => {
+                const isSelected = value === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => {
+                      onChange(opt.value);
+                      setIsOpen(false);
+                      setSearch('');
+                      onBlur?.();
+                    }}
+                    className={`w-full text-left px-2 py-2 text-sm rounded-md flex items-center justify-between min-h-[40px] transition-colors cursor-pointer border-none outline-none ${
+                      isSelected
+                        ? 'bg-blue-50 text-[var(--primary)]'
+                        : 'bg-transparent text-[var(--text-primary)] hover:bg-slate-50'
+                    }`}
                     style={{
-                      display: 'flex',
-                      flexDirection: 'column',
+                      backgroundColor: isSelected
+                        ? 'var(--primary-light, #eff6ff)'
+                        : undefined,
                     }}
                   >
-                    <span
-                      style={{ fontWeight: value === opt.value ? 500 : 400 }}
-                    >
-                      {opt.label}
-                    </span>
-                    {(opt.code || opt.phone) && (
-                      <span
-                        style={{
-                          fontSize: '0.75rem',
-                          color: 'var(--text-secondary)',
-                          marginTop: '2px',
-                        }}
-                      >
-                        {opt.code && `Mã: ${opt.code} `}
-                        {opt.phone && `SĐT: ${opt.phone}`}
+                    <div className="flex flex-col">
+                      <span style={{ fontWeight: isSelected ? 600 : 400 }}>
+                        {opt.label}
                       </span>
+                      {(opt.code || opt.phone) && (
+                        <span className="text-xs text-[var(--text-secondary)] mt-[2px]">
+                          {opt.code && `Mã: ${opt.code} `}
+                          {opt.phone && `SĐT: ${opt.phone}`}
+                        </span>
+                      )}
+                    </div>
+                    {isSelected && (
+                      <Check
+                        className="w-4 h-4 shrink-0"
+                        color="var(--primary)"
+                      />
                     )}
-                  </div>
-                  {value === opt.value && (
-                    <Check
-                      style={{
-                        width: '1rem',
-                        height: '1rem',
-                        flexShrink: 0,
-                      }}
-                    />
-                  )}
-                </button>
-              ))
+                  </button>
+                );
+              })
             )}
           </div>
         </div>

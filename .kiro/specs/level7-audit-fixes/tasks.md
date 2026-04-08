@@ -77,35 +77,35 @@
 - [x] 8.3 Thêm UI block trong `PaymentForm.tsx`: nếu `balanceDue <= 0` thì hiển thị thông báo "Đơn hàng đã thanh toán đầy đủ" và không render form
 - [x] 8.4 Viết property-based test cho `createPaymentsSchema` trong `src/schema/payment.schema.test.ts` (dùng fast-check): Property 1 — overpayment luôn bị từ chối; Property 2 — payment hợp lệ luôn được chấp nhận
 - [x] 8.5 Chạy `npm run test` và xác nhận property tests pass
-- [ ] 8.6\* (Optional — cần confirm) Tạo migration DB: `supabase/migrations/YYYYMMDD_add_overpayment_constraint.sql` với CHECK constraint ngăn `amount > balance_due`
+- [x] 8.6\* (Optional — cần confirm) Tạo migration DB: `supabase/migrations/YYYYMMDD_add_overpayment_constraint.sql` với CHECK constraint ngăn `amount > balance_due`
 
 ## Task 9: [MAJOR-01] Thêm Zod validation cho Supabase API responses
 
-- [ ] 9.1 Thêm `paymentResponseSchema` vào `src/schema/payment.schema.ts`
-- [ ] 9.2 Cập nhật `src/api/payments.api.ts`: thay `as unknown as Payment[]` bằng `paymentResponseSchema.array().parse(data)`
-- [ ] 9.3 Thêm `orderResponseSchema` vào schema file tương ứng
-- [ ] 9.4 Cập nhật `src/api/orders.api.ts`: thay type assertions bằng Zod parse
-- [ ] 9.5 Thêm `shipmentResponseSchema` và cập nhật `src/api/shipments.api.ts`
-- [ ] 9.6 Thêm `customerResponseSchema` và cập nhật `src/api/customers.api.ts`
-- [ ] 9.7 Chạy `npm run typecheck` và xác nhận không có lỗi mới
+- [x] 9.1 Thêm `paymentResponseSchema` vào `src/schema/payment.schema.ts`
+- [x] 9.2 Cập nhật `src/api/payments.api.ts`: thay `as unknown as Payment[]` bằng `paymentResponseSchema.array().parse(data)`
+- [x] 9.3 Thêm `orderResponseSchema` vào schema file tương ứng
+- [x] 9.4 Cập nhật `src/api/orders.api.ts`: thay type assertions bằng Zod parse
+- [x] 9.5 Thêm `shipmentResponseSchema` và cập nhật `src/api/shipments.api.ts`
+- [x] 9.6 Thêm `customerResponseSchema` và cập nhật `src/api/customers.api.ts`
+- [x] 9.7 Chạy `npm run typecheck` và xác nhận không có lỗi mới
 
 ## Task 10: [MAJOR-02] Loại bỏ cross-feature imports và cấu hình eslint-plugin-boundaries
 
-- [ ] 10.1 Refactor `src/features/work-orders/WorkOrderForm.tsx`: thay cross-feature imports bằng props hoặc `src/api/` trực tiếp
-- [ ] 10.2 Refactor `src/features/raw-fabric/RawFabricBulkForm.tsx`: nhận `fabricOptions` qua props thay vì import từ `fabric-catalog`
-- [ ] 10.3 Refactor `src/features/shipments/ShipmentForm.tsx`: nhận `shippingRates` qua props thay vì import từ `shipping-rates`
-- [ ] 10.4 Refactor `src/features/weaving-invoices/WeavingInvoiceForm.tsx`: nhận `fabricOptions` qua props thay vì import từ `fabric-catalog`
-- [ ] 10.5 Cập nhật các parent components gọi các form trên để truyền đúng props
-- [ ] 10.6 Cấu hình `eslint-plugin-boundaries` trong `.eslintrc.cjs` với rule `error` cho cross-feature imports
-- [ ] 10.7 Chạy `npm run lint` và xác nhận 0 boundaries errors
+- [x] 10.1 Refactor `src/features/work-orders/WorkOrderForm.tsx`: thay cross-feature imports bằng props hoặc `src/api/` trực tiếp
+- [x] 10.2 Refactor `src/features/raw-fabric/RawFabricBulkForm.tsx`: nhận `fabricOptions` qua props thay vì import từ `fabric-catalog` (Đã xử lý thông qua `@/shared/hooks`)
+- [x] 10.3 Refactor `src/features/shipments/ShipmentForm.tsx`: nhận `shippingRates` qua props thay vì import từ `shipping-rates` (Đã xử lý qua `@/shared/hooks`)
+- [x] 10.4 Refactor `src/features/weaving-invoices/WeavingInvoiceForm.tsx`: nhận `fabricOptions` qua props thay vì import từ `fabric-catalog` (Đã xử lý qua `@/shared/hooks`)
+- [x] 10.5 Cập nhật các parent components gọi các form trên để truyền đúng props (Không cần thiết vì dùng Shared Hooks)
+- [x] 10.6 Cấu hình `eslint-plugin-boundaries` trong `.eslintrc.cjs` với rule `error` cho cross-feature imports
+- [x] 10.7 Chạy `npm run lint` và xác nhận 0 boundaries errors
 
 ## Task 11: [MINOR-01] Vá lỗ hổng bảo mật trong dependencies
 
-- [ ] 11.1 Chạy `npm audit fix` để vá `brace-expansion` và các deps có thể fix tự động
-- [ ] 11.2 Kiểm tra kết quả `npm audit` — nếu còn lỗi liên quan `esbuild`/`vite`, đánh giá upgrade vite lên version mới nhất
-- [ ] 11.3 Chạy `npm run build` để xác nhận build vẫn thành công sau khi update
-- [ ] 11.4 Chạy `npm run test` để xác nhận không có test failures mới
-- [ ] 11.5 Xác nhận `npm audit --audit-level=moderate` báo cáo 0 issues
+- [x] 11.1 Chạy `npm audit fix` để vá `brace-expansion` và các deps có thể fix tự động
+- [x] 11.2 Kiểm tra kết quả `npm audit` — nếu còn lỗi liên quan `esbuild`/`vite`, đánh giá upgrade vite lên version mới nhất
+- [x] 11.3 Chạy `npm run build` để xác nhận build vẫn thành công sau khi update
+- [x] 11.4 Chạy `npm run test` để xác nhận không có test failures mới
+- [x] 11.5 Xác nhận `npm audit --audit-level=moderate` báo cáo 0 issues
 
 ## Task 12: [MINOR-02] Xử lý ESLint warnings
 

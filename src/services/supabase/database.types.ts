@@ -384,6 +384,36 @@ export type Database = {
           },
         ];
       };
+      employees: {
+        Row: {
+          code: string;
+          created_at: string;
+          id: string;
+          name: string;
+          phone: string | null;
+          role: string;
+          status: string;
+        };
+        Insert: {
+          code: string;
+          created_at?: string;
+          id?: string;
+          name: string;
+          phone?: string | null;
+          role: string;
+          status?: string;
+        };
+        Update: {
+          code?: string;
+          created_at?: string;
+          id?: string;
+          name?: string;
+          phone?: string | null;
+          role?: string;
+          status?: string;
+        };
+        Relationships: [];
+      };
       expenses: {
         Row: {
           account_id: string | null;
@@ -1736,6 +1766,7 @@ export type Database = {
           delivery_address: string | null;
           delivery_proof: string | null;
           delivery_staff_id: string | null;
+          employee_id: string | null;
           id: string;
           loading_fee: number;
           notes: string | null;
@@ -1765,6 +1796,7 @@ export type Database = {
           delivery_address?: string | null;
           delivery_proof?: string | null;
           delivery_staff_id?: string | null;
+          employee_id?: string | null;
           id?: string;
           loading_fee?: number;
           notes?: string | null;
@@ -1794,6 +1826,7 @@ export type Database = {
           delivery_address?: string | null;
           delivery_proof?: string | null;
           delivery_staff_id?: string | null;
+          employee_id?: string | null;
           id?: string;
           loading_fee?: number;
           notes?: string | null;

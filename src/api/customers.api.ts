@@ -5,6 +5,7 @@ import type {
   CustomersFilter,
 } from '@/models';
 import { supabase } from '@/services/supabase/client';
+import { customerResponseSchema } from '@/schema/customer.schema';
 
 const TABLE = 'customers';
 
@@ -26,7 +27,7 @@ export async function fetchCustomers(
 
   const { data, error } = await query;
   if (error) throw error;
-  return (data ?? []) as Customer[];
+  return customerResponseSchema.array().parse(data ?? []) as Customer[];
 }
 
 export async function createCustomer(row: CustomerInsert): Promise<Customer> {
