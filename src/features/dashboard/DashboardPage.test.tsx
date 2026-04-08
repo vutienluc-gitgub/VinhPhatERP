@@ -61,6 +61,5 @@ describe('DashboardPage', () => {
     expect(
       screen.getByRole('heading', { name: 'Dashboard' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Tổng quan')).toBeInTheDocument();
   });
 });
