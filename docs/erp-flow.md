@@ -60,6 +60,7 @@ Luồng xử lý quy trình bán ra sản phẩm:
    - **Quy tắc:** Không thể tạo và duyệt đơn hàng nếu không đủ hàng tồn kho khả dụng.
 
    - _Vòng đời trạng thái đơn hàng (Order Status Flow):_
+
      ```
      DRAFT → CONFIRMED → PICKING → SHIPPED → INVOICED → CLOSED
                 ↓                               ↓
@@ -288,6 +289,7 @@ Quá due_date chưa trả   →  Chuyển sang overdue_debt, cập nhật credit
   ```
 
 - _Quy tắc tự động cập nhật `credit_status`:_
+
   ```
   Nếu overdue_debt > 0 và overdue > 30 ngày  → credit_status = 'on_hold'
   Nếu overdue_debt > 0 và overdue > 60 ngày  → credit_status = 'blocked'

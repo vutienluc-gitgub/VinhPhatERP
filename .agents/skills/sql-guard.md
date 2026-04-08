@@ -26,11 +26,13 @@ If schema is not read → STOP.
 For EVERY SQL task:
 
 ### Step 1: Read schema
+
 - Open .agents/context/schema.sql
 - Locate table
 - Verify columns
 
 ### Step 2: Validate
+
 - Table exists?
 - Column exists?
 - Data type correct?
@@ -38,6 +40,7 @@ For EVERY SQL task:
 ### Step 3: Write SQL
 
 ### Step 4: Self-check
+
 - Compare SQL vs schema
 - Remove any unknown column
 
@@ -70,14 +73,17 @@ DO NOT continue.
 When column is missing:
 
 ### Option A (Preferred)
+
 Remove condition using that column
 
 ### Option B
+
 Add column explicitly:
 
 ALTER TABLE table_name ADD COLUMN column_name text;
 
 ### Option C
+
 Fallback:
 
 COALESCE(column_name, 'default')

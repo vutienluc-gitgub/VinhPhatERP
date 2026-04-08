@@ -1,24 +1,27 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
 import {
   customersDefaultValues,
   CUSTOMER_SOURCES,
   CUSTOMER_SOURCE_LABELS,
-} from '@/schema'
-import { customersSchema } from '@/schema/customer.schema'
-import type { CustomersFormValues } from '@/schema/customer.schema'
+} from '@/schema';
+import { customersSchema } from '@/schema/customer.schema';
+import type { CustomersFormValues } from '@/schema/customer.schema';
+import { Combobox } from '@/shared/components/Combobox';
 
-import { Combobox } from '@/shared/components/Combobox'
-
-import type { Customer } from './types'
-import { useCreateCustomer, useNextCustomerCode, useUpdateCustomer } from './useCustomers'
+import type { Customer } from './types';
+import {
+  useCreateCustomer,
+  useNextCustomerCode,
+  useUpdateCustomer,
+} from './useCustomers';
 
 type CustomerFormProps = {
-  customer: Customer | null
-  onClose: () => void
-}
+  customer: Customer | null;
+  onClose: () => void;
+};
 
 function customerToFormValues(customer: Customer): CustomersFormValues {
   return {
@@ -32,14 +35,14 @@ function customerToFormValues(customer: Customer): CustomersFormValues {
     source: customer.source ?? 'other',
     notes: customer.notes ?? '',
     status: customer.status,
-  }
+  };
 }
 
 export function CustomerForm({ customer, onClose }: CustomerFormProps) {
-  const isEditing = customer !== null
-  const createMutation = useCreateCustomer()
-  const updateMutation = useUpdateCustomer()
-  const { data: nextCode } = useNextCustomerCode()
+  const isEditing = customer !== null;
+  const createMutation = useCreateCustomer();
+  const updateMutation = useUpdateCustomer();
+  const { data: nextCode } = useNextCustomerCode();
 
   const {
     register,
@@ -53,36 +56,37 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
     defaultValues: isEditing
       ? customerToFormValues(customer)
       : customersDefaultValues,
-  })
+  });
 
   useEffect(() => {
-    reset(
-      isEditing ? customerToFormValues(customer) : customersDefaultValues,
-    )
-  }, [customer, isEditing, reset])
+    reset(isEditing ? customerToFormValues(customer) : customersDefaultValues);
+  }, [customer, isEditing, reset]);
 
   useEffect(() => {
     if (!isEditing && nextCode) {
-      setValue('code', nextCode)
+      setValue('code', nextCode);
     }
-  }, [isEditing, nextCode, setValue])
+  }, [isEditing, nextCode, setValue]);
 
   async function onSubmit(values: CustomersFormValues) {
     try {
       if (isEditing) {
-        await updateMutation.mutateAsync({ id: customer.id, values })
+        await updateMutation.mutateAsync({
+          id: customer.id,
+          values,
+        });
       } else {
-        await createMutation.mutateAsync(values)
+        await createMutation.mutateAsync(values);
       }
-      onClose()
+      onClose();
     } catch {
       // Lỗi hiện qua mutationError bên dưới
     }
   }
 
-  const mutationError = isEditing ? updateMutation.error : createMutation.error
+  const mutationError = isEditing ? updateMutation.error : createMutation.error;
   const isPending =
-    isSubmitting || createMutation.isPending || updateMutation.isPending
+    isSubmitting || createMutation.isPending || updateMutation.isPending;
 
   return (
     <form id="customer-form" onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -94,7 +98,12 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
 
       <div className="form-grid">
         {/* Mã + Tên */}
-        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+        <div
+          className="form-grid"
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          }}
+        >
           <div className="form-field">
             <label htmlFor="code">
               Mã khách hàng <span className="field-required">*</span>
@@ -130,7 +139,12 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         </div>
 
         {/* Điện thoại + Email */}
-        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+        <div
+          className="form-grid"
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          }}
+        >
           <div className="form-field">
             <label htmlFor="phone">Số điện thoại</label>
             <input
@@ -173,7 +187,12 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         </div>
 
         {/* Mã số thuế + Người liên hệ */}
-        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+        <div
+          className="form-grid"
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          }}
+        >
           <div className="form-field">
             <label htmlFor="tax_code">Mã số thuế</label>
             <input
@@ -201,7 +220,12 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         </div>
 
         {/* Trạng thái + Nguồn KH */}
-        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+        <div
+          className="form-grid"
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          }}
+        >
           <div className="form-field">
             <label htmlFor="source">Nguồn khách hàng</label>
             <Controller
@@ -211,7 +235,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
                 <Combobox
                   options={CUSTOMER_SOURCES.map((s) => ({
                     value: s,
-                    label: CUSTOMER_SOURCE_LABELS[s]
+                    label: CUSTOMER_SOURCE_LABELS[s],
                   }))}
                   value={field.value}
                   onChange={field.onChange}
@@ -228,8 +252,14 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
               render={({ field }) => (
                 <Combobox
                   options={[
-                    { value: 'active', label: 'Hoạt động' },
-                    { value: 'inactive', label: 'Ngừng hoạt động' }
+                    {
+                      value: 'active',
+                      label: 'Hoạt động',
+                    },
+                    {
+                      value: 'inactive',
+                      label: 'Ngừng hoạt động',
+                    },
                   ]}
                   value={field.value}
                   onChange={field.onChange}
@@ -252,7 +282,14 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         </div>
       </div>
 
-      <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none' }}>
+      <div
+        className="modal-footer"
+        style={{
+          marginTop: '1.5rem',
+          padding: 0,
+          border: 'none',
+        }}
+      >
         <button
           className="btn-secondary"
           type="button"
@@ -270,5 +307,5 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         </button>
       </div>
     </form>
-  )
+  );
 }

@@ -1,16 +1,16 @@
-import type { ShipmentDocument } from './types'
+import type { ShipmentDocument } from './types';
 
-const EMPTY_VALUE = '—'
+const EMPTY_VALUE = '—';
 
 export type ShipmentDocumentRow = {
-  index: number
-  rollNumber: string
-  fabricType: string
-  colorName: string
-  quantityText: string
-  quantityValue: number
-  note: string
-}
+  index: number;
+  rollNumber: string;
+  fabricType: string;
+  colorName: string;
+  quantityText: string;
+  quantityValue: number;
+  note: string;
+};
 
 function escapeHtml(value: string): string {
   return value
@@ -18,21 +18,21 @@ function escapeHtml(value: string): string {
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;')
+    .replaceAll("'", '&#39;');
 }
 
 function formatText(value: string | null | undefined): string {
-  const trimmed = value?.trim()
-  return trimmed ? trimmed : EMPTY_VALUE
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : EMPTY_VALUE;
 }
 
 function formatDate(value: string | null | undefined): string {
-  if (!value) return EMPTY_VALUE
+  if (!value) return EMPTY_VALUE;
 
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return value
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
 
-  return date.toLocaleDateString('vi-VN')
+  return date.toLocaleDateString('vi-VN');
 }
 
 function formatDateTime(value: Date): string {
@@ -42,64 +42,84 @@ function formatDateTime(value: Date): string {
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-  })
+  });
 }
 
 function formatNumber(value: number | null | undefined): string {
-  if (value === null || value === undefined || Number.isNaN(value)) return EMPTY_VALUE
+  if (value === null || value === undefined || Number.isNaN(value))
+    return EMPTY_VALUE;
 
   return value.toLocaleString('vi-VN', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 3,
-  })
+  });
 }
 
-export function makeShipmentDocumentFileName(shipment: Pick<ShipmentDocument, 'shipment_number' | 'shipment_date'>): string {
-  const safeNumber = shipment.shipment_number.trim().replace(/[^a-zA-Z0-9_-]+/g, '_')
-  const safeDate = shipment.shipment_date.replace(/[^0-9-]/g, '') || new Date().toISOString().slice(0, 10)
-  return `phieu_xuat_${safeNumber}_${safeDate}.pdf`
+export function makeShipmentDocumentFileName(
+  shipment: Pick<ShipmentDocument, 'shipment_number' | 'shipment_date'>,
+): string {
+  const safeNumber = shipment.shipment_number
+    .trim()
+    .replace(/[^a-zA-Z0-9_-]+/g, '_');
+  const safeDate =
+    shipment.shipment_date.replace(/[^0-9-]/g, '') ||
+    new Date().toISOString().slice(0, 10);
+  return `phieu_xuat_${safeNumber}_${safeDate}.pdf`;
 }
 
-export function toShipmentDocumentRows(shipment: ShipmentDocument): ShipmentDocumentRow[] {
+export function toShipmentDocumentRows(
+  shipment: ShipmentDocument,
+): ShipmentDocumentRow[] {
   return (shipment.shipment_items ?? [])
     .slice()
     .sort((left, right) => left.sort_order - right.sort_order)
     .map((item, index) => {
-      const quantityValue = Number(item.quantity ?? 0)
-      const rollLength = item.roll_length_m === null || item.roll_length_m === undefined
-        ? null
-        : Number(item.roll_length_m)
-      const rollMeta = rollLength && !Number.isNaN(rollLength)
-        ? ` (${formatNumber(rollLength)}m)`
-        : ''
+      const quantityValue = Number(item.quantity ?? 0);
+      const rollLength =
+        item.roll_length_m === null || item.roll_length_m === undefined
+          ? null
+          : Number(item.roll_length_m);
+      const rollMeta =
+        rollLength && !Number.isNaN(rollLength)
+          ? ` (${formatNumber(rollLength)}m)`
+          : '';
 
       return {
         index: index + 1,
-        rollNumber: item.roll_number ? `${item.roll_number}${rollMeta}` : EMPTY_VALUE,
+        rollNumber: item.roll_number
+          ? `${item.roll_number}${rollMeta}`
+          : EMPTY_VALUE,
         fabricType: formatText(item.fabric_type),
         colorName: formatText(item.color_name),
         quantityText: `${formatNumber(quantityValue)} ${item.unit || 'm'}`,
         quantityValue,
         note: formatText(item.notes),
-      }
-    })
+      };
+    });
 }
 
-export function buildShipmentPrintHtml(shipment: ShipmentDocument): { fileName: string; html: string } {
-  const fileName = makeShipmentDocumentFileName(shipment)
-  const generatedAt = formatDateTime(new Date())
-  const rows = toShipmentDocumentRows(shipment)
-  const totalQuantity = rows.reduce((sum, row) => sum + row.quantityValue, 0)
-  const customerName = formatText(shipment.customers?.name)
-  const customerCode = formatText(shipment.customers?.code)
-  const customerPhone = formatText(shipment.customers?.phone)
-  const customerContact = formatText(shipment.customers?.contact_person)
-  const deliveryAddress = formatText(shipment.delivery_address || shipment.customers?.address)
-  const orderNumber = formatText(shipment.orders?.order_number)
+export function buildShipmentPrintHtml(shipment: ShipmentDocument): {
+  fileName: string;
+  html: string;
+} {
+  const fileName = makeShipmentDocumentFileName(shipment);
+  const generatedAt = formatDateTime(new Date());
+  const rows = toShipmentDocumentRows(shipment);
+  const totalQuantity = rows.reduce((sum, row) => sum + row.quantityValue, 0);
+  const customerName = formatText(shipment.customers?.name);
+  const customerCode = formatText(shipment.customers?.code);
+  const customerPhone = formatText(shipment.customers?.phone);
+  const customerContact = formatText(shipment.customers?.contact_person);
+  const deliveryAddress = formatText(
+    shipment.delivery_address || shipment.customers?.address,
+  );
+  const orderNumber = formatText(shipment.orders?.order_number);
 
-  const tableRows = rows.length > 0
-    ? rows
-      .map((row) => `
+  const tableRows =
+    rows.length > 0
+      ? rows
+          .map(
+            (row) => `
         <tr>
           <td class="text-center">${row.index}</td>
           <td>${escapeHtml(row.rollNumber)}</td>
@@ -107,12 +127,13 @@ export function buildShipmentPrintHtml(shipment: ShipmentDocument): { fileName: 
           <td>${escapeHtml(row.colorName)}</td>
           <td class="text-right">${escapeHtml(row.quantityText)}</td>
           <td>${escapeHtml(row.note)}</td>
-        </tr>`)
-      .join('')
-    : `
+        </tr>`,
+          )
+          .join('')
+      : `
       <tr>
         <td class="text-center" colspan="6">Không có dòng hàng.</td>
-      </tr>`
+      </tr>`;
 
   const html = `<!DOCTYPE html>
 <html lang="vi">
@@ -319,59 +340,62 @@ export function buildShipmentPrintHtml(shipment: ShipmentDocument): { fileName: 
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 
-  return { fileName, html }
+  return {
+    fileName,
+    html,
+  };
 }
 
 export function exportShipmentToPdf(shipment: ShipmentDocument): void {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
-    throw new Error('Không thể in PDF ngoài môi trường trình duyệt.')
+    throw new Error('Không thể in PDF ngoài môi trường trình duyệt.');
   }
 
-  const { html } = buildShipmentPrintHtml(shipment)
-  const printFrame = document.createElement('iframe')
+  const { html } = buildShipmentPrintHtml(shipment);
+  const printFrame = document.createElement('iframe');
 
-  printFrame.setAttribute('aria-hidden', 'true')
-  printFrame.style.position = 'fixed'
-  printFrame.style.right = '0'
-  printFrame.style.bottom = '0'
-  printFrame.style.width = '0'
-  printFrame.style.height = '0'
-  printFrame.style.border = '0'
+  printFrame.setAttribute('aria-hidden', 'true');
+  printFrame.style.position = 'fixed';
+  printFrame.style.right = '0';
+  printFrame.style.bottom = '0';
+  printFrame.style.width = '0';
+  printFrame.style.height = '0';
+  printFrame.style.border = '0';
 
-  document.body.appendChild(printFrame)
+  document.body.appendChild(printFrame);
 
-  const frameWindow = printFrame.contentWindow
+  const frameWindow = printFrame.contentWindow;
   if (!frameWindow) {
-    printFrame.remove()
-    throw new Error('Không thể mở trình in PDF trong trình duyệt này.')
+    printFrame.remove();
+    throw new Error('Không thể mở trình in PDF trong trình duyệt này.');
   }
 
   const cleanup = () => {
     window.setTimeout(() => {
-      printFrame.remove()
-    }, 1_000)
-  }
+      printFrame.remove();
+    }, 1_000);
+  };
 
-  let printed = false
+  let printed = false;
   const triggerPrint = () => {
-    if (printed) return
-    printed = true
+    if (printed) return;
+    printed = true;
 
-    frameWindow.focus()
-    frameWindow.print()
-    cleanup()
-  }
+    frameWindow.focus();
+    frameWindow.print();
+    cleanup();
+  };
 
-  frameWindow.addEventListener('afterprint', cleanup, { once: true })
-  printFrame.addEventListener('load', triggerPrint, { once: true })
+  frameWindow.addEventListener('afterprint', cleanup, { once: true });
+  printFrame.addEventListener('load', triggerPrint, { once: true });
 
-  frameWindow.document.open()
-  frameWindow.document.write(html)
-  frameWindow.document.close()
+  frameWindow.document.open();
+  frameWindow.document.write(html);
+  frameWindow.document.close();
 
   if (frameWindow.document.readyState === 'complete') {
-    triggerPrint()
+    triggerPrint();
   }
 }

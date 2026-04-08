@@ -1,29 +1,29 @@
-import { lazy } from 'react'
-import type { RouteObject } from 'react-router-dom'
+import { lazy } from 'react';
+import type { RouteObject } from 'react-router-dom';
 
-import { LazyPage } from '@/app/router/LazyPage'
-import { FeatureRegistry } from '@/shared/lib/FeatureRegistry'
-import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry'
-import type { UserRole } from '@/services/supabase/database.types'
+import { LazyPage } from '@/app/router/LazyPage';
+import { FeatureRegistry } from '@/shared/lib/FeatureRegistry';
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
+import type { UserRole } from '@/services/supabase/database.types';
 
 /* ── Dashboard (always the index route, not a plugin) ── */
 const DashboardPage = lazy(() =>
   import('@/features/dashboard/DashboardPage').then((m) => ({
     default: m.DashboardPage,
   })),
-)
+);
 
 /* ── Auth (special route, not a plugin) ── */
 const AuthPage = lazy(() =>
   import('@/features/auth').then((m) => ({ default: m.AuthPage })),
-)
+);
 
 /**
  * Convert a FeaturePlugin to a RouteObject.
  * Uses React.lazy() with the plugin's component loader.
  */
 function pluginToRoute(plugin: FeaturePlugin): RouteObject {
-  const LazyComponent = lazy(plugin.component)
+  const LazyComponent = lazy(plugin.component);
   return {
     path: plugin.route,
     element: (
@@ -31,21 +31,21 @@ function pluginToRoute(plugin: FeaturePlugin): RouteObject {
         <LazyComponent />
       </LazyPage>
     ),
-  }
+  };
 }
 
 /* ── Navigation (re-exported for Sidebar/BottomNav) ── */
 
 export type NavigationItem = {
-  path: string
-  label: string
-  shortLabel: string
-  description: string
-  icon?: string
-  primaryMobile?: boolean
-  group?: string
-  requiredRoles?: UserRole[]
-}
+  path: string;
+  label: string;
+  shortLabel: string;
+  description: string;
+  icon?: string;
+  primaryMobile?: boolean;
+  group?: string;
+  requiredRoles?: UserRole[];
+};
 
 /**
  * Generate navigation items from FeatureRegistry.
@@ -56,10 +56,11 @@ export function getNavigationItems(): NavigationItem[] {
     path: '/',
     label: 'Tổng quan',
     shortLabel: 'Home',
-    description: 'Tổng quan scaffold, trạng thái hiện tại và các bước tiếp theo.',
+    description:
+      'Tổng quan scaffold, trạng thái hiện tại và các bước tiếp theo.',
     icon: 'home',
     primaryMobile: true,
-  }
+  };
 
   const pluginItems: NavigationItem[] = FeatureRegistry.getAll().map((p) => ({
     path: `/${p.route}`,
@@ -70,13 +71,13 @@ export function getNavigationItems(): NavigationItem[] {
     primaryMobile: p.primaryMobile,
     group: p.group,
     requiredRoles: p.requiredRoles,
-  }))
+  }));
 
-  return [dashboardItem, ...pluginItems]
+  return [dashboardItem, ...pluginItems];
 }
 
 // Legacy compat
-export const navigationItems: NavigationItem[] = getNavigationItems()
+export const navigationItems: NavigationItem[] = getNavigationItems();
 
 /* ── Route Generation ── */
 
@@ -87,20 +88,23 @@ export const authRoute: RouteObject = {
       <AuthPage />
     </LazyPage>
   ),
-}
+};
 
 /** Routes cho tất cả authenticated user (route không có routeGuard) */
 export const appRoutes: RouteObject[] = [
-  { index: true, element: <DashboardPage /> },
+  {
+    index: true,
+    element: <DashboardPage />,
+  },
   ...FeatureRegistry.getAll()
     .filter((p) => !p.routeGuard)
     .map(pluginToRoute),
-]
+];
 
 /** Print routes from all plugins */
 export const printRoutes: RouteObject[] = FeatureRegistry.getPrintRoutes().map(
   (pr) => {
-    const LazyComponent = lazy(pr.component)
+    const LazyComponent = lazy(pr.component);
     return {
       path: pr.path,
       element: (
@@ -108,16 +112,16 @@ export const printRoutes: RouteObject[] = FeatureRegistry.getPrintRoutes().map(
           <LazyComponent />
         </LazyPage>
       ),
-    }
+    };
   },
-)
+);
 
 /** Routes chỉ dành cho admin và manager (routeGuard === 'manager') */
 export const managerRoutes: RouteObject[] = FeatureRegistry.getAll()
   .filter((p) => p.routeGuard === 'manager')
-  .map(pluginToRoute)
+  .map(pluginToRoute);
 
 /** Routes chỉ dành cho admin (routeGuard === 'admin') */
 export const adminRoutes: RouteObject[] = FeatureRegistry.getAll()
   .filter((p) => p.routeGuard === 'admin')
-  .map(pluginToRoute)
+  .map(pluginToRoute);

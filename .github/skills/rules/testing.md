@@ -1,6 +1,7 @@
 # Testing Standards
 
 ## Testing Pyramid
+
 ```
          [E2E Tests]         ← Few, slow, catch integration issues
        [Integration Tests]   ← Some, test component interaction
@@ -8,12 +9,14 @@
 ```
 
 ## Requirements
+
 - Unit test coverage: **minimum 80%**
 - All new features must have tests
 - All bug fixes must have a regression test
 - Tests run in CI before any merge
 
 ## Test File Organization
+
 ```
 tests/
 ├── unit/
@@ -27,6 +30,7 @@ tests/
 ```
 
 ## Unit Test Example (Jest)
+
 ```js
 // tests/unit/services/user-service.test.js
 import { UserService } from '../../../src/services/user-service.js';
@@ -55,14 +59,16 @@ describe('UserService', () => {
     it('should throw AppError when user not found', async () => {
       mockRepo.findById.mockResolvedValue(null);
 
-      await expect(userService.findById('999'))
-        .rejects.toThrow('User not found');
+      await expect(userService.findById('999')).rejects.toThrow(
+        'User not found',
+      );
     });
   });
 });
 ```
 
 ## Integration Test Example
+
 ```js
 // tests/integration/routes/users.test.js
 import request from 'supertest';
@@ -90,6 +96,7 @@ describe('GET /api/users/:id', () => {
 ```
 
 ## Test Commands
+
 ```bash
 npm test                    # Run all tests
 npm run test:unit           # Unit tests only
@@ -99,6 +106,7 @@ npm run test:watch          # Watch mode for development
 ```
 
 ## Naming Conventions
+
 - Test files: `[filename].test.js`
 - `describe` blocks: Match the module/function being tested
 - `it` blocks: `should [expected behavior] when [condition]`

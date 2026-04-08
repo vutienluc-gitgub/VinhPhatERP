@@ -3,6 +3,7 @@ module.exports = {
   env: {
     browser: true,
     es2020: true,
+    node: true,
   },
 
   extends: [
@@ -13,16 +14,9 @@ module.exports = {
 
   parser: '@typescript-eslint/parser',
 
-  plugins: [
-    '@typescript-eslint',
-    'react-refresh',
-    'import',
-  ],
+  plugins: ['@typescript-eslint', 'react-refresh', 'import'],
 
-  ignorePatterns: [
-    'dist',
-    'node_modules',
-  ],
+  ignorePatterns: ['dist', 'node_modules'],
 
   settings: {
     'import/resolver': {
@@ -34,19 +28,20 @@ module.exports = {
     // ========================
     // 🔒 IMPORT GUARD (ICON + STRUCTURE)
     // ========================
-    "no-restricted-imports": [
-      "warn",
+    'no-restricted-imports': [
+      'warn',
       {
         paths: [
           {
-            name: "lucide-react",
-            message: "❌ Do not import lucide-react directly. Use <Icon /> instead.",
+            name: 'lucide-react',
+            message:
+              '❌ Do not import lucide-react directly. Use <Icon /> instead.',
           },
         ],
         patterns: [
           {
-            group: ["../*"],
-            message: "❌ Do not use relative imports. Use @/ alias instead.",
+            group: ['../*'],
+            message: '❌ Do not use relative imports. Use @/ alias instead.',
           },
         ],
       },
@@ -55,36 +50,36 @@ module.exports = {
     // ========================
     // 📦 IMPORT ORDER
     // ========================
-    "import/order": [
-      "warn",
+    'import/order': [
+      'warn',
       {
-        groups: ["builtin", "external", "internal"],
-        "newlines-between": "always",
+        groups: ['builtin', 'external', 'internal'],
+        'newlines-between': 'always',
       },
     ],
 
     // ========================
     // 🧠 NAMING CONVENTION
     // ========================
-    "@typescript-eslint/naming-convention": [
-      "warn",
+    '@typescript-eslint/naming-convention': [
+      'warn',
       {
-        selector: "variableLike",
-        format: ["camelCase", "PascalCase", "UPPER_CASE"],
-        leadingUnderscore: "allow",
+        selector: 'variableLike',
+        format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
+        leadingUnderscore: 'allow',
       },
       {
-        selector: "parameter",
-        format: ["camelCase", "PascalCase"],
-        leadingUnderscore: "allow",
+        selector: 'parameter',
+        format: ['camelCase', 'PascalCase'],
+        leadingUnderscore: 'allow',
       },
       {
-        selector: "function",
-        format: ["camelCase", "PascalCase"],
+        selector: 'function',
+        format: ['camelCase', 'PascalCase'],
       },
       {
-        selector: "typeLike",
-        format: ["PascalCase"],
+        selector: 'typeLike',
+        format: ['PascalCase'],
       },
     ],
 
@@ -99,13 +94,26 @@ module.exports = {
     // ========================
     // 🧼 CLEAN CODE
     // ========================
-    "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": ["warn", {
-      "argsIgnorePattern": "^_",
-      "varsIgnorePattern": "^_",
-      "caughtErrorsIgnorePattern": "^_"
-    }],
-    "@typescript-eslint/no-explicit-any": "warn",
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      },
+    ],
+    '@typescript-eslint/no-explicit-any': 'warn',
+
+    // ========================
+    // 📐 VERTICAL FORMATTING (Trick tránh lỗi ngoặc)
+    // ========================
+    'object-curly-newline': ['warn', { multiline: true, consistent: true }],
+    'array-bracket-newline': ['warn', { multiline: true }],
+    'object-property-newline': [
+      'warn',
+      { allowAllPropertiesOnSameLine: false },
+    ],
   },
 
   // ========================
@@ -113,10 +121,10 @@ module.exports = {
   // ========================
   overrides: [
     {
-      files: ["src/shared/icons.ts", "**/Icon.tsx", "**/icons.tsx"],
+      files: ['src/shared/icons.ts', '**/Icon.tsx', '**/icons.tsx'],
       rules: {
-        "no-restricted-imports": "off",
-        "@typescript-eslint/naming-convention": "off",
+        'no-restricted-imports': 'off',
+        '@typescript-eslint/naming-convention': 'off',
       },
     },
   ],

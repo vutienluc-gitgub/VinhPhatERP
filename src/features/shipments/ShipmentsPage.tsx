@@ -1,5 +1,5 @@
-import { ShipmentList } from './ShipmentList'
+import { ShipmentList } from './ShipmentList';
 
 export function ShipmentsPage() {
-  return <ShipmentList />
+  return <ShipmentList />;
 }

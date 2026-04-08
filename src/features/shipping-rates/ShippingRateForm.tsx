@@ -1,25 +1,27 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, Controller } from 'react-hook-form';
 
 import {
   shippingRatesSchema,
   shippingRatesDefaultValues,
   type ShippingRateFormValues,
-  type ShippingRate
-} from '@/schema'
+  type ShippingRate,
+} from '@/schema';
+import { Combobox } from '@/shared/components/Combobox';
 
-import { Combobox } from '@/shared/components/Combobox'
-
-import { useCreateShippingRate, useUpdateShippingRate } from './useShippingRates'
+import {
+  useCreateShippingRate,
+  useUpdateShippingRate,
+} from './useShippingRates';
 
 type Props = {
-  item: ShippingRate | null
-  onClose: () => void
-}
+  item: ShippingRate | null;
+  onClose: () => void;
+};
 
 export function ShippingRateForm({ item, onClose }: Props) {
-  const create = useCreateShippingRate()
-  const update = useUpdateShippingRate()
+  const create = useCreateShippingRate();
+  const update = useUpdateShippingRate();
 
   const {
     register,
@@ -41,46 +43,61 @@ export function ShippingRateForm({ item, onClose }: Props) {
           notes: item.notes ?? '',
         }
       : shippingRatesDefaultValues,
-  })
+  });
 
   async function onSubmit(values: ShippingRateFormValues) {
     try {
       if (item) {
-        await update.mutateAsync({ id: item.id, values })
+        await update.mutateAsync({
+          id: item.id,
+          values,
+        });
       } else {
-        await create.mutateAsync(values)
+        await create.mutateAsync(values);
       }
-      onClose()
+      onClose();
     } catch (err) {
-      console.error(err)
+      console.error(err);
     }
   }
 
-  const mutationError = create.error || update.error
+  const mutationError = create.error || update.error;
 
   return (
     <form id="shipping-rate-form" onSubmit={handleSubmit(onSubmit)}>
-      <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+      <div
+        className="form-grid"
+        style={{
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: '1rem',
+        }}
+      >
         {/* Name */}
         <div className="form-field">
-          <label>Tên bảng giá <span className="field-required">*</span></label>
-          <input 
-            className={`field-input${errors.name ? ' is-error' : ''}`} 
-            {...register('name')} 
-            placeholder="VD: Tuyến HCM - Bình Dương" 
+          <label>
+            Tên bảng giá <span className="field-required">*</span>
+          </label>
+          <input
+            className={`field-input${errors.name ? ' is-error' : ''}`}
+            {...register('name')}
+            placeholder="VD: Tuyến HCM - Bình Dương"
           />
           {errors.name && <p className="field-error">{errors.name.message}</p>}
         </div>
 
         {/* Area */}
         <div className="form-field">
-          <label>Khu vực giao <span className="field-required">*</span></label>
-          <input 
-            className={`field-input${errors.destinationArea ? ' is-error' : ''}`} 
-            {...register('destinationArea')} 
-            placeholder="VD: Bình Dương" 
+          <label>
+            Khu vực giao <span className="field-required">*</span>
+          </label>
+          <input
+            className={`field-input${errors.destinationArea ? ' is-error' : ''}`}
+            {...register('destinationArea')}
+            placeholder="VD: Bình Dương"
           />
-          {errors.destinationArea && <p className="field-error">{errors.destinationArea.message}</p>}
+          {errors.destinationArea && (
+            <p className="field-error">{errors.destinationArea.message}</p>
+          )}
         </div>
 
         {/* Rate per trip */}
@@ -89,13 +106,15 @@ export function ShippingRateForm({ item, onClose }: Props) {
           <input
             className={`field-input${errors.ratePerTrip ? ' is-error' : ''}`}
             type="number"
-            {...register('ratePerTrip', { 
-              valueAsNumber: true, 
-              setValueAs: (v) => (v === '' ? null : Number(v)) 
+            {...register('ratePerTrip', {
+              valueAsNumber: true,
+              setValueAs: (v) => (v === '' ? null : Number(v)),
             })}
             placeholder="0"
           />
-          {errors.ratePerTrip && <p className="field-error">{errors.ratePerTrip.message}</p>}
+          {errors.ratePerTrip && (
+            <p className="field-error">{errors.ratePerTrip.message}</p>
+          )}
         </div>
 
         {/* Rate per meter */}
@@ -105,13 +124,15 @@ export function ShippingRateForm({ item, onClose }: Props) {
             className={`field-input${errors.ratePerMeter ? ' is-error' : ''}`}
             type="number"
             step="0.001"
-            {...register('ratePerMeter', { 
-              valueAsNumber: true, 
-              setValueAs: (v) => (v === '' ? null : Number(v)) 
+            {...register('ratePerMeter', {
+              valueAsNumber: true,
+              setValueAs: (v) => (v === '' ? null : Number(v)),
             })}
             placeholder="0"
           />
-          {errors.ratePerMeter && <p className="field-error">{errors.ratePerMeter.message}</p>}
+          {errors.ratePerMeter && (
+            <p className="field-error">{errors.ratePerMeter.message}</p>
+          )}
         </div>
 
         {/* Rate per kg */}
@@ -121,25 +142,31 @@ export function ShippingRateForm({ item, onClose }: Props) {
             className={`field-input${errors.ratePerKg ? ' is-error' : ''}`}
             type="number"
             step="0.001"
-            {...register('ratePerKg', { 
-              valueAsNumber: true, 
-              setValueAs: (v) => (v === '' ? null : Number(v)) 
+            {...register('ratePerKg', {
+              valueAsNumber: true,
+              setValueAs: (v) => (v === '' ? null : Number(v)),
             })}
             placeholder="0"
           />
-          {errors.ratePerKg && <p className="field-error">{errors.ratePerKg.message}</p>}
+          {errors.ratePerKg && (
+            <p className="field-error">{errors.ratePerKg.message}</p>
+          )}
         </div>
 
         {/* Loading fee */}
         <div className="form-field">
-          <label>Phí bốc xếp (VNĐ) <span className="field-required">*</span></label>
+          <label>
+            Phí bốc xếp (VNĐ) <span className="field-required">*</span>
+          </label>
           <input
             className={`field-input${errors.loadingFee ? ' is-error' : ''}`}
             type="number"
             {...register('loadingFee', { valueAsNumber: true })}
             placeholder="0"
           />
-          {errors.loadingFee && <p className="field-error">{errors.loadingFee.message}</p>}
+          {errors.loadingFee && (
+            <p className="field-error">{errors.loadingFee.message}</p>
+          )}
         </div>
 
         {/* Min charge */}
@@ -151,7 +178,9 @@ export function ShippingRateForm({ item, onClose }: Props) {
             {...register('minCharge', { valueAsNumber: true })}
             placeholder="0"
           />
-          {errors.minCharge && <p className="field-error">{errors.minCharge.message}</p>}
+          {errors.minCharge && (
+            <p className="field-error">{errors.minCharge.message}</p>
+          )}
         </div>
 
         {/* Active status */}
@@ -163,8 +192,14 @@ export function ShippingRateForm({ item, onClose }: Props) {
             render={({ field }) => (
               <Combobox
                 options={[
-                  { value: 'true', label: 'Đang dùng' },
-                  { value: 'false', label: 'Ngừng dùng' }
+                  {
+                    value: 'true',
+                    label: 'Đang dùng',
+                  },
+                  {
+                    value: 'false',
+                    label: 'Ngừng dùng',
+                  },
                 ]}
                 value={String(field.value)}
                 onChange={(val) => field.onChange(val === 'true')}
@@ -177,7 +212,12 @@ export function ShippingRateForm({ item, onClose }: Props) {
       {/* Notes */}
       <div className="form-field" style={{ marginTop: '1rem' }}>
         <label>Ghi chú</label>
-        <textarea className="field-textarea" rows={2} {...register('notes')} placeholder="Ghi chú thêm..." />
+        <textarea
+          className="field-textarea"
+          rows={2}
+          {...register('notes')}
+          placeholder="Ghi chú thêm..."
+        />
       </div>
 
       {/* Error display */}
@@ -188,8 +228,17 @@ export function ShippingRateForm({ item, onClose }: Props) {
       )}
 
       {/* Footer is handled by AdaptiveSheet via portal props, but we keep buttons for convenience if not using footer prop */}
-      <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none' }}>
-        <button className="btn-secondary" type="button" onClick={onClose}>Huỷ</button>
+      <div
+        className="modal-footer"
+        style={{
+          marginTop: '1.5rem',
+          padding: 0,
+          border: 'none',
+        }}
+      >
+        <button className="btn-secondary" type="button" onClick={onClose}>
+          Huỷ
+        </button>
         <button
           className="primary-button btn-standard"
           type="submit"
@@ -199,5 +248,5 @@ export function ShippingRateForm({ item, onClose }: Props) {
         </button>
       </div>
     </form>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   fetchFinishedFabricPaginated,
@@ -10,16 +10,23 @@ import {
   createFinishedFabricBulk,
   fetchFinishedFabricStats,
   fetchTraceChain,
-} from '@/api/finished-fabric.api'
-import type { InventoryStats } from '@/api/finished-fabric.api'
+} from '@/api/finished-fabric.api';
+import type { InventoryStats } from '@/api/finished-fabric.api';
 
-import type { FinishedFabricFormValues, BulkFinishedInputFormValues } from './finished-fabric.module'
-import { findDuplicateRollNumbers } from './finished-fabric.module'
-import type { FinishedFabricFilter, FinishedFabricRoll, RawRollOption } from './types'
+import type {
+  FinishedFabricFormValues,
+  BulkFinishedInputFormValues,
+} from './finished-fabric.module';
+import { findDuplicateRollNumbers } from './finished-fabric.module';
+import type {
+  FinishedFabricFilter,
+  FinishedFabricRoll,
+  RawRollOption,
+} from './types';
 
-export type { InventoryStats }
+export type { InventoryStats };
 
-const QUERY_KEY = ['finished-fabric'] as const
+const QUERY_KEY = ['finished-fabric'] as const;
 
 function toDbRow(
   values: FinishedFabricFormValues,
@@ -39,52 +46,61 @@ function toDbRow(
     production_date: values.production_date?.trim() || null,
     reserved_for_order_id: values.reserved_for_order_id ?? null,
     notes: values.notes?.trim() || null,
-  }
+  };
 }
 
-export function useFinishedFabricList(filters: FinishedFabricFilter = {}, page = 1) {
+export function useFinishedFabricList(
+  filters: FinishedFabricFilter = {},
+  page = 1,
+) {
   return useQuery({
     queryKey: [...QUERY_KEY, filters, page],
     queryFn: () => fetchFinishedFabricPaginated(filters, page),
-  })
+  });
 }
 
 export function useCreateFinishedFabric() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: FinishedFabricFormValues) => createFinishedFabric(toDbRow(values)),
+    mutationFn: (values: FinishedFabricFormValues) =>
+      createFinishedFabric(toDbRow(values)),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 export function useUpdateFinishedFabric() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, values }: { id: string; values: FinishedFabricFormValues }) =>
-      updateFinishedFabric(id, toDbRow(values)),
+    mutationFn: ({
+      id,
+      values,
+    }: {
+      id: string;
+      values: FinishedFabricFormValues;
+    }) => updateFinishedFabric(id, toDbRow(values)),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 export function useDeleteFinishedFabric() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteFinishedFabric,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 export function useRawRollOptions() {
   return useQuery<RawRollOption[]>({
     queryKey: ['raw-fabric', 'options'],
     queryFn: fetchRawRollOptions,
-  })
+  });
 }
 
 export function useRawRollsByLot(lotNumber: string) {
@@ -92,16 +108,18 @@ export function useRawRollsByLot(lotNumber: string) {
     queryKey: ['raw-fabric', 'by-lot', lotNumber],
     enabled: lotNumber.trim().length > 0,
     queryFn: () => fetchRawRollsByLot(lotNumber),
-  })
+  });
 }
 
 export function useCreateFinishedFabricBulk() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (values: BulkFinishedInputFormValues) => {
-      const duplicates = findDuplicateRollNumbers(values.rolls)
+      const duplicates = findDuplicateRollNumbers(values.rolls);
       if (duplicates.length > 0) {
-        throw new Error(`Mã cuộn bị trùng trong lô nhập: ${duplicates.join(', ')}`)
+        throw new Error(
+          `Mã cuộn bị trùng trong lô nhập: ${duplicates.join(', ')}`,
+        );
       }
 
       const rows = values.rolls.map((row) => ({
@@ -119,30 +137,34 @@ export function useCreateFinishedFabricBulk() {
         production_date: values.production_date?.trim() || null,
         notes: row.notes?.trim() || null,
         reserved_for_order_id: null,
-      }))
+      }));
 
-      return createFinishedFabricBulk(rows, values.lot_number)
+      return createFinishedFabricBulk(rows, values.lot_number);
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 export function useFinishedFabricStats() {
   return useQuery<InventoryStats>({
     queryKey: [...QUERY_KEY, 'stats'],
     queryFn: fetchFinishedFabricStats,
-  })
+  });
 }
 
 /* ── Trace chain (re-export from API types) ── */
-export type { TraceChainData, TraceRawRoll, TraceYarnReceipt } from '@/api/finished-fabric.api'
+export type {
+  TraceChainData,
+  TraceRawRoll,
+  TraceYarnReceipt,
+} from '@/api/finished-fabric.api';
 
 export function useTraceChain(rawRollId: string | null) {
   return useQuery({
     queryKey: ['trace-chain', rawRollId],
     enabled: !!rawRollId,
     queryFn: () => fetchTraceChain(rawRollId!),
-  })
+  });
 }

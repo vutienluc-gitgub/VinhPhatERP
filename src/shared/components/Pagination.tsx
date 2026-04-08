@@ -1,16 +1,16 @@
-import type { PaginatedResult } from '@/shared/types/pagination'
+import type { PaginatedResult } from '@/shared/types/pagination';
 
 type PaginationProps<T> = {
-  result: PaginatedResult<T> | undefined
-  onPageChange: (page: number) => void
-}
+  result: PaginatedResult<T> | undefined;
+  onPageChange: (page: number) => void;
+};
 
 export function Pagination<T>({ result, onPageChange }: PaginationProps<T>) {
-  if (!result || result.totalPages <= 1) return null
+  if (!result || result.totalPages <= 1) return null;
 
-  const { page, totalPages, total } = result
-  const from = (page - 1) * result.pageSize + 1
-  const to = Math.min(page * result.pageSize, total)
+  const { page, totalPages, total } = result;
+  const from = (page - 1) * result.pageSize + 1;
+  const to = Math.min(page * result.pageSize, total);
 
   return (
     <div className="pagination-bar">
@@ -39,5 +39,5 @@ export function Pagination<T>({ result, onPageChange }: PaginationProps<T>) {
         </button>
       </div>
     </div>
-  )
+  );
 }

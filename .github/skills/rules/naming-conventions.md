@@ -5,17 +5,20 @@
 ## 🔑 Cache Key Naming
 
 ### Format
+
 ```
 {app}:{version}:{entity}:{identifier}:{variant}
 ```
 
 ### Rules
+
 - Use **colons** (`:`) as separators
 - Use **lowercase snake_case** for each segment
 - Always prefix with app/service name to avoid collision
 - Include version for easy cache invalidation
 
 ### Examples
+
 ```
 # User data
 myapp:v1:user:12345
@@ -44,21 +47,23 @@ myapp:v1:dashboard:user:12345:stats:daily
 ```
 
 ### TTL Conventions
-| Data Type | Recommended TTL |
-|-----------|----------------|
-| User session | 7 days |
-| Auth tokens | 15 minutes |
-| User profile | 1 hour |
-| Product catalog | 6 hours |
-| Config/settings | 24 hours |
-| Rate limit windows | 15 minutes |
-| Temporary locks | 30 seconds |
+
+| Data Type          | Recommended TTL |
+| ------------------ | --------------- |
+| User session       | 7 days          |
+| Auth tokens        | 15 minutes      |
+| User profile       | 1 hour          |
+| Product catalog    | 6 hours         |
+| Config/settings    | 24 hours        |
+| Rate limit windows | 15 minutes      |
+| Temporary locks    | 30 seconds      |
 
 ---
 
 ## 🗄️ Database Naming
 
 ### Tables
+
 ```sql
 -- snake_case, plural nouns
 users
@@ -68,6 +73,7 @@ user_role_mappings    -- junction tables: entity1_entity2_mappings
 ```
 
 ### Columns
+
 ```sql
 -- snake_case
 id                    -- primary key (always 'id')
@@ -82,6 +88,7 @@ full_name
 ```
 
 ### Indexes
+
 ```sql
 -- Pattern: idx_{table}_{columns}
 idx_users_email
@@ -97,6 +104,7 @@ fts_products_name_description
 ```
 
 ### Foreign Keys
+
 ```sql
 -- Pattern: fk_{child_table}_{parent_table}
 fk_orders_users
@@ -105,6 +113,7 @@ fk_order_items_products
 ```
 
 ### Stored Procedures / Functions
+
 ```sql
 -- snake_case verbs
 get_user_by_email()
@@ -117,6 +126,7 @@ archive_old_sessions()
 ## 📨 Message Queue / Event Naming
 
 ### Queue Names
+
 ```
 # Pattern: {app}.{entity}.{action}
 # Use dots as separators for queues
@@ -129,6 +139,7 @@ myapp.report.generate
 ```
 
 ### Event Names (Domain Events)
+
 ```
 # Pattern: {entity}.{past_tense_verb}
 # Events describe things that HAPPENED
@@ -144,6 +155,7 @@ product.stock_depleted
 ```
 
 ### Dead Letter Queues (DLQ)
+
 ```
 myapp.email.send.dlq
 myapp.payment.process.dlq
@@ -154,11 +166,13 @@ myapp.payment.process.dlq
 ## 🌍 Environment Variables
 
 ### Rules
+
 - **UPPER_SNAKE_CASE** for all env vars
 - Prefix with app/service name for non-standard vars
 - Be descriptive, avoid abbreviations
 
 ### Standard Variables
+
 ```bash
 # App
 NODE_ENV=production

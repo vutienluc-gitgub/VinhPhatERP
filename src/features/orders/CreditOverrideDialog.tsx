@@ -14,25 +14,28 @@
  *   userRole       – role của user hiện tại
  */
 
-import { AlertTriangle, ShieldAlert, X } from '@/shared/icons'
+import { AlertTriangle, ShieldAlert, X } from '@/shared/icons';
 
-import type { CreateOrderError } from './useCreateOrderV2'
+import type { CreateOrderError } from './useCreateOrderV2';
 
 interface CreditOverrideDialogProps {
-  open:      boolean
-  code:      CreateOrderError['code']
-  message:   string
-  detail?:   CreateOrderError['detail']
-  userRole:  string
-  onConfirm: () => void
-  onCancel:  () => void
-  isLoading?: boolean
+  open: boolean;
+  code: CreateOrderError['code'];
+  message: string;
+  detail?: CreateOrderError['detail'];
+  userRole: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  isLoading?: boolean;
 }
 
 const VND = (n: number | undefined) =>
   n === undefined
     ? '—'
-    : new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n)
+    : new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+      }).format(n);
 
 export function CreditOverrideDialog({
   open,
@@ -44,10 +47,10 @@ export function CreditOverrideDialog({
   onCancel,
   isLoading,
 }: CreditOverrideDialogProps) {
-  if (!open) return null
+  if (!open) return null;
 
-  const canOverride = ['admin', 'manager'].includes(userRole)
-  const isOverdue   = code === 'CREDIT_OVERDUE'
+  const canOverride = ['admin', 'manager'].includes(userRole);
+  const isOverdue = code === 'CREDIT_OVERDUE';
 
   return (
     <div className="credit-dialog-overlay" role="dialog" aria-modal="true">
@@ -64,7 +67,9 @@ export function CreditOverrideDialog({
 
           <div className="credit-dialog__title-block">
             <h2 className="credit-dialog__title">
-              {isOverdue ? 'Cảnh báo: Nợ quá hạn' : 'Cảnh báo: Vượt hạn mức tín dụng'}
+              {isOverdue
+                ? 'Cảnh báo: Nợ quá hạn'
+                : 'Cảnh báo: Vượt hạn mức tín dụng'}
             </h2>
             <p className="credit-dialog__subtitle">
               {isOverdue
@@ -92,31 +97,49 @@ export function CreditOverrideDialog({
               {detail.overdueDebt !== undefined && (
                 <div className="credit-dialog__stat credit-dialog__stat--danger">
                   <span className="credit-dialog__stat-label">Nợ quá hạn</span>
-                  <span className="credit-dialog__stat-value">{VND(detail.overdueDebt)}</span>
+                  <span className="credit-dialog__stat-value">
+                    {VND(detail.overdueDebt)}
+                  </span>
                 </div>
               )}
               {detail.currentDebt !== undefined && (
                 <div className="credit-dialog__stat">
-                  <span className="credit-dialog__stat-label">Công nợ hiện tại</span>
-                  <span className="credit-dialog__stat-value">{VND(detail.currentDebt)}</span>
+                  <span className="credit-dialog__stat-label">
+                    Công nợ hiện tại
+                  </span>
+                  <span className="credit-dialog__stat-value">
+                    {VND(detail.currentDebt)}
+                  </span>
                 </div>
               )}
               {detail.orderTotal !== undefined && (
                 <div className="credit-dialog__stat">
-                  <span className="credit-dialog__stat-label">Giá trị đơn mới</span>
-                  <span className="credit-dialog__stat-value">{VND(detail.orderTotal)}</span>
+                  <span className="credit-dialog__stat-label">
+                    Giá trị đơn mới
+                  </span>
+                  <span className="credit-dialog__stat-value">
+                    {VND(detail.orderTotal)}
+                  </span>
                 </div>
               )}
               {detail.projectedDebt !== undefined && (
                 <div className="credit-dialog__stat credit-dialog__stat--warning">
-                  <span className="credit-dialog__stat-label">Dự kiến công nợ sau tạo đơn</span>
-                  <span className="credit-dialog__stat-value">{VND(detail.projectedDebt)}</span>
+                  <span className="credit-dialog__stat-label">
+                    Dự kiến công nợ sau tạo đơn
+                  </span>
+                  <span className="credit-dialog__stat-value">
+                    {VND(detail.projectedDebt)}
+                  </span>
                 </div>
               )}
               {detail.creditLimit !== undefined && (
                 <div className="credit-dialog__stat credit-dialog__stat--muted">
-                  <span className="credit-dialog__stat-label">Hạn mức tín dụng</span>
-                  <span className="credit-dialog__stat-value">{VND(detail.creditLimit)}</span>
+                  <span className="credit-dialog__stat-label">
+                    Hạn mức tín dụng
+                  </span>
+                  <span className="credit-dialog__stat-value">
+                    {VND(detail.creditLimit)}
+                  </span>
                 </div>
               )}
             </div>
@@ -126,15 +149,17 @@ export function CreditOverrideDialog({
           {canOverride ? (
             <div className="credit-dialog__override-notice">
               <p>
-                <strong>Bạn có quyền Manager/Admin.</strong> Bạn có thể xác nhận tiếp tục tạo đơn.
-                Thao tác này sẽ được ghi vào nhật ký kiểm toán.
+                <strong>Bạn có quyền Manager/Admin.</strong> Bạn có thể xác nhận
+                tiếp tục tạo đơn. Thao tác này sẽ được ghi vào nhật ký kiểm
+                toán.
               </p>
             </div>
           ) : (
             <div className="credit-dialog__no-override-notice">
               <p>
-                Bạn không có quyền bỏ qua cảnh báo này. Vui lòng liên hệ <strong>Manager</strong> để
-                được xác nhận trước khi tạo đơn hàng.
+                Bạn không có quyền bỏ qua cảnh báo này. Vui lòng liên hệ{' '}
+                <strong>Manager</strong> để được xác nhận trước khi tạo đơn
+                hàng.
               </p>
             </div>
           )}
@@ -169,5 +194,5 @@ export function CreditOverrideDialog({
         </div>
       </div>
     </div>
-  )
+  );
 }

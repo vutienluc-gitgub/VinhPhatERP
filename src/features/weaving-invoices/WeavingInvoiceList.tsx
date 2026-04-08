@@ -1,59 +1,63 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { useConfirm } from '@/shared/components/ConfirmDialog'
-import { Pagination } from '@/shared/components/Pagination'
+import { useConfirm } from '@/shared/components/ConfirmDialog';
+import { Pagination } from '@/shared/components/Pagination';
 
-import type { WeavingInvoice, WeavingInvoiceFilter } from './types'
+import type { WeavingInvoice, WeavingInvoiceFilter } from './types';
 import {
   useWeavingInvoiceList,
   useConfirmWeavingInvoice,
   useDeleteWeavingInvoice,
-} from './useWeavingInvoices'
-import { WEAVING_STATUS_LABELS } from './weaving-invoices.module'
+} from './useWeavingInvoices';
+import { WEAVING_STATUS_LABELS } from './weaving-invoices.module';
 
 type Props = {
-  onNew: () => void
-  onEdit: (invoice: WeavingInvoice) => void
-}
+  onNew: () => void;
+  onEdit: (invoice: WeavingInvoice) => void;
+};
 
 function statusClass(status: string) {
-  if (status === 'confirmed') return 'in_stock'
-  if (status === 'paid') return 'confirmed'
-  return 'pending'
+  if (status === 'confirmed') return 'in_stock';
+  if (status === 'paid') return 'confirmed';
+  return 'pending';
 }
 
 function fmt(n: number) {
-  return new Intl.NumberFormat('vi-VN').format(Math.round(n))
+  return new Intl.NumberFormat('vi-VN').format(Math.round(n));
 }
 
 export function WeavingInvoiceList({ onNew, onEdit }: Props) {
-  const [filters, setFilters] = useState<WeavingInvoiceFilter>({})
-  const [search, setSearch] = useState('')
-  const [page, setPage] = useState(1)
+  const [filters, setFilters] = useState<WeavingInvoiceFilter>({});
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
 
-  const { data: result, isLoading, error } = useWeavingInvoiceList(filters, page)
-  const invoices = result?.data ?? []
+  const {
+    data: result,
+    isLoading,
+    error,
+  } = useWeavingInvoiceList(filters, page);
+  const invoices = result?.data ?? [];
 
-  const confirmMutation = useConfirmWeavingInvoice()
-  const deleteMutation = useDeleteWeavingInvoice()
-  const { confirm } = useConfirm()
+  const confirmMutation = useConfirmWeavingInvoice();
+  const deleteMutation = useDeleteWeavingInvoice();
+  const { confirm } = useConfirm();
 
   async function handleConfirm(inv: WeavingInvoice) {
     const ok = await confirm({
       message: `Xác nhận phiếu "${inv.invoice_number}"? Hệ thống sẽ tự động nhập ${inv.weaving_invoice_rolls?.length ?? '?'} cuộn vào kho vải mộc.`,
       variant: 'danger',
-    })
-    if (!ok) return
-    confirmMutation.mutate(inv.id)
+    });
+    if (!ok) return;
+    confirmMutation.mutate(inv.id);
   }
 
   async function handleDelete(inv: WeavingInvoice) {
     const ok = await confirm({
       message: `Xóa phiếu nháp "${inv.invoice_number}"?`,
       variant: 'danger',
-    })
-    if (!ok) return
-    deleteMutation.mutate(inv.id)
+    });
+    if (!ok) return;
+    deleteMutation.mutate(inv.id);
   }
 
   return (
@@ -65,7 +69,11 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
             <p className="eyebrow">Gia công dệt</p>
             <h3>Phiếu gia công</h3>
           </div>
-          <button className="primary-button btn-standard" type="button" onClick={onNew}>
+          <button
+            className="primary-button btn-standard"
+            type="button"
+            onClick={onNew}
+          >
             + Tạo phiếu
           </button>
         </div>
@@ -77,9 +85,12 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
           className="filter-field"
           style={{ flex: '1 1 220px' }}
           onSubmit={(e) => {
-            e.preventDefault()
-            setPage(1)
-            setFilters((prev) => ({ ...prev, search: search.trim() || undefined }))
+            e.preventDefault();
+            setPage(1);
+            setFilters((prev) => ({
+              ...prev,
+              search: search.trim() || undefined,
+            }));
           }}
         >
           <label htmlFor="wi-search">Tìm kiếm</label>
@@ -91,7 +102,9 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-            <button className="btn-secondary" type="submit">Tìm</button>
+            <button className="btn-secondary" type="submit">
+              Tìm
+            </button>
           </div>
         </form>
 
@@ -102,8 +115,13 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
             className="field-select"
             value={filters.status ?? ''}
             onChange={(e) => {
-              setPage(1)
-              setFilters((prev) => ({ ...prev, status: (e.target.value as WeavingInvoiceFilter['status']) || undefined }))
+              setPage(1);
+              setFilters((prev) => ({
+                ...prev,
+                status:
+                  (e.target.value as WeavingInvoiceFilter['status']) ||
+                  undefined,
+              }));
             }}
           >
             <option value="">Tất cả</option>
@@ -114,7 +132,14 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
         </div>
 
         {(filters.search || filters.status) && (
-          <button className="btn-secondary" style={{ alignSelf: 'flex-end' }} onClick={() => { setFilters({}); setSearch('') }}>
+          <button
+            className="btn-secondary"
+            style={{ alignSelf: 'flex-end' }}
+            onClick={() => {
+              setFilters({});
+              setSearch('');
+            }}
+          >
             ✕ Xóa lọc
           </button>
         )}
@@ -125,7 +150,9 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
 
       {/* Confirm/delete errors */}
       {confirmMutation.error && (
-        <p className="error-inline">{(confirmMutation.error as Error).message}</p>
+        <p className="error-inline">
+          {(confirmMutation.error as Error).message}
+        </p>
       )}
 
       {/* Table */}
@@ -152,18 +179,29 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
             <tbody>
               {invoices.map((inv) => (
                 <tr key={inv.id}>
-                  <td><strong>{inv.invoice_number}</strong></td>
+                  <td>
+                    <strong>{inv.invoice_number}</strong>
+                  </td>
                   <td>
                     {inv.suppliers?.name ?? '—'}
                     {inv.suppliers?.code && (
-                      <div className="td-muted" style={{ fontSize: '0.8rem' }}>{inv.suppliers.code}</div>
+                      <div className="td-muted" style={{ fontSize: '0.8rem' }}>
+                        {inv.suppliers.code}
+                      </div>
                     )}
                   </td>
                   <td className="td-muted">{inv.invoice_date}</td>
                   <td>{inv.fabric_type}</td>
-                  <td className="numeric-cell">{fmt(inv.total_weight_kg)} kg</td>
+                  <td className="numeric-cell">
+                    {fmt(inv.total_weight_kg)} kg
+                  </td>
                   <td className="numeric-cell">{fmt(inv.total_amount)} đ</td>
-                  <td className="numeric-cell" style={{ color: inv.paid_amount > 0 ? 'var(--success)' : undefined }}>
+                  <td
+                    className="numeric-cell"
+                    style={{
+                      color: inv.paid_amount > 0 ? 'var(--success)' : undefined,
+                    }}
+                  >
                     {fmt(inv.paid_amount)} đ
                   </td>
                   <td>
@@ -214,5 +252,5 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
 
       <Pagination result={result} onPageChange={setPage} />
     </div>
-  )
+  );
 }

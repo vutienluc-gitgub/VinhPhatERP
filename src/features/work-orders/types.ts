@@ -1,6 +1,5 @@
-import type { WorkOrderStatus } from '@/schema/work-order.schema'
-export type { WorkOrderStatus }
-
+import type { WorkOrderStatus } from '@/schema/work-order.schema';
+export type { WorkOrderStatus };
 
 export interface WorkOrder {
   id: string;

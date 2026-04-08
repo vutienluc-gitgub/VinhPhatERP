@@ -1,29 +1,34 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
-import { useForm, useFieldArray, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
 
-import { Combobox } from '@/shared/components/Combobox'
-import { ArrowLeft, Plus, Trash2 } from '@/shared/icons'
+import { Combobox } from '@/shared/components/Combobox';
+import { ArrowLeft, Plus, Trash2 } from '@/shared/icons';
 
-import { bomTemplateSchema, BomTemplateFormData } from './bom.module'
-import { BomTemplate } from './types'
-import { useFabricCatalogs, useYarnCatalogs, useDraftBom, useUpdateDraftBom } from './useBom'
+import { bomTemplateSchema, BomTemplateFormData } from './bom.module';
+import { BomTemplate } from './types';
+import {
+  useFabricCatalogs,
+  useYarnCatalogs,
+  useDraftBom,
+  useUpdateDraftBom,
+} from './useBom';
 
 interface BomFormProps {
-  initialData?: BomTemplate
-  onSuccess: () => void
-  onCancel: () => void
+  initialData?: BomTemplate;
+  onSuccess: () => void;
+  onCancel: () => void;
 }
 
 export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
-  const { data: fabricCatalogs = [] } = useFabricCatalogs()
-  const { data: yarnCatalogs = [] } = useYarnCatalogs()
+  const { data: fabricCatalogs = [] } = useFabricCatalogs();
+  const { data: yarnCatalogs = [] } = useYarnCatalogs();
 
-  const createDraft = useDraftBom()
-  const updateDraft = useUpdateDraftBom()
+  const createDraft = useDraftBom();
+  const updateDraft = useUpdateDraftBom();
 
-  const isEdit = !!initialData
-  const isSubmitting = createDraft.isPending || updateDraft.isPending
+  const isEdit = !!initialData;
+  const isSubmitting = createDraft.isPending || updateDraft.isPending;
 
   const defaultValues: BomTemplateFormData = {
     code: initialData?.code || '',
@@ -40,8 +45,15 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
       consumption_kg_per_m: y.consumption_kg_per_m,
       notes: y.notes,
       sort_order: y.sort_order,
-    })) || [{ yarn_catalog_id: '', ratio_pct: 100, consumption_kg_per_m: 0.5, sort_order: 0 }],
-  }
+    })) || [
+      {
+        yarn_catalog_id: '',
+        ratio_pct: 100,
+        consumption_kg_per_m: 0.5,
+        sort_order: 0,
+      },
+    ],
+  };
 
   const {
     register,
@@ -53,61 +65,92 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
   } = useForm<BomTemplateFormData>({
     resolver: zodResolver(bomTemplateSchema),
     defaultValues,
-  })
+  });
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'bom_yarn_items',
-  })
+  });
 
-  const watchItems = watch('bom_yarn_items')
-  const totalRatio = watchItems.reduce((acc, curr) => acc + (Number(curr.ratio_pct) || 0), 0)
+  const watchItems = watch('bom_yarn_items');
+  const totalRatio = watchItems.reduce(
+    (acc, curr) => acc + (Number(curr.ratio_pct) || 0),
+    0,
+  );
 
   // ── Tự sinh mã BOM: BOM-<mã sản phẩm mộc>-<mã sợi đầu tiên> ──
-  const watchFabricId = watch('target_fabric_id')
-  const watchFirstYarnId = watchItems?.[0]?.yarn_catalog_id
+  const watchFabricId = watch('target_fabric_id');
+  const watchFirstYarnId = watchItems?.[0]?.yarn_catalog_id;
 
   useEffect(() => {
-    if (isEdit) return // Không đổi mã khi sửa
+    if (isEdit) return; // Không đổi mã khi sửa
 
-    const fabric = fabricCatalogs.find((f) => f.id === watchFabricId)
-    const yarn = yarnCatalogs.find((y) => y.id === watchFirstYarnId)
+    const fabric = fabricCatalogs.find((f) => f.id === watchFabricId);
+    const yarn = yarnCatalogs.find((y) => y.id === watchFirstYarnId);
 
-    const fabricCode = fabric?.code ?? ''
-    const yarnCode = yarn?.code ?? ''
+    const fabricCode = fabric?.code ?? '';
+    const yarnCode = yarn?.code ?? '';
 
     if (fabricCode || yarnCode) {
-      const parts = ['BOM', fabricCode, yarnCode].filter(Boolean)
-      setValue('code', parts.join('-'), { shouldValidate: true })
+      const parts = ['BOM', fabricCode, yarnCode].filter(Boolean);
+      setValue('code', parts.join('-'), { shouldValidate: true });
     }
-  }, [watchFabricId, watchFirstYarnId, fabricCatalogs, yarnCatalogs, isEdit, setValue])
+  }, [
+    watchFabricId,
+    watchFirstYarnId,
+    fabricCatalogs,
+    yarnCatalogs,
+    isEdit,
+    setValue,
+  ]);
 
   const onSubmit = async (data: BomTemplateFormData) => {
     try {
       if (isEdit) {
-        await updateDraft.mutateAsync({ id: initialData.id, data })
+        await updateDraft.mutateAsync({
+          id: initialData.id,
+          data,
+        });
       } else {
-        await createDraft.mutateAsync(data)
+        await createDraft.mutateAsync(data);
       }
-      onSuccess()
+      onSuccess();
     } catch (err) {
-      console.error(err)
-      alert('Có lỗi xảy ra: ' + (err as Error).message)
+      console.error(err);
+      alert('Có lỗi xảy ra: ' + (err as Error).message);
     }
-  }
+  };
 
   return (
     <div className="panel-card card-flush">
       {/* Header */}
       <div className="card-header-area">
         <div className="page-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <button className="btn-icon" type="button" onClick={onCancel} title="Quay lại">
-              <ArrowLeft style={{ width: 18, height: 18 }} />
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+            }}
+          >
+            <button
+              className="btn-icon"
+              type="button"
+              onClick={onCancel}
+              title="Quay lại"
+            >
+              <ArrowLeft
+                style={{
+                  width: 18,
+                  height: 18,
+                }}
+              />
             </button>
             <div>
               <p className="eyebrow">Kỹ thuật</p>
-              <h3>{isEdit ? 'Cập nhật bản nháp' : 'Tạo bản nháp định mức (BOM)'}</h3>
+              <h3>
+                {isEdit ? 'Cập nhật bản nháp' : 'Tạo bản nháp định mức (BOM)'}
+              </h3>
             </div>
           </div>
         </div>
@@ -118,11 +161,22 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
         {/* Basic info */}
         <div
           className="form-grid"
-          style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: '1rem',
+          }}
         >
           <div className="form-field">
             <label>
-              Mã BOM <span style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>(tự sinh)</span>
+              Mã BOM{' '}
+              <span
+                style={{
+                  fontSize: '0.78rem',
+                  color: 'var(--muted)',
+                }}
+              >
+                (tự sinh)
+              </span>
             </label>
             <input
               type="text"
@@ -130,9 +184,14 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
               readOnly
               className="field-input"
               placeholder="Chọn sản phẩm mộc + sợi → tự sinh"
-              style={{ backgroundColor: 'var(--surface-raised)', cursor: 'default' }}
+              style={{
+                backgroundColor: 'var(--surface-raised)',
+                cursor: 'default',
+              }}
             />
-            <span className="field-hint">Mã tự động: BOM‑&lt;mã vải mộc&gt;‑&lt;mã sợi&gt;</span>
+            <span className="field-hint">
+              Mã tự động: BOM‑&lt;mã vải mộc&gt;‑&lt;mã sợi&gt;
+            </span>
           </div>
 
           <div className="form-field">
@@ -145,7 +204,9 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
               className={`field-input${errors.name ? ' is-error' : ''}`}
               placeholder="VD: Định mức Cotton 65/35..."
             />
-            {errors.name && <span className="field-error">{errors.name.message}</span>}
+            {errors.name && (
+              <span className="field-error">{errors.name.message}</span>
+            )}
           </div>
 
           <div className="form-field">
@@ -170,14 +231,20 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
               )}
             />
             {errors.target_fabric_id && (
-              <span className="field-error">{errors.target_fabric_id.message}</span>
+              <span className="field-error">
+                {errors.target_fabric_id.message}
+              </span>
             )}
           </div>
         </div>
 
         <div
           className="form-grid"
-          style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginTop: '1rem' }}
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+            gap: '1rem',
+            marginTop: '1rem',
+          }}
         >
           <div className="form-field">
             <label>Khổ vải (cm)</label>
@@ -216,13 +283,41 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
         </div>
 
         {/* Yarn Items Section */}
-        <div style={{ borderTop: '1px solid var(--border)', marginTop: '1.5rem', paddingTop: '1.25rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+        <div
+          style={{
+            borderTop: '1px solid var(--border)',
+            marginTop: '1.5rem',
+            paddingTop: '1.25rem',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '0.75rem',
+            }}
+          >
             <div>
-              <p className="eyebrow" style={{ marginBottom: '0.2rem' }}>Thành phần nguyên liệu</p>
-              <p style={{ fontSize: '0.82rem', color: 'var(--muted)', margin: 0 }}>
+              <p className="eyebrow" style={{ marginBottom: '0.2rem' }}>
+                Thành phần nguyên liệu
+              </p>
+              <p
+                style={{
+                  fontSize: '0.82rem',
+                  color: 'var(--muted)',
+                  margin: 0,
+                }}
+              >
                 Tổng tỉ lệ:{' '}
-                <strong style={{ color: Math.abs(totalRatio - 100) > 0.01 ? 'var(--danger)' : 'var(--success)' }}>
+                <strong
+                  style={{
+                    color:
+                      Math.abs(totalRatio - 100) > 0.01
+                        ? 'var(--danger)'
+                        : 'var(--success)',
+                  }}
+                >
                   {totalRatio.toFixed(2)}%
                 </strong>
               </p>
@@ -230,10 +325,26 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
             <button
               type="button"
               className="btn-secondary"
-              onClick={() => append({ yarn_catalog_id: '', ratio_pct: 0, consumption_kg_per_m: 0.5, sort_order: fields.length })}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+              onClick={() =>
+                append({
+                  yarn_catalog_id: '',
+                  ratio_pct: 0,
+                  consumption_kg_per_m: 0.5,
+                  sort_order: fields.length,
+                })
+              }
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+              }}
             >
-              <Plus style={{ width: 16, height: 16 }} />
+              <Plus
+                style={{
+                  width: 16,
+                  height: 16,
+                }}
+              />
               Thêm sợi
             </button>
           </div>
@@ -244,7 +355,13 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
             </p>
           )}
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+            }}
+          >
             {fields.map((field, index) => (
               <div
                 key={field.id}
@@ -257,7 +374,14 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
                   borderRadius: 'var(--radius-sm)',
                 }}
               >
-                <div className="form-grid" style={{ flex: 1, gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.5rem' }}>
+                <div
+                  className="form-grid"
+                  style={{
+                    flex: 1,
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                    gap: '0.5rem',
+                  }}
+                >
                   <div className="form-field">
                     <label>Loại sợi</label>
                     <Controller
@@ -273,12 +397,16 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
                           value={field.value}
                           onChange={field.onChange}
                           placeholder="— Chọn sợi —"
-                          hasError={!!errors.bom_yarn_items?.[index]?.yarn_catalog_id}
+                          hasError={
+                            !!errors.bom_yarn_items?.[index]?.yarn_catalog_id
+                          }
                         />
                       )}
                     />
                     {errors.bom_yarn_items?.[index]?.yarn_catalog_id && (
-                      <span className="field-error">{errors.bom_yarn_items[index]?.yarn_catalog_id?.message}</span>
+                      <span className="field-error">
+                        {errors.bom_yarn_items[index]?.yarn_catalog_id?.message}
+                      </span>
                     )}
                   </div>
 
@@ -287,11 +415,15 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
                     <input
                       type="number"
                       step="0.01"
-                      {...register(`bom_yarn_items.${index}.ratio_pct`, { valueAsNumber: true })}
+                      {...register(`bom_yarn_items.${index}.ratio_pct`, {
+                        valueAsNumber: true,
+                      })}
                       className={`field-input${errors.bom_yarn_items?.[index]?.ratio_pct ? ' is-error' : ''}`}
                     />
                     {errors.bom_yarn_items?.[index]?.ratio_pct && (
-                      <span className="field-error">{errors.bom_yarn_items[index]?.ratio_pct?.message}</span>
+                      <span className="field-error">
+                        {errors.bom_yarn_items[index]?.ratio_pct?.message}
+                      </span>
                     )}
                   </div>
 
@@ -300,11 +432,19 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
                     <input
                       type="number"
                       step="0.0001"
-                      {...register(`bom_yarn_items.${index}.consumption_kg_per_m`, { valueAsNumber: true })}
+                      {...register(
+                        `bom_yarn_items.${index}.consumption_kg_per_m`,
+                        { valueAsNumber: true },
+                      )}
                       className={`field-input${errors.bom_yarn_items?.[index]?.consumption_kg_per_m ? ' is-error' : ''}`}
                     />
                     {errors.bom_yarn_items?.[index]?.consumption_kg_per_m && (
-                      <span className="field-error">{errors.bom_yarn_items[index]?.consumption_kg_per_m?.message}</span>
+                      <span className="field-error">
+                        {
+                          errors.bom_yarn_items[index]?.consumption_kg_per_m
+                            ?.message
+                        }
+                      </span>
                     )}
                   </div>
                 </div>
@@ -314,15 +454,29 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
                   className="btn-icon danger"
                   onClick={() => remove(index)}
                   title="Xóa dòng"
-                  style={{ marginTop: '1.6rem', flexShrink: 0 }}
+                  style={{
+                    marginTop: '1.6rem',
+                    flexShrink: 0,
+                  }}
                 >
-                  <Trash2 style={{ width: 16, height: 16 }} />
+                  <Trash2
+                    style={{
+                      width: 16,
+                      height: 16,
+                    }}
+                  />
                 </button>
               </div>
             ))}
 
             {fields.length === 0 && (
-              <div className="table-empty" style={{ border: '2px dashed var(--border)', borderRadius: 'var(--radius-sm)' }}>
+              <div
+                className="table-empty"
+                style={{
+                  border: '2px dashed var(--border)',
+                  borderRadius: 'var(--radius-sm)',
+                }}
+              >
                 Chưa có loại sợi nào. Nhấn "Thêm sợi" để bắt đầu.
               </div>
             )}
@@ -330,7 +484,16 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
         </div>
 
         {/* Footer actions */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: '0.5rem',
+            marginTop: '1.5rem',
+            paddingTop: '1rem',
+            borderTop: '1px solid var(--border)',
+          }}
+        >
           <button
             type="button"
             className="btn-secondary"
@@ -349,5 +512,5 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
         </div>
       </form>
     </div>
-  )
+  );
 }

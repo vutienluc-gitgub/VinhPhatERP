@@ -1,10 +1,15 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import { BlockedPage, ProfilePage, UnauthorizedPage } from '@/features/auth'
-
-import { AppShell } from '@/app/layouts/AppShell'
-import { ProtectedRoute } from '@/app/router/ProtectedRoute'
-import { appRoutes, adminRoutes, authRoute, managerRoutes, printRoutes } from '@/app/router/routes'
+import { BlockedPage, ProfilePage, UnauthorizedPage } from '@/features/auth';
+import { AppShell } from '@/app/layouts/AppShell';
+import { ProtectedRoute } from '@/app/router/ProtectedRoute';
+import {
+  appRoutes,
+  adminRoutes,
+  authRoute,
+  managerRoutes,
+  printRoutes,
+} from '@/app/router/routes';
 
 const router = createBrowserRouter([
   // ---- Public routes (no auth required) ----
@@ -32,7 +37,10 @@ const router = createBrowserRouter([
         children: [
           // All authenticated users
           ...appRoutes,
-          { path: 'profile', element: <ProfilePage /> },
+          {
+            path: 'profile',
+            element: <ProfilePage />,
+          },
 
           // manager + admin only
           {
@@ -49,8 +57,8 @@ const router = createBrowserRouter([
       },
     ],
   },
-])
+]);
 
 export function AppRouter() {
-  return <RouterProvider router={router} />
+  return <RouterProvider router={router} />;
 }

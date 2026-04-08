@@ -1,8 +1,8 @@
-export { InventoryPage } from '@/features/inventory/InventoryPage'
-export { inventoryFeature } from '@/features/inventory/inventory.module'
+export { InventoryPage } from '@/features/inventory/InventoryPage';
+export * from './inventory.module';
 export {
   useRawFabricInventory,
   useFinishedFabricInventory,
   useYarnInventory,
   useAgingStock,
-} from '@/features/inventory/useInventory'
+} from '@/features/inventory/useInventory';

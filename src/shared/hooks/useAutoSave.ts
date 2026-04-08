@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
 type AutoSaveOptions<T> = {
   key: string;
@@ -8,22 +8,22 @@ type AutoSaveOptions<T> = {
   onSaveToDB?: (data: T) => Promise<void>;
 };
 
-type SaveStatus = "idle" | "saving" | "saved" | "conflict";
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'conflict';
 
 export function useAutoSave<T>({
   key,
   data,
   delay = 800,
-  userId = "anonymous",
+  userId = 'anonymous',
   onSaveToDB,
 }: AutoSaveOptions<T>) {
   const fullKey = `${key}-${userId}`;
-  const [status, setStatus] = useState<SaveStatus>("idle");
+  const [status, setStatus] = useState<SaveStatus>('idle');
   const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
   const [hasConflict, setHasConflict] = useState(false);
 
   const timeoutRef = useRef<any>();
-  const lastSavedRef = useRef<string>("");
+  const lastSavedRef = useRef<string>('');
 
   // 🔥 AUTO SAVE
   useEffect(() => {
@@ -31,7 +31,7 @@ export function useAutoSave<T>({
 
     if (serialized === lastSavedRef.current) return;
 
-    setStatus("saving");
+    setStatus('saving');
     clearTimeout(timeoutRef.current);
 
     timeoutRef.current = setTimeout(async () => {
@@ -48,7 +48,7 @@ export function useAutoSave<T>({
 
       lastSavedRef.current = serialized;
       setLastSavedAt(payload.updatedAt);
-      setStatus("saved");
+      setStatus('saved');
     }, delay);
 
     return () => clearTimeout(timeoutRef.current);
@@ -65,12 +65,12 @@ export function useAutoSave<T>({
 
       if (incoming.updatedAt > lastSavedAt) {
         setHasConflict(true);
-        setStatus("conflict");
+        setStatus('conflict');
       }
     };
 
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
   }, [lastSavedAt]);
 
   return {
@@ -81,7 +81,7 @@ export function useAutoSave<T>({
 }
 
 // 🔄 LOAD DRAFT
-export function loadDraft<T>(key: string, userId = "anonymous"): T | null {
+export function loadDraft<T>(key: string, userId = 'anonymous'): T | null {
   const raw = localStorage.getItem(`${key}-${userId}`);
   if (!raw) return null;
 
@@ -93,13 +93,13 @@ export function loadDraft<T>(key: string, userId = "anonymous"): T | null {
 }
 
 // 🧹 CLEAR
-export function clearDraft(key: string, userId = "anonymous") {
+export function clearDraft(key: string, userId = 'anonymous') {
   localStorage.removeItem(`${key}-${userId}`);
 }
 
 // 🕓 FORMAT TIME
 export function formatTime(ts: number | null) {
-  if (!ts) return "";
+  if (!ts) return '';
   const d = new Date(ts);
   return d.toLocaleTimeString();
 }

@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   fetchShipmentDocument,
@@ -12,15 +12,22 @@ import {
   assignDeliveryStaff,
   fetchDeliveryStaff,
   deleteShipmentFull,
-} from '@/api/shipments.api'
+} from '@/api/shipments.api';
 
-import { exportShipmentToPdf } from './shipment-document'
-import type { ShipmentsFormValues, DeliveryConfirmFormValues } from './shipments.module'
-import type { ShipmentDocument, ShipmentsFilter, DeliveryStaffSummary } from './types'
+import { exportShipmentToPdf } from './shipment-document';
+import type {
+  ShipmentsFormValues,
+  DeliveryConfirmFormValues,
+} from './shipments.module';
+import type {
+  ShipmentDocument,
+  ShipmentsFilter,
+  DeliveryStaffSummary,
+} from './types';
 
-export type { ShipmentDocument }
+export type { ShipmentDocument };
 
-const QUERY_KEY = ['shipments'] as const
+const QUERY_KEY = ['shipments'] as const;
 
 /* ── List with filters ── */
 
@@ -28,7 +35,7 @@ export function useShipmentList(filters: ShipmentsFilter = {}, page = 1) {
   return useQuery({
     queryKey: [...QUERY_KEY, filters, page],
     queryFn: () => fetchShipmentsPaginated(filters, page),
-  })
+  });
 }
 
 /* ── Single shipment detail ── */
@@ -38,7 +45,7 @@ export function useShipment(id: string | undefined) {
     queryKey: [...QUERY_KEY, id],
     enabled: !!id,
     queryFn: () => fetchShipmentDocument(id!),
-  })
+  });
 }
 
 /* ── Auto-generate shipment number ── */
@@ -47,7 +54,7 @@ export function useNextShipmentNumber() {
   return useQuery({
     queryKey: [...QUERY_KEY, 'next-number'],
     queryFn: fetchNextShipmentNumber,
-  })
+  });
 }
 
 /* ── Available finished rolls for picking ── */
@@ -56,13 +63,13 @@ export function useAvailableFinishedRolls(orderId?: string) {
   return useQuery({
     queryKey: ['finished-fabric-rolls', 'available', orderId],
     queryFn: () => fetchAvailableFinishedRolls(orderId),
-  })
+  });
 }
 
 /* ── Create ── */
 
 export function useCreateShipment() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (values: ShipmentsFormValues) =>
       createShipmentFull({
@@ -83,27 +90,31 @@ export function useCreateShipment() {
         })),
       }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
-      void queryClient.invalidateQueries({ queryKey: ['orders'] })
-      void queryClient.invalidateQueries({ queryKey: ['finished-fabric-rolls'] })
-      void queryClient.invalidateQueries({ queryKey: ['reserve-rolls'] })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ['orders'] });
+      void queryClient.invalidateQueries({
+        queryKey: ['finished-fabric-rolls'],
+      });
+      void queryClient.invalidateQueries({ queryKey: ['reserve-rolls'] });
     },
-  })
+  });
 }
 
 /* ── Confirm (preparing → shipped) ── */
 
 export function useConfirmShipment() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: confirmShipmentFull,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
-      void queryClient.invalidateQueries({ queryKey: ['orders'] })
-      void queryClient.invalidateQueries({ queryKey: ['finished-fabric-rolls'] })
-      void queryClient.invalidateQueries({ queryKey: ['reserve-rolls'] })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ['orders'] });
+      void queryClient.invalidateQueries({
+        queryKey: ['finished-fabric-rolls'],
+      });
+      void queryClient.invalidateQueries({ queryKey: ['reserve-rolls'] });
     },
-  })
+  });
 }
 
 /* ── Export PDF ── */
@@ -111,24 +122,24 @@ export function useConfirmShipment() {
 export function useExportShipmentPdf() {
   return useMutation({
     mutationFn: async (shipmentId: string) => {
-      const shipment = await fetchShipmentDocument(shipmentId)
-      exportShipmentToPdf(shipment)
-      return shipment
+      const shipment = await fetchShipmentDocument(shipmentId);
+      exportShipmentToPdf(shipment);
+      return shipment;
     },
-  })
+  });
 }
 
 /* ── Mark delivered ── */
 
 export function useMarkDelivered() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
       shipmentId,
       values,
     }: {
-      shipmentId: string
-      values: DeliveryConfirmFormValues
+      shipmentId: string;
+      values: DeliveryConfirmFormValues;
     }) =>
       markShipmentDelivered(shipmentId, {
         receiverName: values.receiverName,
@@ -137,30 +148,30 @@ export function useMarkDelivered() {
         notes: values.notes ?? null,
       }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
-      void queryClient.invalidateQueries({ queryKey: ['orders'] })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ['orders'] });
     },
-  })
+  });
 }
 
 /* ── Assign delivery staff ── */
 
 export function useAssignDeliveryStaff() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
       shipmentId,
       staffId,
       vehicleInfo,
     }: {
-      shipmentId: string
-      staffId: string
-      vehicleInfo?: string
+      shipmentId: string;
+      staffId: string;
+      vehicleInfo?: string;
     }) => assignDeliveryStaff(shipmentId, staffId, vehicleInfo),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 /* ── Delivery staff list ── */
@@ -169,20 +180,22 @@ export function useDeliveryStaffList() {
   return useQuery<DeliveryStaffSummary[]>({
     queryKey: ['delivery-staff'],
     queryFn: fetchDeliveryStaff,
-  })
+  });
 }
 
 /* ── Delete (preparing only) ── */
 
 export function useDeleteShipment() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteShipmentFull,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
-      void queryClient.invalidateQueries({ queryKey: ['finished-fabric-rolls'] })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      void queryClient.invalidateQueries({
+        queryKey: ['finished-fabric-rolls'],
+      });
     },
-  })
+  });
 }
 
 /* ── Shipments by order ── */
@@ -192,5 +205,5 @@ export function useOrderShipments(orderId: string | undefined) {
     queryKey: [...QUERY_KEY, 'by-order', orderId],
     enabled: !!orderId,
     queryFn: () => fetchShipmentsByOrder(orderId!),
-  })
+  });
 }

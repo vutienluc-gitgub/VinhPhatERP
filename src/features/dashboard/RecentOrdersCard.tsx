@@ -1,11 +1,11 @@
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 
-import type { RecentOrder } from './useDashboardData'
+import type { RecentOrder } from './useDashboardData';
 
 type RecentOrdersCardProps = {
-  orders: RecentOrder[]
-  isLoading: boolean
-}
+  orders: RecentOrder[];
+  isLoading: boolean;
+};
 
 const STATUS_LABELS: Record<string, string> = {
   draft: 'Nháp',
@@ -13,7 +13,7 @@ const STATUS_LABELS: Record<string, string> = {
   in_progress: 'Đang SX',
   completed: 'Hoàn thành',
   cancelled: 'Đã huỷ',
-}
+};
 
 const STATUS_CSS: Record<string, string> = {
   draft: 'draft',
@@ -21,19 +21,28 @@ const STATUS_CSS: Record<string, string> = {
   in_progress: 'in_process',
   completed: 'completed',
   cancelled: 'cancelled',
-}
+};
 
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value)
+  return new Intl.NumberFormat('vi-VN').format(value);
 }
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })
+  return new Date(iso).toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+  });
 }
 
 export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
   return (
-    <div className="panel-card" style={{ padding: 0, overflow: 'hidden' }}>
+    <div
+      className="panel-card"
+      style={{
+        padding: 0,
+        overflow: 'hidden',
+      }}
+    >
       <div style={{ padding: '1.25rem 1.25rem 0' }}>
         <div className="card-header-row">
           <div>
@@ -49,8 +58,15 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
       <div style={{ padding: '0.75rem 0 0' }}>
         {isLoading ? (
           <div style={{ padding: '0 1.25rem 1.25rem' }}>
-            {[1, 2, 3].map(i => (
-              <div key={i} className="skeleton-block" style={{ height: '2.5rem', marginBottom: '0.5rem' }} />
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="skeleton-block"
+                style={{
+                  height: '2.5rem',
+                  marginBottom: '0.5rem',
+                }}
+              />
             ))}
           </div>
         ) : orders.length === 0 ? (
@@ -71,12 +87,20 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
                   <tr key={order.id}>
                     <td>
                       <strong>{order.order_number}</strong>
-                      <div className="td-muted" style={{ fontSize: '0.76rem' }}>{formatDate(order.created_at)}</div>
+                      <div className="td-muted" style={{ fontSize: '0.76rem' }}>
+                        {formatDate(order.created_at)}
+                      </div>
                     </td>
-                    <td className="td-muted hide-mobile">{order.customer_name ?? '—'}</td>
-                    <td className="numeric-cell">{formatCurrency(order.total_amount)}</td>
+                    <td className="td-muted hide-mobile">
+                      {order.customer_name ?? '—'}
+                    </td>
+                    <td className="numeric-cell">
+                      {formatCurrency(order.total_amount)}
+                    </td>
                     <td>
-                      <span className={`roll-status ${STATUS_CSS[order.status] ?? 'in_stock'}`}>
+                      <span
+                        className={`roll-status ${STATUS_CSS[order.status] ?? 'in_stock'}`}
+                      >
                         {STATUS_LABELS[order.status] ?? order.status}
                       </span>
                     </td>
@@ -88,5 +112,5 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
         )}
       </div>
     </div>
-  )
+  );
 }

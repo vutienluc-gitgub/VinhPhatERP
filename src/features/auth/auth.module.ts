@@ -1,4 +1,4 @@
-import type { FeatureDefinition } from '@/shared/types/feature'
+import type { FeatureDefinition } from '@/shared/types/feature';
 
 // Schemas & types re-exported from centralized schema registry
 export {
@@ -6,8 +6,8 @@ export {
   authDefaultValues,
   registerSchema,
   registerDefaultValues,
-} from '@/schema/auth.schema'
-export type { AuthFormValues, RegisterFormValues } from '@/schema/auth.schema'
+} from '@/schema/auth.schema';
+export type { AuthFormValues, RegisterFormValues } from '@/schema/auth.schema';
 
 export const authFeature: FeatureDefinition = {
   key: 'auth',
@@ -17,9 +17,18 @@ export const authFeature: FeatureDefinition = {
   description:
     'Auth là điểm vào của V2, quản lý sign in, session state, role-based access và route guard theo từng vai trò.',
   summary: [
-    { label: 'Roles', value: '4' },
-    { label: 'Session mode', value: 'Supabase' },
-    { label: 'Guards', value: 'Planned' },
+    {
+      label: 'Roles',
+      value: '4',
+    },
+    {
+      label: 'Session mode',
+      value: 'Supabase',
+    },
+    {
+      label: 'Guards',
+      value: 'Planned',
+    },
   ],
   highlights: [
     'Login & Sign Up mobile-first với email, password.',
@@ -37,4 +46,4 @@ export const authFeature: FeatureDefinition = {
     'Them login form voi React Hook Form + Zod.',
     'Protect settings, inventory adjustments va reports.',
   ],
-}
+};

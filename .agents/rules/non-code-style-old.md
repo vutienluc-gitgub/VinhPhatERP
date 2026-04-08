@@ -3,6 +3,7 @@ trigger: always_on
 ---
 
 Không dùng:
-- gray-*
+
+- gray-\*
 - rounded-md
 - bg-white

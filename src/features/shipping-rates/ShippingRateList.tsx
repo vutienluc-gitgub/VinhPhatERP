@@ -1,49 +1,56 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { useConfirm } from '@/shared/components/ConfirmDialog'
-import { Edit2, Trash2 } from '@/shared/icons'
+import { useConfirm } from '@/shared/components/ConfirmDialog';
+import { Edit2, Trash2 } from '@/shared/icons';
 
-import { formatCurrency } from './shipping-rates.module'
-import type { ShippingRate, ShippingRateFilter } from './types'
-import { useDeleteShippingRate, useShippingRateList } from './useShippingRates'
+import { formatCurrency } from './shipping-rates.module';
+import type { ShippingRate, ShippingRateFilter } from './types';
+import { useDeleteShippingRate, useShippingRateList } from './useShippingRates';
 
 type Props = {
-  onEdit: (item: ShippingRate) => void
-  onNew: () => void
-}
+  onEdit: (item: ShippingRate) => void;
+  onNew: () => void;
+};
 
 export function ShippingRateList({ onEdit, onNew }: Props) {
-  const [searchInput, setSearchInput] = useState('')
-  const [filters, setFilters] = useState<ShippingRateFilter>({})
+  const [searchInput, setSearchInput] = useState('');
+  const [filters, setFilters] = useState<ShippingRateFilter>({});
 
-  const { data, isLoading, error } = useShippingRateList(filters)
-  const deleteMutation = useDeleteShippingRate()
-  const { confirm } = useConfirm()
+  const { data, isLoading, error } = useShippingRateList(filters);
+  const deleteMutation = useDeleteShippingRate();
+  const { confirm } = useConfirm();
 
   function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    setFilters((prev) => ({ ...prev, query: searchInput.trim() || undefined }))
+    e.preventDefault();
+    setFilters((prev) => ({
+      ...prev,
+      query: searchInput.trim() || undefined,
+    }));
   }
 
   async function handleDelete(item: ShippingRate) {
     const ok = await confirm({
       message: `Xoá bảng giá "${item.name}"?`,
       variant: 'danger',
-    })
-    if (!ok) return
-    deleteMutation.mutate(item.id)
+    });
+    if (!ok) return;
+    deleteMutation.mutate(item.id);
   }
 
   function rateDescription(item: ShippingRate): string {
-    const parts: string[] = []
-    if (item.rate_per_trip != null) parts.push(`${formatCurrency(item.rate_per_trip)}/chuyến`)
-    if (item.rate_per_meter != null) parts.push(`${formatCurrency(item.rate_per_meter)}/m`)
-    if (item.rate_per_kg != null) parts.push(`${formatCurrency(item.rate_per_kg)}/kg`)
-    if (item.loading_fee > 0) parts.push(`Bốc xếp: ${formatCurrency(item.loading_fee)}`)
-    return parts.length > 0 ? parts.join(' · ') : '—'
+    const parts: string[] = [];
+    if (item.rate_per_trip != null)
+      parts.push(`${formatCurrency(item.rate_per_trip)}/chuyến`);
+    if (item.rate_per_meter != null)
+      parts.push(`${formatCurrency(item.rate_per_meter)}/m`);
+    if (item.rate_per_kg != null)
+      parts.push(`${formatCurrency(item.rate_per_kg)}/kg`);
+    if (item.loading_fee > 0)
+      parts.push(`Bốc xếp: ${formatCurrency(item.loading_fee)}`);
+    return parts.length > 0 ? parts.join(' · ') : '—';
   }
 
-  const hasFilter = !!filters.query
+  const hasFilter = !!filters.query;
 
   return (
     <div className="panel-card card-flush">
@@ -54,7 +61,11 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
             <p className="eyebrow">Quản trị</p>
             <h3>Giá cước vận chuyển</h3>
           </div>
-          <button className="primary-button btn-standard" type="button" onClick={onNew}>
+          <button
+            className="primary-button btn-standard"
+            type="button"
+            onClick={onNew}
+          >
             + Thêm bảng giá
           </button>
         </div>
@@ -62,9 +73,18 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
 
       {/* Filters */}
       <div className="filter-bar card-filter-section">
-        <form className="filter-field" onSubmit={handleSearch} style={{ flex: '1 1 220px' }}>
+        <form
+          className="filter-field"
+          onSubmit={handleSearch}
+          style={{ flex: '1 1 220px' }}
+        >
           <label htmlFor="filter-search">Tìm kiếm</label>
-          <div style={{ display: 'flex', gap: '0.4rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: '0.4rem',
+            }}
+          >
             <input
               id="filter-search"
               className="field-input"
@@ -73,7 +93,11 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
             />
-            <button className="btn-secondary" type="submit" style={{ whiteSpace: 'nowrap' }}>
+            <button
+              className="btn-secondary"
+              type="submit"
+              style={{ whiteSpace: 'nowrap' }}
+            >
               Tìm
             </button>
           </div>
@@ -83,7 +107,10 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
           <button
             className="btn-secondary"
             type="button"
-            onClick={() => { setFilters({}); setSearchInput('') }}
+            onClick={() => {
+              setFilters({});
+              setSearchInput('');
+            }}
             style={{ alignSelf: 'flex-end' }}
           >
             ✕ Xóa lọc
@@ -93,7 +120,9 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
 
       {/* Error */}
       {error && (
-        <p className="error-inline">Lỗi tải dữ liệu: {(error as Error).message}</p>
+        <p className="error-inline">
+          Lỗi tải dữ liệu: {(error as Error).message}
+        </p>
       )}
 
       {/* Table */}
@@ -102,7 +131,9 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
           <p className="table-empty">Đang tải...</p>
         ) : !data || data.length === 0 ? (
           <p className="table-empty">
-            {hasFilter ? 'Không tìm thấy bảng giá phù hợp.' : 'Chưa có bảng giá cước nào. Bấm "+ Thêm bảng giá" để tạo.'}
+            {hasFilter
+              ? 'Không tìm thấy bảng giá phù hợp.'
+              : 'Chưa có bảng giá cước nào. Bấm "+ Thêm bảng giá" để tạo.'}
           </p>
         ) : (
           <table className="data-table">
@@ -118,34 +149,69 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
             </thead>
             <tbody>
               {data.map((item) => (
-                <tr key={item.id} style={{ cursor: 'pointer' }} onClick={() => onEdit(item)}>
-                  <td><strong>{item.name}</strong></td>
-                  <td>{item.destination_area}</td>
-                  <td className="td-muted" style={{ fontSize: '0.85rem' }}>{rateDescription(item)}</td>
-                  <td className="hide-mobile">{item.min_charge > 0 ? formatCurrency(item.min_charge) : '—'}</td>
+                <tr
+                  key={item.id}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => onEdit(item)}
+                >
                   <td>
-                    <span className={`roll-status ${item.is_active ? 'in_stock' : 'damaged'}`}>
+                    <strong>{item.name}</strong>
+                  </td>
+                  <td>{item.destination_area}</td>
+                  <td className="td-muted" style={{ fontSize: '0.85rem' }}>
+                    {rateDescription(item)}
+                  </td>
+                  <td className="hide-mobile">
+                    {item.min_charge > 0
+                      ? formatCurrency(item.min_charge)
+                      : '—'}
+                  </td>
+                  <td>
+                    <span
+                      className={`roll-status ${item.is_active ? 'in_stock' : 'damaged'}`}
+                    >
                       {item.is_active ? 'Đang dùng' : 'Ngừng'}
                     </span>
                   </td>
-                  <td className="td-actions" onClick={(e) => e.stopPropagation()}>
-                    <div style={{ display: 'flex', gap: '0.3rem', justifyContent: 'flex-end' }}>
+                  <td
+                    className="td-actions"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: '0.3rem',
+                        justifyContent: 'flex-end',
+                      }}
+                    >
                       <button
                         className="btn-icon"
                         type="button"
                         title="Sửa"
                         onClick={() => onEdit(item)}
                       >
-                        <Edit2 style={{ width: 14, height: 14 }} />
+                        <Edit2
+                          style={{
+                            width: 14,
+                            height: 14,
+                          }}
+                        />
                       </button>
                       <button
                         className="btn-icon danger"
                         type="button"
                         title="Xoá"
-                        onClick={() => { void handleDelete(item) }}
+                        onClick={() => {
+                          void handleDelete(item);
+                        }}
                         disabled={deleteMutation.isPending}
                       >
-                        <Trash2 style={{ width: 14, height: 14 }} />
+                        <Trash2
+                          style={{
+                            width: 14,
+                            height: 14,
+                          }}
+                        />
                       </button>
                     </div>
                   </td>
@@ -162,5 +228,5 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
         </p>
       )}
     </div>
-  )
+  );
 }

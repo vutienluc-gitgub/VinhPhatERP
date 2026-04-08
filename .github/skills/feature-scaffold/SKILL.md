@@ -1,7 +1,7 @@
 ---
 name: feature-scaffold
-description: "Tạo module feature mới theo chuẩn VinhPhat App V2. Dùng khi: scaffold feature, tạo tính năng mới, thêm module, viết feature từ đầu, tạo page mới trong features/. Bao gồm: types, Zod schema, React Query hook, Form, List, Page, index barrel."
-argument-hint: "Tên feature, ví dụ: yarn-receipts, raw-fabric, suppliers"
+description: 'Tạo module feature mới theo chuẩn VinhPhat App V2. Dùng khi: scaffold feature, tạo tính năng mới, thêm module, viết feature từ đầu, tạo page mới trong features/. Bao gồm: types, Zod schema, React Query hook, Form, List, Page, index barrel.'
+argument-hint: 'Tên feature, ví dụ: yarn-receipts, raw-fabric, suppliers'
 ---
 
 # Feature Scaffold — VinhPhat App V2

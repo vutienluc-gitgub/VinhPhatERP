@@ -1,8 +1,8 @@
-const fs = require('fs')
-const path = require('path')
+const fs = require('fs');
+const path = require('path');
 
-const filePath = path.join(__dirname, 'src/features/orders/OrderForm.tsx')
-let content = fs.readFileSync(filePath, 'utf-8')
+const filePath = path.join(__dirname, 'src/features/orders/OrderForm.tsx');
+let content = fs.readFileSync(filePath, 'utf-8');
 
 // 1. Imports
 content = content.replace(
@@ -14,8 +14,8 @@ content = content.replace(
 import { useCreateOrderV2, isCreditWarning, type CreateOrderError } from './useCreateOrderV2'
 import { CreditOverrideDialog } from './CreditOverrideDialog'
 import { useState } from 'react'
-import { useAuth } from '@/features/auth/AuthProvider'`
-)
+import { useAuth } from '@/features/auth/AuthProvider'`,
+);
 
 // 2. State & Hooks
 content = content.replace(
@@ -25,8 +25,8 @@ content = content.replace(
 
   const createMutationV2 = useCreateOrderV2()
   const updateMutation = useUpdateOrder()
-  const { data: nextNumber } = useNextOrderNumber()`
-)
+  const { data: nextNumber } = useNextOrderNumber()`,
+);
 
 // 3. onSubmit & handleOverride
 content = content.replace(
@@ -63,18 +63,21 @@ content = content.replace(
     } catch (err) {
       // Error handled by mutationError
     }
-  }`
-)
+  }`,
+);
 
 // In onSubmit, change createMutation to createMutationV2
-content = content.replace(/createMutation\.error/g, 'createMutationV2.error')
-content = content.replace(/createMutation\.isPending/g, 'createMutationV2.isPending')
+content = content.replace(/createMutation\.error/g, 'createMutationV2.error');
+content = content.replace(
+  /createMutation\.isPending/g,
+  'createMutationV2.isPending',
+);
 
 // Also fix CreateOrderInput reference since we might need to import it
 content = content.replace(
   `import { useCreateOrderV2, isCreditWarning, type CreateOrderError } from './useCreateOrderV2'`,
-  `import { useCreateOrderV2, isCreditWarning, type CreateOrderError, type CreateOrderInput } from './useCreateOrderV2'`
-)
+  `import { useCreateOrderV2, isCreditWarning, type CreateOrderError, type CreateOrderInput } from './useCreateOrderV2'`,
+);
 
 // 4. Modal Dialog
 content = content.replace(
@@ -90,8 +93,8 @@ content = content.replace(
         onCancel={() => setOverrideWarning(null)}
         isLoading={createMutationV2.isPending}
       />
-    $2`
-)
+    $2`,
+);
 
-fs.writeFileSync(filePath, content, 'utf-8')
-console.log('Patched OrderForm.tsx successfully')
+fs.writeFileSync(filePath, content, 'utf-8');
+console.log('Patched OrderForm.tsx successfully');

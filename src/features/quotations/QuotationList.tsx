@@ -1,89 +1,119 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { useConfirm } from '@/shared/components/ConfirmDialog'
-import { EmptyState } from '@/shared/components/EmptyState'
-import { Pagination } from '@/shared/components/Pagination'
-import { TableSkeleton } from '@/shared/components/TableSkeleton'
-import { formatCurrency } from '@/shared/utils/format'
+import { useConfirm } from '@/shared/components/ConfirmDialog';
+import { EmptyState } from '@/shared/components/EmptyState';
+import { Pagination } from '@/shared/components/Pagination';
+import { TableSkeleton } from '@/shared/components/TableSkeleton';
+import { formatCurrency } from '@/shared/utils/format';
 
-import { QUOTATION_STATUS_LABELS, QUOTATION_STATUS_ICONS } from './quotations.module'
-import type { Quotation, QuotationsFilter, QuotationStatus } from './types'
-import { useDeleteQuotation, useExpiringQuotationsCount, useQuotationList } from './useQuotations'
+import {
+  QUOTATION_STATUS_LABELS,
+  QUOTATION_STATUS_ICONS,
+} from './quotations.module';
+import type { Quotation, QuotationsFilter, QuotationStatus } from './types';
+import {
+  useDeleteQuotation,
+  useExpiringQuotationsCount,
+  useQuotationList,
+} from './useQuotations';
 
 type QuotationListProps = {
-  onEdit: (quotation: Quotation) => void
-  onNew: () => void
-  onView: (quotation: Quotation) => void
-}
-
-
+  onEdit: (quotation: Quotation) => void;
+  onNew: () => void;
+  onView: (quotation: Quotation) => void;
+};
 
 function statusClass(status: QuotationStatus): string {
   switch (status) {
     case 'sent':
-      return 'reserved'
+      return 'reserved';
     case 'confirmed':
-      return 'in_stock'
+      return 'in_stock';
     case 'rejected':
-      return 'damaged'
+      return 'damaged';
     case 'expired':
-      return 'written_off'
+      return 'written_off';
     case 'converted':
-      return 'in_process'
+      return 'in_process';
     default:
-      return 'shipped'
+      return 'shipped';
   }
 }
 
-function validityInfo(validUntil: string | null): { text: string; urgent: boolean } | null {
-  if (!validUntil) return null
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const expDate = new Date(validUntil)
-  const diff = Math.ceil((expDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-  if (diff < 0) return { text: `Hết hạn ${Math.abs(diff)} ngày`, urgent: true }
-  if (diff === 0) return { text: 'Hết hạn hôm nay', urgent: true }
-  if (diff <= 3) return { text: `Còn ${diff} ngày`, urgent: true }
-  return { text: `Còn ${diff} ngày`, urgent: false }
+function validityInfo(
+  validUntil: string | null,
+): { text: string; urgent: boolean } | null {
+  if (!validUntil) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const expDate = new Date(validUntil);
+  const diff = Math.ceil(
+    (expDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+  );
+  if (diff < 0)
+    return {
+      text: `Hết hạn ${Math.abs(diff)} ngày`,
+      urgent: true,
+    };
+  if (diff === 0)
+    return {
+      text: 'Hết hạn hôm nay',
+      urgent: true,
+    };
+  if (diff <= 3)
+    return {
+      text: `Còn ${diff} ngày`,
+      urgent: true,
+    };
+  return {
+    text: `Còn ${diff} ngày`,
+    urgent: false,
+  };
 }
 
 export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
-  const [searchInput, setSearchInput] = useState('')
-  const [filters, setFilters] = useState<QuotationsFilter>({})
-  const [page, setPage] = useState(1)
+  const [searchInput, setSearchInput] = useState('');
+  const [filters, setFilters] = useState<QuotationsFilter>({});
+  const [page, setPage] = useState(1);
 
-  const { data: result, isLoading, error } = useQuotationList(filters, page)
-  const quotations = result?.data ?? []
-  const deleteMutation = useDeleteQuotation()
-  const { data: expiringData } = useExpiringQuotationsCount()
-  const { confirm, alert: showAlert } = useConfirm()
+  const { data: result, isLoading, error } = useQuotationList(filters, page);
+  const quotations = result?.data ?? [];
+  const deleteMutation = useDeleteQuotation();
+  const { data: expiringData } = useExpiringQuotationsCount();
+  const { confirm, alert: showAlert } = useConfirm();
 
   function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    setPage(1)
-    setFilters((prev) => ({ ...prev, search: searchInput.trim() || undefined }))
+    e.preventDefault();
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      search: searchInput.trim() || undefined,
+    }));
   }
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as QuotationStatus | ''
-    setPage(1)
-    setFilters((prev) => ({ ...prev, status: val || undefined }))
+    const val = e.target.value as QuotationStatus | '';
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      status: val || undefined,
+    }));
   }
 
   async function handleDelete(q: Quotation) {
     if (q.status !== 'draft') {
-      await showAlert('Chỉ có thể xoá báo giá ở trạng thái Nháp.')
-      return
+      await showAlert('Chỉ có thể xoá báo giá ở trạng thái Nháp.');
+      return;
     }
     const ok = await confirm({
       message: `Xóa báo giá "${q.quotation_number}"? Hành động này không thể hoàn tác.`,
       variant: 'danger',
-    })
-    if (!ok) return
-    deleteMutation.mutate(q.id)
+    });
+    if (!ok) return;
+    deleteMutation.mutate(q.id);
   }
 
-  const hasFilter = !!(filters.search || filters.status)
+  const hasFilter = !!(filters.search || filters.status);
 
   return (
     <div className="panel-card card-flush">
@@ -105,45 +135,46 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
       </div>
 
       {/* Expiration warnings */}
-      {expiringData && (expiringData.expiring > 0 || expiringData.expired > 0) && (
-        <div
-          style={{
-            display: 'flex',
-            gap: '0.75rem',
-            padding: '0.5rem 1.25rem',
-            flexWrap: 'wrap',
-          }}
-        >
-          {expiringData.expired > 0 && (
-            <span
-              style={{
-                background: '#fde8e8',
-                color: '#c0392b',
-                padding: '0.3rem 0.7rem',
-                borderRadius: 'var(--radius-sm)',
-                fontSize: '0.82rem',
-                fontWeight: 500,
-              }}
-            >
-              ⚠️ {expiringData.expired} báo giá đã hết hạn
-            </span>
-          )}
-          {expiringData.expiring > 0 && (
-            <span
-              style={{
-                background: '#fef3c7',
-                color: '#92400e',
-                padding: '0.3rem 0.7rem',
-                borderRadius: 'var(--radius-sm)',
-                fontSize: '0.82rem',
-                fontWeight: 500,
-              }}
-            >
-              ⏰ {expiringData.expiring} báo giá sắp hết hạn
-            </span>
-          )}
-        </div>
-      )}
+      {expiringData &&
+        (expiringData.expiring > 0 || expiringData.expired > 0) && (
+          <div
+            style={{
+              display: 'flex',
+              gap: '0.75rem',
+              padding: '0.5rem 1.25rem',
+              flexWrap: 'wrap',
+            }}
+          >
+            {expiringData.expired > 0 && (
+              <span
+                style={{
+                  background: '#fde8e8',
+                  color: '#c0392b',
+                  padding: '0.3rem 0.7rem',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '0.82rem',
+                  fontWeight: 500,
+                }}
+              >
+                ⚠️ {expiringData.expired} báo giá đã hết hạn
+              </span>
+            )}
+            {expiringData.expiring > 0 && (
+              <span
+                style={{
+                  background: '#fef3c7',
+                  color: '#92400e',
+                  padding: '0.3rem 0.7rem',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '0.82rem',
+                  fontWeight: 500,
+                }}
+              >
+                ⏰ {expiringData.expiring} báo giá sắp hết hạn
+              </span>
+            )}
+          </div>
+        )}
 
       {/* Filters */}
       <div className="filter-bar card-filter-section">
@@ -153,7 +184,12 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
           style={{ flex: '1 1 220px' }}
         >
           <label htmlFor="filter-search">Tìm kiếm</label>
-          <div style={{ display: 'flex', gap: '0.4rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: '0.4rem',
+            }}
+          >
             <input
               id="filter-search"
               className="field-input"
@@ -162,7 +198,11 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
             />
-            <button className="btn-secondary" type="submit" style={{ whiteSpace: 'nowrap' }}>
+            <button
+              className="btn-secondary"
+              type="submit"
+              style={{ whiteSpace: 'nowrap' }}
+            >
               Tìm
             </button>
           </div>
@@ -190,7 +230,10 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
           <button
             className="btn-secondary"
             type="button"
-            onClick={() => { setFilters({}); setSearchInput('') }}
+            onClick={() => {
+              setFilters({});
+              setSearchInput('');
+            }}
             style={{ alignSelf: 'flex-end' }}
           >
             ✕ Xóa lọc
@@ -206,17 +249,23 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
       )}
 
       {/* Table */}
-      <div 
+      <div
         className="data-table-wrap card-table-section"
-        style={isLoading || quotations.length === 0 ? { border: 'none' } : undefined}
+        style={
+          isLoading || quotations.length === 0 ? { border: 'none' } : undefined
+        }
       >
         {isLoading ? (
           <TableSkeleton rows={5} columns={6} />
         ) : quotations.length === 0 ? (
-          <EmptyState 
+          <EmptyState
             icon={hasFilter ? '🔍' : '📋'}
             title={hasFilter ? 'Không tìm thấy báo giá' : 'Chưa có báo giá nào'}
-            description={hasFilter ? 'Hãy thử thay đổi điều kiện lọc.' : 'Nhấn nút tạo báo giá để giới thiệu sản phẩm cho khách hàng.'}
+            description={
+              hasFilter
+                ? 'Hãy thử thay đổi điều kiện lọc.'
+                : 'Nhấn nút tạo báo giá để giới thiệu sản phẩm cho khách hàng.'
+            }
             actionLabel={!hasFilter ? '+ Tạo báo giá' : undefined}
             actionClick={!hasFilter ? onNew : undefined}
           />
@@ -234,8 +283,9 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
             </thead>
             <tbody>
               {quotations.map((q) => {
-                const validity = validityInfo(q.valid_until)
-                const isActiveQuote = q.status === 'draft' || q.status === 'sent'
+                const validity = validityInfo(q.valid_until);
+                const isActiveQuote =
+                  q.status === 'draft' || q.status === 'sent';
                 return (
                   <tr
                     key={q.id}
@@ -245,14 +295,26 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                     <td>
                       <strong>{q.quotation_number}</strong>
                       {q.revision > 1 && (
-                        <span style={{ fontSize: '0.75rem', color: 'var(--muted)', marginLeft: '0.3rem' }}>
+                        <span
+                          style={{
+                            fontSize: '0.75rem',
+                            color: 'var(--muted)',
+                            marginLeft: '0.3rem',
+                          }}
+                        >
                           v{q.revision}
                         </span>
                       )}
                       <div>
                         {q.customers?.name ?? '—'}
                         {q.customers?.code && (
-                          <span className="td-muted" style={{ fontSize: '0.8rem', marginLeft: '0.3rem' }}>
+                          <span
+                            className="td-muted"
+                            style={{
+                              fontSize: '0.8rem',
+                              marginLeft: '0.3rem',
+                            }}
+                          >
                             {q.customers.code}
                           </span>
                         )}
@@ -262,7 +324,12 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                     <td className="hide-mobile">
                       {q.valid_until ?? '—'}
                       {validity && isActiveQuote && (
-                        <div style={{ fontSize: '0.78rem', color: validity.urgent ? '#c0392b' : 'var(--muted)' }}>
+                        <div
+                          style={{
+                            fontSize: '0.78rem',
+                            color: validity.urgent ? '#c0392b' : 'var(--muted)',
+                          }}
+                        >
                           {validity.text}
                         </div>
                       )}
@@ -272,10 +339,14 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                     </td>
                     <td className="hide-mobile">
                       <span className={`roll-status ${statusClass(q.status)}`}>
-                        {QUOTATION_STATUS_ICONS[q.status]} {QUOTATION_STATUS_LABELS[q.status]}
+                        {QUOTATION_STATUS_ICONS[q.status]}{' '}
+                        {QUOTATION_STATUS_LABELS[q.status]}
                       </span>
                     </td>
-                    <td className="td-actions" onClick={(e) => e.stopPropagation()}>
+                    <td
+                      className="td-actions"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       {q.status === 'draft' && (
                         <>
                           <button
@@ -300,7 +371,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                       )}
                     </td>
                   </tr>
-                )
+                );
               })}
             </tbody>
           </table>
@@ -309,5 +380,5 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
 
       <Pagination result={result} onPageChange={setPage} />
     </div>
-  )
+  );
 }

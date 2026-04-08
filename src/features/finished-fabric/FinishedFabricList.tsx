@@ -1,69 +1,101 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { useConfirm } from '@/shared/components/ConfirmDialog'
-import { Pagination } from '@/shared/components/Pagination'
+import { useConfirm } from '@/shared/components/ConfirmDialog';
+import { Pagination } from '@/shared/components/Pagination';
 
 import {
   QUALITY_GRADE_LABELS,
   QUALITY_GRADES,
   ROLL_STATUS_LABELS,
   ROLL_STATUSES,
-} from './finished-fabric.module'
-import { canDeleteRoll, canEditRoll, deleteBlockReason, editBlockReason } from './transitions'
-import type { FinishedFabricFilter, FinishedFabricRoll, QualityGrade, RollStatus } from './types'
-import { useDeleteFinishedFabric, useFinishedFabricList, useFinishedFabricStats } from './useFinishedFabric'
-import { useFinishedFabricExport } from './useFinishedFabricExport'
+} from './finished-fabric.module';
+import {
+  canDeleteRoll,
+  canEditRoll,
+  deleteBlockReason,
+  editBlockReason,
+} from './transitions';
+import type {
+  FinishedFabricFilter,
+  FinishedFabricRoll,
+  QualityGrade,
+  RollStatus,
+} from './types';
+import {
+  useDeleteFinishedFabric,
+  useFinishedFabricList,
+  useFinishedFabricStats,
+} from './useFinishedFabric';
+import { useFinishedFabricExport } from './useFinishedFabricExport';
 
 type FinishedFabricListProps = {
-  onEdit: (roll: FinishedFabricRoll) => void
-  onNew: () => void
-  onBulkNew: () => void
-  onTrace: (roll: FinishedFabricRoll) => void
-}
+  onEdit: (roll: FinishedFabricRoll) => void;
+  onNew: () => void;
+  onBulkNew: () => void;
+  onTrace: (roll: FinishedFabricRoll) => void;
+};
 
 function formatNum(val: number | null, unit: string): string {
-  if (val === null || val === undefined) return '—'
-  return `${val.toLocaleString('vi-VN')} ${unit}`
+  if (val === null || val === undefined) return '—';
+  return `${val.toLocaleString('vi-VN')} ${unit}`;
 }
 
-export function FinishedFabricList({ onEdit, onNew, onBulkNew, onTrace }: FinishedFabricListProps) {
-  const [filters, setFilters] = useState<FinishedFabricFilter>({})
-  const [fabricTypeInput, setFabricTypeInput] = useState('')
-  const [page, setPage] = useState(1)
+export function FinishedFabricList({
+  onEdit,
+  onNew,
+  onBulkNew,
+  onTrace,
+}: FinishedFabricListProps) {
+  const [filters, setFilters] = useState<FinishedFabricFilter>({});
+  const [fabricTypeInput, setFabricTypeInput] = useState('');
+  const [page, setPage] = useState(1);
 
-  const { data: result, isLoading, error } = useFinishedFabricList(filters, page)
-  const rolls = result?.data ?? []
-  const { data: stats } = useFinishedFabricStats()
-  const deleteMutation = useDeleteFinishedFabric()
-  const { confirm } = useConfirm()
-  const { exportExcel, exportPdf } = useFinishedFabricExport()
+  const {
+    data: result,
+    isLoading,
+    error,
+  } = useFinishedFabricList(filters, page);
+  const rolls = result?.data ?? [];
+  const { data: stats } = useFinishedFabricStats();
+  const deleteMutation = useDeleteFinishedFabric();
+  const { confirm } = useConfirm();
+  const { exportExcel, exportPdf } = useFinishedFabricExport();
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as RollStatus | ''
-    setPage(1)
-    setFilters((prev) => ({ ...prev, status: val || undefined }))
+    const val = e.target.value as RollStatus | '';
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      status: val || undefined,
+    }));
   }
 
   function handleGradeChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as QualityGrade | ''
-    setPage(1)
-    setFilters((prev) => ({ ...prev, quality_grade: val || undefined }))
+    const val = e.target.value as QualityGrade | '';
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      quality_grade: val || undefined,
+    }));
   }
 
   function handleFabricTypeSearch(e: React.FormEvent) {
-    e.preventDefault()
-    setPage(1)
-    setFilters((prev) => ({ ...prev, fabric_type: fabricTypeInput.trim() || undefined }))
+    e.preventDefault();
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      fabric_type: fabricTypeInput.trim() || undefined,
+    }));
   }
 
   async function handleDelete(roll: FinishedFabricRoll) {
-    if (!canDeleteRoll(roll.status)) return
+    if (!canDeleteRoll(roll.status)) return;
     const ok = await confirm({
       message: `Xóa cuộn "${roll.roll_number}"? Hành động này không thể hoàn tác.`,
       variant: 'danger',
-    })
-    if (!ok) return
-    deleteMutation.mutate(roll.id)
+    });
+    if (!ok) return;
+    deleteMutation.mutate(roll.id);
   }
 
   return (
@@ -75,10 +107,18 @@ export function FinishedFabricList({ onEdit, onNew, onBulkNew, onTrace }: Finish
             <p className="eyebrow">Kho vải thành phẩm</p>
             <h3>Danh sách cuộn thành phẩm</h3>
           </div>
-          <button className="primary-button btn-standard" type="button" onClick={onNew}>
+          <button
+            className="primary-button btn-standard"
+            type="button"
+            onClick={onNew}
+          >
             + Nhập cuộn mới
           </button>
-          <button className="btn-secondary btn-standard" type="button" onClick={onBulkNew}>
+          <button
+            className="btn-secondary btn-standard"
+            type="button"
+            onClick={onBulkNew}
+          >
             ⚡ Nhập hàng loạt
           </button>
           <button
@@ -107,19 +147,25 @@ export function FinishedFabricList({ onEdit, onNew, onBulkNew, onTrace }: Finish
         <div className="stats-bar">
           <div className="stat-card stat-primary">
             <span className="stat-label">Tổng cuộn</span>
-            <span className="stat-value">{stats.totalRolls.toLocaleString('vi-VN')}</span>
+            <span className="stat-value">
+              {stats.totalRolls.toLocaleString('vi-VN')}
+            </span>
           </div>
           <div className="stat-card">
             <span className="stat-label">Tổng chiều dài</span>
             <span className="stat-value">
-              {stats.totalLengthM.toLocaleString('vi-VN', { maximumFractionDigits: 1 })}
+              {stats.totalLengthM.toLocaleString('vi-VN', {
+                maximumFractionDigits: 1,
+              })}
               <span className="stat-unit">m</span>
             </span>
           </div>
           <div className="stat-card">
             <span className="stat-label">Tổng trọng lượng</span>
             <span className="stat-value">
-              {stats.totalWeightKg.toLocaleString('vi-VN', { maximumFractionDigits: 1 })}
+              {stats.totalWeightKg.toLocaleString('vi-VN', {
+                maximumFractionDigits: 1,
+              })}
               <span className="stat-unit">kg</span>
             </span>
           </div>
@@ -143,7 +189,11 @@ export function FinishedFabricList({ onEdit, onNew, onBulkNew, onTrace }: Finish
               value={fabricTypeInput}
               onChange={(e) => setFabricTypeInput(e.target.value)}
             />
-            <button className="btn-secondary" type="submit" style={{ whiteSpace: 'nowrap' }}>
+            <button
+              className="btn-secondary"
+              type="submit"
+              style={{ whiteSpace: 'nowrap' }}
+            >
               Lọc
             </button>
           </div>
@@ -188,8 +238,8 @@ export function FinishedFabricList({ onEdit, onNew, onBulkNew, onTrace }: Finish
             className="btn-secondary"
             type="button"
             onClick={() => {
-              setFilters({})
-              setFabricTypeInput('')
+              setFilters({});
+              setFabricTypeInput('');
             }}
             style={{ alignSelf: 'flex-end' }}
           >
@@ -200,7 +250,9 @@ export function FinishedFabricList({ onEdit, onNew, onBulkNew, onTrace }: Finish
 
       {/* Thông báo lỗi */}
       {error && (
-        <p className="error-inline">Lỗi tải dữ liệu: {(error as Error).message}</p>
+        <p className="error-inline">
+          Lỗi tải dữ liệu: {(error as Error).message}
+        </p>
       )}
 
       {/* Bảng dữ liệu */}
@@ -237,7 +289,9 @@ export function FinishedFabricList({ onEdit, onNew, onBulkNew, onTrace }: Finish
                   <td>{roll.fabric_type}</td>
                   <td>
                     {roll.quality_grade ? (
-                      <span className={`grade-badge grade-${roll.quality_grade}`}>
+                      <span
+                        className={`grade-badge grade-${roll.quality_grade}`}
+                      >
                         {roll.quality_grade}
                       </span>
                     ) : (
@@ -246,9 +300,12 @@ export function FinishedFabricList({ onEdit, onNew, onBulkNew, onTrace }: Finish
                   </td>
                   <td className="td-muted">
                     {roll.width_cm !== null ? `${roll.width_cm} cm` : '—'}
-                    {roll.length_m !== null && ` × ${formatNum(roll.length_m, 'm')}`}
+                    {roll.length_m !== null &&
+                      ` × ${formatNum(roll.length_m, 'm')}`}
                   </td>
-                  <td className="td-muted">{formatNum(roll.weight_kg, 'kg')}</td>
+                  <td className="td-muted">
+                    {formatNum(roll.weight_kg, 'kg')}
+                  </td>
                   <td>
                     <span className={`roll-status ${roll.status}`}>
                       {ROLL_STATUS_LABELS[roll.status]}
@@ -280,7 +337,9 @@ export function FinishedFabricList({ onEdit, onNew, onBulkNew, onTrace }: Finish
                       type="button"
                       title={deleteBlockReason(roll.status) ?? 'Xóa'}
                       onClick={() => handleDelete(roll)}
-                      disabled={deleteMutation.isPending || !canDeleteRoll(roll.status)}
+                      disabled={
+                        deleteMutation.isPending || !canDeleteRoll(roll.status)
+                      }
                     >
                       🗑
                     </button>
@@ -294,5 +353,5 @@ export function FinishedFabricList({ onEdit, onNew, onBulkNew, onTrace }: Finish
 
       <Pagination result={result} onPageChange={setPage} />
     </div>
-  )
+  );
 }

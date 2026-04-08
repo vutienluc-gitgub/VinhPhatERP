@@ -1,4 +1,4 @@
-import type { FeatureDefinition } from '@/shared/types/feature'
+import type { FeatureDefinition } from '@/shared/types/feature';
 
 export {
   SHIPMENT_STATUS_LABELS,
@@ -7,20 +7,21 @@ export {
   shipmentsDefaultValues,
   deliveryConfirmSchema,
   deliveryConfirmDefaultValues,
-} from '@/schema/shipment.schema'
+} from '@/schema/shipment.schema';
 export type {
   ShipmentStatus,
   ShipmentItemFormValues,
   ShipmentsFormValues,
   DeliveryConfirmFormValues,
-} from '@/schema/shipment.schema'
+} from '@/schema/shipment.schema';
 
 export const shipmentsFeature: FeatureDefinition = {
   key: 'shipments',
   route: '/shipments',
   title: 'Xuất kho',
   badge: 'Scaffolded',
-  description: 'Shipment được tạo từ order items và là điểm duy nhất làm giảm tồn kho thực tế trong V2.',
+  description:
+    'Shipment được tạo từ order items và là điểm duy nhất làm giảm tồn kho thực tế trong V2.',
   highlights: [
     'Tạo shipment từ order và chống xuất vượt remaining qty.',
     'Cập nhật partial shipped và completed status.',
@@ -31,10 +32,30 @@ export const shipmentsFeature: FeatureDefinition = {
     'Business rule confirm shipment tru kho.',
     'Lien ket inventory va payments.',
   ],
-  entities: ['Shipment header', 'Shipment item', 'Delivery proof', 'Stock deduction'],
+  entities: [
+    'Shipment header',
+    'Shipment item',
+    'Delivery proof',
+    'Stock deduction',
+  ],
   nextMilestones: [
     'Them tao shipment tu order detail.',
     'Khoa chinh sua sau khi shipment confirmed.',
     'Cho phep giao tung phan va in phieu giao.',
   ],
-}
+};
+
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
+export const shipmentsPlugin: FeaturePlugin = {
+  key: 'shipments',
+  route: 'shipments',
+  label: 'Xuất kho',
+  shortLabel: 'Ship',
+  description: 'Tạo phiếu xuất từ đơn hàng và đồng bộ tồn kho.',
+  icon: 'truck',
+  primaryMobile: true,
+  group: 'sales',
+  order: 35,
+  component: () =>
+    import('./index').then((m) => ({ default: m.ShipmentsPage })),
+};

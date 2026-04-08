@@ -1,40 +1,50 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import type { ReportsFilter } from '@/api/reports.api'
+import type { ReportsFilter } from '@/api/reports.api';
 
 type ReportsFilterBarProps = {
-  filter: ReportsFilter
-  onChange: (filter: ReportsFilter) => void
-}
+  filter: ReportsFilter;
+  onChange: (filter: ReportsFilter) => void;
+};
 
 function defaultDateFrom(): string {
-  const d = new Date()
-  d.setDate(1)
-  return d.toISOString().slice(0, 10)
+  const d = new Date();
+  d.setDate(1);
+  return d.toISOString().slice(0, 10);
 }
 
 function defaultDateTo(): string {
-  return new Date().toISOString().slice(0, 10)
+  return new Date().toISOString().slice(0, 10);
 }
 
 export function ReportsFilterBar({ filter, onChange }: ReportsFilterBarProps) {
-  const [dateFrom, setDateFrom] = useState(filter.dateFrom ?? defaultDateFrom())
-  const [dateTo, setDateTo] = useState(filter.dateTo ?? defaultDateTo())
+  const [dateFrom, setDateFrom] = useState(
+    filter.dateFrom ?? defaultDateFrom(),
+  );
+  const [dateTo, setDateTo] = useState(filter.dateTo ?? defaultDateTo());
 
   function handleApply(e: React.FormEvent) {
-    e.preventDefault()
-    onChange({ ...filter, dateFrom, dateTo })
+    e.preventDefault();
+    onChange({
+      ...filter,
+      dateFrom,
+      dateTo,
+    });
   }
 
   function handleClear() {
-    const from = defaultDateFrom()
-    const to = defaultDateTo()
-    setDateFrom(from)
-    setDateTo(to)
-    onChange({ dateFrom: from, dateTo: to })
+    const from = defaultDateFrom();
+    const to = defaultDateTo();
+    setDateFrom(from);
+    setDateTo(to);
+    onChange({
+      dateFrom: from,
+      dateTo: to,
+    });
   }
 
-  const hasCustomFilter = filter.dateFrom !== defaultDateFrom() || filter.dateTo !== defaultDateTo()
+  const hasCustomFilter =
+    filter.dateFrom !== defaultDateFrom() || filter.dateTo !== defaultDateTo();
 
   return (
     <form className="filter-bar card-filter-section" onSubmit={handleApply}>
@@ -79,5 +89,5 @@ export function ReportsFilterBar({ filter, onChange }: ReportsFilterBarProps) {
         </button>
       )}
     </form>
-  )
+  );
 }

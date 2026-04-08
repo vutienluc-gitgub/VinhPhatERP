@@ -1,30 +1,30 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react';
 
 type StepperOptions = {
   /** Tổng số bước */
-  totalSteps: number
+  totalSteps: number;
   /** Bước bắt đầu (mặc định = 0) */
-  initialStep?: number
-}
+  initialStep?: number;
+};
 
 type StepperReturn = {
   /** Bước hiện tại (0-indexed) */
-  currentStep: number
+  currentStep: number;
   /** Tổng số bước */
-  totalSteps: number
+  totalSteps: number;
   /** Có phải bước đầu tiên */
-  isFirst: boolean
+  isFirst: boolean;
   /** Có phải bước cuối cùng */
-  isLast: boolean
+  isLast: boolean;
   /** Chuyển sang bước tiếp theo */
-  next: () => void
+  next: () => void;
   /** Quay lại bước trước */
-  prev: () => void
+  prev: () => void;
   /** Nhảy tới bước cụ thể */
-  goTo: (step: number) => void
+  goTo: (step: number) => void;
   /** Reset về bước đầu */
-  reset: () => void
-}
+  reset: () => void;
+};
 
 /**
  * Hook quản lý trạng thái phân bước (Step-based Form).
@@ -35,29 +35,32 @@ type StepperReturn = {
  * // stepper.isFirst === true
  * // stepper.next() → currentStep = 1
  */
-export function useStepper({ totalSteps, initialStep = 0 }: StepperOptions): StepperReturn {
-  const [currentStep, setCurrentStep] = useState(initialStep)
+export function useStepper({
+  totalSteps,
+  initialStep = 0,
+}: StepperOptions): StepperReturn {
+  const [currentStep, setCurrentStep] = useState(initialStep);
 
   const next = useCallback(() => {
-    setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1))
-  }, [totalSteps])
+    setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+  }, [totalSteps]);
 
   const prev = useCallback(() => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0))
-  }, [])
+    setCurrentStep((prev) => Math.max(prev - 1, 0));
+  }, []);
 
   const goTo = useCallback(
     (step: number) => {
       if (step >= 0 && step < totalSteps) {
-        setCurrentStep(step)
+        setCurrentStep(step);
       }
     },
     [totalSteps],
-  )
+  );
 
   const reset = useCallback(() => {
-    setCurrentStep(initialStep)
-  }, [initialStep])
+    setCurrentStep(initialStep);
+  }, [initialStep]);
 
   return {
     currentStep,
@@ -68,5 +71,5 @@ export function useStepper({ totalSteps, initialStep = 0 }: StepperOptions): Ste
     prev,
     goTo,
     reset,
-  }
+  };
 }

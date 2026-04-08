@@ -1,37 +1,37 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { PaymentForm } from '@/features/payments/PaymentForm'
-import { ShipmentForm } from '@/features/shipments/ShipmentForm'
+import { PaymentForm } from '@/features/payments/PaymentForm';
+import { ShipmentForm } from '@/features/shipments/ShipmentForm';
 
-import { OrderDetail } from './OrderDetail'
-import { OrderForm } from './OrderForm'
-import { OrderList } from './OrderList'
-import { ReserveRollsPanel } from './ReserveRollsPanel'
-import type { Order } from './types'
+import { OrderDetail } from './OrderDetail';
+import { OrderForm } from './OrderForm';
+import { OrderList } from './OrderList';
+import { ReserveRollsPanel } from './ReserveRollsPanel';
+import type { Order } from './types';
 
-type View = { mode: 'list' } | { mode: 'detail'; orderId: string }
+type View = { mode: 'list' } | { mode: 'detail'; orderId: string };
 
 export function OrdersPage() {
-  const [view, setView] = useState<View>({ mode: 'list' })
-  const [editOrder, setEditOrder] = useState<Order | null>(null)
-  const [showForm, setShowForm] = useState(false)
-  const [shipmentOrder, setShipmentOrder] = useState<Order | null>(null)
-  const [paymentOrder, setPaymentOrder] = useState<Order | null>(null)
-  const [reserveOrder, setReserveOrder] = useState<Order | null>(null)
+  const [view, setView] = useState<View>({ mode: 'list' });
+  const [editOrder, setEditOrder] = useState<Order | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [shipmentOrder, setShipmentOrder] = useState<Order | null>(null);
+  const [paymentOrder, setPaymentOrder] = useState<Order | null>(null);
+  const [reserveOrder, setReserveOrder] = useState<Order | null>(null);
 
   function openCreate() {
-    setEditOrder(null)
-    setShowForm(true)
+    setEditOrder(null);
+    setShowForm(true);
   }
 
   function openEdit(order: Order) {
-    setEditOrder(order)
-    setShowForm(true)
+    setEditOrder(order);
+    setShowForm(true);
   }
 
   function closeForm() {
-    setShowForm(false)
-    setEditOrder(null)
+    setShowForm(false);
+    setEditOrder(null);
   }
 
   return (
@@ -40,17 +40,26 @@ export function OrdersPage() {
         <OrderList
           onNew={openCreate}
           onEdit={(order) => {
-            if (order.status === 'draft') openEdit(order)
-            else setView({ mode: 'detail', orderId: order.id })
+            if (order.status === 'draft') openEdit(order);
+            else
+              setView({
+                mode: 'detail',
+                orderId: order.id,
+              });
           }}
-          onView={(order) => setView({ mode: 'detail', orderId: order.id })}
+          onView={(order) =>
+            setView({
+              mode: 'detail',
+              orderId: order.id,
+            })
+          }
         />
       ) : (
         <OrderDetail
           orderId={view.orderId}
           onBack={() => setView({ mode: 'list' })}
           onEdit={(order) => {
-            openEdit(order)
+            openEdit(order);
           }}
           onCreateShipment={(order) => setShipmentOrder(order)}
           onCreatePayment={(order) => setPaymentOrder(order)}
@@ -60,10 +69,7 @@ export function OrdersPage() {
 
       {/* Order Form Modal */}
       {showForm && (
-        <OrderForm
-          order={editOrder ? editOrder : null}
-          onClose={closeForm}
-        />
+        <OrderForm order={editOrder ? editOrder : null} onClose={closeForm} />
       )}
 
       {/* Shipment form modal */}
@@ -95,5 +101,5 @@ export function OrdersPage() {
         />
       )}
     </>
-  )
+  );
 }

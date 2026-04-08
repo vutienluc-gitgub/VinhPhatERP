@@ -1,66 +1,88 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { useConfirm } from '@/shared/components/ConfirmDialog'
-import { Pagination } from '@/shared/components/Pagination'
+import { useConfirm } from '@/shared/components/ConfirmDialog';
+import { Pagination } from '@/shared/components/Pagination';
 
 import {
   QUALITY_GRADE_LABELS,
   QUALITY_GRADES,
   ROLL_STATUS_LABELS,
   ROLL_STATUSES,
-} from './raw-fabric.module'
-import type { RawFabricFilter, RawFabricRoll, RollStatus, QualityGrade } from './types'
-import { useDeleteRawFabric, useRawFabricList, useRawFabricStats } from './useRawFabric'
-import { useRawFabricExport } from './useRawFabricExport'
+} from './raw-fabric.module';
+import type {
+  RawFabricFilter,
+  RawFabricRoll,
+  RollStatus,
+  QualityGrade,
+} from './types';
+import {
+  useDeleteRawFabric,
+  useRawFabricList,
+  useRawFabricStats,
+} from './useRawFabric';
+import { useRawFabricExport } from './useRawFabricExport';
 
 type RawFabricListProps = {
-  onEdit: (roll: RawFabricRoll) => void
-  onNew: () => void
-  onBulkNew: () => void
-}
+  onEdit: (roll: RawFabricRoll) => void;
+  onNew: () => void;
+  onBulkNew: () => void;
+};
 
 function formatNum(val: number | null, unit: string): string {
-  if (val === null || val === undefined) return '—'
-  return `${val.toLocaleString('vi-VN')} ${unit}`
+  if (val === null || val === undefined) return '—';
+  return `${val.toLocaleString('vi-VN')} ${unit}`;
 }
 
-export function RawFabricList({ onEdit, onNew, onBulkNew }: RawFabricListProps) {
-  const [filters, setFilters] = useState<RawFabricFilter>({})
-  const [fabricTypeInput, setFabricTypeInput] = useState('')
-  const [page, setPage] = useState(1)
+export function RawFabricList({
+  onEdit,
+  onNew,
+  onBulkNew,
+}: RawFabricListProps) {
+  const [filters, setFilters] = useState<RawFabricFilter>({});
+  const [fabricTypeInput, setFabricTypeInput] = useState('');
+  const [page, setPage] = useState(1);
 
-  const { data: result, isLoading, error } = useRawFabricList(filters, page)
-  const rolls = result?.data ?? []
-  const { data: stats } = useRawFabricStats()
-  const deleteMutation = useDeleteRawFabric()
-  const { confirm } = useConfirm()
-  const { exportExcel, exportPdf } = useRawFabricExport()
+  const { data: result, isLoading, error } = useRawFabricList(filters, page);
+  const rolls = result?.data ?? [];
+  const { data: stats } = useRawFabricStats();
+  const deleteMutation = useDeleteRawFabric();
+  const { confirm } = useConfirm();
+  const { exportExcel, exportPdf } = useRawFabricExport();
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as RollStatus | ''
-    setPage(1)
-    setFilters((prev) => ({ ...prev, status: val || undefined }))
+    const val = e.target.value as RollStatus | '';
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      status: val || undefined,
+    }));
   }
 
   function handleGradeChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as QualityGrade | ''
-    setPage(1)
-    setFilters((prev) => ({ ...prev, quality_grade: val || undefined }))
+    const val = e.target.value as QualityGrade | '';
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      quality_grade: val || undefined,
+    }));
   }
 
   function handleFabricTypeSearch(e: React.FormEvent) {
-    e.preventDefault()
-    setPage(1)
-    setFilters((prev) => ({ ...prev, fabric_type: fabricTypeInput.trim() || undefined }))
+    e.preventDefault();
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      fabric_type: fabricTypeInput.trim() || undefined,
+    }));
   }
 
   async function handleDelete(roll: RawFabricRoll) {
     const ok = await confirm({
       message: `Xóa cuộn "${roll.roll_number}"? Hành động này không thể hoàn tác.`,
       variant: 'danger',
-    })
-    if (!ok) return
-    deleteMutation.mutate(roll.id)
+    });
+    if (!ok) return;
+    deleteMutation.mutate(roll.id);
   }
 
   return (
@@ -72,10 +94,18 @@ export function RawFabricList({ onEdit, onNew, onBulkNew }: RawFabricListProps) 
             <p className="eyebrow">Kho vải mộc</p>
             <h3>Danh sách cuộn vải mộc</h3>
           </div>
-          <button className="primary-button btn-standard" type="button" onClick={onNew}>
+          <button
+            className="primary-button btn-standard"
+            type="button"
+            onClick={onNew}
+          >
             + Nhập cuộn mới
           </button>
-          <button className="btn-secondary btn-standard" type="button" onClick={onBulkNew}>
+          <button
+            className="btn-secondary btn-standard"
+            type="button"
+            onClick={onBulkNew}
+          >
             ⚡ Nhập hàng loạt
           </button>
           <button
@@ -104,19 +134,25 @@ export function RawFabricList({ onEdit, onNew, onBulkNew }: RawFabricListProps) 
         <div className="stats-bar">
           <div className="stat-card stat-primary">
             <span className="stat-label">Tổng cuộn</span>
-            <span className="stat-value">{stats.totalRolls.toLocaleString('vi-VN')}</span>
+            <span className="stat-value">
+              {stats.totalRolls.toLocaleString('vi-VN')}
+            </span>
           </div>
           <div className="stat-card">
             <span className="stat-label">Tổng chiều dài</span>
             <span className="stat-value">
-              {stats.totalLengthM.toLocaleString('vi-VN', { maximumFractionDigits: 1 })}
+              {stats.totalLengthM.toLocaleString('vi-VN', {
+                maximumFractionDigits: 1,
+              })}
               <span className="stat-unit">m</span>
             </span>
           </div>
           <div className="stat-card">
             <span className="stat-label">Tổng trọng lượng</span>
             <span className="stat-value">
-              {stats.totalWeightKg.toLocaleString('vi-VN', { maximumFractionDigits: 1 })}
+              {stats.totalWeightKg.toLocaleString('vi-VN', {
+                maximumFractionDigits: 1,
+              })}
               <span className="stat-unit">kg</span>
             </span>
           </div>
@@ -125,7 +161,11 @@ export function RawFabricList({ onEdit, onNew, onBulkNew }: RawFabricListProps) 
 
       {/* Bộ lọc */}
       <div className="filter-bar card-filter-section">
-        <form className="filter-field" onSubmit={handleFabricTypeSearch} style={{ flex: '1 1 200px' }}>
+        <form
+          className="filter-field"
+          onSubmit={handleFabricTypeSearch}
+          style={{ flex: '1 1 200px' }}
+        >
           <label htmlFor="filter-fabric-type">Loại vải</label>
           <div className="flex-controls">
             <input
@@ -136,7 +176,13 @@ export function RawFabricList({ onEdit, onNew, onBulkNew }: RawFabricListProps) 
               value={fabricTypeInput}
               onChange={(e) => setFabricTypeInput(e.target.value)}
             />
-            <button className="btn-secondary" type="submit" style={{ whiteSpace: 'nowrap' }}>Lọc</button>
+            <button
+              className="btn-secondary"
+              type="submit"
+              style={{ whiteSpace: 'nowrap' }}
+            >
+              Lọc
+            </button>
           </div>
         </form>
 
@@ -150,7 +196,9 @@ export function RawFabricList({ onEdit, onNew, onBulkNew }: RawFabricListProps) 
           >
             <option value="">Tất cả</option>
             {ROLL_STATUSES.map((s) => (
-              <option key={s} value={s}>{ROLL_STATUS_LABELS[s]}</option>
+              <option key={s} value={s}>
+                {ROLL_STATUS_LABELS[s]}
+              </option>
             ))}
           </select>
         </div>
@@ -165,7 +213,9 @@ export function RawFabricList({ onEdit, onNew, onBulkNew }: RawFabricListProps) 
           >
             <option value="">Tất cả</option>
             {QUALITY_GRADES.map((g) => (
-              <option key={g} value={g}>{QUALITY_GRADE_LABELS[g]}</option>
+              <option key={g} value={g}>
+                {QUALITY_GRADE_LABELS[g]}
+              </option>
             ))}
           </select>
         </div>
@@ -174,7 +224,10 @@ export function RawFabricList({ onEdit, onNew, onBulkNew }: RawFabricListProps) 
           <button
             className="btn-secondary"
             type="button"
-            onClick={() => { setFilters({}); setFabricTypeInput('') }}
+            onClick={() => {
+              setFilters({});
+              setFabricTypeInput('');
+            }}
             style={{ alignSelf: 'flex-end' }}
           >
             ✕ Xóa lọc
@@ -194,7 +247,9 @@ export function RawFabricList({ onEdit, onNew, onBulkNew }: RawFabricListProps) 
         {isLoading ? (
           <p className="table-empty">Đang tải...</p>
         ) : rolls.length === 0 ? (
-          <p className="table-empty">Chưa có cuộn vải nào. Nhấn "+ Nhập cuộn mới" để bắt đầu.</p>
+          <p className="table-empty">
+            Chưa có cuộn vải nào. Nhấn "+ Nhập cuộn mới" để bắt đầu.
+          </p>
         ) : (
           <table className="data-table">
             <thead>
@@ -225,7 +280,9 @@ export function RawFabricList({ onEdit, onNew, onBulkNew }: RawFabricListProps) 
                   <td>{roll.fabric_type}</td>
                   <td>
                     {roll.quality_grade ? (
-                      <span className={`grade-badge grade-${roll.quality_grade}`}>
+                      <span
+                        className={`grade-badge grade-${roll.quality_grade}`}
+                      >
                         {roll.quality_grade}
                       </span>
                     ) : (
@@ -234,9 +291,12 @@ export function RawFabricList({ onEdit, onNew, onBulkNew }: RawFabricListProps) 
                   </td>
                   <td className="td-muted">
                     {roll.width_cm !== null ? `${roll.width_cm} cm` : '—'}
-                    {roll.length_m !== null && ` × ${formatNum(roll.length_m, 'm')}`}
+                    {roll.length_m !== null &&
+                      ` × ${formatNum(roll.length_m, 'm')}`}
                   </td>
-                  <td className="td-muted">{formatNum(roll.weight_kg, 'kg')}</td>
+                  <td className="td-muted">
+                    {formatNum(roll.weight_kg, 'kg')}
+                  </td>
                   <td>
                     <span className={`roll-status ${roll.status}`}>
                       {ROLL_STATUS_LABELS[roll.status]}
@@ -272,5 +332,5 @@ export function RawFabricList({ onEdit, onNew, onBulkNew }: RawFabricListProps) 
 
       <Pagination result={result} onPageChange={setPage} />
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   fetchQuotationsPaginated,
@@ -11,15 +11,14 @@ import {
   rejectQuotation,
   deleteQuotation,
   fetchExpiringQuotationsCount,
-} from '@/api/quotations.api'
+} from '@/api/quotations.api';
+import type { PaginatedResult } from '@/shared/types/pagination';
 
-import type { PaginatedResult } from '@/shared/types/pagination'
+import type { QuotationsFormValues } from './quotations.module';
+import { calculateQuotationTotals } from './quotations.module';
+import type { DiscountType, Quotation, QuotationsFilter } from './types';
 
-import type { QuotationsFormValues } from './quotations.module'
-import { calculateQuotationTotals } from './quotations.module'
-import type { DiscountType, Quotation, QuotationsFilter } from './types'
-
-const QUERY_KEY = ['quotations'] as const
+const QUERY_KEY = ['quotations'] as const;
 
 /* ── List with filters + pagination ── */
 
@@ -27,7 +26,7 @@ export function useQuotationList(filters: QuotationsFilter = {}, page = 1) {
   return useQuery<PaginatedResult<Quotation>>({
     queryKey: [...QUERY_KEY, filters, page],
     queryFn: () => fetchQuotationsPaginated(filters, page),
-  })
+  });
 }
 
 /* ── Single quotation with items ── */
@@ -37,7 +36,7 @@ export function useQuotation(id: string | undefined) {
     queryKey: [...QUERY_KEY, id],
     enabled: !!id,
     queryFn: () => fetchQuotationById(id!),
-  })
+  });
 }
 
 /* ── Auto-generate quotation number ── */
@@ -46,13 +45,13 @@ export function useNextQuotationNumber() {
   return useQuery({
     queryKey: [...QUERY_KEY, 'next-number'],
     queryFn: fetchNextQuotationNumber,
-  })
+  });
 }
 
 /* ── Create quotation (header + items) ── */
 
 export function useCreateQuotation() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (values: QuotationsFormValues) => {
       const totals = calculateQuotationTotals(
@@ -60,7 +59,7 @@ export function useCreateQuotation() {
         values.discountType as DiscountType,
         values.discountValue,
         values.vatRate,
-      )
+      );
 
       return createQuotation(
         {
@@ -93,32 +92,32 @@ export function useCreateQuotation() {
           notes: item.notes?.trim() || null,
           sort_order: idx,
         })),
-      )
+      );
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 /* ── Update quotation ── */
 
 export function useUpdateQuotation() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       id,
       values,
     }: {
-      id: string
-      values: QuotationsFormValues
+      id: string;
+      values: QuotationsFormValues;
     }) => {
       const totals = calculateQuotationTotals(
         values.items,
         values.discountType as DiscountType,
         values.discountValue,
         values.vatRate,
-      )
+      );
 
       await updateQuotationWithItems(
         id,
@@ -151,60 +150,60 @@ export function useUpdateQuotation() {
           notes: item.notes?.trim() || null,
           sort_order: idx,
         })),
-      )
+      );
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 /* ── Send quotation to customer ── */
 
 export function useSendQuotation() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: sendQuotation,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 /* ── Confirm quotation (customer approved) ── */
 
 export function useConfirmQuotation() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: confirmQuotation,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 /* ── Reject quotation ── */
 
 export function useRejectQuotation() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: rejectQuotation,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 /* ── Delete quotation ── */
 
 export function useDeleteQuotation() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteQuotation,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 /* ── Expiring quotations count (for warnings) ── */
@@ -214,5 +213,5 @@ export function useExpiringQuotationsCount() {
     queryKey: [...QUERY_KEY, 'expiring-count'],
     queryFn: fetchExpiringQuotationsCount,
     refetchInterval: 5 * 60 * 1000,
-  })
+  });
 }

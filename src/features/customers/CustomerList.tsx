@@ -1,52 +1,60 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { CUSTOMER_SOURCE_LABELS, CUSTOMER_STATUS_LABELS } from '@/schema/customer.schema'
+import {
+  CUSTOMER_SOURCE_LABELS,
+  CUSTOMER_STATUS_LABELS,
+} from '@/schema/customer.schema';
+import { useConfirm } from '@/shared/components/ConfirmDialog';
+import { EmptyState } from '@/shared/components/EmptyState';
+import { Pagination } from '@/shared/components/Pagination';
+import { TableSkeleton } from '@/shared/components/TableSkeleton';
 
-import { useConfirm } from '@/shared/components/ConfirmDialog'
-import { EmptyState } from '@/shared/components/EmptyState'
-import { Pagination } from '@/shared/components/Pagination'
-import { TableSkeleton } from '@/shared/components/TableSkeleton'
-
-import type { Customer, CustomersFilter } from './types'
-import { useCustomerList, useDeleteCustomer } from './useCustomers'
+import type { Customer, CustomersFilter } from './types';
+import { useCustomerList, useDeleteCustomer } from './useCustomers';
 
 type CustomerListProps = {
-  onEdit: (customer: Customer) => void
-  onNew: () => void
-}
+  onEdit: (customer: Customer) => void;
+  onNew: () => void;
+};
 
 export function CustomerList({ onEdit, onNew }: CustomerListProps) {
-  const [queryInput, setQueryInput] = useState('')
-  const [filters, setFilters] = useState<CustomersFilter>({})
-  const [page, setPage] = useState(1)
+  const [queryInput, setQueryInput] = useState('');
+  const [filters, setFilters] = useState<CustomersFilter>({});
+  const [page, setPage] = useState(1);
 
-  const { data: result, isLoading, error } = useCustomerList(filters, page)
-  const customers = result?.data ?? []
-  const deleteMutation = useDeleteCustomer()
-  const { confirm } = useConfirm()
+  const { data: result, isLoading, error } = useCustomerList(filters, page);
+  const customers = result?.data ?? [];
+  const deleteMutation = useDeleteCustomer();
+  const { confirm } = useConfirm();
 
   function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    setPage(1)
-    setFilters((prev) => ({ ...prev, query: queryInput.trim() || undefined }))
+    e.preventDefault();
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      query: queryInput.trim() || undefined,
+    }));
   }
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as 'active' | 'inactive' | ''
-    setPage(1)
-    setFilters((prev) => ({ ...prev, status: val || undefined }))
+    const val = e.target.value as 'active' | 'inactive' | '';
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      status: val || undefined,
+    }));
   }
 
   async function handleDelete(customer: Customer) {
     const ok = await confirm({
       message: `Xóa khách hàng "${customer.name}"? Hành động này không thể hoàn tác.`,
       variant: 'danger',
-    })
-    if (!ok) return
-    deleteMutation.mutate(customer.id)
+    });
+    if (!ok) return;
+    deleteMutation.mutate(customer.id);
   }
 
-  const hasFilter = !!(filters.query || filters.status)
+  const hasFilter = !!(filters.query || filters.status);
 
   return (
     <div className="panel-card card-flush">
@@ -68,9 +76,7 @@ export function CustomerList({ onEdit, onNew }: CustomerListProps) {
       </div>
 
       {/* Bộ lọc */}
-      <div
-        className="filter-bar card-filter-section"
-      >
+      <div className="filter-bar card-filter-section">
         <form
           className="filter-field"
           onSubmit={handleSearch}
@@ -115,8 +121,8 @@ export function CustomerList({ onEdit, onNew }: CustomerListProps) {
             className="btn-secondary"
             type="button"
             onClick={() => {
-              setFilters({})
-              setQueryInput('')
+              setFilters({});
+              setQueryInput('');
             }}
             style={{ alignSelf: 'flex-end' }}
           >
@@ -133,17 +139,27 @@ export function CustomerList({ onEdit, onNew }: CustomerListProps) {
       )}
 
       {/* Bảng */}
-      <div 
+      <div
         className="data-table-wrap card-table-section"
-        style={isLoading || customers.length === 0 ? { border: 'none' } : undefined}
+        style={
+          isLoading || customers.length === 0 ? { border: 'none' } : undefined
+        }
       >
         {isLoading ? (
           <TableSkeleton rows={5} columns={6} />
         ) : customers.length === 0 ? (
-          <EmptyState 
+          <EmptyState
             icon={hasFilter ? '🔍' : '👥'}
-            title={hasFilter ? 'Không tìm thấy khách hàng' : 'Chưa có thông tin khách hàng'}
-            description={hasFilter ? 'Vui lòng thử điều chỉnh lại bộ lọc.' : 'Nhấn nút thêm khách hàng mới để quản lý thông tin liên hệ và công nợ.'}
+            title={
+              hasFilter
+                ? 'Không tìm thấy khách hàng'
+                : 'Chưa có thông tin khách hàng'
+            }
+            description={
+              hasFilter
+                ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
+                : 'Nhấn nút thêm khách hàng mới để quản lý thông tin liên hệ và công nợ.'
+            }
             actionLabel={!hasFilter ? '+ Thêm khách hàng' : undefined}
             actionClick={!hasFilter ? onNew : undefined}
           />
@@ -175,8 +191,12 @@ export function CustomerList({ onEdit, onNew }: CustomerListProps) {
                   </td>
                   <td className="td-muted">{customer.phone ?? '—'}</td>
                   <td>
-                    <span className="roll-status in_stock" style={{ fontSize: '0.78rem' }}>
-                      {CUSTOMER_SOURCE_LABELS[customer.source || 'other'] ?? 'Khác'}
+                    <span
+                      className="roll-status in_stock"
+                      style={{ fontSize: '0.78rem' }}
+                    >
+                      {CUSTOMER_SOURCE_LABELS[customer.source || 'other'] ??
+                        'Khác'}
                     </span>
                   </td>
                   <td>
@@ -215,5 +235,5 @@ export function CustomerList({ onEdit, onNew }: CustomerListProps) {
 
       <Pagination result={result} onPageChange={setPage} />
     </div>
-  )
+  );
 }

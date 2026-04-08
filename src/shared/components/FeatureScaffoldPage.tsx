@@ -1,9 +1,9 @@
-import { PagePlaceholder } from '@/shared/components/PagePlaceholder'
-import type { FeatureDefinition } from '@/shared/types/feature'
+import { PagePlaceholder } from '@/shared/components/PagePlaceholder';
+import type { FeatureDefinition } from '@/shared/types/feature';
 
 type FeatureScaffoldPageProps = {
-  feature: FeatureDefinition
-}
+  feature: FeatureDefinition;
+};
 
 export function FeatureScaffoldPage({ feature }: FeatureScaffoldPageProps) {
   return (
@@ -36,5 +36,5 @@ export function FeatureScaffoldPage({ feature }: FeatureScaffoldPageProps) {
         </>
       }
     />
-  )
+  );
 }

@@ -22,8 +22,14 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .auth-header {
@@ -163,7 +169,8 @@
   background: rgba(99, 102, 241, 0.1);
 }
 
-.auth-loading, .auth-logged-in {
+.auth-loading,
+.auth-logged-in {
   min-height: 100vh;
   display: flex;
   flex-direction: column;

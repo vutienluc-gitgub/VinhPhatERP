@@ -1,24 +1,32 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { PRODUCTION_STAGES, STAGE_LABELS, STAGE_STATUS_LABELS } from './order-progress.module'
-import type { OrderProgressWithOrder, ProductionStage, StageStatus } from './types'
-import { useProgressBoard, useUpdateStageStatus } from './useOrderProgress'
+import {
+  PRODUCTION_STAGES,
+  STAGE_LABELS,
+  STAGE_STATUS_LABELS,
+} from './order-progress.module';
+import type {
+  OrderProgressWithOrder,
+  ProductionStage,
+  StageStatus,
+} from './types';
+import { useProgressBoard, useUpdateStageStatus } from './useOrderProgress';
 
 type GroupedByOrder = {
-  orderId: string
-  orderNumber: string
-  customerName: string
-  deliveryDate: string | null
-  stages: OrderProgressWithOrder[]
-}
+  orderId: string;
+  orderNumber: string;
+  customerName: string;
+  deliveryDate: string | null;
+  stages: OrderProgressWithOrder[];
+};
 
 function groupByOrder(rows: OrderProgressWithOrder[]): GroupedByOrder[] {
-  const map = new Map<string, GroupedByOrder>()
+  const map = new Map<string, GroupedByOrder>();
   for (const row of rows) {
-    const groupKey = row.order_id ?? row.work_order_id ?? row.id
-    let group = map.get(groupKey)
+    const groupKey = row.order_id ?? row.work_order_id ?? row.id;
+    let group = map.get(groupKey);
     if (!group) {
-      const isStandalone = !row.order_id && row.work_order_id
+      const isStandalone = !row.order_id && row.work_order_id;
       group = {
         orderId: groupKey,
         orderNumber: isStandalone
@@ -29,51 +37,62 @@ function groupByOrder(rows: OrderProgressWithOrder[]): GroupedByOrder[] {
           : (row.orders?.customers?.name ?? '—'),
         deliveryDate: isStandalone ? null : (row.orders?.delivery_date ?? null),
         stages: [],
-      }
-      map.set(groupKey, group)
+      };
+      map.set(groupKey, group);
     }
-    group.stages.push(row)
+    group.stages.push(row);
   }
-  return Array.from(map.values())
+  return Array.from(map.values());
 }
 
 function isOverdue(deliveryDate: string | null): boolean {
-  if (!deliveryDate) return false
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  return new Date(deliveryDate) < today
+  if (!deliveryDate) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return new Date(deliveryDate) < today;
 }
 
 export function ProgressBoard() {
-  const { data: allProgress = [], isLoading, error } = useProgressBoard()
-  const updateMutation = useUpdateStageStatus()
-  const [stageFilter, setStageFilter] = useState<ProductionStage | ''>('')
-  const [statusFilter, setStatusFilter] = useState<StageStatus | ''>('')
+  const { data: allProgress = [], isLoading, error } = useProgressBoard();
+  const updateMutation = useUpdateStageStatus();
+  const [stageFilter, setStageFilter] = useState<ProductionStage | ''>('');
+  const [statusFilter, setStatusFilter] = useState<StageStatus | ''>('');
 
-  const grouped = groupByOrder(allProgress)
+  const grouped = groupByOrder(allProgress);
 
   // Filter orders based on selected stage+status
   const filtered = grouped.filter((group) => {
-    if (!stageFilter && !statusFilter) return true
+    if (!stageFilter && !statusFilter) return true;
     return group.stages.some((s) => {
-      if (stageFilter && s.stage !== stageFilter) return false
-      if (statusFilter && s.status !== statusFilter) return false
-      return true
-    })
-  })
+      if (stageFilter && s.stage !== stageFilter) return false;
+      if (statusFilter && s.status !== statusFilter) return false;
+      return true;
+    });
+  });
 
   function handleQuickAdvance(row: OrderProgressWithOrder) {
-    if (row.status === 'done' || row.status === 'skipped') return
-    const nextStatus: StageStatus = row.status === 'pending' ? 'in_progress' : 'done'
-    updateMutation.mutate({ progressId: row.id, status: nextStatus })
+    if (row.status === 'done' || row.status === 'skipped') return;
+    const nextStatus: StageStatus =
+      row.status === 'pending' ? 'in_progress' : 'done';
+    updateMutation.mutate({
+      progressId: row.id,
+      status: nextStatus,
+    });
   }
 
   if (error) {
     return (
       <div className="panel-card">
-        <p style={{ color: '#c0392b', padding: '1rem' }}>Lỗi: {(error as Error).message}</p>
+        <p
+          style={{
+            color: '#c0392b',
+            padding: '1rem',
+          }}
+        >
+          Lỗi: {(error as Error).message}
+        </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -96,11 +115,15 @@ export function ProgressBoard() {
             id="stage-filter"
             className="field-select"
             value={stageFilter}
-            onChange={(e) => setStageFilter(e.target.value as ProductionStage | '')}
+            onChange={(e) =>
+              setStageFilter(e.target.value as ProductionStage | '')
+            }
           >
             <option value="">Tất cả</option>
             {PRODUCTION_STAGES.map((s) => (
-              <option key={s} value={s}>{STAGE_LABELS[s]}</option>
+              <option key={s} value={s}>
+                {STAGE_LABELS[s]}
+              </option>
             ))}
           </select>
         </div>
@@ -111,7 +134,9 @@ export function ProgressBoard() {
             id="status-filter"
             className="field-select"
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as StageStatus | '')}
+            onChange={(e) =>
+              setStatusFilter(e.target.value as StageStatus | '')
+            }
           >
             <option value="">Tất cả</option>
             <option value="pending">Chờ xử lý</option>
@@ -125,7 +150,10 @@ export function ProgressBoard() {
           <button
             className="btn-secondary"
             type="button"
-            onClick={() => { setStageFilter(''); setStatusFilter('') }}
+            onClick={() => {
+              setStageFilter('');
+              setStatusFilter('');
+            }}
             style={{ alignSelf: 'flex-end' }}
           >
             ✕ Xóa lọc
@@ -144,12 +172,23 @@ export function ProgressBoard() {
               : 'Chưa có đơn hàng nào được xác nhận.'}
           </p>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+            }}
+          >
             {filtered.map((group) => {
-              const overdue = isOverdue(group.deliveryDate)
-              const doneCount = group.stages.filter((s) => s.status === 'done').length
-              const totalCount = group.stages.filter((s) => s.status !== 'skipped').length
-              const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0
+              const overdue = isOverdue(group.deliveryDate);
+              const doneCount = group.stages.filter(
+                (s) => s.status === 'done',
+              ).length;
+              const totalCount = group.stages.filter(
+                (s) => s.status !== 'skipped',
+              ).length;
+              const pct =
+                totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
 
               return (
                 <div
@@ -162,15 +201,42 @@ export function ProgressBoard() {
                   }}
                 >
                   {/* Order header */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.4rem' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '0.5rem',
+                      flexWrap: 'wrap',
+                      gap: '0.4rem',
+                    }}
+                  >
                     <div>
                       <strong>{group.orderNumber}</strong>
-                      <span className="td-muted" style={{ marginLeft: '0.5rem' }}>{group.customerName}</span>
+                      <span
+                        className="td-muted"
+                        style={{ marginLeft: '0.5rem' }}
+                      >
+                        {group.customerName}
+                      </span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem' }}>
-                      <span style={{ fontVariantNumeric: 'tabular-nums' }}>{pct}%</span>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        fontSize: '0.82rem',
+                      }}
+                    >
+                      <span style={{ fontVariantNumeric: 'tabular-nums' }}>
+                        {pct}%
+                      </span>
                       {group.deliveryDate && (
-                        <span style={{ color: overdue ? '#c0392b' : 'var(--muted)' }}>
+                        <span
+                          style={{
+                            color: overdue ? '#c0392b' : 'var(--muted)',
+                          }}
+                        >
                           📅 {group.deliveryDate}
                           {overdue && ' ⚠️'}
                         </span>
@@ -179,7 +245,14 @@ export function ProgressBoard() {
                   </div>
 
                   {/* Mini progress bar */}
-                  <div style={{ height: 4, background: 'var(--border)', borderRadius: 2, marginBottom: '0.5rem' }}>
+                  <div
+                    style={{
+                      height: 4,
+                      background: 'var(--border)',
+                      borderRadius: 2,
+                      marginBottom: '0.5rem',
+                    }}
+                  >
                     <div
                       style={{
                         height: '100%',
@@ -192,12 +265,28 @@ export function ProgressBoard() {
                   </div>
 
                   {/* Stage chips */}
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.3rem' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: '0.3rem',
+                    }}
+                  >
                     {PRODUCTION_STAGES.map((stageKey) => {
-                      const row = group.stages.find((s) => s.stage === stageKey)
-                      if (!row) return null
-                      const statusCls = row.status === 'done' ? 'in_stock' : row.status === 'in_progress' ? 'in_process' : row.status === 'skipped' ? 'damaged' : 'shipped'
-                      const clickable = row.status !== 'done' && row.status !== 'skipped'
+                      const row = group.stages.find(
+                        (s) => s.stage === stageKey,
+                      );
+                      if (!row) return null;
+                      const statusCls =
+                        row.status === 'done'
+                          ? 'in_stock'
+                          : row.status === 'in_progress'
+                            ? 'in_process'
+                            : row.status === 'skipped'
+                              ? 'damaged'
+                              : 'shipped';
+                      const clickable =
+                        row.status !== 'done' && row.status !== 'skipped';
 
                       return (
                         <button
@@ -215,21 +304,27 @@ export function ProgressBoard() {
                         >
                           {STAGE_LABELS[stageKey]}
                         </button>
-                      )
+                      );
                     })}
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         )}
       </div>
 
       {updateMutation.error && (
-        <p style={{ color: '#c0392b', fontSize: '0.85rem', padding: '0 1.25rem 1rem' }}>
+        <p
+          style={{
+            color: '#c0392b',
+            fontSize: '0.85rem',
+            padding: '0 1.25rem 1rem',
+          }}
+        >
           Lỗi cập nhật: {(updateMutation.error as Error).message}
         </p>
       )}
     </div>
-  )
+  );
 }

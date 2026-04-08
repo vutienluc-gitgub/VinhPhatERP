@@ -1,4 +1,4 @@
-import type { FeatureDefinition } from '@/shared/types/feature'
+import type { FeatureDefinition } from '@/shared/types/feature';
 
 export {
   QUALITY_GRADES,
@@ -13,12 +13,12 @@ export {
   bulkInputSchema,
   bulkInputDefaults,
   generateBarcode,
-} from '@/schema/raw-fabric.schema'
+} from '@/schema/raw-fabric.schema';
 export type {
   RawFabricFormValues,
   BulkRollRow,
   BulkInputFormValues,
-} from '@/schema/raw-fabric.schema'
+} from '@/schema/raw-fabric.schema';
 
 export const rawFabricFeature: FeatureDefinition = {
   key: 'raw-fabric',
@@ -34,4 +34,18 @@ export const rawFabricFeature: FeatureDefinition = {
   resources: ['raw_fabric_rolls'],
   entities: ['Raw roll', 'Lot', 'Barcode'],
   nextMilestones: ['Scan mã vạch khi nhập kho.'],
-}
+};
+
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
+export const rawFabricPlugin: FeaturePlugin = {
+  key: 'raw-fabric',
+  route: 'raw-fabric',
+  label: 'Nhập vải mộc',
+  shortLabel: 'Raw',
+  description: 'Theo dõi lô vải mộc và mapping với nguyên liệu, nhà dệt.',
+  icon: 'scroll',
+  group: 'production',
+  order: 55,
+  component: () =>
+    import('./index').then((m) => ({ default: m.RawFabricPage })),
+};

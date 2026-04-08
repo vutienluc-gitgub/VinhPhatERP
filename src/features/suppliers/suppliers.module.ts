@@ -1,4 +1,4 @@
-import type { FeatureDefinition } from '@/shared/types/feature'
+import type { FeatureDefinition } from '@/shared/types/feature';
 
 export {
   SUPPLIER_CATEGORIES,
@@ -7,8 +7,8 @@ export {
   SUPPLIER_STATUS_LABELS,
   supplierSchema,
   supplierDefaults,
-} from '@/schema/supplier.schema'
-export type { SupplierFormValues } from '@/schema/supplier.schema'
+} from '@/schema/supplier.schema';
+export type { SupplierFormValues } from '@/schema/supplier.schema';
 
 export const suppliersFeature: FeatureDefinition = {
   key: 'suppliers',
@@ -33,4 +33,18 @@ export const suppliersFeature: FeatureDefinition = {
     'Tao quick picker de dung lai o receipts.',
     'Theo doi lead time va do tin cay nha cung cap.',
   ],
-}
+};
+
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
+export const suppliersPlugin: FeaturePlugin = {
+  key: 'suppliers',
+  route: 'suppliers',
+  label: 'Nhà cung cấp',
+  shortLabel: 'Suppliers',
+  description: 'Quản lý nhà cung cấp sợi, dệt, nhuộm và logistics.',
+  icon: 'building',
+  group: 'master-data',
+  order: 70,
+  component: () =>
+    import('./SuppliersPage').then((m) => ({ default: m.SuppliersPage })),
+};

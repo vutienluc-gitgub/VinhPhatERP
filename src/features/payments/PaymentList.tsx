@@ -1,43 +1,49 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { useConfirm } from '@/shared/components/ConfirmDialog'
-import { Pagination } from '@/shared/components/Pagination'
+import { useConfirm } from '@/shared/components/ConfirmDialog';
+import { Pagination } from '@/shared/components/Pagination';
 
-import { PAYMENT_METHOD_LABELS } from './payments.module'
-import type { PaymentsFilter } from './types'
-import { useDeletePayment, usePaymentList } from './usePayments'
+import { PAYMENT_METHOD_LABELS } from './payments.module';
+import type { PaymentsFilter } from './types';
+import { useDeletePayment, usePaymentList } from './usePayments';
 
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value)
+  return new Intl.NumberFormat('vi-VN').format(value);
 }
 
 export function PaymentList() {
-  const [searchInput, setSearchInput] = useState('')
-  const [filters, setFilters] = useState<PaymentsFilter>({})
-  const [page, setPage] = useState(1)
+  const [searchInput, setSearchInput] = useState('');
+  const [filters, setFilters] = useState<PaymentsFilter>({});
+  const [page, setPage] = useState(1);
 
-  const { data: result, isLoading, error } = usePaymentList(filters, page)
-  const payments = result?.data ?? []
-  const deleteMutation = useDeletePayment()
-  const { confirm } = useConfirm()
+  const { data: result, isLoading, error } = usePaymentList(filters, page);
+  const payments = result?.data ?? [];
+  const deleteMutation = useDeletePayment();
+  const { confirm } = useConfirm();
 
   function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    setPage(1)
-    setFilters((prev) => ({ ...prev, search: searchInput.trim() || undefined }))
+    e.preventDefault();
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      search: searchInput.trim() || undefined,
+    }));
   }
 
   async function handleDelete(id: string) {
-    const ok = await confirm({ message: 'Xoá phiếu thu này? Số tiền sẽ bị trừ khỏi đơn hàng.', variant: 'danger' })
-    if (!ok) return
-    deleteMutation.mutate(id)
+    const ok = await confirm({
+      message: 'Xoá phiếu thu này? Số tiền sẽ bị trừ khỏi đơn hàng.',
+      variant: 'danger',
+    });
+    if (!ok) return;
+    deleteMutation.mutate(id);
   }
 
-  const hasFilter = !!filters.search
+  const hasFilter = !!filters.search;
 
   function onDeleteClick(e: React.MouseEvent<HTMLButtonElement>) {
-    const id = e.currentTarget.dataset.id
-    if (id) void handleDelete(id)
+    const id = e.currentTarget.dataset.id;
+    if (id) void handleDelete(id);
   }
 
   return (
@@ -54,7 +60,11 @@ export function PaymentList() {
 
       {/* Filters */}
       <div className="filter-bar card-filter-section">
-        <form className="filter-field" onSubmit={handleSearch} style={{ flex: '1 1 220px' }}>
+        <form
+          className="filter-field"
+          onSubmit={handleSearch}
+          style={{ flex: '1 1 220px' }}
+        >
           <label htmlFor="filter-search">Tìm kiếm</label>
           <div className="flex-controls">
             <input
@@ -65,7 +75,11 @@ export function PaymentList() {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
             />
-            <button className="btn-secondary" type="submit" style={{ whiteSpace: 'nowrap' }}>
+            <button
+              className="btn-secondary"
+              type="submit"
+              style={{ whiteSpace: 'nowrap' }}
+            >
               Tìm
             </button>
           </div>
@@ -75,7 +89,10 @@ export function PaymentList() {
           <button
             className="btn-secondary"
             type="button"
-            onClick={() => { setFilters({}); setSearchInput('') }}
+            onClick={() => {
+              setFilters({});
+              setSearchInput('');
+            }}
             style={{ alignSelf: 'flex-end' }}
           >
             ✕ Xóa lọc
@@ -96,7 +113,9 @@ export function PaymentList() {
           <p className="table-empty">Đang tải...</p>
         ) : payments.length === 0 ? (
           <p className="table-empty">
-            {hasFilter ? 'Không tìm thấy phiếu thu phù hợp.' : 'Chưa có phiếu thu nào.'}
+            {hasFilter
+              ? 'Không tìm thấy phiếu thu phù hợp.'
+              : 'Chưa có phiếu thu nào.'}
           </p>
         ) : (
           <table className="data-table">
@@ -114,14 +133,16 @@ export function PaymentList() {
             <tbody>
               {payments.map((p) => (
                 <tr key={p.id}>
-                  <td><strong>{p.payment_number}</strong></td>
+                  <td>
+                    <strong>{p.payment_number}</strong>
+                  </td>
                   <td className="td-muted">{p.orders?.order_number ?? '—'}</td>
                   <td>{p.customers?.name ?? '—'}</td>
                   <td className="td-muted">{p.payment_date}</td>
-                  <td className="numeric-paid">
-                    {formatCurrency(p.amount)} đ
+                  <td className="numeric-paid">{formatCurrency(p.amount)} đ</td>
+                  <td className="td-muted">
+                    {PAYMENT_METHOD_LABELS[p.payment_method]}
                   </td>
-                  <td className="td-muted">{PAYMENT_METHOD_LABELS[p.payment_method]}</td>
                   <td>
                     <button
                       className="btn-secondary"
@@ -129,7 +150,11 @@ export function PaymentList() {
                       data-id={p.id}
                       onClick={onDeleteClick}
                       disabled={deleteMutation.isPending}
-                      style={{ fontSize: '0.78rem', padding: '0.2rem 0.5rem', color: '#c0392b' }}
+                      style={{
+                        fontSize: '0.78rem',
+                        padding: '0.2rem 0.5rem',
+                        color: '#c0392b',
+                      }}
                     >
                       ✕
                     </button>
@@ -149,5 +174,5 @@ export function PaymentList() {
 
       <Pagination result={result} onPageChange={setPage} />
     </div>
-  )
+  );
 }

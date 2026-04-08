@@ -1,66 +1,75 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { useConfirm } from '@/shared/components/ConfirmDialog'
-import { EmptyState } from '@/shared/components/EmptyState'
-import { Pagination } from '@/shared/components/Pagination'
-import { TableSkeleton } from '@/shared/components/TableSkeleton'
+import { useConfirm } from '@/shared/components/ConfirmDialog';
+import { EmptyState } from '@/shared/components/EmptyState';
+import { Pagination } from '@/shared/components/Pagination';
+import { TableSkeleton } from '@/shared/components/TableSkeleton';
 
 import {
   SUPPLIER_CATEGORIES,
   SUPPLIER_CATEGORY_LABELS,
   SUPPLIER_STATUSES,
   SUPPLIER_STATUS_LABELS,
-} from './suppliers.module'
-import type { Supplier, SupplierCategory, SupplierFilter } from './types'
-import { useDeleteSupplier, useSuppliersList } from './useSuppliers'
+} from './suppliers.module';
+import type { Supplier, SupplierCategory, SupplierFilter } from './types';
+import { useDeleteSupplier, useSuppliersList } from './useSuppliers';
 
 type SuppliersListProps = {
-  onEdit: (supplier: Supplier) => void
-  onNew: () => void
-}
+  onEdit: (supplier: Supplier) => void;
+  onNew: () => void;
+};
 
 export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
-  const [filters, setFilters] = useState<SupplierFilter>({})
-  const [searchInput, setSearchInput] = useState('')
-  const [page, setPage] = useState(1)
+  const [filters, setFilters] = useState<SupplierFilter>({});
+  const [searchInput, setSearchInput] = useState('');
+  const [page, setPage] = useState(1);
 
-  const { data: result, isLoading, error } = useSuppliersList(filters, page)
-  const suppliers = result?.data ?? []
-  const deleteMutation = useDeleteSupplier()
-  const { confirm } = useConfirm()
+  const { data: result, isLoading, error } = useSuppliersList(filters, page);
+  const suppliers = result?.data ?? [];
+  const deleteMutation = useDeleteSupplier();
+  const { confirm } = useConfirm();
 
-  const hasFilter = !!(filters.search || filters.category || filters.status)
+  const hasFilter = !!(filters.search || filters.category || filters.status);
 
   function handleCategoryChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as SupplierCategory | ''
-    setPage(1)
-    setFilters((prev) => ({ ...prev, category: val || undefined }))
+    const val = e.target.value as SupplierCategory | '';
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      category: val || undefined,
+    }));
   }
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as 'active' | 'inactive' | ''
-    setPage(1)
-    setFilters((prev) => ({ ...prev, status: val || undefined }))
+    const val = e.target.value as 'active' | 'inactive' | '';
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      status: val || undefined,
+    }));
   }
 
   function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    setPage(1)
-    setFilters((prev) => ({ ...prev, search: searchInput.trim() || undefined }))
+    e.preventDefault();
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      search: searchInput.trim() || undefined,
+    }));
   }
 
   function clearFilters() {
-    setFilters({})
-    setSearchInput('')
+    setFilters({});
+    setSearchInput('');
   }
 
   async function handleDelete(supplier: Supplier) {
     const ok = await confirm({
       message: `Xóa NCC "${supplier.name}"? Hành động này không thể hoàn tác.`,
       variant: 'danger',
-    })
-    if (!ok) return
-    deleteMutation.mutate(supplier.id)
+    });
+    if (!ok) return;
+    deleteMutation.mutate(supplier.id);
   }
 
   return (
@@ -84,7 +93,11 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
 
       {/* Bộ lọc */}
       <div className="filter-bar card-filter-section">
-        <form className="filter-field" onSubmit={handleSearch} style={{ flex: '1 1 200px' }}>
+        <form
+          className="filter-field"
+          onSubmit={handleSearch}
+          style={{ flex: '1 1 200px' }}
+        >
           <label htmlFor="filter-search">Tìm kiếm</label>
           <div className="flex-controls">
             <input
@@ -95,7 +108,11 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
             />
-            <button className="btn-secondary" type="submit" style={{ whiteSpace: 'nowrap' }}>
+            <button
+              className="btn-secondary"
+              type="submit"
+              style={{ whiteSpace: 'nowrap' }}
+            >
               Lọc
             </button>
           </div>
@@ -155,17 +172,25 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
       )}
 
       {/* Table */}
-      <div 
+      <div
         className="data-table-wrap card-table-section"
-        style={isLoading || suppliers.length === 0 ? { border: 'none' } : undefined}
+        style={
+          isLoading || suppliers.length === 0 ? { border: 'none' } : undefined
+        }
       >
         {isLoading ? (
           <TableSkeleton rows={5} columns={7} />
         ) : suppliers.length === 0 ? (
-          <EmptyState 
+          <EmptyState
             icon={hasFilter ? '🔍' : '🤝'}
-            title={hasFilter ? 'Không tìm thấy nhà cung cấp' : 'Chưa có nhà cung cấp'}
-            description={hasFilter ? 'Vui lòng thử điều chỉnh lại bộ lọc.' : 'Nhấn nút thêm nhà cung cấp mới để lưu trữ thông tin liên hệ.'}
+            title={
+              hasFilter ? 'Không tìm thấy nhà cung cấp' : 'Chưa có nhà cung cấp'
+            }
+            description={
+              hasFilter
+                ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
+                : 'Nhấn nút thêm nhà cung cấp mới để lưu trữ thông tin liên hệ.'
+            }
             actionLabel={!hasFilter ? '+ Thêm NCC mới' : undefined}
             actionClick={!hasFilter ? onNew : undefined}
           />
@@ -197,7 +222,10 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
                     )}
                   </td>
                   <td>
-                    <span className="roll-status in_stock" style={{ fontSize: '0.78rem' }}>
+                    <span
+                      className="roll-status in_stock"
+                      style={{ fontSize: '0.78rem' }}
+                    >
                       {SUPPLIER_CATEGORY_LABELS[supplier.category]}
                     </span>
                   </td>
@@ -239,5 +267,5 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
 
       <Pagination result={result} onPageChange={setPage} />
     </div>
-  )
+  );
 }

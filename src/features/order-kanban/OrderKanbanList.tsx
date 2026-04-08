@@ -1,17 +1,24 @@
-import styles from './kanban.module.css'
-import { KanbanCard } from './OrderKanbanForm'
-import type { OrderKanbanItem, OrderKanbanStatus } from './types'
+import styles from './kanban.module.css';
+import { KanbanCard } from './OrderKanbanForm';
+import type { OrderKanbanItem, OrderKanbanStatus } from './types';
 
 type KanbanColumnProps = {
-  status: OrderKanbanStatus
-  label: string
-  emoji: string
-  items: OrderKanbanItem[]
-  movingId: string | null
-  onMove: (id: string, status: OrderKanbanStatus) => void
-}
+  status: OrderKanbanStatus;
+  label: string;
+  emoji: string;
+  items: OrderKanbanItem[];
+  movingId: string | null;
+  onMove: (id: string, status: OrderKanbanStatus) => void;
+};
 
-export function KanbanColumn({ status, label, emoji, items, movingId, onMove }: KanbanColumnProps) {
+export function KanbanColumn({
+  status,
+  label,
+  emoji,
+  items,
+  movingId,
+  onMove,
+}: KanbanColumnProps) {
   return (
     <div className={`${styles['kanban-col']} ${styles[`col-${status}`]}`}>
       <div className={styles['kanban-col-header']}>
@@ -39,5 +46,5 @@ export function KanbanColumn({ status, label, emoji, items, movingId, onMove }: 
         )}
       </div>
     </div>
-  )
+  );
 }

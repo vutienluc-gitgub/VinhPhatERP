@@ -4,26 +4,28 @@
 
 ## 🔭 The Three Pillars of Observability
 
-| Pillar | Tool | Purpose |
-|--------|------|---------|
-| **Logs** | Winston / Pino + Loki | What happened |
-| **Metrics** | Prometheus + Grafana | How the system is behaving |
-| **Traces** | OpenTelemetry + Jaeger | Why something is slow |
+| Pillar      | Tool                   | Purpose                    |
+| ----------- | ---------------------- | -------------------------- |
+| **Logs**    | Winston / Pino + Loki  | What happened              |
+| **Metrics** | Prometheus + Grafana   | How the system is behaving |
+| **Traces**  | OpenTelemetry + Jaeger | Why something is slow      |
 
 ---
 
 ## 📝 Logging Rules
 
 ### Log Levels
-| Level | When to Use |
-|-------|-------------|
-| `error` | Unexpected failure requiring attention |
-| `warn` | Unexpected but recoverable situation |
-| `info` | Normal significant events (startup, request lifecycle) |
-| `debug` | Detailed debugging info (dev only) |
-| `trace` | Very verbose (never in production) |
+
+| Level   | When to Use                                            |
+| ------- | ------------------------------------------------------ |
+| `error` | Unexpected failure requiring attention                 |
+| `warn`  | Unexpected but recoverable situation                   |
+| `info`  | Normal significant events (startup, request lifecycle) |
+| `debug` | Detailed debugging info (dev only)                     |
+| `trace` | Very verbose (never in production)                     |
 
 ### Log Format — Structured JSON (always!)
+
 ```js
 // ✅ Structured log — searchable and parseable
 logger.info({
@@ -40,6 +42,7 @@ console.log(`Order ${orderId} placed by user ${userId}`);
 ```
 
 ### Mandatory Fields
+
 ```js
 {
   level: 'info',
@@ -56,15 +59,17 @@ console.log(`Order ${orderId} placed by user ${userId}`);
 ```
 
 ### What NOT to Log
+
 ```js
 // ❌ Never log sensitive data
-logger.info({ password: user.password });     // NEVER
+logger.info({ password: user.password }); // NEVER
 logger.info({ token: req.headers.authorization }); // NEVER
-logger.info({ creditCard: payment.card });    // NEVER
+logger.info({ creditCard: payment.card }); // NEVER
 logger.info({ ssn: user.socialSecurityNumber }); // NEVER
 ```
 
 ### Logger Setup (Pino)
+
 ```js
 // src/utils/logger.js
 import pino from 'pino';
@@ -85,14 +90,16 @@ export const logger = pino({
 ## 📊 Metrics (Prometheus + Grafana)
 
 ### Metric Types
-| Type | Use Case | Example |
-|------|----------|---------|
-| **Counter** | Values that only increase | `http_requests_total` |
-| **Gauge** | Values that go up and down | `active_connections`, `memory_usage_bytes` |
-| **Histogram** | Distribution of values | `http_request_duration_seconds` |
-| **Summary** | Pre-calculated percentiles | `request_latency_percentiles` |
+
+| Type          | Use Case                   | Example                                    |
+| ------------- | -------------------------- | ------------------------------------------ |
+| **Counter**   | Values that only increase  | `http_requests_total`                      |
+| **Gauge**     | Values that go up and down | `active_connections`, `memory_usage_bytes` |
+| **Histogram** | Distribution of values     | `http_request_duration_seconds`            |
+| **Summary**   | Pre-calculated percentiles | `request_latency_percentiles`              |
 
 ### Naming Convention
+
 ```
 # Pattern: {namespace}_{subsystem}_{name}_{unit}
 # All lowercase, underscores, snake_case
@@ -109,20 +116,24 @@ payment_transactions_total            # counter (+ status label)
 ```
 
 ### Labels (Dimensions)
+
 ```js
 // ✅ Use labels for meaningful dimensions
-httpRequestCounter.labels({
-  method: req.method,        // GET, POST, etc.
-  route: '/api/v1/users',    // normalized route
-  status_code: res.statusCode,
-  service: 'user-service',
-}).inc();
+httpRequestCounter
+  .labels({
+    method: req.method, // GET, POST, etc.
+    route: '/api/v1/users', // normalized route
+    status_code: res.statusCode,
+    service: 'user-service',
+  })
+  .inc();
 
 // ❌ Don't use high-cardinality labels (userId, orderId)
 // This creates millions of time series → kills Prometheus
 ```
 
 ### Express Middleware for Metrics
+
 ```js
 // middleware/metrics.js
 import client from 'prom-client';
@@ -137,7 +148,11 @@ const httpDuration = new client.Histogram({
 export function metricsMiddleware(req, res, next) {
   const end = httpDuration.startTimer();
   res.on('finish', () => {
-    end({ method: req.method, route: req.route?.path || req.path, status_code: res.statusCode });
+    end({
+      method: req.method,
+      route: req.route?.path || req.path,
+      status_code: res.statusCode,
+    });
   });
   next();
 }
@@ -154,6 +169,7 @@ app.get('/metrics', async (req, res) => {
 ## 📈 Grafana Dashboard Design
 
 ### Dashboard Naming
+
 ```
 # Pattern: {Service} — {Category}
 User Service — Overview
@@ -164,6 +180,7 @@ Infrastructure — PostgreSQL
 ```
 
 ### Panel Naming
+
 ```
 # Use title case, include units in title
 Request Rate (req/s)
@@ -176,7 +193,9 @@ Memory Usage (MB)
 ```
 
 ### The RED Method (for Services)
+
 Every service dashboard MUST have these 3 panels:
+
 - **R** — **Rate**: requests per second
 - **E** — **Errors**: error rate (%)
 - **D** — **Duration**: P50, P95, P99 latency
@@ -196,12 +215,15 @@ histogram_quantile(0.99,
 ```
 
 ### The USE Method (for Infrastructure)
+
 Every infrastructure dashboard MUST have:
+
 - **U** — **Utilization**: % of resource being used
 - **S** — **Saturation**: queue depth, wait time
 - **E** — **Errors**: error count/rate
 
 ### Standard Dashboard Layout
+
 ```
 Row 1: Summary / Health Overview (traffic lights)
 Row 2: RED metrics (Rate, Errors, Duration)
@@ -215,13 +237,15 @@ Row 5: Logs panel (Loki integration)
 ## 🚨 Alerting Rules
 
 ### Severity Levels
-| Level | Response Time | Example |
-|-------|--------------|---------|
+
+| Level      | Response Time         | Example                        |
+| ---------- | --------------------- | ------------------------------ |
 | `critical` | Immediate (PagerDuty) | Service down, payment failures |
-| `warning` | Within 30min (Slack) | High error rate, slow queries |
-| `info` | Business hours | Unusual traffic patterns |
+| `warning`  | Within 30min (Slack)  | High error rate, slow queries  |
+| `info`     | Business hours        | Unusual traffic patterns       |
 
 ### Standard Alert Rules (Prometheus AlertManager)
+
 ```yaml
 groups:
   - name: service-alerts
@@ -232,7 +256,7 @@ groups:
         for: 1m
         severity: critical
         annotations:
-          summary: "Service {{ $labels.job }} is down"
+          summary: 'Service {{ $labels.job }} is down'
 
       # High error rate
       - alert: HighErrorRate
@@ -242,7 +266,7 @@ groups:
         for: 5m
         severity: warning
         annotations:
-          summary: "Error rate > 5% on {{ $labels.service }}"
+          summary: 'Error rate > 5% on {{ $labels.service }}'
 
       # High P99 latency
       - alert: HighLatency
@@ -253,7 +277,7 @@ groups:
         for: 5m
         severity: warning
         annotations:
-          summary: "P99 latency > 1s on {{ $labels.service }}"
+          summary: 'P99 latency > 1s on {{ $labels.service }}'
 
       # Low cache hit rate
       - alert: LowCacheHitRate
@@ -265,6 +289,7 @@ groups:
 ```
 
 ### Alert Naming Convention
+
 ```
 {Severity}{Service}{Problem}
 CriticalPaymentServiceDown
@@ -293,6 +318,7 @@ sdk.start();
 ```
 
 ### Span Naming
+
 ```
 # HTTP: {method} {route}
 GET /api/v1/users/:id

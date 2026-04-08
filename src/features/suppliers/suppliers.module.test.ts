@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest';
 
 import {
   SUPPLIER_CATEGORIES,
@@ -6,7 +6,7 @@ import {
   SUPPLIER_STATUS_LABELS,
   supplierDefaults,
   supplierSchema,
-} from '@/features/suppliers/suppliers.module'
+} from '@/features/suppliers/suppliers.module';
 
 describe('suppliers.module', () => {
   it('accepts valid supplier data', () => {
@@ -21,12 +21,12 @@ describe('suppliers.module', () => {
       contact_person: 'Nguyễn Văn A',
       notes: 'Giao hàng nhanh',
       status: 'active',
-    })
+    });
 
-    expect(result.code).toBe('NCC-001')
-    expect(result.name).toBe('Công ty Sợi ABC')
-    expect(result.category).toBe('yarn')
-  })
+    expect(result.code).toBe('NCC-001');
+    expect(result.name).toBe('Công ty Sợi ABC');
+    expect(result.category).toBe('yarn');
+  });
 
   it('accepts empty optional fields', () => {
     const result = supplierSchema.parse({
@@ -40,11 +40,11 @@ describe('suppliers.module', () => {
       contact_person: '',
       notes: '',
       status: 'active',
-    })
+    });
 
-    expect(result.phone).toBe('')
-    expect(result.email).toBe('')
-  })
+    expect(result.phone).toBe('');
+    expect(result.email).toBe('');
+  });
 
   it('rejects missing required fields', () => {
     const result = supplierSchema.safeParse({
@@ -52,33 +52,39 @@ describe('suppliers.module', () => {
       name: '',
       category: 'other',
       status: 'active',
-    })
+    });
 
-    expect(result.success).toBe(false)
-  })
+    expect(result.success).toBe(false);
+  });
 
   it('validates tax_code format (10 or 13 digits)', () => {
-    expect(supplierSchema.safeParse({
-      ...supplierDefaults,
-      code: 'T1',
-      name: 'Test',
-      tax_code: '0312345678',
-    }).success).toBe(true)
+    expect(
+      supplierSchema.safeParse({
+        ...supplierDefaults,
+        code: 'T1',
+        name: 'Test',
+        tax_code: '0312345678',
+      }).success,
+    ).toBe(true);
 
-    expect(supplierSchema.safeParse({
-      ...supplierDefaults,
-      code: 'T2',
-      name: 'Test',
-      tax_code: '0312345678901',
-    }).success).toBe(true)
+    expect(
+      supplierSchema.safeParse({
+        ...supplierDefaults,
+        code: 'T2',
+        name: 'Test',
+        tax_code: '0312345678901',
+      }).success,
+    ).toBe(true);
 
-    expect(supplierSchema.safeParse({
-      ...supplierDefaults,
-      code: 'T3',
-      name: 'Test',
-      tax_code: '12345',
-    }).success).toBe(false)
-  })
+    expect(
+      supplierSchema.safeParse({
+        ...supplierDefaults,
+        code: 'T3',
+        name: 'Test',
+        tax_code: '12345',
+      }).success,
+    ).toBe(false);
+  });
 
   it('validates category must be in allowed list', () => {
     const result = supplierSchema.safeParse({
@@ -86,20 +92,20 @@ describe('suppliers.module', () => {
       code: 'T4',
       name: 'Test',
       category: 'invalid_cat',
-    })
-    expect(result.success).toBe(false)
-  })
+    });
+    expect(result.success).toBe(false);
+  });
 
   it('keeps stable defaults and labels', () => {
-    expect(supplierDefaults.status).toBe('active')
-    expect(supplierDefaults.category).toBe('other')
+    expect(supplierDefaults.status).toBe('active');
+    expect(supplierDefaults.category).toBe('other');
     expect(SUPPLIER_STATUS_LABELS).toEqual({
       active: 'Hoạt động',
       inactive: 'Ngưng hợp tác',
-    })
-    expect(SUPPLIER_CATEGORIES).toContain('yarn')
-    expect(SUPPLIER_CATEGORIES).toContain('dye')
-    expect(SUPPLIER_CATEGORIES).toContain('weaving')
-    expect(SUPPLIER_CATEGORY_LABELS.yarn).toBe('Sợi')
-  })
-})
+    });
+    expect(SUPPLIER_CATEGORIES).toContain('yarn');
+    expect(SUPPLIER_CATEGORIES).toContain('dye');
+    expect(SUPPLIER_CATEGORIES).toContain('weaving');
+    expect(SUPPLIER_CATEGORY_LABELS.yarn).toBe('Sợi');
+  });
+});

@@ -1,20 +1,24 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 
-import { hasSupabaseEnv } from '@/services/supabase/client'
+import { hasSupabaseEnv } from '@/services/supabase/client';
 
-import { registerSchema, registerDefaultValues, type RegisterFormValues } from './auth.module'
-import { useAuth } from './AuthProvider'
+import {
+  registerSchema,
+  registerDefaultValues,
+  type RegisterFormValues,
+} from './auth.module';
+import { useAuth } from './AuthProvider';
 
 interface RegisterFormProps {
-  onSuccess: () => void
+  onSuccess: () => void;
 }
 
 export function RegisterForm({ onSuccess }: RegisterFormProps) {
-  const { signUp } = useAuth()
-  const [serverError, setServerError] = useState<string | null>(null)
-  const [isDone, setIsDone] = useState(false)
+  const { signUp } = useAuth();
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [isDone, setIsDone] = useState(false);
 
   const {
     register,
@@ -23,22 +27,22 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: registerDefaultValues,
-  })
+  });
 
   const onSubmit = async (values: RegisterFormValues) => {
-    setServerError(null)
-    const { error } = await signUp(values.email, values.password)
-    
+    setServerError(null);
+    const { error } = await signUp(values.email, values.password);
+
     if (error) {
-      setServerError(vietnameseAuthError(error.message))
-      return
+      setServerError(vietnameseAuthError(error.message));
+      return;
     }
-    
-    setIsDone(true)
+
+    setIsDone(true);
     setTimeout(() => {
-      onSuccess()
-    }, 3000)
-  }
+      onSuccess();
+    }, 3000);
+  };
 
   if (!hasSupabaseEnv()) {
     return (
@@ -46,7 +50,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         <p className="logo-text">Cấu hình chưa đủ</p>
         <h2>Chưa có thông tin Supabase</h2>
       </div>
-    )
+    );
   }
 
   if (isDone) {
@@ -56,12 +60,17 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           <span className="logo-text">Vinh Phat ERP</span>
           <h2>Đăng ký thành công!</h2>
         </div>
-        <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.7)' }}>
+        <p
+          style={{
+            textAlign: 'center',
+            color: 'rgba(255,255,255,0.7)',
+          }}
+        >
           Vui lòng kiểm tra email để xác nhận tài khoản trước khi đăng nhập.
           Đang chuyển hướng về trang đăng nhập...
         </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -82,7 +91,9 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             {...register('email')}
           />
         </div>
-        {errors.email && <span className="error-message">{errors.email.message}</span>}
+        {errors.email && (
+          <span className="error-message">{errors.email.message}</span>
+        )}
       </div>
 
       <div className="form-group">
@@ -96,7 +107,9 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             {...register('password')}
           />
         </div>
-        {errors.password && <span className="error-message">{errors.password.message}</span>}
+        {errors.password && (
+          <span className="error-message">{errors.password.message}</span>
+        )}
       </div>
 
       <div className="form-group">
@@ -111,25 +124,24 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           />
         </div>
         {errors.confirmPassword && (
-          <span className="error-message">{errors.confirmPassword.message}</span>
+          <span className="error-message">
+            {errors.confirmPassword.message}
+          </span>
         )}
       </div>
 
       {serverError && <p className="form-error-banner">{serverError}</p>}
 
-      <button
-        type="submit"
-        className="auth-submit-btn"
-        disabled={isSubmitting}
-      >
+      <button type="submit" className="auth-submit-btn" disabled={isSubmitting}>
         {isSubmitting ? 'Đang xử lý…' : 'Đăng ký ngay'}
       </button>
     </form>
-  )
+  );
 }
 
 function vietnameseAuthError(message: string): string {
-  if (/user already registered/i.test(message)) return 'Email này đã được đăng ký.'
-  if (/network/i.test(message)) return 'Lỗi kết nối mạng.'
-  return message
+  if (/user already registered/i.test(message))
+    return 'Email này đã được đăng ký.';
+  if (/network/i.test(message)) return 'Lỗi kết nối mạng.';
+  return message;
 }

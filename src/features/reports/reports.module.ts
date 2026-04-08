@@ -1,9 +1,7 @@
-import type { FeatureDefinition } from '@/shared/types/feature'
+import type { FeatureDefinition } from '@/shared/types/feature';
 
-export {
-  reportsFilterSchema,
-} from '@/schema/report.schema'
-export type { ReportsFilterValues } from '@/schema/report.schema'
+export { reportsFilterSchema } from '@/schema/report.schema';
+export type { ReportsFilterValues } from '@/schema/report.schema';
 
 export const reportsFeature: FeatureDefinition = {
   key: 'reports',
@@ -27,4 +25,19 @@ export const reportsFeature: FeatureDefinition = {
     'Tai su dung SQL views cho order va inventory summary.',
     'Bo sung xuat Excel/PDF sau MVP.',
   ],
-}
+};
+
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
+export const reportsPlugin: FeaturePlugin = {
+  key: 'reports',
+  route: 'reports',
+  label: 'Báo cáo',
+  shortLabel: 'Reports',
+  description: 'Dashboard KPI, đơn hàng trễ, doanh thu và sức khoẻ kho.',
+  icon: 'bar-chart-3',
+  requiredRoles: ['admin', 'manager'],
+  routeGuard: 'manager',
+  group: 'system',
+  order: 95,
+  component: () => import('./index').then((m) => ({ default: m.ReportsPage })),
+};

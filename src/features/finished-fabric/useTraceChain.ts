@@ -5,4 +5,4 @@ export {
   type TraceChainData,
   type TraceRawRoll,
   type TraceYarnReceipt,
-} from './useFinishedFabric'
+} from './useFinishedFabric';

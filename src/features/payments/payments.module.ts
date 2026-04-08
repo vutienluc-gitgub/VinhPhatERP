@@ -1,4 +1,4 @@
-import type { FeatureDefinition } from '@/shared/types/feature'
+import type { FeatureDefinition } from '@/shared/types/feature';
 
 export {
   PAYMENT_METHOD_LABELS,
@@ -12,7 +12,7 @@ export {
   expenseDefaultValues,
   accountSchema,
   accountDefaultValues,
-} from '@/schema/payment.schema'
+} from '@/schema/payment.schema';
 export type {
   PaymentMethod,
   AccountType,
@@ -20,14 +20,15 @@ export type {
   PaymentsFormValues,
   ExpenseFormValues,
   AccountFormValues,
-} from '@/schema/payment.schema'
+} from '@/schema/payment.schema';
 
 export const paymentsFeature: FeatureDefinition = {
   key: 'payments',
   route: '/payments',
   title: 'Thu Chi',
   badge: 'Active',
-  description: 'Module thu chi toàn diện: phiếu thu, phiếu chi, tài khoản, dòng tiền và công nợ.',
+  description:
+    'Module thu chi toàn diện: phiếu thu, phiếu chi, tài khoản, dòng tiền và công nợ.',
   highlights: [
     'Quản lý phiếu thu từ đơn hàng khách hàng.',
     'Quản lý phiếu chi cho nhà cung cấp và chi phí vận hành.',
@@ -46,4 +47,29 @@ export const paymentsFeature: FeatureDefinition = {
     'Báo cáo lãi lỗ theo tháng.',
     'Xuất báo cáo thu chi Excel/PDF.',
   ],
-}
+};
+
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
+export const paymentsPlugin: FeaturePlugin = {
+  key: 'payments',
+  route: 'payments',
+  label: 'Thu Chi',
+  shortLabel: 'Thu Chi',
+  description: 'Quản lý thu chi, phiếu thu, phiếu chi và dòng tiền.',
+  icon: 'wallet',
+  group: 'system',
+  order: 90,
+  component: () => import('./index').then((m) => ({ default: m.PaymentsPage })),
+};
+
+export const debtsPlugin: FeaturePlugin = {
+  key: 'debts',
+  route: 'debts',
+  label: 'Công nợ',
+  shortLabel: 'Nợ',
+  description: 'Theo dõi công nợ khách hàng và nhà cung cấp.',
+  icon: 'credit-card',
+  group: 'system',
+  order: 91,
+  component: () => import('./index').then((m) => ({ default: m.DebtsPage })),
+};

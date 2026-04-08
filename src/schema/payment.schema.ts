@@ -1,29 +1,45 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
-export type PaymentMethod = 'cash' | 'bank_transfer' | 'check' | 'other'
-export type AccountType = 'cash' | 'bank'
+export type PaymentMethod = 'cash' | 'bank_transfer' | 'check' | 'other';
+export type AccountType = 'cash' | 'bank';
 export type ExpenseCategory =
-  | 'supplier_payment' | 'yarn_purchase' | 'weaving_cost' | 'dyeing_cost'
-  | 'salary' | 'rent' | 'utilities' | 'logistics' | 'equipment' | 'other'
+  | 'supplier_payment'
+  | 'yarn_purchase'
+  | 'weaving_cost'
+  | 'dyeing_cost'
+  | 'salary'
+  | 'rent'
+  | 'utilities'
+  | 'logistics'
+  | 'equipment'
+  | 'other';
 
 export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
   cash: 'Tiền mặt',
   bank_transfer: 'Chuyển khoản',
   check: 'Séc',
   other: 'Khác',
-}
+};
 
 export const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = {
   cash: 'Tiền mặt',
   bank: 'Ngân hàng',
-}
+};
 
-export const ACCOUNT_TYPES = ['cash', 'bank'] as const
+export const ACCOUNT_TYPES = ['cash', 'bank'] as const;
 
 export const EXPENSE_CATEGORIES = [
-  'supplier_payment', 'yarn_purchase', 'weaving_cost', 'dyeing_cost',
-  'salary', 'rent', 'utilities', 'logistics', 'equipment', 'other',
-] as const
+  'supplier_payment',
+  'yarn_purchase',
+  'weaving_cost',
+  'dyeing_cost',
+  'salary',
+  'rent',
+  'utilities',
+  'logistics',
+  'equipment',
+  'other',
+] as const;
 
 export const EXPENSE_CATEGORY_LABELS: Record<ExpenseCategory, string> = {
   supplier_payment: 'Trả nhà cung cấp',
@@ -36,7 +52,7 @@ export const EXPENSE_CATEGORY_LABELS: Record<ExpenseCategory, string> = {
   logistics: 'Vận chuyển',
   equipment: 'Thiết bị / Bảo trì',
   other: 'Chi phí khác',
-}
+};
 
 export const paymentsSchema = z.object({
   paymentNumber: z.string().trim().min(3, 'Nhập số phiếu thu'),
@@ -47,9 +63,9 @@ export const paymentsSchema = z.object({
   paymentMethod: z.enum(['cash', 'bank_transfer', 'check', 'other']),
   accountId: z.string().uuid().optional().or(z.literal('')),
   referenceNumber: z.string().trim().max(120).optional().or(z.literal('')),
-})
+});
 
-export type PaymentsFormValues = z.infer<typeof paymentsSchema>
+export type PaymentsFormValues = z.infer<typeof paymentsSchema>;
 
 export const paymentsDefaultValues: PaymentsFormValues = {
   paymentNumber: '',
@@ -60,7 +76,7 @@ export const paymentsDefaultValues: PaymentsFormValues = {
   paymentMethod: 'bank_transfer',
   accountId: '',
   referenceNumber: '',
-}
+};
 
 export const expenseSchema = z.object({
   expenseNumber: z.string().trim().min(3, 'Nhập số phiếu chi'),
@@ -72,9 +88,9 @@ export const expenseSchema = z.object({
   description: z.string().trim().min(2, 'Nhập mô tả chi phí'),
   referenceNumber: z.string().trim().max(120).optional().or(z.literal('')),
   notes: z.string().trim().optional().or(z.literal('')),
-})
+});
 
-export type ExpenseFormValues = z.infer<typeof expenseSchema>
+export type ExpenseFormValues = z.infer<typeof expenseSchema>;
 
 export const expenseDefaultValues: ExpenseFormValues = {
   expenseNumber: '',
@@ -86,7 +102,7 @@ export const expenseDefaultValues: ExpenseFormValues = {
   description: '',
   referenceNumber: '',
   notes: '',
-}
+};
 
 export const accountSchema = z.object({
   name: z.string().trim().min(2, 'Tên tài khoản tối thiểu 2 ký tự'),
@@ -96,9 +112,9 @@ export const accountSchema = z.object({
   initialBalance: z.number().min(0, 'Số dư không được âm'),
   notes: z.string().trim().optional().or(z.literal('')),
   status: z.enum(['active', 'inactive']),
-})
+});
 
-export type AccountFormValues = z.infer<typeof accountSchema>
+export type AccountFormValues = z.infer<typeof accountSchema>;
 
 export const accountDefaultValues: AccountFormValues = {
   name: '',
@@ -108,4 +124,4 @@ export const accountDefaultValues: AccountFormValues = {
   initialBalance: 0,
   notes: '',
   status: 'active',
-}
+};

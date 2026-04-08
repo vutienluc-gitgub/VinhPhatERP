@@ -1,28 +1,28 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { RawFabricBulkForm } from './RawFabricBulkForm'
-import { RawFabricForm } from './RawFabricForm'
-import { RawFabricList } from './RawFabricList'
-import type { RawFabricRoll } from './types'
+import { RawFabricBulkForm } from './RawFabricBulkForm';
+import { RawFabricForm } from './RawFabricForm';
+import { RawFabricList } from './RawFabricList';
+import type { RawFabricRoll } from './types';
 
 export function RawFabricPage() {
-  const [editRoll, setEditRoll] = useState<RawFabricRoll | null>(null)
-  const [showForm, setShowForm] = useState(false)
-  const [showBulkForm, setShowBulkForm] = useState(false)
+  const [editRoll, setEditRoll] = useState<RawFabricRoll | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [showBulkForm, setShowBulkForm] = useState(false);
 
   function openCreate() {
-    setEditRoll(null)
-    setShowForm(true)
+    setEditRoll(null);
+    setShowForm(true);
   }
 
   function openEdit(roll: RawFabricRoll) {
-    setEditRoll(roll)
-    setShowForm(true)
+    setEditRoll(roll);
+    setShowForm(true);
   }
 
   function closeForm() {
-    setShowForm(false)
-    setEditRoll(null)
+    setShowForm(false);
+    setEditRoll(null);
   }
 
   return (
@@ -33,7 +33,9 @@ export function RawFabricPage() {
         onBulkNew={() => setShowBulkForm(true)}
       />
       {showForm && <RawFabricForm roll={editRoll} onClose={closeForm} />}
-      {showBulkForm && <RawFabricBulkForm onClose={() => setShowBulkForm(false)} />}
+      {showBulkForm && (
+        <RawFabricBulkForm onClose={() => setShowBulkForm(false)} />
+      )}
     </>
-  )
+  );
 }

@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query';
 
-import { supabase } from '@/services/supabase/client'
+import { supabase } from '@/services/supabase/client';
 
 /**
  * Shared hook to fetch active customers for pickers/selects.
@@ -14,9 +14,9 @@ export function useActiveCustomers() {
         .from('customers')
         .select('id, code, name')
         .eq('status', 'active')
-        .order('name')
-      if (error) throw error
-      return data ?? []
+        .order('name');
+      if (error) throw error;
+      return data ?? [];
     },
-  })
+  });
 }

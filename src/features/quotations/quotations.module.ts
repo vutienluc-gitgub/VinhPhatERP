@@ -1,4 +1,4 @@
-import type { FeatureDefinition } from '@/shared/types/feature'
+import type { FeatureDefinition } from '@/shared/types/feature';
 
 export {
   QUOTATION_STATUSES,
@@ -12,25 +12,35 @@ export {
   emptyQuotationItem,
   quotationsDefaultValues,
   calculateQuotationTotals,
-} from '@/schema/quotation.schema'
+} from '@/schema/quotation.schema';
 export type {
   QuotationStatus,
   DiscountType,
   UnitType,
   QuotationItemFormValues,
   QuotationsFormValues,
-} from '@/schema/quotation.schema'
+} from '@/schema/quotation.schema';
 
 export const quotationsFeature: FeatureDefinition = {
   key: 'quotations',
   route: '/quotations',
   title: 'Báo giá',
   badge: 'New',
-  description: 'Quản lý báo giá khách hàng với VAT, chiết khấu, revision và chuyển đổi sang đơn hàng.',
+  description:
+    'Quản lý báo giá khách hàng với VAT, chiết khấu, revision và chuyển đổi sang đơn hàng.',
   summary: [
-    { label: 'Status set', value: '6' },
-    { label: 'VAT', value: 'Có' },
-    { label: 'Chiết khấu', value: 'Có' },
+    {
+      label: 'Status set',
+      value: '6',
+    },
+    {
+      label: 'VAT',
+      value: 'Có',
+    },
+    {
+      label: 'Chiết khấu',
+      value: 'Có',
+    },
   ],
   highlights: [
     'Tạo báo giá với nhiều dòng hàng, VAT và chiết khấu.',
@@ -49,4 +59,28 @@ export const quotationsFeature: FeatureDefinition = {
     'Gửi báo giá qua email/Zalo.',
     'Báo cáo tỷ lệ chuyển đổi.',
   ],
-}
+};
+
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
+export const quotationsPlugin: FeaturePlugin = {
+  key: 'quotations',
+  route: 'quotations',
+  label: 'Báo giá',
+  shortLabel: 'Báo giá',
+  description:
+    'Tạo và quản lý báo giá, VAT, chiết khấu, chuyển thành đơn hàng.',
+  icon: 'file-text',
+  primaryMobile: true,
+  requiredRoles: ['admin', 'manager', 'sale'],
+  group: 'sales',
+  order: 10,
+  component: () =>
+    import('./index').then((m) => ({ default: m.QuotationsPage })),
+  printRoutes: [
+    {
+      path: 'print/quotation/:id',
+      component: () =>
+        import('./index').then((m) => ({ default: m.QuotationPrint })),
+    },
+  ],
+};

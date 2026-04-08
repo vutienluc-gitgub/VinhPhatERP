@@ -1,85 +1,107 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { BOM_STATUSES, BOM_STATUS_LABELS } from './bom.module'
-import { BomDetail } from './BomDetail'
-import { BomForm } from './BomForm'
-import { BomList } from './BomList'
-import { BomTemplate, BomStatus, BomFilter } from './types'
-import { useBomList, useApproveBom, useDeprecateBom, useReviseBom } from './useBom'
+import { BOM_STATUSES, BOM_STATUS_LABELS } from './bom.module';
+import { BomDetail } from './BomDetail';
+import { BomForm } from './BomForm';
+import { BomList } from './BomList';
+import { BomTemplate, BomStatus, BomFilter } from './types';
+import {
+  useBomList,
+  useApproveBom,
+  useDeprecateBom,
+  useReviseBom,
+} from './useBom';
 
 export function BomPage() {
-  const [filter, setFilter] = useState<BomFilter>({})
-  const [viewState, setViewState] = useState<'list' | 'create' | 'edit' | 'detail'>('list')
-  const [selectedBom, setSelectedBom] = useState<BomTemplate | null>(null)
+  const [filter, setFilter] = useState<BomFilter>({});
+  const [viewState, setViewState] = useState<
+    'list' | 'create' | 'edit' | 'detail'
+  >('list');
+  const [selectedBom, setSelectedBom] = useState<BomTemplate | null>(null);
 
-  const { data: boms = [], isLoading } = useBomList(filter)
-  const approveBom = useApproveBom()
-  const deprecateBom = useDeprecateBom()
-  const reviseBom = useReviseBom()
+  const { data: boms = [], isLoading } = useBomList(filter);
+  const approveBom = useApproveBom();
+  const deprecateBom = useDeprecateBom();
+  const reviseBom = useReviseBom();
 
   const handleCreate = () => {
-    setSelectedBom(null)
-    setViewState('create')
-  }
+    setSelectedBom(null);
+    setViewState('create');
+  };
 
   const handleEdit = (bom: BomTemplate) => {
-    setSelectedBom(bom)
-    setViewState('edit')
-  }
+    setSelectedBom(bom);
+    setViewState('edit');
+  };
 
   const handleSelect = (bom: BomTemplate) => {
-    setSelectedBom(bom)
-    setViewState('detail')
-  }
+    setSelectedBom(bom);
+    setViewState('detail');
+  };
 
   const handleCancelForm = () => {
-    setViewState('list')
-    setSelectedBom(null)
-  }
+    setViewState('list');
+    setSelectedBom(null);
+  };
 
   const handleSuccessForm = () => {
-    setViewState('list')
-    setSelectedBom(null)
-  }
+    setViewState('list');
+    setSelectedBom(null);
+  };
 
   // --- Task-based actions ---
   const handleApprove = async () => {
-    if (!selectedBom) return
-    const ok = window.confirm(`Bạn có chắc chắn muốn duyệt BOM ${selectedBom.code}?`)
-    if (!ok) return
+    if (!selectedBom) return;
+    const ok = window.confirm(
+      `Bạn có chắc chắn muốn duyệt BOM ${selectedBom.code}?`,
+    );
+    if (!ok) return;
     try {
-      await approveBom.mutateAsync({ id: selectedBom.id, reason: 'Phê duyệt ban đầu' })
-      setViewState('list')
+      await approveBom.mutateAsync({
+        id: selectedBom.id,
+        reason: 'Phê duyệt ban đầu',
+      });
+      setViewState('list');
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Có lỗi xảy ra')
+      alert(e instanceof Error ? e.message : 'Có lỗi xảy ra');
     }
-  }
+  };
 
   const handleDeprecate = async (bom?: BomTemplate) => {
-    const target = bom ?? selectedBom
-    if (!target) return
-    const reason = window.prompt(`Lý do ngưng áp dụng (báo phế) BOM ${target.code}?`)
-    if (!reason) return
+    const target = bom ?? selectedBom;
+    if (!target) return;
+    const reason = window.prompt(
+      `Lý do ngưng áp dụng (báo phế) BOM ${target.code}?`,
+    );
+    if (!reason) return;
     try {
-      await deprecateBom.mutateAsync({ id: target.id, reason })
-      setViewState('list')
-      setSelectedBom(null)
+      await deprecateBom.mutateAsync({
+        id: target.id,
+        reason,
+      });
+      setViewState('list');
+      setSelectedBom(null);
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Có lỗi xảy ra')
+      alert(e instanceof Error ? e.message : 'Có lỗi xảy ra');
     }
-  }
+  };
 
   const handleRevise = async () => {
-    if (!selectedBom) return
-    const reason = window.prompt(`Lý do tạo phiên bản mới từ BOM ${selectedBom.code}?`)
-    if (!reason) return
+    if (!selectedBom) return;
+    const reason = window.prompt(
+      `Lý do tạo phiên bản mới từ BOM ${selectedBom.code}?`,
+    );
+    if (!reason) return;
     try {
-      await reviseBom.mutateAsync({ id: selectedBom.id, reason })
-      setViewState('list')
+      await reviseBom.mutateAsync({
+        id: selectedBom.id,
+        reason,
+      });
+      setViewState('list');
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Có lỗi xảy ra')
+      alert(e instanceof Error ? e.message : 'Có lỗi xảy ra');
     }
-  }
+  };
 
   // --- Form / Detail views ---
   if (viewState === 'create' || viewState === 'edit') {
@@ -89,7 +111,7 @@ export function BomPage() {
         onSuccess={handleSuccessForm}
         onCancel={handleCancelForm}
       />
-    )
+    );
   }
 
   if (viewState === 'detail' && selectedBom) {
@@ -100,9 +122,11 @@ export function BomPage() {
         onApprove={handleApprove}
         onDeprecate={() => handleDeprecate()}
         onRevise={handleRevise}
-        isSaving={approveBom.isPending || deprecateBom.isPending || reviseBom.isPending}
+        isSaving={
+          approveBom.isPending || deprecateBom.isPending || reviseBom.isPending
+        }
       />
-    )
+    );
   }
 
   // --- List view (default) ---
@@ -135,7 +159,12 @@ export function BomPage() {
             type="text"
             placeholder="Mã hoặc tên BOM..."
             value={filter.search ?? ''}
-            onChange={(e) => setFilter({ ...filter, search: e.target.value || undefined })}
+            onChange={(e) =>
+              setFilter({
+                ...filter,
+                search: e.target.value || undefined,
+              })
+            }
           />
         </div>
 
@@ -145,11 +174,18 @@ export function BomPage() {
             id="bom-status"
             className="field-select"
             value={filter.status ?? ''}
-            onChange={(e) => setFilter({ ...filter, status: (e.target.value as BomStatus) || undefined })}
+            onChange={(e) =>
+              setFilter({
+                ...filter,
+                status: (e.target.value as BomStatus) || undefined,
+              })
+            }
           >
             <option value="">Tất cả</option>
             {BOM_STATUSES.map((s) => (
-              <option key={s} value={s}>{BOM_STATUS_LABELS[s]}</option>
+              <option key={s} value={s}>
+                {BOM_STATUS_LABELS[s]}
+              </option>
             ))}
           </select>
         </div>
@@ -176,7 +212,14 @@ export function BomPage() {
         ) : boms.length === 0 ? (
           <div className="table-empty">
             <p>Chưa có công thức định mức (BOM) nào.</p>
-            <p style={{ fontSize: '0.82rem', marginTop: '0.5rem' }}>Nhấn nút tạo để bắt đầu.</p>
+            <p
+              style={{
+                fontSize: '0.82rem',
+                marginTop: '0.5rem',
+              }}
+            >
+              Nhấn nút tạo để bắt đầu.
+            </p>
           </div>
         ) : (
           <BomList
@@ -188,5 +231,5 @@ export function BomPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

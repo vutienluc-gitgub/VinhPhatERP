@@ -8,9 +8,9 @@ Execute workflow based on task type selected by orchestrator.
 
 ## Input
 
-* task_type
-* entity (orders, shipments, drivers...)
-* ERP flow context
+- task_type
+- entity (orders, shipments, drivers...)
+- ERP flow context
 
 ---
 
@@ -18,12 +18,11 @@ Execute workflow based on task type selected by orchestrator.
 
 ### 1. Load ERP Flow
 
-* Read docs/erp-flow/{entity}.md
-* Extract:
-
-  * entities
-  * rules
-  * relationships
+- Read docs/erp-flow/{entity}.md
+- Extract:
+  - entities
+  - rules
+  - relationships
 
 ---
 
@@ -40,18 +39,18 @@ Execute workflow based on task type selected by orchestrator.
 
 ### 3. Spawn Agents
 
-* UI Agent
-* Frontend Agent
-* Backend Agent
-* Reviewer Agent
+- UI Agent
+- Frontend Agent
+- Backend Agent
+- Reviewer Agent
 
 ---
 
 ### 4. Enforce Rules
 
-* Must follow ERP rules
-* Must follow coding rules
-* Must follow design system
+- Must follow ERP rules
+- Must follow coding rules
+- Must follow design system
 
 ---
 
@@ -59,15 +58,15 @@ Execute workflow based on task type selected by orchestrator.
 
 Check:
 
-* Type safety
-* UI consistency
-* Business correctness
+- Type safety
+- UI consistency
+- Business correctness
 
 ---
 
 ## Output
 
-* workflow_used
-* components_created
-* api_created
-* validation_result
+- workflow_used
+- components_created
+- api_created
+- validation_result

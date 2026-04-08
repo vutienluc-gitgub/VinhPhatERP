@@ -1,9 +1,9 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
-import { Combobox } from '@/shared/components/Combobox'
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { Combobox } from '@/shared/components/Combobox';
 
 import {
   SUPPLIER_CATEGORIES,
@@ -12,15 +12,19 @@ import {
   SUPPLIER_STATUS_LABELS,
   supplierDefaults,
   supplierSchema,
-} from './suppliers.module'
-import type { SupplierFormValues } from './suppliers.module'
-import type { Supplier } from './types'
-import { useCreateSupplier, useNextSupplierCode, useUpdateSupplier } from './useSuppliers'
+} from './suppliers.module';
+import type { SupplierFormValues } from './suppliers.module';
+import type { Supplier } from './types';
+import {
+  useCreateSupplier,
+  useNextSupplierCode,
+  useUpdateSupplier,
+} from './useSuppliers';
 
 type SupplierFormProps = {
-  supplier: Supplier | null
-  onClose: () => void
-}
+  supplier: Supplier | null;
+  onClose: () => void;
+};
 
 function supplierToFormValues(supplier: Supplier): SupplierFormValues {
   return {
@@ -34,14 +38,14 @@ function supplierToFormValues(supplier: Supplier): SupplierFormValues {
     contact_person: supplier.contact_person ?? '',
     notes: supplier.notes ?? '',
     status: supplier.status,
-  }
+  };
 }
 
 export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
-  const isEditing = supplier !== null
-  const createMutation = useCreateSupplier()
-  const updateMutation = useUpdateSupplier()
-  const { data: nextCode } = useNextSupplierCode()
+  const isEditing = supplier !== null;
+  const createMutation = useCreateSupplier();
+  const updateMutation = useUpdateSupplier();
+  const { data: nextCode } = useNextSupplierCode();
 
   const {
     register,
@@ -52,34 +56,40 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<SupplierFormValues>({
     resolver: zodResolver(supplierSchema),
-    defaultValues: isEditing ? supplierToFormValues(supplier) : supplierDefaults,
-  })
+    defaultValues: isEditing
+      ? supplierToFormValues(supplier)
+      : supplierDefaults,
+  });
 
   useEffect(() => {
-    reset(isEditing ? supplierToFormValues(supplier) : supplierDefaults)
-  }, [supplier, isEditing, reset])
+    reset(isEditing ? supplierToFormValues(supplier) : supplierDefaults);
+  }, [supplier, isEditing, reset]);
 
   useEffect(() => {
     if (!isEditing && nextCode) {
-      setValue('code', nextCode)
+      setValue('code', nextCode);
     }
-  }, [isEditing, nextCode, setValue])
+  }, [isEditing, nextCode, setValue]);
 
   async function onSubmit(values: SupplierFormValues) {
     try {
       if (isEditing) {
-        await updateMutation.mutateAsync({ id: supplier.id, values })
+        await updateMutation.mutateAsync({
+          id: supplier.id,
+          values,
+        });
       } else {
-        await createMutation.mutateAsync(values)
+        await createMutation.mutateAsync(values);
       }
-      onClose()
+      onClose();
     } catch {
       // Lỗi hiển thị qua mutationError bên dưới
     }
   }
 
-  const mutationError = isEditing ? updateMutation.error : createMutation.error
-  const isPending = isSubmitting || createMutation.isPending || updateMutation.isPending
+  const mutationError = isEditing ? updateMutation.error : createMutation.error;
+  const isPending =
+    isSubmitting || createMutation.isPending || updateMutation.isPending;
 
   return (
     <AdaptiveSheet
@@ -88,10 +98,20 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
       title={isEditing ? `Sửa NCC: ${supplier.name}` : 'Thêm nhà cung cấp mới'}
       footer={
         <>
-          <button type="button" className="btn-secondary" onClick={onClose} disabled={isPending}>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={onClose}
+            disabled={isPending}
+          >
             Hủy
           </button>
-          <button type="submit" className="btn-primary" form="supplier-form" disabled={isPending}>
+          <button
+            type="submit"
+            className="btn-primary"
+            form="supplier-form"
+            disabled={isPending}
+          >
             {isPending ? 'Đang lưu…' : isEditing ? 'Cập nhật' : 'Tạo mới'}
           </button>
         </>
@@ -119,7 +139,9 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
                 readOnly={!isEditing}
                 {...register('code')}
               />
-              {errors.code && <span className="field-error">{errors.code.message}</span>}
+              {errors.code && (
+                <span className="field-error">{errors.code.message}</span>
+              )}
             </div>
 
             <div className="form-field">
@@ -133,7 +155,9 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
                 placeholder="VD: Công ty TNHH ABC"
                 {...register('name')}
               />
-              {errors.name && <span className="field-error">{errors.name.message}</span>}
+              {errors.name && (
+                <span className="field-error">{errors.name.message}</span>
+              )}
             </div>
           </div>
 
@@ -148,7 +172,9 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
                 placeholder="VD: 0901 234 567"
                 {...register('phone')}
               />
-              {errors.phone && <span className="field-error">{errors.phone.message}</span>}
+              {errors.phone && (
+                <span className="field-error">{errors.phone.message}</span>
+              )}
             </div>
 
             <div className="form-field">
@@ -160,7 +186,9 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
                 placeholder="VD: supplier@example.com"
                 {...register('email')}
               />
-              {errors.email && <span className="field-error">{errors.email.message}</span>}
+              {errors.email && (
+                <span className="field-error">{errors.email.message}</span>
+              )}
             </div>
           </div>
 
@@ -187,7 +215,9 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
                 placeholder="VD: 0312345678"
                 {...register('tax_code')}
               />
-              {errors.tax_code && <span className="field-error">{errors.tax_code.message}</span>}
+              {errors.tax_code && (
+                <span className="field-error">{errors.tax_code.message}</span>
+              )}
             </div>
 
             <div className="form-field">
@@ -215,7 +245,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
                   <Combobox
                     options={SUPPLIER_CATEGORIES.map((cat) => ({
                       value: cat,
-                      label: SUPPLIER_CATEGORY_LABELS[cat]
+                      label: SUPPLIER_CATEGORY_LABELS[cat],
                     }))}
                     value={field.value}
                     onChange={field.onChange}
@@ -223,7 +253,9 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
                   />
                 )}
               />
-              {errors.category && <span className="field-error">{errors.category.message}</span>}
+              {errors.category && (
+                <span className="field-error">{errors.category.message}</span>
+              )}
             </div>
 
             <div className="form-field">
@@ -235,7 +267,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
                   <Combobox
                     options={SUPPLIER_STATUSES.map((st) => ({
                       value: st,
-                      label: SUPPLIER_STATUS_LABELS[st]
+                      label: SUPPLIER_STATUS_LABELS[st],
                     }))}
                     value={field.value}
                     onChange={field.onChange}
@@ -259,5 +291,5 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
         </div>
       </form>
     </AdaptiveSheet>
-  )
+  );
 }

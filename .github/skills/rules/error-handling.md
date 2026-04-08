@@ -1,12 +1,14 @@
 # Error Handling
 
 ## Core Principles
+
 - **Never swallow errors silently** — always log or rethrow
 - Use a centralized error handler
 - Return consistent error responses to the API
 - Distinguish between operational errors (expected) and programmer errors (bugs)
 
 ## Custom Error Class
+
 ```js
 // src/utils/app-error.js
 class AppError extends Error {
@@ -24,6 +26,7 @@ export default AppError;
 ```
 
 ## Throwing Errors
+
 ```js
 // ✅ Use AppError for known operational errors
 if (!user) {
@@ -36,18 +39,23 @@ if (!hasPermission) {
 ```
 
 ## Async Error Handling
+
 ```js
 // ✅ Always wrap async route handlers
 const asyncHandler = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next);
 
-router.get('/users/:id', asyncHandler(async (req, res) => {
-  const user = await userService.findById(req.params.id);
-  res.json({ success: true, data: user });
-}));
+router.get(
+  '/users/:id',
+  asyncHandler(async (req, res) => {
+    const user = await userService.findById(req.params.id);
+    res.json({ success: true, data: user });
+  }),
+);
 ```
 
 ## Global Error Handler (Express)
+
 ```js
 // middleware/error-handler.js
 export function errorHandler(err, req, res, next) {
@@ -61,25 +69,29 @@ export function errorHandler(err, req, res, next) {
   if (!isOperational) {
     return res.status(500).json({
       success: false,
-      error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' }
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'An unexpected error occurred',
+      },
     });
   }
 
   res.status(statusCode).json({
     success: false,
-    error: { code: err.code, message: err.message }
+    error: { code: err.code, message: err.message },
   });
 }
 ```
 
 ## Validation Errors
+
 ```js
 // Use a validation library (Zod/Joi/Yup) and throw structured errors
 import { z } from 'zod';
 
 const userSchema = z.object({
   email: z.string().email(),
-  name: z.string().min(2)
+  name: z.string().min(2),
 });
 
 function validateUser(data) {

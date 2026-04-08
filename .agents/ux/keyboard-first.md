@@ -1,9 +1,11 @@
 # Keyboard-first UX System
 
 ## Goal
+
 Maximize data entry speed for ERP users
 
 ## Principles
+
 - Zero mouse required
 - Predictable focus flow
 - No interruption during typing
@@ -23,6 +25,7 @@ Maximize data entry speed for ERP users
 ## Navigation Behavior
 
 ### Basic
+
 - Tab → next field
 - Shift + Tab → previous field
 - Enter → confirm / next / add row
@@ -62,6 +65,7 @@ Maximize data entry speed for ERP users
 ## Expected Output
 
 Agent MUST generate:
+
 - Keyboard handlers
 - Focus control logic
 - Table navigation system

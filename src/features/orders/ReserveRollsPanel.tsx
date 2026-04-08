@@ -1,60 +1,83 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 
-import type { Order, OrderItem } from './types'
+import type { Order, OrderItem } from './types';
 import {
   useAvailableRolls,
   useReservedRollsForOrder,
   useReserveRoll,
   useUnreserveRoll,
-} from './useReserveRolls'
+} from './useReserveRolls';
 
 type ReserveRollsPanelProps = {
-  order: Order
-  onClose: () => void
-}
+  order: Order;
+  onClose: () => void;
+};
 
 function fmtNum(val: number | null, unit: string): string {
-  if (val === null || val === undefined) return '—'
-  return `${val.toLocaleString('vi-VN')} ${unit}`
+  if (val === null || val === undefined) return '—';
+  return `${val.toLocaleString('vi-VN')} ${unit}`;
 }
 
 export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
-  const items = order.order_items ?? []
-  const [selectedItem, setSelectedItem] = useState<OrderItem | null>(items[0] ?? null)
+  const items = order.order_items ?? [];
+  const [selectedItem, setSelectedItem] = useState<OrderItem | null>(
+    items[0] ?? null,
+  );
 
   const { data: reservedRolls = [], isLoading: loadingReserved } =
-    useReservedRollsForOrder(order.id)
+    useReservedRollsForOrder(order.id);
 
   const { data: availableRolls = [], isLoading: loadingAvailable } =
     useAvailableRolls(
       selectedItem?.fabric_type ?? '',
       selectedItem?.color_name ?? null,
-    )
+    );
 
-  const reserveMutation = useReserveRoll()
-  const unreserveMutation = useUnreserveRoll()
+  const reserveMutation = useReserveRoll();
+  const unreserveMutation = useUnreserveRoll();
 
   // Filter out already reserved rolls from available list
-  const reservedIds = new Set(reservedRolls.map((r) => r.id))
-  const filteredAvailable = availableRolls.filter((r) => !reservedIds.has(r.id))
+  const reservedIds = new Set(reservedRolls.map((r) => r.id));
+  const filteredAvailable = availableRolls.filter(
+    (r) => !reservedIds.has(r.id),
+  );
 
   // Calc totals for reserved rolls
-  const reservedLengthM = reservedRolls.reduce((s, r) => s + (r.length_m ?? 0), 0)
-  const reservedWeightKg = reservedRolls.reduce((s, r) => s + (r.weight_kg ?? 0), 0)
+  const reservedLengthM = reservedRolls.reduce(
+    (s, r) => s + (r.length_m ?? 0),
+    0,
+  );
+  const reservedWeightKg = reservedRolls.reduce(
+    (s, r) => s + (r.weight_kg ?? 0),
+    0,
+  );
 
   function handleReserve(rollId: string) {
-    reserveMutation.mutate({ rollId, orderId: order.id })
+    reserveMutation.mutate({
+      rollId,
+      orderId: order.id,
+    });
   }
 
   function handleUnreserve(rollId: string) {
-    unreserveMutation.mutate(rollId)
+    unreserveMutation.mutate(rollId);
   }
 
   return (
-    <AdaptiveSheet open={true} onClose={onClose} title={`🔒 Giữ cuộn — ${order.order_number}`}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    <AdaptiveSheet
+      open={true}
+      onClose={onClose}
+      title={`🔒 Giữ cuộn — ${order.order_number}`}
+    >
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+        }}
+      >
         {/* Order items as filter tabs */}
         {items.length > 1 && (
           <div className="reserve-item-tabs">
@@ -71,7 +94,8 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                   {item.color_name ? ` · ${item.color_name}` : ''}
                 </span>
                 <span className="reserve-tab-qty">
-                  {new Intl.NumberFormat('vi-VN').format(item.quantity)} {item.unit}
+                  {new Intl.NumberFormat('vi-VN').format(item.quantity)}{' '}
+                  {item.unit}
                 </span>
               </button>
             ))}
@@ -82,8 +106,17 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
         {items.length === 1 && selectedItem && (
           <div className="info-box">
             <strong>{selectedItem.fabric_type}</strong>
-            {selectedItem.color_name && <span> · {selectedItem.color_name}</span>}
-            <span className="td-muted"> — Cần: {new Intl.NumberFormat('vi-VN').format(selectedItem.quantity)} {selectedItem.unit}</span>
+            {selectedItem.color_name && (
+              <span> · {selectedItem.color_name}</span>
+            )}
+            <span className="td-muted">
+              {' '}
+              — Cần:{' '}
+              {new Intl.NumberFormat('vi-VN').format(
+                selectedItem.quantity,
+              )}{' '}
+              {selectedItem.unit}
+            </span>
           </div>
         )}
 
@@ -91,22 +124,33 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
         <div className="reserve-summary">
           <div className="reserve-summary-item">
             <span className="reserve-summary-label">Đã giữ</span>
-            <span className="reserve-summary-value">{reservedRolls.length} cuộn</span>
+            <span className="reserve-summary-value">
+              {reservedRolls.length} cuộn
+            </span>
           </div>
           <div className="reserve-summary-item">
             <span className="reserve-summary-label">Tổng dài</span>
-            <span className="reserve-summary-value">{fmtNum(reservedLengthM, 'm')}</span>
+            <span className="reserve-summary-value">
+              {fmtNum(reservedLengthM, 'm')}
+            </span>
           </div>
           <div className="reserve-summary-item">
             <span className="reserve-summary-label">Tổng nặng</span>
-            <span className="reserve-summary-value">{fmtNum(reservedWeightKg, 'kg')}</span>
+            <span className="reserve-summary-value">
+              {fmtNum(reservedWeightKg, 'kg')}
+            </span>
           </div>
         </div>
 
         {/* Reserved rolls table */}
         {reservedRolls.length > 0 && (
           <div>
-            <h4 style={{ fontSize: '0.88rem', marginBottom: '0.5rem' }}>
+            <h4
+              style={{
+                fontSize: '0.88rem',
+                marginBottom: '0.5rem',
+              }}
+            >
               Cuộn đang giữ ({reservedRolls.length})
             </h4>
             <div className="data-table-wrap">
@@ -124,22 +168,33 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                 <tbody>
                   {reservedRolls.map((roll) => (
                     <tr key={roll.id}>
-                      <td><strong>{roll.roll_number}</strong></td>
+                      <td>
+                        <strong>{roll.roll_number}</strong>
+                      </td>
                       <td className="td-muted">{roll.fabric_type}</td>
                       <td className="td-muted">{fmtNum(roll.length_m, 'm')}</td>
-                      <td className="td-muted">{fmtNum(roll.weight_kg, 'kg')}</td>
+                      <td className="td-muted">
+                        {fmtNum(roll.weight_kg, 'kg')}
+                      </td>
                       <td>
                         {roll.quality_grade ? (
-                          <span className={`grade-badge grade-${roll.quality_grade}`}>
+                          <span
+                            className={`grade-badge grade-${roll.quality_grade}`}
+                          >
                             {roll.quality_grade}
                           </span>
-                        ) : '—'}
+                        ) : (
+                          '—'
+                        )}
                       </td>
                       <td className="td-actions">
                         <button
                           className="btn-secondary"
                           type="button"
-                          style={{ fontSize: '0.8rem', padding: '0.3rem 0.6rem' }}
+                          style={{
+                            fontSize: '0.8rem',
+                            padding: '0.3rem 0.6rem',
+                          }}
                           onClick={() => handleUnreserve(roll.id)}
                           disabled={unreserveMutation.isPending}
                         >
@@ -156,10 +211,19 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
 
         {/* Available rolls to reserve */}
         <div>
-          <h4 style={{ fontSize: '0.88rem', marginBottom: '0.5rem' }}>
+          <h4
+            style={{
+              fontSize: '0.88rem',
+              marginBottom: '0.5rem',
+            }}
+          >
             Cuộn khả dụng
             {selectedItem && (
-              <span className="td-muted"> — {selectedItem.fabric_type}{selectedItem.color_name ? ` · ${selectedItem.color_name}` : ''}</span>
+              <span className="td-muted">
+                {' '}
+                — {selectedItem.fabric_type}
+                {selectedItem.color_name ? ` · ${selectedItem.color_name}` : ''}
+              </span>
             )}
           </h4>
 
@@ -167,7 +231,8 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
             <p className="table-empty">Đang tải...</p>
           ) : filteredAvailable.length === 0 ? (
             <p className="table-empty">
-              Không có cuộn nào khả dụng{selectedItem ? ` cho "${selectedItem.fabric_type}"` : ''}.
+              Không có cuộn nào khả dụng
+              {selectedItem ? ` cho "${selectedItem.fabric_type}"` : ''}.
             </p>
           ) : (
             <div className="data-table-wrap">
@@ -186,23 +251,38 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                 <tbody>
                   {filteredAvailable.map((roll) => (
                     <tr key={roll.id}>
-                      <td><strong>{roll.roll_number}</strong></td>
-                      <td className="td-muted hide-mobile">{roll.color_name ?? '—'}</td>
+                      <td>
+                        <strong>{roll.roll_number}</strong>
+                      </td>
+                      <td className="td-muted hide-mobile">
+                        {roll.color_name ?? '—'}
+                      </td>
                       <td className="td-muted">{fmtNum(roll.length_m, 'm')}</td>
-                      <td className="td-muted">{fmtNum(roll.weight_kg, 'kg')}</td>
+                      <td className="td-muted">
+                        {fmtNum(roll.weight_kg, 'kg')}
+                      </td>
                       <td className="hide-mobile">
                         {roll.quality_grade ? (
-                          <span className={`grade-badge grade-${roll.quality_grade}`}>
+                          <span
+                            className={`grade-badge grade-${roll.quality_grade}`}
+                          >
                             {roll.quality_grade}
                           </span>
-                        ) : '—'}
+                        ) : (
+                          '—'
+                        )}
                       </td>
-                      <td className="td-muted hide-mobile">{roll.warehouse_location ?? '—'}</td>
+                      <td className="td-muted hide-mobile">
+                        {roll.warehouse_location ?? '—'}
+                      </td>
                       <td className="td-actions">
                         <button
                           className="primary-button"
                           type="button"
-                          style={{ fontSize: '0.8rem', padding: '0.3rem 0.6rem' }}
+                          style={{
+                            fontSize: '0.8rem',
+                            padding: '0.3rem 0.6rem',
+                          }}
                           onClick={() => handleReserve(roll.id)}
                           disabled={reserveMutation.isPending}
                         >
@@ -219,17 +299,32 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
 
         {(reserveMutation.error || unreserveMutation.error) && (
           <p className="error-inline" style={{ marginTop: '0.75rem' }}>
-            Lỗi: {((reserveMutation.error ?? unreserveMutation.error) as Error).message}
+            Lỗi:{' '}
+            {
+              ((reserveMutation.error ?? unreserveMutation.error) as Error)
+                .message
+            }
           </p>
         )}
       </div>
 
       {/* Footer using modal-footer convention inside sheet */}
-      <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none' }}>
-        <button className="btn-secondary btn-standard" type="button" onClick={onClose}>
+      <div
+        className="modal-footer"
+        style={{
+          marginTop: '1.5rem',
+          padding: 0,
+          border: 'none',
+        }}
+      >
+        <button
+          className="btn-secondary btn-standard"
+          type="button"
+          onClick={onClose}
+        >
           Đóng
         </button>
       </div>
     </AdaptiveSheet>
-  )
+  );
 }

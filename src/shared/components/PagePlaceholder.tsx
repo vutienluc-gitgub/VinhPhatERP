@@ -1,19 +1,19 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from 'react';
 
 type SummaryItem = {
-  label: string
-  value: string
-}
+  label: string;
+  value: string;
+};
 
 type PagePlaceholderProps = {
-  title: string
-  description: string
-  highlights: string[]
-  resources: string[]
-  summary?: SummaryItem[]
-  badge?: string
-  aside?: ReactNode
-}
+  title: string;
+  description: string;
+  highlights: string[];
+  resources: string[];
+  summary?: SummaryItem[];
+  badge?: string;
+  aside?: ReactNode;
+};
 
 export function PagePlaceholder({
   title,
@@ -62,5 +62,5 @@ export function PagePlaceholder({
         {aside}
       </div>
     </section>
-  )
+  );
 }

@@ -1,5 +1,5 @@
-import { supabase } from '@/services/supabase/client'
-import { resolveTenant } from '@/shared/context/TenantContext'
+import { supabase } from '@/services/supabase/client';
+import { resolveTenant } from '@/shared/context/TenantContext';
 
 /**
  * Tenant-aware Supabase client helper.
@@ -27,41 +27,45 @@ import { resolveTenant } from '@/shared/context/TenantContext'
  *   await supabase.from('order_items').insert(items.map(withTenantId))
  */
 
-let cachedTenantId: string | null = null
+let cachedTenantId: string | null = null;
 
 /**
  * Get the current tenant's database ID.
  * Fetches once then caches for the session.
  */
 export async function getTenantId(): Promise<string> {
-  if (cachedTenantId) return cachedTenantId
+  if (cachedTenantId) return cachedTenantId;
 
-  const tenant = resolveTenant()
+  const tenant = resolveTenant();
 
   const { data, error } = await supabase
     .from('tenants')
     .select('id')
     .eq('slug', tenant.slug)
-    .single()
+    .single();
 
   if (error || !data) {
-    console.error('[Tenant] Could not resolve tenant_id for slug:', tenant.slug, error)
+    console.error(
+      '[Tenant] Could not resolve tenant_id for slug:',
+      tenant.slug,
+      error,
+    );
     const { data: fallback } = await supabase
       .from('tenants')
       .select('id')
       .eq('slug', 'default')
-      .single()
+      .single();
 
     if (fallback) {
-      cachedTenantId = fallback.id
-      return fallback.id
+      cachedTenantId = fallback.id;
+      return fallback.id;
     }
 
-    throw new Error(`Tenant "${tenant.slug}" not found in database`)
+    throw new Error(`Tenant "${tenant.slug}" not found in database`);
   }
 
-  cachedTenantId = data.id
-  return data.id
+  cachedTenantId = data.id;
+  return data.id;
 }
 
 /**
@@ -69,7 +73,7 @@ export async function getTenantId(): Promise<string> {
  * Use this when you're sure tenant has been resolved already.
  */
 export function getCachedTenantId(): string | null {
-  return cachedTenantId
+  return cachedTenantId;
 }
 
 /**
@@ -80,17 +84,24 @@ export function getCachedTenantId(): string | null {
  *   await getTenantId() // populate cache on app init
  *   await supabase.from('orders').insert(withTenantId({ order_number: 'SO-001' }))
  */
-export function withTenantId<T extends Record<string, unknown>>(row: T): T & { tenant_id: string } {
-  const tenantId = cachedTenantId
+export function withTenantId<T extends Record<string, unknown>>(
+  row: T,
+): T & { tenant_id: string } {
+  const tenantId = cachedTenantId;
   if (!tenantId) {
-    throw new Error('[Tenant] tenant_id not resolved yet. Call getTenantId() first.')
+    throw new Error(
+      '[Tenant] tenant_id not resolved yet. Call getTenantId() first.',
+    );
   }
-  return { ...row, tenant_id: tenantId }
+  return {
+    ...row,
+    tenant_id: tenantId,
+  };
 }
 
 /**
  * Reset cached tenant (for testing or tenant switching).
  */
 export function resetTenantCache(): void {
-  cachedTenantId = null
+  cachedTenantId = null;
 }

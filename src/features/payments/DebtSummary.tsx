@@ -1,20 +1,20 @@
-import { useDebtSummary } from './usePayments'
+import { useDebtSummary } from './usePayments';
 
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value)
+  return new Intl.NumberFormat('vi-VN').format(value);
 }
 
 export function DebtSummary() {
-  const { data: debts = [], isLoading, error } = useDebtSummary()
+  const { data: debts = [], isLoading, error } = useDebtSummary();
 
-  const totalDebt = debts.reduce((sum, d) => sum + d.balance_due, 0)
+  const totalDebt = debts.reduce((sum, d) => sum + d.balance_due, 0);
 
   if (error) {
     return (
       <div className="panel-card">
         <p className="error-inline">Lỗi: {(error as Error).message}</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -80,5 +80,5 @@ export function DebtSummary() {
         )}
       </div>
     </div>
-  )
+  );
 }
