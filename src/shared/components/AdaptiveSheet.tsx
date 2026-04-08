@@ -1,24 +1,24 @@
-import { useCallback, useEffect, useRef, type ReactNode } from 'react'
-import { createPortal } from 'react-dom'
+import { useCallback, useEffect, useRef, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 
 type AdaptiveSheetProps = {
   /** Hiển thị hay ẩn */
-  open: boolean
+  open: boolean;
   /** Callback khi đóng */
-  onClose: () => void
+  onClose: () => void;
   /** Tiêu đề hiển thị trên Header */
-  title: string
+  title: string;
   /** Nội dung chính (cuộn được) */
-  children: ReactNode
+  children: ReactNode;
   /** Các nút bấm ở Footer (Sticky) */
-  footer?: ReactNode
+  footer?: ReactNode;
   /** Thông tin bước hiện tại (hiển thị Progress Indicator) */
-  stepInfo?: { current: number; total: number }
+  stepInfo?: { current: number; total: number };
   /** ID cho aria-labelledby */
-  titleId?: string
+  titleId?: string;
   /** Độ rộng tối đa của modal trên Desktop */
-  maxWidth?: number | string
-}
+  maxWidth?: number | string;
+};
 
 /**
  * AdaptiveSheet — 1 Component, 2 Cách hiển thị.
@@ -39,73 +39,73 @@ export function AdaptiveSheet({
   titleId = 'adaptive-sheet-title',
   maxWidth,
 }: AdaptiveSheetProps) {
-  const sheetRef = useRef<HTMLDivElement>(null)
+  const sheetRef = useRef<HTMLDivElement>(null);
 
   // Trap focus bên trong sheet
   useEffect(() => {
-    if (!open) return
+    if (!open) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose()
-        return
+        onClose();
+        return;
       }
 
       // Trap Tab focus
       if (e.key === 'Tab' && sheetRef.current) {
         const focusable = sheetRef.current.querySelectorAll<HTMLElement>(
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        )
-        if (focusable.length === 0) return
+        );
+        if (focusable.length === 0) return;
 
-        const first = focusable[0]
-        const last = focusable[focusable.length - 1]
-        if (!first || !last) return
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (!first || !last) return;
 
         if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault()
-          last.focus()
+          e.preventDefault();
+          last.focus();
         } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault()
-          first.focus()
+          e.preventDefault();
+          first.focus();
         }
       }
-    }
+    };
 
-    document.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('keydown', handleKeyDown);
     // Chặn scroll body khi sheet mở
-    document.body.style.overflow = 'hidden'
+    document.body.style.overflow = 'hidden';
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = ''
-    }
-  }, [open, onClose])
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [open, onClose]);
 
   // Auto-focus vào sheet khi mở
   useEffect(() => {
     if (open && sheetRef.current) {
       const firstInput = sheetRef.current.querySelector<HTMLElement>(
         'input:not([type="hidden"]), select, textarea',
-      )
+      );
       if (firstInput) {
         // Delay nhỏ để animation kịp chạy
-        requestAnimationFrame(() => firstInput.focus())
+        requestAnimationFrame(() => firstInput.focus());
       }
     }
-  }, [open])
+  }, [open]);
 
   const handleOverlayClick = useCallback(
     (e: React.MouseEvent) => {
-      if (e.target === e.currentTarget) onClose()
+      if (e.target === e.currentTarget) onClose();
     },
     [onClose],
-  )
+  );
 
-  if (!open) return null
+  if (!open) return null;
 
-  const mount = document.getElementById('modal-root')
-  if (!mount) return null
+  const mount = document.getElementById('modal-root');
+  if (!mount) return null;
 
   return createPortal(
     <div className="modal-overlay" onClick={handleOverlayClick}>
@@ -142,7 +142,9 @@ export function AdaptiveSheet({
           <div className="sheet-progress">
             <div
               className="sheet-progress-bar"
-              style={{ width: `${((stepInfo.current + 1) / stepInfo.total) * 100}%` }}
+              style={{
+                width: `${((stepInfo.current + 1) / stepInfo.total) * 100}%`,
+              }}
             />
           </div>
         )}
@@ -155,5 +157,5 @@ export function AdaptiveSheet({
       </div>
     </div>,
     mount,
-  )
+  );
 }

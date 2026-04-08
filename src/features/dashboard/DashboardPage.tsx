@@ -1,42 +1,67 @@
-import { KpiCard, KpiGrid } from '@/shared/components/KpiCard'
-import { formatCurrency } from '@/shared/utils/format'
+import { KpiCard, KpiGrid } from '@/shared/components/KpiCard';
+import { formatCurrency } from '@/shared/utils/format';
 
-import { CustomerSourceChart } from './CustomerSourceChart'
-import { PendingTasksCard } from './PendingTasksCard'
-import { RecentOrdersCard } from './RecentOrdersCard'
-import { useDashboardStats, usePendingTasks, useRecentOrders, useCustomerSources } from './useDashboardData'
-
+import { CustomerSourceChart } from './CustomerSourceChart';
+import { PendingTasksCard } from './PendingTasksCard';
+import { RecentOrdersCard } from './RecentOrdersCard';
+import {
+  useDashboardStats,
+  usePendingTasks,
+  useRecentOrders,
+  useCustomerSources,
+} from './useDashboardData';
 
 function DashboardSkeleton() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1rem',
+      }}
+    >
       <KpiGrid>
-        {[1, 2, 3, 4].map(i => (
+        {[1, 2, 3, 4].map((i) => (
           <div key={i} className="skeleton-card" />
         ))}
       </KpiGrid>
       <KpiGrid>
-        {[5, 6, 7, 8].map(i => (
+        {[5, 6, 7, 8].map((i) => (
           <div key={i} className="skeleton-card" />
         ))}
       </KpiGrid>
     </div>
-  )
+  );
 }
 
 export function DashboardPage() {
-  const { data: stats, isLoading: statsLoading } = useDashboardStats()
-  const pendingTasks = usePendingTasks(stats)
-  const { data: recentOrders, isLoading: ordersLoading } = useRecentOrders()
-  const { data: customerSources, isLoading: sourcesLoading } = useCustomerSources()
+  const { data: stats, isLoading: statsLoading } = useDashboardStats();
+  const pendingTasks = usePendingTasks(stats);
+  const { data: recentOrders, isLoading: ordersLoading } = useRecentOrders();
+  const { data: customerSources, isLoading: sourcesLoading } =
+    useCustomerSources();
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', padding: '0 0.5rem' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1.5rem',
+        width: '100%',
+        padding: '0 0.5rem',
+      }}
+    >
       {/* ── KPI Cards ── */}
       {statsLoading ? (
         <DashboardSkeleton />
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.75rem',
+          }}
+        >
           {/* Primary row */}
           <KpiGrid>
             <KpiCard
@@ -82,7 +107,12 @@ export function DashboardPage() {
             <KpiCard
               icon="📊"
               label="Tỷ lệ chốt đơn"
-              value={stats?.conversionRate !== null && stats?.conversionRate !== undefined ? `${stats.conversionRate}%` : '—'}
+              value={
+                stats?.conversionRate !== null &&
+                stats?.conversionRate !== undefined
+                  ? `${stats.conversionRate}%`
+                  : '—'
+              }
               color="#0b6bcb"
             />
             <KpiCard
@@ -96,15 +126,24 @@ export function DashboardPage() {
       )}
 
       {/* ── Two-column widgets ── */}
-      <div className="dashboard-grid dashboard-grid--2col" style={{ gap: '1.5rem' }}>
+      <div
+        className="dashboard-grid dashboard-grid--2col"
+        style={{ gap: '1.5rem' }}
+      >
         <PendingTasksCard tasks={pendingTasks} />
-        <RecentOrdersCard orders={recentOrders ?? []} isLoading={ordersLoading} />
+        <RecentOrdersCard
+          orders={recentOrders ?? []}
+          isLoading={ordersLoading}
+        />
       </div>
 
       {/* ── Customer Sources ── */}
       <div style={{ marginTop: '0.5rem' }}>
-        <CustomerSourceChart sources={customerSources ?? []} isLoading={sourcesLoading} />
+        <CustomerSourceChart
+          sources={customerSources ?? []}
+          isLoading={sourcesLoading}
+        />
       </div>
     </div>
-  )
+  );
 }

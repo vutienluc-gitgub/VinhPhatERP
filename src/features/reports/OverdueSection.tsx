@@ -1,18 +1,17 @@
-import type { OverdueOrderRow } from '@/api/reports.api'
-
-import { KpiCard, KpiGrid } from '@/shared/components/KpiCard'
+import type { OverdueOrderRow } from '@/api/reports.api';
+import { KpiCard, KpiGrid } from '@/shared/components/KpiCard';
 
 type OverdueSectionProps = {
-  data: OverdueOrderRow[]
-  isLoading: boolean
-}
+  data: OverdueOrderRow[];
+  isLoading: boolean;
+};
 
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value)
+  return new Intl.NumberFormat('vi-VN').format(value);
 }
 
 export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
-  const severeCount = data.filter((r) => r.days_overdue > 7).length
+  const severeCount = data.filter((r) => r.days_overdue > 7).length;
 
   return (
     <div className="panel-card card-flush">
@@ -65,17 +64,31 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
             <tbody>
               {data.map((row) => (
                 <tr key={row.order_id}>
-                  <td><strong>{row.order_number}</strong></td>
+                  <td>
+                    <strong>{row.order_number}</strong>
+                  </td>
                   <td className="hide-mobile">{row.customer_name}</td>
                   <td className="td-muted">{row.delivery_date}</td>
-                  <td className="numeric-cell" style={{
-                    color: row.days_overdue > 7 ? 'var(--danger)' : 'var(--warning-strong)',
-                    fontWeight: row.days_overdue > 7 ? 700 : 600,
-                  }}>
+                  <td
+                    className="numeric-cell"
+                    style={{
+                      color:
+                        row.days_overdue > 7
+                          ? 'var(--danger)'
+                          : 'var(--warning-strong)',
+                      fontWeight: row.days_overdue > 7 ? 700 : 600,
+                    }}
+                  >
                     {row.days_overdue} ngày
                   </td>
-                  <td className="numeric-cell hide-mobile">{formatCurrency(row.total_amount)}</td>
-                  <td className={row.balance_due > 0 ? 'numeric-debt' : 'numeric-paid'}>
+                  <td className="numeric-cell hide-mobile">
+                    {formatCurrency(row.total_amount)}
+                  </td>
+                  <td
+                    className={
+                      row.balance_due > 0 ? 'numeric-debt' : 'numeric-paid'
+                    }
+                  >
                     {formatCurrency(row.balance_due)}
                   </td>
                 </tr>
@@ -85,5 +98,5 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
         )}
       </div>
     </div>
-  )
+  );
 }

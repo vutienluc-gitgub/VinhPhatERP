@@ -51,16 +51,16 @@
 
 ### Mối liên kết giữa các module
 
-| Từ module       | Sang module        | Dữ liệu liên kết                         |
-| --------------- | ------------------ | ----------------------------------------- |
-| Customers       | Orders             | `customer_id` — ai đặt hàng              |
-| Orders          | Yarn Receipts      | Gián tiếp — biết cần nhập sợi gì         |
-| Yarn Receipts   | Raw Fabric         | `yarn_receipt_id` — sợi nào dệt cuộn nào |
-| Raw Fabric      | Finished Fabric    | `raw_roll_id` — mộc nào thành phẩm nào   |
-| Orders          | Order Progress     | `order_id` — tiến độ 7 công đoạn          |
-| Orders          | Shipments          | `order_id` — xuất hàng theo đơn           |
-| Finished Fabric | Shipment Items     | `finished_roll_id` — cuộn nào đã xuất     |
-| Orders          | Payments           | `order_id` — thu tiền theo đơn            |
+| Từ module       | Sang module     | Dữ liệu liên kết                         |
+| --------------- | --------------- | ---------------------------------------- |
+| Customers       | Orders          | `customer_id` — ai đặt hàng              |
+| Orders          | Yarn Receipts   | Gián tiếp — biết cần nhập sợi gì         |
+| Yarn Receipts   | Raw Fabric      | `yarn_receipt_id` — sợi nào dệt cuộn nào |
+| Raw Fabric      | Finished Fabric | `raw_roll_id` — mộc nào thành phẩm nào   |
+| Orders          | Order Progress  | `order_id` — tiến độ 7 công đoạn         |
+| Orders          | Shipments       | `order_id` — xuất hàng theo đơn          |
+| Finished Fabric | Shipment Items  | `finished_roll_id` — cuộn nào đã xuất    |
+| Orders          | Payments        | `order_id` — thu tiền theo đơn           |
 
 ---
 
@@ -96,23 +96,23 @@ Quản lý xem xét → Xác nhận đơn (confirmed)
 
 **Form Header:**
 
-| Trường           | Kiểu       | Bắt buộc | Ghi chú                                      |
-| ---------------- | ---------- | -------- | -------------------------------------------- |
-| Số đơn hàng      | text       | ✅       | Auto-gen từ prefix `DH` + số tự tăng         |
-| Khách hàng       | select     | ✅       | Lookup từ bảng customers, chỉ chọn `active`  |
-| Ngày đặt hàng    | date       | ✅       | Default: hôm nay                              |
-| Ngày giao dự kiến | date      | ❌       | Phải >= ngày đặt hàng                         |
-| Ghi chú          | textarea   | ❌       | Tối đa 500 ký tự                              |
+| Trường            | Kiểu     | Bắt buộc | Ghi chú                                     |
+| ----------------- | -------- | -------- | ------------------------------------------- |
+| Số đơn hàng       | text     | ✅       | Auto-gen từ prefix `DH` + số tự tăng        |
+| Khách hàng        | select   | ✅       | Lookup từ bảng customers, chỉ chọn `active` |
+| Ngày đặt hàng     | date     | ✅       | Default: hôm nay                            |
+| Ngày giao dự kiến | date     | ❌       | Phải >= ngày đặt hàng                       |
+| Ghi chú           | textarea | ❌       | Tối đa 500 ký tự                            |
 
 **Form Line Items (repeater):**
 
-| Trường           | Kiểu       | Bắt buộc | Ghi chú                                      |
-| ---------------- | ---------- | -------- | -------------------------------------------- |
-| Loại vải         | text       | ✅       | Ví dụ: "Cotton 60/40", "PE 100%"             |
-| Màu              | text       | ❌       | Tên màu hoặc mã màu                          |
-| Số lượng (m)     | number     | ✅       | Phải > 0                                     |
-| Đơn giá (đ/m)    | number     | ✅       | Phải >= 0                                    |
-| Thành tiền       | computed   | —        | = số lượng × đơn giá (auto)                  |
+| Trường        | Kiểu     | Bắt buộc | Ghi chú                          |
+| ------------- | -------- | -------- | -------------------------------- |
+| Loại vải      | text     | ✅       | Ví dụ: "Cotton 60/40", "PE 100%" |
+| Màu           | text     | ❌       | Tên màu hoặc mã màu              |
+| Số lượng (m)  | number   | ✅       | Phải > 0                         |
+| Đơn giá (đ/m) | number   | ✅       | Phải >= 0                        |
+| Thành tiền    | computed | —        | = số lượng × đơn giá (auto)      |
 
 **Hành động trên form:**
 
@@ -327,24 +327,24 @@ Kiểm phẩm thành phẩm
 
 ### 5.1 Bảy công đoạn sản xuất
 
-| # | Stage          | Tên tiếng Việt     | Mô tả                                    |
-|---|----------------|--------------------|--------------------------------------------|
-| 1 | `warping`      | Mắc sợi           | Chuẩn bị sợi dọc trên khung dệt           |
-| 2 | `weaving`      | Dệt               | Dệt vải trên máy dệt                      |
-| 3 | `greige_check` | Kiểm vải mộc       | Kiểm tra chất lượng vải mộc sau dệt       |
-| 4 | `dyeing`       | Nhuộm              | Nhuộm màu theo yêu cầu đơn hàng           |
-| 5 | `finishing`    | Hoàn tất           | Xử lý bề mặt, co rút, ổn định vải        |
-| 6 | `final_check`  | Kiểm thành phẩm    | Kiểm tra chất lượng vải thành phẩm        |
-| 7 | `packing`      | Đóng gói           | Đóng gói, dán nhãn, sẵn sàng giao hàng   |
+| #   | Stage          | Tên tiếng Việt  | Mô tả                                  |
+| --- | -------------- | --------------- | -------------------------------------- |
+| 1   | `warping`      | Mắc sợi         | Chuẩn bị sợi dọc trên khung dệt        |
+| 2   | `weaving`      | Dệt             | Dệt vải trên máy dệt                   |
+| 3   | `greige_check` | Kiểm vải mộc    | Kiểm tra chất lượng vải mộc sau dệt    |
+| 4   | `dyeing`       | Nhuộm           | Nhuộm màu theo yêu cầu đơn hàng        |
+| 5   | `finishing`    | Hoàn tất        | Xử lý bề mặt, co rút, ổn định vải      |
+| 6   | `final_check`  | Kiểm thành phẩm | Kiểm tra chất lượng vải thành phẩm     |
+| 7   | `packing`      | Đóng gói        | Đóng gói, dán nhãn, sẵn sàng giao hàng |
 
 ### 5.2 Trạng thái từng công đoạn
 
-| Trạng thái    | Tên tiếng Việt  | Ý nghĩa                              |
-| ------------- | --------------- | ------------------------------------- |
-| `pending`     | Chờ xử lý      | Công đoạn chưa bắt đầu               |
-| `in_progress` | Đang làm        | Công đoạn đang được thực hiện         |
-| `done`        | Hoàn thành      | Công đoạn đã xong                     |
-| `skipped`     | Bỏ qua          | Công đoạn không áp dụng cho đơn này  |
+| Trạng thái    | Tên tiếng Việt | Ý nghĩa                             |
+| ------------- | -------------- | ----------------------------------- |
+| `pending`     | Chờ xử lý      | Công đoạn chưa bắt đầu              |
+| `in_progress` | Đang làm       | Công đoạn đang được thực hiện       |
+| `done`        | Hoàn thành     | Công đoạn đã xong                   |
+| `skipped`     | Bỏ qua         | Công đoạn không áp dụng cho đơn này |
 
 ### 5.3 Luồng cập nhật tiến độ hàng ngày
 
@@ -428,11 +428,11 @@ Phần trăm = (stage đã done / tổng stage áp dụng) × 100
 
 ### 5.7 Cảnh báo trễ hạn
 
-| Điều kiện                                                | Mức cảnh báo        | Hành động                        |
-| ------------------------------------------------------- | -------------------- | -------------------------------- |
-| `actual_date > planned_date` cho bất kỳ stage nào       | ⚠️ Stage trễ         | Hiển thị badge trên timeline     |
-| `delivery_date` còn ≤ 3 ngày mà chưa xong `packing`    | 🔴 Sắp trễ giao hàng | Hiển thị trên dashboard          |
-| `delivery_date` đã qua mà chưa tạo shipment             | 🔴 Đã trễ giao hàng  | Hiển thị trên danh sách overdue  |
+| Điều kiện                                           | Mức cảnh báo         | Hành động                       |
+| --------------------------------------------------- | -------------------- | ------------------------------- |
+| `actual_date > planned_date` cho bất kỳ stage nào   | ⚠️ Stage trễ         | Hiển thị badge trên timeline    |
+| `delivery_date` còn ≤ 3 ngày mà chưa xong `packing` | 🔴 Sắp trễ giao hàng | Hiển thị trên dashboard         |
+| `delivery_date` đã qua mà chưa tạo shipment         | 🔴 Đã trễ giao hàng  | Hiển thị trên danh sách overdue |
 
 ### 5.8 Business Rules — Tiến độ
 
@@ -550,13 +550,13 @@ Bước 4: Cập nhật DB
 
 ### 6.5 Trạng thái phiếu xuất
 
-| Trạng thái             | Ý nghĩa                                  | Cho phép sửa? |
-| ---------------------- | ----------------------------------------- | ------------- |
-| `preparing`            | Đang chuẩn bị, chưa giao                 | ✅ Được sửa   |
-| `shipped`              | Đã xuất kho, đang vận chuyển             | ❌ Khoá       |
-| `delivered`            | Khách đã nhận hàng                        | ❌ Khoá       |
-| `partially_returned`   | Khách trả lại một phần                    | ❌ Khoá       |
-| `returned`             | Khách trả lại toàn bộ                     | ❌ Khoá       |
+| Trạng thái           | Ý nghĩa                      | Cho phép sửa? |
+| -------------------- | ---------------------------- | ------------- |
+| `preparing`          | Đang chuẩn bị, chưa giao     | ✅ Được sửa   |
+| `shipped`            | Đã xuất kho, đang vận chuyển | ❌ Khoá       |
+| `delivered`          | Khách đã nhận hàng           | ❌ Khoá       |
+| `partially_returned` | Khách trả lại một phần       | ❌ Khoá       |
+| `returned`           | Khách trả lại toàn bộ        | ❌ Khoá       |
 
 ### 6.6 Business Rules — Xuất hàng
 
@@ -604,16 +604,16 @@ Theo dõi công nợ trên dashboard
 
 ### 7.2 Form phiếu thu tiền
 
-| Trường            | Kiểu       | Bắt buộc | Ghi chú                                     |
-| ----------------- | ---------- | -------- | ------------------------------------------- |
-| Số phiếu thu      | text       | ✅       | Auto-gen từ prefix `TT`                     |
-| Đơn hàng          | select     | ✅       | Auto-fill nếu tạo từ chi tiết đơn           |
-| Khách hàng        | computed   | ✅       | Tự lấy từ đơn hàng                          |
-| Ngày thu          | date       | ✅       | Default: hôm nay                             |
-| Số tiền           | number     | ✅       | > 0, mặc định = balance_due                 |
-| Phương thức       | select     | ✅       | cash / bank_transfer / check / other         |
-| Số tham chiếu     | text       | ❌       | Mã GD ngân hàng, số séc, v.v.               |
-| Ghi chú           | textarea   | ❌       |                                              |
+| Trường        | Kiểu     | Bắt buộc | Ghi chú                              |
+| ------------- | -------- | -------- | ------------------------------------ |
+| Số phiếu thu  | text     | ✅       | Auto-gen từ prefix `TT`              |
+| Đơn hàng      | select   | ✅       | Auto-fill nếu tạo từ chi tiết đơn    |
+| Khách hàng    | computed | ✅       | Tự lấy từ đơn hàng                   |
+| Ngày thu      | date     | ✅       | Default: hôm nay                     |
+| Số tiền       | number   | ✅       | > 0, mặc định = balance_due          |
+| Phương thức   | select   | ✅       | cash / bank_transfer / check / other |
+| Số tham chiếu | text     | ❌       | Mã GD ngân hàng, số séc, v.v.        |
+| Ghi chú       | textarea | ❌       |                                      |
 
 ### 7.3 Cơ chế đồng bộ `paid_amount`
 
@@ -707,14 +707,14 @@ WHERE id = {order_id};
 
 ### 8.2 Điều kiện chuyển trạng thái
 
-| Từ            | Sang           | Điều kiện                                           | Ai được làm         |
-| ------------- | -------------- | --------------------------------------------------- | ------------------- |
-| `draft`       | `confirmed`    | Có ≥ 1 item, khách hàng active                      | staff, manager, admin |
-| `confirmed`   | `in_progress`  | Tất cả progress `done`/`skipped` HOẶC thủ công      | staff, manager, admin |
-| `in_progress` | `completed`    | Tổng đã xuất = tổng đặt VÀ `paid_amount >= total`   | manager, admin       |
-| bất kỳ        | `cancelled`    | Không có shipment `shipped`/`delivered`              | manager, admin       |
-| `draft`       | `draft` (sửa)  | Luôn cho phép                                       | staff, manager, admin |
-| `confirmed`   | `confirmed` (sửa) | Chỉ sửa ghi chú, ngày giao                       | manager, admin       |
+| Từ            | Sang              | Điều kiện                                         | Ai được làm           |
+| ------------- | ----------------- | ------------------------------------------------- | --------------------- |
+| `draft`       | `confirmed`       | Có ≥ 1 item, khách hàng active                    | staff, manager, admin |
+| `confirmed`   | `in_progress`     | Tất cả progress `done`/`skipped` HOẶC thủ công    | staff, manager, admin |
+| `in_progress` | `completed`       | Tổng đã xuất = tổng đặt VÀ `paid_amount >= total` | manager, admin        |
+| bất kỳ        | `cancelled`       | Không có shipment `shipped`/`delivered`           | manager, admin        |
+| `draft`       | `draft` (sửa)     | Luôn cho phép                                     | staff, manager, admin |
+| `confirmed`   | `confirmed` (sửa) | Chỉ sửa ghi chú, ngày giao                        | manager, admin        |
 
 ### 8.3 Khi huỷ đơn hàng
 
@@ -732,13 +732,13 @@ WHERE id = {order_id};
 
 **Bộ lọc:**
 
-| Filter            | Kiểu          | Options                                            |
-| ----------------- | ------------- | -------------------------------------------------- |
-| Tìm kiếm          | text          | Theo số đơn, tên khách                              |
-| Trạng thái        | chip/select   | Tất cả / Nháp / Đã xác nhận / Đang xử lý / Hoàn thành / Đã huỷ |
-| Khách hàng        | select        | Dropdown khách hàng                                 |
-| Ngày đặt          | date range    | Từ ngày — Đến ngày                                  |
-| Sắp trễ giao hàng | toggle       | Chỉ hiện đơn delivery_date ≤ today + 3              |
+| Filter            | Kiểu        | Options                                                        |
+| ----------------- | ----------- | -------------------------------------------------------------- |
+| Tìm kiếm          | text        | Theo số đơn, tên khách                                         |
+| Trạng thái        | chip/select | Tất cả / Nháp / Đã xác nhận / Đang xử lý / Hoàn thành / Đã huỷ |
+| Khách hàng        | select      | Dropdown khách hàng                                            |
+| Ngày đặt          | date range  | Từ ngày — Đến ngày                                             |
+| Sắp trễ giao hàng | toggle      | Chỉ hiện đơn delivery_date ≤ today + 3                         |
 
 **Card đơn hàng (mobile):**
 
@@ -784,15 +784,15 @@ WHERE id = {order_id};
 
 ### 9.3 Các action chính trên chi tiết đơn hàng
 
-| Action              | Điều kiện                       | Kết quả                          |
-| ------------------- | ------------------------------- | -------------------------------- |
-| Sửa đơn            | Đơn ở `draft`                   | Mở form chỉnh sửa                |
-| Xác nhận đơn       | Đơn ở `draft`                   | Chuyển `confirmed`, tạo progress |
-| Cập nhật tiến độ   | Đơn ở `confirmed`/`in_progress` | Mở form cập nhật stage           |
-| Tạo phiếu xuất     | Đơn đã `confirmed` trở đi       | Mở form tạo shipment             |
-| Thu tiền            | Đơn đã `confirmed` trở đi       | Mở form tạo payment              |
-| Huỷ đơn            | Không có shipment đã giao       | Chuyển `cancelled`               |
-| Hoàn thành đơn     | Đã giao đủ + đã thu đủ          | Chuyển `completed`               |
+| Action           | Điều kiện                       | Kết quả                          |
+| ---------------- | ------------------------------- | -------------------------------- |
+| Sửa đơn          | Đơn ở `draft`                   | Mở form chỉnh sửa                |
+| Xác nhận đơn     | Đơn ở `draft`                   | Chuyển `confirmed`, tạo progress |
+| Cập nhật tiến độ | Đơn ở `confirmed`/`in_progress` | Mở form cập nhật stage           |
+| Tạo phiếu xuất   | Đơn đã `confirmed` trở đi       | Mở form tạo shipment             |
+| Thu tiền         | Đơn đã `confirmed` trở đi       | Mở form tạo payment              |
+| Huỷ đơn          | Không có shipment đã giao       | Chuyển `cancelled`               |
+| Hoàn thành đơn   | Đã giao đủ + đã thu đủ          | Chuyển `completed`               |
 
 ---
 
@@ -800,45 +800,45 @@ WHERE id = {order_id};
 
 ### 10.1 Ràng buộc dữ liệu
 
-| Rule                                          | Module           | Kiểm tra tại       |
-| --------------------------------------------- | ---------------- | ------------------- |
-| Đơn hàng phải có ≥ 1 item                     | Orders           | Frontend + DB       |
-| Khách hàng phải `active`                       | Orders           | Frontend            |
-| `delivery_date >= order_date`                  | Orders           | Frontend (Zod)      |
-| `quantity > 0` cho mọi item                    | Orders, Receipts | Frontend + DB       |
-| `unit_price >= 0`                              | Orders, Receipts | Frontend + DB       |
-| Mã đơn hàng unique                             | Orders           | DB (unique key)     |
-| Mỗi `(order_id, stage)` unique                | Progress         | DB (unique key)     |
-| Shipment qty ≤ remaining order qty             | Shipments        | Frontend + Backend  |
-| Cuộn thành phẩm chỉ xuất 1 lần                | Shipments        | Frontend + DB       |
-| Payment amount > 0                             | Payments         | Frontend + DB       |
-| `paid_amount` đồng bộ bởi trigger              | Payments         | DB trigger          |
+| Rule                               | Module           | Kiểm tra tại       |
+| ---------------------------------- | ---------------- | ------------------ |
+| Đơn hàng phải có ≥ 1 item          | Orders           | Frontend + DB      |
+| Khách hàng phải `active`           | Orders           | Frontend           |
+| `delivery_date >= order_date`      | Orders           | Frontend (Zod)     |
+| `quantity > 0` cho mọi item        | Orders, Receipts | Frontend + DB      |
+| `unit_price >= 0`                  | Orders, Receipts | Frontend + DB      |
+| Mã đơn hàng unique                 | Orders           | DB (unique key)    |
+| Mỗi `(order_id, stage)` unique     | Progress         | DB (unique key)    |
+| Shipment qty ≤ remaining order qty | Shipments        | Frontend + Backend |
+| Cuộn thành phẩm chỉ xuất 1 lần     | Shipments        | Frontend + DB      |
+| Payment amount > 0                 | Payments         | Frontend + DB      |
+| `paid_amount` đồng bộ bởi trigger  | Payments         | DB trigger         |
 
 ### 10.2 Quyền hạn
 
-| Hành động                   | viewer | staff | manager | admin |
-| --------------------------- | ------ | ----- | ------- | ----- |
-| Xem danh sách đơn hàng      | ✅     | ✅    | ✅      | ✅    |
-| Tạo đơn hàng mới            | ❌     | ✅    | ✅      | ✅    |
-| Sửa đơn hàng (draft)        | ❌     | ✅    | ✅      | ✅    |
-| Xác nhận đơn hàng           | ❌     | ✅    | ✅      | ✅    |
-| Cập nhật tiến độ            | ❌     | ✅    | ✅      | ✅    |
-| Tạo phiếu xuất hàng        | ❌     | ✅    | ✅      | ✅    |
-| Tạo phiếu thu tiền          | ❌     | ✅    | ✅      | ✅    |
-| Sửa đơn đã xác nhận        | ❌     | ❌    | ✅      | ✅    |
-| Huỷ đơn hàng               | ❌     | ❌    | ✅      | ✅    |
-| Hoàn thành đơn hàng         | ❌     | ❌    | ✅      | ✅    |
-| Xoá phiếu thu tiền          | ❌     | ❌    | ❌      | ✅    |
+| Hành động              | viewer | staff | manager | admin |
+| ---------------------- | ------ | ----- | ------- | ----- |
+| Xem danh sách đơn hàng | ✅     | ✅    | ✅      | ✅    |
+| Tạo đơn hàng mới       | ❌     | ✅    | ✅      | ✅    |
+| Sửa đơn hàng (draft)   | ❌     | ✅    | ✅      | ✅    |
+| Xác nhận đơn hàng      | ❌     | ✅    | ✅      | ✅    |
+| Cập nhật tiến độ       | ❌     | ✅    | ✅      | ✅    |
+| Tạo phiếu xuất hàng    | ❌     | ✅    | ✅      | ✅    |
+| Tạo phiếu thu tiền     | ❌     | ✅    | ✅      | ✅    |
+| Sửa đơn đã xác nhận    | ❌     | ❌    | ✅      | ✅    |
+| Huỷ đơn hàng           | ❌     | ❌    | ✅      | ✅    |
+| Hoàn thành đơn hàng    | ❌     | ❌    | ✅      | ✅    |
+| Xoá phiếu thu tiền     | ❌     | ❌    | ❌      | ✅    |
 
 ### 10.3 Tính toán tự động
 
-| Phép tính                          | Trigger                    | Vị trí            |
-| ---------------------------------- | -------------------------- | ------------------ |
-| `order_item.amount = qty × price`  | Khi insert/update item     | DB (generated col) |
-| `order.total_amount = Σ items`     | Khi confirm order          | Backend logic      |
-| `order.paid_amount = Σ payments`   | Khi insert/update payment  | DB trigger         |
-| `balance_due = total - paid`       | Khi query                  | DB view / Frontend |
-| `progress_percent`                 | Khi query                  | Frontend           |
+| Phép tính                         | Trigger                   | Vị trí             |
+| --------------------------------- | ------------------------- | ------------------ |
+| `order_item.amount = qty × price` | Khi insert/update item    | DB (generated col) |
+| `order.total_amount = Σ items`    | Khi confirm order         | Backend logic      |
+| `order.paid_amount = Σ payments`  | Khi insert/update payment | DB trigger         |
+| `balance_due = total - paid`      | Khi query                 | DB view / Frontend |
+| `progress_percent`                | Khi query                 | Frontend           |
 
 ---
 
@@ -1014,7 +1014,7 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   in_progress: 'Đang xử lý',
   completed: 'Hoàn thành',
   cancelled: 'Đã huỷ',
-}
+};
 ```
 
 ### Công đoạn sản xuất (`production_stage`)
@@ -1028,7 +1028,7 @@ export const STAGE_LABELS: Record<ProductionStage, string> = {
   finishing: 'Hoàn tất',
   final_check: 'Kiểm thành phẩm',
   packing: 'Đóng gói',
-}
+};
 ```
 
 ### Trạng thái công đoạn (`stage_status`)
@@ -1039,7 +1039,7 @@ export const STAGE_STATUS_LABELS: Record<StageStatus, string> = {
   in_progress: 'Đang làm',
   done: 'Hoàn thành',
   skipped: 'Bỏ qua',
-}
+};
 ```
 
 ### Phương thức thanh toán (`payment_method`)
@@ -1050,7 +1050,7 @@ export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
   bank_transfer: 'Chuyển khoản',
   check: 'Séc',
   other: 'Khác',
-}
+};
 ```
 
 ### Trạng thái phiếu xuất (`shipment_status`)
@@ -1062,5 +1062,5 @@ export const SHIPMENT_STATUS_LABELS: Record<ShipmentStatus, string> = {
   delivered: 'Đã giao hàng',
   partially_returned: 'Trả lại một phần',
   returned: 'Trả lại toàn bộ',
-}
+};
 ```

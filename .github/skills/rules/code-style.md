@@ -1,6 +1,7 @@
 # Code Style Guide
 
 ## General Principles
+
 - **Clarity over cleverness** — Write code that is easy to read and understand
 - **Consistency** — Follow existing patterns in the codebase
 - **DRY** — Don't Repeat Yourself, but don't over-abstract
@@ -8,6 +9,7 @@
 ## JavaScript / TypeScript
 
 ### Formatting
+
 - Indentation: **2 spaces** (no tabs)
 - Max line length: **100 characters**
 - Use **single quotes** for strings
@@ -15,6 +17,7 @@
 - Trailing commas in multi-line structures
 
 ### Naming
+
 ```js
 // Variables and functions: camelCase
 const userProfile = {};
@@ -33,6 +36,7 @@ const API_BASE_URL = 'https://api.example.com';
 ```
 
 ### Functions
+
 ```js
 // ✅ Good — Arrow functions for simple operations
 const double = (x) => x * 2;
@@ -46,6 +50,7 @@ function processUserData(user) {
 ```
 
 ### Async/Await
+
 ```js
 // ✅ Always use async/await over raw promises
 async function fetchUser(id) {
@@ -62,6 +67,7 @@ fetchUser(id).then(...).catch(...);
 ```
 
 ### Imports
+
 ```js
 // Order: 1. Node built-ins, 2. External deps, 3. Internal modules
 import path from 'path';
@@ -70,6 +76,7 @@ import { UserService } from './user-service.js';
 ```
 
 ## Comments
+
 ```js
 // ✅ Explain WHY, not WHAT
 // We retry 3 times because the external API has transient failures
@@ -81,6 +88,7 @@ const x = 5;
 ```
 
 ## File Organization
+
 - One class/service per file
 - Group related files in feature folders
 - Index files for clean imports

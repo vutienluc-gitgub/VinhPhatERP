@@ -1,4 +1,12 @@
-export function TableSkeleton({ rows = 5, columns = 4, showHeader = true }: { rows?: number; columns?: number; showHeader?: boolean }) {
+export function TableSkeleton({
+  rows = 5,
+  columns = 4,
+  showHeader = true,
+}: {
+  rows?: number;
+  columns?: number;
+  showHeader?: boolean;
+}) {
   return (
     <div className="data-table-wrap">
       <table className="data-table">
@@ -7,7 +15,14 @@ export function TableSkeleton({ rows = 5, columns = 4, showHeader = true }: { ro
             <tr>
               {Array.from({ length: columns }).map((_, i) => (
                 <th key={i}>
-                  <div className="skeleton-block" style={{ height: '1rem', width: '60%', minWidth: '40px' }} />
+                  <div
+                    className="skeleton-block"
+                    style={{
+                      height: '1rem',
+                      width: '60%',
+                      minWidth: '40px',
+                    }}
+                  />
                 </th>
               ))}
             </tr>
@@ -18,7 +33,14 @@ export function TableSkeleton({ rows = 5, columns = 4, showHeader = true }: { ro
             <tr key={r}>
               {Array.from({ length: columns }).map((_, c) => (
                 <td key={c}>
-                  <div className="skeleton-block" style={{ height: '1.5rem', width: c === 0 ? '80%' : '100%', minWidth: '60px' }} />
+                  <div
+                    className="skeleton-block"
+                    style={{
+                      height: '1.5rem',
+                      width: c === 0 ? '80%' : '100%',
+                      minWidth: '60px',
+                    }}
+                  />
                 </td>
               ))}
             </tr>
@@ -26,5 +48,5 @@ export function TableSkeleton({ rows = 5, columns = 4, showHeader = true }: { ro
         </tbody>
       </table>
     </div>
-  )
+  );
 }

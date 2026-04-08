@@ -1,4 +1,3 @@
-
 const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
@@ -8,8 +7,10 @@ let supabaseUrl, supabaseKey;
 try {
   const envContent = fs.readFileSync(envPath, 'utf-8');
   for (const line of envContent.split('\n')) {
-    if (line.includes('VITE_SUPABASE_URL=')) supabaseUrl = line.split('=')[1].trim();
-    if (line.includes('VITE_SUPABASE_ANON_KEY=')) supabaseKey = line.split('=')[1].trim();
+    if (line.includes('VITE_SUPABASE_URL='))
+      supabaseUrl = line.split('=')[1].trim();
+    if (line.includes('VITE_SUPABASE_ANON_KEY='))
+      supabaseKey = line.split('=')[1].trim();
   }
 } catch (e) {
   console.error(e);
@@ -28,24 +29,24 @@ async function createStandaloneWO() {
     .single();
 
   if (bomError) {
-    console.error("No approved BOM found, trying any BOM", bomError);
+    console.error('No approved BOM found, trying any BOM', bomError);
     const { data: anyBom, error: anyBomError } = await supabase
       .from('bom_templates')
       .select('id, code, name')
       .limit(1)
       .single();
     if (anyBomError) {
-      console.error("No BOM found at all.");
+      console.error('No BOM found at all.');
       return;
     }
     // We might need to approve it first if it's draft, but let's try
   }
 
   const selectedBom = bom || anyBom;
-  console.log("Using BOM:", selectedBom.name);
+  console.log('Using BOM:', selectedBom.name);
 
   // 2. Create standalone Work Order
-  const woNumber = "WO-STANDALONE-" + Date.now();
+  const woNumber = 'WO-STANDALONE-' + Date.now();
   const { data: wo, error: woError } = await supabase
     .from('work_orders')
     .insert({
@@ -56,24 +57,29 @@ async function createStandaloneWO() {
       target_quantity_m: 100,
       target_unit: 'm',
       target_weight_kg: 25,
-      status: 'draft'
+      status: 'draft',
     })
     .select()
     .single();
 
   if (woError) {
-    console.error("Error creating WO:", woError);
+    console.error('Error creating WO:', woError);
     return;
   }
 
-  console.log("Created standalone Work Order:", wo.work_order_number);
+  console.log('Created standalone Work Order:', wo.work_order_number);
 
   // 3. Manually trigger progress rows (as done in createWorkOrder in API)
   const stages = [
-    'warping', 'weaving', 'greige_check', 'dyeing',
-    'finishing', 'final_check', 'packing',
+    'warping',
+    'weaving',
+    'greige_check',
+    'dyeing',
+    'finishing',
+    'final_check',
+    'packing',
   ];
-  const progressRows = stages.map(stage => ({
+  const progressRows = stages.map((stage) => ({
     work_order_id: wo.id,
     order_id: null,
     stage,
@@ -85,9 +91,9 @@ async function createStandaloneWO() {
     .insert(progressRows);
 
   if (progressErr) {
-    console.error("Error creating progress rows:", progressErr);
+    console.error('Error creating progress rows:', progressErr);
   } else {
-    console.log("Successfully created 7 progress stages for standalone WO.");
+    console.log('Successfully created 7 progress stages for standalone WO.');
   }
 }
 

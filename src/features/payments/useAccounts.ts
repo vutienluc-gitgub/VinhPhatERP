@@ -1,35 +1,35 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   fetchPaymentAccounts,
   createPaymentAccount,
   updatePaymentAccount,
   deletePaymentAccount,
-} from '@/api/payments.api'
+} from '@/api/payments.api';
 
-import type { AccountFormValues } from './payments.module'
-import type { PaymentAccount } from './types'
+import type { AccountFormValues } from './payments.module';
+import type { PaymentAccount } from './types';
 
-export type { PaymentAccount }
+export type { PaymentAccount };
 
-const QUERY_KEY = ['payment-accounts'] as const
+const QUERY_KEY = ['payment-accounts'] as const;
 
 export function useAccountList(showInactive = false) {
   return useQuery<PaymentAccount[]>({
     queryKey: [...QUERY_KEY, showInactive],
     queryFn: () => fetchPaymentAccounts(showInactive),
-  })
+  });
 }
 
 export function useAllAccounts() {
   return useQuery<PaymentAccount[]>({
     queryKey: [...QUERY_KEY, 'all'],
     queryFn: () => fetchPaymentAccounts(true),
-  })
+  });
 }
 
 export function useCreateAccount() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (values: AccountFormValues) =>
       createPaymentAccount({
@@ -43,13 +43,13 @@ export function useCreateAccount() {
         status: values.status,
       }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 export function useUpdateAccount() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, values }: { id: string; values: AccountFormValues }) =>
       updatePaymentAccount(id, {
@@ -62,17 +62,17 @@ export function useUpdateAccount() {
         status: values.status,
       }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 export function useDeleteAccount() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deletePaymentAccount,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }

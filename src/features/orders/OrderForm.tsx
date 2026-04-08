@@ -1,38 +1,45 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
-import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useState } from 'react';
+import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
-import { useAuth } from '@/features/auth/AuthProvider'
-import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
+import { useAuth } from '@/features/auth/AuthProvider';
+import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog';
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { Combobox } from '@/shared/components/Combobox';
+import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers';
+import {
+  useColorOptions,
+  toColorComboboxOptions,
+} from '@/shared/hooks/useColorOptions';
+import { useStepper } from '@/shared/hooks/useStepper';
+import { formatCurrency } from '@/shared/utils/format';
 
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
-import { Combobox } from '@/shared/components/Combobox'
-import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers'
-import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
-import { useStepper } from '@/shared/hooks/useStepper'
-import { formatCurrency } from '@/shared/utils/format'
-
-import { CreditOverrideDialog } from './CreditOverrideDialog'
+import { CreditOverrideDialog } from './CreditOverrideDialog';
 import {
   emptyOrderItem,
   ordersDefaultValues,
   ordersSchema,
   UNIT_OPTIONS,
-} from './orders.module'
-import type { OrdersFormValues } from './orders.module'
-import type { Order } from './types'
-import { useCreateOrderV2, isCreditWarning, type CreateOrderError, type CreateOrderInput } from './useCreateOrderV2'
+} from './orders.module';
+import type { OrdersFormValues } from './orders.module';
+import type { Order } from './types';
 import {
-  useNextOrderNumber,
-  useUpdateOrder,
-} from './useOrders'
+  useCreateOrderV2,
+  isCreditWarning,
+  type CreateOrderError,
+  type CreateOrderInput,
+} from './useCreateOrderV2';
+import { useNextOrderNumber, useUpdateOrder } from './useOrders';
 
-const UNIT_LABELS: Record<string, string> = { m: 'm', kg: 'kg' }
+const UNIT_LABELS: Record<string, string> = {
+  m: 'm',
+  kg: 'kg',
+};
 
 type OrderFormProps = {
-  order: Order | null
-  onClose: () => void
-}
+  order: Order | null;
+  onClose: () => void;
+};
 
 function orderToFormValues(order: Order): OrdersFormValues {
   return {
@@ -49,17 +56,24 @@ function orderToFormValues(order: Order): OrdersFormValues {
       quantity: Number(it.quantity),
       unitPrice: Number(it.unit_price),
     })),
-  }
+  };
 }
 
 /* ── Realtime totals ── */
 
-function LineTotals({ control }: { control: ReturnType<typeof useForm<OrdersFormValues>>['control'] }) {
-  const items = useWatch({ control, name: 'items' })
+function LineTotals({
+  control,
+}: {
+  control: ReturnType<typeof useForm<OrdersFormValues>>['control'];
+}) {
+  const items = useWatch({
+    control,
+    name: 'items',
+  });
   const total = (items ?? []).reduce(
     (sum, it) => sum + (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0),
     0,
-  )
+  );
   return (
     <div
       style={{
@@ -73,21 +87,30 @@ function LineTotals({ control }: { control: ReturnType<typeof useForm<OrdersForm
     >
       Tổng cộng: {formatCurrency(total)} đ
     </div>
-  )
+  );
 }
 
 /* ── Quantity + Unit Price with dynamic unit label ── */
 
 type ItemFieldsProps = {
-  control: ReturnType<typeof useForm<OrdersFormValues>>['control']
-  index: number
-  register: ReturnType<typeof useForm<OrdersFormValues>>['register']
-  errors: ReturnType<typeof useForm<OrdersFormValues>>['formState']['errors']
-}
+  control: ReturnType<typeof useForm<OrdersFormValues>>['control'];
+  index: number;
+  register: ReturnType<typeof useForm<OrdersFormValues>>['register'];
+  errors: ReturnType<typeof useForm<OrdersFormValues>>['formState']['errors'];
+};
 
-function ItemQuantityFields({ control, index, register, errors }: ItemFieldsProps) {
-  const unit = useWatch({ control, name: `items.${index}.unit` }) ?? 'm'
-  const unitLabel = UNIT_LABELS[unit] ?? unit
+function ItemQuantityFields({
+  control,
+  index,
+  register,
+  errors,
+}: ItemFieldsProps) {
+  const unit =
+    useWatch({
+      control,
+      name: `items.${index}.unit`,
+    }) ?? 'm';
+  const unitLabel = UNIT_LABELS[unit] ?? unit;
 
   return (
     <>
@@ -131,22 +154,23 @@ function ItemQuantityFields({ control, index, register, errors }: ItemFieldsProp
         )}
       </div>
     </>
-  )
+  );
 }
 
 export function OrderForm({ order, onClose }: OrderFormProps) {
-  const isEditing = order !== null
-  const { profile } = useAuth()
-  const [overrideWarning, setOverrideWarning] = useState<CreateOrderError | null>(null)
+  const isEditing = order !== null;
+  const { profile } = useAuth();
+  const [overrideWarning, setOverrideWarning] =
+    useState<CreateOrderError | null>(null);
 
-  const createMutationV2 = useCreateOrderV2()
-  const updateMutation = useUpdateOrder()
-  const { data: nextNumber } = useNextOrderNumber()
-  const { data: customers = [] } = useActiveCustomers()
-  const { data: fabricOptions = [] } = useFabricCatalogOptions()
-  const { data: colorOptions = [] } = useColorOptions()
+  const createMutationV2 = useCreateOrderV2();
+  const updateMutation = useUpdateOrder();
+  const { data: nextNumber } = useNextOrderNumber();
+  const { data: customers = [] } = useActiveCustomers();
+  const { data: fabricOptions = [] } = useFabricCatalogOptions();
+  const { data: colorOptions = [] } = useColorOptions();
 
-  const stepper = useStepper({ totalSteps: 2 })
+  const stepper = useStepper({ totalSteps: 2 });
 
   const {
     register,
@@ -158,51 +182,58 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<OrdersFormValues>({
     resolver: zodResolver(ordersSchema),
-    defaultValues: isEditing
-      ? orderToFormValues(order)
-      : ordersDefaultValues,
-  })
+    defaultValues: isEditing ? orderToFormValues(order) : ordersDefaultValues,
+  });
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'items',
-  })
+  });
 
   useEffect(() => {
-    reset(isEditing ? orderToFormValues(order) : ordersDefaultValues)
-  }, [order, isEditing, reset])
+    reset(isEditing ? orderToFormValues(order) : ordersDefaultValues);
+  }, [order, isEditing, reset]);
 
   useEffect(() => {
     if (!isEditing && nextNumber) {
-      setValue('orderNumber', nextNumber)
+      setValue('orderNumber', nextNumber);
     }
-  }, [isEditing, nextNumber, setValue])
+  }, [isEditing, nextNumber, setValue]);
 
   async function handleNextStep() {
     if (stepper.currentStep === 0) {
-      const isValid = await trigger(['orderNumber', 'orderDate', 'customerId', 'deliveryDate', 'notes'])
+      const isValid = await trigger([
+        'orderNumber',
+        'orderDate',
+        'customerId',
+        'deliveryDate',
+        'notes',
+      ]);
       if (isValid) {
-        stepper.next()
+        stepper.next();
       }
     }
   }
 
   async function onSubmit(values: OrdersFormValues) {
-    if (!stepper.isLast) return
+    if (!stepper.isLast) return;
 
     try {
       if (isEditing) {
-        await updateMutation.mutateAsync({ id: order.id, values })
-        onClose()
+        await updateMutation.mutateAsync({
+          id: order.id,
+          values,
+        });
+        onClose();
       } else {
-        await createMutationV2.mutateAsync(values)
-        onClose()
+        await createMutationV2.mutateAsync(values);
+        onClose();
       }
     } catch (err) {
       if (!isEditing && err && typeof err === 'object' && 'code' in err) {
-        const e = err as CreateOrderError
+        const e = err as CreateOrderError;
         if (isCreditWarning(e.code)) {
-          setOverrideWarning(e)
+          setOverrideWarning(e);
         } else {
           // Error handled via mutationError
         }
@@ -213,27 +244,37 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
   async function handleOverride() {
     try {
       if (overrideWarning) {
-        const values = control._formValues as OrdersFormValues
-        await createMutationV2.mutateAsync({ ...values, managerOverride: true } as CreateOrderInput)
-        setOverrideWarning(null)
-        onClose()
+        const values = control._formValues as OrdersFormValues;
+        await createMutationV2.mutateAsync({
+          ...values,
+          managerOverride: true,
+        } as CreateOrderInput);
+        setOverrideWarning(null);
+        onClose();
       }
     } catch (err) {
       // Error handled via mutationError
     }
   }
 
-  const mutationError = isEditing ? updateMutation.error : createMutationV2.error
+  const mutationError = isEditing
+    ? updateMutation.error
+    : createMutationV2.error;
   const isPending =
-    isSubmitting || createMutationV2.isPending || updateMutation.isPending
+    isSubmitting || createMutationV2.isPending || updateMutation.isPending;
 
   return (
     <>
       <AdaptiveSheet
         open={true}
         onClose={onClose}
-        title={isEditing ? `Sửa đơn: ${order.order_number}` : 'Tạo đơn hàng mới'}
-        stepInfo={{ current: stepper.currentStep, total: stepper.totalSteps }}
+        title={
+          isEditing ? `Sửa đơn: ${order.order_number}` : 'Tạo đơn hàng mới'
+        }
+        stepInfo={{
+          current: stepper.currentStep,
+          total: stepper.totalSteps,
+        }}
         maxWidth={720}
       >
         <form id="order-form" onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -245,9 +286,16 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
 
           <div className="form-grid">
             {/* ── BƯỚC 1: THÔNG TIN CHUNG ── */}
-            <div style={{ display: stepper.currentStep === 0 ? 'block' : 'none' }}>
+            <div
+              style={{ display: stepper.currentStep === 0 ? 'block' : 'none' }}
+            >
               <div className="form-grid">
-                <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                <div
+                  className="form-grid"
+                  style={{
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  }}
+                >
                   <div className="form-field">
                     <label htmlFor="orderNumber">
                       Số đơn hàng <span className="field-required">*</span>
@@ -257,11 +305,17 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                       className={`field-input${errors.orderNumber ? ' is-error' : ''}`}
                       type="text"
                       readOnly={!isEditing}
-                      style={!isEditing ? { background: 'var(--surface)' } : undefined}
+                      style={
+                        !isEditing
+                          ? { background: 'var(--surface)' }
+                          : undefined
+                      }
                       {...register('orderNumber')}
                     />
                     {errors.orderNumber && (
-                      <span className="field-error">{errors.orderNumber.message}</span>
+                      <span className="field-error">
+                        {errors.orderNumber.message}
+                      </span>
                     )}
                   </div>
 
@@ -276,12 +330,19 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                       {...register('orderDate')}
                     />
                     {errors.orderDate && (
-                      <span className="field-error">{errors.orderDate.message}</span>
+                      <span className="field-error">
+                        {errors.orderDate.message}
+                      </span>
                     )}
                   </div>
                 </div>
 
-                <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                <div
+                  className="form-grid"
+                  style={{
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  }}
+                >
                   <div className="form-field">
                     <label htmlFor="customerId">
                       Khách hàng <span className="field-required">*</span>
@@ -294,7 +355,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                           value: c.id,
                           label: c.name,
                           code: c.code,
-                        }))
+                        }));
                         return (
                           <Combobox
                             options={customerOptions}
@@ -303,11 +364,13 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                             placeholder="— Chọn khách hàng —"
                             hasError={!!errors.customerId}
                           />
-                        )
+                        );
                       }}
                     />
                     {errors.customerId && (
-                      <span className="field-error">{errors.customerId.message}</span>
+                      <span className="field-error">
+                        {errors.customerId.message}
+                      </span>
                     )}
                   </div>
 
@@ -320,7 +383,9 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                       {...register('deliveryDate')}
                     />
                     {errors.deliveryDate && (
-                      <span className="field-error">{errors.deliveryDate.message}</span>
+                      <span className="field-error">
+                        {errors.deliveryDate.message}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -339,18 +404,33 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
             </div>
 
             {/* ── BƯỚC 2: CHI TIẾT HÀNG HÓA ── */}
-            <div style={{ display: stepper.currentStep === 1 ? 'block' : 'none' }}>
+            <div
+              style={{ display: stepper.currentStep === 1 ? 'block' : 'none' }}
+            >
               <div className="form-field">
                 <label>
                   Dòng hàng <span className="field-required">*</span>
                 </label>
                 {errors.items?.root && (
-                  <span className="field-error" style={{ marginBottom: '0.5rem', display: 'block' }}>
+                  <span
+                    className="field-error"
+                    style={{
+                      marginBottom: '0.5rem',
+                      display: 'block',
+                    }}
+                  >
                     {errors.items.root.message}
                   </span>
                 )}
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.5rem' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1rem',
+                    marginTop: '0.5rem',
+                  }}
+                >
                   {fields.map((field, index) => (
                     <div
                       key={field.id}
@@ -358,7 +438,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                         border: '1px solid var(--border)',
                         borderRadius: 'var(--radius-md)',
                         padding: '1rem',
-                        background: 'var(--surface)'
+                        background: 'var(--surface)',
                       }}
                     >
                       <div
@@ -368,10 +448,16 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                           alignItems: 'center',
                           marginBottom: '0.75rem',
                           borderBottom: '1px solid var(--border)',
-                          paddingBottom: '0.5rem'
+                          paddingBottom: '0.5rem',
                         }}
                       >
-                        <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                        <span
+                          style={{
+                            fontSize: '0.9rem',
+                            fontWeight: 600,
+                            color: 'var(--text-secondary)',
+                          }}
+                        >
                           Dòng Hàng #{index + 1}
                         </span>
                         {fields.length > 1 && (
@@ -388,7 +474,13 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                       </div>
 
                       <div className="form-grid">
-                        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                        <div
+                          className="form-grid"
+                          style={{
+                            gridTemplateColumns:
+                              'repeat(auto-fit, minmax(200px, 1fr))',
+                          }}
+                        >
                           <div className="form-field">
                             <label htmlFor={`items.${index}.fabricType`}>
                               Loại vải <span className="field-required">*</span>
@@ -405,10 +497,15 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                                   }))}
                                   value={field.value}
                                   onChange={(val) => {
-                                    field.onChange(val)
-                                    const selected = fabricOptions.find((f) => f.name === val)
+                                    field.onChange(val);
+                                    const selected = fabricOptions.find(
+                                      (f) => f.name === val,
+                                    );
                                     if (selected?.unit) {
-                                      setValue(`items.${index}.unit`, selected.unit as 'm' | 'kg')
+                                      setValue(
+                                        `items.${index}.unit`,
+                                        selected.unit as 'm' | 'kg',
+                                      );
                                     }
                                   }}
                                   placeholder="Chọn hoặc nhập loại vải"
@@ -424,7 +521,9 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                           </div>
 
                           <div className="form-field">
-                            <label htmlFor={`items.${index}.colorName`}>Màu</label>
+                            <label htmlFor={`items.${index}.colorName`}>
+                              Màu
+                            </label>
                             <Controller
                               name={`items.${index}.colorName` as const}
                               control={control}
@@ -440,9 +539,17 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                           </div>
                         </div>
 
-                        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' }}>
+                        <div
+                          className="form-grid"
+                          style={{
+                            gridTemplateColumns:
+                              'repeat(auto-fit, minmax(140px, 1fr))',
+                          }}
+                        >
                           <div className="form-field">
-                            <label htmlFor={`items.${index}.colorCode`}>Mã màu</label>
+                            <label htmlFor={`items.${index}.colorCode`}>
+                              Mã màu
+                            </label>
                             <input
                               id={`items.${index}.colorCode`}
                               className="field-input"
@@ -452,7 +559,9 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                             />
                           </div>
                           <div className="form-field">
-                            <label htmlFor={`items.${index}.unit`}>Đơn vị</label>
+                            <label htmlFor={`items.${index}.unit`}>
+                              Đơn vị
+                            </label>
                             <Controller
                               name={`items.${index}.unit` as const}
                               control={control}
@@ -470,8 +579,19 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                           </div>
                         </div>
 
-                        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
-                          <ItemQuantityFields control={control} index={index} register={register} errors={errors} />
+                        <div
+                          className="form-grid"
+                          style={{
+                            gridTemplateColumns:
+                              'repeat(auto-fit, minmax(160px, 1fr))',
+                          }}
+                        >
+                          <ItemQuantityFields
+                            control={control}
+                            index={index}
+                            register={register}
+                            errors={errors}
+                          />
                         </div>
                       </div>
                     </div>
@@ -482,7 +602,10 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                   className="btn-secondary"
                   type="button"
                   onClick={() => append({ ...emptyOrderItem })}
-                  style={{ marginTop: '1rem', width: '100%' }}
+                  style={{
+                    marginTop: '1rem',
+                    width: '100%',
+                  }}
                 >
                   + Thêm dòng hàng mới
                 </button>
@@ -492,7 +615,15 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
             </div>
           </div>
 
-          <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none', justifyContent: 'space-between' }}>
+          <div
+            className="modal-footer"
+            style={{
+              marginTop: '1.5rem',
+              padding: 0,
+              border: 'none',
+              justifyContent: 'space-between',
+            }}
+          >
             <div>
               {!stepper.isFirst && (
                 <button
@@ -515,7 +646,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                 </button>
               )}
             </div>
-            
+
             <div>
               {!stepper.isLast ? (
                 <button
@@ -532,7 +663,11 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                   type="submit"
                   disabled={isPending}
                 >
-                  {isPending ? 'Đang lưu...' : isEditing ? 'Lưu thay đổi' : 'Tạo đơn mới'}
+                  {isPending
+                    ? 'Đang lưu...'
+                    : isEditing
+                      ? 'Lưu thay đổi'
+                      : 'Tạo đơn mới'}
                 </button>
               )}
             </div>
@@ -551,5 +686,5 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
         isLoading={createMutationV2.isPending}
       />
     </>
-  )
+  );
 }

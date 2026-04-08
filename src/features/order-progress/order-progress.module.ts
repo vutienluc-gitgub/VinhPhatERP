@@ -1,4 +1,4 @@
-import type { FeatureDefinition } from '@/shared/types/feature'
+import type { FeatureDefinition } from '@/shared/types/feature';
 
 // Re-export schema & constants from centralized schema
 export {
@@ -6,15 +6,20 @@ export {
   STAGE_LABELS,
   STAGE_STATUS_LABELS,
   orderProgressSchema,
-} from '@/schema/order-progress.schema'
+} from '@/schema/order-progress.schema';
 export type {
   ProductionStage,
   StageStatus,
   OrderProgressFormValues,
-} from '@/schema/order-progress.schema'
+} from '@/schema/order-progress.schema';
 
 // Domain types stay in feature (tightly coupled to DB shape)
-export type { OrderProgress, OrderProgressWithOrder, ProgressAuditLog, ProgressAuditLogWithOrder } from './types'
+export type {
+  OrderProgress,
+  OrderProgressWithOrder,
+  ProgressAuditLog,
+  ProgressAuditLogWithOrder,
+} from './types';
 
 export const orderProgressFeature: FeatureDefinition = {
   key: 'order-progress',
@@ -39,4 +44,19 @@ export const orderProgressFeature: FeatureDefinition = {
     'Tinh overdue va ready-to-ship slices.',
     'Ghi log thay doi khi status duoc cap nhat.',
   ],
-}
+};
+
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
+export const orderProgressPlugin: FeaturePlugin = {
+  key: 'order-progress',
+  route: 'order-progress',
+  label: 'Tiến độ đơn hàng',
+  shortLabel: 'Progress',
+  description: 'Timeline và cập nhật tiến độ cho từng dòng hàng.',
+  icon: 'trending-up',
+  primaryMobile: true,
+  group: 'sales',
+  order: 25,
+  component: () =>
+    import('./index').then((m) => ({ default: m.OrderProgressPage })),
+};

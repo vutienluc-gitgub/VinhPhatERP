@@ -1,22 +1,29 @@
-import type { FeatureDefinition } from '@/shared/types/feature'
+import type { FeatureDefinition } from '@/shared/types/feature';
 
 export {
   YARN_CATALOG_STATUSES,
   YARN_CATALOG_STATUS_LABELS,
   yarnCatalogSchema,
   yarnCatalogDefaultValues,
-} from '@/schema/yarn-catalog.schema'
-export type { YarnCatalogFormValues } from '@/schema/yarn-catalog.schema'
+} from '@/schema/yarn-catalog.schema';
+export type { YarnCatalogFormValues } from '@/schema/yarn-catalog.schema';
 
 export const yarnCatalogFeature: FeatureDefinition = {
   key: 'yarn-catalog',
   route: '/yarn-catalog',
   title: 'Danh mục sợi',
   badge: 'Master Data',
-  description: 'Quản lý danh mục loại sợi chuẩn — dùng lại khi tạo phiếu nhập sợi.',
+  description:
+    'Quản lý danh mục loại sợi chuẩn — dùng lại khi tạo phiếu nhập sợi.',
   summary: [
-    { label: 'Loại dữ liệu', value: 'Master Data' },
-    { label: 'Tích hợp', value: 'Nhập sợi' },
+    {
+      label: 'Loại dữ liệu',
+      value: 'Master Data',
+    },
+    {
+      label: 'Tích hợp',
+      value: 'Nhập sợi',
+    },
   ],
   highlights: [
     'Chuẩn hoá tên và thành phần sợi, giảm lỗi nhập liệu.',
@@ -32,4 +39,18 @@ export const yarnCatalogFeature: FeatureDefinition = {
     'Thêm giá đơn vị tham khảo theo từng NCC.',
     'Lịch sử nhập theo loại sợi.',
   ],
-}
+};
+
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
+export const yarnCatalogPlugin: FeaturePlugin = {
+  key: 'yarn-catalog',
+  route: 'yarn-catalog',
+  label: 'Danh mục sợi',
+  shortLabel: 'Danh mục',
+  description: 'Quản lý danh mục loại sợi — nền cho luồng nhập sợi.',
+  icon: 'database',
+  group: 'master-data',
+  order: 75,
+  component: () =>
+    import('./index').then((m) => ({ default: m.YarnCatalogPage })),
+};

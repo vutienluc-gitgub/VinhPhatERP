@@ -2,12 +2,12 @@ name: Deploy (Vercel)
 
 on:
   workflow_run:
-    workflows: ["Release"]
+    workflows: ['Release']
     types: [completed]
   workflow_dispatch:
     inputs:
       environment:
-        description: "Target environment"
+        description: 'Target environment'
         type: choice
         options: [dev, staging, prod]
         default: dev

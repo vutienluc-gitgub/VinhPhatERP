@@ -12,6 +12,7 @@ release/*     — Release preparation
 ```
 
 ## Branch Naming
+
 ```
 feature/user-authentication
 feature/payment-integration
@@ -32,18 +33,20 @@ release/v1.2.0
 ```
 
 ### Types
-| Type | Usage |
-|------|-------|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `docs` | Documentation only |
-| `style` | Formatting, no logic change |
+
+| Type       | Usage                            |
+| ---------- | -------------------------------- |
+| `feat`     | New feature                      |
+| `fix`      | Bug fix                          |
+| `docs`     | Documentation only               |
+| `style`    | Formatting, no logic change      |
 | `refactor` | Code restructure, no feature/fix |
-| `test` | Adding or fixing tests |
-| `chore` | Build process, dependencies |
-| `perf` | Performance improvement |
+| `test`     | Adding or fixing tests           |
+| `chore`    | Build process, dependencies      |
+| `perf`     | Performance improvement          |
 
 ### Examples
+
 ```
 feat(auth): add JWT refresh token support
 
@@ -57,6 +60,7 @@ chore: upgrade express to v5.0.0
 ```
 
 ## Pull Request Rules
+
 - PRs must reference an issue: `Closes #123`
 - Minimum 1 reviewer approval required
 - All CI checks must pass
@@ -64,12 +68,14 @@ chore: upgrade express to v5.0.0
 - PR title must follow conventional commit format
 
 ## Commit Best Practices
+
 - Commit frequently with small, focused changes
 - Each commit should be a single logical change
 - Never commit: `.env` files, secrets, `node_modules`
 - Always run tests before committing
 
 ## Tags & Releases
+
 ```bash
 # Tag a release
 git tag -a v1.2.0 -m "Release version 1.2.0"

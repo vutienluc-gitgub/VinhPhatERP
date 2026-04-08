@@ -1,6 +1,6 @@
-import type { FeatureDefinition } from '@/shared/types/feature'
+import type { FeatureDefinition } from '@/shared/types/feature';
 
-export * from '@/schema/order.schema'
+export * from '@/schema/order.schema';
 
 export const ordersFeature: FeatureDefinition = {
   key: 'orders',
@@ -10,9 +10,18 @@ export const ordersFeature: FeatureDefinition = {
   description:
     'Order là trung tâm nghiệp vụ của V2, tách rõ header, line items, due date, reservation và shipment downstream.',
   summary: [
-    { label: 'Status set', value: '5' },
-    { label: 'Shipment mode', value: 'Partial' },
-    { label: 'Priority', value: 'Ready' },
+    {
+      label: 'Status set',
+      value: '5',
+    },
+    {
+      label: 'Shipment mode',
+      value: 'Partial',
+    },
+    {
+      label: 'Priority',
+      value: 'Ready',
+    },
   ],
   highlights: [
     'Cho phép giao nhiều lần cho một đơn hàng.',
@@ -30,4 +39,18 @@ export const ordersFeature: FeatureDefinition = {
     'Them detail page va line editor.',
     'Dong bo voi payments, progress va shipments.',
   ],
-}
+};
+
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
+export const ordersPlugin: FeaturePlugin = {
+  key: 'orders',
+  route: 'orders',
+  label: 'Đơn hàng',
+  shortLabel: 'Orders',
+  description: 'Quản lý đơn hàng, chi tiết dòng hàng, giữ chỗ và ngày giao.',
+  icon: 'shopping-cart',
+  primaryMobile: true,
+  group: 'sales',
+  order: 20,
+  component: () => import('./index').then((m) => ({ default: m.OrdersPage })),
+};

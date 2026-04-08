@@ -1,14 +1,14 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 /* ── Types ── */
 
 export type CompanySettingRow = {
-  id: string
-  key: string
-  value: string
-  description: string | null
-  updated_at: string
-}
+  id: string;
+  key: string;
+  value: string;
+  description: string | null;
+  updated_at: string;
+};
 
 /**
  * Danh sách các key chuẩn trong bảng company_settings.
@@ -24,12 +24,12 @@ export const COMPANY_SETTING_KEYS = [
   'bank_account',
   'bank_name',
   'logo_url',
-] as const
+] as const;
 
-export type CompanySettingKey = (typeof COMPANY_SETTING_KEYS)[number]
+export type CompanySettingKey = (typeof COMPANY_SETTING_KEYS)[number];
 
 /** Object phẳng sau khi map từ key-value rows */
-export type CompanySettingsMap = Record<CompanySettingKey, string>
+export type CompanySettingsMap = Record<CompanySettingKey, string>;
 
 /* ── Zod Schema (form validation) ── */
 
@@ -38,14 +38,19 @@ export const companySettingsSchema = z.object({
   address: z.string().trim().min(2, 'Nhập địa chỉ'),
   tax_code: z.string().trim().max(20).optional().or(z.literal('')),
   phone: z.string().trim().max(20).optional().or(z.literal('')),
-  email: z.string().trim().email('Email không hợp lệ').optional().or(z.literal('')),
+  email: z
+    .string()
+    .trim()
+    .email('Email không hợp lệ')
+    .optional()
+    .or(z.literal('')),
   website: z.string().trim().max(200).optional().or(z.literal('')),
   bank_account: z.string().trim().max(50).optional().or(z.literal('')),
   bank_name: z.string().trim().max(200).optional().or(z.literal('')),
   logo_url: z.string().trim().max(500).optional().or(z.literal('')),
-})
+});
 
-export type CompanySettingsFormValues = z.infer<typeof companySettingsSchema>
+export type CompanySettingsFormValues = z.infer<typeof companySettingsSchema>;
 
 export const companySettingsDefaultValues: CompanySettingsFormValues = {
   company_name: '',
@@ -57,19 +62,21 @@ export const companySettingsDefaultValues: CompanySettingsFormValues = {
   bank_account: '',
   bank_name: '',
   logo_url: '',
-}
+};
 
 /* ── Helpers ── */
 
 /** Chuyển mảng key-value rows thành object phẳng */
-export function rowsToSettingsMap(rows: CompanySettingRow[]): CompanySettingsMap {
-  const map = { ...companySettingsDefaultValues } as CompanySettingsMap
+export function rowsToSettingsMap(
+  rows: CompanySettingRow[],
+): CompanySettingsMap {
+  const map = { ...companySettingsDefaultValues } as CompanySettingsMap;
   for (const row of rows) {
     if (COMPANY_SETTING_KEYS.includes(row.key as CompanySettingKey)) {
-      map[row.key as CompanySettingKey] = row.value
+      map[row.key as CompanySettingKey] = row.value;
     }
   }
-  return map
+  return map;
 }
 
 /** Chuyển object phẳng thành mảng { key, value } để upsert */
@@ -79,5 +86,5 @@ export function settingsMapToUpsertRows(
   return COMPANY_SETTING_KEYS.map((key) => ({
     key,
     value: map[key] ?? '',
-  }))
+  }));
 }

@@ -1,9 +1,11 @@
 # Icon Usage Skill
+
 # You MUST read:
 
 .agents/context/icon-system.md
 
 ## Goal
+
 Ensure consistent icon usage across the application.
 
 ## Rules
@@ -24,6 +26,7 @@ Ensure consistent icon usage across the application.
 ## Validation
 
 Before writing code:
+
 - Check if icon exists in mapping
 - If not, suggest adding to mapping
 

@@ -1,56 +1,96 @@
-import { ArrowLeft, CheckCircle, FileX, GitMerge } from '@/shared/icons'
+import { ArrowLeft, CheckCircle, FileX, GitMerge } from '@/shared/icons';
 
-import { BOM_STATUS_LABELS } from './bom.module'
-import { BomTemplate, BomStatus } from './types'
-import { useBomVersions } from './useBom'
+import { BOM_STATUS_LABELS } from './bom.module';
+import { BomTemplate, BomStatus } from './types';
+import { useBomVersions } from './useBom';
 
 interface BomDetailProps {
-  bom: BomTemplate
-  onBack: () => void
-  onApprove: () => void
-  onDeprecate: () => void
-  onRevise: () => void
-  isSaving: boolean
+  bom: BomTemplate;
+  onBack: () => void;
+  onApprove: () => void;
+  onDeprecate: () => void;
+  onRevise: () => void;
+  isSaving: boolean;
 }
 
-export function BomDetail({ bom, onBack, onApprove, onDeprecate, onRevise, isSaving }: BomDetailProps) {
-  const { data: versions = [] } = useBomVersions(bom.id)
-  const statusLabel = BOM_STATUS_LABELS[bom.status as BomStatus] || bom.status
+export function BomDetail({
+  bom,
+  onBack,
+  onApprove,
+  onDeprecate,
+  onRevise,
+  isSaving,
+}: BomDetailProps) {
+  const { data: versions = [] } = useBomVersions(bom.id);
+  const statusLabel = BOM_STATUS_LABELS[bom.status as BomStatus] || bom.status;
 
   return (
     <div className="panel-card card-flush">
       {/* Header */}
       <div className="card-header-area">
         <div className="page-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+            }}
+          >
             <button
               className="btn-icon"
               type="button"
               onClick={onBack}
               title="Quay lại"
             >
-              <ArrowLeft style={{ width: 18, height: 18 }} />
+              <ArrowLeft
+                style={{
+                  width: 18,
+                  height: 18,
+                }}
+              />
             </button>
             <div>
               <p className="eyebrow">Chi tiết định mức</p>
-              <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <h3
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                }}
+              >
                 {bom.code}
-                <span className={`roll-status ${bom.status}`}>{statusLabel}</span>
+                <span className={`roll-status ${bom.status}`}>
+                  {statusLabel}
+                </span>
               </h3>
             </div>
           </div>
 
           {/* Actions */}
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: '0.5rem',
+            }}
+          >
             {bom.status === 'draft' && (
               <button
                 className="primary-button btn-standard"
                 type="button"
                 onClick={onApprove}
                 disabled={isSaving}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                }}
               >
-                <CheckCircle style={{ width: 16, height: 16 }} />
+                <CheckCircle
+                  style={{
+                    width: 16,
+                    height: 16,
+                  }}
+                />
                 Phê duyệt
               </button>
             )}
@@ -62,9 +102,18 @@ export function BomDetail({ bom, onBack, onApprove, onDeprecate, onRevise, isSav
                   type="button"
                   onClick={onRevise}
                   disabled={isSaving}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                  }}
                 >
-                  <GitMerge style={{ width: 16, height: 16 }} />
+                  <GitMerge
+                    style={{
+                      width: 16,
+                      height: 16,
+                    }}
+                  />
                   Tạo Revision
                 </button>
                 <button
@@ -72,9 +121,19 @@ export function BomDetail({ bom, onBack, onApprove, onDeprecate, onRevise, isSav
                   type="button"
                   onClick={onDeprecate}
                   disabled={isSaving}
-                  style={{ color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                  style={{
+                    color: 'var(--danger)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                  }}
                 >
-                  <FileX style={{ width: 16, height: 16 }} />
+                  <FileX
+                    style={{
+                      width: 16,
+                      height: 16,
+                    }}
+                  />
                   Báo phế
                 </button>
               </>
@@ -85,26 +144,52 @@ export function BomDetail({ bom, onBack, onApprove, onDeprecate, onRevise, isSav
 
       {/* Info Section */}
       <div style={{ padding: '1.25rem' }}>
-        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
+        <div
+          className="form-grid"
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '1.25rem',
+          }}
+        >
           <div className="form-field">
             <label>Tên công thức</label>
-            <p style={{ fontWeight: 600, margin: 0 }}>{bom.name}</p>
+            <p
+              style={{
+                fontWeight: 600,
+                margin: 0,
+              }}
+            >
+              {bom.name}
+            </p>
           </div>
           <div className="form-field">
             <label>Sản phẩm mộc</label>
-            <p style={{ fontWeight: 600, margin: 0 }}>
+            <p
+              style={{
+                fontWeight: 600,
+                margin: 0,
+              }}
+            >
               {bom.fabric_catalogs?.code} — {bom.fabric_catalogs?.name ?? 'N/A'}
             </p>
           </div>
           <div className="form-field">
             <label>Quy cách (Width / GSM)</label>
             <p style={{ margin: 0 }}>
-              {bom.target_width_cm ? `${bom.target_width_cm} cm` : '—'} / {bom.target_gsm ? `${bom.target_gsm} gsm` : '—'}
+              {bom.target_width_cm ? `${bom.target_width_cm} cm` : '—'} /{' '}
+              {bom.target_gsm ? `${bom.target_gsm} gsm` : '—'}
             </p>
           </div>
           <div className="form-field">
             <label>Hao hụt mặc định</label>
-            <p style={{ margin: 0, fontWeight: 700 }}>{bom.standard_loss_pct}%</p>
+            <p
+              style={{
+                margin: 0,
+                fontWeight: 700,
+              }}
+            >
+              {bom.standard_loss_pct}%
+            </p>
           </div>
           <div className="form-field">
             <label>Phiên bản</label>
@@ -113,7 +198,14 @@ export function BomDetail({ bom, onBack, onApprove, onDeprecate, onRevise, isSav
         </div>
 
         {bom.notes && (
-          <p style={{ marginTop: '1rem', fontStyle: 'italic', color: 'var(--muted)', fontSize: '0.88rem' }}>
+          <p
+            style={{
+              marginTop: '1rem',
+              fontStyle: 'italic',
+              color: 'var(--muted)',
+              fontSize: '0.88rem',
+            }}
+          >
             {bom.notes}
           </p>
         )}
@@ -170,13 +262,27 @@ export function BomDetail({ bom, onBack, onApprove, onDeprecate, onRevise, isSav
 
       {/* Version History */}
       <div style={{ padding: '1.25rem' }}>
-        <p className="eyebrow" style={{ marginBottom: '0.75rem' }}>Lịch sử phiên bản</p>
+        <p className="eyebrow" style={{ marginBottom: '0.75rem' }}>
+          Lịch sử phiên bản
+        </p>
         {versions.length === 0 ? (
-          <p className="td-muted" style={{ fontStyle: 'italic', fontSize: '0.85rem' }}>
+          <p
+            className="td-muted"
+            style={{
+              fontStyle: 'italic',
+              fontSize: '0.85rem',
+            }}
+          >
             Chưa có lịch sử (chưa từng được duyệt).
           </p>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+            }}
+          >
             {versions.map((ver) => (
               <div
                 key={ver.id}
@@ -191,15 +297,36 @@ export function BomDetail({ bom, onBack, onApprove, onDeprecate, onRevise, isSav
               >
                 <span
                   className="roll-status in_stock"
-                  style={{ flexShrink: 0, fontSize: '0.7rem' }}
+                  style={{
+                    flexShrink: 0,
+                    fontSize: '0.7rem',
+                  }}
                 >
                   v{ver.version}
                 </span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: 600 }}>
+                <div
+                  style={{
+                    flex: 1,
+                    minWidth: 0,
+                  }}
+                >
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: '0.88rem',
+                      fontWeight: 600,
+                    }}
+                  >
                     {ver.change_reason || 'Phê duyệt ban đầu'}
                   </p>
-                  <p className="td-muted" style={{ margin: 0, fontSize: '0.78rem', marginTop: '0.2rem' }}>
+                  <p
+                    className="td-muted"
+                    style={{
+                      margin: 0,
+                      fontSize: '0.78rem',
+                      marginTop: '0.2rem',
+                    }}
+                  >
                     {ver.created_by_profile?.full_name ?? 'N/A'} •{' '}
                     {new Date(ver.created_at).toLocaleString('vi-VN')}
                   </p>
@@ -210,5 +337,5 @@ export function BomDetail({ bom, onBack, onApprove, onDeprecate, onRevise, isSav
         )}
       </div>
     </div>
-  )
+  );
 }

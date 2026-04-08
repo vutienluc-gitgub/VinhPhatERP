@@ -1,9 +1,9 @@
 ---
 name: Yêu cầu Tính năng / Feature Request
 about: Đề xuất tính năng mới / Suggest a new feature
-title: "[Tính năng/Feature] "
+title: '[Tính năng/Feature] '
 labels: enhancement
-assignees: ""
+assignees: ''
 ---
 
 ## Tóm tắt / Summary

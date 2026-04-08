@@ -5,7 +5,7 @@
  * @example formatCurrency(1500000) // "1.500.000"
  */
 export function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value)
+  return new Intl.NumberFormat('vi-VN').format(value);
 }
 
 /**
@@ -16,6 +16,9 @@ export function formatCurrency(value: number): string {
  * @example formatCurrencyFull(null)     // "—"
  */
 export function formatCurrencyFull(value: number | null | undefined): string {
-  if (value == null) return '—'
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
+  if (value == null) return '—';
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(value);
 }

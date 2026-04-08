@@ -4,12 +4,16 @@
 
 :root {
   color-scheme: light;
-  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+  font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: #10233d;
   background:
-    radial-gradient(circle at top left, rgba(194, 226, 255, 0.9), transparent 28%),
+    radial-gradient(
+      circle at top left,
+      rgba(194, 226, 255, 0.9),
+      transparent 28%
+    ),
     linear-gradient(180deg, #f6fbff 0%, #edf4fb 100%);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -91,7 +95,11 @@ p {
   color-scheme: dark;
   color: #eef7ff;
   background:
-    radial-gradient(circle at top left, rgba(11, 107, 203, 0.15), transparent 28%),
+    radial-gradient(
+      circle at top left,
+      rgba(11, 107, 203, 0.15),
+      transparent 28%
+    ),
     linear-gradient(180deg, #091524 0%, #060e18 100%);
 
   --surface: rgba(16, 35, 61, 0.86);

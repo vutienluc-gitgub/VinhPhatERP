@@ -1,28 +1,31 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
-import { Combobox } from '@/shared/components/Combobox'
-import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { Combobox } from '@/shared/components/Combobox';
+import {
+  useColorOptions,
+  toColorComboboxOptions,
+} from '@/shared/hooks/useColorOptions';
 
-import type { YarnCatalog } from './types'
+import type { YarnCatalog } from './types';
 import {
   useCreateYarnCatalog,
   useNextYarnCatalogCode,
   useUpdateYarnCatalog,
-} from './useYarnCatalog'
+} from './useYarnCatalog';
 import {
   yarnCatalogDefaultValues,
   yarnCatalogSchema,
   YARN_CATALOG_STATUS_LABELS,
-} from './yarn-catalog.module'
-import type { YarnCatalogFormValues } from './yarn-catalog.module'
+} from './yarn-catalog.module';
+import type { YarnCatalogFormValues } from './yarn-catalog.module';
 
 type YarnCatalogFormProps = {
-  catalog: YarnCatalog | null
-  onClose: () => void
-}
+  catalog: YarnCatalog | null;
+  onClose: () => void;
+};
 
 function catalogToFormValues(catalog: YarnCatalog): YarnCatalogFormValues {
   return {
@@ -35,15 +38,15 @@ function catalogToFormValues(catalog: YarnCatalog): YarnCatalogFormValues {
     unit: catalog.unit,
     notes: catalog.notes ?? '',
     status: catalog.status,
-  }
+  };
 }
 
 export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
-  const isEditing = catalog !== null
-  const createMutation = useCreateYarnCatalog()
-  const updateMutation = useUpdateYarnCatalog()
-  const { data: nextCode } = useNextYarnCatalogCode()
-  const { data: colorOptions = [] } = useColorOptions()
+  const isEditing = catalog !== null;
+  const createMutation = useCreateYarnCatalog();
+  const updateMutation = useUpdateYarnCatalog();
+  const { data: nextCode } = useNextYarnCatalogCode();
+  const { data: colorOptions = [] } = useColorOptions();
 
   const {
     register,
@@ -54,37 +57,47 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<YarnCatalogFormValues>({
     resolver: zodResolver(yarnCatalogSchema),
-    defaultValues: isEditing ? catalogToFormValues(catalog) : yarnCatalogDefaultValues,
-  })
+    defaultValues: isEditing
+      ? catalogToFormValues(catalog)
+      : yarnCatalogDefaultValues,
+  });
 
   useEffect(() => {
-    reset(isEditing ? catalogToFormValues(catalog) : yarnCatalogDefaultValues)
-  }, [catalog, isEditing, reset])
+    reset(isEditing ? catalogToFormValues(catalog) : yarnCatalogDefaultValues);
+  }, [catalog, isEditing, reset]);
 
   useEffect(() => {
     if (!isEditing && nextCode) {
-      setValue('code', nextCode)
+      setValue('code', nextCode);
     }
-  }, [isEditing, nextCode, setValue])
+  }, [isEditing, nextCode, setValue]);
 
   async function onSubmit(values: YarnCatalogFormValues) {
     try {
       if (isEditing) {
-        await updateMutation.mutateAsync({ id: catalog.id, values })
+        await updateMutation.mutateAsync({
+          id: catalog.id,
+          values,
+        });
       } else {
-        await createMutation.mutateAsync(values)
+        await createMutation.mutateAsync(values);
       }
-      onClose()
+      onClose();
     } catch {
       // Lỗi hiện qua mutationError bên dưới
     }
   }
 
-  const mutationError = isEditing ? updateMutation.error : createMutation.error
-  const isPending = isSubmitting || createMutation.isPending || updateMutation.isPending
+  const mutationError = isEditing ? updateMutation.error : createMutation.error;
+  const isPending =
+    isSubmitting || createMutation.isPending || updateMutation.isPending;
 
   return (
-    <AdaptiveSheet open={true} onClose={onClose} title={isEditing ? `Sửa: ${catalog.name}` : 'Thêm loại sợi'}>
+    <AdaptiveSheet
+      open={true}
+      onClose={onClose}
+      title={isEditing ? `Sửa: ${catalog.name}` : 'Thêm loại sợi'}
+    >
       {mutationError && (
         <p className="error-inline" style={{ marginBottom: '1rem' }}>
           Lỗi: {(mutationError as Error).message}
@@ -94,7 +107,12 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
       <form id="yarn-catalog-form" onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="form-grid">
           {/* Mã + Tên */}
-          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+          <div
+            className="form-grid"
+            style={{
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            }}
+          >
             <div className="form-field">
               <label htmlFor="code">
                 Mã sợi <span className="field-required">*</span>
@@ -130,7 +148,12 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
           </div>
 
           {/* Thành phần + Màu mặc định */}
-          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+          <div
+            className="form-grid"
+            style={{
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            }}
+          >
             <div className="form-field">
               <label htmlFor="composition">Thành phần</label>
               <input
@@ -160,7 +183,12 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
           </div>
 
           {/* Cường lực + Xuất xứ */}
-          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+          <div
+            className="form-grid"
+            style={{
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            }}
+          >
             <div className="form-field">
               <label htmlFor="tensile_strength">Cường lực</label>
               <input
@@ -185,7 +213,12 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
           </div>
 
           {/* Đơn vị + Trạng thái */}
-          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+          <div
+            className="form-grid"
+            style={{
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            }}
+          >
             <div className="form-field">
               <label htmlFor="unit">
                 Đơn vị <span className="field-required">*</span>
@@ -196,9 +229,18 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
                 render={({ field }) => (
                   <Combobox
                     options={[
-                      { value: 'kg', label: 'kg' },
-                      { value: 'cuộn', label: 'cuộn' },
-                      { value: 'tấn', label: 'tấn' },
+                      {
+                        value: 'kg',
+                        label: 'kg',
+                      },
+                      {
+                        value: 'cuộn',
+                        label: 'cuộn',
+                      },
+                      {
+                        value: 'tấn',
+                        label: 'tấn',
+                      },
                     ]}
                     value={field.value}
                     onChange={field.onChange}
@@ -244,7 +286,14 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
           </div>
         </div>
 
-        <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none' }}>
+        <div
+          className="modal-footer"
+          style={{
+            marginTop: '1.5rem',
+            padding: 0,
+            border: 'none',
+          }}
+        >
           <button
             className="btn-secondary"
             type="button"
@@ -253,11 +302,19 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
           >
             Hủy
           </button>
-          <button className="primary-button btn-standard" type="submit" disabled={isPending}>
-            {isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Thêm loại sợi'}
+          <button
+            className="primary-button btn-standard"
+            type="submit"
+            disabled={isPending}
+          >
+            {isPending
+              ? 'Đang lưu...'
+              : isEditing
+                ? 'Cập nhật'
+                : 'Thêm loại sợi'}
           </button>
         </div>
       </form>
     </AdaptiveSheet>
-  )
+  );
 }

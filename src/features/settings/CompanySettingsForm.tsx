@@ -1,18 +1,21 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 
 import {
   companySettingsSchema,
   companySettingsDefaultValues,
   type CompanySettingsFormValues,
-} from '@/schema/company-settings.schema'
+} from '@/schema/company-settings.schema';
 
-import { useCompanySettings, useUpdateCompanySettings } from './useCompanySettings'
+import {
+  useCompanySettings,
+  useUpdateCompanySettings,
+} from './useCompanySettings';
 
 export function CompanySettingsForm() {
-  const { data: settings, isLoading, error: loadError } = useCompanySettings()
-  const updateMutation = useUpdateCompanySettings()
+  const { data: settings, isLoading, error: loadError } = useCompanySettings();
+  const updateMutation = useUpdateCompanySettings();
 
   const {
     register,
@@ -22,17 +25,17 @@ export function CompanySettingsForm() {
   } = useForm<CompanySettingsFormValues>({
     resolver: zodResolver(companySettingsSchema),
     defaultValues: companySettingsDefaultValues,
-  })
+  });
 
   // Populate form when data is loaded
   useEffect(() => {
     if (settings) {
-      reset(settings as CompanySettingsFormValues)
+      reset(settings as CompanySettingsFormValues);
     }
-  }, [settings, reset])
+  }, [settings, reset]);
 
   async function onSubmit(values: CompanySettingsFormValues) {
-    await updateMutation.mutateAsync(values)
+    await updateMutation.mutateAsync(values);
   }
 
   if (isLoading) {
@@ -42,7 +45,7 @@ export function CompanySettingsForm() {
           <div key={i} className="skeleton-block" style={{ height: 56 }} />
         ))}
       </div>
-    )
+    );
   }
 
   if (loadError) {
@@ -50,14 +53,24 @@ export function CompanySettingsForm() {
       <p className="error-inline">
         Không thể tải cài đặt: {(loadError as Error).message}
       </p>
-    )
+    );
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       {/* Success feedback */}
       {updateMutation.isSuccess && (
-        <div className="success-inline" style={{ marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: 8, background: 'var(--color-emerald-50, #ecfdf5)', color: 'var(--color-emerald-700, #047857)', fontSize: '0.875rem' }}>
+        <div
+          className="success-inline"
+          style={{
+            marginBottom: '1rem',
+            padding: '0.75rem 1rem',
+            borderRadius: 8,
+            background: 'var(--color-emerald-50, #ecfdf5)',
+            color: 'var(--color-emerald-700, #047857)',
+            fontSize: '0.875rem',
+          }}
+        >
           ✅ Đã lưu thông tin công ty thành công!
         </div>
       )}
@@ -71,7 +84,13 @@ export function CompanySettingsForm() {
 
       <div className="form-grid" style={{ gap: '1rem' }}>
         {/* Tên công ty */}
-        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+        <div
+          className="form-grid"
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: '1rem',
+          }}
+        >
           <div className="form-field">
             <label htmlFor="cs-company-name">
               Tên công ty <span className="field-required">*</span>
@@ -121,7 +140,13 @@ export function CompanySettingsForm() {
         </div>
 
         {/* SĐT + Email */}
-        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+        <div
+          className="form-grid"
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: '1rem',
+          }}
+        >
           <div className="form-field">
             <label htmlFor="cs-phone">Số điện thoại</label>
             <input
@@ -152,7 +177,13 @@ export function CompanySettingsForm() {
         </div>
 
         {/* Website + Logo */}
-        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+        <div
+          className="form-grid"
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: '1rem',
+          }}
+        >
           <div className="form-field">
             <label htmlFor="cs-website">Website</label>
             <input
@@ -177,7 +208,13 @@ export function CompanySettingsForm() {
         </div>
 
         {/* Bank info */}
-        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+        <div
+          className="form-grid"
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: '1rem',
+          }}
+        >
           <div className="form-field">
             <label htmlFor="cs-bank-name">Tên ngân hàng</label>
             <input
@@ -203,12 +240,21 @@ export function CompanySettingsForm() {
       </div>
 
       {/* Actions */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: '0.75rem',
+          marginTop: '1.5rem',
+        }}
+      >
         <button
           className="btn-secondary"
           type="button"
           disabled={isSubmitting || !isDirty}
-          onClick={() => settings && reset(settings as CompanySettingsFormValues)}
+          onClick={() =>
+            settings && reset(settings as CompanySettingsFormValues)
+          }
         >
           Hoàn tác
         </button>
@@ -221,5 +267,5 @@ export function CompanySettingsForm() {
         </button>
       </div>
     </form>
-  )
+  );
 }

@@ -1,27 +1,27 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
-import { Combobox } from '@/shared/components/Combobox'
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { Combobox } from '@/shared/components/Combobox';
 
 import {
   fabricCatalogDefaultValues,
   fabricCatalogSchema,
   FABRIC_CATALOG_STATUS_LABELS,
-} from './fabric-catalog.module'
-import type { FabricCatalogFormValues } from './fabric-catalog.module'
-import type { FabricCatalog } from './types'
+} from './fabric-catalog.module';
+import type { FabricCatalogFormValues } from './fabric-catalog.module';
+import type { FabricCatalog } from './types';
 import {
   useCreateFabricCatalog,
   useNextFabricCatalogCode,
   useUpdateFabricCatalog,
-} from './useFabricCatalog'
+} from './useFabricCatalog';
 
 type FabricCatalogFormProps = {
-  catalog: FabricCatalog | null
-  onClose: () => void
-}
+  catalog: FabricCatalog | null;
+  onClose: () => void;
+};
 
 function catalogToFormValues(catalog: FabricCatalog): FabricCatalogFormValues {
   return {
@@ -31,14 +31,17 @@ function catalogToFormValues(catalog: FabricCatalog): FabricCatalogFormValues {
     unit: catalog.unit,
     notes: catalog.notes ?? '',
     status: catalog.status,
-  }
+  };
 }
 
-export function FabricCatalogForm({ catalog, onClose }: FabricCatalogFormProps) {
-  const isEditing = catalog !== null
-  const createMutation = useCreateFabricCatalog()
-  const updateMutation = useUpdateFabricCatalog()
-  const { data: nextCode } = useNextFabricCatalogCode()
+export function FabricCatalogForm({
+  catalog,
+  onClose,
+}: FabricCatalogFormProps) {
+  const isEditing = catalog !== null;
+  const createMutation = useCreateFabricCatalog();
+  const updateMutation = useUpdateFabricCatalog();
+  const { data: nextCode } = useNextFabricCatalogCode();
 
   const {
     register,
@@ -49,47 +52,68 @@ export function FabricCatalogForm({ catalog, onClose }: FabricCatalogFormProps) 
     formState: { errors, isSubmitting },
   } = useForm<FabricCatalogFormValues>({
     resolver: zodResolver(fabricCatalogSchema),
-    defaultValues: isEditing ? catalogToFormValues(catalog) : fabricCatalogDefaultValues,
-  })
+    defaultValues: isEditing
+      ? catalogToFormValues(catalog)
+      : fabricCatalogDefaultValues,
+  });
 
   useEffect(() => {
-    reset(isEditing ? catalogToFormValues(catalog) : fabricCatalogDefaultValues)
-  }, [catalog, isEditing, reset])
+    reset(
+      isEditing ? catalogToFormValues(catalog) : fabricCatalogDefaultValues,
+    );
+  }, [catalog, isEditing, reset]);
 
   useEffect(() => {
     if (!isEditing && nextCode) {
-      setValue('code', nextCode)
+      setValue('code', nextCode);
     }
-  }, [isEditing, nextCode, setValue])
+  }, [isEditing, nextCode, setValue]);
 
   async function onSubmit(values: FabricCatalogFormValues) {
     try {
       if (isEditing) {
-        await updateMutation.mutateAsync({ id: catalog.id, values })
+        await updateMutation.mutateAsync({
+          id: catalog.id,
+          values,
+        });
       } else {
-        await createMutation.mutateAsync(values)
+        await createMutation.mutateAsync(values);
       }
-      onClose()
+      onClose();
     } catch {
       // Lỗi hiện qua mutationError bên dưới
     }
   }
 
-  const mutationError = isEditing ? updateMutation.error : createMutation.error
-  const isPending = isSubmitting || createMutation.isPending || updateMutation.isPending
+  const mutationError = isEditing ? updateMutation.error : createMutation.error;
+  const isPending =
+    isSubmitting || createMutation.isPending || updateMutation.isPending;
 
   return (
-    <AdaptiveSheet open={true} onClose={onClose} title={isEditing ? `Sửa: ${catalog.name}` : 'Thêm loại vải'}>
+    <AdaptiveSheet
+      open={true}
+      onClose={onClose}
+      title={isEditing ? `Sửa: ${catalog.name}` : 'Thêm loại vải'}
+    >
       {mutationError && (
         <p className="error-inline" style={{ marginBottom: '1rem' }}>
           Lỗi: {(mutationError as Error).message}
         </p>
       )}
 
-      <form id="fabric-catalog-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form
+        id="fabric-catalog-form"
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+      >
         <div className="form-grid">
           {/* Mã + Tên */}
-          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+          <div
+            className="form-grid"
+            style={{
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            }}
+          >
             <div className="form-field">
               <label htmlFor="fc-code">
                 Mã vải <span className="field-required">*</span>
@@ -125,7 +149,12 @@ export function FabricCatalogForm({ catalog, onClose }: FabricCatalogFormProps) 
           </div>
 
           {/* Thành phần + Đơn vị */}
-          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+          <div
+            className="form-grid"
+            style={{
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            }}
+          >
             <div className="form-field">
               <label htmlFor="fc-composition">Thành phần</label>
               <input
@@ -147,9 +176,18 @@ export function FabricCatalogForm({ catalog, onClose }: FabricCatalogFormProps) 
                 render={({ field }) => (
                   <Combobox
                     options={[
-                      { value: 'kg', label: 'kg' },
-                      { value: 'm', label: 'mét (m)' },
-                      { value: 'cuộn', label: 'cuộn' },
+                      {
+                        value: 'kg',
+                        label: 'kg',
+                      },
+                      {
+                        value: 'm',
+                        label: 'mét (m)',
+                      },
+                      {
+                        value: 'cuộn',
+                        label: 'cuộn',
+                      },
                     ]}
                     value={field.value}
                     onChange={field.onChange}
@@ -165,7 +203,12 @@ export function FabricCatalogForm({ catalog, onClose }: FabricCatalogFormProps) 
           </div>
 
           {/* Trạng thái */}
-          <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+          <div
+            className="form-grid"
+            style={{
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            }}
+          >
             <div className="form-field">
               <label>Trạng thái</label>
               <Controller
@@ -199,7 +242,14 @@ export function FabricCatalogForm({ catalog, onClose }: FabricCatalogFormProps) 
           </div>
         </div>
 
-        <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none' }}>
+        <div
+          className="modal-footer"
+          style={{
+            marginTop: '1.5rem',
+            padding: 0,
+            border: 'none',
+          }}
+        >
           <button
             className="btn-secondary"
             type="button"
@@ -208,11 +258,19 @@ export function FabricCatalogForm({ catalog, onClose }: FabricCatalogFormProps) 
           >
             Hủy
           </button>
-          <button className="primary-button btn-standard" type="submit" disabled={isPending}>
-            {isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Thêm loại vải'}
+          <button
+            className="primary-button btn-standard"
+            type="submit"
+            disabled={isPending}
+          >
+            {isPending
+              ? 'Đang lưu...'
+              : isEditing
+                ? 'Cập nhật'
+                : 'Thêm loại vải'}
           </button>
         </div>
       </form>
     </AdaptiveSheet>
-  )
+  );
 }

@@ -232,7 +232,11 @@
 }
 
 .summary-card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(242, 248, 255, 0.95));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(242, 248, 255, 0.95)
+  );
 }
 
 .summary-label {
@@ -292,7 +296,6 @@
 }
 
 @media (min-width: 768px) {
-
   .sidebar-nav,
   .content-shell {
     width: min(1180px, 100% - 2rem);
@@ -357,7 +360,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .nav-link,
   .mobile-nav-link {
     transition: none;
@@ -528,7 +530,9 @@
   border-radius: var(--radius-md);
   background: var(--surface-strong);
   cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .user-trigger:hover {
@@ -542,7 +546,7 @@
   transition: transform 0.15s;
 }
 
-.user-trigger[aria-expanded="true"] svg {
+.user-trigger[aria-expanded='true'] svg {
   transform: rotate(180deg);
 }
 

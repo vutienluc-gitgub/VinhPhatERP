@@ -1,13 +1,13 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query';
 
-import { supabase } from '@/services/supabase/client'
+import { supabase } from '@/services/supabase/client';
 
 export type ColorOption = {
-  code: string
-  name: string
-}
+  code: string;
+  name: string;
+};
 
-const QUERY_KEY = ['colors', 'options'] as const
+const QUERY_KEY = ['colors', 'options'] as const;
 
 /**
  * Lấy danh sách màu từ bảng `colors` để dùng trong Combobox.
@@ -23,20 +23,20 @@ export function useColorOptions() {
       const { data, error } = await (supabase as any)
         .from('colors')
         .select('code, name')
-        .order('name')
+        .order('name');
 
-      if (error) throw error
-      return (data ?? []) as ColorOption[]
+      if (error) throw error;
+      return (data ?? []) as ColorOption[];
     },
     staleTime: 10 * 60 * 1000,
-  })
+  });
 }
 
 /** Chuyển ColorOption[] thành mảng options cho Combobox (tìm được theo tên + mã) */
 export function toColorComboboxOptions(colors: ColorOption[]) {
   return colors.map((c) => ({
-    value: c.name,  // lưu tên vào form field (backward compatible)
+    value: c.name, // lưu tên vào form field (backward compatible)
     label: c.name,
-    code: c.code,   // hiện mã màu làm phụ đề trong dropdown
-  }))
+    code: c.code, // hiện mã màu làm phụ đề trong dropdown
+  }));
 }

@@ -1,7 +1,7 @@
 ---
 name: run-tests
-description: "Viết và chạy unit test cho VinhPhat App V2. Dùng khi: viết test, tạo test file, chạy test, fix test fail, test schema, test component, test hook, kiểm tra logic, coverage. Framework: Vitest + Testing Library."
-argument-hint: "Tên feature hoặc file cần test, ví dụ: customers, suppliers, DashboardPage"
+description: 'Viết và chạy unit test cho VinhPhat App V2. Dùng khi: viết test, tạo test file, chạy test, fix test fail, test schema, test component, test hook, kiểm tra logic, coverage. Framework: Vitest + Testing Library.'
+argument-hint: 'Tên feature hoặc file cần test, ví dụ: customers, suppliers, DashboardPage'
 ---
 
 # Run Tests — VinhPhat App V2
@@ -60,11 +60,11 @@ npx vitest run --reporter=verbose   # Output chi tiết từng test case
 
 ```typescript
 // Schema test
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 
 // Component test
-import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
 ```
 
 ### 3. Chạy test & fix
@@ -91,68 +91,68 @@ npm run typecheck
 Dùng cho file `*.module.ts` chứa Zod schema.
 
 ```typescript
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 import {
   STATUS_LABELS,
   entityDefaults,
   entitySchema,
-} from "@/features/<name>/<name>.module";
+} from '@/features/<name>/<name>.module';
 
-describe("<name>.module", () => {
-  it("accepts valid data", () => {
+describe('<name>.module', () => {
+  it('accepts valid data', () => {
     const result = entitySchema.parse({
-      code: "XX-001",
-      name: "Tên hợp lệ",
-      status: "active",
+      code: 'XX-001',
+      name: 'Tên hợp lệ',
+      status: 'active',
       // ... các field bắt buộc
     });
-    expect(result.code).toBe("XX-001");
+    expect(result.code).toBe('XX-001');
   });
 
-  it("trims whitespace on string fields", () => {
+  it('trims whitespace on string fields', () => {
     const result = entitySchema.parse({
-      code: "  XX-001  ",
-      name: "  Tên  ",
-      status: "active",
+      code: '  XX-001  ',
+      name: '  Tên  ',
+      status: 'active',
     });
-    expect(result.code).toBe("XX-001");
-    expect(result.name).toBe("Tên");
+    expect(result.code).toBe('XX-001');
+    expect(result.name).toBe('Tên');
   });
 
-  it("accepts empty optional fields", () => {
+  it('accepts empty optional fields', () => {
     const result = entitySchema.parse({
-      code: "XX-002",
-      name: "Test",
-      phone: "",
-      email: "",
-      status: "active",
+      code: 'XX-002',
+      name: 'Test',
+      phone: '',
+      email: '',
+      status: 'active',
     });
-    expect(result.phone).toBe("");
+    expect(result.phone).toBe('');
   });
 
-  it("rejects missing required fields", () => {
+  it('rejects missing required fields', () => {
     const result = entitySchema.safeParse({
-      code: "",
-      name: "",
+      code: '',
+      name: '',
     });
     expect(result.success).toBe(false);
   });
 
-  it("validates enum fields", () => {
+  it('validates enum fields', () => {
     const result = entitySchema.safeParse({
       ...entityDefaults,
-      code: "T1",
-      name: "Test",
-      status: "invalid_status",
+      code: 'T1',
+      name: 'Test',
+      status: 'invalid_status',
     });
     expect(result.success).toBe(false);
   });
 
-  it("keeps stable defaults and labels", () => {
-    expect(entityDefaults.status).toBe("active");
+  it('keeps stable defaults and labels', () => {
+    expect(entityDefaults.status).toBe('active');
     expect(STATUS_LABELS).toEqual({
-      active: "Hoạt động",
-      inactive: "Ngừng hoạt động",
+      active: 'Hoạt động',
+      inactive: 'Ngừng hoạt động',
     });
   });
 });

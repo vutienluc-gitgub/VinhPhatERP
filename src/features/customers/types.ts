@@ -1,1 +1,1 @@
-export * from '@/schema/customer.schema'
+export * from '@/schema/customer.schema';

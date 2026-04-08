@@ -1,45 +1,66 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
-import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useState } from 'react';
+import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
-import { Combobox } from '@/shared/components/Combobox'
-import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm'
-import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { Combobox } from '@/shared/components/Combobox';
+import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm';
+import {
+  useColorOptions,
+  toColorComboboxOptions,
+} from '@/shared/hooks/useColorOptions';
 
-import type { YarnReceipt } from './types'
+import type { YarnReceipt } from './types';
 import {
   useActiveSuppliers,
   useCreateYarnReceipt,
   useNextReceiptNumber,
   useUpdateYarnReceipt,
   useYarnCatalogOptions,
-} from './useYarnReceipts'
+} from './useYarnReceipts';
 import {
   emptyItem,
   yarnReceiptsDefaultValues,
   yarnReceiptsSchema,
-} from './yarn-receipts.module'
-import type { YarnReceiptsFormValues } from './yarn-receipts.module'
+} from './yarn-receipts.module';
+import type { YarnReceiptsFormValues } from './yarn-receipts.module';
 
 /* ── Collapsible form section ── */
-function FormSection({ title, defaultOpen = true, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
-  const [open, setOpen] = useState(defaultOpen)
+function FormSection({
+  title,
+  defaultOpen = true,
+  children,
+}: {
+  title: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="form-section">
-      <div className="form-section-header" onClick={() => setOpen((v) => !v)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setOpen((v) => !v) }}>
+      <div
+        className="form-section-header"
+        onClick={() => setOpen((v) => !v)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') setOpen((v) => !v);
+        }}
+      >
         <span className="form-section-title">{title}</span>
-        <span className="form-section-toggle" data-open={open}>▼</span>
+        <span className="form-section-toggle" data-open={open}>
+          ▼
+        </span>
       </div>
       {open && <div className="form-section-body">{children}</div>}
     </div>
-  )
+  );
 }
 
 type YarnReceiptFormProps = {
-  receipt: YarnReceipt | null
-  onClose: () => void
-}
+  receipt: YarnReceipt | null;
+  onClose: () => void;
+};
 
 function receiptToFormValues(receipt: YarnReceipt): YarnReceiptsFormValues {
   return {
@@ -58,21 +79,28 @@ function receiptToFormValues(receipt: YarnReceipt): YarnReceiptsFormValues {
       composition: it.composition ?? '',
       origin: it.origin ?? '',
     })),
-  }
+  };
 }
 
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value)
+  return new Intl.NumberFormat('vi-VN').format(value);
 }
 
 /* ── Realtime totals sub-component ── */
 
-function LineTotals({ control }: { control: ReturnType<typeof useForm<YarnReceiptsFormValues>>['control'] }) {
-  const items = useWatch({ control, name: 'items' })
+function LineTotals({
+  control,
+}: {
+  control: ReturnType<typeof useForm<YarnReceiptsFormValues>>['control'];
+}) {
+  const items = useWatch({
+    control,
+    name: 'items',
+  });
   const total = (items ?? []).reduce(
     (sum, it) => sum + (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0),
     0,
-  )
+  );
   return (
     <div
       style={{
@@ -85,18 +113,18 @@ function LineTotals({ control }: { control: ReturnType<typeof useForm<YarnReceip
     >
       Tổng cộng: {formatCurrency(total)} đ
     </div>
-  )
+  );
 }
 
 export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
-  const isEditing = receipt !== null
-  const [showQuickSupplier, setShowQuickSupplier] = useState(false)
-  const createMutation = useCreateYarnReceipt()
-  const updateMutation = useUpdateYarnReceipt()
-  const { data: nextNumber } = useNextReceiptNumber()
-  const { data: suppliers = [] } = useActiveSuppliers()
-  const { data: yarnCatalogs = [] } = useYarnCatalogOptions()
-  const { data: colorOptions = [] } = useColorOptions()
+  const isEditing = receipt !== null;
+  const [showQuickSupplier, setShowQuickSupplier] = useState(false);
+  const createMutation = useCreateYarnReceipt();
+  const updateMutation = useUpdateYarnReceipt();
+  const { data: nextNumber } = useNextReceiptNumber();
+  const { data: suppliers = [] } = useActiveSuppliers();
+  const { data: yarnCatalogs = [] } = useYarnCatalogOptions();
+  const { data: colorOptions = [] } = useColorOptions();
 
   const {
     register,
@@ -110,42 +138,53 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
     defaultValues: isEditing
       ? receiptToFormValues(receipt)
       : yarnReceiptsDefaultValues,
-  })
+  });
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'items',
-  })
+  });
 
   useEffect(() => {
-    reset(isEditing ? receiptToFormValues(receipt) : yarnReceiptsDefaultValues)
-  }, [receipt, isEditing, reset])
+    reset(isEditing ? receiptToFormValues(receipt) : yarnReceiptsDefaultValues);
+  }, [receipt, isEditing, reset]);
 
   useEffect(() => {
     if (!isEditing && nextNumber) {
-      setValue('receiptNumber', nextNumber)
+      setValue('receiptNumber', nextNumber);
     }
-  }, [isEditing, nextNumber, setValue])
+  }, [isEditing, nextNumber, setValue]);
 
   async function onSubmit(values: YarnReceiptsFormValues) {
     try {
       if (isEditing) {
-        await updateMutation.mutateAsync({ id: receipt.id, values })
+        await updateMutation.mutateAsync({
+          id: receipt.id,
+          values,
+        });
       } else {
-        await createMutation.mutateAsync(values)
+        await createMutation.mutateAsync(values);
       }
-      onClose()
+      onClose();
     } catch {
       // Error displayed via mutationError below
     }
   }
 
-  const mutationError = isEditing ? updateMutation.error : createMutation.error
+  const mutationError = isEditing ? updateMutation.error : createMutation.error;
   const isPending =
-    isSubmitting || createMutation.isPending || updateMutation.isPending
+    isSubmitting || createMutation.isPending || updateMutation.isPending;
 
   return (
-    <AdaptiveSheet open={true} onClose={onClose} title={isEditing ? `Sửa phiếu: ${receipt.receipt_number}` : 'Tạo phiếu nhập sợi'}>
+    <AdaptiveSheet
+      open={true}
+      onClose={onClose}
+      title={
+        isEditing
+          ? `Sửa phiếu: ${receipt.receipt_number}`
+          : 'Tạo phiếu nhập sợi'
+      }
+    >
       {mutationError && (
         <p className="error-inline" style={{ marginBottom: '1rem' }}>
           Lỗi: {(mutationError as Error).message}
@@ -157,7 +196,12 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
           {/* ── Section 1: Thông tin phiếu ── */}
           <FormSection title="Thông tin phiếu" defaultOpen={true}>
             <div className="form-grid">
-              <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+              <div
+                className="form-grid"
+                style={{
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                }}
+              >
                 <div className="form-field">
                   <label htmlFor="receiptNumber">
                     Số phiếu <span className="field-required">*</span>
@@ -217,14 +261,21 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                   )}
                 />
                 {errors.supplierId && (
-                  <span className="field-error">{errors.supplierId.message}</span>
+                  <span className="field-error">
+                    {errors.supplierId.message}
+                  </span>
                 )}
                 {!showQuickSupplier && (
                   <button
                     className="btn-secondary"
                     type="button"
                     onClick={() => setShowQuickSupplier(true)}
-                    style={{ fontSize: '0.8rem', padding: '0.35rem 0.7rem', alignSelf: 'flex-start', marginTop: '0.5rem' }}
+                    style={{
+                      fontSize: '0.8rem',
+                      padding: '0.35rem 0.7rem',
+                      alignSelf: 'flex-start',
+                      marginTop: '0.5rem',
+                    }}
                   >
                     + Tạo NCC mới
                   </button>
@@ -234,8 +285,8 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                     <QuickSupplierForm
                       defaultCategory="yarn"
                       onCreated={(created) => {
-                        setValue('supplierId', created.id)
-                        setShowQuickSupplier(false)
+                        setValue('supplierId', created.id);
+                        setShowQuickSupplier(false);
                       }}
                       onCancel={() => setShowQuickSupplier(false)}
                     />
@@ -248,12 +299,24 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
           {/* ── Section 2: Danh sách sợi ── */}
           <FormSection title="Danh sách sợi" defaultOpen={true}>
             {errors.items?.root && (
-              <span className="field-error" style={{ marginBottom: '0.5rem', display: 'block' }}>
+              <span
+                className="field-error"
+                style={{
+                  marginBottom: '0.5rem',
+                  display: 'block',
+                }}
+              >
                 {errors.items.root.message}
               </span>
             )}
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+              }}
+            >
               {fields.map((field, index) => (
                 <div
                   key={field.id}
@@ -262,7 +325,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                     borderRadius: 'var(--radius-sm)',
                     padding: '0.75rem',
                     position: 'relative',
-                    background: 'var(--surface)'
+                    background: 'var(--surface)',
                   }}
                 >
                   <div
@@ -273,7 +336,13 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                       marginBottom: '0.5rem',
                     }}
                   >
-                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                    <span
+                      style={{
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        color: 'var(--text-secondary)',
+                      }}
+                    >
                       Dòng {index + 1}
                     </span>
                     {fields.length > 1 && (
@@ -289,9 +358,20 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                     )}
                   </div>
 
-                  <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-                    <div className="form-field" style={{ gridColumn: '1 / -1' }}>
-                      <label htmlFor={`items.${index}.yarnCatalogId`}>Chọn từ danh mục sợi</label>
+                  <div
+                    className="form-grid"
+                    style={{
+                      gridTemplateColumns:
+                        'repeat(auto-fit, minmax(200px, 1fr))',
+                    }}
+                  >
+                    <div
+                      className="form-field"
+                      style={{ gridColumn: '1 / -1' }}
+                    >
+                      <label htmlFor={`items.${index}.yarnCatalogId`}>
+                        Chọn từ danh mục sợi
+                      </label>
                       <Controller
                         name={`items.${index}.yarnCatalogId` as const}
                         control={control}
@@ -304,14 +384,28 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                             }))}
                             value={field.value}
                             onChange={(val) => {
-                              field.onChange(val)
-                              const cat = yarnCatalogs.find((c) => c.id === val)
+                              field.onChange(val);
+                              const cat = yarnCatalogs.find(
+                                (c) => c.id === val,
+                              );
                               if (cat) {
-                                setValue(`items.${index}.yarnType`, cat.name)
-                                setValue(`items.${index}.colorName`, cat.color_name ?? '')
-                                setValue(`items.${index}.composition`, cat.composition ?? '')
-                                setValue(`items.${index}.tensileStrength`, cat.tensile_strength ?? '')
-                                setValue(`items.${index}.origin`, cat.origin ?? '')
+                                setValue(`items.${index}.yarnType`, cat.name);
+                                setValue(
+                                  `items.${index}.colorName`,
+                                  cat.color_name ?? '',
+                                );
+                                setValue(
+                                  `items.${index}.composition`,
+                                  cat.composition ?? '',
+                                );
+                                setValue(
+                                  `items.${index}.tensileStrength`,
+                                  cat.tensile_strength ?? '',
+                                );
+                                setValue(
+                                  `items.${index}.origin`,
+                                  cat.origin ?? '',
+                                );
                               }
                             }}
                             placeholder="— Chọn từ danh mục (tuỳ chọn) —"
@@ -321,7 +415,13 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                     </div>
                   </div>
 
-                  <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                  <div
+                    className="form-grid"
+                    style={{
+                      gridTemplateColumns:
+                        'repeat(auto-fit, minmax(200px, 1fr))',
+                    }}
+                  >
                     <div className="form-field">
                       <label htmlFor={`items.${index}.yarnType`}>
                         Loại sợi <span className="field-required">*</span>
@@ -341,7 +441,9 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                     </div>
 
                     <div className="form-field">
-                      <label htmlFor={`items.${index}.colorName`}>Màu sợi</label>
+                      <label htmlFor={`items.${index}.colorName`}>
+                        Màu sợi
+                      </label>
                       <Controller
                         name={`items.${index}.colorName` as const}
                         control={control}
@@ -357,7 +459,13 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                     </div>
                   </div>
 
-                  <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                  <div
+                    className="form-grid"
+                    style={{
+                      gridTemplateColumns:
+                        'repeat(auto-fit, minmax(200px, 1fr))',
+                    }}
+                  >
                     <div className="form-field">
                       <label htmlFor={`items.${index}.quantity`}>
                         Số lượng (kg) <span className="field-required">*</span>
@@ -403,9 +511,17 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                     </div>
                   </div>
 
-                  <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                  <div
+                    className="form-grid"
+                    style={{
+                      gridTemplateColumns:
+                        'repeat(auto-fit, minmax(200px, 1fr))',
+                    }}
+                  >
                     <div className="form-field">
-                      <label htmlFor={`items.${index}.lotNumber`}>Số lô (Lot)</label>
+                      <label htmlFor={`items.${index}.lotNumber`}>
+                        Số lô (Lot)
+                      </label>
                       <input
                         id={`items.${index}.lotNumber`}
                         className="field-input"
@@ -416,7 +532,9 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                     </div>
 
                     <div className="form-field">
-                      <label htmlFor={`items.${index}.tensileStrength`}>Cường lực</label>
+                      <label htmlFor={`items.${index}.tensileStrength`}>
+                        Cường lực
+                      </label>
                       <input
                         id={`items.${index}.tensileStrength`}
                         className="field-input"
@@ -427,9 +545,17 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                     </div>
                   </div>
 
-                  <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                  <div
+                    className="form-grid"
+                    style={{
+                      gridTemplateColumns:
+                        'repeat(auto-fit, minmax(200px, 1fr))',
+                    }}
+                  >
                     <div className="form-field">
-                      <label htmlFor={`items.${index}.composition`}>Thành phần</label>
+                      <label htmlFor={`items.${index}.composition`}>
+                        Thành phần
+                      </label>
                       <input
                         id={`items.${index}.composition`}
                         className="field-input"
@@ -458,7 +584,10 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
               className="btn-secondary"
               type="button"
               onClick={() => append({ ...emptyItem })}
-              style={{ marginTop: '0.5rem', width: '100%' }}
+              style={{
+                marginTop: '0.5rem',
+                width: '100%',
+              }}
             >
               + Thêm dòng sợi
             </button>
@@ -482,7 +611,14 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
           </FormSection>
         </div>
 
-        <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none' }}>
+        <div
+          className="modal-footer"
+          style={{
+            marginTop: '1.5rem',
+            padding: 0,
+            border: 'none',
+          }}
+        >
           <button
             className="btn-secondary"
             type="button"
@@ -496,14 +632,10 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
             type="submit"
             disabled={isPending}
           >
-            {isPending
-              ? 'Đang lưu...'
-              : isEditing
-                ? 'Cập nhật'
-                : 'Tạo phiếu'}
+            {isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo phiếu'}
           </button>
         </div>
       </form>
     </AdaptiveSheet>
-  )
+  );
 }

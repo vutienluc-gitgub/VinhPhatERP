@@ -2,12 +2,14 @@
 
 This is the ONLY file that defines coding standards.
 Do not use any other file for code rules.
+
 # VinhPhat App V2 — Quy tắc lập trình
 
 > Tài liệu này định nghĩa các quy tắc bắt buộc và khuyến nghị cho dự án.
 > Mọi thành viên và AI assistant đều phải tuân theo.
 
 ---
+
 ## Priority
 
 This file has higher priority than any other coding-related document.
@@ -150,14 +152,31 @@ features/customers/
 - **AI không được phép xoá file hoặc thay đổi schema** mà không có xác nhận rõ ràng
 - **Luôn trả lời và ghi vào các file trong docs bằng tiếng việt có dấu và phong cách dễ hiểu cho người non-tech**
 - **Luôn suy luận logic theo flow, theo nghiệp vụ sản xuất, thương mại B2B ngành dệt may**
-- **Không dùng màu Tailwind trực tiếp (gray-*, blue-*)**
+- **Không dùng màu Tailwind trực tiếp (gray-_, blue-_)**
 - **Chỉ dùng design token (border-border, bg-background…)**
 - **Không viết raw input/button → dùng component system**
 - **Mọi UI phải mobile-first**
 
 ---
 
-## 9. Thứ tự ưu tiên triển khai
+## 9. UI & CSS Standards (Anti-guessing Layout)
+
+- **CSS Framework**: Tuyệt đối KHÔNG dùng TailwindCSS, Bootstrap hay đoán utility classes (như `p-4`, `space-y`).
+- **Audit Requirement**: Trước khi code UI, Model PHẢI dùng `view_file` xem `src/index.css` để lấy mã màu (`--primary`, `--surface`, `--border-color`) và các class chuẩn.
+- **Allowed Components/Classes**:
+  - **Inputs**: Bắt buộc dùng `.field-input`.
+  - **Buttons**: Dùng `.primary-button` (nút chính), `.btn-secondary` (nút phụ), `.btn-icon`.
+  - **Cards**: Dùng `.surface`, `.border-color` để tạo khối.
+- **AdaptiveBottomSheet**:
+  - Không thiết kế ad-hoc trong sheet.
+  - Sử dụng `.modal-content` cho phần nội dung chính.
+  - Phải dùng `display: flex/grid` với `gap` rõ ràng để layout cân đối trên Mobile.
+- **Touch Targets**: Các Card có thể click (như chọn vải) phải có padding tối thiểu `12px` và border rõ ràng.
+- **Rules Over Style**: Ưu tiên tính nhất quán của hệ thống UI hiện tại hơn là tự sáng tạo style mới.
+
+---
+
+## 10. Thứ tự ưu tiên triển khai
 
 ```
 ✅ Đã làm    strict TypeScript config

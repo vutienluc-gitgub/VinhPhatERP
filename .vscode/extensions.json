@@ -1,5 +1,7 @@
 {
-    "recommendations": [
-        "shinotatwu-ds.file-tree-generator"
-    ]
+  "recommendations": [
+    "shinotatwu-ds.file-tree-generator",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
+  ]
 }

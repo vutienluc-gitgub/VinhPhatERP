@@ -25,10 +25,12 @@ description: UI/UX design rules cho VinhPhat App V2. Invoke khi: thiết kế UI
 ## Design Tokens — CSS Variables & Tailwind CSS (Hybrid)
 
 Dự án sử dụng mô hình **Hybrid**:
+
 - **CSS Variables (Source of Truth)**: Định nghĩa các giá trị cốt lõi (màu sắc, bo góc, bóng) trong `src/styles/global.css`.
 - **Tailwind CSS (Utilities)**: Dùng cho layout (flex, grid), spacing (padding, margin) và các tinh chỉnh nhanh.
 
 ### 1. CSS Variables (Design Tokens)
+
 Định nghĩa trong `src/styles/global.css`:
 
 ```css
@@ -52,7 +54,7 @@ Dự án sử dụng mô hình **Hybrid**:
   --shadow: 0 16px 40px rgba(16, 35, 61, 0.08);
 
   /* Font */
-  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+  font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
   font-size: 16px;
   line-height: 1.5;
 }
@@ -74,6 +76,7 @@ Dùng Tailwind để tăng tốc độ phát triển nhưng phải tuân thủ t
 ```
 
 ### 3. Quy tắc bắt buộc khi dùng token
+
 Dù dùng CSS thuần hay Tailwind, luôn phải tham chiếu đến Variable:
 
 ```css
@@ -212,11 +215,13 @@ Vùng chạm tối thiểu **44×44px**:
 ## Form & Input (Step-based & Bottom Sheet)
 
 ### Quy tắc cơ bản
+
 - **Bắt buộc dùng Bottom Sheet**: Đối với mọi phân hệ nhập liệu trên mobile.
-- **Giới hạn 1 màn hình**: Form không được dài quá chiều cao màn hình di động. 
+- **Giới hạn 1 màn hình**: Form không được dài quá chiều cao màn hình di động.
 - **Chia để trị (Divide & Conquer)**: Form nhiều dữ liệu PHẢI chia thành các bước (VD: Bước 1: Thông tin chung; Bước 2: Kỹ thuật; Bước 3: Nguồn gốc).
 
 ### Tương tác Phân bước (Step-based Interaction)
+
 - **Nút "Tiếp tục" (Next)**: Dùng cho các bước trung gian (`btn-primary` ở góc phải).
 - **Nút "Quay lại" (Back)**: Luôn hiển thị ở bên trái (`btn-secondary`) khi từ Bước 2 trở đi.
 - **Nút "Lưu/Xác nhận"**: Chỉ xuất hiện ở bước cuối cùng để hoàn tất giao dịch.
@@ -228,18 +233,22 @@ Vùng chạm tối thiểu **44×44px**:
 ## Select & Dropdown (Searchable Combobox)
 
 ### Nguyên tắc bắt buộc
+
 - **Cấm dùng `<select>` HTML**: Trừ phi tập dữ liệu cực kỳ nhỏ (< 5 mục ổn định như Yes/No, Gender).
 - **Phải có Tìm kiếm (Searchable)**: Mọi dropdown chứa dữ liệu nghiệp vụ (Khách hàng, Sợi, Vải...) đều phải có ô tìm kiếm.
 - **Thư viện tiêu chuẩn**: Sử dụng **shadcn/ui Combobox** (kết hợp Radix UI Popover + Command).
 
 ### Quy tắc Tìm kiếm (Filtering)
+
 Lọc kết quả ĐỒNG THỜI theo:
+
 - **Tên** (Name)
 - **Mã** (Code / ID)
 - **Số điện thoại** (Phone) — nếu là khách hàng/nhà cung cấp.
 - **Highlight**: In đậm các ký tự khớp với từ khóa trong danh sách kết quả.
 
 ### Tương tác & Mobile
+
 - **Quick Create**: Nếu tìm kiếm không ra kết quả (`No results found`), hiển thị nút **"+ Thêm mới [Tên đang gõ]"** ngay dưới đáy để mở Bottom Sheet tạo nhanh.
 - **Mobile optimization**: Trên màn hình nhỏ, Combobox Popover phải hành xử như một **Bottom Sheet** (trượt từ đáy lên) để dễ dàng thao tác bằng một tay, thay vì treo lơ lửng giữa màn hình.
 
@@ -248,14 +257,17 @@ Lọc kết quả ĐỒNG THỜI theo:
 ## ADVANCED — Mobile Interaction (App-like Experience)
 
 ### Swipe & Pull Gestures
+
 - **Pull-to-refresh**: Phải có trên mọi danh sách dữ liệu quan trọng (Đơn hàng, Kho).
 - **Swipe Actions**: Hỗ trợ vuốt trái/phải trên các thẻ danh sách (List items) cho các hành động nhanh.
 
 ### Visual States
+
 - **Skeleton Screens (Shimmer)**: Dùng thay cho icon loading xoay tròn truyền thống. Phải mô phỏng được cấu trúc của nội dung thật.
 - **Empty States**: Không hiển thị màn hình trống không; phải có icon minh họa và một nút hành động kèm theo.
 
 ### Feedback
+
 - **Haptic Feedback**: Sử dụng bộ rung hệ thống (Vibration API) để xác nhận khi quét mã vạch đúng hoặc lưu form thành công.
 - **Infinite Scroll**: Ưu tiên tải dữ liệu tự động thay cho phân trang kiểu cũ khi chạm đáy màn hình.
 
@@ -279,7 +291,7 @@ Khi form đang submit:
 
 ```tsx
 <button disabled={isPending}>
-  {isPending ? "Đang lưu..." : "Lưu thay đổi"}
+  {isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
 </button>
 ```
 
@@ -330,12 +342,14 @@ Mọi async UI cần 3 trạng thái:
 ## Navigation
 
 ### Mobile (📱)
+
 - **Bắt buộc dùng Bottom Navigation**: Luôn hiển thị ở đáy màn hình cho các mục chính.
 - **Fixed bottom**: Vị trí luôn cố định, không trôi theo nội dung.
 - **Không dùng top menu**: Header chỉ dành cho tên trang và các hành động ngữ cảnh (Contextual actions).
 - **Z-Index**: Phải cao hơn mọi nội dung khác (`z-index: 100`).
 
 ### Desktop (💻)
+
 - **Sidebar bên trái**: Chứa danh mục chức năng phân tầng.
 - **Có thể collapse**: Thu gọn sidebar để tối ưu không gian cho các bảng dữ liệu chuyên sâu.
 - **Micro-animations**: Hiển thị text nhãn khi rê chuột qua (tooltip) nếu sidebar đang ở trạng thái thu gọn.
@@ -431,13 +445,13 @@ height: 0 → height: auto;
 
 ---
 
-| `backdrop-filter: blur()`               | Tốn CPU — máy cũ tại xưởng dệt |
-| Hardcode màu hex (ngoài token)         | Phá vỡ design system           |
-| `outline: none` không có focus thay thế | Vi phạm accessibility          |
-| Cuộn ngang trên mobile                  | Trải nghiệm người dùng tệ      |
-| Animate `width`/`height`/`margin`       | Gây reflow, giật               |
-| Emoji icon đơn không có `aria-label`    | Không accessible               |
-| Placeholder thay label                  | Vi phạm WCAG                   |
+| `backdrop-filter: blur()` | Tốn CPU — máy cũ tại xưởng dệt |
+| Hardcode màu hex (ngoài token) | Phá vỡ design system |
+| `outline: none` không có focus thay thế | Vi phạm accessibility |
+| Cuộn ngang trên mobile | Trải nghiệm người dùng tệ |
+| Animate `width`/`height`/`margin` | Gây reflow, giật |
+| Emoji icon đơn không có `aria-label` | Không accessible |
+| Placeholder thay label | Vi phạm WCAG |
 
 ---
 

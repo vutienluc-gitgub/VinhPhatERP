@@ -1,34 +1,34 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 
-import { ShippingRateForm } from './ShippingRateForm'
-import { ShippingRateList } from './ShippingRateList'
-import type { ShippingRate } from './types'
+import { ShippingRateForm } from './ShippingRateForm';
+import { ShippingRateList } from './ShippingRateList';
+import type { ShippingRate } from './types';
 
 export function ShippingRatesPage() {
-  const [editItem, setEditItem] = useState<ShippingRate | null>(null)
-  const [showForm, setShowForm] = useState(false)
+  const [editItem, setEditItem] = useState<ShippingRate | null>(null);
+  const [showForm, setShowForm] = useState(false);
 
   function openCreate() {
-    setEditItem(null)
-    setShowForm(true)
+    setEditItem(null);
+    setShowForm(true);
   }
 
   function openEdit(item: ShippingRate) {
-    setEditItem(item)
-    setShowForm(true)
+    setEditItem(item);
+    setShowForm(true);
   }
 
   function closeForm() {
-    setShowForm(false)
-    setEditItem(null)
+    setShowForm(false);
+    setEditItem(null);
   }
 
   return (
     <>
       <ShippingRateList onEdit={openEdit} onNew={openCreate} />
-      
+
       <AdaptiveSheet
         open={showForm}
         onClose={closeForm}
@@ -37,5 +37,5 @@ export function ShippingRatesPage() {
         <ShippingRateForm item={editItem} onClose={closeForm} />
       </AdaptiveSheet>
     </>
-  )
+  );
 }

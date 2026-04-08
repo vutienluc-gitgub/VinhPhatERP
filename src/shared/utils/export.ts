@@ -6,59 +6,64 @@
 
 export type ExportColumn = {
   /** Header hiển thị trong file */
-  label: string
+  label: string;
   /** Key trong object dữ liệu */
-  key: string
+  key: string;
   /** Căn lề cell Excel (default: left) */
-  align?: 'left' | 'right' | 'center'
+  align?: 'left' | 'right' | 'center';
   /** Chiều rộng cột Excel tính bằng ký tự (default: auto) */
-  width?: number
-}
+  width?: number;
+};
 
 /** Xuất mảng data ra file Excel (.xlsx) */
 export async function exportToExcel<T extends Record<string, unknown>>(
   data: T[],
   columns: ExportColumn[],
   options: {
-    fileName: string
-    sheetName?: string
-    title?: string
+    fileName: string;
+    sheetName?: string;
+    title?: string;
   },
 ): Promise<void> {
   const [{ default: ExcelJS }, { saveAs }] = await Promise.all([
     import('exceljs'),
     import('file-saver'),
-  ])
-  const wb = new ExcelJS.Workbook()
-  const ws = wb.addWorksheet(options.sheetName ?? 'Sheet1')
+  ]);
+  const wb = new ExcelJS.Workbook();
+  const ws = wb.addWorksheet(options.sheetName ?? 'Sheet1');
 
   // Thiết lập cột
   ws.columns = columns.map((c) => ({
     header: c.label,
     key: c.key,
     width: c.width ?? Math.max(c.label.length + 2, 12),
-  }))
+  }));
 
   // Bold header row
-  const headerRow = ws.getRow(1)
-  headerRow.font = { bold: true }
+  const headerRow = ws.getRow(1);
+  headerRow.font = { bold: true };
 
   // Các hàng dữ liệu
   for (const row of data) {
-    const rowValues: Record<string, unknown> = {}
+    const rowValues: Record<string, unknown> = {};
     for (const c of columns) {
-      const val = row[c.key]
-      rowValues[c.key] = val === null || val === undefined ? '' : val
+      const val = row[c.key];
+      rowValues[c.key] = val === null || val === undefined ? '' : val;
     }
-    ws.addRow(rowValues)
+    ws.addRow(rowValues);
   }
 
   const safeFileName = options.fileName.endsWith('.xlsx')
     ? options.fileName
-    : `${options.fileName}.xlsx`
+    : `${options.fileName}.xlsx`;
 
-  const buffer = await wb.xlsx.writeBuffer()
-  saveAs(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), safeFileName)
+  const buffer = await wb.xlsx.writeBuffer();
+  saveAs(
+    new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    }),
+    safeFileName,
+  );
 }
 
 /** Xuất mảng data ra file PDF — dùng browser print dialog để hỗ trợ tiếng Việt */
@@ -66,9 +71,9 @@ export function exportToPdf<T extends Record<string, unknown>>(
   data: T[],
   columns: ExportColumn[],
   options: {
-    fileName: string
-    title: string
-    subtitle?: string
+    fileName: string;
+    title: string;
+    subtitle?: string;
   },
 ): void {
   const generatedAt = new Date().toLocaleString('vi-VN', {
@@ -77,22 +82,22 @@ export function exportToPdf<T extends Record<string, unknown>>(
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-  })
+  });
 
-  const headerCells = columns.map((c) => `<th>${c.label}</th>`).join('')
+  const headerCells = columns.map((c) => `<th>${c.label}</th>`).join('');
   const bodyRows = data
     .map((row) => {
       const cells = columns
         .map((c) => {
-          const val = row[c.key]
-          const text = val === null || val === undefined ? '—' : String(val)
-          const align = c.align ?? 'left'
-          return `<td style="text-align:${align}">${text}</td>`
+          const val = row[c.key];
+          const text = val === null || val === undefined ? '—' : String(val);
+          const align = c.align ?? 'left';
+          return `<td style="text-align:${align}">${text}</td>`;
         })
-        .join('')
-      return `<tr>${cells}</tr>`
+        .join('');
+      return `<tr>${cells}</tr>`;
     })
-    .join('')
+    .join('');
 
   const html = `<!DOCTYPE html>
 <html lang="vi">
@@ -123,14 +128,14 @@ ${options.subtitle ? `<p class="sub">${options.subtitle}</p>` : ''}
   <tbody>${bodyRows}</tbody>
 </table>
 </body>
-</html>`
+</html>`;
 
-  const win = window.open('', '_blank')
-  if (!win) return
-  win.document.write(html)
-  win.document.close()
+  const win = window.open('', '_blank');
+  if (!win) return;
+  win.document.write(html);
+  win.document.close();
   win.addEventListener('load', () => {
-    win.focus()
-    win.print()
-  })
+    win.focus();
+    win.print();
+  });
 }

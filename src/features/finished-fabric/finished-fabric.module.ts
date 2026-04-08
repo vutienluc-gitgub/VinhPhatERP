@@ -1,4 +1,4 @@
-import type { FeatureDefinition } from '@/shared/types/feature'
+import type { FeatureDefinition } from '@/shared/types/feature';
 
 export {
   QUALITY_GRADES,
@@ -12,12 +12,12 @@ export {
   bulkFinishedRollRowSchema,
   bulkFinishedInputSchema,
   bulkFinishedInputDefaults,
-} from '@/schema/finished-fabric.schema'
+} from '@/schema/finished-fabric.schema';
 export type {
   FinishedFabricFormValues,
   BulkFinishedRollRow,
   BulkFinishedInputFormValues,
-} from '@/schema/finished-fabric.schema'
+} from '@/schema/finished-fabric.schema';
 
 export const finishedFabricFeature: FeatureDefinition = {
   key: 'finished-fabric',
@@ -42,4 +42,18 @@ export const finishedFabricFeature: FeatureDefinition = {
     'Inventory cards theo loại vải và màu.',
     'Trace từ raw roll sang shipment.',
   ],
-}
+};
+
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
+export const finishedFabricPlugin: FeaturePlugin = {
+  key: 'finished-fabric',
+  route: 'finished-fabric',
+  label: 'Vải thành phẩm',
+  shortLabel: 'Finished',
+  description: 'Nhập thành phẩm và cập nhật sản lượng đã xử lý.',
+  icon: 'check-square',
+  group: 'production',
+  order: 60,
+  component: () =>
+    import('./index').then((m) => ({ default: m.FinishedFabricPage })),
+};

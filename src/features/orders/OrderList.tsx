@@ -1,85 +1,110 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { useConfirm } from '@/shared/components/ConfirmDialog'
-import { EmptyState } from '@/shared/components/EmptyState'
-import { Pagination } from '@/shared/components/Pagination'
-import { TableSkeleton } from '@/shared/components/TableSkeleton'
+import { useConfirm } from '@/shared/components/ConfirmDialog';
+import { EmptyState } from '@/shared/components/EmptyState';
+import { Pagination } from '@/shared/components/Pagination';
+import { TableSkeleton } from '@/shared/components/TableSkeleton';
 
-import { ORDER_STATUS_LABELS } from './orders.module'
-import type { Order, OrdersFilter, OrderStatus } from './types'
-import { useDeleteOrder, useOrderList } from './useOrders'
+import { ORDER_STATUS_LABELS } from './orders.module';
+import type { Order, OrdersFilter, OrderStatus } from './types';
+import { useDeleteOrder, useOrderList } from './useOrders';
 
 type OrderListProps = {
-  onEdit: (order: Order) => void
-  onNew: () => void
-  onView: (order: Order) => void
-}
+  onEdit: (order: Order) => void;
+  onNew: () => void;
+  onView: (order: Order) => void;
+};
 
-import { formatCurrency } from '@/shared/utils/format'
+import { formatCurrency } from '@/shared/utils/format';
 
 function statusClass(status: OrderStatus): string {
   switch (status) {
     case 'confirmed':
-      return 'reserved'
+      return 'reserved';
     case 'in_progress':
-      return 'in_process'
+      return 'in_process';
     case 'completed':
-      return 'in_stock'
+      return 'in_stock';
     case 'cancelled':
-      return 'damaged'
+      return 'damaged';
     default:
-      return 'shipped'
+      return 'shipped';
   }
 }
 
-function daysUntilDelivery(deliveryDate: string | null): { text: string; urgent: boolean } | null {
-  if (!deliveryDate) return null
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const delivery = new Date(deliveryDate)
-  const diff = Math.ceil((delivery.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-  if (diff < 0) return { text: `Trễ ${Math.abs(diff)} ngày`, urgent: true }
-  if (diff === 0) return { text: 'Hôm nay', urgent: true }
-  if (diff <= 3) return { text: `Còn ${diff} ngày`, urgent: true }
-  return { text: `Còn ${diff} ngày`, urgent: false }
+function daysUntilDelivery(
+  deliveryDate: string | null,
+): { text: string; urgent: boolean } | null {
+  if (!deliveryDate) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const delivery = new Date(deliveryDate);
+  const diff = Math.ceil(
+    (delivery.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+  );
+  if (diff < 0)
+    return {
+      text: `Trễ ${Math.abs(diff)} ngày`,
+      urgent: true,
+    };
+  if (diff === 0)
+    return {
+      text: 'Hôm nay',
+      urgent: true,
+    };
+  if (diff <= 3)
+    return {
+      text: `Còn ${diff} ngày`,
+      urgent: true,
+    };
+  return {
+    text: `Còn ${diff} ngày`,
+    urgent: false,
+  };
 }
 
 export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
-  const [searchInput, setSearchInput] = useState('')
-  const [filters, setFilters] = useState<OrdersFilter>({})
-  const [page, setPage] = useState(1)
+  const [searchInput, setSearchInput] = useState('');
+  const [filters, setFilters] = useState<OrdersFilter>({});
+  const [page, setPage] = useState(1);
 
-  const { data: result, isLoading, error } = useOrderList(filters, page)
-  const orders = result?.data ?? []
-  const deleteMutation = useDeleteOrder()
-  const { confirm, alert: showAlert } = useConfirm()
+  const { data: result, isLoading, error } = useOrderList(filters, page);
+  const orders = result?.data ?? [];
+  const deleteMutation = useDeleteOrder();
+  const { confirm, alert: showAlert } = useConfirm();
 
   function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    setPage(1)
-    setFilters((prev) => ({ ...prev, search: searchInput.trim() || undefined }))
+    e.preventDefault();
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      search: searchInput.trim() || undefined,
+    }));
   }
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as OrderStatus | ''
-    setPage(1)
-    setFilters((prev) => ({ ...prev, status: val || undefined }))
+    const val = e.target.value as OrderStatus | '';
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      status: val || undefined,
+    }));
   }
 
   async function handleDelete(order: Order) {
     if (order.status !== 'draft') {
-      await showAlert('Chỉ có thể xoá đơn hàng ở trạng thái Nháp.')
-      return
+      await showAlert('Chỉ có thể xoá đơn hàng ở trạng thái Nháp.');
+      return;
     }
     const ok = await confirm({
       message: `Xóa đơn hàng "${order.order_number}"? Hành động này không thể hoàn tác.`,
       variant: 'danger',
-    })
-    if (!ok) return
-    deleteMutation.mutate(order.id)
+    });
+    if (!ok) return;
+    deleteMutation.mutate(order.id);
   }
 
-  const hasFilter = !!(filters.search || filters.status)
+  const hasFilter = !!(filters.search || filters.status);
 
   return (
     <div className="panel-card card-flush">
@@ -101,16 +126,19 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
       </div>
 
       {/* Filters */}
-      <div
-        className="filter-bar card-filter-section"
-      >
+      <div className="filter-bar card-filter-section">
         <form
           className="filter-field"
           onSubmit={handleSearch}
           style={{ flex: '1 1 220px' }}
         >
           <label htmlFor="filter-search">Tìm kiếm</label>
-          <div style={{ display: 'flex', gap: '0.4rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: '0.4rem',
+            }}
+          >
             <input
               id="filter-search"
               className="field-input"
@@ -119,7 +147,11 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
             />
-            <button className="btn-secondary" type="submit" style={{ whiteSpace: 'nowrap' }}>
+            <button
+              className="btn-secondary"
+              type="submit"
+              style={{ whiteSpace: 'nowrap' }}
+            >
               Tìm
             </button>
           </div>
@@ -146,7 +178,10 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           <button
             className="btn-secondary"
             type="button"
-            onClick={() => { setFilters({}); setSearchInput('') }}
+            onClick={() => {
+              setFilters({});
+              setSearchInput('');
+            }}
             style={{ alignSelf: 'flex-end' }}
           >
             ✕ Xóa lọc
@@ -164,15 +199,23 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
       {/* Table */}
       <div
         className="data-table-wrap card-table-section"
-        style={isLoading || orders.length === 0 ? { border: 'none' } : undefined}
+        style={
+          isLoading || orders.length === 0 ? { border: 'none' } : undefined
+        }
       >
         {isLoading ? (
           <TableSkeleton rows={5} columns={7} />
         ) : orders.length === 0 ? (
           <EmptyState
             icon={hasFilter ? '🔍' : '📦'}
-            title={hasFilter ? 'Không tìm thấy đơn hàng' : 'Chưa có đơn hàng nào'}
-            description={hasFilter ? 'Hãy thử thay đổi điều kiện lọc.' : 'Nhấn nút tạo đơn để bắt đầu quy trình bán hàng mới.'}
+            title={
+              hasFilter ? 'Không tìm thấy đơn hàng' : 'Chưa có đơn hàng nào'
+            }
+            description={
+              hasFilter
+                ? 'Hãy thử thay đổi điều kiện lọc.'
+                : 'Nhấn nút tạo đơn để bắt đầu quy trình bán hàng mới.'
+            }
             actionLabel={!hasFilter ? '+ Tạo đơn hàng' : undefined}
             actionClick={!hasFilter ? onNew : undefined}
           />
@@ -191,8 +234,8 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
             </thead>
             <tbody>
               {orders.map((order) => {
-                const due = daysUntilDelivery(order.delivery_date)
-                const balanceDue = order.total_amount - order.paid_amount
+                const due = daysUntilDelivery(order.delivery_date);
+                const balanceDue = order.total_amount - order.paid_amount;
                 return (
                   <tr
                     key={order.id}
@@ -204,7 +247,13 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
                       <div>
                         {order.customers?.name ?? '—'}
                         {order.customers?.code && (
-                          <span className="td-muted" style={{ fontSize: '0.8rem', marginLeft: '0.3rem' }}>
+                          <span
+                            className="td-muted"
+                            style={{
+                              fontSize: '0.8rem',
+                              marginLeft: '0.3rem',
+                            }}
+                          >
                             {order.customers.code}
                           </span>
                         )}
@@ -214,7 +263,12 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
                     <td className="hide-mobile">
                       {order.delivery_date ?? '—'}
                       {due && (
-                        <div style={{ fontSize: '0.78rem', color: due.urgent ? '#c0392b' : 'var(--muted)' }}>
+                        <div
+                          style={{
+                            fontSize: '0.78rem',
+                            color: due.urgent ? '#c0392b' : 'var(--muted)',
+                          }}
+                        >
                           {due.text}
                         </div>
                       )}
@@ -222,15 +276,24 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
                     <td className="numeric-cell hide-mobile">
                       {formatCurrency(order.total_amount)}
                     </td>
-                    <td className={balanceDue > 0 ? 'numeric-debt' : 'numeric-paid'}>
+                    <td
+                      className={
+                        balanceDue > 0 ? 'numeric-debt' : 'numeric-paid'
+                      }
+                    >
                       {formatCurrency(balanceDue)}
                     </td>
                     <td className="hide-mobile">
-                      <span className={`roll-status ${statusClass(order.status)}`}>
+                      <span
+                        className={`roll-status ${statusClass(order.status)}`}
+                      >
                         {ORDER_STATUS_LABELS[order.status]}
                       </span>
                     </td>
-                    <td className="td-actions" onClick={(e) => e.stopPropagation()}>
+                    <td
+                      className="td-actions"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       {order.status === 'draft' && (
                         <>
                           <button
@@ -255,7 +318,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
                       )}
                     </td>
                   </tr>
-                )
+                );
               })}
             </tbody>
           </table>
@@ -264,5 +327,5 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
 
       <Pagination result={result} onPageChange={setPage} />
     </div>
-  )
+  );
 }

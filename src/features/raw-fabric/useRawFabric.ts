@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   fetchRawFabricPaginated,
@@ -10,19 +10,26 @@ import {
   fetchYarnReceiptOptions,
   fetchWorkOrderOptions,
   fetchRawFabricStats,
-} from '@/api/raw-fabric.api'
-import type { SupplierOption, YarnReceiptOption, WorkOrderOption, InventoryStats } from '@/api/raw-fabric.api'
+} from '@/api/raw-fabric.api';
+import type {
+  SupplierOption,
+  YarnReceiptOption,
+  WorkOrderOption,
+  InventoryStats,
+} from '@/api/raw-fabric.api';
 
-import { findDuplicateRollNumbers, generateBarcode } from './raw-fabric.module'
-import type { BulkInputFormValues } from './raw-fabric.module'
-import type { RawFabricFormValues } from './raw-fabric.module'
-import type { RawFabricFilter, RawFabricRoll } from './types'
+import { findDuplicateRollNumbers, generateBarcode } from './raw-fabric.module';
+import type { BulkInputFormValues } from './raw-fabric.module';
+import type { RawFabricFormValues } from './raw-fabric.module';
+import type { RawFabricFilter, RawFabricRoll } from './types';
 
-export type { SupplierOption, YarnReceiptOption, WorkOrderOption }
+export type { SupplierOption, YarnReceiptOption, WorkOrderOption };
 
-const QUERY_KEY = ['raw-fabric'] as const
+const QUERY_KEY = ['raw-fabric'] as const;
 
-function toDbRow(values: RawFabricFormValues): Omit<RawFabricRoll, 'id' | 'created_at' | 'updated_at'> {
+function toDbRow(
+  values: RawFabricFormValues,
+): Omit<RawFabricRoll, 'id' | 'created_at' | 'updated_at'> {
   return {
     roll_number: values.roll_number,
     fabric_type: values.fabric_type,
@@ -41,55 +48,58 @@ function toDbRow(values: RawFabricFormValues): Omit<RawFabricRoll, 'id' | 'creat
     lot_number: values.lot_number?.trim() || null,
     barcode: generateBarcode(values.roll_number),
     work_order_id: values.work_order_id?.trim() || null,
-  }
+  };
 }
 
 export function useRawFabricList(filters: RawFabricFilter = {}, page = 1) {
   return useQuery({
     queryKey: [...QUERY_KEY, filters, page],
     queryFn: () => fetchRawFabricPaginated(filters, page),
-  })
+  });
 }
 
 export function useCreateRawFabric() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: RawFabricFormValues) => createRawFabric(toDbRow(values)),
+    mutationFn: (values: RawFabricFormValues) =>
+      createRawFabric(toDbRow(values)),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 export function useUpdateRawFabric() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, values }: { id: string; values: RawFabricFormValues }) =>
       updateRawFabric(id, toDbRow(values)),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 export function useDeleteRawFabric() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteRawFabric,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 /** Nhập hàng loạt cuộn vải mộc */
 export function useCreateRawFabricBulk() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (values: BulkInputFormValues) => {
-      const duplicateRollNumbers = findDuplicateRollNumbers(values.rolls)
+      const duplicateRollNumbers = findDuplicateRollNumbers(values.rolls);
       if (duplicateRollNumbers.length > 0) {
-        throw new Error(`Mã cuộn bị trùng trong lô nhập: ${duplicateRollNumbers.join(', ')}`)
+        throw new Error(
+          `Mã cuộn bị trùng trong lô nhập: ${duplicateRollNumbers.join(', ')}`,
+        );
       }
 
       const rows = values.rolls.map((row) => ({
@@ -110,42 +120,42 @@ export function useCreateRawFabricBulk() {
         lot_number: values.lot_number?.trim() || null,
         barcode: generateBarcode(row.roll_number.trim()),
         work_order_id: values.work_order_id?.trim() || null,
-      }))
+      }));
 
-      return createRawFabricBulk(rows)
+      return createRawFabricBulk(rows);
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 export function useWeavingPartners() {
   return useQuery({
     queryKey: ['suppliers', 'weaving'],
     queryFn: fetchWeavingPartners,
-  })
+  });
 }
 
 export function useYarnReceiptOptions() {
   return useQuery({
     queryKey: ['yarn-receipts', 'options'],
     queryFn: fetchYarnReceiptOptions,
-  })
+  });
 }
 
 export function useWorkOrderOptions() {
   return useQuery({
     queryKey: ['work-orders', 'options'],
     queryFn: fetchWorkOrderOptions,
-  })
+  });
 }
 
-export type { InventoryStats }
+export type { InventoryStats };
 
 export function useRawFabricStats() {
   return useQuery<InventoryStats>({
     queryKey: [...QUERY_KEY, 'stats'],
     queryFn: fetchRawFabricStats,
-  })
+  });
 }

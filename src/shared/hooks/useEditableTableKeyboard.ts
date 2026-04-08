@@ -1,4 +1,5 @@
 import { useRef, useCallback } from 'react';
+
 import { getFocusableElements, moveFocus } from '@/utils/focusManager';
 
 /**
@@ -11,7 +12,7 @@ import { getFocusableElements, moveFocus } from '@/utils/focusManager';
 export function useEditableTableKeyboard(
   tableRef: React.RefObject<HTMLElement>,
   onEdit?: (cell: HTMLElement) => void,
-  onCancel?: () => void
+  onCancel?: () => void,
 ) {
   const focusIndex = useRef(0);
 
@@ -41,13 +42,17 @@ export function useEditableTableKeyboard(
           handled = true;
           break;
         case 'Tab':
-          focusIndex.current = moveFocus(focusables, focusIndex.current, e.shiftKey ? -1 : +1);
+          focusIndex.current = moveFocus(
+            focusables,
+            focusIndex.current,
+            e.shiftKey ? -1 : +1,
+          );
           handled = true;
           break;
       }
       if (handled) e.preventDefault();
     },
-    [tableRef, onEdit, onCancel]
+    [tableRef, onEdit, onCancel],
   );
 
   return handleKeyDown;

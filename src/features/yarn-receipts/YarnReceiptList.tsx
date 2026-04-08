@@ -1,64 +1,70 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { useConfirm } from '@/shared/components/ConfirmDialog'
-import { Pagination } from '@/shared/components/Pagination'
+import { useConfirm } from '@/shared/components/ConfirmDialog';
+import { Pagination } from '@/shared/components/Pagination';
 
-import type { DocStatus, YarnReceipt, YarnReceiptsFilter } from './types'
-import { useDeleteYarnReceipt, useYarnReceiptList } from './useYarnReceipts'
-import { DOC_STATUS_LABELS } from './yarn-receipts.module'
+import type { DocStatus, YarnReceipt, YarnReceiptsFilter } from './types';
+import { useDeleteYarnReceipt, useYarnReceiptList } from './useYarnReceipts';
+import { DOC_STATUS_LABELS } from './yarn-receipts.module';
 
 type YarnReceiptListProps = {
-  onEdit: (receipt: YarnReceipt) => void
-  onNew: () => void
-}
+  onEdit: (receipt: YarnReceipt) => void;
+  onNew: () => void;
+};
 
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value)
+  return new Intl.NumberFormat('vi-VN').format(value);
 }
 
 function statusClass(status: DocStatus): string {
   switch (status) {
     case 'confirmed':
-      return 'in_stock'
+      return 'in_stock';
     case 'cancelled':
-      return 'damaged'
+      return 'damaged';
     default:
-      return 'pending'
+      return 'pending';
   }
 }
 
 export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
-  const [searchInput, setSearchInput] = useState('')
-  const [filters, setFilters] = useState<YarnReceiptsFilter>({})
-  const [page, setPage] = useState(1)
+  const [searchInput, setSearchInput] = useState('');
+  const [filters, setFilters] = useState<YarnReceiptsFilter>({});
+  const [page, setPage] = useState(1);
 
-  const { data: result, isLoading, error } = useYarnReceiptList(filters, page)
-  const receipts = result?.data ?? []
-  const deleteMutation = useDeleteYarnReceipt()
-  const { confirm } = useConfirm()
+  const { data: result, isLoading, error } = useYarnReceiptList(filters, page);
+  const receipts = result?.data ?? [];
+  const deleteMutation = useDeleteYarnReceipt();
+  const { confirm } = useConfirm();
 
   function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    setPage(1)
-    setFilters((prev) => ({ ...prev, search: searchInput.trim() || undefined }))
+    e.preventDefault();
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      search: searchInput.trim() || undefined,
+    }));
   }
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as DocStatus | ''
-    setPage(1)
-    setFilters((prev) => ({ ...prev, status: val || undefined }))
+    const val = e.target.value as DocStatus | '';
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      status: val || undefined,
+    }));
   }
 
   async function handleDelete(receipt: YarnReceipt) {
     const ok = await confirm({
       message: `Xóa phiếu nhập "${receipt.receipt_number}"? Hành động này không thể hoàn tác.`,
       variant: 'danger',
-    })
-    if (!ok) return
-    deleteMutation.mutate(receipt.id)
+    });
+    if (!ok) return;
+    deleteMutation.mutate(receipt.id);
   }
 
-  const hasFilter = !!(filters.search || filters.status)
+  const hasFilter = !!(filters.search || filters.status);
 
   return (
     <div className="panel-card card-flush">
@@ -80,9 +86,7 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
       </div>
 
       {/* Filters */}
-      <div
-        className="filter-bar card-filter-section"
-      >
+      <div className="filter-bar card-filter-section">
         <form
           className="filter-field"
           onSubmit={handleSearch}
@@ -128,8 +132,8 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
             className="btn-secondary"
             type="button"
             onClick={() => {
-              setFilters({})
-              setSearchInput('')
+              setFilters({});
+              setSearchInput('');
             }}
             style={{ alignSelf: 'flex-end' }}
           >
@@ -146,9 +150,7 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
       )}
 
       {/* Table */}
-      <div
-        className="data-table-wrap card-table-section"
-      >
+      <div className="data-table-wrap card-table-section">
         {isLoading ? (
           <p className="table-empty">Đang tải...</p>
         ) : receipts.length === 0 ? (
@@ -188,7 +190,9 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
                     {formatCurrency(receipt.total_amount)}
                   </td>
                   <td>
-                    <span className={`roll-status ${statusClass(receipt.status)}`}>
+                    <span
+                      className={`roll-status ${statusClass(receipt.status)}`}
+                    >
                       {DOC_STATUS_LABELS[receipt.status]}
                     </span>
                   </td>
@@ -206,7 +210,9 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
                       className="btn-icon danger"
                       type="button"
                       title="Xóa"
-                      onClick={() => handleDelete(receipt as unknown as YarnReceipt)}
+                      onClick={() =>
+                        handleDelete(receipt as unknown as YarnReceipt)
+                      }
                       disabled={deleteMutation.isPending}
                     >
                       🗑
@@ -221,5 +227,5 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
 
       <Pagination result={result} onPageChange={setPage} />
     </div>
-  )
+  );
 }

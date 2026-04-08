@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 export const inventoryAdjustmentSchema = z.object({
   adjustmentDate: z.string().trim().min(1),
@@ -7,6 +7,8 @@ export const inventoryAdjustmentSchema = z.object({
   adjustmentType: z.enum(['increase', 'decrease', 'correction']),
   quantityDelta: z.number(),
   reason: z.string().trim().min(3),
-})
+});
 
-export type InventoryAdjustmentFormValues = z.infer<typeof inventoryAdjustmentSchema>
+export type InventoryAdjustmentFormValues = z.infer<
+  typeof inventoryAdjustmentSchema
+>;

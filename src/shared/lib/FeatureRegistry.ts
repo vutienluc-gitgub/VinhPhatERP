@@ -1,4 +1,4 @@
-import type { UserRole } from '@/services/supabase/database.types'
+import type { UserRole } from '@/services/supabase/database.types';
 
 /**
  * FeaturePlugin — Interface chuẩn cho mỗi module/plugin trong hệ thống.
@@ -8,25 +8,25 @@ import type { UserRole } from '@/services/supabase/database.types'
  */
 export interface FeaturePlugin {
   /** Unique key, dùng làm identifier. Ví dụ: 'work-orders' */
-  key: string
+  key: string;
 
   /** Route path (không có '/'), ví dụ: 'work-orders' */
-  route: string
+  route: string;
 
   /** Tên hiển thị đầy đủ trên menu. Ví dụ: 'Lệnh Sản Xuất' */
-  label: string
+  label: string;
 
   /** Tên ngắn cho mobile bottom nav. Ví dụ: 'Lệnh SX' */
-  shortLabel: string
+  shortLabel: string;
 
   /** Mô tả ngắn cho tooltip/subtitle */
-  description: string
+  description: string;
 
   /** Icon key theo lucide-react naming. Ví dụ: 'package' */
-  icon?: string
+  icon?: string;
 
   /** Roles được phép thấy trên menu. Nếu undefined → tất cả authenticated users */
-  requiredRoles?: UserRole[]
+  requiredRoles?: UserRole[];
 
   /**
    * Route-level access control group.
@@ -37,31 +37,31 @@ export interface FeaturePlugin {
    * Phân biệt với requiredRoles: requiredRoles chỉ ẩn menu,
    * routeGuard thực sự block truy cập ở tầng router.
    */
-  routeGuard?: 'manager' | 'admin'
+  routeGuard?: 'manager' | 'admin';
 
   /** Hiển thị trên mobile bottom bar */
-  primaryMobile?: boolean
+  primaryMobile?: boolean;
 
   /** Lazy-loaded page component */
-  component: () => Promise<{ default: React.ComponentType }>
+  component: () => Promise<{ default: React.ComponentType }>;
 
   /** Thứ tự hiển thị trên menu (nhỏ = ưu tiên cao) */
-  order?: number
+  order?: number;
 
   /** Nhóm menu: sales, production, master-data, system */
-  group?: 'sales' | 'production' | 'master-data' | 'system'
+  group?: 'sales' | 'production' | 'master-data' | 'system';
 
   /** Print routes */
   printRoutes?: Array<{
-    path: string
-    component: () => Promise<{ default: React.ComponentType }>
-  }>
+    path: string;
+    component: () => Promise<{ default: React.ComponentType }>;
+  }>;
 
   /** Sub-routes (ví dụ: detail page) */
   subRoutes?: Array<{
-    path: string
-    component: () => Promise<{ default: React.ComponentType }>
-  }>
+    path: string;
+    component: () => Promise<{ default: React.ComponentType }>;
+  }>;
 }
 
 /**
@@ -77,86 +77,95 @@ export interface FeaturePlugin {
  *   const navItems = registry.getNavItems('admin')
  */
 class FeatureRegistryClass {
-  private plugins: Map<string, FeaturePlugin> = new Map()
+  private plugins: Map<string, FeaturePlugin> = new Map();
 
   /** Đăng ký một plugin vào hệ thống */
   register(plugin: FeaturePlugin): void {
     if (this.plugins.has(plugin.key)) {
-      console.warn(`[FeatureRegistry] Plugin "${plugin.key}" đã được đăng ký, sẽ bị ghi đè.`)
+      console.warn(
+        `[FeatureRegistry] Plugin "${plugin.key}" đã được đăng ký, sẽ bị ghi đè.`,
+      );
     }
-    this.plugins.set(plugin.key, plugin)
+    this.plugins.set(plugin.key, plugin);
   }
 
   /** Đăng ký nhiều plugins cùng lúc */
   registerAll(plugins: FeaturePlugin[]): void {
     for (const plugin of plugins) {
-      this.register(plugin)
+      this.register(plugin);
     }
   }
 
   /** Lấy tất cả plugins đã đăng ký */
   getAll(): FeaturePlugin[] {
-    return Array.from(this.plugins.values())
-      .sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
+    return Array.from(this.plugins.values()).sort(
+      (a, b) => (a.order ?? 999) - (b.order ?? 999),
+    );
   }
 
   /** Lấy plugin theo key */
   get(key: string): FeaturePlugin | undefined {
-    return this.plugins.get(key)
+    return this.plugins.get(key);
   }
 
   /** Kiểm tra plugin có tồn tại không */
   has(key: string): boolean {
-    return this.plugins.has(key)
+    return this.plugins.has(key);
   }
 
   /** Lấy danh sách navigation items, lọc theo role */
   getNavItems(userRole?: UserRole): FeaturePlugin[] {
     return this.getAll().filter((plugin) => {
-      if (!plugin.requiredRoles) return true
-      if (!userRole) return false
-      return plugin.requiredRoles.includes(userRole)
-    })
+      if (!plugin.requiredRoles) return true;
+      if (!userRole) return false;
+      return plugin.requiredRoles.includes(userRole);
+    });
   }
 
   /** Lấy danh sách app routes (cho authenticated users) */
   getAppRoutes(): FeaturePlugin[] {
-    return this.getAll().filter((p) => !p.requiredRoles)
+    return this.getAll().filter((p) => !p.requiredRoles);
   }
 
   /** Lấy routes có yêu cầu quyền cao (manager/admin) */
   getRoleRoutes(roles: UserRole[]): FeaturePlugin[] {
-    return this.getAll().filter((p) =>
-      p.requiredRoles && p.requiredRoles.some((r) => roles.includes(r)),
-    )
+    return this.getAll().filter(
+      (p) => p.requiredRoles && p.requiredRoles.some((r) => roles.includes(r)),
+    );
   }
 
   /** Lấy routes theo nhóm */
   getByGroup(group: FeaturePlugin['group']): FeaturePlugin[] {
-    return this.getAll().filter((p) => p.group === group)
+    return this.getAll().filter((p) => p.group === group);
   }
 
   /** Lấy danh sách print routes từ tất cả plugins */
-  getPrintRoutes(): Array<{ path: string; component: () => Promise<{ default: React.ComponentType }> }> {
-    const routes: Array<{ path: string; component: () => Promise<{ default: React.ComponentType }> }> = []
+  getPrintRoutes(): Array<{
+    path: string;
+    component: () => Promise<{ default: React.ComponentType }>;
+  }> {
+    const routes: Array<{
+      path: string;
+      component: () => Promise<{ default: React.ComponentType }>;
+    }> = [];
     for (const plugin of this.getAll()) {
       if (plugin.printRoutes) {
-        routes.push(...plugin.printRoutes)
+        routes.push(...plugin.printRoutes);
       }
     }
-    return routes
+    return routes;
   }
 
   /** Xóa plugin (dùng cho hot-reload hoặc disable feature) */
   unregister(key: string): void {
-    this.plugins.delete(key)
+    this.plugins.delete(key);
   }
 
   /** Reset toàn bộ registry (dùng cho testing) */
   clear(): void {
-    this.plugins.clear()
+    this.plugins.clear();
   }
 }
 
 /** Singleton instance */
-export const FeatureRegistry = new FeatureRegistryClass()
+export const FeatureRegistry = new FeatureRegistryClass();

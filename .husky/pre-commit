@@ -1,2 +1,13 @@
-npm run typecheck
-npx lint-staged
+
+
+echo "🎨 Format code..."
+npm run format || exit 1
+
+echo "🔍 Lint fix..."
+npm run lint:fix || exit 1
+
+echo "🔍 Type check..."
+npm run typecheck || exit 1
+
+echo "🤖 AI Audit..."
+npm run ai:audit || exit 1

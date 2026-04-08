@@ -1,8 +1,8 @@
-import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { describe, expect, it, vi } from 'vitest'
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { describe, expect, it, vi } from 'vitest';
 
-import type { AuthContextValue } from '@/features/auth/AuthProvider'
+import type { AuthContextValue } from '@/features/auth/AuthProvider';
 
 // Default mock values
 let mockAuth: AuthContextValue = {
@@ -14,13 +14,13 @@ let mockAuth: AuthContextValue = {
   signIn: vi.fn(),
   signUp: vi.fn(),
   signOut: vi.fn(),
-}
+};
 
 vi.mock('@/features/auth/AuthProvider', () => ({
   useAuth: () => mockAuth,
-}))
+}));
 
-import { ProtectedRoute } from '@/app/router/ProtectedRoute'
+import { ProtectedRoute } from '@/app/router/ProtectedRoute';
 
 function renderWithRouter(initialPath: string) {
   return render(
@@ -37,21 +37,29 @@ function renderWithRouter(initialPath: string) {
         </Route>
       </Routes>
     </MemoryRouter>,
-  )
+  );
 }
 
 describe('ProtectedRoute', () => {
   it('shows loading state while auth is loading', () => {
-    mockAuth = { ...mockAuth, loading: true, session: null }
-    renderWithRouter('/dashboard')
-    expect(screen.getByText('Đang xác thực…')).toBeInTheDocument()
-  })
+    mockAuth = {
+      ...mockAuth,
+      loading: true,
+      session: null,
+    };
+    renderWithRouter('/dashboard');
+    expect(screen.getByText('Đang xác thực…')).toBeInTheDocument();
+  });
 
   it('redirects to /auth when not authenticated', () => {
-    mockAuth = { ...mockAuth, loading: false, session: null }
-    renderWithRouter('/dashboard')
-    expect(screen.getByText('Login Page')).toBeInTheDocument()
-  })
+    mockAuth = {
+      ...mockAuth,
+      loading: false,
+      session: null,
+    };
+    renderWithRouter('/dashboard');
+    expect(screen.getByText('Login Page')).toBeInTheDocument();
+  });
 
   it('redirects to /blocked when user is blocked', () => {
     mockAuth = {
@@ -59,11 +67,15 @@ describe('ProtectedRoute', () => {
       loading: false,
       session: {} as AuthContextValue['session'],
       isBlocked: true,
-      profile: { id: '1', role: 'staff', is_active: false } as AuthContextValue['profile'],
-    }
-    renderWithRouter('/dashboard')
-    expect(screen.getByText('Blocked Page')).toBeInTheDocument()
-  })
+      profile: {
+        id: '1',
+        role: 'staff',
+        is_active: false,
+      } as AuthContextValue['profile'],
+    };
+    renderWithRouter('/dashboard');
+    expect(screen.getByText('Blocked Page')).toBeInTheDocument();
+  });
 
   it('renders outlet when authenticated', () => {
     mockAuth = {
@@ -71,11 +83,15 @@ describe('ProtectedRoute', () => {
       loading: false,
       session: {} as AuthContextValue['session'],
       isBlocked: false,
-      profile: { id: '1', role: 'staff', is_active: true } as AuthContextValue['profile'],
-    }
-    renderWithRouter('/dashboard')
-    expect(screen.getByText('Dashboard')).toBeInTheDocument()
-  })
+      profile: {
+        id: '1',
+        role: 'staff',
+        is_active: true,
+      } as AuthContextValue['profile'],
+    };
+    renderWithRouter('/dashboard');
+    expect(screen.getByText('Dashboard')).toBeInTheDocument();
+  });
 
   it('redirects to /unauthorized when role is not allowed', () => {
     mockAuth = {
@@ -83,11 +99,15 @@ describe('ProtectedRoute', () => {
       loading: false,
       session: {} as AuthContextValue['session'],
       isBlocked: false,
-      profile: { id: '1', role: 'staff', is_active: true } as AuthContextValue['profile'],
-    }
-    renderWithRouter('/admin')
-    expect(screen.getByText('Unauthorized Page')).toBeInTheDocument()
-  })
+      profile: {
+        id: '1',
+        role: 'staff',
+        is_active: true,
+      } as AuthContextValue['profile'],
+    };
+    renderWithRouter('/admin');
+    expect(screen.getByText('Unauthorized Page')).toBeInTheDocument();
+  });
 
   it('renders outlet when role matches allowedRoles', () => {
     mockAuth = {
@@ -95,9 +115,13 @@ describe('ProtectedRoute', () => {
       loading: false,
       session: {} as AuthContextValue['session'],
       isBlocked: false,
-      profile: { id: '1', role: 'admin', is_active: true } as AuthContextValue['profile'],
-    }
-    renderWithRouter('/admin')
-    expect(screen.getByText('Admin Area')).toBeInTheDocument()
-  })
-})
+      profile: {
+        id: '1',
+        role: 'admin',
+        is_active: true,
+      } as AuthContextValue['profile'],
+    };
+    renderWithRouter('/admin');
+    expect(screen.getByText('Admin Area')).toBeInTheDocument();
+  });
+});

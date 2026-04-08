@@ -5,12 +5,14 @@ import { useEffect } from 'react';
  * Đăng ký lắng nghe phím Tab, Enter, Esc, Arrow để điều hướng focus cho UI.
  * @param options - Cấu hình callback cho các phím
  */
-export function useKeyboardNavigation(options: {
-  onEnter?: () => void;
-  onEsc?: () => void;
-  onArrow?: (direction: 'up' | 'down' | 'left' | 'right') => void;
-  onTab?: (shift: boolean) => void;
-} = {}) {
+export function useKeyboardNavigation(
+  options: {
+    onEnter?: () => void;
+    onEsc?: () => void;
+    onArrow?: (direction: 'up' | 'down' | 'left' | 'right') => void;
+    onTab?: (shift: boolean) => void;
+  } = {},
+) {
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Enter' && options.onEnter) {
@@ -19,8 +21,15 @@ export function useKeyboardNavigation(options: {
         options.onEsc();
       } else if (e.key === 'Tab' && options.onTab) {
         options.onTab(e.shiftKey);
-      } else if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key) && options.onArrow) {
-        const dir = e.key.replace('Arrow', '').toLowerCase() as 'up' | 'down' | 'left' | 'right';
+      } else if (
+        ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key) &&
+        options.onArrow
+      ) {
+        const dir = e.key.replace('Arrow', '').toLowerCase() as
+          | 'up'
+          | 'down'
+          | 'left'
+          | 'right';
         options.onArrow(dir);
       }
     }

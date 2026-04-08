@@ -1,32 +1,32 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 
-import { QuotationDetail } from './QuotationDetail'
-import { QuotationForm } from './QuotationForm'
-import { QuotationList } from './QuotationList'
-import type { Quotation } from './types'
+import { QuotationDetail } from './QuotationDetail';
+import { QuotationForm } from './QuotationForm';
+import { QuotationList } from './QuotationList';
+import type { Quotation } from './types';
 
-type View = { mode: 'list' } | { mode: 'detail'; quotationId: string }
+type View = { mode: 'list' } | { mode: 'detail'; quotationId: string };
 
 export function QuotationsPage() {
-  const [view, setView] = useState<View>({ mode: 'list' })
-  const [editQuotation, setEditQuotation] = useState<Quotation | null>(null)
-  const [showForm, setShowForm] = useState(false)
+  const [view, setView] = useState<View>({ mode: 'list' });
+  const [editQuotation, setEditQuotation] = useState<Quotation | null>(null);
+  const [showForm, setShowForm] = useState(false);
 
   function openCreate() {
-    setEditQuotation(null)
-    setShowForm(true)
+    setEditQuotation(null);
+    setShowForm(true);
   }
 
   function openEdit(quotation: Quotation) {
-    setEditQuotation(quotation)
-    setShowForm(true)
+    setEditQuotation(quotation);
+    setShowForm(true);
   }
 
   function closeForm() {
-    setShowForm(false)
-    setEditQuotation(null)
+    setShowForm(false);
+    setEditQuotation(null);
   }
 
   return (
@@ -35,10 +35,19 @@ export function QuotationsPage() {
         <QuotationList
           onNew={openCreate}
           onEdit={(q) => {
-            if (q.status === 'draft' || q.status === 'sent') openEdit(q)
-            else setView({ mode: 'detail', quotationId: q.id })
+            if (q.status === 'draft' || q.status === 'sent') openEdit(q);
+            else
+              setView({
+                mode: 'detail',
+                quotationId: q.id,
+              });
           }}
-          onView={(q) => setView({ mode: 'detail', quotationId: q.id })}
+          onView={(q) =>
+            setView({
+              mode: 'detail',
+              quotationId: q.id,
+            })
+          }
         />
       ) : (
         <QuotationDetail
@@ -47,7 +56,7 @@ export function QuotationsPage() {
           onEdit={(q) => openEdit(q)}
           onViewOrder={() => {
             // Navigate to orders page — could use router in the future
-            window.location.hash = '#/orders'
+            window.location.hash = '#/orders';
           }}
         />
       )}
@@ -55,14 +64,15 @@ export function QuotationsPage() {
       <AdaptiveSheet
         open={showForm}
         onClose={closeForm}
-        title={editQuotation ? `Sửa báo giá: ${editQuotation.quotation_number}` : 'Tạo báo giá mới'}
+        title={
+          editQuotation
+            ? `Sửa báo giá: ${editQuotation.quotation_number}`
+            : 'Tạo báo giá mới'
+        }
         maxWidth={780}
       >
-        <QuotationForm
-          quotation={editQuotation}
-          onClose={closeForm}
-        />
+        <QuotationForm quotation={editQuotation} onClose={closeForm} />
       </AdaptiveSheet>
     </>
-  )
+  );
 }

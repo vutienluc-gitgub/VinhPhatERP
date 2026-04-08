@@ -8,10 +8,10 @@
 
 ```js
 // ❌ Bad
-const yyyymmdstr = moment().format("YYYY/MM/DD");
+const yyyymmdstr = moment().format('YYYY/MM/DD');
 
 // ✅ Good
-const currentDate = moment().format("YYYY/MM/DD");
+const currentDate = moment().format('YYYY/MM/DD');
 ```
 
 ### ✅ Same vocabulary for same type
@@ -163,7 +163,7 @@ class QueryBuilder {
     return `SELECT ${this.fields} FROM ${this.table}`;
   }
 }
-new QueryBuilder().select("*").from("users").build();
+new QueryBuilder().select('*').from('users').build();
 ```
 
 ### ✅ Prefer composition over inheritance
@@ -208,7 +208,7 @@ class InventoryService {
 async function getCleanCodeArticle() {
   try {
     const response = await request.get(cleanCodeUrl);
-    await fs.writeFile("article.html", response);
+    await fs.writeFile('article.html', response);
   } catch (err) {
     console.error(err);
   }

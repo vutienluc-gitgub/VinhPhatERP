@@ -1,17 +1,22 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom';
 
-import type { NavigationItem } from '@/app/router/routes'
+import type { NavigationItem } from '@/app/router/routes';
 
 type Props = {
-  items: NavigationItem[]
-  onClose: () => void
-}
+  items: NavigationItem[];
+  onClose: () => void;
+};
 
 export function MobileMoreDrawer({ items, onClose }: Props) {
   return (
     <>
       <div className="drawer-overlay" onClick={onClose} aria-hidden="true" />
-      <div className="drawer-sheet" role="dialog" aria-modal="true" aria-label="Tất cả module">
+      <div
+        className="drawer-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Tất cả module"
+      >
         <div className="drawer-handle" />
         <p className="drawer-title">Tất cả module</p>
         <div className="drawer-grid">
@@ -19,7 +24,9 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
             <NavLink
               key={item.path}
               to={item.path}
-              className={({ isActive }) => `drawer-item${isActive ? ' is-active' : ''}`}
+              className={({ isActive }) =>
+                `drawer-item${isActive ? ' is-active' : ''}`
+              }
               onClick={onClose}
             >
               {item.label}
@@ -28,5 +35,5 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
         </div>
       </div>
     </>
-  )
+  );
 }

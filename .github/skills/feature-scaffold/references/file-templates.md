@@ -264,12 +264,12 @@ export function <EntityName>Page() {
 ## index.ts
 
 ```ts
-export * from "./<featureName>.module";
-export * from "./types";
-export * from "./use<EntityName>s";
-export * from "./<EntityName>Form";
-export * from "./<EntityName>List";
-export * from "./<EntityName>Page";
+export * from './<featureName>.module';
+export * from './types';
+export * from './use<EntityName>s';
+export * from './<EntityName>Form';
+export * from './<EntityName>List';
+export * from './<EntityName>Page';
 ```
 
 ---

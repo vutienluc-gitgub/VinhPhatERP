@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   fetchSuppliersPaginated,
@@ -6,16 +6,18 @@ import {
   createSupplier,
   updateSupplierRpc,
   deleteSupplier,
-} from '@/api/suppliers.api'
+} from '@/api/suppliers.api';
 
-import type { SupplierFormValues } from './suppliers.module'
-import type { Supplier, SupplierFilter } from './types'
+import type { SupplierFormValues } from './suppliers.module';
+import type { Supplier, SupplierFilter } from './types';
 
-export type { Supplier, SupplierFilter }
+export type { Supplier, SupplierFilter };
 
-const QUERY_KEY = ['suppliers'] as const
+const QUERY_KEY = ['suppliers'] as const;
 
-function toInsertRow(values: SupplierFormValues): Omit<Supplier, 'id' | 'created_at' | 'updated_at'> {
+function toInsertRow(
+  values: SupplierFormValues,
+): Omit<Supplier, 'id' | 'created_at' | 'updated_at'> {
   return {
     code: values.code,
     name: values.name,
@@ -27,28 +29,29 @@ function toInsertRow(values: SupplierFormValues): Omit<Supplier, 'id' | 'created
     contact_person: values.contact_person?.trim() || null,
     notes: values.notes?.trim() || null,
     status: values.status,
-  }
+  };
 }
 
 export function useSuppliersList(filters: SupplierFilter = {}, page = 1) {
   return useQuery({
     queryKey: [...QUERY_KEY, filters, page],
     queryFn: () => fetchSuppliersPaginated(filters, page),
-  })
+  });
 }
 
 export function useCreateSupplier() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: SupplierFormValues) => createSupplier(toInsertRow(values)),
+    mutationFn: (values: SupplierFormValues) =>
+      createSupplier(toInsertRow(values)),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 export function useUpdateSupplier() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, values }: { id: string; values: SupplierFormValues }) =>
       updateSupplierRpc(id, {
@@ -64,24 +67,24 @@ export function useUpdateSupplier() {
         p_status: values.status,
       }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 export function useNextSupplierCode() {
   return useQuery({
     queryKey: [...QUERY_KEY, 'next-code'],
     queryFn: fetchNextSupplierCode,
-  })
+  });
 }
 
 export function useDeleteSupplier() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteSupplier,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }

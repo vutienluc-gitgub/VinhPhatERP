@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   fetchOrdersPaginated,
@@ -10,12 +10,12 @@ import {
   cancelOrder,
   completeOrder,
   deleteOrder,
-} from '@/api/orders.api'
+} from '@/api/orders.api';
 
-import type { OrdersFormValues } from './orders.module'
-import type { OrdersFilter } from './types'
+import type { OrdersFormValues } from './orders.module';
+import type { OrdersFilter } from './types';
 
-const QUERY_KEY = ['orders'] as const
+const QUERY_KEY = ['orders'] as const;
 
 /* ── List with filters + pagination ── */
 
@@ -23,7 +23,7 @@ export function useOrderList(filters: OrdersFilter = {}, page = 1) {
   return useQuery({
     queryKey: [...QUERY_KEY, filters, page] as const,
     queryFn: () => fetchOrdersPaginated(filters, page),
-  })
+  });
 }
 
 /* ── Single order with items ── */
@@ -33,7 +33,7 @@ export function useOrder(id: string | undefined) {
     queryKey: [...QUERY_KEY, id],
     enabled: !!id,
     queryFn: () => fetchOrderById(id!),
-  })
+  });
 }
 
 /* ── Auto-generate order number ── */
@@ -42,19 +42,19 @@ export function useNextOrderNumber() {
   return useQuery({
     queryKey: [...QUERY_KEY, 'next-number'],
     queryFn: fetchNextOrderNumber,
-  })
+  });
 }
 
 /* ── Create order (header + items) ── */
 
 export function useCreateOrder() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (values: OrdersFormValues) => {
       const total = values.items.reduce(
         (sum, it) => sum + it.quantity * it.unitPrice,
         0,
-      )
+      );
 
       return createOrder(
         {
@@ -75,30 +75,30 @@ export function useCreateOrder() {
           unit_price: item.unitPrice,
           sort_order: idx,
         })),
-      )
+      );
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 /* ── Update order ── */
 
 export function useUpdateOrder() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       id,
       values,
     }: {
-      id: string
-      values: OrdersFormValues
+      id: string;
+      values: OrdersFormValues;
     }) => {
       const total = values.items.reduce(
         (sum, it) => sum + it.quantity * it.unitPrice,
         0,
-      )
+      );
 
       await updateOrderWithItems(
         id,
@@ -119,61 +119,61 @@ export function useUpdateOrder() {
           unit_price: item.unitPrice,
           sort_order: idx,
         })),
-      )
+      );
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 /* ── Confirm order → recalculate total, update status, create progress rows ── */
 
 export function useConfirmOrder() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: confirmOrder,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
-      void queryClient.invalidateQueries({ queryKey: ['order-progress'] })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ['order-progress'] });
     },
-  })
+  });
 }
 
 /* ── Cancel order ── */
 
 export function useCancelOrder() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: cancelOrder,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
-      void queryClient.invalidateQueries({ queryKey: ['reserve-rolls'] })
-      void queryClient.invalidateQueries({ queryKey: ['finished-fabric'] })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ['reserve-rolls'] });
+      void queryClient.invalidateQueries({ queryKey: ['finished-fabric'] });
     },
-  })
+  });
 }
 
 /* ── Complete order ── */
 
 export function useCompleteOrder() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: completeOrder,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }
 
 /* ── Delete order ── */
 
 export function useDeleteOrder() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteOrder,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-  })
+  });
 }

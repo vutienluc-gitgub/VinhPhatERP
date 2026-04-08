@@ -1,50 +1,69 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react';
 
-import styles from './kanban.module.css'
-import { KanbanColumn } from './OrderKanbanList'
-import type { OrderKanbanStatus } from './types'
-import { useOrderKanban, useUpdateOrderStatus } from './useOrderKanban'
+import styles from './kanban.module.css';
+import { KanbanColumn } from './OrderKanbanList';
+import type { OrderKanbanStatus } from './types';
+import { useOrderKanban, useUpdateOrderStatus } from './useOrderKanban';
 
 const COLUMNS: { status: OrderKanbanStatus; label: string; emoji: string }[] = [
-  { status: 'draft', label: 'Bản nháp', emoji: '📝' },
-  { status: 'confirmed', label: 'Đã xác nhận', emoji: '✅' },
-  { status: 'delivering', label: 'Đang giao', emoji: '🚚' },
-  { status: 'completed', label: 'Hoàn thành', emoji: '🎉' },
-]
+  {
+    status: 'draft',
+    label: 'Bản nháp',
+    emoji: '📝',
+  },
+  {
+    status: 'confirmed',
+    label: 'Đã xác nhận',
+    emoji: '✅',
+  },
+  {
+    status: 'delivering',
+    label: 'Đang giao',
+    emoji: '🚚',
+  },
+  {
+    status: 'completed',
+    label: 'Hoàn thành',
+    emoji: '🎉',
+  },
+];
 
 export function OrderKanbanPage() {
-  const { data: orders = [], isLoading, error } = useOrderKanban()
-  const { mutate: moveOrder } = useUpdateOrderStatus()
-  const [movingId, setMovingId] = useState<string | null>(null)
-  const [search, setSearch] = useState('')
+  const { data: orders = [], isLoading, error } = useOrderKanban();
+  const { mutate: moveOrder } = useUpdateOrderStatus();
+  const [movingId, setMovingId] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return orders
-    const q = search.trim().toLowerCase()
+    if (!search.trim()) return orders;
+    const q = search.trim().toLowerCase();
     return orders.filter(
       (o) =>
         o.order_number.toLowerCase().includes(q) ||
         o.customer_name.toLowerCase().includes(q),
-    )
-  }, [orders, search])
+    );
+  }, [orders, search]);
 
   function handleMove(id: string, status: OrderKanbanStatus) {
-    setMovingId(id)
+    setMovingId(id);
     moveOrder(
-      { id, status },
+      {
+        id,
+        status,
+      },
       {
         onSettled: () => setMovingId(null),
       },
-    )
+    );
   }
 
-  const totalOrders = filtered.length
+  const totalOrders = filtered.length;
   const overdueCount = filtered.filter(
     (o) =>
       o.delivery_date &&
       new Date(o.delivery_date) < new Date() &&
       o.status !== 'completed',
-  ).length
+  ).length;
 
   return (
     <div className={styles['kanban-page']}>
@@ -61,7 +80,12 @@ export function OrderKanbanPage() {
           <span className={styles['kanban-stat']}>
             {totalOrders} đơn hàng
             {overdueCount > 0 && (
-              <span style={{ color: 'var(--danger)', marginLeft: '0.5rem' }}>
+              <span
+                style={{
+                  color: 'var(--danger)',
+                  marginLeft: '0.5rem',
+                }}
+              >
                 · ⚠ {overdueCount} quá hạn
               </span>
             )}
@@ -71,7 +95,12 @@ export function OrderKanbanPage() {
 
       {/* Error */}
       {error && (
-        <p style={{ color: 'var(--danger)', padding: '1rem' }}>
+        <p
+          style={{
+            color: 'var(--danger)',
+            padding: '1rem',
+          }}
+        >
           Lỗi tải dữ liệu: {(error as Error).message}
         </p>
       )}
@@ -106,5 +135,5 @@ export function OrderKanbanPage() {
             ))}
       </div>
     </div>
-  )
+  );
 }

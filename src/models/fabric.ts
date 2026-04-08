@@ -1,28 +1,28 @@
-import type { TableRow, TableInsert, TableUpdate, RollStatus } from './common'
-import { products as fabricTypes } from './products'
+import type { TableRow, TableInsert, TableUpdate, RollStatus } from './common';
+import { products as fabricTypes } from './products';
 
 // --- Vải mộc (Raw Fabric) ---
 export type RawFabricRoll = TableRow<'raw_fabric_rolls'> & {
-  gsm?: number | null
-  composition?: string | null
-  price_tier?: Record<string, unknown> | null
-}
-export type RawFabricRollInsert = TableInsert<'raw_fabric_rolls'>
-export type RawFabricRollUpdate = TableUpdate<'raw_fabric_rolls'>
+  gsm?: number | null;
+  composition?: string | null;
+  price_tier?: Record<string, unknown> | null;
+};
+export type RawFabricRollInsert = TableInsert<'raw_fabric_rolls'>;
+export type RawFabricRollUpdate = TableUpdate<'raw_fabric_rolls'>;
 
 export type RawFabricFilter = {
-  status?: RollStatus
-  quality_grade?: string
-  fabric_type?: string
-}
+  status?: RollStatus;
+  quality_grade?: string;
+  fabric_type?: string;
+};
 
 // --- Vải thành phẩm (Finished Fabric) ---
 export type FinishedFabricRoll = TableRow<'finished_fabric_rolls'> & {
-  gsm?: number | null
-  composition?: string | null
-  price_tier?: Record<string, unknown> | null
-}
-export type FinishedFabricRollInsert = TableInsert<'finished_fabric_rolls'>
-export type FinishedFabricRollUpdate = TableUpdate<'finished_fabric_rolls'>
+  gsm?: number | null;
+  composition?: string | null;
+  price_tier?: Record<string, unknown> | null;
+};
+export type FinishedFabricRollInsert = TableInsert<'finished_fabric_rolls'>;
+export type FinishedFabricRollUpdate = TableUpdate<'finished_fabric_rolls'>;
 
-export { fabricTypes }
+export { fabricTypes };

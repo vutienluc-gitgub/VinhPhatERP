@@ -1,18 +1,18 @@
-import { useAuth } from './AuthProvider'
+import { useAuth } from './AuthProvider';
 
 const roleLabel: Record<string, string> = {
   admin: 'Admin',
   manager: 'Manager',
   staff: 'Staff',
   viewer: 'Viewer',
-}
+};
 
 /**
  * Trang thông tin tài khoản cơ bản.
  * Route: /profile (protected, all roles)
  */
 export function ProfilePage() {
-  const { user, profile, signOut } = useAuth()
+  const { user, profile, signOut } = useAuth();
 
   return (
     <div className="profile-page">
@@ -71,5 +71,5 @@ export function ProfilePage() {
         </button>
       </div>
     </div>
-  )
+  );
 }

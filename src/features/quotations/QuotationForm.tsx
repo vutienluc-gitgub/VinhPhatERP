@@ -1,13 +1,15 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
-import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
+import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
-import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog'
-
-import { Combobox } from '@/shared/components/Combobox'
-import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers'
-import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
-import { formatCurrency } from '@/shared/utils/format'
+import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog';
+import { Combobox } from '@/shared/components/Combobox';
+import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers';
+import {
+  useColorOptions,
+  toColorComboboxOptions,
+} from '@/shared/hooks/useColorOptions';
+import { formatCurrency } from '@/shared/utils/format';
 
 import {
   calculateQuotationTotals,
@@ -17,21 +19,24 @@ import {
   quotationsSchema,
   UNIT_OPTIONS,
   VAT_RATE_OPTIONS,
-} from './quotations.module'
-import type { QuotationsFormValues } from './quotations.module'
-import type { DiscountType, Quotation } from './types'
+} from './quotations.module';
+import type { QuotationsFormValues } from './quotations.module';
+import type { DiscountType, Quotation } from './types';
 import {
   useCreateQuotation,
   useNextQuotationNumber,
   useUpdateQuotation,
-} from './useQuotations'
+} from './useQuotations';
 
-const UNIT_LABELS: Record<string, string> = { m: 'm', kg: 'kg' }
+const UNIT_LABELS: Record<string, string> = {
+  m: 'm',
+  kg: 'kg',
+};
 
 type QuotationFormProps = {
-  quotation: Quotation | null
-  onClose: () => void
-}
+  quotation: Quotation | null;
+  onClose: () => void;
+};
 
 function quotationToFormValues(q: Quotation): QuotationsFormValues {
   return {
@@ -56,18 +61,41 @@ function quotationToFormValues(q: Quotation): QuotationsFormValues {
       leadTimeDays: it.lead_time_days ?? 0,
       notes: it.notes ?? '',
     })),
-  }
+  };
 }
 
 /* ── Realtime totals ── */
 
-function TotalsSummary({ control }: { control: ReturnType<typeof useForm<QuotationsFormValues>>['control'] }) {
-  const items = useWatch({ control, name: 'items' })
-  const discountType = useWatch({ control, name: 'discountType' }) as DiscountType
-  const discountValue = useWatch({ control, name: 'discountValue' }) ?? 0
-  const vatRate = useWatch({ control, name: 'vatRate' }) ?? 10
+function TotalsSummary({
+  control,
+}: {
+  control: ReturnType<typeof useForm<QuotationsFormValues>>['control'];
+}) {
+  const items = useWatch({
+    control,
+    name: 'items',
+  });
+  const discountType = useWatch({
+    control,
+    name: 'discountType',
+  }) as DiscountType;
+  const discountValue =
+    useWatch({
+      control,
+      name: 'discountValue',
+    }) ?? 0;
+  const vatRate =
+    useWatch({
+      control,
+      name: 'vatRate',
+    }) ?? 10;
 
-  const totals = calculateQuotationTotals(items ?? [], discountType, Number(discountValue), Number(vatRate))
+  const totals = calculateQuotationTotals(
+    items ?? [],
+    discountType,
+    Number(discountValue),
+    Number(vatRate),
+  );
 
   return (
     <div
@@ -80,46 +108,87 @@ function TotalsSummary({ control }: { control: ReturnType<typeof useForm<Quotati
         fontSize: '0.92rem',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
         <span>Tạm tính:</span>
         <span>{formatCurrency(totals.subtotal)} đ</span>
       </div>
       {totals.discountAmount > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', color: '#c0392b' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            color: '#c0392b',
+          }}
+        >
           <span>Chiết khấu:</span>
           <span>-{formatCurrency(totals.discountAmount)} đ</span>
         </div>
       )}
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
         <span>Trước VAT:</span>
         <span>{formatCurrency(totals.totalBeforeVat)} đ</span>
       </div>
       {totals.vatAmount > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
           <span>VAT ({vatRate}%):</span>
           <span>+{formatCurrency(totals.vatAmount)} đ</span>
         </div>
       )}
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '1.05rem', borderTop: '1px solid var(--border)', paddingTop: '0.5rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          fontWeight: 700,
+          fontSize: '1.05rem',
+          borderTop: '1px solid var(--border)',
+          paddingTop: '0.5rem',
+        }}
+      >
         <span>Tổng cộng:</span>
         <span>{formatCurrency(totals.totalAmount)} đ</span>
       </div>
     </div>
-  )
+  );
 }
 
 /* ── Quantity + Unit Price fields ── */
 
 type ItemFieldsProps = {
-  control: ReturnType<typeof useForm<QuotationsFormValues>>['control']
-  index: number
-  register: ReturnType<typeof useForm<QuotationsFormValues>>['register']
-  errors: ReturnType<typeof useForm<QuotationsFormValues>>['formState']['errors']
-}
+  control: ReturnType<typeof useForm<QuotationsFormValues>>['control'];
+  index: number;
+  register: ReturnType<typeof useForm<QuotationsFormValues>>['register'];
+  errors: ReturnType<
+    typeof useForm<QuotationsFormValues>
+  >['formState']['errors'];
+};
 
-function ItemQuantityFields({ control, index, register, errors }: ItemFieldsProps) {
-  const unit = useWatch({ control, name: `items.${index}.unit` }) ?? 'm'
-  const unitLabel = UNIT_LABELS[unit] ?? unit
+function ItemQuantityFields({
+  control,
+  index,
+  register,
+  errors,
+}: ItemFieldsProps) {
+  const unit =
+    useWatch({
+      control,
+      name: `items.${index}.unit`,
+    }) ?? 'm';
+  const unitLabel = UNIT_LABELS[unit] ?? unit;
 
   return (
     <>
@@ -163,17 +232,17 @@ function ItemQuantityFields({ control, index, register, errors }: ItemFieldsProp
         )}
       </div>
     </>
-  )
+  );
 }
 
 export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
-  const isEditing = quotation !== null
-  const createMutation = useCreateQuotation()
-  const updateMutation = useUpdateQuotation()
-  const { data: nextNumber } = useNextQuotationNumber()
-  const { data: customers = [] } = useActiveCustomers()
-  const { data: fabricOptions = [] } = useFabricCatalogOptions()
-  const { data: colorOptions = [] } = useColorOptions()
+  const isEditing = quotation !== null;
+  const createMutation = useCreateQuotation();
+  const updateMutation = useUpdateQuotation();
+  const { data: nextNumber } = useNextQuotationNumber();
+  const { data: customers = [] } = useActiveCustomers();
+  const { data: fabricOptions = [] } = useFabricCatalogOptions();
+  const { data: colorOptions = [] } = useColorOptions();
 
   const {
     register,
@@ -187,39 +256,44 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
     defaultValues: isEditing
       ? quotationToFormValues(quotation)
       : quotationsDefaultValues,
-  })
+  });
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'items',
-  })
+  });
 
   useEffect(() => {
-    reset(isEditing ? quotationToFormValues(quotation) : quotationsDefaultValues)
-  }, [quotation, isEditing, reset])
+    reset(
+      isEditing ? quotationToFormValues(quotation) : quotationsDefaultValues,
+    );
+  }, [quotation, isEditing, reset]);
 
   useEffect(() => {
     if (!isEditing && nextNumber) {
-      setValue('quotationNumber', nextNumber)
+      setValue('quotationNumber', nextNumber);
     }
-  }, [isEditing, nextNumber, setValue])
+  }, [isEditing, nextNumber, setValue]);
 
   async function onSubmit(values: QuotationsFormValues) {
     try {
       if (isEditing) {
-        await updateMutation.mutateAsync({ id: quotation.id, values })
+        await updateMutation.mutateAsync({
+          id: quotation.id,
+          values,
+        });
       } else {
-        await createMutation.mutateAsync(values)
+        await createMutation.mutateAsync(values);
       }
-      onClose()
+      onClose();
     } catch {
       // Error displayed via mutationError below
     }
   }
 
-  const mutationError = isEditing ? updateMutation.error : createMutation.error
+  const mutationError = isEditing ? updateMutation.error : createMutation.error;
   const isPending =
-    isSubmitting || createMutation.isPending || updateMutation.isPending
+    isSubmitting || createMutation.isPending || updateMutation.isPending;
 
   return (
     <form id="quotation-form" onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -231,7 +305,12 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
 
       <div className="form-grid">
         {/* Row 1: Số BG + Ngày BG */}
-        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+        <div
+          className="form-grid"
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          }}
+        >
           <div className="form-field">
             <label htmlFor="quotationNumber">
               Số báo giá <span className="field-required">*</span>
@@ -244,7 +323,9 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
               {...register('quotationNumber')}
             />
             {errors.quotationNumber && (
-              <span className="field-error">{errors.quotationNumber.message}</span>
+              <span className="field-error">
+                {errors.quotationNumber.message}
+              </span>
             )}
           </div>
 
@@ -259,13 +340,20 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
               {...register('quotationDate')}
             />
             {errors.quotationDate && (
-              <span className="field-error">{errors.quotationDate.message}</span>
+              <span className="field-error">
+                {errors.quotationDate.message}
+              </span>
             )}
           </div>
         </div>
 
         {/* Row 2: Khách hàng + Hết hiệu lực */}
-        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+        <div
+          className="form-grid"
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          }}
+        >
           <div className="form-field">
             <label htmlFor="customerId">
               Khách hàng <span className="field-required">*</span>
@@ -278,7 +366,7 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
                   value: c.id,
                   label: c.name,
                   code: c.code,
-                }))
+                }));
                 return (
                   <Combobox
                     options={customerOptions}
@@ -287,7 +375,7 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
                     placeholder="— Chọn khách hàng —"
                     hasError={!!errors.customerId}
                   />
-                )
+                );
               }}
             />
             {errors.customerId && (
@@ -315,12 +403,24 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
             Dòng hàng <span className="field-required">*</span>
           </label>
           {errors.items?.root && (
-            <span className="field-error" style={{ marginBottom: '0.5rem', display: 'block' }}>
+            <span
+              className="field-error"
+              style={{
+                marginBottom: '0.5rem',
+                display: 'block',
+              }}
+            >
               {errors.items.root.message}
             </span>
           )}
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.75rem',
+            }}
+          >
             {fields.map((field, index) => (
               <div
                 key={field.id}
@@ -328,7 +428,7 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
                   border: '1px solid var(--border)',
                   borderRadius: 'var(--radius-sm)',
                   padding: '0.75rem',
-                  background: 'var(--surface)'
+                  background: 'var(--surface)',
                 }}
               >
                 <div
@@ -339,7 +439,13 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
                     marginBottom: '0.5rem',
                   }}
                 >
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                  <span
+                    style={{
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      color: 'var(--text-secondary)',
+                    }}
+                  >
                     Dòng {index + 1}
                   </span>
                   {fields.length > 1 && (
@@ -368,23 +474,28 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
                           value: f.name,
                           label: f.name,
                           code: f.code,
-                        }))
+                        }));
                         return (
                           <Combobox
                             options={fabricComboOptions}
                             value={field.value}
                             onChange={(val) => {
-                              field.onChange(val)
+                              field.onChange(val);
                               // Auto-fill unit from catalog
-                              const selected = fabricOptions.find((f) => f.name === val)
+                              const selected = fabricOptions.find(
+                                (f) => f.name === val,
+                              );
                               if (selected?.unit) {
-                                setValue(`items.${index}.unit`, selected.unit as 'm' | 'kg')
+                                setValue(
+                                  `items.${index}.unit`,
+                                  selected.unit as 'm' | 'kg',
+                                );
                               }
                             }}
                             placeholder="Chọn hoặc nhập loại vải"
                             hasError={!!errors.items?.[index]?.fabricType}
                           />
-                        )
+                        );
                       }}
                     />
                     {errors.items?.[index]?.fabricType && (
@@ -425,7 +536,9 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
 
                   <div className="form-grid form-grid-2">
                     <div className="form-field">
-                      <label htmlFor={`items.${index}.widthCm`}>Khổ vải (cm)</label>
+                      <label htmlFor={`items.${index}.widthCm`}>
+                        Khổ vải (cm)
+                      </label>
                       <input
                         id={`items.${index}.widthCm`}
                         className="field-input"
@@ -433,7 +546,9 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
                         step="0.01"
                         min="0"
                         placeholder="150"
-                        {...register(`items.${index}.widthCm`, { valueAsNumber: true })}
+                        {...register(`items.${index}.widthCm`, {
+                          valueAsNumber: true,
+                        })}
                       />
                     </div>
                     <div className="form-field">
@@ -457,19 +572,28 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
                 </div>
 
                 <div className="form-grid form-grid-2">
-                  <ItemQuantityFields control={control} index={index} register={register} errors={errors} />
+                  <ItemQuantityFields
+                    control={control}
+                    index={index}
+                    register={register}
+                    errors={errors}
+                  />
                 </div>
 
                 <div className="form-grid form-grid-2">
                   <div className="form-field">
-                    <label htmlFor={`items.${index}.leadTimeDays`}>Thời gian SX (ngày)</label>
+                    <label htmlFor={`items.${index}.leadTimeDays`}>
+                      Thời gian SX (ngày)
+                    </label>
                     <input
                       id={`items.${index}.leadTimeDays`}
                       className="field-input"
                       type="number"
                       min="0"
                       placeholder="15"
-                      {...register(`items.${index}.leadTimeDays`, { valueAsNumber: true })}
+                      {...register(`items.${index}.leadTimeDays`, {
+                        valueAsNumber: true,
+                      })}
                     />
                   </div>
                   <div className="form-field">
@@ -491,14 +615,22 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
             className="btn-secondary"
             type="button"
             onClick={() => append({ ...emptyQuotationItem })}
-            style={{ marginTop: '0.5rem', width: '100%' }}
+            style={{
+              marginTop: '0.5rem',
+              width: '100%',
+            }}
           >
             + Thêm dòng hàng
           </button>
         </div>
 
         {/* Discount + VAT */}
-        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+        <div
+          className="form-grid"
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          }}
+        >
           <div className="form-field">
             <label htmlFor="discountType">Loại chiết khấu</label>
             <Controller
@@ -553,7 +685,12 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
         <TotalsSummary control={control} />
 
         {/* Terms */}
-        <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+        <div
+          className="form-grid"
+          style={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          }}
+        >
           <div className="form-field">
             <label htmlFor="deliveryTerms">Điều kiện giao hàng</label>
             <textarea
@@ -590,7 +727,14 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
         </div>
       </div>
 
-      <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none' }}>
+      <div
+        className="modal-footer"
+        style={{
+          marginTop: '1.5rem',
+          padding: 0,
+          border: 'none',
+        }}
+      >
         <button
           className="btn-secondary"
           type="button"
@@ -608,5 +752,5 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
         </button>
       </div>
     </form>
-  )
+  );
 }

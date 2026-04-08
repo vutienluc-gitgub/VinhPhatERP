@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
   fetchFabricCatalogsForBom,
@@ -11,10 +11,15 @@ import {
   approveBom,
   deprecateBom,
   reviseBom,
-} from '@/api/bom.api'
+} from '@/api/bom.api';
 
-import type { BomTemplateFormData } from './bom.module'
-import type { BomTemplate, BomVersion, BomFilter, FabricCatalog } from './types'
+import type { BomTemplateFormData } from './bom.module';
+import type {
+  BomTemplate,
+  BomVersion,
+  BomFilter,
+  FabricCatalog,
+} from './types';
 
 // Query keys
 export const bomKeys = {
@@ -26,7 +31,7 @@ export const bomKeys = {
   versions: (id: string) => [...bomKeys.all, 'versions', id] as const,
   fabricCatalogs: () => ['fabric_catalogs'] as const,
   yarnCatalogs: () => ['yarn_catalogs'] as const,
-}
+};
 
 // ---------------------------------------------------------
 // Queries
@@ -36,21 +41,21 @@ export function useFabricCatalogs() {
   return useQuery<FabricCatalog[]>({
     queryKey: ['fabric-catalog', 'options'],
     queryFn: fetchFabricCatalogsForBom,
-  })
+  });
 }
 
 export function useYarnCatalogs() {
   return useQuery({
     queryKey: bomKeys.yarnCatalogs(),
     queryFn: fetchYarnCatalogsForBom,
-  })
+  });
 }
 
 export function useBomList(filters: BomFilter) {
   return useQuery<BomTemplate[]>({
     queryKey: bomKeys.list(filters),
     queryFn: () => fetchBomList(filters),
-  })
+  });
 }
 
 export function useBomDetail(id: string | null) {
@@ -58,7 +63,7 @@ export function useBomDetail(id: string | null) {
     queryKey: bomKeys.detail(id!),
     enabled: !!id,
     queryFn: () => fetchBomById(id!),
-  })
+  });
 }
 
 export function useBomVersions(templateId: string | null) {
@@ -66,7 +71,7 @@ export function useBomVersions(templateId: string | null) {
     queryKey: bomKeys.versions(templateId!),
     enabled: !!templateId,
     queryFn: () => fetchBomVersions(templateId!),
-  })
+  });
 }
 
 // ---------------------------------------------------------
@@ -74,59 +79,59 @@ export function useBomVersions(templateId: string | null) {
 // ---------------------------------------------------------
 
 export function useDraftBom() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: BomTemplateFormData) => createBomDraft(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: bomKeys.all })
+      queryClient.invalidateQueries({ queryKey: bomKeys.all });
     },
-  })
+  });
 }
 
 export function useUpdateDraftBom() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: BomTemplateFormData }) =>
       updateBomDraft(id, data),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: bomKeys.all })
-      queryClient.invalidateQueries({ queryKey: bomKeys.detail(variables.id) })
+      queryClient.invalidateQueries({ queryKey: bomKeys.all });
+      queryClient.invalidateQueries({ queryKey: bomKeys.detail(variables.id) });
     },
-  })
+  });
 }
 
 export function useApproveBom() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
       approveBom(id, reason),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: bomKeys.all })
-      queryClient.invalidateQueries({ queryKey: bomKeys.detail(variables.id) })
+      queryClient.invalidateQueries({ queryKey: bomKeys.all });
+      queryClient.invalidateQueries({ queryKey: bomKeys.detail(variables.id) });
     },
-  })
+  });
 }
 
 export function useDeprecateBom() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
       deprecateBom(id, reason),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: bomKeys.all })
-      queryClient.invalidateQueries({ queryKey: bomKeys.detail(variables.id) })
+      queryClient.invalidateQueries({ queryKey: bomKeys.all });
+      queryClient.invalidateQueries({ queryKey: bomKeys.detail(variables.id) });
     },
-  })
+  });
 }
 
 export function useReviseBom() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
       reviseBom(id, reason),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: bomKeys.all })
-      queryClient.invalidateQueries({ queryKey: bomKeys.detail(variables.id) })
+      queryClient.invalidateQueries({ queryKey: bomKeys.all });
+      queryClient.invalidateQueries({ queryKey: bomKeys.detail(variables.id) });
     },
-  })
+  });
 }

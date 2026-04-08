@@ -1,9 +1,9 @@
-export * from '@/features/quotations/QuotationsPage'
-export * from '@/features/quotations/QuotationForm'
-export * from '@/features/quotations/QuotationList'
-export * from '@/features/quotations/QuotationDetail'
-export * from '@/features/quotations/quotations.module'
-export * from '@/features/quotations/types'
-export * from '@/features/quotations/useQuotations'
-export * from '@/features/quotations/useConvertToOrder'
-export { default as QuotationPrint } from '@/features/quotations/QuotationPrint'
+export * from '@/features/quotations/QuotationsPage';
+export * from '@/features/quotations/QuotationForm';
+export * from '@/features/quotations/QuotationList';
+export * from '@/features/quotations/QuotationDetail';
+export * from '@/features/quotations/quotations.module';
+export * from '@/features/quotations/types';
+export * from '@/features/quotations/useQuotations';
+export * from '@/features/quotations/useConvertToOrder';
+export { default as QuotationPrint } from '@/features/quotations/QuotationPrint';

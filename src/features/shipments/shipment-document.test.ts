@@ -1,11 +1,11 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest';
 
 import {
   buildShipmentPrintHtml,
   makeShipmentDocumentFileName,
   toShipmentDocumentRows,
-} from './shipment-document'
-import type { ShipmentDocument } from './types'
+} from './shipment-document';
+import type { ShipmentDocument } from './types';
 
 const shipmentFixture: ShipmentDocument = {
   id: 'shipment-1',
@@ -72,39 +72,41 @@ const shipmentFixture: ShipmentDocument = {
       warehouse_location: 'A-R3',
     },
   ],
-}
+};
 
 describe('shipment-document', () => {
   it('maps shipment items into sorted printable rows', () => {
-    const rows = toShipmentDocumentRows(shipmentFixture)
+    const rows = toShipmentDocumentRows(shipmentFixture);
 
-    expect(rows).toHaveLength(2)
+    expect(rows).toHaveLength(2);
     expect(rows[0]).toMatchObject({
       index: 1,
       rollNumber: 'FIN-2604-0007 (120,5m)',
       fabricType: 'Kate Silk',
       colorName: 'Trang',
       quantityText: '120,5 m',
-    })
+    });
     expect(rows[1]).toMatchObject({
       index: 2,
       rollNumber: '—',
       colorName: '—',
       quantityText: '42 m',
-    })
-  })
+    });
+  });
 
   it('builds escaped printable html with shipment summary', () => {
-    const { html } = buildShipmentPrintHtml(shipmentFixture)
+    const { html } = buildShipmentPrintHtml(shipmentFixture);
 
-    expect(html).toContain('Phiếu xuất kho')
-    expect(html).toContain('XK2604-0001')
-    expect(html).toContain('DH2604-0012')
-    expect(html).toContain('Cong ty Det &lt;B&gt;')
-    expect(html).toContain('Tổng số lượng:</strong> 162,5 m')
-  })
+    expect(html).toContain('Phiếu xuất kho');
+    expect(html).toContain('XK2604-0001');
+    expect(html).toContain('DH2604-0012');
+    expect(html).toContain('Cong ty Det &lt;B&gt;');
+    expect(html).toContain('Tổng số lượng:</strong> 162,5 m');
+  });
 
   it('creates a stable shipment pdf file name', () => {
-    expect(makeShipmentDocumentFileName(shipmentFixture)).toBe('phieu_xuat_XK2604-0001_2026-04-02.pdf')
-  })
-})
+    expect(makeShipmentDocumentFileName(shipmentFixture)).toBe(
+      'phieu_xuat_XK2604-0001_2026-04-02.pdf',
+    );
+  });
+});

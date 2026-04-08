@@ -1,9 +1,9 @@
 ---
 name: Báo cáo Lỗi / Bug Report
 about: Báo cáo lỗi để giúp chúng tôi cải thiện / Report a bug to help us improve
-title: "[Lỗi/Bug] "
+title: '[Lỗi/Bug] '
 labels: bug
-assignees: ""
+assignees: ''
 ---
 
 ## Mô tả / Description

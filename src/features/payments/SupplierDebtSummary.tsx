@@ -1,20 +1,20 @@
-import { useSupplierDebt } from './useCashFlow'
+import { useSupplierDebt } from './useCashFlow';
 
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value)
+  return new Intl.NumberFormat('vi-VN').format(value);
 }
 
 export function SupplierDebtSummary() {
-  const { data: debts = [], isLoading, error } = useSupplierDebt()
+  const { data: debts = [], isLoading, error } = useSupplierDebt();
 
-  const totalDebt = debts.reduce((sum, d) => sum + d.balance_due, 0)
+  const totalDebt = debts.reduce((sum, d) => sum + d.balance_due, 0);
 
   if (error) {
     return (
       <div className="panel-card">
         <p className="error-inline">Lỗi: {(error as Error).message}</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -64,9 +64,15 @@ export function SupplierDebtSummary() {
                     )}
                   </td>
                   <td className="numeric-cell">{d.document_count}</td>
-                  <td className="numeric-cell">{formatCurrency(d.total_purchased)} đ</td>
-                  <td className="numeric-paid">{formatCurrency(d.total_paid)} đ</td>
-                  <td className="numeric-debt">{formatCurrency(d.balance_due)} đ</td>
+                  <td className="numeric-cell">
+                    {formatCurrency(d.total_purchased)} đ
+                  </td>
+                  <td className="numeric-paid">
+                    {formatCurrency(d.total_paid)} đ
+                  </td>
+                  <td className="numeric-debt">
+                    {formatCurrency(d.balance_due)} đ
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -74,5 +80,5 @@ export function SupplierDebtSummary() {
         )}
       </div>
     </div>
-  )
+  );
 }

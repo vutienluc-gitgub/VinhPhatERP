@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   fetchExpensesPaginated,
@@ -6,31 +6,31 @@ import {
   createExpense,
   updateExpense,
   deleteExpense,
-} from '@/api/payments.api'
+} from '@/api/payments.api';
 
-import type { ExpenseFormValues } from './payments.module'
-import type { Expense, ExpensesFilter } from './types'
+import type { ExpenseFormValues } from './payments.module';
+import type { Expense, ExpensesFilter } from './types';
 
-export type { Expense, ExpensesFilter }
+export type { Expense, ExpensesFilter };
 
-const QUERY_KEY = ['expenses'] as const
+const QUERY_KEY = ['expenses'] as const;
 
 export function useExpenseList(filters: ExpensesFilter = {}, page = 1) {
   return useQuery({
     queryKey: [...QUERY_KEY, filters, page],
     queryFn: () => fetchExpensesPaginated(filters, page),
-  })
+  });
 }
 
 export function useNextExpenseNumber() {
   return useQuery({
     queryKey: [...QUERY_KEY, 'next-number'],
     queryFn: fetchNextExpenseNumber,
-  })
+  });
 }
 
 export function useCreateExpense() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (values: ExpenseFormValues) =>
       createExpense({
@@ -45,14 +45,14 @@ export function useCreateExpense() {
         notes: values.notes?.trim() || null,
       }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
-      void queryClient.invalidateQueries({ queryKey: ['payment-accounts'] })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ['payment-accounts'] });
     },
-  })
+  });
 }
 
 export function useUpdateExpense() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, values }: { id: string; values: ExpenseFormValues }) =>
       updateExpense(id, {
@@ -67,19 +67,19 @@ export function useUpdateExpense() {
         notes: values.notes?.trim() || null,
       }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
-      void queryClient.invalidateQueries({ queryKey: ['payment-accounts'] })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ['payment-accounts'] });
     },
-  })
+  });
 }
 
 export function useDeleteExpense() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteExpense,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEY })
-      void queryClient.invalidateQueries({ queryKey: ['payment-accounts'] })
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ['payment-accounts'] });
     },
-  })
+  });
 }

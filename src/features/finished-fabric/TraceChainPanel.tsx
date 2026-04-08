@@ -1,13 +1,13 @@
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 
-import { QUALITY_GRADE_LABELS } from './finished-fabric.module'
-import type { FinishedFabricRoll } from './types'
-import { useTraceChain } from './useTraceChain'
+import { QUALITY_GRADE_LABELS } from './finished-fabric.module';
+import type { FinishedFabricRoll } from './types';
+import { useTraceChain } from './useTraceChain';
 
 type TraceChainPanelProps = {
-  roll: FinishedFabricRoll
-  onClose: () => void
-}
+  roll: FinishedFabricRoll;
+  onClose: () => void;
+};
 
 const STATUS_LABELS: Record<string, string> = {
   in_stock: 'Trong kho',
@@ -17,30 +17,35 @@ const STATUS_LABELS: Record<string, string> = {
   draft: 'Nháp',
   confirmed: 'Đã xác nhận',
   cancelled: 'Đã hủy',
-}
+};
 
 function fmtDate(d: string | null): string {
-  if (!d) return '—'
-  return new Date(d).toLocaleDateString('vi-VN')
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('vi-VN');
 }
 
 function fmtNum(val: number | null, unit: string): string {
-  if (val === null || val === undefined) return '—'
-  return `${val.toLocaleString('vi-VN')} ${unit}`
+  if (val === null || val === undefined) return '—';
+  return `${val.toLocaleString('vi-VN')} ${unit}`;
 }
 
 function fmtCurrency(val: number): string {
-  return new Intl.NumberFormat('vi-VN').format(val) + ' đ'
+  return new Intl.NumberFormat('vi-VN').format(val) + ' đ';
 }
 
 export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
-  const { data, isLoading } = useTraceChain(roll.raw_roll_id)
+  const { data, isLoading } = useTraceChain(roll.raw_roll_id);
 
-  const rawRoll = data?.rawRoll
-  const yarnReceipt = data?.yarnReceipt
+  const rawRoll = data?.rawRoll;
+  const yarnReceipt = data?.yarnReceipt;
 
   return (
-    <AdaptiveSheet open={true} onClose={onClose} title="🔗 Truy vết nguồn gốc" maxWidth={560}>
+    <AdaptiveSheet
+      open={true}
+      onClose={onClose}
+      title="🔗 Truy vết nguồn gốc"
+      maxWidth={560}
+    >
       {/* ── Chain timeline ── */}
       <div className="trace-chain">
         {/* Level 1: Cuộn thành phẩm */}
@@ -54,7 +59,8 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
               {roll.color_name && <span>{roll.color_name}</span>}
               {roll.quality_grade && (
                 <span className={`grade-badge grade-${roll.quality_grade}`}>
-                  {QUALITY_GRADE_LABELS[roll.quality_grade] ?? roll.quality_grade}
+                  {QUALITY_GRADE_LABELS[roll.quality_grade] ??
+                    roll.quality_grade}
                 </span>
               )}
               <span>{fmtNum(roll.length_m, 'm')}</span>
@@ -87,7 +93,9 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
                 <span>{rawRoll.fabric_type}</span>
                 {rawRoll.color_name && <span>{rawRoll.color_name}</span>}
                 {rawRoll.quality_grade && (
-                  <span className={`grade-badge grade-${rawRoll.quality_grade}`}>
+                  <span
+                    className={`grade-badge grade-${rawRoll.quality_grade}`}
+                  >
                     {rawRoll.quality_grade}
                   </span>
                 )}
@@ -99,7 +107,8 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
               )}
               {rawRoll.weaving_partner && (
                 <p className="trace-node-meta">
-                  🏠 Nhà dệt: {rawRoll.weaving_partner.name} ({rawRoll.weaving_partner.code})
+                  🏠 Nhà dệt: {rawRoll.weaving_partner.name} (
+                  {rawRoll.weaving_partner.code})
                 </p>
               )}
               <p className="trace-node-meta">
@@ -121,8 +130,8 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
         {rawRoll && <div className="trace-connector" />}
 
         {/* Level 3: Phiếu nhập sợi */}
-        {rawRoll && (
-          yarnReceipt ? (
+        {rawRoll &&
+          (yarnReceipt ? (
             <div className="trace-node">
               <div className="trace-node-icon">📋</div>
               <div className="trace-node-body">
@@ -135,11 +144,13 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
                 </div>
                 {yarnReceipt.supplier && (
                   <p className="trace-node-meta">
-                    🏢 NCC sợi: {yarnReceipt.supplier.name} ({yarnReceipt.supplier.code})
+                    🏢 NCC sợi: {yarnReceipt.supplier.name} (
+                    {yarnReceipt.supplier.code})
                   </p>
                 )}
                 <p className="trace-node-meta">
-                  Trạng thái: {STATUS_LABELS[yarnReceipt.status] ?? yarnReceipt.status}
+                  Trạng thái:{' '}
+                  {STATUS_LABELS[yarnReceipt.status] ?? yarnReceipt.status}
                 </p>
               </div>
             </div>
@@ -148,18 +159,31 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
               <div className="trace-node-icon">❓</div>
               <div className="trace-node-body">
                 <p className="trace-node-label">Phiếu nhập sợi</p>
-                <p className="trace-node-meta">Không có liên kết phiếu nhập sợi</p>
+                <p className="trace-node-meta">
+                  Không có liên kết phiếu nhập sợi
+                </p>
               </div>
             </div>
-          )
-        )}
+          ))}
       </div>
 
-      <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none' }}>
-        <button className="primary-button btn-standard" type="button" onClick={onClose} style={{ marginLeft: 'auto' }}>
+      <div
+        className="modal-footer"
+        style={{
+          marginTop: '1.5rem',
+          padding: 0,
+          border: 'none',
+        }}
+      >
+        <button
+          className="primary-button btn-standard"
+          type="button"
+          onClick={onClose}
+          style={{ marginLeft: 'auto' }}
+        >
           Đóng
         </button>
       </div>
     </AdaptiveSheet>
-  )
+  );
 }

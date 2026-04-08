@@ -10,17 +10,19 @@
 //   import { authSchema, quotationsSchema } from '@/schema'
 
 // ── Standalone schemas (no name conflicts) ──
-export * from './company-settings.schema'
-export * from './customer.schema'
-export * from './order.schema'
-export * from './product.schema'
-export * from './shipping-rate.schema'
-export * from './auth.schema'
-export * from './bom.schema'
-export * from './fabric-catalog.schema'
-export * from './inventory.schema'
-export * from './order-progress.schema'
-export * from './payment.schema'
+export * from './company-settings.schema';
+export * from './customer.schema';
+export * from './order.schema';
+export * from './product.schema';
+export * from './shipping-rate.schema';
+export * from './auth.schema';
+export * from './bom.schema';
+export * from './fabric-catalog.schema';
+export * from './inventory.schema';
+export * from './order-progress.schema';
+export * from './payment.schema';
+export * from './debt.schema';
+export * from './dyeing-order.schema';
 export {
   QUOTATION_STATUSES,
   QUOTATION_STATUS_LABELS,
@@ -32,18 +34,18 @@ export {
   emptyQuotationItem,
   quotationsDefaultValues,
   calculateQuotationTotals,
-} from './quotation.schema'
+} from './quotation.schema';
 export type {
   QuotationStatus,
   DiscountType,
   QuotationItemFormValues,
   QuotationsFormValues,
-} from './quotation.schema'
-export * from './report.schema'
-export * from './supplier.schema'
-export * from './work-order.schema'
-export * from './yarn-catalog.schema'
-export * from './yarn-receipt.schema'
+} from './quotation.schema';
+export * from './report.schema';
+export * from './supplier.schema';
+export * from './work-order.schema';
+export * from './yarn-catalog.schema';
+export * from './yarn-receipt.schema';
 
 // ── Schemas with shared export names ──
 // These are NOT re-exported via barrel to avoid name collisions.
@@ -62,8 +64,12 @@ export {
   bulkInputSchema,
   bulkInputDefaults,
   generateBarcode,
-} from './raw-fabric.schema'
-export type { RawFabricFormValues, BulkRollRow, BulkInputFormValues } from './raw-fabric.schema'
+} from './raw-fabric.schema';
+export type {
+  RawFabricFormValues,
+  BulkRollRow,
+  BulkInputFormValues,
+} from './raw-fabric.schema';
 
 export {
   finishedFabricSchema,
@@ -71,8 +77,12 @@ export {
   bulkFinishedRollRowSchema,
   bulkFinishedInputSchema,
   bulkFinishedInputDefaults,
-} from './finished-fabric.schema'
-export type { FinishedFabricFormValues, BulkFinishedRollRow, BulkFinishedInputFormValues } from './finished-fabric.schema'
+} from './finished-fabric.schema';
+export type {
+  FinishedFabricFormValues,
+  BulkFinishedRollRow,
+  BulkFinishedInputFormValues,
+} from './finished-fabric.schema';
 
 export {
   weavingRollSchema,
@@ -80,8 +90,12 @@ export {
   weavingInvoiceFormSchema,
   weavingInvoiceDefaults,
   WEAVING_STATUS_LABELS,
-} from './weaving-invoice.schema'
-export type { WeavingRollFormValues, WeavingInvoiceHeaderFormValues, WeavingInvoiceFormValues } from './weaving-invoice.schema'
+} from './weaving-invoice.schema';
+export type {
+  WeavingRollFormValues,
+  WeavingInvoiceHeaderFormValues,
+  WeavingInvoiceFormValues,
+} from './weaving-invoice.schema';
 
 export {
   shipmentsSchema,
@@ -90,5 +104,13 @@ export {
   deliveryConfirmSchema,
   deliveryConfirmDefaultValues,
   SHIPMENT_STATUS_LABELS,
-} from './shipment.schema'
-export type { ShipmentStatus, ShipmentItemFormValues, ShipmentsFormValues, DeliveryConfirmFormValues } from './shipment.schema'
+} from './shipment.schema';
+export type {
+  ShipmentStatus,
+  ShipmentItemFormValues,
+  ShipmentsFormValues,
+  DeliveryConfirmFormValues,
+} from './shipment.schema';
+
+export { CreateShipmentFromFinishedSchema } from './shipments.schema';
+export type { CreateShipmentFromFinishedInput } from './shipments.schema';

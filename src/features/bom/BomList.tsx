@@ -1,11 +1,11 @@
-import { BOM_STATUS_LABELS } from './bom.module'
-import { BomTemplate, BomStatus } from './types'
+import { BOM_STATUS_LABELS } from './bom.module';
+import { BomTemplate, BomStatus } from './types';
 
 interface BomListProps {
-  boms: BomTemplate[]
-  onSelect: (bom: BomTemplate) => void
-  onEdit: (bom: BomTemplate) => void
-  onDeprecate: (bom: BomTemplate) => void
+  boms: BomTemplate[];
+  onSelect: (bom: BomTemplate) => void;
+  onEdit: (bom: BomTemplate) => void;
+  onDeprecate: (bom: BomTemplate) => void;
 }
 
 export function BomList({ boms, onSelect, onEdit, onDeprecate }: BomListProps) {
@@ -14,7 +14,7 @@ export function BomList({ boms, onSelect, onEdit, onDeprecate }: BomListProps) {
       <div className="table-empty">
         <p>Chưa có công thức định mức (BOM) nào.</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -32,7 +32,8 @@ export function BomList({ boms, onSelect, onEdit, onDeprecate }: BomListProps) {
       </thead>
       <tbody>
         {boms.map((bom) => {
-          const statusLabel = BOM_STATUS_LABELS[bom.status as BomStatus] || bom.status
+          const statusLabel =
+            BOM_STATUS_LABELS[bom.status as BomStatus] || bom.status;
 
           return (
             <tr
@@ -51,9 +52,7 @@ export function BomList({ boms, onSelect, onEdit, onDeprecate }: BomListProps) {
                 {bom.fabric_catalogs?.name || '---'}
                 {bom.target_width_cm ? ` (${bom.target_width_cm}cm)` : ''}
               </td>
-              <td className="hide-mobile">
-                v{bom.active_version}
-              </td>
+              <td className="hide-mobile">v{bom.active_version}</td>
               <td>
                 <span className={`roll-status ${bom.status}`}>
                   {statusLabel}
@@ -86,9 +85,9 @@ export function BomList({ boms, onSelect, onEdit, onDeprecate }: BomListProps) {
                 )}
               </td>
             </tr>
-          )
+          );
         })}
       </tbody>
     </table>
-  )
+  );
 }

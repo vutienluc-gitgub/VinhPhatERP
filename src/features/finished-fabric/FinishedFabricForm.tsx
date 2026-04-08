@@ -1,11 +1,13 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet'
-import { Combobox } from '@/shared/components/Combobox'
-import { useColorOptions, toColorComboboxOptions } from '@/shared/hooks/useColorOptions'
-
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { Combobox } from '@/shared/components/Combobox';
+import {
+  useColorOptions,
+  toColorComboboxOptions,
+} from '@/shared/hooks/useColorOptions';
 
 import {
   QUALITY_GRADE_LABELS,
@@ -14,20 +16,20 @@ import {
   ROLL_STATUSES,
   finishedFabricDefaults,
   finishedFabricSchema,
-} from './finished-fabric.module'
-import type { FinishedFabricFormValues } from './finished-fabric.module'
-import { editBlockReason, getAllowedStatusTransitions } from './transitions'
-import type { FinishedFabricRoll, RollStatus } from './types'
+} from './finished-fabric.module';
+import type { FinishedFabricFormValues } from './finished-fabric.module';
+import { editBlockReason, getAllowedStatusTransitions } from './transitions';
+import type { FinishedFabricRoll, RollStatus } from './types';
 import {
   useCreateFinishedFabric,
   useRawRollOptions,
   useUpdateFinishedFabric,
-} from './useFinishedFabric'
+} from './useFinishedFabric';
 
 type FinishedFabricFormProps = {
-  roll: FinishedFabricRoll | null
-  onClose: () => void
-}
+  roll: FinishedFabricRoll | null;
+  onClose: () => void;
+};
 
 function rollToFormValues(roll: FinishedFabricRoll): FinishedFabricFormValues {
   return {
@@ -44,20 +46,20 @@ function rollToFormValues(roll: FinishedFabricRoll): FinishedFabricFormValues {
     warehouse_location: roll.warehouse_location ?? '',
     production_date: roll.production_date ?? '',
     notes: roll.notes ?? '',
-  }
+  };
 }
 
 export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
-  const isEditing = roll !== null
-  const lockReason = isEditing ? editBlockReason(roll.status) : null
-  const isLocked = lockReason !== null
+  const isEditing = roll !== null;
+  const lockReason = isEditing ? editBlockReason(roll.status) : null;
+  const isLocked = lockReason !== null;
   const allowedStatuses: RollStatus[] = isEditing
     ? getAllowedStatusTransitions(roll.status)
-    : [...ROLL_STATUSES]
-  const createMutation = useCreateFinishedFabric()
-  const updateMutation = useUpdateFinishedFabric()
-  const { data: rawRollOptions = [] } = useRawRollOptions()
-  const { data: colorOptions = [] } = useColorOptions()
+    : [...ROLL_STATUSES];
+  const createMutation = useCreateFinishedFabric();
+  const updateMutation = useUpdateFinishedFabric();
+  const { data: rawRollOptions = [] } = useRawRollOptions();
+  const { data: colorOptions = [] } = useColorOptions();
 
   const {
     register,
@@ -68,35 +70,47 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
   } = useForm<FinishedFabricFormValues>({
     resolver: zodResolver(finishedFabricSchema),
     defaultValues: isEditing ? rollToFormValues(roll) : finishedFabricDefaults,
-  })
+  });
 
   useEffect(() => {
-    reset(isEditing ? rollToFormValues(roll) : finishedFabricDefaults)
-  }, [roll, isEditing, reset])
+    reset(isEditing ? rollToFormValues(roll) : finishedFabricDefaults);
+  }, [roll, isEditing, reset]);
 
   async function onSubmit(values: FinishedFabricFormValues) {
     try {
       if (isEditing) {
-        await updateMutation.mutateAsync({ id: roll.id, values })
+        await updateMutation.mutateAsync({
+          id: roll.id,
+          values,
+        });
       } else {
-        await createMutation.mutateAsync(values)
+        await createMutation.mutateAsync(values);
       }
-      onClose()
+      onClose();
     } catch {
       // Lỗi hiển thị qua mutationError bên dưới
     }
   }
 
-  const mutationError = isEditing ? updateMutation.error : createMutation.error
-  const isPending = isSubmitting || createMutation.isPending || updateMutation.isPending
+  const mutationError = isEditing ? updateMutation.error : createMutation.error;
+  const isPending =
+    isSubmitting || createMutation.isPending || updateMutation.isPending;
 
   return (
     <AdaptiveSheet
       open={true}
       onClose={onClose}
-      title={isEditing ? `Sửa cuộn: ${roll.roll_number}` : 'Nhập cuộn vải thành phẩm mới'}
+      title={
+        isEditing
+          ? `Sửa cuộn: ${roll.roll_number}`
+          : 'Nhập cuộn vải thành phẩm mới'
+      }
     >
-      <form id="finished-fabric-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form
+        id="finished-fabric-form"
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+      >
         {lockReason && (
           <div
             role="alert"
@@ -123,10 +137,22 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
           </p>
         )}
 
-        <fieldset disabled={isLocked} style={{ border: 'none', padding: 0, margin: 0 }}>
+        <fieldset
+          disabled={isLocked}
+          style={{
+            border: 'none',
+            padding: 0,
+            margin: 0,
+          }}
+        >
           <div className="form-grid">
             {/* Hàng 1: Mã cuộn + Loại vải */}
-            <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+            <div
+              className="form-grid"
+              style={{
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              }}
+            >
               <div className="form-field">
                 <label htmlFor="roll_number">
                   Mã cuộn <span className="field-required">*</span>
@@ -139,7 +165,9 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                   {...register('roll_number')}
                 />
                 {errors.roll_number && (
-                  <span className="field-error">{errors.roll_number.message}</span>
+                  <span className="field-error">
+                    {errors.roll_number.message}
+                  </span>
                 )}
               </div>
 
@@ -155,7 +183,9 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                   {...register('fabric_type')}
                 />
                 {errors.fabric_type && (
-                  <span className="field-error">{errors.fabric_type.message}</span>
+                  <span className="field-error">
+                    {errors.fabric_type.message}
+                  </span>
                 )}
               </div>
             </div>
@@ -172,7 +202,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                   <Combobox
                     options={rawRollOptions.map((r) => ({
                       value: r.id,
-                      label: `${r.roll_number} — ${r.fabric_type}${r.color_name ? ` (${r.color_name})` : ''}${r.lot_number ? ` [Lô: ${r.lot_number}]` : ''}`
+                      label: `${r.roll_number} — ${r.fabric_type}${r.color_name ? ` (${r.color_name})` : ''}${r.lot_number ? ` [Lô: ${r.lot_number}]` : ''}`,
                     }))}
                     value={field.value}
                     onChange={field.onChange}
@@ -182,13 +212,23 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                 )}
               />
               {errors.raw_roll_id && (
-                <span className="field-error">{errors.raw_roll_id.message}</span>
+                <span className="field-error">
+                  {errors.raw_roll_id.message}
+                </span>
               )}
-              <span className="field-hint">Bắt buộc liên kết cuộn mộc để truy vết nguồn gốc và đối chiếu lô.</span>
+              <span className="field-hint">
+                Bắt buộc liên kết cuộn mộc để truy vết nguồn gốc và đối chiếu
+                lô.
+              </span>
             </div>
 
             {/* Hàng 2: Màu */}
-            <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+            <div
+              className="form-grid"
+              style={{
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              }}
+            >
               <div className="form-field">
                 <label htmlFor="color_name">Màu vải</label>
                 <Controller
@@ -199,9 +239,11 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                       options={toColorComboboxOptions(colorOptions)}
                       value={field.value ?? ''}
                       onChange={(val) => {
-                        field.onChange(val)
+                        field.onChange(val);
                         // Auto-fill mã màu từ danh mục
-                        const selected = colorOptions.find((c) => c.name === val)
+                        const selected = colorOptions.find(
+                          (c) => c.name === val,
+                        );
                         if (selected) {
                           // setValue không available ở đây → dùng register pattern
                         }
@@ -225,7 +267,12 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
             </div>
 
             {/* Hàng 3: Khổ + Dài */}
-            <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+            <div
+              className="form-grid"
+              style={{
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              }}
+            >
               <div className="form-field">
                 <label htmlFor="width_cm">Khổ vải (cm)</label>
                 <input
@@ -260,7 +307,12 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
             </div>
 
             {/* Hàng 4: Trọng lượng + Chất lượng */}
-            <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+            <div
+              className="form-grid"
+              style={{
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              }}
+            >
               <div className="form-field">
                 <label htmlFor="weight_kg">Trọng lượng (kg)</label>
                 <input
@@ -273,7 +325,9 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                   {...register('weight_kg')}
                 />
                 {errors.weight_kg && (
-                  <span className="field-error">{errors.weight_kg.message}</span>
+                  <span className="field-error">
+                    {errors.weight_kg.message}
+                  </span>
                 )}
               </div>
 
@@ -285,11 +339,14 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                   render={({ field }) => (
                     <Combobox
                       options={[
-                        { value: '', label: 'Chưa kiểm định' },
+                        {
+                          value: '',
+                          label: 'Chưa kiểm định',
+                        },
                         ...QUALITY_GRADES.map((g) => ({
                           value: g,
-                          label: QUALITY_GRADE_LABELS[g]
-                        }))
+                          label: QUALITY_GRADE_LABELS[g],
+                        })),
                       ]}
                       value={field.value}
                       onChange={field.onChange}
@@ -300,7 +357,12 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
             </div>
 
             {/* Hàng 5: Trạng thái + Ngày sản xuất */}
-            <div className="form-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+            <div
+              className="form-grid"
+              style={{
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              }}
+            >
               <div className="form-field">
                 <label htmlFor="status">Trạng thái</label>
                 <Controller
@@ -310,7 +372,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                     <Combobox
                       options={allowedStatuses.map((s) => ({
                         value: s,
-                        label: ROLL_STATUS_LABELS[s]
+                        label: ROLL_STATUS_LABELS[s],
                       }))}
                       value={field.value}
                       onChange={field.onChange}
@@ -355,7 +417,14 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
           </div>
         </fieldset>
 
-        <div className="modal-footer" style={{ marginTop: '1.5rem', padding: 0, border: 'none' }}>
+        <div
+          className="modal-footer"
+          style={{
+            marginTop: '1.5rem',
+            padding: 0,
+            border: 'none',
+          }}
+        >
           <button
             className="btn-secondary"
             type="button"
@@ -370,11 +439,15 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
               type="submit"
               disabled={isPending}
             >
-              {isPending ? 'Đang lưu...' : isEditing ? 'Lưu thay đổi' : 'Nhập kho'}
+              {isPending
+                ? 'Đang lưu...'
+                : isEditing
+                  ? 'Lưu thay đổi'
+                  : 'Nhập kho'}
             </button>
           )}
         </div>
       </form>
     </AdaptiveSheet>
-  )
+  );
 }

@@ -36,12 +36,14 @@
 ## Responsive & Overflow Rules (BẮT BUỘC)
 
 ### Grid
+
 - Mobile-first: luôn dùng 1 cột mặc định
 - Không dùng inline style: gridTemplateColumns
 - Bắt buộc dùng:
   - grid-cols-1 md:grid-cols-2
 
 ### Table
+
 - must wrap in overflow-x-auto
 - no fixed width larger than screen
 - Table phải luôn được bọc bởi container:
@@ -61,29 +63,35 @@
 - Desktop: use centered dialog
 
 ### Bottom Sheet
+
 - position: fixed bottom
 - rounded top
 - max-height: 90vh
 - overflow-y-auto
 
 ### Required
+
 - sticky action button at bottom
 - content scroll inside
 
 ### Forbidden
+
 - fixed height modal
 - content overflow outside screen
 
 ### Text Overflow
+
 - Text dài phải xử lý:
   - break-words (ưu tiên)
   - hoặc truncate
 
 ### Layout
+
 - Không được gây scroll ngang
 - Không dùng width cố định lớn hơn màn hình
 
 ### Forbidden
+
 - ❌ gridTemplateColumns: '1fr 1fr'
 - ❌ table không có overflow-x-auto
 - ❌ colSpan hardcode sai

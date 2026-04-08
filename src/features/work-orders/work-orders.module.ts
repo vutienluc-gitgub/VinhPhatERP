@@ -1,16 +1,23 @@
-import type { FeatureDefinition } from '@/shared/types/feature'
+import type { FeatureDefinition } from '@/shared/types/feature';
 
-export type { WorkOrderStatus } from '@/schema/work-order.schema'
+export type { WorkOrderStatus } from '@/schema/work-order.schema';
 
 export {
   WORK_ORDER_STATUSES,
   createWorkOrderSchema,
   completeWorkOrderSchema,
-} from '@/schema/work-order.schema'
-export type { CreateWorkOrderInput, CompleteWorkOrderInput } from '@/schema/work-order.schema'
+} from '@/schema/work-order.schema';
+export type {
+  CreateWorkOrderInput,
+  CompleteWorkOrderInput,
+} from '@/schema/work-order.schema';
 
 // Domain types stay in feature (tightly coupled to DB shape)
-export type { WorkOrder, WorkOrderWithRelations, WorkOrderYarnRequirement } from './types'
+export type {
+  WorkOrder,
+  WorkOrderWithRelations,
+  WorkOrderYarnRequirement,
+} from './types';
 
 export const workOrdersFeature: FeatureDefinition = {
   key: 'work-orders',
@@ -26,4 +33,18 @@ export const workOrdersFeature: FeatureDefinition = {
   resources: ['work_orders', 'work_order_y_requirements'],
   entities: ['Lệnh sản xuất', 'Nhu cầu sợi'],
   nextMilestones: ['Kết nối module nhuộm', 'Kho vận mộc'],
-}
+};
+
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
+export const workOrdersPlugin: FeaturePlugin = {
+  key: 'work-orders',
+  route: 'work-orders',
+  label: 'Lệnh sản xuất',
+  shortLabel: 'Lệnh SX',
+  description: 'Chỉ đạo sản xuất và tự động phân bổ nguồn lực sợi.',
+  icon: 'clipboard-list',
+  group: 'production',
+  order: 50,
+  component: () =>
+    import('./index').then((m) => ({ default: m.WorkOrdersPage })),
+};

@@ -1,2 +1,2 @@
 // Re-exports from ConfirmDialog for convenience
-export { useConfirm } from '@/shared/components/ConfirmDialog'
+export { useConfirm } from '@/shared/components/ConfirmDialog';

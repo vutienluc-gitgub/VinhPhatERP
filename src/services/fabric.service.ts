@@ -1,4 +1,4 @@
-import type { RawFabricRoll, FinishedFabricRoll, RollStatus } from '@/models'
+import type { RawFabricRoll, FinishedFabricRoll, RollStatus } from '@/models';
 
 /**
  * Tính trọng lượng ước tính (kg) dựa trên chiều dài, chiều rộng, GSM.
@@ -9,39 +9,49 @@ export function estimateFabricWeight(
   widthCm: number,
   gsmWeight: number,
 ): number {
-  return (lengthM * (widthCm / 100) * gsmWeight) / 1000
+  return (lengthM * (widthCm / 100) * gsmWeight) / 1000;
 }
 
 /**
  * Tổng hợp thống kê cơ bản cho danh sách cuộn vải mộc.
  */
 export function summarizeRawFabric(rolls: RawFabricRoll[]) {
-  const totalRolls = rolls.length
-  const totalWeightKg = rolls.reduce((sum, r) => sum + (r.weight_kg ?? 0), 0)
-  const totalLengthM = rolls.reduce((sum, r) => sum + (r.length_m ?? 0), 0)
+  const totalRolls = rolls.length;
+  const totalWeightKg = rolls.reduce((sum, r) => sum + (r.weight_kg ?? 0), 0);
+  const totalLengthM = rolls.reduce((sum, r) => sum + (r.length_m ?? 0), 0);
 
   const byStatus = rolls.reduce<Record<string, number>>((acc, r) => {
-    acc[r.status] = (acc[r.status] ?? 0) + 1
-    return acc
-  }, {})
+    acc[r.status] = (acc[r.status] ?? 0) + 1;
+    return acc;
+  }, {});
 
-  return { totalRolls, totalWeightKg, totalLengthM, byStatus }
+  return {
+    totalRolls,
+    totalWeightKg,
+    totalLengthM,
+    byStatus,
+  };
 }
 
 /**
  * Tổng hợp thống kê cho vải thành phẩm.
  */
 export function summarizeFinishedFabric(rolls: FinishedFabricRoll[]) {
-  const totalRolls = rolls.length
-  const totalWeightKg = rolls.reduce((sum, r) => sum + (r.weight_kg ?? 0), 0)
-  const totalLengthM = rolls.reduce((sum, r) => sum + (r.length_m ?? 0), 0)
+  const totalRolls = rolls.length;
+  const totalWeightKg = rolls.reduce((sum, r) => sum + (r.weight_kg ?? 0), 0);
+  const totalLengthM = rolls.reduce((sum, r) => sum + (r.length_m ?? 0), 0);
 
   const byStatus = rolls.reduce<Record<string, number>>((acc, r) => {
-    acc[r.status] = (acc[r.status] ?? 0) + 1
-    return acc
-  }, {})
+    acc[r.status] = (acc[r.status] ?? 0) + 1;
+    return acc;
+  }, {});
 
-  return { totalRolls, totalWeightKg, totalLengthM, byStatus }
+  return {
+    totalRolls,
+    totalWeightKg,
+    totalLengthM,
+    byStatus,
+  };
 }
 
 /**
@@ -49,23 +59,23 @@ export function summarizeFinishedFabric(rolls: FinishedFabricRoll[]) {
  * Chỉ cuộn 'in_stock' mới được phép giao.
  */
 export function canShipRoll(status: RollStatus): boolean {
-  return status === 'in_stock'
+  return status === 'in_stock';
 }
 
 /**
  * Phát hiện mã cuộn trùng lặp trong danh sách nhập.
  */
 export function findDuplicateRollNumbers(rollNumbers: string[]): string[] {
-  const seen = new Set<string>()
-  const duplicates = new Set<string>()
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
 
   for (const rn of rollNumbers) {
-    const normalized = rn.trim().toUpperCase()
+    const normalized = rn.trim().toUpperCase();
     if (seen.has(normalized)) {
-      duplicates.add(normalized)
+      duplicates.add(normalized);
     }
-    seen.add(normalized)
+    seen.add(normalized);
   }
 
-  return Array.from(duplicates)
+  return Array.from(duplicates);
 }
