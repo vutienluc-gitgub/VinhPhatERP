@@ -65,6 +65,42 @@ export function PaymentForm({
     onClose();
   }
 
+  if (balanceDue <= 0) {
+    return (
+      <AdaptiveSheet
+        open={true}
+        onClose={onClose}
+        title={`Thu tiền — ${orderNumber}`}
+      >
+        <div
+          style={{
+            padding: '1rem',
+            background: 'var(--surface-success)',
+            color: 'var(--success-strong)',
+            borderRadius: 'var(--radius)',
+            fontSize: '0.9rem',
+            border: '1px solid var(--success)',
+            textAlign: 'center',
+          }}
+        >
+          ✅ Đơn hàng đã được thanh toán đầy đủ.
+        </div>
+        <div
+          className="modal-footer"
+          style={{
+            marginTop: '1.5rem',
+            padding: 0,
+            border: 'none',
+          }}
+        >
+          <button className="btn-secondary" type="button" onClick={onClose}>
+            Đóng
+          </button>
+        </div>
+      </AdaptiveSheet>
+    );
+  }
+
   return (
     <AdaptiveSheet
       open={true}
