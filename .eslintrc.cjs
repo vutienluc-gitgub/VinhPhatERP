@@ -108,6 +108,7 @@ module.exports = {
     // ========================
     // 📐 VERTICAL FORMATTING (Trick tránh lỗi ngoặc)
     // ========================
+    'linebreak-style': ['error', 'unix'],
     'object-curly-newline': ['warn', { multiline: true, consistent: true }],
     'array-bracket-newline': ['warn', { multiline: true }],
     'object-property-newline': [

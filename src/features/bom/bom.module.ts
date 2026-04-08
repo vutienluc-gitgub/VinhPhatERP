@@ -35,7 +35,9 @@ export const bomFeature: FeatureDefinition = {
     'Duyệt để chốt định mức cho lệnh sản xuất.',
   ],
   entities: ['bom_templates', 'bom_yarn_items', 'bom_versions'],
-  nextMilestones: ['Tích hợp BOM vào tính kế hoạch nguyên liệu trong Work Orders.',],
+  nextMilestones: [
+    'Tích hợp BOM vào tính kế hoạch nguyên liệu trong Work Orders.',
+  ],
 };
 
 import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
