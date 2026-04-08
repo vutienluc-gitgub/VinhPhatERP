@@ -67,6 +67,22 @@ export const paymentsSchema = z.object({
 
 export type PaymentsFormValues = z.infer<typeof paymentsSchema>;
 
+/**
+ * Factory tạo schema có validate overpayment.
+ * Nếu balanceDue được cung cấp, amount không được vượt quá balanceDue.
+ */
+export function createPaymentsSchema(balanceDue?: number) {
+  return paymentsSchema.superRefine((data, ctx) => {
+    if (balanceDue !== undefined && data.amount > balanceDue) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['amount'],
+        message: `Số tiền thu không được vượt quá số còn nợ (${new Intl.NumberFormat('vi-VN').format(balanceDue)} đ)`,
+      });
+    }
+  });
+}
+
 export const paymentsDefaultValues: PaymentsFormValues = {
   paymentNumber: '',
   orderId: '',

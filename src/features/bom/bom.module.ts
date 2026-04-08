@@ -42,7 +42,6 @@ export const bomFeature: FeatureDefinition = {
     'Tích hợp BOM vào tính kế hoạch nguyên liệu trong Work Orders.',
   ],
 };
-
 export const bomPlugin: FeaturePlugin = {
   key: 'bom',
   route: 'bom',

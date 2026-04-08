@@ -1,14 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import { createPaymentsSchema } from '@/schema/payment.schema';
 
 import {
   PAYMENT_METHOD_LABELS,
   paymentsDefaultValues,
-  paymentsSchema,
 } from './payments.module';
 import type { PaymentsFormValues } from './payments.module';
 import type { PaymentMethod } from './types';
@@ -36,6 +36,8 @@ export function PaymentForm({
   const { data: nextNumber } = useNextPaymentNumber();
   const createMutation = useCreatePayment();
 
+  const schema = useMemo(() => createPaymentsSchema(balanceDue), [balanceDue]);
+
   const {
     register,
     handleSubmit,
@@ -44,7 +46,7 @@ export function PaymentForm({
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<PaymentsFormValues>({
-    resolver: zodResolver(paymentsSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       ...paymentsDefaultValues,
       orderId,
