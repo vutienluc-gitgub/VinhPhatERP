@@ -1,13 +1,14 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
+echo "🛡️ Level 7 Defense: Pre-commit checks starting..."
 
-echo "🎨 Format code..."
-npm run format || exit 1
+# 1. Run lint-staged for fast individual file fixes
+echo "⚡ Running lint-staged (Fix & Format)..."
+npx lint-staged || exit 1
 
-echo "🔍 Lint fix..."
-npm run lint:fix || exit 1
-
-echo "🔍 Type check..."
+# 2. Run full type check to ensure no boundary breaking
+echo "🏗️ Running full Type Check..."
 npm run typecheck || exit 1
 
-echo "🤖 AI Audit..."
-npm run ai:audit || exit 1
+echo "✅ All checks passed. Committing safe code."

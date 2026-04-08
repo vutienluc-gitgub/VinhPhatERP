@@ -1,4 +1,4 @@
-import { Database } from '../../services/supabase/database.types';
+import { Database } from '@/services/supabase/database.types';
 
 export type BomStatus = Database['public']['Enums']['bom_status'];
 

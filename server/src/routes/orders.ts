@@ -3,9 +3,9 @@ import { eq, desc, sum } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 
-import { db } from '../db/client.js';
-import { orders, orderItems, orderProgress } from '../db/schema/index.js';
-import { requireAuth } from '../middleware/auth.js';
+import { db } from '@/db/client.js';
+import { orders, orderItems, orderProgress } from '@/db/schema/index.js';
+import { requireAuth } from '@/middleware/auth.js';
 
 const PRODUCTION_STAGES = [
   'warping',

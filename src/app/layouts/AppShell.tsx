@@ -1,4 +1,3 @@
-import type { LucideIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
@@ -7,19 +6,7 @@ import { useDashboardStats } from '@/features/dashboard/useDashboardData';
 import { navigationItems } from '@/app/router/routes';
 import type { UserRole } from '@/services/supabase/database.types';
 import { useTheme } from '@/shared/hooks/useTheme';
-import {
-  Home,
-  FileText,
-  Package,
-  Activity,
-  Truck,
-  Layers,
-  Users,
-  CircleDollarSign,
-  Component,
-  Settings,
-  AlignJustify,
-} from '@/shared/icons';
+import { Icon } from '@/shared/components/Icon';
 
 import { MobileMoreDrawer } from './MobileMoreDrawer';
 
@@ -66,16 +53,16 @@ const ROUTE_ICONS: Record<string, string> = {
   '/settings': '⚙️',
 };
 
-const LUCIDE_ICONS: Record<string, LucideIcon> = {
-  '/': Home,
-  '/quotations': FileText,
-  '/orders': Package,
-  '/order-progress': Activity,
-  '/shipments': Truck,
-  '/inventory': Layers,
-  '/customers': Users,
-  '/payments': CircleDollarSign,
-  '/settings': Settings,
+const LUCIDE_ICONS: Record<string, string> = {
+  '/': 'Home',
+  '/quotations': 'FileText',
+  '/orders': 'Package',
+  '/order-progress': 'Activity',
+  '/shipments': 'Truck',
+  '/inventory': 'Layers',
+  '/customers': 'Users',
+  '/payments': 'CircleDollarSign',
+  '/settings': 'Settings',
 };
 
 export function AppShell() {
@@ -281,7 +268,7 @@ export function AppShell() {
 
       <nav className="mobile-nav" aria-label="Bottom navigation">
         {primaryItems.slice(0, 5).map((item) => {
-          const IconObj = LUCIDE_ICONS[item.path] || Component;
+          const iconName = LUCIDE_ICONS[item.path] || 'Component';
           return (
             <NavLink
               key={item.path}
@@ -293,7 +280,8 @@ export function AppShell() {
             >
               {({ isActive }) => (
                 <>
-                  <IconObj
+                  <Icon
+                    name={iconName}
                     size={24}
                     strokeWidth={isActive ? 2.5 : 1.8}
                     fill={isActive ? 'currentColor' : 'none'}
@@ -348,7 +336,8 @@ export function AppShell() {
                   justifyContent: 'center',
                 }}
               >
-                <AlignJustify
+                <Icon
+                  name="AlignJustify"
                   className="hamburger-badge"
                   size={8}
                   color="#fff"

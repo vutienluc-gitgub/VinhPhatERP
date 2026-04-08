@@ -3,9 +3,9 @@ import { eq, ilike, and } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 
-import { db } from '../db/client.js';
-import { suppliers } from '../db/schema/index.js';
-import { requireAuth } from '../middleware/auth.js';
+import { db } from '@/db/client.js';
+import { suppliers } from '@/db/schema/index.js';
+import { requireAuth } from '@/middleware/auth.js';
 
 const router = new Hono();
 

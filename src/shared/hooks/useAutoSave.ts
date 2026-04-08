@@ -22,7 +22,7 @@ export function useAutoSave<T>({
   const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
   const [hasConflict, setHasConflict] = useState(false);
 
-  const timeoutRef = useRef<any>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedRef = useRef<string>('');
 
   // 🔥 AUTO SAVE
@@ -32,7 +32,7 @@ export function useAutoSave<T>({
     if (serialized === lastSavedRef.current) return;
 
     setStatus('saving');
-    clearTimeout(timeoutRef.current);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     timeoutRef.current = setTimeout(async () => {
       const payload = {
@@ -51,8 +51,10 @@ export function useAutoSave<T>({
       setStatus('saved');
     }, delay);
 
-    return () => clearTimeout(timeoutRef.current);
-  }, [data]);
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [data, delay, fullKey, onSaveToDB]);
 
   // 🔥 MULTI TAB SYNC + CONFLICT DETECT
   useEffect(() => {
@@ -71,7 +73,7 @@ export function useAutoSave<T>({
 
     window.addEventListener('storage', handler);
     return () => window.removeEventListener('storage', handler);
-  }, [lastSavedAt]);
+  }, [lastSavedAt, fullKey]);
 
   return {
     status,

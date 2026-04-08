@@ -4,13 +4,17 @@ import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
 
-import type { WorkOrderFilter, WorkOrderStatus } from './types';
+import type {
+  WorkOrderFilter,
+  WorkOrderStatus,
+  WorkOrderWithRelations,
+} from './types';
 import { useWorkOrders, useStartWorkOrder } from './useWorkOrders';
 import { WORK_ORDER_STATUSES } from './work-orders.module';
 
 interface WorkOrderListProps {
   onView: (id: string) => void;
-  onEdit: (wo: any) => void;
+  onEdit: (wo: WorkOrderWithRelations) => void;
   onCreate: () => void;
 }
 

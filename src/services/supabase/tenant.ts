@@ -1,5 +1,5 @@
 import { supabase } from '@/services/supabase/client';
-import { resolveTenant } from '@/shared/context/TenantContext';
+import { resolveTenant } from '@/shared/context/tenant-context';
 
 /**
  * Tenant-aware Supabase client helper.
