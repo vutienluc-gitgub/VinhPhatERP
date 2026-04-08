@@ -1,50 +1,61 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
+import { createModule } from '@/core/registry/moduleRegistry';
+import type {
+  WorkOrder,
+  WorkOrderItem,
+  WorkOrderStatus,
+  WorkOrderWithRelations,
+} from '@/features/work-orders/types';
 
-export type { WorkOrderStatus } from '@/schema/work-order.schema';
-
-export {
-  WORK_ORDER_STATUSES,
-  createWorkOrderSchema,
-  completeWorkOrderSchema,
-} from '@/schema/work-order.schema';
-export type {
-  CreateWorkOrderInput,
-  CompleteWorkOrderInput,
-} from '@/schema/work-order.schema';
-
-// Domain types stay in feature (tightly coupled to DB shape)
 export type {
   WorkOrder,
+  WorkOrderItem,
+  WorkOrderStatus,
   WorkOrderWithRelations,
-  WorkOrderYarnRequirement,
-} from './types';
+};
 
 export const workOrdersFeature: FeatureDefinition = {
   key: 'work-orders',
   route: '/work-orders',
-  title: 'Lệnh Sản Xuất',
-  description: 'Quản lý lệnh sản xuất, kết nối BOM và phân bổ sợi',
-  badge: 'Sản Xuất',
-  highlights: [
-    'Quản lý lệnh dệt',
-    'Phân bổ BOM chi tiết',
-    'Theo dõi năng suất mộc',
+  title: 'Lệnh sản xuất (Dệt)',
+  badge: 'Production',
+  description:
+    'Quản lý các lệnh dệt vải, giao kế hoạch cho máy dệt và theo dõi sản lượng thực tế.',
+  summary: [
+    {
+      label: 'Lệnh đang chạy',
+      value: '24',
+    },
+    {
+      label: 'Hiệu suất máy',
+      value: '92%',
+    },
   ],
-  resources: ['work_orders', 'work_order_y_requirements'],
-  entities: ['Lệnh sản xuất', 'Nhu cầu sợi'],
-  nextMilestones: ['Kết nối module nhuộm', 'Kho vận mộc'],
+  highlights: [
+    'Phân bổ lệnh cho máy dệt.',
+    'Theo dõi sản lượng theo ca.',
+    'Kiểm soát hao hụt sợi.',
+  ],
+  entities: ['work_orders', 'work_order_items'],
+  nextMilestones: [
+    'Tích hợp cảm biến IOT theo dõi tốc độ máy dệt.',
+    'Lịch bảo trì máy tự động.',
+  ],
 };
 
 import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const workOrdersPlugin: FeaturePlugin = {
   key: 'work-orders',
   route: 'work-orders',
-  label: 'Lệnh sản xuất',
-  shortLabel: 'Lệnh SX',
-  description: 'Chỉ đạo sản xuất và tự động phân bổ nguồn lực sợi.',
-  icon: 'clipboard-list',
+  label: 'Lệnh dệt',
+  shortLabel: 'Dệt',
+  description: 'Quản lý lệnh sản xuất dệt vải mộc từ kho sợi.',
+  icon: 'layers',
+  requiredRoles: ['admin', 'manager', 'staff'],
   group: 'production',
-  order: 50,
+  order: 20,
   component: () =>
-    import('./index').then((m) => ({ default: m.WorkOrdersPage })),
+    import('./WorkOrdersPage').then((m) => ({ default: m.WorkOrdersPage })),
 };
+
+export default createModule(workOrdersFeature);

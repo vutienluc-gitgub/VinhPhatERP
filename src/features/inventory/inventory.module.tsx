@@ -3,90 +3,57 @@ import { lazy } from 'react';
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import { LazyPage } from '@/app/router/LazyPage';
-export { inventoryAdjustmentSchema } from '@/schema/inventory.schema';
-export type { InventoryAdjustmentFormValues } from '@/schema/inventory.schema';
+import { inventoryAdjustmentSchema } from '@/schema/inventory.schema';
+import type { InventoryAdjustmentFormValues } from '@/schema/inventory.schema';
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
+
+import type { InventoryAction, InventoryLog } from './types';
+import { inventoryFeature as inventoryFeatureExport } from './inventory.feature';
+
+export { inventoryAdjustmentSchema, inventoryFeatureExport };
+export type { InventoryAdjustmentFormValues, InventoryAction, InventoryLog };
 
 export const inventoryFeature: FeatureDefinition = {
   key: 'inventory',
   route: '/inventory',
-  title: 'Tồn kho',
-  badge: 'Scaffolded',
+  title: 'Kho & Tồn kho',
+  badge: 'Critical',
   description:
-    'Inventory tập trung vào movement, available stock và reservations để tránh over-selling.',
+    'Quản lý linh hoạt nhập/xuất kho, điều chỉnh tồn kho và nhật ký giao dịch.',
   summary: [
     {
-      label: 'Nguồn sự thật',
-      value: 'Movements',
+      label: 'Sức chứa',
+      value: '85%',
     },
     {
-      label: 'View mode',
-      value: 'Cards + Table',
-    },
-    {
-      label: 'Alerts',
-      value: 'Low stock',
+      label: 'Giao dịch/tháng',
+      value: '1.2k',
     },
   ],
   highlights: [
-    'Tồn có sẵn và tồn đã giữ chỗ cần hiển thị tách biệt.',
-    'Cảnh báo tồn thấp theo item type.',
-    'Mobile card list, desktop rich table.',
+    'Quản lý đa kho.',
+    'Nhật ký giao dịch thời gian thực.',
+    'Hỗ trợ QR Code/Barcode.',
   ],
-  resources: [
-    'Bang inventory_adjustments.',
-    'View inventory available va ready to ship.',
-    'Badge canh bao o navigation sau khi co data that.',
-  ],
-  entities: ['Stock card', 'Movement', 'Adjustment', 'Reservation'],
+  entities: ['inventory_stocks', 'inventory_logs', 'warehouses'],
   nextMilestones: [
-    'Hop nhat ton soi, vai moc va thanh pham.',
-    'Tao card canh bao low stock va aging stock.',
-    'Bo sung inventory history theo reference item.',
+    'Tự động cảnh báo tồn kho thấp.',
+    'Tích hợp tính giá vốn hàng tồn kho.',
   ],
 };
 
-const InventoryPage = lazy(() =>
-  import('./InventoryPage').then((m) => ({ default: m.InventoryPage })),
-);
-
-export const inventoryModule = createModule({
-  key: 'module-inventory',
-  name: 'Tồn Kho',
-  routes: [
-    {
-      path: '/inventory',
-      element: (
-        <LazyPage>
-          <InventoryPage />
-        </LazyPage>
-      ),
-    },
-  ],
-  menu: [
-    {
-      path: '/inventory',
-      label: 'Tồn kho',
-      shortLabel: 'Stock',
-      description: 'Tồn khả dụng, tồn giữ chỗ, cảnh báo tồn thấp và truy vết.',
-      icon: 'warehouse',
-      primaryMobile: true,
-      group: 'master-data',
-      order: 80,
-    },
-  ],
-});
-
-import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const inventoryPlugin: FeaturePlugin = {
   key: 'inventory',
   route: 'inventory',
-  label: 'Tồn kho',
-  shortLabel: 'Stock',
-  description: 'Tồn khả dụng, tồn giữ chỗ, cảnh báo tồn thấp và truy vết.',
-  icon: 'warehouse',
-  primaryMobile: true,
-  group: 'master-data',
-  order: 80,
+  label: 'Kho & Tồn kho',
+  shortLabel: 'Kho',
+  description: 'Theo dõi tồn kho sợi, mộc, thành phẩm và vật tư.',
+  icon: 'package',
+  requiredRoles: ['admin', 'manager', 'staff'],
+  group: 'inventory',
+  order: 20,
   component: () =>
     import('./InventoryPage').then((m) => ({ default: m.InventoryPage })),
 };
+
+export default createModule(inventoryFeature);

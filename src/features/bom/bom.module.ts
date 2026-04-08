@@ -1,16 +1,22 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
-
-// Domain type from local file (tightly coupled to DB shape)
-export type { BomStatus } from '@/schema/bom.schema';
-
-export {
-  BOM_STATUSES,
-  BOM_STATUS_LABELS,
+import { createModule } from '@/core/registry/moduleRegistry';
+import type { BomStatus, BomTemplateFormData } from '@/schema/bom.schema';
+import {
   BOM_STATUS_COLORS,
-  bomYarnItemSchema,
+  BOM_STATUS_LABELS,
+  BOM_STATUSES,
   bomTemplateSchema,
+  bomYarnItemSchema,
 } from '@/schema/bom.schema';
-export type { BomTemplateFormData } from '@/schema/bom.schema';
+
+export type { BomStatus, BomTemplateFormData };
+export {
+  BOM_STATUS_COLORS,
+  BOM_STATUS_LABELS,
+  BOM_STATUSES,
+  bomTemplateSchema,
+  bomYarnItemSchema,
+};
 
 export const bomFeature: FeatureDefinition = {
   key: 'bom',
@@ -30,10 +36,6 @@ export const bomFeature: FeatureDefinition = {
     },
   ],
   highlights: ['BOM định nghĩa tỷ lệ hao hụt.', 'Quản lý phiên bản bất biến.'],
-  resources: [
-    'Chỉ cập nhật bản nháp.',
-    'Duyệt để chốt định mức cho lệnh sản xuất.',
-  ],
   entities: ['bom_templates', 'bom_yarn_items', 'bom_versions'],
   nextMilestones: [
     'Tích hợp BOM vào tính kế hoạch nguyên liệu trong Work Orders.',
@@ -49,8 +51,9 @@ export const bomPlugin: FeaturePlugin = {
   description: 'Cấu hình định mức nguyên vật liệu sợi cho từng mã vải mộc.',
   icon: 'layers',
   requiredRoles: ['admin', 'manager'],
-  routeGuard: 'manager',
   group: 'production',
   order: 45,
   component: () => import('./BomPage').then((m) => ({ default: m.BomPage })),
 };
+
+export default createModule(bomFeature);

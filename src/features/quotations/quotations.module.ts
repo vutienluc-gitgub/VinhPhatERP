@@ -1,63 +1,32 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
-
-export {
-  QUOTATION_STATUSES,
-  QUOTATION_STATUS_LABELS,
-  QUOTATION_STATUS_ICONS,
-  DISCOUNT_TYPE_OPTIONS,
-  VAT_RATE_OPTIONS,
-  UNIT_OPTIONS,
-  quotationItemSchema,
-  quotationsSchema,
-  emptyQuotationItem,
-  quotationsDefaultValues,
-  calculateQuotationTotals,
-} from '@/schema/quotation.schema';
-export type {
-  QuotationStatus,
-  DiscountType,
-  UnitType,
-  QuotationItemFormValues,
-  QuotationsFormValues,
-} from '@/schema/quotation.schema';
+import { createModule } from '@/core/registry/moduleRegistry';
 
 export const quotationsFeature: FeatureDefinition = {
   key: 'quotations',
   route: '/quotations',
-  title: 'Báo giá',
-  badge: 'New',
+  title: 'Báo giá (CRM)',
+  badge: 'Sale-Tool',
   description:
-    'Quản lý báo giá khách hàng với VAT, chiết khấu, revision và chuyển đổi sang đơn hàng.',
+    'Công cụ tính toán giá thành nhanh cho khách hàng dựa trên biến động giá sợi và nhu cầu.',
   summary: [
     {
-      label: 'Status set',
-      value: '6',
+      label: 'Mẫu báo giá',
+      value: '15',
     },
     {
-      label: 'VAT',
-      value: 'Có',
-    },
-    {
-      label: 'Chiết khấu',
-      value: 'Có',
+      label: 'Tỷ lệ chốt',
+      value: '65%',
     },
   ],
   highlights: [
-    'Tạo báo giá với nhiều dòng hàng, VAT và chiết khấu.',
-    'Theo dõi revision khi khách yêu cầu sửa đổi.',
-    'Chuyển đổi báo giá đã duyệt thành đơn hàng 1 click.',
-    'Cảnh báo báo giá sắp/đã hết hiệu lực.',
+    'Tính toán giá nhanh.',
+    'Lưu lịch sử báo giá khách hàng.',
+    'Xuất PDF chuyên nghiệp.',
   ],
-  resources: [
-    'Bảng quotations và quotation_items.',
-    'UI list, detail, form, print.',
-    'Hook chuyển đổi sang đơn hàng.',
-  ],
-  entities: ['Quotation header', 'Quotation item', 'Revision', 'Conversion'],
+  entities: ['quotations'],
   nextMilestones: [
-    'Bản in PDF báo giá.',
-    'Gửi báo giá qua email/Zalo.',
-    'Báo cáo tỷ lệ chuyển đổi.',
+    'Tự động lấy giá sợi thị trường.',
+    'Tích hợp chatbot gửi báo giá nhanh.',
   ],
 };
 
@@ -67,20 +36,13 @@ export const quotationsPlugin: FeaturePlugin = {
   route: 'quotations',
   label: 'Báo giá',
   shortLabel: 'Báo giá',
-  description:
-    'Tạo và quản lý báo giá, VAT, chiết khấu, chuyển thành đơn hàng.',
-  icon: 'file-text',
-  primaryMobile: true,
-  requiredRoles: ['admin', 'manager', 'sale'],
+  description: 'Tạo và quản lý báo giá gửi tới khách hàng tiềm năng.',
+  icon: 'package',
+  requiredRoles: ['admin', 'manager', 'staff'],
   group: 'sales',
-  order: 10,
+  order: 5,
   component: () =>
-    import('./index').then((m) => ({ default: m.QuotationsPage })),
-  printRoutes: [
-    {
-      path: 'print/quotation/:id',
-      component: () =>
-        import('./index').then((m) => ({ default: m.QuotationPrint })),
-    },
-  ],
+    import('./QuotationsPage').then((m) => ({ default: m.QuotationsPage })),
 };
+
+export default createModule(quotationsFeature);

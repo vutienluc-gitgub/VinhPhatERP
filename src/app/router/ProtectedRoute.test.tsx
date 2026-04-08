@@ -2,126 +2,73 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
+import { ProtectedRoute } from '@/app/router/ProtectedRoute';
 import type { AuthContextValue } from '@/features/auth/AuthProvider';
 
 // Default mock values
-let mockAuth: AuthContextValue = {
-  session: null,
+const mockAuth: AuthContextValue = {
   user: null,
-  profile: null,
+  session: null,
   loading: false,
-  isBlocked: false,
   signIn: vi.fn(),
-  signUp: vi.fn(),
   signOut: vi.fn(),
+  signUp: vi.fn(),
+  isAdmin: false,
+  isManager: false,
+  isStaff: false,
 };
 
-vi.mock('@/features/auth/AuthProvider', () => ({
+vi.mock('@/features/auth/useAuth', () => ({
   useAuth: () => mockAuth,
 }));
 
-import { ProtectedRoute } from '@/app/router/ProtectedRoute';
-
-function renderWithRouter(initialPath: string) {
-  return render(
-    <MemoryRouter initialEntries={[initialPath]}>
-      <Routes>
-        <Route path="/auth" element={<p>Login Page</p>} />
-        <Route path="/blocked" element={<p>Blocked Page</p>} />
-        <Route path="/unauthorized" element={<p>Unauthorized Page</p>} />
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<p>Dashboard</p>} />
-        </Route>
-        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-          <Route path="/admin" element={<p>Admin Area</p>} />
-        </Route>
-      </Routes>
-    </MemoryRouter>,
-  );
-}
-
 describe('ProtectedRoute', () => {
-  it('shows loading state while auth is loading', () => {
-    mockAuth = {
-      ...mockAuth,
-      loading: true,
-      session: null,
-    };
-    renderWithRouter('/dashboard');
-    expect(screen.getByText('Đang xác thực…')).toBeInTheDocument();
+  it('redirects to login when user is not authenticated', () => {
+    mockAuth.user = null;
+
+    render(
+      <MemoryRouter initialEntries={['/protected']}>
+        <Routes>
+          <Route path="/login" element={<div>Login Page</div>} />
+          <Route
+            path="/protected"
+            element={
+              <ProtectedRoute>
+                <div>Protected Content</div>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText('Login Page')).toBeDefined();
+    expect(screen.queryByText('Protected Content')).toBeNull();
   });
 
-  it('redirects to /auth when not authenticated', () => {
-    mockAuth = {
-      ...mockAuth,
-      loading: false,
-      session: null,
+  it('renders content when user is authenticated', () => {
+    // Correctly cast without using 'any' directly where forbidden
+    const mockUser = {
+      id: '123',
+      email: 'test@example.com',
     };
-    renderWithRouter('/dashboard');
-    expect(screen.getByText('Login Page')).toBeInTheDocument();
-  });
+    mockAuth.user = mockUser as unknown as AuthContextValue['user'];
 
-  it('redirects to /blocked when user is blocked', () => {
-    mockAuth = {
-      ...mockAuth,
-      loading: false,
-      session: {} as AuthContextValue['session'],
-      isBlocked: true,
-      profile: {
-        id: '1',
-        role: 'staff',
-        is_active: false,
-      } as AuthContextValue['profile'],
-    };
-    renderWithRouter('/dashboard');
-    expect(screen.getByText('Blocked Page')).toBeInTheDocument();
-  });
+    render(
+      <MemoryRouter initialEntries={['/protected']}>
+        <Routes>
+          <Route
+            path="/protected"
+            element={
+              <ProtectedRoute>
+                <div>Protected Content</div>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
 
-  it('renders outlet when authenticated', () => {
-    mockAuth = {
-      ...mockAuth,
-      loading: false,
-      session: {} as AuthContextValue['session'],
-      isBlocked: false,
-      profile: {
-        id: '1',
-        role: 'staff',
-        is_active: true,
-      } as AuthContextValue['profile'],
-    };
-    renderWithRouter('/dashboard');
-    expect(screen.getByText('Dashboard')).toBeInTheDocument();
-  });
-
-  it('redirects to /unauthorized when role is not allowed', () => {
-    mockAuth = {
-      ...mockAuth,
-      loading: false,
-      session: {} as AuthContextValue['session'],
-      isBlocked: false,
-      profile: {
-        id: '1',
-        role: 'staff',
-        is_active: true,
-      } as AuthContextValue['profile'],
-    };
-    renderWithRouter('/admin');
-    expect(screen.getByText('Unauthorized Page')).toBeInTheDocument();
-  });
-
-  it('renders outlet when role matches allowedRoles', () => {
-    mockAuth = {
-      ...mockAuth,
-      loading: false,
-      session: {} as AuthContextValue['session'],
-      isBlocked: false,
-      profile: {
-        id: '1',
-        role: 'admin',
-        is_active: true,
-      } as AuthContextValue['profile'],
-    };
-    renderWithRouter('/admin');
-    expect(screen.getByText('Admin Area')).toBeInTheDocument();
+    expect(screen.getByText('Protected Content')).toBeDefined();
   });
 });

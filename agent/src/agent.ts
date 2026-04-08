@@ -21,11 +21,11 @@ if (!ANTHROPIC_API_KEY) {
 }
 
 // ---- Khởi động MCP Client (spawn mcp-server.ts làm subprocess) ----
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const dirName = path.dirname(fileURLToPath(import.meta.url));
 
 const transport = new StdioClientTransport({
   command: 'tsx',
-  args: [path.join(__dirname, 'mcp-server.ts')],
+  args: [path.join(dirName, 'mcp-server.ts')],
   env: {
     ...process.env,
     SUPABASE_URL: process.env.SUPABASE_URL ?? '',

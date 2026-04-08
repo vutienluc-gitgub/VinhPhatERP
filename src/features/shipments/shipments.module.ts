@@ -1,47 +1,32 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
-
-export {
-  SHIPMENT_STATUS_LABELS,
-  emptyShipmentItem,
-  shipmentsSchema,
-  shipmentsDefaultValues,
-  deliveryConfirmSchema,
-  deliveryConfirmDefaultValues,
-} from '@/schema/shipment.schema';
-export type {
-  ShipmentStatus,
-  ShipmentItemFormValues,
-  ShipmentsFormValues,
-  DeliveryConfirmFormValues,
-} from '@/schema/shipment.schema';
+import { createModule } from '@/core/registry/moduleRegistry';
 
 export const shipmentsFeature: FeatureDefinition = {
   key: 'shipments',
   route: '/shipments',
-  title: 'Xuất kho',
-  badge: 'Scaffolded',
+  title: 'Giao hàng (Logistics)',
+  badge: 'Shipping',
   description:
-    'Shipment được tạo từ order items và là điểm duy nhất làm giảm tồn kho thực tế trong V2.',
+    'Quản lý phiếu xuất kho giao hàng, theo dõi đơn vị vận chuyển và trạng thái kiện hàng.',
+  summary: [
+    {
+      label: 'Kiện hàng tháng',
+      value: '850',
+    },
+    {
+      label: 'Đang vận chuyển',
+      value: '45',
+    },
+  ],
   highlights: [
-    'Tạo shipment từ order và chống xuất vượt remaining qty.',
-    'Cập nhật partial shipped và completed status.',
-    'Sẵn sàng cho in phiếu giao hàng ở phase sau.',
+    'Tích hợp in phiếu giao hàng.',
+    'Theo dõi COD & Công nợ ship.',
+    'Quản lý đội xe nội bộ.',
   ],
-  resources: [
-    'Bang shipments va shipment_items.',
-    'Business rule confirm shipment tru kho.',
-    'Lien ket inventory va payments.',
-  ],
-  entities: [
-    'Shipment header',
-    'Shipment item',
-    'Delivery proof',
-    'Stock deduction',
-  ],
+  entities: ['shipments', 'shipment_items'],
   nextMilestones: [
-    'Them tao shipment tu order detail.',
-    'Khoa chinh sua sau khi shipment confirmed.',
-    'Cho phep giao tung phan va in phieu giao.',
+    'Tích hợp API các đơn vị vận chuyển (GHN, GHTK).',
+    'Dự báo phí ship thông minh.',
   ],
 };
 
@@ -49,13 +34,16 @@ import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const shipmentsPlugin: FeaturePlugin = {
   key: 'shipments',
   route: 'shipments',
-  label: 'Xuất kho',
+  label: 'Giao hàng',
   shortLabel: 'Ship',
-  description: 'Tạo phiếu xuất từ đơn hàng và đồng bộ tồn kho.',
-  icon: 'truck',
-  primaryMobile: true,
-  group: 'sales',
-  order: 35,
+  description:
+    'Quản lý quy trình đóng gói và giao nhận hàng hóa tới khách hàng.',
+  icon: 'package',
+  requiredRoles: ['admin', 'manager', 'staff'],
+  group: 'logistics',
+  order: 70,
   component: () =>
-    import('./index').then((m) => ({ default: m.ShipmentsPage })),
+    import('./ShipmentsPage').then((m) => ({ default: m.ShipmentsPage })),
 };
+
+export default createModule(shipmentsFeature);

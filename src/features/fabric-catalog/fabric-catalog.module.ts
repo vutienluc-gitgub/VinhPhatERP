@@ -1,53 +1,66 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
+import { createModule } from '@/core/registry/moduleRegistry';
+import {
+  FABRIC_CATALOG_STATUS_COLORS,
+  FABRIC_CATALOG_STATUS_LABELS,
+  FABRIC_CATALOG_STATUSES,
+  fabricTemplateSchema,
+  yarnRequirementSchema,
+} from '@/schema/fabric-catalog.schema';
 
 export {
-  FABRIC_CATALOG_STATUSES,
+  FABRIC_CATALOG_STATUS_COLORS,
   FABRIC_CATALOG_STATUS_LABELS,
-  fabricCatalogSchema,
-  fabricCatalogDefaultValues,
-} from '@/schema/fabric-catalog.schema';
-export type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
+  FABRIC_CATALOG_STATUSES,
+  fabricTemplateSchema,
+  yarnRequirementSchema,
+};
 
 export const fabricCatalogFeature: FeatureDefinition = {
   key: 'fabric-catalog',
   route: '/fabric-catalog',
-  title: 'Danh mục vải',
-  badge: 'Master Data',
+  title: 'Danh mục Vải',
+  badge: 'Internal',
   description:
-    'Quản lý danh mục loại vải — dùng chung cho vải mộc và vải thành phẩm.',
+    'Thư viện mẫu vải, thông số kỹ thuật, kiểu dệt và định mức hao hụt chuẩn.',
   summary: [
     {
-      label: 'Loại dữ liệu',
-      value: 'Master Data',
+      label: 'Mẫu vải',
+      value: '450+',
     },
     {
-      label: 'Tích hợp',
-      value: 'BOM, Vải mộc, Thành phẩm',
+      label: 'Kiểu dệt',
+      value: '25+',
     },
   ],
   highlights: [
-    'Chuẩn hoá tên và thành phần vải, giảm lỗi nhập liệu.',
-    'Dùng chung cho BOM, nhập vải mộc và vải thành phẩm.',
+    'Tra cứu mã vải nhanh.',
+    'Lưu trữ thông số dệt chuẩn.',
+    'Quản lý hình ảnh mẫu thực tế.',
   ],
-  resources: [
-    'Bảng fabric_catalogs với mã, tên, thành phần.',
-    'FK target_fabric_id trong bom_templates.',
+  entities: ['fabric_templates', 'yarn_requirements'],
+  nextMilestones: [
+    'Tự động tính giá thành kế hoạch.',
+    'Phân tích xu hướng thị trường.',
   ],
-  entities: ['FabricCatalog'],
-  nextMilestones: ['Liên kết với raw_fabric_rolls và finished_fabric_rolls.'],
 };
 
 import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const fabricCatalogPlugin: FeaturePlugin = {
   key: 'fabric-catalog',
   route: 'fabric-catalog',
-  label: 'Danh mục vải',
-  shortLabel: 'Vải',
+  label: 'Danh mục Vải',
+  shortLabel: 'Mẫu Vải',
   description:
-    'Quản lý danh mục loại vải — dùng chung cho vải mộc và thành phẩm.',
-  icon: 'layout-grid',
-  group: 'master-data',
-  order: 76,
+    'Quản lý thông số kỹ thuật các loại vải công ty có thể sản xuất.',
+  icon: 'layers',
+  requiredRoles: ['admin', 'manager', 'staff'],
+  group: 'production',
+  order: 40,
   component: () =>
-    import('./index').then((m) => ({ default: m.FabricCatalogPage })),
+    import('./FabricCatalogPage').then((m) => ({
+      default: m.FabricCatalogPage,
+    })),
 };
+
+export default createModule(fabricCatalogFeature);

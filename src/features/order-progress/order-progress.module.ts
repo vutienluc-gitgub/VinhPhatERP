@@ -1,62 +1,55 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
-
-// Re-export schema & constants from centralized schema
-export {
+import { createModule } from '@/core/registry/moduleRegistry';
+import type { OrderProgress, OrderProgressWithOrder } from '@/models';
+import {
+  PRODUCTION_STAGE_LABELS,
   PRODUCTION_STAGES,
-  STAGE_LABELS,
-  STAGE_STATUS_LABELS,
-  orderProgressSchema,
-} from '@/schema/order-progress.schema';
-export type {
-  ProductionStage,
-  StageStatus,
-  OrderProgressFormValues,
 } from '@/schema/order-progress.schema';
 
-// Domain types stay in feature (tightly coupled to DB shape)
-export type {
-  OrderProgress,
-  OrderProgressWithOrder,
-  ProgressAuditLog,
-  ProgressAuditLogWithOrder,
-} from './types';
+export type { OrderProgress, OrderProgressWithOrder };
+export { PRODUCTION_STAGE_LABELS, PRODUCTION_STAGES };
 
 export const orderProgressFeature: FeatureDefinition = {
   key: 'order-progress',
   route: '/order-progress',
-  title: 'Tiến độ đơn hàng',
-  badge: 'Scaffolded',
+  title: 'Theo dõi tiến độ',
+  badge: 'Premium',
   description:
-    'Tiến độ phân tách khỏi order và shipment để theo dõi vận hành theo stage, theo dòng hàng và theo mức độ trễ hạn.',
+    'Bảng theo dõi trạng thái đơn hàng từ Sợi -> Dệt -> Nhuộm -> Kho -> Ship.',
+  summary: [
+    {
+      label: 'Đang sản xuất',
+      value: '85',
+    },
+    {
+      label: 'Chậm tiến độ',
+      value: '12',
+    },
+  ],
   highlights: [
-    'Tiến độ theo từng dòng hàng, không chỉ theo header.',
-    'Timeline update logs và progress percent.',
-    'Chú ý cách hiển thị gọn trên mobile.',
+    'Visualization Gantt Chart đơn giản.',
+    'Thông báo tự động khi trễ stage.',
+    'Dashboard tổng quan cho quản lý.',
   ],
-  resources: [
-    'Bang order_progress.',
-    'Cap nhat thu cong truoc, automation sau.',
-    'Dashboard overdue va ready_to_ship.',
-  ],
-  entities: ['Stage update', 'Delay reason', 'Percent done', 'Audit trail'],
-  nextMilestones: [
-    'Them board view theo stage.',
-    'Tinh overdue va ready-to-ship slices.',
-    'Ghi log thay doi khi status duoc cap nhat.',
-  ],
+  entities: ['order_progress', 'progress_audit_log'],
+  nextMilestones: ['Dự báo ngày hoàn thiện dựa trên hiệu suất quá khứ.'],
 };
 
 import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const orderProgressPlugin: FeaturePlugin = {
   key: 'order-progress',
   route: 'order-progress',
-  label: 'Tiến độ đơn hàng',
-  shortLabel: 'Progress',
-  description: 'Timeline và cập nhật tiến độ cho từng dòng hàng.',
-  icon: 'trending-up',
-  primaryMobile: true,
-  group: 'sales',
-  order: 25,
+  label: 'Bảng tiến độ',
+  shortLabel: 'Tiến độ',
+  description: 'Theo dõi quy trình sản xuất các đơn hàng đang triển khai.',
+  icon: 'package',
+  requiredRoles: ['admin', 'manager'],
+  group: 'production',
+  order: 90,
   component: () =>
-    import('./index').then((m) => ({ default: m.OrderProgressPage })),
+    import('./OrderProgressPage').then((m) => ({
+      default: m.OrderProgressPage,
+    })),
 };
+
+export default createModule(orderProgressFeature);

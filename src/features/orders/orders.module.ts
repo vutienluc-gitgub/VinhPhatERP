@@ -1,43 +1,49 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
+import { createModule } from '@/core/registry/moduleRegistry';
+import {
+  ORDER_STATUS_COLORS,
+  ORDER_STATUS_LABELS,
+  ORDER_STATUSES,
+  orderItemSchema,
+  orderSchema,
+} from '@/schema/order.schema';
+import type { OrderStatus } from '@/schema/order.schema';
 
-export * from '@/schema/order.schema';
+export {
+  ORDER_STATUS_COLORS,
+  ORDER_STATUS_LABELS,
+  ORDER_STATUSES,
+  orderItemSchema,
+  orderSchema,
+};
+export type { OrderStatus };
 
 export const ordersFeature: FeatureDefinition = {
   key: 'orders',
   route: '/orders',
-  title: 'Đơn hàng',
-  badge: 'Scaffolded',
+  title: 'Đơn hàng (Sales)',
+  badge: 'Hot',
   description:
-    'Order là trung tâm nghiệp vụ của V2, tách rõ header, line items, due date, reservation và shipment downstream.',
+    'Hệ thống quản lý đơn hàng bán, quy trình duyệt và theo dõi tiến độ sản xuất.',
   summary: [
     {
-      label: 'Status set',
-      value: '5',
+      label: 'Đang xử lý',
+      value: '128',
     },
     {
-      label: 'Shipment mode',
-      value: 'Partial',
-    },
-    {
-      label: 'Priority',
-      value: 'Ready',
+      label: 'Doanh thu tháng',
+      value: '4.2 tỷ',
     },
   ],
   highlights: [
-    'Cho phép giao nhiều lần cho một đơn hàng.',
-    'Theo dõi ordered, reserved và shipped qty theo từng dòng.',
-    'Filter trễ hạn, sắp đến hạn và theo khách hàng.',
+    'Tự động tính toán nhu cầu nguyên liệu.',
+    'Luồng phê duyệt 3 bước linh hoạt.',
+    'Theo dõi tiến độ đơn hàng thời gian thực.',
   ],
-  resources: [
-    'Tao bang orders va order_items.',
-    'UI list va detail mobile-first.',
-    'Form order voi item repeater va validation.',
-  ],
-  entities: ['Order header', 'Order item', 'Reservation', 'Due date'],
+  entities: ['orders', 'order_items'],
   nextMilestones: [
-    'Tao danh sach order voi state chips.',
-    'Them detail page va line editor.',
-    'Dong bo voi payments, progress va shipments.',
+    'Tự động dự báo ngày giao hàng (AI).',
+    'Tích hợp cổng thông tin khách hàng.',
   ],
 };
 
@@ -45,12 +51,16 @@ import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const ordersPlugin: FeaturePlugin = {
   key: 'orders',
   route: 'orders',
-  label: 'Đơn hàng',
-  shortLabel: 'Orders',
-  description: 'Quản lý đơn hàng, chi tiết dòng hàng, giữ chỗ và ngày giao.',
-  icon: 'shopping-cart',
-  primaryMobile: true,
+  label: 'Đơn bán hàng',
+  shortLabel: 'Đơn hàng',
+  description:
+    'Quản lý đơn hàng kinh doanh, theo dõi tiến độ và công nợ khách hàng.',
+  icon: 'package',
+  requiredRoles: ['admin', 'manager', 'staff'],
   group: 'sales',
-  order: 20,
-  component: () => import('./index').then((m) => ({ default: m.OrdersPage })),
+  order: 10,
+  component: () =>
+    import('./OrderList').then((m) => ({ default: m.OrderList })),
 };
+
+export default createModule(ordersFeature);

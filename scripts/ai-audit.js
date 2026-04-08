@@ -13,8 +13,8 @@ import { readFileSync, readdirSync, lstatSync, existsSync } from 'fs';
 import { join, resolve, dirname, relative, sep } from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(__dirname, '..');
+const dirName = dirname(fileURLToPath(import.meta.url));
+const ROOT = resolve(dirName, '..');
 
 const colors = {
   reset: "\x1b[0m",
