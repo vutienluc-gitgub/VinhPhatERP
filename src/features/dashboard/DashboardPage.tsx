@@ -51,6 +51,7 @@ export function DashboardPage() {
         padding: '0 0.5rem',
       }}
     >
+      <h1 className="sr-only">Dashboard</h1>
       {/* ── KPI Cards ── */}
       {statsLoading ? (
         <DashboardSkeleton />

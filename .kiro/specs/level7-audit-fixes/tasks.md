@@ -50,25 +50,25 @@
 
 ## Task 5: [CRITICAL-02-A] Sửa test failures do createModule
 
-- [ ] 5.1 Đọc `src/core/registry/moduleRegistry.ts` để xác nhận `createModule` được export đúng
-- [ ] 5.2 Thêm `vi.mock('@/core/registry/moduleRegistry', ...)` vào `src/features/orders/orders.module.test.ts`
-- [ ] 5.3 Thêm mock tương tự vào `src/features/quotations/quotations.module.test.ts`
-- [ ] 5.4 Thêm mock tương tự vào `src/features/raw-fabric/raw-fabric.module.test.ts`
-- [ ] 5.5 Thêm mock tương tự vào `src/features/suppliers/suppliers.module.test.ts`
-- [ ] 5.6 Chạy `npm run test` và xác nhận 4 test files trên pass
+- [x] 5.1 Đọc `src/core/registry/moduleRegistry.ts` để xác nhận `createModule` được export đúng
+- [x] 5.2 Thêm `vi.mock('@/core/registry/moduleRegistry', ...)` vào `src/features/orders/orders.module.test.ts`
+- [x] 5.3 Thêm mock tương tự vào `src/features/quotations/quotations.module.test.ts`
+- [x] 5.4 Thêm mock tương tự vào `src/features/raw-fabric/raw-fabric.module.test.ts`
+- [x] 5.5 Thêm mock tương tự vào `src/features/suppliers/suppliers.module.test.ts`
+- [x] 5.6 Chạy `npm run test` và xác nhận 4 test files trên pass
 
 ## Task 6: [CRITICAL-02-B] Sửa ProtectedRoute.test.tsx mock sai interface
 
-- [ ] 6.1 Đọc `src/features/auth/AuthProvider.tsx` để xác định interface `AuthContextValue` thực tế
-- [ ] 6.2 Cập nhật mock trong `src/app/router/ProtectedRoute.test.tsx` để match đúng interface (xóa `isAdmin`, `isManager`, `isStaff` nếu không tồn tại; thêm `profile`, `isBlocked`)
-- [ ] 6.3 Chạy `npm run test` và xác nhận `ProtectedRoute.test.tsx` pass
+- [x] 6.1 Đọc `src/features/auth/AuthProvider.tsx` để xác định interface `AuthContextValue` thực tế
+- [x] 6.2 Cập nhật mock trong `src/app/router/ProtectedRoute.test.tsx` để match đúng interface (xóa `isAdmin`, `isManager`, `isStaff` nếu không tồn tại; thêm `profile`, `isBlocked`)
+- [x] 6.3 Chạy `npm run test` và xác nhận `ProtectedRoute.test.tsx` pass
 
 ## Task 7: [CRITICAL-02-C] Sửa DashboardPage.test.tsx heading không khớp
 
-- [ ] 7.1 Đọc `src/features/dashboard/DashboardPage.tsx` để xác định text/heading thực tế component render
-- [ ] 7.2 Thêm `<h1>` heading vào `DashboardPage.tsx` nếu chưa có (dùng `sr-only` nếu không muốn hiển thị)
-- [ ] 7.3 Cập nhật assertions trong `DashboardPage.test.tsx` để match đúng nội dung render
-- [ ] 7.4 Chạy `npm run test` và xác nhận toàn bộ test suite pass (9/9 files)
+- [x] 7.1 Đọc `src/features/dashboard/DashboardPage.tsx` để xác định text/heading thực tế component render
+- [x] 7.2 Thêm `<h1>` heading vào `DashboardPage.tsx` nếu chưa có (dùng `sr-only` nếu không muốn hiển thị)
+- [x] 7.3 Cập nhật assertions trong `DashboardPage.test.tsx` để match đúng nội dung render
+- [x] 7.4 Chạy `npm run test` và xác nhận toàn bộ test suite pass (9/9 files)
 
 ## Task 8: [MAJOR-03] Validate overpayment trong payment schema và form
 
