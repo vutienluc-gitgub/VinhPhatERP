@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
-import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog';
+import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { Combobox } from '@/shared/components/Combobox';
 import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers';
 import {

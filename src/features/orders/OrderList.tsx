@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { Pagination } from '@/shared/components/Pagination';
+import { SearchInput } from '@/shared/components/SearchInput';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
 import { formatCurrency } from '@/shared/utils/format';
 
@@ -138,13 +139,12 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               gap: '0.4rem',
             }}
           >
-            <input
+            <SearchInput
               id="filter-search"
-              className="field-input"
-              type="text"
               placeholder="Số đơn hàng..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
+              style={{ width: 220 }}
             />
             <button
               className="btn-secondary"

@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react';
 
+import { SearchInput } from '@/shared/components/SearchInput';
+
 import styles from './kanban.module.css';
 import { KanbanColumn } from './OrderKanbanList';
 import type { OrderKanbanStatus } from './types';
@@ -70,8 +72,7 @@ export function OrderKanbanPage() {
       {/* Header bar */}
       <div className={styles['kanban-header']}>
         <div className={styles['kanban-filter-group']}>
-          <input
-            type="text"
+          <SearchInput
             className={styles['kanban-search']}
             placeholder="Tìm mã đơn, tên khách..."
             value={search}

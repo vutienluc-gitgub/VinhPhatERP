@@ -79,6 +79,7 @@ export function useCreateShipment() {
         shipmentDate: values.shipmentDate,
         deliveryAddress: values.deliveryAddress?.trim() || null,
         deliveryStaffId: values.deliveryStaffId?.trim() || null,
+        employeeId: values.employeeId?.trim() || null,
         shippingRateId: values.shippingRateId?.trim() || null,
         shippingCost: values.shippingCost,
         loadingFee: values.loadingFee,

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { useCompanySettings } from '@/features/settings/useCompanySettings';
+import { useCompanySettings } from '@/shared/hooks/useCompanySettings';
 import { formatCurrency } from '@/shared/utils/format';
 
 import { useQuotation } from './useQuotations';

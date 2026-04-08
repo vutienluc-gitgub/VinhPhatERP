@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
+import { Icon } from '@/shared/components/Icon';
 import { formatCurrency } from '@/shared/utils/format';
 
 import styles from './kanban.module.css';
@@ -56,9 +57,12 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
     ? new Date(item.delivery_date).toLocaleDateString('vi-VN')
     : '—';
 
+  const isInProgress =
+    item.status === 'confirmed' || item.status === 'delivering';
+
   return (
     <div
-      className={`${styles['kanban-card']} ${isOverdue ? styles['overdue'] : ''}`}
+      className={`${styles['kanban-card']} ${isOverdue ? styles['overdue'] : ''} ${isInProgress ? styles['in-progress'] : ''}`}
       onClick={() => navigate(`/orders/${item.id}`)}
       role="button"
       tabIndex={0}
@@ -66,7 +70,25 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
     >
       {/* Header */}
       <div className={styles['kanban-card-header']}>
-        <span className={styles['kanban-card-order']}>{item.order_number}</span>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+          }}
+        >
+          <span className={styles['kanban-card-order']}>
+            {item.order_number}
+          </span>
+          {isInProgress && (
+            <Icon
+              name="loader-2"
+              size={14}
+              className="animate-spin"
+              color="var(--primary)"
+            />
+          )}
+        </div>
         {isOverdue && (
           <span className={styles['kanban-card-warning']}>⚠ Quá hạn</span>
         )}

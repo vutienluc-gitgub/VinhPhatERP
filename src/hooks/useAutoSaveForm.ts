@@ -45,7 +45,7 @@ export function useAutoSaveForm<T extends FieldValues>({
     formState: { isDirty },
   } = form;
   const watchedValues = watch();
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Check for existing draft on mount only
   useEffect(() => {

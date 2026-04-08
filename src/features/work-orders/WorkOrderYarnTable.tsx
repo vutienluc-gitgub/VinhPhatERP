@@ -8,7 +8,7 @@ import {
 
 import { Plus, Trash2 } from '@/shared/icons';
 import { Combobox } from '@/shared/components/Combobox';
-import { useYarnCatalogOptions } from '@/features/yarn-catalog/useYarnCatalog';
+import { useYarnCatalogOptions } from '@/shared/hooks/useYarnCatalogOptions';
 
 import type { CreateWorkOrderInput } from './work-orders.module';
 

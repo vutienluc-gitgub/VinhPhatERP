@@ -36,6 +36,7 @@ export const shipmentsSchema = z.object({
   shipmentDate: z.string().trim().min(1, 'Chọn ngày giao'),
   deliveryAddress: z.string().trim().max(255).optional().or(z.literal('')),
   deliveryStaffId: z.string().uuid().optional().or(z.literal('')),
+  employeeId: z.string().uuid().optional().or(z.literal('')),
   shippingRateId: z.string().uuid().optional().or(z.literal('')),
   shippingCost: z.number().min(0, 'Chi phí phải >= 0'),
   loadingFee: z.number().min(0, 'Phí bốc xếp phải >= 0'),
@@ -52,6 +53,7 @@ export const shipmentsDefaultValues: ShipmentsFormValues = {
   shipmentDate: new Date().toISOString().slice(0, 10),
   deliveryAddress: '',
   deliveryStaffId: '',
+  employeeId: '',
   shippingRateId: '',
   shippingCost: 0,
   loadingFee: 0,
@@ -74,3 +76,10 @@ export const deliveryConfirmDefaultValues: DeliveryConfirmFormValues = {
   deliveryProof: '',
   notes: '',
 };
+
+export const shipmentResponseSchema = z
+  .object({
+    id: z.string().uuid(),
+    shipment_number: z.string(),
+  })
+  .passthrough();

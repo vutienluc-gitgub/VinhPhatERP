@@ -65,6 +65,14 @@ export const paymentsSchema = z.object({
   referenceNumber: z.string().trim().max(120).optional().or(z.literal('')),
 });
 
+export const paymentResponseSchema = z
+  .object({
+    id: z.string().uuid(),
+    payment_number: z.string(),
+    amount: z.number(),
+  })
+  .passthrough();
+
 export type PaymentsFormValues = z.infer<typeof paymentsSchema>;
 
 /**

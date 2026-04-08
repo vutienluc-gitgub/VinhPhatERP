@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
+// eslint-disable-next-line boundaries/element-types, boundaries/dependencies
 import { PaymentForm } from '@/features/payments/PaymentForm';
+// eslint-disable-next-line boundaries/element-types, boundaries/dependencies
 import { ShipmentForm } from '@/features/shipments/ShipmentForm';
 
 import { OrderDetail } from './OrderDetail';

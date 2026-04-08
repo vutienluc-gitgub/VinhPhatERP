@@ -2,8 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
-import { useAuth } from '@/features/auth/AuthProvider';
-import { useFabricCatalogOptions } from '@/features/fabric-catalog/useFabricCatalog';
+import { useAuth } from '@/shared/hooks/useAuth';
+import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers';

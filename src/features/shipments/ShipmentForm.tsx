@@ -2,10 +2,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useMemo } from 'react';
 import { useFieldArray, useForm, Controller } from 'react-hook-form';
 
-import type { ShippingRate } from '@/features/shipping-rates/types';
-import { useActiveShippingRates } from '@/features/shipping-rates/useShippingRates';
+import type { ShippingRate } from '@/shared/hooks/useShippingRateOptions';
+import { useActiveShippingRates } from '@/shared/hooks/useShippingRateOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import { useEmployees } from '@/shared/hooks/useEmployeeOptions';
 
 import {
   emptyShipmentItem,
@@ -64,6 +65,10 @@ export function ShipmentForm({
   const { data: availableRolls = [] } = useAvailableFinishedRolls(orderId);
   const { data: shippingRates = [] } = useActiveShippingRates();
   const { data: deliveryStaff = [] } = useDeliveryStaffList();
+  const { data: warehouseEmployees = [] } = useEmployees({
+    role: 'warehouse',
+    status: 'active',
+  });
   const createMutation = useCreateShipment();
   const availableRollById = new Map(
     availableRolls.map((roll) => [roll.id, roll]),
@@ -172,14 +177,43 @@ export function ShipmentForm({
             </div>
           </div>
 
-          {/* Delivery address */}
-          <div className="form-field">
-            <label>Địa chỉ giao</label>
-            <input
-              className="field-input"
-              {...register('deliveryAddress')}
-              placeholder="Địa chỉ giao hàng..."
-            />
+          {/* Employee & Delivery address */}
+          <div
+            className="form-grid"
+            style={{
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            }}
+          >
+            <div className="form-field">
+              <label>Nhân viên kho</label>
+              <Controller
+                name="employeeId"
+                control={control}
+                render={({ field }) => {
+                  const empOptions = warehouseEmployees.map((emp) => ({
+                    value: emp.id,
+                    label: emp.name,
+                    code: emp.code,
+                  }));
+                  return (
+                    <Combobox
+                      options={empOptions}
+                      value={field.value || ''}
+                      onChange={field.onChange}
+                      placeholder="— Kho xuất —"
+                    />
+                  );
+                }}
+              />
+            </div>
+            <div className="form-field">
+              <label>Địa chỉ giao</label>
+              <input
+                className="field-input"
+                {...register('deliveryAddress')}
+                placeholder="Địa chỉ giao hàng..."
+              />
+            </div>
           </div>
 
           {/* Delivery staff + vehicle */}
@@ -291,154 +325,186 @@ export function ShipmentForm({
               </label>
             </div>
 
-            {fields.map((field, idx) => (
-              <div
-                key={field.id}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr 100px 40px',
-                  gap: '0.5rem',
-                  alignItems: 'start',
-                  marginBottom: '1rem',
-                  border: '1px solid var(--border)',
-                  padding: '1rem',
-                  borderRadius: 'var(--radius)',
-                  background: 'var(--surface)',
-                }}
-              >
+            {fields.map((field, idx) => {
+              const selectedRollId = watchedItems[idx]?.finishedRollId;
+              const isSelected = !!selectedRollId;
+
+              return (
                 <div
+                  key={field.id}
                   style={{
-                    gridColumn: '1 / -1',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '0.5rem',
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr 100px 40px',
+                    gap: '0.5rem',
+                    alignItems: 'start',
+                    marginBottom: '1rem',
+                    border: isSelected
+                      ? '1px solid #10b981'
+                      : '1px solid var(--border)',
+                    padding: '1rem',
+                    borderRadius: 'var(--radius)',
+                    background: isSelected ? '#ecfdf5' : 'var(--surface)',
+                    transition: 'background-color 0.2s, border-color 0.2s',
+                    boxShadow: isSelected
+                      ? '0 1px 2px rgba(16, 185, 129, 0.1)'
+                      : 'none',
                   }}
                 >
-                  <span
+                  <div
                     style={{
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      color: 'var(--text-secondary)',
+                      gridColumn: '1 / -1',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '0.5rem',
                     }}
                   >
-                    Dòng {idx + 1}
-                  </span>
-                  {fields.length > 1 && (
-                    <button
-                      className="btn-icon danger"
-                      type="button"
-                      title="Xóa dòng"
-                      onClick={() => remove(idx)}
-                      style={{ fontSize: '0.85rem' }}
+                    <span
+                      style={{
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        color: isSelected ? '#059669' : 'var(--text-secondary)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                      }}
                     >
-                      ✕
-                    </button>
-                  )}
-                </div>
-
-                <div style={{ gridColumn: 'span 2' }}>
-                  <span
-                    style={{
-                      fontSize: '0.8rem',
-                      color: 'var(--muted)',
-                      display: 'block',
-                      marginBottom: '0.2rem',
-                    }}
-                  >
-                    Cuộn thành phẩm
-                  </span>
-                  <Controller
-                    name={`items.${idx}.finishedRollId` as const}
-                    control={control}
-                    render={({ field }) => (
-                      <Combobox
-                        options={availableRolls.map((roll) => ({
-                          value: roll.id,
-                          label: `${roll.status === 'reserved' ? '🔒 ' : ''}${roll.roll_number} — ${roll.fabric_type} ${roll.color_name ? `(${roll.color_name})` : ''} — ${roll.length_m}m`,
-                        }))}
-                        value={field.value}
-                        onChange={(val) => {
-                          field.onChange(val);
-                          const selectedRoll = availableRollById.get(val || '');
-                          if (selectedRoll) {
-                            setValue(
-                              `items.${idx}.fabricType`,
-                              selectedRoll.fabric_type,
-                              {
-                                shouldDirty: true,
-                                shouldValidate: true,
-                              },
-                            );
-                            const defaultQty =
-                              selectedRoll.weight_kg ||
-                              selectedRoll.length_m ||
-                              0;
-                            if (defaultQty > 0) {
-                              setValue(`items.${idx}.quantity`, defaultQty, {
-                                shouldDirty: true,
-                                shouldValidate: true,
-                              });
-                            }
-                          }
-                        }}
-                        placeholder="— Không chọn —"
-                      />
+                      {isSelected && (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M22 11.08V12a10 10 10 0 1 1-5.93-9.14"></path>
+                          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                      )}
+                      Dòng {idx + 1}
+                    </span>
+                    {fields.length > 1 && (
+                      <button
+                        className="btn-icon danger"
+                        type="button"
+                        title="Xóa dòng"
+                        onClick={() => remove(idx)}
+                        style={{ fontSize: '0.85rem' }}
+                      >
+                        ✕
+                      </button>
                     )}
-                  />
-                </div>
+                  </div>
 
-                <div style={{ gridColumn: 'span 2' }}>
-                  <span
-                    style={{
-                      fontSize: '0.8rem',
-                      color: 'var(--muted)',
-                      display: 'block',
-                      marginBottom: '0.2rem',
-                    }}
-                  >
-                    Loại vải *
-                  </span>
-                  <input
-                    className="field-input"
-                    {...register(`items.${idx}.fabricType`)}
-                    placeholder="Loại vải"
-                  />
-                  {errors.items?.[idx]?.fabricType && (
-                    <p className="field-error">
-                      {errors.items[idx]?.fabricType?.message}
-                    </p>
-                  )}
-                </div>
+                  <div style={{ gridColumn: 'span 2' }}>
+                    <span
+                      style={{
+                        fontSize: '0.8rem',
+                        color: 'var(--muted)',
+                        display: 'block',
+                        marginBottom: '0.2rem',
+                      }}
+                    >
+                      Cuộn thành phẩm
+                    </span>
+                    <Controller
+                      name={`items.${idx}.finishedRollId` as const}
+                      control={control}
+                      render={({ field }) => (
+                        <Combobox
+                          options={availableRolls.map((roll) => ({
+                            value: roll.id,
+                            label: `${roll.status === 'reserved' ? '🔒 ' : ''}${roll.roll_number} — ${roll.fabric_type} ${roll.color_name ? `(${roll.color_name})` : ''} — ${roll.length_m}m`,
+                          }))}
+                          value={field.value}
+                          onChange={(val) => {
+                            field.onChange(val);
+                            const selectedRoll = availableRollById.get(
+                              val || '',
+                            );
+                            if (selectedRoll) {
+                              setValue(
+                                `items.${idx}.fabricType`,
+                                selectedRoll.fabric_type,
+                                {
+                                  shouldDirty: true,
+                                  shouldValidate: true,
+                                },
+                              );
+                              const defaultQty =
+                                selectedRoll.weight_kg ||
+                                selectedRoll.length_m ||
+                                0;
+                              if (defaultQty > 0) {
+                                setValue(`items.${idx}.quantity`, defaultQty, {
+                                  shouldDirty: true,
+                                  shouldValidate: true,
+                                });
+                              }
+                            }
+                          }}
+                          placeholder="— Không chọn —"
+                        />
+                      )}
+                    />
+                  </div>
 
-                <div style={{ gridColumn: 'span 2' }}>
-                  <span
-                    style={{
-                      fontSize: '0.8rem',
-                      color: 'var(--muted)',
-                      display: 'block',
-                      marginBottom: '0.2rem',
-                    }}
-                  >
-                    Số lượng *
-                  </span>
-                  <input
-                    className="field-input"
-                    type="number"
-                    step="0.001"
-                    {...register(`items.${idx}.quantity`, {
-                      valueAsNumber: true,
-                    })}
-                    placeholder="0"
-                  />
-                  {errors.items?.[idx]?.quantity && (
-                    <p className="field-error">
-                      {errors.items[idx]?.quantity?.message}
-                    </p>
-                  )}
+                  <div style={{ gridColumn: 'span 2' }}>
+                    <span
+                      style={{
+                        fontSize: '0.8rem',
+                        color: 'var(--muted)',
+                        display: 'block',
+                        marginBottom: '0.2rem',
+                      }}
+                    >
+                      Loại vải *
+                    </span>
+                    <input
+                      className="field-input"
+                      {...register(`items.${idx}.fabricType`)}
+                      placeholder="Loại vải"
+                    />
+                    {errors.items?.[idx]?.fabricType && (
+                      <p className="field-error">
+                        {errors.items[idx]?.fabricType?.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div style={{ gridColumn: 'span 2' }}>
+                    <span
+                      style={{
+                        fontSize: '0.8rem',
+                        color: 'var(--muted)',
+                        display: 'block',
+                        marginBottom: '0.2rem',
+                      }}
+                    >
+                      Số lượng *
+                    </span>
+                    <input
+                      className="field-input"
+                      type="number"
+                      step="0.001"
+                      {...register(`items.${idx}.quantity`, {
+                        valueAsNumber: true,
+                      })}
+                      placeholder="0"
+                    />
+                    {errors.items?.[idx]?.quantity && (
+                      <p className="field-error">
+                        {errors.items[idx]?.quantity?.message}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             <button
               className="btn-secondary"

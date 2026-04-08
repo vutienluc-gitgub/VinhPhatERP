@@ -137,6 +137,14 @@ export const ordersDefaultValues: OrdersFormValues = {
   items: [{ ...emptyOrderItem }],
 };
 
+export const orderResponseSchema = z
+  .object({
+    id: z.string().uuid(),
+    order_number: z.string(),
+    total_amount: z.number(),
+  })
+  .passthrough();
+
 // =========================
 // TABLE COLUMNS (Tĩnh)
 // =========================

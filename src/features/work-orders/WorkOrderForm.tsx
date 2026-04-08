@@ -2,9 +2,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { useEffect, useRef, useState } from 'react';
 
-import { useBomList } from '@/features/bom/useBom';
-import { useOrderList } from '@/features/orders/useOrders';
-import { useSuppliersList } from '@/features/suppliers/useSuppliers';
+import {
+  useBomList,
+  useOrderList,
+  useSuppliersList,
+} from '@/shared/hooks/useFormOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import DraftBanner from '@/shared/components/DraftBanner';
