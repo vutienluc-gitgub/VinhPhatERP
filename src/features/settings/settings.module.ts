@@ -1,33 +1,41 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
+import { createModule } from '@/core/registry/moduleRegistry';
+import type {
+  CompanySettingRow,
+  CompanySettingsFormValues,
+  CompanySettingsMap,
+} from '@/schema/company-settings.schema';
+
+export type {
+  CompanySettingRow,
+  CompanySettingsFormValues,
+  CompanySettingsMap,
+};
 
 export const settingsFeature: FeatureDefinition = {
   key: 'settings',
   route: '/settings',
-  title: 'Cài đặt',
-  badge: 'Active',
+  title: 'Cài đặt hệ thống',
+  badge: 'Settings',
   description:
-    'Quản lý thông tin công ty, hiển thị trên báo giá và các chứng từ. Chỉ admin truy cập được.',
+    'Quản lý thông tin công ty, cấu hình quy trình, phân quyền và các tham số vận hành.',
   summary: [
     {
-      label: 'Bảng',
-      value: 'company_settings',
+      label: 'Người dùng',
+      value: '15',
     },
     {
-      label: 'Quyền',
-      value: 'Admin only',
+      label: 'Vai trò',
+      value: '4',
     },
   ],
   highlights: [
-    'Chỉ admin mới được xem và sửa.',
-    'Thông tin tự động chèn vào báo giá khi in.',
-    'Hỗ trợ logo, MST, ngân hàng, email.',
+    'Cấu hình thông tin pháp lý.',
+    'Quản lý danh mục dùng chung.',
+    'Backup dữ liệu.',
   ],
-  resources: [
-    'Bảng company_settings (key-value).',
-    'RLS: đọc mọi người, ghi admin.',
-  ],
-  entities: ['CompanySetting'],
-  nextMilestones: ['Upload logo trực tiếp.', 'Config document prefixes.'],
+  entities: ['company_settings'],
+  nextMilestones: ['Tích hợp nhật ký hoạt động hệ thống (System Audit Logs).'],
 };
 
 import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
@@ -35,12 +43,14 @@ export const settingsPlugin: FeaturePlugin = {
   key: 'settings',
   route: 'settings',
   label: 'Cài đặt',
-  shortLabel: 'Settings',
-  description: 'Cấu hình môi trường, phân quyền, đồng bộ và triển khai.',
-  icon: 'settings',
+  shortLabel: 'Cấu hình',
+  description: 'Cài đặt thông tin công ty và các tham số vận hành hệ thống.',
+  icon: 'package',
   requiredRoles: ['admin'],
-  routeGuard: 'admin',
-  group: 'system',
-  order: 99,
-  component: () => import('./index').then((m) => ({ default: m.SettingsPage })),
+  group: 'admin',
+  order: 999,
+  component: () =>
+    import('./SettingsPage').then((m) => ({ default: m.SettingsPage })),
 };
+
+export default createModule(settingsFeature);

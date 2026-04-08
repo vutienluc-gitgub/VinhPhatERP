@@ -1,51 +1,48 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
-
-export {
-  QUALITY_GRADES,
-  ROLL_STATUSES,
-  QUALITY_GRADE_LABELS,
-  ROLL_STATUS_LABELS,
-  formatBulkRollNumber,
-  findDuplicateRollNumbers,
-  rawFabricSchema,
-  rawFabricDefaults,
-  bulkRollRowSchema,
-  bulkInputSchema,
-  bulkInputDefaults,
-  generateBarcode,
-} from '@/schema/raw-fabric.schema';
-export type {
-  RawFabricFormValues,
-  BulkRollRow,
-  BulkInputFormValues,
-} from '@/schema/raw-fabric.schema';
+import { createModule } from '@/core/registry/moduleRegistry';
 
 export const rawFabricFeature: FeatureDefinition = {
   key: 'raw-fabric',
   route: '/raw-fabric',
-  title: 'Nhập vải mộc',
-  badge: 'Production',
-  description: 'Theo dõi lô vải mộc và mapping với nguyên liệu, nhà dệt.',
-  highlights: [
-    'Nhập từng cuộn vải mộc từ nhà dệt.',
-    'Liên kết lô sợi, nhà dệt và lệnh sản xuất.',
-    'Mã vạch Code128 cho mỗi cuộn.',
+  title: 'Kho Vải mộc',
+  badge: 'Storage',
+  description:
+    'Quản lý vải mộc sau khi dệt xong, chờ gửi đi nhuộm hoặc xả kho bán mộc.',
+  summary: [
+    {
+      label: 'Tổng cây vải',
+      value: '4.2k',
+    },
+    {
+      label: 'Đang đi nhuộm',
+      value: '1.1k',
+    },
   ],
-  resources: ['raw_fabric_rolls'],
-  entities: ['Raw roll', 'Lot', 'Barcode'],
-  nextMilestones: ['Scan mã vạch khi nhập kho.'],
+  highlights: [
+    'Kiểm soát QR Code từng cây vải.',
+    'Theo dõi hao hụt dệt.',
+    'Quản lý vị trí lưu kho.',
+  ],
+  entities: ['raw_fabric_rolls', 'warehouse_locations'],
+  nextMilestones: [
+    'Cảnh báo tồn kho vải mộc quá lâu.',
+    'Tối ưu hoá sơ đồ kho vải mộc.',
+  ],
 };
 
 import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const rawFabricPlugin: FeaturePlugin = {
   key: 'raw-fabric',
   route: 'raw-fabric',
-  label: 'Nhập vải mộc',
-  shortLabel: 'Raw',
-  description: 'Theo dõi lô vải mộc và mapping với nguyên liệu, nhà dệt.',
-  icon: 'scroll',
-  group: 'production',
-  order: 55,
+  label: 'Kho Vải mộc',
+  shortLabel: 'Mộc',
+  description: 'Quản lý vải mộc từ lệnh dệt về kho và xuất đi nhuộm.',
+  icon: 'layers',
+  requiredRoles: ['admin', 'manager', 'staff'],
+  group: 'inventory',
+  order: 25,
   component: () =>
-    import('./index').then((m) => ({ default: m.RawFabricPage })),
+    import('./RawFabricPage').then((m) => ({ default: m.RawFabricPage })),
 };
+
+export default createModule(rawFabricFeature);

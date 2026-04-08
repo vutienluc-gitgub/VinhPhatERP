@@ -1,56 +1,46 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
-
-export {
-  YARN_CATALOG_STATUSES,
-  YARN_CATALOG_STATUS_LABELS,
-  yarnCatalogSchema,
-  yarnCatalogDefaultValues,
-} from '@/schema/yarn-catalog.schema';
-export type { YarnCatalogFormValues } from '@/schema/yarn-catalog.schema';
+import { createModule } from '@/core/registry/moduleRegistry';
 
 export const yarnCatalogFeature: FeatureDefinition = {
   key: 'yarn-catalog',
   route: '/yarn-catalog',
-  title: 'Danh mục sợi',
-  badge: 'Master Data',
+  title: 'Danh mục Sợi',
+  badge: 'Material',
   description:
-    'Quản lý danh mục loại sợi chuẩn — dùng lại khi tạo phiếu nhập sợi.',
+    'Quản lý các loại sợi (Cotton, Poly, CVC...), chi số sợi và nhà cung cấp sợi.',
   summary: [
     {
-      label: 'Loại dữ liệu',
-      value: 'Master Data',
+      label: 'Loại sợi',
+      value: '120+',
     },
     {
-      label: 'Tích hợp',
-      value: 'Nhập sợi',
+      label: 'Nhà cung cấp',
+      value: '15',
     },
   ],
   highlights: [
-    'Chuẩn hoá tên và thành phần sợi, giảm lỗi nhập liệu.',
-    'Auto-fill thông tin kỹ thuật khi chọn loại sợi trong phiếu nhập.',
-    'Tra cứu lịch sử nhập theo từng loại sợi.',
+    'Tra cứu thông số sợi.',
+    'Lịch sử biến động giá sợi.',
+    'Phân nhóm sợi theo chất liệu.',
   ],
-  resources: [
-    'Bảng yarn_catalogs với mã, tên, thành phần, xuất xứ.',
-    'FK yarn_catalog_id trong yarn_receipt_items.',
-  ],
-  entities: ['YarnCatalog'],
-  nextMilestones: [
-    'Thêm giá đơn vị tham khảo theo từng NCC.',
-    'Lịch sử nhập theo loại sợi.',
-  ],
+  entities: ['yarn_templates'],
+  nextMilestones: ['Quản lý chứng chỉ chất lượng sợi (OEKO-TEX...).'],
 };
 
 import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const yarnCatalogPlugin: FeaturePlugin = {
   key: 'yarn-catalog',
   route: 'yarn-catalog',
-  label: 'Danh mục sợi',
-  shortLabel: 'Danh mục',
-  description: 'Quản lý danh mục loại sợi — nền cho luồng nhập sợi.',
-  icon: 'database',
-  group: 'master-data',
-  order: 75,
+  label: 'Danh mục Sợi',
+  shortLabel: 'Loại Sợi',
+  description:
+    'Quản lý thông tin kỹ thuật và phân loại các loại sợi nguyên liệu.',
+  icon: 'package',
+  requiredRoles: ['admin', 'manager', 'staff'],
+  group: 'production',
+  order: 30,
   component: () =>
-    import('./index').then((m) => ({ default: m.YarnCatalogPage })),
+    import('./YarnCatalogPage').then((m) => ({ default: m.YarnCatalogPage })),
 };
+
+export default createModule(yarnCatalogFeature);

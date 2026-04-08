@@ -1,51 +1,35 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
+import { createModule } from '@/core/registry/moduleRegistry';
+import type { Expense, Payment, PaymentAccount, PaymentInsert } from '@/models';
 
-export {
-  PAYMENT_METHOD_LABELS,
-  ACCOUNT_TYPE_LABELS,
-  ACCOUNT_TYPES,
-  EXPENSE_CATEGORIES,
-  EXPENSE_CATEGORY_LABELS,
-  paymentsSchema,
-  paymentsDefaultValues,
-  expenseSchema,
-  expenseDefaultValues,
-  accountSchema,
-  accountDefaultValues,
-} from '@/schema/payment.schema';
-export type {
-  PaymentMethod,
-  AccountType,
-  ExpenseCategory,
-  PaymentsFormValues,
-  ExpenseFormValues,
-  AccountFormValues,
-} from '@/schema/payment.schema';
+export type { Expense, Payment, PaymentAccount, PaymentInsert };
 
 export const paymentsFeature: FeatureDefinition = {
   key: 'payments',
   route: '/payments',
-  title: 'Thu Chi',
-  badge: 'Active',
+  title: 'Tài chính & Thanh toán',
+  badge: 'Critical',
   description:
-    'Module thu chi toàn diện: phiếu thu, phiếu chi, tài khoản, dòng tiền và công nợ.',
+    'Quản lý thu chi, công nợ nhà cung cấp, nhật ký thanh toán và tài khoản ngân hàng.',
+  summary: [
+    {
+      label: 'Số dư quỹ',
+      value: '1.5 tỷ',
+    },
+    {
+      label: 'Chi tháng này',
+      value: '450 triệu',
+    },
+  ],
   highlights: [
-    'Quản lý phiếu thu từ đơn hàng khách hàng.',
-    'Quản lý phiếu chi cho nhà cung cấp và chi phí vận hành.',
-    'Theo dõi dòng tiền và công nợ realtime.',
-    'Tự động cập nhật số dư tài khoản.',
+    'Quản lý đa tài khoản.',
+    'Theo dõi chi phí sản xuất.',
+    'Đối soát công nợ tự động.',
   ],
-  resources: [
-    'Bảng payments, expenses, payment_accounts.',
-    'Trigger tự động sync paid_amount và account balance.',
-    'RPC get_cash_flow_summary, get_expense_by_category.',
-    'View v_supplier_debt, v_debt_by_customer.',
-  ],
-  entities: ['Payment', 'Expense', 'PaymentAccount', 'DebtSummary', 'CashFlow'],
+  entities: ['payments', 'payment_accounts', 'expenses'],
   nextMilestones: [
-    'Dashboard tài chính tổng hợp.',
-    'Báo cáo lãi lỗ theo tháng.',
-    'Xuất báo cáo thu chi Excel/PDF.',
+    'Tích hợp cổng thanh toán API.',
+    'Báo cáo lưu chuyển tiền tệ chi tiết.',
   ],
 };
 
@@ -53,23 +37,15 @@ import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 export const paymentsPlugin: FeaturePlugin = {
   key: 'payments',
   route: 'payments',
-  label: 'Thu Chi',
-  shortLabel: 'Thu Chi',
-  description: 'Quản lý thu chi, phiếu thu, phiếu chi và dòng tiền.',
-  icon: 'wallet',
-  group: 'system',
-  order: 90,
-  component: () => import('./index').then((m) => ({ default: m.PaymentsPage })),
+  label: 'Tài chính',
+  shortLabel: 'Tiền',
+  description: 'Quản lý chi phí, công nợ NCC và các giao dịch thanh toán.',
+  icon: 'package',
+  requiredRoles: ['admin', 'manager'],
+  group: 'finance',
+  order: 100,
+  component: () =>
+    import('./PaymentsPage').then((m) => ({ default: m.PaymentsPage })),
 };
 
-export const debtsPlugin: FeaturePlugin = {
-  key: 'debts',
-  route: 'debts',
-  label: 'Công nợ',
-  shortLabel: 'Nợ',
-  description: 'Theo dõi công nợ khách hàng và nhà cung cấp.',
-  icon: 'credit-card',
-  group: 'system',
-  order: 91,
-  component: () => import('./index').then((m) => ({ default: m.DebtsPage })),
-};
+export default createModule(paymentsFeature);

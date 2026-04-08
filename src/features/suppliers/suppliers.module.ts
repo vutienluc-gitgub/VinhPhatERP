@@ -1,36 +1,37 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
+import { createModule } from '@/core/registry/moduleRegistry';
+import type { Supplier, SupplierInsert, SupplierUpdate } from '@/models';
 
-export {
-  SUPPLIER_CATEGORIES,
-  SUPPLIER_STATUSES,
-  SUPPLIER_CATEGORY_LABELS,
-  SUPPLIER_STATUS_LABELS,
-  supplierSchema,
-  supplierDefaults,
-} from '@/schema/supplier.schema';
-export type { SupplierFormValues } from '@/schema/supplier.schema';
+import { suppliersFeature as suppliersFeatureExport } from './suppliers.feature';
+
+export { suppliersFeatureExport };
+export type { Supplier, SupplierInsert, SupplierUpdate };
 
 export const suppliersFeature: FeatureDefinition = {
   key: 'suppliers',
   route: '/suppliers',
   title: 'Nhà cung cấp',
-  badge: 'Scaffolded',
+  badge: 'Core',
   description:
-    'Nhà cung cấp được tách rõ theo nghiệp vụ sợi, dệt, nhuộm và dịch vụ để liên kết dữ liệu nguồn cung.',
+    'Quản lý thông tin đối tác cung ứng, phân loại nhóm hàng và đánh giá chất lượng.',
+  summary: [
+    {
+      label: 'Tổng đối tác',
+      value: '45',
+    },
+    {
+      label: 'Nhóm vật tư',
+      value: '12',
+    },
+  ],
   highlights: [
-    'Loại nhà cung cấp và contact management.',
-    'Dùng lại trong nhập sợi, vải mộc và vải thành phẩm.',
-    'Trạng thái active để gom dữ liệu master data gọn hơn.',
+    'Phân loại NCC Sợi/Hóa chất/Phụ kiện.',
+    'Quản lý công nợ NCC tập trung.',
+    'Theo dõi đánh giá định kỳ.',
   ],
-  resources: [
-    'Schema suppliers va supplier_category.',
-    'List view mobile-card va desktop-table.',
-    'Quick actions cho chinh sua va khoa du lieu.',
-  ],
-  entities: ['Supplier', 'Category', 'Contact', 'Tax profile'],
+  entities: ['suppliers'],
   nextMilestones: [
-    'Bo sung filter theo category va status.',
-    'Tao quick picker de dung lai o receipts.',
+    'Tích hợp portal cho NCC.',
     'Theo doi lead time va do tin cay nha cung cap.',
   ],
 };
@@ -40,11 +41,14 @@ export const suppliersPlugin: FeaturePlugin = {
   key: 'suppliers',
   route: 'suppliers',
   label: 'Nhà cung cấp',
-  shortLabel: 'Suppliers',
-  description: 'Quản lý nhà cung cấp sợi, dệt, nhuộm và logistics.',
-  icon: 'building',
-  group: 'master-data',
-  order: 70,
+  shortLabel: 'NCC',
+  description: 'Tra cứu và quản lý danh sách nhà cung cấp, đối tác gia công.',
+  icon: 'users',
+  requiredRoles: ['admin', 'manager'],
+  group: 'partners',
+  order: 50,
   component: () =>
     import('./SuppliersPage').then((m) => ({ default: m.SuppliersPage })),
 };
+
+export default createModule(suppliersFeature);
