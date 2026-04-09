@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { Pagination } from '@/shared/components/Pagination';
-import { SearchInput } from '@/shared/components/SearchInput';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
+import { Icon } from '@/shared/components/Icon';
 import { formatCurrency } from '@/shared/utils/format';
 
 import { ORDER_STATUS_LABELS } from './orders.module';
@@ -108,69 +108,148 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
 
   return (
     <div className="panel-card card-flush">
-      {/* Header */}
-      <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Bán hàng</p>
-            <h3>Đơn hàng</h3>
-          </div>
+      {/* Header Area */}
+      <div className="card-header-area card-header-premium">
+        <div>
+          <p className="eyebrow-premium">BÁN HÀNG</p>
+          <h3 className="title-premium">Quản lý Đơn hàng</h3>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+          }}
+        >
           <button
-            className="primary-button btn-standard"
+            className="btn-primary"
             type="button"
             onClick={onNew}
+            style={{
+              minHeight: '42px',
+              padding: '0 1.25rem',
+            }}
           >
             + Tạo đơn hàng
           </button>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="filter-bar card-filter-section">
-        <form
-          className="filter-field"
-          onSubmit={handleSearch}
-          style={{ flex: '1 1 220px' }}
-        >
-          <label htmlFor="filter-search">Tìm kiếm</label>
+      {/* Stats Section */}
+      <div className="stats-grid-premium">
+        <div className="stat-item-premium">
           <div
+            className="stat-icon-wrapper"
             style={{
-              display: 'flex',
-              gap: '0.4rem',
+              background: 'rgba(11, 107, 203, 0.1)',
+              color: 'var(--primary)',
             }}
           >
-            <SearchInput
-              id="filter-search"
-              placeholder="Số đơn hàng..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              style={{ width: 220 }}
-            />
-            <button
-              className="btn-secondary"
-              type="submit"
-              style={{ whiteSpace: 'nowrap' }}
-            >
-              Tìm
-            </button>
+            <Icon name="ShoppingCart" size={24} />
           </div>
-        </form>
+          <div className="stat-content-premium">
+            <p>Đơn hàng (Trang hiện tại)</p>
+            <p>{orders.length}</p>
+          </div>
+        </div>
 
-        <div className="filter-field">
-          <label htmlFor="filter-status">Trạng thái</label>
-          <select
-            id="filter-status"
-            className="field-select"
-            value={filters.status ?? ''}
-            onChange={handleStatusChange}
+        <div className="stat-item-premium">
+          <div
+            className="stat-icon-wrapper"
+            style={{
+              background: 'rgba(10, 128, 92, 0.1)',
+              color: 'var(--success)',
+            }}
           >
-            <option value="">Tất cả</option>
-            <option value="draft">Nháp</option>
-            <option value="confirmed">Đã xác nhận</option>
-            <option value="in_progress">Đang xử lý</option>
-            <option value="completed">Hoàn thành</option>
-            <option value="cancelled">Đã huỷ</option>
-          </select>
+            <Icon name="Banknote" size={24} />
+          </div>
+          <div className="stat-content-premium">
+            <p>Doanh số trang</p>
+            <p>
+              {formatCurrency(
+                orders.reduce((sum, o) => sum + o.total_amount, 0),
+              ).replace(' đ', '')}
+              <span
+                style={{
+                  fontSize: '1rem',
+                  fontWeight: 500,
+                  marginLeft: '0.2rem',
+                }}
+              >
+                đ
+              </span>
+            </p>
+          </div>
+        </div>
+
+        <div className="stat-item-premium">
+          <div
+            className="stat-icon-wrapper"
+            style={{
+              background: 'rgba(225, 29, 72, 0.1)',
+              color: '#e11d48',
+            }}
+          >
+            <Icon name="AlertCircle" size={24} />
+          </div>
+          <div className="stat-content-premium">
+            <p>Công nợ trang</p>
+            <p style={{ color: '#be123c' }}>
+              {formatCurrency(
+                orders.reduce(
+                  (sum, o) => sum + Math.max(0, o.total_amount - o.paid_amount),
+                  0,
+                ),
+              ).replace(' đ', '')}
+              <span
+                style={{
+                  fontSize: '1rem',
+                  fontWeight: 500,
+                  marginLeft: '0.2rem',
+                }}
+              >
+                đ
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter Section */}
+      <div className="filter-bar card-filter-section">
+        <div className="filter-grid-premium">
+          <div className="filter-field">
+            <label>Tìm kiếm</label>
+            <form className="search-input-wrapper" onSubmit={handleSearch}>
+              <input
+                className="field-input"
+                type="text"
+                placeholder="Số đơn hàng..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onBlur={handleSearch}
+              />
+              <button type="submit" style={{ display: 'none' }}></button>
+              <Icon name="Search" size={16} className="search-input-icon" />
+            </form>
+          </div>
+
+          <div className="filter-field">
+            <label>Trạng thái</label>
+            <select
+              className="field-select"
+              value={filters.status ?? ''}
+              onChange={handleStatusChange}
+            >
+              <option value="">Tất cả</option>
+              <option value="draft">Nháp</option>
+              <option value="confirmed">Đã xác nhận</option>
+              <option value="in_progress">Đang xử lý</option>
+              <option value="completed">Hoàn thành</option>
+              <option value="cancelled">Đã huỷ</option>
+            </select>
+          </div>
         </div>
 
         {hasFilter && (
@@ -180,10 +259,15 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
             onClick={() => {
               setFilters({});
               setSearchInput('');
+              setPage(1);
             }}
-            style={{ alignSelf: 'flex-end' }}
+            style={{
+              marginTop: '1rem',
+              color: 'var(--danger)',
+              borderColor: 'rgba(192, 57, 43, 0.2)',
+            }}
           >
-            ✕ Xóa lọc
+            <Icon name="X" size={14} /> Xóa lọc nhanh
           </button>
         )}
       </div>
@@ -293,28 +377,44 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
                       className="td-actions"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      {order.status === 'draft' && (
-                        <>
+                      <div
+                        style={{
+                          display: 'flex',
+                          gap: '0.25rem',
+                          justifyContent: 'flex-end',
+                        }}
+                      >
+                        {order.status === 'draft' ? (
+                          <>
+                            <button
+                              className="btn-icon"
+                              type="button"
+                              title="Sửa"
+                              onClick={() => onEdit(order)}
+                            >
+                              <Icon name="Edit3" size={16} />
+                            </button>
+                            <button
+                              className="btn-icon danger"
+                              type="button"
+                              title="Xóa"
+                              onClick={() => handleDelete(order)}
+                              disabled={deleteMutation.isPending}
+                            >
+                              <Icon name="Trash2" size={16} />
+                            </button>
+                          </>
+                        ) : (
                           <button
                             className="btn-icon"
                             type="button"
-                            title="Sửa"
-                            onClick={() => onEdit(order)}
-                            style={{ marginRight: 4 }}
+                            title="Xem chi tiết"
+                            onClick={() => onView(order)}
                           >
-                            ✏️
+                            <Icon name="Eye" size={16} />
                           </button>
-                          <button
-                            className="btn-icon danger"
-                            type="button"
-                            title="Xóa"
-                            onClick={() => handleDelete(order)}
-                            disabled={deleteMutation.isPending}
-                          >
-                            🗑
-                          </button>
-                        </>
-                      )}
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );

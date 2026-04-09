@@ -47,7 +47,7 @@ export function RawFabricList({
   } = useRawFabricList(activeFilters, page);
   const rolls = result?.data ?? [];
   const { data: stats } = useRawFabricStats();
-  const { exportExcel, exportPdf } = useRawFabricExport();
+  const { exportExcel } = useRawFabricExport();
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
     setPage(1);
@@ -65,23 +65,7 @@ export function RawFabricList({
     }));
   }
 
-  function handleFabricTypeSearch(e: React.FormEvent) {
-    e.preventDefault();
-    setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      fabric_type: fabricTypeInput.trim() || undefined,
-    }));
-  }
-
-  function handleRollNumberSearch(e: React.FormEvent) {
-    e.preventDefault();
-    setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      roll_number: rollNumberInput.trim() || undefined,
-    }));
-  }
+  // Search logic is handled inline or on blur.
 
   async function handleExportExcel() {
     setIsExporting(true);
@@ -93,15 +77,7 @@ export function RawFabricList({
     }
   }
 
-  async function handleExportPdf() {
-    setIsExporting(true);
-    try {
-      const all = await fetchRawFabricAll(filters);
-      exportPdf(all);
-    } finally {
-      setIsExporting(false);
-    }
-  }
+  // exportPdf removed as it's unused
 
   const hasFilter = !!(
     filters.status ??
@@ -118,25 +94,43 @@ export function RawFabricList({
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(roll);
     });
-    return Array.from(map.entries()).map(([lot, items]) => ({
-      lot,
-      rolls: items,
-      fabricType: items[0]?.fabric_type,
-      colorName: items[0]?.color_name,
-    }));
+    return Array.from(map.entries()).map(([lot, items]) => {
+      // Calculate median weight for anomaly reference
+      const weights = items
+        .map((r) => r.weight_kg)
+        .filter((w): w is number => !!w && w > 0)
+        .sort((a, b) => a - b);
+      let median: number | undefined;
+      if (weights.length > 0) {
+        median = weights[Math.floor(weights.length / 2)];
+      }
+
+      return {
+        lot,
+        rolls: items,
+        fabricType: items[0]?.fabric_type,
+        colorName: items[0]?.color_name,
+        medianWeight: median,
+      };
+    });
   }, [rolls]);
 
   return (
     <div className="panel-card card-flush">
-      {/* Header */}
-      <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Kho vải mộc</p>
-            <h3>Danh sách cuộn vải mộc</h3>
-          </div>
-          <div style={{ flex: 1 }} />
+      {/* Header Area */}
+      <div className="card-header-area card-header-premium">
+        <div>
+          <p className="eyebrow-premium">KHO VẢI MỘC</p>
+          <h3 className="title-premium">Quản lý cuộn vải mộc</h3>
+        </div>
 
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+          }}
+        >
           <div
             className="view-toggle-group"
             style={{
@@ -144,8 +138,8 @@ export function RawFabricList({
               gap: '0.25rem',
               background: 'var(--surface-subtle)',
               padding: '0.25rem',
-              borderRadius: '8px',
-              marginRight: '0.5rem',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--border)',
             }}
           >
             <button
@@ -153,178 +147,248 @@ export function RawFabricList({
               onClick={() => setViewMode('table')}
               title="Dạng bảng"
               style={{
+                width: '36px',
+                height: '36px',
                 background:
-                  viewMode === 'table' ? 'var(--surface)' : 'transparent',
+                  viewMode === 'table'
+                    ? 'var(--surface-strong)'
+                    : 'transparent',
                 boxShadow:
-                  viewMode === 'table' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  viewMode === 'table' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+                border: 'none',
+                color: viewMode === 'table' ? 'var(--primary)' : 'var(--muted)',
               }}
             >
-              <Icon name="LayoutList" size={18} />
+              <Icon name="LayoutList" size={20} />
             </button>
             <button
               className={`btn-icon ${viewMode === 'grid' ? 'active' : ''}`}
               onClick={() => setViewMode('grid')}
               title="Dạng lưới"
               style={{
+                width: '36px',
+                height: '36px',
                 background:
-                  viewMode === 'grid' ? 'var(--surface)' : 'transparent',
+                  viewMode === 'grid' ? 'var(--surface-strong)' : 'transparent',
                 boxShadow:
-                  viewMode === 'grid' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  viewMode === 'grid' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+                border: 'none',
+                color: viewMode === 'grid' ? 'var(--primary)' : 'var(--muted)',
               }}
             >
-              <Icon name="LayoutGrid" size={18} />
+              <Icon name="LayoutGrid" size={20} />
             </button>
           </div>
 
-          <button
-            className="primary-button btn-standard"
-            type="button"
-            onClick={onNew}
+          <div
+            style={{
+              display: 'flex',
+              gap: '0.5rem',
+            }}
           >
-            + Nhập cuộn mới
-          </button>
-          <button
-            className="btn-secondary btn-standard"
-            type="button"
-            onClick={onBulkNew}
-          >
-            ⚡ Nhập hàng loạt
-          </button>
-          <button
-            className="btn-secondary btn-standard"
-            type="button"
-            onClick={() => void handleExportExcel()}
-            disabled={isExporting}
-            title="Xuất toàn bộ kết quả lọc ra Excel"
-          >
-            {isExporting ? '...' : '📊 Excel'}
-          </button>
-          <button
-            className="btn-secondary btn-standard"
-            type="button"
-            onClick={() => void handleExportPdf()}
-            disabled={isExporting}
-            title="Xuất toàn bộ kết quả lọc ra PDF"
-          >
-            {isExporting ? '...' : '🖨 PDF'}
-          </button>
+            <button
+              className="btn-primary"
+              type="button"
+              onClick={onNew}
+              style={{
+                minHeight: '42px',
+                padding: '0 1.25rem',
+              }}
+            >
+              + Nhập mới
+            </button>
+            <button
+              className="btn-secondary"
+              type="button"
+              onClick={onBulkNew}
+              style={{ height: '42px' }}
+            >
+              <Icon name="Zap" size={16} /> Nhập mẻ
+            </button>
+            <div
+              style={{
+                width: '1px',
+                height: '24px',
+                background: 'var(--border)',
+                margin: 'auto 0.25rem',
+              }}
+            />
+            <button
+              className="btn-icon"
+              type="button"
+              onClick={() => void handleExportExcel()}
+              disabled={isExporting}
+              title="Xuất Excel"
+              style={{
+                height: '42px',
+                width: '42px',
+              }}
+            >
+              {isExporting ? (
+                <Icon name="Loader2" size={18} className="animate-spin" />
+              ) : (
+                <Icon name="FileSpreadsheet" size={18} />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats Section */}
       {stats && (
-        <div className="stats-bar">
-          <div className="stat-card stat-primary">
-            <span className="stat-label">Tổng cuộn</span>
-            <span className="stat-value">
-              {stats.totalRolls.toLocaleString('vi-VN')}
-            </span>
+        <div className="stats-grid-premium">
+          <div className="stat-item-premium">
+            <div
+              className="stat-icon-wrapper"
+              style={{
+                background: 'rgba(11, 107, 203, 0.1)',
+                color: 'var(--primary)',
+              }}
+            >
+              <Icon name="Package" size={24} />
+            </div>
+            <div className="stat-content-premium">
+              <p>Tổng cuộn</p>
+              <p>{stats.totalRolls.toLocaleString('vi-VN')}</p>
+            </div>
           </div>
-          <div className="stat-card">
-            <span className="stat-label">Tổng chiều dài</span>
-            <span className="stat-value">
-              {stats.totalLengthM.toLocaleString('vi-VN', {
-                maximumFractionDigits: 1,
-              })}
-              <span className="stat-unit">m</span>
-            </span>
+
+          <div className="stat-item-premium">
+            <div
+              className="stat-icon-wrapper"
+              style={{
+                background: 'rgba(10, 128, 92, 0.1)',
+                color: 'var(--success)',
+              }}
+            >
+              <Icon name="Ruler" size={24} />
+            </div>
+            <div className="stat-content-premium">
+              <p>Tổng chiều dài</p>
+              <p>
+                {stats.totalLengthM.toLocaleString('vi-VN', {
+                  maximumFractionDigits: 1,
+                })}
+                <span
+                  style={{
+                    fontSize: '1rem',
+                    fontWeight: 500,
+                    marginLeft: '0.2rem',
+                  }}
+                >
+                  m
+                </span>
+              </p>
+            </div>
           </div>
-          <div className="stat-card">
-            <span className="stat-label">Tổng trọng lượng</span>
-            <span className="stat-value">
-              {stats.totalWeightKg.toLocaleString('vi-VN', {
-                maximumFractionDigits: 1,
-              })}
-              <span className="stat-unit">kg</span>
-            </span>
+
+          <div className="stat-item-premium">
+            <div
+              className="stat-icon-wrapper"
+              style={{
+                background: 'rgba(245, 158, 11, 0.1)',
+                color: '#f59e0b',
+              }}
+            >
+              <Icon name="Weight" size={24} />
+            </div>
+            <div className="stat-content-premium">
+              <p>Tổng trọng lượng</p>
+              <p>
+                {stats.totalWeightKg.toLocaleString('vi-VN', {
+                  maximumFractionDigits: 1,
+                })}
+                <span
+                  style={{
+                    fontSize: '1rem',
+                    fontWeight: 500,
+                    marginLeft: '0.2rem',
+                  }}
+                >
+                  kg
+                </span>
+              </p>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Filters */}
+      {/* Filter Section */}
       <div className="filter-bar card-filter-section">
-        <form
-          className="filter-field"
-          onSubmit={handleFabricTypeSearch}
-          style={{ flex: '1 1 180px' }}
-        >
-          <label htmlFor="filter-fabric-type">Loại vải</label>
-          <div className="flex-controls">
-            <input
-              id="filter-fabric-type"
-              className="field-input"
-              type="text"
-              placeholder="Tìm loại vải..."
-              value={fabricTypeInput}
-              onChange={(e) => setFabricTypeInput(e.target.value)}
-            />
-            <button
-              className="btn-secondary"
-              type="submit"
-              style={{ whiteSpace: 'nowrap' }}
-            >
-              Lọc
-            </button>
+        <div className="filter-grid-premium">
+          <div className="filter-field">
+            <label>Loại vải</label>
+            <div className="search-input-wrapper">
+              <input
+                className="field-input"
+                type="text"
+                placeholder="Tìm sản phẩm..."
+                value={fabricTypeInput}
+                onChange={(e) => setFabricTypeInput(e.target.value)}
+                onBlur={() => {
+                  setFilters((prev) => ({
+                    ...prev,
+                    fabric_type: fabricTypeInput.trim() || undefined,
+                  }));
+                  setPage(1);
+                }}
+              />
+              <Icon name="Search" size={16} className="search-input-icon" />
+            </div>
           </div>
-        </form>
 
-        <form
-          className="filter-field"
-          onSubmit={handleRollNumberSearch}
-          style={{ flex: '1 1 160px' }}
-        >
-          <label htmlFor="filter-roll-number">Mã cuộn</label>
-          <div className="flex-controls">
-            <input
-              id="filter-roll-number"
-              className="field-input"
-              type="text"
-              placeholder="VD: BGR-001..."
-              value={rollNumberInput}
-              onChange={(e) => setRollNumberInput(e.target.value)}
-            />
-            <button
-              className="btn-secondary"
-              type="submit"
-              style={{ whiteSpace: 'nowrap' }}
-            >
-              Tìm
-            </button>
+          <div className="filter-field">
+            <label>Mã cuộn</label>
+            <div className="search-input-wrapper">
+              <input
+                className="field-input"
+                type="text"
+                placeholder="VD: BGR-001..."
+                value={rollNumberInput}
+                onChange={(e) => setRollNumberInput(e.target.value)}
+                onBlur={() => {
+                  setFilters((prev) => ({
+                    ...prev,
+                    roll_number: rollNumberInput.trim() || undefined,
+                  }));
+                  setPage(1);
+                }}
+              />
+              <Icon name="Tag" size={16} className="search-input-icon" />
+            </div>
           </div>
-        </form>
 
-        <div className="filter-field">
-          <label htmlFor="filter-status">Trạng thái</label>
-          <select
-            id="filter-status"
-            className="field-select"
-            value={filters.status ?? ''}
-            onChange={handleStatusChange}
-          >
-            <option value="">Tất cả</option>
-            {ROLL_STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {ROLL_STATUS_LABELS[s]}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div className="filter-field">
+            <label>Trạng thái</label>
+            <select
+              className="field-select"
+              value={filters.status ?? ''}
+              onChange={handleStatusChange}
+            >
+              <option value="">Tất cả trạng thái</option>
+              {ROLL_STATUSES.map((s) => (
+                <option key={s} value={s}>
+                  {ROLL_STATUS_LABELS[s]}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className="filter-field">
-          <label htmlFor="filter-grade">Chất lượng</label>
-          <select
-            id="filter-grade"
-            className="field-select"
-            value={filters.quality_grade ?? ''}
-            onChange={handleGradeChange}
-          >
-            <option value="">Tất cả</option>
-            {QUALITY_GRADES.map((g) => (
-              <option key={g} value={g}>
-                {QUALITY_GRADE_LABELS[g]}
-              </option>
-            ))}
-          </select>
+          <div className="filter-field">
+            <label>Chất lượng</label>
+            <select
+              className="field-select"
+              value={filters.quality_grade ?? ''}
+              onChange={handleGradeChange}
+            >
+              <option value="">Tất cả loại</option>
+              {QUALITY_GRADES.map((g) => (
+                <option key={g} value={g}>
+                  {QUALITY_GRADE_LABELS[g]}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {hasFilter && (
@@ -336,9 +400,13 @@ export function RawFabricList({
               setFabricTypeInput('');
               setRollNumberInput('');
             }}
-            style={{ alignSelf: 'flex-end' }}
+            style={{
+              marginTop: '1rem',
+              color: 'var(--danger)',
+              borderColor: 'rgba(192, 57, 43, 0.2)',
+            }}
           >
-            ✕ Xóa lọc
+            <Icon name="X" size={14} /> Xóa lọc nhanh
           </button>
         )}
       </div>
@@ -376,6 +444,7 @@ export function RawFabricList({
                 lotNumber={group.lot !== 'KHÔNG CÓ LÔ' ? group.lot : undefined}
                 colorName={group.colorName || undefined}
                 expectedRollsCount={group.rolls.length}
+                standardWeightKg={group.medianWeight}
                 rolls={group.rolls.map((r) => ({
                   id: r.id,
                   roll_number: r.roll_number,

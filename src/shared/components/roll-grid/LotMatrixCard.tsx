@@ -15,7 +15,7 @@ interface LotMatrixCardProps {
   title: string;
   lotNumber?: string;
   colorName?: string;
-  widthInfo?: string;
+  // widthInfo removed due to unsued
 
   // Data
   expectedRollsCount: number;
@@ -42,7 +42,6 @@ export function LotMatrixCard({
   title,
   lotNumber,
   colorName,
-  widthInfo,
   expectedRollsCount,
   expectedTotalWeightKg,
   rolls,
@@ -74,7 +73,7 @@ export function LotMatrixCard({
 
   // Check progress matching
   const isCountMatch = totals.rollCount === expectedRollsCount;
-  const progressColor = isCountMatch ? 'bg-emerald-500' : 'bg-amber-500';
+  // progressColor removed due to unused
 
   // Render ghost slots if we have fewer rolls than expected
   const displayRolls = [...rolls];
@@ -92,98 +91,187 @@ export function LotMatrixCard({
 
   return (
     <div
-      className={cn(
-        'rounded-xl shadow-sm border border-slate-200 overflow-hidden',
-        'bg-white',
-        className,
-      )}
+      className={cn('overflow-hidden transition-all', className)}
+      style={{
+        borderRadius: 'var(--radius-xl)',
+        boxShadow: '0 4px 20px -4px rgba(0,0,0,0.06)',
+        border: '1px solid var(--border)',
+        background: 'var(--surface-strong)',
+      }}
     >
-      {/* Header Section: Metadata & Checksum */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border-b border-slate-100 bg-slate-50/50 gap-3">
-        <div className="flex items-start gap-2.5">
-          <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg shrink-0">
-            <Icon name="Layers" size={18} />
+      {/* Header Section: Metadata & Checksum - Premium Look */}
+      <div
+        className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4"
+        style={{
+          background:
+            'linear-gradient(to right, rgba(16, 35, 61, 0.01), rgba(16, 35, 61, 0.03))',
+          borderBottom: '1px solid var(--border)',
+        }}
+      >
+        <div className="flex items-start gap-3">
+          <div
+            style={{
+              padding: '0.6rem',
+              background: 'var(--surface-strong)',
+              color: 'var(--primary)',
+              borderRadius: '12px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+              border: '1px solid var(--border)',
+            }}
+          >
+            <Icon name="Layers" size={20} />
           </div>
           <div className="min-w-0">
-            <h4 className="font-bold text-slate-800 text-sm leading-tight uppercase truncate">
+            <h4
+              style={{
+                fontWeight: 800,
+                fontSize: '1rem',
+                color: 'var(--text)',
+                marginBottom: '0.25rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+              }}
+            >
               {title}
             </h4>
-            <div className="flex flex-wrap gap-1.5 mt-1">
+            <div className="flex flex-wrap gap-2">
               {lotNumber && (
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700">
-                  Mẻ: {lotNumber}
+                <span
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    background: 'var(--surface-subtle)',
+                    color: 'var(--muted)',
+                    padding: '1px 8px',
+                    borderRadius: '6px',
+                    border: '1px solid var(--border)',
+                  }}
+                >
+                  LÔ: {lotNumber}
                 </span>
               )}
               {colorName && (
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium bg-indigo-50 text-indigo-700">
+                <span
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    background: 'rgba(11, 107, 203, 0.08)',
+                    color: 'var(--primary)',
+                    padding: '1px 8px',
+                    borderRadius: '6px',
+                  }}
+                >
                   {colorName}
                 </span>
               )}
-              {widthInfo && (
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700">
-                  {widthInfo}
-                </span>
-              )}
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-600">
-                {rolls.length} cuộn
+              <span
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  color: 'var(--muted)',
+                  opacity: 0.8,
+                }}
+              >
+                • {rolls.length} cuộn thành phẩm
               </span>
             </div>
           </div>
         </div>
 
-        {/* Right side: counters / selection summary */}
-        <div className="flex flex-col items-end shrink-0">
+        {/* Right side: counters / progress summary */}
+        <div
+          style={{
+            background: 'var(--surface-strong)',
+            padding: '0.5rem 1rem',
+            borderRadius: '12px',
+            border: '1px solid var(--border)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
+          }}
+        >
           {mode === 'select' ? (
-            // Select mode: show selected count
             selectedCount > 0 ? (
-              <>
-                <span className="text-xs font-bold text-emerald-700">
-                  {selectedCount} đã chọn
+              <div style={{ textAlign: 'right' }}>
+                <span
+                  style={{
+                    fontSize: '13px',
+                    fontWeight: 800,
+                    color: 'var(--success)',
+                  }}
+                >
+                  {selectedCount} cuộn đã chọn
                 </span>
-                <span className="text-[11px] text-slate-500">
-                  {selectedWeight.toFixed(1)} kg
-                </span>
-              </>
+                <p
+                  style={{
+                    fontSize: '11px',
+                    color: 'var(--muted)',
+                    fontWeight: 600,
+                  }}
+                >
+                  Tổng: {selectedWeight.toFixed(1)} kg
+                </p>
+              </div>
             ) : (
-              <span className="text-[11px] text-slate-400">
-                Nhấn để chọn cuộn
+              <span
+                style={{
+                  fontSize: '12px',
+                  color: 'var(--muted)',
+                  fontWeight: 500,
+                }}
+              >
+                Nhấn chọn để xuất hàng
               </span>
             )
           ) : (
-            // Input/View mode: show progress checksum
-            <>
-              <div className="text-sm font-medium flex items-center gap-2">
-                <span className="text-slate-500">Tiến độ:</span>
-                <div className="flex items-center gap-2">
-                  <span className={cn('w-2 h-2 rounded-full', progressColor)} />
-                  <span
-                    className={
-                      isCountMatch
-                        ? 'text-emerald-700 font-bold'
-                        : 'text-slate-800'
-                    }
-                  >
-                    {totals.rollCount} / {expectedRollsCount} cuộn
-                  </span>
-                </div>
-              </div>
-              <div className="text-sm text-slate-500 mt-1">
-                Tổng:{' '}
-                <span className="font-bold text-slate-800">
-                  {totals.totalWeight.toFixed(1)}
+            <div style={{ textAlign: 'right' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: 'var(--muted)',
+                  }}
+                >
+                  Tiến độ:
                 </span>
+                <span
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: 800,
+                    color: isCountMatch ? 'var(--success)' : 'var(--text)',
+                  }}
+                >
+                  {totals.rollCount} / {expectedRollsCount}
+                </span>
+              </div>
+              <p
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  color: 'var(--muted)',
+                }}
+              >
+                {totals.totalWeight.toFixed(1)} kg{' '}
                 {expectedTotalWeightKg
                   ? ` / ${expectedTotalWeightKg.toFixed(1)} kg`
-                  : ' kg'}
-              </div>
-            </>
+                  : ''}
+              </p>
+            </div>
           )}
         </div>
       </div>
 
       {/* Grid Presentation Section */}
-      <div className="p-3">
-        <div className="grid grid-cols-5 md:grid-cols-10 gap-2">
+      <div className="p-4" style={{ background: 'var(--surface-strong)' }}>
+        <div className="grid grid-cols-5 md:grid-cols-10 gap-3">
           {displayRolls.map((roll, index) => {
             const isGhost = roll.status === 'ghost';
             const anomalyStatus = isGhost
