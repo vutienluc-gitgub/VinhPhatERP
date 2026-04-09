@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useMemo } from 'react';
-import { useFieldArray, useForm, Controller } from 'react-hook-form';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import type { ShippingRate } from '@/shared/hooks/useShippingRateOptions';
@@ -9,11 +9,7 @@ import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { useEmployees } from '@/shared/hooks/useEmployeeOptions';
 
-import {
-  emptyShipmentItem,
-  shipmentsDefaultValues,
-  shipmentsSchema,
-} from './shipments.module';
+import { shipmentsDefaultValues, shipmentsSchema } from './shipments.module';
 import type { ShipmentsFormValues } from './shipments.module';
 import {
   useAvailableFinishedRolls,
@@ -21,6 +17,7 @@ import {
   useDeliveryStaffList,
   useNextShipmentNumber,
 } from './useShipments';
+import { ShipmentRollPicker, type AvailableRoll } from './ShipmentRollPicker';
 
 type ShipmentFormProps = {
   orderId: string;
@@ -71,9 +68,12 @@ export function ShipmentForm({
     status: 'active',
   });
   const createMutation = useCreateShipment();
-  const availableRollById = new Map(
-    availableRolls.map((roll) => [roll.id, roll]),
+
+  // Selected rolls state (Set of roll IDs)
+  const [selectedRollIds, setSelectedRollIds] = useState<Set<string>>(
+    new Set(),
   );
+
   const shippingRateById = useMemo(
     () => new Map(shippingRates.map((r) => [r.id, r])),
     [shippingRates],
@@ -96,37 +96,84 @@ export function ShipmentForm({
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'items',
-  });
-
   const watchedRateId = watch('shippingRateId');
-  const watchedItems = watch('items');
+
+  // Compute total from selected rolls
+  const selectedRollsSummary = useMemo(() => {
+    const selected = availableRolls.filter((r) => selectedRollIds.has(r.id));
+    return {
+      count: selected.length,
+      totalWeight: selected.reduce((sum, r) => sum + (r.weight_kg ?? 0), 0),
+      totalLength: selected.reduce((sum, r) => sum + (r.length_m ?? 0), 0),
+      rolls: selected,
+    };
+  }, [availableRolls, selectedRollIds]);
 
   // Auto-fill shipment number
   useEffect(() => {
     if (nextNumber) setValue('shipmentNumber', nextNumber);
   }, [nextNumber, setValue]);
 
-  // Auto-compute shipping cost when rate changes
+  // Sync selected rolls → form items
+  useEffect(() => {
+    const items = selectedRollsSummary.rolls.map((roll) => ({
+      finishedRollId: roll.id,
+      fabricType: roll.fabric_type,
+      quantity: roll.weight_kg || roll.length_m || 0,
+    }));
+
+    // Always have at least one empty item if none selected
+    if (items.length === 0) {
+      setValue('items', [
+        {
+          finishedRollId: '',
+          fabricType: '',
+          quantity: 0,
+        },
+      ]);
+    } else {
+      setValue('items', items);
+    }
+  }, [selectedRollsSummary.rolls, setValue]);
+
+  // Auto-compute shipping cost when rate or items change
   useEffect(() => {
     if (!watchedRateId) return;
     const rate = shippingRateById.get(watchedRateId);
-    const totalMeters = watchedItems.reduce(
-      (sum, item) => sum + (item.quantity || 0),
-      0,
-    );
+    const totalMeters = selectedRollsSummary.totalLength;
     const { shippingCost, loadingFee } = computeShippingCost(rate, totalMeters);
     setValue('shippingCost', shippingCost);
     setValue('loadingFee', loadingFee);
-  }, [watchedRateId, watchedItems, setValue, shippingRateById]);
+  }, [
+    watchedRateId,
+    selectedRollsSummary.totalLength,
+    setValue,
+    shippingRateById,
+  ]);
+
+  const handleToggleRoll = useCallback((roll: AvailableRoll) => {
+    setSelectedRollIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(roll.id)) {
+        next.delete(roll.id);
+      } else {
+        next.add(roll.id);
+      }
+      return next;
+    });
+  }, []);
 
   async function onSubmit(values: ShipmentsFormValues) {
+    if (selectedRollIds.size === 0) {
+      toast.error('Vui lòng chọn ít nhất một cuộn vải để xuất.');
+      return;
+    }
+
     try {
       await createMutation.mutateAsync(values);
       toast.success('Tạo phiếu xuất thành công');
       reset();
+      setSelectedRollIds(new Set());
       onClose();
     } catch {
       toast.error('Có lỗi xảy ra khi tạo phiếu xuất');
@@ -316,213 +363,60 @@ export function ShipmentForm({
             <div />
           </div>
 
-          {/* Items */}
+          {/* ─── Roll Picker Grid ─── */}
           <div className="form-field">
-            <div
+            <label
               style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                margin: 0,
                 marginBottom: '0.5rem',
               }}
             >
-              <label style={{ margin: 0 }}>
-                Dòng hàng <span className="field-required">*</span>
-              </label>
-            </div>
+              Chọn cuộn xuất kho <span className="field-required">*</span>
+            </label>
 
-            {fields.map((field, idx) => {
-              const selectedRollId = watchedItems[idx]?.finishedRollId;
-              const isSelected = !!selectedRollId;
+            <ShipmentRollPicker
+              availableRolls={availableRolls}
+              selectedRollIds={selectedRollIds}
+              onToggleRoll={handleToggleRoll}
+            />
 
-              return (
-                <div
-                  key={field.id}
+            {/* Selection summary */}
+            {selectedRollsSummary.count > 0 && (
+              <div
+                style={{
+                  marginTop: '0.75rem',
+                  padding: '0.75rem 1rem',
+                  borderRadius: 'var(--radius)',
+                  background: '#ecfdf5',
+                  border: '1px solid #a7f3d0',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '0.5rem',
+                }}
+              >
+                <span
                   style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr 100px 40px',
-                    gap: '0.5rem',
-                    alignItems: 'start',
-                    marginBottom: '1rem',
-                    border: isSelected
-                      ? '1px solid #10b981'
-                      : '1px solid var(--border)',
-                    padding: '1rem',
-                    borderRadius: 'var(--radius)',
-                    background: isSelected ? '#ecfdf5' : 'var(--surface)',
-                    transition: 'background-color 0.2s, border-color 0.2s',
-                    boxShadow: isSelected
-                      ? '0 1px 2px rgba(16, 185, 129, 0.1)'
-                      : 'none',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    color: '#065f46',
                   }}
                 >
-                  <div
-                    style={{
-                      gridColumn: '1 / -1',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '0.5rem',
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: '0.85rem',
-                        fontWeight: 600,
-                        color: isSelected ? '#059669' : 'var(--text-secondary)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.4rem',
-                      }}
-                    >
-                      {isSelected && (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M22 11.08V12a10 10 10 0 1 1-5.93-9.14"></path>
-                          <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
-                      )}
-                      Dòng {idx + 1}
-                    </span>
-                    {fields.length > 1 && (
-                      <button
-                        className="btn-icon danger"
-                        type="button"
-                        title="Xóa dòng"
-                        onClick={() => remove(idx)}
-                        style={{ fontSize: '0.85rem' }}
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
-
-                  <div style={{ gridColumn: 'span 2' }}>
-                    <span
-                      style={{
-                        fontSize: '0.8rem',
-                        color: 'var(--muted)',
-                        display: 'block',
-                        marginBottom: '0.2rem',
-                      }}
-                    >
-                      Cuộn thành phẩm
-                    </span>
-                    <Controller
-                      name={`items.${idx}.finishedRollId` as const}
-                      control={control}
-                      render={({ field }) => (
-                        <Combobox
-                          options={availableRolls.map((roll) => ({
-                            value: roll.id,
-                            label: `${roll.status === 'reserved' ? '🔒 ' : ''}${roll.roll_number} — ${roll.fabric_type} ${roll.color_name ? `(${roll.color_name})` : ''} — ${roll.length_m}m`,
-                          }))}
-                          value={field.value}
-                          onChange={(val) => {
-                            field.onChange(val);
-                            const selectedRoll = availableRollById.get(
-                              val || '',
-                            );
-                            if (selectedRoll) {
-                              setValue(
-                                `items.${idx}.fabricType`,
-                                selectedRoll.fabric_type,
-                                {
-                                  shouldDirty: true,
-                                  shouldValidate: true,
-                                },
-                              );
-                              const defaultQty =
-                                selectedRoll.weight_kg ||
-                                selectedRoll.length_m ||
-                                0;
-                              if (defaultQty > 0) {
-                                setValue(`items.${idx}.quantity`, defaultQty, {
-                                  shouldDirty: true,
-                                  shouldValidate: true,
-                                });
-                              }
-                            }
-                          }}
-                          placeholder="— Không chọn —"
-                        />
-                      )}
-                    />
-                  </div>
-
-                  <div style={{ gridColumn: 'span 2' }}>
-                    <span
-                      style={{
-                        fontSize: '0.8rem',
-                        color: 'var(--muted)',
-                        display: 'block',
-                        marginBottom: '0.2rem',
-                      }}
-                    >
-                      Loại vải *
-                    </span>
-                    <input
-                      className="field-input"
-                      {...register(`items.${idx}.fabricType`)}
-                      placeholder="Loại vải"
-                    />
-                    {errors.items?.[idx]?.fabricType && (
-                      <p className="field-error">
-                        {errors.items[idx]?.fabricType?.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div style={{ gridColumn: 'span 2' }}>
-                    <span
-                      style={{
-                        fontSize: '0.8rem',
-                        color: 'var(--muted)',
-                        display: 'block',
-                        marginBottom: '0.2rem',
-                      }}
-                    >
-                      Số lượng *
-                    </span>
-                    <input
-                      className="field-input"
-                      type="number"
-                      step="0.001"
-                      {...register(`items.${idx}.quantity`, {
-                        valueAsNumber: true,
-                      })}
-                      placeholder="0"
-                    />
-                    {errors.items?.[idx]?.quantity && (
-                      <p className="field-error">
-                        {errors.items[idx]?.quantity?.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-
-            <button
-              className="btn-secondary"
-              type="button"
-              onClick={() => append({ ...emptyShipmentItem })}
-              style={{
-                width: '100%',
-                marginTop: '0.5rem',
-              }}
-            >
-              + Thêm dòng
-            </button>
+                  ✓ {selectedRollsSummary.count} cuộn đã chọn
+                </span>
+                <span
+                  style={{
+                    fontSize: '0.85rem',
+                    color: '#047857',
+                  }}
+                >
+                  Tổng: {selectedRollsSummary.totalWeight.toFixed(1)} kg
+                  {selectedRollsSummary.totalLength > 0 &&
+                    ` • ${selectedRollsSummary.totalLength.toFixed(1)} m`}
+                </span>
+              </div>
+            )}
 
             {errors.items?.root && (
               <p className="field-error">{errors.items.root.message}</p>
@@ -548,9 +442,15 @@ export function ShipmentForm({
           <button
             className="primary-button btn-standard"
             type="submit"
-            disabled={isSubmitting || createMutation.isPending}
+            disabled={
+              isSubmitting ||
+              createMutation.isPending ||
+              selectedRollIds.size === 0
+            }
           >
-            {createMutation.isPending ? 'Đang lưu...' : 'Tạo phiếu xuất'}
+            {createMutation.isPending
+              ? 'Đang lưu...'
+              : `Tạo phiếu xuất (${selectedRollIds.size} cuộn)`}
           </button>
         </div>
       </form>
