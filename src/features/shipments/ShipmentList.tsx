@@ -1,10 +1,13 @@
 import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { EmptyState } from '@/shared/components/EmptyState';
 import { Pagination } from '@/shared/components/Pagination';
-import { TableSkeleton } from '@/shared/components/TableSkeleton';
-import { Icon, Badge, type BadgeVariant } from '@/shared/components';
+import {
+  Icon,
+  Badge,
+  type BadgeVariant,
+  DataTablePremium,
+} from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 
 import { DeliveryConfirmForm } from './DeliveryConfirmForm';
@@ -258,148 +261,202 @@ export function ShipmentList() {
         </p>
       )}
 
-      {/* Table */}
-      <div
-        className="data-table-wrap card-table-section"
-        style={
-          isLoading || shipments.length === 0 ? { border: 'none' } : undefined
+      {/* Table & Cards */}
+      <DataTablePremium
+        data={shipments}
+        isLoading={isLoading}
+        rowKey={(s) => s.id}
+        emptyStateTitle={
+          hasFilter ? 'Không tìm thấy phiếu xuất' : 'Chưa có phiếu xuất kho'
         }
-      >
-        {isLoading ? (
-          <TableSkeleton rows={5} columns={8} />
-        ) : shipments.length === 0 ? (
-          <EmptyState
-            icon={hasFilter ? '🔍' : '🚚'}
-            title={
-              hasFilter ? 'Không tìm thấy phiếu xuất' : 'Chưa có phiếu xuất kho'
-            }
-            description={
-              hasFilter
-                ? 'Hãy thử thay đổi tiêu chí tìm kiếm.'
-                : 'Sẽ có dữ liệu ở đây khi có yêu cầu chuyển hàng hoặc đơn giao cần xử lý.'
-            }
-          />
-        ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Số phiếu</th>
-                <th>Đơn hàng</th>
-                <th>Khách hàng</th>
-                <th>NV giao hàng</th>
-                <th>Cước VC</th>
-                <th>Ngày giao</th>
-                <th>Trạng thái</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {shipments.map((s) => {
-                const totalCost = (s.shipping_cost || 0) + (s.loading_fee || 0);
-                return (
-                  <tr key={s.id}>
-                    <td>
-                      <strong>{s.shipment_number}</strong>
-                    </td>
-                    <td className="td-muted">
-                      {s.orders?.order_number ?? '—'}
-                    </td>
-                    <td>{s.customers?.name ?? '—'}</td>
-                    <td className="td-muted">
-                      {s.delivery_staff?.full_name ?? (
-                        <span
-                          style={{
-                            color: 'var(--warning)',
-                            fontSize: '0.82rem',
-                          }}
-                        >
-                          Chưa phân công
-                        </span>
-                      )}
-                    </td>
-                    <td className="td-muted">
-                      {totalCost ? `${formatCurrency(totalCost)}đ` : '—'}
-                    </td>
-                    <td className="td-muted">{s.shipment_date}</td>
-                    <td>
-                      <Badge variant={getVariant(s.status)}>
-                        {SHIPMENT_STATUS_LABELS[s.status]}
-                      </Badge>
-                    </td>
-                    <td className="td-actions">
-                      <div
-                        style={{
-                          display: 'flex',
-                          gap: '0.25rem',
-                          justifyContent: 'flex-end',
-                        }}
-                      >
-                        {s.status === 'preparing' && (
-                          <>
-                            <button
-                              className="btn-icon"
-                              type="button"
-                              onClick={() => {
-                                void handleConfirm(s);
-                              }}
-                              disabled={confirmMutation.isPending}
-                              title="Xác nhận xuất kho và mở PDF"
-                            >
-                              <Icon name="CheckCircle" size={16} />
-                            </button>
-                            <button
-                              className="btn-icon danger"
-                              type="button"
-                              onClick={() => {
-                                void handleDelete(s.id);
-                              }}
-                              disabled={deleteMutation.isPending}
-                              title="Xóa"
-                            >
-                              <Icon name="Trash2" size={16} />
-                            </button>
-                          </>
-                        )}
-                        {s.status !== 'preparing' && (
-                          <button
-                            className="btn-icon"
-                            type="button"
-                            onClick={() => {
-                              void handleExportPdf(s);
-                            }}
-                            disabled={exportPdfMutation.isPending}
-                            title="In PDF"
-                          >
-                            <Icon name="Printer" size={16} />
-                          </button>
-                        )}
-                        {s.status === 'shipped' && (
-                          <button
-                            className="btn-primary"
-                            type="button"
-                            onClick={() => setDeliveryShipment(s)}
-                            style={{
-                              marginLeft: '0.25rem',
-                              height: '32px',
-                              padding: '0 0.5rem',
-                              fontSize: '0.75rem',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.25rem',
-                            }}
-                          >
-                            <Icon name="Check" size={14} /> Nhận hàng
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
+        emptyStateDescription={
+          hasFilter
+            ? 'Hãy thử thay đổi tiêu chí tìm kiếm.'
+            : 'Sẽ có dữ liệu ở đây khi có yêu cầu chuyển hàng hoặc đơn giao cần xử lý.'
+        }
+        emptyStateIcon={hasFilter ? '🔍' : '🚚'}
+        columns={[
+          {
+            header: 'Số phiếu',
+            cell: (s) => <strong>{s.shipment_number}</strong>,
+          },
+          {
+            header: 'Đơn hàng',
+            className: 'td-muted',
+            cell: (s) => s.orders?.order_number ?? '—',
+          },
+          {
+            header: 'Khách hàng',
+            cell: (s) => s.customers?.name ?? '—',
+          },
+          {
+            header: 'NV giao hàng',
+            className: 'td-muted',
+            cell: (s) =>
+              s.delivery_staff?.full_name ?? (
+                <span className="text-warning text-[0.82rem]">
+                  Chưa phân công
+                </span>
+              ),
+          },
+          {
+            header: 'Cước VC',
+            className: 'td-muted',
+            cell: (s) => {
+              const totalCost = (s.shipping_cost || 0) + (s.loading_fee || 0);
+              return totalCost ? `${formatCurrency(totalCost)}đ` : '—';
+            },
+          },
+          {
+            header: 'Ngày giao',
+            className: 'td-muted',
+            cell: (s) => s.shipment_date,
+          },
+          {
+            header: 'Trạng thái',
+            cell: (s) => (
+              <Badge variant={getVariant(s.status)}>
+                {SHIPMENT_STATUS_LABELS[s.status]}
+              </Badge>
+            ),
+          },
+          {
+            header: '',
+            className: 'td-actions',
+            onCellClick: () => {},
+            cell: (s) => (
+              <div className="flex justify-end gap-1">
+                {s.status === 'preparing' && (
+                  <>
+                    <button
+                      className="btn-icon"
+                      type="button"
+                      onClick={() => void handleConfirm(s)}
+                      disabled={confirmMutation.isPending}
+                      title="Xác nhận & Mở PDF"
+                    >
+                      <Icon name="CheckCircle" size={16} />
+                    </button>
+                    <button
+                      className="btn-icon danger"
+                      type="button"
+                      onClick={() => void handleDelete(s.id)}
+                      disabled={deleteMutation.isPending}
+                      title="Xóa"
+                    >
+                      <Icon name="Trash2" size={16} />
+                    </button>
+                  </>
+                )}
+                {s.status !== 'preparing' && (
+                  <button
+                    className="btn-icon"
+                    type="button"
+                    onClick={() => void handleExportPdf(s)}
+                    disabled={exportPdfMutation.isPending}
+                    title="In PDF"
+                  >
+                    <Icon name="Printer" size={16} />
+                  </button>
+                )}
+                {s.status === 'shipped' && (
+                  <button
+                    className="btn-primary h-8 px-2 text-[0.75rem] flex items-center gap-1"
+                    type="button"
+                    onClick={() => setDeliveryShipment(s)}
+                  >
+                    <Icon name="Check" size={14} /> Nhận hàng
+                  </button>
+                )}
+              </div>
+            ),
+          },
+        ]}
+        renderMobileCard={(s) => {
+          const totalCost = (s.shipping_cost || 0) + (s.loading_fee || 0);
+          return (
+            <div className="mobile-card">
+              <div className="mobile-card-header">
+                <span className="mobile-card-title">{s.shipment_number}</span>
+                <Badge variant={getVariant(s.status)}>
+                  {SHIPMENT_STATUS_LABELS[s.status]}
+                </Badge>
+              </div>
+              <div className="mobile-card-body">
+                <div className="mobile-card-row">
+                  <span className="label">Đơn hàng:</span>
+                  <span className="value">{s.orders?.order_number ?? '—'}</span>
+                </div>
+                <div className="mobile-card-row">
+                  <span className="label">Khách hàng:</span>
+                  <span className="value">{s.customers?.name ?? '—'}</span>
+                </div>
+                {s.delivery_staff && (
+                  <div className="mobile-card-row">
+                    <span className="label">Giao hàng:</span>
+                    <span className="value">{s.delivery_staff.full_name}</span>
+                  </div>
+                )}
+                <div className="mobile-card-row border-t border-border mt-2 pt-2">
+                  <span className="label font-bold">Cước VC:</span>
+                  <span className="value font-bold text-primary">
+                    {totalCost ? `${formatCurrency(totalCost)}đ` : '—'}
+                  </span>
+                </div>
+              </div>
+              <div className="mobile-card-actions">
+                {s.status === 'preparing' && (
+                  <>
+                    <button
+                      className="btn-secondary flex-1 text-success"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void handleConfirm(s);
+                      }}
+                      disabled={confirmMutation.isPending}
+                    >
+                      <Icon name="CheckCircle" size={16} /> Xác nhận
+                    </button>
+                    <button
+                      className="btn-secondary flex-1 text-danger"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void handleDelete(s.id);
+                      }}
+                      disabled={deleteMutation.isPending}
+                    >
+                      <Icon name="Trash2" size={16} /> Xóa
+                    </button>
+                  </>
+                )}
+                {s.status !== 'preparing' && (
+                  <button
+                    className="btn-secondary flex-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      void handleExportPdf(s);
+                    }}
+                    disabled={exportPdfMutation.isPending}
+                  >
+                    <Icon name="Printer" size={16} /> In PDF
+                  </button>
+                )}
+                {s.status === 'shipped' && (
+                  <button
+                    className="btn-primary flex-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDeliveryShipment(s);
+                    }}
+                  >
+                    <Icon name="Check" size={14} /> Nhận hàng
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        }}
+      />
 
       {(confirmMutation.error ||
         deleteMutation.error ||

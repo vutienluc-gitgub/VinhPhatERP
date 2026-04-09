@@ -9,6 +9,8 @@ export { Badge } from './Badge';
 export type { BadgeVariant } from './Badge';
 export { Combobox } from './Combobox';
 export { ConfirmProvider, ConfirmContext, useConfirm } from './ConfirmDialog';
+export { DataTablePremium } from './DataTablePremium';
+export type { Column as DataTableColumn } from './DataTablePremium';
 export { default as DraftBanner } from './DraftBanner';
 export { EmptyState } from './EmptyState';
 export { ErrorBoundary } from './ErrorBoundary';

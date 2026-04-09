@@ -380,6 +380,27 @@
   width: 100%;
 }
 
+.filter-compact-premium {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  align-items: flex-end;
+  padding: 0.25rem 0;
+}
+
+.filter-compact-premium .filter-field {
+  flex: 1 1 180px;
+  max-width: 320px;
+}
+
+.filter-compact-premium label {
+  font-size: 0.75rem;
+  margin-bottom: 0.35rem;
+  color: var(--muted);
+  font-weight: 700;
+  display: block;
+}
+
 .roll-status.in_progress {
   background: rgba(155, 89, 182, 0.12);
   color: #7d3c98;
@@ -1771,20 +1792,37 @@
 .mobile-card {
   background: var(--surface-strong);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 1rem;
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  box-shadow: 0 2px 8px rgba(16, 35, 61, 0.04);
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
+  gap: 0.75rem;
+  box-shadow: 0 6px 16px rgba(16, 35, 61, 0.05);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.mobile-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.mobile-card:hover {
+  box-shadow: 0 10px 24px rgba(16, 35, 61, 0.1);
+  border-color: var(--primary-light);
 }
 
 .mobile-card:active {
-  transform: scale(0.98);
+  transform: scale(0.97) translateY(2px);
+  box-shadow: 0 2px 6px rgba(16, 35, 61, 0.08);
 }
 
 .mobile-card-header {
