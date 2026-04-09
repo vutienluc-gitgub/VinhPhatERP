@@ -59,7 +59,7 @@ export function FinishedFabricList({
     isLoading,
     error,
   } = useFinishedFabricList(filters, page);
-  const rolls = result?.data ?? [];
+  const rolls = useMemo(() => result?.data ?? [], [result?.data]);
   const { data: stats } = useFinishedFabricStats();
   const deleteMutation = useDeleteFinishedFabric();
   const { confirm } = useConfirm();

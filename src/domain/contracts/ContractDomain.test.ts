@@ -309,12 +309,13 @@ describe('buildNewRevision', () => {
       ...baseContract,
       status: 'active' as const,
     };
-    const { revision, parent_contract_id, auditEntry } = buildNewRevision(
-      activeContract,
-      ACTOR_ID,
-    );
+    const {
+      revision,
+      parent_contract_id: parentContractId,
+      auditEntry,
+    } = buildNewRevision(activeContract, ACTOR_ID);
     expect(revision).toBe(2);
-    expect(parent_contract_id).toBe(CONTRACT_ID);
+    expect(parentContractId).toBe(CONTRACT_ID);
     expect(auditEntry.action).toBe('create_revision');
   });
 

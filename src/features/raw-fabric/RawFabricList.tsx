@@ -45,7 +45,7 @@ export function RawFabricList({
     isLoading,
     error,
   } = useRawFabricList(activeFilters, page);
-  const rolls = result?.data ?? [];
+  const rolls = useMemo(() => result?.data ?? [], [result?.data]);
   const { data: stats } = useRawFabricStats();
   const { exportExcel } = useRawFabricExport();
 

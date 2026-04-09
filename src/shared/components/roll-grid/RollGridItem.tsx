@@ -131,8 +131,41 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!onChangeWeight) return;
-      const num = parseFloat(e.target.value);
-      onChangeWeight(isNaN(num) ? undefined : num);
+      const valStr = e.target.value;
+      if (!valStr) {
+        onChangeWeight(undefined);
+        return;
+      }
+      const num = parseFloat(valStr);
+      if (isNaN(num)) {
+        onChangeWeight(undefined);
+        return;
+      }
+      onChangeWeight(num);
+    };
+
+    const processFastEntry = () => {
+      if (value !== undefined && value >= 100) {
+        // We divide by 100: e.g. 2175 becomes 21.75
+        // If they entered a decimal (like 120.5), it won't be >= 100 unless they typed true 100+ kg
+        // We check string to avoid dividing something that already has decimals,
+        // but value is number here so we convert it to string to check.
+        if (!String(value).includes('.')) {
+          onChangeWeight?.(value / 100);
+        }
+      }
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      processFastEntry();
+      props.onBlur?.(e);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        processFastEntry();
+      }
+      props.onKeyDown?.(e);
     };
 
     const displayValue = () => {
@@ -195,6 +228,8 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
               style={{ color: 'inherit' }}
               value={value ?? ''}
               onChange={handleInputChange}
+              onBlur={handleBlur}
+              onKeyDown={handleKeyDown}
               placeholder="..."
             />
           ) : (
