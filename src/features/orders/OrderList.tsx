@@ -5,7 +5,7 @@ import { EmptyState } from '@/shared/components/EmptyState';
 import { Pagination } from '@/shared/components/Pagination';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
 import { Combobox } from '@/shared/components/Combobox';
-import { Icon } from '@/shared/components/Icon';
+import { Icon, Badge, type BadgeVariant } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 
 import { ORDER_STATUS_LABELS } from './orders.module';
@@ -18,18 +18,18 @@ type OrderListProps = {
   onView: (order: Order) => void;
 };
 
-function statusClass(status: OrderStatus): string {
+function getVariant(status: OrderStatus): BadgeVariant {
   switch (status) {
     case 'confirmed':
-      return 'reserved';
+      return 'info';
     case 'in_progress':
-      return 'in_process';
+      return 'purple';
     case 'completed':
-      return 'in_stock';
+      return 'success';
     case 'cancelled':
-      return 'damaged';
+      return 'danger';
     default:
-      return 'shipped';
+      return 'gray';
   }
 }
 
@@ -341,11 +341,9 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
                         {formatCurrency(balanceDue)}
                       </td>
                       <td>
-                        <span
-                          className={`status-badge status-${order.status} ${statusClass(order.status)}`}
-                        >
+                        <Badge variant={getVariant(order.status)}>
                           {ORDER_STATUS_LABELS[order.status]}
-                        </span>
+                        </Badge>
                       </td>
                       <td
                         className="text-right"
@@ -398,11 +396,9 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
                       <span className="font-bold text-primary">
                         {order.order_number}
                       </span>
-                      <span
-                        className={`status-badge ${statusClass(order.status)}`}
-                      >
+                      <Badge variant={getVariant(order.status)}>
                         {ORDER_STATUS_LABELS[order.status]}
-                      </span>
+                      </Badge>
                     </div>
                     <div className="mobile-card-body space-y-2">
                       <div className="flex justify-between items-start">

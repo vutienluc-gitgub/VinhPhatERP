@@ -5,6 +5,7 @@ import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Icon } from '@/shared/components/Icon';
 import { Pagination } from '@/shared/components/Pagination';
 import { useAuth } from '@/shared/hooks/useAuth';
+import { formatCurrency } from '@/shared/utils/format';
 
 import type { DocStatus, YarnReceipt, YarnReceiptsFilter } from './types';
 import {
@@ -18,11 +19,6 @@ type YarnReceiptListProps = {
   onEdit: (receipt: YarnReceipt) => void;
   onNew: () => void;
 };
-
-function formatCurrency(value: number | null | undefined): string {
-  if (value === null || value === undefined) return '0';
-  return new Intl.NumberFormat('vi-VN').format(value);
-}
 
 function statusClass(status: DocStatus): string {
   switch (status) {
@@ -236,7 +232,7 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
                       </td>
                       <td className="text-muted">{receipt.receipt_date}</td>
                       <td className="numeric-cell font-medium">
-                        {formatCurrency(receipt.total_amount)}
+                        {formatCurrency(receipt.total_amount ?? 0)}
                       </td>
                       <td>
                         <span
@@ -314,7 +310,7 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
                     <div className="mobile-card-row pt-2 border-t border-divider mt-2">
                       <span className="label font-bold">Tổng tiền:</span>
                       <span className="value font-bold text-primary">
-                        {formatCurrency(receipt.total_amount)}
+                        {formatCurrency(receipt.total_amount ?? 0)}
                       </span>
                     </div>
                   </div>

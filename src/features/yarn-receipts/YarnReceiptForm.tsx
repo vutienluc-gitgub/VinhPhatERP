@@ -9,6 +9,7 @@ import {
   useColorOptions,
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
+import { formatCurrency } from '@/shared/utils/format';
 
 import type { YarnReceipt } from './types';
 import {
@@ -80,10 +81,6 @@ function receiptToFormValues(receipt: YarnReceipt): YarnReceiptsFormValues {
       origin: it.origin ?? '',
     })),
   };
-}
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value);
 }
 
 /* ── Realtime totals sub-component ── */

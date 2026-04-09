@@ -5,6 +5,8 @@ export { Icon } from './Icon';
 export type { IconName } from './Icon';
 
 export { AdaptiveSheet } from './AdaptiveSheet';
+export { Badge } from './Badge';
+export type { BadgeVariant } from './Badge';
 export { Combobox } from './Combobox';
 export { ConfirmProvider, ConfirmContext, useConfirm } from './ConfirmDialog';
 export { default as DraftBanner } from './DraftBanner';
