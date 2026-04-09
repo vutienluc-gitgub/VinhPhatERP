@@ -2,6 +2,13 @@ import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
+import {
+  Icon,
+  Badge,
+  type BadgeVariant,
+  DataTablePremium,
+} from '@/shared/components';
+import { Combobox } from '@/shared/components/Combobox';
 
 import type { WeavingInvoice, WeavingInvoiceFilter } from './types';
 import {
@@ -16,10 +23,12 @@ type Props = {
   onEdit: (invoice: WeavingInvoice) => void;
 };
 
-function statusClass(status: string) {
-  if (status === 'confirmed') return 'in_stock';
-  if (status === 'paid') return 'confirmed';
-  return 'pending';
+type WeavingStatus = WeavingInvoiceFilter['status'];
+
+function getStatusVariant(status: string): BadgeVariant {
+  if (status === 'confirmed') return 'success';
+  if (status === 'paid') return 'info';
+  return 'gray';
 }
 
 function fmt(n: number) {
@@ -60,195 +69,356 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
     deleteMutation.mutate(inv.id);
   }
 
+  const hasFilter = !!(filters.search || filters.status);
+
   return (
     <div className="panel-card card-flush">
       {/* Header */}
-      <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Gia công dệt</p>
-            <h3>Phiếu gia công</h3>
+      <div className="card-header-area card-header-premium">
+        <div>
+          <p className="eyebrow-premium">GIA CÔNG DỆT</p>
+          <h3 className="title-premium">Phiếu Gia Công</h3>
+        </div>
+        <button
+          className="btn-primary min-h-[42px] px-5"
+          type="button"
+          onClick={onNew}
+        >
+          <Icon name="Plus" size={18} className="mr-2" /> Tạo phiếu
+        </button>
+      </div>
+
+      {/* KPI */}
+      <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
+        <div className="kpi-card-premium kpi-primary">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Tổng phiếu gia công</p>
+              <p className="kpi-value">{result?.total ?? 0}</p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="Package" size={32} />
+            </div>
           </div>
-          <button
-            className="primary-button btn-standard"
-            type="button"
-            onClick={onNew}
-          >
-            + Tạo phiếu
-          </button>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Tất cả phiếu nhập kho dệt
+          </div>
+        </div>
+
+        <div className="kpi-card-premium kpi-warning">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Chờ xác nhận</p>
+              <p className="kpi-value">
+                {invoices.filter((inv) => inv.status === 'draft').length}
+              </p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="Clock" size={32} />
+            </div>
+          </div>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Phiếu nháp chưa nhập kho
+          </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="filter-bar card-filter-section">
-        <form
-          className="filter-field"
-          style={{ flex: '1 1 220px' }}
-          onSubmit={(e) => {
-            e.preventDefault();
-            setPage(1);
-            setFilters((prev) => ({
-              ...prev,
-              search: search.trim() || undefined,
-            }));
-          }}
-        >
-          <label htmlFor="wi-search">Tìm kiếm</label>
-          <div className="flex-controls">
-            <input
-              id="wi-search"
-              className="field-input"
-              placeholder="Số phiếu..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <button className="btn-secondary" type="submit">
-              Tìm
-            </button>
+      <div className="filter-bar card-filter-section p-4 border-b border-border">
+        <div className="filter-compact-premium">
+          <div className="filter-field">
+            <label htmlFor="wi-search">Tìm kiếm</label>
+            <form
+              className="search-input-wrapper"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setPage(1);
+                setFilters((prev) => ({
+                  ...prev,
+                  search: search.trim() || undefined,
+                }));
+              }}
+            >
+              <input
+                id="wi-search"
+                className="field-input"
+                placeholder="Số phiếu..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <button type="submit" className="hidden" />
+              <Icon name="Search" size={16} className="search-input-icon" />
+            </form>
           </div>
-        </form>
 
-        <div className="filter-field">
-          <label htmlFor="wi-status">Trạng thái</label>
-          <select
-            id="wi-status"
-            className="field-select"
-            value={filters.status ?? ''}
-            onChange={(e) => {
-              setPage(1);
-              setFilters((prev) => ({
-                ...prev,
-                status:
-                  (e.target.value as WeavingInvoiceFilter['status']) ||
-                  undefined,
-              }));
-            }}
-          >
-            <option value="">Tất cả</option>
-            <option value="draft">Nháp</option>
-            <option value="confirmed">Đã xác nhận</option>
-            <option value="paid">Đã thanh toán</option>
-          </select>
+          <div className="filter-field">
+            <label>Trạng thái</label>
+            <Combobox
+              options={[
+                {
+                  value: '',
+                  label: 'Tất cả trạng thái',
+                },
+                {
+                  value: 'draft',
+                  label: 'Nháp',
+                },
+                {
+                  value: 'confirmed',
+                  label: 'Đã xác nhận',
+                },
+                {
+                  value: 'paid',
+                  label: 'Đã thanh toán',
+                },
+              ]}
+              value={filters.status ?? ''}
+              onChange={(val) => {
+                setPage(1);
+                setFilters((prev) => ({
+                  ...prev,
+                  status: (val as WeavingStatus) || undefined,
+                }));
+              }}
+            />
+          </div>
+
+          {hasFilter && (
+            <button
+              className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
+              style={{ marginBottom: '4px' }}
+              onClick={() => {
+                setFilters({});
+                setSearch('');
+              }}
+            >
+              <Icon name="X" size={14} /> Xóa lọc
+            </button>
+          )}
         </div>
-
-        {(filters.search || filters.status) && (
-          <button
-            className="btn-secondary"
-            style={{ alignSelf: 'flex-end' }}
-            onClick={() => {
-              setFilters({});
-              setSearch('');
-            }}
-          >
-            ✕ Xóa lọc
-          </button>
-        )}
       </div>
 
-      {/* Error */}
-      {error && <p className="error-inline">Lỗi: {(error as Error).message}</p>}
-
-      {/* Confirm/delete errors */}
+      {/* Errors */}
+      {error && (
+        <div className="p-4">
+          <p className="error-inline">Lỗi: {(error as Error).message}</p>
+        </div>
+      )}
       {confirmMutation.error && (
-        <p className="error-inline">
-          {(confirmMutation.error as Error).message}
-        </p>
+        <div className="p-4">
+          <p className="error-inline">
+            {(confirmMutation.error as Error).message}
+          </p>
+        </div>
       )}
 
-      {/* Table */}
-      <div className="data-table-wrap card-table-section">
-        {isLoading ? (
-          <p className="table-empty">Đang tải...</p>
-        ) : invoices.length === 0 ? (
-          <p className="table-empty">Chưa có phiếu gia công nào.</p>
-        ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Số phiếu</th>
-                <th>Nhà dệt</th>
-                <th>Ngày</th>
-                <th>Loại vải</th>
-                <th className="text-right">Tổng KG</th>
-                <th className="text-right">Thành tiền</th>
-                <th className="text-right">Đã trả</th>
-                <th>Trạng thái</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {invoices.map((inv) => (
-                <tr key={inv.id}>
-                  <td>
-                    <strong>{inv.invoice_number}</strong>
-                  </td>
-                  <td>
+      {/* Table & Cards */}
+      <DataTablePremium
+        data={invoices}
+        isLoading={isLoading}
+        rowKey={(inv) => inv.id}
+        emptyStateTitle={
+          hasFilter
+            ? 'Không tìm thấy phiếu gia công'
+            : 'Chưa có phiếu gia công nào'
+        }
+        emptyStateDescription={
+          hasFilter
+            ? 'Thử điều chỉnh bộ lọc.'
+            : 'Nhấn "+ Tạo phiếu" để bắt đầu nhập cuộn vải từ nhà dệt.'
+        }
+        emptyStateIcon={hasFilter ? '🔍' : 'Package'}
+        emptyStateActionLabel={!hasFilter ? '+ Tạo phiếu' : undefined}
+        onEmptyStateAction={!hasFilter ? onNew : undefined}
+        columns={[
+          {
+            header: 'Số phiếu',
+            cell: (inv) => (
+              <div className="flex flex-col">
+                <span className="font-bold text-primary">
+                  {inv.invoice_number}
+                </span>
+                <span className="text-xs text-muted">{inv.invoice_date}</span>
+              </div>
+            ),
+          },
+          {
+            header: 'Nhà dệt',
+            cell: (inv) => (
+              <div className="flex flex-col">
+                <span className="font-bold">{inv.suppliers?.name ?? '—'}</span>
+                {inv.suppliers?.code && (
+                  <span className="text-xs text-muted">
+                    {inv.suppliers.code}
+                  </span>
+                )}
+              </div>
+            ),
+          },
+          {
+            header: 'Loại vải',
+            cell: (inv) => (
+              <span className="font-medium">{inv.fabric_type}</span>
+            ),
+          },
+          {
+            header: 'Tổng KG',
+            className: 'text-right',
+            cell: (inv) => (
+              <span className="font-bold">{fmt(inv.total_weight_kg)} kg</span>
+            ),
+          },
+          {
+            header: 'Thành tiền',
+            className: 'text-right',
+            cell: (inv) => (
+              <span className="font-bold">{fmt(inv.total_amount)}đ</span>
+            ),
+          },
+          {
+            header: 'Đã trả',
+            className: 'text-right',
+            cell: (inv) => (
+              <span
+                className={`font-medium ${inv.paid_amount > 0 ? 'text-success' : 'text-muted'}`}
+              >
+                {fmt(inv.paid_amount)}đ
+              </span>
+            ),
+          },
+          {
+            header: 'Trạng thái',
+            cell: (inv) => (
+              <Badge variant={getStatusVariant(inv.status)}>
+                {WEAVING_STATUS_LABELS[inv.status]}
+              </Badge>
+            ),
+          },
+          {
+            header: 'Thao tác',
+            className: 'text-right',
+            onCellClick: () => {},
+            cell: (inv) => (
+              <div className="flex justify-end gap-1">
+                {inv.status === 'draft' && (
+                  <>
+                    <button
+                      className="btn-icon"
+                      type="button"
+                      onClick={() => onEdit(inv)}
+                      title="Sửa"
+                    >
+                      <Icon name="Pencil" size={16} />
+                    </button>
+                    <button
+                      className="btn-icon text-success hover:bg-success/10"
+                      type="button"
+                      onClick={() => handleConfirm(inv)}
+                      disabled={confirmMutation.isPending}
+                      title="Xác nhận & nhập kho"
+                    >
+                      <Icon name="CheckCircle" size={16} />
+                    </button>
+                    <button
+                      className="btn-icon text-danger hover:bg-danger/10"
+                      type="button"
+                      onClick={() => handleDelete(inv)}
+                      disabled={deleteMutation.isPending}
+                      title="Xóa"
+                    >
+                      <Icon name="Trash2" size={16} />
+                    </button>
+                  </>
+                )}
+              </div>
+            ),
+          },
+        ]}
+        renderMobileCard={(inv) => (
+          <div className="mobile-card">
+            <div className="mobile-card-header">
+              <div className="flex flex-col">
+                <span className="mobile-card-title">{inv.invoice_number}</span>
+                <span className="text-xs text-muted">{inv.invoice_date}</span>
+              </div>
+              <Badge variant={getStatusVariant(inv.status)}>
+                {WEAVING_STATUS_LABELS[inv.status]}
+              </Badge>
+            </div>
+            <div className="mobile-card-body space-y-2">
+              <div className="flex justify-between items-start">
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted">Nhà dệt</span>
+                  <span className="font-bold">
                     {inv.suppliers?.name ?? '—'}
-                    {inv.suppliers?.code && (
-                      <div className="td-muted" style={{ fontSize: '0.8rem' }}>
-                        {inv.suppliers.code}
-                      </div>
-                    )}
-                  </td>
-                  <td className="td-muted">{inv.invoice_date}</td>
-                  <td>{inv.fabric_type}</td>
-                  <td className="numeric-cell">
-                    {fmt(inv.total_weight_kg)} kg
-                  </td>
-                  <td className="numeric-cell">{fmt(inv.total_amount)} đ</td>
-                  <td
-                    className="numeric-cell"
-                    style={{
-                      color: inv.paid_amount > 0 ? 'var(--success)' : undefined,
+                  </span>
+                </div>
+                <div className="flex flex-col text-right">
+                  <span className="text-xs text-muted">Loại vải</span>
+                  <span className="font-medium">{inv.fabric_type}</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 text-sm mt-2">
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted">Tổng KG</span>
+                  <span className="font-bold">{fmt(inv.total_weight_kg)}</span>
+                </div>
+                <div className="flex flex-col text-center">
+                  <span className="text-xs text-muted">Thành tiền</span>
+                  <span className="font-bold text-primary">
+                    {fmt(inv.total_amount)}đ
+                  </span>
+                </div>
+                <div className="flex flex-col text-right">
+                  <span className="text-xs text-muted">Đã trả</span>
+                  <span
+                    className={`font-bold ${inv.paid_amount > 0 ? 'text-success' : 'text-muted'}`}
+                  >
+                    {fmt(inv.paid_amount)}đ
+                  </span>
+                </div>
+              </div>
+
+              {inv.status === 'draft' && (
+                <div className="flex gap-2 pt-3 mt-1 border-t border-border/10">
+                  <button
+                    className="btn-secondary flex-1 text-primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit(inv);
                     }}
                   >
-                    {fmt(inv.paid_amount)} đ
-                  </td>
-                  <td>
-                    <span className={`roll-status ${statusClass(inv.status)}`}>
-                      {WEAVING_STATUS_LABELS[inv.status]}
-                    </span>
-                  </td>
-                  <td className="td-actions">
-                    {inv.status === 'draft' && (
-                      <>
-                        <button
-                          className="btn-icon"
-                          type="button"
-                          title="Sửa"
-                          onClick={() => onEdit(inv)}
-                          style={{ marginRight: 4 }}
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          className="btn-icon"
-                          type="button"
-                          title="Xác nhận & nhập kho"
-                          onClick={() => handleConfirm(inv)}
-                          disabled={confirmMutation.isPending}
-                          style={{ marginRight: 4 }}
-                        >
-                          ✅
-                        </button>
-                        <button
-                          className="btn-icon danger"
-                          type="button"
-                          title="Xóa"
-                          onClick={() => handleDelete(inv)}
-                          disabled={deleteMutation.isPending}
-                        >
-                          🗑
-                        </button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    <Icon name="Pencil" size={16} /> Sửa
+                  </button>
+                  <button
+                    className="btn-secondary flex-1 text-success border-success/20"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleConfirm(inv);
+                    }}
+                    disabled={confirmMutation.isPending}
+                  >
+                    <Icon name="CheckCircle" size={16} /> Xác nhận
+                  </button>
+                  <button
+                    className="btn-secondary text-danger border-danger/20 px-3"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(inv);
+                    }}
+                    disabled={deleteMutation.isPending}
+                  >
+                    <Icon name="Trash2" size={16} />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         )}
-      </div>
+      />
 
       <Pagination result={result} onPageChange={setPage} />
     </div>
