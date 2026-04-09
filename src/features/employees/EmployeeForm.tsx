@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import toast from 'react-hot-toast';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
@@ -82,7 +83,12 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
           id: employee.id,
           data: values,
         },
-        { onSuccess: onClose },
+        {
+          onSuccess: () => {
+            toast.success('Cập nhật nhân viên thành công');
+            onClose();
+          },
+        },
       );
     } else {
       createMutation.mutate(
@@ -90,7 +96,12 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
           ...values,
           code: nextCode ?? '',
         },
-        { onSuccess: onClose },
+        {
+          onSuccess: () => {
+            toast.success('Thêm nhân viên thành công');
+            onClose();
+          },
+        },
       );
     }
   };

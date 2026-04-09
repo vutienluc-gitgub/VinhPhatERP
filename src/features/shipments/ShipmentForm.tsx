@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useMemo } from 'react';
 import { useFieldArray, useForm, Controller } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 import type { ShippingRate } from '@/shared/hooks/useShippingRateOptions';
 import { useActiveShippingRates } from '@/shared/hooks/useShippingRateOptions';
@@ -122,9 +123,14 @@ export function ShipmentForm({
   }, [watchedRateId, watchedItems, setValue, shippingRateById]);
 
   async function onSubmit(values: ShipmentsFormValues) {
-    await createMutation.mutateAsync(values);
-    reset();
-    onClose();
+    try {
+      await createMutation.mutateAsync(values);
+      toast.success('Tạo phiếu xuất thành công');
+      reset();
+      onClose();
+    } catch {
+      toast.error('Có lỗi xảy ra khi tạo phiếu xuất');
+    }
   }
 
   return (

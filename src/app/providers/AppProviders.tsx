@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { PropsWithChildren } from 'react';
 import { useState } from 'react';
+import { Toaster } from 'react-hot-toast';
 
 import { AuthProvider } from '@/features/auth/AuthProvider';
 import { ConfirmProvider } from '@/shared/components/ConfirmDialog';
@@ -29,7 +30,10 @@ export function AppProviders({ children }: PropsWithChildren) {
       <TenantProvider>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <ConfirmProvider>{children}</ConfirmProvider>
+            <ConfirmProvider>
+              {children}
+              <Toaster position="top-center" />
+            </ConfirmProvider>
           </AuthProvider>
         </QueryClientProvider>
       </TenantProvider>

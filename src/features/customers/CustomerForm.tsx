@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 import {
   customersDefaultValues,
@@ -75,8 +76,10 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
           id: customer.id,
           values,
         });
+        toast.success('Cập nhật khách hàng thành công');
       } else {
         await createMutation.mutateAsync(values);
+        toast.success('Tạo khách hàng mới thành công');
       }
       onClose();
     } catch {
