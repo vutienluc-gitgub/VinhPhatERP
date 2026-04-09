@@ -4,7 +4,8 @@ import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { Pagination } from '@/shared/components/Pagination';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
-import { Icon } from '@/shared/components/Icon';
+import { Icon, Badge, type BadgeVariant } from '@/shared/components';
+import { formatCurrency } from '@/shared/utils/format';
 
 import { DeliveryConfirmForm } from './DeliveryConfirmForm';
 import { exportShipmentToPdf } from './shipment-document';
@@ -17,24 +18,21 @@ import {
   useShipmentList,
 } from './useShipments';
 
-function statusClass(status: ShipmentStatus): string {
+function getVariant(status: ShipmentStatus): BadgeVariant {
   switch (status) {
     case 'shipped':
-      return 'reserved';
+      return 'info';
     case 'delivered':
-      return 'in_stock';
+      return 'success';
     case 'partially_returned':
-      return 'in_process';
+      return 'purple';
     case 'returned':
-      return 'damaged';
+      return 'danger';
+    case 'preparing':
+      return 'warning';
     default:
-      return 'shipped';
+      return 'gray';
   }
-}
-
-function formatCost(value: number): string {
-  if (!value) return '—';
-  return new Intl.NumberFormat('vi-VN').format(value) + 'đ';
 }
 
 export function ShipmentList() {
@@ -160,13 +158,13 @@ export function ShipmentList() {
           <div className="stat-content-premium">
             <p>Tổng cước (Trang)</p>
             <p>
-              {formatCost(
+              {formatCurrency(
                 shipments.reduce(
                   (sum, s) =>
                     sum + (s.shipping_cost || 0) + (s.loading_fee || 0),
                   0,
                 ),
-              ).replace('đ', '')}
+              )}
               <span
                 style={{
                   fontSize: '1rem',
@@ -319,12 +317,14 @@ export function ShipmentList() {
                         </span>
                       )}
                     </td>
-                    <td className="td-muted">{formatCost(totalCost)}</td>
+                    <td className="td-muted">
+                      {totalCost ? `${formatCurrency(totalCost)}đ` : '—'}
+                    </td>
                     <td className="td-muted">{s.shipment_date}</td>
                     <td>
-                      <span className={`roll-status ${statusClass(s.status)}`}>
+                      <Badge variant={getVariant(s.status)}>
                         {SHIPMENT_STATUS_LABELS[s.status]}
-                      </span>
+                      </Badge>
                     </td>
                     <td className="td-actions">
                       <div
