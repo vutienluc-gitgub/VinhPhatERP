@@ -13,6 +13,8 @@ import {
   fetchDeliveryStaff,
   deleteShipmentFull,
 } from '@/api/shipments.api';
+import { useAuth } from '@/shared/hooks/useAuth';
+import { useCompanySettings } from '@/shared/hooks/useCompanySettings';
 
 import { exportShipmentToPdf } from './shipment-document';
 import type {
@@ -121,10 +123,16 @@ export function useConfirmShipment() {
 /* ── Export PDF ── */
 
 export function useExportShipmentPdf() {
+  const { profile } = useAuth();
+  const { data: settings } = useCompanySettings();
+
   return useMutation({
     mutationFn: async (shipmentId: string) => {
       const shipment = await fetchShipmentDocument(shipmentId);
-      exportShipmentToPdf(shipment);
+      exportShipmentToPdf(shipment, {
+        createdByName: profile?.full_name ?? undefined,
+        companyName: settings?.company_name ?? undefined,
+      });
       return shipment;
     },
   });

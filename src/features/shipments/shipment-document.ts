@@ -98,14 +98,34 @@ export function toShipmentDocumentRows(
     });
 }
 
-export function buildShipmentPrintHtml(shipment: ShipmentDocument): {
+type PrintOptions = {
+  createdByName?: string;
+  companyName?: string;
+};
+
+export function buildShipmentPrintHtml(
+  shipment: ShipmentDocument,
+  options: PrintOptions = {},
+): {
   fileName: string;
   html: string;
 } {
   const fileName = makeShipmentDocumentFileName(shipment);
   const generatedAt = formatDateTime(new Date());
   const rows = toShipmentDocumentRows(shipment);
-  const totalQuantity = rows.reduce((sum, row) => sum + row.quantityValue, 0);
+
+  // Group tổng theo đơn vị thay vì hardcode 'm'
+  const totalByUnit = rows.reduce<Record<string, number>>((acc, row) => {
+    const unit =
+      shipment.shipment_items?.find((_, idx) => idx === row.index - 1)?.unit ??
+      'm';
+    acc[unit] = (acc[unit] ?? 0) + row.quantityValue;
+    return acc;
+  }, {});
+  const totalSummary = Object.entries(totalByUnit)
+    .map(([unit, qty]) => `${formatNumber(qty)} ${unit}`)
+    .join(' · ');
+
   const customerName = formatText(shipment.customers?.name);
   const customerCode = formatText(shipment.customers?.code);
   const customerPhone = formatText(shipment.customers?.phone);
@@ -114,6 +134,8 @@ export function buildShipmentPrintHtml(shipment: ShipmentDocument): {
     shipment.delivery_address || shipment.customers?.address,
   );
   const orderNumber = formatText(shipment.orders?.order_number);
+  const companyName = options.companyName ?? 'VinhPhat';
+  const createdByName = options.createdByName ?? EMPTY_VALUE;
 
   const tableRows =
     rows.length > 0
@@ -278,7 +300,7 @@ export function buildShipmentPrintHtml(shipment: ShipmentDocument): {
     <div class="header">
       <div class="title-block">
         <h1>Phiếu xuất kho</h1>
-        <p class="doc-subtitle">Chứng từ giao hàng được sinh từ hệ thống VinhPhat App V2.</p>
+        <p class="doc-subtitle">${escapeHtml(companyName)} — Chứng từ giao hàng.</p>
       </div>
       <div class="meta-block">
         <p><span class="meta-label">Số phiếu:</span> <strong>${escapeHtml(formatText(shipment.shipment_number))}</strong></p>
@@ -321,12 +343,13 @@ export function buildShipmentPrintHtml(shipment: ShipmentDocument): {
 
     <div class="summary">
       <p><strong>Số dòng hàng:</strong> ${rows.length}</p>
-      <p><strong>Tổng số lượng:</strong> ${escapeHtml(formatNumber(totalQuantity))} m</p>
+      <p><strong>Tổng số lượng:</strong> ${escapeHtml(totalSummary)}</p>
     </div>
 
     <div class="signature-grid">
       <div class="sign-cell">
         <strong>Người lập phiếu</strong>
+        <p>${escapeHtml(createdByName)}</p>
         <p class="sign-note">Ký và ghi rõ họ tên</p>
       </div>
       <div class="sign-cell">
@@ -348,12 +371,15 @@ export function buildShipmentPrintHtml(shipment: ShipmentDocument): {
   };
 }
 
-export function exportShipmentToPdf(shipment: ShipmentDocument): void {
+export function exportShipmentToPdf(
+  shipment: ShipmentDocument,
+  options: PrintOptions = {},
+): void {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     throw new Error('Không thể in PDF ngoài môi trường trình duyệt.');
   }
 
-  const { html } = buildShipmentPrintHtml(shipment);
+  const { html } = buildShipmentPrintHtml(shipment, options);
   const printFrame = document.createElement('iframe');
 
   printFrame.setAttribute('aria-hidden', 'true');
