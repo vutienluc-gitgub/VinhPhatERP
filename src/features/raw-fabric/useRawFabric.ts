@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   fetchRawFabricPaginated,
+  fetchRawFabricAll,
   createRawFabric,
   updateRawFabric,
   deleteRawFabric,
@@ -55,6 +56,15 @@ export function useRawFabricList(filters: RawFabricFilter = {}, page = 1) {
   return useQuery({
     queryKey: [...QUERY_KEY, filters, page],
     queryFn: () => fetchRawFabricPaginated(filters, page),
+  });
+}
+
+/** Fetch toàn bộ theo filter — dùng cho export */
+export function useRawFabricAll(filters: RawFabricFilter = {}) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'all', filters],
+    queryFn: () => fetchRawFabricAll(filters),
+    enabled: false, // chỉ fetch khi gọi refetch() thủ công
   });
 }
 
