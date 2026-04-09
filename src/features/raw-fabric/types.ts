@@ -30,4 +30,7 @@ export type RawFabricFilter = {
   status?: RollStatus;
   quality_grade?: QualityGrade;
   fabric_type?: string;
+  roll_number?: string;
+  sort_by?: 'created_at' | 'weight_kg' | 'roll_number';
+  sort_dir?: 'asc' | 'desc';
 };

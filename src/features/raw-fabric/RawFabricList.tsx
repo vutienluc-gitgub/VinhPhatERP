@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
+import { fetchRawFabricAll } from '@/api/raw-fabric.api';
 
 import {
   QUALITY_GRADE_LABELS,
@@ -22,6 +23,8 @@ import {
 } from './useRawFabric';
 import { useRawFabricExport } from './useRawFabricExport';
 
+type SortCol = 'created_at' | 'weight_kg' | 'roll_number';
+
 type RawFabricListProps = {
   onEdit: (roll: RawFabricRoll) => void;
   onNew: () => void;
@@ -33,6 +36,21 @@ function formatNum(val: number | null, unit: string): string {
   return `${val.toLocaleString('vi-VN')} ${unit}`;
 }
 
+function SortIcon({ active, dir }: { active: boolean; dir: 'asc' | 'desc' }) {
+  if (!active)
+    return (
+      <span
+        style={{
+          opacity: 0.3,
+          marginLeft: 4,
+        }}
+      >
+        ↕
+      </span>
+    );
+  return <span style={{ marginLeft: 4 }}>{dir === 'asc' ? '↑' : '↓'}</span>;
+}
+
 export function RawFabricList({
   onEdit,
   onNew,
@@ -40,30 +58,52 @@ export function RawFabricList({
 }: RawFabricListProps) {
   const [filters, setFilters] = useState<RawFabricFilter>({});
   const [fabricTypeInput, setFabricTypeInput] = useState('');
+  const [rollNumberInput, setRollNumberInput] = useState('');
   const [page, setPage] = useState(1);
+  const [sortCol, setSortCol] = useState<SortCol>('created_at');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const [isExporting, setIsExporting] = useState(false);
 
-  const { data: result, isLoading, error } = useRawFabricList(filters, page);
+  const activeFilters: RawFabricFilter = {
+    ...filters,
+    sort_by: sortCol,
+    sort_dir: sortDir,
+  };
+
+  const {
+    data: result,
+    isLoading,
+    error,
+  } = useRawFabricList(activeFilters, page);
   const rolls = result?.data ?? [];
   const { data: stats } = useRawFabricStats();
   const deleteMutation = useDeleteRawFabric();
   const { confirm } = useConfirm();
   const { exportExcel, exportPdf } = useRawFabricExport();
 
+  function handleSort(col: SortCol) {
+    if (sortCol === col) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortCol(col);
+      setSortDir('asc');
+    }
+    setPage(1);
+  }
+
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as RollStatus | '';
     setPage(1);
     setFilters((prev) => ({
       ...prev,
-      status: val || undefined,
+      status: (e.target.value as RollStatus) || undefined,
     }));
   }
 
   function handleGradeChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as QualityGrade | '';
     setPage(1);
     setFilters((prev) => ({
       ...prev,
-      quality_grade: val || undefined,
+      quality_grade: (e.target.value as QualityGrade) || undefined,
     }));
   }
 
@@ -76,6 +116,35 @@ export function RawFabricList({
     }));
   }
 
+  function handleRollNumberSearch(e: React.FormEvent) {
+    e.preventDefault();
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      roll_number: rollNumberInput.trim() || undefined,
+    }));
+  }
+
+  async function handleExportExcel() {
+    setIsExporting(true);
+    try {
+      const all = await fetchRawFabricAll(filters);
+      exportExcel(all);
+    } finally {
+      setIsExporting(false);
+    }
+  }
+
+  async function handleExportPdf() {
+    setIsExporting(true);
+    try {
+      const all = await fetchRawFabricAll(filters);
+      exportPdf(all);
+    } finally {
+      setIsExporting(false);
+    }
+  }
+
   async function handleDelete(roll: RawFabricRoll) {
     const ok = await confirm({
       message: `Xóa cuộn "${roll.roll_number}"? Hành động này không thể hoàn tác.`,
@@ -84,6 +153,13 @@ export function RawFabricList({
     if (!ok) return;
     deleteMutation.mutate(roll.id);
   }
+
+  const hasFilter = !!(
+    filters.status ??
+    filters.quality_grade ??
+    filters.fabric_type ??
+    filters.roll_number
+  );
 
   return (
     <div className="panel-card card-flush">
@@ -111,25 +187,25 @@ export function RawFabricList({
           <button
             className="btn-secondary btn-standard"
             type="button"
-            onClick={() => exportExcel(rolls)}
-            disabled={rolls.length === 0}
-            title="Xuất danh sách hiện tại ra Excel"
+            onClick={() => void handleExportExcel()}
+            disabled={isExporting}
+            title="Xuất toàn bộ kết quả lọc ra Excel"
           >
-            📊 Excel
+            {isExporting ? '...' : '📊 Excel'}
           </button>
           <button
             className="btn-secondary btn-standard"
             type="button"
-            onClick={() => exportPdf(rolls)}
-            disabled={rolls.length === 0}
-            title="Xuất danh sách hiện tại ra PDF"
+            onClick={() => void handleExportPdf()}
+            disabled={isExporting}
+            title="Xuất toàn bộ kết quả lọc ra PDF"
           >
-            🖨 PDF
+            {isExporting ? '...' : '🖨 PDF'}
           </button>
         </div>
       </div>
 
-      {/* Thống kê nhanh */}
+      {/* Stats */}
       {stats && (
         <div className="stats-bar">
           <div className="stat-card stat-primary">
@@ -159,12 +235,12 @@ export function RawFabricList({
         </div>
       )}
 
-      {/* Bộ lọc */}
+      {/* Filters */}
       <div className="filter-bar card-filter-section">
         <form
           className="filter-field"
           onSubmit={handleFabricTypeSearch}
-          style={{ flex: '1 1 200px' }}
+          style={{ flex: '1 1 180px' }}
         >
           <label htmlFor="filter-fabric-type">Loại vải</label>
           <div className="flex-controls">
@@ -182,6 +258,31 @@ export function RawFabricList({
               style={{ whiteSpace: 'nowrap' }}
             >
               Lọc
+            </button>
+          </div>
+        </form>
+
+        <form
+          className="filter-field"
+          onSubmit={handleRollNumberSearch}
+          style={{ flex: '1 1 160px' }}
+        >
+          <label htmlFor="filter-roll-number">Mã cuộn</label>
+          <div className="flex-controls">
+            <input
+              id="filter-roll-number"
+              className="field-input"
+              type="text"
+              placeholder="VD: BGR-001..."
+              value={rollNumberInput}
+              onChange={(e) => setRollNumberInput(e.target.value)}
+            />
+            <button
+              className="btn-secondary"
+              type="submit"
+              style={{ whiteSpace: 'nowrap' }}
+            >
+              Tìm
             </button>
           </div>
         </form>
@@ -220,13 +321,14 @@ export function RawFabricList({
           </select>
         </div>
 
-        {(filters.status ?? filters.quality_grade ?? filters.fabric_type) && (
+        {hasFilter && (
           <button
             className="btn-secondary"
             type="button"
             onClick={() => {
               setFilters({});
               setFabricTypeInput('');
+              setRollNumberInput('');
             }}
             style={{ alignSelf: 'flex-end' }}
           >
@@ -235,31 +337,50 @@ export function RawFabricList({
         )}
       </div>
 
-      {/* Thông báo lỗi */}
       {error && (
         <p className="error-inline">
           Lỗi tải dữ liệu: {(error as Error).message}
         </p>
       )}
 
-      {/* Bảng dữ liệu */}
+      {/* Table */}
       <div className="data-table-wrap card-table-section">
         {isLoading ? (
           <p className="table-empty">Đang tải...</p>
         ) : rolls.length === 0 ? (
           <p className="table-empty">
-            Chưa có cuộn vải nào. Nhấn "+ Nhập cuộn mới" để bắt đầu.
+            {hasFilter
+              ? 'Không tìm thấy cuộn vải phù hợp.'
+              : 'Chưa có cuộn vải nào. Nhấn "+ Nhập cuộn mới" để bắt đầu.'}
           </p>
         ) : (
           <table className="data-table">
             <thead>
               <tr>
-                <th>Mã cuộn</th>
+                <th
+                  style={{
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                  }}
+                  onClick={() => handleSort('roll_number')}
+                >
+                  Mã cuộn{' '}
+                  <SortIcon active={sortCol === 'roll_number'} dir={sortDir} />
+                </th>
                 <th>Số lô</th>
                 <th>Loại vải</th>
                 <th>CL</th>
                 <th>Khổ × Dài</th>
-                <th>Trọng lượng</th>
+                <th
+                  style={{
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                  }}
+                  onClick={() => handleSort('weight_kg')}
+                >
+                  Trọng lượng{' '}
+                  <SortIcon active={sortCol === 'weight_kg'} dir={sortDir} />
+                </th>
                 <th>Trạng thái</th>
                 <th>Vị trí kho</th>
                 <th></th>
@@ -274,9 +395,7 @@ export function RawFabricList({
                       <div className="td-muted">{roll.color_name}</div>
                     )}
                   </td>
-                  <td className="td-muted">
-                    {roll.lot_number ?? <span className="td-muted">—</span>}
-                  </td>
+                  <td className="td-muted">{roll.lot_number ?? '—'}</td>
                   <td>{roll.fabric_type}</td>
                   <td>
                     {roll.quality_grade ? (
@@ -317,7 +436,7 @@ export function RawFabricList({
                       className="btn-icon danger"
                       type="button"
                       title="Xóa"
-                      onClick={() => handleDelete(roll)}
+                      onClick={() => void handleDelete(roll)}
                       disabled={deleteMutation.isPending}
                     >
                       🗑

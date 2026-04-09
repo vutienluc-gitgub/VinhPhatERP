@@ -33,10 +33,13 @@ export async function fetchRawFabricPaginated(
   const from = (page - 1) * DEFAULT_PAGE_SIZE;
   const to = from + DEFAULT_PAGE_SIZE - 1;
 
+  const sortCol = filters.sort_by ?? 'created_at';
+  const sortAsc = filters.sort_dir === 'asc';
+
   let query = supabase
     .from(TABLE)
     .select('*', { count: 'exact' })
-    .order('created_at', { ascending: false })
+    .order(sortCol, { ascending: sortAsc })
     .range(from, to);
 
   if (filters.status) query = query.eq('status', filters.status);
@@ -44,6 +47,8 @@ export async function fetchRawFabricPaginated(
     query = query.eq('quality_grade', filters.quality_grade);
   if (filters.fabric_type)
     query = query.ilike('fabric_type', `%${filters.fabric_type}%`);
+  if (filters.roll_number)
+    query = query.ilike('roll_number', `%${filters.roll_number}%`);
 
   const { data, error, count } = await query;
   if (error) throw error;
@@ -55,6 +60,28 @@ export async function fetchRawFabricPaginated(
     pageSize: DEFAULT_PAGE_SIZE,
     totalPages: Math.ceil(total / DEFAULT_PAGE_SIZE),
   };
+}
+
+/** Fetch toàn bộ cuộn theo filter hiện tại — dùng cho export Excel/PDF */
+export async function fetchRawFabricAll(
+  filters: RawFabricFilter = {},
+): Promise<RawFabricRoll[]> {
+  let query = supabase
+    .from(TABLE)
+    .select('*')
+    .order('roll_number', { ascending: true });
+
+  if (filters.status) query = query.eq('status', filters.status);
+  if (filters.quality_grade)
+    query = query.eq('quality_grade', filters.quality_grade);
+  if (filters.fabric_type)
+    query = query.ilike('fabric_type', `%${filters.fabric_type}%`);
+  if (filters.roll_number)
+    query = query.ilike('roll_number', `%${filters.roll_number}%`);
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return (data ?? []) as RawFabricRoll[];
 }
 
 export async function createRawFabric(
