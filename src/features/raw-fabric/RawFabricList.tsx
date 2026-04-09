@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { useMemo } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
 import { fetchRawFabricAll } from '@/api/raw-fabric.api';
+import { Icon } from '@/shared/components/Icon';
+import { LotMatrixCard } from '@/shared/components/roll-grid';
 
 import {
   QUALITY_GRADE_LABELS,
@@ -63,6 +66,7 @@ export function RawFabricList({
   const [sortCol, setSortCol] = useState<SortCol>('created_at');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [isExporting, setIsExporting] = useState(false);
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('grid');
 
   const activeFilters: RawFabricFilter = {
     ...filters,
@@ -161,6 +165,22 @@ export function RawFabricList({
     filters.roll_number
   );
 
+  // Grouping logic for Grid View
+  const groupedRolls = useMemo(() => {
+    const map = new Map<string, RawFabricRoll[]>();
+    rolls.forEach((roll) => {
+      const key = roll.lot_number || 'KHÔNG CÓ LÔ';
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(roll);
+    });
+    return Array.from(map.entries()).map(([lot, items]) => ({
+      lot,
+      rolls: items,
+      fabricType: items[0]?.fabric_type,
+      colorName: items[0]?.color_name,
+    }));
+  }, [rolls]);
+
   return (
     <div className="panel-card card-flush">
       {/* Header */}
@@ -170,6 +190,47 @@ export function RawFabricList({
             <p className="eyebrow">Kho vải mộc</p>
             <h3>Danh sách cuộn vải mộc</h3>
           </div>
+          <div style={{ flex: 1 }} />
+
+          <div
+            className="view-toggle-group"
+            style={{
+              display: 'flex',
+              gap: '0.25rem',
+              background: 'var(--surface-subtle)',
+              padding: '0.25rem',
+              borderRadius: '8px',
+              marginRight: '0.5rem',
+            }}
+          >
+            <button
+              className={`btn-icon ${viewMode === 'table' ? 'active' : ''}`}
+              onClick={() => setViewMode('table')}
+              title="Dạng bảng"
+              style={{
+                background:
+                  viewMode === 'table' ? 'var(--surface)' : 'transparent',
+                boxShadow:
+                  viewMode === 'table' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              }}
+            >
+              <Icon name="LayoutList" size={18} />
+            </button>
+            <button
+              className={`btn-icon ${viewMode === 'grid' ? 'active' : ''}`}
+              onClick={() => setViewMode('grid')}
+              title="Dạng lưới"
+              style={{
+                background:
+                  viewMode === 'grid' ? 'var(--surface)' : 'transparent',
+                boxShadow:
+                  viewMode === 'grid' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              }}
+            >
+              <Icon name="LayoutGrid" size={18} />
+            </button>
+          </div>
+
           <button
             className="primary-button btn-standard"
             type="button"
@@ -343,8 +404,8 @@ export function RawFabricList({
         </p>
       )}
 
-      {/* Table */}
-      <div className="data-table-wrap card-table-section">
+      {/* Data Section */}
+      <div className="card-table-section">
         {isLoading ? (
           <p className="table-empty">Đang tải...</p>
         ) : rolls.length === 0 ? (
@@ -353,99 +414,137 @@ export function RawFabricList({
               ? 'Không tìm thấy cuộn vải phù hợp.'
               : 'Chưa có cuộn vải nào. Nhấn "+ Nhập cuộn mới" để bắt đầu.'}
           </p>
+        ) : viewMode === 'grid' ? (
+          <div
+            className="grid-view-container"
+            style={{
+              padding: '1rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1.5rem',
+            }}
+          >
+            {groupedRolls.map((group) => (
+              <LotMatrixCard
+                key={group.lot}
+                title={group.lot}
+                lotNumber={group.lot !== 'KHÔNG CÓ LÔ' ? group.lot : undefined}
+                colorName={group.colorName || undefined}
+                expectedRollsCount={group.rolls.length}
+                rolls={group.rolls.map((r) => ({
+                  id: r.id,
+                  roll_number: r.roll_number,
+                  weight_kg: r.weight_kg ?? undefined,
+                  status: r.status,
+                }))}
+                mode="view"
+                onRollPress={(roll) => {
+                  const original = rolls.find((r) => r.id === roll.id);
+                  if (original) onEdit(original);
+                }}
+              />
+            ))}
+          </div>
         ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th
-                  style={{
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                  }}
-                  onClick={() => handleSort('roll_number')}
-                >
-                  Mã cuộn{' '}
-                  <SortIcon active={sortCol === 'roll_number'} dir={sortDir} />
-                </th>
-                <th>Số lô</th>
-                <th>Loại vải</th>
-                <th>CL</th>
-                <th>Khổ × Dài</th>
-                <th
-                  style={{
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                  }}
-                  onClick={() => handleSort('weight_kg')}
-                >
-                  Trọng lượng{' '}
-                  <SortIcon active={sortCol === 'weight_kg'} dir={sortDir} />
-                </th>
-                <th>Trạng thái</th>
-                <th>Vị trí kho</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {rolls.map((roll) => (
-                <tr key={roll.id}>
-                  <td>
-                    <strong>{roll.roll_number}</strong>
-                    {roll.color_name && (
-                      <div className="td-muted">{roll.color_name}</div>
-                    )}
-                  </td>
-                  <td className="td-muted">{roll.lot_number ?? '—'}</td>
-                  <td>{roll.fabric_type}</td>
-                  <td>
-                    {roll.quality_grade ? (
-                      <span
-                        className={`grade-badge grade-${roll.quality_grade}`}
-                      >
-                        {roll.quality_grade}
-                      </span>
-                    ) : (
-                      <span className="td-muted">—</span>
-                    )}
-                  </td>
-                  <td className="td-muted">
-                    {roll.width_cm !== null ? `${roll.width_cm} cm` : '—'}
-                    {roll.length_m !== null &&
-                      ` × ${formatNum(roll.length_m, 'm')}`}
-                  </td>
-                  <td className="td-muted">
-                    {formatNum(roll.weight_kg, 'kg')}
-                  </td>
-                  <td>
-                    <span className={`roll-status ${roll.status}`}>
-                      {ROLL_STATUS_LABELS[roll.status]}
-                    </span>
-                  </td>
-                  <td className="td-muted">{roll.warehouse_location ?? '—'}</td>
-                  <td className="td-actions">
-                    <button
-                      className="btn-icon"
-                      type="button"
-                      title="Sửa"
-                      onClick={() => onEdit(roll)}
-                      style={{ marginRight: 4 }}
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="btn-icon danger"
-                      type="button"
-                      title="Xóa"
-                      onClick={() => void handleDelete(roll)}
-                      disabled={deleteMutation.isPending}
-                    >
-                      🗑
-                    </button>
-                  </td>
+          <div className="data-table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th
+                    style={{
+                      cursor: 'pointer',
+                      userSelect: 'none',
+                    }}
+                    onClick={() => handleSort('roll_number')}
+                  >
+                    Mã cuộn{' '}
+                    <SortIcon
+                      active={sortCol === 'roll_number'}
+                      dir={sortDir}
+                    />
+                  </th>
+                  <th>Số lô</th>
+                  <th>Loại vải</th>
+                  <th>CL</th>
+                  <th>Khổ × Dài</th>
+                  <th
+                    style={{
+                      cursor: 'pointer',
+                      userSelect: 'none',
+                    }}
+                    onClick={() => handleSort('weight_kg')}
+                  >
+                    Trọng lượng{' '}
+                    <SortIcon active={sortCol === 'weight_kg'} dir={sortDir} />
+                  </th>
+                  <th>Trạng thái</th>
+                  <th>Vị trí kho</th>
+                  <th></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rolls.map((roll) => (
+                  <tr key={roll.id}>
+                    <td>
+                      <strong>{roll.roll_number}</strong>
+                      {roll.color_name && (
+                        <div className="td-muted">{roll.color_name}</div>
+                      )}
+                    </td>
+                    <td className="td-muted">{roll.lot_number ?? '—'}</td>
+                    <td>{roll.fabric_type}</td>
+                    <td>
+                      {roll.quality_grade ? (
+                        <span
+                          className={`grade-badge grade-${roll.quality_grade}`}
+                        >
+                          {roll.quality_grade}
+                        </span>
+                      ) : (
+                        <span className="td-muted">—</span>
+                      )}
+                    </td>
+                    <td className="td-muted">
+                      {roll.width_cm !== null ? `${roll.width_cm} cm` : '—'}
+                      {roll.length_m !== null &&
+                        ` × ${formatNum(roll.length_m, 'm')}`}
+                    </td>
+                    <td className="td-muted">
+                      {formatNum(roll.weight_kg, 'kg')}
+                    </td>
+                    <td>
+                      <span className={`roll-status ${roll.status}`}>
+                        {ROLL_STATUS_LABELS[roll.status]}
+                      </span>
+                    </td>
+                    <td className="td-muted">
+                      {roll.warehouse_location ?? '—'}
+                    </td>
+                    <td className="td-actions">
+                      <button
+                        className="btn-icon"
+                        type="button"
+                        title="Sửa"
+                        onClick={() => onEdit(roll)}
+                        style={{ marginRight: 4 }}
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        className="btn-icon danger"
+                        type="button"
+                        title="Xóa"
+                        onClick={() => void handleDelete(roll)}
+                        disabled={deleteMutation.isPending}
+                      >
+                        🗑
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
