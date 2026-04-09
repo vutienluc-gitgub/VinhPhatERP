@@ -1,11 +1,14 @@
 import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { EmptyState } from '@/shared/components/EmptyState';
 import { Pagination } from '@/shared/components/Pagination';
-import { TableSkeleton } from '@/shared/components/TableSkeleton';
 import { Combobox } from '@/shared/components/Combobox';
-import { Icon, Badge, type BadgeVariant } from '@/shared/components';
+import {
+  Icon,
+  Badge,
+  type BadgeVariant,
+  DataTablePremium,
+} from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 
 import { ORDER_STATUS_LABELS } from './orders.module';
@@ -258,192 +261,170 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
       )}
 
       {/* 📑 Data Table / List */}
-      <div className="card-table-section min-h-[400px]">
-        {isLoading ? (
-          <TableSkeleton rows={8} columns={6} />
-        ) : orders.length === 0 ? (
-          <div className="py-20">
-            <EmptyState
-              icon={hasFilter ? '🔍' : '📦'}
-              title={
-                hasFilter ? 'Không tìm thấy đơn hàng' : 'Chưa có đơn hàng nào'
-              }
-              description={
-                hasFilter
-                  ? 'Hãy thử thay đổi điều kiện lọc.'
-                  : 'Nhấn nút tạo đơn để bắt đầu.'
-              }
-              actionLabel={!hasFilter ? '+ Tạo đơn hàng' : undefined}
-              actionClick={!hasFilter ? onNew : undefined}
-            />
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            {/* Desktop Table View */}
-            <table className="data-table hidden md:table">
-              <thead>
-                <tr>
-                  <th>Số đơn / Khách hàng</th>
-                  <th>Ngày đặt</th>
-                  <th>Dự kiến giao</th>
-                  <th className="text-right">Tổng tiền</th>
-                  <th className="text-right">Còn nợ</th>
-                  <th>Trạng thái</th>
-                  <th className="text-right">Thao tác</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => {
-                  const due = daysUntilDelivery(order.delivery_date);
-                  const balanceDue = order.total_amount - order.paid_amount;
-                  return (
-                    <tr
-                      key={order.id}
-                      className="hover:bg-surface-subtle transition-colors cursor-pointer"
-                      onClick={() => onView(order)}
+      <DataTablePremium
+        data={orders}
+        isLoading={isLoading}
+        rowKey={(o) => o.id}
+        onRowClick={onView}
+        emptyStateTitle={
+          hasFilter ? 'Không tìm thấy đơn hàng' : 'Chưa có đơn hàng nào'
+        }
+        emptyStateDescription={
+          hasFilter
+            ? 'Hãy thử thay đổi điều kiện lọc.'
+            : 'Nhấn nút tạo đơn để bắt đầu.'
+        }
+        emptyStateIcon={hasFilter ? '🔍' : '📦'}
+        emptyStateActionLabel={!hasFilter ? '+ Tạo đơn hàng' : undefined}
+        onEmptyStateAction={!hasFilter ? onNew : undefined}
+        columns={[
+          {
+            header: 'Số đơn / Khách hàng',
+            cell: (order) => (
+              <div className="flex flex-col">
+                <span className="font-bold text-primary">
+                  {order.order_number}
+                </span>
+                <span className="text-sm">
+                  {order.customers?.name ?? '—'}
+                  {order.customers?.code && (
+                    <span className="text-xs text-muted ml-1 italic">
+                      ({order.customers.code})
+                    </span>
+                  )}
+                </span>
+              </div>
+            ),
+          },
+          {
+            header: 'Ngày đặt',
+            className: 'text-muted text-sm',
+            cell: (order) => order.order_date,
+          },
+          {
+            header: 'Dự kiến giao',
+            cell: (order) => {
+              const due = daysUntilDelivery(order.delivery_date);
+              return (
+                <div className="flex flex-col">
+                  <span className="text-sm">{order.delivery_date ?? '—'}</span>
+                  {due && (
+                    <span
+                      className={`text-[10px] font-bold uppercase ${due.urgent ? 'text-danger animate-pulse' : 'text-muted'}`}
                     >
-                      <td>
-                        <div className="flex flex-col">
-                          <span className="font-bold text-primary">
-                            {order.order_number}
-                          </span>
-                          <span className="text-sm">
-                            {order.customers?.name ?? '—'}
-                            {order.customers?.code && (
-                              <span className="text-xs text-muted ml-1 italic">
-                                ({order.customers.code})
-                              </span>
-                            )}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="text-muted text-sm">{order.order_date}</td>
-                      <td>
-                        <div className="flex flex-col">
-                          <span className="text-sm">
-                            {order.delivery_date ?? '—'}
-                          </span>
-                          {due && (
-                            <span
-                              className={`text-[10px] font-bold uppercase ${due.urgent ? 'text-danger animate-pulse' : 'text-muted'}`}
-                            >
-                              {due.text}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="numeric-cell font-medium">
-                        {formatCurrency(order.total_amount)}
-                      </td>
-                      <td
-                        className={`numeric-cell font-bold ${balanceDue > 0 ? 'text-danger' : 'text-success'}`}
-                      >
-                        {formatCurrency(balanceDue)}
-                      </td>
-                      <td>
-                        <Badge variant={getVariant(order.status)}>
-                          {ORDER_STATUS_LABELS[order.status]}
-                        </Badge>
-                      </td>
-                      <td
-                        className="text-right"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div className="flex justify-end gap-1">
-                          {order.status === 'draft' ? (
-                            <>
-                              <button
-                                className="btn-icon"
-                                onClick={() => onEdit(order)}
-                              >
-                                <Icon name="Edit3" size={16} />
-                              </button>
-                              <button
-                                className="btn-icon text-danger"
-                                onClick={() => handleDelete(order)}
-                              >
-                                <Icon name="Trash2" size={16} />
-                              </button>
-                            </>
-                          ) : (
-                            <button
-                              className="btn-icon"
-                              onClick={() => onView(order)}
-                            >
-                              <Icon name="Eye" size={16} />
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-
-            {/* Mobile Card View */}
-            <div className="md:hidden space-y-3 p-3">
-              {orders.map((order) => {
-                const due = daysUntilDelivery(order.delivery_date);
-                const balanceDue = order.total_amount - order.paid_amount;
-                return (
-                  <div
-                    key={order.id}
-                    className="mobile-card"
-                    onClick={() => onView(order)}
-                  >
-                    <div className="mobile-card-header border-b border-border/10 pb-2 mb-2">
-                      <span className="font-bold text-primary">
-                        {order.order_number}
-                      </span>
-                      <Badge variant={getVariant(order.status)}>
-                        {ORDER_STATUS_LABELS[order.status]}
-                      </Badge>
-                    </div>
-                    <div className="mobile-card-body space-y-2">
-                      <div className="flex justify-between items-start">
-                        <span className="text-sm font-bold">
-                          {order.customers?.name}
-                        </span>
-                        <span className="text-xs text-muted">
-                          {order.order_date}
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4 pt-2">
-                        <div className="flex flex-col">
-                          <span className="text-[10px] uppercase text-muted">
-                            Tổng tiền
-                          </span>
-                          <span className="text-sm font-medium">
-                            {formatCurrency(order.total_amount)}
-                          </span>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-[10px] uppercase text-muted">
-                            Còn nợ
-                          </span>
-                          <span
-                            className={`text-sm font-bold ${balanceDue > 0 ? 'text-danger' : 'text-success'}`}
-                          >
-                            {formatCurrency(balanceDue)}
-                          </span>
-                        </div>
-                      </div>
-                      {due && (
-                        <div
-                          className={`mt-2 p-1.5 rounded text-[10px] font-bold text-center uppercase ${due.urgent ? 'bg-danger/10 text-danger' : 'bg-surface-subtle text-muted'}`}
-                        >
-                          Giao hàng: {due.text} ({order.delivery_date})
-                        </div>
-                      )}
-                    </div>
+                      {due.text}
+                    </span>
+                  )}
+                </div>
+              );
+            },
+          },
+          {
+            header: 'Tổng tiền',
+            className: 'text-right numeric-cell font-medium',
+            cell: (order) => formatCurrency(order.total_amount),
+          },
+          {
+            header: 'Còn nợ',
+            className: 'text-right numeric-cell font-bold',
+            cell: (order) => {
+              const balanceDue = order.total_amount - order.paid_amount;
+              return (
+                <span
+                  className={balanceDue > 0 ? 'text-danger' : 'text-success'}
+                >
+                  {formatCurrency(balanceDue)}
+                </span>
+              );
+            },
+          },
+          {
+            header: 'Trạng thái',
+            cell: (order) => (
+              <Badge variant={getVariant(order.status)}>
+                {ORDER_STATUS_LABELS[order.status]}
+              </Badge>
+            ),
+          },
+          {
+            header: 'Thao tác',
+            className: 'text-right',
+            onCellClick: () => {}, // prevent row click
+            cell: (order) => (
+              <div className="flex justify-end gap-1">
+                {order.status === 'draft' ? (
+                  <>
+                    <button className="btn-icon" onClick={() => onEdit(order)}>
+                      <Icon name="Edit3" size={16} />
+                    </button>
+                    <button
+                      className="btn-icon text-danger"
+                      onClick={() => handleDelete(order)}
+                    >
+                      <Icon name="Trash2" size={16} />
+                    </button>
+                  </>
+                ) : (
+                  <button className="btn-icon" onClick={() => onView(order)}>
+                    <Icon name="Eye" size={16} />
+                  </button>
+                )}
+              </div>
+            ),
+          },
+        ]}
+        renderMobileCard={(order) => {
+          const due = daysUntilDelivery(order.delivery_date);
+          const balanceDue = order.total_amount - order.paid_amount;
+          return (
+            <div className="mobile-card">
+              <div className="mobile-card-header border-b border-border/10 pb-2 mb-2">
+                <span className="font-bold text-primary">
+                  {order.order_number}
+                </span>
+                <Badge variant={getVariant(order.status)}>
+                  {ORDER_STATUS_LABELS[order.status]}
+                </Badge>
+              </div>
+              <div className="mobile-card-body space-y-2">
+                <div className="flex justify-between items-start">
+                  <span className="text-sm font-bold">
+                    {order.customers?.name}
+                  </span>
+                  <span className="text-xs text-muted">{order.order_date}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase text-muted">
+                      Tổng tiền
+                    </span>
+                    <span className="text-sm font-medium">
+                      {formatCurrency(order.total_amount)}
+                    </span>
                   </div>
-                );
-              })}
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase text-muted">
+                      Còn nợ
+                    </span>
+                    <span
+                      className={`text-sm font-bold ${balanceDue > 0 ? 'text-danger' : 'text-success'}`}
+                    >
+                      {formatCurrency(balanceDue)}
+                    </span>
+                  </div>
+                </div>
+                {due && (
+                  <div
+                    className={`mt-2 p-1.5 rounded text-[10px] font-bold text-center uppercase ${due.urgent ? 'bg-danger/10 text-danger' : 'bg-surface-subtle text-muted'}`}
+                  >
+                    Giao hàng: {due.text} ({order.delivery_date})
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          );
+        }}
+      />
 
       <Pagination result={result} onPageChange={setPage} />
     </div>

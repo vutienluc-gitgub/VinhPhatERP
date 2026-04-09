@@ -3,7 +3,12 @@ import { useMemo } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
-import { Icon, Badge, type BadgeVariant } from '@/shared/components';
+import {
+  Icon,
+  Badge,
+  type BadgeVariant,
+  DataTablePremium,
+} from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 
@@ -458,101 +463,187 @@ export function FinishedFabricList({
             ))}
           </div>
         ) : (
-          <div className="data-table-wrap">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Mã cuộn</th>
-                  <th>Loại vải</th>
-                  <th>CL</th>
-                  <th>Khổ × Dài</th>
-                  <th>Trọng lượng</th>
-                  <th>Trạng thái</th>
-                  <th>Vị trí kho</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {rolls.map((roll) => (
-                  <tr key={roll.id}>
-                    <td>
-                      <strong>{roll.roll_number}</strong>
-                      {roll.color_name && (
-                        <div className="td-muted">{roll.color_name}</div>
-                      )}
-                    </td>
-                    <td>{roll.fabric_type}</td>
-                    <td>
-                      {roll.quality_grade ? (
-                        <span
-                          className={`grade-badge grade-${roll.quality_grade}`}
-                        >
-                          {roll.quality_grade}
-                        </span>
-                      ) : (
-                        <span className="td-muted">—</span>
-                      )}
-                    </td>
-                    <td className="td-muted">
+          <DataTablePremium
+            data={rolls}
+            isLoading={isLoading}
+            rowKey={(r) => r.id}
+            onRowClick={(r) => {
+              if (canEditRoll(r.status)) onEdit(r);
+            }}
+            emptyStateTitle="Không có dữ liệu"
+            emptyStateDescription="Chưa có cuộn thành phẩm nào. Nhấn '+ Nhập cuộn mới' để bắt đầu."
+            columns={[
+              {
+                header: 'Mã cuộn',
+                cell: (roll) => (
+                  <div className="flex flex-col">
+                    <span className="font-bold">{roll.roll_number}</span>
+                    {roll.color_name && (
+                      <span className="text-xs text-muted">
+                        {roll.color_name}
+                      </span>
+                    )}
+                  </div>
+                ),
+              },
+              {
+                header: 'Loại vải',
+                cell: (roll) => roll.fabric_type,
+              },
+              {
+                header: 'CL',
+                cell: (roll) =>
+                  roll.quality_grade ? (
+                    <span className={`grade-badge grade-${roll.quality_grade}`}>
+                      {roll.quality_grade}
+                    </span>
+                  ) : (
+                    <span className="td-muted">—</span>
+                  ),
+              },
+              {
+                header: 'Khổ × Dài',
+                className: 'td-muted',
+                cell: (roll) => (
+                  <div className="flex flex-col text-xs">
+                    <span>
                       {roll.width_cm !== null ? `${roll.width_cm} cm` : '—'}
+                    </span>
+                    <span>
                       {roll.length_m !== null &&
                         ` × ${formatNum(roll.length_m, 'm')}`}
-                    </td>
-                    <td className="td-muted">
-                      {formatNum(roll.weight_kg, 'kg')}
-                    </td>
-                    <td>
-                      <Badge variant={getStatusVariant(roll.status)}>
-                        {ROLL_STATUS_LABELS[roll.status]}
-                      </Badge>
-                    </td>
-                    <td className="td-muted">
-                      {roll.warehouse_location ?? '—'}
-                    </td>
-                    <td className="td-actions">
-                      <div
-                        style={{
-                          display: 'flex',
-                          gap: '0.25rem',
-                          justifyContent: 'flex-end',
-                        }}
-                      >
-                        <button
-                          className="btn-icon"
-                          type="button"
-                          title="Truy vết nguồn gốc"
-                          onClick={() => onTrace(roll)}
-                        >
-                          <Icon name="Link" size={16} />
-                        </button>
-                        <button
-                          className="btn-icon"
-                          type="button"
-                          title={editBlockReason(roll.status) ?? 'Sửa'}
-                          onClick={() => onEdit(roll)}
-                          disabled={!canEditRoll(roll.status)}
-                        >
-                          <Icon name="Edit3" size={16} />
-                        </button>
-                        <button
-                          className="btn-icon danger"
-                          type="button"
-                          title={deleteBlockReason(roll.status) ?? 'Xóa'}
-                          onClick={() => handleDelete(roll)}
-                          disabled={
-                            deleteMutation.isPending ||
-                            !canDeleteRoll(roll.status)
-                          }
-                        >
-                          <Icon name="Trash2" size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </span>
+                  </div>
+                ),
+              },
+              {
+                header: 'Trọng lượng',
+                className: 'td-muted font-medium',
+                cell: (roll) => formatNum(roll.weight_kg, 'kg'),
+              },
+              {
+                header: 'Trạng thái',
+                cell: (roll) => (
+                  <Badge variant={getStatusVariant(roll.status)}>
+                    {ROLL_STATUS_LABELS[roll.status]}
+                  </Badge>
+                ),
+              },
+              {
+                header: 'Vị trí',
+                className: 'td-muted text-xs',
+                cell: (roll) => roll.warehouse_location ?? '—',
+              },
+              {
+                header: '',
+                className: 'td-actions',
+                onCellClick: () => {},
+                cell: (roll) => (
+                  <div className="flex justify-end gap-1">
+                    <button
+                      className="btn-icon"
+                      type="button"
+                      title="Truy vết nguồn gốc"
+                      onClick={() => onTrace(roll)}
+                    >
+                      <Icon name="Link" size={16} />
+                    </button>
+                    <button
+                      className="btn-icon"
+                      type="button"
+                      title={editBlockReason(roll.status) ?? 'Sửa'}
+                      onClick={() => onEdit(roll)}
+                      disabled={!canEditRoll(roll.status)}
+                    >
+                      <Icon name="Edit3" size={16} />
+                    </button>
+                    <button
+                      className="btn-icon danger"
+                      type="button"
+                      title={deleteBlockReason(roll.status) ?? 'Xóa'}
+                      onClick={() => handleDelete(roll)}
+                      disabled={
+                        deleteMutation.isPending || !canDeleteRoll(roll.status)
+                      }
+                    >
+                      <Icon name="Trash2" size={16} />
+                    </button>
+                  </div>
+                ),
+              },
+            ]}
+            renderMobileCard={(roll) => (
+              <div className="mobile-card">
+                <div className="mobile-card-header">
+                  <span className="mobile-card-title">{roll.roll_number}</span>
+                  <Badge variant={getStatusVariant(roll.status)}>
+                    {ROLL_STATUS_LABELS[roll.status]}
+                  </Badge>
+                </div>
+                <div className="mobile-card-body">
+                  <div className="flex justify-between items-start mb-1">
+                    <span className="text-sm font-bold">
+                      {roll.fabric_type}
+                    </span>
+                    <span className="text-xs text-muted">
+                      {roll.color_name}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase text-muted">
+                        Trọng lượng
+                      </span>
+                      <span className="text-sm font-medium">
+                        {formatNum(roll.weight_kg, 'kg')}
+                      </span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase text-muted">
+                        Chất lượng
+                      </span>
+                      <span className="text-sm font-bold">
+                        {roll.quality_grade || '—'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="mobile-card-actions">
+                  <button
+                    className="btn-secondary flex-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onTrace(roll);
+                    }}
+                  >
+                    <Icon name="Link" size={16} /> Truy vết
+                  </button>
+                  {canEditRoll(roll.status) && (
+                    <button
+                      className="btn-secondary flex-1 text-primary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(roll);
+                      }}
+                    >
+                      <Icon name="Edit3" size={16} /> Sửa
+                    </button>
+                  )}
+                  {canDeleteRoll(roll.status) && (
+                    <button
+                      className="btn-secondary flex-1 text-danger"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void handleDelete(roll);
+                      }}
+                    >
+                      <Icon name="Trash2" size={16} /> Xóa
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          />
         )}
       </div>
 
