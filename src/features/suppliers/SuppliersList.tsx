@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { EmptyState } from '@/shared/components/EmptyState';
 import { Pagination } from '@/shared/components/Pagination';
-import { TableSkeleton } from '@/shared/components/TableSkeleton';
+import { Icon, Badge, DataTablePremium } from '@/shared/components';
+import { Combobox } from '@/shared/components/Combobox';
 
 import {
   SUPPLIER_CATEGORIES,
@@ -31,24 +31,6 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
 
   const hasFilter = !!(filters.search || filters.category || filters.status);
 
-  function handleCategoryChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as SupplierCategory | '';
-    setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      category: val || undefined,
-    }));
-  }
-
-  function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as 'active' | 'inactive' | '';
-    setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      status: val || undefined,
-    }));
-  }
-
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     setPage(1);
@@ -61,6 +43,7 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
   function clearFilters() {
     setFilters({});
     setSearchInput('');
+    setPage(1);
   }
 
   async function handleDelete(supplier: Supplier) {
@@ -75,195 +58,283 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
   return (
     <div className="panel-card card-flush">
       {/* Header */}
-      <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Nhà cung cấp</p>
-            <h3>Danh sách nhà cung cấp</h3>
+      <div className="card-header-area card-header-premium">
+        <div>
+          <p className="eyebrow-premium">CRM & ĐỐI TÁC</p>
+          <h3 className="title-premium">Danh sách nhà cung cấp</h3>
+        </div>
+        <button
+          className="btn-primary min-h-[42px] px-6"
+          type="button"
+          onClick={onNew}
+        >
+          <Icon name="Plus" size={18} className="mr-2" /> Thêm NCC
+        </button>
+      </div>
+
+      {/* KPI Dashboard */}
+      <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
+        <div className="kpi-card-premium kpi-primary">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Tổng nhà cung cấp</p>
+              <p className="kpi-value">{result?.total ?? 0}</p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="Truck" size={32} />
+            </div>
           </div>
-          <button
-            className="primary-button btn-standard"
-            type="button"
-            onClick={onNew}
-          >
-            + Thêm NCC mới
-          </button>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Đối tác cung cấp vật tư
+          </div>
+        </div>
+
+        <div className="kpi-card-premium kpi-success">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Đang giao dịch</p>
+              <p className="kpi-value">
+                {suppliers.filter((s) => s.status === 'active').length}
+              </p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="CheckCircle" size={32} />
+            </div>
+          </div>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Trạng thái hoạt động
+          </div>
         </div>
       </div>
 
       {/* Bộ lọc */}
-      <div className="filter-bar card-filter-section">
-        <form
-          className="filter-field"
-          onSubmit={handleSearch}
-          style={{ flex: '1 1 200px' }}
-        >
-          <label htmlFor="filter-search">Tìm kiếm</label>
-          <div className="flex-controls">
-            <input
-              id="filter-search"
-              className="field-input"
-              type="text"
-              placeholder="Tên hoặc mã NCC..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
-            <button
-              className="btn-secondary"
-              type="submit"
-              style={{ whiteSpace: 'nowrap' }}
-            >
-              Lọc
-            </button>
+      <div className="filter-bar card-filter-section p-4 border-b border-border">
+        <div className="filter-compact-premium" onSubmit={handleSearch}>
+          <div className="filter-field">
+            <label htmlFor="filter-search">Tìm kiếm</label>
+            <form className="search-input-wrapper" onSubmit={handleSearch}>
+              <input
+                id="filter-search"
+                className="field-input"
+                type="text"
+                placeholder="Tên hoặc mã NCC..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+              <button type="submit" className="hidden" />
+              <Icon name="Search" size={16} className="search-input-icon" />
+            </form>
           </div>
-        </form>
 
-        <div className="filter-field" style={{ flex: '0 1 160px' }}>
-          <label htmlFor="filter-category">Danh mục</label>
-          <select
-            id="filter-category"
-            className="field-select"
-            value={filters.category ?? ''}
-            onChange={handleCategoryChange}
-          >
-            <option value="">Tất cả</option>
-            {SUPPLIER_CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>
-                {SUPPLIER_CATEGORY_LABELS[cat]}
-              </option>
-            ))}
-          </select>
+          <div className="filter-field">
+            <label>Danh mục</label>
+            <Combobox
+              options={[
+                {
+                  value: '',
+                  label: 'Tất cả danh mục',
+                },
+                ...SUPPLIER_CATEGORIES.map((cat) => ({
+                  value: cat,
+                  label: SUPPLIER_CATEGORY_LABELS[cat],
+                })),
+              ]}
+              value={filters.category ?? ''}
+              onChange={(val) => {
+                setPage(1);
+                setFilters((prev) => ({
+                  ...prev,
+                  category: (val as SupplierCategory) || undefined,
+                }));
+              }}
+            />
+          </div>
+
+          <div className="filter-field">
+            <label>Trạng thái</label>
+            <Combobox
+              options={[
+                {
+                  value: '',
+                  label: 'Tất cả trạng thái',
+                },
+                ...SUPPLIER_STATUSES.map((st) => ({
+                  value: st,
+                  label: SUPPLIER_STATUS_LABELS[st],
+                })),
+              ]}
+              value={filters.status ?? ''}
+              onChange={(val) => {
+                setPage(1);
+                setFilters((prev) => ({
+                  ...prev,
+                  status: (val as 'active' | 'inactive') || undefined,
+                }));
+              }}
+            />
+          </div>
+
+          {hasFilter && (
+            <button
+              className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
+              type="button"
+              onClick={clearFilters}
+              style={{ marginBottom: '4px' }}
+            >
+              <Icon name="X" size={14} /> Xóa lọc
+            </button>
+          )}
         </div>
-
-        <div className="filter-field" style={{ flex: '0 1 140px' }}>
-          <label htmlFor="filter-status">Trạng thái</label>
-          <select
-            id="filter-status"
-            className="field-select"
-            value={filters.status ?? ''}
-            onChange={handleStatusChange}
-          >
-            <option value="">Tất cả</option>
-            {SUPPLIER_STATUSES.map((st) => (
-              <option key={st} value={st}>
-                {SUPPLIER_STATUS_LABELS[st]}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {hasFilter && (
-          <button
-            className="btn-secondary"
-            type="button"
-            onClick={clearFilters}
-            style={{ alignSelf: 'flex-end' }}
-          >
-            ✕ Xóa lọc
-          </button>
-        )}
       </div>
 
-      {/* Loading / Error */}
       {error && (
-        <p className="error-inline">
-          Lỗi tải dữ liệu: {(error as Error).message}
-        </p>
+        <div className="p-4">
+          <p className="error-inline">Lỗi: {(error as Error).message}</p>
+        </div>
       )}
 
-      {/* Table */}
-      <div
-        className="data-table-wrap card-table-section"
-        style={
-          isLoading || suppliers.length === 0 ? { border: 'none' } : undefined
+      {/* Table & Cards */}
+      <DataTablePremium
+        data={suppliers}
+        isLoading={isLoading}
+        rowKey={(s) => s.id}
+        onRowClick={onEdit}
+        emptyStateTitle={
+          hasFilter ? 'Không tìm thấy nhà cung cấp' : 'Chưa có nhà cung cấp'
         }
-      >
-        {isLoading ? (
-          <TableSkeleton rows={5} columns={7} />
-        ) : suppliers.length === 0 ? (
-          <EmptyState
-            icon={hasFilter ? '🔍' : '🤝'}
-            title={
-              hasFilter ? 'Không tìm thấy nhà cung cấp' : 'Chưa có nhà cung cấp'
-            }
-            description={
-              hasFilter
-                ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
-                : 'Nhấn nút thêm nhà cung cấp mới để lưu trữ thông tin liên hệ.'
-            }
-            actionLabel={!hasFilter ? '+ Thêm NCC mới' : undefined}
-            actionClick={!hasFilter ? onNew : undefined}
-          />
-        ) : (
-          <table className="data-table" style={{ width: '100%' }}>
-            <thead>
-              <tr>
-                <th>Mã NCC</th>
-                <th>Tên nhà cung cấp</th>
-                <th>Danh mục</th>
-                <th>Số điện thoại</th>
-                <th>Người liên hệ</th>
-                <th>Trạng thái</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {suppliers.map((supplier) => (
-                <tr key={supplier.id}>
-                  <td>
-                    <strong>{supplier.code}</strong>
-                  </td>
-                  <td>
-                    {supplier.name}
-                    {supplier.address && (
-                      <div className="td-muted" style={{ fontSize: '0.8rem' }}>
-                        {supplier.address}
-                      </div>
-                    )}
-                  </td>
-                  <td>
-                    <span
-                      className="roll-status in_stock"
-                      style={{ fontSize: '0.78rem' }}
-                    >
-                      {SUPPLIER_CATEGORY_LABELS[supplier.category]}
-                    </span>
-                  </td>
-                  <td className="td-muted">{supplier.phone || '—'}</td>
-                  <td className="td-muted">{supplier.contact_person || '—'}</td>
-                  <td>
-                    <span
-                      className={`roll-status ${supplier.status === 'active' ? 'in_stock' : 'damaged'}`}
-                    >
-                      {SUPPLIER_STATUS_LABELS[supplier.status]}
-                    </span>
-                  </td>
-                  <td className="td-actions">
-                    <button
-                      className="btn-icon"
-                      type="button"
-                      title="Sửa"
-                      onClick={() => onEdit(supplier)}
-                      style={{ marginRight: 4 }}
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="btn-icon danger"
-                      type="button"
-                      title="Xóa"
-                      onClick={() => handleDelete(supplier)}
-                      disabled={deleteMutation.isPending}
-                    >
-                      🗑
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        emptyStateDescription={
+          hasFilter
+            ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
+            : 'Nhấn nút thêm nhà cung cấp mới để lưu trữ thông tin liên hệ.'
+        }
+        emptyStateIcon={hasFilter ? '🔍' : 'Truck'}
+        emptyStateActionLabel={!hasFilter ? '+ Thêm NCC mới' : undefined}
+        onEmptyStateAction={!hasFilter ? onNew : undefined}
+        columns={[
+          {
+            header: 'Mã NCC',
+            cell: (s) => (
+              <span className="font-bold text-primary">{s.code}</span>
+            ),
+          },
+          {
+            header: 'Tên nhà cung cấp',
+            cell: (s) => (
+              <div className="flex flex-col">
+                <span className="font-bold">{s.name}</span>
+                {s.address && (
+                  <span className="text-xs text-muted truncate max-w-[250px]">
+                    {s.address}
+                  </span>
+                )}
+              </div>
+            ),
+          },
+          {
+            header: 'Danh mục',
+            cell: (s) => (
+              <span className="badge-outline">
+                {SUPPLIER_CATEGORY_LABELS[s.category]}
+              </span>
+            ),
+          },
+          {
+            header: 'Liên hệ',
+            className: 'td-muted',
+            cell: (s) => (
+              <div className="flex flex-col text-sm">
+                {s.phone && <span>{s.phone}</span>}
+                {s.contact_person && (
+                  <span className="text-xs">NLH: {s.contact_person}</span>
+                )}
+                {!s.phone && !s.contact_person && '—'}
+              </div>
+            ),
+          },
+          {
+            header: 'Trạng thái',
+            cell: (s) => (
+              <Badge variant={s.status === 'active' ? 'success' : 'gray'}>
+                {SUPPLIER_STATUS_LABELS[s.status]}
+              </Badge>
+            ),
+          },
+          {
+            header: 'Thao tác',
+            className: 'text-right',
+            onCellClick: () => {},
+            cell: (s) => (
+              <div className="flex justify-end gap-1">
+                <button
+                  className="btn-icon"
+                  type="button"
+                  title="Sửa"
+                  onClick={() => onEdit(s)}
+                >
+                  <Icon name="Pencil" size={16} />
+                </button>
+                <button
+                  className="btn-icon text-danger"
+                  type="button"
+                  title="Xóa"
+                  onClick={() => handleDelete(s)}
+                  disabled={deleteMutation.isPending}
+                >
+                  <Icon name="Trash2" size={16} />
+                </button>
+              </div>
+            ),
+          },
+        ]}
+        renderMobileCard={(s) => (
+          <div className="mobile-card">
+            <div className="mobile-card-header">
+              <span className="mobile-card-title">{s.code}</span>
+              <Badge variant={s.status === 'active' ? 'success' : 'gray'}>
+                {SUPPLIER_STATUS_LABELS[s.status]}
+              </Badge>
+            </div>
+            <div className="mobile-card-body space-y-2">
+              <p className="font-bold text-lg">{s.name}</p>
+
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                {s.phone && (
+                  <div className="flex items-center gap-2 text-muted">
+                    <Icon name="Phone" size={14} />
+                    <span>{s.phone}</span>
+                  </div>
+                )}
+                {s.contact_person && (
+                  <div className="flex items-center gap-2 text-muted">
+                    <Icon name="User" size={14} />
+                    <span>{s.contact_person}</span>
+                  </div>
+                )}
+              </div>
+
+              {s.address && (
+                <div className="flex items-start gap-2 text-xs text-muted mt-1">
+                  <Icon
+                    name="MapPin"
+                    size={14}
+                    className="mt-0.5 flex-shrink-0"
+                  />
+                  <span className="truncate">{s.address}</span>
+                </div>
+              )}
+
+              <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/10">
+                <span className="text-[10px] uppercase font-bold text-muted bg-surface-subtle px-1.5 py-0.5 rounded">
+                  {SUPPLIER_CATEGORY_LABELS[s.category]}
+                </span>
+                <Icon name="ChevronRight" size={16} className="text-muted" />
+              </div>
+            </div>
+          </div>
         )}
-      </div>
+      />
 
       <Pagination result={result} onPageChange={setPage} />
     </div>
