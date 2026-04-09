@@ -9,6 +9,7 @@ import {
   createYarnReceiptFull,
   updateYarnReceiptFull,
   deleteYarnReceiptRecord,
+  confirmYarnReceipt,
 } from '@/api/yarn-receipts.api';
 import type {
   YarnSupplierOption,
@@ -122,6 +123,16 @@ export function useDeleteYarnReceipt() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteYarnReceiptRecord,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+  });
+}
+
+export function useConfirmYarnReceipt() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: confirmYarnReceipt,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },

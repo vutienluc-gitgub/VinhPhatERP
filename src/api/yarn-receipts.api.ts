@@ -224,3 +224,13 @@ export async function deleteYarnReceiptRecord(id: string): Promise<void> {
   const { error } = await supabase.from(HEADER_TABLE).delete().eq('id', id);
   if (error) throw error;
 }
+
+export async function confirmYarnReceipt(id: string): Promise<void> {
+  const { error } = await supabase
+    .from(HEADER_TABLE)
+    .update({ status: 'confirmed' })
+    .eq('id', id)
+    .eq('status', 'draft');
+
+  if (error) throw error;
+}

@@ -234,10 +234,107 @@
   color: var(--muted);
 }
 
-/* Common aliases for work orders & orders */
-.roll-status.draft {
-  background: rgba(11, 107, 203, 0.12);
+/* ---- Premium UI Components (WOW Factor) ---- */
+
+.card-header-premium {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-strong);
+}
+
+.eyebrow-premium {
   color: var(--primary);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.title-premium {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0;
+}
+
+.stats-grid-premium {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: linear-gradient(to bottom, var(--surface-strong), var(--surface));
+  border-bottom: 1px solid var(--border);
+}
+
+.stat-item-premium {
+  background: var(--surface-strong);
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 4px 12px rgba(16, 35, 61, 0.04);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.stat-item-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(16, 35, 61, 0.08);
+}
+
+.stat-icon-wrapper {
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-content-premium p:first-child {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 0.15rem;
+}
+
+.stat-content-premium p:last-child {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input-wrapper .field-input {
+  padding-right: 2.75rem;
+  border-radius: var(--radius-sm);
+}
+
+.search-input-icon {
+  position: absolute;
+  right: 0.85rem;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.filter-grid-premium {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
 }
 
 .roll-status.in_progress {

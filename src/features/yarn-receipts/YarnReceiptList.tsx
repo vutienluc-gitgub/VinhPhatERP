@@ -1,10 +1,16 @@
 import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
+import { Icon } from '@/shared/components/Icon';
 import { Pagination } from '@/shared/components/Pagination';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 import type { DocStatus, YarnReceipt, YarnReceiptsFilter } from './types';
-import { useDeleteYarnReceipt, useYarnReceiptList } from './useYarnReceipts';
+import {
+  useDeleteYarnReceipt,
+  useYarnReceiptList,
+  useConfirmYarnReceipt,
+} from './useYarnReceipts';
 import { DOC_STATUS_LABELS } from './yarn-receipts.module';
 
 type YarnReceiptListProps = {
@@ -35,7 +41,11 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
   const { data: result, isLoading, error } = useYarnReceiptList(filters, page);
   const receipts = result?.data ?? [];
   const deleteMutation = useDeleteYarnReceipt();
+  const confirmMutation = useConfirmYarnReceipt();
   const { confirm } = useConfirm();
+  const { profile } = useAuth();
+
+  const canConfirm = profile?.role === 'admin' || profile?.role === 'manager';
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -62,6 +72,14 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
     });
     if (!ok) return;
     deleteMutation.mutate(receipt.id);
+  }
+
+  async function handleConfirmReceipt(receipt: YarnReceipt) {
+    const ok = await confirm({
+      message: `Xác nhận phiếu nhập "${receipt.receipt_number}"? Sau khi xác nhận sẽ không thể sửa hay xoá phiếu được nữa.`,
+    });
+    if (!ok) return;
+    confirmMutation.mutate(receipt.id);
   }
 
   const hasFilter = !!(filters.search || filters.status);
@@ -197,26 +215,51 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
                     </span>
                   </td>
                   <td className="td-actions">
-                    <button
-                      className="btn-icon"
-                      type="button"
-                      title="Sửa"
-                      onClick={() => onEdit(receipt as unknown as YarnReceipt)}
-                      style={{ marginRight: 4 }}
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="btn-icon danger"
-                      type="button"
-                      title="Xóa"
-                      onClick={() =>
-                        handleDelete(receipt as unknown as YarnReceipt)
-                      }
-                      disabled={deleteMutation.isPending}
-                    >
-                      🗑
-                    </button>
+                    {receipt.status === 'draft' && canConfirm && (
+                      <button
+                        className="btn-icon"
+                        type="button"
+                        title="Xác nhận phiếu"
+                        onClick={() =>
+                          handleConfirmReceipt(
+                            receipt as unknown as YarnReceipt,
+                          )
+                        }
+                        disabled={confirmMutation.isPending}
+                        style={{
+                          marginRight: 4,
+                          color: 'var(--success)',
+                        }}
+                      >
+                        <Icon name="CheckCircle" size={18} />
+                      </button>
+                    )}
+                    {receipt.status === 'draft' && (
+                      <button
+                        className="btn-icon"
+                        type="button"
+                        title="Sửa"
+                        onClick={() =>
+                          onEdit(receipt as unknown as YarnReceipt)
+                        }
+                        style={{ marginRight: 4 }}
+                      >
+                        <Icon name="Pencil" size={18} />
+                      </button>
+                    )}
+                    {receipt.status === 'draft' && (
+                      <button
+                        className="btn-icon danger"
+                        type="button"
+                        title="Xóa"
+                        onClick={() =>
+                          handleDelete(receipt as unknown as YarnReceipt)
+                        }
+                        disabled={deleteMutation.isPending}
+                      >
+                        <Icon name="Trash2" size={18} />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

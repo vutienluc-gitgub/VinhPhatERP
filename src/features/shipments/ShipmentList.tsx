@@ -1,10 +1,10 @@
 import { useState } from 'react';
 
-import { Combobox } from '@/shared/components/Combobox';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { Pagination } from '@/shared/components/Pagination';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
+import { Icon } from '@/shared/components/Icon';
 
 import { DeliveryConfirmForm } from './DeliveryConfirmForm';
 import { exportShipmentToPdf } from './shipment-document';
@@ -121,67 +121,116 @@ export function ShipmentList() {
 
   return (
     <div className="panel-card card-flush">
-      {/* Header */}
-      <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Kho & Giao hàng</p>
-            <h3>Xuất kho</h3>
+      {/* Header Area */}
+      <div className="card-header-area card-header-premium">
+        <div>
+          <p className="eyebrow-premium">KHO & GIAO HÀNG</p>
+          <h3 className="title-premium">Quản lý Xuất kho</h3>
+        </div>
+      </div>
+
+      {/* Stats Section */}
+      <div className="stats-grid-premium">
+        <div className="stat-item-premium">
+          <div
+            className="stat-icon-wrapper"
+            style={{
+              background: 'rgba(11, 107, 203, 0.1)',
+              color: 'var(--primary)',
+            }}
+          >
+            <Icon name="Truck" size={24} />
+          </div>
+          <div className="stat-content-premium">
+            <p>Số chuyến (Trang)</p>
+            <p>{shipments.length}</p>
+          </div>
+        </div>
+
+        <div className="stat-item-premium">
+          <div
+            className="stat-icon-wrapper"
+            style={{
+              background: 'rgba(10, 128, 92, 0.1)',
+              color: 'var(--success)',
+            }}
+          >
+            <Icon name="Banknote" size={24} />
+          </div>
+          <div className="stat-content-premium">
+            <p>Tổng cước (Trang)</p>
+            <p>
+              {formatCost(
+                shipments.reduce(
+                  (sum, s) =>
+                    sum + (s.shipping_cost || 0) + (s.loading_fee || 0),
+                  0,
+                ),
+              ).replace('đ', '')}
+              <span
+                style={{
+                  fontSize: '1rem',
+                  fontWeight: 500,
+                  marginLeft: '0.2rem',
+                }}
+              >
+                đ
+              </span>
+            </p>
+          </div>
+        </div>
+
+        <div className="stat-item-premium">
+          <div
+            className="stat-icon-wrapper"
+            style={{
+              background: 'rgba(245, 158, 11, 0.1)',
+              color: '#f59e0b',
+            }}
+          >
+            <Icon name="Clock" size={24} />
+          </div>
+          <div className="stat-content-premium">
+            <p>Chờ xác nhận</p>
+            <p style={{ color: '#b45309' }}>
+              {shipments.filter((s) => s.status === 'preparing').length}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Filters */}
+      {/* Filter Section */}
       <div className="filter-bar card-filter-section">
-        <form
-          className="filter-field"
-          onSubmit={handleSearch}
-          style={{ flex: '1 1 220px' }}
-        >
-          <label htmlFor="filter-search">Tìm kiếm</label>
-          <div className="flex-controls">
-            <input
-              id="filter-search"
-              className="field-input"
-              type="text"
-              placeholder="Số phiếu xuất..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
-            <button
-              className="btn-secondary"
-              type="submit"
-              style={{ whiteSpace: 'nowrap' }}
-            >
-              Tìm
-            </button>
+        <div className="filter-grid-premium">
+          <div className="filter-field">
+            <label>Tìm kiếm</label>
+            <form className="search-input-wrapper" onSubmit={handleSearch}>
+              <input
+                className="field-input"
+                type="text"
+                placeholder="Số phiếu xuất..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onBlur={handleSearch}
+              />
+              <button type="submit" style={{ display: 'none' }}></button>
+              <Icon name="Search" size={16} className="search-input-icon" />
+            </form>
           </div>
-        </form>
 
-        <div className="filter-field">
-          <label htmlFor="filter-status">Trạng thái</label>
-          <Combobox
-            options={[
-              {
-                value: '',
-                label: 'Tất cả',
-              },
-              {
-                value: 'preparing',
-                label: 'Đang chuẩn bị',
-              },
-              {
-                value: 'shipped',
-                label: 'Đã giao',
-              },
-              {
-                value: 'delivered',
-                label: 'Đã nhận',
-              },
-            ]}
-            value={filters.status ?? ''}
-            onChange={handleStatusChange}
-          />
+          <div className="filter-field">
+            <label>Trạng thái</label>
+            <select
+              className="field-select"
+              value={filters.status ?? ''}
+              onChange={(e) => handleStatusChange(e.target.value)}
+            >
+              <option value="">Tất cả</option>
+              <option value="preparing">Đang chuẩn bị</option>
+              <option value="shipped">Đã giao</option>
+              <option value="delivered">Đã nhận</option>
+            </select>
+          </div>
         </div>
 
         {hasFilter && (
@@ -191,10 +240,15 @@ export function ShipmentList() {
             onClick={() => {
               setFilters({});
               setSearchInput('');
+              setPage(1);
             }}
-            style={{ alignSelf: 'flex-end' }}
+            style={{
+              marginTop: '1rem',
+              color: 'var(--danger)',
+              borderColor: 'rgba(192, 57, 43, 0.2)',
+            }}
           >
-            ✕ Xóa lọc
+            <Icon name="X" size={14} /> Xóa lọc nhanh
           </button>
         )}
       </div>
@@ -272,77 +326,69 @@ export function ShipmentList() {
                         {SHIPMENT_STATUS_LABELS[s.status]}
                       </span>
                     </td>
-                    <td>
+                    <td className="td-actions">
                       <div
                         style={{
                           display: 'flex',
-                          gap: '0.3rem',
-                          flexWrap: 'wrap',
+                          gap: '0.25rem',
                           justifyContent: 'flex-end',
                         }}
                       >
                         {s.status === 'preparing' && (
                           <>
                             <button
-                              className="btn-secondary"
+                              className="btn-icon"
                               type="button"
                               onClick={() => {
                                 void handleConfirm(s);
                               }}
                               disabled={confirmMutation.isPending}
-                              style={{
-                                fontSize: '0.78rem',
-                                padding: '0.2rem 0.5rem',
-                              }}
-                              title="Xác nhận xuất kho và mở phiếu PDF"
+                              title="Xác nhận xuất kho và mở PDF"
                             >
-                              📦 Giao + PDF
+                              <Icon name="CheckCircle" size={16} />
                             </button>
                             <button
-                              className="btn-secondary"
+                              className="btn-icon danger"
                               type="button"
                               onClick={() => {
                                 void handleDelete(s.id);
                               }}
                               disabled={deleteMutation.isPending}
-                              style={{
-                                fontSize: '0.78rem',
-                                padding: '0.2rem 0.5rem',
-                                color: '#c0392b',
-                              }}
+                              title="Xóa"
                             >
-                              ✕
+                              <Icon name="Trash2" size={16} />
                             </button>
                           </>
                         )}
                         {s.status !== 'preparing' && (
                           <button
-                            className="btn-secondary"
+                            className="btn-icon"
                             type="button"
                             onClick={() => {
                               void handleExportPdf(s);
                             }}
                             disabled={exportPdfMutation.isPending}
-                            style={{
-                              fontSize: '0.78rem',
-                              padding: '0.2rem 0.5rem',
-                            }}
-                            title="Mở phiếu xuất để in hoặc lưu PDF"
+                            title="In PDF"
                           >
-                            🖨 PDF
+                            <Icon name="Printer" size={16} />
                           </button>
                         )}
                         {s.status === 'shipped' && (
                           <button
-                            className="btn-secondary"
+                            className="btn-primary"
                             type="button"
                             onClick={() => setDeliveryShipment(s)}
                             style={{
-                              fontSize: '0.78rem',
-                              padding: '0.2rem 0.5rem',
+                              marginLeft: '0.25rem',
+                              height: '32px',
+                              padding: '0 0.5rem',
+                              fontSize: '0.75rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.25rem',
                             }}
                           >
-                            ✓ Xác nhận nhận hàng
+                            <Icon name="Check" size={14} /> Nhận hàng
                           </button>
                         )}
                       </div>
