@@ -7,6 +7,7 @@ export const employeesPlugin: FeaturePlugin = {
   shortLabel: 'Nhân sự',
   description: 'Quản trị nhân viên, tài xế, kinh doanh',
   icon: 'users',
+  requiredRoles: ['admin', 'manager'],
   group: 'master-data',
   order: 100,
   component: () =>

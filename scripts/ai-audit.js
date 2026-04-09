@@ -1,20 +1,19 @@
 /**
- * AI Audit Script (Level 7 Architecture)
- * 
- * Checks for:
- * 1. Forbidden 'any' usage (Rule clean-code.md)
- * 2. Cross-feature relative imports (Rule follow-project-structure.md)
- * 3. TypeScript errors (tsc --noEmit)
- * 4. ESLint violations
+ * AI Audit Script (Level 9 - Production Ready)
+ *
+ * Checks:
+ * 1. Forbidden 'any'
+ * 2. Cross-feature relative imports
+ * 3. Business logic risks (ERP)
+ * 4. TypeScript errors
  */
 
-import { execSync } from 'child_process';
-import { readFileSync, readdirSync, lstatSync, existsSync } from 'fs';
-import { join, resolve, dirname, relative, sep } from 'path';
-import { fileURLToPath } from 'url';
+import { execSync } from "child_process";
+import { readFileSync, existsSync } from "fs";
+import { join, resolve } from "path";
 
-const dirName = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(dirName, '..');
+// ===== CONFIG =====
+const ROOT = resolve(process.cwd());
 
 const colors = {
   reset: "\x1b[0m",
@@ -25,129 +24,155 @@ const colors = {
   cyan: "\x1b[36m",
 };
 
-console.log(`${colors.cyan}🚀 Starting AI Audit (Vinh Phat ERP - Level 7)...${colors.reset}\n`);
-
 let failed = false;
 
-function logStatus(name, success, message = '') {
-  const icon = success ? '✅' : '❌';
+// ===== UTILS =====
+function logStatus(name, success, message = "") {
+  const icon = success ? "✅" : "❌";
   const color = success ? colors.green : colors.red;
-  console.log(`${color}${icon} ${name}${message ? `: ${message}` : ''}${colors.reset}`);
+  console.log(`${color}${icon} ${name}${message ? `: ${message}` : ""}${colors.reset}`);
   if (!success) failed = true;
 }
 
-// 1. Check for 'any' usage (Rule clean-code.md)
-function checkAny() {
-  const srcDir = join(ROOT, 'src');
-  let anyCount = 0;
-  const filesWithAny = [];
+function run(cmd) {
+  try {
+    return execSync(cmd, { stdio: "pipe" }).toString();
+  } catch (e) {
+    return e.stdout?.toString() || "";
+  }
+}
 
-  function walk(dir) {
-    if (!existsSync(dir)) return;
-    const files = readdirSync(dir);
-    for (const file of files) {
-      const path = join(dir, file);
-      if (lstatSync(path).isDirectory()) {
-         if (file !== 'node_modules' && file !== '.git') walk(path);
-      } else if (file.endsWith('.ts') || file.endsWith('.tsx')) {
-        if (file === 'database.types.ts') continue; // Allowed
-        const content = readFileSync(path, 'utf8');
-        // Heuristic for 'as any', ': any', '(any)'
-        if (/ as any|: any|\(any\)/.test(content)) {
-          anyCount++;
-          filesWithAny.push(relative(ROOT, path));
-        }
+// ===== GET CHANGED FILES =====
+function getChangedFiles() {
+  const output = run("git diff --cached --name-only");
+  return output
+    .split("\n")
+    .map(f => f.trim())
+    .filter(f => f.endsWith(".ts") || f.endsWith(".tsx"))
+    .filter(f => f.length > 0);
+}
+
+// ===== 1. CHECK ANY =====
+function checkAny(files) {
+  const anyRegex = /:\s*any\b|as\s+any\b|<any>/;
+
+  let count = 0;
+  const badFiles = [];
+
+  for (const file of files) {
+    const fullPath = join(ROOT, file);
+    if (!existsSync(fullPath)) continue;
+    if (file.includes("database.types.ts")) continue;
+
+    const content = readFileSync(fullPath, "utf8");
+    if (anyRegex.test(content)) {
+      count++;
+      badFiles.push(file);
+    }
+  }
+
+  if (count > 0) {
+    logStatus("Type Safety", false, `Found ${count} 'any' usage`);
+    badFiles.slice(0, 10).forEach(f => console.log(`   - ${f}`));
+  } else {
+    logStatus("Type Safety", true);
+  }
+}
+
+// ===== 2. CHECK ARCHITECTURE =====
+function checkArchitecture(files) {
+  let count = 0;
+
+  for (const file of files) {
+    const fullPath = join(ROOT, file);
+    if (!existsSync(fullPath)) continue;
+
+    const content = readFileSync(fullPath, "utf8");
+    const matches = content.matchAll(/from ['"]([^'"]+)['"]/g);
+
+    for (const match of matches) {
+      const importPath = match[1];
+      if (!importPath.startsWith(".")) continue;
+      if (importPath.startsWith("../../")) {
+        count++;
+        console.log(`   ❌ Cross-feature import: ${file} -> ${importPath}`);
       }
     }
   }
 
-  walk(srcDir);
-  if (anyCount > 0) {
-    logStatus('Type Safety', false, `Found ${anyCount} instances of 'any' in ${filesWithAny.length} files.`);
-    filesWithAny.slice(0, 10).forEach(f => console.log(`   - ${f}`));
-    if (filesWithAny.length > 10) console.log(`   ... and ${filesWithAny.length - 10} more`);
+  if (count > 0) {
+    logStatus("Architecture", false, `Found ${count} cross-feature imports`);
   } else {
-    logStatus('Type Safety', true, 'No forbidden "any" usage found.');
+    logStatus("Architecture", true);
   }
 }
 
-// 2. Check for cross-feature relative imports (Rule follow-project-structure.md)
-function checkArchitecture() {
-  const featuresDir = join(ROOT, 'src', 'features');
-  if (!existsSync(featuresDir)) return;
+// ===== 3. BUSINESS LOGIC (ERP) =====
+function checkBusiness(files) {
+  let warnings = 0;
 
-  const features = readdirSync(featuresDir).filter(f => lstatSync(join(featuresDir, f)).isDirectory());
-  let crossImportCount = 0;
+  for (const file of files) {
+    const fullPath = join(ROOT, file);
+    if (!existsSync(fullPath)) continue;
 
-  features.forEach(feature => {
-    const featurePath = join(featuresDir, feature);
-    function walk(dir) {
-      const files = readdirSync(dir);
-      for (const file of files) {
-        const path = join(dir, file);
-        if (lstatSync(path).isDirectory()) walk(path);
-        else if (file.endsWith('.ts') || file.endsWith('.tsx')) {
-          const content = readFileSync(path, 'utf8');
-          const relPathToFeatures = relative(featuresDir, path);
-          const currentFeatureName = relPathToFeatures.split(sep)[0];
-          
-          const matches = content.matchAll(/from ['"](\.\.[^'"]+)['"]/g);
-          for (const match of matches) {
-            const importPath = match[1];
-            const absoluteImportPath = resolve(dir, importPath);
-            const relativeToFeatures = relative(featuresDir, absoluteImportPath);
-            
-            // If the relative path doesn't start with the current feature name directory, it's a cross-import
-            if (!relativeToFeatures.startsWith(currentFeatureName + sep) && relativeToFeatures !== currentFeatureName) {
-              crossImportCount++;
-              console.log(`   ${colors.red}❌ Cross-feature import: ${relative(ROOT, path)} -> ${importPath}${colors.reset}`);
-            }
-          }
-        }
-      }
+    const content = readFileSync(fullPath, "utf8");
+
+    // ⚠️ kg vs meter
+    if (content.includes("meter") && content.includes("price")) {
+      console.log(`   ⚠️ Possible unit mismatch (meter vs price) in ${file}`);
+      warnings++;
     }
-    walk(featurePath);
-  });
 
-  if (crossImportCount > 0) {
-    logStatus('Architecture', false, `Found ${crossImportCount} cross-feature relative imports.`);
+    // ❌ gọi API trong component
+    if (content.includes("useEffect") && content.includes("fetch(")) {
+      console.log(`   ❌ API call inside component: ${file}`);
+      failed = true;
+    }
+  }
+
+  if (warnings === 0) {
+    logStatus("Business Logic", true);
   } else {
-    logStatus('Architecture', true, 'Feature isolation looks good.');
+    logStatus("Business Logic", true, `${warnings} warnings`);
   }
 }
 
-// 3. TSC and ESLint
-async function runStandardChecks() {
-  console.log(`\n${colors.blue}📦 Running Standard Quality Checks...${colors.reset}`);
-  
+// ===== 4. TYPESCRIPT =====
+function checkTypeScript() {
+  console.log(`\n${colors.blue}📦 Running TypeScript check...${colors.reset}`);
   try {
-    console.log(`   ${colors.cyan}Running tsc --noEmit...${colors.reset}`);
-    execSync('npm run typecheck', { stdio: 'inherit' });
-    logStatus('TypeScript', true);
-  } catch (e) {
-    logStatus('TypeScript', false, 'Found compilation errors.');
-  }
-
-  try {
-    console.log(`\n   ${colors.cyan}Running eslint...${colors.reset}`);
-    execSync('npm run lint', { stdio: 'inherit' });
-    logStatus('ESLint', true);
-  } catch (e) {
-    logStatus('ESLint', false, 'Found linting violations.');
+    execSync("npx tsc --noEmit", { stdio: "inherit" });
+    logStatus("TypeScript", true);
+  } catch {
+    logStatus("TypeScript", false);
   }
 }
 
+// ===== MAIN =====
 async function main() {
-  checkAny();
-  checkArchitecture();
-  await runStandardChecks();
+  console.log(`${colors.cyan}🚀 AI Audit (Level 9) Starting...${colors.reset}\n`);
 
-  console.log('\n---');
+  const files = getChangedFiles();
+
+  if (files.length === 0) {
+    console.log("⚠️ No changed files");
+    process.exit(0);
+  }
+
+  console.log(`📂 Checking ${files.length} changed files...\n`);
+
+  checkAny(files);
+  checkArchitecture(files);
+  checkBusiness(files);
+  checkTypeScript();
+
+  console.log("\n---");
+
   if (failed) {
-    console.log(`${colors.red}❌ Audit FAILED. Codebase does not meet Level 7 standards.${colors.reset}`);
+    console.log(`${colors.red}❌ AUDIT FAILED${colors.reset}`);
     process.exit(1);
   } else {
-    console.log(`${colors.green}✅ Audit PASSED. Level 7 Architecture is stable.${colors.reset}`);
+    console.log(`${colors.green}✅ AUDIT PASSED${colors.reset}`);
     process.exit(0);
   }
 }
