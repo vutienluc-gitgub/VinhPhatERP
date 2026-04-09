@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
-import { Icon } from '@/shared/components/Icon';
+import { Icon, Badge, type BadgeVariant } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 
@@ -38,6 +38,25 @@ type FinishedFabricListProps = {
   onBulkNew: () => void;
   onTrace: (roll: FinishedFabricRoll) => void;
 };
+
+function getStatusVariant(status: RollStatus): BadgeVariant {
+  switch (status) {
+    case 'in_stock':
+      return 'success';
+    case 'reserved':
+      return 'info';
+    case 'in_process':
+      return 'purple';
+    case 'shipped':
+      return 'gray';
+    case 'damaged':
+      return 'danger';
+    case 'written_off':
+      return 'gray';
+    default:
+      return 'gray';
+  }
+}
 
 function formatNum(val: number | null, unit: string): string {
   if (val === null || val === undefined) return '—';
@@ -227,7 +246,7 @@ export function FinishedFabricList({
 
       {/* Stats Section - Premium Dashboard */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 md:p-6 bg-surface-subtle">
+        <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
           <div className="kpi-card-premium kpi-primary">
             <div className="kpi-overlay" />
             <div className="kpi-content">
@@ -483,9 +502,9 @@ export function FinishedFabricList({
                       {formatNum(roll.weight_kg, 'kg')}
                     </td>
                     <td>
-                      <span className={`roll-status ${roll.status}`}>
+                      <Badge variant={getStatusVariant(roll.status)}>
                         {ROLL_STATUS_LABELS[roll.status]}
-                      </span>
+                      </Badge>
                     </td>
                     <td className="td-muted">
                       {roll.warehouse_location ?? '—'}
