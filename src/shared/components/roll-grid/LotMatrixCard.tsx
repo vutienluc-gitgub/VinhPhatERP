@@ -1,15 +1,13 @@
-import React from 'react';
 import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 
 import { Icon } from '@/shared/components/Icon';
 
 import { RollGridItem, type RollGridItemMode } from './RollGridItem';
 import { useRollMatrixLogic, type RollMatrixItem } from './useRollMatrixLogic';
 
-/** Utility for tailwind class merging */
+/** Utility for class merging */
 function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return clsx(inputs);
 }
 
 interface LotMatrixCardProps {
@@ -29,9 +27,15 @@ interface LotMatrixCardProps {
   mode?: RollGridItemMode;
   className?: string;
 
+  // Selection (mode=select)
+  /** Set of selected roll IDs (mode=select) */
+  selectedRollIds?: Set<string>;
+
   // Actions
   onRollChange?: (index: number, weight: number | undefined) => void;
   onRollPress?: (roll: RollMatrixItem, index: number) => void;
+  /** Called when Enter pressed on last cell — triggers new roll insertion */
+  onAddRoll?: () => void;
 }
 
 export function LotMatrixCard({
@@ -45,35 +49,41 @@ export function LotMatrixCard({
   standardWeightKg,
   mode = 'input',
   className,
+  selectedRollIds,
   onRollChange,
   onRollPress,
+  onAddRoll,
 }: LotMatrixCardProps) {
   const { inputRefs, focusNextCell, totals, getAnomalyStatus } =
     useRollMatrixLogic({
       rolls,
       standardWeightKg,
-      onEnterAtEnd: () => {
-        // Optional: Handle finishing input matrix
-        console.log('Finished entering lot matrix');
-      },
+      onAddRoll,
     });
+
+  // For select mode: count/weight of selected rolls in this group
+  const selectedInGroup =
+    mode === 'select' && selectedRollIds
+      ? rolls.filter((r) => selectedRollIds.has(r.id))
+      : [];
+  const selectedCount = selectedInGroup.length;
+  const selectedWeight = selectedInGroup.reduce(
+    (sum, r) => sum + (r.weight_kg ?? 0),
+    0,
+  );
 
   // Check progress matching
   const isCountMatch = totals.rollCount === expectedRollsCount;
-  // If weight is missing, matching is determined by count only
   const progressColor = isCountMatch ? 'bg-emerald-500' : 'bg-amber-500';
 
   // Render ghost slots if we have fewer rolls than expected
   const displayRolls = [...rolls];
-  // Note: if doing "ghost slots" for a pure input array, we map what exists.
-  // We can pad with empty entries up to expectedRollsCount
   if (displayRolls.length < expectedRollsCount) {
     const shorts = expectedRollsCount - displayRolls.length;
     for (let i = 0; i < shorts; i++) {
-      // Mock items to render ghost slots
       displayRolls.push({
         id: `ghost-${i}`,
-        roll_number: `Ghost`,
+        roll_number: 'Ghost',
         weight_kg: undefined,
         status: 'ghost',
       });
@@ -83,86 +93,132 @@ export function LotMatrixCard({
   return (
     <div
       className={cn(
-        'bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden',
+        'rounded-xl shadow-sm border border-slate-200 overflow-hidden',
+        'bg-white',
         className,
       )}
     >
       {/* Header Section: Metadata & Checksum */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between p-4 border-b border-slate-100 bg-slate-50/50 gap-4">
-        <div className="flex items-start gap-3">
-          <div className="p-2 bg-blue-50 text-brand-600 rounded-lg">
-            <Icon name="Box" size={24} />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border-b border-slate-100 bg-slate-50/50 gap-3">
+        <div className="flex items-start gap-2.5">
+          <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg shrink-0">
+            <Icon name="Layers" size={18} />
           </div>
-          <div>
-            <h3 className="font-bold text-slate-800 text-sm md:text-base leading-tight uppercase">
+          <div className="min-w-0">
+            <h4 className="font-bold text-slate-800 text-sm leading-tight uppercase truncate">
               {title}
-            </h3>
-            <div className="flex flex-wrap gap-2 mt-2">
+            </h4>
+            <div className="flex flex-wrap gap-1.5 mt-1">
               {lotNumber && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700">
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700">
                   Mẻ: {lotNumber}
                 </span>
               )}
               {colorName && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-50 text-indigo-700">
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium bg-indigo-50 text-indigo-700">
                   {colorName}
                 </span>
               )}
               {widthInfo && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700">
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700">
                   {widthInfo}
                 </span>
               )}
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-600">
+                {rolls.length} cuộn
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Real-time Checksum Counters */}
+        {/* Right side: counters / selection summary */}
         <div className="flex flex-col items-end shrink-0">
-          <div className="text-sm font-medium flex items-center gap-2">
-            <span className="text-slate-500">Tiến độ:</span>
-            <div className="flex items-center gap-2">
-              <span className={cn('w-2 h-2 rounded-full', progressColor)} />
-              <span
-                className={
-                  isCountMatch ? 'text-emerald-700 font-bold' : 'text-slate-800'
-                }
-              >
-                {totals.rollCount} / {expectedRollsCount} cuộn
+          {mode === 'select' ? (
+            // Select mode: show selected count
+            selectedCount > 0 ? (
+              <>
+                <span className="text-xs font-bold text-emerald-700">
+                  {selectedCount} đã chọn
+                </span>
+                <span className="text-[11px] text-slate-500">
+                  {selectedWeight.toFixed(1)} kg
+                </span>
+              </>
+            ) : (
+              <span className="text-[11px] text-slate-400">
+                Nhấn để chọn cuộn
               </span>
-            </div>
-          </div>
-          <div className="text-sm text-slate-500 mt-1">
-            Tổng:{' '}
-            <span className="font-bold text-slate-800">
-              {totals.totalWeight.toFixed(1)}
-            </span>
-            {expectedTotalWeightKg
-              ? ` / ${expectedTotalWeightKg.toFixed(1)} kg`
-              : ' kg'}
-          </div>
+            )
+          ) : (
+            // Input/View mode: show progress checksum
+            <>
+              <div className="text-sm font-medium flex items-center gap-2">
+                <span className="text-slate-500">Tiến độ:</span>
+                <div className="flex items-center gap-2">
+                  <span className={cn('w-2 h-2 rounded-full', progressColor)} />
+                  <span
+                    className={
+                      isCountMatch
+                        ? 'text-emerald-700 font-bold'
+                        : 'text-slate-800'
+                    }
+                  >
+                    {totals.rollCount} / {expectedRollsCount} cuộn
+                  </span>
+                </div>
+              </div>
+              <div className="text-sm text-slate-500 mt-1">
+                Tổng:{' '}
+                <span className="font-bold text-slate-800">
+                  {totals.totalWeight.toFixed(1)}
+                </span>
+                {expectedTotalWeightKg
+                  ? ` / ${expectedTotalWeightKg.toFixed(1)} kg`
+                  : ' kg'}
+              </div>
+            </>
+          )}
         </div>
       </div>
 
       {/* Grid Presentation Section */}
-      <div className="p-4 bg-white overflow-x-hidden">
-        <div className="grid grid-cols-5 md:grid-cols-10 gap-2 sm:gap-3">
+      <div className="p-3">
+        <div className="grid grid-cols-5 md:grid-cols-10 gap-2">
           {displayRolls.map((roll, index) => {
             const isGhost = roll.status === 'ghost';
             const anomalyStatus = isGhost
               ? 'empty'
               : getAnomalyStatus(roll.weight_kg);
+            const rollIsSelected =
+              mode === 'select' && selectedRollIds
+                ? selectedRollIds.has(roll.id)
+                : false;
 
             return (
               <RollGridItem
                 key={roll.id}
-                ref={(el) => (inputRefs.current[index] = el)}
+                ref={(el: HTMLInputElement | null) =>
+                  (inputRefs.current[index] = el)
+                }
                 mode={mode}
-                label={isGhost ? '' : (index + 1).toString().padStart(2, '0')} // Simple numbering like 01, 02
+                label={
+                  isGhost
+                    ? ''
+                    : roll.roll_number.replace(/^R-?/i, '') ||
+                      (index + 1).toString().padStart(2, '0')
+                }
+                subLabel={roll.raw_roll_number}
                 value={roll.weight_kg}
+                valueUnit="kg"
                 anomalyStatus={anomalyStatus}
                 isGhost={isGhost}
-                onChangeWeight={(val) => {
+                isSelected={rollIsSelected}
+                statusIcon={
+                  roll.status === 'reserved' && !rollIsSelected
+                    ? 'locked'
+                    : 'none'
+                }
+                onChangeWeight={(val: number | undefined) => {
                   if (onRollChange && !isGhost) onRollChange(index, val);
                 }}
                 onKeyDown={(e) => {

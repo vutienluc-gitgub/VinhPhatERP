@@ -1,17 +1,16 @@
 import React, { forwardRef } from 'react';
 import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 
 import { Icon } from '@/shared/components/Icon';
 
 import { AnomalyStatus } from './useRollMatrixLogic';
 
-/** Utility for tailwind class merging */
+/** Utility for class merging */
 function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return clsx(inputs);
 }
 
-export type RollGridItemMode = 'input' | 'view';
+export type RollGridItemMode = 'input' | 'view' | 'select';
 
 interface RollGridItemProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -19,9 +18,15 @@ interface RollGridItemProps extends Omit<
 > {
   mode?: RollGridItemMode;
   label?: string; // e.g., "R01" or the roll number
+  /** Secondary label shown below main label (e.g., raw roll number for pairing) */
+  subLabel?: string;
   value?: number;
+  /** Unit label shown after value (default: "kg") */
+  valueUnit?: string;
   anomalyStatus?: AnomalyStatus;
   isGhost?: boolean;
+  /** Whether this cell is currently selected (mode=select) */
+  isSelected?: boolean;
   statusIcon?: 'locked' | 'cut' | 'none'; // Further visual signals
   onChangeWeight?: (weight: number | undefined) => void;
   onPress?: () => void; // Mobile friendly tap handler
@@ -32,9 +37,12 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
     {
       mode = 'view',
       label,
+      subLabel,
       value,
+      valueUnit = 'kg',
       anomalyStatus = 'normal',
       isGhost = false,
+      isSelected = false,
       statusIcon = 'none',
       onChangeWeight,
       onPress,
@@ -47,28 +55,42 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
     const anomalyStyle = {
       normal: 'border-slate-200 bg-white text-slate-800',
       light:
-        'border-red-400 bg-red-50 text-red-700 shadow-[0_0_0_1px_rgba(248,113,113,1)]', // Red glow
-      heavy: 'border-amber-400 bg-amber-50 text-amber-700', // Heavy could be warning instead of error
+        'border-red-400 bg-red-50 text-red-700 shadow-[0_0_0_1px_rgba(248,113,113,1)]',
+      heavy: 'border-amber-400 bg-amber-50 text-amber-700',
       empty: 'border-slate-200 bg-slate-50 text-slate-400',
     };
 
     if (anomalyStatus === 'light') {
-      // User specifically requested red for anomalous. Let's use red for both diffs for now
       anomalyStyle.heavy =
         'border-red-400 bg-red-50 text-red-700 shadow-[0_0_0_1px_rgba(248,113,113,1)]';
     }
 
+    // Selected style overrides anomaly when in select mode
+    const selectedStyle =
+      'border-emerald-500 bg-emerald-50 text-emerald-800 shadow-[0_0_0_1px_rgba(16,185,129,0.3)]';
+
     const baseClass = cn(
-      'relative flex flex-col justify-center items-center rounded-md border p-2 transition-all',
+      'relative flex flex-col justify-center items-center rounded-lg border-2 p-2 transition-all',
       'min-h-[64px] min-w-[64px]', // Touch friendly min-size
       isGhost
         ? 'border-dashed border-slate-300 bg-transparent opacity-60'
-        : anomalyStyle[anomalyStatus],
-      mode === 'view' ? 'cursor-pointer active:scale-95' : '',
+        : mode === 'select' && isSelected
+          ? selectedStyle
+          : anomalyStyle[anomalyStatus],
+      mode !== 'input' ? 'cursor-pointer active:scale-95 select-none' : '',
       className,
     );
 
     const renderIcon = () => {
+      // Selection checkmark badge (mode=select)
+      if (mode === 'select' && isSelected) {
+        return (
+          <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center">
+            <Icon name="Check" size={12} className="text-white" />
+          </span>
+        );
+      }
+
       if (statusIcon === 'locked')
         return (
           <Icon
@@ -94,14 +116,25 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
       onChangeWeight(isNaN(num) ? undefined : num);
     };
 
+    const displayValue = () => {
+      if (isGhost) return 'Đã Xuất';
+      if (!value) return '-';
+      return `${value}${valueUnit}`;
+    };
+
     return (
       <div
         className={baseClass}
-        onClick={mode === 'view' ? onPress : undefined}
+        onClick={mode !== 'input' ? onPress : undefined}
       >
         {label && (
-          <span className="text-[10px] uppercase font-semibold opacity-70 mb-1">
+          <span className="text-[10px] uppercase font-semibold opacity-70 mb-0.5 truncate max-w-full">
             {label}
+          </span>
+        )}
+        {subLabel && (
+          <span className="text-[9px] opacity-50 truncate max-w-full leading-none mb-0.5">
+            {subLabel}
           </span>
         )}
 
@@ -117,8 +150,8 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
             placeholder="..."
           />
         ) : (
-          <span className="font-bold text-sm">
-            {isGhost ? 'Đã Xuất' : value ? `${value}kg` : '-'}
+          <span className="font-bold text-xs leading-tight">
+            {displayValue()}
           </span>
         )}
 
