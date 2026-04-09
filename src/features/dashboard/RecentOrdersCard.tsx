@@ -36,68 +36,55 @@ function formatDate(iso: string): string {
 
 export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
   return (
-    <div
-      className="panel-card"
-      style={{
-        padding: 0,
-        overflow: 'hidden',
-      }}
-    >
-      <div style={{ padding: '1.25rem 1.25rem 0' }}>
-        <div className="card-header-row">
-          <div>
-            <p className="eyebrow">Đơn hàng</p>
-            <h3 style={{ margin: 0 }}>Gần đây</h3>
-          </div>
-          <Link to="/orders" className="card-action-link">
-            Xem tất cả →
-          </Link>
+    <div className="panel-card card-flush">
+      <div className="card-header-area card-header-premium">
+        <div>
+          <p className="eyebrow-premium">GIAO DỊCH</p>
+          <h3 className="title-premium">Đơn hàng mới</h3>
         </div>
+        <Link to="/orders" className="card-action-link">
+          Tất cả →
+        </Link>
       </div>
 
-      <div style={{ padding: '0.75rem 0 0' }}>
+      <div className="card-table-section mt-1">
         {isLoading ? (
-          <div style={{ padding: '0 1.25rem 1.25rem' }}>
+          <div className="p-4 space-y-3">
             {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="skeleton-block"
-                style={{
-                  height: '2.5rem',
-                  marginBottom: '0.5rem',
-                }}
-              />
+              <div key={i} className="skeleton-block h-10 w-full" />
             ))}
           </div>
         ) : orders.length === 0 ? (
-          <p className="table-empty">Chưa có đơn hàng nào.</p>
+          <p className="table-empty py-10">Chưa có đơn hàng nào.</p>
         ) : (
-          <div className="data-table-wrap" style={{ border: 'none' }}>
+          <div className="overflow-x-auto">
             <table className="data-table">
               <thead>
                 <tr>
                   <th>Mã đơn</th>
-                  <th className="hide-mobile">KH</th>
+                  <th className="hide-mobile">Khách hàng</th>
                   <th className="text-right">Tổng tiền</th>
-                  <th>Trạng thái</th>
+                  <th className="text-right">Trạng thái</th>
                 </tr>
               </thead>
               <tbody>
                 {orders.map((order) => (
                   <tr key={order.id}>
                     <td>
-                      <strong>{order.order_number}</strong>
-                      <div className="td-muted" style={{ fontSize: '0.76rem' }}>
-                        {formatDate(order.created_at)}
+                      <div className="flex flex-col">
+                        <span className="font-bold">{order.order_number}</span>
+                        <span className="text-[11px] text-muted">
+                          {formatDate(order.created_at)}
+                        </span>
                       </div>
                     </td>
                     <td className="td-muted hide-mobile">
                       {order.customer_name ?? '—'}
                     </td>
-                    <td className="numeric-cell">
+                    <td className="numeric-cell font-medium">
                       {formatCurrency(order.total_amount)}
                     </td>
-                    <td>
+                    <td className="text-right">
                       <span
                         className={`roll-status ${STATUS_CSS[order.status] ?? 'in_stock'}`}
                       >

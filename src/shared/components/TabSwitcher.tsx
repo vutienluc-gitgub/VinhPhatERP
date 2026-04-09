@@ -10,20 +10,25 @@ interface Props<T extends string> {
   tabs: TabItem<T>[];
   active: T;
   onChange: (key: T) => void;
+  variant?: 'boxed' | 'underline';
 }
 
 export function TabSwitcher<T extends string>({
   tabs,
   active,
   onChange,
+  variant = 'boxed',
 }: Props<T>) {
+  const barClass = variant === 'underline' ? 'tab-bar-underline' : 'tab-bar';
+  const itemClass = variant === 'underline' ? 'tab-item-underline' : 'tab-item';
+
   return (
-    <div className="tab-bar">
+    <div className={barClass}>
       {tabs.map((tab) => (
         <button
           key={tab.key}
           type="button"
-          className={`tab-item${active === tab.key ? ' is-active' : ''}`}
+          className={`${itemClass}${active === tab.key ? ' is-active' : ''}`}
           onClick={() => onChange(tab.key)}
         >
           {tab.icon}

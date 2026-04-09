@@ -1,4 +1,4 @@
-import { KpiCard, KpiGrid } from '@/shared/components/KpiCard';
+import { KpiCardPremium, KpiGridPremium } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 
 import { CustomerSourceChart } from './CustomerSourceChart';
@@ -11,29 +11,6 @@ import {
   useCustomerSources,
 } from './useDashboardData';
 
-function DashboardSkeleton() {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1rem',
-      }}
-    >
-      <KpiGrid>
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="skeleton-card" />
-        ))}
-      </KpiGrid>
-      <KpiGrid>
-        {[5, 6, 7, 8].map((i) => (
-          <div key={i} className="skeleton-card" />
-        ))}
-      </KpiGrid>
-    </div>
-  );
-}
-
 export function DashboardPage() {
   const { data: stats, isLoading: statsLoading } = useDashboardStats();
   const pendingTasks = usePendingTasks(stats);
@@ -42,95 +19,80 @@ export function DashboardPage() {
     useCustomerSources();
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1.5rem',
-        width: '100%',
-        padding: '0 0.5rem',
-      }}
-    >
+    <div className="page-container p-4 space-y-6">
       <h1 className="sr-only">Dashboard</h1>
-      {/* ── KPI Cards ── */}
-      {statsLoading ? (
-        <DashboardSkeleton />
-      ) : (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.75rem',
-          }}
-        >
-          {/* Primary row */}
-          <KpiGrid>
-            <KpiCard
-              icon="📊"
-              label="Đang xử lý"
-              value={String(stats?.activeOrders ?? 0)}
-              color="#0b6bcb"
-            />
-            <KpiCard
-              icon="⚠️"
-              label="Trễ hạn"
-              value={String(stats?.overdueOrders ?? 0)}
-              color={stats?.overdueOrders ? '#c0392b' : '#0c8f68'}
-            />
-            <KpiCard
-              icon="💰"
-              label="Tổng công nợ"
-              value={stats ? `${formatCurrency(stats.totalDebt)} đ` : '—'}
-              color={stats && stats.totalDebt > 0 ? '#c0392b' : '#0c8f68'}
-            />
-            <KpiCard
-              icon="✅"
-              label="Thu 7 ngày qua"
-              value={stats ? `${formatCurrency(stats.recentPayments)} đ` : '—'}
-              color="#0c8f68"
-            />
-          </KpiGrid>
 
-          {/* Secondary row */}
-          <KpiGrid>
-            <KpiCard
-              icon="📝"
-              label="Đơn nháp"
-              value={String(stats?.draftOrders ?? 0)}
-              color="#6b7280"
-            />
-            <KpiCard
-              icon="🚚"
-              label="Chờ giao"
-              value={String(stats?.pendingShipments ?? 0)}
-              color="#d97706"
-            />
-            <KpiCard
-              icon="📊"
-              label="Tỷ lệ chốt đơn"
-              value={
-                stats?.conversionRate !== null &&
-                stats?.conversionRate !== undefined
-                  ? `${stats.conversionRate}%`
-                  : '—'
-              }
-              color="#0b6bcb"
-            />
-            <KpiCard
-              icon="📋"
-              label="BG sắp hết hạn"
-              value={String(stats?.expiringQuotations ?? 0)}
-              color={stats?.expiringQuotations ? '#c0392b' : '#6b7280'}
-            />
-          </KpiGrid>
-        </div>
-      )}
+      {/* ── Top Level KPIs ── */}
+      <KpiGridPremium>
+        <KpiCardPremium
+          label="Đang xử lý"
+          value={stats?.activeOrders ?? 0}
+          icon="Package"
+          variant="primary"
+          isLoading={statsLoading}
+        />
+        <KpiCardPremium
+          label="Trễ hạn"
+          value={stats?.overdueOrders ?? 0}
+          icon="AlertTriangle"
+          variant={stats?.overdueOrders ? 'danger' : 'success'}
+          isLoading={statsLoading}
+          footer={stats?.overdueOrders ? 'Cần xử lý ngay' : 'Đúng tiến độ'}
+        />
+        <KpiCardPremium
+          label="Tổng công nợ"
+          value={stats ? `${formatCurrency(stats.totalDebt)} đ` : '—'}
+          icon="Wallet"
+          variant={stats && stats.totalDebt > 0 ? 'danger' : 'success'}
+          isLoading={statsLoading}
+        />
+        <KpiCardPremium
+          label="Thu 7 ngày qua"
+          value={stats ? `${formatCurrency(stats.recentPayments)} đ` : '—'}
+          icon="CheckCircle"
+          variant="success"
+          isLoading={statsLoading}
+        />
+      </KpiGridPremium>
 
-      {/* ── Two-column widgets ── */}
-      <div
-        className="dashboard-grid dashboard-grid--2col"
-        style={{ gap: '1.5rem' }}
-      >
+      {/* ── Operational KPIs ── */}
+      <KpiGridPremium>
+        <KpiCardPremium
+          label="Đơn nháp"
+          value={stats?.draftOrders ?? 0}
+          icon="FileText"
+          variant="secondary"
+          isLoading={statsLoading}
+        />
+        <KpiCardPremium
+          label="Chờ giao"
+          value={stats?.pendingShipments ?? 0}
+          icon="Truck"
+          variant="warning"
+          isLoading={statsLoading}
+        />
+        <KpiCardPremium
+          label="Tỷ lệ chốt"
+          value={
+            stats?.conversionRate !== undefined
+              ? `${stats.conversionRate}%`
+              : '—'
+          }
+          icon="TrendingUp"
+          variant="primary"
+          isLoading={statsLoading}
+        />
+        <KpiCardPremium
+          label="BG sắp hết hạn"
+          value={stats?.expiringQuotations ?? 0}
+          icon="Clock"
+          variant={stats?.expiringQuotations ? 'danger' : 'secondary'}
+          isLoading={statsLoading}
+        />
+      </KpiGridPremium>
+
+      {/* ── Two-column content ── */}
+      <div className="dashboard-grid dashboard-grid--2col">
         <PendingTasksCard tasks={pendingTasks} />
         <RecentOrdersCard
           orders={recentOrders ?? []}
@@ -138,8 +100,8 @@ export function DashboardPage() {
         />
       </div>
 
-      {/* ── Customer Sources ── */}
-      <div style={{ marginTop: '0.5rem' }}>
+      {/* ── Analytics ── */}
+      <div className="mt-6">
         <CustomerSourceChart
           sources={customerSources ?? []}
           isLoading={sourcesLoading}
