@@ -4,6 +4,7 @@ import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { Pagination } from '@/shared/components/Pagination';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
+import { Combobox } from '@/shared/components/Combobox';
 import { Icon } from '@/shared/components/Icon';
 import { formatCurrency } from '@/shared/utils/format';
 
@@ -82,15 +83,6 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
     }));
   }
 
-  function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as OrderStatus | '';
-    setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      status: val || undefined,
-    }));
-  }
-
   async function handleDelete(order: Order) {
     if (order.status !== 'draft') {
       await showAlert('Chỉ có thể xoá đơn hàng ở trạng thái Nháp.');
@@ -115,156 +107,140 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           <h3 className="title-premium">Quản lý Đơn hàng</h3>
         </div>
 
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
+        <div className="flex items-center gap-4">
           <button
-            className="btn-primary"
+            className="btn-primary min-h-[42px] px-5"
             type="button"
             onClick={onNew}
-            style={{
-              minHeight: '42px',
-              padding: '0 1.25rem',
-            }}
           >
             + Tạo đơn hàng
           </button>
         </div>
       </div>
 
-      {/* Stats Section */}
-      <div className="stats-grid-premium">
-        <div className="stat-item-premium">
-          <div
-            className="stat-icon-wrapper"
-            style={{
-              background: 'rgba(11, 107, 203, 0.1)',
-              color: 'var(--primary)',
-            }}
-          >
-            <Icon name="ShoppingCart" size={24} />
+      {/* 📊 KPI Dashboard - Premium Visuals */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 md:p-6 bg-surface-subtle border-b border-border">
+        <div className="kpi-card-premium kpi-primary">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Đơn hàng mới</p>
+              <p className="kpi-value">{orders.length}</p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="ShoppingCart" size={32} />
+            </div>
           </div>
-          <div className="stat-content-premium">
-            <p>Đơn hàng (Trang hiện tại)</p>
-            <p>{orders.length}</p>
-          </div>
-        </div>
-
-        <div className="stat-item-premium">
-          <div
-            className="stat-icon-wrapper"
-            style={{
-              background: 'rgba(10, 128, 92, 0.1)',
-              color: 'var(--success)',
-            }}
-          >
-            <Icon name="Banknote" size={24} />
-          </div>
-          <div className="stat-content-premium">
-            <p>Doanh số trang</p>
-            <p>
-              {formatCurrency(
-                orders.reduce((sum, o) => sum + o.total_amount, 0),
-              ).replace(' đ', '')}
-              <span
-                style={{
-                  fontSize: '1rem',
-                  fontWeight: 500,
-                  marginLeft: '0.2rem',
-                }}
-              >
-                đ
-              </span>
-            </p>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Đơn hàng trong kỳ hiện tại
           </div>
         </div>
 
-        <div className="stat-item-premium">
-          <div
-            className="stat-icon-wrapper"
-            style={{
-              background: 'rgba(225, 29, 72, 0.1)',
-              color: '#e11d48',
-            }}
-          >
-            <Icon name="AlertCircle" size={24} />
+        <div className="kpi-card-premium kpi-success">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Doanh thu dự kiến</p>
+              <div className="flex items-baseline gap-1">
+                <p className="kpi-value">
+                  {formatCurrency(
+                    orders.reduce((sum, o) => sum + o.total_amount, 0),
+                  ).replace(' đ', '')}
+                </p>
+                <span className="text-lg font-bold opacity-80">đ</span>
+              </div>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="Banknote" size={32} />
+            </div>
           </div>
-          <div className="stat-content-premium">
-            <p>Công nợ trang</p>
-            <p style={{ color: '#be123c' }}>
-              {formatCurrency(
-                orders.reduce(
-                  (sum, o) => sum + Math.max(0, o.total_amount - o.paid_amount),
-                  0,
-                ),
-              ).replace(' đ', '')}
-              <span
-                style={{
-                  fontSize: '1rem',
-                  fontWeight: 500,
-                  marginLeft: '0.2rem',
-                }}
-              >
-                đ
-              </span>
-            </p>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Tổng giá trị đơn hiển thị
+          </div>
+        </div>
+
+        <div className="kpi-card-premium kpi-danger">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Tổng công nợ</p>
+              <div className="flex items-baseline gap-1">
+                <p className="kpi-value">
+                  {formatCurrency(
+                    orders.reduce(
+                      (sum, o) =>
+                        sum + Math.max(0, o.total_amount - o.paid_amount),
+                      0,
+                    ),
+                  ).replace(' đ', '')}
+                </p>
+                <span className="text-lg font-bold opacity-80">đ</span>
+              </div>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="AlertCircle" size={32} strokeWidth={2} />
+            </div>
+          </div>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Số tiền khách còn nợ
           </div>
         </div>
       </div>
 
-      {/* Filter Section */}
-      <div className="filter-bar card-filter-section">
-        <div className="filter-grid-premium">
+      {/* 🔍 Filter Bar */}
+      <div className="filter-bar card-filter-section border-b border-border p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="filter-field">
-            <label>Tìm kiếm</label>
+            <label>Tìm kiếm khách hàng / Số đơn</label>
             <form className="search-input-wrapper" onSubmit={handleSearch}>
               <input
                 className="field-input"
                 type="text"
-                placeholder="Số đơn hàng..."
+                placeholder="Nhập mã đơn hoặc tên khách..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 onBlur={handleSearch}
               />
-              <button type="submit" style={{ display: 'none' }}></button>
+              <button type="submit" className="hidden" />
               <Icon name="Search" size={16} className="search-input-icon" />
             </form>
           </div>
 
           <div className="filter-field">
-            <label>Trạng thái</label>
-            <select
-              className="field-select"
+            <label>Trạng thái đơn hàng</label>
+            <Combobox
+              options={[
+                {
+                  value: '',
+                  label: 'Tất cả trạng thái',
+                },
+                ...Object.entries(ORDER_STATUS_LABELS).map(
+                  ([value, label]) => ({
+                    value,
+                    label,
+                  }),
+                ),
+              ]}
               value={filters.status ?? ''}
-              onChange={handleStatusChange}
-            >
-              <option value="">Tất cả</option>
-              <option value="draft">Nháp</option>
-              <option value="confirmed">Đã xác nhận</option>
-              <option value="in_progress">Đang xử lý</option>
-              <option value="completed">Hoàn thành</option>
-              <option value="cancelled">Đã huỷ</option>
-            </select>
+              onChange={(val) => {
+                setPage(1);
+                setFilters((prev) => ({
+                  ...prev,
+                  status: (val as OrderStatus) || undefined,
+                }));
+              }}
+            />
           </div>
         </div>
 
         {hasFilter && (
           <button
-            className="btn-secondary"
+            className="btn-secondary mt-4 text-danger border-danger/20 flex items-center gap-2"
             type="button"
             onClick={() => {
               setFilters({});
               setSearchInput('');
               setPage(1);
-            }}
-            style={{
-              marginTop: '1rem',
-              color: 'var(--danger)',
-              borderColor: 'rgba(192, 57, 43, 0.2)',
             }}
           >
             <Icon name="X" size={14} /> Xóa lọc nhanh
@@ -272,155 +248,204 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
         )}
       </div>
 
-      {/* Error */}
+      {/* Error State */}
       {error && (
-        <p className="error-inline">
-          Lỗi tải dữ liệu: {(error as Error).message}
-        </p>
+        <div className="p-4">
+          <p className="error-inline">
+            Lỗi tải dữ liệu: {(error as Error).message}
+          </p>
+        </div>
       )}
 
-      {/* Table */}
-      <div
-        className="data-table-wrap card-table-section"
-        style={
-          isLoading || orders.length === 0 ? { border: 'none' } : undefined
-        }
-      >
+      {/* 📑 Data Table / List */}
+      <div className="card-table-section min-h-[400px]">
         {isLoading ? (
-          <TableSkeleton rows={5} columns={7} />
+          <TableSkeleton rows={8} columns={6} />
         ) : orders.length === 0 ? (
-          <EmptyState
-            icon={hasFilter ? '🔍' : '📦'}
-            title={
-              hasFilter ? 'Không tìm thấy đơn hàng' : 'Chưa có đơn hàng nào'
-            }
-            description={
-              hasFilter
-                ? 'Hãy thử thay đổi điều kiện lọc.'
-                : 'Nhấn nút tạo đơn để bắt đầu quy trình bán hàng mới.'
-            }
-            actionLabel={!hasFilter ? '+ Tạo đơn hàng' : undefined}
-            actionClick={!hasFilter ? onNew : undefined}
-          />
+          <div className="py-20">
+            <EmptyState
+              icon={hasFilter ? '🔍' : '📦'}
+              title={
+                hasFilter ? 'Không tìm thấy đơn hàng' : 'Chưa có đơn hàng nào'
+              }
+              description={
+                hasFilter
+                  ? 'Hãy thử thay đổi điều kiện lọc.'
+                  : 'Nhấn nút tạo đơn để bắt đầu.'
+              }
+              actionLabel={!hasFilter ? '+ Tạo đơn hàng' : undefined}
+              actionClick={!hasFilter ? onNew : undefined}
+            />
+          </div>
         ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Khách hàng</th>
-                <th>Ngày đặt</th>
-                <th className="hide-mobile">Giao hàng</th>
-                <th className="text-right hide-mobile">Tổng tiền</th>
-                <th className="text-right">Còn nợ</th>
-                <th className="hide-mobile">Trạng thái</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
+          <div className="overflow-x-auto">
+            {/* Desktop Table View */}
+            <table className="data-table hidden md:table">
+              <thead>
+                <tr>
+                  <th>Số đơn / Khách hàng</th>
+                  <th>Ngày đặt</th>
+                  <th>Dự kiến giao</th>
+                  <th className="text-right">Tổng tiền</th>
+                  <th className="text-right">Còn nợ</th>
+                  <th>Trạng thái</th>
+                  <th className="text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.map((order) => {
+                  const due = daysUntilDelivery(order.delivery_date);
+                  const balanceDue = order.total_amount - order.paid_amount;
+                  return (
+                    <tr
+                      key={order.id}
+                      className="hover:bg-surface-subtle transition-colors cursor-pointer"
+                      onClick={() => onView(order)}
+                    >
+                      <td>
+                        <div className="flex flex-col">
+                          <span className="font-bold text-primary">
+                            {order.order_number}
+                          </span>
+                          <span className="text-sm">
+                            {order.customers?.name ?? '—'}
+                            {order.customers?.code && (
+                              <span className="text-xs text-muted ml-1 italic">
+                                ({order.customers.code})
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="text-muted text-sm">{order.order_date}</td>
+                      <td>
+                        <div className="flex flex-col">
+                          <span className="text-sm">
+                            {order.delivery_date ?? '—'}
+                          </span>
+                          {due && (
+                            <span
+                              className={`text-[10px] font-bold uppercase ${due.urgent ? 'text-danger animate-pulse' : 'text-muted'}`}
+                            >
+                              {due.text}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="numeric-cell font-medium">
+                        {formatCurrency(order.total_amount)}
+                      </td>
+                      <td
+                        className={`numeric-cell font-bold ${balanceDue > 0 ? 'text-danger' : 'text-success'}`}
+                      >
+                        {formatCurrency(balanceDue)}
+                      </td>
+                      <td>
+                        <span
+                          className={`status-badge status-${order.status} ${statusClass(order.status)}`}
+                        >
+                          {ORDER_STATUS_LABELS[order.status]}
+                        </span>
+                      </td>
+                      <td
+                        className="text-right"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="flex justify-end gap-1">
+                          {order.status === 'draft' ? (
+                            <>
+                              <button
+                                className="btn-icon"
+                                onClick={() => onEdit(order)}
+                              >
+                                <Icon name="Edit3" size={16} />
+                              </button>
+                              <button
+                                className="btn-icon text-danger"
+                                onClick={() => handleDelete(order)}
+                              >
+                                <Icon name="Trash2" size={16} />
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              className="btn-icon"
+                              onClick={() => onView(order)}
+                            >
+                              <Icon name="Eye" size={16} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-3 p-3">
               {orders.map((order) => {
                 const due = daysUntilDelivery(order.delivery_date);
                 const balanceDue = order.total_amount - order.paid_amount;
                 return (
-                  <tr
+                  <div
                     key={order.id}
-                    style={{ cursor: 'pointer' }}
+                    className="mobile-card"
                     onClick={() => onView(order)}
                   >
-                    <td>
-                      <strong>{order.order_number}</strong>
-                      <div>
-                        {order.customers?.name ?? '—'}
-                        {order.customers?.code && (
-                          <span
-                            className="td-muted"
-                            style={{
-                              fontSize: '0.8rem',
-                              marginLeft: '0.3rem',
-                            }}
-                          >
-                            {order.customers.code}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="td-muted">{order.order_date}</td>
-                    <td className="hide-mobile">
-                      {order.delivery_date ?? '—'}
-                      {due && (
-                        <div
-                          style={{
-                            fontSize: '0.78rem',
-                            color: due.urgent ? '#c0392b' : 'var(--muted)',
-                          }}
-                        >
-                          {due.text}
-                        </div>
-                      )}
-                    </td>
-                    <td className="numeric-cell hide-mobile">
-                      {formatCurrency(order.total_amount)}
-                    </td>
-                    <td
-                      className={
-                        balanceDue > 0 ? 'numeric-debt' : 'numeric-paid'
-                      }
-                    >
-                      {formatCurrency(balanceDue)}
-                    </td>
-                    <td className="hide-mobile">
+                    <div className="mobile-card-header border-b border-border/10 pb-2 mb-2">
+                      <span className="font-bold text-primary">
+                        {order.order_number}
+                      </span>
                       <span
-                        className={`roll-status ${statusClass(order.status)}`}
+                        className={`status-badge ${statusClass(order.status)}`}
                       >
                         {ORDER_STATUS_LABELS[order.status]}
                       </span>
-                    </td>
-                    <td
-                      className="td-actions"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          gap: '0.25rem',
-                          justifyContent: 'flex-end',
-                        }}
-                      >
-                        {order.status === 'draft' ? (
-                          <>
-                            <button
-                              className="btn-icon"
-                              type="button"
-                              title="Sửa"
-                              onClick={() => onEdit(order)}
-                            >
-                              <Icon name="Edit3" size={16} />
-                            </button>
-                            <button
-                              className="btn-icon danger"
-                              type="button"
-                              title="Xóa"
-                              onClick={() => handleDelete(order)}
-                              disabled={deleteMutation.isPending}
-                            >
-                              <Icon name="Trash2" size={16} />
-                            </button>
-                          </>
-                        ) : (
-                          <button
-                            className="btn-icon"
-                            type="button"
-                            title="Xem chi tiết"
-                            onClick={() => onView(order)}
-                          >
-                            <Icon name="Eye" size={16} />
-                          </button>
-                        )}
+                    </div>
+                    <div className="mobile-card-body space-y-2">
+                      <div className="flex justify-between items-start">
+                        <span className="text-sm font-bold">
+                          {order.customers?.name}
+                        </span>
+                        <span className="text-xs text-muted">
+                          {order.order_date}
+                        </span>
                       </div>
-                    </td>
-                  </tr>
+                      <div className="grid grid-cols-2 gap-4 pt-2">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] uppercase text-muted">
+                            Tổng tiền
+                          </span>
+                          <span className="text-sm font-medium">
+                            {formatCurrency(order.total_amount)}
+                          </span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[10px] uppercase text-muted">
+                            Còn nợ
+                          </span>
+                          <span
+                            className={`text-sm font-bold ${balanceDue > 0 ? 'text-danger' : 'text-success'}`}
+                          >
+                            {formatCurrency(balanceDue)}
+                          </span>
+                        </div>
+                      </div>
+                      {due && (
+                        <div
+                          className={`mt-2 p-1.5 rounded text-[10px] font-bold text-center uppercase ${due.urgent ? 'bg-danger/10 text-danger' : 'bg-surface-subtle text-muted'}`}
+                        >
+                          Giao hàng: {due.text} ({order.delivery_date})
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 );
               })}
-            </tbody>
-          </table>
+            </div>
+          </div>
         )}
       </div>
 

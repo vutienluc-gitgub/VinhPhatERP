@@ -27,6 +27,7 @@ import {
   Plus,
   FileX,
   GitMerge,
+  Pencil,
 } from 'lucide-react';
 
 export {
@@ -56,4 +57,5 @@ export {
   Plus,
   FileX,
   GitMerge,
+  Pencil,
 };

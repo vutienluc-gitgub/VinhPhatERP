@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { Pagination } from '@/shared/components/Pagination';
 import { fetchRawFabricAll } from '@/api/raw-fabric.api';
 import { Icon } from '@/shared/components/Icon';
+import { Combobox } from '@/shared/components/Combobox';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 
 import {
@@ -48,22 +49,6 @@ export function RawFabricList({
   const rolls = useMemo(() => result?.data ?? [], [result?.data]);
   const { data: stats } = useRawFabricStats();
   const { exportExcel } = useRawFabricExport();
-
-  function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      status: (e.target.value as RollStatus) || undefined,
-    }));
-  }
-
-  function handleGradeChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      quality_grade: (e.target.value as QualityGrade) || undefined,
-    }));
-  }
 
   // Search logic is handled inline or on blur.
 
@@ -234,80 +219,80 @@ export function RawFabricList({
         </div>
       </div>
 
-      {/* Stats Section */}
+      {/* Stats Section - Dashboard Style */}
       {stats && (
-        <div className="stats-grid-premium">
-          <div className="stat-item-premium">
-            <div
-              className="stat-icon-wrapper"
-              style={{
-                background: 'rgba(11, 107, 203, 0.1)',
-                color: 'var(--primary)',
-              }}
-            >
-              <Icon name="Package" size={24} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 md:p-6 bg-surface-subtle">
+          <div className="kpi-card-premium kpi-primary">
+            <div className="kpi-overlay" />
+            <div className="kpi-content">
+              <div className="kpi-info">
+                <p className="kpi-label">Tổng số cuộn</p>
+                <p className="kpi-value">
+                  {stats.totalRolls.toLocaleString('vi-VN')}
+                </p>
+              </div>
+              <div className="kpi-icon-box">
+                <Icon name="Package" size={32} strokeWidth={1.5} />
+              </div>
             </div>
-            <div className="stat-content-premium">
-              <p>Tổng cuộn</p>
-              <p>{stats.totalRolls.toLocaleString('vi-VN')}</p>
-            </div>
-          </div>
-
-          <div className="stat-item-premium">
-            <div
-              className="stat-icon-wrapper"
-              style={{
-                background: 'rgba(10, 128, 92, 0.1)',
-                color: 'var(--success)',
-              }}
-            >
-              <Icon name="Ruler" size={24} />
-            </div>
-            <div className="stat-content-premium">
-              <p>Tổng chiều dài</p>
-              <p>
-                {stats.totalLengthM.toLocaleString('vi-VN', {
-                  maximumFractionDigits: 1,
-                })}
-                <span
-                  style={{
-                    fontSize: '1rem',
-                    fontWeight: 500,
-                    marginLeft: '0.2rem',
-                  }}
-                >
-                  m
-                </span>
-              </p>
+            <div className="kpi-footer">
+              <span className="text-xs opacity-80 italic">
+                Số lượng cuộn vải mộc hiện có
+              </span>
             </div>
           </div>
 
-          <div className="stat-item-premium">
-            <div
-              className="stat-icon-wrapper"
-              style={{
-                background: 'rgba(245, 158, 11, 0.1)',
-                color: '#f59e0b',
-              }}
-            >
-              <Icon name="Weight" size={24} />
+          <div className="kpi-card-premium kpi-success">
+            <div className="kpi-overlay" />
+            <div className="kpi-content">
+              <div className="kpi-info">
+                <p className="kpi-label">Tổng chiều dài</p>
+                <div className="flex items-baseline gap-1">
+                  <p className="kpi-value">
+                    {stats.totalLengthM.toLocaleString('vi-VN', {
+                      maximumFractionDigits: 1,
+                    })}
+                  </p>
+                  <span className="text-lg font-bold opacity-80 uppercase">
+                    m
+                  </span>
+                </div>
+              </div>
+              <div className="kpi-icon-box">
+                <Icon name="Ruler" size={32} strokeWidth={1.5} />
+              </div>
             </div>
-            <div className="stat-content-premium">
-              <p>Tổng trọng lượng</p>
-              <p>
-                {stats.totalWeightKg.toLocaleString('vi-VN', {
-                  maximumFractionDigits: 1,
-                })}
-                <span
-                  style={{
-                    fontSize: '1rem',
-                    fontWeight: 500,
-                    marginLeft: '0.2rem',
-                  }}
-                >
-                  kg
-                </span>
-              </p>
+            <div className="kpi-footer">
+              <span className="text-xs opacity-80 italic">
+                Sẵn sàng để đưa vào nhuộm
+              </span>
+            </div>
+          </div>
+
+          <div className="kpi-card-premium kpi-warning">
+            <div className="kpi-overlay" />
+            <div className="kpi-content">
+              <div className="kpi-info">
+                <p className="kpi-label">Tổng khối lượng</p>
+                <div className="flex items-baseline gap-1">
+                  <p className="kpi-value">
+                    {stats.totalWeightKg.toLocaleString('vi-VN', {
+                      maximumFractionDigits: 1,
+                    })}
+                  </p>
+                  <span className="text-lg font-bold opacity-80 uppercase">
+                    kg
+                  </span>
+                </div>
+              </div>
+              <div className="kpi-icon-box">
+                <Icon name="Weight" size={32} strokeWidth={1.5} />
+              </div>
+            </div>
+            <div className="kpi-footer">
+              <span className="text-xs opacity-80 italic">
+                Trọng lượng tịnh thực tế
+              </span>
             </div>
           </div>
         </div>
@@ -360,50 +345,61 @@ export function RawFabricList({
 
           <div className="filter-field">
             <label>Trạng thái</label>
-            <select
-              className="field-select"
+            <Combobox
+              options={[
+                {
+                  value: '',
+                  label: 'Tất cả trạng thái',
+                },
+                ...ROLL_STATUSES.map((s) => ({
+                  value: s,
+                  label: ROLL_STATUS_LABELS[s],
+                })),
+              ]}
               value={filters.status ?? ''}
-              onChange={handleStatusChange}
-            >
-              <option value="">Tất cả trạng thái</option>
-              {ROLL_STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {ROLL_STATUS_LABELS[s]}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => {
+                setPage(1);
+                setFilters((prev) => ({
+                  ...prev,
+                  status: (val as RollStatus) || undefined,
+                }));
+              }}
+            />
           </div>
 
           <div className="filter-field">
             <label>Chất lượng</label>
-            <select
-              className="field-select"
+            <Combobox
+              options={[
+                {
+                  value: '',
+                  label: 'Tất cả loại',
+                },
+                ...QUALITY_GRADES.map((g) => ({
+                  value: g,
+                  label: QUALITY_GRADE_LABELS[g],
+                })),
+              ]}
               value={filters.quality_grade ?? ''}
-              onChange={handleGradeChange}
-            >
-              <option value="">Tất cả loại</option>
-              {QUALITY_GRADES.map((g) => (
-                <option key={g} value={g}>
-                  {QUALITY_GRADE_LABELS[g]}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => {
+                setPage(1);
+                setFilters((prev) => ({
+                  ...prev,
+                  quality_grade: (val as QualityGrade) || undefined,
+                }));
+              }}
+            />
           </div>
         </div>
 
         {hasFilter && (
           <button
-            className="btn-secondary"
+            className="btn-secondary mt-4 text-danger border-danger/20 flex items-center gap-2"
             type="button"
             onClick={() => {
               setFilters({});
               setFabricTypeInput('');
               setRollNumberInput('');
-            }}
-            style={{
-              marginTop: '1rem',
-              color: 'var(--danger)',
-              borderColor: 'rgba(192, 57, 43, 0.2)',
             }}
           >
             <Icon name="X" size={14} /> Xóa lọc nhanh
@@ -418,15 +414,131 @@ export function RawFabricList({
       )}
 
       {/* Data Section */}
-      <div className="card-table-section">
+      <div className="card-table-section min-h-[400px]">
         {isLoading ? (
-          <p className="table-empty">Đang tải...</p>
+          <div className="flex-center py-20">
+            <div className="spinner" />
+          </div>
         ) : rolls.length === 0 ? (
-          <p className="table-empty">
-            {hasFilter
-              ? 'Không tìm thấy cuộn vải phù hợp.'
-              : 'Chưa có cuộn vải nào. Nhấn "+ Nhập cuộn mới" để bắt đầu.'}
-          </p>
+          <div className="empty-state py-20">
+            <div className="empty-icon">
+              <Icon name="Layers" size={48} />
+            </div>
+            <p>
+              {hasFilter
+                ? 'Không tìm thấy cuộn vải phù hợp.'
+                : 'Chưa có cuộn vải nào. Nhấn "+ Nhập cuộn mới" để bắt đầu.'}
+            </p>
+          </div>
+        ) : viewMode === 'table' ? (
+          <div className="overflow-x-auto">
+            {/* Desktop Table */}
+            <table className="data-table hidden md:table">
+              <thead>
+                <tr>
+                  <th>Mã cuộn</th>
+                  <th>Số lô</th>
+                  <th>Loại vải / Màu</th>
+                  <th className="text-right">Khối lượng</th>
+                  <th className="text-right">Chiều dài</th>
+                  <th>Trạng thái</th>
+                  <th className="text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rolls.map((roll) => (
+                  <tr
+                    key={roll.id}
+                    className="hover:bg-surface-subtle transition-colors cursor-pointer"
+                    onClick={() => onEdit(roll)}
+                  >
+                    <td>
+                      <span className="font-bold text-primary">
+                        {roll.roll_number}
+                      </span>
+                    </td>
+                    <td className="font-medium text-muted">
+                      {roll.lot_number || '—'}
+                    </td>
+                    <td>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{roll.fabric_type}</span>
+                        <span className="text-xs text-muted">
+                          {roll.color_name}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="numeric-cell font-medium">
+                      {roll.weight_kg?.toLocaleString()}
+                      <span className="text-xs ml-1 text-muted">kg</span>
+                    </td>
+                    <td className="numeric-cell font-medium text-success">
+                      {roll.length_m?.toLocaleString()}
+                      <span className="text-xs ml-1 text-muted">m</span>
+                    </td>
+                    <td>
+                      <span className={`status-badge ${roll.status}`}>
+                        {ROLL_STATUS_LABELS[roll.status]}
+                      </span>
+                    </td>
+                    <td className="text-right">
+                      <button className="btn-icon">
+                        <Icon name="Pencil" size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Mobile Cards (for Table mode) */}
+            <div className="md:hidden space-y-3 p-2">
+              {rolls.map((roll) => (
+                <div
+                  key={roll.id}
+                  className="mobile-card"
+                  onClick={() => onEdit(roll)}
+                >
+                  <div className="mobile-card-header">
+                    <span className="mobile-card-title">
+                      {roll.roll_number}
+                    </span>
+                    <span className={`status-badge ${roll.status}`}>
+                      {ROLL_STATUS_LABELS[roll.status]}
+                    </span>
+                  </div>
+                  <div className="mobile-card-body">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-sm font-medium">
+                        {roll.fabric_type}
+                      </span>
+                      <span className="text-xs text-muted">
+                        Lô: {roll.lot_number || '—'}
+                      </span>
+                    </div>
+                    <div className="flex gap-4 mt-2">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] uppercase text-muted">
+                          Khối lượng
+                        </span>
+                        <span className="font-bold text-sm">
+                          {roll.weight_kg} kg
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[10px] uppercase text-muted">
+                          Chiều dài
+                        </span>
+                        <span className="font-bold text-sm text-success">
+                          {roll.length_m} m
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         ) : (
           <div
             className="grid-view-container"
