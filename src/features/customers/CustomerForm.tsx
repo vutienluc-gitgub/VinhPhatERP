@@ -153,6 +153,28 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
               type="tel"
               placeholder="VD: 0901 234 567"
               {...register('phone')}
+              onKeyDown={(e) => {
+                // Cho phép: Xóa, Điều hướng, Copy/Paste, các phím số và dấu cấu trúc cơ bản
+                const allowedKeys = [
+                  'Backspace',
+                  'Delete',
+                  'ArrowLeft',
+                  'ArrowRight',
+                  'Tab',
+                  'Home',
+                  'End',
+                  'Enter',
+                  'Escape',
+                ];
+                if (
+                  !allowedKeys.includes(e.key) &&
+                  !e.ctrlKey &&
+                  !e.metaKey &&
+                  !/^[0-9\s\-().+]$/.test(e.key)
+                ) {
+                  e.preventDefault();
+                }
+              }}
             />
             {errors.phone && (
               <span className="field-error">{errors.phone.message}</span>

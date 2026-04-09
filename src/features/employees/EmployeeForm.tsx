@@ -138,7 +138,33 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
               placeholder="Ví dụ: 0912345678"
               type="tel"
               disabled={isPending}
+              onKeyDown={(e) => {
+                const allowedKeys = [
+                  'Backspace',
+                  'Delete',
+                  'ArrowLeft',
+                  'ArrowRight',
+                  'Tab',
+                  'Home',
+                  'End',
+                  'Enter',
+                  'Escape',
+                ];
+                if (
+                  !allowedKeys.includes(e.key) &&
+                  !e.ctrlKey &&
+                  !e.metaKey &&
+                  !/^[0-9\s\-().+]$/.test(e.key)
+                ) {
+                  e.preventDefault();
+                }
+              }}
             />
+            {form.formState.errors.phone && (
+              <p className="field-error">
+                {form.formState.errors.phone.message}
+              </p>
+            )}
           </div>
 
           <div className="form-field">
