@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 
 import { Pagination } from '@/shared/components/Pagination';
 import { fetchRawFabricAll } from '@/api/raw-fabric.api';
-import { Icon } from '@/shared/components/Icon';
+import { Icon, Badge, type BadgeVariant } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 
@@ -26,6 +26,25 @@ type RawFabricListProps = {
   onNew: () => void;
   onBulkNew: () => void;
 };
+
+function getStatusVariant(status: RollStatus): BadgeVariant {
+  switch (status) {
+    case 'in_stock':
+      return 'success';
+    case 'reserved':
+      return 'info';
+    case 'in_process':
+      return 'purple';
+    case 'shipped':
+      return 'gray';
+    case 'damaged':
+      return 'danger';
+    case 'written_off':
+      return 'gray';
+    default:
+      return 'gray';
+  }
+}
 
 export function RawFabricList({
   onEdit,
@@ -221,7 +240,7 @@ export function RawFabricList({
 
       {/* Stats Section - Dashboard Style */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 md:p-6 bg-surface-subtle">
+        <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
           <div className="kpi-card-premium kpi-primary">
             <div className="kpi-overlay" />
             <div className="kpi-content">
@@ -477,9 +496,9 @@ export function RawFabricList({
                       <span className="text-xs ml-1 text-muted">m</span>
                     </td>
                     <td>
-                      <span className={`status-badge ${roll.status}`}>
+                      <Badge variant={getStatusVariant(roll.status)}>
                         {ROLL_STATUS_LABELS[roll.status]}
-                      </span>
+                      </Badge>
                     </td>
                     <td className="text-right">
                       <button className="btn-icon">
@@ -503,9 +522,9 @@ export function RawFabricList({
                     <span className="mobile-card-title">
                       {roll.roll_number}
                     </span>
-                    <span className={`status-badge ${roll.status}`}>
+                    <Badge variant={getStatusVariant(roll.status)}>
                       {ROLL_STATUS_LABELS[roll.status]}
-                    </span>
+                    </Badge>
                   </div>
                   <div className="mobile-card-body">
                     <div className="flex justify-between items-center mb-1">

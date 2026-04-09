@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Combobox } from '@/shared/components/Combobox';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { Icon } from '@/shared/components/Icon';
+import { Icon, Badge, type BadgeVariant } from '@/shared/components';
 import { Pagination } from '@/shared/components/Pagination';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { formatCurrency } from '@/shared/utils/format';
@@ -20,14 +20,14 @@ type YarnReceiptListProps = {
   onNew: () => void;
 };
 
-function statusClass(status: DocStatus): string {
+function getStatusVariant(status: DocStatus): BadgeVariant {
   switch (status) {
     case 'confirmed':
-      return 'in_stock';
+      return 'success';
     case 'cancelled':
-      return 'damaged';
+      return 'danger';
     default:
-      return 'pending';
+      return 'warning';
   }
 }
 
@@ -81,15 +81,16 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
 
   return (
     <div className="panel-card card-flush">
-      {/* Header */}
-      <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Nghiệp vụ kho</p>
-            <h3>Phiếu nhập sợi</h3>
-          </div>
+      {/* Header Area */}
+      <div className="card-header-area card-header-premium">
+        <div>
+          <p className="eyebrow-premium">NGHIỆP VỤ KHO</p>
+          <h3 className="title-premium">Quản lý phiếu nhập sợi</h3>
+        </div>
+
+        <div className="flex items-center gap-4">
           <button
-            className="primary-button btn-standard"
+            className="btn-primary min-h-[42px] px-5"
             type="button"
             onClick={onNew}
           >
@@ -235,11 +236,9 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
                         {formatCurrency(receipt.total_amount ?? 0)}
                       </td>
                       <td>
-                        <span
-                          className={`status-badge ${statusClass(receipt.status)}`}
-                        >
+                        <Badge variant={getStatusVariant(receipt.status)}>
                           {DOC_STATUS_LABELS[receipt.status]}
-                        </span>
+                        </Badge>
                       </td>
                       <td className="text-right">
                         <div className="flex justify-end gap-2">
@@ -292,11 +291,9 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
                     <span className="mobile-card-title">
                       {receipt.receipt_number}
                     </span>
-                    <span
-                      className={`status-badge ${statusClass(receipt.status)}`}
-                    >
+                    <Badge variant={getStatusVariant(receipt.status)}>
                       {DOC_STATUS_LABELS[receipt.status]}
-                    </span>
+                    </Badge>
                   </div>
                   <div className="mobile-card-body">
                     <div className="mobile-card-row">
