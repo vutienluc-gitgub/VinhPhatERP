@@ -1,5 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
 
 echo "🛡️ Level 7 Defense: Pre-commit checks starting..."
 

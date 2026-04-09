@@ -9,8 +9,8 @@ export type YarnReceiptItem = {
   color_code: string | null;
   unit: string;
   quantity: number;
-  unit_price: number;
-  amount: number;
+  unit_price: number | null;
+  amount: number | null;
   lot_number: string | null;
   tensile_strength: string | null;
   composition: string | null;
@@ -25,7 +25,7 @@ export type YarnReceipt = {
   receipt_number: string;
   supplier_id: string;
   receipt_date: string;
-  total_amount: number;
+  total_amount: number | null;
   status: DocStatus;
   notes: string | null;
   created_by: string | null;

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { Combobox } from '@/shared/components/Combobox';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Icon } from '@/shared/components/Icon';
 import { Pagination } from '@/shared/components/Pagination';
@@ -18,7 +19,8 @@ type YarnReceiptListProps = {
   onNew: () => void;
 };
 
-function formatCurrency(value: number): string {
+function formatCurrency(value: number | null | undefined): string {
+  if (value === null || value === undefined) return '0';
   return new Intl.NumberFormat('vi-VN').format(value);
 }
 
@@ -53,15 +55,6 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
     setFilters((prev) => ({
       ...prev,
       search: searchInput.trim() || undefined,
-    }));
-  }
-
-  function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as DocStatus | '';
-    setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      status: val || undefined,
     }));
   }
 
@@ -138,17 +131,34 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
 
         <div className="filter-field">
           <label htmlFor="filter-status">Trạng thái</label>
-          <select
-            id="filter-status"
-            className="field-select"
+          <Combobox
+            options={[
+              {
+                value: '',
+                label: 'Tất cả',
+              },
+              {
+                value: 'draft',
+                label: 'Nháp',
+              },
+              {
+                value: 'confirmed',
+                label: 'Đã xác nhận',
+              },
+              {
+                value: 'cancelled',
+                label: 'Đã huỷ',
+              },
+            ]}
             value={filters.status ?? ''}
-            onChange={handleStatusChange}
-          >
-            <option value="">Tất cả</option>
-            <option value="draft">Nháp</option>
-            <option value="confirmed">Đã xác nhận</option>
-            <option value="cancelled">Đã huỷ</option>
-          </select>
+            onChange={(val) => {
+              setPage(1);
+              setFilters((prev) => ({
+                ...prev,
+                status: (val as DocStatus) || undefined,
+              }));
+            }}
+          />
         </div>
 
         {hasFilter && (
@@ -173,108 +183,175 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
         </p>
       )}
 
-      {/* Table */}
-      <div className="data-table-wrap card-table-section">
+      {/* Table & Cards */}
+      <div className="card-table-section">
         {isLoading ? (
-          <p className="table-empty">Đang tải...</p>
+          <div className="flex-center py-12">
+            <div className="spinner" />
+            <p className="mt-4 text-muted">Đang tải dữ liệu...</p>
+          </div>
         ) : receipts.length === 0 ? (
-          <p className="table-empty">
-            {hasFilter
-              ? 'Không tìm thấy phiếu nhập phù hợp.'
-              : 'Chưa có phiếu nhập nào. Nhấn "+ Tạo phiếu nhập" để bắt đầu.'}
-          </p>
+          <div className="empty-state">
+            <div className="empty-icon">
+              <Icon name="Package" size={48} />
+            </div>
+            <p>
+              {hasFilter
+                ? 'Không tìm thấy phiếu nhập phù hợp.'
+                : 'Chưa có phiếu nhập nào. Nhấn "+ Tạo phiếu nhập" để bắt đầu.'}
+            </p>
+          </div>
         ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Số phiếu</th>
-                <th>Nhà cung cấp</th>
-                <th>Ngày nhập</th>
-                <th className="text-right">Tổng tiền</th>
-                <th>Trạng thái</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Số phiếu</th>
+                    <th>Nhà cung cấp</th>
+                    <th>Ngày nhập</th>
+                    <th className="text-right">Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th className="text-right whitespace-nowrap">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {receipts.map((receipt) => (
+                    <tr key={receipt.id}>
+                      <td>
+                        <span className="font-bold text-primary">
+                          {receipt.receipt_number}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="flex flex-col">
+                          <span className="font-medium">
+                            {receipt.suppliers?.name ?? '—'}
+                          </span>
+                          <span className="text-xs text-muted">
+                            {receipt.suppliers?.code}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="text-muted">{receipt.receipt_date}</td>
+                      <td className="numeric-cell font-medium">
+                        {formatCurrency(receipt.total_amount)}
+                      </td>
+                      <td>
+                        <span
+                          className={`status-badge ${statusClass(receipt.status)}`}
+                        >
+                          {DOC_STATUS_LABELS[receipt.status]}
+                        </span>
+                      </td>
+                      <td className="text-right">
+                        <div className="flex justify-end gap-2">
+                          {receipt.status === 'draft' && canConfirm && (
+                            <button
+                              className="btn-icon text-success hover:bg-success/10"
+                              onClick={() => handleConfirmReceipt(receipt)}
+                              disabled={confirmMutation.isPending}
+                              title="Xác nhận"
+                            >
+                              <Icon name="CheckCircle" size={18} />
+                            </button>
+                          )}
+                          {receipt.status === 'draft' && (
+                            <button
+                              className="btn-icon hover:bg-primary/10"
+                              onClick={() => onEdit(receipt)}
+                              title="Sửa"
+                            >
+                              <Icon name="Pencil" size={18} />
+                            </button>
+                          )}
+                          {receipt.status === 'draft' && (
+                            <button
+                              className="btn-icon text-danger hover:bg-danger/10"
+                              onClick={() => handleDelete(receipt)}
+                              disabled={deleteMutation.isPending}
+                              title="Xóa"
+                            >
+                              <Icon name="Trash2" size={18} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-4 px-4 py-2">
               {receipts.map((receipt) => (
-                <tr key={receipt.id}>
-                  <td>
-                    <strong>{receipt.receipt_number}</strong>
-                  </td>
-                  <td>
-                    {receipt.suppliers?.name ?? '—'}
-                    {receipt.suppliers?.code && (
-                      <div className="td-muted" style={{ fontSize: '0.8rem' }}>
-                        {receipt.suppliers.code}
-                      </div>
-                    )}
-                  </td>
-                  <td className="td-muted">{receipt.receipt_date}</td>
-                  <td className="numeric-cell">
-                    {formatCurrency(receipt.total_amount)}
-                  </td>
-                  <td>
+                <div
+                  key={receipt.id}
+                  className="mobile-card"
+                  onClick={() => onEdit(receipt)}
+                >
+                  <div className="mobile-card-header">
+                    <span className="mobile-card-title">
+                      {receipt.receipt_number}
+                    </span>
                     <span
-                      className={`roll-status ${statusClass(receipt.status)}`}
+                      className={`status-badge ${statusClass(receipt.status)}`}
                     >
                       {DOC_STATUS_LABELS[receipt.status]}
                     </span>
-                  </td>
-                  <td className="td-actions">
-                    {receipt.status === 'draft' && canConfirm && (
+                  </div>
+                  <div className="mobile-card-body">
+                    <div className="mobile-card-row">
+                      <span className="label">NCC:</span>
+                      <span className="value">{receipt.suppliers?.name}</span>
+                    </div>
+                    <div className="mobile-card-row">
+                      <span className="label">Ngày:</span>
+                      <span className="value">{receipt.receipt_date}</span>
+                    </div>
+                    <div className="mobile-card-row pt-2 border-t border-divider mt-2">
+                      <span className="label font-bold">Tổng tiền:</span>
+                      <span className="value font-bold text-primary">
+                        {formatCurrency(receipt.total_amount)}
+                      </span>
+                    </div>
+                  </div>
+                  {receipt.status === 'draft' && (
+                    <div className="mobile-card-actions mt-3 flex gap-2">
+                      {canConfirm && (
+                        <button
+                          className="flex-1 btn-secondary text-success py-2 text-sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleConfirmReceipt(receipt);
+                          }}
+                        >
+                          Xác nhận
+                        </button>
+                      )}
                       <button
-                        className="btn-icon"
-                        type="button"
-                        title="Xác nhận phiếu"
-                        onClick={() =>
-                          handleConfirmReceipt(
-                            receipt as unknown as YarnReceipt,
-                          )
-                        }
-                        disabled={confirmMutation.isPending}
-                        style={{
-                          marginRight: 4,
-                          color: 'var(--success)',
+                        className="flex-1 btn-secondary text-danger py-2 text-sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(receipt);
                         }}
                       >
-                        <Icon name="CheckCircle" size={18} />
+                        Xóa
                       </button>
-                    )}
-                    {receipt.status === 'draft' && (
-                      <button
-                        className="btn-icon"
-                        type="button"
-                        title="Sửa"
-                        onClick={() =>
-                          onEdit(receipt as unknown as YarnReceipt)
-                        }
-                        style={{ marginRight: 4 }}
-                      >
-                        <Icon name="Pencil" size={18} />
-                      </button>
-                    )}
-                    {receipt.status === 'draft' && (
-                      <button
-                        className="btn-icon danger"
-                        type="button"
-                        title="Xóa"
-                        onClick={() =>
-                          handleDelete(receipt as unknown as YarnReceipt)
-                        }
-                        disabled={deleteMutation.isPending}
-                      >
-                        <Icon name="Trash2" size={18} />
-                      </button>
-                    )}
-                  </td>
-                </tr>
+                    </div>
+                  )}
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </>
         )}
       </div>
 
-      <Pagination result={result} onPageChange={setPage} />
+      <div className="mt-4 px-4 pb-4">
+        <Pagination result={result} onPageChange={setPage} />
+      </div>
     </div>
   );
 }

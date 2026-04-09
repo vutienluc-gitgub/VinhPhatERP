@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
 import { Icon } from '@/shared/components/Icon';
+import { Combobox } from '@/shared/components/Combobox';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 
 import {
@@ -64,24 +65,6 @@ export function FinishedFabricList({
   const deleteMutation = useDeleteFinishedFabric();
   const { confirm } = useConfirm();
   const { exportExcel } = useFinishedFabricExport();
-
-  function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as RollStatus | '';
-    setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      status: val || undefined,
-    }));
-  }
-
-  function handleGradeChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as QualityGrade | '';
-    setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      quality_grade: val || undefined,
-    }));
-  }
 
   // Removed unused handleFabricTypeSearch
 
@@ -242,80 +225,80 @@ export function FinishedFabricList({
         </div>
       </div>
 
-      {/* Stats Section */}
+      {/* Stats Section - Premium Dashboard */}
       {stats && (
-        <div className="stats-grid-premium">
-          <div className="stat-item-premium">
-            <div
-              className="stat-icon-wrapper"
-              style={{
-                background: 'rgba(11, 107, 203, 0.1)',
-                color: 'var(--primary)',
-              }}
-            >
-              <Icon name="Package" size={24} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 md:p-6 bg-surface-subtle">
+          <div className="kpi-card-premium kpi-primary">
+            <div className="kpi-overlay" />
+            <div className="kpi-content">
+              <div className="kpi-info">
+                <p className="kpi-label">Tổng thành phẩm</p>
+                <p className="kpi-value">
+                  {stats.totalRolls.toLocaleString('vi-VN')}
+                </p>
+              </div>
+              <div className="kpi-icon-box">
+                <Icon name="Package" size={32} />
+              </div>
             </div>
-            <div className="stat-content-premium">
-              <p>Tổng cuộn</p>
-              <p>{stats.totalRolls.toLocaleString('vi-VN')}</p>
-            </div>
-          </div>
-
-          <div className="stat-item-premium">
-            <div
-              className="stat-icon-wrapper"
-              style={{
-                background: 'rgba(10, 128, 92, 0.1)',
-                color: 'var(--success)',
-              }}
-            >
-              <Icon name="Ruler" size={24} />
-            </div>
-            <div className="stat-content-premium">
-              <p>Tổng chiều dài</p>
-              <p>
-                {stats.totalLengthM.toLocaleString('vi-VN', {
-                  maximumFractionDigits: 1,
-                })}
-                <span
-                  style={{
-                    fontSize: '1rem',
-                    fontWeight: 500,
-                    marginLeft: '0.2rem',
-                  }}
-                >
-                  m
-                </span>
-              </p>
+            <div className="kpi-footer">
+              <span className="text-xs opacity-80 italic">
+                Cuộn đã hoàn tất công đoạn nhuộm
+              </span>
             </div>
           </div>
 
-          <div className="stat-item-premium">
-            <div
-              className="stat-icon-wrapper"
-              style={{
-                background: 'rgba(245, 158, 11, 0.1)',
-                color: '#f59e0b',
-              }}
-            >
-              <Icon name="Weight" size={24} />
+          <div className="kpi-card-premium kpi-success">
+            <div className="kpi-overlay" />
+            <div className="kpi-content">
+              <div className="kpi-info">
+                <p className="kpi-label">Tổng chiều dài</p>
+                <div className="flex items-baseline gap-1">
+                  <p className="kpi-value">
+                    {stats.totalLengthM.toLocaleString('vi-VN', {
+                      maximumFractionDigits: 1,
+                    })}
+                  </p>
+                  <span className="text-lg font-bold opacity-80 uppercase">
+                    m
+                  </span>
+                </div>
+              </div>
+              <div className="kpi-icon-box">
+                <Icon name="Ruler" size={32} />
+              </div>
             </div>
-            <div className="stat-content-premium">
-              <p>Tổng trọng lượng</p>
-              <p>
-                {stats.totalWeightKg.toLocaleString('vi-VN', {
-                  maximumFractionDigits: 1,
-                })}
-                <span
-                  style={{
-                    fontSize: '1rem',
-                    fontWeight: 500,
-                    marginLeft: '0.2rem',
-                  }}
-                >
-                  kg
-                </span>
-              </p>
+            <div className="kpi-footer">
+              <span className="text-xs opacity-80 italic">
+                Đã kiểm tra chất lượng (QC)
+              </span>
+            </div>
+          </div>
+
+          <div className="kpi-card-premium kpi-warning">
+            <div className="kpi-overlay" />
+            <div className="kpi-content">
+              <div className="kpi-info">
+                <p className="kpi-label">Tổng khối lượng</p>
+                <div className="flex items-baseline gap-1">
+                  <p className="kpi-value">
+                    {stats.totalWeightKg.toLocaleString('vi-VN', {
+                      maximumFractionDigits: 1,
+                    })}
+                  </p>
+                  <span className="text-lg font-bold opacity-80 uppercase">
+                    kg
+                  </span>
+                </div>
+              </div>
+              <div className="kpi-icon-box">
+                <Icon name="Weight" size={32} />
+              </div>
+            </div>
+            <div className="kpi-footer">
+              <span className="text-xs opacity-80 italic">
+                Trọng lượng tịnh xuất kho
+              </span>
             </div>
           </div>
         </div>
@@ -323,7 +306,7 @@ export function FinishedFabricList({
 
       {/* Filter Section */}
       <div className="filter-bar card-filter-section">
-        <div className="filter-grid-premium">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="filter-field">
             <label>Loại vải</label>
             <div className="search-input-wrapper">
@@ -347,49 +330,60 @@ export function FinishedFabricList({
 
           <div className="filter-field">
             <label>Trạng thái</label>
-            <select
-              className="field-select"
+            <Combobox
+              options={[
+                {
+                  value: '',
+                  label: 'Tất cả trạng thái',
+                },
+                ...ROLL_STATUSES.map((s) => ({
+                  value: s,
+                  label: ROLL_STATUS_LABELS[s],
+                })),
+              ]}
               value={filters.status ?? ''}
-              onChange={handleStatusChange}
-            >
-              <option value="">Tất cả trạng thái</option>
-              {ROLL_STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {ROLL_STATUS_LABELS[s]}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => {
+                setPage(1);
+                setFilters((prev) => ({
+                  ...prev,
+                  status: (val as RollStatus) || undefined,
+                }));
+              }}
+            />
           </div>
 
           <div className="filter-field">
             <label>Chất lượng</label>
-            <select
-              className="field-select"
+            <Combobox
+              options={[
+                {
+                  value: '',
+                  label: 'Tất cả loại',
+                },
+                ...QUALITY_GRADES.map((g) => ({
+                  value: g,
+                  label: QUALITY_GRADE_LABELS[g],
+                })),
+              ]}
               value={filters.quality_grade ?? ''}
-              onChange={handleGradeChange}
-            >
-              <option value="">Tất cả loại</option>
-              {QUALITY_GRADES.map((g) => (
-                <option key={g} value={g}>
-                  {QUALITY_GRADE_LABELS[g]}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => {
+                setPage(1);
+                setFilters((prev) => ({
+                  ...prev,
+                  quality_grade: (val as QualityGrade) || undefined,
+                }));
+              }}
+            />
           </div>
         </div>
 
         {(filters.status ?? filters.quality_grade ?? filters.fabric_type) && (
           <button
-            className="btn-secondary"
+            className="btn-secondary mt-4 text-danger border-danger/20 flex items-center gap-2"
             type="button"
             onClick={() => {
               setFilters({});
               setFabricTypeInput('');
-            }}
-            style={{
-              marginTop: '1rem',
-              color: 'var(--danger)',
-              borderColor: 'rgba(192, 57, 43, 0.2)',
             }}
           >
             <Icon name="X" size={14} /> Xóa lọc nhanh
