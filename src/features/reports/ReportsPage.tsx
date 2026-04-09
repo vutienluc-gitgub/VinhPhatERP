@@ -1,13 +1,13 @@
 import { useState } from 'react';
 
 import type { ReportsFilter } from '@/api/reports.api';
+import { TabSwitcher } from '@/shared/components';
 
 import { DebtAgingSection } from './DebtAgingSection';
 import { DebtSection } from './DebtSection';
 import { InventorySection } from './InventorySection';
 import { OverdueSection } from './OverdueSection';
 import { ProductionSection } from './ProductionSection';
-import styles from './reports.module.css';
 import { ReportsFilterBar } from './ReportsFilter';
 import { RevenueSection } from './RevenueSection';
 import { RevenueTrendSection } from './RevenueTrendSection';
@@ -81,52 +81,26 @@ export function ReportsPage() {
   const payments = usePaymentCollection();
 
   return (
-    <div className="route-content">
+    <div className="page-container p-4">
       {/* Header + filter */}
-      <div className="panel-card card-flush">
-        <div className="card-header-area">
-          <div className="page-header">
-            <div>
-              <p className="eyebrow">Bảng điều khiển</p>
-              <h3>Báo cáo CEO</h3>
-              <p
-                style={{
-                  fontSize: '0.8rem',
-                  color: 'var(--muted)',
-                  marginTop: '0.25rem',
-                }}
-              >
-                Phân tích hoạt động kinh doanh đa chiều theo thời gian cụ thể
-              </p>
-            </div>
+      <div className="panel-card card-flush mb-6">
+        <div className="card-header-area card-header-premium">
+          <div>
+            <p className="eyebrow-premium">BẢNG ĐIỀU KHIỂN</p>
+            <h3 className="title-premium">Báo cáo CEO</h3>
+            <p className="text-xs text-muted mt-1">
+              Phân tích hoạt động kinh doanh đa chiều theo thời gian cụ thể
+            </p>
           </div>
         </div>
 
         <ReportsFilterBar filter={filter} onChange={setFilter} />
 
-        {/* Tab switcher using project style (bottom border on active) */}
-        <div className={styles.tabBar}>
-          {TABS.map((tab) => (
-            <button
-              key={tab.key}
-              type="button"
-              onClick={() => setActiveTab(tab.key)}
-              className={`${styles.tabButton} ${activeTab === tab.key ? styles.tabButtonActive : ''}`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <TabSwitcher tabs={TABS} active={activeTab} onChange={setActiveTab} />
       </div>
 
       {/* Content wrapper with spacing */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1.5rem',
-        }}
-      >
+      <div className="flex flex-col gap-6">
         {activeTab === 'overview' && (
           <>
             <RevenueSection
@@ -168,7 +142,7 @@ export function ReportsPage() {
           </>
         )}
 
-        {activeTab === 'debt' && activeTab === 'debt' && (
+        {activeTab === 'debt' && (
           <>
             <DebtSection data={debt.data ?? []} isLoading={debt.isLoading} />
             <DebtAgingSection

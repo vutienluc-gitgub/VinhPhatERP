@@ -1,58 +1,60 @@
 import { useState } from 'react';
 
+import { TabSwitcher } from '@/shared/components';
+import type { TabItem } from '@/shared/components';
 import { Icon } from '@/shared/components/Icon';
+import { DebtAgingSection } from '@/features/reports/DebtAgingSection';
+import { useDebtAging } from '@/features/reports/useReports';
 
 import { DebtSummary } from './DebtSummary';
 import { SupplierDebtSummary } from './SupplierDebtSummary';
 
 type DebtTab = 'customer' | 'supplier';
 
+const TABS: TabItem<DebtTab>[] = [
+  {
+    key: 'customer',
+    label: 'Công nợ Khách hàng',
+    icon: <Icon name="Users" size={15} />,
+  },
+  {
+    key: 'supplier',
+    label: 'Công nợ Nhà cung cấp',
+    icon: <Icon name="Building2" size={15} />,
+  },
+];
+
 export function DebtsPage() {
-  const [tab, setTab] = useState<DebtTab>('customer');
+  const [activeTab, setActiveTab] = useState<DebtTab>('customer');
+  const debtAging = useDebtAging();
 
   return (
-    <div className="panel-card card-flush">
-      {/* Premium Header */}
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">TÀI CHÍNH</p>
-          <h3 className="title-premium">Quản Lý Công Nợ</h3>
+    <div className="page-container p-4">
+      <div className="panel-card card-flush mb-6">
+        {/* Premium Header */}
+        <div className="card-header-area card-header-premium">
+          <div>
+            <p className="eyebrow-premium">TÀI CHÍNH</p>
+            <h3 className="title-premium">Quản Lý Công Nợ</h3>
+          </div>
         </div>
+
+        <TabSwitcher tabs={TABS} active={activeTab} onChange={setActiveTab} />
       </div>
 
-      {/* Tab Switcher */}
-      <div className="p-4 border-b border-border">
-        <div className="inline-flex gap-1 bg-surface-subtle p-1 rounded-lg">
-          <button
-            type="button"
-            className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-              tab === 'customer'
-                ? 'bg-surface-strong shadow-sm text-primary'
-                : 'text-muted'
-            }`}
-            onClick={() => setTab('customer')}
-          >
-            <Icon name="Users" size={15} />
-            Công nợ Khách hàng
-          </button>
-          <button
-            type="button"
-            className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-              tab === 'supplier'
-                ? 'bg-surface-strong shadow-sm text-primary'
-                : 'text-muted'
-            }`}
-            onClick={() => setTab('supplier')}
-          >
-            <Icon name="Building2" size={15} />
-            Công nợ Nhà cung cấp
-          </button>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div>
-        {tab === 'customer' ? <DebtSummary /> : <SupplierDebtSummary />}
+      {/* Content - Responsive Gap */}
+      <div className="flex flex-col gap-6">
+        {activeTab === 'customer' ? (
+          <>
+            <DebtSummary />
+            <DebtAgingSection
+              data={debtAging.data ?? []}
+              isLoading={debtAging.isLoading}
+            />
+          </>
+        ) : (
+          <SupplierDebtSummary />
+        )}
       </div>
     </div>
   );

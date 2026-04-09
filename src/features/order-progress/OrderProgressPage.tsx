@@ -1,22 +1,24 @@
 import { useState } from 'react';
 
+import { TabSwitcher } from '@/shared/components';
+
 import { ProgressAuditLogView } from './ProgressAuditLog';
 import { ProgressBoard } from './ProgressBoard';
 import { ProgressDashboard } from './ProgressDashboard';
 
 type Tab = 'dashboard' | 'board' | 'audit';
 
-const TABS: { key: Tab; label: string }[] = [
+const TABS = [
   {
-    key: 'dashboard',
+    key: 'dashboard' as Tab,
     label: 'Tổng quan',
   },
   {
-    key: 'board',
+    key: 'board' as Tab,
     label: 'Board',
   },
   {
-    key: 'audit',
+    key: 'audit' as Tab,
     label: 'Nhật ký',
   },
 ];
@@ -32,18 +34,7 @@ export function OrderProgressPage() {
         gap: '1rem',
       }}
     >
-      <div className="tab-bar">
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            className={`tab-item${tab === t.key ? ' is-active' : ''}`}
-            onClick={() => setTab(t.key)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <TabSwitcher tabs={TABS} active={tab} onChange={setTab} />
 
       {tab === 'dashboard' && <ProgressDashboard />}
       {tab === 'board' && <ProgressBoard />}

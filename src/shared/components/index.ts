@@ -22,3 +22,5 @@ export { Portal } from './Portal';
 export { QuickSupplierForm } from './QuickSupplierForm';
 export { default as SaveStatus } from './SaveStatus';
 export { TableSkeleton } from './TableSkeleton';
+export { TabSwitcher } from './TabSwitcher';
+export type { TabItem } from './TabSwitcher';

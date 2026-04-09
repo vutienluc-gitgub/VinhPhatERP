@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
@@ -90,8 +89,6 @@ export function FinishedFabricList({
   const { confirm } = useConfirm();
   const { exportExcel } = useFinishedFabricExport();
 
-  // Removed unused handleFabricTypeSearch
-
   async function handleDelete(roll: FinishedFabricRoll) {
     if (!canDeleteRoll(roll.status)) return;
     const ok = await confirm({
@@ -102,7 +99,6 @@ export function FinishedFabricList({
     deleteMutation.mutate(roll.id);
   }
 
-  // Median helper
   const median = (values: number[]) => {
     if (values.length === 0) return undefined;
     const sorted = [...values].sort((a, b) => a - b);
@@ -112,7 +108,6 @@ export function FinishedFabricList({
       : (sorted[mid - 1]! + sorted[mid]!) / 2;
   };
 
-  // Grouping logic
   const groupedRolls = useMemo(() => {
     const map = new Map<string, FinishedFabricRoll[]>();
     rolls.forEach((roll) => {
@@ -134,6 +129,12 @@ export function FinishedFabricList({
     });
   }, [rolls]);
 
+  const hasFilter = !!(
+    filters.status ||
+    filters.quality_grade ||
+    filters.fabric_type
+  );
+
   return (
     <div className="panel-card card-flush">
       {/* Header Area */}
@@ -143,95 +144,63 @@ export function FinishedFabricList({
           <h3 className="title-premium">Quản lý cuộn thành phẩm</h3>
         </div>
 
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        >
-          <div
-            className="view-toggle-group"
-            style={{
-              display: 'flex',
-              gap: '0.25rem',
-              background: 'var(--surface-subtle)',
-              padding: '0.25rem',
-              borderRadius: 'var(--radius-sm)',
-              border: '1px solid var(--border)',
-            }}
-          >
+        <div className="flex items-center gap-4">
+          <div className="inline-flex gap-1 bg-surface-subtle p-1 rounded-lg border border-border">
             <button
-              className={`btn-icon ${viewMode === 'table' ? 'active' : ''}`}
+              className={`btn-icon ${viewMode === 'table' ? 'bg-surface-strong shadow-sm text-primary' : 'text-muted'}`}
               onClick={() => setViewMode('table')}
               title="Dạng bảng"
               style={{
-                width: '36px',
-                height: '36px',
-                background:
-                  viewMode === 'table'
-                    ? 'var(--surface-strong)'
-                    : 'transparent',
-                boxShadow:
-                  viewMode === 'table' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+                width: 36,
+                height: 36,
                 border: 'none',
-                color: viewMode === 'table' ? 'var(--primary)' : 'var(--muted)',
               }}
             >
               <Icon name="LayoutList" size={20} />
             </button>
             <button
-              className={`btn-icon ${viewMode === 'grid' ? 'active' : ''}`}
+              className={`btn-icon ${viewMode === 'grid' ? 'bg-surface-strong shadow-sm text-primary' : 'text-muted'}`}
               onClick={() => setViewMode('grid')}
               title="Dạng lưới"
               style={{
-                width: '36px',
-                height: '36px',
-                background:
-                  viewMode === 'grid' ? 'var(--surface-strong)' : 'transparent',
-                boxShadow:
-                  viewMode === 'grid' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+                width: 36,
+                height: 36,
                 border: 'none',
-                color: viewMode === 'grid' ? 'var(--primary)' : 'var(--muted)',
               }}
             >
               <Icon name="LayoutGrid" size={20} />
             </button>
           </div>
 
-          <div
-            style={{
-              display: 'flex',
-              gap: '0.5rem',
-            }}
-          >
+          <div className="flex gap-2">
             <button
               className="btn-primary"
               type="button"
               onClick={onNew}
               style={{
-                minHeight: '42px',
+                minHeight: 42,
                 padding: '0 1.25rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
               }}
             >
-              + Nhập mới
+              <Icon name="Plus" size={18} /> Nhập mới
             </button>
             <button
               className="btn-secondary"
               type="button"
               onClick={onBulkNew}
-              style={{ height: '42px' }}
+              style={{
+                height: 42,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+              }}
             >
               <Icon name="Zap" size={16} /> Nhập mẻ
             </button>
-            <div
-              style={{
-                width: '1px',
-                height: '24px',
-                background: 'var(--border)',
-                margin: 'auto 0.25rem',
-              }}
-            />
+            <div className="w-px h-6 bg-border mx-1" />
             <button
               className="btn-icon"
               type="button"
@@ -239,8 +208,8 @@ export function FinishedFabricList({
               disabled={rolls.length === 0}
               title="Xuất Excel"
               style={{
-                height: '42px',
-                width: '42px',
+                height: 42,
+                width: 42,
               }}
             >
               <Icon name="FileSpreadsheet" size={18} />
@@ -249,7 +218,7 @@ export function FinishedFabricList({
         </div>
       </div>
 
-      {/* Stats Section - Premium Dashboard */}
+      {/* KPI Dashboard */}
       {stats && (
         <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
           <div className="kpi-card-premium kpi-primary">
@@ -265,10 +234,8 @@ export function FinishedFabricList({
                 <Icon name="Package" size={32} />
               </div>
             </div>
-            <div className="kpi-footer">
-              <span className="text-xs opacity-80 italic">
-                Cuộn đã hoàn tất công đoạn nhuộm
-              </span>
+            <div className="kpi-footer text-xs opacity-80 italic">
+              Cuộn đã hoàn tất công đoạn nhuộm
             </div>
           </div>
 
@@ -292,10 +259,8 @@ export function FinishedFabricList({
                 <Icon name="Ruler" size={32} />
               </div>
             </div>
-            <div className="kpi-footer">
-              <span className="text-xs opacity-80 italic">
-                Đã kiểm tra chất lượng (QC)
-              </span>
+            <div className="kpi-footer text-xs opacity-80 italic">
+              Đã kiểm tra chất lượng (QC)
             </div>
           </div>
 
@@ -319,18 +284,16 @@ export function FinishedFabricList({
                 <Icon name="Weight" size={32} />
               </div>
             </div>
-            <div className="kpi-footer">
-              <span className="text-xs opacity-80 italic">
-                Trọng lượng tịnh xuất kho
-              </span>
+            <div className="kpi-footer text-xs opacity-80 italic">
+              Trọng lượng tịnh xuất kho
             </div>
           </div>
         </div>
       )}
 
-      {/* Filter Section */}
-      <div className="filter-bar card-filter-section">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Filters */}
+      <div className="filter-bar card-filter-section p-4 border-b border-border">
+        <div className="filter-grid-premium">
           <div className="filter-field">
             <label>Loại vải</label>
             <div className="search-input-wrapper">
@@ -401,13 +364,14 @@ export function FinishedFabricList({
           </div>
         </div>
 
-        {(filters.status ?? filters.quality_grade ?? filters.fabric_type) && (
+        {hasFilter && (
           <button
             className="btn-secondary mt-4 text-danger border-danger/20 flex items-center gap-2"
             type="button"
             onClick={() => {
               setFilters({});
               setFabricTypeInput('');
+              setPage(1);
             }}
           >
             <Icon name="X" size={14} /> Xóa lọc nhanh
@@ -415,52 +379,54 @@ export function FinishedFabricList({
         )}
       </div>
 
-      {/* Thông báo lỗi */}
       {error && (
-        <p className="error-inline">
-          Lỗi tải dữ liệu: {(error as Error).message}
-        </p>
+        <div className="p-4">
+          <p className="error-inline">
+            Lỗi tải dữ liệu: {(error as Error).message}
+          </p>
+        </div>
       )}
 
-      {/* Bảng dữ liệu / Lưới dữ liệu */}
-      <div className="card-table-section">
-        {isLoading ? (
-          <p className="table-empty">Đang tải...</p>
-        ) : rolls.length === 0 ? (
-          <p className="table-empty">
-            Chưa có cuộn thành phẩm nào. Nhấn "+ Nhập cuộn mới" để bắt đầu.
-          </p>
-        ) : viewMode === 'grid' ? (
-          <div
-            className="grid-view-container"
-            style={{
-              padding: '1rem',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1.5rem',
-            }}
-          >
-            {groupedRolls.map((group) => (
-              <LotMatrixCard
-                key={group.lot}
-                title={group.lot}
-                lotNumber={group.lot !== 'KHÔNG CÓ LÔ' ? group.lot : undefined}
-                colorName={group.colorName || undefined}
-                expectedRollsCount={group.rolls.length}
-                rolls={group.rolls.map((r) => ({
-                  id: r.id,
-                  roll_number: r.roll_number,
-                  weight_kg: r.weight_kg ?? undefined,
-                  status: r.status,
-                }))}
-                standardWeightKg={group.standardWeightKg}
-                mode="view"
-                onRollPress={(roll) => {
-                  const original = rolls.find((r) => r.id === roll.id);
-                  if (original) onEdit(original);
-                }}
-              />
-            ))}
+      {/* Main Content View */}
+      <div className="card-table-section min-h-[400px]">
+        {viewMode === 'grid' ? (
+          <div className="p-4 flex flex-col gap-6">
+            {isLoading ? (
+              <div className="flex-center py-20">
+                <div className="spinner" />
+              </div>
+            ) : rolls.length === 0 ? (
+              <div className="empty-state py-20">
+                <div className="empty-icon">
+                  <Icon name="Package" size={48} />
+                </div>
+                <p>Chưa có cuộn thành phẩm nào.</p>
+              </div>
+            ) : (
+              groupedRolls.map((group) => (
+                <LotMatrixCard
+                  key={group.lot}
+                  title={group.lot}
+                  lotNumber={
+                    group.lot !== 'KHÔNG CÓ LÔ' ? group.lot : undefined
+                  }
+                  colorName={group.colorName || undefined}
+                  expectedRollsCount={group.rolls.length}
+                  rolls={group.rolls.map((r) => ({
+                    id: r.id,
+                    roll_number: r.roll_number,
+                    weight_kg: r.weight_kg ?? undefined,
+                    status: r.status,
+                  }))}
+                  standardWeightKg={group.standardWeightKg}
+                  mode="view"
+                  onRollPress={(roll) => {
+                    const original = rolls.find((r) => r.id === roll.id);
+                    if (original) onEdit(original);
+                  }}
+                />
+              ))
+            )}
           </div>
         ) : (
           <DataTablePremium
@@ -471,99 +437,103 @@ export function FinishedFabricList({
               if (canEditRoll(r.status)) onEdit(r);
             }}
             emptyStateTitle="Không có dữ liệu"
-            emptyStateDescription="Chưa có cuộn thành phẩm nào. Nhấn '+ Nhập cuộn mới' để bắt đầu."
+            emptyStateIcon="Package"
             columns={[
               {
                 header: 'Mã cuộn',
-                cell: (roll) => (
+                cell: (r) => (
                   <div className="flex flex-col">
-                    <span className="font-bold">{roll.roll_number}</span>
-                    {roll.color_name && (
-                      <span className="text-xs text-muted">
-                        {roll.color_name}
-                      </span>
+                    <span className="font-bold text-primary">
+                      {r.roll_number}
+                    </span>
+                    {r.color_name && (
+                      <span className="text-xs text-muted">{r.color_name}</span>
                     )}
                   </div>
                 ),
               },
               {
                 header: 'Loại vải',
-                cell: (roll) => roll.fabric_type,
+                cell: (r) => r.fabric_type,
               },
               {
                 header: 'CL',
-                cell: (roll) =>
-                  roll.quality_grade ? (
-                    <span className={`grade-badge grade-${roll.quality_grade}`}>
-                      {roll.quality_grade}
+                cell: (r) =>
+                  r.quality_grade ? (
+                    <span className={`grade-badge grade-${r.quality_grade}`}>
+                      {r.quality_grade}
                     </span>
                   ) : (
-                    <span className="td-muted">—</span>
+                    <span className="text-muted">—</span>
                   ),
               },
               {
                 header: 'Khổ × Dài',
-                className: 'td-muted',
-                cell: (roll) => (
+                className: 'text-muted',
+                cell: (r) => (
                   <div className="flex flex-col text-xs">
                     <span>
-                      {roll.width_cm !== null ? `${roll.width_cm} cm` : '—'}
+                      {r.width_cm !== null ? `${r.width_cm} cm` : '—'}
                     </span>
                     <span>
-                      {roll.length_m !== null &&
-                        ` × ${formatNum(roll.length_m, 'm')}`}
+                      {r.length_m !== null &&
+                        ` × ${formatNum(r.length_m, 'm')}`}
                     </span>
                   </div>
                 ),
               },
               {
                 header: 'Trọng lượng',
-                className: 'td-muted font-medium',
-                cell: (roll) => formatNum(roll.weight_kg, 'kg'),
+                className: 'text-right',
+                cell: (r) => (
+                  <span className="font-medium">
+                    {formatNum(r.weight_kg, 'kg')}
+                  </span>
+                ),
               },
               {
                 header: 'Trạng thái',
-                cell: (roll) => (
-                  <Badge variant={getStatusVariant(roll.status)}>
-                    {ROLL_STATUS_LABELS[roll.status]}
+                cell: (r) => (
+                  <Badge variant={getStatusVariant(r.status)}>
+                    {ROLL_STATUS_LABELS[r.status]}
                   </Badge>
                 ),
               },
               {
                 header: 'Vị trí',
-                className: 'td-muted text-xs',
-                cell: (roll) => roll.warehouse_location ?? '—',
+                cell: (r) => (
+                  <span className="text-xs text-muted">
+                    {r.warehouse_location ?? '—'}
+                  </span>
+                ),
               },
               {
-                header: '',
-                className: 'td-actions',
+                header: 'Thao tác',
+                className: 'text-right',
                 onCellClick: () => {},
-                cell: (roll) => (
+                cell: (r) => (
                   <div className="flex justify-end gap-1">
                     <button
                       className="btn-icon"
-                      type="button"
-                      title="Truy vết nguồn gốc"
-                      onClick={() => onTrace(roll)}
+                      title="Truy vết"
+                      onClick={() => onTrace(r)}
                     >
                       <Icon name="Link" size={16} />
                     </button>
                     <button
                       className="btn-icon"
-                      type="button"
-                      title={editBlockReason(roll.status) ?? 'Sửa'}
-                      onClick={() => onEdit(roll)}
-                      disabled={!canEditRoll(roll.status)}
+                      title={editBlockReason(r.status) ?? 'Sửa'}
+                      onClick={() => onEdit(r)}
+                      disabled={!canEditRoll(r.status)}
                     >
-                      <Icon name="Edit3" size={16} />
+                      <Icon name="Pencil" size={16} />
                     </button>
                     <button
-                      className="btn-icon danger"
-                      type="button"
-                      title={deleteBlockReason(roll.status) ?? 'Xóa'}
-                      onClick={() => handleDelete(roll)}
+                      className="btn-icon text-danger"
+                      title={deleteBlockReason(r.status) ?? 'Xóa'}
+                      onClick={() => handleDelete(r)}
                       disabled={
-                        deleteMutation.isPending || !canDeleteRoll(roll.status)
+                        deleteMutation.isPending || !canDeleteRoll(r.status)
                       }
                     >
                       <Icon name="Trash2" size={16} />
@@ -572,22 +542,18 @@ export function FinishedFabricList({
                 ),
               },
             ]}
-            renderMobileCard={(roll) => (
+            renderMobileCard={(r) => (
               <div className="mobile-card">
                 <div className="mobile-card-header">
-                  <span className="mobile-card-title">{roll.roll_number}</span>
-                  <Badge variant={getStatusVariant(roll.status)}>
-                    {ROLL_STATUS_LABELS[roll.status]}
+                  <span className="mobile-card-title">{r.roll_number}</span>
+                  <Badge variant={getStatusVariant(r.status)}>
+                    {ROLL_STATUS_LABELS[r.status]}
                   </Badge>
                 </div>
                 <div className="mobile-card-body">
                   <div className="flex justify-between items-start mb-1">
-                    <span className="text-sm font-bold">
-                      {roll.fabric_type}
-                    </span>
-                    <span className="text-xs text-muted">
-                      {roll.color_name}
-                    </span>
+                    <span className="text-sm font-bold">{r.fabric_type}</span>
+                    <span className="text-xs text-muted">{r.color_name}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2">
                     <div className="flex flex-col">
@@ -595,7 +561,7 @@ export function FinishedFabricList({
                         Trọng lượng
                       </span>
                       <span className="text-sm font-medium">
-                        {formatNum(roll.weight_kg, 'kg')}
+                        {formatNum(r.weight_kg, 'kg')}
                       </span>
                     </div>
                     <div className="flex flex-col">
@@ -603,41 +569,41 @@ export function FinishedFabricList({
                         Chất lượng
                       </span>
                       <span className="text-sm font-bold">
-                        {roll.quality_grade || '—'}
+                        {r.quality_grade || '—'}
                       </span>
                     </div>
                   </div>
                 </div>
-                <div className="mobile-card-actions">
+                <div className="flex gap-2 pt-2 border-t border-border/10">
                   <button
                     className="btn-secondary flex-1"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onTrace(roll);
+                      onTrace(r);
                     }}
                   >
                     <Icon name="Link" size={16} /> Truy vết
                   </button>
-                  {canEditRoll(roll.status) && (
+                  {canEditRoll(r.status) && (
                     <button
                       className="btn-secondary flex-1 text-primary"
                       onClick={(e) => {
                         e.stopPropagation();
-                        onEdit(roll);
+                        onEdit(r);
                       }}
                     >
-                      <Icon name="Edit3" size={16} /> Sửa
+                      <Icon name="Pencil" size={16} /> Sửa
                     </button>
                   )}
-                  {canDeleteRoll(roll.status) && (
+                  {canDeleteRoll(r.status) && (
                     <button
-                      className="btn-secondary flex-1 text-danger"
+                      className="btn-secondary text-danger px-3"
                       onClick={(e) => {
                         e.stopPropagation();
-                        void handleDelete(roll);
+                        handleDelete(r);
                       }}
                     >
-                      <Icon name="Trash2" size={16} /> Xóa
+                      <Icon name="Trash2" size={16} />
                     </button>
                   )}
                 </div>
@@ -647,7 +613,9 @@ export function FinishedFabricList({
         )}
       </div>
 
-      <Pagination result={result} onPageChange={setPage} />
+      <div className="p-4">
+        <Pagination result={result} onPageChange={setPage} />
+      </div>
     </div>
   );
 }

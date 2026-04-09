@@ -1,5 +1,15 @@
 import { useState } from 'react';
 
+import { useConfirm } from '@/shared/components/ConfirmDialog';
+import { Pagination } from '@/shared/components/Pagination';
+import {
+  Icon,
+  Badge,
+  type BadgeVariant,
+  DataTablePremium,
+} from '@/shared/components';
+import { Combobox } from '@/shared/components/Combobox';
+
 import type {
   YarnCatalog,
   YarnCatalogFilter,
@@ -13,14 +23,8 @@ type YarnCatalogListProps = {
   onNew: () => void;
 };
 
-function StatusBadge({ status }: { status: YarnCatalogStatus }) {
-  return (
-    <span
-      className={`roll-status ${status === 'active' ? 'in_stock' : 'damaged'}`}
-    >
-      {YARN_CATALOG_STATUS_LABELS[status]}
-    </span>
-  );
+function getStatusVariant(status: YarnCatalogStatus): BadgeVariant {
+  return status === 'active' ? 'success' : 'gray';
 }
 
 export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
@@ -30,9 +34,9 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
 
   const { data, isLoading, error } = useYarnCatalogList(filters, page);
   const deleteMutation = useDeleteYarnCatalog();
+  const { confirm } = useConfirm();
 
   const catalogs = data?.data ?? [];
-  const totalPages = data?.totalPages ?? 1;
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -43,248 +47,252 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
     }));
   }
 
-  function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const val = e.target.value as YarnCatalogStatus | '';
-    setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      status: val || undefined,
-    }));
-  }
-
-  function handleDelete(catalog: YarnCatalog) {
-    if (
-      !window.confirm(
-        `Xóa loại sợi "${catalog.name}"? Hành động này không thể hoàn tác.`,
-      )
-    )
-      return;
+  async function handleDelete(catalog: YarnCatalog) {
+    const ok = await confirm({
+      message: `Xóa loại sợi "${catalog.name}"? Hành động này không thể hoàn tác.`,
+      variant: 'danger',
+    });
+    if (!ok) return;
     deleteMutation.mutate(catalog.id);
   }
 
   const hasFilter = !!(filters.search || filters.status);
 
   return (
-    <div
-      className="panel-card"
-      style={{
-        padding: 0,
-        overflow: 'hidden',
-      }}
-    >
-      <div style={{ padding: '1.25rem 1.25rem 0' }}>
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Master Data</p>
-            <h3>Danh mục loại sợi</h3>
-          </div>
-          <button
-            className="primary-button"
-            type="button"
-            onClick={onNew}
-            style={{
-              minHeight: 40,
-              padding: '0.6rem 1.1rem',
-              fontSize: '0.9rem',
-            }}
-          >
-            + Thêm loại sợi
-          </button>
+    <div className="panel-card card-flush">
+      {/* Header */}
+      <div className="card-header-area card-header-premium">
+        <div>
+          <p className="eyebrow-premium">MASTER DATA</p>
+          <h3 className="title-premium">Danh Mục Loại Sợi</h3>
         </div>
+        <button
+          className="btn-primary flex items-center gap-2"
+          type="button"
+          onClick={onNew}
+          style={{
+            minHeight: 42,
+            padding: '0 1.25rem',
+          }}
+        >
+          <Icon name="Plus" size={18} /> Thêm loại sợi
+        </button>
       </div>
 
       {/* Filters */}
-      <div
-        className="filter-bar"
-        style={{
-          margin: '1rem 1.25rem',
-          borderRadius: 'var(--radius-sm)',
-        }}
-      >
-        <form
-          className="filter-field"
-          onSubmit={handleSearch}
-          style={{ flex: '1 1 220px' }}
-        >
-          <label htmlFor="filter-search">Tìm kiếm</label>
-          <div
-            style={{
-              display: 'flex',
-              gap: '0.4rem',
-            }}
-          >
-            <input
-              id="filter-search"
-              className="field-input"
-              type="text"
-              placeholder="Tên, mã, thành phần..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
-            <button
-              className="btn-secondary"
-              type="submit"
-              style={{ whiteSpace: 'nowrap' }}
-            >
-              Tìm
-            </button>
+      <div className="filter-bar card-filter-section p-4 border-b border-border">
+        <div className="filter-compact-premium">
+          <div className="filter-field">
+            <label htmlFor="filter-yarn-search">Tìm kiếm</label>
+            <form className="search-input-wrapper" onSubmit={handleSearch}>
+              <input
+                id="filter-yarn-search"
+                className="field-input"
+                type="text"
+                placeholder="Tên, mã, thành phần..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+              <button type="submit" className="hidden" />
+              <Icon name="Search" size={16} className="search-input-icon" />
+            </form>
           </div>
-        </form>
 
-        <div className="filter-field">
-          <label htmlFor="filter-status">Trạng thái</label>
-          <select
-            id="filter-status"
-            className="field-select"
-            value={filters.status ?? ''}
-            onChange={handleStatusChange}
-          >
-            <option value="">Tất cả</option>
-            <option value="active">Đang dùng</option>
-            <option value="inactive">Ngưng dùng</option>
-          </select>
+          <div className="filter-field">
+            <label>Trạng thái</label>
+            <Combobox
+              options={[
+                {
+                  value: '',
+                  label: 'Tất cả trạng thái',
+                },
+                {
+                  value: 'active',
+                  label: 'Đang dùng',
+                },
+                {
+                  value: 'inactive',
+                  label: 'Ngưng dùng',
+                },
+              ]}
+              value={filters.status ?? ''}
+              onChange={(val) => {
+                setPage(1);
+                setFilters((prev) => ({
+                  ...prev,
+                  status: (val as YarnCatalogStatus) || undefined,
+                }));
+              }}
+            />
+          </div>
+
+          {hasFilter && (
+            <button
+              className="btn-secondary text-danger flex items-center gap-2"
+              type="button"
+              onClick={() => {
+                setFilters({});
+                setSearchInput('');
+                setPage(1);
+              }}
+              style={{ marginBottom: 4 }}
+            >
+              <Icon name="X" size={14} /> Xóa lọc
+            </button>
+          )}
         </div>
-
-        {hasFilter && (
-          <button
-            className="btn-secondary"
-            type="button"
-            onClick={() => {
-              setFilters({});
-              setSearchInput('');
-              setPage(1);
-            }}
-            style={{ alignSelf: 'flex-end' }}
-          >
-            ✕ Xóa lọc
-          </button>
-        )}
       </div>
 
+      {/* Error */}
       {error && (
-        <p
-          style={{
-            padding: '1rem 1.25rem',
-            color: '#c0392b',
-            fontSize: '0.9rem',
-          }}
-        >
-          Lỗi tải dữ liệu: {(error as Error).message}
+        <div className="p-4">
+          <p className="error-inline">
+            Lỗi tải dữ liệu: {(error as Error).message}
+          </p>
+        </div>
+      )}
+
+      {/* Table & Cards */}
+      <DataTablePremium
+        data={catalogs}
+        isLoading={isLoading}
+        rowKey={(c) => c.id}
+        onRowClick={(c) => onEdit(c)}
+        emptyStateTitle={
+          hasFilter ? 'Không tìm thấy loại sợi phù hợp' : 'Chưa có loại sợi nào'
+        }
+        emptyStateDescription={
+          hasFilter
+            ? 'Thử điều chỉnh bộ lọc.'
+            : 'Nhấn "+ Thêm loại sợi" để bắt đầu quản lý danh mục sợi.'
+        }
+        emptyStateIcon={hasFilter ? '🔍' : 'Layers'}
+        emptyStateActionLabel={!hasFilter ? '+ Thêm loại sợi' : undefined}
+        onEmptyStateAction={!hasFilter ? onNew : undefined}
+        columns={[
+          {
+            header: 'Mã / Tên',
+            cell: (c) => (
+              <div className="flex flex-col">
+                <span className="font-bold text-primary">{c.code}</span>
+                <span className="text-sm">{c.name}</span>
+                {c.color_name && (
+                  <span className="text-xs text-muted">{c.color_name}</span>
+                )}
+              </div>
+            ),
+          },
+          {
+            header: 'Thành phần',
+            cell: (c) => (
+              <span className="text-sm text-muted">{c.composition ?? '—'}</span>
+            ),
+          },
+          {
+            header: 'Xuất xứ',
+            cell: (c) => <span className="text-sm">{c.origin ?? '—'}</span>,
+          },
+          {
+            header: 'Đơn vị',
+            cell: (c) => <span className="text-sm font-medium">{c.unit}</span>,
+          },
+          {
+            header: 'Trạng thái',
+            cell: (c) => (
+              <Badge variant={getStatusVariant(c.status)}>
+                {YARN_CATALOG_STATUS_LABELS[c.status]}
+              </Badge>
+            ),
+          },
+          {
+            header: 'Thao tác',
+            className: 'text-right',
+            onCellClick: () => {},
+            cell: (c) => (
+              <div className="flex justify-end gap-1">
+                <button
+                  className="btn-icon"
+                  type="button"
+                  title="Sửa"
+                  onClick={() => onEdit(c)}
+                >
+                  <Icon name="Pencil" size={16} />
+                </button>
+                <button
+                  className="btn-icon text-danger"
+                  type="button"
+                  title="Xóa"
+                  onClick={() => handleDelete(c)}
+                  disabled={deleteMutation.isPending}
+                >
+                  <Icon name="Trash2" size={16} />
+                </button>
+              </div>
+            ),
+          },
+        ]}
+        renderMobileCard={(c) => (
+          <div className="mobile-card">
+            <div className="mobile-card-header">
+              <div className="flex flex-col">
+                <span className="mobile-card-title">{c.code}</span>
+                <span className="text-sm font-medium">{c.name}</span>
+              </div>
+              <Badge variant={getStatusVariant(c.status)}>
+                {YARN_CATALOG_STATUS_LABELS[c.status]}
+              </Badge>
+            </div>
+            <div className="mobile-card-body space-y-2">
+              <div className="grid grid-cols-3 gap-2 text-sm">
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted">Thành phần</span>
+                  <span className="font-medium">{c.composition ?? '—'}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted">Xuất xứ</span>
+                  <span className="font-medium">{c.origin ?? '—'}</span>
+                </div>
+                <div className="flex flex-col text-right">
+                  <span className="text-xs text-muted">Đơn vị</span>
+                  <span className="font-medium">{c.unit}</span>
+                </div>
+              </div>
+              {c.color_name && (
+                <div className="text-xs text-muted">Màu: {c.color_name}</div>
+              )}
+              <div className="flex gap-2 pt-2 border-t border-border/10">
+                <button
+                  className="btn-secondary flex-1 text-primary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(c);
+                  }}
+                >
+                  <Icon name="Pencil" size={16} /> Sửa
+                </button>
+                <button
+                  className="btn-secondary text-danger px-3"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(c);
+                  }}
+                  disabled={deleteMutation.isPending}
+                >
+                  <Icon name="Trash2" size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      />
+
+      {deleteMutation.error && (
+        <p className="error-inline-sm p-4">
+          Lỗi: {(deleteMutation.error as Error).message}
         </p>
       )}
 
-      <div
-        className="data-table-wrap"
-        style={{
-          margin: '0 1.25rem 1.25rem',
-          borderRadius: 'var(--radius-sm)',
-        }}
-      >
-        {isLoading ? (
-          <p className="table-empty">Đang tải...</p>
-        ) : catalogs.length === 0 ? (
-          <p className="table-empty">
-            {hasFilter
-              ? 'Không tìm thấy loại sợi phù hợp.'
-              : 'Chưa có loại sợi nào. Nhấn "+ Thêm loại sợi" để bắt đầu.'}
-          </p>
-        ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Mã</th>
-                <th>Tên loại sợi</th>
-                <th>Thành phần</th>
-                <th>Xuất xứ</th>
-                <th>Đơn vị</th>
-                <th>Trạng thái</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {catalogs.map((catalog) => (
-                <tr key={catalog.id}>
-                  <td>
-                    <strong>{catalog.code}</strong>
-                  </td>
-                  <td>
-                    {catalog.name}
-                    {catalog.color_name && (
-                      <div className="td-muted" style={{ fontSize: '0.8rem' }}>
-                        {catalog.color_name}
-                      </div>
-                    )}
-                  </td>
-                  <td className="td-muted">{catalog.composition ?? '—'}</td>
-                  <td className="td-muted">{catalog.origin ?? '—'}</td>
-                  <td className="td-muted">{catalog.unit}</td>
-                  <td>
-                    <StatusBadge status={catalog.status} />
-                  </td>
-                  <td className="td-actions">
-                    <button
-                      className="btn-icon"
-                      type="button"
-                      title="Sửa"
-                      onClick={() => onEdit(catalog)}
-                      style={{ marginRight: 4 }}
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="btn-icon danger"
-                      type="button"
-                      title="Xóa"
-                      onClick={() => handleDelete(catalog)}
-                      disabled={deleteMutation.isPending}
-                    >
-                      🗑
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '0.5rem',
-            padding: '0 1.25rem 1.25rem',
-          }}
-        >
-          <button
-            className="btn-secondary"
-            type="button"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
-          >
-            ← Trước
-          </button>
-          <span
-            style={{
-              alignSelf: 'center',
-              fontSize: '0.9rem',
-              color: 'var(--text-secondary)',
-            }}
-          >
-            {page} / {totalPages}
-          </span>
-          <button
-            className="btn-secondary"
-            type="button"
-            disabled={page >= totalPages}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            Tiếp →
-          </button>
-        </div>
-      )}
+      <Pagination result={data} onPageChange={setPage} />
     </div>
   );
 }
