@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import type { Employee } from '@/schema';
-import { Icon } from '@/shared/components/Icon';
+import { Icon, Badge, DataTablePremium } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 
@@ -92,140 +92,222 @@ export function EmployeeListPage() {
 
   return (
     <div className="panel-card card-flush">
-      {/* Header */}
-      <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Nhân sự</p>
-            <h3>Quản lý nhân viên</h3>
+      {/* 🏷️ Header Area */}
+      <div className="card-header-area card-header-premium">
+        <div>
+          <p className="eyebrow-premium">NHÂN SỰ</p>
+          <h3 className="title-premium">Quản lý nhân viên</h3>
+        </div>
+        <button
+          className="btn-primary min-h-[42px] px-6"
+          type="button"
+          onClick={handleCreate}
+        >
+          <Icon name="Plus" size={18} className="mr-2" /> Thêm mới
+        </button>
+      </div>
+
+      {/* 📊 KPI Dashboard area */}
+      <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
+        <div className="kpi-card-premium kpi-primary">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Tổng nhân viên</p>
+              <p className="kpi-value">{employees?.length ?? 0}</p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="Users" size={32} />
+            </div>
           </div>
-          <button
-            className="primary-button"
-            type="button"
-            onClick={handleCreate}
-          >
-            <Icon name="Plus" size={16} />
-            Thêm mới
-          </button>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Thuộc các phòng ban
+          </div>
+        </div>
+
+        <div className="kpi-card-premium kpi-success">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Đang hoạt động</p>
+              <p className="kpi-value">
+                {employees?.filter((e) => e.status === 'active').length ?? 0}
+              </p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="Activity" size={32} />
+            </div>
+          </div>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Người dùng kích hoạt
+          </div>
+        </div>
+
+        <div className="kpi-card-premium kpi-warning">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Kinh doanh (Sales)</p>
+              <p className="kpi-value">
+                {employees?.filter((e) => e.role === 'sales').length ?? 0}
+              </p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="Briefcase" size={32} />
+            </div>
+          </div>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Nhân viên kinh doanh
+          </div>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="filter-bar card-filter-section">
-        <div className="filter-field" style={{ flex: '1 1 220px' }}>
-          <label htmlFor="emp-search">Tìm kiếm</label>
-          <input
-            id="emp-search"
-            className="field-input"
-            type="text"
-            placeholder="Tên, mã, SĐT..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <div className="filter-field" style={{ flex: '0 0 180px' }}>
-          <label>Vai trò</label>
-          <Combobox
-            options={ROLE_FILTER_OPTIONS}
-            value={roleFilter}
-            onChange={setRoleFilter}
-            placeholder="Tất cả vai trò"
-          />
+      {/* 🔍 Filter Area */}
+      <div className="filter-bar card-filter-section p-4 border-b border-border">
+        <div className="filter-compact-premium">
+          <div className="filter-field">
+            <label htmlFor="emp-search">Tìm kiếm</label>
+            <div className="search-input-wrapper">
+              <input
+                id="emp-search"
+                className="field-input"
+                type="text"
+                placeholder="Tên, mã, SĐT..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <Icon name="Search" size={16} className="search-input-icon" />
+            </div>
+          </div>
+          <div className="filter-field">
+            <label>Vai trò</label>
+            <Combobox
+              options={ROLE_FILTER_OPTIONS}
+              value={roleFilter}
+              onChange={setRoleFilter}
+            />
+          </div>
+          {(search || roleFilter) && (
+            <button
+              className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
+              type="button"
+              onClick={() => {
+                setSearch('');
+                setRoleFilter('');
+              }}
+              style={{ marginBottom: '4px' }}
+            >
+              <Icon name="X" size={14} /> Xóa lọc nhanh
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Table */}
-      <div className="data-table-wrap card-table-section">
-        {isLoading ? (
-          <p className="table-empty">Đang tải...</p>
-        ) : !employees?.length ? (
-          <p className="table-empty">Không tìm thấy nhân viên nào.</p>
-        ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Mã NV</th>
-                <th>Họ tên</th>
-                <th>SĐT</th>
-                <th>Vai trò</th>
-                <th>Trạng thái</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {employees.map((emp) => (
-                <tr key={emp.id}>
-                  <td>
-                    <strong>{emp.code}</strong>
-                  </td>
-                  <td>{emp.name}</td>
-                  <td className="td-muted">{emp.phone || '—'}</td>
-                  <td>
-                    <span className="roll-status in_stock">
-                      {ROLE_LABELS[emp.role] ?? emp.role}
-                    </span>
-                  </td>
-                  <td>
-                    <span
-                      className={
-                        emp.status === 'active'
-                          ? 'roll-status in_stock'
-                          : 'roll-status damaged'
-                      }
-                    >
-                      {STATUS_LABELS[emp.status] ?? emp.status}
-                    </span>
-                  </td>
-                  <td>
-                    <div
-                      style={{
-                        display: 'flex',
-                        gap: '0.4rem',
-                        justifyContent: 'flex-end',
-                      }}
-                    >
-                      <button
-                        className="btn-secondary"
-                        type="button"
-                        title="Sửa"
-                        onClick={() => handleEdit(emp)}
-                        style={{
-                          padding: '0.25rem 0.5rem',
-                          fontSize: '0.8rem',
-                        }}
-                      >
-                        <Icon name="Pencil" size={14} />
-                      </button>
-                      {emp.status === 'active' && (
-                        <button
-                          className="btn-secondary"
-                          type="button"
-                          title="Ngừng hoạt động"
-                          onClick={() => void handleDeactivate(emp)}
-                          disabled={deactivateMutation.isPending}
-                          style={{
-                            padding: '0.25rem 0.5rem',
-                            fontSize: '0.8rem',
-                            color: '#c0392b',
-                          }}
-                        >
-                          <Icon name="UserX" size={14} />
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* 📑 Data Table / Cards */}
+      <DataTablePremium
+        data={employees ?? []}
+        isLoading={isLoading}
+        rowKey={(e) => e.id}
+        onRowClick={handleEdit}
+        emptyStateTitle={
+          search || roleFilter
+            ? 'Không tìm thấy nhân viên'
+            : 'Chưa có dữ liệu nhân viên'
+        }
+        emptyStateDescription={
+          search || roleFilter
+            ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
+            : 'Hãy thêm nhân viên mới để bắt đầu quản lý.'
+        }
+        emptyStateIcon={search || roleFilter ? '🔍' : 'Users'}
+        emptyStateActionLabel={
+          !(search || roleFilter) ? '+ Thêm nhân viên' : undefined
+        }
+        onEmptyStateAction={!(search || roleFilter) ? handleCreate : undefined}
+        columns={[
+          {
+            header: 'Mã NV',
+            cell: (emp) => (
+              <span className="font-bold text-primary">{emp.code}</span>
+            ),
+          },
+          {
+            header: 'Họ tên',
+            cell: (emp) => <span className="font-bold">{emp.name}</span>,
+          },
+          {
+            header: 'SĐT',
+            className: 'text-sm font-medium',
+            cell: (emp) => emp.phone || '—',
+          },
+          {
+            header: 'Vai trò',
+            cell: (emp) => (
+              <span className="badge-outline">
+                {ROLE_LABELS[emp.role] ?? emp.role}
+              </span>
+            ),
+          },
+          {
+            header: 'Trạng thái',
+            cell: (emp) => (
+              <Badge variant={emp.status === 'active' ? 'success' : 'gray'}>
+                {STATUS_LABELS[emp.status] ?? emp.status}
+              </Badge>
+            ),
+          },
+          {
+            header: 'Thao tác',
+            className: 'text-right',
+            onCellClick: () => {},
+            cell: (emp) => (
+              <div className="flex justify-end gap-1">
+                <button
+                  className="btn-icon"
+                  type="button"
+                  title="Sửa"
+                  onClick={() => handleEdit(emp)}
+                >
+                  <Icon name="Pencil" size={16} />
+                </button>
+                {emp.status === 'active' && (
+                  <button
+                    className="btn-icon text-danger"
+                    type="button"
+                    title="Ngừng hoạt động"
+                    onClick={() => void handleDeactivate(emp)}
+                    disabled={deactivateMutation.isPending}
+                  >
+                    <Icon name="UserX" size={16} />
+                  </button>
+                )}
+              </div>
+            ),
+          },
+        ]}
+        renderMobileCard={(emp) => (
+          <div className="mobile-card">
+            <div className="mobile-card-header">
+              <span className="mobile-card-title">{emp.code}</span>
+              <Badge variant={emp.status === 'active' ? 'success' : 'gray'}>
+                {STATUS_LABELS[emp.status] ?? emp.status}
+              </Badge>
+            </div>
+            <div className="mobile-card-body">
+              <p className="font-bold text-lg">{emp.name}</p>
+              <div className="mobile-card-row">
+                <span className="label">Liên hệ:</span>
+                <span className="value">{emp.phone || '—'}</span>
+              </div>
+              <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/10">
+                <span className="text-[10px] uppercase font-bold text-muted bg-surface-subtle px-1.5 py-0.5 rounded">
+                  {ROLE_LABELS[emp.role] ?? emp.role}
+                </span>
+              </div>
+            </div>
+          </div>
         )}
-      </div>
-
-      {deactivateMutation.error && (
-        <p className="error-inline-sm">
-          Lỗi: {(deactivateMutation.error as Error).message}
-        </p>
-      )}
+      />
 
       <EmployeeForm
         open={isFormOpen}
