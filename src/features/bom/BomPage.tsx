@@ -1,5 +1,8 @@
 import { useState } from 'react';
 
+import { Icon } from '@/shared/components/Icon';
+import { Combobox } from '@/shared/components/Combobox';
+
 import { BOM_STATUSES, BOM_STATUS_LABELS } from './bom.module';
 import { BomDetail } from './BomDetail';
 import { BomForm } from './BomForm';
@@ -129,107 +132,132 @@ export function BomPage() {
     );
   }
 
+  const hasFilter = !!(filter.search || filter.status);
+
   // --- List view (default) ---
   return (
     <div className="panel-card card-flush">
       {/* Header */}
-      <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Kỹ thuật</p>
-            <h3>Định mức (BOM)</h3>
+      <div className="card-header-area card-header-premium">
+        <div>
+          <p className="eyebrow-premium">KỸ THUẬT</p>
+          <h3 className="title-premium">Định Mức Nguyên Liệu (BOM)</h3>
+        </div>
+        <button
+          className="btn-primary min-h-[42px] px-6"
+          type="button"
+          onClick={handleCreate}
+        >
+          <Icon name="Plus" size={18} className="mr-2" /> Tạo bản nháp
+        </button>
+      </div>
+
+      {/* KPI Dashboard */}
+      <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
+        <div className="kpi-card-premium kpi-primary">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Tổng số định mức</p>
+              <p className="kpi-value">{boms.length}</p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="Layers" size={32} />
+            </div>
           </div>
-          <button
-            className="primary-button btn-standard"
-            type="button"
-            onClick={handleCreate}
-          >
-            + Tạo bản nháp
-          </button>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Tất cả thẻ định mức
+          </div>
+        </div>
+
+        <div className="kpi-card-premium kpi-success">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Đang áp dụng</p>
+              <p className="kpi-value">
+                {boms.filter((b) => b.status === 'approved').length}
+              </p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="CheckCircle" size={32} />
+            </div>
+          </div>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            BOM đã duyệt
+          </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="filter-bar card-filter-section">
-        <div className="filter-field" style={{ flex: '1 1 220px' }}>
-          <label htmlFor="bom-search">Tìm kiếm</label>
-          <input
-            id="bom-search"
-            className="field-input"
-            type="text"
-            placeholder="Mã hoặc tên BOM..."
-            value={filter.search ?? ''}
-            onChange={(e) =>
-              setFilter({
-                ...filter,
-                search: e.target.value || undefined,
-              })
-            }
-          />
-        </div>
+      <div className="filter-bar card-filter-section p-4 border-b border-border">
+        <div className="filter-compact-premium">
+          <div className="filter-field">
+            <label htmlFor="bom-search">Tìm kiếm</label>
+            <div className="search-input-wrapper">
+              <input
+                id="bom-search"
+                className="field-input"
+                type="text"
+                placeholder="Mã hoặc tên BOM..."
+                value={filter.search ?? ''}
+                onChange={(e) =>
+                  setFilter({
+                    ...filter,
+                    search: e.target.value || undefined,
+                  })
+                }
+              />
+              <Icon name="Search" size={16} className="search-input-icon" />
+            </div>
+          </div>
 
-        <div className="filter-field">
-          <label htmlFor="bom-status">Trạng thái</label>
-          <select
-            id="bom-status"
-            className="field-select"
-            value={filter.status ?? ''}
-            onChange={(e) =>
-              setFilter({
-                ...filter,
-                status: (e.target.value as BomStatus) || undefined,
-              })
-            }
-          >
-            <option value="">Tất cả</option>
-            {BOM_STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {BOM_STATUS_LABELS[s]}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div className="filter-field">
+            <label>Trạng thái</label>
+            <Combobox
+              options={[
+                {
+                  value: '',
+                  label: 'Tất cả trạng thái',
+                },
+                ...BOM_STATUSES.map((s) => ({
+                  value: s,
+                  label: BOM_STATUS_LABELS[s],
+                })),
+              ]}
+              value={filter.status ?? ''}
+              onChange={(val) =>
+                setFilter({
+                  ...filter,
+                  status: (val as BomStatus) || undefined,
+                })
+              }
+            />
+          </div>
 
-        {(filter.search || filter.status) && (
-          <button
-            className="btn-secondary"
-            type="button"
-            onClick={() => setFilter({})}
-            style={{ alignSelf: 'flex-end' }}
-          >
-            ✕ Xóa lọc
-          </button>
-        )}
+          {hasFilter && (
+            <button
+              className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
+              type="button"
+              onClick={() => setFilter({})}
+              style={{ marginBottom: '4px' }}
+            >
+              <Icon name="X" size={14} /> Xóa lọc nhanh
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Table */}
-      <div
-        className="data-table-wrap card-table-section"
-        style={isLoading || boms.length === 0 ? { border: 'none' } : undefined}
-      >
-        {isLoading ? (
-          <div className="table-empty">Đang tải danh sách BOM...</div>
-        ) : boms.length === 0 ? (
-          <div className="table-empty">
-            <p>Chưa có công thức định mức (BOM) nào.</p>
-            <p
-              style={{
-                fontSize: '0.82rem',
-                marginTop: '0.5rem',
-              }}
-            >
-              Nhấn nút tạo để bắt đầu.
-            </p>
-          </div>
-        ) : (
-          <BomList
-            boms={boms}
-            onSelect={handleSelect}
-            onEdit={handleEdit}
-            onDeprecate={(bom) => handleDeprecate(bom)}
-          />
-        )}
-      </div>
+      <BomList
+        boms={boms}
+        isLoading={isLoading}
+        hasFilter={hasFilter}
+        onSelect={handleSelect}
+        onEdit={handleEdit}
+        onDeprecate={(bom) => handleDeprecate(bom)}
+        onCreate={handleCreate}
+      />
     </div>
   );
 }

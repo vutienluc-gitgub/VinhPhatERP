@@ -1,93 +1,222 @@
+import {
+  Icon,
+  Badge,
+  type BadgeVariant,
+  DataTablePremium,
+} from '@/shared/components';
+
 import { BOM_STATUS_LABELS } from './bom.module';
 import { BomTemplate, BomStatus } from './types';
 
 interface BomListProps {
   boms: BomTemplate[];
+  isLoading?: boolean;
+  hasFilter?: boolean;
   onSelect: (bom: BomTemplate) => void;
   onEdit: (bom: BomTemplate) => void;
   onDeprecate: (bom: BomTemplate) => void;
+  onCreate?: () => void;
 }
 
-export function BomList({ boms, onSelect, onEdit, onDeprecate }: BomListProps) {
-  if (boms.length === 0) {
-    return (
-      <div className="table-empty">
-        <p>Chưa có công thức định mức (BOM) nào.</p>
-      </div>
-    );
+function getStatusVariant(status: BomStatus): BadgeVariant {
+  switch (status) {
+    case 'draft':
+      return 'gray';
+    case 'approved':
+      return 'success';
+    case 'deprecated':
+      return 'danger';
+    default:
+      return 'gray';
   }
+}
 
+export function BomList({
+  boms,
+  isLoading,
+  hasFilter,
+  onSelect,
+  onEdit,
+  onDeprecate,
+  onCreate,
+}: BomListProps) {
   return (
-    <table className="data-table">
-      <thead>
-        <tr>
-          <th>Mã BOM</th>
-          <th>Tên Công Thức</th>
-          <th className="hide-mobile">Sản Phẩm Mục Tiêu</th>
-          <th className="hide-mobile">Phiên Bản</th>
-          <th>Trạng Thái</th>
-          <th className="hide-mobile">Người Tạo</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {boms.map((bom) => {
-          const statusLabel =
-            BOM_STATUS_LABELS[bom.status as BomStatus] || bom.status;
-
-          return (
-            <tr
-              key={bom.id}
-              style={{ cursor: 'pointer' }}
-              onClick={() => onSelect(bom)}
-            >
-              <td>
-                <strong>{bom.code}</strong>
-                <div className="td-muted" style={{ fontSize: '0.8rem' }}>
-                  {bom.name}
-                </div>
-              </td>
-              <td className="hide-mobile">{bom.name}</td>
-              <td className="hide-mobile td-muted">
+    <DataTablePremium
+      data={boms}
+      isLoading={isLoading}
+      rowKey={(bom) => bom.id}
+      onRowClick={(bom) => onSelect(bom)}
+      emptyStateTitle={
+        hasFilter
+          ? 'Không tìm thấy công thức định mức (BOM)'
+          : 'Chưa có công thức định mức (BOM) nào'
+      }
+      emptyStateDescription={
+        hasFilter
+          ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
+          : 'Nhấn "Tạo bản nháp" để bắt đầu xây dựng BOM.'
+      }
+      emptyStateIcon={hasFilter ? '🔍' : 'FileText'}
+      emptyStateActionLabel={!hasFilter ? '+ Tạo bản nháp' : undefined}
+      onEmptyStateAction={!hasFilter && onCreate ? onCreate : undefined}
+      columns={[
+        {
+          header: 'Mã BOM / Tên Công Thức',
+          cell: (bom) => (
+            <div className="flex flex-col">
+              <span className="font-bold text-primary">{bom.code}</span>
+              <span className="text-xs text-muted truncate max-w-[200px]">
+                {bom.name}
+              </span>
+            </div>
+          ),
+        },
+        {
+          header: 'Sản Phẩm Mục Tiêu',
+          cell: (bom) => (
+            <div className="flex flex-col">
+              <span className="font-medium">
                 {bom.fabric_catalogs?.name || '---'}
-                {bom.target_width_cm ? ` (${bom.target_width_cm}cm)` : ''}
-              </td>
-              <td className="hide-mobile">v{bom.active_version}</td>
-              <td>
-                <span className={`roll-status ${bom.status}`}>
-                  {statusLabel}
+              </span>
+              {bom.target_width_cm && (
+                <span className="text-xs text-muted">
+                  Khổ: {bom.target_width_cm}cm
                 </span>
-              </td>
-              <td className="hide-mobile td-muted">
-                {bom.created_by_profile?.full_name || 'N/A'}
-              </td>
-              <td className="td-actions" onClick={(e) => e.stopPropagation()}>
-                {bom.status === 'draft' && (
-                  <button
-                    className="btn-icon"
-                    type="button"
-                    title="Sửa bản nháp"
-                    onClick={() => onEdit(bom)}
-                    style={{ marginRight: 4 }}
-                  >
-                    ✏️
-                  </button>
-                )}
-                {bom.status === 'approved' && (
-                  <button
-                    className="btn-icon danger"
-                    type="button"
-                    title="Báo phế"
-                    onClick={() => onDeprecate(bom)}
-                  >
-                    ⚠️
-                  </button>
-                )}
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+              )}
+            </div>
+          ),
+        },
+        {
+          header: 'Phiên Bản',
+          cell: (bom) => (
+            <span className="font-medium text-sm">v{bom.active_version}</span>
+          ),
+        },
+        {
+          header: 'Trạng Thái',
+          cell: (bom) => (
+            <Badge variant={getStatusVariant(bom.status)}>
+              {BOM_STATUS_LABELS[bom.status] || bom.status}
+            </Badge>
+          ),
+        },
+        {
+          header: 'Người Tạo',
+          className: 'td-muted text-sm',
+          cell: (bom) => bom.created_by_profile?.full_name || 'N/A',
+        },
+        {
+          header: 'Thao tác',
+          className: 'text-right',
+          onCellClick: () => {},
+          cell: (bom) => (
+            <div className="flex justify-end gap-1">
+              <button
+                className="btn-icon"
+                type="button"
+                onClick={() => onSelect(bom)}
+                title="Chi tiết"
+              >
+                <Icon name="Eye" size={16} />
+              </button>
+              {bom.status === 'draft' && (
+                <button
+                  className="btn-icon"
+                  type="button"
+                  onClick={() => onEdit(bom)}
+                  title="Sửa bản nháp"
+                >
+                  <Icon name="Pencil" size={16} />
+                </button>
+              )}
+              {bom.status === 'approved' && (
+                <button
+                  className="btn-icon text-danger hover:bg-danger/10"
+                  type="button"
+                  onClick={() => onDeprecate(bom)}
+                  title="Báo phế"
+                >
+                  <Icon name="AlertTriangle" size={16} />
+                </button>
+              )}
+            </div>
+          ),
+        },
+      ]}
+      renderMobileCard={(bom) => (
+        <div className="mobile-card">
+          <div className="mobile-card-header">
+            <div className="flex flex-col">
+              <span className="mobile-card-title">{bom.code}</span>
+              <span className="text-xs text-muted">
+                Phiên bản: v{bom.active_version}
+              </span>
+            </div>
+            <Badge variant={getStatusVariant(bom.status)}>
+              {BOM_STATUS_LABELS[bom.status] || bom.status}
+            </Badge>
+          </div>
+          <div className="mobile-card-body space-y-2">
+            <p className="font-bold">{bom.name}</p>
+
+            <div className="grid grid-cols-2 gap-2 text-sm mt-2">
+              <div className="flex flex-col">
+                <span className="text-xs text-muted">Sản phẩm Vải</span>
+                <span className="font-medium">
+                  {bom.fabric_catalogs?.name || '---'}
+                </span>
+              </div>
+              <div className="flex flex-col text-right">
+                <span className="text-xs text-muted">Khổ mục tiêu</span>
+                <span className="font-medium">
+                  {bom.target_width_cm ? `${bom.target_width_cm} cm` : '---'}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs text-muted mt-2">
+              <Icon name="User" size={14} />
+              <span>
+                Người tạo: {bom.created_by_profile?.full_name || 'N/A'}
+              </span>
+            </div>
+
+            <div className="flex gap-2 pt-3 mt-1 border-t border-border/10">
+              <button
+                className="btn-secondary flex-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelect(bom);
+                }}
+              >
+                <Icon name="Eye" size={16} /> Chi tiết
+              </button>
+              {bom.status === 'draft' && (
+                <button
+                  className="btn-secondary flex-1 text-primary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(bom);
+                  }}
+                >
+                  <Icon name="Pencil" size={16} /> Sửa BOM
+                </button>
+              )}
+              {bom.status === 'approved' && (
+                <button
+                  className="btn-secondary flex-1 text-danger border-danger/20"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeprecate(bom);
+                  }}
+                >
+                  <Icon name="AlertTriangle" size={16} /> Báo phế
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    />
   );
 }
