@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { Icon } from '@/shared/components/Icon';
 import type { ReportsFilter } from '@/api/reports.api';
 
 type ReportsFilterBarProps = {
@@ -47,47 +48,52 @@ export function ReportsFilterBar({ filter, onChange }: ReportsFilterBarProps) {
     filter.dateFrom !== defaultDateFrom() || filter.dateTo !== defaultDateTo();
 
   return (
-    <form className="filter-bar card-filter-section" onSubmit={handleApply}>
-      <div className="filter-field">
-        <label htmlFor="rpt-date-from">Từ ngày</label>
-        <input
-          id="rpt-date-from"
-          className="field-input"
-          type="date"
-          value={dateFrom}
-          onChange={(e) => setDateFrom(e.target.value)}
-        />
+    <form
+      className="filter-bar card-filter-section p-4 border-b border-border"
+      onSubmit={handleApply}
+    >
+      <div className="filter-compact-premium">
+        <div className="filter-field">
+          <label htmlFor="rpt-date-from">Từ ngày</label>
+          <input
+            id="rpt-date-from"
+            className="field-input"
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+          />
+        </div>
+
+        <div className="filter-field">
+          <label htmlFor="rpt-date-to">Đến ngày</label>
+          <input
+            id="rpt-date-to"
+            className="field-input"
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+          />
+        </div>
+
+        <div className="flex gap-2 self-end mb-[4px]">
+          <button
+            className="btn-primary min-h-[42px] px-6 flex items-center gap-2"
+            type="submit"
+          >
+            <Icon name="Filter" size={16} /> Áp dụng
+          </button>
+
+          {hasCustomFilter && (
+            <button
+              className="btn-secondary text-danger border-danger/20 flex items-center gap-2 h-[42px]"
+              type="button"
+              onClick={handleClear}
+            >
+              <Icon name="X" size={14} /> Đặt lại
+            </button>
+          )}
+        </div>
       </div>
-
-      <div className="filter-field">
-        <label htmlFor="rpt-date-to">Đến ngày</label>
-        <input
-          id="rpt-date-to"
-          className="field-input"
-          type="date"
-          value={dateTo}
-          onChange={(e) => setDateTo(e.target.value)}
-        />
-      </div>
-
-      <button
-        className="primary-button btn-standard"
-        type="submit"
-        style={{ alignSelf: 'flex-end' }}
-      >
-        Áp dụng
-      </button>
-
-      {hasCustomFilter && (
-        <button
-          className="btn-secondary"
-          type="button"
-          onClick={handleClear}
-          style={{ alignSelf: 'flex-end' }}
-        >
-          ✕ Đặt lại
-        </button>
-      )}
     </form>
   );
 }

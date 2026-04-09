@@ -21,7 +21,7 @@ export function DebtSummary() {
   }
 
   return (
-    <div>
+    <div className="panel-card card-flush">
       {/* KPI Summary */}
       {debts.length > 0 && (
         <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
@@ -30,7 +30,10 @@ export function DebtSummary() {
             <div className="kpi-content">
               <div className="kpi-info">
                 <p className="kpi-label">Tổng công nợ phải thu</p>
-                <p className="kpi-value">{formatCurrency(totalDebt)}đ</p>
+                <p className="kpi-value">
+                  {formatCurrency(totalDebt)}
+                  <span className="text-xs font-normal ml-1">đ</span>
+                </p>
               </div>
               <div className="kpi-icon-box">
                 <Icon name="TrendingUp" size={32} />
@@ -60,116 +63,120 @@ export function DebtSummary() {
       )}
 
       {/* Table & Cards */}
-      <DataTablePremium
-        data={debts}
-        isLoading={isLoading}
-        rowKey={(d) => d.customer_id}
-        emptyStateTitle="Không có công nợ khách hàng"
-        emptyStateDescription="Tất cả đơn hàng đã được thanh toán đầy đủ."
-        emptyStateIcon="CheckCircle"
-        columns={[
-          {
-            header: 'Khách hàng',
-            cell: (d) => (
-              <div className="flex flex-col">
-                <span className="font-bold">{d.customer_name}</span>
-                {d.customer_code && (
-                  <span className="text-xs text-muted">{d.customer_code}</span>
-                )}
-              </div>
-            ),
-          },
-          {
-            header: 'Số đơn',
-            className: 'text-right',
-            cell: (d) => <span className="font-medium">{d.order_count}</span>,
-          },
-          {
-            header: 'Tổng đặt',
-            className: 'text-right',
-            cell: (d) => (
-              <span className="font-medium">
-                {formatCurrency(d.total_ordered)}đ
-              </span>
-            ),
-          },
-          {
-            header: 'Đã thu',
-            className: 'text-right',
-            cell: (d) => (
-              <span className="font-medium text-success">
-                {formatCurrency(d.total_paid)}đ
-              </span>
-            ),
-          },
-          {
-            header: 'Còn nợ',
-            className: 'text-right',
-            cell: (d) => (
-              <span className="font-bold text-danger">
-                {formatCurrency(d.balance_due)}đ
-              </span>
-            ),
-          },
-        ]}
-        renderMobileCard={(d) => {
-          const paidPercent =
-            d.total_ordered > 0
-              ? Math.round((d.total_paid / d.total_ordered) * 100)
-              : 0;
-
-          return (
-            <div className="mobile-card">
-              <div className="mobile-card-header">
+      <div className="card-table-section">
+        <DataTablePremium
+          data={debts}
+          isLoading={isLoading}
+          rowKey={(d) => d.customer_id}
+          emptyStateTitle="Không có công nợ khách hàng"
+          emptyStateDescription="Tất cả đơn hàng đã được thanh toán đầy đủ."
+          emptyStateIcon="CheckCircle"
+          columns={[
+            {
+              header: 'Khách hàng',
+              cell: (d) => (
                 <div className="flex flex-col">
-                  <span className="mobile-card-title">{d.customer_name}</span>
+                  <span className="font-bold">{d.customer_name}</span>
                   {d.customer_code && (
                     <span className="text-xs text-muted">
                       {d.customer_code}
                     </span>
                   )}
                 </div>
-                <span className="font-bold text-danger text-lg">
-                  -{formatCurrency(d.balance_due)}đ
+              ),
+            },
+            {
+              header: 'Số đơn',
+              className: 'text-right',
+              cell: (d) => <span className="font-medium">{d.order_count}</span>,
+            },
+            {
+              header: 'Tổng đặt',
+              className: 'text-right',
+              cell: (d) => (
+                <span className="font-medium">
+                  {formatCurrency(d.total_ordered)}đ
                 </span>
-              </div>
-              <div className="mobile-card-body space-y-3">
-                <div className="grid grid-cols-3 gap-2 text-sm">
+              ),
+            },
+            {
+              header: 'Đã thu',
+              className: 'text-right',
+              cell: (d) => (
+                <span className="font-medium text-success">
+                  {formatCurrency(d.total_paid)}đ
+                </span>
+              ),
+            },
+            {
+              header: 'Còn nợ',
+              className: 'text-right',
+              cell: (d) => (
+                <span className="font-bold text-danger">
+                  {formatCurrency(d.balance_due)}đ
+                </span>
+              ),
+            },
+          ]}
+          renderMobileCard={(d) => {
+            const paidPercent =
+              d.total_ordered > 0
+                ? Math.round((d.total_paid / d.total_ordered) * 100)
+                : 0;
+
+            return (
+              <div className="mobile-card">
+                <div className="mobile-card-header">
                   <div className="flex flex-col">
-                    <span className="text-xs text-muted">Tổng đặt</span>
-                    <span className="font-medium">
-                      {formatCurrency(d.total_ordered)}đ
-                    </span>
+                    <span className="mobile-card-title">{d.customer_name}</span>
+                    {d.customer_code && (
+                      <span className="text-xs text-muted">
+                        {d.customer_code}
+                      </span>
+                    )}
                   </div>
-                  <div className="flex flex-col text-center">
-                    <span className="text-xs text-muted">Đã thu</span>
-                    <span className="font-medium text-success">
-                      {formatCurrency(d.total_paid)}đ
-                    </span>
-                  </div>
-                  <div className="flex flex-col text-right">
-                    <span className="text-xs text-muted">Số đơn</span>
-                    <span className="font-medium">{d.order_count} đơn</span>
-                  </div>
+                  <span className="font-bold text-danger text-lg">
+                    -{formatCurrency(d.balance_due)}đ
+                  </span>
                 </div>
-                {/* Progress bar */}
-                <div>
-                  <div className="flex justify-between text-xs text-muted mb-1">
-                    <span>Tiến độ thu tiền</span>
-                    <span>{paidPercent}%</span>
+                <div className="mobile-card-body space-y-3">
+                  <div className="grid grid-cols-3 gap-2 text-sm">
+                    <div className="flex flex-col">
+                      <span className="text-xs text-muted">Tổng đặt</span>
+                      <span className="font-medium">
+                        {formatCurrency(d.total_ordered)}đ
+                      </span>
+                    </div>
+                    <div className="flex flex-col text-center">
+                      <span className="text-xs text-muted">Đã thu</span>
+                      <span className="font-medium text-success">
+                        {formatCurrency(d.total_paid)}đ
+                      </span>
+                    </div>
+                    <div className="flex flex-col text-right">
+                      <span className="text-xs text-muted">Số đơn</span>
+                      <span className="font-medium">{d.order_count} đơn</span>
+                    </div>
                   </div>
-                  <div className="w-full bg-border rounded-full h-1.5">
-                    <div
-                      className="bg-success rounded-full h-1.5 transition-all"
-                      style={{ width: `${paidPercent}%` }}
-                    />
+                  {/* Progress bar */}
+                  <div>
+                    <div className="flex justify-between text-xs text-muted mb-1">
+                      <span>Tiến độ thu tiền</span>
+                      <span>{paidPercent}%</span>
+                    </div>
+                    <div className="w-full bg-border rounded-full h-1.5">
+                      <div
+                        className="bg-success rounded-full h-1.5 transition-all"
+                        style={{ width: `${paidPercent}%` }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        }}
-      />
+            );
+          }}
+        />
+      </div>
     </div>
   );
 }

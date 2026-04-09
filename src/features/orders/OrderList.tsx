@@ -110,19 +110,24 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           <h3 className="title-premium">Quản lý Đơn hàng</h3>
         </div>
 
-        <div className="flex items-center gap-4">
-          <button
-            className="btn-primary min-h-[42px] px-5"
-            type="button"
-            onClick={onNew}
-          >
-            + Tạo đơn hàng
-          </button>
-        </div>
+        <button
+          className="btn-primary"
+          type="button"
+          onClick={onNew}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            minHeight: 42,
+            padding: '0 1.25rem',
+          }}
+        >
+          <Icon name="Plus" size={18} /> Tạo đơn hàng
+        </button>
       </div>
 
       {/* 📊 KPI Dashboard - Premium Visuals */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 md:p-6 bg-surface-subtle border-b border-border">
+      <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
         <div className="kpi-card-premium kpi-primary">
           <div className="kpi-overlay" />
           <div className="kpi-content">
@@ -191,8 +196,8 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
       </div>
 
       {/* 🔍 Filter Bar */}
-      <div className="filter-bar card-filter-section border-b border-border p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="filter-bar card-filter-section p-4 border-b border-border">
+        <div className="filter-compact-premium">
           <div className="filter-field">
             <label>Tìm kiếm khách hàng / Số đơn</label>
             <form className="search-input-wrapper" onSubmit={handleSearch}>
@@ -202,7 +207,6 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
                 placeholder="Nhập mã đơn hoặc tên khách..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                onBlur={handleSearch}
               />
               <button type="submit" className="hidden" />
               <Icon name="Search" size={16} className="search-input-icon" />
@@ -210,7 +214,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           </div>
 
           <div className="filter-field">
-            <label>Trạng thái đơn hàng</label>
+            <label>Trạng thái</label>
             <Combobox
               options={[
                 {
@@ -234,21 +238,22 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               }}
             />
           </div>
-        </div>
 
-        {hasFilter && (
-          <button
-            className="btn-secondary mt-4 text-danger border-danger/20 flex items-center gap-2"
-            type="button"
-            onClick={() => {
-              setFilters({});
-              setSearchInput('');
-              setPage(1);
-            }}
-          >
-            <Icon name="X" size={14} /> Xóa lọc nhanh
-          </button>
-        )}
+          {hasFilter && (
+            <button
+              className="btn-secondary text-danger flex items-center gap-2"
+              type="button"
+              onClick={() => {
+                setFilters({});
+                setSearchInput('');
+                setPage(1);
+              }}
+              style={{ marginBottom: 4 }}
+            >
+              <Icon name="X" size={14} /> Xóa lọc
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Error State */}
