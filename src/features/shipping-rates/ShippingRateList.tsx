@@ -1,7 +1,12 @@
 import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { Edit2, Trash2 } from '@/shared/icons';
+import {
+  Icon,
+  Badge,
+  type BadgeVariant,
+  DataTablePremium,
+} from '@/shared/components';
 
 import { formatCurrency } from './shipping-rates.module';
 import type { ShippingRate, ShippingRateFilter } from './types';
@@ -12,11 +17,29 @@ type Props = {
   onNew: () => void;
 };
 
+function rateDescription(item: ShippingRate): string {
+  const parts: string[] = [];
+  if (item.rate_per_trip != null)
+    parts.push(`${formatCurrency(item.rate_per_trip)}/chuyến`);
+  if (item.rate_per_meter != null)
+    parts.push(`${formatCurrency(item.rate_per_meter)}/m`);
+  if (item.rate_per_kg != null)
+    parts.push(`${formatCurrency(item.rate_per_kg)}/kg`);
+  if (item.loading_fee > 0)
+    parts.push(`Bốc xếp: ${formatCurrency(item.loading_fee)}`);
+  return parts.length > 0 ? parts.join(' · ') : '—';
+}
+
+function getStatusVariant(isActive: boolean): BadgeVariant {
+  return isActive ? 'success' : 'gray';
+}
+
 export function ShippingRateList({ onEdit, onNew }: Props) {
   const [searchInput, setSearchInput] = useState('');
   const [filters, setFilters] = useState<ShippingRateFilter>({});
 
   const { data, isLoading, error } = useShippingRateList(filters);
+  const rates = data ?? [];
   const deleteMutation = useDeleteShippingRate();
   const { confirm } = useConfirm();
 
@@ -37,190 +60,203 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
     deleteMutation.mutate(item.id);
   }
 
-  function rateDescription(item: ShippingRate): string {
-    const parts: string[] = [];
-    if (item.rate_per_trip != null)
-      parts.push(`${formatCurrency(item.rate_per_trip)}/chuyến`);
-    if (item.rate_per_meter != null)
-      parts.push(`${formatCurrency(item.rate_per_meter)}/m`);
-    if (item.rate_per_kg != null)
-      parts.push(`${formatCurrency(item.rate_per_kg)}/kg`);
-    if (item.loading_fee > 0)
-      parts.push(`Bốc xếp: ${formatCurrency(item.loading_fee)}`);
-    return parts.length > 0 ? parts.join(' · ') : '—';
-  }
-
   const hasFilter = !!filters.query;
 
   return (
     <div className="panel-card card-flush">
       {/* Header */}
-      <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Quản trị</p>
-            <h3>Giá cước vận chuyển</h3>
-          </div>
-          <button
-            className="primary-button btn-standard"
-            type="button"
-            onClick={onNew}
-          >
-            + Thêm bảng giá
-          </button>
+      <div className="card-header-area card-header-premium">
+        <div>
+          <p className="eyebrow-premium">VẬN CHUYỂN</p>
+          <h3 className="title-premium">Giá Cước Vận Chuyển</h3>
         </div>
+        <button
+          className="btn-primary min-h-[42px] px-5"
+          type="button"
+          onClick={onNew}
+        >
+          <Icon name="Plus" size={18} className="mr-2" /> Thêm bảng giá
+        </button>
       </div>
 
       {/* Filters */}
-      <div className="filter-bar card-filter-section">
-        <form
-          className="filter-field"
-          onSubmit={handleSearch}
-          style={{ flex: '1 1 220px' }}
-        >
-          <label htmlFor="filter-search">Tìm kiếm</label>
-          <div
-            style={{
-              display: 'flex',
-              gap: '0.4rem',
-            }}
-          >
-            <input
-              id="filter-search"
-              className="field-input"
-              type="text"
-              placeholder="Tên hoặc khu vực..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
-            <button
-              className="btn-secondary"
-              type="submit"
-              style={{ whiteSpace: 'nowrap' }}
-            >
-              Tìm
-            </button>
+      <div className="filter-bar card-filter-section p-4 border-b border-border">
+        <div className="filter-compact-premium">
+          <div className="filter-field">
+            <label htmlFor="filter-rate-search">Tìm kiếm</label>
+            <form className="search-input-wrapper" onSubmit={handleSearch}>
+              <input
+                id="filter-rate-search"
+                className="field-input"
+                type="text"
+                placeholder="Tên hoặc khu vực..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+              <button type="submit" className="hidden" />
+              <Icon name="Search" size={16} className="search-input-icon" />
+            </form>
           </div>
-        </form>
 
-        {hasFilter && (
-          <button
-            className="btn-secondary"
-            type="button"
-            onClick={() => {
-              setFilters({});
-              setSearchInput('');
-            }}
-            style={{ alignSelf: 'flex-end' }}
-          >
-            ✕ Xóa lọc
-          </button>
-        )}
+          {hasFilter && (
+            <button
+              className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
+              type="button"
+              onClick={() => {
+                setFilters({});
+                setSearchInput('');
+              }}
+              style={{ marginBottom: '4px' }}
+            >
+              <Icon name="X" size={14} /> Xóa lọc
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Error */}
       {error && (
-        <p className="error-inline">
-          Lỗi tải dữ liệu: {(error as Error).message}
-        </p>
+        <div className="p-4">
+          <p className="error-inline">
+            Lỗi tải dữ liệu: {(error as Error).message}
+          </p>
+        </div>
       )}
 
-      {/* Table */}
-      <div className="data-table-wrap card-table-section">
-        {isLoading ? (
-          <p className="table-empty">Đang tải...</p>
-        ) : !data || data.length === 0 ? (
-          <p className="table-empty">
-            {hasFilter
-              ? 'Không tìm thấy bảng giá phù hợp.'
-              : 'Chưa có bảng giá cước nào. Bấm "+ Thêm bảng giá" để tạo.'}
-          </p>
-        ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Tên bảng giá</th>
-                <th>Khu vực</th>
-                <th>Giá cước</th>
-                <th className="hide-mobile">Phí tối thiểu</th>
-                <th>Trạng thái</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item) => (
-                <tr
-                  key={item.id}
-                  style={{ cursor: 'pointer' }}
+      {/* Table & Cards */}
+      <DataTablePremium
+        data={rates}
+        isLoading={isLoading}
+        rowKey={(item) => item.id}
+        onRowClick={(item) => onEdit(item)}
+        emptyStateTitle={
+          hasFilter
+            ? 'Không tìm thấy bảng giá phù hợp'
+            : 'Chưa có bảng giá cước nào'
+        }
+        emptyStateDescription={
+          hasFilter
+            ? 'Thử điều chỉnh bộ lọc.'
+            : 'Bấm "+ Thêm bảng giá" để tạo giá cước vận chuyển.'
+        }
+        emptyStateIcon={hasFilter ? '🔍' : 'Truck'}
+        emptyStateActionLabel={!hasFilter ? '+ Thêm bảng giá' : undefined}
+        onEmptyStateAction={!hasFilter ? onNew : undefined}
+        columns={[
+          {
+            header: 'Tên bảng giá',
+            cell: (item) => (
+              <span className="font-bold text-primary">{item.name}</span>
+            ),
+          },
+          {
+            header: 'Khu vực',
+            cell: (item) => (
+              <span className="font-medium">{item.destination_area}</span>
+            ),
+          },
+          {
+            header: 'Giá cước',
+            cell: (item) => (
+              <span className="text-sm text-muted">
+                {rateDescription(item)}
+              </span>
+            ),
+          },
+          {
+            header: 'Phí tối thiểu',
+            cell: (item) => (
+              <span className="font-medium">
+                {item.min_charge > 0 ? formatCurrency(item.min_charge) : '—'}
+              </span>
+            ),
+          },
+          {
+            header: 'Trạng thái',
+            cell: (item) => (
+              <Badge variant={getStatusVariant(item.is_active)}>
+                {item.is_active ? 'Đang dùng' : 'Ngừng'}
+              </Badge>
+            ),
+          },
+          {
+            header: 'Thao tác',
+            className: 'text-right',
+            onCellClick: () => {},
+            cell: (item) => (
+              <div className="flex justify-end gap-1">
+                <button
+                  className="btn-icon"
+                  type="button"
                   onClick={() => onEdit(item)}
+                  title="Sửa"
                 >
-                  <td>
-                    <strong>{item.name}</strong>
-                  </td>
-                  <td>{item.destination_area}</td>
-                  <td className="td-muted" style={{ fontSize: '0.85rem' }}>
-                    {rateDescription(item)}
-                  </td>
-                  <td className="hide-mobile">
+                  <Icon name="Pencil" size={16} />
+                </button>
+                <button
+                  className="btn-icon text-danger hover:bg-danger/10"
+                  type="button"
+                  onClick={() => {
+                    void handleDelete(item);
+                  }}
+                  disabled={deleteMutation.isPending}
+                  title="Xoá"
+                >
+                  <Icon name="Trash2" size={16} />
+                </button>
+              </div>
+            ),
+          },
+        ]}
+        renderMobileCard={(item) => (
+          <div className="mobile-card">
+            <div className="mobile-card-header">
+              <span className="mobile-card-title">{item.name}</span>
+              <Badge variant={getStatusVariant(item.is_active)}>
+                {item.is_active ? 'Đang dùng' : 'Ngừng'}
+              </Badge>
+            </div>
+            <div className="mobile-card-body space-y-2">
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted">Khu vực</span>
+                  <span className="font-bold">{item.destination_area}</span>
+                </div>
+                <div className="flex flex-col text-right">
+                  <span className="text-xs text-muted">Phí tối thiểu</span>
+                  <span className="font-medium">
                     {item.min_charge > 0
                       ? formatCurrency(item.min_charge)
                       : '—'}
-                  </td>
-                  <td>
-                    <span
-                      className={`roll-status ${item.is_active ? 'in_stock' : 'damaged'}`}
-                    >
-                      {item.is_active ? 'Đang dùng' : 'Ngừng'}
-                    </span>
-                  </td>
-                  <td
-                    className="td-actions"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div
-                      style={{
-                        display: 'flex',
-                        gap: '0.3rem',
-                        justifyContent: 'flex-end',
-                      }}
-                    >
-                      <button
-                        className="btn-icon"
-                        type="button"
-                        title="Sửa"
-                        onClick={() => onEdit(item)}
-                      >
-                        <Edit2
-                          style={{
-                            width: 14,
-                            height: 14,
-                          }}
-                        />
-                      </button>
-                      <button
-                        className="btn-icon danger"
-                        type="button"
-                        title="Xoá"
-                        onClick={() => {
-                          void handleDelete(item);
-                        }}
-                        disabled={deleteMutation.isPending}
-                      >
-                        <Trash2
-                          style={{
-                            width: 14,
-                            height: 14,
-                          }}
-                        />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </span>
+                </div>
+              </div>
+              <div className="text-xs text-muted">{rateDescription(item)}</div>
+              <div className="flex gap-2 pt-2 border-t border-border/10">
+                <button
+                  className="btn-secondary flex-1 text-primary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(item);
+                  }}
+                >
+                  <Icon name="Pencil" size={16} /> Sửa
+                </button>
+                <button
+                  className="btn-secondary text-danger border-danger/20 px-3"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void handleDelete(item);
+                  }}
+                  disabled={deleteMutation.isPending}
+                >
+                  <Icon name="Trash2" size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
         )}
-      </div>
+      />
 
       {deleteMutation.error && (
         <p className="error-inline-sm">
