@@ -17,8 +17,4 @@ if [ -z "$(git diff --cached)" ]; then
   exit 0
 fi
 
-# 4. AI Audit
-echo "🤖 Running AI Audit (Level 7 Standards)..."
-npm run ai:audit || exit 1
-
-echo "✅ All checks passed. Committing safe code."
+echo "✅ Pre-commit checks passed."

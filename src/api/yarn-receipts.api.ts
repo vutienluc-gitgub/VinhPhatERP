@@ -230,7 +230,14 @@ export async function confirmYarnReceipt(id: string): Promise<void> {
     .from(HEADER_TABLE)
     .update({ status: 'confirmed' })
     .eq('id', id)
-    .eq('status', 'draft');
+    .eq('status', 'draft')
+    .select()
+    .single();
 
-  if (error) throw error;
+  if (error) {
+    if (error.code === 'PGRST116') {
+      throw new Error('Phiếu không tồn tại hoặc đã được xác nhận trước đó.');
+    }
+    throw error;
+  }
 }

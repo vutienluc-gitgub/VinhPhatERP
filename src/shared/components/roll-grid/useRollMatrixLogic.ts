@@ -1,4 +1,4 @@
-import { useRef, useCallback, useMemo } from 'react';
+import { useRef, useCallback, useMemo, useState, useEffect } from 'react';
 
 export type RollMatrixItem = {
   id: string;
@@ -24,6 +24,9 @@ export function useRollMatrixLogic({
   onAddRoll,
 }: UseRollMatrixLogicProps) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [pendingFocusIndex, setPendingFocusIndex] = useState<number | null>(
+    null,
+  );
 
   const focusNextCell = useCallback(
     (currentIndex: number) => {
@@ -33,10 +36,19 @@ export function useRollMatrixLogic({
         inputRefs.current[nextIndex]?.select();
       } else {
         onAddRoll?.();
+        setPendingFocusIndex(nextIndex);
       }
     },
     [rolls.length, onAddRoll],
   );
+
+  useEffect(() => {
+    if (pendingFocusIndex !== null && inputRefs.current[pendingFocusIndex]) {
+      inputRefs.current[pendingFocusIndex]?.focus();
+      inputRefs.current[pendingFocusIndex]?.select();
+      setPendingFocusIndex(null);
+    }
+  }, [rolls.length, pendingFocusIndex]);
 
   const totals = useMemo(() => {
     let rollCount = 0;

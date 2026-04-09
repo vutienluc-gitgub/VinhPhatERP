@@ -79,7 +79,13 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
       message: `Xác nhận phiếu nhập "${receipt.receipt_number}"? Sau khi xác nhận sẽ không thể sửa hay xoá phiếu được nữa.`,
     });
     if (!ok) return;
-    confirmMutation.mutate(receipt.id);
+    try {
+      await confirmMutation.mutateAsync(receipt.id);
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : 'Có lỗi xảy ra khi xác nhận phiếu';
+      alert(msg);
+    }
   }
 
   const hasFilter = !!(filters.search || filters.status);

@@ -20,12 +20,29 @@ export default defineConfig({
     chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Tách vendor lớn ra chunk riêng
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-query': ['@tanstack/react-query'],
-          'vendor-form': ['react-hook-form', '@hookform/resolvers', 'zod'],
-          'vendor-supabase': ['@supabase/supabase-js'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (
+              id.includes('node_modules/react/') ||
+              id.includes('node_modules/react-dom/') ||
+              id.includes('node_modules/react-router-dom/')
+            ) {
+              return 'vendor-react';
+            }
+            if (id.includes('node_modules/@tanstack/react-query/')) {
+              return 'vendor-query';
+            }
+            if (
+              id.includes('node_modules/react-hook-form/') ||
+              id.includes('node_modules/@hookform/resolvers/') ||
+              id.includes('node_modules/zod/')
+            ) {
+              return 'vendor-form';
+            }
+            if (id.includes('node_modules/@supabase/supabase-js/')) {
+              return 'vendor-supabase';
+            }
+          }
         },
       },
     },
