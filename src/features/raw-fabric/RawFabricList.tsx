@@ -1,7 +1,5 @@
-import { useState } from 'react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
-import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
 import { fetchRawFabricAll } from '@/api/raw-fabric.api';
 import { Icon } from '@/shared/components/Icon';
@@ -19,40 +17,14 @@ import type {
   RollStatus,
   QualityGrade,
 } from './types';
-import {
-  useDeleteRawFabric,
-  useRawFabricList,
-  useRawFabricStats,
-} from './useRawFabric';
+import { useRawFabricList, useRawFabricStats } from './useRawFabric';
 import { useRawFabricExport } from './useRawFabricExport';
-
-type SortCol = 'created_at' | 'weight_kg' | 'roll_number';
 
 type RawFabricListProps = {
   onEdit: (roll: RawFabricRoll) => void;
   onNew: () => void;
   onBulkNew: () => void;
 };
-
-function formatNum(val: number | null, unit: string): string {
-  if (val === null || val === undefined) return '—';
-  return `${val.toLocaleString('vi-VN')} ${unit}`;
-}
-
-function SortIcon({ active, dir }: { active: boolean; dir: 'asc' | 'desc' }) {
-  if (!active)
-    return (
-      <span
-        style={{
-          opacity: 0.3,
-          marginLeft: 4,
-        }}
-      >
-        ↕
-      </span>
-    );
-  return <span style={{ marginLeft: 4 }}>{dir === 'asc' ? '↑' : '↓'}</span>;
-}
 
 export function RawFabricList({
   onEdit,
@@ -63,16 +35,10 @@ export function RawFabricList({
   const [fabricTypeInput, setFabricTypeInput] = useState('');
   const [rollNumberInput, setRollNumberInput] = useState('');
   const [page, setPage] = useState(1);
-  const [sortCol, setSortCol] = useState<SortCol>('created_at');
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [isExporting, setIsExporting] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('grid');
 
-  const activeFilters: RawFabricFilter = {
-    ...filters,
-    sort_by: sortCol,
-    sort_dir: sortDir,
-  };
+  const activeFilters: RawFabricFilter = { ...filters };
 
   const {
     data: result,
@@ -81,19 +47,7 @@ export function RawFabricList({
   } = useRawFabricList(activeFilters, page);
   const rolls = result?.data ?? [];
   const { data: stats } = useRawFabricStats();
-  const deleteMutation = useDeleteRawFabric();
-  const { confirm } = useConfirm();
   const { exportExcel, exportPdf } = useRawFabricExport();
-
-  function handleSort(col: SortCol) {
-    if (sortCol === col) {
-      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-    } else {
-      setSortCol(col);
-      setSortDir('asc');
-    }
-    setPage(1);
-  }
 
   function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
     setPage(1);
@@ -147,15 +101,6 @@ export function RawFabricList({
     } finally {
       setIsExporting(false);
     }
-  }
-
-  async function handleDelete(roll: RawFabricRoll) {
-    const ok = await confirm({
-      message: `Xóa cuộn "${roll.roll_number}"? Hành động này không thể hoàn tác.`,
-      variant: 'danger',
-    });
-    if (!ok) return;
-    deleteMutation.mutate(roll.id);
   }
 
   const hasFilter = !!(
@@ -414,7 +359,7 @@ export function RawFabricList({
               ? 'Không tìm thấy cuộn vải phù hợp.'
               : 'Chưa có cuộn vải nào. Nhấn "+ Nhập cuộn mới" để bắt đầu.'}
           </p>
-        ) : viewMode === 'grid' ? (
+        ) : (
           <div
             className="grid-view-container"
             style={{
@@ -444,106 +389,6 @@ export function RawFabricList({
                 }}
               />
             ))}
-          </div>
-        ) : (
-          <div className="data-table-wrap">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th
-                    style={{
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                    }}
-                    onClick={() => handleSort('roll_number')}
-                  >
-                    Mã cuộn{' '}
-                    <SortIcon
-                      active={sortCol === 'roll_number'}
-                      dir={sortDir}
-                    />
-                  </th>
-                  <th>Số lô</th>
-                  <th>Loại vải</th>
-                  <th>CL</th>
-                  <th>Khổ × Dài</th>
-                  <th
-                    style={{
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                    }}
-                    onClick={() => handleSort('weight_kg')}
-                  >
-                    Trọng lượng{' '}
-                    <SortIcon active={sortCol === 'weight_kg'} dir={sortDir} />
-                  </th>
-                  <th>Trạng thái</th>
-                  <th>Vị trí kho</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {rolls.map((roll) => (
-                  <tr key={roll.id}>
-                    <td>
-                      <strong>{roll.roll_number}</strong>
-                      {roll.color_name && (
-                        <div className="td-muted">{roll.color_name}</div>
-                      )}
-                    </td>
-                    <td className="td-muted">{roll.lot_number ?? '—'}</td>
-                    <td>{roll.fabric_type}</td>
-                    <td>
-                      {roll.quality_grade ? (
-                        <span
-                          className={`grade-badge grade-${roll.quality_grade}`}
-                        >
-                          {roll.quality_grade}
-                        </span>
-                      ) : (
-                        <span className="td-muted">—</span>
-                      )}
-                    </td>
-                    <td className="td-muted">
-                      {roll.width_cm !== null ? `${roll.width_cm} cm` : '—'}
-                      {roll.length_m !== null &&
-                        ` × ${formatNum(roll.length_m, 'm')}`}
-                    </td>
-                    <td className="td-muted">
-                      {formatNum(roll.weight_kg, 'kg')}
-                    </td>
-                    <td>
-                      <span className={`roll-status ${roll.status}`}>
-                        {ROLL_STATUS_LABELS[roll.status]}
-                      </span>
-                    </td>
-                    <td className="td-muted">
-                      {roll.warehouse_location ?? '—'}
-                    </td>
-                    <td className="td-actions">
-                      <button
-                        className="btn-icon"
-                        type="button"
-                        title="Sửa"
-                        onClick={() => onEdit(roll)}
-                        style={{ marginRight: 4 }}
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        className="btn-icon danger"
-                        type="button"
-                        title="Xóa"
-                        onClick={() => void handleDelete(roll)}
-                        disabled={deleteMutation.isPending}
-                      >
-                        🗑
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         )}
       </div>
