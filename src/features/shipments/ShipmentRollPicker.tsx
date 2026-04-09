@@ -21,6 +21,8 @@ type RollGroup = {
   fabricType: string;
   colorName: string | null;
   rolls: AvailableRoll[];
+  /** Median weight of the group — used as standard for anomaly detection */
+  standardWeightKg: number | undefined;
 };
 
 type ShipmentRollPickerProps = {
@@ -30,7 +32,17 @@ type ShipmentRollPickerProps = {
   className?: string;
 };
 
-/** Group rolls by fabricType + colorName */
+/** Compute median of an array of numbers */
+function median(values: number[]): number | undefined {
+  if (values.length === 0) return undefined;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 !== 0
+    ? sorted[mid]
+    : (sorted[mid - 1]! + sorted[mid]!) / 2;
+}
+
+/** Group rolls by fabricType + colorName, compute standard weight per group */
 function groupRolls(rolls: AvailableRoll[]): RollGroup[] {
   const map = new Map<string, RollGroup>();
 
@@ -45,8 +57,17 @@ function groupRolls(rolls: AvailableRoll[]): RollGroup[] {
         fabricType: roll.fabric_type,
         colorName: roll.color_name,
         rolls: [roll],
+        standardWeightKg: undefined,
       });
     }
+  }
+
+  // Populate standardWeightKg from median of each group's weights
+  for (const group of map.values()) {
+    const weights = group.rolls
+      .map((r) => r.weight_kg)
+      .filter((w): w is number => w != null && w > 0);
+    group.standardWeightKg = median(weights);
   }
 
   return Array.from(map.values());
@@ -128,6 +149,7 @@ export function ShipmentRollPicker({
           colorName={group.colorName ?? undefined}
           expectedRollsCount={group.rolls.length}
           rolls={toMatrixItems(group.rolls)}
+          standardWeightKg={group.standardWeightKg}
           mode="select"
           selectedRollIds={selectedRollIds}
           onRollPress={handleRollPress}
