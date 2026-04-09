@@ -1,4 +1,30 @@
-# Logs
+# =========================
+# 🔐 ENV (CỰC QUAN TRỌNG)
+# =========================
+.env
+.env.local
+.env.*.local
+.env.*
+!.env.example
+
+# =========================
+# 📦 NODE
+# =========================
+node_modules
+.pnpm-store
+
+# =========================
+# 🏗 BUILD
+# =========================
+dist
+dist-ssr
+.next
+out
+build
+
+# =========================
+# 📝 LOGS
+# =========================
 logs
 *.log
 npm-debug.log*
@@ -7,12 +33,14 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# =========================
+# 🧪 TEST
+# =========================
+coverage
 
-# Editor directories and files
+# =========================
+# 🖥 EDITOR
+# =========================
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -23,6 +51,21 @@ dist-ssr
 *.sln
 *.sw?
 
-# Temp & scratch files
+# =========================
+# 📁 TEMP
+# =========================
 tmp-*
-*.txt
+*.tmp
+*.cache
+
+# =========================
+# ⚙️ OS
+# =========================
+Thumbs.db
+
+# =========================
+# 🔑 SECRETS (backup)
+# =========================
+*.pem
+*.key
+*.cert
