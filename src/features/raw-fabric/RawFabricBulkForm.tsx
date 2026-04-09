@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
@@ -10,6 +10,8 @@ import {
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
 import { useStepper } from '@/shared/hooks/useStepper';
+import { LotMatrixCard } from '@/shared/components/roll-grid';
+import type { RollMatrixItem } from '@/shared/components/roll-grid';
 
 import {
   QUALITY_GRADE_LABELS,
@@ -41,7 +43,6 @@ export function RawFabricBulkForm({ onClose }: Props) {
   const { data: workOrders = [] } = useWorkOrderOptions();
   const { data: colorOptions = [] } = useColorOptions();
   const { data: fabricCatalogOptions = [] } = useFabricCatalogOptions();
-  const weightRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [savedRolls, setSavedRolls] = useState<RawFabricRoll[] | null>(null);
   const { exportExcel, exportPdf } = useRawFabricExport();
 
@@ -60,7 +61,7 @@ export function RawFabricBulkForm({ onClose }: Props) {
     mode: 'onTouched',
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append } = useFieldArray({
     control,
     name: 'rolls',
   });
@@ -72,6 +73,10 @@ export function RawFabricBulkForm({ onClose }: Props) {
   const startNumber = useWatch({
     control,
     name: 'start_number',
+  });
+  const expectedRolls = useWatch({
+    control,
+    name: 'expected_rolls',
   });
   const rolls = useWatch({
     control,
@@ -93,6 +98,7 @@ export function RawFabricBulkForm({ onClose }: Props) {
     });
   }, [rollPrefix, startNumber, fields.length, setValue, fields]);
 
+  /** Thêm 1 cuộn mới vào cuối grid */
   const addRow = useCallback(() => {
     const prefix = rollPrefix?.trim() || bulkInputDefaults.roll_prefix;
     const start =
@@ -106,25 +112,14 @@ export function RawFabricBulkForm({ onClose }: Props) {
       quality_grade: undefined,
       notes: '',
     });
-    // Focus trọng lượng dòng mới sau khi render
-    requestAnimationFrame(() => weightRefs.current[fields.length]?.focus());
   }, [append, rollPrefix, startNumber, fields.length]);
 
-  function addMultipleRows(count: number) {
-    const prefix = rollPrefix?.trim() || bulkInputDefaults.roll_prefix;
-    const start =
-      typeof startNumber === 'number'
-        ? startNumber
-        : bulkInputDefaults.start_number;
-    const newRows = Array.from({ length: count }, (_, i) => ({
-      roll_number: formatBulkRollNumber(prefix, start + fields.length + i),
-      weight_kg: undefined as unknown as number,
-      length_m: undefined,
-      quality_grade: undefined,
-      notes: '',
-    }));
-    append(newRows);
-  }
+  /** Embed rolls array as RollMatrixItem[] for LotMatrixCard */
+  const gridRolls: RollMatrixItem[] = fields.map((field, idx) => ({
+    id: field.id,
+    roll_number: rolls?.[idx]?.roll_number ?? '',
+    weight_kg: rolls?.[idx]?.weight_kg,
+  }));
 
   // Tổng hợp — chỉ đếm dòng có nhập trọng lượng > 0
   const filledRolls = (rolls ?? []).filter((r) => {
@@ -132,10 +127,6 @@ export function RawFabricBulkForm({ onClose }: Props) {
     return Number.isFinite(val) && val > 0;
   });
   const totalRolls = filledRolls.length;
-  const totalWeight = filledRolls.reduce(
-    (sum, r) => sum + (parseFloat(String(r.weight_kg)) || 0),
-    0,
-  );
 
   async function handleNextStep() {
     if (stepper.currentStep === 0) {
@@ -145,7 +136,28 @@ export function RawFabricBulkForm({ onClose }: Props) {
         'roll_prefix',
         'start_number',
       ]);
-      if (stepValid) stepper.next();
+      if (!stepValid) return;
+
+      // Auto-populate grid dựa trên expected_rolls
+      const target = typeof expectedRolls === 'number' ? expectedRolls : 1;
+      const prefix = rollPrefix?.trim() || bulkInputDefaults.roll_prefix;
+      const start =
+        typeof startNumber === 'number'
+          ? startNumber
+          : bulkInputDefaults.start_number;
+      const missing = target - fields.length;
+      if (missing > 0) {
+        const newRows = Array.from({ length: missing }, (_, i) => ({
+          roll_number: formatBulkRollNumber(prefix, start + fields.length + i),
+          weight_kg: undefined as unknown as number,
+          length_m: undefined,
+          quality_grade: undefined,
+          notes: '',
+        }));
+        append(newRows);
+      }
+
+      stepper.next();
     }
   }
 
@@ -153,42 +165,6 @@ export function RawFabricBulkForm({ onClose }: Props) {
     if (!stepper.isLast) return;
     const saved = await bulkMutation.mutateAsync(values);
     setSavedRolls(saved);
-  }
-
-  // Nhập số nguyên → tự động thêm dấu thập phân: 211 → 21.1
-  const handleWeightBlur = useCallback(
-    (
-      e: React.FocusEvent<HTMLInputElement>,
-      idx: number,
-      rhfOnBlur: React.FocusEventHandler<HTMLInputElement>,
-    ) => {
-      const raw = e.target.value.trim();
-      if (raw !== '' && /^\d+$/.test(raw)) {
-        const transformed = parseInt(raw, 10) / 10;
-        e.target.value = String(transformed);
-        setValue(`rolls.${idx}.weight_kg`, transformed as unknown as number, {
-          shouldValidate: false,
-        });
-      }
-      rhfOnBlur(e);
-    },
-    [setValue],
-  );
-
-  // Nhấn Enter trong ô trọng lượng → focus dòng tiếp theo hoặc thêm dòng mới
-  function handleWeightKeyDown(
-    e: React.KeyboardEvent<HTMLInputElement>,
-    index: number,
-  ) {
-    if (e.key !== 'Enter') return;
-    e.preventDefault();
-    if (index < fields.length - 1) {
-      // Còn dòng tiếp theo → focus xuống
-      requestAnimationFrame(() => weightRefs.current[index + 1]?.focus());
-    } else if (e.currentTarget.value.trim()) {
-      // Dòng cuối có giá trị → thêm dòng mới
-      addRow();
-    }
   }
 
   const isPending = isSubmitting || bulkMutation.isPending;
@@ -567,165 +543,62 @@ export function RawFabricBulkForm({ onClose }: Props) {
                       </span>
                     )}
                   </div>
+
+                  <div className="form-field">
+                    <label htmlFor="bulk_expected_rolls">Số cuộn dự kiến</label>
+                    <input
+                      id="bulk_expected_rolls"
+                      className="field-input"
+                      type="number"
+                      min="1"
+                      max="500"
+                      step="1"
+                      placeholder="VD: 20"
+                      {...register('expected_rolls')}
+                    />
+                    <span
+                      className="field-hint"
+                      style={{
+                        fontSize: '0.78rem',
+                        color: 'var(--muted)',
+                        display: 'block',
+                        marginTop: '0.25rem',
+                      }}
+                    >
+                      Hệ thống tự tạo sẵn lưới trống theo số lượng này.
+                    </span>
+                  </div>
                 </div>
               </fieldset>
             </div>
 
-            {/* ── BƯỚC 2: BẢNG NHẬP LIỆU (DATA TABLE) ── */}
+            {/* ── BƯỚC 2: LƯỚI NHẬP SỐ TỊNH ── */}
             <div
               style={{ display: stepper.currentStep === 1 ? 'block' : 'none' }}
             >
               <fieldset className="bulk-section">
-                <legend>
-                  Bảng thông số cuộn
-                  <span
-                    className="bulk-summary"
-                    style={{
-                      marginLeft: '1rem',
-                      background: 'var(--primary-subtle)',
-                      color: 'var(--primary)',
-                      padding: '0.2rem 0.5rem',
-                      borderRadius: '4px',
-                      fontSize: '0.85rem',
-                    }}
-                  >
-                    {totalRolls} cuộn ·{' '}
-                    {totalWeight.toLocaleString('vi-VN', {
-                      maximumFractionDigits: 2,
-                    })}{' '}
-                    kg
-                  </span>
-                </legend>
+                <legend>Nhập số tịnh từng cuộn</legend>
 
-                <div
-                  className="data-table-wrap"
-                  style={{ marginTop: '0.5rem' }}
-                >
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th style={{ width: 40 }}>#</th>
-                        <th>Mã cuộn (Auto)</th>
-                        <th>
-                          Trọng lượng (kg){' '}
-                          <span className="field-required">*</span>
-                        </th>
-                        <th className="hide-mobile">Dài (m)</th>
-                        <th className="hide-mobile">CL</th>
-                        <th className="hide-mobile">Ghi chú</th>
-                        <th style={{ width: 40 }}></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {fields.map((field, idx) => (
-                        <tr key={field.id}>
-                          <td className="td-muted">{idx + 1}</td>
-                          <td>
-                            <input
-                              className={`field-input bulk-input${errors.rolls?.[idx]?.roll_number ? ' is-error' : ''}`}
-                              type="text"
-                              readOnly
-                              title="Tự động từ cài đặt ở Bước 1"
-                              {...register(`rolls.${idx}.roll_number`)}
-                              style={{ minWidth: '110px' }}
-                            />
-                            {errors.rolls?.[idx]?.roll_number && (
-                              <span className="field-error">
-                                {errors.rolls[idx]?.roll_number?.message}
-                              </span>
-                            )}
-                          </td>
-                          <td>
-                            {(() => {
-                              const weightField = register(
-                                `rolls.${idx}.weight_kg`,
-                              );
-
-                              return (
-                                <input
-                                  className={`field-input bulk-input${errors.rolls?.[idx]?.weight_kg ? ' is-error' : ''}`}
-                                  type="text"
-                                  inputMode="decimal"
-                                  placeholder="0.0"
-                                  {...weightField}
-                                  onBlur={(e) =>
-                                    handleWeightBlur(e, idx, weightField.onBlur)
-                                  }
-                                  onKeyDown={(event) =>
-                                    handleWeightKeyDown(event, idx)
-                                  }
-                                  ref={(element) => {
-                                    weightField.ref(element);
-                                    weightRefs.current[idx] = element;
-                                  }}
-                                  style={{ minWidth: '80px' }}
-                                />
-                              );
-                            })()}
-                            {errors.rolls?.[idx]?.weight_kg && (
-                              <span className="field-error">
-                                {errors.rolls[idx]?.weight_kg?.message}
-                              </span>
-                            )}
-                          </td>
-                          <td className="hide-mobile">
-                            <input
-                              className="field-input bulk-input"
-                              type="number"
-                              step="0.001"
-                              min="0"
-                              placeholder="—"
-                              {...register(`rolls.${idx}.length_m`)}
-                            />
-                          </td>
-                          <td className="hide-mobile">
-                            <Controller
-                              name={`rolls.${idx}.quality_grade` as const}
-                              control={control}
-                              render={({ field }) => (
-                                <Combobox
-                                  options={QUALITY_GRADES.map((g) => ({
-                                    value: g,
-                                    label: g,
-                                  }))}
-                                  value={field.value}
-                                  onChange={field.onChange}
-                                  placeholder="—"
-                                />
-                              )}
-                            />
-                          </td>
-                          <td className="hide-mobile">
-                            <input
-                              className="field-input bulk-input"
-                              type="text"
-                              placeholder="—"
-                              {...register(`rolls.${idx}.notes`)}
-                            />
-                          </td>
-                          <td>
-                            {fields.length > 1 && (
-                              <button
-                                className="btn-icon danger"
-                                type="button"
-                                title="Xóa dòng"
-                                onClick={() => remove(idx)}
-                              >
-                                ✕
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                <LotMatrixCard
+                  title={`Lô ${rollPrefix ?? 'RM-'} — ${fields.length} cuộn`}
+                  rolls={gridRolls}
+                  expectedRollsCount={fields.length}
+                  mode="input"
+                  onRollChange={(index, weight) => {
+                    setValue(
+                      `rolls.${index}.weight_kg`,
+                      (weight ?? undefined) as unknown as number,
+                      { shouldValidate: false },
+                    );
+                  }}
+                  onAddRoll={addRow}
+                />
 
                 {errors.rolls?.message && (
                   <span
                     className="field-error"
                     style={{
-                      marginTop: '0.5rem',
+                      marginTop: '0.75rem',
                       display: 'block',
                     }}
                   >
@@ -734,11 +607,9 @@ export function RawFabricBulkForm({ onClose }: Props) {
                 )}
 
                 <div
-                  className="bulk-add-actions"
                   style={{
                     display: 'flex',
                     gap: '0.5rem',
-                    flexWrap: 'wrap',
                     marginTop: '1rem',
                   }}
                 >
@@ -749,30 +620,14 @@ export function RawFabricBulkForm({ onClose }: Props) {
                   >
                     + 1 cuộn
                   </button>
-                  <button
-                    className="btn-secondary hide-mobile"
-                    type="button"
-                    onClick={() => addMultipleRows(5)}
-                  >
-                    + 5 cuộn
-                  </button>
-                  <button
-                    className="btn-secondary hide-mobile"
-                    type="button"
-                    onClick={() => addMultipleRows(10)}
-                  >
-                    + 10 cuộn
-                  </button>
                   <span
-                    className="bulk-hint hide-mobile"
                     style={{
-                      marginLeft: 'auto',
                       alignSelf: 'center',
-                      fontSize: '0.8rem',
+                      fontSize: '0.78rem',
                       color: 'var(--muted)',
                     }}
                   >
-                    Nhấn Enter trong ô trọng lượng để thêm dòng mới
+                    Gõ số tịnh → nhấn Enter để chuyển ô tiếp theo
                   </span>
                 </div>
               </fieldset>

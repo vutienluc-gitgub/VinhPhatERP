@@ -135,6 +135,14 @@ export const bulkInputSchema = z
         val === '' || val === null || val === undefined ? 1 : Number(val),
       z.number().int().min(1, 'Số bắt đầu phải ≥ 1'),
     ),
+    /** Số cuộn dự kiến — tự động sinh lưới trống */
+    expected_rolls: z.preprocess(
+      (val) =>
+        val === '' || val === null || val === undefined
+          ? undefined
+          : Number(val),
+      z.number().int().min(1).max(500).optional(),
+    ),
     rolls: z.array(bulkRollRowSchema).min(1, 'Phải có ít nhất 1 cuộn'),
   })
   .superRefine((values, ctx) => {
@@ -169,6 +177,7 @@ export const bulkInputDefaults: BulkInputFormValues = {
   lot_number: '',
   roll_prefix: 'RM-',
   start_number: 1,
+  expected_rolls: undefined,
   rolls: [
     {
       roll_number: formatBulkRollNumber('RM-', 1),
