@@ -25,7 +25,7 @@ export const Icon = memo(
   ({ name, size = 20, strokeWidth = 1.5, ...props }: IconProps) => {
     const LucideIcon = LucideIcons[name as IconName] as React.FC<LucideProps>;
 
-    if (!LucideIcon || typeof LucideIcon !== 'function') {
+    if (!LucideIcon) {
       console.warn(`Icon "${name}" not found in lucide-react`);
       return null;
     }
