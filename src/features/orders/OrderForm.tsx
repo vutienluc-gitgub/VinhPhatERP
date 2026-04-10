@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
+import { fetchCustomerDebt } from '@/api/debt.api';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
@@ -163,6 +164,8 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
   const { profile } = useAuth();
   const [overrideWarning, setOverrideWarning] =
     useState<CreateOrderError | null>(null);
+  const [pendingUpdateValues, setPendingUpdateValues] =
+    useState<OrdersFormValues | null>(null);
 
   const createMutationV2 = useCreateOrderV2();
   const updateMutation = useUpdateOrder();
@@ -226,6 +229,38 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
 
     try {
       if (isEditing) {
+        // Client-side credit check truoc khi update
+        const newTotal = values.items.reduce(
+          (sum, it) =>
+            sum + (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0),
+          0,
+        );
+        const oldTotal = order.total_amount;
+        const totalDiff = newTotal - oldTotal;
+
+        if (totalDiff > 0) {
+          const debt = await fetchCustomerDebt(values.customerId);
+          if (debt && debt.credit_limit > 0) {
+            const projectedDebt = debt.balance + totalDiff;
+            if (projectedDebt > debt.credit_limit) {
+              setPendingUpdateValues(values);
+              setOverrideWarning({
+                code: 'CREDIT_LIMIT_EXCEEDED',
+                message:
+                  `Sua don se tang cong no du kien len ${formatCurrency(projectedDebt)} d, ` +
+                  `vuot han muc ${formatCurrency(debt.credit_limit)} d.`,
+                detail: {
+                  currentDebt: debt.balance,
+                  orderTotal: newTotal,
+                  projectedDebt,
+                  creditLimit: debt.credit_limit,
+                },
+              });
+              return;
+            }
+          }
+        }
+
         await updateMutation.mutateAsync({
           id: order.id,
           values,
@@ -250,7 +285,20 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
 
   async function handleOverride() {
     try {
-      if (overrideWarning) {
+      if (!overrideWarning) return;
+
+      if (isEditing && pendingUpdateValues) {
+        // Override cho flow sua don
+        await updateMutation.mutateAsync({
+          id: order.id,
+          values: pendingUpdateValues,
+        });
+        toast.success(`Da cap nhat don hang ${order.order_number}`);
+        setPendingUpdateValues(null);
+        setOverrideWarning(null);
+        onClose();
+      } else {
+        // Override cho flow tao moi
         const values = control._formValues as OrdersFormValues;
         await createMutationV2.mutateAsync({
           ...values,
@@ -686,7 +734,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
         userRole={profile?.role || 'staff'}
         onConfirm={handleOverride}
         onCancel={() => setOverrideWarning(null)}
-        isLoading={createMutationV2.isPending}
+        isLoading={createMutationV2.isPending || updateMutation.isPending}
       />
     </>
   );
