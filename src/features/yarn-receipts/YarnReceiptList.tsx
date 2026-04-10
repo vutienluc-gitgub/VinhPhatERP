@@ -23,6 +23,9 @@ import { DOC_STATUS_LABELS } from './yarn-receipts.module';
 type YarnReceiptListProps = {
   onEdit: (receipt: YarnReceipt) => void;
   onNew: () => void;
+  totalWeight: number;
+  pendingCount: number;
+  supplierCount: number;
 };
 
 function getStatusVariant(status: DocStatus): BadgeVariant {
@@ -36,7 +39,13 @@ function getStatusVariant(status: DocStatus): BadgeVariant {
   }
 }
 
-export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
+export function YarnReceiptList({
+  onEdit,
+  onNew,
+  totalWeight,
+  pendingCount,
+  supplierCount,
+}: YarnReceiptListProps) {
   const [searchInput, setSearchInput] = useState('');
   const [filters, setFilters] = useState<YarnReceiptsFilter>({});
   const [page, setPage] = useState(1);
@@ -109,9 +118,62 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
         </button>
       </div>
 
+      {/* KPI Dashboard */}
+      <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
+        <div className="kpi-card-premium kpi-primary">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Tổng lượng sợi nhập</p>
+              <p className="kpi-value">
+                {totalWeight.toLocaleString('vi-VN')} kg
+              </p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="Package" size={32} />
+            </div>
+          </div>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Cập nhật trong tháng này
+          </div>
+        </div>
+
+        <div className="kpi-card-premium kpi-warning">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Phiếu chờ xác nhận</p>
+              <p className="kpi-value">{pendingCount}</p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="Activity" size={32} />
+            </div>
+          </div>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Yêu cầu kiểm tra & xác nhận
+          </div>
+        </div>
+
+        <div className="kpi-card-premium kpi-success">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Nhà cung cấp</p>
+              <p className="kpi-value">{supplierCount}</p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="Users" size={32} />
+            </div>
+          </div>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Đối tác cung ứng hiện có
+          </div>
+        </div>
+      </div>
+
       {/* Filters */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-compact-premium">
+      <div className="card-filter-section p-4 border-b border-border">
+        <div className="filter-grid-premium">
           <div className="filter-field">
             <label htmlFor="filter-search">Tìm kiếm</label>
             <form className="search-input-wrapper" onSubmit={handleSearch}>
@@ -159,21 +221,21 @@ export function YarnReceiptList({ onEdit, onNew }: YarnReceiptListProps) {
               }}
             />
           </div>
-
-          {hasFilter && (
-            <button
-              className="btn-secondary text-danger flex items-center gap-2"
-              type="button"
-              onClick={() => {
-                setFilters({});
-                setSearchInput('');
-              }}
-              style={{ marginBottom: 4 }}
-            >
-              <Icon name="X" size={14} /> Xóa lọc
-            </button>
-          )}
         </div>
+
+        {hasFilter && (
+          <button
+            className="btn-secondary text-danger flex items-center gap-2"
+            type="button"
+            onClick={() => {
+              setFilters({});
+              setSearchInput('');
+            }}
+            style={{ marginTop: '1rem' }}
+          >
+            <Icon name="X" size={14} /> Xóa lọc
+          </button>
+        )}
       </div>
 
       {/* Error */}
