@@ -1,28 +1,33 @@
 import { CompanySettingsForm } from './CompanySettingsForm';
+import { ColorsSection } from './ColorsSection';
 
 export function SettingsPage() {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h1 className="page-title">⚙️ Cài đặt</h1>
-        <p className="page-subtitle">
-          Quản lý thông tin công ty — hiển thị trên báo giá, phiếu xuất kho và
-          các chứng từ.
-        </p>
+        <div>
+          <h1 className="page-title">Cài đặt hệ thống</h1>
+          <p className="page-subtitle">
+            Quản lý cấu hình công ty và danh mục dùng chung.
+          </p>
+        </div>
       </div>
 
-      <section className="card" style={{ padding: '1.5rem' }}>
-        <h2
-          style={{
-            fontSize: '1.125rem',
-            fontWeight: 600,
-            marginBottom: '1.25rem',
-          }}
-        >
-          🏢 Thông tin công ty
-        </h2>
-        <CompanySettingsForm />
-      </section>
+      <div className="route-content">
+        <div className="panel-card card-flush">
+          <div className="card-header-premium">
+            <div>
+              <p className="eyebrow-premium">Cài đặt hệ thống</p>
+              <h2 className="title-premium">Thông tin công ty</h2>
+            </div>
+          </div>
+          <div style={{ padding: '1.5rem' }}>
+            <CompanySettingsForm />
+          </div>
+        </div>
+
+        <ColorsSection />
+      </div>
     </div>
   );
 }

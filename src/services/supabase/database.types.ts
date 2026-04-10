@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -11,6 +11,31 @@ export type Database = {
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: '14.4';
+  };
+  graphql_public: {
+    Tables: {
+      [_ in never]: never;
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json;
+          operationName?: string;
+          query?: string;
+          variables?: Json;
+        };
+        Returns: Json;
+      };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
   };
   public: {
     Tables: {
@@ -257,18 +282,21 @@ export type Database = {
       colors: {
         Row: {
           code: string;
+          color_group: string | null;
           name: string;
           note: string | null;
           trend_year: number | null;
         };
         Insert: {
           code: string;
+          color_group?: string | null;
           name: string;
           note?: string | null;
           trend_year?: number | null;
         };
         Update: {
           code?: string;
+          color_group?: string | null;
           name?: string;
           note?: string | null;
           trend_year?: number | null;
@@ -303,6 +331,51 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: 'company_settings_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      customer_debt: {
+        Row: {
+          balance: number;
+          credit_limit: number | null;
+          customer_id: string;
+          id: string;
+          notes: string | null;
+          tenant_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          balance?: number;
+          credit_limit?: number | null;
+          customer_id: string;
+          id?: string;
+          notes?: string | null;
+          tenant_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          balance?: number;
+          credit_limit?: number | null;
+          customer_id?: string;
+          id?: string;
+          notes?: string | null;
+          tenant_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'customer_debt_customer_id_fkey';
+            columns: ['customer_id'];
+            isOneToOne: false;
+            referencedRelation: 'customers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'customer_debt_tenant_id_fkey';
             columns: ['tenant_id'];
             isOneToOne: false;
             referencedRelation: 'tenants';
@@ -380,6 +453,226 @@ export type Database = {
             columns: ['tenant_id'];
             isOneToOne: false;
             referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      debt_transactions: {
+        Row: {
+          amount: number;
+          balance_after: number | null;
+          created_at: string;
+          created_by: string | null;
+          customer_id: string;
+          id: string;
+          invoice_id: string | null;
+          notes: string | null;
+          shipment_id: string | null;
+          tenant_id: string;
+          type: Database['public']['Enums']['debt_transaction_type'];
+        };
+        Insert: {
+          amount: number;
+          balance_after?: number | null;
+          created_at?: string;
+          created_by?: string | null;
+          customer_id: string;
+          id?: string;
+          invoice_id?: string | null;
+          notes?: string | null;
+          shipment_id?: string | null;
+          tenant_id: string;
+          type: Database['public']['Enums']['debt_transaction_type'];
+        };
+        Update: {
+          amount?: number;
+          balance_after?: number | null;
+          created_at?: string;
+          created_by?: string | null;
+          customer_id?: string;
+          id?: string;
+          invoice_id?: string | null;
+          notes?: string | null;
+          shipment_id?: string | null;
+          tenant_id?: string;
+          type?: Database['public']['Enums']['debt_transaction_type'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'debt_transactions_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'debt_transactions_customer_id_fkey';
+            columns: ['customer_id'];
+            isOneToOne: false;
+            referencedRelation: 'customers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'debt_transactions_shipment_id_fkey';
+            columns: ['shipment_id'];
+            isOneToOne: false;
+            referencedRelation: 'shipments';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'debt_transactions_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      dyeing_order_items: {
+        Row: {
+          color_code: string | null;
+          color_name: string;
+          created_at: string | null;
+          dyeing_order_id: string | null;
+          finished_fabric_roll_id: string | null;
+          id: string;
+          length_m: number | null;
+          notes: string | null;
+          raw_fabric_roll_id: string | null;
+          sort_order: number | null;
+          tenant_id: string;
+          weight_kg: number;
+        };
+        Insert: {
+          color_code?: string | null;
+          color_name: string;
+          created_at?: string | null;
+          dyeing_order_id?: string | null;
+          finished_fabric_roll_id?: string | null;
+          id?: string;
+          length_m?: number | null;
+          notes?: string | null;
+          raw_fabric_roll_id?: string | null;
+          sort_order?: number | null;
+          tenant_id?: string;
+          weight_kg: number;
+        };
+        Update: {
+          color_code?: string | null;
+          color_name?: string;
+          created_at?: string | null;
+          dyeing_order_id?: string | null;
+          finished_fabric_roll_id?: string | null;
+          id?: string;
+          length_m?: number | null;
+          notes?: string | null;
+          raw_fabric_roll_id?: string | null;
+          sort_order?: number | null;
+          tenant_id?: string;
+          weight_kg?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'dyeing_order_items_dyeing_order_id_fkey';
+            columns: ['dyeing_order_id'];
+            isOneToOne: false;
+            referencedRelation: 'dyeing_orders';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'dyeing_order_items_finished_fabric_roll_id_fkey';
+            columns: ['finished_fabric_roll_id'];
+            isOneToOne: false;
+            referencedRelation: 'finished_fabric_rolls';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'dyeing_order_items_raw_fabric_roll_id_fkey';
+            columns: ['raw_fabric_roll_id'];
+            isOneToOne: false;
+            referencedRelation: 'raw_fabric_rolls';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      dyeing_orders: {
+        Row: {
+          actual_return_date: string | null;
+          created_at: string | null;
+          created_by: string | null;
+          dyeing_order_number: string;
+          expected_return_date: string | null;
+          id: string;
+          notes: string | null;
+          order_date: string;
+          paid_amount: number | null;
+          status: Database['public']['Enums']['dyeing_order_status'] | null;
+          supplier_id: string;
+          tenant_id: string;
+          total_amount: number | null;
+          total_weight_kg: number | null;
+          unit_price_per_kg: number | null;
+          updated_at: string | null;
+          work_order_id: string | null;
+        };
+        Insert: {
+          actual_return_date?: string | null;
+          created_at?: string | null;
+          created_by?: string | null;
+          dyeing_order_number: string;
+          expected_return_date?: string | null;
+          id?: string;
+          notes?: string | null;
+          order_date: string;
+          paid_amount?: number | null;
+          status?: Database['public']['Enums']['dyeing_order_status'] | null;
+          supplier_id: string;
+          tenant_id?: string;
+          total_amount?: number | null;
+          total_weight_kg?: number | null;
+          unit_price_per_kg?: number | null;
+          updated_at?: string | null;
+          work_order_id?: string | null;
+        };
+        Update: {
+          actual_return_date?: string | null;
+          created_at?: string | null;
+          created_by?: string | null;
+          dyeing_order_number?: string;
+          expected_return_date?: string | null;
+          id?: string;
+          notes?: string | null;
+          order_date?: string;
+          paid_amount?: number | null;
+          status?: Database['public']['Enums']['dyeing_order_status'] | null;
+          supplier_id?: string;
+          tenant_id?: string;
+          total_amount?: number | null;
+          total_weight_kg?: number | null;
+          unit_price_per_kg?: number | null;
+          updated_at?: string | null;
+          work_order_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'dyeing_orders_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'suppliers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'dyeing_orders_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_debt';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'dyeing_orders_work_order_id_fkey';
+            columns: ['work_order_id'];
+            isOneToOne: false;
+            referencedRelation: 'work_orders';
             referencedColumns: ['id'];
           },
         ];
@@ -1702,10 +1995,12 @@ export type Database = {
           finished_roll_id: string | null;
           id: string;
           notes: string | null;
+          price_per_meter: number | null;
           quantity: number;
           shipment_id: string;
           sort_order: number;
           tenant_id: string | null;
+          total_amount: number | null;
           unit: string;
         };
         Insert: {
@@ -1714,10 +2009,12 @@ export type Database = {
           finished_roll_id?: string | null;
           id?: string;
           notes?: string | null;
+          price_per_meter?: number | null;
           quantity: number;
           shipment_id: string;
           sort_order?: number;
           tenant_id?: string | null;
+          total_amount?: number | null;
           unit?: string;
         };
         Update: {
@@ -1726,10 +2023,12 @@ export type Database = {
           finished_roll_id?: string | null;
           id?: string;
           notes?: string | null;
+          price_per_meter?: number | null;
           quantity?: number;
           shipment_id?: string;
           sort_order?: number;
           tenant_id?: string | null;
+          total_amount?: number | null;
           unit?: string;
         };
         Relationships: [
@@ -1770,7 +2069,7 @@ export type Database = {
           id: string;
           loading_fee: number;
           notes: string | null;
-          order_id: string;
+          order_id: string | null;
           prepared_at: string | null;
           receiver_name: string | null;
           receiver_phone: string | null;
@@ -1800,7 +2099,7 @@ export type Database = {
           id?: string;
           loading_fee?: number;
           notes?: string | null;
-          order_id: string;
+          order_id?: string | null;
           prepared_at?: string | null;
           receiver_name?: string | null;
           receiver_phone?: string | null;
@@ -1830,7 +2129,7 @@ export type Database = {
           id?: string;
           loading_fee?: number;
           notes?: string | null;
-          order_id?: string;
+          order_id?: string | null;
           prepared_at?: string | null;
           receiver_name?: string | null;
           receiver_phone?: string | null;
@@ -1860,6 +2159,13 @@ export type Database = {
             columns: ['delivery_staff_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'shipments_employee_id_fkey';
+            columns: ['employee_id'];
+            isOneToOne: false;
+            referencedRelation: 'employees';
             referencedColumns: ['id'];
           },
           {
@@ -1972,6 +2278,126 @@ export type Database = {
           },
           {
             foreignKeyName: 'shipping_rates_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      supplier_debt: {
+        Row: {
+          balance: number;
+          id: string;
+          notes: string | null;
+          supplier_id: string;
+          tenant_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          balance?: number;
+          id?: string;
+          notes?: string | null;
+          supplier_id: string;
+          tenant_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          balance?: number;
+          id?: string;
+          notes?: string | null;
+          supplier_id?: string;
+          tenant_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'supplier_debt_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'suppliers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'supplier_debt_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_debt';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'supplier_debt_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      supplier_debt_transactions: {
+        Row: {
+          amount: number;
+          balance_after: number | null;
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          notes: string | null;
+          reference_id: string | null;
+          reference_type: string | null;
+          supplier_id: string;
+          tenant_id: string;
+          type: Database['public']['Enums']['supplier_debt_transaction_type'];
+        };
+        Insert: {
+          amount: number;
+          balance_after?: number | null;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          notes?: string | null;
+          reference_id?: string | null;
+          reference_type?: string | null;
+          supplier_id: string;
+          tenant_id: string;
+          type: Database['public']['Enums']['supplier_debt_transaction_type'];
+        };
+        Update: {
+          amount?: number;
+          balance_after?: number | null;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          notes?: string | null;
+          reference_id?: string | null;
+          reference_type?: string | null;
+          supplier_id?: string;
+          tenant_id?: string;
+          type?: Database['public']['Enums']['supplier_debt_transaction_type'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'supplier_debt_transactions_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'supplier_debt_transactions_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'suppliers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'supplier_debt_transactions_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_debt';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'supplier_debt_transactions_tenant_id_fkey';
             columns: ['tenant_id'];
             isOneToOne: false;
             referencedRelation: 'tenants';
@@ -2865,10 +3291,38 @@ export type Database = {
       };
     };
     Functions: {
+      complete_dyeing_order: {
+        Args: { p_actual_return_date?: string; p_dyeing_order_id: string };
+        Returns: undefined;
+      };
       confirm_weaving_invoice: {
         Args: { p_invoice_id: string };
         Returns: undefined;
       };
+      create_shipment_from_finished_fabric:
+        | {
+            Args: {
+              p_customer_id: string;
+              p_roll_ids: string[];
+              p_shipment_date?: string;
+            };
+            Returns: {
+              rolls_count: number;
+              shipment_id: string;
+            }[];
+          }
+        | {
+            Args: {
+              p_customer_id: string;
+              p_price_per_meter?: number;
+              p_roll_ids: string[];
+              p_shipment_date?: string;
+            };
+            Returns: {
+              rolls_count: number;
+              shipment_id: string;
+            }[];
+          };
       current_tenant_id: { Args: never; Returns: string };
       current_user_role: {
         Args: never;
@@ -2922,13 +3376,26 @@ export type Database = {
           total_amount: number;
         }[];
       };
+      next_dyeing_order_number: { Args: never; Returns: string };
       next_weaving_invoice_number: { Args: never; Returns: string };
+      pay_customer_debt: {
+        Args: { p_amount: number; p_customer_id: string; p_notes: string };
+        Returns: undefined;
+      };
+      pay_supplier_debt: {
+        Args: { p_amount: number; p_notes: string; p_supplier_id: string };
+        Returns: undefined;
+      };
       release_order_allocations: {
         Args: { p_order_id: string; p_reason: string };
         Returns: undefined;
       };
       show_limit: { Args: never; Returns: number };
       show_trgm: { Args: { '': string }; Returns: string[] };
+      sync_shipment_debt: {
+        Args: { p_shipment_id: string };
+        Returns: undefined;
+      };
       update_supplier: {
         Args: {
           p_address?: string;
@@ -2961,7 +3428,18 @@ export type Database = {
         | 'direct'
         | 'cold_call'
         | 'other';
+      debt_transaction_type:
+        | 'shipment'
+        | 'payment'
+        | 'adjustment'
+        | 'return_credit';
       doc_status: 'draft' | 'confirmed' | 'cancelled';
+      dyeing_order_status:
+        | 'draft'
+        | 'sent'
+        | 'in_progress'
+        | 'completed'
+        | 'cancelled';
       expense_category:
         | 'supplier_payment'
         | 'yarn_purchase'
@@ -3011,8 +3489,18 @@ export type Database = {
         | 'returned';
       stage_status: 'pending' | 'in_progress' | 'done' | 'skipped';
       supplier_category: 'yarn' | 'dye' | 'accessories' | 'other' | 'weaving';
+      supplier_debt_transaction_type:
+        | 'purchase'
+        | 'payment'
+        | 'adjustment'
+        | 'return_credit';
       user_role: 'admin' | 'manager' | 'staff' | 'driver' | 'viewer' | 'sale';
-      work_order_status: 'draft' | 'in_progress' | 'completed' | 'cancelled';
+      work_order_status:
+        | 'draft'
+        | 'yarn_issued'
+        | 'in_progress'
+        | 'completed'
+        | 'cancelled';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -3141,6 +3629,9 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       account_type: ['cash', 'bank'],
@@ -3158,7 +3649,20 @@ export const Constants = {
         'cold_call',
         'other',
       ],
+      debt_transaction_type: [
+        'shipment',
+        'payment',
+        'adjustment',
+        'return_credit',
+      ],
       doc_status: ['draft', 'confirmed', 'cancelled'],
+      dyeing_order_status: [
+        'draft',
+        'sent',
+        'in_progress',
+        'completed',
+        'cancelled',
+      ],
       expense_category: [
         'supplier_payment',
         'yarn_purchase',
@@ -3214,11 +3718,22 @@ export const Constants = {
       ],
       stage_status: ['pending', 'in_progress', 'done', 'skipped'],
       supplier_category: ['yarn', 'dye', 'accessories', 'other', 'weaving'],
+      supplier_debt_transaction_type: [
+        'purchase',
+        'payment',
+        'adjustment',
+        'return_credit',
+      ],
       user_role: ['admin', 'manager', 'staff', 'driver', 'viewer', 'sale'],
-      work_order_status: ['draft', 'in_progress', 'completed', 'cancelled'],
+      work_order_status: [
+        'draft',
+        'yarn_issued',
+        'in_progress',
+        'completed',
+        'cancelled',
+      ],
     },
   },
 } as const;
-
 export type UserRole = Database['public']['Enums']['user_role'];
 export type Profile = Database['public']['Tables']['profiles']['Row'];
