@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Flow Xuất Kho - ERP Sản Xuất Vải</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        color: #333;
+        line-height: 1.7;
+      }
+      h1 {
+        color: #1a73e8;
+        border-bottom: 3px solid #1a73e8;
+        padding-bottom: 10px;
+      }
+      h2 {
+        color: #0d47a1;
+        margin-top: 36px;
+      }
+      h3 {
+        color: #1565c0;
+      }
+      .step {
+        background: #f0f4ff;
+        border-left: 4px solid #1a73e8;
+        padding: 16px 20px;
+        margin: 16px 0;
+        border-radius: 0 8px 8px 0;
+      }
+      .step-number {
+        display: inline-block;
+        background: #1a73e8;
+        color: #fff;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        text-align: center;
+        line-height: 28px;
+        font-weight: bold;
+        margin-right: 8px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0;
+      }
+      th {
+        background: #1a73e8;
+        color: #fff;
+        padding: 10px 14px;
+        text-align: left;
+      }
+      td {
+        padding: 9px 14px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      tr:nth-child(even) td {
+        background: #f5f8ff;
+      }
+      .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 0.85em;
+        font-weight: bold;
+      }
+      .badge-blue {
+        background: #e3f2fd;
+        color: #1565c0;
+      }
+      .badge-orange {
+        background: #fff3e0;
+        color: #e65100;
+      }
+      .badge-green {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+      .badge-red {
+        background: #fce4ec;
+        color: #c62828;
+      }
+      .badge-gray {
+        background: #f5f5f5;
+        color: #616161;
+      }
+      .flow-arrow {
+        text-align: center;
+        font-size: 1.4em;
+        color: #1a73e8;
+        margin: 4px 0;
+      }
+      .note {
+        background: #fff8e1;
+        border-left: 4px solid #ffc107;
+        padding: 12px 16px;
+        border-radius: 0 8px 8px 0;
+        margin: 16px 0;
+        font-size: 0.95em;
+      }
+      code {
+        background: #f1f3f4;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 0.92em;
+      }
+      ul li {
+        margin-bottom: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📦 Flow Xuất Kho — ERP Sản Xuất Vải</h1>
+    <p>
+      Tài liệu mô tả quy trình xuất kho thành phẩm, từ lúc tạo phiếu xuất đến
+      khi khách hàng xác nhận nhận hàng.
+    </p>
+
+    <h2>Tổng quan quy trình</h2>
+
+    <div class="step">
+      <span class="step-number">1</span><strong>Tạo phiếu xuất</strong> — Chọn
+      cuộn vải, nhập thông tin giao hàng → status:
+      <span class="badge badge-blue">Đang chuẩn bị</span>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="step">
+      <span class="step-number">2</span><strong>Xác nhận xuất kho</strong> —
+      Nhân viên kho confirm, tồn kho bị trừ → status:
+      <span class="badge badge-orange">Đã giao</span>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="step">
+      <span class="step-number">3</span><strong>Xác nhận giao hàng</strong> —
+      Nhập tên/SĐT người nhận, ảnh biên nhận → status:
+      <span class="badge badge-green">Đã nhận</span>
+    </div>
+
+    <h2>Chi tiết từng bước</h2>
+
+    <h3>Bước 1 — Tạo phiếu xuất</h3>
+    <p>
+      Được trigger từ màn hình chi tiết đơn hàng, khi đơn ở trạng thái
+      <code>confirmed</code> hoặc <code>in_progress</code>.
+    </p>
+    <ul>
+      <li>Hệ thống tự sinh số phiếu theo định dạng <code>XK2501-0001</code></li>
+      <li>
+        Chọn cuộn thành phẩm cần xuất (chỉ hiển thị cuộn
+        <code>in_stock</code> hoặc <code>reserved</code> cho đơn đó)
+      </li>
+      <li>
+        Nhập thông tin giao: địa chỉ, nhân viên giao hàng, biển số xe, cước phí
+      </li>
+      <li>
+        Cước phí tự tính từ bảng giá vận chuyển (<code>shipping_rates</code>)
+      </li>
+      <li>
+        Sau khi lưu: <code>shipments.status</code> = <code>preparing</code>,
+        cuộn vải → <code>reserved</code>
+      </li>
+    </ul>
+
+    <h3>Bước 2 — Xác nhận xuất kho</h3>
+    <p>Nhân viên kho thực hiện confirm phiếu sau khi đã chuẩn bị hàng xong.</p>
+    <ul>
+      <li>
+        <code>shipments.status</code> chuyển sang <code>shipped</code>, ghi nhận
+        <code>shipped_at</code>
+      </li>
+      <li>
+        <code>finished_fabric_rolls.status</code> chuyển sang
+        <code>shipped</code> — đây là điểm trừ tồn thực tế
+      </li>
+      <li>Sau bước này không thể chỉnh sửa hoặc xóa phiếu</li>
+    </ul>
+
+    <h3>Bước 3 — Xác nhận giao hàng</h3>
+    <p>Nhân viên giao hàng cập nhật sau khi khách đã nhận.</p>
+    <ul>
+      <li>Nhập tên người nhận, số điện thoại</li>
+      <li>Upload ảnh biên nhận (delivery proof)</li>
+      <li><code>shipments.status</code> chuyển sang <code>delivered</code></li>
+    </ul>
+
+    <h2>Trạng thái phiếu xuất kho</h2>
+    <table>
+      <tr>
+        <th>Status</th>
+        <th>Tên hiển thị</th>
+        <th>Mô tả</th>
+      </tr>
+      <tr>
+        <td><code>preparing</code></td>
+        <td><span class="badge badge-blue">Đang chuẩn bị</span></td>
+        <td>Phiếu vừa tạo, chưa xuất kho. Có thể chỉnh sửa hoặc xóa.</td>
+      </tr>
+      <tr>
+        <td><code>shipped</code></td>
+        <td><span class="badge badge-orange">Đã giao</span></td>
+        <td>Đã confirm, cuộn đã trừ kho, đang vận chuyển.</td>
+      </tr>
+      <tr>
+        <td><code>delivered</code></td>
+        <td><span class="badge badge-green">Đã nhận</span></td>
+        <td>Khách hàng đã nhận hàng, có biên nhận.</td>
+      </tr>
+      <tr>
+        <td><code>partially_returned</code></td>
+        <td><span class="badge badge-red">Trả một phần</span></td>
+        <td>Khách trả lại một phần hàng.</td>
+      </tr>
+      <tr>
+        <td><code>returned</code></td>
+        <td><span class="badge badge-gray">Đã trả lại</span></td>
+        <td>Toàn bộ hàng đã trả lại.</td>
+      </tr>
+    </table>
+
+    <h2>Trạng thái cuộn vải thành phẩm</h2>
+    <table>
+      <tr>
+        <th>Status</th>
+        <th>Ý nghĩa</th>
+      </tr>
+      <tr>
+        <td><code>in_stock</code></td>
+        <td>Còn hàng trong kho, sẵn sàng xuất</td>
+      </tr>
+      <tr>
+        <td><code>reserved</code></td>
+        <td>Đã giữ cho một đơn hàng cụ thể (phiếu đang chuẩn bị)</td>
+      </tr>
+      <tr>
+        <td><code>shipped</code></td>
+        <td>Đã xuất kho, không còn trong tồn</td>
+      </tr>
+      <tr>
+        <td><code>damaged</code></td>
+        <td>Hàng hỏng</td>
+      </tr>
+      <tr>
+        <td><code>written_off</code></td>
+        <td>Đã xóa sổ</td>
+      </tr>
+    </table>
+
+    <h2>Cấu trúc dữ liệu chính</h2>
+
+    <h3>Bảng <code>shipments</code> — Header phiếu xuất</h3>
+    <table>
+      <tr>
+        <th>Cột</th>
+        <th>Kiểu</th>
+        <th>Mô tả</th>
+      </tr>
+      <tr>
+        <td><code>shipment_number</code></td>
+        <td>TEXT</td>
+        <td>Số phiếu, VD: XK2501-0001</td>
+      </tr>
+      <tr>
+        <td><code>order_id</code></td>
+        <td>UUID (FK)</td>
+        <td>Đơn hàng liên kết</td>
+      </tr>
+      <tr>
+        <td><code>customer_id</code></td>
+        <td>UUID (FK)</td>
+        <td>Khách hàng</td>
+      </tr>
+      <tr>
+        <td><code>shipment_date</code></td>
+        <td>DATE</td>
+        <td>Ngày giao hàng</td>
+      </tr>
+      <tr>
+        <td><code>status</code></td>
+        <td>ENUM</td>
+        <td>Trạng thái phiếu</td>
+      </tr>
+      <tr>
+        <td><code>delivery_staff_id</code></td>
+        <td>UUID (FK)</td>
+        <td>Nhân viên giao hàng</td>
+      </tr>
+      <tr>
+        <td><code>shipping_cost</code></td>
+        <td>NUMERIC</td>
+        <td>Cước vận chuyển</td>
+      </tr>
+      <tr>
+        <td><code>loading_fee</code></td>
+        <td>NUMERIC</td>
+        <td>Phí bốc xếp</td>
+      </tr>
+      <tr>
+        <td><code>vehicle_info</code></td>
+        <td>TEXT</td>
+        <td>Biển số xe</td>
+      </tr>
+      <tr>
+        <td><code>receiver_name</code></td>
+        <td>TEXT</td>
+        <td>Tên người nhận (điền khi delivered)</td>
+      </tr>
+      <tr>
+        <td><code>delivery_proof</code></td>
+        <td>TEXT</td>
+        <td>Ảnh biên nhận</td>
+      </tr>
+    </table>
+
+    <h3>Bảng <code>shipment_items</code> — Chi tiết cuộn xuất</h3>
+    <table>
+      <tr>
+        <th>Cột</th>
+        <th>Kiểu</th>
+        <th>Mô tả</th>
+      </tr>
+      <tr>
+        <td><code>shipment_id</code></td>
+        <td>UUID (FK)</td>
+        <td>Phiếu xuất</td>
+      </tr>
+      <tr>
+        <td><code>finished_roll_id</code></td>
+        <td>UUID (FK)</td>
+        <td>Cuộn thành phẩm cụ thể</td>
+      </tr>
+      <tr>
+        <td><code>fabric_type</code></td>
+        <td>TEXT</td>
+        <td>Loại vải</td>
+      </tr>
+      <tr>
+        <td><code>quantity</code></td>
+        <td>NUMERIC</td>
+        <td>Số lượng xuất</td>
+      </tr>
+      <tr>
+        <td><code>unit</code></td>
+        <td>TEXT</td>
+        <td>Đơn vị: m hoặc kg</td>
+      </tr>
+    </table>
+
+    <h2>Business Rules</h2>
+    <ul>
+      <li>Phiếu xuất phải có ít nhất 1 cuộn thành phẩm</li>
+      <li>Không được xuất vượt tồn hoặc vượt số lượng còn lại của đơn hàng</li>
+      <li>Cuộn đã <code>reserved</code> không thể dùng cho đơn hàng khác</li>
+      <li>Chỉ được xóa phiếu khi status = <code>preparing</code></li>
+      <li>Hỗ trợ giao từng phần (partial shipment) cho cùng một đơn hàng</li>
+    </ul>
+
+    <div class="note">
+      ⚠️ <strong>Lưu ý:</strong> Logic trừ tồn thực tế sau khi confirm hiện đang
+      được hoàn thiện. Điểm trừ tồn chính thức là khi
+      <code>shipments.status</code> chuyển sang <code>shipped</code>.
+    </div>
+  </body>
+</html>
