@@ -123,6 +123,7 @@ export function useUpdateOrder() {
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ['customers'] });
     },
   });
 }

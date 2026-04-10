@@ -9,7 +9,7 @@ import type { IconName } from './Icon';
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /**
    * Semantic variants matching the project's design system.
-   * Standardized with gradients and shadows in data-ui.css.
+   * Maps to CSS classes in data-ui.css (btn-primary, btn-secondary, etc.)
    */
   variant?:
     | 'primary'
@@ -21,7 +21,11 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     | 'warning'
     | 'info';
   /**
-   * Unified size system. Min-height 44px for md/icon (touch-friendly).
+   * Unified size system.
+   * - sm: compact, 36px min (use sparingly — below 44px touch target)
+   * - md: default, 44px min (touch-friendly baseline)
+   * - lg: prominent CTA, 52px min
+   * - icon: square icon-only, 44px min
    */
   size?: 'sm' | 'md' | 'lg' | 'icon';
   /** Displays a spinner and disables the button. */
@@ -36,13 +40,47 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   asChild?: boolean;
 }
 
+/* ── Static maps hoisted outside render to avoid re-creation ── */
+
+const VARIANT_CLASSES: Record<NonNullable<ButtonProps['variant']>, string> = {
+  primary: 'btn-primary',
+  secondary: 'btn-secondary',
+  success: 'btn-success',
+  warning: 'btn-warning',
+  danger: 'btn-danger',
+  info: 'btn-info',
+  outline:
+    'border border-border bg-transparent text-text active:bg-primary/[0.06]',
+  ghost:
+    'bg-transparent text-muted active:text-foreground active:bg-surface-subtle',
+};
+
+const SIZE_CLASSES: Record<NonNullable<ButtonProps['size']>, string> = {
+  sm: 'px-3 py-1.5 text-xs rounded-sm min-h-[36px] gap-1.5',
+  md: 'px-4 py-2.5 text-sm rounded-lg min-h-[44px] gap-2',
+  lg: 'px-6 py-3.5 text-base rounded-lg min-h-[52px] gap-2.5',
+  icon: 'p-2.5 rounded-lg aspect-square min-h-[44px] min-w-[44px]',
+};
+
+/** Icon sizes follow icon-system rules: Small=16, Default=20 */
+const ICON_SIZE: Record<NonNullable<ButtonProps['size']>, number> = {
+  sm: 16,
+  md: 20,
+  lg: 20,
+  icon: 20,
+};
+
+const BASE_STYLES =
+  'inline-flex items-center justify-center font-bold transition-all duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 select-none';
+
 /**
  * Premium Button component following the project's design system.
- * Optimized for mobile-first interactions and consistent premium aesthetics.
+ *
  * Features:
- *   - Semantic variants: primary, secondary, success, warning, info, danger.
- *   - Pro-level Slot pattern (asChild) for seamless router integration.
- *   - Clean positioning: justify-center + gap-based spacing.
+ *   - Semantic variants: primary, secondary, success, warning, info, danger, outline, ghost.
+ *   - Radix Slot pattern (asChild) for seamless router Link integration.
+ *   - Gap-based spacing for consistent icon/spinner alignment.
+ *   - Touch-friendly: md/lg/icon ≥ 44px. sm = 36px (use sparingly).
  */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
@@ -63,34 +101,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const Component = asChild ? Slot : 'button';
-
-    // Base styles: Standardized font-weight across all sizes to prevent jumpy layout
-    const baseStyles =
-      'inline-flex items-center justify-center font-bold transition-all duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 select-none overflow-hidden';
-
-    // Semantic Variants mapping to data-ui.css
-    const variants = {
-      primary: 'btn-primary',
-      secondary: 'btn-secondary',
-      success: 'btn-success',
-      warning: 'btn-warning',
-      danger: 'btn-danger',
-      info: 'btn-info',
-      outline:
-        'border-1.5 border-border bg-transparent text-text hover:border-primary hover:text-primary hover:bg-primary/[0.04]',
-      ghost:
-        'bg-transparent text-muted hover:text-foreground hover:bg-surface-subtle',
-    };
-
-    // Standardized Size system: gap-based spacing prevents icon/spinner misalignment
-    const sizes = {
-      sm: 'px-3 py-1.5 text-xs rounded-sm min-h-[32px] gap-1.5',
-      md: 'px-4 py-2.5 text-sm rounded-md min-h-[44px] gap-2',
-      lg: 'px-6 py-4 text-base rounded-lg min-h-[54px] gap-2.5',
-      icon: 'p-2.5 rounded-md aspect-square min-h-[44px] min-w-[44px]',
-    };
-
-    const iconSize = size === 'sm' ? 16 : 18;
+    const iconSize = ICON_SIZE[size];
 
     return (
       <Component
@@ -98,9 +109,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         type={asChild ? undefined : type}
         disabled={isLoading || disabled}
         className={clsx(
-          baseStyles,
-          variants[variant],
-          sizes[size],
+          BASE_STYLES,
+          VARIANT_CLASSES[variant],
+          SIZE_CLASSES[size],
           fullWidth && 'w-full',
           className,
         )}

@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
@@ -218,25 +219,31 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
   async function onSubmit(values: OrdersFormValues) {
     if (!stepper.isLast) return;
 
+    if (isEditing && order.status !== 'draft') {
+      toast.error('Chi co the sua don o trang thai Nhap');
+      return;
+    }
+
     try {
       if (isEditing) {
         await updateMutation.mutateAsync({
           id: order.id,
           values,
         });
+        toast.success(`Da cap nhat don hang ${order.order_number}`);
         onClose();
       } else {
         await createMutationV2.mutateAsync(values);
+        toast.success('Tao don hang moi thanh cong');
         onClose();
       }
     } catch (err) {
-      if (!isEditing && err && typeof err === 'object' && 'code' in err) {
+      if (err && typeof err === 'object' && 'code' in err) {
         const e = err as CreateOrderError;
         if (isCreditWarning(e.code)) {
           setOverrideWarning(e);
-        } else {
-          // Error handled via mutationError
         }
+        // Other structured errors handled via mutationError
       }
     }
   }
@@ -304,12 +311,8 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                       id="orderNumber"
                       className={`field-input${errors.orderNumber ? ' is-error' : ''}`}
                       type="text"
-                      readOnly={!isEditing}
-                      style={
-                        !isEditing
-                          ? { background: 'var(--surface)' }
-                          : undefined
-                      }
+                      readOnly
+                      style={{ background: 'var(--surface)' }}
                       {...register('orderNumber')}
                     />
                     {errors.orderNumber && (

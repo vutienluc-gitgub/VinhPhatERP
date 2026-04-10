@@ -171,18 +171,27 @@ export async function updateOrderWithItems(
   header: OrderUpdate,
   items: Omit<OrderItemInsert, 'order_id'>[],
 ): Promise<void> {
+  // 1. Update header
   const { error: headerErr } = await supabase
     .from(HEADER_TABLE)
     .update(header)
     .eq('id', id);
   if (headerErr) throw headerErr;
 
+  // 2. Save existing items for rollback
+  const { data: oldItems } = await supabase
+    .from(ITEMS_TABLE)
+    .select('*')
+    .eq('order_id', id);
+
+  // 3. Delete old items
   const { error: delErr } = await supabase
     .from(ITEMS_TABLE)
     .delete()
     .eq('order_id', id);
   if (delErr) throw delErr;
 
+  // 4. Insert new items — rollback if fails
   const itemsWithOrderId = items.map((item) => ({
     ...item,
     order_id: id,
@@ -190,7 +199,14 @@ export async function updateOrderWithItems(
   const { error: insertErr } = await supabase
     .from(ITEMS_TABLE)
     .insert(itemsWithOrderId);
-  if (insertErr) throw insertErr;
+
+  if (insertErr) {
+    // Rollback: restore old items
+    if (oldItems && oldItems.length > 0) {
+      await supabase.from(ITEMS_TABLE).insert(oldItems);
+    }
+    throw insertErr;
+  }
 }
 
 /* ── Delete order ── */
