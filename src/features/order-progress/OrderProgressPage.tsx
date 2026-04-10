@@ -27,14 +27,22 @@ export function OrderProgressPage() {
   const [tab, setTab] = useState<Tab>('dashboard');
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1rem',
-      }}
-    >
-      <TabSwitcher tabs={TABS} active={tab} onChange={setTab} />
+    <div className="flex flex-col gap-6">
+      <div className="panel-card card-flush">
+        <div className="card-header-area card-header-premium">
+          <div>
+            <p className="eyebrow-premium">SẢN XUẤT</p>
+            <h3 className="title-premium">Tiến độ sản xuất</h3>
+          </div>
+        </div>
+
+        <TabSwitcher
+          tabs={TABS}
+          active={tab}
+          onChange={setTab}
+          variant="underline"
+        />
+      </div>
 
       {tab === 'dashboard' && <ProgressDashboard />}
       {tab === 'board' && <ProgressBoard />}

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { TabSwitcher } from '@/shared/components';
+
 import { AccountForm } from './AccountForm';
 import { AccountList } from './AccountList';
 import { CashFlowDashboard } from './CashFlowDashboard';
@@ -57,30 +59,21 @@ export function PaymentsPage() {
   const [showAccountForm, setShowAccountForm] = useState(false);
 
   return (
-    <div>
-      {/* Tab switcher */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '0.35rem',
-          marginBottom: '1rem',
-          flexWrap: 'wrap',
-        }}
-      >
-        {TAB_CONFIG.map(({ key, label }) => (
-          <button
-            key={key}
-            className={tab === key ? 'primary-button' : 'btn-secondary'}
-            type="button"
-            onClick={() => setTab(key)}
-            style={{
-              padding: '0.45rem 0.85rem',
-              fontSize: '0.85rem',
-            }}
-          >
-            {label}
-          </button>
-        ))}
+    <div className="flex flex-col gap-6">
+      {/* Premium Tab Header */}
+      <div className="panel-card card-flush">
+        <div className="card-header-area card-header-premium">
+          <div>
+            <p className="eyebrow-premium">TÀI CHÍNH</p>
+            <h3 className="title-premium">Quản lý Tiền tệ</h3>
+          </div>
+        </div>
+        <TabSwitcher
+          tabs={TAB_CONFIG}
+          active={tab}
+          onChange={setTab}
+          variant="underline"
+        />
       </div>
 
       {/* Tab content */}

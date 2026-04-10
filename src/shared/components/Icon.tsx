@@ -1,5 +1,5 @@
-import { LucideProps } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
+import type { LucideProps } from 'lucide-react';
 import { memo } from 'react';
 
 /**
@@ -14,7 +14,8 @@ import { memo } from 'react';
  *        <Icon name="Settings" size={24} />         ← large
  */
 
-export type IconName = keyof typeof LucideIcons;
+// Extract only string keys (exclude symbol keys) to fix TS2731
+export type IconName = Extract<keyof typeof LucideIcons, string>;
 
 interface IconProps extends LucideProps {
   name: IconName | string;
@@ -22,10 +23,9 @@ interface IconProps extends LucideProps {
 
 export const Icon = memo(
   ({ name, size = 20, strokeWidth = 1.5, ...props }: IconProps) => {
-    // @ts-expect-error - dynamic lookup from string key
-    const LucideIcon = LucideIcons[name] as React.FC<LucideProps>;
+    const LucideIcon = LucideIcons[name as IconName] as React.FC<LucideProps>;
 
-    if (!LucideIcon) {
+    if (!LucideIcon || typeof LucideIcon !== 'function') {
       console.warn(`Icon "${name}" not found in lucide-react`);
       return null;
     }
