@@ -13,62 +13,62 @@ Extract 4 button patterns lặp lại thành shared components trong `src/shared
   - Import `Icon` và `IconName` từ `./Icon` — không dùng `as any`, không implicit any
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 1.10_
 
-  - [ ]\* 1.1 Write property test for AddButton rendering invariants
+  - [x]\* 1.1 Write property test for AddButton rendering invariants
     - **Property 1: AddButton rendering invariants**
     - **Validates: Requirements 1.6, 1.7, 1.8**
     - Dùng `@fast-check/vitest`: generate arbitrary `label`, optional `icon` (subset of valid IconName), optional `disabled`
     - Assert: `type="button"`, className chứa `"btn-primary"`, style `minHeight: 42`, có Icon `size={18}`
 
-  - [ ]\* 1.2 Write unit tests for AddButton
+  - [x]\* 1.2 Write unit tests for AddButton
     - Test default icon là `"Plus"` khi không truyền `icon`
     - Test custom icon khi truyền `icon` prop
     - Test `disabled=true` có attribute `disabled`
     - _Requirements: 1.4, 1.5, 1.9_
 
-- [ ] 2. Implement ClearFilterButton component
+- [x] 2. Implement ClearFilterButton component
   - Tạo file `src/shared/components/ClearFilterButton.tsx`
   - Props interface: `onClick: () => void`, `label?: string` (default `"Xóa lọc"`)
   - Render: `<button type="button" className="btn-secondary text-danger border-danger/20 flex items-center gap-2">`
   - Icon luôn là `"X"` size `14` — không configurable
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8_
 
-  - [ ]\* 2.1 Write property test for ClearFilterButton rendering invariants
+  - [x]\* 2.1 Write property test for ClearFilterButton rendering invariants
     - **Property 2: ClearFilterButton rendering invariants**
     - **Validates: Requirements 2.4, 2.5, 2.6**
     - Generate arbitrary optional `label`
     - Assert: `type="button"`, className chứa `"btn-secondary"`, `"text-danger"`, `"border-danger/20"`, Icon `"X"` size `14`
 
-  - [ ]\* 2.2 Write property test for ClearFilterButton label round-trip
+  - [x]\* 2.2 Write property test for ClearFilterButton label round-trip
     - **Property 3: ClearFilterButton label round-trip**
     - **Validates: Requirements 2.7**
     - Generate arbitrary non-empty string làm `label`
     - Assert: rendered output chứa label string đó
 
-  - [ ]\* 2.3 Write unit tests for ClearFilterButton
+  - [x]\* 2.3 Write unit tests for ClearFilterButton
     - Test default label `"Xóa lọc"` khi không truyền `label`
     - Test custom label khi truyền `label` prop
     - _Requirements: 2.3, 2.7_
 
-- [ ] 3. Implement CancelButton component
+- [x] 3. Implement CancelButton component
   - Tạo file `src/shared/components/CancelButton.tsx`
   - Props interface: `onClick: () => void`, `label?: string` (default `"Hủy"`), `disabled?: boolean` (default `false`)
   - Render: `<button type="button" className="btn-secondary" disabled={disabled} onClick={onClick}>`
   - Không có icon — text-only theo design system
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9_
 
-  - [ ]\* 3.1 Write property test for CancelButton rendering invariants
+  - [x]\* 3.1 Write property test for CancelButton rendering invariants
     - **Property 4: CancelButton rendering invariants**
     - **Validates: Requirements 3.5, 3.6**
     - Generate arbitrary optional `label`, optional `disabled`
     - Assert: `type="button"`, className chứa `"btn-secondary"`
 
-  - [ ]\* 3.2 Write property test for CancelButton label round-trip
+  - [x]\* 3.2 Write property test for CancelButton label round-trip
     - **Property 5: CancelButton label round-trip**
     - **Validates: Requirements 3.8**
     - Generate arbitrary non-empty string làm `label`
     - Assert: rendered output chứa label string đó
 
-  - [ ]\* 3.3 Write unit tests for CancelButton
+  - [x]\* 3.3 Write unit tests for CancelButton
     - Test default label `"Hủy"` khi không truyền `label`
     - Test `disabled=true` có attribute `disabled`
     - _Requirements: 3.3, 3.4, 3.7_

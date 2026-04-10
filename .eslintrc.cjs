@@ -16,18 +16,33 @@ module.exports = {
 
   plugins: ['@typescript-eslint', 'react-refresh', 'import', 'boundaries'],
 
-  ignorePatterns: ['dist', 'node_modules'],
+  ignorePatterns: ['dist', 'node_modules', '.eslintrc.cjs'],
 
   settings: {
     'import/resolver': {
       typescript: {},
     },
     'boundaries/elements': [
-      { type: 'feature', pattern: 'src/features/*' },
-      { type: 'shared', pattern: 'src/shared/*' },
-      { type: 'api', pattern: 'src/api/*' },
-      { type: 'schema', pattern: 'src/schema/*' },
-      { type: 'models', pattern: 'src/models/*' },
+      {
+ type: 'feature',
+pattern: ['src/features/*'] 
+},
+      {
+ type: 'shared',
+pattern: ['src/shared/*'] 
+},
+      {
+ type: 'api',
+pattern: ['src/api/*'] 
+},
+      {
+ type: 'schema',
+pattern: ['src/schema/*'] 
+},
+      {
+ type: 'models',
+pattern: ['src/models/*'] 
+},
     ],
   },
 
@@ -41,8 +56,8 @@ module.exports = {
         default: 'allow',
         rules: [
           {
-            from: ['feature'],
-            disallow: ['feature'],
+            from: { type: 'feature' },
+            disallow: [{ to: { type: 'feature' } }],
             message:
               'Cross-feature imports are not allowed. Use @/shared/, @/api/, or @/models/ instead.',
           },
@@ -134,7 +149,12 @@ module.exports = {
     // 📐 VERTICAL FORMATTING (Trick tránh lỗi ngoặc)
     // ========================
     'linebreak-style': ['error', 'unix'],
-    'object-curly-newline': ['warn', { multiline: true, consistent: true }],
+    'object-curly-newline': [
+'warn', {
+ multiline: true,
+consistent: true 
+}
+],
     'array-bracket-newline': ['warn', { multiline: true }],
     'object-property-newline': [
       'warn',
