@@ -53,8 +53,8 @@ export function PaymentList() {
       </div>
 
       {/* Filters */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-compact-premium">
+      <div className="card-filter-section p-4 border-b border-border">
+        <div className="filter-grid-premium">
           <div className="filter-field">
             <label htmlFor="filter-search">T\u00ecm ki\u1ebfm</label>
             <form className="search-input-wrapper" onSubmit={handleSearch}>
@@ -70,21 +70,20 @@ export function PaymentList() {
               <Icon name="Search" size={16} className="search-input-icon" />
             </form>
           </div>
-
-          {hasFilter && (
-            <button
-              className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
-              type="button"
-              onClick={() => {
-                setFilters({});
-                setSearchInput('');
-              }}
-              style={{ marginBottom: '4px' }}
-            >
-              <Icon name="X" size={14} /> X\u00f3a l\u1ecdc
-            </button>
-          )}
         </div>
+        {hasFilter && (
+          <button
+            className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
+            type="button"
+            onClick={() => {
+              setFilters({});
+              setSearchInput('');
+            }}
+            style={{ marginTop: '1rem' }}
+          >
+            <Icon name="X" size={14} /> X\u00f3a l\u1ecdc
+          </button>
+        )}
       </div>
 
       {/* Error */}
