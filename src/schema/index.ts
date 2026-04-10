@@ -24,6 +24,7 @@ export * from './payment.schema';
 export * from './debt.schema';
 export * from './dyeing-order.schema';
 export * from './employee.schema';
+export * from './color.schema';
 export {
   QUOTATION_STATUSES,
   QUOTATION_STATUS_LABELS,
