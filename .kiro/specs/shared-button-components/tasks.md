@@ -6,7 +6,7 @@ Extract 4 button patterns lặp lại thành shared components trong `src/shared
 
 ## Tasks
 
-- [ ] 1. Implement AddButton component
+- [x] 1. Implement AddButton component
   - Tạo file `src/shared/components/AddButton.tsx`
   - Props interface: `onClick: () => void`, `label: string`, `icon?: IconName` (default `"Plus"`), `disabled?: boolean` (default `false`)
   - Render: `<button type="button" className="btn-primary" style={{ minHeight: 42, padding: '0 1.25rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }} disabled={disabled} onClick={onClick}>`
