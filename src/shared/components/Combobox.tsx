@@ -130,11 +130,14 @@ export function Combobox({
               }
             }}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && filteredOptions.length > 0) {
-                const first = filteredOptions[0]!;
-                onChange(first.value);
-                setSearch(first.label);
-                setIsOpen(false);
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                if (filteredOptions.length > 0) {
+                  const first = filteredOptions[0]!;
+                  onChange(first.value);
+                  setSearch(first.label);
+                  setIsOpen(false);
+                }
               }
               if (e.key === 'Escape') {
                 setIsOpen(false);
@@ -254,10 +257,15 @@ export function Combobox({
             <input
               type="text"
               className="w-full text-sm outline-none bg-transparent text-[var(--text-primary)] border-none min-h-[32px]"
-              placeholder="Tìm kiếm..."
+              placeholder="Tim kiem..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                }
+              }}
             />
           </div>
           <div className="p-1">

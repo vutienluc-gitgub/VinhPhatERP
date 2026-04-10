@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 // eslint-disable-next-line boundaries/element-types, boundaries/dependencies
 import { PaymentForm } from '@/features/payments/PaymentForm';
@@ -21,20 +21,20 @@ export function OrdersPage() {
   const [paymentOrder, setPaymentOrder] = useState<Order | null>(null);
   const [reserveOrder, setReserveOrder] = useState<Order | null>(null);
 
-  function openCreate() {
+  const openCreate = useCallback(() => {
     setEditOrder(null);
     setShowForm(true);
-  }
+  }, []);
 
-  function openEdit(order: Order) {
+  const openEdit = useCallback((order: Order) => {
     setEditOrder(order);
     setShowForm(true);
-  }
+  }, []);
 
-  function closeForm() {
+  const closeForm = useCallback(() => {
     setShowForm(false);
     setEditOrder(null);
-  }
+  }, []);
 
   return (
     <>

@@ -2,37 +2,41 @@
 trigger: always_on
 ---
 
-# Agent Workflow & Coding Standards
+# Agent Workflow & Premium Coding Standards
 
 ## 1. Quy trình thực hiện (Mini-tasks)
 
-- **Chia nhỏ Task**: Luôn chia nhỏ yêu cầu thành các "mini-tasks" cực nhỏ. Mỗi bước chỉ giải quyết một vấn đề duy nhất để đảm bảo an toàn.
-- **Quy trình Verify**: Sau MỖI lần thay đổi code (Modified), Agent BẮT BUỘC phải chạy:
-  1. `npm run typecheck` (Kiểm tra lỗi TypeScript).
-  2. `npm run lint` (Kiểm tra lỗi Format/Style, bao gồm cả lỗi `array-bracket-newline`).
-     _Chỉ khi cả hai lệnh trên PASS mới được chuyển sang task tiếp theo._
+- Chia nhỏ task cực nhỏ, cẩn thận và an toàn.
+- **BẮT BUỘC**: Sau mỗi lần chỉnh sửa (modified), phải chạy:
+  1. `npm run typecheck`
+  2. `npm run lint`
+- Chỉ tiếp tục nếu không có lỗi. Nếu có lỗi chạy 2. `npm run lint -- --fix`
 
 ## 2. Quy tắc TypeScript & Code Quality
 
-- **Tuyệt đối không dùng `as any`**: Không ép kiểu bừa bãi. Phải định nghĩa Interface/Type rõ ràng.
-- **Không gây lỗi `any`**: Đảm bảo mọi biến đều có kiểu dữ liệu tường minh.
-- **Chống trùng lặp (No Duplicate)**: Không copy-paste code. Nếu logic lặp lại, phải tách thành utility hoặc hook dùng chung.
-- **Emoji**: Tuyệt đối không sử dụng emoji trong code, comment, hoặc commit message.
+- **Tuyệt đối không dùng `as any`**: Không ép kiểu bừa bãi, không gây lỗi `any`.
+- **Không Duplicate**: Không trùng lặp code, không gây lỗi duplicate logic.
+- **Không Emoji**: Tuyệt đối không dùng emoji trong code và nội dung trả lời.
+- **Import**: Không dùng relative import giữa các feature khác nhau.
 
-## 3. Kiến trúc & Import
+## 3. Giao diện & Layout (Premium Standard)
 
-- **Module Isolation**: Tuyệt đối không dùng "Relative Import" (ví dụ: `../../`) để gọi giữa các Feature khác nhau.
-- **Aliased Imports**: Sử dụng Path Aliases (ví dụ: `@/features/...`) để đảm bảo tính đóng gói của module.
+- Hiển thị đúng chuẩn "Premium", tinh tế.
+- **Responsive**: Phải linh hoạt trên mọi thiết bị.
+- **Layout**: Tuyệt đối không phá vỡ Layout chung của hệ thống.
 
-## 4. UI/UX & Output (Premium Standard)
+## 4. Ngôn ngữ & Báo cáo
 
-- **Premium Display**: Giao diện phải chỉn chu, căn lề chuẩn, typography rõ ràng, hiệu ứng mượt mà.
-- **Responsive**: Phải kiểm tra hiển thị trên Mobile, Tablet, Desktop.
-- **Layout Integrity**: Tuyệt đối không phá vỡ Layout chung của hệ thống (Header, Sidebar, Footer phải giữ nguyên).
+- **Ngôn ngữ**: Trả lời hoàn toàn bằng **Tiếng Việt có d**.
+- **Báo cáo**: Sau mỗi nhiệm vụ phải có báo cáo chi tiết các file đã sửa và kết quả verify (typecheck/lint).
 
-## 5. Báo cáo (Reporting)
+## 5. Xử lý lỗi CSS & Render (Visual Verification)
 
-- Sau khi hoàn thành chuỗi mini-tasks, Agent phải báo cáo:
-  - Danh sách các file đã sửa.
-  - Kết quả chạy `typecheck` và `lint`.
-  - Xác nhận đã kiểm tra Responsive.
+- **Self-Review**: Trước khi báo cáo hoàn thành, Agent phải tự rà soát các thay đổi về Style (CSS/Tailwind).
+- **Phòng ngừa lỗi Render**:
+  - Kiểm tra các biến `null/undefined` trước khi render để tránh lỗi "White Screen".
+  - Đảm bảo các `key` trong list render là duy nhất (Unique Key).
+- **Xử lý khi có lỗi**:
+  - Nếu giao diện bị vỡ hoặc không đúng thiết kế "Premium", Agent phải tự động **Rollback** (quay lại bản cũ) hoặc sửa ngay lập tức.
+  - Phải kiểm tra tính tương thích của CSS (không làm ảnh hưởng đến các component khác - No Global Scope Pollution).
+- **Thử nghiệm biên (Edge Cases)**: Thử nghiệm với dữ liệu trống (Empty State) và dữ liệu quá dài để đảm bảo layout không bị tràn (Overflow).

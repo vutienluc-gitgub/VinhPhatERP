@@ -1,9 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
-import toast from 'react-hot-toast';
 
-import { fetchCustomerDebt } from '@/api/debt.api';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
@@ -164,8 +162,6 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
   const { profile } = useAuth();
   const [overrideWarning, setOverrideWarning] =
     useState<CreateOrderError | null>(null);
-  const [pendingUpdateValues, setPendingUpdateValues] =
-    useState<OrdersFormValues | null>(null);
 
   const createMutationV2 = useCreateOrderV2();
   const updateMutation = useUpdateOrder();
@@ -175,6 +171,11 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
   const { data: colorOptions = [] } = useColorOptions();
 
   const stepper = useStepper({ totalSteps: 2 });
+  // Ref để track step trong onSubmit, tránh stale closure
+  const stepRef = useRef(stepper.currentStep);
+  useEffect(() => {
+    stepRef.current = stepper.currentStep;
+  }, [stepper.currentStep]);
 
   const {
     register,
@@ -204,7 +205,9 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
     }
   }, [isEditing, nextNumber, setValue]);
 
-  async function handleNextStep() {
+  async function handleNextStep(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
     if (stepper.currentStep === 0) {
       const isValid = await trigger([
         'orderNumber',
@@ -220,85 +223,35 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
   }
 
   async function onSubmit(values: OrdersFormValues) {
-    if (!stepper.isLast) return;
-
-    if (isEditing && order.status !== 'draft') {
-      toast.error('Chi co the sua don o trang thai Nhap');
-      return;
-    }
+    // Guard bằng ref để tránh stale closure khi stepper vừa next()
+    if (stepRef.current !== stepper.totalSteps - 1) return;
 
     try {
       if (isEditing) {
-        // Client-side credit check truoc khi update
-        const newTotal = values.items.reduce(
-          (sum, it) =>
-            sum + (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0),
-          0,
-        );
-        const oldTotal = order.total_amount;
-        const totalDiff = newTotal - oldTotal;
-
-        if (totalDiff > 0) {
-          const debt = await fetchCustomerDebt(values.customerId);
-          if (debt && debt.credit_limit > 0) {
-            const projectedDebt = debt.balance + totalDiff;
-            if (projectedDebt > debt.credit_limit) {
-              setPendingUpdateValues(values);
-              setOverrideWarning({
-                code: 'CREDIT_LIMIT_EXCEEDED',
-                message:
-                  `Sua don se tang cong no du kien len ${formatCurrency(projectedDebt)} d, ` +
-                  `vuot han muc ${formatCurrency(debt.credit_limit)} d.`,
-                detail: {
-                  currentDebt: debt.balance,
-                  orderTotal: newTotal,
-                  projectedDebt,
-                  creditLimit: debt.credit_limit,
-                },
-              });
-              return;
-            }
-          }
-        }
-
         await updateMutation.mutateAsync({
           id: order.id,
           values,
         });
-        toast.success(`Da cap nhat don hang ${order.order_number}`);
         onClose();
       } else {
         await createMutationV2.mutateAsync(values);
-        toast.success('Tao don hang moi thanh cong');
         onClose();
       }
     } catch (err) {
-      if (err && typeof err === 'object' && 'code' in err) {
+      if (!isEditing && err && typeof err === 'object' && 'code' in err) {
         const e = err as CreateOrderError;
         if (isCreditWarning(e.code)) {
           setOverrideWarning(e);
+        } else {
+          // Error handled via mutationError
         }
-        // Other structured errors handled via mutationError
       }
     }
   }
 
   async function handleOverride() {
     try {
-      if (!overrideWarning) return;
-
-      if (isEditing && pendingUpdateValues) {
-        // Override cho flow sua don
-        await updateMutation.mutateAsync({
-          id: order.id,
-          values: pendingUpdateValues,
-        });
-        toast.success(`Da cap nhat don hang ${order.order_number}`);
-        setPendingUpdateValues(null);
-        setOverrideWarning(null);
-        onClose();
-      } else {
-        // Override cho flow tao moi
+      if (overrideWarning) {
         const values = control._formValues as OrdersFormValues;
         await createMutationV2.mutateAsync({
           ...values,
@@ -332,7 +285,20 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
         }}
         maxWidth={720}
       >
-        <form id="order-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <form
+          id="order-form"
+          onSubmit={handleSubmit(onSubmit)}
+          onKeyDown={(e) => {
+            if (
+              e.key === 'Enter' &&
+              (e.target as HTMLElement).tagName !== 'TEXTAREA' &&
+              !stepper.isLast
+            ) {
+              e.preventDefault();
+            }
+          }}
+          noValidate
+        >
           {mutationError && (
             <p className="error-inline" style={{ marginBottom: '1rem' }}>
               Lỗi: {(mutationError as Error).message}
@@ -734,7 +700,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
         userRole={profile?.role || 'staff'}
         onConfirm={handleOverride}
         onCancel={() => setOverrideWarning(null)}
-        isLoading={createMutationV2.isPending || updateMutation.isPending}
+        isLoading={createMutationV2.isPending}
       />
     </>
   );
