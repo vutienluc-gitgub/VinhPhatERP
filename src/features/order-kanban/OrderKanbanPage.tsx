@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 
-import { SearchInput } from '@/shared/components/SearchInput';
 import { Icon, type IconName } from '@/shared/components';
 
 import { KanbanColumn } from './OrderKanbanList';
@@ -69,25 +68,32 @@ export function OrderKanbanPage() {
   ).length;
 
   return (
-    <div className="flex flex-col min-h-0 -mx-5 -mt-4">
-      {/* Header bar */}
-      <div className="flex items-center justify-between gap-3 flex-wrap p-3 bg-surface-strong border-b border-border">
-        <div className="flex items-center gap-3 flex-wrap flex-1">
-          <SearchInput
-            className="field-input max-w-[320px] h-10"
-            placeholder="Tim ma don, ten khach..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <div className="text-xs text-muted font-bold flex items-center gap-2">
-            <span className="bg-surface px-2 py-1 rounded border border-border">
-              {totalOrders} don hang
+    <div className="panel-card card-flush">
+      {/* Premium Header Area */}
+      <div className="card-header-area card-header-premium">
+        <div>
+          <p className="eyebrow-premium">BÁN HÀNG</p>
+          <h3 className="title-premium">Tiến độ Đơn hàng</h3>
+        </div>
+        <div className="flex items-center gap-4 flex-wrap">
+          <div className="hidden sm:flex items-center gap-2 text-xs font-bold text-muted mr-2">
+            <span className="bg-surface px-2.5 py-1.5 rounded-md border border-border">
+              {totalOrders} đơn hàng
             </span>
             {overdueCount > 0 && (
-              <span className="text-danger flex items-center gap-1 bg-danger/10 px-2 py-1 rounded border border-danger/20">
-                <Icon name="AlertTriangle" size={14} /> {overdueCount} qua han
+              <span className="text-danger flex items-center gap-1.5 bg-danger/10 px-2.5 py-1.5 rounded-md border border-danger/20">
+                <Icon name="AlertTriangle" size={14} /> {overdueCount} quá hạn
               </span>
             )}
+          </div>
+          <div className="search-input-wrapper">
+            <input
+              className="field-input h-10 w-[260px]"
+              placeholder="Tìm mã đơn, tên khách..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <Icon name="Search" size={16} className="search-input-icon" />
           </div>
         </div>
       </div>

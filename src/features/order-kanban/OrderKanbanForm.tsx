@@ -83,7 +83,7 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
         </div>
         {isOverdue && (
           <span className="kanban-card-tag flex items-center gap-1">
-            <Icon name="AlertTriangle" size={10} /> Qua han
+            <Icon name="AlertTriangle" size={10} /> Quá hạn
           </span>
         )}
       </div>
@@ -112,7 +112,11 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
           {prev && (
             <button
               type="button"
-              className="flex-1 text-[0.72rem] font-bold p-1.5 rounded-lg border border-border bg-surface text-danger hover:bg-danger/5 transition-colors"
+              className="btn-secondary flex-1 justify-center text-danger"
+              style={{
+                fontSize: '0.75rem',
+                padding: '0.35rem 0.5rem',
+              }}
               disabled={isMoving}
               onClick={() => onMove(item.id, prev.prev)}
             >
@@ -122,11 +126,19 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
           {next && (
             <button
               type="button"
-              className="flex-1 text-[0.72rem] font-bold p-1.5 rounded-lg bg-primary text-white hover:brightness-110 transition-all shadow-sm active:translate-y-0.5"
+              className="btn-primary flex-1 justify-center"
+              style={{
+                fontSize: '0.75rem',
+                padding: '0.35rem 0.5rem',
+              }}
               disabled={isMoving}
               onClick={() => onMove(item.id, next.next)}
             >
-              {isMoving ? '...' : next.label}
+              {isMoving ? (
+                <Icon name="Loader2" size={14} className="animate-spin" />
+              ) : (
+                next.label
+              )}
             </button>
           )}
         </div>
