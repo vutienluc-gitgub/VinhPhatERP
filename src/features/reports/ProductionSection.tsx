@@ -2,7 +2,12 @@ import type {
   ProductionEfficiencyRow,
   OnTimeDeliveryRow,
 } from '@/api/reports.api';
-import { KpiCard, KpiGrid } from '@/shared/components/KpiCard';
+import {
+  KpiCardPremium,
+  KpiGridPremium,
+  DataTablePremium,
+  type DataTableColumn,
+} from '@/shared/components';
 
 type ProductionSectionProps = {
   efficiencyData: ProductionEfficiencyRow[];
@@ -81,125 +86,141 @@ export function ProductionSection({
       ? stages.reduce((s, st) => s + st.avgDeviation, 0) / stages.length
       : 0;
 
+  const columns: DataTableColumn<StageSummary>[] = [
+    {
+      header: 'Công đoạn',
+      cell: (st) => (
+        <span className="font-bold">{STAGE_LABELS[st.stage] ?? st.stage}</span>
+      ),
+    },
+    {
+      header: 'Đơn',
+      cell: (st) => st.totalOrders,
+      className: 'text-right',
+    },
+    {
+      header: 'Đúng hạn',
+      cell: (st) => <span className="text-success">{st.onTimeCount}</span>,
+      className: 'text-right',
+    },
+    {
+      header: 'Trễ',
+      cell: (st) => (
+        <span className={st.lateCount > 0 ? 'text-danger' : ''}>
+          {st.lateCount}
+        </span>
+      ),
+      className: 'text-right',
+    },
+    {
+      header: '% Trễ',
+      cell: (st) => (
+        <span
+          className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+            st.latePct > 30
+              ? 'bg-danger/10 text-danger border-danger/20'
+              : st.latePct > 10
+                ? 'bg-warning/10 text-warning border-warning/20'
+                : 'bg-success/10 text-success border-success/20'
+          }`}
+        >
+          {st.latePct}%
+        </span>
+      ),
+      className: 'text-right',
+    },
+    {
+      header: 'TB trễ (ngày)',
+      cell: (st) => formatNum(st.avgDeviation),
+      className: 'text-right hide-mobile',
+    },
+  ];
+
   return (
     <div className="panel-card card-flush">
-      <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Hiệu suất</p>
-            <h3>Sản xuất & Giao hàng</h3>
-          </div>
+      <div className="card-header-area card-header-premium">
+        <div>
+          <p className="eyebrow-premium">HIỆU SUẤT</p>
+          <h3 className="title-premium">Sản xuất & Giao hàng</h3>
         </div>
       </div>
 
-      {isLoading ? (
-        <p className="table-empty">Đang tải...</p>
-      ) : efficiencyData.length === 0 ? (
-        <p className="table-empty">Chưa có dữ liệu tiến độ.</p>
-      ) : (
-        <>
-          {/* KPI columns */}
-          <KpiGrid>
-            <KpiCard
-              label="Giao đúng hạn"
-              value={`${onTimePct}%`}
-              icon="✅"
-              color={
-                onTimePct >= 80
-                  ? 'var(--success)'
-                  : onTimePct >= 60
-                    ? 'var(--warning)'
-                    : 'var(--danger)'
-              }
-            />
-            <KpiCard
-              label="TB trễ (ngày)"
-              value={formatNum(avgOverallDeviation)}
-              color={
-                avgOverallDeviation <= 2 ? 'var(--success)' : 'var(--danger)'
-              }
-            />
-            {worstStage && worstStage.latePct > 0 && (
-              <KpiCard
-                label="Mắc xích yếu"
-                value={STAGE_LABELS[worstStage.stage] ?? worstStage.stage}
-                color="var(--danger)"
-              />
-            )}
-            <KpiCard label="Đơn theo dõi" value={String(totalDeliveries)} />
-          </KpiGrid>
+      <KpiGridPremium className="px-5 py-4">
+        <KpiCardPremium
+          label="Giao đúng hạn"
+          value={`${onTimePct}%`}
+          icon="CheckCircle"
+          variant={
+            onTimePct >= 80 ? 'success' : onTimePct >= 60 ? 'warning' : 'danger'
+          }
+          isLoading={isLoading}
+        />
+        <KpiCardPremium
+          label="TB trễ (ngày)"
+          value={formatNum(avgOverallDeviation)}
+          icon="Clock"
+          variant={avgOverallDeviation <= 2 ? 'success' : 'danger'}
+          isLoading={isLoading}
+        />
+        {worstStage && (
+          <KpiCardPremium
+            label="Mắc xích yếu"
+            value={STAGE_LABELS[worstStage.stage] ?? worstStage.stage}
+            icon="Search"
+            variant="danger"
+            footer={`${worstStage.latePct}% đơn bị trễ`}
+            isLoading={isLoading}
+          />
+        )}
+        <KpiCardPremium
+          label="Đơn theo dõi"
+          value={totalDeliveries}
+          icon="List"
+          variant="secondary"
+          isLoading={isLoading}
+        />
+      </KpiGridPremium>
 
-          {/* Stage breakdown table */}
-          <div className="data-table-wrap card-table-section">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Công đoạn</th>
-                  <th className="text-right">Đơn</th>
-                  <th className="text-right">Đúng hạn</th>
-                  <th className="text-right">Trễ</th>
-                  <th className="text-right">% Trễ</th>
-                  <th className="text-right hide-mobile">TB trễ (ngày)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {stages.map((st) => (
-                  <tr key={st.stage}>
-                    <td>
-                      <strong>{STAGE_LABELS[st.stage] ?? st.stage}</strong>
-                    </td>
-                    <td className="numeric-cell">{st.totalOrders}</td>
-                    <td
-                      className="numeric-cell"
-                      style={{ color: 'var(--success)' }}
-                    >
-                      {st.onTimeCount}
-                    </td>
-                    <td
-                      className="numeric-cell"
-                      style={{
-                        color: st.lateCount > 0 ? 'var(--danger)' : undefined,
-                      }}
-                    >
-                      {st.lateCount}
-                    </td>
-                    <td className="numeric-cell">
-                      <span
-                        style={{
-                          display: 'inline-block',
-                          padding: '0.1rem 0.5rem',
-                          borderRadius: '4px',
-                          fontSize: '0.8rem',
-                          fontWeight: 700,
-                          background:
-                            st.latePct > 30
-                              ? 'var(--surface-danger)'
-                              : st.latePct > 10
-                                ? 'var(--surface-warning)'
-                                : 'var(--surface-success)',
-                          color:
-                            st.latePct > 30
-                              ? 'var(--danger)'
-                              : st.latePct > 10
-                                ? 'var(--warning-strong)'
-                                : 'var(--success)',
-                          border: '1px solid currentColor',
-                          opacity: 0.8,
-                        }}
-                      >
-                        {st.latePct}%
-                      </span>
-                    </td>
-                    <td className="numeric-cell hide-mobile">
-                      {formatNum(st.avgDeviation)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <DataTablePremium
+        data={stages}
+        columns={columns}
+        isLoading={isLoading}
+        rowKey={(st) => st.stage}
+        renderMobileCard={(st) => (
+          <div className="mobile-card">
+            <div className="flex justify-between items-start">
+              <span className="font-bold">
+                {STAGE_LABELS[st.stage] ?? st.stage}
+              </span>
+              <span
+                className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                  st.latePct > 30
+                    ? 'bg-danger/10 text-danger border-danger/20'
+                    : st.latePct > 10
+                      ? 'bg-warning/10 text-warning border-warning/20'
+                      : 'bg-success/10 text-success border-success/20'
+                }`}
+              >
+                {st.latePct}% Trễ
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-center mt-3 border-t pt-2 text-[10px] text-muted">
+              <div>
+                <p>Tổng đơn</p>
+                <p className="font-bold text-text">{st.totalOrders}</p>
+              </div>
+              <div>
+                <p>Đúng hạn</p>
+                <p className="font-bold text-success">{st.onTimeCount}</p>
+              </div>
+              <div>
+                <p>Trễ hạn</p>
+                <p className="font-bold text-danger">{st.lateCount}</p>
+              </div>
+            </div>
           </div>
-        </>
-      )}
+        )}
+      />
     </div>
   );
 }

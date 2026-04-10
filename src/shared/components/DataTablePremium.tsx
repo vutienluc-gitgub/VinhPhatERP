@@ -7,6 +7,7 @@ import { TableSkeleton } from './TableSkeleton';
 export interface Column<T> {
   header: ReactNode;
   cell: (item: T) => ReactNode;
+  footer?: ReactNode;
   className?: string;
   /** Custom click handler for specific cell, stops propagation if provided */
   onCellClick?: (item: T, e: React.MouseEvent) => void;
@@ -69,6 +70,8 @@ export function DataTablePremium<T>({
     );
   }
 
+  const hasFooter = columns.some((col) => col.footer !== undefined);
+
   return (
     <div className={clsx('card-table-section', className)}>
       {/* Desktop View */}
@@ -110,6 +113,17 @@ export function DataTablePremium<T>({
               </tr>
             ))}
           </tbody>
+          {hasFooter && (
+            <tfoot>
+              <tr className="bg-surface-subtle font-bold border-t-2 border-border">
+                {columns.map((col, idx) => (
+                  <td key={idx} className={col.className}>
+                    {col.footer}
+                  </td>
+                ))}
+              </tr>
+            </tfoot>
+          )}
         </table>
       </div>
 

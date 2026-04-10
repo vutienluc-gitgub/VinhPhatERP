@@ -3,7 +3,13 @@ import type {
   RevenueByFabricRow,
   PaymentCollectionRow,
 } from '@/api/reports.api';
-import { KpiCard, KpiGrid } from '@/shared/components/KpiCard';
+import {
+  KpiCardPremium,
+  KpiGridPremium,
+  DataTablePremium,
+  type DataTableColumn,
+} from '@/shared/components';
+import { formatCurrency } from '@/shared/utils/format';
 
 type RevenueTrendSectionProps = {
   monthlyData: MonthlyRevenueRow[];
@@ -11,10 +17,6 @@ type RevenueTrendSectionProps = {
   paymentData: PaymentCollectionRow[];
   isLoading: boolean;
 };
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value);
-}
 
 function formatShortCurrency(value: number): string {
   if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}T`;
@@ -46,73 +48,32 @@ function MiniBarChart({
   maxValue: number;
 }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.35rem',
-      }}
-    >
+    <div className="flex flex-col gap-2">
       {data.map((d, i) => (
-        <div
-          key={i}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          <span
-            className="td-muted"
-            style={{
-              fontSize: '0.7rem',
-              minWidth: '5rem',
-              textAlign: 'right',
-              fontWeight: 600,
-            }}
-          >
+        <div key={i} className="flex items-center gap-3">
+          <span className="text-[10px] font-bold text-muted w-20 text-right uppercase tracking-tighter">
             {d.label}
           </span>
-          <div
-            style={{
-              flex: 1,
-              height: '1.2rem',
-              background: 'var(--border)',
-              borderRadius: '4px',
-              overflow: 'hidden',
-            }}
-          >
+          <div className="flex-1 h-5 bg-surface-subtle border border-border rounded-sm overflow-hidden shadow-inner">
             <div
               style={{
                 width:
                   maxValue > 0
                     ? `${Math.max((d.value / maxValue) * 100, 1)}%`
                     : '0%',
-                height: '100%',
                 background: d.color ?? 'var(--primary)',
-                borderRadius: '4px',
-                display: 'flex',
-                alignItems: 'center',
-                paddingLeft: '0.35rem',
-                transition: 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-                opacity: 0.9,
               }}
+              className="h-full relative transition-all duration-700 ease-out opacity-85 hover:opacity-100 flex items-center px-2"
             >
-              {d.value / maxValue > 0.2 && (
-                <span
-                  style={{
-                    color: '#fff',
-                    fontSize: '0.65rem',
-                    fontWeight: 700,
-                  }}
-                >
+              {d.value / maxValue > 0.15 && (
+                <span className="text-white text-[9px] font-bold">
                   {formatShortCurrency(d.value)}
                 </span>
               )}
             </div>
           </div>
-          {d.value / maxValue <= 0.2 && (
-            <span className="td-muted" style={{ fontSize: '0.7rem' }}>
+          {d.value / maxValue <= 0.15 && (
+            <span className="text-[10px] text-muted font-medium">
               {formatShortCurrency(d.value)}
             </span>
           )}
@@ -158,143 +119,137 @@ export function RevenueTrendSection({
       ? Math.max(...fabricData.map((r) => r.total_revenue))
       : 0;
 
+  const paymentColumns: DataTableColumn<{ label: string; value: number }>[] = [
+    {
+      header: 'Phương thức',
+      cell: (m) => <span className="font-bold">{m.label}</span>,
+    },
+    {
+      header: 'Số tiền thu',
+      cell: (m) => `${formatCurrency(m.value)} đ`,
+      className: 'text-right font-medium',
+    },
+    {
+      header: 'Tỷ lệ',
+      cell: (m) => (
+        <span className="px-2 py-0.5 bg-surface-subtle border border-border rounded text-[10px] font-bold">
+          {totalCollected > 0
+            ? Math.round((m.value / totalCollected) * 100)
+            : 0}
+          %
+        </span>
+      ),
+      className: 'text-right',
+    },
+  ];
+
   return (
     <div className="panel-card card-flush">
-      <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Xu hướng</p>
-            <h3>Doanh thu & Thu tiền</h3>
-          </div>
+      <div className="card-header-area card-header-premium">
+        <div>
+          <p className="eyebrow-premium">XU HƯỚNG</p>
+          <h3 className="title-premium">Doanh thu & Thu tiền</h3>
         </div>
       </div>
 
-      {isLoading ? (
-        <p className="table-empty">Đang tải...</p>
-      ) : monthlyData.length === 0 ? (
-        <p className="table-empty">Chưa có dữ liệu doanh thu.</p>
-      ) : (
-        <>
-          {/* KPIs */}
-          <KpiGrid>
-            <KpiCard
-              label="Tổng doanh thu"
-              value={`${formatCurrency(totalRevenue)} đ`}
-              icon="💰"
-            />
-            <KpiCard
-              label="Đã thu"
-              value={`${formatCurrency(totalCollected)} đ`}
-              color="var(--success)"
-              icon={`${collectionRate}%`}
-            />
-            {growth && (
-              <KpiCard
-                label="Tăng trưởng"
-                value={growth.label}
-                color={growth.pct >= 0 ? 'var(--success)' : 'var(--danger)'}
-                icon="📈"
-              />
-            )}
-            <KpiCard
-              label="Còn phải thu"
-              value={`${formatCurrency(totalRevenue - totalCollected)} đ`}
-              color="var(--warning)"
-              icon="⏳"
-            />
-          </KpiGrid>
+      <KpiGridPremium className="px-5 py-4">
+        <KpiCardPremium
+          label="Tổng doanh thu"
+          value={`${formatCurrency(totalRevenue)} đ`}
+          icon="TrendingUp"
+          variant="primary"
+          isLoading={isLoading}
+        />
+        <KpiCardPremium
+          label="Đã thu"
+          value={`${formatCurrency(totalCollected)} đ`}
+          icon="CheckCircle"
+          variant="success"
+          footer={`${collectionRate}% tỷ lệ thu hồi`}
+          isLoading={isLoading}
+        />
+        {growth && (
+          <KpiCardPremium
+            label="Tăng trưởng"
+            value={growth.label}
+            icon={growth.pct >= 0 ? 'ArrowUpCircle' : 'ArrowDownCircle'}
+            variant={growth.pct >= 0 ? 'success' : 'danger'}
+            isLoading={isLoading}
+          />
+        )}
+        <KpiCardPremium
+          label="Phải thu"
+          value={`${formatCurrency(totalRevenue - totalCollected)} đ`}
+          icon="Clock"
+          variant="warning"
+          isLoading={isLoading}
+        />
+      </KpiGridPremium>
 
-          {/* Monthly revenue trend */}
-          <div style={{ padding: '0 1.25rem 1rem' }}>
-            <div
-              className="td-muted"
-              style={{
-                fontSize: '0.72rem',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                marginBottom: '1rem',
-              }}
-            >
-              Doanh thu theo tháng
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-5">
+        <div className="card-sub-section">
+          <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-4 border-b pb-1">
+            Doanh thu theo tháng
+          </p>
+          <MiniBarChart
+            data={[...monthlyData].reverse().map((r) => ({
+              label: r.month,
+              value: r.total_revenue,
+              color: 'var(--primary)',
+            }))}
+            maxValue={maxMonthlyRevenue}
+          />
+        </div>
+
+        {fabricData.length > 0 && (
+          <div className="card-sub-section">
+            <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-4 border-b pb-1">
+              Cơ cấu loại vải (Top 10)
+            </p>
             <MiniBarChart
-              data={[...monthlyData].reverse().map((r) => ({
-                label: r.month,
+              data={fabricData.slice(0, 10).map((r) => ({
+                label: `${r.fabric_type}${r.color_name ? ` (${r.color_name})` : ''}`,
                 value: r.total_revenue,
-                color: 'var(--primary)',
+                color: 'var(--accent)',
               }))}
-              maxValue={maxMonthlyRevenue}
+              maxValue={maxFabricRevenue}
             />
           </div>
+        )}
+      </div>
 
-          {/* Revenue by fabric type */}
-          {fabricData.length > 0 && (
-            <div style={{ padding: '0 1.25rem 1.5rem' }}>
-              <div
-                className="td-muted"
-                style={{
-                  fontSize: '0.72rem',
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  marginBottom: '1rem',
-                }}
-              >
-                Doanh thu theo loại vải (Top 10)
+      {paymentMethods.length > 0 && (
+        <div className="mt-4">
+          <div className="px-5 py-2 bg-surface-subtle border-y border-border">
+            <p className="text-[10px] font-bold text-muted uppercase tracking-widest">
+              THU TIỀN
+            </p>
+            <p className="text-xs font-bold">Phân bổ phương thức thanh toán</p>
+          </div>
+          <DataTablePremium
+            data={paymentMethods}
+            columns={paymentColumns}
+            isLoading={isLoading}
+            rowKey={(m) => m.label}
+            renderMobileCard={(m) => (
+              <div className="mobile-card">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-bold">{m.label}</span>
+                  <span className="font-bold text-success">
+                    {formatCurrency(m.value)} đ
+                  </span>
+                </div>
+                <div className="mt-1 text-right text-[10px] text-muted">
+                  Chiếm{' '}
+                  {totalCollected > 0
+                    ? Math.round((m.value / totalCollected) * 100)
+                    : 0}
+                  % tổng thu
+                </div>
               </div>
-              <MiniBarChart
-                data={fabricData.slice(0, 10).map((r) => ({
-                  label: `${r.fabric_type}${r.color_name ? ` (${r.color_name})` : ''}`,
-                  value: r.total_revenue,
-                  color: 'var(--accent)',
-                }))}
-                maxValue={maxFabricRevenue}
-              />
-            </div>
-          )}
-
-          {/* Payment method breakdown */}
-          {paymentMethods.length > 0 && (
-            <div className="data-table-wrap card-table-section">
-              <div style={{ padding: '0.5rem 1.25rem 0' }}>
-                <strong
-                  style={{
-                    fontSize: '0.8rem',
-                    color: 'var(--fg-muted)',
-                  }}
-                >
-                  Phân bổ phương thức thanh toán
-                </strong>
-              </div>
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Phương thức</th>
-                    <th className="text-right">Số tiền thu</th>
-                    <th className="text-right">Tỷ lệ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paymentMethods.map(({ label, value }) => (
-                    <tr key={label}>
-                      <td>
-                        <strong>{label}</strong>
-                      </td>
-                      <td className="numeric-cell">
-                        {formatCurrency(value)} đ
-                      </td>
-                      <td className="numeric-cell">
-                        {totalCollected > 0
-                          ? Math.round((value / totalCollected) * 100)
-                          : 0}
-                        %
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </>
+            )}
+          />
+        </div>
       )}
     </div>
   );

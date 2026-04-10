@@ -1,113 +1,114 @@
 import type { DebtByCustomerRow } from '@/api/reports.api';
-import { KpiCard, KpiGrid } from '@/shared/components/KpiCard';
+import {
+  KpiCardPremium,
+  KpiGridPremium,
+  DataTablePremium,
+  type DataTableColumn,
+} from '@/shared/components';
+import { formatCurrency } from '@/shared/utils/format';
 
 type DebtSectionProps = {
   data: DebtByCustomerRow[];
   isLoading: boolean;
 };
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value);
-}
-
 export function DebtSection({ data, isLoading }: DebtSectionProps) {
   const totalDebt = data.reduce((sum, r) => sum + r.balance_due, 0);
+  const totalAmount = data.reduce((sum, r) => sum + r.total_amount, 0);
+  const totalPaid = data.reduce((sum, r) => sum + r.paid_amount, 0);
   const customerCount = data.length;
+
+  const columns: DataTableColumn<DebtByCustomerRow>[] = [
+    {
+      header: 'Khách hàng',
+      cell: (r) => <span className="font-bold">{r.customer_name}</span>,
+      footer: `Tổng (${customerCount})`,
+    },
+    {
+      header: 'Mã KH',
+      cell: (r) => r.customer_code || '—',
+      className: 'hide-mobile td-muted',
+    },
+    {
+      header: 'Số đơn',
+      cell: (r) => r.total_orders,
+      className: 'text-right hide-mobile',
+    },
+    {
+      header: 'Tổng tiền',
+      cell: (r) => formatCurrency(r.total_amount),
+      footer: formatCurrency(totalAmount),
+      className: 'text-right hide-mobile font-medium',
+    },
+    {
+      header: 'Đã thu',
+      cell: (r) => formatCurrency(r.paid_amount),
+      footer: formatCurrency(totalPaid),
+      className: 'text-right hide-mobile text-success',
+    },
+    {
+      header: 'Còn nợ',
+      cell: (r) => formatCurrency(r.balance_due),
+      footer: formatCurrency(totalDebt),
+      className: 'text-right font-bold text-danger',
+    },
+  ];
 
   return (
     <div className="panel-card card-flush">
-      <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Báo cáo</p>
-            <h3>Công nợ theo khách hàng</h3>
-          </div>
+      <div className="card-header-area card-header-premium">
+        <div>
+          <p className="eyebrow-premium">CÔNG NỢ</p>
+          <h3 className="title-premium">Dư nợ khách hàng</h3>
         </div>
       </div>
 
-      {/* KPI cards */}
-      <KpiGrid>
-        <KpiCard
+      <KpiGridPremium className="px-5 py-4">
+        <KpiCardPremium
           label="Tổng công nợ"
           value={`${formatCurrency(totalDebt)} đ`}
-          color={totalDebt > 0 ? 'var(--danger)' : 'var(--success)'}
+          icon="Wallet"
+          variant={totalDebt > 0 ? 'danger' : 'success'}
+          isLoading={isLoading}
         />
-        <KpiCard
+        <KpiCardPremium
           label="Khách còn nợ"
-          value={String(customerCount)}
-          color="var(--warning-strong)"
+          value={customerCount}
+          icon="Users"
+          variant="warning"
+          isLoading={isLoading}
         />
-      </KpiGrid>
+      </KpiGridPremium>
 
-      {/* Table */}
-      <div className="data-table-wrap card-table-section">
-        {isLoading ? (
-          <p className="table-empty">Đang tải...</p>
-        ) : data.length === 0 ? (
-          <p className="table-empty">Không có khách hàng nào còn công nợ.</p>
-        ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Khách hàng</th>
-                <th className="hide-mobile">Mã KH</th>
-                <th className="text-right hide-mobile">Số đơn</th>
-                <th className="text-right hide-mobile">Tổng tiền</th>
-                <th className="text-right hide-mobile">Đã thu</th>
-                <th className="text-right">Còn nợ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((row) => (
-                <tr key={row.customer_id}>
-                  <td>
-                    <strong>{row.customer_name}</strong>
-                  </td>
-                  <td className="td-muted hide-mobile">
-                    {row.customer_code || '—'}
-                  </td>
-                  <td className="numeric-cell hide-mobile">
-                    {row.total_orders}
-                  </td>
-                  <td className="numeric-cell hide-mobile">
-                    {formatCurrency(row.total_amount)}
-                  </td>
-                  <td className="numeric-cell hide-mobile">
-                    {formatCurrency(row.paid_amount)}
-                  </td>
-                  <td className="numeric-debt">
-                    {formatCurrency(row.balance_due)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colSpan={3}>
-                  <strong>Tổng cộng ({customerCount} KH)</strong>
-                </td>
-                <td className="numeric-cell hide-mobile">
-                  <strong>
-                    {formatCurrency(
-                      data.reduce((s, r) => s + r.total_amount, 0),
-                    )}
-                  </strong>
-                </td>
-                <td className="numeric-cell hide-mobile">
-                  <strong>
-                    {formatCurrency(
-                      data.reduce((s, r) => s + r.paid_amount, 0),
-                    )}
-                  </strong>
-                </td>
-                <td className="numeric-debt">
-                  <strong>{formatCurrency(totalDebt)}</strong>
-                </td>
-              </tr>
-            </tfoot>
-          </table>
+      <DataTablePremium
+        data={data}
+        columns={columns}
+        isLoading={isLoading}
+        rowKey={(r) => r.customer_id}
+        renderMobileCard={(r) => (
+          <div className="mobile-card">
+            <div className="flex justify-between items-start">
+              <span className="font-bold">{r.customer_name}</span>
+              <span className="badge badge-error">
+                {formatCurrency(r.balance_due)}
+              </span>
+            </div>
+            <div className="text-sm text-muted mb-2">
+              {r.customer_code || '—'}
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-xs border-t pt-2">
+              <div>
+                <p className="opacity-70">Tổng tiền</p>
+                <p className="font-medium">{formatCurrency(r.total_amount)}</p>
+              </div>
+              <div className="text-right">
+                <p className="opacity-70">Số đơn</p>
+                <p className="font-medium">{r.total_orders}</p>
+              </div>
+            </div>
+          </div>
         )}
-      </div>
+      />
     </div>
   );
 }

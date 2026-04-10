@@ -7,6 +7,8 @@ import {
   Badge,
   type BadgeVariant,
   DataTablePremium,
+  ViewToggle,
+  type ViewMode,
 } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
@@ -76,7 +78,7 @@ export function FinishedFabricList({
   const [filters, setFilters] = useState<FinishedFabricFilter>({});
   const [fabricTypeInput, setFabricTypeInput] = useState('');
   const [page, setPage] = useState(1);
-  const [viewMode, setViewMode] = useState<'table' | 'grid'>('grid');
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
   const {
     data: result,
@@ -145,32 +147,7 @@ export function FinishedFabricList({
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="inline-flex gap-1 bg-surface-subtle p-1 rounded-lg border border-border">
-            <button
-              className={`btn-icon ${viewMode === 'table' ? 'bg-surface-strong shadow-sm text-primary' : 'text-muted'}`}
-              onClick={() => setViewMode('table')}
-              title="Dạng bảng"
-              style={{
-                width: 36,
-                height: 36,
-                border: 'none',
-              }}
-            >
-              <Icon name="LayoutList" size={20} />
-            </button>
-            <button
-              className={`btn-icon ${viewMode === 'grid' ? 'bg-surface-strong shadow-sm text-primary' : 'text-muted'}`}
-              onClick={() => setViewMode('grid')}
-              title="Dạng lưới"
-              style={{
-                width: 36,
-                height: 36,
-                border: 'none',
-              }}
-            >
-              <Icon name="LayoutGrid" size={20} />
-            </button>
-          </div>
+          <ViewToggle value={viewMode} onChange={setViewMode} />
 
           <div className="flex gap-2">
             <button
