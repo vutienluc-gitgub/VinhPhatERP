@@ -6,7 +6,7 @@ import {
   Controller,
 } from 'react-hook-form';
 
-import { Plus, Trash2 } from '@/shared/icons';
+import { Icon } from '@/shared/components/Icon';
 import { Combobox } from '@/shared/components/Combobox';
 import { useYarnCatalogOptions } from '@/shared/hooks/useYarnCatalogOptions';
 
@@ -31,38 +31,13 @@ export function WorkOrderYarnTable({
   const { data: yarnOptions = [] } = useYarnCatalogOptions();
 
   return (
-    <div
-      className="panel-card card-flush"
-      style={{
-        border: '1px solid var(--border)',
-        marginTop: '1rem',
-      }}
-    >
-      <div
-        className="card-header-area"
-        style={{
-          padding: '0.75rem 1rem',
-          background: 'var(--surface)',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <h4
-            style={{
-              margin: 0,
-              fontSize: '0.9rem',
-            }}
-          >
-            Phân bổ sợi (Editable Table)
-          </h4>
+    <div className="panel-card card-flush mt-4">
+      <div className="card-header-area">
+        <div className="flex justify-between items-center">
+          <h4 className="text-sm font-bold">Phan bo soi (Editable Table)</h4>
           <button
             type="button"
-            className="btn-secondary btn-sm"
+            className="btn-secondary flex items-center gap-1.5"
             onClick={() =>
               append({
                 yarn_catalog_id: '',
@@ -70,25 +45,15 @@ export function WorkOrderYarnTable({
                 required_kg: 0,
               })
             }
-            style={{
-              padding: '0.25rem 0.5rem',
-              fontSize: '0.8rem',
-            }}
           >
-            <Plus
-              style={{
-                width: 14,
-                height: 14,
-                marginRight: 4,
-              }}
-            />
-            Thêm sợi
+            <Icon name="Plus" size={14} />
+            Them soi
           </button>
         </div>
       </div>
 
       <div
-        className="data-table-wrap"
+        className="card-table-section"
         style={{
           maxHeight: '300px',
           overflowY: 'auto',
@@ -97,14 +62,14 @@ export function WorkOrderYarnTable({
         <table className="data-table table-sm">
           <thead>
             <tr>
-              <th style={{ width: '45%' }}>Loại sợi</th>
+              <th style={{ width: '45%' }}>Loai soi</th>
               <th className="text-right" style={{ width: '20%' }}>
                 % BOM
               </th>
               <th className="text-right" style={{ width: '25%' }}>
-                Cần (kg)
+                Can (kg)
               </th>
-              <th style={{ width: '10%' }}></th>
+              <th style={{ width: '10%' }} />
             </tr>
           </thead>
           <tbody>
@@ -136,7 +101,6 @@ export function WorkOrderYarnTable({
                       valueAsNumber: true,
                     })}
                     className="field-input text-right"
-                    style={{ padding: '0.25rem' }}
                     placeholder="%"
                     onKeyDown={(e) => {
                       if (e.key === 'ArrowDown') {
@@ -163,12 +127,7 @@ export function WorkOrderYarnTable({
                     {...register(`yarn_requirements.${index}.required_kg`, {
                       valueAsNumber: true,
                     })}
-                    className="field-input text-right"
-                    style={{
-                      padding: '0.25rem',
-                      fontWeight: 600,
-                      color: 'var(--primary)',
-                    }}
+                    className="field-input text-right font-bold text-primary"
                     placeholder="kg"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -207,32 +166,18 @@ export function WorkOrderYarnTable({
                 <td className="text-center">
                   <button
                     type="button"
-                    className="btn-icon"
+                    className="btn-icon text-danger"
                     onClick={() => remove(index)}
-                    style={{
-                      color: 'var(--danger)',
-                      padding: 1,
-                    }}
                   >
-                    <Trash2
-                      style={{
-                        width: 14,
-                        height: 14,
-                      }}
-                    />
+                    <Icon name="Trash2" size={14} />
                   </button>
                 </td>
               </tr>
             ))}
           </tbody>
           <tfoot>
-            <tr
-              style={{
-                background: 'var(--surface)',
-                fontWeight: 700,
-              }}
-            >
-              <td className="text-right">TỔNG:</td>
+            <tr className="font-bold">
+              <td className="text-right">TONG:</td>
               <td className="text-right">
                 {watch('yarn_requirements')
                   ?.reduce(
@@ -242,7 +187,7 @@ export function WorkOrderYarnTable({
                   .toFixed(1)}
                 %
               </td>
-              <td className="text-right" style={{ color: 'var(--primary)' }}>
+              <td className="text-right text-primary">
                 {watch('yarn_requirements')
                   ?.reduce(
                     (sum, item) => sum + (Number(item.required_kg) || 0),
@@ -251,22 +196,15 @@ export function WorkOrderYarnTable({
                   .toFixed(2)}{' '}
                 kg
               </td>
-              <td></td>
+              <td />
             </tr>
           </tfoot>
         </table>
       </div>
 
-      <div
-        style={{
-          padding: '0.5rem 1rem',
-          fontSize: '0.75rem',
-          color: 'var(--muted)',
-          borderTop: '1px solid var(--border)',
-        }}
-      >
-        * Enter ở cột KG dòng cuối để thêm dòng mới. Mũi tên Lên/Xuống để di
-        chuyển nhanh.
+      <div className="px-4 py-2 text-xs text-muted border-t border-border">
+        * Enter o cot KG dong cuoi de them dong moi. Mui ten Len/Xuong de di
+        chuyen nhanh.
       </div>
     </div>
   );

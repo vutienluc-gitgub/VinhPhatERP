@@ -159,7 +159,7 @@ export function Combobox({
 
         {isOpen && filteredOptions.length > 0 && (
           <div
-            className="absolute z-50 w-full mt-1 bg-white border border-[var(--border)] rounded-lg shadow-lg max-h-[240px] overflow-y-auto"
+            className="absolute z-50 w-full mt-1 border border-[var(--border)] rounded-lg shadow-lg max-h-[240px] overflow-y-auto"
             style={{ backgroundColor: 'var(--surface)' }}
           >
             {filteredOptions.map((opt) => {
@@ -174,24 +174,13 @@ export function Combobox({
                     setSearch(opt.label);
                     setIsOpen(false);
                   }}
-                  className={`w-full text-left px-3 py-2 text-sm flex items-center justify-between min-h-[40px] transition-colors cursor-pointer border-none outline-none ${
-                    isSelected
-                      ? 'bg-blue-50 text-[var(--primary)]'
-                      : 'bg-transparent text-[var(--text-primary)] hover:bg-slate-50'
-                  }`}
-                  style={{
-                    backgroundColor: isSelected
-                      ? 'var(--primary-light, #eff6ff)'
-                      : undefined,
-                  }}
+                  className={`combobox-option${isSelected ? ' is-selected' : ''}`}
                 >
                   <div className="flex flex-col">
-                    <span style={{ fontWeight: isSelected ? 600 : 400 }}>
-                      {opt.label}
-                    </span>
+                    <span>{opt.label}</span>
                     {opt.code && (
-                      <span className="text-xs text-[var(--text-secondary)] mt-[2px]">
-                        Mã: {opt.code}
+                      <span className="text-xs text-muted mt-0.5">
+                        Ma: {opt.code}
                       </span>
                     )}
                   </div>
@@ -254,11 +243,11 @@ export function Combobox({
 
       {isOpen && (
         <div
-          className="absolute z-50 w-full mt-1 bg-white border border-[var(--border)] rounded-lg shadow-lg max-h-[240px] overflow-y-auto"
+          className="absolute z-50 w-full mt-1 border border-[var(--border)] rounded-lg shadow-lg max-h-[240px] overflow-y-auto"
           style={{ backgroundColor: 'var(--surface)' }}
         >
           <div
-            className="sticky top-0 bg-white p-2 border-b border-[var(--border-light)] flex flex-row items-center gap-2 z-10"
+            className="sticky top-0 p-2 border-b border-[var(--border-light)] flex flex-row items-center gap-2 z-10"
             style={{ backgroundColor: 'var(--surface)' }}
           >
             <Search className="w-4 h-4 text-[var(--text-secondary)]" />
@@ -289,25 +278,14 @@ export function Combobox({
                       setSearch('');
                       onBlur?.();
                     }}
-                    className={`w-full text-left px-2 py-2 text-sm rounded-md flex items-center justify-between min-h-[40px] transition-colors cursor-pointer border-none outline-none ${
-                      isSelected
-                        ? 'bg-blue-50 text-[var(--primary)]'
-                        : 'bg-transparent text-[var(--text-primary)] hover:bg-slate-50'
-                    }`}
-                    style={{
-                      backgroundColor: isSelected
-                        ? 'var(--primary-light, #eff6ff)'
-                        : undefined,
-                    }}
+                    className={`combobox-option${isSelected ? ' is-selected' : ''}`}
                   >
                     <div className="flex flex-col">
-                      <span style={{ fontWeight: isSelected ? 600 : 400 }}>
-                        {opt.label}
-                      </span>
+                      <span>{opt.label}</span>
                       {(opt.code || opt.phone) && (
-                        <span className="text-xs text-[var(--text-secondary)] mt-[2px]">
-                          {opt.code && `Mã: ${opt.code} `}
-                          {opt.phone && `SĐT: ${opt.phone}`}
+                        <span className="text-xs text-muted mt-0.5">
+                          {opt.code && `Ma: ${opt.code} `}
+                          {opt.phone && `SDT: ${opt.phone}`}
                         </span>
                       )}
                     </div>

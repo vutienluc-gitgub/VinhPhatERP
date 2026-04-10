@@ -1,34 +1,35 @@
 import { useState, useMemo } from 'react';
 
 import { SearchInput } from '@/shared/components/SearchInput';
+import { Icon, type IconName } from '@/shared/components';
 
-import styles from './kanban.module.css';
 import { KanbanColumn } from './OrderKanbanList';
 import type { OrderKanbanStatus } from './types';
 import { useOrderKanban, useUpdateOrderStatus } from './useOrderKanban';
 
-const COLUMNS: { status: OrderKanbanStatus; label: string; emoji: string }[] = [
-  {
-    status: 'draft',
-    label: 'Bản nháp',
-    emoji: '📝',
-  },
-  {
-    status: 'confirmed',
-    label: 'Đã xác nhận',
-    emoji: '✅',
-  },
-  {
-    status: 'delivering',
-    label: 'Đang giao',
-    emoji: '🚚',
-  },
-  {
-    status: 'completed',
-    label: 'Hoàn thành',
-    emoji: '🎉',
-  },
-];
+const COLUMNS: { status: OrderKanbanStatus; label: string; icon: IconName }[] =
+  [
+    {
+      status: 'draft',
+      label: 'Ban nhap',
+      icon: 'Pencil',
+    },
+    {
+      status: 'confirmed',
+      label: 'Da xac nhan',
+      icon: 'CheckCircle',
+    },
+    {
+      status: 'delivering',
+      label: 'Dang giao',
+      icon: 'Truck',
+    },
+    {
+      status: 'completed',
+      label: 'Hoan thanh',
+      icon: 'PartyPopper',
+    },
+  ];
 
 export function OrderKanbanPage() {
   const { data: orders = [], isLoading, error } = useOrderKanban();
@@ -68,57 +69,54 @@ export function OrderKanbanPage() {
   ).length;
 
   return (
-    <div className={styles['kanban-page']}>
+    <div className="flex flex-col min-h-0 -mx-5 -mt-4">
       {/* Header bar */}
-      <div className={styles['kanban-header']}>
-        <div className={styles['kanban-filter-group']}>
+      <div className="flex items-center justify-between gap-3 flex-wrap p-3 bg-surface-strong border-b border-border">
+        <div className="flex items-center gap-3 flex-wrap flex-1">
           <SearchInput
-            className={styles['kanban-search']}
-            placeholder="Tìm mã đơn, tên khách..."
+            className="field-input max-w-[320px] h-10"
+            placeholder="Tim ma don, ten khach..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <span className={styles['kanban-stat']}>
-            {totalOrders} đơn hàng
+          <div className="text-xs text-muted font-bold flex items-center gap-2">
+            <span className="bg-surface px-2 py-1 rounded border border-border">
+              {totalOrders} don hang
+            </span>
             {overdueCount > 0 && (
-              <span
-                style={{
-                  color: 'var(--danger)',
-                  marginLeft: '0.5rem',
-                }}
-              >
-                · ⚠ {overdueCount} quá hạn
+              <span className="text-danger flex items-center gap-1 bg-danger/10 px-2 py-1 rounded border border-danger/20">
+                <Icon name="AlertTriangle" size={14} /> {overdueCount} qua han
               </span>
             )}
-          </span>
+          </div>
         </div>
       </div>
 
       {/* Error */}
       {error && (
-        <p
-          style={{
-            color: 'var(--danger)',
-            padding: '1rem',
-          }}
-        >
-          Lỗi tải dữ liệu: {(error as Error).message}
-        </p>
+        <div className="p-4">
+          <p className="error-inline">
+            Loi tai du lieu: {(error as Error).message}
+          </p>
+        </div>
       )}
 
-      {/* Board — needs horizontal scroll, cannot be inside overflow:clip */}
-      <div className={styles['kanban-board']}>
+      {/* Board — needs horizontal scroll */}
+      <div className="kanban-board-premium">
         {isLoading
           ? COLUMNS.map((col) => (
-              <div key={col.status} className={styles['kanban-col']}>
-                <div className={styles['kanban-col-header']}>
-                  <div className={styles['kanban-col-title']}>
-                    {col.emoji} {col.label}
+              <div key={col.status} className="kanban-column-premium">
+                <div className="kanban-column-header">
+                  <div className="kanban-column-title">
+                    <Icon name={col.icon} size={16} /> {col.label}
                   </div>
                 </div>
-                <div className={styles['kanban-col-body']}>
+                <div className="kanban-column-body">
                   {[1, 2, 3].map((n) => (
-                    <div key={n} className={styles['kanban-skeleton']} />
+                    <div
+                      key={n}
+                      className="h-[100px] rounded-lg bg-surface-hover animate-pulse"
+                    />
                   ))}
                 </div>
               </div>
@@ -128,7 +126,7 @@ export function OrderKanbanPage() {
                 key={col.status}
                 status={col.status}
                 label={col.label}
-                emoji={col.emoji}
+                icon={col.icon}
                 items={filtered.filter((o) => o.status === col.status)}
                 movingId={movingId}
                 onMove={handleMove}

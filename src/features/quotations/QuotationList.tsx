@@ -118,32 +118,15 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
           <p className="eyebrow-premium">BÁN HÀNG</p>
           <h3 className="title-premium">Báo giá</h3>
         </div>
-        <button
-          className="btn-primary"
-          type="button"
-          onClick={onNew}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            minHeight: 42,
-            padding: '0 1.25rem',
-          }}
-        >
-          <Icon name="Plus" size={18} /> Tạo báo giá
+        <button className="btn-primary" type="button" onClick={onNew}>
+          <Icon name="Plus" size={18} /> Tao bao gia
         </button>
       </div>
 
       {/* Expiration KPI */}
       {expiringData &&
         (expiringData.expiring > 0 || expiringData.expired > 0) && (
-          <div
-            className="kpi-grid"
-            style={{
-              padding: '1rem 1.25rem',
-              borderBottom: '1px solid var(--border)',
-            }}
-          >
+          <div className="kpi-grid p-4 border-b border-border">
             {expiringData.expiring > 0 && (
               <div className="kpi-card-premium kpi-warning">
                 <div className="kpi-overlay" />
@@ -156,15 +139,8 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                     <Icon name="Clock" size={32} />
                   </div>
                 </div>
-                <div
-                  className="kpi-footer"
-                  style={{
-                    fontSize: '0.75rem',
-                    opacity: 0.8,
-                    fontStyle: 'italic',
-                  }}
-                >
-                  Cần theo dõi sát với khách hàng
+                <div className="kpi-footer opacity-80 text-xs italic">
+                  Can theo doi sat voi khach hang
                 </div>
               </div>
             )}
@@ -180,15 +156,8 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                     <Icon name="AlertCircle" size={32} />
                   </div>
                 </div>
-                <div
-                  className="kpi-footer"
-                  style={{
-                    fontSize: '0.75rem',
-                    opacity: 0.8,
-                    fontStyle: 'italic',
-                  }}
-                >
-                  Không còn hiệu lực (Đã qua hạn chót)
+                <div className="kpi-footer opacity-80 text-xs italic">
+                  Khong con hieu luc (Da qua han chot)
                 </div>
               </div>
             )}
@@ -196,13 +165,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
         )}
 
       {/* Filters */}
-      <div
-        className="filter-bar card-filter-section"
-        style={{
-          padding: '0.75rem 1rem',
-          borderBottom: '1px solid var(--border)',
-        }}
-      >
+      <div className="filter-bar card-filter-section p-4 border-b border-border">
         <div className="filter-compact-premium">
           <div className="filter-field">
             <label htmlFor="filter-quote-search">Tìm kiếm</label>
@@ -266,21 +229,14 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
 
           {hasFilter && (
             <button
-              className="btn-secondary"
+              className="btn-secondary text-danger border-danger/20 flex items-center gap-1.5"
               type="button"
               onClick={() => {
                 setFilters({});
                 setSearchInput('');
               }}
-              style={{
-                marginBottom: '4px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.3rem',
-                color: 'var(--danger)',
-              }}
             >
-              <Icon name="X" size={14} /> Xóa lọc
+              <Icon name="X" size={14} /> Xoa loc
             </button>
           )}
         </div>
@@ -288,9 +244,9 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
 
       {/* Error */}
       {error && (
-        <div style={{ padding: '1rem' }}>
+        <div className="p-4">
           <p className="error-inline">
-            Lỗi tải dữ liệu: {(error as Error).message}
+            Loi tai du lieu: {(error as Error).message}
           </p>
         </div>
       )}
@@ -314,109 +270,45 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
         onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={[
           {
-            header: 'Số báo giá / Bắt đầu',
+            header: 'So bao gia / Bat dau',
             cell: (q) => (
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.15rem',
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.4rem',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontWeight: 700,
-                      color: 'var(--primary)',
-                    }}
-                  >
+              <div className="flex flex-col gap-0.5">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-bold text-primary">
                     {q.quotation_number}
                   </span>
                   {q.revision > 1 && (
-                    <span
-                      style={{
-                        fontSize: '0.75rem',
-                        color: 'var(--muted)',
-                      }}
-                    >
-                      v{q.revision}
-                    </span>
+                    <span className="text-xs text-muted">v{q.revision}</span>
                   )}
                 </div>
-                <span
-                  style={{
-                    fontSize: '0.75rem',
-                    color: 'var(--muted)',
-                  }}
-                >
-                  {q.quotation_date}
-                </span>
+                <span className="text-xs text-muted">{q.quotation_date}</span>
               </div>
             ),
           },
           {
-            header: 'Khách hàng',
+            header: 'Khach hang',
             cell: (q) => (
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.15rem',
-                }}
-              >
-                <span
-                  style={{
-                    fontWeight: 700,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    maxWidth: 200,
-                  }}
-                >
+              <div className="flex flex-col gap-0.5">
+                <span className="font-bold truncate max-w-[200px]">
                   {q.customers?.name ?? '—'}
                 </span>
                 {q.customers?.code && (
-                  <span
-                    style={{
-                      fontSize: '0.75rem',
-                      color: 'var(--muted)',
-                    }}
-                  >
-                    {q.customers.code}
-                  </span>
+                  <span className="text-xs text-muted">{q.customers.code}</span>
                 )}
               </div>
             ),
           },
           {
-            header: 'Hiệu lực',
+            header: 'Hieu luc',
             cell: (q) => {
               const validity = validityInfo(q.valid_until);
               const isActiveQuote = q.status === 'draft' || q.status === 'sent';
               return (
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.15rem',
-                  }}
-                >
+                <div className="flex flex-col gap-0.5">
                   <span>{q.valid_until ?? '—'}</span>
                   {validity && isActiveQuote && (
                     <span
-                      style={{
-                        fontSize: '0.78rem',
-                        fontWeight: validity.urgent ? 600 : 400,
-                        color: validity.urgent
-                          ? 'var(--danger)'
-                          : 'var(--muted)',
-                      }}
+                      className={`text-[0.78rem] ${validity.urgent ? 'font-bold text-danger' : 'text-muted'}`}
                     >
                       {validity.text}
                     </span>
@@ -426,10 +318,10 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
             },
           },
           {
-            header: 'Tổng tiền',
+            header: 'Tong tien',
             className: 'text-right',
             cell: (q) => (
-              <span style={{ fontWeight: 700 }}>
+              <span className="font-bold">
                 {formatCurrency(q.total_amount)}
               </span>
             ),
@@ -443,17 +335,11 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
             ),
           },
           {
-            header: 'Thao tác',
+            header: 'Thao tac',
             className: 'text-right',
             onCellClick: () => {},
             cell: (q) => (
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  gap: '0.25rem',
-                }}
-              >
+              <div className="flex justify-end gap-1">
                 <button
                   className="btn-icon"
                   type="button"
@@ -467,18 +353,17 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                     <button
                       className="btn-icon"
                       type="button"
-                      title="Sửa"
+                      title="Sua"
                       onClick={() => onEdit(q)}
                     >
                       <Icon name="Pencil" size={16} />
                     </button>
                     <button
-                      className="btn-icon"
+                      className="btn-icon text-danger"
                       type="button"
-                      title="Xóa"
+                      title="Xoa"
                       onClick={() => handleDelete(q)}
                       disabled={deleteMutation.isPending}
-                      style={{ color: 'var(--danger)' }}
                     >
                       <Icon name="Trash2" size={16} />
                     </button>
@@ -495,25 +380,12 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
           return (
             <div className="mobile-card">
               <div className="mobile-card-header">
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.4rem',
-                  }}
-                >
+                <div className="flex items-center gap-1.5">
                   <span className="mobile-card-title">
                     {q.quotation_number}
                   </span>
                   {q.revision > 1 && (
-                    <span
-                      style={{
-                        fontSize: '0.75rem',
-                        color: 'var(--muted)',
-                      }}
-                    >
-                      v{q.revision}
-                    </span>
+                    <span className="text-xs text-muted">v{q.revision}</span>
                   )}
                 </div>
                 <Badge variant={getStatusVariant(q.status)}>
@@ -522,90 +394,26 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
               </div>
 
               <div className="mobile-card-body">
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    marginBottom: '0.75rem',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: '0.72rem',
-                      color: 'var(--muted)',
-                    }}
-                  >
-                    Khách hàng
-                  </span>
-                  <span
-                    style={{
-                      fontWeight: 700,
-                      fontSize: '1rem',
-                      lineHeight: 1.3,
-                    }}
-                  >
+                <div className="flex flex-col mb-3">
+                  <span className="text-[0.72rem] text-muted">Khach hang</span>
+                  <span className="font-bold text-base leading-tight">
                     {q.customers?.name ?? '—'}
                   </span>
                 </div>
 
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: '0.5rem',
-                    marginBottom: '0.75rem',
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: '0.72rem',
-                        color: 'var(--muted)',
-                      }}
-                    >
-                      Tổng tiền
-                    </span>
-                    <span
-                      style={{
-                        fontWeight: 700,
-                        color: 'var(--primary)',
-                      }}
-                    >
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div className="flex flex-col">
+                    <span className="text-[0.72rem] text-muted">Tong tien</span>
+                    <span className="font-bold text-primary">
                       {formatCurrency(q.total_amount)}
                     </span>
                   </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-end',
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: '0.72rem',
-                        color: 'var(--muted)',
-                      }}
-                    >
-                      Thời hạn
-                    </span>
-                    <span style={{ fontWeight: 500 }}>
-                      {q.valid_until ?? '—'}
-                    </span>
+                  <div className="flex flex-col items-end">
+                    <span className="text-[0.72rem] text-muted">Thoi han</span>
+                    <span className="font-medium">{q.valid_until ?? '—'}</span>
                     {validity && isActiveQuote && (
                       <span
-                        style={{
-                          fontSize: '0.7rem',
-                          fontWeight: validity.urgent ? 600 : 400,
-                          color: validity.urgent
-                            ? 'var(--danger)'
-                            : 'var(--muted)',
-                        }}
+                        className={`text-[0.7rem] ${validity.urgent ? 'font-bold text-danger' : 'text-muted'}`}
                       >
                         {validity.text}
                       </span>
@@ -613,45 +421,29 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                   </div>
                 </div>
 
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: '0.5rem',
-                    paddingTop: '0.75rem',
-                    borderTop: '1px solid var(--border)',
-                  }}
-                >
+                <div className="flex gap-2 pt-3 border-t border-border">
                   <button
-                    className="btn-secondary"
-                    style={{ flex: 1 }}
+                    className="btn-secondary flex-1"
                     onClick={(e) => {
                       e.stopPropagation();
                       onView(q);
                     }}
                   >
-                    <Icon name="Eye" size={16} /> Chi tiết
+                    <Icon name="Eye" size={16} /> Chi tiet
                   </button>
                   {q.status === 'draft' && (
                     <>
                       <button
-                        className="btn-secondary"
-                        style={{
-                          flex: 1,
-                          color: 'var(--primary)',
-                        }}
+                        className="btn-secondary flex-1 text-primary"
                         onClick={(e) => {
                           e.stopPropagation();
                           onEdit(q);
                         }}
                       >
-                        <Icon name="Pencil" size={16} /> Sửa
+                        <Icon name="Pencil" size={16} /> Sua
                       </button>
                       <button
-                        className="btn-secondary"
-                        style={{
-                          color: 'var(--danger)',
-                          padding: '0 0.75rem',
-                        }}
+                        className="btn-secondary text-danger px-3"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(q);

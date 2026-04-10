@@ -68,6 +68,14 @@ export function useRawFabricAll(filters: RawFabricFilter = {}) {
   });
 }
 
+/** Fetch các cuộn đang có sẵn trong kho */
+export function useAvailableRawRolls() {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'available'],
+    queryFn: () => fetchRawFabricAll({ status: 'in_stock' }),
+  });
+}
+
 export function useCreateRawFabric() {
   const queryClient = useQueryClient();
   return useMutation({

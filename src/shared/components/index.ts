@@ -28,3 +28,4 @@ export { TabSwitcher } from './TabSwitcher';
 export type { TabItem } from './TabSwitcher';
 export { ViewToggle } from './ViewToggle';
 export type { ViewMode } from './ViewToggle';
+export { SearchInput } from './SearchInput';

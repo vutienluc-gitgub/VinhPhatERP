@@ -14,7 +14,7 @@
  *   userRole       – role của user hiện tại
  */
 
-import { AlertTriangle, ShieldAlert, X } from '@/shared/icons';
+import { Icon } from '@/shared/components/Icon';
 
 import type { CreateOrderError } from './useCreateOrderV2';
 
@@ -59,9 +59,9 @@ export function CreditOverrideDialog({
         <div className="credit-dialog__header">
           <div className="credit-dialog__icon-wrap credit-dialog__icon-wrap--warning">
             {isOverdue ? (
-              <AlertTriangle size={24} />
+              <Icon name="AlertTriangle" size={24} />
             ) : (
-              <ShieldAlert size={24} />
+              <Icon name="ShieldAlert" size={24} />
             )}
           </div>
 
@@ -83,7 +83,7 @@ export function CreditOverrideDialog({
             onClick={onCancel}
             aria-label="Đóng"
           >
-            <X size={18} />
+            <Icon name="X" size={18} />
           </button>
         </div>
 
