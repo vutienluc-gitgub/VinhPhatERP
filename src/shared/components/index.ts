@@ -29,3 +29,6 @@ export type { TabItem } from './TabSwitcher';
 export { ViewToggle } from './ViewToggle';
 export type { ViewMode } from './ViewToggle';
 export { SearchInput } from './SearchInput';
+export { AddButton } from './AddButton';
+export { CancelButton } from './CancelButton';
+export { ClearFilterButton } from './ClearFilterButton';
