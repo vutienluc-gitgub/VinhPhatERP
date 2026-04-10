@@ -8,6 +8,7 @@ import {
   useColorOptions,
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
+import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 
 import {
   QUALITY_GRADE_LABELS,
@@ -60,6 +61,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
   const updateMutation = useUpdateFinishedFabric();
   const { data: rawRollOptions = [] } = useRawRollOptions();
   const { data: colorOptions = [] } = useColorOptions();
+  const { data: fabricOptions = [] } = useFabricCatalogOptions();
 
   const {
     register,
@@ -175,12 +177,21 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                 <label htmlFor="fabric_type">
                   Loại vải <span className="field-required">*</span>
                 </label>
-                <input
-                  id="fabric_type"
-                  className={`field-input${errors.fabric_type ? ' is-error' : ''}`}
-                  type="text"
-                  placeholder="VD: Dệt thoi 60/40 TC"
-                  {...register('fabric_type')}
+                <Controller
+                  name="fabric_type"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={fabricOptions.map((f) => ({
+                        value: f.name,
+                        label: f.code ? `${f.name} (${f.code})` : f.name,
+                      }))}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Chọn loại vải..."
+                      hasError={!!errors.fabric_type}
+                    />
+                  )}
                 />
                 {errors.fabric_type && (
                   <span className="field-error">
