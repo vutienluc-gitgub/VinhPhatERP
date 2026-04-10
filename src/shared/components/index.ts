@@ -32,3 +32,5 @@ export { SearchInput } from './SearchInput';
 export { AddButton } from './AddButton';
 export { CancelButton } from './CancelButton';
 export { ClearFilterButton } from './ClearFilterButton';
+export { Button } from './Button';
+export type { ButtonProps } from './Button';
