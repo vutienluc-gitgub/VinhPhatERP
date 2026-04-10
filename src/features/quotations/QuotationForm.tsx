@@ -4,6 +4,7 @@ import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { Combobox } from '@/shared/components/Combobox';
+import { Icon } from '@/shared/components/Icon';
 import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers';
 import {
   useColorOptions,
@@ -98,69 +99,30 @@ function TotalsSummary({
   );
 
   return (
-    <div
-      style={{
-        borderTop: '2px solid var(--border)',
-        padding: '0.75rem 0',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.35rem',
-        fontSize: '0.92rem',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}
-      >
-        <span>Tạm tính:</span>
-        <span>{formatCurrency(totals.subtotal)} đ</span>
+    <div className="border-t-2 border-border py-3 flex flex-col gap-1.5 text-[0.92rem]">
+      <div className="flex justify-between">
+        <span>Tam tinh:</span>
+        <span>{formatCurrency(totals.subtotal)} d</span>
       </div>
       {totals.discountAmount > 0 && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            color: '#c0392b',
-          }}
-        >
-          <span>Chiết khấu:</span>
-          <span>-{formatCurrency(totals.discountAmount)} đ</span>
+        <div className="flex justify-between text-danger">
+          <span>Chiet khau:</span>
+          <span>-{formatCurrency(totals.discountAmount)} d</span>
         </div>
       )}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}
-      >
-        <span>Trước VAT:</span>
-        <span>{formatCurrency(totals.totalBeforeVat)} đ</span>
+      <div className="flex justify-between">
+        <span>Truoc VAT:</span>
+        <span>{formatCurrency(totals.totalBeforeVat)} d</span>
       </div>
       {totals.vatAmount > 0 && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-          }}
-        >
+        <div className="flex justify-between">
           <span>VAT ({vatRate}%):</span>
-          <span>+{formatCurrency(totals.vatAmount)} đ</span>
+          <span>+{formatCurrency(totals.vatAmount)} d</span>
         </div>
       )}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          fontWeight: 700,
-          fontSize: '1.05rem',
-          borderTop: '1px solid var(--border)',
-          paddingTop: '0.5rem',
-        }}
-      >
-        <span>Tổng cộng:</span>
-        <span>{formatCurrency(totals.totalAmount)} đ</span>
+      <div className="flex justify-between font-bold text-[1.05rem] border-t border-border pt-2">
+        <span>Tong cong:</span>
+        <span>{formatCurrency(totals.totalAmount)} d</span>
       </div>
     </div>
   );
@@ -298,19 +260,14 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
   return (
     <form id="quotation-form" onSubmit={handleSubmit(onSubmit)} noValidate>
       {mutationError && (
-        <p className="error-inline" style={{ marginBottom: '1rem' }}>
-          Lỗi: {(mutationError as Error).message}
+        <p className="error-inline mb-4">
+          Loi: {(mutationError as Error).message}
         </p>
       )}
 
       <div className="form-grid">
-        {/* Row 1: Số BG + Ngày BG */}
-        <div
-          className="form-grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          }}
-        >
+        {/* Row 1: So BG + Ngay BG */}
+        <div className="form-grid sm:grid-cols-2">
           <div className="form-field">
             <label htmlFor="quotationNumber">
               Số báo giá <span className="field-required">*</span>
@@ -347,13 +304,8 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
           </div>
         </div>
 
-        {/* Row 2: Khách hàng + Hết hiệu lực */}
-        <div
-          className="form-grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          }}
-        >
+        {/* Row 2: Khach hang + Het hieu luc */}
+        <div className="form-grid sm:grid-cols-2">
           <div className="form-field">
             <label htmlFor="customerId">
               Khách hàng <span className="field-required">*</span>
@@ -403,62 +355,29 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
             Dòng hàng <span className="field-required">*</span>
           </label>
           {errors.items?.root && (
-            <span
-              className="field-error"
-              style={{
-                marginBottom: '0.5rem',
-                display: 'block',
-              }}
-            >
+            <span className="field-error mb-2 block">
               {errors.items.root.message}
             </span>
           )}
 
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.75rem',
-            }}
-          >
+          <div className="flex flex-col gap-3">
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                style={{
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '0.75rem',
-                  background: 'var(--surface)',
-                }}
+                className="border border-border rounded-lg p-3 bg-surface"
               >
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '0.5rem',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      color: 'var(--text-secondary)',
-                    }}
-                  >
-                    Dòng {index + 1}
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-[0.85rem] font-bold text-muted uppercase tracking-wider">
+                    Dong {index + 1}
                   </span>
-                  {fields.length > 1 && (
-                    <button
-                      className="btn-icon danger"
-                      type="button"
-                      title="Xóa dòng"
-                      onClick={() => remove(index)}
-                      style={{ fontSize: '0.85rem' }}
-                    >
-                      ✕
-                    </button>
-                  )}
+                  <button
+                    className="btn-icon text-danger"
+                    type="button"
+                    title="Xoa dong"
+                    onClick={() => remove(index)}
+                  >
+                    <Icon name="X" size={14} />
+                  </button>
                 </div>
 
                 <div className="form-grid form-grid-2">
@@ -612,25 +531,16 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
           </div>
 
           <button
-            className="btn-secondary"
+            className="btn-secondary w-full mt-2"
             type="button"
             onClick={() => append({ ...emptyQuotationItem })}
-            style={{
-              marginTop: '0.5rem',
-              width: '100%',
-            }}
           >
-            + Thêm dòng hàng
+            <Icon name="Plus" size={16} /> Them dong hang
           </button>
         </div>
 
         {/* Discount + VAT */}
-        <div
-          className="form-grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          }}
-        >
+        <div className="form-grid sm:grid-cols-2">
           <div className="form-field">
             <label htmlFor="discountType">Loại chiết khấu</label>
             <Controller
@@ -685,12 +595,7 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
         <TotalsSummary control={control} />
 
         {/* Terms */}
-        <div
-          className="form-grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          }}
-        >
+        <div className="form-grid sm:grid-cols-2">
           <div className="form-field">
             <label htmlFor="deliveryTerms">Điều kiện giao hàng</label>
             <textarea
@@ -727,14 +632,7 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
         </div>
       </div>
 
-      <div
-        className="modal-footer"
-        style={{
-          marginTop: '1.5rem',
-          padding: 0,
-          border: 'none',
-        }}
-      >
+      <div className="modal-footer mt-6 p-0 border-none bg-transparent">
         <button
           className="btn-secondary"
           type="button"
@@ -743,12 +641,8 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
         >
           Hủy
         </button>
-        <button
-          className="primary-button btn-standard"
-          type="submit"
-          disabled={isPending}
-        >
-          {isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo báo giá'}
+        <button className="btn-primary" type="submit" disabled={isPending}>
+          {isPending ? 'Dang luu...' : isEditing ? 'Cap nhat' : 'Tao bao gia'}
         </button>
       </div>
     </form>

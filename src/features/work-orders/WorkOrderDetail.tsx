@@ -1,11 +1,5 @@
-import {
-  ArrowLeft,
-  CheckCircle,
-  Play,
-  Scissors,
-  Package,
-  Edit2,
-} from '@/shared/icons';
+import { Icon } from '@/shared/components/Icon';
+import { Badge } from '@/shared/components/Badge';
 
 import type { WorkOrder } from './types';
 import {
@@ -22,6 +16,19 @@ interface WorkOrderDetailProps {
   onEdit: (wo: WorkOrder) => void;
 }
 
+function getStatusVariant(status: string) {
+  switch (status) {
+    case 'completed':
+      return 'success';
+    case 'in_progress':
+      return 'info';
+    case 'cancelled':
+      return 'danger';
+    default:
+      return 'gray';
+  }
+}
+
 export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
   const { data: wo, isLoading } = useWorkOrderDetail(id);
   const { data: requirements, isLoading: isLoadingReq } =
@@ -31,252 +38,142 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
 
   if (isLoading)
     return (
-      <div className="table-empty" style={{ padding: '3rem' }}>
-        Đang tải chi tiết lệnh...
+      <div className="panel-card p-12 flex flex-col items-center gap-3">
+        <div className="spinner" />
+        <p className="text-muted text-sm">Dang tai chi tiet lenh...</p>
       </div>
     );
   if (!wo)
     return (
-      <p className="error-inline" style={{ padding: '2rem' }}>
-        Lệnh sản xuất không tồn tại hoặc bạn không có quyền xem.
+      <p className="error-inline p-8">
+        Lenh san xuat khong ton tai hoac ban khong co quyen xem.
       </p>
     );
 
   const statusConfig = WORK_ORDER_STATUSES[wo.status];
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1.5rem',
-      }}
-    >
-      {/* Header */}
+    <div className="flex flex-col gap-6">
+      {/* Header Card */}
       <div className="panel-card card-flush">
-        <div className="card-header-area">
-          <div className="page-header">
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-              }}
+        <div className="card-header-area card-header-premium">
+          <div className="flex items-center gap-3">
+            <button
+              className="btn-icon"
+              type="button"
+              onClick={onBack}
+              title="Quay lai"
             >
-              <button
-                className="btn-icon"
-                type="button"
-                onClick={onBack}
-                title="Quay lại"
-              >
-                <ArrowLeft
-                  style={{
-                    width: 18,
-                    height: 18,
-                  }}
-                />
-              </button>
-              <div>
-                <p className="eyebrow">Chi tiết lệnh sản xuất</p>
-                <h3
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.75rem',
-                  }}
-                >
-                  {wo.work_order_number}
-                  <span className={`roll-status ${wo.status}`}>
-                    {statusConfig?.label}
-                  </span>
-                </h3>
-                {wo.order && (
-                  <p
-                    style={{
-                      fontSize: '0.82rem',
-                      color: 'var(--muted)',
-                      marginTop: '0.25rem',
-                    }}
-                  >
-                    Sản xuất cho ĐH: {wo.order.order_number}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div
-              style={{
-                display: 'flex',
-                gap: '0.5rem',
-              }}
-            >
-              {wo.status === 'draft' && (
-                <button
-                  className="btn-secondary btn-standard"
-                  type="button"
-                  onClick={() => onEdit(wo)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.4rem',
-                  }}
-                >
-                  <Edit2
-                    style={{
-                      width: 16,
-                      height: 16,
-                    }}
-                  />
-                  Sửa lệnh
-                </button>
-              )}
-              {wo.status === 'draft' && (
-                <button
-                  className="primary-button btn-standard"
-                  type="button"
-                  onClick={() => startMutation.mutate(wo.id)}
-                  disabled={startMutation.isPending}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.4rem',
-                  }}
-                >
-                  <Play
-                    style={{
-                      width: 16,
-                      height: 16,
-                    }}
-                  />
-                  Bắt đầu dệt
-                </button>
-              )}
-              {wo.status === 'in_progress' && (
-                <button
-                  className="primary-button btn-standard"
-                  type="button"
-                  style={{
-                    background: 'var(--success)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.4rem',
-                  }}
-                  onClick={() => {
-                    const yieldP = prompt(
-                      `Nhập sản lượng MỘC thu được thực tế (m)\nMục tiêu: ${wo.target_quantity_m}m`,
-                    );
-                    if (yieldP) {
-                      completeMutation.mutate({
-                        id: wo.id,
-                        input: { actual_yield_m: parseFloat(yieldP) },
-                      });
-                    }
-                  }}
-                >
-                  <CheckCircle
-                    style={{
-                      width: 16,
-                      height: 16,
-                    }}
-                  />
-                  Hoàn thành dệt
-                </button>
+              <Icon name="ArrowLeft" size={18} />
+            </button>
+            <div>
+              <p className="eyebrow-premium">CHI TIET LENH SAN XUAT</p>
+              <h3 className="title-premium flex items-center gap-3">
+                {wo.work_order_number}
+                <Badge variant={getStatusVariant(wo.status)}>
+                  {statusConfig?.label}
+                </Badge>
+              </h3>
+              {wo.order && (
+                <p className="text-xs text-muted mt-0.5">
+                  San xuat cho DH: {wo.order.order_number}
+                </p>
               )}
             </div>
           </div>
-        </div>
 
-        {/* Info fields inside header card */}
-        <div style={{ padding: '1rem 1.25rem 1.25rem' }}>
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-              gap: '1rem',
-            }}
-          >
-            <div className="form-field">
-              <label>BOM Định Mức</label>
-              <p
-                style={{
-                  fontWeight: 700,
-                  margin: 0,
+          {/* Action Buttons */}
+          <div className="flex gap-2">
+            {wo.status === 'draft' && (
+              <button
+                className="btn-secondary flex items-center gap-2"
+                type="button"
+                onClick={() => onEdit(wo)}
+              >
+                <Icon name="Edit2" size={16} />
+                Sua lenh
+              </button>
+            )}
+            {wo.status === 'draft' && (
+              <button
+                className="btn-primary flex items-center gap-2"
+                type="button"
+                onClick={() => startMutation.mutate(wo.id)}
+                disabled={startMutation.isPending}
+              >
+                <Icon name="Play" size={16} />
+                Bat dau det
+              </button>
+            )}
+            {wo.status === 'in_progress' && (
+              <button
+                className="btn-primary flex items-center gap-2"
+                type="button"
+                onClick={() => {
+                  const yieldP = prompt(
+                    `Nhap san luong MOC thu duoc thuc te (m)\nMuc tieu: ${wo.target_quantity_m}m`,
+                  );
+                  if (yieldP) {
+                    completeMutation.mutate({
+                      id: wo.id,
+                      input: { actual_yield_m: parseFloat(yieldP) },
+                    });
+                  }
                 }}
               >
+                <Icon name="CheckCircle" size={16} />
+                Hoan thanh det
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Info Grid */}
+        <div className="p-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="form-field">
+              <label>BOM Dinh Muc</label>
+              <p className="font-bold">
                 {wo.bom_template?.code} (V{wo.bom_version})
               </p>
             </div>
             <div className="form-field">
-              <label>Vải mục tiêu</label>
-              <p
-                style={{
-                  fontWeight: 600,
-                  margin: 0,
-                }}
-              >
+              <label>Vai muc tieu</label>
+              <p className="font-bold">
                 {wo.bom_template?.target_fabric?.name || '—'}
               </p>
             </div>
             <div className="form-field">
-              <label>Ngày tạo lệnh</label>
-              <p style={{ margin: 0 }}>
-                {new Date(wo.created_at).toLocaleDateString('vi-VN')}
-              </p>
+              <label>Ngay tao lenh</label>
+              <p>{new Date(wo.created_at).toLocaleDateString('vi-VN')}</p>
             </div>
             <div className="form-field">
-              <label>Hao hụt (%)</label>
-              <p
-                style={{
-                  fontWeight: 700,
-                  color: 'var(--warning)',
-                  margin: 0,
-                }}
-              >
-                {wo.standard_loss_pct}%
-              </p>
+              <label>Hao hut (%)</label>
+              <p className="font-bold text-warning">{wo.standard_loss_pct}%</p>
             </div>
             <div className="form-field">
-              <label>Đơn hàng liên kết</label>
-              <p style={{ margin: 0 }}>
-                {wo.order?.order_number || 'Sản xuất dự trữ'}
-              </p>
+              <label>Don hang lien ket</label>
+              <p>{wo.order?.order_number || 'San xuat du tru'}</p>
             </div>
             <div className="form-field">
-              <label>Đối tác dệt</label>
-              <p
-                style={{
-                  fontWeight: 700,
-                  color: 'var(--accent)',
-                  margin: 0,
-                }}
-              >
+              <label>Doi tac det</label>
+              <p className="font-bold text-primary">
                 {wo.supplier?.name || '—'}
               </p>
             </div>
             <div className="form-field">
-              <label>Đơn giá dệt</label>
-              <p
-                style={{
-                  fontWeight: 600,
-                  margin: 0,
-                }}
-              >
-                {wo.weaving_unit_price.toLocaleString()}đ/m
+              <label>Don gia det</label>
+              <p className="font-bold">
+                {wo.weaving_unit_price.toLocaleString()}d/m
               </p>
             </div>
             <div className="form-field">
-              <label>Tổng phí dự kiến</label>
-              <p
-                style={{
-                  fontWeight: 700,
-                  color: 'var(--success)',
-                  margin: 0,
-                }}
-              >
+              <label>Tong phi du kien</label>
+              <p className="font-bold text-success">
                 {(
                   wo.target_quantity_m * wo.weaving_unit_price
                 ).toLocaleString()}
-                đ
+                d
               </p>
             </div>
           </div>
@@ -285,43 +182,29 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
 
       {/* Yarn Requirements */}
       <div className="panel-card card-flush">
-        <div className="card-header-area">
-          <div className="page-header">
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }}
-            >
-              <Package
-                style={{
-                  width: 20,
-                  height: 20,
-                  color: 'var(--primary)',
-                }}
-              />
-              <h3>Nhu cầu & Xuất kho sợi</h3>
-            </div>
+        <div className="card-header-area card-header-premium">
+          <div className="flex items-center gap-2">
+            <Icon name="Package" size={20} className="text-primary" />
+            <h3 className="title-premium">Nhu cau & Xuat kho soi</h3>
           </div>
         </div>
 
         {isLoadingReq ? (
-          <div className="table-empty">Đang tải...</div>
+          <div className="p-8 text-center text-sm text-muted">Dang tai...</div>
         ) : !requirements || requirements.length === 0 ? (
-          <div className="table-empty">
-            Chưa có dữ liệu tính toán nhu cầu sợi.
+          <div className="p-8 text-center text-sm text-muted">
+            Chua co du lieu tinh toan nhu cau soi.
           </div>
         ) : (
-          <div className="data-table-wrap card-table-section">
+          <div className="card-table-section">
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>Loại Sợi</th>
-                  <th className="hide-mobile">Mã Màu</th>
+                  <th>Loai Soi</th>
+                  <th className="hide-mobile">Ma Mau</th>
                   <th className="text-right">% BOM</th>
-                  <th className="text-right">Cần (kg)</th>
-                  <th className="text-right">Đã xuất</th>
+                  <th className="text-right">Can (kg)</th>
+                  <th className="text-right">Da xuat</th>
                 </tr>
               </thead>
               <tbody>
@@ -334,36 +217,19 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                       {req.yarn_catalog?.color_name || '—'}
                     </td>
                     <td className="text-right">{req.bom_ratio_pct}%</td>
-                    <td
-                      className="text-right"
-                      style={{
-                        fontWeight: 700,
-                        color: 'var(--primary)',
-                      }}
-                    >
+                    <td className="text-right font-bold text-primary">
                       {req.required_kg.toLocaleString(undefined, {
                         minimumFractionDigits: 1,
                       })}
                     </td>
-                    <td
-                      className="text-right"
-                      style={{
-                        fontWeight: 700,
-                        color: 'var(--success)',
-                      }}
-                    >
+                    <td className="text-right font-bold text-success">
                       {req.allocated_kg.toLocaleString()}
                     </td>
                   </tr>
                 ))}
-                <tr
-                  style={{
-                    background: 'var(--surface)',
-                    fontWeight: 700,
-                  }}
-                >
+                <tr className="font-bold bg-surface-subtle">
                   <td colSpan={2} className="text-right">
-                    TỔNG CỘNG:
+                    TONG CONG:
                   </td>
                   <td className="text-right">
                     {requirements.reduce(
@@ -372,10 +238,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                     )}
                     %
                   </td>
-                  <td
-                    className="text-right"
-                    style={{ color: 'var(--primary)' }}
-                  >
+                  <td className="text-right text-primary">
                     {requirements
                       .reduce((sum, r) => sum + Number(r.required_kg), 0)
                       .toLocaleString(undefined, {
@@ -383,10 +246,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                       })}{' '}
                     kg
                   </td>
-                  <td
-                    className="text-right"
-                    style={{ color: 'var(--success)' }}
-                  >
+                  <td className="text-right text-success">
                     {requirements
                       .reduce((sum, r) => sum + Number(r.allocated_kg), 0)
                       .toLocaleString(undefined, {
@@ -401,33 +261,19 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
         )}
       </div>
 
-      {/* Stats sidebar — target & results */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '1.5rem',
-        }}
-      >
-        <div className="panel-card">
-          <p className="eyebrow" style={{ marginBottom: '0.75rem' }}>
-            Mục tiêu sản xuất
-          </p>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-            }}
-          >
+      {/* Stats — target & results */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="panel-card p-5">
+          <p className="eyebrow-premium mb-3">Muc tieu san xuat</p>
+          <div className="flex flex-col gap-2">
             <div className="stat-card">
-              <span className="stat-label">Tổng mét mục tiêu</span>
-              <span className="stat-value" style={{ color: 'var(--primary)' }}>
+              <span className="stat-label">Tong met muc tieu</span>
+              <span className="stat-value text-primary">
                 {wo.target_quantity_m.toLocaleString()} m
               </span>
             </div>
             <div className="stat-card">
-              <span className="stat-label">Khối lượng mộc dự kiến</span>
+              <span className="stat-label">Khoi luong moc du kien</span>
               <span className="stat-value">
                 {wo.target_weight_kg
                   ? `${wo.target_weight_kg.toLocaleString()} kg`
@@ -437,29 +283,18 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
           </div>
         </div>
 
-        <div className="panel-card">
-          <p className="eyebrow" style={{ marginBottom: '0.75rem' }}>
-            Kết quả thực tế
-          </p>
+        <div className="panel-card p-5">
+          <p className="eyebrow-premium mb-3">Ket qua thuc te</p>
           {wo.status === 'completed' ? (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.5rem',
-              }}
-            >
+            <div className="flex flex-col gap-2">
               <div className="stat-card">
-                <span className="stat-label">Sản lượng mộc thu được</span>
-                <span
-                  className="stat-value"
-                  style={{ color: 'var(--success)' }}
-                >
+                <span className="stat-label">San luong moc thu duoc</span>
+                <span className="stat-value text-success">
                   {wo.actual_yield_m?.toLocaleString()} m
                 </span>
               </div>
               <div className="stat-card">
-                <span className="stat-label">Hiệu suất (Yield Rate)</span>
+                <span className="stat-label">Hieu suat (Yield Rate)</span>
                 <span className="stat-value">
                   {(
                     ((wo.actual_yield_m || 0) / wo.target_quantity_m) *
@@ -470,23 +305,10 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
               </div>
             </div>
           ) : (
-            <div
-              className="table-empty"
-              style={{
-                paddingTop: '2rem',
-                paddingBottom: '2rem',
-              }}
-            >
-              <Scissors
-                style={{
-                  width: 40,
-                  height: 40,
-                  opacity: 0.15,
-                  marginBottom: '0.5rem',
-                }}
-              />
-              <p style={{ fontSize: '0.85rem' }}>
-                Đang đợi kết quả từ xưởng dệt...
+            <div className="flex flex-col items-center justify-center py-8 gap-2">
+              <Icon name="Scissors" size={40} className="opacity-20" />
+              <p className="text-sm text-muted">
+                Dang doi ket qua tu xuong det...
               </p>
             </div>
           )}

@@ -29,12 +29,12 @@ export const QUOTATION_STATUS_LABELS: Record<QuotationStatus, string> = {
 };
 
 export const QUOTATION_STATUS_ICONS: Record<QuotationStatus, string> = {
-  draft: '📝',
-  sent: '📤',
-  confirmed: '✅',
-  rejected: '❌',
-  expired: '⏰',
-  converted: '🔄',
+  draft: 'Pencil',
+  sent: 'Send',
+  confirmed: 'CheckCircle',
+  rejected: 'XCircle',
+  expired: 'Clock',
+  converted: 'ArrowRightLeft',
 };
 
 export const DISCOUNT_TYPE_OPTIONS: { value: DiscountType; label: string }[] = [

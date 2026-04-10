@@ -240,9 +240,8 @@ export function BomPage() {
               className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
               type="button"
               onClick={() => setFilter({})}
-              style={{ marginBottom: '4px' }}
             >
-              <Icon name="X" size={14} /> Xóa lọc nhanh
+              <Icon name="X" size={14} /> Xoa loc nhanh
             </button>
           )}
         </div>

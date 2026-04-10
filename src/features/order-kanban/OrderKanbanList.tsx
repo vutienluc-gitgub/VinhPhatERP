@@ -1,11 +1,12 @@
-import styles from './kanban.module.css';
+import { Icon, type IconName } from '@/shared/components';
+
 import { KanbanCard } from './OrderKanbanForm';
 import type { OrderKanbanItem, OrderKanbanStatus } from './types';
 
 type KanbanColumnProps = {
   status: OrderKanbanStatus;
   label: string;
-  emoji: string;
+  icon: IconName;
   items: OrderKanbanItem[];
   movingId: string | null;
   onMove: (id: string, status: OrderKanbanStatus) => void;
@@ -14,25 +15,25 @@ type KanbanColumnProps = {
 export function KanbanColumn({
   status,
   label,
-  emoji,
+  icon,
   items,
   movingId,
   onMove,
 }: KanbanColumnProps) {
   return (
-    <div className={`${styles['kanban-col']} ${styles[`col-${status}`]}`}>
-      <div className={styles['kanban-col-header']}>
-        <div className={styles['kanban-col-title']}>
-          <span>{emoji}</span>
+    <div className={`kanban-column-premium col-accent-${status}`}>
+      <div className="kanban-column-header">
+        <div className="kanban-column-title">
+          <Icon name={icon} size={16} />
           <span>{label}</span>
         </div>
-        <span className={styles['kanban-col-badge']}>{items.length}</span>
+        <span className="kanban-column-badge">{items.length}</span>
       </div>
 
-      <div className={styles['kanban-col-body']}>
+      <div className="kanban-column-body">
         {items.length === 0 ? (
-          <div className={styles['kanban-empty']}>
-            <p>Không có đơn hàng</p>
+          <div className="text-center py-8 text-muted text-xs font-medium">
+            <p>Khong co don hang</p>
           </div>
         ) : (
           items.map((item) => (

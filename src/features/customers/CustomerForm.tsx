@@ -94,19 +94,14 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
   return (
     <form id="customer-form" onSubmit={handleSubmit(onSubmit)} noValidate>
       {mutationError && (
-        <p className="error-inline" style={{ marginBottom: '1rem' }}>
+        <p className="error-inline mb-4">
           Lỗi: {(mutationError as Error).message}
         </p>
       )}
 
       <div className="form-grid">
         {/* Mã + Tên */}
-        <div
-          className="form-grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          }}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
             <label htmlFor="code">
               Mã khách hàng <span className="field-required">*</span>
@@ -142,12 +137,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         </div>
 
         {/* Điện thoại + Email */}
-        <div
-          className="form-grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          }}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
             <label htmlFor="phone">Số điện thoại</label>
             <input
@@ -212,12 +202,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         </div>
 
         {/* Mã số thuế + Người liên hệ */}
-        <div
-          className="form-grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          }}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
             <label htmlFor="tax_code">Mã số thuế</label>
             <input
@@ -245,12 +230,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         </div>
 
         {/* Trạng thái + Nguồn KH */}
-        <div
-          className="form-grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          }}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
             <label htmlFor="source">Nguồn khách hàng</label>
             <Controller
@@ -307,14 +287,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         </div>
       </div>
 
-      <div
-        className="modal-footer"
-        style={{
-          marginTop: '1.5rem',
-          padding: 0,
-          border: 'none',
-        }}
-      >
+      <div className="flex justify-end gap-3 pt-5 mt-4 border-t border-border">
         <button
           className="btn-secondary"
           type="button"
@@ -323,11 +296,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         >
           Hủy
         </button>
-        <button
-          className="primary-button btn-standard"
-          type="submit"
-          disabled={isPending}
-        >
+        <button className="btn-primary" type="submit" disabled={isPending}>
           {isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo mới'}
         </button>
       </div>

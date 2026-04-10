@@ -1,9 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 
-import { Icon } from '@/shared/components/Icon';
+import { Icon } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 
-import styles from './kanban.module.css';
 import type { OrderKanbanItem, OrderKanbanStatus } from './types';
 
 const NEXT_STATUS: Partial<
@@ -62,61 +61,58 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
 
   return (
     <div
-      className={`${styles['kanban-card']} ${isOverdue ? styles['overdue'] : ''} ${isInProgress ? styles['in-progress'] : ''}`}
+      className={`kanban-card-premium ${isOverdue ? 'is-overdue border-l-4 border-danger' : ''} ${isInProgress ? 'is-active' : ''}`}
       onClick={() => navigate(`/orders/${item.id}`)}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && navigate(`/orders/${item.id}`)}
     >
       {/* Header */}
-      <div className={styles['kanban-card-header']}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-          }}
-        >
-          <span className={styles['kanban-card-order']}>
-            {item.order_number}
-          </span>
-          {isInProgress && (
+      <div className="kanban-card-header">
+        <div className="flex items-center gap-1.5">
+          <span className="kanban-card-title">{item.order_number}</span>
+          {isInProgress ? (
             <Icon
-              name="loader-2"
+              name="Loader2"
               size={14}
-              className="animate-spin"
-              color="var(--primary)"
+              className="animate-spin text-primary"
             />
+          ) : (
+            <Icon name="Package" size={14} className="text-muted" />
           )}
         </div>
         {isOverdue && (
-          <span className={styles['kanban-card-warning']}>⚠ Quá hạn</span>
+          <span className="kanban-card-tag flex items-center gap-1">
+            <Icon name="AlertTriangle" size={10} /> Qua han
+          </span>
         )}
       </div>
 
       {/* Customer */}
-      <div className={styles['kanban-card-customer']}>{item.customer_name}</div>
-
-      {/* Amount */}
-      <div className={styles['kanban-card-amount']}>
-        {formatCurrency(item.total_amount)} đ
+      <div className="text-[0.82rem] font-bold text-text truncate">
+        {item.customer_name}
       </div>
 
       {/* Meta */}
-      <div className={styles['kanban-card-meta']}>
-        <span>📅 {deliveryLabel}</span>
+      <div className="flex items-center justify-between mt-0.5">
+        <div className="kanban-card-amount">
+          {formatCurrency(item.total_amount)} d
+        </div>
+        <div className="text-[0.7rem] text-muted font-medium flex items-center gap-1">
+          <Icon name="Calendar" size={12} /> {deliveryLabel}
+        </div>
       </div>
 
       {/* Actions */}
       {(next || prev) && (
         <div
-          className={styles['kanban-card-actions']}
+          className="flex gap-2 pt-3 mt-1 border-t border-border"
           onClick={(e) => e.stopPropagation()}
         >
           {prev && (
             <button
               type="button"
-              className={`${styles['kanban-action-btn']} ${styles['danger']}`}
+              className="flex-1 text-[0.72rem] font-bold p-1.5 rounded-lg border border-border bg-surface text-danger hover:bg-danger/5 transition-colors"
               disabled={isMoving}
               onClick={() => onMove(item.id, prev.prev)}
             >
@@ -126,7 +122,7 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
           {next && (
             <button
               type="button"
-              className={`${styles['kanban-action-btn']} ${styles['primary']}`}
+              className="flex-1 text-[0.72rem] font-bold p-1.5 rounded-lg bg-primary text-white hover:brightness-110 transition-all shadow-sm active:translate-y-0.5"
               disabled={isMoving}
               onClick={() => onMove(item.id, next.next)}
             >

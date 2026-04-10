@@ -1,4 +1,5 @@
-import { ArrowLeft, CheckCircle, FileX, GitMerge } from '@/shared/icons';
+import { Icon } from '@/shared/components/Icon';
+import { Badge } from '@/shared/components/Badge';
 
 import { BOM_STATUS_LABELS } from './bom.module';
 import { BomTemplate, BomStatus } from './types';
@@ -11,6 +12,17 @@ interface BomDetailProps {
   onDeprecate: () => void;
   onRevise: () => void;
   isSaving: boolean;
+}
+
+function getStatusVariant(status: BomStatus) {
+  switch (status) {
+    case 'approved':
+      return 'success';
+    case 'deprecated':
+      return 'danger';
+    default:
+      return 'gray';
+  }
 }
 
 export function BomDetail({
@@ -27,204 +39,115 @@ export function BomDetail({
   return (
     <div className="panel-card card-flush">
       {/* Header */}
-      <div className="card-header-area">
-        <div className="page-header">
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-            }}
+      <div className="card-header-area card-header-premium">
+        <div className="flex items-center gap-3">
+          <button
+            className="btn-icon"
+            type="button"
+            onClick={onBack}
+            title="Quay lai"
           >
+            <Icon name="ArrowLeft" size={18} />
+          </button>
+          <div>
+            <p className="eyebrow-premium">CHI TIET DINH MUC</p>
+            <h3 className="title-premium flex items-center gap-3">
+              {bom.code}
+              <Badge variant={getStatusVariant(bom.status as BomStatus)}>
+                {statusLabel}
+              </Badge>
+            </h3>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-2">
+          {bom.status === 'draft' && (
             <button
-              className="btn-icon"
+              className="btn-primary flex items-center gap-2"
               type="button"
-              onClick={onBack}
-              title="Quay lại"
+              onClick={onApprove}
+              disabled={isSaving}
             >
-              <ArrowLeft
-                style={{
-                  width: 18,
-                  height: 18,
-                }}
-              />
+              <Icon name="CheckCircle" size={16} />
+              Phe duyet
             </button>
-            <div>
-              <p className="eyebrow">Chi tiết định mức</p>
-              <h3
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                }}
-              >
-                {bom.code}
-                <span className={`roll-status ${bom.status}`}>
-                  {statusLabel}
-                </span>
-              </h3>
-            </div>
-          </div>
+          )}
 
-          {/* Actions */}
-          <div
-            style={{
-              display: 'flex',
-              gap: '0.5rem',
-            }}
-          >
-            {bom.status === 'draft' && (
+          {bom.status === 'approved' && (
+            <>
               <button
-                className="primary-button btn-standard"
+                className="btn-secondary flex items-center gap-2"
                 type="button"
-                onClick={onApprove}
+                onClick={onRevise}
                 disabled={isSaving}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                }}
               >
-                <CheckCircle
-                  style={{
-                    width: 16,
-                    height: 16,
-                  }}
-                />
-                Phê duyệt
+                <Icon name="GitMerge" size={16} />
+                Tao Revision
               </button>
-            )}
-
-            {bom.status === 'approved' && (
-              <>
-                <button
-                  className="btn-secondary"
-                  type="button"
-                  onClick={onRevise}
-                  disabled={isSaving}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.4rem',
-                  }}
-                >
-                  <GitMerge
-                    style={{
-                      width: 16,
-                      height: 16,
-                    }}
-                  />
-                  Tạo Revision
-                </button>
-                <button
-                  className="btn-secondary"
-                  type="button"
-                  onClick={onDeprecate}
-                  disabled={isSaving}
-                  style={{
-                    color: 'var(--danger)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.4rem',
-                  }}
-                >
-                  <FileX
-                    style={{
-                      width: 16,
-                      height: 16,
-                    }}
-                  />
-                  Báo phế
-                </button>
-              </>
-            )}
-          </div>
+              <button
+                className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
+                type="button"
+                onClick={onDeprecate}
+                disabled={isSaving}
+              >
+                <Icon name="FileX" size={16} />
+                Bao phe
+              </button>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Info Section */}
-      <div style={{ padding: '1.25rem' }}>
-        <div
-          className="form-grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '1.25rem',
-          }}
-        >
+      {/* Info Grid */}
+      <div className="p-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           <div className="form-field">
-            <label>Tên công thức</label>
-            <p
-              style={{
-                fontWeight: 600,
-                margin: 0,
-              }}
-            >
-              {bom.name}
-            </p>
+            <label>Ten cong thuc</label>
+            <p className="font-bold">{bom.name}</p>
           </div>
           <div className="form-field">
-            <label>Sản phẩm mộc</label>
-            <p
-              style={{
-                fontWeight: 600,
-                margin: 0,
-              }}
-            >
+            <label>San pham moc</label>
+            <p className="font-bold">
               {bom.fabric_catalogs?.code} — {bom.fabric_catalogs?.name ?? 'N/A'}
             </p>
           </div>
           <div className="form-field">
-            <label>Quy cách (Width / GSM)</label>
-            <p style={{ margin: 0 }}>
+            <label>Quy cach (Width / GSM)</label>
+            <p>
               {bom.target_width_cm ? `${bom.target_width_cm} cm` : '—'} /{' '}
               {bom.target_gsm ? `${bom.target_gsm} gsm` : '—'}
             </p>
           </div>
           <div className="form-field">
-            <label>Hao hụt mặc định</label>
-            <p
-              style={{
-                margin: 0,
-                fontWeight: 700,
-              }}
-            >
-              {bom.standard_loss_pct}%
-            </p>
+            <label>Hao hut mac dinh</label>
+            <p className="font-bold text-primary">{bom.standard_loss_pct}%</p>
           </div>
           <div className="form-field">
-            <label>Phiên bản</label>
-            <p style={{ margin: 0 }}>v{bom.active_version}</p>
+            <label>Phien ban</label>
+            <p>v{bom.active_version}</p>
           </div>
         </div>
 
         {bom.notes && (
-          <p
-            style={{
-              marginTop: '1rem',
-              fontStyle: 'italic',
-              color: 'var(--muted)',
-              fontSize: '0.88rem',
-            }}
-          >
-            {bom.notes}
-          </p>
+          <p className="mt-4 text-sm italic text-muted">{bom.notes}</p>
         )}
       </div>
 
       {/* Yarn Items Table */}
-      <div style={{ padding: '0 1.25rem' }}>
-        <p className="eyebrow" style={{ marginBottom: '0.5rem' }}>
-          Thành phần nguyên liệu (v{bom.active_version})
+      <div className="px-5 pb-2">
+        <p className="eyebrow-premium">
+          Thanh phan nguyen lieu (v{bom.active_version})
         </p>
       </div>
-      <div className="data-table-wrap card-table-section">
+      <div className="card-table-section">
         <table className="data-table">
           <thead>
             <tr>
-              <th>Loại Sợi</th>
-              <th className="hide-mobile">Thành phần</th>
-              <th className="text-right">Tỉ lệ (%)</th>
-              <th className="text-right">Tiêu hao (kg/m)</th>
+              <th>Loai Soi</th>
+              <th className="hide-mobile">Thanh phan</th>
+              <th className="text-right">Ti le (%)</th>
+              <th className="text-right">Tieu hao (kg/m)</th>
             </tr>
           </thead>
           <tbody>
@@ -232,16 +155,14 @@ export function BomDetail({
               <tr key={item.id}>
                 <td>
                   <strong>{item.yarn_catalogs?.code}</strong>
-                  <div className="td-muted" style={{ fontSize: '0.8rem' }}>
+                  <div className="td-muted text-xs">
                     {item.yarn_catalogs?.name}
                   </div>
                 </td>
                 <td className="hide-mobile td-muted">
                   {item.yarn_catalogs?.composition || '—'}
                 </td>
-                <td className="text-right" style={{ fontWeight: 700 }}>
-                  {item.ratio_pct}%
-                </td>
+                <td className="text-right font-bold">{item.ratio_pct}%</td>
                 <td className="text-right td-muted">
                   {item.consumption_kg_per_m} kg/m
                 </td>
@@ -250,8 +171,8 @@ export function BomDetail({
             {(!bom.bom_yarn_items || bom.bom_yarn_items.length === 0) && (
               <tr>
                 <td colSpan={4}>
-                  <div className="table-empty" style={{ padding: '2rem' }}>
-                    Chưa có dữ liệu nguyên liệu
+                  <div className="py-8 text-center text-sm text-muted">
+                    Chua co du lieu nguyen lieu
                   </div>
                 </td>
               </tr>
@@ -261,72 +182,25 @@ export function BomDetail({
       </div>
 
       {/* Version History */}
-      <div style={{ padding: '1.25rem' }}>
-        <p className="eyebrow" style={{ marginBottom: '0.75rem' }}>
-          Lịch sử phiên bản
-        </p>
+      <div className="p-5">
+        <p className="eyebrow-premium mb-3">Lich su phien ban</p>
         {versions.length === 0 ? (
-          <p
-            className="td-muted"
-            style={{
-              fontStyle: 'italic',
-              fontSize: '0.85rem',
-            }}
-          >
-            Chưa có lịch sử (chưa từng được duyệt).
+          <p className="td-muted text-sm italic">
+            Chua co lich su (chua tung duoc duyet).
           </p>
         ) : (
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-            }}
-          >
+          <div className="flex flex-col gap-2">
             {versions.map((ver) => (
               <div
                 key={ver.id}
-                style={{
-                  display: 'flex',
-                  gap: '0.75rem',
-                  padding: '0.75rem',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-sm)',
-                  alignItems: 'flex-start',
-                }}
+                className="flex gap-3 p-3 border border-border rounded-lg items-start"
               >
-                <span
-                  className="roll-status in_stock"
-                  style={{
-                    flexShrink: 0,
-                    fontSize: '0.7rem',
-                  }}
-                >
-                  v{ver.version}
-                </span>
-                <div
-                  style={{
-                    flex: 1,
-                    minWidth: 0,
-                  }}
-                >
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: '0.88rem',
-                      fontWeight: 600,
-                    }}
-                  >
-                    {ver.change_reason || 'Phê duyệt ban đầu'}
+                <Badge variant="info">v{ver.version}</Badge>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold">
+                    {ver.change_reason || 'Phe duyet ban dau'}
                   </p>
-                  <p
-                    className="td-muted"
-                    style={{
-                      margin: 0,
-                      fontSize: '0.78rem',
-                      marginTop: '0.2rem',
-                    }}
-                  >
+                  <p className="td-muted text-xs mt-0.5">
                     {ver.created_by_profile?.full_name ?? 'N/A'} •{' '}
                     {new Date(ver.created_at).toLocaleString('vi-VN')}
                   </p>

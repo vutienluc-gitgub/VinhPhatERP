@@ -39,7 +39,7 @@ export const bomFeature: FeatureDefinition = {
   highlights: ['BOM định nghĩa tỷ lệ hao hụt.', 'Quản lý phiên bản bất biến.'],
   entities: ['bom_templates', 'bom_yarn_items', 'bom_versions'],
   nextMilestones: [
-    'Tích hợp BOM vào tính kế hoạch nguyên liệu trong Work Orders.',
+    'Tich hop BOM vao tinh ke hoach nguyen lieu trong Work Orders.',
   ],
 };
 export const bomPlugin: FeaturePlugin = {

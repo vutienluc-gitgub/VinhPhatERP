@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 
 import { Combobox } from '@/shared/components/Combobox';
-import { ArrowLeft, Plus, Trash2 } from '@/shared/icons';
+import { Icon } from '@/shared/components/Icon';
 
 import { bomTemplateSchema, BomTemplateFormData } from './bom.module';
 import { BomTemplate } from './types';
@@ -124,70 +124,39 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
   return (
     <div className="panel-card card-flush">
       {/* Header */}
-      <div className="card-header-area">
-        <div className="page-header">
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-            }}
+      <div className="card-header-area card-header-premium">
+        <div className="flex items-center gap-3">
+          <button
+            className="btn-icon"
+            type="button"
+            onClick={onCancel}
+            title="Quay lai"
           >
-            <button
-              className="btn-icon"
-              type="button"
-              onClick={onCancel}
-              title="Quay lại"
-            >
-              <ArrowLeft
-                style={{
-                  width: 18,
-                  height: 18,
-                }}
-              />
-            </button>
-            <div>
-              <p className="eyebrow">Kỹ thuật</p>
-              <h3>
-                {isEdit ? 'Cập nhật bản nháp' : 'Tạo bản nháp định mức (BOM)'}
-              </h3>
-            </div>
+            <Icon name="ArrowLeft" size={18} />
+          </button>
+          <div>
+            <p className="eyebrow-premium">KY THUAT</p>
+            <h3 className="title-premium">
+              {isEdit ? 'Cap nhat ban nhap' : 'Tao ban nhap dinh muc (BOM)'}
+            </h3>
           </div>
         </div>
       </div>
 
       {/* Form content */}
-      <form onSubmit={handleSubmit(onSubmit)} style={{ padding: '1.25rem' }}>
+      <form onSubmit={handleSubmit(onSubmit)} className="p-5">
         {/* Basic info */}
-        <div
-          className="form-grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '1rem',
-          }}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="form-field">
             <label>
-              Mã BOM{' '}
-              <span
-                style={{
-                  fontSize: '0.78rem',
-                  color: 'var(--muted)',
-                }}
-              >
-                (tự sinh)
-              </span>
+              Mã BOM <span className="text-xs text-muted">(tự sinh)</span>
             </label>
             <input
               type="text"
               {...register('code')}
               readOnly
-              className="field-input"
+              className="field-input bg-surface-raised cursor-default"
               placeholder="Chọn sản phẩm mộc + sợi → tự sinh"
-              style={{
-                backgroundColor: 'var(--surface-raised)',
-                cursor: 'default',
-              }}
             />
             <span className="field-hint">
               Mã tự động: BOM‑&lt;mã vải mộc&gt;‑&lt;mã sợi&gt;
@@ -238,14 +207,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
           </div>
         </div>
 
-        <div
-          className="form-grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-            gap: '1rem',
-            marginTop: '1rem',
-          }}
-        >
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
           <div className="form-field">
             <label>Khổ vải (cm)</label>
             <input
@@ -283,40 +245,18 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
         </div>
 
         {/* Yarn Items Section */}
-        <div
-          style={{
-            borderTop: '1px solid var(--border)',
-            marginTop: '1.5rem',
-            paddingTop: '1.25rem',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '0.75rem',
-            }}
-          >
+        <div className="border-t border-border mt-6 pt-5">
+          <div className="flex justify-between items-center mb-3">
             <div>
-              <p className="eyebrow" style={{ marginBottom: '0.2rem' }}>
-                Thành phần nguyên liệu
-              </p>
-              <p
-                style={{
-                  fontSize: '0.82rem',
-                  color: 'var(--muted)',
-                  margin: 0,
-                }}
-              >
+              <p className="eyebrow-premium mb-0.5">Thành phần nguyên liệu</p>
+              <p className="text-xs text-muted">
                 Tổng tỉ lệ:{' '}
                 <strong
-                  style={{
-                    color:
-                      Math.abs(totalRatio - 100) > 0.01
-                        ? 'var(--danger)'
-                        : 'var(--success)',
-                  }}
+                  className={
+                    Math.abs(totalRatio - 100) > 0.01
+                      ? 'text-danger'
+                      : 'text-success'
+                  }
                 >
                   {totalRatio.toFixed(2)}%
                 </strong>
@@ -324,7 +264,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
             </div>
             <button
               type="button"
-              className="btn-secondary"
+              className="btn-secondary flex items-center gap-1.5"
               onClick={() =>
                 append({
                   yarn_catalog_id: '',
@@ -333,18 +273,8 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
                   sort_order: fields.length,
                 })
               }
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.3rem',
-              }}
             >
-              <Plus
-                style={{
-                  width: 16,
-                  height: 16,
-                }}
-              />
+              <Icon name="Plus" size={16} />
               Thêm sợi
             </button>
           </div>
@@ -355,31 +285,16 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
             </p>
           )}
 
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-            }}
-          >
+          <div className="flex flex-col gap-2">
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                style={{
-                  display: 'flex',
-                  gap: '0.5rem',
-                  alignItems: 'flex-start',
-                  padding: '0.75rem',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-sm)',
-                }}
+                className="flex gap-2 items-start p-3 border border-border rounded-lg"
               >
                 <div
-                  className="form-grid"
+                  className="form-grid flex-1"
                   style={{
-                    flex: 1,
                     gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                    gap: '0.5rem',
                   }}
                 >
                   <div className="form-field">
@@ -451,32 +366,17 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
 
                 <button
                   type="button"
-                  className="btn-icon danger"
+                  className="btn-icon text-danger mt-6 flex-shrink-0"
                   onClick={() => remove(index)}
                   title="Xóa dòng"
-                  style={{
-                    marginTop: '1.6rem',
-                    flexShrink: 0,
-                  }}
                 >
-                  <Trash2
-                    style={{
-                      width: 16,
-                      height: 16,
-                    }}
-                  />
+                  <Icon name="Trash2" size={16} />
                 </button>
               </div>
             ))}
 
             {fields.length === 0 && (
-              <div
-                className="table-empty"
-                style={{
-                  border: '2px dashed var(--border)',
-                  borderRadius: 'var(--radius-sm)',
-                }}
-              >
+              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center text-sm text-muted">
                 Chưa có loại sợi nào. Nhấn "Thêm sợi" để bắt đầu.
               </div>
             )}
@@ -484,16 +384,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
         </div>
 
         {/* Footer actions */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: '0.5rem',
-            marginTop: '1.5rem',
-            paddingTop: '1rem',
-            borderTop: '1px solid var(--border)',
-          }}
-        >
+        <div className="flex justify-end gap-3 pt-5 mt-4 border-t border-border">
           <button
             type="button"
             className="btn-secondary"
@@ -502,11 +393,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
           >
             Huỷ bỏ
           </button>
-          <button
-            type="submit"
-            className="primary-button btn-standard"
-            disabled={isSubmitting}
-          >
+          <button type="submit" className="btn-primary" disabled={isSubmitting}>
             {isSubmitting ? 'Đang lưu...' : 'Lưu bản nháp'}
           </button>
         </div>
