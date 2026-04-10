@@ -1,5 +1,11 @@
 import type { DebtAgingRow } from '@/api/reports.api';
-import { KpiCard, KpiGrid } from '@/shared/components/KpiCard';
+import {
+  KpiCardPremium,
+  KpiGridPremium,
+  DataTablePremium,
+  type DataTableColumn,
+} from '@/shared/components';
+import { formatCurrency } from '@/shared/utils/format';
 
 type DebtAgingSectionProps = {
   data: DebtAgingRow[];
@@ -13,20 +19,25 @@ const BUCKET_LABELS: Record<string, string> = {
   '61-90': '61–90 ngày',
   '90+': 'Trên 90 ngày',
 };
+type BucketVariant = 'success' | 'primary' | 'warning' | 'danger' | 'secondary';
+
+const BUCKET_VARIANTS: Record<string, BucketVariant> = {
+  '0-30': 'success',
+  '31-60': 'primary',
+  '61-90': 'warning',
+  '90+': 'danger',
+};
 const BUCKET_COLORS: Record<string, string> = {
   '0-30': 'var(--success)',
-  '31-60': 'var(--warning)',
-  '61-90': 'var(--warning-strong)',
+  '31-60': 'var(--primary)',
+  '61-90': 'var(--warning)',
   '90+': 'var(--danger)',
 };
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value);
-}
 
 type BucketSummary = {
   bucket: string;
   label: string;
+  variant: BucketVariant;
   color: string;
   count: number;
   total: number;
@@ -41,6 +52,7 @@ function computeBuckets(data: DebtAgingRow[]): BucketSummary[] {
     return {
       bucket,
       label: BUCKET_LABELS[bucket] ?? bucket,
+      variant: BUCKET_VARIANTS[bucket] ?? 'secondary',
       color: BUCKET_COLORS[bucket] ?? '#888',
       count: rows.length,
       total,
@@ -54,136 +66,109 @@ export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
   const buckets = computeBuckets(data);
   const criticalRows = data.filter((r) => r.aging_bucket === '90+');
 
+  const columns: DataTableColumn<DebtAgingRow>[] = [
+    {
+      header: 'Đơn hàng',
+      cell: (r) => <span className="font-bold">{r.order_number}</span>,
+    },
+    {
+      header: 'Khách hàng',
+      cell: (r) => r.customer_name,
+      className: 'hide-mobile td-muted',
+    },
+    {
+      header: 'Ngày đặt',
+      cell: (r) => r.order_date,
+      className: 'td-muted',
+    },
+    {
+      header: 'Ngày nợ',
+      cell: (r) => (
+        <span className="text-danger font-bold">{r.days_since_order} ngày</span>
+      ),
+      className: 'text-right',
+    },
+    {
+      header: 'Còn nợ',
+      cell: (r) => formatCurrency(r.balance_due),
+      className: 'text-right font-bold text-danger',
+    },
+  ];
+
   return (
     <div className="panel-card card-flush">
-      <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Phân tích chuyên sâu</p>
-            <h3>Tuổi nợ (Debt Aging)</h3>
-          </div>
+      <div className="card-header-area card-header-premium">
+        <div>
+          <p className="eyebrow-premium">PHÂN TÍCH</p>
+          <h3 className="title-premium">Tuổi nợ (Debt Aging)</h3>
         </div>
       </div>
 
-      {isLoading ? (
-        <p className="table-empty">Đang tải...</p>
-      ) : data.length === 0 ? (
-        <p className="table-empty">Không có công nợ nào.</p>
-      ) : (
-        <>
-          {/* Aging bar visual */}
-          <div style={{ padding: '0 1.25rem 1rem' }}>
-            <div style={{ marginBottom: '0.75rem' }}>
-              <span
-                className="td-muted"
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                }}
-              >
-                Phân bổ công nợ: {formatCurrency(totalDebt)} đ
-              </span>
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                height: '1.5rem',
-                borderRadius: '99px',
-                overflow: 'hidden',
-                border: '1px solid var(--border)',
-                background: 'var(--surface)',
-              }}
-            >
-              {buckets
-                .filter((b) => b.percent > 0)
-                .map((b) => (
-                  <div
-                    key={b.bucket}
-                    title={`${b.label}: ${formatCurrency(b.total)} đ (${b.percent}%)`}
-                    style={{
-                      width: `${b.percent}%`,
-                      background: b.color,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#fff',
-                      fontSize: '0.65rem',
-                      fontWeight: 700,
-                      minWidth: b.percent > 5 ? undefined : '0',
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
-                    {b.percent >= 10 ? `${b.percent}%` : ''}
-                  </div>
-                ))}
-            </div>
-
-            {/* Bucket cards */}
-            <KpiGrid>
-              {buckets.map((b) => (
-                <KpiCard
+      <div className="p-5">
+        <div className="mb-4">
+          <p className="text-xs font-bold text-muted uppercase tracking-wider mb-2">
+            Phân bổ tổng nợ: {formatCurrency(totalDebt)} đ
+          </p>
+          <div className="flex h-6 rounded-full overflow-hidden border border-border bg-surface shadow-inner">
+            {buckets
+              .filter((b) => b.percent > 0)
+              .map((b) => (
+                <div
                   key={b.bucket}
-                  label={b.label}
-                  value={`${formatCurrency(b.total)} đ`}
-                  color={b.color}
-                  icon={`${b.percent}%`}
-                />
-              ))}
-            </KpiGrid>
-          </div>
-
-          {/* Critical debts table (>90 days) */}
-          {criticalRows.length > 0 && (
-            <div className="data-table-wrap card-table-section">
-              <div style={{ padding: '0.75rem 1.25rem 0' }}>
-                <strong
+                  title={`${b.label}: ${formatCurrency(b.total)} đ (${b.percent}%)`}
                   style={{
-                    fontSize: '0.85rem',
-                    color: 'var(--danger)',
+                    width: `${b.percent}%`,
+                    background: b.color,
                   }}
+                  className="flex items-center justify-center text-[10px] text-white font-bold transition-all duration-500"
                 >
-                  ⚠ Nợ trên 90 ngày — cần hành động ngay ({criticalRows.length}{' '}
-                  đơn)
-                </strong>
+                  {b.percent >= 8 ? `${b.percent}%` : ''}
+                </div>
+              ))}
+          </div>
+        </div>
+
+        <KpiGridPremium>
+          {buckets.map((b) => (
+            <KpiCardPremium
+              key={b.bucket}
+              label={b.label}
+              value={`${formatCurrency(b.total)} đ`}
+              icon={b.bucket === '90+' ? 'AlertCircle' : 'Clock'}
+              variant={b.variant}
+              footer={`${b.percent}% tổng nợ`}
+              isLoading={isLoading}
+            />
+          ))}
+        </KpiGridPremium>
+      </div>
+
+      {criticalRows.length > 0 && (
+        <div className="mt-2">
+          <div className="px-5 py-2 bg-danger/5 border-y border-danger/10 text-danger text-xs font-bold uppercase tracking-widest">
+            ⚠ Nợ trên 90 ngày — cần hành động gấp ({criticalRows.length} đơn)
+          </div>
+          <DataTablePremium
+            data={criticalRows}
+            columns={columns}
+            isLoading={isLoading}
+            rowKey={(r) => r.order_id}
+            renderMobileCard={(r) => (
+              <div className="mobile-card border-l-danger">
+                <div className="flex justify-between items-start">
+                  <span className="font-bold">{r.order_number}</span>
+                  <span className="text-danger font-bold">
+                    {r.days_since_order} ngày
+                  </span>
+                </div>
+                <div className="text-xs text-muted mb-2">{r.customer_name}</div>
+                <div className="text-right text-sm font-bold text-danger">
+                  {formatCurrency(r.balance_due)} đ
+                </div>
               </div>
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Đơn hàng</th>
-                    <th className="hide-mobile">Khách hàng</th>
-                    <th>Ngày đặt</th>
-                    <th className="text-right">Ngày nợ</th>
-                    <th className="text-right">Còn nợ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {criticalRows.map((row) => (
-                    <tr key={row.order_id}>
-                      <td>
-                        <strong>{row.order_number}</strong>
-                      </td>
-                      <td className="hide-mobile">{row.customer_name}</td>
-                      <td className="td-muted">{row.order_date}</td>
-                      <td
-                        className="numeric-cell"
-                        style={{
-                          color: 'var(--danger)',
-                          fontWeight: 700,
-                        }}
-                      >
-                        {row.days_since_order} ngày
-                      </td>
-                      <td className="numeric-debt">
-                        {formatCurrency(row.balance_due)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </>
+            )}
+          />
+        </div>
       )}
     </div>
   );

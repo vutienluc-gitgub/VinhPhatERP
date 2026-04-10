@@ -96,7 +96,12 @@ export function ReportsPage() {
 
         <ReportsFilterBar filter={filter} onChange={setFilter} />
 
-        <TabSwitcher tabs={TABS} active={activeTab} onChange={setActiveTab} />
+        <TabSwitcher
+          tabs={TABS}
+          active={activeTab}
+          onChange={setActiveTab}
+          variant="underline"
+        />
       </div>
 
       {/* Content wrapper with spacing */}
