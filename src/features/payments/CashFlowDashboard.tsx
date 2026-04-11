@@ -1,12 +1,10 @@
 import { useState } from 'react';
 
+import { formatCurrency } from '@/shared/utils/format';
+
 import { EXPENSE_CATEGORY_LABELS } from './payments.module';
 import { useAccountList } from './useAccounts';
 import { useCashFlowSummary, useExpenseByCategory } from './useCashFlow';
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value);
-}
 
 function getDefaultDates(): { from: string; to: string } {
   const now = new Date();

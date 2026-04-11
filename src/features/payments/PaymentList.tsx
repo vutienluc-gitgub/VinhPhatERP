@@ -3,14 +3,11 @@ import { useState } from 'react';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
 import { Icon, DataTablePremium } from '@/shared/components';
+import { formatCurrency } from '@/shared/utils/format';
 
 import { PAYMENT_METHOD_LABELS } from './payments.module';
 import type { PaymentsFilter } from './types';
 import { useDeletePayment, usePaymentList } from './usePayments';
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value);
-}
 
 export function PaymentList() {
   const [searchInput, setSearchInput] = useState('');

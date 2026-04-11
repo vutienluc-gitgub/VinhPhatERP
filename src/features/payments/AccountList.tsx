@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Icon, Badge, DataTablePremium } from '@/shared/components';
+import { formatCurrency } from '@/shared/utils/format';
 
 import { ACCOUNT_TYPE_LABELS } from './payments.module';
 import type { PaymentAccount } from './types';
@@ -11,10 +12,6 @@ type AccountListProps = {
   onEdit: (account: PaymentAccount) => void;
   onNew: () => void;
 };
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value);
-}
 
 export function AccountList({ onEdit, onNew }: AccountListProps) {
   const { data: accounts = [], isLoading, error } = useAllAccounts();

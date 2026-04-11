@@ -327,7 +327,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           {
             header: 'Tổng tiền',
             className: 'text-right numeric-cell font-medium',
-            cell: (order) => formatCurrency(order.total_amount),
+            cell: (order) => `${formatCurrency(order.total_amount)}đ`,
           },
           {
             header: 'Còn nợ',
@@ -338,7 +338,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
                 <span
                   className={balanceDue > 0 ? 'text-danger' : 'text-success'}
                 >
-                  {formatCurrency(balanceDue)}
+                  {formatCurrency(balanceDue)}đ
                 </span>
               );
             },
@@ -404,7 +404,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
                       Tổng tiền
                     </span>
                     <span className="text-sm font-medium">
-                      {formatCurrency(order.total_amount)}
+                      {formatCurrency(order.total_amount)}đ
                     </span>
                   </div>
                   <div className="flex flex-col">
@@ -414,7 +414,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
                     <span
                       className={`text-sm font-bold ${balanceDue > 0 ? 'text-danger' : 'text-success'}`}
                     >
-                      {formatCurrency(balanceDue)}
+                      {formatCurrency(balanceDue)}đ
                     </span>
                   </div>
                 </div>

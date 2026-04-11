@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 
+import { formatCurrency } from '@/shared/utils/format';
+
 import type { RecentOrder } from './useDashboardData';
 
 type RecentOrdersCardProps = {
@@ -22,10 +24,6 @@ const STATUS_CSS: Record<string, string> = {
   completed: 'completed',
   cancelled: 'cancelled',
 };
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value);
-}
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('vi-VN', {
@@ -82,7 +80,7 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
                       {order.customer_name ?? '—'}
                     </td>
                     <td className="numeric-cell font-medium">
-                      {formatCurrency(order.total_amount)}
+                      {formatCurrency(order.total_amount)}đ
                     </td>
                     <td className="text-right">
                       <span

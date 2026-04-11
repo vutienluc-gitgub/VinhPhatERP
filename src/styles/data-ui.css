@@ -2095,6 +2095,11 @@
   color: var(--primary);
 }
 
+.kpi-primary .kpi-icon-box {
+  background: rgba(11, 107, 203, 0.1);
+  color: var(--primary);
+}
+
 .kpi-success .kpi-icon-box {
   background: rgba(10, 128, 92, 0.1);
   color: var(--success);
@@ -2103,6 +2108,16 @@
 .kpi-warning .kpi-icon-box {
   background: rgba(217, 119, 6, 0.1);
   color: var(--warning);
+}
+
+.kpi-danger .kpi-icon-box {
+  background: rgba(192, 57, 43, 0.1);
+  color: var(--danger);
+}
+
+.kpi-secondary .kpi-icon-box {
+  background: rgba(16, 35, 61, 0.06);
+  color: var(--muted);
 }
 
 .kpi-footer {

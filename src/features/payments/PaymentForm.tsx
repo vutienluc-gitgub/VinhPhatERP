@@ -5,6 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { createPaymentsSchema } from '@/schema/payment.schema';
+import { formatCurrency } from '@/shared/utils/format';
 
 import {
   PAYMENT_METHOD_LABELS,
@@ -21,10 +22,6 @@ type PaymentFormProps = {
   balanceDue: number;
   onClose: () => void;
 };
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value);
-}
 
 export function PaymentForm({
   orderId,
