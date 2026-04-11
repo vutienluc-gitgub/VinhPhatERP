@@ -68,7 +68,7 @@ export const rawFabricPlugin: FeaturePlugin = {
   label: 'Kho Vải mộc',
   shortLabel: 'Mộc',
   description: 'Quản lý vải mộc từ lệnh dệt về kho và xuất đi nhuộm.',
-  icon: 'layers',
+  icon: 'Layers',
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'production',
   order: 25,

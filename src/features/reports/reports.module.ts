@@ -38,7 +38,7 @@ export const reportsPlugin: FeaturePlugin = {
   shortLabel: 'Báo cáo',
   description:
     'Tổng hợp số liệu sản xuất, kinh doanh và tài chính toàn công ty.',
-  icon: 'package',
+  icon: 'BarChart3',
   requiredRoles: ['admin', 'manager'],
   group: 'system',
   order: 100,

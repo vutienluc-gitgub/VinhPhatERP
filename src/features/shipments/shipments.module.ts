@@ -64,7 +64,7 @@ export const shipmentsPlugin: FeaturePlugin = {
   shortLabel: 'Ship',
   description:
     'Quản lý quy trình đóng gói và giao nhận hàng hóa tới khách hàng.',
-  icon: 'package',
+  icon: 'Truck',
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'sales',
   order: 70,

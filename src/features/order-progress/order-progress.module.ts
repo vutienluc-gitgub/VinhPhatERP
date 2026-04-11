@@ -43,7 +43,7 @@ export const orderProgressPlugin: FeaturePlugin = {
   label: 'Bảng tiến độ',
   shortLabel: 'Tiến độ',
   description: 'Theo dõi quy trình sản xuất các đơn hàng đang triển khai.',
-  icon: 'package',
+  icon: 'Clock',
   requiredRoles: ['admin', 'manager'],
   group: 'production',
   order: 90,

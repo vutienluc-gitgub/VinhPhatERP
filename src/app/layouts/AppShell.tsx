@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { useDashboardStats } from '@/features/dashboard/useDashboardData';
 import { navigationItems } from '@/app/router/routes';
+import type { NavigationItem } from '@/app/router/routes';
 import type { UserRole } from '@/services/supabase/database.types';
 import { useTheme } from '@/shared/hooks/useTheme';
 import { Icon } from '@/shared/components/Icon';
@@ -28,41 +29,58 @@ const roleLabel: Record<UserRole, string> = {
   admin: 'Admin',
   manager: 'Manager',
   staff: 'Staff',
-  driver: 'Tài xế',
+  driver: 'Tai xe',
   viewer: 'Viewer',
   sale: 'Sale',
 };
 
-const ROUTE_ICONS: Record<string, string> = {
-  '/': '📊',
-  '/quotations': '📋',
-  '/orders': '📦',
-  '/order-progress': '⏱️',
-  '/shipments': '🚚',
-  '/inventory': '🏭',
-  '/customers': '👥',
-  '/suppliers': '🤝',
-  '/yarn-catalog': '🧵',
-  '/fabric-catalog': '🪡',
-  '/yarn-receipts': '📥',
-  '/raw-fabric': '🧶',
-  '/finished-fabric': '✨',
-  '/payments': '💰',
-  '/reports': '📈',
-  '/shipping-rates': '💵',
-  '/settings': '⚙️',
+/** Group display metadata */
+const GROUP_LABELS: Record<string, { label: string; icon: string }> = {
+  sales: {
+    label: 'Kinh doanh',
+    icon: 'Briefcase',
+  },
+  production: {
+    label: 'San xuat',
+    icon: 'Factory',
+  },
+  'master-data': {
+    label: 'Danh muc',
+    icon: 'Database',
+  },
+  system: {
+    label: 'He thong',
+    icon: 'Shield',
+  },
 };
 
-const LUCIDE_ICONS: Record<string, string> = {
-  '/': 'Home',
-  '/quotations': 'FileText',
-  '/orders': 'Package',
-  '/order-progress': 'Activity',
-  '/shipments': 'Truck',
-  '/inventory': 'Layers',
-  '/customers': 'Users',
-  '/payments': 'CircleDollarSign',
-  '/settings': 'Settings',
+const GROUP_ORDER = ['sales', 'production', 'master-data', 'system'];
+
+const STORAGE_KEY = 'erp-sidebar-collapsed';
+
+function loadCollapsed(): Record<string, boolean> {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw) as Record<string, boolean>;
+  } catch {
+    /* ignore */
+  }
+  return {};
+}
+
+function saveCollapsed(state: Record<string, boolean>): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    /* ignore */
+  }
+}
+
+type GroupedNav = {
+  group: string;
+  label: string;
+  icon: string;
+  items: NavigationItem[];
 };
 
 export function AppShell() {
@@ -70,6 +88,8 @@ export function AppShell() {
   const { profile, signOut } = useAuth();
   const [showMore, setShowMore] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [collapsed, setCollapsed] =
+    useState<Record<string, boolean>>(loadCollapsed);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const currentItem = getCurrentItem(pathname);
   const { data: stats } = useDashboardStats();
@@ -84,6 +104,39 @@ export function AppShell() {
   const isSecondaryActive = secondaryItems.some((item) =>
     item.path === '/' ? pathname === '/' : pathname.startsWith(item.path),
   );
+
+  // Dashboard item (no group)
+  const dashboardItem = visibleNavItems.find((item) => item.path === '/');
+
+  // Group remaining items
+  const grouped: GroupedNav[] = useMemo(() => {
+    const itemsWithGroup = visibleNavItems.filter(
+      (item) => item.path !== '/' && item.group,
+    );
+    return GROUP_ORDER.map((groupKey) => {
+      const meta = GROUP_LABELS[groupKey];
+      if (!meta) return null;
+      const items = itemsWithGroup.filter((item) => item.group === groupKey);
+      if (items.length === 0) return null;
+      return {
+        group: groupKey,
+        label: meta.label,
+        icon: meta.icon,
+        items,
+      };
+    }).filter((g): g is GroupedNav => g !== null);
+  }, [visibleNavItems]);
+
+  const toggleGroup = useCallback((group: string) => {
+    setCollapsed((prev) => {
+      const next = {
+        ...prev,
+        [group]: !prev[group],
+      };
+      saveCollapsed(next);
+      return next;
+    });
+  }, []);
 
   // Close user menu on click outside
   useEffect(() => {
@@ -110,45 +163,72 @@ export function AppShell() {
         .toUpperCase()
     : '?';
 
+  function renderNavLink(item: NavigationItem) {
+    const iconName = item.icon ?? 'Component';
+    return (
+      <NavLink
+        key={item.path}
+        to={item.path}
+        className={({ isActive }) => `nav-link${isActive ? ' is-active' : ''}`}
+        end={item.path === '/'}
+      >
+        <div className="nav-link-inner">
+          <span className="nav-icon" aria-hidden="true">
+            <Icon name={iconName} size={18} strokeWidth={1.5} />
+          </span>
+          <span className="nav-link-title">{item.label}</span>
+        </div>
+        {item.path === '/orders' && stats?.overdueOrders ? (
+          <span className="nav-badge danger">{stats.overdueOrders}</span>
+        ) : item.path === '/quotations' && stats?.expiringQuotations ? (
+          <span className="nav-badge warning">{stats.expiringQuotations}</span>
+        ) : null}
+      </NavLink>
+    );
+  }
+
   return (
     <div className="shell-layout">
       <aside className="sidebar-nav">
         <div className="brand-block">
-          <p className="eyebrow">Vĩnh Phát</p>
-          <h1>ERP Sản xuất</h1>
+          <p className="eyebrow">Vinh Phat</p>
+          <h1>ERP San xuat</h1>
         </div>
 
         <nav className="nav-stack" aria-label="Main navigation">
-          {visibleNavItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `nav-link${isActive ? ' is-active' : ''}`
-              }
-              end={item.path === '/'}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                }}
-              >
-                <span className="nav-icon" aria-hidden="true">
-                  {ROUTE_ICONS[item.path] ?? '📌'}
-                </span>
-                <span className="nav-link-title">{item.label}</span>
+          {/* Dashboard - always visible at top */}
+          {dashboardItem && renderNavLink(dashboardItem)}
+
+          {/* Grouped navigation */}
+          {grouped.map((g) => {
+            const isCollapsed = collapsed[g.group] ?? false;
+            const hasActive = g.items.some((item) =>
+              pathname.startsWith(item.path),
+            );
+            return (
+              <div key={g.group} className="nav-group">
+                <button
+                  type="button"
+                  className={`nav-group-toggle${hasActive ? ' has-active' : ''}`}
+                  onClick={() => toggleGroup(g.group)}
+                  aria-expanded={!isCollapsed}
+                >
+                  <span className="nav-group-label">{g.label}</span>
+                  <Icon
+                    name="ChevronDown"
+                    size={14}
+                    strokeWidth={2}
+                    className={`nav-group-chevron${isCollapsed ? ' is-collapsed' : ''}`}
+                  />
+                </button>
+                <div
+                  className={`nav-group-items${isCollapsed ? ' is-collapsed' : ''}`}
+                >
+                  {g.items.map(renderNavLink)}
+                </div>
               </div>
-              {item.path === '/orders' && stats?.overdueOrders ? (
-                <span className="nav-badge danger">{stats.overdueOrders}</span>
-              ) : item.path === '/quotations' && stats?.expiringQuotations ? (
-                <span className="nav-badge warning">
-                  {stats.expiringQuotations}
-                </span>
-              ) : null}
-            </NavLink>
-          ))}
+            );
+          })}
         </nav>
       </aside>
 
@@ -268,7 +348,8 @@ export function AppShell() {
 
       <nav className="mobile-nav" aria-label="Bottom navigation">
         {primaryItems.slice(0, 5).map((item) => {
-          const iconName = LUCIDE_ICONS[item.path] || 'Component';
+          const iconName =
+            item.icon ?? (item.path === '/' ? 'Home' : 'Component');
           return (
             <NavLink
               key={item.path}

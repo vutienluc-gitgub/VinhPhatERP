@@ -57,7 +57,7 @@ export const suppliersPlugin: FeaturePlugin = {
   label: 'Nhà cung cấp',
   shortLabel: 'NCC',
   description: 'Tra cứu và quản lý danh sách nhà cung cấp, đối tác gia công.',
-  icon: 'users',
+  icon: 'Handshake',
   requiredRoles: ['admin', 'manager'],
   group: 'master-data',
   order: 50,

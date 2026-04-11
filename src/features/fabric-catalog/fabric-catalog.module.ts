@@ -52,7 +52,7 @@ export const fabricCatalogPlugin: FeaturePlugin = {
   shortLabel: 'Mẫu Vải',
   description:
     'Quản lý thông số kỹ thuật các loại vải công ty có thể sản xuất.',
-  icon: 'layers',
+  icon: 'SwatchBook',
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'production',
   order: 40,

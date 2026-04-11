@@ -47,7 +47,7 @@ export const yarnCatalogPlugin: FeaturePlugin = {
   shortLabel: 'Loại Sợi',
   description:
     'Quản lý thông tin kỹ thuật và phân loại các loại sợi nguyên liệu.',
-  icon: 'package',
+  icon: 'Grip',
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'production',
   order: 30,

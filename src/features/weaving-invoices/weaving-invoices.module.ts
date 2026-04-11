@@ -21,7 +21,7 @@ export const weavingInvoicesPlugin: FeaturePlugin = {
   shortLabel: 'Gia công',
   description:
     'Quản lý phiếu gia công dệt theo lô — tính công nợ nhà dệt tự động.',
-  icon: 'receipt',
+  icon: 'Receipt',
   group: 'production',
   order: 57,
   component: () =>

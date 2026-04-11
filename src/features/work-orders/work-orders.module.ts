@@ -54,7 +54,7 @@ export const workOrdersPlugin: FeaturePlugin = {
   label: 'Lệnh dệt',
   shortLabel: 'Dệt',
   description: 'Quản lý lệnh sản xuất dệt vải mộc từ kho sợi.',
-  icon: 'layers',
+  icon: 'Scissors',
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'production',
   order: 20,

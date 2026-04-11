@@ -48,7 +48,7 @@ export const bomPlugin: FeaturePlugin = {
   label: 'Định mức (BOM)',
   shortLabel: 'BOM',
   description: 'Cấu hình định mức nguyên vật liệu sợi cho từng mã vải mộc.',
-  icon: 'layers',
+  icon: 'GitMerge',
   requiredRoles: ['admin', 'manager'],
   group: 'production',
   order: 45,

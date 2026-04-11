@@ -44,8 +44,8 @@ export function PaymentList() {
       {/* Header */}
       <div className="card-header-area card-header-premium">
         <div>
-          <p className="eyebrow-premium">T\u00c0I CH\u00cdNH</p>
-          <h3 className="title-premium">Phi\u1ebfu Thu</h3>
+          <p className="eyebrow-premium">TÀI CHÍNH</p>
+          <h3 className="title-premium">Phiếu Thu</h3>
         </div>
       </div>
 
@@ -53,13 +53,13 @@ export function PaymentList() {
       <div className="card-filter-section p-4 border-b border-border">
         <div className="filter-grid-premium">
           <div className="filter-field">
-            <label htmlFor="filter-search">T\u00ecm ki\u1ebfm</label>
+            <label htmlFor="filter-search">Tìm kiếm</label>
             <form className="search-input-wrapper" onSubmit={handleSearch}>
               <input
                 id="filter-search"
                 className="field-input"
                 type="text"
-                placeholder="S\u1ed1 phi\u1ebfu thu..."
+                placeholder="Số phiếu thu..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
               />
@@ -78,7 +78,7 @@ export function PaymentList() {
             }}
             style={{ marginTop: '1rem' }}
           >
-            <Icon name="X" size={14} /> X\u00f3a l\u1ecdc
+            <Icon name="X" size={14} /> Xóa lọc
           </button>
         )}
       </div>
@@ -87,7 +87,7 @@ export function PaymentList() {
       {error && (
         <div className="p-4">
           <p className="error-inline">
-            L\u1ed7i t\u1ea3i d\u1eef li\u1ec7u: {(error as Error).message}
+            Lỗi tải dữ liệu: {(error as Error).message}
           </p>
         </div>
       )}
@@ -98,55 +98,51 @@ export function PaymentList() {
         isLoading={isLoading}
         rowKey={(p) => p.id}
         emptyStateTitle={
-          hasFilter
-            ? 'Kh\u00f4ng t\u00ecm th\u1ea5y phi\u1ebfu thu'
-            : 'Ch\u01b0a c\u00f3 phi\u1ebfu thu n\u00e0o'
+          hasFilter ? 'Không tìm thấy phiếu thu' : 'Chưa có phiếu thu nào'
         }
         emptyStateDescription={
           hasFilter
-            ? 'Th\u1eed \u0111i\u1ec1u ch\u1ec9nh b\u1ed9 l\u1ecdc.'
-            : 'Phi\u1ebfu thu \u0111\u01b0\u1ee3c t\u1ea1o t\u1ef1 \u0111\u1ed9ng khi x\u00e1c nh\u1eadn thanh to\u00e1n \u0111\u01a1n h\u00e0ng.'
+            ? 'Thử điều chỉnh bộ lọc.'
+            : 'Phiếu thu được tạo tự động khi xác nhận thanh toán đơn hàng.'
         }
-        emptyStateIcon={hasFilter ? '\ud83d\udd0d' : 'Wallet'}
+        emptyStateIcon={hasFilter ? 'Search' : 'Wallet'}
         columns={[
           {
-            header: 'S\u1ed1 phi\u1ebfu',
+            header: 'Số phiếu',
             cell: (p) => (
               <span className="font-bold text-primary">{p.payment_number}</span>
             ),
           },
           {
-            header: '\u0110\u01a1n h\u00e0ng',
+            header: 'Đơn hàng',
             cell: (p) => (
               <span className="text-muted">
-                {p.orders?.order_number ?? '\u2014'}
+                {p.orders?.order_number ?? '—'}
               </span>
             ),
           },
           {
-            header: 'Kh\u00e1ch h\u00e0ng',
+            header: 'Khách hàng',
             cell: (p) => (
-              <span className="font-medium">
-                {p.customers?.name ?? '\u2014'}
-              </span>
+              <span className="font-medium">{p.customers?.name ?? '—'}</span>
             ),
           },
           {
-            header: 'Ng\u00e0y thu',
+            header: 'Ngày thu',
             className: 'td-muted',
             cell: (p) => p.payment_date,
           },
           {
-            header: 'S\u1ed1 ti\u1ec1n',
+            header: 'Số tiền',
             className: 'text-right',
             cell: (p) => (
               <span className="font-bold text-success">
-                {formatCurrency(p.amount)}\u0111
+                {formatCurrency(p.amount)}đ
               </span>
             ),
           },
           {
-            header: 'H\u00ecnh th\u1ee9c',
+            header: 'Hình thức',
             className: 'td-muted',
             cell: (p) => PAYMENT_METHOD_LABELS[p.payment_method],
           },
@@ -159,7 +155,7 @@ export function PaymentList() {
                 type="button"
                 onClick={() => handleDelete(p.id)}
                 disabled={deleteMutation.isPending}
-                title="X\u00f3a phi\u1ebfu thu"
+                title="Xóa phiếu thu"
               >
                 <Icon name="Trash2" size={16} />
               </button>
@@ -171,30 +167,24 @@ export function PaymentList() {
             <div className="mobile-card-header">
               <span className="mobile-card-title">{p.payment_number}</span>
               <span className="font-bold text-success text-lg">
-                {formatCurrency(p.amount)}\u0111
+                {formatCurrency(p.amount)}đ
               </span>
             </div>
             <div className="mobile-card-body space-y-2">
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="flex flex-col">
-                  <span className="text-xs text-muted">
-                    Kh\u00e1ch h\u00e0ng
-                  </span>
-                  <span className="font-bold">
-                    {p.customers?.name ?? '\u2014'}
-                  </span>
+                  <span className="text-xs text-muted">Khách hàng</span>
+                  <span className="font-bold">{p.customers?.name ?? '—'}</span>
                 </div>
                 <div className="flex flex-col text-right">
-                  <span className="text-xs text-muted">
-                    \u0110\u01a1n h\u00e0ng
-                  </span>
+                  <span className="text-xs text-muted">Đơn hàng</span>
                   <span className="font-medium">
-                    {p.orders?.order_number ?? '\u2014'}
+                    {p.orders?.order_number ?? '—'}
                   </span>
                 </div>
               </div>
               <div className="flex items-center justify-between text-xs text-muted">
-                <span>Ng\u00e0y: {p.payment_date}</span>
+                <span>Ngày: {p.payment_date}</span>
                 <span>{PAYMENT_METHOD_LABELS[p.payment_method]}</span>
               </div>
               <div className="pt-2 border-t border-border/10">
@@ -206,7 +196,7 @@ export function PaymentList() {
                   }}
                   disabled={deleteMutation.isPending}
                 >
-                  <Icon name="Trash2" size={16} /> X\u00f3a phi\u1ebfu
+                  <Icon name="Trash2" size={16} /> Xóa phiếu
                 </button>
               </div>
             </div>
@@ -216,7 +206,7 @@ export function PaymentList() {
 
       {deleteMutation.error && (
         <p className="error-inline-sm">
-          L\u1ed7i: {(deleteMutation.error as Error).message}
+          Lỗi: {(deleteMutation.error as Error).message}
         </p>
       )}
 

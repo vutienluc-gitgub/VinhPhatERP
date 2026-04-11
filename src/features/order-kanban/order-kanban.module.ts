@@ -5,7 +5,7 @@ export const orderKanbanPlugin: FeaturePlugin = {
   label: 'Kanban Đơn Hàng',
   shortLabel: 'Kanban',
   description: 'Quản lý đơn hàng theo trạng thái trực quan.',
-  icon: 'kanban',
+  icon: 'Columns3',
   requiredRoles: ['admin', 'manager', 'sale'],
   group: 'sales',
   order: 27,

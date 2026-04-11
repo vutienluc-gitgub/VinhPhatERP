@@ -66,7 +66,7 @@ export const finishedFabricPlugin: FeaturePlugin = {
   label: 'Kho Thành phẩm',
   shortLabel: 'Thành phẩm',
   description: 'Theo dõi tồn kho vải đã nhuộm, nhập kho và xuất kho giao hàng.',
-  icon: 'layers',
+  icon: 'Sparkles',
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'production',
   order: 30,
