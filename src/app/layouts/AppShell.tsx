@@ -32,6 +32,7 @@ const roleLabel: Record<UserRole, string> = {
   driver: 'Tai xe',
   viewer: 'Viewer',
   sale: 'Sale',
+  customer: 'Khach hang',
 };
 
 /** Group display metadata */

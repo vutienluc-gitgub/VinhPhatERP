@@ -24,6 +24,8 @@ export const weavingInvoicesPlugin: FeaturePlugin = {
   icon: 'Receipt',
   group: 'production',
   order: 57,
+  requiredRoles: ['admin', 'manager'],
+  routeGuard: 'manager',
   component: () =>
     import('./index').then((m) => ({ default: m.WeavingInvoicesPage })),
 };
