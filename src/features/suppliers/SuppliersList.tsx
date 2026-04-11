@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
@@ -291,13 +291,13 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
               <div className="grid grid-cols-2 gap-2 text-sm">
                 {s.phone && (
                   <div className="flex items-center gap-2 text-muted">
-                    <Icon name="Phone" size={14} />
+                    <Icon name="Phone" size={16} />
                     <span>{s.phone}</span>
                   </div>
                 )}
                 {s.contact_person && (
                   <div className="flex items-center gap-2 text-muted">
-                    <Icon name="User" size={14} />
+                    <Icon name="User" size={16} />
                     <span>{s.contact_person}</span>
                   </div>
                 )}
@@ -307,7 +307,7 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
                 <div className="flex items-start gap-2 text-xs text-muted mt-1">
                   <Icon
                     name="MapPin"
-                    size={14}
+                    size={16}
                     className="mt-0.5 flex-shrink-0"
                   />
                   <span className="truncate">{s.address}</span>

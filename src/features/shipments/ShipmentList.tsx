@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
@@ -348,7 +348,7 @@ export function ShipmentList() {
                     type="button"
                     onClick={() => setDeliveryShipment(s)}
                   >
-                    <Icon name="Check" size={14} /> Nhận hàng
+                    <Icon name="Check" size={16} /> Nhận hàng
                   </button>
                 )}
               </div>
@@ -432,7 +432,7 @@ export function ShipmentList() {
                       setDeliveryShipment(s);
                     }}
                   >
-                    <Icon name="Check" size={14} /> Nhận hàng
+                    <Icon name="Check" size={16} /> Nhận hàng
                   </button>
                 )}
               </div>

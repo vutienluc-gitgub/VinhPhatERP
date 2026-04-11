@@ -1,4 +1,4 @@
-import {
+﻿import {
   Icon,
   Badge,
   DataTablePremium,
@@ -144,12 +144,12 @@ function AgingMobileCard({ roll }: { roll: AgingRoll }) {
         <p className="font-bold">{roll.fabric_type}</p>
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div className="flex items-center gap-2 text-muted">
-            <Icon name="Layers" size={14} />
+            <Icon name="Layers" size={16} />
             <span>{roll.source === 'raw' ? 'Mộc' : 'Thành phẩm'}</span>
           </div>
           {roll.color_name && (
             <div className="flex items-center gap-2 text-muted">
-              <Icon name="Palette" size={14} />
+              <Icon name="Palette" size={16} />
               <span>{roll.color_name}</span>
             </div>
           )}

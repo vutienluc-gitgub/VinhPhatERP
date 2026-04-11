@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 
+import { Icon } from '@/shared/components';
+
 import type { PendingTask } from './useDashboardData';
 
 type PendingTasksCardProps = {
@@ -30,14 +32,17 @@ export function PendingTasksCard({ tasks }: PendingTasksCardProps) {
 
       <div className="p-4">
         {tasks.length === 0 ? (
-          <div className="task-empty py-6 text-success">
-            ✨ Tuyệt vời! Bạn không còn nhiệm vụ nào chưa xử lý.
+          <div className="task-empty py-6 text-success flex items-center justify-center gap-2">
+            <Icon name="Sparkles" size={20} />
+            Tuyệt vời! Bạn không còn nhiệm vụ nào chưa xử lý.
           </div>
         ) : (
           <div className="task-list">
             {tasks.map((task) => (
               <Link key={task.text} to={task.href} className="task-item">
-                <span className="task-item-icon">{task.icon}</span>
+                <span className="task-item-icon">
+                  <Icon name={task.icon} size={20} />
+                </span>
                 <span className="task-item-text font-medium">{task.text}</span>
                 {task.count > 0 && (
                   <span

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CreditOverrideDialog
  * =====================
  * Hiển thị khi createOrder trả về lỗi CREDIT_OVERDUE hoặc CREDIT_LIMIT_EXCEEDED.
@@ -83,7 +83,7 @@ export function CreditOverrideDialog({
             onClick={onCancel}
             aria-label="Đóng"
           >
-            <Icon name="X" size={18} />
+            <Icon name="X" size={20} />
           </button>
         </div>
 

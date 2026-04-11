@@ -1,4 +1,4 @@
-import { Icon } from '@/shared/components/Icon';
+﻿import { Icon } from '@/shared/components/Icon';
 import { Badge } from '@/shared/components/Badge';
 
 import { BOM_STATUS_LABELS } from './bom.module';
@@ -47,7 +47,7 @@ export function BomDetail({
             onClick={onBack}
             title="Quay lai"
           >
-            <Icon name="ArrowLeft" size={18} />
+            <Icon name="ArrowLeft" size={20} />
           </button>
           <div>
             <p className="eyebrow-premium">CHI TIET DINH MUC</p>

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 
+import { Icon } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 
 import type { RecentOrder } from './useDashboardData';
@@ -40,8 +41,8 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
           <p className="eyebrow-premium">GIAO DỊCH</p>
           <h3 className="title-premium">Đơn hàng mới</h3>
         </div>
-        <Link to="/orders" className="card-action-link">
-          Tất cả →
+        <Link to="/orders" className="card-action-link flex items-center gap-1">
+          Tất cả <Icon name="ChevronRight" size={16} />
         </Link>
       </div>
 

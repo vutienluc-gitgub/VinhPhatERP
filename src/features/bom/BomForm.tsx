@@ -1,4 +1,4 @@
-import { zodResolver } from '@hookform/resolvers/zod';
+﻿import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 
@@ -132,7 +132,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
             onClick={onCancel}
             title="Quay lai"
           >
-            <Icon name="ArrowLeft" size={18} />
+            <Icon name="ArrowLeft" size={20} />
           </button>
           <div>
             <p className="eyebrow-premium">KY THUAT</p>

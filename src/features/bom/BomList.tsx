@@ -1,4 +1,4 @@
-import {
+﻿import {
   Icon,
   Badge,
   type BadgeVariant,
@@ -173,7 +173,7 @@ export function BomList({
             </div>
 
             <div className="flex items-center gap-2 text-xs text-muted mt-2">
-              <Icon name="User" size={14} />
+              <Icon name="User" size={16} />
               <span>
                 Người tạo: {bom.created_by_profile?.full_name || 'N/A'}
               </span>
