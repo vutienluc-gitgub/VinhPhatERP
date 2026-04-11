@@ -63,14 +63,7 @@ export function OrderDetail({
   if (error)
     return (
       <div className="panel-card">
-        <p
-          style={{
-            color: '#c0392b',
-            padding: '1rem',
-          }}
-        >
-          Lỗi: {(error as Error).message}
-        </p>
+        <p className="error-inline">Lỗi: {(error as Error).message}</p>
       </div>
     );
   if (!order)
@@ -82,6 +75,10 @@ export function OrderDetail({
 
   const balanceDue = order.total_amount - order.paid_amount;
   const items = order.order_items ?? [];
+  const paymentPct = Math.min(
+    100,
+    Math.round((order.paid_amount / order.total_amount) * 100),
+  );
 
   async function handleConfirm() {
     const ok = await confirm({
@@ -110,20 +107,13 @@ export function OrderDetail({
   return (
     <div className="panel-card card-flush">
       {/* Header */}
-      <div style={{ padding: '1.25rem' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem',
-            marginBottom: '1rem',
-          }}
-        >
+      <div className="p-5">
+        <div className="flex items-center gap-3 mb-4">
           <Button variant="secondary" leftIcon="ArrowLeft" onClick={onBack}>
             Quay lại
           </Button>
-          <div style={{ flex: 1 }}>
-            <h3 style={{ margin: 0 }}>{order.order_number}</h3>
+          <div className="flex-1">
+            <h3 className="m-0">{order.order_number}</h3>
             <span className="td-muted">{order.customers?.name ?? '—'}</span>
           </div>
           <span className={`roll-status ${statusClass(order.status)}`}>
@@ -132,14 +122,7 @@ export function OrderDetail({
         </div>
 
         {/* Info grid */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-            gap: '0.75rem',
-            marginBottom: '1rem',
-          }}
-        >
+        <div className="dashboard-summary-row mb-4">
           <div>
             <div className="td-muted summary-label">Ngày đặt</div>
             <div>{order.order_date}</div>
@@ -150,27 +133,20 @@ export function OrderDetail({
           </div>
           <div>
             <div className="td-muted summary-label">Tổng tiền</div>
-            <div
-              className="numeric-cell"
-              style={{
-                textAlign: 'left',
-                fontWeight: 600,
-              }}
-            >
+            <div className="summary-value">
               {formatCurrency(order.total_amount)} đ
             </div>
           </div>
           <div>
             <div className="td-muted summary-label">Đã thu</div>
-            <div className="numeric-paid" style={{ textAlign: 'left' }}>
+            <div className="summary-value" style={{ color: 'var(--success)' }}>
               {formatCurrency(order.paid_amount)} đ
             </div>
           </div>
           <div>
             <div className="td-muted summary-label">Còn nợ</div>
             <div
-              className={balanceDue > 0 ? 'numeric-debt' : 'numeric-paid'}
-              style={{ textAlign: 'left' }}
+              className={`summary-value${balanceDue > 0 ? ' summary-value--danger' : ''}`}
             >
               {formatCurrency(balanceDue)} đ
             </div>
@@ -178,53 +154,24 @@ export function OrderDetail({
         </div>
 
         {order.notes && (
-          <div
-            style={{
-              padding: '0.75rem',
-              background: 'var(--surface)',
-              borderRadius: 'var(--radius-sm)',
-              fontSize: '0.9rem',
-              marginBottom: '1rem',
-            }}
-          >
+          <div className="info-box mb-4">
             <strong>Ghi chú:</strong> {order.notes}
           </div>
         )}
 
         {/* Payment progress bar */}
         {order.total_amount > 0 && (
-          <div style={{ marginBottom: '1rem' }}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                fontSize: '0.8rem',
-                marginBottom: '0.25rem',
-              }}
-            >
+          <div className="mb-4">
+            <div className="flex justify-between text-xs mb-1">
               <span>Thanh toán</span>
-              <span>
-                {Math.min(
-                  100,
-                  Math.round((order.paid_amount / order.total_amount) * 100),
-                )}
-                %
-              </span>
+              <span>{paymentPct}%</span>
             </div>
-            <div
-              style={{
-                height: 8,
-                background: 'var(--border)',
-                borderRadius: 4,
-              }}
-            >
+            <div className="h-2 bg-border rounded">
               <div
+                className="h-full rounded transition-all duration-300"
                 style={{
-                  height: '100%',
-                  width: `${Math.min(100, (order.paid_amount / order.total_amount) * 100)}%`,
+                  width: `${paymentPct}%`,
                   background: balanceDue <= 0 ? '#0c8f68' : '#0b6bcb',
-                  borderRadius: 4,
-                  transition: 'width 300ms ease',
                 }}
               />
             </div>
@@ -232,14 +179,7 @@ export function OrderDetail({
         )}
 
         {/* Actions */}
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '0.5rem',
-            marginBottom: '1rem',
-          }}
-        >
+        <div className="flex flex-wrap gap-2 mb-4">
           {order.status === 'draft' && (
             <>
               <Button
@@ -263,7 +203,7 @@ export function OrderDetail({
             <>
               <Button
                 variant="secondary"
-                leftIcon="Lock" // Giữ cuộn
+                leftIcon="Lock"
                 onClick={() => onReserveRolls(order)}
               >
                 Giữ cuộn
@@ -300,7 +240,7 @@ export function OrderDetail({
               leftIcon="Trash2"
               onClick={handleCancel}
               isLoading={cancelMutation.isPending}
-              style={{ color: '#c0392b' }}
+              className="text-danger"
             >
               Huỷ đơn
             </Button>
@@ -310,12 +250,7 @@ export function OrderDetail({
         {(confirmMutation.error ||
           cancelMutation.error ||
           completeMutation.error) && (
-          <p
-            style={{
-              color: '#c0392b',
-              fontSize: '0.88rem',
-            }}
-          >
+          <p className="error-inline text-sm">
             Lỗi:{' '}
             {
               (
@@ -329,12 +264,9 @@ export function OrderDetail({
       </div>
 
       {/* Order items table */}
-      <div style={{ padding: '0 1.25rem 1.25rem' }}>
-        <h4 style={{ marginBottom: '0.75rem' }}>Dòng hàng ({items.length})</h4>
-        <div
-          className="data-table-wrap"
-          style={{ borderRadius: 'var(--radius-sm)' }}
-        >
+      <div className="px-5 pb-5">
+        <h4 className="mb-3">Dòng hàng ({items.length})</h4>
+        <div className="data-table-wrap">
           {items.length === 0 ? (
             <p className="table-empty">Chưa có dòng hàng.</p>
           ) : (
@@ -344,9 +276,9 @@ export function OrderDetail({
                   <th>#</th>
                   <th>Loại vải</th>
                   <th>Màu</th>
-                  <th style={{ textAlign: 'right' }}>Số lượng</th>
-                  <th style={{ textAlign: 'right' }}>Đơn giá</th>
-                  <th style={{ textAlign: 'right' }}>Thành tiền</th>
+                  <th className="text-right">Số lượng</th>
+                  <th className="text-right">Đơn giá</th>
+                  <th className="text-right">Thành tiền</th>
                 </tr>
               </thead>
               <tbody>
@@ -359,51 +291,23 @@ export function OrderDetail({
                         <strong>{item.fabric_type}</strong>
                       </td>
                       <td className="td-muted">{item.color_name ?? '—'}</td>
-                      <td
-                        style={{
-                          textAlign: 'right',
-                          fontVariantNumeric: 'tabular-nums',
-                        }}
-                      >
+                      <td className="numeric-cell">
                         {new Intl.NumberFormat('vi-VN').format(item.quantity)}{' '}
                         {item.unit}
                       </td>
-                      <td
-                        style={{
-                          textAlign: 'right',
-                          fontVariantNumeric: 'tabular-nums',
-                        }}
-                      >
+                      <td className="numeric-cell">
                         {formatCurrency(item.unit_price)}
                       </td>
-                      <td
-                        style={{
-                          textAlign: 'right',
-                          fontWeight: 600,
-                          fontVariantNumeric: 'tabular-nums',
-                        }}
-                      >
+                      <td className="numeric-cell font-bold">
                         {formatCurrency(item.amount ?? 0)}
                       </td>
                     </tr>
                   ))}
                 <tr>
-                  <td
-                    colSpan={5}
-                    style={{
-                      textAlign: 'right',
-                      fontWeight: 700,
-                    }}
-                  >
+                  <td colSpan={5} className="text-right font-bold">
                     Tổng cộng
                   </td>
-                  <td
-                    style={{
-                      textAlign: 'right',
-                      fontWeight: 700,
-                      fontVariantNumeric: 'tabular-nums',
-                    }}
-                  >
+                  <td className="numeric-cell font-bold">
                     {formatCurrency(order.total_amount)} đ
                   </td>
                 </tr>
@@ -415,8 +319,8 @@ export function OrderDetail({
 
       {/* Production progress timeline */}
       {progressStages.length > 0 && (
-        <div style={{ padding: '0 1.25rem 1.25rem' }}>
-          <h4 style={{ marginBottom: '0.75rem' }}>Tiến độ sản xuất</h4>
+        <div className="px-5 pb-5">
+          <h4 className="mb-3">Tiến độ sản xuất</h4>
           <ProgressTimeline
             stages={progressStages}
             readonly={
