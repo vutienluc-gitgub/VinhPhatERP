@@ -99,16 +99,29 @@ export function AppShell() {
   const visibleNavItems = navigationItems.filter((item) =>
     hasAccess(item.requiredRoles, userRole),
   );
-  const primaryItems = visibleNavItems.filter((item) => item.primaryMobile);
-  const secondaryItems = visibleNavItems.filter((item) => !item.primaryMobile);
-  const isSecondaryActive = secondaryItems.some((item) =>
+
+  // Fixed bottom nav tabs (high-frequency features)
+  const BOTTOM_TAB_PATHS = ['/', '/orders', '/dyeing-orders'];
+  const bottomTabs = BOTTOM_TAB_PATHS.map((p) =>
+    visibleNavItems.find((item) => item.path === p),
+  ).filter(
+    (item): item is NavigationItem => item !== null && item !== undefined,
+  );
+
+  // All non-tab items for drawer (exclude bottom tabs to avoid duplicates)
+  const drawerItems = visibleNavItems.filter(
+    (item) => !BOTTOM_TAB_PATHS.includes(item.path),
+  );
+
+  // Check if active page is in the drawer (not in bottom tabs)
+  const isDrawerActive = drawerItems.some((item) =>
     item.path === '/' ? pathname === '/' : pathname.startsWith(item.path),
   );
 
-  // Dashboard item (no group)
+  // Dashboard item (no group) for sidebar
   const dashboardItem = visibleNavItems.find((item) => item.path === '/');
 
-  // Group remaining items
+  // Group remaining items for sidebar
   const grouped: GroupedNav[] = useMemo(() => {
     const itemsWithGroup = visibleNavItems.filter(
       (item) => item.path !== '/' && item.group,
@@ -250,7 +263,7 @@ export function AppShell() {
             <button
               type="button"
               onClick={toggleTheme}
-              title={theme === 'dark' ? 'Chế độ Sáng' : 'Chế độ Tối'}
+              title={theme === 'dark' ? 'Che do Sang' : 'Che do Toi'}
               aria-label="Toggle Theme"
               style={{
                 display: 'flex',
@@ -267,7 +280,11 @@ export function AppShell() {
                 padding: 0,
               }}
             >
-              {theme === 'dark' ? '☀️' : '🌙'}
+              <Icon
+                name={theme === 'dark' ? 'Sun' : 'Moon'}
+                size={18}
+                strokeWidth={1.5}
+              />
             </button>
             {profile && (
               <button
@@ -281,21 +298,7 @@ export function AppShell() {
                 <span className="user-name">
                   {profile.full_name || profile.id.slice(0, 8)}
                 </span>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M4 6l4 4 4-4"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <Icon name="ChevronDown" size={16} strokeWidth={1.5} />
               </button>
             )}
 
@@ -319,22 +322,8 @@ export function AppShell() {
                     signOut();
                   }}
                 >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M6 14H3.333A1.333 1.333 0 012 12.667V3.333A1.333 1.333 0 013.333 2H6M10.667 11.333L14 8m0 0l-3.333-3.333M14 8H6"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  Đăng xuất
+                  <Icon name="LogOut" size={16} strokeWidth={1.5} />
+                  Dang xuat
                 </button>
               </div>
             )}
@@ -346,8 +335,9 @@ export function AppShell() {
         </main>
       </div>
 
+      {/* ── Mobile Bottom Nav (3 tabs + Menu) ── */}
       <nav className="mobile-nav" aria-label="Bottom navigation">
-        {primaryItems.slice(0, 5).map((item) => {
+        {bottomTabs.map((item) => {
           const iconName =
             item.icon ?? (item.path === '/' ? 'Home' : 'Component');
           return (
@@ -363,10 +353,8 @@ export function AppShell() {
                 <>
                   <Icon
                     name={iconName}
-                    size={24}
-                    strokeWidth={isActive ? 2.5 : 1.8}
-                    fill={isActive ? 'currentColor' : 'none'}
-                    fillOpacity={isActive ? 0.15 : 0}
+                    size={22}
+                    strokeWidth={isActive ? 2.2 : 1.6}
                   />
                   <span>{item.shortLabel}</span>
                 </>
@@ -376,64 +364,22 @@ export function AppShell() {
         })}
         <button
           type="button"
-          className={`mobile-more-btn${isSecondaryActive ? ' is-active' : ''}`}
+          className={`mobile-nav-link mobile-menu-btn${isDrawerActive ? ' is-active' : ''}`}
           onClick={() => setShowMore(true)}
           aria-label="Menu"
         >
-          <div
-            style={{
-              position: 'relative',
-              display: 'flex',
-            }}
-          >
-            <span
-              className="user-avatar"
-              style={{
-                width: 26,
-                height: 26,
-                fontSize: '0.65rem',
-              }}
-            >
-              {initials}
-            </span>
-            <div
-              style={{
-                position: 'absolute',
-                bottom: -2,
-                right: -4,
-                background: 'var(--surface-strong)',
-                borderRadius: '50%',
-                padding: '1px',
-              }}
-            >
-              <div
-                style={{
-                  background: 'var(--muted)',
-                  borderRadius: '50%',
-                  width: 12,
-                  height: 12,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Icon
-                  name="AlignJustify"
-                  className="hamburger-badge"
-                  size={8}
-                  color="#fff"
-                  strokeWidth={3}
-                />
-              </div>
-            </div>
-          </div>
+          <Icon
+            name="LayoutGrid"
+            size={22}
+            strokeWidth={isDrawerActive ? 2.2 : 1.6}
+          />
           <span>Menu</span>
         </button>
       </nav>
 
       {showMore && (
         <MobileMoreDrawer
-          items={secondaryItems}
+          items={drawerItems}
           onClose={() => setShowMore(false)}
         />
       )}
