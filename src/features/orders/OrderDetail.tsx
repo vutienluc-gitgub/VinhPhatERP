@@ -277,8 +277,8 @@ export function OrderDetail({
                   <th>Loại vải</th>
                   <th>Màu</th>
                   <th className="text-right">Số lượng</th>
-                  <th className="text-right">Đơn giá</th>
-                  <th className="text-right">Thành tiền</th>
+                  <th className="text-right">Đơn giá (đ)</th>
+                  <th className="text-right">Thành tiền (đ)</th>
                 </tr>
               </thead>
               <tbody>
@@ -296,10 +296,10 @@ export function OrderDetail({
                         {item.unit}
                       </td>
                       <td className="numeric-cell">
-                        {formatCurrency(item.unit_price)}
+                        {formatCurrency(item.unit_price)}đ
                       </td>
                       <td className="numeric-cell font-bold">
-                        {formatCurrency(item.amount ?? 0)}
+                        {formatCurrency(item.amount ?? 0)}đ
                       </td>
                     </tr>
                   ))}

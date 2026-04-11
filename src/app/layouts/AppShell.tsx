@@ -41,15 +41,15 @@ const GROUP_LABELS: Record<string, { label: string; icon: string }> = {
     icon: 'Briefcase',
   },
   production: {
-    label: 'San xuat',
+    label: 'Sản xuất',
     icon: 'Factory',
   },
   'master-data': {
-    label: 'Danh muc',
+    label: 'Danh mục',
     icon: 'Database',
   },
   system: {
-    label: 'He thong',
+    label: 'Hệ thống',
     icon: 'Shield',
   },
 };
@@ -204,8 +204,8 @@ export function AppShell() {
     <div className="shell-layout">
       <aside className="sidebar-nav">
         <div className="brand-block">
-          <p className="eyebrow">Vinh Phat</p>
-          <h1>ERP San xuat</h1>
+          <p className="eyebrow">Vĩnh Phát</p>
+          <h1>ERP Sản xuất</h1>
         </div>
 
         <nav className="nav-stack" aria-label="Main navigation">
@@ -263,7 +263,7 @@ export function AppShell() {
             <button
               type="button"
               onClick={toggleTheme}
-              title={theme === 'dark' ? 'Che do Sang' : 'Che do Toi'}
+              title={theme === 'dark' ? 'Chế độ Sáng' : 'Chế độ Tối'}
               aria-label="Toggle Theme"
               style={{
                 display: 'flex',
@@ -323,7 +323,7 @@ export function AppShell() {
                   }}
                 >
                   <Icon name="LogOut" size={16} strokeWidth={1.5} />
-                  Dang xuat
+                  Đăng xuất
                 </button>
               </div>
             )}

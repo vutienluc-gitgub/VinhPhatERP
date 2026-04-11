@@ -158,7 +158,7 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
             ? 'Thử điều chỉnh bộ lọc.'
             : 'Nhấn "Tạo phiếu chi" để bắt đầu ghi nhận chi phí.'
         }
-        emptyStateIcon={hasFilter ? '🔍' : 'ReceiptText'}
+        emptyStateIcon={hasFilter ? 'Search' : 'ReceiptText'}
         emptyStateActionLabel={!hasFilter ? '+ Tạo phiếu chi' : undefined}
         onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={[

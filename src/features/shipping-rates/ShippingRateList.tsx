@@ -131,7 +131,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
             ? 'Thử điều chỉnh bộ lọc.'
             : 'Bấm "+ Thêm bảng giá" để tạo giá cước vận chuyển.'
         }
-        emptyStateIcon={hasFilter ? '🔍' : 'Truck'}
+        emptyStateIcon={hasFilter ? 'Search' : 'Truck'}
         emptyStateActionLabel={!hasFilter ? '+ Thêm bảng giá' : undefined}
         onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={[

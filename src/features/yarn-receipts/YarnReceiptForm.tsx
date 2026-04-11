@@ -4,6 +4,7 @@ import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm';
 import {
   useColorOptions,
@@ -489,16 +490,19 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                       <label htmlFor={`items.${index}.unitPrice`}>
                         Đơn giá <span className="field-required">*</span>
                       </label>
-                      <input
-                        id={`items.${index}.unitPrice`}
-                        className={`field-input${errors.items?.[index]?.unitPrice ? ' is-error' : ''}`}
-                        type="number"
-                        step="1"
-                        min="0"
-                        placeholder="0"
-                        {...register(`items.${index}.unitPrice`, {
-                          valueAsNumber: true,
-                        })}
+                      <Controller
+                        name={`items.${index}.unitPrice` as const}
+                        control={control}
+                        render={({ field }) => (
+                          <CurrencyInput
+                            id={`items.${index}.unitPrice`}
+                            className={`field-input${errors.items?.[index]?.unitPrice ? ' is-error' : ''}`}
+                            value={field.value}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            placeholder="0"
+                          />
+                        )}
                       />
                       {errors.items?.[index]?.unitPrice && (
                         <span className="field-error">

@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
@@ -259,7 +259,7 @@ export function ShipmentList() {
             ? 'Hãy thử thay đổi tiêu chí tìm kiếm.'
             : 'Sẽ có dữ liệu ở đây khi có yêu cầu chuyển hàng hoặc đơn giao cần xử lý.'
         }
-        emptyStateIcon={hasFilter ? '🔍' : '🚚'}
+        emptyStateIcon={hasFilter ? 'Search' : 'Truck'}
         columns={[
           {
             header: 'Số phiếu',

@@ -13,6 +13,7 @@ import {
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
+import { formatCurrency } from '@/shared/utils/format';
 
 import type {
   WorkOrderFilter,
@@ -206,7 +207,7 @@ export function WorkOrderList({
             ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
             : 'Nhấn "Tạo lệnh SX" để bắt đầu thiết lập quy trình.'
         }
-        emptyStateIcon={hasFilter ? '🔍' : 'Factory'}
+        emptyStateIcon={hasFilter ? 'Search' : 'Factory'}
         emptyStateActionLabel={!hasFilter ? '+ Tạo Lệnh SX' : undefined}
         onEmptyStateAction={!hasFilter ? onCreate : undefined}
         columns={[
@@ -240,7 +241,7 @@ export function WorkOrderList({
               <div className="flex flex-col">
                 <span className="font-medium">{wo.supplier?.name}</span>
                 <span className="text-xs text-muted">
-                  {wo.weaving_unit_price.toLocaleString()}đ/m
+                  {formatCurrency(wo.weaving_unit_price)}đ/m
                 </span>
               </div>
             ),
@@ -350,7 +351,7 @@ export function WorkOrderList({
                   <div className="flex flex-col text-right">
                     <span className="text-xs text-muted">Đơn giá dệt</span>
                     <span className="font-medium">
-                      {wo.weaving_unit_price.toLocaleString()}đ/m
+                      {formatCurrency(wo.weaving_unit_price)}đ/m
                     </span>
                   </div>
                 </div>

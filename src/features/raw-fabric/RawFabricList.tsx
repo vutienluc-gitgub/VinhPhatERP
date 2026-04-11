@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Pagination } from '@/shared/components/Pagination';
 import { fetchRawFabricAll } from '@/api/raw-fabric.api';
@@ -356,7 +356,7 @@ export function RawFabricList({
                 ? 'Không tìm thấy cuộn vải phù hợp'
                 : 'Chưa có cuộn vải nào'
             }
-            emptyStateIcon={hasFilter ? '🔍' : 'Layers'}
+            emptyStateIcon={hasFilter ? 'Search' : 'Layers'}
             columns={[
               {
                 header: 'Mã cuộn',

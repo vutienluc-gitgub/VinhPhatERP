@@ -22,8 +22,8 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
  */
 
 type CurrencyInputProps = {
-  value: number;
-  onChange: (value: number) => void;
+  value: number | null | undefined;
+  onChange: (value: number | null) => void;
   onBlur?: () => void;
   id?: string;
   className?: string;
@@ -32,8 +32,8 @@ type CurrencyInputProps = {
 };
 
 /** Format number -> display string (VD: 115000 -> "115.000") */
-function toDisplay(num: number): string {
-  if (!num || num <= 0) return '';
+function toDisplay(num: number | null | undefined): string {
+  if (num == null || num <= 0) return '';
   return new Intl.NumberFormat('vi-VN').format(num);
 }
 
@@ -52,13 +52,14 @@ export const CurrencyInput = memo(function CurrencyInput({
   placeholder = '0',
   disabled,
 }: CurrencyInputProps) {
-  const [display, setDisplay] = useState(() => toDisplay(value));
+  const [display, setDisplay] = useState(() => toDisplay(value ?? null));
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Sync khi value thay đổi từ bên ngoài (edit mode, form reset)
   useEffect(() => {
     const currentNum = toNumber(display);
-    if (value !== currentNum) {
+    const safeValue = value ?? 0;
+    if (safeValue !== currentNum) {
       setDisplay(toDisplay(value));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

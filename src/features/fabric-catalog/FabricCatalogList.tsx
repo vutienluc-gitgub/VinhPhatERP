@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 
 import { Combobox } from '@/shared/components/Combobox';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
@@ -202,7 +202,7 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
         emptyStateTitle={
           hasFilter ? 'Không tìm thấy loại vải phù hợp' : 'Chưa có loại vải nào'
         }
-        emptyStateIcon={hasFilter ? '🔍' : 'Layers'}
+        emptyStateIcon={hasFilter ? 'Search' : 'Layers'}
         columns={[
           {
             header: 'Mã',

@@ -263,7 +263,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
             ? 'Hãy thử thay đổi điều kiện lọc.'
             : 'Nhấn nút tạo báo giá để giới thiệu sản phẩm cho khách hàng.'
         }
-        emptyStateIcon={hasFilter ? '🔍' : 'ClipboardList'}
+        emptyStateIcon={hasFilter ? 'Search' : 'ClipboardList'}
         emptyStateActionLabel={!hasFilter ? '+ Tạo báo giá' : undefined}
         onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={[

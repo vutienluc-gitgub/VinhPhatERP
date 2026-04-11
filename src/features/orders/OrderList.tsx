@@ -265,7 +265,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
             ? 'Hãy thử thay đổi điều kiện lọc.'
             : 'Nhấn nút tạo đơn để bắt đầu.'
         }
-        emptyStateIcon={hasFilter ? '🔍' : '📦'}
+        emptyStateIcon={hasFilter ? 'Search' : 'Package'}
         emptyStateActionLabel={!hasFilter ? '+ Tạo đơn hàng' : undefined}
         onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={[

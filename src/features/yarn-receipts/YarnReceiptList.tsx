@@ -247,7 +247,7 @@ export function YarnReceiptList({
             ? 'Hãy thử thay đổi điều kiện lọc.'
             : 'Nhấn nút tạo phiếu nhập để bắt đầu.'
         }
-        emptyStateIcon={hasFilter ? '🔍' : 'Package'}
+        emptyStateIcon={hasFilter ? 'Search' : 'Package'}
         emptyStateActionLabel={!hasFilter ? '+ Tạo phiếu nhập' : undefined}
         onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={[

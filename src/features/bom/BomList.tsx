@@ -1,4 +1,4 @@
-﻿import {
+import {
   Icon,
   Badge,
   type BadgeVariant,
@@ -58,7 +58,7 @@ export function BomList({
           ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
           : 'Nhấn "Tạo bản nháp" để bắt đầu xây dựng BOM.'
       }
-      emptyStateIcon={hasFilter ? '🔍' : 'FileText'}
+      emptyStateIcon={hasFilter ? 'Search' : 'FileText'}
       emptyStateActionLabel={!hasFilter ? '+ Tạo bản nháp' : undefined}
       onEmptyStateAction={!hasFilter && onCreate ? onCreate : undefined}
       columns={[

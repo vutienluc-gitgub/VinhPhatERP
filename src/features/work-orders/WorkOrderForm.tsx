@@ -9,6 +9,7 @@ import {
 } from '@/shared/hooks/useFormOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import DraftBanner from '@/shared/components/DraftBanner';
 import SaveStatus from '@/shared/components/SaveStatus';
 import { useAutoSave, loadDraft, clearDraft } from '@/shared/hooks/useAutoSave';
@@ -401,11 +402,18 @@ export function WorkOrderForm({
 
               <div className="form-field">
                 <label>Đơn giá gia công (đ/m)</label>
-                <input
-                  type="number"
-                  {...register('weaving_unit_price', { valueAsNumber: true })}
-                  className={`field-input${errors.weaving_unit_price ? ' is-error' : ''}`}
-                  placeholder="Ví dụ: 3500"
+                <Controller
+                  name="weaving_unit_price"
+                  control={control}
+                  render={({ field }) => (
+                    <CurrencyInput
+                      className={`field-input${errors.weaving_unit_price ? ' is-error' : ''}`}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      placeholder="Ví dụ: 3.500"
+                    />
+                  )}
                 />
                 {errors.weaving_unit_price && (
                   <span className="field-error">

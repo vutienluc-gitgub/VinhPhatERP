@@ -154,7 +154,7 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
             ? 'Thử điều chỉnh bộ lọc.'
             : 'Nhấn "+ Thêm loại sợi" để bắt đầu quản lý danh mục sợi.'
         }
-        emptyStateIcon={hasFilter ? '🔍' : 'Layers'}
+        emptyStateIcon={hasFilter ? 'Search' : 'Layers'}
         emptyStateActionLabel={!hasFilter ? '+ Thêm loại sợi' : undefined}
         onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={[

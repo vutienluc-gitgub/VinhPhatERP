@@ -223,7 +223,7 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
             ? 'Thử điều chỉnh bộ lọc.'
             : 'Nhấn "+ Tạo phiếu" để bắt đầu nhập cuộn vải từ nhà dệt.'
         }
-        emptyStateIcon={hasFilter ? '🔍' : 'Package'}
+        emptyStateIcon={hasFilter ? 'Search' : 'Package'}
         emptyStateActionLabel={!hasFilter ? '+ Tạo phiếu' : undefined}
         onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={[
