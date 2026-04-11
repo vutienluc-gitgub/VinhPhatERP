@@ -1504,6 +1504,7 @@ export type Database = {
         Row: {
           avatar_url: string | null;
           created_at: string;
+          customer_id: string | null;
           full_name: string;
           id: string;
           is_active: boolean;
@@ -1515,6 +1516,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null;
           created_at?: string;
+          customer_id?: string | null;
           full_name?: string;
           id: string;
           is_active?: boolean;
@@ -1526,6 +1528,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null;
           created_at?: string;
+          customer_id?: string | null;
           full_name?: string;
           id?: string;
           is_active?: boolean;
@@ -3494,7 +3497,14 @@ export type Database = {
         | 'payment'
         | 'adjustment'
         | 'return_credit';
-      user_role: 'admin' | 'manager' | 'staff' | 'driver' | 'viewer' | 'sale';
+      user_role:
+        | 'admin'
+        | 'manager'
+        | 'staff'
+        | 'driver'
+        | 'viewer'
+        | 'sale'
+        | 'customer';
       work_order_status:
         | 'draft'
         | 'yarn_issued'
@@ -3724,7 +3734,15 @@ export const Constants = {
         'adjustment',
         'return_credit',
       ],
-      user_role: ['admin', 'manager', 'staff', 'driver', 'viewer', 'sale'],
+      user_role: [
+        'admin',
+        'manager',
+        'staff',
+        'driver',
+        'viewer',
+        'sale',
+        'customer',
+      ],
       work_order_status: [
         'draft',
         'yarn_issued',

@@ -27,6 +27,11 @@ export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps = {}) {
     return <Navigate to="/blocked" replace />;
   }
 
+  // Customer role belongs in the portal, not the ERP shell
+  if (profile?.role === 'customer') {
+    return <Navigate to="/portal" replace />;
+  }
+
   if (allowedRoles && allowedRoles.length > 0) {
     const role = profile?.role;
     if (!role || !allowedRoles.includes(role)) {
