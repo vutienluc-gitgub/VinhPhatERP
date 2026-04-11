@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Icon } from '@/shared/components/Icon';
+import { Icon, ClearFilterButton } from '@/shared/components';
 import type { ReportsFilter } from '@/api/reports.api';
 
 type ReportsFilterBarProps = {
@@ -84,13 +84,7 @@ export function ReportsFilterBar({ filter, onChange }: ReportsFilterBarProps) {
           </button>
 
           {hasCustomFilter && (
-            <button
-              className="btn-secondary text-danger border-danger/20 flex items-center gap-2 h-[42px]"
-              type="button"
-              onClick={handleClear}
-            >
-              <Icon name="X" size={14} /> Đặt lại
-            </button>
+            <ClearFilterButton onClick={handleClear} label="Đặt lại" />
           )}
         </div>
       </div>

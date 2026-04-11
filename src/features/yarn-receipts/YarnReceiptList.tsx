@@ -7,7 +7,11 @@ import {
   Badge,
   type BadgeVariant,
   DataTablePremium,
+  AddButton,
+  ClearFilterButton,
+  ActionBar,
 } from '@/shared/components';
+import type { ActionConfig } from '@/shared/components';
 import { Pagination } from '@/shared/components/Pagination';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { formatCurrency } from '@/shared/utils/format';
@@ -102,20 +106,7 @@ export function YarnReceiptList({
           <h3 className="title-premium">Quản lý phiếu nhập sợi</h3>
         </div>
 
-        <button
-          className="btn-primary"
-          type="button"
-          onClick={onNew}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            minHeight: 42,
-            padding: '0 1.25rem',
-          }}
-        >
-          <Icon name="Plus" size={18} /> Tạo phiếu nhập
-        </button>
+        <AddButton onClick={onNew} label="Tạo phiếu nhập" />
       </div>
 
       {/* KPI Dashboard */}
@@ -224,17 +215,12 @@ export function YarnReceiptList({
         </div>
 
         {hasFilter && (
-          <button
-            className="btn-secondary text-danger flex items-center gap-2"
-            type="button"
+          <ClearFilterButton
             onClick={() => {
               setFilters({});
               setSearchInput('');
             }}
-            style={{ marginTop: '1rem' }}
-          >
-            <Icon name="X" size={14} /> Xóa lọc
-          </button>
+          />
         )}
       </div>
 
@@ -306,45 +292,43 @@ export function YarnReceiptList({
             className: 'text-right',
             onCellClick: () => {},
             cell: (r) => (
-              <div className="flex justify-end gap-1">
-                {r.status === 'draft' && canConfirm && (
-                  <button
-                    className="btn-icon text-success hover:bg-success/10"
-                    onClick={() => handleConfirmReceipt(r)}
-                    disabled={confirmMutation.isPending}
-                    title="Xác nhận"
-                  >
-                    <Icon name="CheckCircle" size={18} />
-                  </button>
-                )}
-                {r.status === 'draft' ? (
-                  <>
-                    <button
-                      className="btn-icon hover:bg-primary/10"
-                      onClick={() => onEdit(r)}
-                      title="Sửa"
-                    >
-                      <Icon name="Pencil" size={18} />
-                    </button>
-                    <button
-                      className="btn-icon text-danger hover:bg-danger/10"
-                      onClick={() => handleDelete(r)}
-                      disabled={deleteMutation.isPending}
-                      title="Xóa"
-                    >
-                      <Icon name="Trash2" size={18} />
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    className="btn-icon"
-                    onClick={() => onEdit(r)}
-                    title="Xem"
-                  >
-                    <Icon name="Eye" size={18} />
-                  </button>
-                )}
-              </div>
+              <ActionBar
+                actions={
+                  [
+                    r.status === 'draft' && canConfirm
+                      ? {
+                          icon: 'CheckCircle',
+                          onClick: () => handleConfirmReceipt(r),
+                          title: 'Xác nhận',
+                          disabled: confirmMutation.isPending,
+                        }
+                      : null,
+                    r.status === 'draft'
+                      ? {
+                          icon: 'Pencil',
+                          onClick: () => onEdit(r),
+                          title: 'Sửa',
+                        }
+                      : null,
+                    r.status === 'draft'
+                      ? {
+                          icon: 'Trash2',
+                          onClick: () => handleDelete(r),
+                          title: 'Xóa',
+                          variant: 'danger',
+                          disabled: deleteMutation.isPending,
+                        }
+                      : null,
+                    r.status !== 'draft'
+                      ? {
+                          icon: 'Eye',
+                          onClick: () => onEdit(r),
+                          title: 'Xem',
+                        }
+                      : null,
+                  ].filter(Boolean) as ActionConfig[]
+                }
+              />
             ),
           },
         ]}

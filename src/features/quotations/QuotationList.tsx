@@ -7,7 +7,11 @@ import {
   Badge,
   type BadgeVariant,
   DataTablePremium,
+  AddButton,
+  ClearFilterButton,
+  ActionBar,
 } from '@/shared/components';
+import type { ActionConfig } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { formatCurrency } from '@/shared/utils/format';
 
@@ -118,9 +122,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
           <p className="eyebrow-premium">BÁN HÀNG</p>
           <h3 className="title-premium">Báo giá</h3>
         </div>
-        <button className="btn-primary" type="button" onClick={onNew}>
-          <Icon name="Plus" size={18} /> Tao bao gia
-        </button>
+        <AddButton onClick={onNew} label="Tạo báo giá" />
       </div>
 
       {/* Expiration KPI */}
@@ -228,16 +230,12 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
           </div>
 
           {hasFilter && (
-            <button
-              className="btn-secondary text-danger border-danger/20 flex items-center gap-1.5"
-              type="button"
+            <ClearFilterButton
               onClick={() => {
                 setFilters({});
                 setSearchInput('');
               }}
-            >
-              <Icon name="X" size={14} /> Xoa loc
-            </button>
+            />
           )}
         </div>
       </div>
@@ -335,41 +333,37 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
             ),
           },
           {
-            header: 'Thao tac',
+            header: 'Thao tác',
             className: 'text-right',
             onCellClick: () => {},
             cell: (q) => (
-              <div className="flex justify-end gap-1">
-                <button
-                  className="btn-icon"
-                  type="button"
-                  title="Xem"
-                  onClick={() => onView(q)}
-                >
-                  <Icon name="Eye" size={16} />
-                </button>
-                {q.status === 'draft' && (
-                  <>
-                    <button
-                      className="btn-icon"
-                      type="button"
-                      title="Sua"
-                      onClick={() => onEdit(q)}
-                    >
-                      <Icon name="Pencil" size={16} />
-                    </button>
-                    <button
-                      className="btn-icon text-danger"
-                      type="button"
-                      title="Xoa"
-                      onClick={() => handleDelete(q)}
-                      disabled={deleteMutation.isPending}
-                    >
-                      <Icon name="Trash2" size={16} />
-                    </button>
-                  </>
-                )}
-              </div>
+              <ActionBar
+                actions={
+                  [
+                    {
+                      icon: 'Eye',
+                      onClick: () => onView(q),
+                      title: 'Xem',
+                    },
+                    q.status === 'draft'
+                      ? {
+                          icon: 'Pencil',
+                          onClick: () => onEdit(q),
+                          title: 'Sửa',
+                        }
+                      : null,
+                    q.status === 'draft'
+                      ? {
+                          icon: 'Trash2',
+                          onClick: () => handleDelete(q),
+                          title: 'Xóa',
+                          variant: 'danger',
+                          disabled: deleteMutation.isPending,
+                        }
+                      : null,
+                  ].filter(Boolean) as ActionConfig[]
+                }
+              />
             ),
           },
         ]}

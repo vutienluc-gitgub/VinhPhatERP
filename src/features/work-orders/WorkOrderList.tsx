@@ -7,7 +7,11 @@ import {
   Badge,
   type BadgeVariant,
   DataTablePremium,
+  AddButton,
+  ClearFilterButton,
+  ActionBar,
 } from '@/shared/components';
+import type { ActionConfig } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 
 import type {
@@ -76,13 +80,7 @@ export function WorkOrderList({
           <p className="eyebrow-premium">Sản xuất</p>
           <h3 className="title-premium">Lệnh Sản Xuất</h3>
         </div>
-        <button
-          className="btn-primary min-h-[42px] px-6"
-          type="button"
-          onClick={onCreate}
-        >
-          <Icon name="Plus" size={18} className="mr-2" /> Tạo lệnh SX
-        </button>
+        <AddButton onClick={onCreate} label="Tạo lệnh SX" />
       </div>
 
       {/* KPI Dashboard */}
@@ -181,19 +179,15 @@ export function WorkOrderList({
           </div>
 
           {hasFilter && (
-            <button
-              className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
-              type="button"
+            <ClearFilterButton
               onClick={() =>
                 setFilter({
                   status: 'all',
                   search: '',
                 })
               }
-              style={{ marginBottom: '4px' }}
-            >
-              <Icon name="X" size={14} /> Xóa lọc nhanh
-            </button>
+              label="Xóa lọc nhanh"
+            />
           )}
         </div>
       </div>
@@ -291,37 +285,32 @@ export function WorkOrderList({
             className: 'text-right',
             onCellClick: () => {},
             cell: (wo) => (
-              <div className="flex justify-end gap-1">
-                <button
-                  className="btn-icon"
-                  type="button"
-                  onClick={() => onView(wo.id)}
-                  title="Chi tiết"
-                >
-                  <Icon name="Eye" size={16} />
-                </button>
-                {wo.status === 'draft' && (
-                  <button
-                    className="btn-icon"
-                    type="button"
-                    onClick={() => onEdit(wo)}
-                    title="Sửa lệnh"
-                  >
-                    <Icon name="Pencil" size={16} />
-                  </button>
-                )}
-                {wo.status === 'draft' && (
-                  <button
-                    className="btn-icon text-primary border-primary/20 hover:bg-primary/5"
-                    type="button"
-                    onClick={() => handleStart(wo.id)}
-                    title="Bắt đầu sản xuất"
-                    disabled={startMutation.isPending}
-                  >
-                    <Icon name="Play" size={16} />
-                  </button>
-                )}
-              </div>
+              <ActionBar
+                actions={
+                  [
+                    {
+                      icon: 'Eye',
+                      onClick: () => onView(wo.id),
+                      title: 'Chi tiết',
+                    },
+                    wo.status === 'draft'
+                      ? {
+                          icon: 'Pencil',
+                          onClick: () => onEdit(wo),
+                          title: 'Sửa lệnh',
+                        }
+                      : null,
+                    wo.status === 'draft'
+                      ? {
+                          icon: 'Play',
+                          onClick: () => handleStart(wo.id),
+                          title: 'Bắt đầu sản xuất',
+                          disabled: startMutation.isPending,
+                        }
+                      : null,
+                  ].filter(Boolean) as ActionConfig[]
+                }
+              />
             ),
           },
         ]}

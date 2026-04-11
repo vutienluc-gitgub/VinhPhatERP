@@ -9,6 +9,8 @@ import {
   DataTablePremium,
   ViewToggle,
   type ViewMode,
+  AddButton,
+  ClearFilterButton,
 } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
@@ -127,44 +129,21 @@ export function RawFabricList({
           <ViewToggle value={viewMode} onChange={setViewMode} />
 
           <div className="flex gap-2">
+            <AddButton onClick={onNew} label="Nhập mới" />
             <button
-              className="btn-primary"
-              type="button"
-              onClick={onNew}
-              style={{
-                minHeight: 42,
-                padding: '0 1.25rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-              }}
-            >
-              <Icon name="Plus" size={18} /> Nhập mới
-            </button>
-            <button
-              className="btn-secondary"
+              className="btn-secondary btn-standard"
               type="button"
               onClick={onBulkNew}
-              style={{
-                height: 42,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-              }}
             >
               <Icon name="Zap" size={16} /> Nhập mẻ
             </button>
             <div className="w-px h-6 bg-border mx-1" />
             <button
-              className="btn-icon"
+              className="btn-icon btn-standard"
               type="button"
               onClick={() => void handleExportExcel()}
               disabled={isExporting}
               title="Xuất Excel"
-              style={{
-                height: 42,
-                width: 42,
-              }}
             >
               {isExporting ? (
                 <Icon name="Loader2" size={18} className="animate-spin" />
@@ -344,19 +323,15 @@ export function RawFabricList({
         </div>
 
         {hasFilter && (
-          <button
-            className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
-            type="button"
+          <ClearFilterButton
             onClick={() => {
               setFilters({});
               setFabricTypeInput('');
               setRollNumberInput('');
               setPage(1);
             }}
-            style={{ marginTop: '1rem' }}
-          >
-            <Icon name="X" size={14} /> Xóa lọc nhanh
-          </button>
+            label="Xóa lọc nhanh"
+          />
         )}
       </div>
 

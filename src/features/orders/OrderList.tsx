@@ -8,7 +8,11 @@ import {
   Badge,
   type BadgeVariant,
   DataTablePremium,
+  AddButton,
+  ClearFilterButton,
+  ActionBar,
 } from '@/shared/components';
+import type { ActionConfig } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 
 import { ORDER_STATUS_LABELS } from './orders.module';
@@ -110,20 +114,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           <h3 className="title-premium">Quản lý Đơn hàng</h3>
         </div>
 
-        <button
-          className="btn-primary"
-          type="button"
-          onClick={onNew}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            minHeight: 42,
-            padding: '0 1.25rem',
-          }}
-        >
-          <Icon name="Plus" size={18} /> Tạo đơn hàng
-        </button>
+        <AddButton onClick={onNew} label="Tạo đơn hàng" />
       </div>
 
       {/* 📊 KPI Dashboard - Premium Visuals */}
@@ -240,18 +231,13 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           </div>
 
           {hasFilter && (
-            <button
-              className="btn-secondary text-danger flex items-center gap-2"
-              type="button"
+            <ClearFilterButton
               onClick={() => {
                 setFilters({});
                 setSearchInput('');
                 setPage(1);
               }}
-              style={{ marginBottom: 4 }}
-            >
-              <Icon name="X" size={14} /> Xóa lọc
-            </button>
+            />
           )}
         </div>
       </div>
@@ -356,25 +342,31 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
             className: 'text-right',
             onCellClick: () => {}, // prevent row click
             cell: (order) => (
-              <div className="flex justify-end gap-1">
-                {order.status === 'draft' ? (
-                  <>
-                    <button className="btn-icon" onClick={() => onEdit(order)}>
-                      <Icon name="Edit3" size={16} />
-                    </button>
-                    <button
-                      className="btn-icon text-danger"
-                      onClick={() => handleDelete(order)}
-                    >
-                      <Icon name="Trash2" size={16} />
-                    </button>
-                  </>
-                ) : (
-                  <button className="btn-icon" onClick={() => onView(order)}>
-                    <Icon name="Eye" size={16} />
-                  </button>
-                )}
-              </div>
+              <ActionBar
+                actions={
+                  [
+                    order.status === 'draft'
+                      ? {
+                          icon: 'Edit3',
+                          onClick: () => onEdit(order),
+                        }
+                      : null,
+                    order.status === 'draft'
+                      ? {
+                          icon: 'Trash2',
+                          onClick: () => handleDelete(order),
+                          variant: 'danger',
+                        }
+                      : null,
+                    order.status !== 'draft'
+                      ? {
+                          icon: 'Eye',
+                          onClick: () => onView(order),
+                        }
+                      : null,
+                  ].filter(Boolean) as ActionConfig[]
+                }
+              />
             ),
           },
         ]}

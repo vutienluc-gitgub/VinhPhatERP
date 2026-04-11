@@ -7,7 +7,10 @@ import {
   Badge,
   type BadgeVariant,
   DataTablePremium,
+  ClearFilterButton,
+  ActionBar,
 } from '@/shared/components';
+import type { ActionConfig } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 
 import { DeliveryConfirmForm } from './DeliveryConfirmForm';
@@ -167,16 +170,8 @@ export function ShipmentList() {
                     sum + (s.shipping_cost || 0) + (s.loading_fee || 0),
                   0,
                 ),
-              )}
-              <span
-                style={{
-                  fontSize: '1rem',
-                  fontWeight: 500,
-                  marginLeft: '0.2rem',
-                }}
-              >
-                đ
-              </span>
+              )}{' '}
+              đ
             </p>
           </div>
         </div>
@@ -193,9 +188,7 @@ export function ShipmentList() {
           </div>
           <div className="stat-content-premium">
             <p>Chờ xác nhận</p>
-            <p style={{ color: '#b45309' }}>
-              {shipments.filter((s) => s.status === 'preparing').length}
-            </p>
+            <p>{shipments.filter((s) => s.status === 'preparing').length}</p>
           </div>
         </div>
       </div>
@@ -235,22 +228,14 @@ export function ShipmentList() {
         </div>
 
         {hasFilter && (
-          <button
-            className="btn-secondary"
-            type="button"
+          <ClearFilterButton
             onClick={() => {
               setFilters({});
               setSearchInput('');
               setPage(1);
             }}
-            style={{
-              marginTop: '1rem',
-              color: 'var(--danger)',
-              borderColor: 'rgba(192, 57, 43, 0.2)',
-            }}
-          >
-            <Icon name="X" size={14} /> Xóa lọc nhanh
-          </button>
+            label="Xóa lọc nhanh"
+          />
         )}
       </div>
 
@@ -325,40 +310,38 @@ export function ShipmentList() {
             className: 'td-actions',
             onCellClick: () => {},
             cell: (s) => (
-              <div className="flex justify-end gap-1">
-                {s.status === 'preparing' && (
-                  <>
-                    <button
-                      className="btn-icon"
-                      type="button"
-                      onClick={() => void handleConfirm(s)}
-                      disabled={confirmMutation.isPending}
-                      title="Xác nhận & Mở PDF"
-                    >
-                      <Icon name="CheckCircle" size={16} />
-                    </button>
-                    <button
-                      className="btn-icon danger"
-                      type="button"
-                      onClick={() => void handleDelete(s.id)}
-                      disabled={deleteMutation.isPending}
-                      title="Xóa"
-                    >
-                      <Icon name="Trash2" size={16} />
-                    </button>
-                  </>
-                )}
-                {s.status !== 'preparing' && (
-                  <button
-                    className="btn-icon"
-                    type="button"
-                    onClick={() => void handleExportPdf(s)}
-                    disabled={exportPdfMutation.isPending}
-                    title="In PDF"
-                  >
-                    <Icon name="Printer" size={16} />
-                  </button>
-                )}
+              <div className="flex justify-end gap-1 items-center">
+                <ActionBar
+                  actions={
+                    [
+                      s.status === 'preparing'
+                        ? {
+                            icon: 'CheckCircle',
+                            onClick: () => void handleConfirm(s),
+                            title: 'Xác nhận & Mở PDF',
+                            disabled: confirmMutation.isPending,
+                          }
+                        : null,
+                      s.status === 'preparing'
+                        ? {
+                            icon: 'Trash2',
+                            onClick: () => void handleDelete(s.id),
+                            title: 'Xóa',
+                            variant: 'danger',
+                            disabled: deleteMutation.isPending,
+                          }
+                        : null,
+                      s.status !== 'preparing'
+                        ? {
+                            icon: 'Printer',
+                            onClick: () => void handleExportPdf(s),
+                            title: 'In PDF',
+                            disabled: exportPdfMutation.isPending,
+                          }
+                        : null,
+                    ].filter(Boolean) as ActionConfig[]
+                  }
+                />
                 {s.status === 'shipped' && (
                   <button
                     className="btn-primary h-8 px-2 text-[0.75rem] flex items-center gap-1"

@@ -6,7 +6,14 @@ import {
 } from '@/schema/customer.schema';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
-import { Icon, Badge, DataTablePremium } from '@/shared/components';
+import {
+  Icon,
+  Badge,
+  DataTablePremium,
+  AddButton,
+  ClearFilterButton,
+  ActionBar,
+} from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 
 import type { Customer, CustomersFilter } from './types';
@@ -55,13 +62,7 @@ export function CustomerList({ onEdit, onNew }: CustomerListProps) {
           <p className="eyebrow-premium">CRM & ĐỐI TÁC</p>
           <h3 className="title-premium">Quản lý Khách hàng</h3>
         </div>
-        <button
-          className="btn-primary min-h-[42px] px-6"
-          type="button"
-          onClick={onNew}
-        >
-          <Icon name="UserPlus" size={18} className="mr-2" /> Thêm khách hàng
-        </button>
+        <AddButton onClick={onNew} label="Thêm khách hàng" icon="UserPlus" />
       </div>
 
       {/* 📊 KPI Dashboard area */}
@@ -165,17 +166,14 @@ export function CustomerList({ onEdit, onNew }: CustomerListProps) {
         </div>
 
         {hasFilter && (
-          <button
-            className="btn-secondary mt-4 text-danger border-danger/20 flex items-center gap-2"
-            type="button"
+          <ClearFilterButton
             onClick={() => {
               setFilters({});
               setQueryInput('');
               setPage(1);
             }}
-          >
-            <Icon name="X" size={14} /> Xóa lọc nhanh
-          </button>
+            label="Xóa lọc nhanh"
+          />
         )}
       </div>
 
@@ -242,23 +240,22 @@ export function CustomerList({ onEdit, onNew }: CustomerListProps) {
             className: 'text-right',
             onCellClick: () => {},
             cell: (c) => (
-              <div className="flex justify-end gap-1">
-                <button
-                  className="btn-icon"
-                  onClick={() => onEdit(c)}
-                  title="Sửa"
-                >
-                  <Icon name="Pencil" size={16} />
-                </button>
-                <button
-                  className="btn-icon text-danger"
-                  onClick={() => handleDelete(c)}
-                  disabled={deleteMutation.isPending}
-                  title="Xóa"
-                >
-                  <Icon name="Trash2" size={16} />
-                </button>
-              </div>
+              <ActionBar
+                actions={[
+                  {
+                    icon: 'Pencil',
+                    onClick: () => onEdit(c),
+                    title: 'Sửa',
+                  },
+                  {
+                    icon: 'Trash2',
+                    onClick: () => handleDelete(c),
+                    title: 'Xóa',
+                    variant: 'danger',
+                    disabled: deleteMutation.isPending,
+                  },
+                ]}
+              />
             ),
           },
         ]}

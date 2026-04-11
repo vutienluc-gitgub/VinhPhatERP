@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
-import { Icon, DataTablePremium } from '@/shared/components';
+import { Icon, DataTablePremium, ClearFilterButton } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 
 import { PAYMENT_METHOD_LABELS } from './payments.module';
@@ -69,17 +69,12 @@ export function PaymentList() {
           </div>
         </div>
         {hasFilter && (
-          <button
-            className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
-            type="button"
+          <ClearFilterButton
             onClick={() => {
               setFilters({});
               setSearchInput('');
             }}
-            style={{ marginTop: '1rem' }}
-          >
-            <Icon name="X" size={14} /> Xóa lọc
-          </button>
+          />
         )}
       </div>
 

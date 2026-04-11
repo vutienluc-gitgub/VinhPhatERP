@@ -9,6 +9,9 @@ import {
   DataTablePremium,
   ViewToggle,
   type ViewMode,
+  AddButton,
+  ClearFilterButton,
+  ActionBar,
 } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
@@ -150,44 +153,21 @@ export function FinishedFabricList({
           <ViewToggle value={viewMode} onChange={setViewMode} />
 
           <div className="flex gap-2">
+            <AddButton onClick={onNew} label="Nhập mới" />
             <button
-              className="btn-primary"
-              type="button"
-              onClick={onNew}
-              style={{
-                minHeight: 42,
-                padding: '0 1.25rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-              }}
-            >
-              <Icon name="Plus" size={18} /> Nhập mới
-            </button>
-            <button
-              className="btn-secondary"
+              className="btn-secondary btn-standard"
               type="button"
               onClick={onBulkNew}
-              style={{
-                height: 42,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-              }}
             >
               <Icon name="Zap" size={16} /> Nhập mẻ
             </button>
             <div className="w-px h-6 bg-border mx-1" />
             <button
-              className="btn-icon"
+              className="btn-icon btn-standard"
               type="button"
               onClick={() => exportExcel(rolls)}
               disabled={rolls.length === 0}
               title="Xuất Excel"
-              style={{
-                height: 42,
-                width: 42,
-              }}
             >
               <Icon name="FileSpreadsheet" size={18} />
             </button>
@@ -342,17 +322,14 @@ export function FinishedFabricList({
         </div>
 
         {hasFilter && (
-          <button
-            className="btn-secondary mt-4 text-danger border-danger/20 flex items-center gap-2"
-            type="button"
+          <ClearFilterButton
             onClick={() => {
               setFilters({});
               setFabricTypeInput('');
               setPage(1);
             }}
-          >
-            <Icon name="X" size={14} /> Xóa lọc nhanh
-          </button>
+            label="Xóa lọc nhanh"
+          />
         )}
       </div>
 
@@ -489,33 +466,29 @@ export function FinishedFabricList({
                 className: 'text-right',
                 onCellClick: () => {},
                 cell: (r) => (
-                  <div className="flex justify-end gap-1">
-                    <button
-                      className="btn-icon"
-                      title="Truy vết"
-                      onClick={() => onTrace(r)}
-                    >
-                      <Icon name="Link" size={16} />
-                    </button>
-                    <button
-                      className="btn-icon"
-                      title={editBlockReason(r.status) ?? 'Sửa'}
-                      onClick={() => onEdit(r)}
-                      disabled={!canEditRoll(r.status)}
-                    >
-                      <Icon name="Pencil" size={16} />
-                    </button>
-                    <button
-                      className="btn-icon text-danger"
-                      title={deleteBlockReason(r.status) ?? 'Xóa'}
-                      onClick={() => handleDelete(r)}
-                      disabled={
-                        deleteMutation.isPending || !canDeleteRoll(r.status)
-                      }
-                    >
-                      <Icon name="Trash2" size={16} />
-                    </button>
-                  </div>
+                  <ActionBar
+                    actions={[
+                      {
+                        icon: 'Link',
+                        onClick: () => onTrace(r),
+                        title: 'Truy vết',
+                      },
+                      {
+                        icon: 'Pencil',
+                        onClick: () => onEdit(r),
+                        title: editBlockReason(r.status) ?? 'Sửa',
+                        disabled: !canEditRoll(r.status),
+                      },
+                      {
+                        icon: 'Trash2',
+                        onClick: () => handleDelete(r),
+                        title: deleteBlockReason(r.status) ?? 'Xóa',
+                        variant: 'danger',
+                        disabled:
+                          deleteMutation.isPending || !canDeleteRoll(r.status),
+                      },
+                    ]}
+                  />
                 ),
               },
             ]}

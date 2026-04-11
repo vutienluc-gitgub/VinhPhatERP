@@ -8,6 +8,7 @@ import {
   type ShippingRate,
 } from '@/schema';
 import { Combobox } from '@/shared/components/Combobox';
+import { CancelButton } from '@/shared/components';
 
 import {
   useCreateShippingRate,
@@ -236,9 +237,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
           border: 'none',
         }}
       >
-        <button className="btn-secondary" type="button" onClick={onClose}>
-          Huỷ
-        </button>
+        <CancelButton onClick={onClose} label="Huỷ" />
         <button
           className="primary-button btn-standard"
           type="submit"

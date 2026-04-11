@@ -7,7 +7,11 @@ import {
   Badge,
   type BadgeVariant,
   DataTablePremium,
+  AddButton,
+  ClearFilterButton,
+  ActionBar,
 } from '@/shared/components';
+import type { ActionConfig } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 
 import type { WeavingInvoice, WeavingInvoiceFilter } from './types';
@@ -79,13 +83,7 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
           <p className="eyebrow-premium">GIA CÔNG DỆT</p>
           <h3 className="title-premium">Phiếu Gia Công</h3>
         </div>
-        <button
-          className="btn-primary min-h-[42px] px-5"
-          type="button"
-          onClick={onNew}
-        >
-          <Icon name="Plus" size={18} className="mr-2" /> Tạo phiếu
-        </button>
+        <AddButton onClick={onNew} label="Tạo phiếu" />
       </div>
 
       {/* KPI */}
@@ -186,16 +184,12 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
           </div>
 
           {hasFilter && (
-            <button
-              className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
-              style={{ marginBottom: '4px' }}
+            <ClearFilterButton
               onClick={() => {
                 setFilters({});
                 setSearch('');
               }}
-            >
-              <Icon name="X" size={14} /> Xóa lọc
-            </button>
+            />
           )}
         </div>
       </div>
@@ -301,38 +295,36 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
             className: 'text-right',
             onCellClick: () => {},
             cell: (inv) => (
-              <div className="flex justify-end gap-1">
-                {inv.status === 'draft' && (
-                  <>
-                    <button
-                      className="btn-icon"
-                      type="button"
-                      onClick={() => onEdit(inv)}
-                      title="Sửa"
-                    >
-                      <Icon name="Pencil" size={16} />
-                    </button>
-                    <button
-                      className="btn-icon text-success hover:bg-success/10"
-                      type="button"
-                      onClick={() => handleConfirm(inv)}
-                      disabled={confirmMutation.isPending}
-                      title="Xác nhận & nhập kho"
-                    >
-                      <Icon name="CheckCircle" size={16} />
-                    </button>
-                    <button
-                      className="btn-icon text-danger hover:bg-danger/10"
-                      type="button"
-                      onClick={() => handleDelete(inv)}
-                      disabled={deleteMutation.isPending}
-                      title="Xóa"
-                    >
-                      <Icon name="Trash2" size={16} />
-                    </button>
-                  </>
-                )}
-              </div>
+              <ActionBar
+                actions={
+                  [
+                    inv.status === 'draft'
+                      ? {
+                          icon: 'Pencil',
+                          onClick: () => onEdit(inv),
+                          title: 'Sửa',
+                        }
+                      : null,
+                    inv.status === 'draft'
+                      ? {
+                          icon: 'CheckCircle',
+                          onClick: () => handleConfirm(inv),
+                          title: 'Xác nhận & nhập kho',
+                          disabled: confirmMutation.isPending,
+                        }
+                      : null,
+                    inv.status === 'draft'
+                      ? {
+                          icon: 'Trash2',
+                          onClick: () => handleDelete(inv),
+                          title: 'Xóa',
+                          variant: 'danger',
+                          disabled: deleteMutation.isPending,
+                        }
+                      : null,
+                  ].filter(Boolean) as ActionConfig[]
+                }
+              />
             ),
           },
         ]}

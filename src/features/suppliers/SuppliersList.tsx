@@ -2,7 +2,14 @@ import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
-import { Icon, Badge, DataTablePremium } from '@/shared/components';
+import {
+  Icon,
+  Badge,
+  DataTablePremium,
+  AddButton,
+  ClearFilterButton,
+  ActionBar,
+} from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 
 import {
@@ -63,13 +70,7 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
           <p className="eyebrow-premium">CRM & ĐỐI TÁC</p>
           <h3 className="title-premium">Danh sách nhà cung cấp</h3>
         </div>
-        <button
-          className="btn-primary min-h-[42px] px-6"
-          type="button"
-          onClick={onNew}
-        >
-          <Icon name="Plus" size={18} className="mr-2" /> Thêm NCC
-        </button>
+        <AddButton onClick={onNew} label="Thêm NCC" />
       </div>
 
       {/* KPI Dashboard */}
@@ -176,16 +177,7 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
             />
           </div>
 
-          {hasFilter && (
-            <button
-              className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
-              type="button"
-              onClick={clearFilters}
-              style={{ marginBottom: '4px' }}
-            >
-              <Icon name="X" size={14} /> Xóa lọc
-            </button>
-          )}
+          {hasFilter && <ClearFilterButton onClick={clearFilters} />}
         </div>
       </div>
 
@@ -266,25 +258,22 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
             className: 'text-right',
             onCellClick: () => {},
             cell: (s) => (
-              <div className="flex justify-end gap-1">
-                <button
-                  className="btn-icon"
-                  type="button"
-                  title="Sửa"
-                  onClick={() => onEdit(s)}
-                >
-                  <Icon name="Pencil" size={16} />
-                </button>
-                <button
-                  className="btn-icon text-danger"
-                  type="button"
-                  title="Xóa"
-                  onClick={() => handleDelete(s)}
-                  disabled={deleteMutation.isPending}
-                >
-                  <Icon name="Trash2" size={16} />
-                </button>
-              </div>
+              <ActionBar
+                actions={[
+                  {
+                    icon: 'Pencil',
+                    onClick: () => onEdit(s),
+                    title: 'Sửa',
+                  },
+                  {
+                    icon: 'Trash2',
+                    onClick: () => handleDelete(s),
+                    title: 'Xóa',
+                    variant: 'danger',
+                    disabled: deleteMutation.isPending,
+                  },
+                ]}
+              />
             ),
           },
         ]}

@@ -7,7 +7,7 @@ interface ClearFilterButtonProps {
 
 export function ClearFilterButton({
   onClick,
-  label = 'Xoa loc',
+  label = 'Xóa lọc',
 }: ClearFilterButtonProps) {
   return (
     <button

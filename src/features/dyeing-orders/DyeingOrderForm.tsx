@@ -3,7 +3,12 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 
-import { AdaptiveSheet, Icon, Combobox } from '@/shared/components';
+import {
+  AdaptiveSheet,
+  Icon,
+  Combobox,
+  CancelButton,
+} from '@/shared/components';
 import { fetchRawFabricAll } from '@/api/raw-fabric.api';
 import {
   dyeingOrderSchema,
@@ -122,9 +127,7 @@ export function DyeingOrderForm({
       title={isEdit ? 'Sua lenh nhuom' : 'Tao lenh nhuom moi'}
       footer={
         <div className="flex justify-end gap-2 w-full">
-          <button className="btn-secondary" onClick={onClose} type="button">
-            Huy
-          </button>
+          <CancelButton onClick={onClose} label="Huỷ" />
           <button
             className="btn-primary"
             onClick={handleSubmit(onSubmit)}

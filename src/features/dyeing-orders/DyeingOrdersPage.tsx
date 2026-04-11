@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { KpiCardPremium, Icon } from '@/shared/components';
+import { KpiCardPremium, Icon, AddButton } from '@/shared/components';
 
 import { DyeingOrderList } from './DyeingOrderList';
 import { DyeingOrderForm } from './DyeingOrderForm';
@@ -53,22 +53,13 @@ export function DyeingOrdersPage() {
           <p className="eyebrow-premium">SẢN XUẤT</p>
           <h3 className="title-premium">Lệnh nhuộm</h3>
         </div>
-        <button
-          className="btn-primary"
+        <AddButton
           onClick={() => {
             setEditingOrder(null);
             setIsFormOpen(true);
           }}
-          style={{
-            minHeight: 42,
-            padding: '0 1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-          }}
-        >
-          <Icon name="Plus" size={18} /> Tạo lệnh nhuộm
-        </button>
+          label="Tạo lệnh nhuộm"
+        />
       </div>
 
       {/* KPI Dashboard */}

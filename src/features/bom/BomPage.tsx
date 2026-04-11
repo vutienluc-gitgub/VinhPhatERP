@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Icon } from '@/shared/components/Icon';
+import { Icon, AddButton, ClearFilterButton } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 
 import { BOM_STATUSES, BOM_STATUS_LABELS } from './bom.module';
@@ -143,13 +143,7 @@ export function BomPage() {
           <p className="eyebrow-premium">KỸ THUẬT</p>
           <h3 className="title-premium">Định Mức Nguyên Liệu (BOM)</h3>
         </div>
-        <button
-          className="btn-primary min-h-[42px] px-6"
-          type="button"
-          onClick={handleCreate}
-        >
-          <Icon name="Plus" size={18} className="mr-2" /> Tạo bản nháp
-        </button>
+        <AddButton onClick={handleCreate} label="Tạo bản nháp" />
       </div>
 
       {/* KPI Dashboard */}
@@ -235,15 +229,7 @@ export function BomPage() {
             />
           </div>
 
-          {hasFilter && (
-            <button
-              className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
-              type="button"
-              onClick={() => setFilter({})}
-            >
-              <Icon name="X" size={14} /> Xoa loc nhanh
-            </button>
-          )}
+          {hasFilter && <ClearFilterButton onClick={() => setFilter({})} />}
         </div>
       </div>
 

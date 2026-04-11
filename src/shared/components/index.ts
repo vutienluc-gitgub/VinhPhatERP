@@ -39,3 +39,5 @@ export { CancelButton } from './CancelButton';
 export { ClearFilterButton } from './ClearFilterButton';
 export { Button } from './Button';
 export type { ButtonProps } from './Button';
+export { ActionBar } from './ActionBar';
+export type { ActionConfig } from './ActionBar';

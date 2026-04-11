@@ -3,7 +3,9 @@ import {
   Badge,
   type BadgeVariant,
   DataTablePremium,
+  ActionBar,
 } from '@/shared/components';
+import type { ActionConfig } from '@/shared/components';
 
 import { BOM_STATUS_LABELS } from './bom.module';
 import { BomTemplate, BomStatus } from './types';
@@ -110,36 +112,32 @@ export function BomList({
           className: 'text-right',
           onCellClick: () => {},
           cell: (bom) => (
-            <div className="flex justify-end gap-1">
-              <button
-                className="btn-icon"
-                type="button"
-                onClick={() => onSelect(bom)}
-                title="Chi tiết"
-              >
-                <Icon name="Eye" size={16} />
-              </button>
-              {bom.status === 'draft' && (
-                <button
-                  className="btn-icon"
-                  type="button"
-                  onClick={() => onEdit(bom)}
-                  title="Sửa bản nháp"
-                >
-                  <Icon name="Pencil" size={16} />
-                </button>
-              )}
-              {bom.status === 'approved' && (
-                <button
-                  className="btn-icon text-danger hover:bg-danger/10"
-                  type="button"
-                  onClick={() => onDeprecate(bom)}
-                  title="Báo phế"
-                >
-                  <Icon name="AlertTriangle" size={16} />
-                </button>
-              )}
-            </div>
+            <ActionBar
+              actions={
+                [
+                  {
+                    icon: 'Eye',
+                    onClick: () => onSelect(bom),
+                    title: 'Chi tiết',
+                  },
+                  bom.status === 'draft'
+                    ? {
+                        icon: 'Pencil',
+                        onClick: () => onEdit(bom),
+                        title: 'Sửa bản nháp',
+                      }
+                    : null,
+                  bom.status === 'approved'
+                    ? {
+                        icon: 'AlertTriangle',
+                        onClick: () => onDeprecate(bom),
+                        title: 'Báo phế',
+                        variant: 'danger',
+                      }
+                    : null,
+                ].filter(Boolean) as ActionConfig[]
+              }
+            />
           ),
         },
       ]}

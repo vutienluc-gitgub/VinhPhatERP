@@ -6,7 +6,9 @@ import {
   Badge,
   type BadgeVariant,
   type DataTableColumn,
+  ActionBar,
 } from '@/shared/components';
+import type { ActionConfig } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import { DYEING_ORDER_STATUSES } from '@/schema/dyeing-order.schema';
 
@@ -102,31 +104,23 @@ export function DyeingOrderList({
       header: '',
       className: 'w-10 text-right',
       cell: (row: DyeingOrder) => (
-        <div className="flex justify-end gap-1">
-          {row.status === 'draft' ? (
-            <button
-              className="btn-icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(row);
-              }}
-              title="Sua"
-            >
-              <Icon name="Pencil" size={14} />
-            </button>
-          ) : (
-            <button
-              className="btn-icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                onView(row.id);
-              }}
-              title="Xem"
-            >
-              <Icon name="Eye" size={14} />
-            </button>
-          )}
-        </div>
+        <ActionBar
+          actions={
+            [
+              row.status === 'draft'
+                ? {
+                    icon: 'Pencil',
+                    onClick: () => onEdit(row),
+                    title: 'Sửa',
+                  }
+                : {
+                    icon: 'Eye',
+                    onClick: () => onView(row.id),
+                    title: 'Xem',
+                  },
+            ] as ActionConfig[]
+          }
+        />
       ),
     },
   ];
