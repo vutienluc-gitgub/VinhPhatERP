@@ -3,6 +3,7 @@ import { ProgressTimeline } from '@/features/order-progress/ProgressTimeline';
 // eslint-disable-next-line boundaries/element-types, boundaries/dependencies
 import { useOrderProgress } from '@/features/order-progress/useOrderProgress';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
+import { Button } from '@/shared/components/Button';
 import { formatCurrency } from '@/shared/utils/format';
 
 import { ORDER_STATUS_LABELS } from './orders.module';
@@ -118,9 +119,9 @@ export function OrderDetail({
             marginBottom: '1rem',
           }}
         >
-          <button className="btn-secondary" type="button" onClick={onBack}>
-            ← Quay lại
-          </button>
+          <Button variant="secondary" leftIcon="ArrowLeft" onClick={onBack}>
+            Quay lại
+          </Button>
           <div style={{ flex: 1 }}>
             <h3 style={{ margin: 0 }}>{order.order_number}</h3>
             <span className="td-muted">{order.customers?.name ?? '—'}</span>
@@ -149,19 +150,28 @@ export function OrderDetail({
           </div>
           <div>
             <div className="td-muted summary-label">Tổng tiền</div>
-            <div className="numeric-cell" style={{ fontWeight: 600 }}>
+            <div
+              className="numeric-cell"
+              style={{
+                textAlign: 'left',
+                fontWeight: 600,
+              }}
+            >
               {formatCurrency(order.total_amount)} đ
             </div>
           </div>
           <div>
             <div className="td-muted summary-label">Đã thu</div>
-            <div className="numeric-paid">
+            <div className="numeric-paid" style={{ textAlign: 'left' }}>
               {formatCurrency(order.paid_amount)} đ
             </div>
           </div>
           <div>
             <div className="td-muted summary-label">Còn nợ</div>
-            <div className={balanceDue > 0 ? 'numeric-debt' : 'numeric-paid'}>
+            <div
+              className={balanceDue > 0 ? 'numeric-debt' : 'numeric-paid'}
+              style={{ textAlign: 'left' }}
+            >
               {formatCurrency(balanceDue)} đ
             </div>
           </div>
@@ -232,78 +242,68 @@ export function OrderDetail({
         >
           {order.status === 'draft' && (
             <>
-              <button
-                className="btn-secondary"
-                type="button"
+              <Button
+                variant="secondary"
+                leftIcon="Pencil"
                 onClick={() => onEdit(order)}
               >
-                ✏️ Sửa đơn
-              </button>
-              <button
-                className="primary-button"
-                type="button"
+                Sửa đơn
+              </Button>
+              <Button
+                variant="primary"
+                leftIcon="CheckCircle"
                 onClick={handleConfirm}
-                disabled={confirmMutation.isPending}
-                style={{
-                  padding: '0.55rem 1rem',
-                  fontSize: '0.88rem',
-                }}
+                isLoading={confirmMutation.isPending}
               >
-                {confirmMutation.isPending
-                  ? 'Đang xác nhận...'
-                  : '✓ Xác nhận đơn'}
-              </button>
+                Xác nhận đơn
+              </Button>
             </>
           )}
           {(order.status === 'confirmed' || order.status === 'in_progress') && (
             <>
-              <button
-                className="btn-secondary"
-                type="button"
+              <Button
+                variant="secondary"
+                leftIcon="Lock" // Giữ cuộn
                 onClick={() => onReserveRolls(order)}
               >
-                🔒 Giữ cuộn
-              </button>
-              <button
-                className="primary-button"
-                type="button"
+                Giữ cuộn
+              </Button>
+              <Button
+                variant="primary"
+                leftIcon="Package"
                 onClick={() => onCreateShipment(order)}
-                style={{
-                  padding: '0.55rem 1rem',
-                  fontSize: '0.88rem',
-                }}
               >
-                📦 Tạo phiếu xuất
-              </button>
-              <button
-                className="btn-secondary"
-                type="button"
+                Tạo phiếu xuất
+              </Button>
+              <Button
+                variant="outline"
+                leftIcon="CircleDollarSign"
                 onClick={() => onCreatePayment(order)}
               >
-                💰 Thu tiền
-              </button>
+                Thu tiền
+              </Button>
             </>
           )}
           {order.status === 'in_progress' && (
-            <button
-              className="btn-secondary"
-              type="button"
+            <Button
+              variant="secondary"
+              leftIcon="Check"
               onClick={handleComplete}
-              disabled={completeMutation.isPending}
+              isLoading={completeMutation.isPending}
             >
-              {completeMutation.isPending ? 'Đang xử lý...' : '✓ Hoàn thành'}
-            </button>
+              Hoàn thành
+            </Button>
           )}
           {order.status !== 'cancelled' && order.status !== 'completed' && (
-            <button
-              className="btn-secondary"
-              type="button"
+            <Button
+              variant="secondary"
+              leftIcon="Trash2"
               onClick={handleCancel}
-              disabled={cancelMutation.isPending}
+              isLoading={cancelMutation.isPending}
               style={{ color: '#c0392b' }}
             >
-              ✕ Huỷ đơn
-            </button>
+              Huỷ đơn
+            </Button>
           )}
         </div>
 

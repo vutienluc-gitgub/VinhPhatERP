@@ -19,6 +19,7 @@ import {
   emptyOrderItem,
   ordersDefaultValues,
   ordersSchema,
+  ordersSchemaEdit,
   UNIT_OPTIONS,
 } from './orders.module';
 import type { OrdersFormValues } from './orders.module';
@@ -186,7 +187,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
     trigger,
     formState: { errors, isSubmitting },
   } = useForm<OrdersFormValues>({
-    resolver: zodResolver(ordersSchema),
+    resolver: zodResolver(isEditing ? ordersSchemaEdit : ordersSchema),
     defaultValues: isEditing ? orderToFormValues(order) : ordersDefaultValues,
   });
 
@@ -195,9 +196,16 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
     name: 'items',
   });
 
+  // Dùng state để track ID, tránh reset liên tục gây re-render loop
+  const [lastOrderId, setLastOrderId] = useState<string | null>(null);
+
   useEffect(() => {
-    reset(isEditing ? orderToFormValues(order) : ordersDefaultValues);
-  }, [order, isEditing, reset]);
+    const currentId = isEditing ? order.id : 'new';
+    if (currentId !== lastOrderId) {
+      reset(isEditing ? orderToFormValues(order) : ordersDefaultValues);
+      setLastOrderId(currentId);
+    }
+  }, [order, isEditing, reset, lastOrderId]);
 
   useEffect(() => {
     if (!isEditing && nextNumber) {

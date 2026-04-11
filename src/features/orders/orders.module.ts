@@ -4,8 +4,9 @@ import { createModule } from '@/core/registry/moduleRegistry';
 import {
   ORDER_STATUS_LABELS,
   ORDER_STATUSES,
-  orderItemSchema,
+  orderItemBaseSchema as orderItemSchema,
   ordersSchema,
+  ordersSchemaEdit,
   ordersDefaultValues,
   emptyOrderItem,
   UNIT_OPTIONS,
@@ -17,12 +18,16 @@ export {
   ORDER_STATUSES,
   orderItemSchema,
   ordersSchema,
+  ordersSchemaEdit,
   ordersDefaultValues,
   emptyOrderItem,
   UNIT_OPTIONS,
 };
 export type { OrderStatus };
-export type { OrdersFormValues } from '@/schema/order.schema';
+export type {
+  OrdersFormValues,
+  OrderItemFormValues,
+} from '@/schema/order.schema';
 
 export const ordersFeature: FeatureDefinition = {
   key: 'orders',

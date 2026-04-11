@@ -27,7 +27,6 @@ trigger: always_on
 
 ## 4. Ngôn ngữ & Báo cáo
 
-- **Ngôn ngữ**: Trả lời hoàn toàn bằng **Tiếng Việt có d**.
 - **Báo cáo**: Sau mỗi nhiệm vụ phải có báo cáo chi tiết các file đã sửa và kết quả verify (typecheck/lint).
 
 ## 5. Xử lý lỗi CSS & Render (Visual Verification)

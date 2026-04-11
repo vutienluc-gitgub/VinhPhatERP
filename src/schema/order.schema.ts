@@ -82,7 +82,8 @@ export type UnitType = (typeof UNIT_OPTIONS)[number]['value'];
 
 /* ── Zod Schemas ── */
 
-export const orderItemSchema = z.object({
+// 1. Định nghĩa ITEM schema cơ bản
+export const orderItemBaseSchema = z.object({
   fabricType: z.string().trim().min(2, 'Loại vải tối thiểu 2 ký tự'),
   colorName: z.string().trim().max(120).optional().or(z.literal('')),
   colorCode: z.string().trim().max(20).optional().or(z.literal('')),
@@ -95,16 +96,37 @@ export const orderItemSchema = z.object({
     .min(0, 'Đơn giá >= 0'),
 });
 
-export type OrderItemFormValues = z.infer<typeof orderItemSchema>;
+// Item schema cho EDIT: cho phép quantity >= 0
+export const orderItemEditSchema = orderItemBaseSchema.extend({
+  quantity: z.number().min(0, 'Số lượng phải >= 0'),
+});
 
-export const ordersSchema = z
-  .object({
-    orderNumber: z.string().trim().min(3, 'Số đơn hàng tối thiểu 3 ký tự'),
-    customerId: z.string().uuid('Chọn khách hàng'),
-    orderDate: z.string().trim().min(1, 'Chọn ngày đặt hàng'),
-    deliveryDate: z.string().trim().optional().or(z.literal('')),
-    notes: z.string().trim().max(500).optional().or(z.literal('')),
-    items: z.array(orderItemSchema).min(1, 'Phải có ít nhất 1 dòng hàng'),
+// 2. Định nghĩa ORDER schema cơ bản (chưa có refine)
+export const ordersBaseSchema = z.object({
+  orderNumber: z.string().trim().min(3, 'Số đơn hàng tối thiểu 3 ký tự'),
+  customerId: z.string().uuid('Chọn khách hàng'),
+  orderDate: z.string().trim().min(1, 'Chọn ngày đặt hàng'),
+  deliveryDate: z.string().trim().optional().or(z.literal('')),
+  notes: z.string().trim().max(500).optional().or(z.literal('')),
+  items: z.array(orderItemBaseSchema).min(1, 'Phải có ít nhất 1 dòng hàng'),
+});
+
+// 3. Tạo Schema hoàn chỉnh với Refine
+export const ordersSchema = ordersBaseSchema.refine(
+  (data) => {
+    if (!data.deliveryDate) return true;
+    return data.deliveryDate >= data.orderDate;
+  },
+  {
+    message: 'Ngày giao hàng phải sau ngày đặt hàng',
+    path: ['deliveryDate'],
+  },
+);
+
+// 4. Tạo Schema EDIT hoàn chỉnh
+export const ordersSchemaEdit = ordersBaseSchema
+  .extend({
+    items: z.array(orderItemEditSchema).min(1, 'Phải có ít nhất 1 dòng hàng'),
   })
   .refine(
     (data) => {
@@ -117,7 +139,9 @@ export const ordersSchema = z
     },
   );
 
+// Tiện ích xuất kiểu dữ liệu
 export type OrdersFormValues = z.infer<typeof ordersSchema>;
+export type OrderItemFormValues = z.infer<typeof orderItemBaseSchema>;
 
 export const emptyOrderItem: OrderItemFormValues = {
   fabricType: '',
