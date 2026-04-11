@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
-import { TabSwitcher } from '@/shared/components';
+import { TabSwitcher, Icon } from '@/shared/components';
+import type { TabItem } from '@/shared/components';
 
 import { ProgressAuditLogView } from './ProgressAuditLog';
 import { ProgressBoard } from './ProgressBoard';
@@ -8,18 +9,21 @@ import { ProgressDashboard } from './ProgressDashboard';
 
 type Tab = 'dashboard' | 'board' | 'audit';
 
-const TABS = [
+const TABS: TabItem<Tab>[] = [
   {
-    key: 'dashboard' as Tab,
+    key: 'dashboard',
     label: 'Tổng quan',
+    icon: <Icon name="LayoutDashboard" size={16} />,
   },
   {
-    key: 'board' as Tab,
-    label: 'Board',
+    key: 'board',
+    label: 'Bảng tiến hồ',
+    icon: <Icon name="Kanban" size={16} />,
   },
   {
-    key: 'audit' as Tab,
+    key: 'audit',
     label: 'Nhật ký',
+    icon: <Icon name="History" size={16} />,
   },
 ];
 

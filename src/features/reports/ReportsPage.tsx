@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
 import type { ReportsFilter } from '@/api/reports.api';
-import { TabSwitcher } from '@/shared/components';
+import { TabSwitcher, Icon } from '@/shared/components';
+import type { TabItem } from '@/shared/components';
 
 import { DebtAgingSection } from './DebtAgingSection';
 import { DebtSection } from './DebtSection';
@@ -36,26 +37,31 @@ function defaultDateTo(): string {
 
 type Tab = 'overview' | 'revenue' | 'debt' | 'production' | 'inventory';
 
-const TABS: { key: Tab; label: string }[] = [
+const TABS: TabItem<Tab>[] = [
   {
     key: 'overview',
     label: 'Tổng quan CEO',
+    icon: <Icon name="BarChart3" size={16} />,
   },
   {
     key: 'revenue',
     label: 'Doanh thu',
+    icon: <Icon name="TrendingUp" size={16} />,
   },
   {
     key: 'debt',
     label: 'Công nợ',
+    icon: <Icon name="Wallet" size={16} />,
   },
   {
     key: 'production',
     label: 'Sản xuất',
+    icon: <Icon name="Factory" size={16} />,
   },
   {
     key: 'inventory',
     label: 'Tồn kho',
+    icon: <Icon name="Box" size={16} />,
   },
 ];
 

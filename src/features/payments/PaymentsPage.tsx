@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
-import { TabSwitcher } from '@/shared/components';
+import { TabSwitcher, Icon } from '@/shared/components';
+import type { TabItem } from '@/shared/components';
 
 import { AccountForm } from './AccountForm';
 import { AccountList } from './AccountList';
@@ -20,30 +21,36 @@ type Tab =
   | 'supplier-debt'
   | 'accounts';
 
-const TAB_CONFIG: { key: Tab; label: string }[] = [
+const TAB_CONFIG: TabItem<Tab>[] = [
   {
     key: 'cashflow',
     label: 'Dòng tiền',
+    icon: <Icon name="LineChart" size={16} />,
   },
   {
     key: 'payments',
     label: 'Phiếu thu',
+    icon: <Icon name="Receipt" size={16} />,
   },
   {
     key: 'expenses',
     label: 'Phiếu chi',
+    icon: <Icon name="CreditCard" size={16} />,
   },
   {
     key: 'customer-debt',
     label: 'Công nợ KH',
+    icon: <Icon name="Users" size={16} />,
   },
   {
     key: 'supplier-debt',
     label: 'Công nợ NCC',
+    icon: <Icon name="Truck" size={16} />,
   },
   {
     key: 'accounts',
     label: 'Tài khoản',
+    icon: <Icon name="Wallet" size={16} />,
   },
 ];
 
