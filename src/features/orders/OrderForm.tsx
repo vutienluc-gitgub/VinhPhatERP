@@ -6,6 +6,7 @@ import { useAuth } from '@/shared/hooks/useAuth';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers';
 import {
   useColorOptions,
@@ -130,14 +131,19 @@ function ItemQuantityFields({
         <label htmlFor={`items.${index}.unitPrice`}>
           Đơn giá (đ/{unitLabel}) <span className="field-required">*</span>
         </label>
-        <input
-          id={`items.${index}.unitPrice`}
-          className={`field-input${errors.items?.[index]?.unitPrice ? ' is-error' : ''}`}
-          type="number"
-          step="1"
-          min="0"
-          placeholder="0"
-          {...register(`items.${index}.unitPrice`, { valueAsNumber: true })}
+        <Controller
+          name={`items.${index}.unitPrice` as const}
+          control={control}
+          render={({ field }) => (
+            <CurrencyInput
+              id={`items.${index}.unitPrice`}
+              className={`field-input${errors.items?.[index]?.unitPrice ? ' is-error' : ''}`}
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              placeholder="0"
+            />
+          )}
         />
         {errors.items?.[index]?.unitPrice && (
           <span className="field-error">
