@@ -14,93 +14,71 @@ export function PortalShipmentDetail() {
   const { id } = useParams<{ id: string }>();
   const { shipment, loading, error } = usePortalShipments(id);
 
-  if (loading) return <p className="text-sm text-gray-500 p-4">Đang tải…</p>;
-  if (error) return <p className="text-sm text-red-500 p-4">{error}</p>;
+  if (loading) return <p className="portal-loading">Đang tải…</p>;
+  if (error) return <p className="portal-error">{error}</p>;
   if (!shipment)
-    return (
-      <p className="text-sm text-gray-500 p-4">Không tìm thấy phiếu giao.</p>
-    );
+    return <p className="portal-empty">Không tìm thấy phiếu giao.</p>;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <Link
-          to="/portal/shipments"
-          className="text-sm text-blue-600 hover:underline"
-        >
-          ← Giao hàng
-        </Link>
-        <span className="text-gray-300">/</span>
-        <span className="text-sm text-gray-700">
-          {shipment.shipment_number}
-        </span>
+    <div className="portal-section">
+      <div className="portal-breadcrumb">
+        <Link to="/portal/shipments">← Giao hàng</Link>
+        <span>/</span>
+        <span>{shipment.shipment_number}</span>
       </div>
 
-      {/* Shipment summary */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <h1 className="text-base font-semibold text-gray-900">
-            {shipment.shipment_number}
-          </h1>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
+      <div className="portal-table-wrap">
+        <div className="portal-card-header">
+          <span>{shipment.shipment_number}</span>
+          <span className="portal-badge">
             {STATUS_LABEL[shipment.status] ?? shipment.status}
           </span>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
-          <div>
-            <p className="text-xs text-gray-500">Ngày giao</p>
-            <p className="text-gray-900">{shipment.shipment_date ?? '—'}</p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500">Đơn hàng</p>
-            <p className="text-gray-900">{shipment.order_number ?? '—'}</p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500">Địa chỉ giao</p>
-            <p className="text-gray-900">{shipment.delivery_address ?? '—'}</p>
+        <div className="portal-card-body">
+          <div className="portal-detail-grid">
+            <div className="portal-detail-item">
+              <label>Ngày giao</label>
+              <p>{shipment.shipment_date ?? '—'}</p>
+            </div>
+            <div className="portal-detail-item">
+              <label>Đơn hàng</label>
+              <p>{shipment.order_number ?? '—'}</p>
+            </div>
+            <div className="portal-detail-item">
+              <label>Địa chỉ giao</label>
+              <p>{shipment.delivery_address ?? '—'}</p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Shipment items */}
       {shipment.items && shipment.items.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <p className="px-4 py-3 text-sm font-medium text-gray-900 border-b border-gray-100">
-            Danh sách cuộn vải
-          </p>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50">
+        <div className="portal-table-wrap">
+          <div className="portal-card-header">Danh sách cuộn vải</div>
+          <div style={{ overflowX: 'auto' }}>
+            <table className="portal-table">
+              <thead>
                 <tr>
-                  <th className="text-left px-4 py-2 font-medium text-gray-600">
-                    Mã cuộn
-                  </th>
-                  <th className="text-left px-4 py-2 font-medium text-gray-600">
-                    Loại vải
-                  </th>
-                  <th className="text-right px-4 py-2 font-medium text-gray-600">
-                    Số lượng (m)
-                  </th>
-                  <th className="text-right px-4 py-2 font-medium text-gray-600">
-                    Trọng lượng (kg)
-                  </th>
+                  <th>Mã cuộn</th>
+                  <th>Loại vải</th>
+                  <th className="right">Số lượng (m)</th>
+                  <th className="right">Trọng lượng (kg)</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody>
                 {shipment.items.map((item, idx) => (
                   <tr key={idx}>
-                    <td className="px-4 py-2 text-gray-900 font-mono text-xs">
+                    <td
+                      style={{
+                        fontFamily: 'monospace',
+                        fontSize: '0.8rem',
+                      }}
+                    >
                       {item.roll_number}
                     </td>
-                    <td className="px-4 py-2 text-gray-700">
-                      {item.fabric_type}
-                    </td>
-                    <td className="px-4 py-2 text-right text-gray-900">
-                      {item.length_m != null ? item.length_m : '—'}
-                    </td>
-                    <td className="px-4 py-2 text-right text-gray-900">
-                      {item.weight_kg != null ? item.weight_kg : '—'}
-                    </td>
+                    <td>{item.fabric_type}</td>
+                    <td className="right">{item.length_m ?? '—'}</td>
+                    <td className="right">{item.weight_kg ?? '—'}</td>
                   </tr>
                 ))}
               </tbody>

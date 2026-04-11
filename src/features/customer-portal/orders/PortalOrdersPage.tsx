@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
-import { formatCurrency } from '@/shared/utils/format';
 import { usePortalOrders } from '@/features/customer-portal/hooks/usePortalOrders';
+import { formatCurrency } from '@/shared/utils/format';
 
 const STATUS_LABEL: Record<string, string> = {
   draft: 'Nháp',
@@ -15,64 +15,48 @@ export function PortalOrdersPage() {
   const { orders, loading, error, page, setPage, PAGE_SIZE } =
     usePortalOrders();
 
-  if (loading) return <p className="text-sm text-gray-500 p-4">Đang tải…</p>;
-  if (error) return <p className="text-sm text-red-500 p-4">{error}</p>;
+  if (loading) return <p className="portal-loading">Đang tải…</p>;
+  if (error) return <p className="portal-error">{error}</p>;
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-lg font-semibold text-gray-900">Đơn hàng</h1>
+    <div className="portal-section">
+      <h1 className="portal-page-title">Đơn hàng</h1>
 
       {orders.length === 0 ? (
-        <p className="text-sm text-gray-500">Chưa có đơn hàng nào.</p>
+        <p className="portal-empty">Chưa có đơn hàng nào.</p>
       ) : (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
+        <div className="portal-table-wrap">
+          <div style={{ overflowX: 'auto' }}>
+            <table className="portal-table">
+              <thead>
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">
-                    Số đơn
-                  </th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">
-                    Ngày đặt
-                  </th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">
-                    Ngày giao
-                  </th>
-                  <th className="text-right px-4 py-3 font-medium text-gray-600">
-                    Tổng tiền
-                  </th>
-                  <th className="text-right px-4 py-3 font-medium text-gray-600">
-                    Đã thanh toán
-                  </th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">
-                    Trạng thái
-                  </th>
+                  <th>Số đơn</th>
+                  <th>Ngày đặt</th>
+                  <th>Ngày giao</th>
+                  <th className="right">Tổng tiền</th>
+                  <th className="right">Đã thanh toán</th>
+                  <th>Trạng thái</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody>
                 {orders.map((o) => (
-                  <tr key={o.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3">
+                  <tr key={o.id}>
+                    <td>
                       <Link
                         to={`/portal/orders/${o.id}`}
-                        className="text-blue-600 hover:underline font-medium"
+                        className="portal-link"
                       >
                         {o.order_number}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-gray-600">{o.order_date}</td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {o.due_date ?? '—'}
-                    </td>
-                    <td className="px-4 py-3 text-right text-gray-900">
+                    <td>{o.order_date}</td>
+                    <td>{o.due_date ?? '—'}</td>
+                    <td className="right">
                       {formatCurrency(o.total_amount)} ₫
                     </td>
-                    <td className="px-4 py-3 text-right text-gray-600">
-                      {formatCurrency(o.paid_amount)} ₫
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
+                    <td className="right">{formatCurrency(o.paid_amount)} ₫</td>
+                    <td>
+                      <span className="portal-badge">
                         {STATUS_LABEL[o.status] ?? o.status}
                       </span>
                     </td>
@@ -81,21 +65,17 @@ export function PortalOrdersPage() {
               </tbody>
             </table>
           </div>
-
-          {/* Pagination */}
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
+          <div className="portal-pagination">
             <button
               onClick={() => setPage(Math.max(0, page - 1))}
               disabled={page === 0}
-              className="text-sm text-gray-600 disabled:opacity-40 hover:text-gray-900"
             >
               ← Trước
             </button>
-            <span className="text-xs text-gray-500">Trang {page + 1}</span>
+            <span>Trang {page + 1}</span>
             <button
               onClick={() => setPage(page + 1)}
               disabled={orders.length < PAGE_SIZE}
-              className="text-sm text-gray-600 disabled:opacity-40 hover:text-gray-900"
             >
               Tiếp →
             </button>

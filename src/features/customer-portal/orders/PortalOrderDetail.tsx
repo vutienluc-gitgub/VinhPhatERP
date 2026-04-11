@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 
-import { formatCurrency } from '@/shared/utils/format';
 import { usePortalOrders } from '@/features/customer-portal/hooks/usePortalOrders';
+import { formatCurrency } from '@/shared/utils/format';
 
 import { PortalProgressTimeline } from './PortalProgressTimeline';
 
@@ -9,103 +9,73 @@ export function PortalOrderDetail() {
   const { id } = useParams<{ id: string }>();
   const { order, stages, loading, error } = usePortalOrders(id);
 
-  if (loading) return <p className="text-sm text-gray-500 p-4">Đang tải…</p>;
-  if (error) return <p className="text-sm text-red-500 p-4">{error}</p>;
-  if (!order)
-    return (
-      <p className="text-sm text-gray-500 p-4">Không tìm thấy đơn hàng.</p>
-    );
+  if (loading) return <p className="portal-loading">Đang tải…</p>;
+  if (error) return <p className="portal-error">{error}</p>;
+  if (!order) return <p className="portal-empty">Không tìm thấy đơn hàng.</p>;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <Link
-          to="/portal/orders"
-          className="text-sm text-blue-600 hover:underline"
-        >
-          ← Đơn hàng
-        </Link>
-        <span className="text-gray-300">/</span>
-        <span className="text-sm text-gray-700">{order.order_number}</span>
+    <div className="portal-section">
+      <div className="portal-breadcrumb">
+        <Link to="/portal/orders">← Đơn hàng</Link>
+        <span>/</span>
+        <span>{order.order_number}</span>
       </div>
 
-      {/* Order summary */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-2">
-        <div className="flex items-center justify-between">
-          <h1 className="text-base font-semibold text-gray-900">
-            {order.order_number}
-          </h1>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
-            {order.status}
-          </span>
+      {/* Summary */}
+      <div className="portal-table-wrap">
+        <div className="portal-card-header">
+          <span>{order.order_number}</span>
+          <span className="portal-badge">{order.status}</span>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-          <div>
-            <p className="text-xs text-gray-500">Ngày đặt</p>
-            <p className="text-gray-900">{order.order_date}</p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500">Ngày giao</p>
-            <p className="text-gray-900">{order.due_date ?? '—'}</p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500">Tổng tiền</p>
-            <p className="text-gray-900 font-medium">
-              {formatCurrency(order.total_amount)} ₫
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500">Đã thanh toán</p>
-            <p className="text-gray-900">
-              {formatCurrency(order.paid_amount)} ₫
-            </p>
+        <div className="portal-card-body">
+          <div className="portal-detail-grid">
+            <div className="portal-detail-item">
+              <label>Ngày đặt</label>
+              <p>{order.order_date}</p>
+            </div>
+            <div className="portal-detail-item">
+              <label>Ngày giao</label>
+              <p>{order.due_date ?? '—'}</p>
+            </div>
+            <div className="portal-detail-item">
+              <label>Tổng tiền</label>
+              <p style={{ fontWeight: 600 }}>
+                {formatCurrency(order.total_amount)} ₫
+              </p>
+            </div>
+            <div className="portal-detail-item">
+              <label>Đã thanh toán</label>
+              <p>{formatCurrency(order.paid_amount)} ₫</p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Order items */}
+      {/* Items */}
       {order.items && order.items.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <p className="px-4 py-3 text-sm font-medium text-gray-900 border-b border-gray-100">
-            Sản phẩm
-          </p>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50">
+        <div className="portal-table-wrap">
+          <div className="portal-card-header">Sản phẩm</div>
+          <div style={{ overflowX: 'auto' }}>
+            <table className="portal-table">
+              <thead>
                 <tr>
-                  <th className="text-left px-4 py-2 font-medium text-gray-600">
-                    Loại vải
-                  </th>
-                  <th className="text-left px-4 py-2 font-medium text-gray-600">
-                    Màu
-                  </th>
-                  <th className="text-right px-4 py-2 font-medium text-gray-600">
-                    SL
-                  </th>
-                  <th className="text-right px-4 py-2 font-medium text-gray-600">
-                    Đơn giá
-                  </th>
-                  <th className="text-right px-4 py-2 font-medium text-gray-600">
-                    Thành tiền
-                  </th>
+                  <th>Loại vải</th>
+                  <th>Màu</th>
+                  <th className="right">SL</th>
+                  <th className="right">Đơn giá</th>
+                  <th className="right">Thành tiền</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody>
                 {order.items.map((item) => (
                   <tr key={item.id}>
-                    <td className="px-4 py-2 text-gray-900">
-                      {item.fabric_name}
-                    </td>
-                    <td className="px-4 py-2 text-gray-600">
-                      {item.color ?? '—'}
-                    </td>
-                    <td className="px-4 py-2 text-right text-gray-900">
-                      {item.quantity}
-                    </td>
-                    <td className="px-4 py-2 text-right text-gray-600">
+                    <td>{item.fabric_name}</td>
+                    <td>{item.color ?? '—'}</td>
+                    <td className="right">{item.quantity}</td>
+                    <td className="right">
                       {formatCurrency(item.unit_price)} ₫
                     </td>
-                    <td className="px-4 py-2 text-right text-gray-900 font-medium">
+                    <td className="right" style={{ fontWeight: 500 }}>
                       {formatCurrency(item.amount)} ₫
                     </td>
                   </tr>
@@ -116,12 +86,12 @@ export function PortalOrderDetail() {
         </div>
       )}
 
-      {/* Progress timeline */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <p className="text-sm font-medium text-gray-900 mb-4">
-          Tiến độ sản xuất
-        </p>
-        <PortalProgressTimeline stages={stages} />
+      {/* Progress */}
+      <div className="portal-table-wrap">
+        <div className="portal-card-header">Tiến độ sản xuất</div>
+        <div className="portal-card-body">
+          <PortalProgressTimeline stages={stages} />
+        </div>
       </div>
     </div>
   );

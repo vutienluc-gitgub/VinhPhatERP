@@ -17,54 +17,47 @@ const STATUS_LABEL: Record<string, string> = {
   skipped: 'Bỏ qua',
 };
 
-const STATUS_COLOR: Record<string, string> = {
-  pending: 'bg-gray-100 text-gray-500',
-  in_progress: 'bg-blue-100 text-blue-700',
-  done: 'bg-green-100 text-green-700',
-  skipped: 'bg-gray-100 text-gray-400',
-};
-
 interface Props {
   stages: PortalProgressStage[];
 }
 
 export function PortalProgressTimeline({ stages }: Props) {
   if (stages.length === 0) {
-    return <p className="text-sm text-gray-400">Chưa có dữ liệu tiến độ.</p>;
+    return (
+      <p className="portal-empty" style={{ padding: '0.5rem 0' }}>
+        Chưa có dữ liệu tiến độ.
+      </p>
+    );
   }
 
   return (
-    <ol className="space-y-3">
+    <ol className="portal-timeline">
       {stages.map((s) => (
-        <li key={s.id} className="flex items-start gap-3">
-          {/* Dot */}
+        <li key={s.id} className="portal-timeline-item">
           <div
-            className={`mt-0.5 w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+            className={`portal-timeline-dot${
               s.status === 'done'
-                ? 'bg-green-500'
+                ? ' portal-timeline-dot--done'
                 : s.status === 'in_progress'
-                  ? 'bg-blue-500'
-                  : 'bg-gray-300'
+                  ? ' portal-timeline-dot--active'
+                  : ''
             }`}
           />
-
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-medium text-gray-900">
+          <div className="portal-timeline-body">
+            <div className="portal-timeline-title">
+              <span className="portal-timeline-name">
                 {STAGE_LABEL[s.stage] ?? s.stage}
               </span>
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full ${STATUS_COLOR[s.status]}`}
-              >
+              <span className="portal-badge">
                 {STATUS_LABEL[s.status] ?? s.status}
               </span>
               {s.is_overdue && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-600">
+                <span className="portal-badge portal-badge--danger">
                   Trễ hạn
                 </span>
               )}
             </div>
-            <div className="flex gap-4 mt-0.5 text-xs text-gray-500">
+            <div className="portal-timeline-dates">
               {s.planned_date && <span>Dự kiến: {s.planned_date}</span>}
               {s.actual_date && <span>Thực tế: {s.actual_date}</span>}
             </div>
