@@ -98,7 +98,7 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
         rowKey={(r) => r.order_id}
         emptyStateTitle="Tuyệt vời! Không có đơn trễ hạn."
         emptyStateDescription="Tất cả các đơn hàng đều đang trong tiến độ giao hàng đúng hạn."
-        emptyStateIcon="🎉"
+        emptyStateIcon="PartyPopper"
         renderMobileCard={(r) => (
           <div
             className={`mobile-card ${r.days_overdue > 7 ? 'border-l-danger' : 'border-l-warning'}`}

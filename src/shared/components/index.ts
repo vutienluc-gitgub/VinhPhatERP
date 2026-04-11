@@ -28,6 +28,8 @@ export { TabSwitcher } from './TabSwitcher';
 export type { TabItem } from './TabSwitcher';
 export { ViewToggle } from './ViewToggle';
 export type { ViewMode } from './ViewToggle';
+export { MiniBarChart } from './MiniBarChart';
+export type { MiniBarChartProps, MiniBarChartItem } from './MiniBarChart';
 export { SearchInput } from './SearchInput';
 export { AddButton } from './AddButton';
 export { CancelButton } from './CancelButton';

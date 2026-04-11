@@ -34,6 +34,11 @@ const STAGE_LABELS: Record<string, string> = {
   finishing: 'Hoàn tất',
   quality_check: 'KCS',
   delivery: 'Giao hàng',
+  greige_check: 'Kiểm tra mộc',
+  gnriga_check: 'Kiểm tra mộc',
+  final_check: 'KCS cuối',
+  packing: 'Đóng gói',
+  warping: 'Mắc sợi',
 };
 
 function computeStages(data: ProductionEfficiencyRow[]): StageSummary[] {
