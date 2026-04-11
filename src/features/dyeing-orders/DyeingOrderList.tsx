@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+﻿import dayjs from 'dayjs';
 
 import {
   DataTablePremium,
@@ -91,7 +91,7 @@ export function DyeingOrderList({
       className: 'hide-mobile',
       cell: (row: DyeingOrder) => (
         <div className="flex items-center gap-1.5 text-muted">
-          <Icon name="Calendar" size={14} />
+          <Icon name="Calendar" size={16} />
           <span>
             {row.expected_return_date
               ? dayjs(row.expected_return_date).format('DD/MM/YYYY')
@@ -148,7 +148,7 @@ export function DyeingOrderList({
           </div>
           <div className="flex justify-between items-end mt-3 border-t border-border pt-2">
             <div className="text-[0.7rem] text-muted flex items-center gap-1">
-              <Icon name="Calendar" size={12} />
+              <Icon name="Calendar" size={16} />
               {row.order_date
                 ? dayjs(row.order_date).format('DD/MM/YYYY')
                 : '—'}

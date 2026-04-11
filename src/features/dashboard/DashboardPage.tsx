@@ -34,7 +34,7 @@ export function DashboardPage() {
         <KpiCardPremium
           label="Trễ hạn"
           value={stats?.overdueOrders ?? 0}
-          icon="AlertTriangle"
+          icon="TriangleAlert"
           variant={stats?.overdueOrders ? 'danger' : 'success'}
           isLoading={statsLoading}
           footer={stats?.overdueOrders ? 'Cần xử lý ngay' : 'Đúng tiến độ'}
@@ -49,7 +49,7 @@ export function DashboardPage() {
         <KpiCardPremium
           label="Thu 7 ngày qua"
           value={stats ? `${formatCurrency(stats.recentPayments)} đ` : '—'}
-          icon="CheckCircle"
+          icon="CircleCheck"
           variant="success"
           isLoading={statsLoading}
         />

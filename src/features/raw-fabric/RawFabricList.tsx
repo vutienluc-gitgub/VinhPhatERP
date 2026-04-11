@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 
 import { Pagination } from '@/shared/components/Pagination';
 import { fetchRawFabricAll } from '@/api/raw-fabric.api';
@@ -146,9 +146,9 @@ export function RawFabricList({
               title="Xuất Excel"
             >
               {isExporting ? (
-                <Icon name="Loader2" size={18} className="animate-spin" />
+                <Icon name="Loader2" size={20} className="animate-spin" />
               ) : (
-                <Icon name="FileSpreadsheet" size={18} />
+                <Icon name="FileSpreadsheet" size={20} />
               )}
             </button>
           </div>

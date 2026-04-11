@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+﻿import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
@@ -229,7 +229,7 @@ export function DyeingOrderForm({
               className="btn-secondary py-1.5 text-xs"
               onClick={() => append({ ...emptyDyeingOrderItem })}
             >
-              <Icon name="Plus" size={14} /> Them cay vai
+              <Icon name="Plus" size={16} /> Them cay vai
             </button>
           </div>
 

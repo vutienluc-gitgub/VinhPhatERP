@@ -149,7 +149,7 @@ export function buildPendingTasks(stats: DashboardStats): PendingTask[] {
 
   if (stats.overdueOrders > 0) {
     tasks.push({
-      icon: '⚠️',
+      icon: 'TriangleAlert',
       text: 'Đơn hàng trễ hạn',
       count: stats.overdueOrders,
       href: '/orders',
@@ -158,7 +158,7 @@ export function buildPendingTasks(stats: DashboardStats): PendingTask[] {
   }
   if (stats.expiringQuotations > 0) {
     tasks.push({
-      icon: '📋',
+      icon: 'ClipboardList',
       text: 'Báo giá sắp hết hạn',
       count: stats.expiringQuotations,
       href: '/quotations',
@@ -167,7 +167,7 @@ export function buildPendingTasks(stats: DashboardStats): PendingTask[] {
   }
   if (stats.pendingShipments > 0) {
     tasks.push({
-      icon: '📦',
+      icon: 'PackageCheck',
       text: 'Phiếu xuất chờ xử lý',
       count: stats.pendingShipments,
       href: '/shipments',
@@ -176,7 +176,7 @@ export function buildPendingTasks(stats: DashboardStats): PendingTask[] {
   }
   if (stats.draftOrders > 0) {
     tasks.push({
-      icon: '📝',
+      icon: 'FilePenLine',
       text: 'Đơn nháp chưa xác nhận',
       count: stats.draftOrders,
       href: '/orders',
@@ -185,7 +185,7 @@ export function buildPendingTasks(stats: DashboardStats): PendingTask[] {
   }
   if (stats.totalDebt > 0) {
     tasks.push({
-      icon: '💰',
+      icon: 'Wallet',
       text: `Công nợ còn ${formatCurrency(stats.totalDebt)} đ`,
       count: 0,
       href: '/payments',

@@ -1,4 +1,4 @@
-import {
+﻿import {
   Control,
   useFieldArray,
   UseFormRegister,
@@ -46,7 +46,7 @@ export function WorkOrderYarnTable({
               })
             }
           >
-            <Icon name="Plus" size={14} />
+            <Icon name="Plus" size={16} />
             Them soi
           </button>
         </div>
@@ -169,7 +169,7 @@ export function WorkOrderYarnTable({
                     className="btn-icon text-danger"
                     onClick={() => remove(index)}
                   >
-                    <Icon name="Trash2" size={14} />
+                    <Icon name="Trash2" size={16} />
                   </button>
                 </td>
               </tr>

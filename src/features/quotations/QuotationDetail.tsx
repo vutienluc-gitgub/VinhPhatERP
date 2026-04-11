@@ -1,4 +1,4 @@
-import { Badge, type BadgeVariant, Icon } from '@/shared/components';
+﻿import { Badge, type BadgeVariant, Icon } from '@/shared/components';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { formatCurrency } from '@/shared/utils/format';
 
@@ -350,7 +350,7 @@ export function QuotationDetail({
 
       <div className="px-5 pb-5">
         <h4 className="mb-3 text-base flex items-center gap-2">
-          <Icon name="List" size={18} className="text-muted" />
+          <Icon name="List" size={20} className="text-muted" />
           Dong hang ({items.length})
         </h4>
         <div className="data-table-wrap">

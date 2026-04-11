@@ -1,4 +1,4 @@
-import { zodResolver } from '@hookform/resolvers/zod';
+﻿import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
@@ -376,7 +376,7 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
                     title="Xoa dong"
                     onClick={() => remove(index)}
                   >
-                    <Icon name="X" size={14} />
+                    <Icon name="X" size={16} />
                   </button>
                 </div>
 

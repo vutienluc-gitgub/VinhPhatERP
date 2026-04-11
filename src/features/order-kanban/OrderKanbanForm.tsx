@@ -1,36 +1,47 @@
 import { useNavigate } from 'react-router-dom';
 
-import { Icon } from '@/shared/components';
+import { Icon, type IconName } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 
 import type { OrderKanbanItem, OrderKanbanStatus } from './types';
 
 const NEXT_STATUS: Partial<
-  Record<OrderKanbanStatus, { label: string; next: OrderKanbanStatus }>
+  Record<
+    OrderKanbanStatus,
+    { label: string; icon: IconName; next: OrderKanbanStatus }
+  >
 > = {
   draft: {
-    label: '✓ Xác nhận',
+    label: 'Xác nhận',
+    icon: 'CircleCheck',
     next: 'confirmed',
   },
   confirmed: {
-    label: '🚚 Xuất kho',
+    label: 'Xuất kho',
+    icon: 'Truck',
     next: 'delivering',
   },
   delivering: {
-    label: '✅ Hoàn thành',
+    label: 'Hoàn thành',
+    icon: 'CheckCheck',
     next: 'completed',
   },
 };
 
 const PREV_STATUS: Partial<
-  Record<OrderKanbanStatus, { label: string; prev: OrderKanbanStatus }>
+  Record<
+    OrderKanbanStatus,
+    { label: string; icon: IconName; prev: OrderKanbanStatus }
+  >
 > = {
   confirmed: {
-    label: '← Draft',
+    label: 'Bản nháp',
+    icon: 'ArrowLeft',
     prev: 'draft',
   },
   delivering: {
-    label: '← Confirmed',
+    label: 'Xác nhận',
+    icon: 'ArrowLeft',
     prev: 'confirmed',
   },
 };
@@ -74,16 +85,16 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
           {isInProgress ? (
             <Icon
               name="Loader2"
-              size={14}
+              size={16}
               className="animate-spin text-primary"
             />
           ) : (
-            <Icon name="Package" size={14} className="text-muted" />
+            <Icon name="Package" size={16} className="text-muted" />
           )}
         </div>
         {isOverdue && (
           <span className="kanban-card-tag flex items-center gap-1">
-            <Icon name="AlertTriangle" size={10} /> Quá hạn
+            <Icon name="TriangleAlert" size={16} /> Quá hạn
           </span>
         )}
       </div>
@@ -99,7 +110,7 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
           {formatCurrency(item.total_amount)}đ
         </div>
         <div className="text-[0.7rem] text-muted font-medium flex items-center gap-1">
-          <Icon name="Calendar" size={12} /> {deliveryLabel}
+          <Icon name="Calendar" size={16} /> {deliveryLabel}
         </div>
       </div>
 
@@ -112,32 +123,26 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
           {prev && (
             <button
               type="button"
-              className="btn-secondary flex-1 justify-center text-danger"
-              style={{
-                fontSize: '0.75rem',
-                padding: '0.35rem 0.5rem',
-              }}
+              className="btn-secondary flex-1 justify-center gap-1.5 text-xs py-1.5 px-2"
               disabled={isMoving}
               onClick={() => onMove(item.id, prev.prev)}
             >
-              {prev.label}
+              <Icon name={prev.icon} size={16} /> {prev.label}
             </button>
           )}
           {next && (
             <button
               type="button"
-              className="btn-primary flex-1 justify-center"
-              style={{
-                fontSize: '0.75rem',
-                padding: '0.35rem 0.5rem',
-              }}
+              className="btn-primary flex-1 justify-center gap-1.5 text-xs py-1.5 px-2"
               disabled={isMoving}
               onClick={() => onMove(item.id, next.next)}
             >
               {isMoving ? (
-                <Icon name="Loader2" size={14} className="animate-spin" />
+                <Icon name="Loader2" size={16} className="animate-spin" />
               ) : (
-                next.label
+                <>
+                  <Icon name={next.icon} size={16} /> {next.label}
+                </>
               )}
             </button>
           )}

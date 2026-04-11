@@ -1,4 +1,4 @@
-import { Icon } from '@/shared/components/Icon';
+﻿import { Icon } from '@/shared/components/Icon';
 import { Badge } from '@/shared/components/Badge';
 
 import type { WorkOrder } from './types';
@@ -64,7 +64,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
               onClick={onBack}
               title="Quay lai"
             >
-              <Icon name="ArrowLeft" size={18} />
+              <Icon name="ArrowLeft" size={20} />
             </button>
             <div>
               <p className="eyebrow-premium">CHI TIET LENH SAN XUAT</p>

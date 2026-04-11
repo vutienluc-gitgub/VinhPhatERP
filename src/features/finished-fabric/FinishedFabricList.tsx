@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+﻿import { useState, useMemo } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
@@ -169,7 +169,7 @@ export function FinishedFabricList({
               disabled={rolls.length === 0}
               title="Xuất Excel"
             >
-              <Icon name="FileSpreadsheet" size={18} />
+              <Icon name="FileSpreadsheet" size={20} />
             </button>
           </div>
         </div>

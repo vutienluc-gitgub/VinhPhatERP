@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 
 import { Combobox } from '@/shared/components/Combobox';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
@@ -281,7 +281,7 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
                       onEdit(c);
                     }}
                   >
-                    <Icon name="Pencil" size={14} />
+                    <Icon name="Pencil" size={16} />
                   </button>
                   <button
                     className="btn-icon p-1 text-danger"
@@ -291,7 +291,7 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
                     }}
                     disabled={deleteMutation.isPending}
                   >
-                    <Icon name="Trash2" size={14} />
+                    <Icon name="Trash2" size={16} />
                   </button>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
@@ -71,7 +71,7 @@ export function ColorsSection() {
           <h3 className="title-premium">Danh mục màu sắc</h3>
         </div>
         <button className="btn-primary" type="button" onClick={handleCreate}>
-          <Icon name="Plus" size={18} />
+          <Icon name="Plus" size={20} />
           Thêm màu
         </button>
       </div>

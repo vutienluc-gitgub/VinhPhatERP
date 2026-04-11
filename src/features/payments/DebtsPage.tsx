@@ -15,12 +15,12 @@ const TABS: TabItem<DebtTab>[] = [
   {
     key: 'customer',
     label: 'Công nợ Khách hàng',
-    icon: <Icon name="Users" size={15} />,
+    icon: <Icon name="Users" size={16} />,
   },
   {
     key: 'supplier',
     label: 'Công nợ Nhà cung cấp',
-    icon: <Icon name="Building2" size={15} />,
+    icon: <Icon name="Building2" size={16} />,
   },
 ];
 

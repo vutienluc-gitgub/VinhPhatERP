@@ -177,10 +177,10 @@ export function ProgressTimeline({
                   }}
                 >
                   {row.status === 'in_progress' && (
-                    <Icon name="loader-2" size={14} className="animate-spin" />
+                    <Icon name="Loader2" size={16} className="animate-spin" />
                   )}
                   {row.status === 'done' && (
-                    <Icon name="check" size={14} color="#fff" strokeWidth={3} />
+                    <Icon name="Check" size={16} color="#fff" strokeWidth={3} />
                   )}
                 </div>
                 {!isLast && (
