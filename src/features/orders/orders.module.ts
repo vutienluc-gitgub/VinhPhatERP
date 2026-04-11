@@ -65,7 +65,7 @@ export const ordersPlugin: FeaturePlugin = {
   shortLabel: 'Đơn hàng',
   description:
     'Quản lý đơn hàng kinh doanh, theo dõi tiến độ và công nợ khách hàng.',
-  icon: 'package',
+  icon: 'ShoppingBag',
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'sales',
   order: 10,

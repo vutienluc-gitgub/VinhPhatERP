@@ -37,7 +37,7 @@ export const customersPlugin: FeaturePlugin = {
   label: 'Khách hàng',
   shortLabel: 'Khách',
   description: 'Danh mục khách hàng và quản lý công nợ khách hàng.',
-  icon: 'users',
+  icon: 'UserCheck',
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'sales',
   order: 60,

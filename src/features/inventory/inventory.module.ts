@@ -42,7 +42,7 @@ export const inventoryPlugin: FeaturePlugin = {
   label: 'Kho & Tồn kho',
   shortLabel: 'Kho',
   description: 'Theo dõi tồn kho sợi, mộc, thành phẩm và vật tư.',
-  icon: 'package',
+  icon: 'Warehouse',
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'master-data',
   order: 20,

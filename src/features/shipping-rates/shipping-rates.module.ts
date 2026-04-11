@@ -40,7 +40,7 @@ export const shippingRatesPlugin: FeaturePlugin = {
   shortLabel: 'Phí Ship',
   description:
     'Cấu hình đơn giá vận chuyển cho các khu vực và đối tác khác nhau.',
-  icon: 'package',
+  icon: 'BadgeDollarSign',
   requiredRoles: ['admin', 'manager'],
   group: 'system',
   order: 110,

@@ -45,7 +45,7 @@ export const settingsPlugin: FeaturePlugin = {
   label: 'Cài đặt',
   shortLabel: 'Cấu hình',
   description: 'Cài đặt thông tin công ty và các tham số vận hành hệ thống.',
-  icon: 'package',
+  icon: 'Settings',
   requiredRoles: ['admin'],
   group: 'system',
   component: () =>

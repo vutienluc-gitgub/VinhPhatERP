@@ -63,7 +63,7 @@ export const quotationsPlugin: FeaturePlugin = {
   label: 'Báo giá',
   shortLabel: 'Báo giá',
   description: 'Tạo và quản lý báo giá gửi tới khách hàng tiềm năng.',
-  icon: 'package',
+  icon: 'FileText',
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'sales',
   order: 5,

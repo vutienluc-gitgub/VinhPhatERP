@@ -6,7 +6,7 @@ export const dyeingOrdersPlugin: FeaturePlugin = {
   label: 'Lệnh nhuộm',
   shortLabel: 'Nhuộm',
   description: 'Quản lý lệnh nhuộm và theo dõi trả hàng từ nhà nhuộm.',
-  icon: 'droplet',
+  icon: 'Droplet',
   primaryMobile: true,
   group: 'production',
   order: 58,
