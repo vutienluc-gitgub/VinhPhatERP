@@ -18,6 +18,7 @@ import {
   useNextCustomerCode,
   useUpdateCustomer,
 } from './useCustomers';
+import { CustomerPortalAccountPanel } from './CustomerPortalAccountPanel';
 
 type CustomerFormProps = {
   customer: Customer | null;
@@ -285,6 +286,14 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
             {...register('notes')}
           />
         </div>
+
+        {/* Customer Portal Account — chỉ hiện khi đang edit */}
+        {isEditing && (
+          <CustomerPortalAccountPanel
+            customerId={customer.id}
+            customerName={customer.name}
+          />
+        )}
       </div>
 
       <div className="flex justify-end gap-3 pt-5 mt-4 border-t border-border">

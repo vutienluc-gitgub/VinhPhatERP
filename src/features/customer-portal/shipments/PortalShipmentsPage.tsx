@@ -13,61 +13,54 @@ const STATUS_LABEL: Record<string, string> = {
 export function PortalShipmentsPage() {
   const { shipments, loading, error } = usePortalShipments();
 
-  if (loading) return <p className="text-sm text-gray-500 p-4">Đang tải…</p>;
-  if (error) return <p className="text-sm text-red-500 p-4">{error}</p>;
+  if (loading) return <p className="portal-loading">Đang tải…</p>;
+  if (error) return <p className="portal-error">{error}</p>;
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-lg font-semibold text-gray-900">Giao hàng</h1>
+    <div className="portal-section">
+      <h1 className="portal-page-title">Giao hàng</h1>
 
       {shipments.length === 0 ? (
-        <p className="text-sm text-gray-500">Chưa có phiếu giao hàng nào.</p>
+        <p className="portal-empty">Chưa có phiếu giao hàng nào.</p>
       ) : (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
+        <div className="portal-table-wrap">
+          <div style={{ overflowX: 'auto' }}>
+            <table className="portal-table">
+              <thead>
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">
-                    Số phiếu
-                  </th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">
-                    Ngày giao
-                  </th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">
-                    Đơn hàng
-                  </th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">
-                    Trạng thái
-                  </th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">
-                    Địa chỉ
-                  </th>
+                  <th>Số phiếu</th>
+                  <th>Ngày giao</th>
+                  <th>Đơn hàng</th>
+                  <th>Trạng thái</th>
+                  <th>Địa chỉ</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody>
                 {shipments.map((s) => (
-                  <tr key={s.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3">
+                  <tr key={s.id}>
+                    <td>
                       <Link
                         to={`/portal/shipments/${s.id}`}
-                        className="text-blue-600 hover:underline font-medium"
+                        className="portal-link"
                       >
                         {s.shipment_number}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {s.shipment_date ?? '—'}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {s.order_number ?? '—'}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
+                    <td>{s.shipment_date ?? '—'}</td>
+                    <td>{s.order_number ?? '—'}</td>
+                    <td>
+                      <span className="portal-badge">
                         {STATUS_LABEL[s.status] ?? s.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-600 max-w-xs truncate">
+                    <td
+                      style={{
+                        maxWidth: '200px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
                       {s.delivery_address ?? '—'}
                     </td>
                   </tr>

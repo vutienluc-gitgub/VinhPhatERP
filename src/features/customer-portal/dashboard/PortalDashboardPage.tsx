@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 
-import { formatCurrency } from '@/shared/utils/format';
 import { usePortalOrders } from '@/features/customer-portal/hooks/usePortalOrders';
 import { usePortalDebt } from '@/features/customer-portal/hooks/usePortalDebt';
 import { usePortalShipments } from '@/features/customer-portal/hooks/usePortalShipments';
+import { formatCurrency } from '@/shared/utils/format';
 
 export function PortalDashboardPage() {
   const { orders, loading: ordersLoading } = usePortalOrders();
@@ -13,98 +13,106 @@ export function PortalDashboardPage() {
   const latestShipment = shipments[0];
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-lg font-semibold text-gray-900">Tổng quan</h1>
+    <div className="portal-section">
+      <h1 className="portal-page-title">Tổng quan</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {/* Tổng đơn hàng */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-xs text-gray-500 mb-1">Đơn hàng</p>
-          <p className="text-2xl font-semibold text-gray-900">
+      <div className="portal-summary-grid">
+        <div className="portal-stat-card">
+          <p className="portal-stat-label">Đơn hàng</p>
+          <p className="portal-stat-value">
             {ordersLoading ? '…' : orders.length}
           </p>
-          <Link
-            to="/portal/orders"
-            className="text-xs text-blue-600 mt-2 inline-block"
-          >
+          <Link to="/portal/orders" className="portal-stat-link">
             Xem tất cả →
           </Link>
         </div>
 
-        {/* Công nợ còn lại */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-xs text-gray-500 mb-1">Công nợ còn lại</p>
-          <p className="text-2xl font-semibold text-red-600">
-            {debtLoading ? '…' : formatCurrency(remainingDebt)}
+        <div className="portal-stat-card">
+          <p className="portal-stat-label">Công nợ còn lại</p>
+          <p className="portal-stat-value portal-stat-value--danger">
+            {debtLoading ? '…' : `${formatCurrency(remainingDebt)} ₫`}
           </p>
-          <Link
-            to="/portal/debt"
-            className="text-xs text-blue-600 mt-2 inline-block"
-          >
+          <Link to="/portal/debt" className="portal-stat-link">
             Chi tiết →
           </Link>
         </div>
 
-        {/* Giao hàng gần nhất */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <p className="text-xs text-gray-500 mb-1">Giao hàng gần nhất</p>
+        <div className="portal-stat-card">
+          <p className="portal-stat-label">Giao hàng gần nhất</p>
           {shipmentsLoading ? (
-            <p className="text-sm text-gray-400">…</p>
+            <p className="portal-stat-value">…</p>
           ) : latestShipment ? (
             <>
-              <p className="text-sm font-medium text-gray-900">
+              <p className="portal-stat-value" style={{ fontSize: '1rem' }}>
                 {latestShipment.shipment_number}
               </p>
-              <p className="text-xs text-gray-500">
+              <p
+                style={{
+                  fontSize: '0.75rem',
+                  color: 'var(--muted)',
+                  margin: '0.25rem 0 0',
+                }}
+              >
                 {latestShipment.shipment_date}
               </p>
             </>
           ) : (
-            <p className="text-sm text-gray-400">Chưa có</p>
+            <p
+              className="portal-stat-value"
+              style={{
+                fontSize: '1rem',
+                color: 'var(--muted)',
+              }}
+            >
+              Chưa có
+            </p>
           )}
-          <Link
-            to="/portal/shipments"
-            className="text-xs text-blue-600 mt-2 inline-block"
-          >
+          <Link to="/portal/shipments" className="portal-stat-link">
             Xem tất cả →
           </Link>
         </div>
       </div>
 
-      {/* Recent orders */}
       {!ordersLoading && orders.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200">
-          <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-900">
-              Đơn hàng gần đây
-            </p>
-            <Link to="/portal/orders" className="text-xs text-blue-600">
+        <div className="portal-table-wrap">
+          <div className="portal-card-header">
+            <span>Đơn hàng gần đây</span>
+            <Link to="/portal/orders" className="portal-stat-link">
               Xem tất cả
             </Link>
           </div>
-          <ul className="divide-y divide-gray-100">
-            {orders.slice(0, 5).map((o) => (
-              <li key={o.id}>
-                <Link
-                  to={`/portal/orders/${o.id}`}
-                  className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">
+          <table className="portal-table">
+            <tbody>
+              {orders.slice(0, 5).map((o) => (
+                <tr key={o.id}>
+                  <td>
+                    <Link to={`/portal/orders/${o.id}`} className="portal-link">
                       {o.order_number}
-                    </p>
-                    <p className="text-xs text-gray-500">{o.order_date}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-gray-900">
-                      {formatCurrency(o.total_amount)}
-                    </p>
-                    <p className="text-xs text-gray-500">{o.status}</p>
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
+                    </Link>
+                    <div
+                      style={{
+                        fontSize: '0.75rem',
+                        color: 'var(--muted)',
+                      }}
+                    >
+                      {o.order_date}
+                    </div>
+                  </td>
+                  <td className="right">
+                    <div>{formatCurrency(o.total_amount)} ₫</div>
+                    <div
+                      style={{
+                        fontSize: '0.75rem',
+                        color: 'var(--muted)',
+                      }}
+                    >
+                      {o.status}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
