@@ -9,6 +9,7 @@ import {
   DataTablePremium,
 } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
+import { formatCurrency } from '@/shared/utils/format';
 
 import { EXPENSE_CATEGORIES, EXPENSE_CATEGORY_LABELS } from './payments.module';
 import type { Expense, ExpenseCategory, ExpensesFilter } from './types';
@@ -18,10 +19,6 @@ type ExpenseListProps = {
   onEdit: (expense: Expense) => void;
   onNew: () => void;
 };
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value);
-}
 
 function getCategoryVariant(category: ExpenseCategory): BadgeVariant {
   switch (category) {

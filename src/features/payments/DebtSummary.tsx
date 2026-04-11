@@ -1,10 +1,7 @@
 import { Icon, DataTablePremium } from '@/shared/components';
+import { formatCurrency } from '@/shared/utils/format';
 
 import { useDebtSummary } from './usePayments';
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value);
-}
 
 export function DebtSummary() {
   const { data: debts = [], isLoading, error } = useDebtSummary();
