@@ -76,16 +76,7 @@ function LineTotals({
     0,
   );
   return (
-    <div
-      style={{
-        textAlign: 'right',
-        fontWeight: 600,
-        fontSize: '1rem',
-        padding: '0.6rem 0',
-        borderTop: '2px solid var(--border)',
-        marginTop: '0.75rem',
-      }}
-    >
+    <div className="text-right font-semibold text-base py-2 border-t-2 border-border mt-3">
       Tổng cộng: {formatCurrency(total)} đ
     </div>
   );
@@ -308,7 +299,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
           noValidate
         >
           {mutationError && (
-            <p className="error-inline" style={{ marginBottom: '1rem' }}>
+            <p className="error-inline mb-4">
               Lỗi: {(mutationError as Error).message}
             </p>
           )}
@@ -437,52 +428,16 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                   Dòng hàng <span className="field-required">*</span>
                 </label>
                 {errors.items?.root && (
-                  <span
-                    className="field-error"
-                    style={{
-                      marginBottom: '0.5rem',
-                      display: 'block',
-                    }}
-                  >
+                  <span className="field-error block mb-2">
                     {errors.items.root.message}
                   </span>
                 )}
 
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '1rem',
-                    marginTop: '0.5rem',
-                  }}
-                >
+                <div className="flex flex-col gap-4 mt-2">
                   {fields.map((field, index) => (
-                    <div
-                      key={field.id}
-                      style={{
-                        border: '1px solid var(--border)',
-                        borderRadius: 'var(--radius-md)',
-                        padding: '1rem',
-                        background: 'var(--surface)',
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          marginBottom: '0.75rem',
-                          borderBottom: '1px solid var(--border)',
-                          paddingBottom: '0.5rem',
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontSize: '0.9rem',
-                            fontWeight: 600,
-                            color: 'var(--text-secondary)',
-                          }}
-                        >
+                    <div key={field.id} className="form-item-box">
+                      <div className="flex justify-between items-center mb-3 pb-2 border-b border-border">
+                        <span className="text-sm font-semibold text-muted">
                           Dòng Hàng #{index + 1}
                         </span>
                         {fields.length > 1 && (
@@ -491,7 +446,6 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                             type="button"
                             title="Xóa dòng"
                             onClick={() => remove(index)}
-                            style={{ fontSize: '0.9rem' }}
                           >
                             Xóa ✕
                           </button>
@@ -624,13 +578,9 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                 </div>
 
                 <button
-                  className="btn-secondary"
+                  className="btn-secondary w-full mt-4"
                   type="button"
                   onClick={() => append({ ...emptyOrderItem })}
-                  style={{
-                    marginTop: '1rem',
-                    width: '100%',
-                  }}
                 >
                   + Thêm dòng hàng mới
                 </button>
@@ -640,15 +590,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
             </div>
           </div>
 
-          <div
-            className="modal-footer"
-            style={{
-              marginTop: '1.5rem',
-              padding: 0,
-              border: 'none',
-              justifyContent: 'space-between',
-            }}
-          >
+          <div className="modal-footer mt-6 p-0 border-none justify-between">
             <div>
               {!stepper.isFirst && (
                 <button

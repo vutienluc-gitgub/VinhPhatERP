@@ -77,11 +77,11 @@ export function OrderKanbanPage() {
         </div>
         <div className="flex items-center gap-4 flex-wrap">
           <div className="hidden sm:flex items-center gap-2 text-xs font-bold text-muted mr-2">
-            <span className="bg-surface px-2.5 py-1.5 rounded-md border border-border">
+            <span className="bg-surface px-2.5 py-1.5 rounded border border-border">
               {totalOrders} đơn hàng
             </span>
             {overdueCount > 0 && (
-              <span className="text-danger flex items-center gap-1.5 bg-danger/10 px-2.5 py-1.5 rounded-md border border-danger/20">
+              <span className="text-danger flex items-center gap-1.5 bg-danger/10 px-2.5 py-1.5 rounded border border-danger/20">
                 <Icon name="AlertTriangle" size={14} /> {overdueCount} quá hạn
               </span>
             )}
