@@ -10,6 +10,8 @@ export const dyeingOrdersPlugin: FeaturePlugin = {
   primaryMobile: true,
   group: 'production',
   order: 58,
+  requiredRoles: ['admin', 'manager'],
+  routeGuard: 'manager',
   component: () =>
     import('./DyeingOrdersPage').then((m) => ({ default: m.DyeingOrdersPage })),
 };

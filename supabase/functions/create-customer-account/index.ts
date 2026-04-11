@@ -75,7 +75,7 @@ serve(async (req: Request) => {
 
     const { data: callerProfile } = await supabaseAdmin
       .from('profiles')
-      .select('role, is_active')
+      .select('role, is_active, tenant_id')
       .eq('id', user.id)
       .single();
 
@@ -94,6 +94,16 @@ serve(async (req: Request) => {
       return errorResponse(
         'VALIDATION',
         'Thiếu thông tin bắt buộc: email, password, customer_id, full_name',
+      );
+    }
+
+    // Resolve tenant_id from caller (admin)
+    const callerTenantId = callerProfile.tenant_id;
+    if (!callerTenantId) {
+      return errorResponse(
+        'TENANT_MISSING',
+        'Admin chưa được gán tenant. Liên hệ quản trị hệ thống.',
+        500,
       );
     }
 
@@ -139,7 +149,7 @@ serve(async (req: Request) => {
       );
     }
 
-    // Update profile: role = customer, customer_id, full_name
+    // Update profile: role = customer, customer_id, full_name, tenant_id
     const { error: profileErr } = await supabaseAdmin
       .from('profiles')
       .update({
@@ -147,6 +157,7 @@ serve(async (req: Request) => {
         customer_id,
         full_name,
         is_active: true,
+        tenant_id: callerTenantId,
       })
       .eq('id', newUser.user.id);
 
