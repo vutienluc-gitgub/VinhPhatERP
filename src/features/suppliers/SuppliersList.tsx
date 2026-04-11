@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
@@ -201,7 +201,7 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
             ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
             : 'Nhấn nút thêm nhà cung cấp mới để lưu trữ thông tin liên hệ.'
         }
-        emptyStateIcon={hasFilter ? '🔍' : 'Truck'}
+        emptyStateIcon={hasFilter ? 'Search' : 'Truck'}
         emptyStateActionLabel={!hasFilter ? '+ Thêm NCC mới' : undefined}
         onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={[

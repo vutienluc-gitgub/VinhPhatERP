@@ -8,6 +8,7 @@ import {
   type ShippingRate,
 } from '@/schema';
 import { Combobox } from '@/shared/components/Combobox';
+import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { CancelButton } from '@/shared/components';
 
 import {
@@ -104,14 +105,18 @@ export function ShippingRateForm({ item, onClose }: Props) {
         {/* Rate per trip */}
         <div className="form-field">
           <label>Giá cố định/chuyến (VNĐ)</label>
-          <input
-            className={`field-input${errors.ratePerTrip ? ' is-error' : ''}`}
-            type="number"
-            {...register('ratePerTrip', {
-              valueAsNumber: true,
-              setValueAs: (v) => (v === '' ? null : Number(v)),
-            })}
-            placeholder="0"
+          <Controller
+            name="ratePerTrip"
+            control={control}
+            render={({ field }) => (
+              <CurrencyInput
+                className={`field-input${errors.ratePerTrip ? ' is-error' : ''}`}
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                placeholder="0"
+              />
+            )}
           />
           {errors.ratePerTrip && (
             <p className="field-error">{errors.ratePerTrip.message}</p>
@@ -121,15 +126,18 @@ export function ShippingRateForm({ item, onClose }: Props) {
         {/* Rate per meter */}
         <div className="form-field">
           <label>Giá theo mét (VNĐ/m)</label>
-          <input
-            className={`field-input${errors.ratePerMeter ? ' is-error' : ''}`}
-            type="number"
-            step="0.001"
-            {...register('ratePerMeter', {
-              valueAsNumber: true,
-              setValueAs: (v) => (v === '' ? null : Number(v)),
-            })}
-            placeholder="0"
+          <Controller
+            name="ratePerMeter"
+            control={control}
+            render={({ field }) => (
+              <CurrencyInput
+                className={`field-input${errors.ratePerMeter ? ' is-error' : ''}`}
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                placeholder="0"
+              />
+            )}
           />
           {errors.ratePerMeter && (
             <p className="field-error">{errors.ratePerMeter.message}</p>
@@ -139,15 +147,18 @@ export function ShippingRateForm({ item, onClose }: Props) {
         {/* Rate per kg */}
         <div className="form-field">
           <label>Giá theo kg (VNĐ/kg)</label>
-          <input
-            className={`field-input${errors.ratePerKg ? ' is-error' : ''}`}
-            type="number"
-            step="0.001"
-            {...register('ratePerKg', {
-              valueAsNumber: true,
-              setValueAs: (v) => (v === '' ? null : Number(v)),
-            })}
-            placeholder="0"
+          <Controller
+            name="ratePerKg"
+            control={control}
+            render={({ field }) => (
+              <CurrencyInput
+                className={`field-input${errors.ratePerKg ? ' is-error' : ''}`}
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                placeholder="0"
+              />
+            )}
           />
           {errors.ratePerKg && (
             <p className="field-error">{errors.ratePerKg.message}</p>
@@ -159,11 +170,18 @@ export function ShippingRateForm({ item, onClose }: Props) {
           <label>
             Phí bốc xếp (VNĐ) <span className="field-required">*</span>
           </label>
-          <input
-            className={`field-input${errors.loadingFee ? ' is-error' : ''}`}
-            type="number"
-            {...register('loadingFee', { valueAsNumber: true })}
-            placeholder="0"
+          <Controller
+            name="loadingFee"
+            control={control}
+            render={({ field }) => (
+              <CurrencyInput
+                className={`field-input${errors.loadingFee ? ' is-error' : ''}`}
+                value={field.value}
+                onChange={(v) => field.onChange(v ?? 0)}
+                onBlur={field.onBlur}
+                placeholder="0"
+              />
+            )}
           />
           {errors.loadingFee && (
             <p className="field-error">{errors.loadingFee.message}</p>
@@ -173,11 +191,18 @@ export function ShippingRateForm({ item, onClose }: Props) {
         {/* Min charge */}
         <div className="form-field">
           <label>Phí tối thiểu (VNĐ)</label>
-          <input
-            className={`field-input${errors.minCharge ? ' is-error' : ''}`}
-            type="number"
-            {...register('minCharge', { valueAsNumber: true })}
-            placeholder="0"
+          <Controller
+            name="minCharge"
+            control={control}
+            render={({ field }) => (
+              <CurrencyInput
+                className={`field-input${errors.minCharge ? ' is-error' : ''}`}
+                value={field.value}
+                onChange={(v) => field.onChange(v ?? 0)}
+                onBlur={field.onBlur}
+                placeholder="0"
+              />
+            )}
           />
           {errors.minCharge && (
             <p className="field-error">{errors.minCharge.message}</p>

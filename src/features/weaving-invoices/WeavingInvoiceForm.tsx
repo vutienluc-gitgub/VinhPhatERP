@@ -5,6 +5,7 @@ import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { CancelButton } from '@/shared/components';
 import { useStepper } from '@/shared/hooks/useStepper';
 import { formatCurrency } from '@/shared/utils/format';
@@ -256,12 +257,18 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
                   Đơn giá gia công (đ/kg){' '}
                   <span className="field-required">*</span>
                 </label>
-                <input
-                  type="number"
-                  min={0}
-                  step={100}
-                  className={`field-input${errors.unit_price_per_kg ? ' is-error' : ''}`}
-                  {...register('unit_price_per_kg')}
+                <Controller
+                  control={control}
+                  name="unit_price_per_kg"
+                  render={({ field }) => (
+                    <CurrencyInput
+                      className={`field-input${errors.unit_price_per_kg ? ' is-error' : ''}`}
+                      value={field.value}
+                      onChange={(v) => field.onChange(v ?? 0)}
+                      onBlur={field.onBlur}
+                      placeholder="0"
+                    />
+                  )}
                 />
                 {errors.unit_price_per_kg && (
                   <span className="field-error">

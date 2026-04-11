@@ -216,7 +216,7 @@ export function EmployeeListPage() {
             ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
             : 'Hãy thêm nhân viên mới để bắt đầu quản lý.'
         }
-        emptyStateIcon={search || roleFilter ? '🔍' : 'Users'}
+        emptyStateIcon={search || roleFilter ? 'Search' : 'Users'}
         emptyStateActionLabel={
           !(search || roleFilter) ? '+ Thêm nhân viên' : undefined
         }

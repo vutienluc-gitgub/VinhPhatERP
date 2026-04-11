@@ -1,5 +1,6 @@
-﻿import { Icon } from '@/shared/components/Icon';
+import { Icon } from '@/shared/components/Icon';
 import { Badge } from '@/shared/components/Badge';
+import { formatCurrency } from '@/shared/utils/format';
 
 import type { WorkOrder } from './types';
 import {
@@ -40,13 +41,13 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
     return (
       <div className="panel-card p-12 flex flex-col items-center gap-3">
         <div className="spinner" />
-        <p className="text-muted text-sm">Dang tai chi tiet lenh...</p>
+        <p className="text-muted text-sm">Đang tải chi tiết lệnh...</p>
       </div>
     );
   if (!wo)
     return (
       <p className="error-inline p-8">
-        Lenh san xuat khong ton tai hoac ban khong co quyen xem.
+        Lệnh sản xuất không tồn tại hoặc bạn không có quyền xem.
       </p>
     );
 
@@ -67,7 +68,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
               <Icon name="ArrowLeft" size={20} />
             </button>
             <div>
-              <p className="eyebrow-premium">CHI TIET LENH SAN XUAT</p>
+              <p className="eyebrow-premium">CHI TIẾT LỆNH SẢN XUẤT</p>
               <h3 className="title-premium flex items-center gap-3">
                 {wo.work_order_number}
                 <Badge variant={getStatusVariant(wo.status)}>
@@ -76,7 +77,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
               </h3>
               {wo.order && (
                 <p className="text-xs text-muted mt-0.5">
-                  San xuat cho DH: {wo.order.order_number}
+                  Sản xuất cho ĐH: {wo.order.order_number}
                 </p>
               )}
             </div>
@@ -91,7 +92,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                 onClick={() => onEdit(wo)}
               >
                 <Icon name="Edit2" size={16} />
-                Sua lenh
+                Sửa lệnh
               </button>
             )}
             {wo.status === 'draft' && (
@@ -102,7 +103,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                 disabled={startMutation.isPending}
               >
                 <Icon name="Play" size={16} />
-                Bat dau det
+                Bắt đầu dệt
               </button>
             )}
             {wo.status === 'in_progress' && (
@@ -111,7 +112,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                 type="button"
                 onClick={() => {
                   const yieldP = prompt(
-                    `Nhap san luong MOC thu duoc thuc te (m)\nMuc tieu: ${wo.target_quantity_m}m`,
+                    `Nhập sản lượng mộc thu được thực tế (m)\nMục tiêu: ${wo.target_quantity_m}m`,
                   );
                   if (yieldP) {
                     completeMutation.mutate({
@@ -122,7 +123,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                 }}
               >
                 <Icon name="CheckCircle" size={16} />
-                Hoan thanh det
+                Hoàn thành dệt
               </button>
             )}
           </div>
@@ -132,48 +133,45 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
         <div className="p-5">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             <div className="form-field">
-              <label>BOM Dinh Muc</label>
+              <label>BOM định mức</label>
               <p className="font-bold">
                 {wo.bom_template?.code} (V{wo.bom_version})
               </p>
             </div>
             <div className="form-field">
-              <label>Vai muc tieu</label>
+              <label>Vải mục tiêu</label>
               <p className="font-bold">
                 {wo.bom_template?.target_fabric?.name || '—'}
               </p>
             </div>
             <div className="form-field">
-              <label>Ngay tao lenh</label>
+              <label>Ngày tạo lệnh</label>
               <p>{new Date(wo.created_at).toLocaleDateString('vi-VN')}</p>
             </div>
             <div className="form-field">
-              <label>Hao hut (%)</label>
+              <label>Hao hụt (%)</label>
               <p className="font-bold text-warning">{wo.standard_loss_pct}%</p>
             </div>
             <div className="form-field">
-              <label>Don hang lien ket</label>
-              <p>{wo.order?.order_number || 'San xuat du tru'}</p>
+              <label>Đơn hàng liên kết</label>
+              <p>{wo.order?.order_number || 'Sản xuất dự trữ'}</p>
             </div>
             <div className="form-field">
-              <label>Doi tac det</label>
+              <label>Đối tác dệt</label>
               <p className="font-bold text-primary">
                 {wo.supplier?.name || '—'}
               </p>
             </div>
             <div className="form-field">
-              <label>Don gia det</label>
+              <label>Đơn giá dệt</label>
               <p className="font-bold">
-                {wo.weaving_unit_price.toLocaleString()}d/m
+                {formatCurrency(wo.weaving_unit_price)}đ/m
               </p>
             </div>
             <div className="form-field">
-              <label>Tong phi du kien</label>
+              <label>Tổng phí dự kiến</label>
               <p className="font-bold text-success">
-                {(
-                  wo.target_quantity_m * wo.weaving_unit_price
-                ).toLocaleString()}
-                d
+                {formatCurrency(wo.target_quantity_m * wo.weaving_unit_price)}đ
               </p>
             </div>
           </div>
@@ -185,26 +183,26 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
         <div className="card-header-area card-header-premium">
           <div className="flex items-center gap-2">
             <Icon name="Package" size={20} className="text-primary" />
-            <h3 className="title-premium">Nhu cau & Xuat kho soi</h3>
+            <h3 className="title-premium">Nhu cầu & Xuất kho sợi</h3>
           </div>
         </div>
 
         {isLoadingReq ? (
-          <div className="p-8 text-center text-sm text-muted">Dang tai...</div>
+          <div className="p-8 text-center text-sm text-muted">Đang tải...</div>
         ) : !requirements || requirements.length === 0 ? (
           <div className="p-8 text-center text-sm text-muted">
-            Chua co du lieu tinh toan nhu cau soi.
+            Chưa có dữ liệu tính toán nhu cầu sợi.
           </div>
         ) : (
           <div className="card-table-section">
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>Loai Soi</th>
-                  <th className="hide-mobile">Ma Mau</th>
+                  <th>Loại sợi</th>
+                  <th className="hide-mobile">Mã màu</th>
                   <th className="text-right">% BOM</th>
-                  <th className="text-right">Can (kg)</th>
-                  <th className="text-right">Da xuat</th>
+                  <th className="text-right">Cần (kg)</th>
+                  <th className="text-right">Đã xuất</th>
                 </tr>
               </thead>
               <tbody>
@@ -264,16 +262,16 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
       {/* Stats — target & results */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="panel-card p-5">
-          <p className="eyebrow-premium mb-3">Muc tieu san xuat</p>
+          <p className="eyebrow-premium mb-3">Mục tiêu sản xuất</p>
           <div className="flex flex-col gap-2">
             <div className="stat-card">
-              <span className="stat-label">Tong met muc tieu</span>
+              <span className="stat-label">Tổng mét mục tiêu</span>
               <span className="stat-value text-primary">
                 {wo.target_quantity_m.toLocaleString()} m
               </span>
             </div>
             <div className="stat-card">
-              <span className="stat-label">Khoi luong moc du kien</span>
+              <span className="stat-label">Khối lượng mộc dự kiến</span>
               <span className="stat-value">
                 {wo.target_weight_kg
                   ? `${wo.target_weight_kg.toLocaleString()} kg`
@@ -284,17 +282,17 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
         </div>
 
         <div className="panel-card p-5">
-          <p className="eyebrow-premium mb-3">Ket qua thuc te</p>
+          <p className="eyebrow-premium mb-3">Kết quả thực tế</p>
           {wo.status === 'completed' ? (
             <div className="flex flex-col gap-2">
               <div className="stat-card">
-                <span className="stat-label">San luong moc thu duoc</span>
+                <span className="stat-label">Sản lượng mộc thu được</span>
                 <span className="stat-value text-success">
                   {wo.actual_yield_m?.toLocaleString()} m
                 </span>
               </div>
               <div className="stat-card">
-                <span className="stat-label">Hieu suat (Yield Rate)</span>
+                <span className="stat-label">Hiệu suất (Yield Rate)</span>
                 <span className="stat-value">
                   {(
                     ((wo.actual_yield_m || 0) / wo.target_quantity_m) *
@@ -308,7 +306,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
             <div className="flex flex-col items-center justify-center py-8 gap-2">
               <Icon name="Scissors" size={40} className="opacity-20" />
               <p className="text-sm text-muted">
-                Dang doi ket qua tu xuong det...
+                Đang đợi kết quả từ xưởng dệt...
               </p>
             </div>
           )}

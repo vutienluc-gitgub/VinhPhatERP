@@ -193,7 +193,7 @@ export function CustomerList({ onEdit, onNew }: CustomerListProps) {
             ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
             : 'Hãy thêm khách hàng mới để quản lý thông tin.'
         }
-        emptyStateIcon={hasFilter ? '🔍' : '👥'}
+        emptyStateIcon={hasFilter ? 'Search' : 'Users'}
         emptyStateActionLabel={!hasFilter ? '+ Thêm khách hàng' : undefined}
         onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={[
