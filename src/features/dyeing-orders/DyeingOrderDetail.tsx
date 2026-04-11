@@ -136,7 +136,7 @@ export function DyeingOrderDetail({
               Don gia nhuộm
             </label>
             <div className="font-semibold text-primary">
-              {formatCurrency(order.unit_price_per_kg)} d/kg
+              {formatCurrency(order.unit_price_per_kg)}đ/kg
             </div>
           </div>
           <div>

@@ -90,7 +90,7 @@ export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
     },
     {
       header: 'Còn nợ',
-      cell: (r) => formatCurrency(r.balance_due),
+      cell: (r) => `${formatCurrency(r.balance_due)}đ`,
       className: 'text-right font-bold text-danger',
     },
   ];

@@ -6,6 +6,7 @@ import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions'
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { useStepper } from '@/shared/hooks/useStepper';
+import { formatCurrency } from '@/shared/utils/format';
 
 import type { WeavingInvoice } from './types';
 import {
@@ -26,10 +27,6 @@ type Props = {
   invoice?: WeavingInvoice | null;
   onClose: () => void;
 };
-
-function formatCurrency(n: number) {
-  return new Intl.NumberFormat('vi-VN').format(Math.round(n));
-}
 
 export function WeavingInvoiceForm({ invoice, onClose }: Props) {
   const isEdit = !!invoice;

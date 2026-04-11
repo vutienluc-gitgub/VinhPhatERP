@@ -102,27 +102,27 @@ function TotalsSummary({
     <div className="border-t-2 border-border py-3 flex flex-col gap-1.5 text-[0.92rem]">
       <div className="flex justify-between">
         <span>Tam tinh:</span>
-        <span>{formatCurrency(totals.subtotal)} d</span>
+        <span>{formatCurrency(totals.subtotal)}đ</span>
       </div>
       {totals.discountAmount > 0 && (
         <div className="flex justify-between text-danger">
           <span>Chiet khau:</span>
-          <span>-{formatCurrency(totals.discountAmount)} d</span>
+          <span>-{formatCurrency(totals.discountAmount)}đ</span>
         </div>
       )}
       <div className="flex justify-between">
         <span>Truoc VAT:</span>
-        <span>{formatCurrency(totals.totalBeforeVat)} d</span>
+        <span>{formatCurrency(totals.totalBeforeVat)}đ</span>
       </div>
       {totals.vatAmount > 0 && (
         <div className="flex justify-between">
           <span>VAT ({vatRate}%):</span>
-          <span>+{formatCurrency(totals.vatAmount)} d</span>
+          <span>+{formatCurrency(totals.vatAmount)}đ</span>
         </div>
       )}
       <div className="flex justify-between font-bold text-[1.05rem] border-t border-border pt-2">
         <span>Tong cong:</span>
-        <span>{formatCurrency(totals.totalAmount)} d</span>
+        <span>{formatCurrency(totals.totalAmount)}đ</span>
       </div>
     </div>
   );

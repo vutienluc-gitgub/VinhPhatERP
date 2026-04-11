@@ -168,7 +168,7 @@ export function QuotationDetail({
             Tam tinh
           </div>
           <div className="font-medium text-primary">
-            {formatCurrency(quotation.subtotal)} d
+            {formatCurrency(quotation.subtotal)}đ
           </div>
         </div>
         <div>
@@ -184,7 +184,7 @@ export function QuotationDetail({
           >
             {quotation.discount_amount > 0 ? (
               <>
-                -{formatCurrency(quotation.discount_amount)} d
+                -{formatCurrency(quotation.discount_amount)}đ
                 <span className="text-xs text-muted ml-1 font-normal italic">
                   (
                   {quotation.discount_type === 'percent'
@@ -203,7 +203,7 @@ export function QuotationDetail({
             VAT ({quotation.vat_rate}%)
           </div>
           <div className="font-medium">
-            {formatCurrency(quotation.vat_amount)} d
+            {formatCurrency(quotation.vat_amount)}đ
           </div>
         </div>
         <div>
@@ -211,7 +211,7 @@ export function QuotationDetail({
             Tong cong
           </div>
           <div className="font-extrabold text-lg text-primary">
-            {formatCurrency(quotation.total_amount)} d
+            {formatCurrency(quotation.total_amount)}đ
           </div>
         </div>
       </div>
@@ -388,10 +388,10 @@ export function QuotationDetail({
                         {item.unit}
                       </td>
                       <td className="text-right tabular-nums">
-                        {formatCurrency(item.unit_price)}
+                        {formatCurrency(item.unit_price)}đ
                       </td>
                       <td className="text-right font-bold tabular-nums">
-                        {formatCurrency(item.amount)}
+                        {formatCurrency(item.amount)}đ
                       </td>
                       <td className="text-muted hide-mobile">
                         {item.lead_time_days ?? '—'}
@@ -403,7 +403,7 @@ export function QuotationDetail({
                     Tam tinh
                   </td>
                   <td className="text-right tabular-nums">
-                    {formatCurrency(quotation.subtotal)} d
+                    {formatCurrency(quotation.subtotal)}đ
                   </td>
                   <td className="hide-mobile"></td>
                 </tr>
@@ -417,7 +417,7 @@ export function QuotationDetail({
                       )
                     </td>
                     <td className="text-right tabular-nums">
-                      -{formatCurrency(quotation.discount_amount)} d
+                      -{formatCurrency(quotation.discount_amount)}đ
                     </td>
                     <td className="hide-mobile"></td>
                   </tr>
@@ -428,7 +428,7 @@ export function QuotationDetail({
                       VAT ({quotation.vat_rate}%)
                     </td>
                     <td className="text-right tabular-nums">
-                      +{formatCurrency(quotation.vat_amount)} d
+                      +{formatCurrency(quotation.vat_amount)}đ
                     </td>
                     <td className="hide-mobile"></td>
                   </tr>
@@ -438,7 +438,7 @@ export function QuotationDetail({
                     Tong cong
                   </td>
                   <td className="text-right text-lg tabular-nums">
-                    {formatCurrency(quotation.total_amount)} d
+                    {formatCurrency(quotation.total_amount)}đ
                   </td>
                   <td className="hide-mobile"></td>
                 </tr>

@@ -7,8 +7,8 @@ import {
   type BadgeVariant,
   DataTablePremium,
 } from '@/shared/components';
+import { formatCurrency } from '@/shared/utils/format';
 
-import { formatCurrency } from './shipping-rates.module';
 import type { ShippingRate, ShippingRateFilter } from './types';
 import { useDeleteShippingRate, useShippingRateList } from './useShippingRates';
 
@@ -20,13 +20,13 @@ type Props = {
 function rateDescription(item: ShippingRate): string {
   const parts: string[] = [];
   if (item.rate_per_trip != null)
-    parts.push(`${formatCurrency(item.rate_per_trip)}/chuyến`);
+    parts.push(`${formatCurrency(item.rate_per_trip)}đ/chuyến`);
   if (item.rate_per_meter != null)
-    parts.push(`${formatCurrency(item.rate_per_meter)}/m`);
+    parts.push(`${formatCurrency(item.rate_per_meter)}đ/m`);
   if (item.rate_per_kg != null)
-    parts.push(`${formatCurrency(item.rate_per_kg)}/kg`);
+    parts.push(`${formatCurrency(item.rate_per_kg)}đ/kg`);
   if (item.loading_fee > 0)
-    parts.push(`Bốc xếp: ${formatCurrency(item.loading_fee)}`);
+    parts.push(`Bốc xếp: ${formatCurrency(item.loading_fee)}đ`);
   return parts.length > 0 ? parts.join(' · ') : '—';
 }
 
@@ -167,7 +167,9 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
             header: 'Phí tối thiểu',
             cell: (item) => (
               <span className="font-medium">
-                {item.min_charge > 0 ? formatCurrency(item.min_charge) : '—'}
+                {item.min_charge > 0
+                  ? `${formatCurrency(item.min_charge)}đ`
+                  : '—'}
               </span>
             ),
           },
