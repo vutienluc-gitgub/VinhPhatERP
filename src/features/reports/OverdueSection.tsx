@@ -48,12 +48,12 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
     },
     {
       header: 'Tổng tiền',
-      cell: (r) => formatCurrency(r.total_amount),
+      cell: (r) => `${formatCurrency(r.total_amount)}đ`,
       className: 'text-right hide-mobile td-muted',
     },
     {
       header: 'Còn nợ',
-      cell: (r) => formatCurrency(r.balance_due),
+      cell: (r) => `${formatCurrency(r.balance_due)}đ`,
       className: 'text-right font-bold text-danger',
     },
   ];
@@ -117,7 +117,7 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
             <div className="flex justify-between items-center border-t pt-2 mt-2">
               <span className="text-[10px] text-muted uppercase">Nợ:</span>
               <span className="font-bold text-danger">
-                {formatCurrency(r.balance_due)}
+                {formatCurrency(r.balance_due)}đ
               </span>
             </div>
           </div>

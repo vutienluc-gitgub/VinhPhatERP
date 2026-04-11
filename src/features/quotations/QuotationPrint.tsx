@@ -225,9 +225,9 @@ export default function QuotationPrint() {
                     {item.quantity} {item.unit}
                   </td>
                   <td className="text-right">
-                    {formatCurrency(item.unit_price)}
+                    {formatCurrency(item.unit_price)}đ
                   </td>
-                  <td className="text-right">{formatCurrency(item.amount)}</td>
+                  <td className="text-right">{formatCurrency(item.amount)}đ</td>
                 </tr>
               ))}
           </tbody>
@@ -237,7 +237,7 @@ export default function QuotationPrint() {
                 <strong>Tạm tính:</strong>
               </td>
               <td className="text-right">
-                <strong>{formatCurrency(quotation.subtotal)}</strong>
+                <strong>{formatCurrency(quotation.subtotal)}đ</strong>
               </td>
             </tr>
             {quotation.discount_amount > 0 && (
@@ -246,7 +246,7 @@ export default function QuotationPrint() {
                   Chiết khấu:
                 </td>
                 <td className="text-right">
-                  -{formatCurrency(quotation.discount_amount)}
+                  -{formatCurrency(quotation.discount_amount)}đ
                 </td>
               </tr>
             )}
@@ -256,7 +256,7 @@ export default function QuotationPrint() {
                   Thuế GTGT ({quotation.vat_rate}%):
                 </td>
                 <td className="text-right">
-                  {formatCurrency(quotation.vat_amount)}
+                  {formatCurrency(quotation.vat_amount)}đ
                 </td>
               </tr>
             )}

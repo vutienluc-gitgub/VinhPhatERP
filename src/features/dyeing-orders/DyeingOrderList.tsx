@@ -80,7 +80,7 @@ export function DyeingOrderList({
       className: 'text-right',
       cell: (row: DyeingOrder) => (
         <span className="tabular-nums font-medium">
-          {formatCurrency(row.unit_price_per_kg)} d
+          {formatCurrency(row.unit_price_per_kg)}đ
         </span>
       ),
     },
@@ -160,7 +160,7 @@ export function DyeingOrderList({
                 : '—'}
             </div>
             <div className="font-bold text-sm">
-              {formatCurrency(row.unit_price_per_kg)} d/kg
+              {formatCurrency(row.unit_price_per_kg)}đ/kg
             </div>
           </div>
         </div>

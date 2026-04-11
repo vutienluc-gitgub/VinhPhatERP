@@ -289,7 +289,7 @@ export function YarnReceiptList({
             className: 'text-right',
             cell: (r) => (
               <span className="font-medium">
-                {formatCurrency(r.total_amount ?? 0)}
+                {formatCurrency(r.total_amount ?? 0)}đ
               </span>
             ),
           },
@@ -369,7 +369,7 @@ export function YarnReceiptList({
                 <div className="flex flex-col text-right">
                   <span className="text-xs text-muted">Tổng tiền</span>
                   <span className="font-bold text-primary">
-                    {formatCurrency(r.total_amount ?? 0)}
+                    {formatCurrency(r.total_amount ?? 0)}đ
                   </span>
                 </div>
               </div>

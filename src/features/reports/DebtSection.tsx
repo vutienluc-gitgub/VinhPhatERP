@@ -36,20 +36,20 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
     },
     {
       header: 'Tổng tiền',
-      cell: (r) => formatCurrency(r.total_amount),
-      footer: formatCurrency(totalAmount),
+      cell: (r) => `${formatCurrency(r.total_amount)}đ`,
+      footer: `${formatCurrency(totalAmount)}đ`,
       className: 'text-right hide-mobile font-medium',
     },
     {
       header: 'Đã thu',
-      cell: (r) => formatCurrency(r.paid_amount),
-      footer: formatCurrency(totalPaid),
+      cell: (r) => `${formatCurrency(r.paid_amount)}đ`,
+      footer: `${formatCurrency(totalPaid)}đ`,
       className: 'text-right hide-mobile text-success',
     },
     {
       header: 'Còn nợ',
-      cell: (r) => formatCurrency(r.balance_due),
-      footer: formatCurrency(totalDebt),
+      cell: (r) => `${formatCurrency(r.balance_due)}đ`,
+      footer: `${formatCurrency(totalDebt)}đ`,
       className: 'text-right font-bold text-danger',
     },
   ];
@@ -90,7 +90,7 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
             <div className="flex justify-between items-start">
               <span className="font-bold">{r.customer_name}</span>
               <span className="badge badge-error">
-                {formatCurrency(r.balance_due)}
+                {formatCurrency(r.balance_due)}đ
               </span>
             </div>
             <div className="text-sm text-muted mb-2">
@@ -99,7 +99,7 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
             <div className="grid grid-cols-2 gap-2 text-xs border-t pt-2">
               <div>
                 <p className="opacity-70">Tổng tiền</p>
-                <p className="font-medium">{formatCurrency(r.total_amount)}</p>
+                <p className="font-medium">{formatCurrency(r.total_amount)}đ</p>
               </div>
               <div className="text-right">
                 <p className="opacity-70">Số đơn</p>

@@ -96,7 +96,7 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
       {/* Meta */}
       <div className="flex items-center justify-between mt-0.5">
         <div className="kanban-card-amount">
-          {formatCurrency(item.total_amount)} d
+          {formatCurrency(item.total_amount)}đ
         </div>
         <div className="text-[0.7rem] text-muted font-medium flex items-center gap-1">
           <Icon name="Calendar" size={12} /> {deliveryLabel}
