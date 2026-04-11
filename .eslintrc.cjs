@@ -180,5 +180,12 @@ consistent: true
         'boundaries/dependencies': 'off',
       },
     },
+    {
+      // Portal infrastructure files need auth access
+      files: ['**/PortalRoute.tsx', '**/CustomerPortalLayout.tsx', '**/CustomerPortalRouter.tsx'],
+      rules: {
+        'boundaries/dependencies': 'off',
+      },
+    },
   ],
 };
