@@ -84,10 +84,11 @@ export function MiniBarChart({
               </span>
             )}
 
-            {/* Label — CSS var từ codebase, width từ code mới */}
+            {/* Label — fixed width + truncate */}
             <span
               style={{
-                minWidth: '100px',
+                width: '100px',
+                maxWidth: '100px',
                 fontSize: '13px',
                 color: 'var(--muted)',
                 flexShrink: 0,
@@ -100,42 +101,27 @@ export function MiniBarChart({
               {d.label}
             </span>
 
-            {/* Track — position:relative từ code mới */}
+            {/* Track */}
             <div
               style={{
                 flex: 1,
                 height: '10px',
-                backgroundColor: 'rgba(16,35,61,0.06)',
+                backgroundColor: 'rgba(16,35,61,0.07)',
                 borderRadius: '999px',
                 position: 'relative',
               }}
             >
-              {/* Fill — height:'100%' từ code mới, gradient + glow từ code mới */}
+              {/* Fill — full opacity gradient, shine removed for light backgrounds */}
               <div
                 style={{
                   width: `${pct}%`,
                   height: '100%',
                   borderRadius: '999px',
-                  background: `linear-gradient(90deg, ${color}cc, ${color})`,
-                  boxShadow: `0 1px 6px ${color}55`,
-                  position: 'relative',
-                  overflow: 'hidden',
+                  background: `linear-gradient(90deg, ${color}dd, ${color})`,
+                  boxShadow: `0 1px 6px ${color}44`,
                   transition: 'width 0.7s ease-out',
                 }}
-              >
-                {/* Shine overlay — glass effect từ code mới */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: '50%',
-                    backgroundColor: 'rgba(255,255,255,0.32)',
-                    borderRadius: '999px 999px 0 0',
-                  }}
-                />
-              </div>
+              />
             </div>
 
             {/* Value — CSS var từ codebase, formatter từ codebase */}

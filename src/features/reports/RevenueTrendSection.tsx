@@ -6,9 +6,9 @@ import type {
 import {
   KpiCardPremium,
   KpiGridPremium,
-  DataTablePremium,
-  MiniBarChart,
-  type DataTableColumn,
+  RevenueBarChart,
+  FabricRevenueChart,
+  PaymentMethodChart,
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 
@@ -18,13 +18,6 @@ type RevenueTrendSectionProps = {
   paymentData: PaymentCollectionRow[];
   isLoading: boolean;
 };
-
-function formatShortCurrency(value: number): string {
-  if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}T`;
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}Tr`;
-  if (value >= 1_000) return `${(value / 1_000).toFixed(0)}K`;
-  return String(value);
-}
 
 function computeGrowth(
   data: MonthlyRevenueRow[],
@@ -74,39 +67,6 @@ export function RevenueTrendSection({
       value: total,
     }));
 
-  const maxMonthlyRevenue =
-    monthlyData.length > 0
-      ? Math.max(...monthlyData.map((r) => r.total_revenue))
-      : 0;
-  const maxFabricRevenue =
-    fabricData.length > 0
-      ? Math.max(...fabricData.map((r) => r.total_revenue))
-      : 0;
-
-  const paymentColumns: DataTableColumn<{ label: string; value: number }>[] = [
-    {
-      header: 'Phương thức',
-      cell: (m) => <span className="font-bold">{m.label}</span>,
-    },
-    {
-      header: 'Số tiền thu',
-      cell: (m) => `${formatCurrency(m.value)} đ`,
-      className: 'text-right font-medium',
-    },
-    {
-      header: 'Tỷ lệ',
-      cell: (m) => (
-        <span className="px-2 py-0.5 bg-surface-subtle border border-border rounded text-[10px] font-bold">
-          {totalCollected > 0
-            ? Math.round((m.value / totalCollected) * 100)
-            : 0}
-          %
-        </span>
-      ),
-      className: 'text-right',
-    },
-  ];
-
   return (
     <div className="panel-card card-flush">
       <div className="card-header-area card-header-premium">
@@ -155,15 +115,7 @@ export function RevenueTrendSection({
           <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-4 border-b pb-1">
             Doanh thu theo tháng
           </p>
-          <MiniBarChart
-            maxValue={maxMonthlyRevenue}
-            valueFormatter={formatShortCurrency}
-            data={[...monthlyData].reverse().map((r) => ({
-              label: r.month,
-              value: r.total_revenue,
-              color: 'var(--primary)',
-            }))}
-          />
+          <RevenueBarChart data={monthlyData} isLoading={isLoading} />
         </div>
 
         {fabricData.length > 0 && (
@@ -171,15 +123,7 @@ export function RevenueTrendSection({
             <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-4 border-b pb-1">
               Cơ cấu loại vải (Top 10)
             </p>
-            <MiniBarChart
-              maxValue={maxFabricRevenue}
-              valueFormatter={formatShortCurrency}
-              data={fabricData.slice(0, 10).map((r) => ({
-                label: `${r.fabric_type}${r.color_name ? ` (${r.color_name})` : ''}`,
-                value: r.total_revenue,
-                color: 'var(--accent)',
-              }))}
-            />
+            <FabricRevenueChart data={fabricData} isLoading={isLoading} />
           </div>
         )}
       </div>
@@ -192,29 +136,9 @@ export function RevenueTrendSection({
             </p>
             <p className="text-xs font-bold">Phân bổ phương thức thanh toán</p>
           </div>
-          <DataTablePremium
-            data={paymentMethods}
-            columns={paymentColumns}
-            isLoading={isLoading}
-            rowKey={(m) => m.label}
-            renderMobileCard={(m) => (
-              <div className="mobile-card">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="font-bold">{m.label}</span>
-                  <span className="font-bold text-success">
-                    {formatCurrency(m.value)} đ
-                  </span>
-                </div>
-                <div className="mt-1 text-right text-[10px] text-muted">
-                  Chiếm{' '}
-                  {totalCollected > 0
-                    ? Math.round((m.value / totalCollected) * 100)
-                    : 0}
-                  % tổng thu
-                </div>
-              </div>
-            )}
-          />
+          <div className="px-5 py-4">
+            <PaymentMethodChart data={paymentMethods} isLoading={isLoading} />
+          </div>
         </div>
       )}
     </div>
