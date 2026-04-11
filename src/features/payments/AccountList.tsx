@@ -1,7 +1,13 @@
 import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { Icon, Badge, DataTablePremium } from '@/shared/components';
+import {
+  Icon,
+  Badge,
+  DataTablePremium,
+  AddButton,
+  ActionBar,
+} from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 
 import { ACCOUNT_TYPE_LABELS } from './payments.module';
@@ -52,13 +58,7 @@ export function AccountList({ onEdit, onNew }: AccountListProps) {
             />
             Hiện ngừng dùng
           </label>
-          <button
-            className="btn-primary min-h-[42px] px-5"
-            type="button"
-            onClick={onNew}
-          >
-            <Icon name="Plus" size={18} className="mr-2" /> Thêm tài khoản
-          </button>
+          <AddButton onClick={onNew} label="Thêm tài khoản" />
         </div>
       </div>
 
@@ -181,25 +181,22 @@ export function AccountList({ onEdit, onNew }: AccountListProps) {
             className: 'text-right',
             onCellClick: () => {},
             cell: (acc) => (
-              <div className="flex justify-end gap-1">
-                <button
-                  className="btn-icon"
-                  type="button"
-                  onClick={() => onEdit(acc)}
-                  title="Sửa"
-                >
-                  <Icon name="Pencil" size={16} />
-                </button>
-                <button
-                  className="btn-icon text-danger hover:bg-danger/10"
-                  type="button"
-                  onClick={() => handleDelete(acc)}
-                  disabled={deleteMutation.isPending}
-                  title="Xóa"
-                >
-                  <Icon name="Trash2" size={16} />
-                </button>
-              </div>
+              <ActionBar
+                actions={[
+                  {
+                    icon: 'Pencil',
+                    onClick: () => onEdit(acc),
+                    title: 'Sửa',
+                  },
+                  {
+                    icon: 'Trash2',
+                    onClick: () => handleDelete(acc),
+                    title: 'Xóa',
+                    variant: 'danger',
+                    disabled: deleteMutation.isPending,
+                  },
+                ]}
+              />
             ),
           },
         ]}

@@ -1,7 +1,15 @@
 import { useState } from 'react';
 
 import type { Employee } from '@/schema';
-import { Icon, Badge, DataTablePremium } from '@/shared/components';
+import {
+  Icon,
+  Badge,
+  DataTablePremium,
+  AddButton,
+  ClearFilterButton,
+  ActionBar,
+} from '@/shared/components';
+import type { ActionConfig } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 
@@ -98,13 +106,7 @@ export function EmployeeListPage() {
           <p className="eyebrow-premium">NHÂN SỰ</p>
           <h3 className="title-premium">Quản lý nhân viên</h3>
         </div>
-        <button
-          className="btn-primary min-h-[42px] px-6"
-          type="button"
-          onClick={handleCreate}
-        >
-          <Icon name="Plus" size={18} className="mr-2" /> Thêm mới
-        </button>
+        <AddButton onClick={handleCreate} label="Thêm mới" />
       </div>
 
       {/* 📊 KPI Dashboard area */}
@@ -188,17 +190,12 @@ export function EmployeeListPage() {
             />
           </div>
           {(search || roleFilter) && (
-            <button
-              className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
-              type="button"
+            <ClearFilterButton
               onClick={() => {
                 setSearch('');
                 setRoleFilter('');
               }}
-              style={{ marginBottom: '4px' }}
-            >
-              <Icon name="X" size={14} /> Xóa lọc nhanh
-            </button>
+            />
           )}
         </div>
       </div>
@@ -261,27 +258,26 @@ export function EmployeeListPage() {
             className: 'text-right',
             onCellClick: () => {},
             cell: (emp) => (
-              <div className="flex justify-end gap-1">
-                <button
-                  className="btn-icon"
-                  type="button"
-                  title="Sửa"
-                  onClick={() => handleEdit(emp)}
-                >
-                  <Icon name="Pencil" size={16} />
-                </button>
-                {emp.status === 'active' && (
-                  <button
-                    className="btn-icon text-danger"
-                    type="button"
-                    title="Ngừng hoạt động"
-                    onClick={() => void handleDeactivate(emp)}
-                    disabled={deactivateMutation.isPending}
-                  >
-                    <Icon name="UserX" size={16} />
-                  </button>
-                )}
-              </div>
+              <ActionBar
+                actions={
+                  [
+                    {
+                      icon: 'Pencil',
+                      onClick: () => handleEdit(emp),
+                      title: 'Sửa',
+                    },
+                    emp.status === 'active'
+                      ? {
+                          icon: 'UserX',
+                          onClick: () => void handleDeactivate(emp),
+                          title: 'Ngừng hoạt động',
+                          variant: 'danger',
+                          disabled: deactivateMutation.isPending,
+                        }
+                      : null,
+                  ].filter(Boolean) as ActionConfig[]
+                }
+              />
             ),
           },
         ]}

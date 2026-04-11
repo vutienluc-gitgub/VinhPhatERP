@@ -7,6 +7,9 @@ import {
   Badge,
   type BadgeVariant,
   DataTablePremium,
+  AddButton,
+  ClearFilterButton,
+  ActionBar,
 } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 
@@ -66,17 +69,7 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
           <p className="eyebrow-premium">MASTER DATA</p>
           <h3 className="title-premium">Danh Mục Loại Sợi</h3>
         </div>
-        <button
-          className="btn-primary flex items-center gap-2"
-          type="button"
-          onClick={onNew}
-          style={{
-            minHeight: 42,
-            padding: '0 1.25rem',
-          }}
-        >
-          <Icon name="Plus" size={18} /> Thêm loại sợi
-        </button>
+        <AddButton onClick={onNew} label="Thêm loại sợi" />
       </div>
 
       {/* Filters */}
@@ -127,18 +120,13 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
           </div>
 
           {hasFilter && (
-            <button
-              className="btn-secondary text-danger flex items-center gap-2"
-              type="button"
+            <ClearFilterButton
               onClick={() => {
                 setFilters({});
                 setSearchInput('');
                 setPage(1);
               }}
-              style={{ marginBottom: 4 }}
-            >
-              <Icon name="X" size={14} /> Xóa lọc
-            </button>
+            />
           )}
         </div>
       </div>
@@ -209,25 +197,22 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
             className: 'text-right',
             onCellClick: () => {},
             cell: (c) => (
-              <div className="flex justify-end gap-1">
-                <button
-                  className="btn-icon"
-                  type="button"
-                  title="Sửa"
-                  onClick={() => onEdit(c)}
-                >
-                  <Icon name="Pencil" size={16} />
-                </button>
-                <button
-                  className="btn-icon text-danger"
-                  type="button"
-                  title="Xóa"
-                  onClick={() => handleDelete(c)}
-                  disabled={deleteMutation.isPending}
-                >
-                  <Icon name="Trash2" size={16} />
-                </button>
-              </div>
+              <ActionBar
+                actions={[
+                  {
+                    icon: 'Pencil',
+                    onClick: () => onEdit(c),
+                    title: 'Sửa',
+                  },
+                  {
+                    icon: 'Trash2',
+                    onClick: () => handleDelete(c),
+                    title: 'Xóa',
+                    variant: 'danger',
+                    disabled: deleteMutation.isPending,
+                  },
+                ]}
+              />
             ),
           },
         ]}

@@ -7,6 +7,9 @@ import {
   Badge,
   type BadgeVariant,
   DataTablePremium,
+  AddButton,
+  ClearFilterButton,
+  ActionBar,
 } from '@/shared/components';
 import { Pagination } from '@/shared/components/Pagination';
 
@@ -75,20 +78,7 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
           <p className="eyebrow-premium">DANH MỤC TRUNG TÂM</p>
           <h3 className="title-premium">Danh mục loại vải</h3>
         </div>
-        <button
-          className="btn-primary"
-          type="button"
-          onClick={onNew}
-          style={{
-            minHeight: 42,
-            padding: '0 1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-          }}
-        >
-          <Icon name="Plus" size={18} /> Thêm loại vải
-        </button>
+        <AddButton onClick={onNew} label="Thêm loại vải" />
       </div>
 
       {/* 📊 KPI Dashboard area */}
@@ -192,18 +182,13 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
           </div>
 
           {hasFilter && (
-            <button
-              className="btn-secondary text-danger flex items-center gap-2"
-              type="button"
+            <ClearFilterButton
               onClick={() => {
                 setFilters({});
                 setSearchInput('');
                 setPage(1);
               }}
-              style={{ marginBottom: 4 }}
-            >
-              <Icon name="X" size={14} /> Xóa lọc
-            </button>
+            />
           )}
         </div>
       </div>
@@ -254,23 +239,22 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
             className: 'text-right',
             onCellClick: () => {},
             cell: (c) => (
-              <div className="flex justify-end gap-1">
-                <button
-                  className="btn-icon"
-                  onClick={() => onEdit(c)}
-                  title="Chỉnh sửa"
-                >
-                  <Icon name="Pencil" size={16} />
-                </button>
-                <button
-                  className="btn-icon text-danger"
-                  onClick={() => handleDelete(c)}
-                  disabled={deleteMutation.isPending}
-                  title="Xóa"
-                >
-                  <Icon name="Trash2" size={16} />
-                </button>
-              </div>
+              <ActionBar
+                actions={[
+                  {
+                    icon: 'Pencil',
+                    onClick: () => onEdit(c),
+                    title: 'Chỉnh sửa',
+                  },
+                  {
+                    icon: 'Trash2',
+                    onClick: () => handleDelete(c),
+                    title: 'Xóa',
+                    variant: 'danger',
+                    disabled: deleteMutation.isPending,
+                  },
+                ]}
+              />
             ),
           },
         ]}

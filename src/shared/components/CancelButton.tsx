@@ -6,7 +6,7 @@ interface CancelButtonProps {
 
 export function CancelButton({
   onClick,
-  label = 'Huy',
+  label = 'Hủy',
   disabled = false,
 }: CancelButtonProps) {
   return (

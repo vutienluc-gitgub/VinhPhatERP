@@ -4,6 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import { CancelButton } from '@/shared/components';
 import { createPaymentsSchema } from '@/schema/payment.schema';
 import { formatCurrency } from '@/shared/utils/format';
 
@@ -90,9 +91,7 @@ export function PaymentForm({
             border: 'none',
           }}
         >
-          <button className="btn-secondary" type="button" onClick={onClose}>
-            Đóng
-          </button>
+          <CancelButton onClick={onClose} label="Đóng" />
         </div>
       </AdaptiveSheet>
     );
@@ -235,14 +234,11 @@ export function PaymentForm({
             border: 'none',
           }}
         >
-          <button
-            className="btn-secondary"
-            type="button"
+          <CancelButton
             onClick={onClose}
+            label="Huỷ"
             disabled={isSubmitting || createMutation.isPending}
-          >
-            Huỷ
-          </button>
+          />
           <button
             className="primary-button btn-standard"
             type="submit"

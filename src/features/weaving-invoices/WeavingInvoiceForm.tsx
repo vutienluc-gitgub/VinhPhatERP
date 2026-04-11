@@ -5,6 +5,7 @@ import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import { CancelButton } from '@/shared/components';
 import { useStepper } from '@/shared/hooks/useStepper';
 import { formatCurrency } from '@/shared/utils/format';
 
@@ -282,9 +283,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
           </fieldset>
 
           <div className="sheet-footer" style={{ marginTop: '1.5rem' }}>
-            <button type="button" className="btn-secondary" onClick={onClose}>
-              Hủy
-            </button>
+            <CancelButton onClick={onClose} label="Hủy" />
             <button
               type="button"
               className="primary-button btn-standard"

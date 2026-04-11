@@ -73,7 +73,7 @@ Extract 4 button patterns lặp lại thành shared components trong `src/shared
     - Test `disabled=true` có attribute `disabled`
     - _Requirements: 3.3, 3.4, 3.7_
 
-- [ ] 4. Implement ActionBar component
+- [x] 4. Implement ActionBar component
   - Tạo file `src/shared/components/ActionBar.tsx`
   - Export interface `ActionConfig`: `{ icon: IconName; onClick: () => void; title?: string; disabled?: boolean; variant?: 'default' | 'danger' }`
   - Props interface: `actions: ActionConfig[]`
@@ -101,7 +101,7 @@ Extract 4 button patterns lặp lại thành shared components trong `src/shared
     - Test `title` được render thành attribute
     - _Requirements: 4.5, 4.6, 4.7, 4.8, 4.9_
 
-- [ ] 5. Update barrel export
+- [x] 5. Update barrel export
   - Mở `src/shared/components/index.ts`
   - Thêm exports: `AddButton`, `ClearFilterButton`, `CancelButton`, `ActionBar`
   - Thêm export type: `ActionConfig`
@@ -112,13 +112,13 @@ Extract 4 button patterns lặp lại thành shared components trong `src/shared
     - Assert tất cả 5 symbols (`AddButton`, `ClearFilterButton`, `CancelButton`, `ActionBar`, `ActionConfig`) được export từ `@/shared/components`
     - _Requirements: 5.1_
 
-- [ ] 6. Checkpoint — Verify components compile clean
+- [x] 6. Checkpoint — Verify components compile clean
   - Chạy `npm run typecheck` — không có lỗi mới
   - Chạy `npm run lint` — không có warning mới
   - Đảm bảo 4 component files và barrel export đều pass trước khi bắt đầu migration
   - _Requirements: 7.1, 7.2_
 
-- [ ] 7. Migrate AddButton — List page headers
+- [x] 7. Migrate AddButton — List page headers
   - Thay thế tất cả hardcode `btn-primary` + `minHeight: 42` / `min-h-[42px]` ở header của các List pages bằng `<AddButton>`
   - Các files cần migrate:
     - `src/features/bom/BomPage.tsx`
@@ -141,7 +141,7 @@ Extract 4 button patterns lặp lại thành shared components trong `src/shared
   - Chạy `npm run typecheck` và `npm run lint` sau khi migrate xong
   - _Requirements: 6.1, 6.5_
 
-- [ ] 8. Migrate ClearFilterButton — Filter bars
+- [x] 8. Migrate ClearFilterButton — Filter bars
   - Thay thế tất cả hardcode `btn-secondary text-danger border-danger/20 flex items-center gap-2` trong filter bar bằng `<ClearFilterButton>`
   - Các files cần migrate:
     - `src/features/bom/BomPage.tsx`
@@ -160,7 +160,7 @@ Extract 4 button patterns lặp lại thành shared components trong `src/shared
   - Chạy `npm run typecheck` và `npm run lint` sau khi migrate xong
   - _Requirements: 6.2, 6.6_
 
-- [ ] 9. Migrate CancelButton — Form footers
+- [x] 9. Migrate CancelButton — Form footers
   - Thay thế tất cả `btn-secondary` cancel/close button trong form footer bằng `<CancelButton>`
   - Các files cần migrate:
     - `src/features/dyeing-orders/DyeingOrderForm.tsx` (nút "Huy")
@@ -172,7 +172,7 @@ Extract 4 button patterns lặp lại thành shared components trong `src/shared
   - Chạy `npm run typecheck` và `npm run lint` sau khi migrate xong
   - _Requirements: 6.3_
 
-- [ ] 10. Migrate ActionBar — Table row action buttons
+- [x] 10. Migrate ActionBar — Table row action buttons
   - Thay thế tất cả `<div className="flex justify-end gap-1">` + nhóm `btn-icon` buttons trong table rows bằng `<ActionBar actions={[...]}>`
   - Các files cần migrate:
     - `src/features/bom/BomList.tsx`
@@ -197,7 +197,7 @@ Extract 4 button patterns lặp lại thành shared components trong `src/shared
   - Chạy `npm run typecheck` và `npm run lint` sau khi migrate xong
   - _Requirements: 6.4_
 
-- [ ] 11. Final checkpoint — Verify full migration
+- [x] 11. Final checkpoint — Verify full migration
   - Chạy `npm run typecheck` — không có lỗi mới
   - Chạy `npm run lint` — không có warning mới
   - Verify không còn hardcode pattern `btn-primary min-h-[42px]` / `minHeight: 42` ở header List pages

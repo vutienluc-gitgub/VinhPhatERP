@@ -7,6 +7,9 @@ import {
   Badge,
   type BadgeVariant,
   DataTablePremium,
+  AddButton,
+  ClearFilterButton,
+  ActionBar,
 } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { formatCurrency } from '@/shared/utils/format';
@@ -76,13 +79,7 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
           <p className="eyebrow-premium">TÀI CHÍNH</p>
           <h3 className="title-premium">Phiếu Chi</h3>
         </div>
-        <button
-          className="btn-primary min-h-[42px] px-6"
-          type="button"
-          onClick={onNew}
-        >
-          <Icon name="Plus" size={18} className="mr-2" /> Tạo phiếu chi
-        </button>
+        <AddButton onClick={onNew} label="Tạo phiếu chi" />
       </div>
 
       {/* Filters */}
@@ -130,17 +127,12 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
         </div>
 
         {hasFilter && (
-          <button
-            className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
-            type="button"
+          <ClearFilterButton
             onClick={() => {
               setFilters({});
               setSearchInput('');
             }}
-            style={{ marginTop: '1rem' }}
-          >
-            <Icon name="X" size={14} /> Xóa lọc
-          </button>
+          />
         )}
       </div>
 
@@ -221,25 +213,22 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
             className: 'text-right',
             onCellClick: () => {},
             cell: (exp) => (
-              <div className="flex justify-end gap-1">
-                <button
-                  className="btn-icon"
-                  type="button"
-                  onClick={() => onEdit(exp)}
-                  title="Sửa"
-                >
-                  <Icon name="Pencil" size={16} />
-                </button>
-                <button
-                  className="btn-icon text-danger hover:bg-danger/10"
-                  type="button"
-                  onClick={() => handleDelete(exp)}
-                  disabled={deleteMutation.isPending}
-                  title="Xóa"
-                >
-                  <Icon name="Trash2" size={16} />
-                </button>
-              </div>
+              <ActionBar
+                actions={[
+                  {
+                    icon: 'Pencil',
+                    onClick: () => onEdit(exp),
+                    title: 'Sửa',
+                  },
+                  {
+                    icon: 'Trash2',
+                    onClick: () => handleDelete(exp),
+                    title: 'Xóa',
+                    variant: 'danger',
+                    disabled: deleteMutation.isPending,
+                  },
+                ]}
+              />
             ),
           },
         ]}
