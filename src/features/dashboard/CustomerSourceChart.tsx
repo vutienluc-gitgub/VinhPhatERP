@@ -1,3 +1,5 @@
+import { MiniBarChart } from '@/shared/components';
+
 import type { CustomerSourceItem } from './useDashboardData';
 
 type CustomerSourceChartProps = {
@@ -57,23 +59,14 @@ export function CustomerSourceChart({
         ) : sources.length === 0 ? (
           <p className="task-empty">Chưa có dữ liệu nguồn khách hàng</p>
         ) : (
-          <div className="source-bar-list">
-            {sources.map((item) => (
-              <div key={item.source} className="source-bar-row">
-                <span className="source-bar-label">{item.source}</span>
-                <div className="source-bar-track">
-                  <div
-                    className="source-bar-fill"
-                    style={{
-                      width: `${Math.round((item.count / maxCount) * 100)}%`,
-                      background: item.color,
-                    }}
-                  />
-                </div>
-                <span className="source-bar-count">{item.count}</span>
-              </div>
-            ))}
-          </div>
+          <MiniBarChart
+            maxValue={maxCount}
+            data={sources.map((item) => ({
+              label: item.source,
+              value: item.count,
+              color: item.color,
+            }))}
+          />
         )}
       </div>
     </div>

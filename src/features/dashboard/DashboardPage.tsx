@@ -74,9 +74,7 @@ export function DashboardPage() {
         <KpiCardPremium
           label="Tỷ lệ chốt"
           value={
-            stats?.conversionRate !== undefined
-              ? `${stats.conversionRate}%`
-              : '—'
+            stats?.conversionRate != null ? `${stats.conversionRate}%` : '—'
           }
           icon="TrendingUp"
           variant="primary"

@@ -1,12 +1,15 @@
 import { Link } from 'react-router-dom';
 
+import { Icon } from './Icon';
+import type { IconName } from './Icon';
+
 type EmptyStateProps = {
   title?: string;
   description?: string;
   actionLabel?: string;
   actionHref?: string;
   actionClick?: () => void;
-  icon?: string;
+  icon?: IconName | string;
 };
 
 export function EmptyState({
@@ -17,6 +20,10 @@ export function EmptyState({
   actionClick,
   icon = '📂',
 }: EmptyStateProps) {
+  // Biểu thức regex đơn giản nhận diện tên Icon của Lucide (PascalCase)
+  const isLucideIcon =
+    typeof icon === 'string' && /^[A-Z][a-zA-Z]+$/.test(icon);
+
   return (
     <div
       style={{
@@ -31,9 +38,11 @@ export function EmptyState({
           fontSize: '3rem',
           marginBottom: '0.75rem',
           opacity: 0.9,
+          display: 'flex',
+          justifyContent: 'center',
         }}
       >
-        {icon}
+        {isLucideIcon ? <Icon name={icon as IconName} size={48} /> : icon}
       </div>
       <h3
         style={{

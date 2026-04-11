@@ -7,6 +7,7 @@ import {
   KpiCardPremium,
   KpiGridPremium,
   DataTablePremium,
+  MiniBarChart,
   type DataTableColumn,
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
@@ -39,49 +40,12 @@ function computeGrowth(
   };
 }
 
-/** Simple inline bar chart using CSS standard tokens */
-function MiniBarChart({
-  data,
-  maxValue,
-}: {
-  data: { label: string; value: number; color?: string }[];
-  maxValue: number;
-}) {
-  return (
-    <div className="flex flex-col gap-2">
-      {data.map((d, i) => (
-        <div key={i} className="flex items-center gap-3">
-          <span className="text-[10px] font-bold text-muted w-20 text-right uppercase tracking-tighter">
-            {d.label}
-          </span>
-          <div className="flex-1 h-5 bg-surface-subtle border border-border rounded-sm overflow-hidden shadow-inner">
-            <div
-              style={{
-                width:
-                  maxValue > 0
-                    ? `${Math.max((d.value / maxValue) * 100, 1)}%`
-                    : '0%',
-                background: d.color ?? 'var(--primary)',
-              }}
-              className="h-full relative transition-all duration-700 ease-out opacity-85 hover:opacity-100 flex items-center px-2"
-            >
-              {d.value / maxValue > 0.15 && (
-                <span className="text-white text-[9px] font-bold">
-                  {formatShortCurrency(d.value)}
-                </span>
-              )}
-            </div>
-          </div>
-          {d.value / maxValue <= 0.15 && (
-            <span className="text-[10px] text-muted font-medium">
-              {formatShortCurrency(d.value)}
-            </span>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
+const PAYMENT_METHOD_LABELS: Record<string, string> = {
+  bank_transfer: 'Chuyển khoản',
+  cash: 'Tiền mặt',
+  card: 'Quẹt thẻ',
+  debt: 'Ghi nợ',
+};
 
 export function RevenueTrendSection({
   monthlyData,
@@ -106,7 +70,7 @@ export function RevenueTrendSection({
   const paymentMethods = Array.from(methodMap.entries())
     .sort((a, b) => b[1] - a[1])
     .map(([method, total]) => ({
-      label: method,
+      label: PAYMENT_METHOD_LABELS[method.toLowerCase()] ?? method,
       value: total,
     }));
 
@@ -192,12 +156,13 @@ export function RevenueTrendSection({
             Doanh thu theo tháng
           </p>
           <MiniBarChart
+            maxValue={maxMonthlyRevenue}
+            valueFormatter={formatShortCurrency}
             data={[...monthlyData].reverse().map((r) => ({
               label: r.month,
               value: r.total_revenue,
               color: 'var(--primary)',
             }))}
-            maxValue={maxMonthlyRevenue}
           />
         </div>
 
@@ -207,12 +172,13 @@ export function RevenueTrendSection({
               Cơ cấu loại vải (Top 10)
             </p>
             <MiniBarChart
+              maxValue={maxFabricRevenue}
+              valueFormatter={formatShortCurrency}
               data={fabricData.slice(0, 10).map((r) => ({
                 label: `${r.fabric_type}${r.color_name ? ` (${r.color_name})` : ''}`,
                 value: r.total_revenue,
                 color: 'var(--accent)',
               }))}
-              maxValue={maxFabricRevenue}
             />
           </div>
         )}
