@@ -2,6 +2,7 @@ import React, { forwardRef } from 'react';
 import { clsx, type ClassValue } from 'clsx';
 
 import { Icon } from '@/shared/components/Icon';
+import { calcDeviationPercent } from '@/features/raw-fabric/helpers';
 
 import { AnomalyStatus } from './useRollMatrixLogic';
 
@@ -30,6 +31,33 @@ interface RollGridItemProps extends Omit<
   statusIcon?: 'locked' | 'cut' | 'none'; // Further visual signals
   onChangeWeight?: (weight: number | undefined) => void;
   onPress?: () => void; // Mobile friendly tap handler
+  /** Standard weight in kg — used to compute deviation tooltip for light/heavy anomalies */
+  standardWeightKg?: number;
+}
+
+/** Simple Tailwind-based tooltip wrapper */
+function Tooltip({
+  content,
+  children,
+}: {
+  content: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <span className="relative group/tip">
+      {children}
+      <span
+        className={cn(
+          'pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-50',
+          'whitespace-nowrap rounded px-2 py-1 text-[10px] font-semibold',
+          'bg-gray-900 text-white shadow-lg',
+          'opacity-0 group-hover/tip:opacity-100 transition-opacity duration-150',
+        )}
+      >
+        {content}
+      </span>
+    </span>
+  );
 }
 
 export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
@@ -47,6 +75,7 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
       onChangeWeight,
       onPress,
       className,
+      standardWeightKg,
       ...props
     },
     ref,
@@ -83,9 +112,11 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
       ? anomalyStyles.empty
       : anomalyStyles[anomalyStatus];
 
+    const isCompact = mode === 'view';
+
     const baseClass = cn(
-      'relative flex flex-col justify-center items-center p-2 transition-all duration-200',
-      'min-h-[72px] min-w-[64px]',
+      'relative flex flex-col justify-center items-center transition-all duration-200',
+      isCompact ? 'p-1' : 'p-2 min-h-[72px] min-w-[64px]',
       mode === 'select' && isSelected ? 'scale-[1.02] z-10' : '',
       mode !== 'input'
         ? 'cursor-pointer hover:border-primary active:scale-95 select-none'
@@ -146,10 +177,6 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
 
     const processFastEntry = () => {
       if (value !== undefined && value >= 100) {
-        // We divide by 100: e.g. 2175 becomes 21.75
-        // If they entered a decimal (like 120.5), it won't be >= 100 unless they typed true 100+ kg
-        // We check string to avoid dividing something that already has decimals,
-        // but value is number here so we convert it to string to check.
         if (!String(value).includes('.')) {
           onChangeWeight?.(value / 100);
         }
@@ -170,18 +197,109 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
 
     const displayValue = () => {
       if (isGhost) return '';
-      if (!value) return <span style={{ opacity: 0.3 }}>-</span>;
+      if (!value)
+        return (
+          <span
+            style={{
+              opacity: 0.3,
+              fontSize: isCompact ? 10 : 14,
+            }}
+          >
+            -
+          </span>
+        );
+      if (isCompact) {
+        // Compact: show value only, no unit suffix to save space
+        return (
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 800,
+              letterSpacing: '-0.02em',
+              lineHeight: 1,
+            }}
+          >
+            {value}
+          </span>
+        );
+      }
       return (
         <span className="flex items-baseline gap-0.5">
           <span className="text-base font-black tracking-tight">{value}</span>
-          <span className="text-[10px] font-bold opacity-60 uppercase">
+          <span className="text-[9px] font-bold opacity-60 uppercase">
             {valueUnit}
           </span>
         </span>
       );
     };
 
-    return (
+    // Compute anomaly tooltip text when light/heavy and standardWeightKg is provided
+    const anomalyTooltip = (() => {
+      if (
+        !standardWeightKg ||
+        (anomalyStatus !== 'light' && anomalyStatus !== 'heavy')
+      )
+        return null;
+      if (value === undefined) return null;
+      const pct = calcDeviationPercent(value, standardWeightKg).toFixed(1);
+      return anomalyStatus === 'light'
+        ? `Nhẹ hơn chuẩn ${pct}%`
+        : `Nặng hơn chuẩn ${pct}%`;
+    })();
+
+    // Build tooltip content — include subLabel (raw roll number) for traceability
+    const labelTooltipContent = subLabel
+      ? `${label} | Moc: ${subLabel}`
+      : (label ?? '');
+
+    // Render label — truncate + tooltip when > 8 chars or has subLabel
+    const renderLabel = () => {
+      if (!label) return null;
+      // Compact view: show truncated label with tooltip always
+      if (isCompact) {
+        const shortLabel = label.length > 6 ? label.slice(-5) : label;
+        return (
+          <Tooltip content={labelTooltipContent}>
+            <span
+              style={{
+                fontSize: 8,
+                fontWeight: 700,
+                opacity: 0.6,
+                lineHeight: 1,
+                letterSpacing: '0.02em',
+                textTransform: 'uppercase',
+                display: 'block',
+                textAlign: 'center',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                maxWidth: '100%',
+              }}
+            >
+              {shortLabel}
+            </span>
+          </Tooltip>
+        );
+      }
+      const labelSpan = (
+        <span
+          className={cn(
+            'uppercase font-extrabold opacity-70 leading-none mb-0.5 truncate max-w-full',
+            'text-[10px]',
+            label.length > 8 ? 'block' : '',
+            anomalyStatus === 'empty' ? 'opacity-30' : '',
+          )}
+        >
+          {label}
+        </span>
+      );
+
+      if (label.length > 8 || subLabel) {
+        return <Tooltip content={labelTooltipContent}>{labelSpan}</Tooltip>;
+      }
+      return labelSpan;
+    };
+
+    const cellContent = (
       <div
         className={baseClass}
         onClick={mode !== 'input' ? onPress : undefined}
@@ -195,27 +313,22 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
           background: isSelected ? 'rgba(16, 185, 129, 0.08)' : currentStyle.bg,
           boxShadow: isSelected
             ? '0 8px 20px rgba(16, 185, 129, 0.15)'
-            : currentStyle.shadow,
+            : isCompact
+              ? 'none'
+              : currentStyle.shadow,
           color: isSelected ? '#064e3b' : currentStyle.text,
           opacity: isGhost ? 0.4 : 1,
+          ...(isCompact
+            ? {
+                height: 44,
+                borderRadius: 6,
+              }
+            : {}),
         }}
       >
-        {label && (
-          <span
-            className={cn(
-              'text-[10px] uppercase font-extrabold letter-spacing-widest opacity-70 truncate max-w-full leading-none mb-1',
-              anomalyStatus === 'empty' ? 'opacity-30' : '',
-            )}
-          >
-            {label}
-          </span>
-        )}
+        {renderLabel()}
 
-        {subLabel && (
-          <span className="text-[9px] font-bold opacity-50 truncate max-w-full leading-none mb-1">
-            {subLabel}
-          </span>
-        )}
+        {/* subLabel (raw roll number) is merged into label tooltip for space efficiency */}
 
         <div className="flex-1 flex items-center justify-center w-full">
           {mode === 'input' ? (
@@ -240,6 +353,13 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
         {renderIcon()}
       </div>
     );
+
+    // Wrap entire cell in anomaly tooltip when applicable
+    if (anomalyTooltip) {
+      return <Tooltip content={anomalyTooltip}>{cellContent}</Tooltip>;
+    }
+
+    return cellContent;
   },
 );
 

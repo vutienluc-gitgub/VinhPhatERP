@@ -9,26 +9,23 @@ import {
   DataTablePremium,
   ViewToggle,
   type ViewMode,
-  AddButton,
-  ClearFilterButton,
 } from '@/shared/components';
-import { Combobox } from '@/shared/components/Combobox';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
+import { AnomalyLegend } from '@/shared/components/roll-grid';
 
-import {
-  QUALITY_GRADE_LABELS,
-  QUALITY_GRADES,
-  ROLL_STATUS_LABELS,
-  ROLL_STATUSES,
-} from './raw-fabric.module';
+import { ActionMenu } from './ActionMenu';
+import { KpiCard } from './KpiCard';
+import { FilterBar } from './FilterBar';
+import { ROLL_STATUS_LABELS } from './raw-fabric.module';
 import type {
+  QualityGrade,
   RawFabricFilter,
   RawFabricRoll,
   RollStatus,
-  QualityGrade,
 } from './types';
 import { useRawFabricList, useRawFabricStats } from './useRawFabric';
 import { useRawFabricExport } from './useRawFabricExport';
+import { DEFAULT_FILTER_STATE, type FilterState } from './helpers';
 
 type RawFabricListProps = {
   onEdit: (roll: RawFabricRoll) => void;
@@ -55,17 +52,28 @@ function getStatusVariant(status: RollStatus): BadgeVariant {
   }
 }
 
+/** Derive RawFabricFilter from unified FilterState */
+function toApiFilter(fs: FilterState): RawFabricFilter {
+  return {
+    fabric_type: fs.fabricType.trim() || undefined,
+    roll_number: fs.rollCode.trim() || undefined,
+    status: (fs.status as RollStatus) || undefined,
+    quality_grade: (fs.quality as QualityGrade) || undefined,
+  };
+}
+
 export function RawFabricList({
   onEdit,
   onNew,
   onBulkNew,
 }: RawFabricListProps) {
-  const [filters, setFilters] = useState<RawFabricFilter>({});
-  const [fabricTypeInput, setFabricTypeInput] = useState('');
-  const [rollNumberInput, setRollNumberInput] = useState('');
+  const [filterState, setFilterState] =
+    useState<FilterState>(DEFAULT_FILTER_STATE);
   const [page, setPage] = useState(1);
   const [isExporting, setIsExporting] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+
+  const filters = useMemo(() => toApiFilter(filterState), [filterState]);
 
   const { data: result, isLoading, error } = useRawFabricList(filters, page);
   const rolls = useMemo(() => result?.data ?? [], [result?.data]);
@@ -76,18 +84,37 @@ export function RawFabricList({
     setIsExporting(true);
     try {
       const all = await fetchRawFabricAll(filters);
-      exportExcel(all);
+      await exportExcel(all);
     } finally {
       setIsExporting(false);
     }
   }
 
+  function handleFilterChange(next: FilterState) {
+    setFilterState(next);
+    setPage(1);
+  }
+
+  function handleClearFilter() {
+    setFilterState(DEFAULT_FILTER_STATE);
+    setPage(1);
+  }
+
   const hasFilter = !!(
-    filters.status ||
-    filters.quality_grade ||
-    filters.fabric_type ||
-    filters.roll_number
+    filterState.fabricType ||
+    filterState.rollCode ||
+    filterState.status ||
+    filterState.quality
   );
+
+  // Derive unique fabric_type options from current rolls data
+  const fabricTypeOptions = useMemo(() => {
+    const seen = new Set<string>();
+    rolls.forEach((r) => {
+      if (r.fabric_type) seen.add(r.fabric_type);
+    });
+    return Array.from(seen).sort();
+  }, [rolls]);
 
   const groupedRolls = useMemo(() => {
     const map = new Map<string, RawFabricRoll[]>();
@@ -127,211 +154,66 @@ export function RawFabricList({
 
         <div className="flex items-center gap-4">
           <ViewToggle value={viewMode} onChange={setViewMode} />
-
-          <div className="flex gap-2">
-            <AddButton onClick={onNew} label="Nhập mới" />
-            <button
-              className="btn-secondary btn-standard"
-              type="button"
-              onClick={onBulkNew}
-            >
-              <Icon name="Zap" size={16} /> Nhập mẻ
-            </button>
-            <div className="w-px h-6 bg-border mx-1" />
-            <button
-              className="btn-icon btn-standard"
-              type="button"
-              onClick={() => void handleExportExcel()}
-              disabled={isExporting}
-              title="Xuất Excel"
-            >
-              {isExporting ? (
-                <Icon name="Loader2" size={20} className="animate-spin" />
-              ) : (
-                <Icon name="FileSpreadsheet" size={20} />
-              )}
-            </button>
-          </div>
+          <ActionMenu
+            onNew={onNew}
+            onBulkNew={onBulkNew}
+            onExport={() => void handleExportExcel()}
+            isExporting={isExporting}
+          />
         </div>
       </div>
 
       {/* KPI Dashboard */}
       {stats && (
         <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
-          <div className="kpi-card-premium kpi-primary">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">Tổng số cuộn</p>
-                <p className="kpi-value">
-                  {stats.totalRolls.toLocaleString('vi-VN')}
-                </p>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="Package" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              Số lượng cuộn vải mộc hiện có
-            </div>
-          </div>
-
-          <div className="kpi-card-premium kpi-success">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">Tổng chiều dài</p>
-                <div className="flex items-baseline gap-1">
-                  <p className="kpi-value">
-                    {stats.totalLengthM.toLocaleString('vi-VN', {
-                      maximumFractionDigits: 1,
-                    })}
-                  </p>
-                  <span className="text-lg font-bold opacity-80 uppercase">
-                    m
-                  </span>
-                </div>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="Ruler" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              Sẵn sàng để đưa vào nhuộm
-            </div>
-          </div>
-
-          <div className="kpi-card-premium kpi-warning">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">Tổng khối lượng</p>
-                <div className="flex items-baseline gap-1">
-                  <p className="kpi-value">
-                    {stats.totalWeightKg.toLocaleString('vi-VN', {
-                      maximumFractionDigits: 1,
-                    })}
-                  </p>
-                  <span className="text-lg font-bold opacity-80 uppercase">
-                    kg
-                  </span>
-                </div>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="Weight" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              Trọng lượng tịnh thực tế
-            </div>
-          </div>
+          <KpiCard
+            type="rolls"
+            value={stats.totalRolls}
+            footerLabel="Chỉ tính cuộn đang trong kho (in_stock)"
+            colorVariant="primary"
+            onClick={() => {
+              handleClearFilter();
+            }}
+          />
+          <KpiCard
+            type="length"
+            value={stats.totalLengthM}
+            footerLabel="Chỉ tính cuộn đang trong kho (in_stock)"
+            colorVariant="success"
+            onClick={() => {
+              handleFilterChange({
+                ...DEFAULT_FILTER_STATE,
+                status: 'in_stock',
+              });
+            }}
+          />
+          <KpiCard
+            type="weight"
+            value={stats.totalWeightKg}
+            footerLabel="Trọng lượng tịnh thực tế"
+            colorVariant="info"
+            onClick={() => {
+              handleFilterChange({
+                ...DEFAULT_FILTER_STATE,
+                status: 'in_stock',
+              });
+            }}
+          />
         </div>
       )}
 
       {/* Filters */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-grid-premium">
-          <div className="filter-field">
-            <label>Loại vải</label>
-            <div className="search-input-wrapper">
-              <input
-                className="field-input"
-                type="text"
-                placeholder="Tìm sản phẩm..."
-                value={fabricTypeInput}
-                onChange={(e) => setFabricTypeInput(e.target.value)}
-                onBlur={() => {
-                  setFilters((prev) => ({
-                    ...prev,
-                    fabric_type: fabricTypeInput.trim() || undefined,
-                  }));
-                  setPage(1);
-                }}
-              />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </div>
+      <div className="card-filter-section p-4 border-b border-border">
+        <FilterBar
+          value={filterState}
+          onChange={handleFilterChange}
+          fabricTypeOptions={fabricTypeOptions}
+          resultCount={result?.total}
+        />
+        {viewMode === 'grid' && rolls.length > 0 && (
+          <div className="mt-2">
+            <AnomalyLegend />
           </div>
-
-          <div className="filter-field">
-            <label>Mã cuộn</label>
-            <div className="search-input-wrapper">
-              <input
-                className="field-input"
-                type="text"
-                placeholder="VD: BGR-001..."
-                value={rollNumberInput}
-                onChange={(e) => setRollNumberInput(e.target.value)}
-                onBlur={() => {
-                  setFilters((prev) => ({
-                    ...prev,
-                    roll_number: rollNumberInput.trim() || undefined,
-                  }));
-                  setPage(1);
-                }}
-              />
-              <Icon name="Tag" size={16} className="search-input-icon" />
-            </div>
-          </div>
-
-          <div className="filter-field">
-            <label>Trạng thái</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tất cả trạng thái',
-                },
-                ...ROLL_STATUSES.map((s) => ({
-                  value: s,
-                  label: ROLL_STATUS_LABELS[s],
-                })),
-              ]}
-              value={filters.status ?? ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  status: (val as RollStatus) || undefined,
-                }));
-              }}
-            />
-          </div>
-
-          <div className="filter-field">
-            <label>Chất lượng</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tất cả loại',
-                },
-                ...QUALITY_GRADES.map((g) => ({
-                  value: g,
-                  label: QUALITY_GRADE_LABELS[g],
-                })),
-              ]}
-              value={filters.quality_grade ?? ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  quality_grade: (val as QualityGrade) || undefined,
-                }));
-              }}
-            />
-          </div>
-        </div>
-
-        {hasFilter && (
-          <ClearFilterButton
-            onClick={() => {
-              setFilters({});
-              setFabricTypeInput('');
-              setRollNumberInput('');
-              setPage(1);
-            }}
-            label="Xóa lọc nhanh"
-          />
         )}
       </div>
 
@@ -460,7 +342,8 @@ export function RawFabricList({
             )}
           />
         ) : (
-          <div className="p-4 flex flex-col gap-6">
+          // overflow-x-hidden to prevent horizontal scroll on mobile (Requirement 6.3)
+          <div className="p-4 flex flex-col gap-6 overflow-x-hidden">
             {isLoading ? (
               <div className="flex-center py-20">
                 <div className="spinner" />
@@ -468,16 +351,26 @@ export function RawFabricList({
             ) : rolls.length === 0 ? (
               <div className="empty-state py-20">
                 <div className="empty-icon">
-                  <Icon name="Layers" size={48} />
+                  <Icon name={hasFilter ? 'Search' : 'Layers'} size={48} />
                 </div>
                 <p>
                   {hasFilter
                     ? 'Không tìm thấy cuộn vải phù hợp.'
                     : 'Chưa có cuộn vải nào.'}
                 </p>
+                {/* Requirement 4.5: show clear filter button in empty state when filter is active */}
+                {hasFilter && (
+                  <button
+                    className="btn btn-secondary mt-4"
+                    onClick={handleClearFilter}
+                  >
+                    <Icon name="X" size={14} />
+                    Xóa bộ lọc
+                  </button>
+                )}
               </div>
             ) : (
-              groupedRolls.map((group) => (
+              groupedRolls.map((group, index) => (
                 <LotMatrixCard
                   key={group.lot}
                   title={group.lot}
@@ -487,6 +380,8 @@ export function RawFabricList({
                   colorName={group.colorName || undefined}
                   expectedRollsCount={group.rolls.length}
                   standardWeightKg={group.medianWeight}
+                  lotIndex={index + 1}
+                  totalLots={groupedRolls.length}
                   rolls={group.rolls.map((r) => ({
                     id: r.id,
                     roll_number: r.roll_number,

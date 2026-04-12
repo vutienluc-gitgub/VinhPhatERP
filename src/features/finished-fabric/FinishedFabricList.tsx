@@ -1,4 +1,4 @@
-﻿import { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
@@ -371,6 +371,7 @@ export function FinishedFabricList({
                     roll_number: r.roll_number,
                     weight_kg: r.weight_kg ?? undefined,
                     status: r.status,
+                    raw_roll_number: r.raw_roll_number ?? undefined,
                   }))}
                   standardWeightKg={group.standardWeightKg}
                   mode="view"

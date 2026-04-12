@@ -1,3 +1,4 @@
+import { formatPaginationText } from '@/features/raw-fabric/helpers';
 import type { PaginatedResult } from '@/shared/types/pagination';
 
 type PaginationProps<T> = {
@@ -9,28 +10,23 @@ export function Pagination<T>({ result, onPageChange }: PaginationProps<T>) {
   if (!result || result.totalPages <= 1) return null;
 
   const { page, totalPages, total } = result;
-  const from = (page - 1) * result.pageSize + 1;
-  const to = Math.min(page * result.pageSize, total);
 
   return (
     <div className="pagination-bar">
-      <span className="pagination-info">
-        {from}–{to} / {total}
+      <span className="text-sm">
+        {formatPaginationText(page, totalPages, total)}
       </span>
       <div className="pagination-buttons">
         <button
-          className="btn-secondary"
+          className="btn-secondary min-h-[44px] min-w-[44px]"
           type="button"
           disabled={page <= 1}
           onClick={() => onPageChange(page - 1)}
         >
           ←
         </button>
-        <span className="pagination-current">
-          {page} / {totalPages}
-        </span>
         <button
-          className="btn-secondary"
+          className="btn-secondary min-h-[44px] min-w-[44px]"
           type="button"
           disabled={page >= totalPages}
           onClick={() => onPageChange(page + 1)}

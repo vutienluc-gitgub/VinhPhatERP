@@ -57,7 +57,7 @@ describe('CancelButton', () => {
 
   it('renders default label Huy when label prop is not provided', () => {
     render(<CancelButton onClick={() => undefined} />);
-    expect(screen.getByRole('button')).toHaveTextContent('Huy');
+    expect(screen.getByRole('button')).toHaveTextContent('Hủy');
   });
 
   it('renders with disabled attribute when disabled=true', () => {

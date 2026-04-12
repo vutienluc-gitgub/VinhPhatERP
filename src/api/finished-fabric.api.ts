@@ -24,7 +24,7 @@ export async function fetchFinishedFabricPaginated(
 
   let query = supabase
     .from(TABLE)
-    .select('*', { count: 'exact' })
+    .select('*, raw_fabric_rolls!raw_roll_id(roll_number)', { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(from, to);
 
@@ -37,8 +37,22 @@ export async function fetchFinishedFabricPaginated(
   const { data, error, count } = await query;
   if (error) throw error;
   const total = count ?? 0;
+
+  // Flatten joined raw_fabric_rolls → raw_roll_number
+  type RawJoinRow = Record<string, unknown> & {
+    raw_fabric_rolls?: { roll_number: string } | null;
+  };
+  const mapped = (data ?? []).map((row) => {
+    const r = row as RawJoinRow;
+    const { raw_fabric_rolls: rawJoin, ...rest } = r;
+    return {
+      ...rest,
+      raw_roll_number: rawJoin?.roll_number ?? null,
+    } as FinishedFabricRoll;
+  });
+
   return {
-    data: (data ?? []) as FinishedFabricRoll[],
+    data: mapped,
     total,
     page,
     pageSize: DEFAULT_PAGE_SIZE,

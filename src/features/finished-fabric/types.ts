@@ -7,6 +7,8 @@ export type FinishedFabricRoll = {
   id: string;
   roll_number: string;
   raw_roll_id: string;
+  /** Populated via join from raw_fabric_rolls — source roll number for traceability */
+  raw_roll_number?: string | null;
   fabric_type: string;
   color_name: string | null;
   color_code: string | null;
