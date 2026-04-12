@@ -7,9 +7,9 @@ import { TableSkeleton } from '@/shared/components/TableSkeleton';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { getColorHex } from '@/schema/color.schema';
 import type { ColorRow } from '@/schema/color.schema';
+import { useColorMutations, useColors } from '@/application/settings';
 
 import { ColorForm } from './ColorForm';
-import { useColorMutations, useColors } from './hooks/useColors';
 
 export function ColorsSection() {
   const { data: colors, isLoading } = useColors();

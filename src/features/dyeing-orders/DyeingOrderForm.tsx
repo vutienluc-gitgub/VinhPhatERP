@@ -16,13 +16,13 @@ import {
   emptyDyeingOrderItem,
 } from '@/schema/dyeing-order.schema';
 import type { DyeingOrderFormValues } from '@/schema/dyeing-order.schema';
-
 import {
   useCreateDyeingOrder,
   useDyeingSuppliers,
   useUpdateDyeingOrder,
   useNextDyeingOrderNumber,
-} from './useDyeingOrders';
+} from '@/application/production';
+
 import type { DyeingOrder } from './types';
 
 type DyeingOrderFormProps = {

@@ -1,6 +1,5 @@
 import { MiniBarChart } from '@/shared/components';
-
-import type { CustomerSourceItem } from './useDashboardData';
+import type { CustomerSourceItem } from '@/application/analytics';
 
 type CustomerSourceChartProps = {
   sources: CustomerSourceItem[];

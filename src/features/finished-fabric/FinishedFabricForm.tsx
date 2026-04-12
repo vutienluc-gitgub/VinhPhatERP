@@ -9,6 +9,11 @@ import {
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
+import {
+  useCreateFinishedFabric,
+  useRawRollOptions,
+  useUpdateFinishedFabric,
+} from '@/application/inventory';
 
 import {
   QUALITY_GRADE_LABELS,
@@ -21,11 +26,6 @@ import {
 import type { FinishedFabricFormValues } from './finished-fabric.module';
 import { editBlockReason, getAllowedStatusTransitions } from './transitions';
 import type { FinishedFabricRoll, RollStatus } from './types';
-import {
-  useCreateFinishedFabric,
-  useRawRollOptions,
-  useUpdateFinishedFabric,
-} from './useFinishedFabric';
 
 type FinishedFabricFormProps = {
   roll: FinishedFabricRoll | null;

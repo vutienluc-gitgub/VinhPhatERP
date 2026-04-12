@@ -12,13 +12,16 @@ import {
   ActionBar,
 } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
+import {
+  useDeleteYarnCatalog,
+  useYarnCatalogList,
+} from '@/application/settings';
 
 import type {
   YarnCatalog,
   YarnCatalogFilter,
   YarnCatalogStatus,
 } from './types';
-import { useDeleteYarnCatalog, useYarnCatalogList } from './useYarnCatalog';
 import { YARN_CATALOG_STATUS_LABELS } from './yarn-catalog.module';
 
 type YarnCatalogListProps = {

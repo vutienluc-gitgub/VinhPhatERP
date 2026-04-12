@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
 import { Icon } from '@/shared/components/Icon';
+import { useYarnCatalogList } from '@/application/settings';
 
 import type { YarnCatalog } from './types';
-import { useYarnCatalogList } from './useYarnCatalog';
 import { YarnCatalogForm } from './YarnCatalogForm';
 import { YarnCatalogList } from './YarnCatalogList';
 

@@ -14,7 +14,7 @@ export {
   useProgressAuditLog,
   useRecentAuditLog,
   useProgressDashboard,
-} from '@/features/orders/progress/useOrderProgress';
+} from '@/application/orders';
 export * from '@/features/orders/progress/ProgressTimeline';
 export * from '@/features/orders/progress/ProgressBoard';
 export * from '@/features/orders/progress/ProgressDashboard';

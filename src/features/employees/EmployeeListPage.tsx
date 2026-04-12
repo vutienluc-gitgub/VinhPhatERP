@@ -12,9 +12,9 @@ import {
 import type { ActionConfig } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
+import { useEmployees, useDeactivateEmployee } from '@/application/crm';
 
 import { EmployeeForm } from './EmployeeForm';
-import { useEmployees, useDeactivateEmployee } from './useEmployees';
 
 const ROLE_LABELS: Record<string, string> = {
   admin: 'Quản trị viên',

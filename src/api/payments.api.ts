@@ -7,9 +7,9 @@ import type {
   ExpenseByCategoryRow,
   SupplierDebtRow,
   DebtSummaryRow,
-  ExpenseCategory,
 } from '@/features/payments/types';
-import type { Payment, PaymentInsert } from '@/features/payments/types';
+import type { Payment } from '@/features/payments/types';
+import type { PaymentDbPayload, ExpenseDbPayload } from '@/domain/payments';
 import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
@@ -87,7 +87,7 @@ export async function fetchNextPaymentNumber(): Promise<string> {
 }
 
 export async function createPaymentRecord(
-  row: PaymentInsert,
+  row: PaymentDbPayload,
 ): Promise<Payment> {
   const { data, error } = await supabase
     .from(PAYMENTS_TABLE)
@@ -174,18 +174,6 @@ export async function deletePaymentAccount(id: string): Promise<void> {
 
 const EXPENSES_TABLE = 'expenses';
 
-export type ExpenseInsertRow = {
-  expense_number: string;
-  category: ExpenseCategory;
-  amount: number;
-  expense_date: string;
-  account_id: string | null;
-  supplier_id: string | null;
-  description: string;
-  reference_number: string | null;
-  notes: string | null;
-};
-
 export async function fetchExpensesPaginated(
   filters: ExpensesFilter = {},
   page = 1,
@@ -242,7 +230,7 @@ export async function fetchNextExpenseNumber(): Promise<string> {
   return `${prefix}${String(parseInt(match[1], 10) + 1).padStart(4, '0')}`;
 }
 
-export async function createExpense(row: ExpenseInsertRow): Promise<Expense> {
+export async function createExpense(row: ExpenseDbPayload): Promise<Expense> {
   const { data, error } = await untypedDb
     .from('expenses')
     .insert(row)
@@ -254,7 +242,7 @@ export async function createExpense(row: ExpenseInsertRow): Promise<Expense> {
 
 export async function updateExpense(
   id: string,
-  row: ExpenseInsertRow,
+  row: ExpenseDbPayload,
 ): Promise<Expense> {
   const { data, error } = await untypedDb
     .from('expenses')

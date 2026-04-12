@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react';
 
 import { Icon, type IconName } from '@/shared/components';
+import { useOrderKanban, useUpdateOrderStatus } from '@/application/orders';
 
 import { KanbanColumn } from './OrderKanbanList';
 import type { OrderKanbanStatus } from './types';
-import { useOrderKanban, useUpdateOrderStatus } from './useOrderKanban';
 
 const COLUMNS: { status: OrderKanbanStatus; label: string; icon: IconName }[] =
   [

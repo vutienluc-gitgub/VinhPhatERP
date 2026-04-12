@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
-import { useDashboardStats } from '@/features/dashboard/useDashboardData';
+import { useDashboardStats } from '@/application/analytics';
 import { navigationItems } from '@/app/router/routes';
 import type { NavigationItem } from '@/app/router/routes';
 import type { UserRole } from '@/services/supabase/database.types';

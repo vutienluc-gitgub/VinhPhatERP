@@ -2,11 +2,11 @@ import { useState } from 'react';
 
 import { TabSwitcher, Icon } from '@/shared/components';
 import type { TabItem } from '@/shared/components';
+import { useProgressBoard } from '@/application/orders';
 
 import { ProgressAuditLogView } from './ProgressAuditLog';
 import { ProgressBoard } from './ProgressBoard';
 import { ProgressDashboard } from './ProgressDashboard';
-import { useProgressBoard } from './useOrderProgress';
 
 type Tab = 'dashboard' | 'board' | 'audit';
 

@@ -12,6 +12,13 @@ import {
 import { useStepper } from '@/shared/hooks/useStepper';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 import type { RollMatrixItem } from '@/shared/components/roll-grid';
+import {
+  useCreateRawFabricBulk,
+  useWeavingPartners,
+  useWorkOrderOptions,
+  useYarnReceiptOptions,
+} from '@/application/inventory';
+import { useRawFabricExport } from '@/application/inventory';
 
 import {
   QUALITY_GRADE_LABELS,
@@ -24,13 +31,6 @@ import {
 } from './raw-fabric.module';
 import type { BulkInputFormValues } from './raw-fabric.module';
 import type { RawFabricRoll } from './types';
-import {
-  useCreateRawFabricBulk,
-  useWeavingPartners,
-  useWorkOrderOptions,
-  useYarnReceiptOptions,
-} from './useRawFabric';
-import { useRawFabricExport } from './useRawFabricExport';
 
 type Props = {
   onClose: () => void;

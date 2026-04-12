@@ -11,9 +11,12 @@ import {
   ActionBar,
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
+import {
+  useDeleteShippingRate,
+  useShippingRateList,
+} from '@/application/shipments';
 
 import type { ShippingRate, ShippingRateFilter } from './types';
-import { useDeleteShippingRate, useShippingRateList } from './useShippingRates';
 
 type Props = {
   onEdit: (item: ShippingRate) => void;

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { useProgressBoard, useUpdateStageStatus } from '@/application/orders';
+
 import {
   PRODUCTION_STAGES,
   STAGE_LABELS,
@@ -10,7 +12,6 @@ import type {
   ProductionStage,
   StageStatus,
 } from './types';
-import { useProgressBoard, useUpdateStageStatus } from './useOrderProgress';
 
 type GroupedByOrder = {
   orderId: string;

@@ -1,14 +1,14 @@
 import { Icon } from '@/shared/components/Icon';
 import { Badge } from '@/shared/components/Badge';
 import { formatCurrency } from '@/shared/utils/format';
-
-import type { WorkOrder } from './types';
 import {
   useWorkOrderDetail,
   useWorkOrderRequirements,
   useStartWorkOrder,
   useCompleteWorkOrder,
-} from './useWorkOrders';
+} from '@/application/production';
+
+import type { WorkOrder } from './types';
 import { WORK_ORDER_STATUSES } from './work-orders.module';
 
 interface WorkOrderDetailProps {

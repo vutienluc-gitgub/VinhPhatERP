@@ -1,10 +1,13 @@
 import { useState } from 'react';
 
 import { formatCurrency } from '@/shared/utils/format';
+import { useAccountList } from '@/application/payments';
+import {
+  useCashFlowSummary,
+  useExpenseByCategory,
+} from '@/application/payments';
 
 import { EXPENSE_CATEGORY_LABELS } from './payments.module';
-import { useAccountList } from './useAccounts';
-import { useCashFlowSummary, useExpenseByCategory } from './useCashFlow';
 
 function getDefaultDates(): { from: string; to: string } {
   const now = new Date();

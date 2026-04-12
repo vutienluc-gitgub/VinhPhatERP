@@ -14,14 +14,14 @@ import {
 import type { ActionConfig } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { formatCurrency } from '@/shared/utils/format';
-
-import { QUOTATION_STATUS_LABELS } from './quotations.module';
-import type { Quotation, QuotationsFilter, QuotationStatus } from './types';
 import {
   useDeleteQuotation,
   useExpiringQuotationsCount,
   useQuotationList,
-} from './useQuotations';
+} from '@/application/quotations';
+
+import { QUOTATION_STATUS_LABELS } from './quotations.module';
+import type { Quotation, QuotationsFilter, QuotationStatus } from './types';
 
 type QuotationListProps = {
   onEdit: (quotation: Quotation) => void;

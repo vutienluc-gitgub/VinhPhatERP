@@ -9,10 +9,10 @@ import {
   ActionBar,
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
+import { useAllAccounts, useDeleteAccount } from '@/application/payments';
 
 import { ACCOUNT_TYPE_LABELS } from './payments.module';
 import type { PaymentAccount } from './types';
-import { useAllAccounts, useDeleteAccount } from './useAccounts';
 
 type AccountListProps = {
   onEdit: (account: PaymentAccount) => void;

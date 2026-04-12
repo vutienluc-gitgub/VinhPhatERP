@@ -14,20 +14,20 @@ import DraftBanner from '@/shared/components/DraftBanner';
 import SaveStatus from '@/shared/components/SaveStatus';
 import { useAutoSave, loadDraft, clearDraft } from '@/shared/hooks/useAutoSave';
 import { useStepper } from '@/shared/hooks/useStepper';
-
-import type { WorkOrder } from './types';
 import {
   useCreateWorkOrder,
   useUpdateWorkOrder,
   useUnitOptions,
   useWorkOrderRequirements,
-} from './useWorkOrders';
+} from '@/application/production';
+import { useWorkOrderLogic } from '@/application/production';
+
+import type { WorkOrder } from './types';
 import {
   createWorkOrderSchema,
   type CreateWorkOrderInput,
 } from './work-orders.module';
 import { WorkOrderYarnTable } from './WorkOrderYarnTable';
-import { useWorkOrderLogic } from './useWorkOrderLogic';
 
 const DRAFT_KEY = 'work-order-draft';
 

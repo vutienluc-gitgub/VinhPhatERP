@@ -2,8 +2,7 @@ import { Link } from 'react-router-dom';
 
 import { Icon } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
-
-import type { RecentOrder } from './useDashboardData';
+import type { RecentOrder } from '@/application/analytics';
 
 type RecentOrdersCardProps = {
   orders: RecentOrder[];

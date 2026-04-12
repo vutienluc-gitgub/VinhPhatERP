@@ -1,14 +1,14 @@
 import { useState } from 'react';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
-
-import type { Order, OrderItem } from './types';
 import {
   useAvailableRolls,
   useReservedRollsForOrder,
   useReserveRoll,
   useUnreserveRoll,
-} from './useReserveRolls';
+} from '@/application/orders';
+
+import type { Order, OrderItem } from './types';
 
 type ReserveRollsPanelProps = {
   order: Order;

@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
 import { KpiCardPremium, Icon, AddButton } from '@/shared/components';
+import { useDyeingOrderList } from '@/application/production';
 
 import { DyeingOrderList } from './DyeingOrderList';
 import { DyeingOrderForm } from './DyeingOrderForm';
 import { DyeingOrderDetail } from './DyeingOrderDetail';
 import type { DyeingOrder, DyeingOrderFilter } from './types';
-import { useDyeingOrderList } from './useDyeingOrders';
 
 export function DyeingOrdersPage() {
   const [filter, setFilter] = useState<DyeingOrderFilter>({
