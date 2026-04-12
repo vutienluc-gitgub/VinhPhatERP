@@ -13,6 +13,10 @@ import {
   fetchDeliveryStaff,
   deleteShipmentFull,
 } from '@/api/shipments.api';
+import {
+  mapShipmentFormToPayload,
+  mapDeliveryConfirmToPayload,
+} from '@/domain/shipments/ShipmentDomain';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useCompanySettings } from '@/shared/hooks/useCompanySettings';
 
@@ -74,24 +78,7 @@ export function useCreateShipment() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (values: ShipmentsFormValues) =>
-      createShipmentFull({
-        shipmentNumber: values.shipmentNumber,
-        orderId: values.orderId,
-        customerId: values.customerId,
-        shipmentDate: values.shipmentDate,
-        deliveryAddress: values.deliveryAddress?.trim() || null,
-        deliveryStaffId: values.deliveryStaffId?.trim() || null,
-        employeeId: values.employeeId?.trim() || null,
-        shippingRateId: values.shippingRateId?.trim() || null,
-        shippingCost: values.shippingCost,
-        loadingFee: values.loadingFee,
-        vehicleInfo: values.vehicleInfo?.trim() || null,
-        items: values.items.map((item) => ({
-          finishedRollId: item.finishedRollId?.trim() || null,
-          fabricType: item.fabricType,
-          quantity: item.quantity,
-        })),
-      }),
+      createShipmentFull(mapShipmentFormToPayload(values)),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: ['orders'] });
@@ -150,12 +137,7 @@ export function useMarkDelivered() {
       shipmentId: string;
       values: DeliveryConfirmFormValues;
     }) =>
-      markShipmentDelivered(shipmentId, {
-        receiverName: values.receiverName,
-        receiverPhone: values.receiverPhone ?? null,
-        deliveryProof: values.deliveryProof,
-        notes: values.notes ?? null,
-      }),
+      markShipmentDelivered(shipmentId, mapDeliveryConfirmToPayload(values)),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: ['orders'] });

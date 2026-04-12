@@ -60,11 +60,25 @@ function PortalPage({ children }: { children: React.ReactNode }) {
   );
 }
 
+const TenantRegisterPage = lazy(() =>
+  import('@/features/auth/TenantRegisterPage').then((m) => ({
+    default: m.TenantRegisterPage,
+  })),
+);
+
 const router = createBrowserRouter([
   // ---- Public routes ----
   {
     path: '/auth',
     element: authRoute.element,
+  },
+  {
+    path: '/register',
+    element: (
+      <Suspense fallback={<div />}>
+        <TenantRegisterPage />
+      </Suspense>
+    ),
   },
   {
     path: '/unauthorized',

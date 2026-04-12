@@ -4,18 +4,18 @@ import { resolveTenant } from '@/shared/context/tenant-context';
 /**
  * Tenant-aware Supabase client helper.
  *
- * Cách hoạt động Multi-tenant:
+ * Cach hoat dong Multi-tenant:
  *
- * 1. SELECT (đọc dữ liệu):
- *    → RLS policies tự động lọc theo tenant_id của user (database-level).
- *    → Không cần thêm .eq('tenant_id', ...) thủ công.
+ * 1. SELECT (doc du lieu):
+ *    -> RLS policies tu dong loc theo tenant_id cua user (database-level).
+ *    -> Khong can them .eq('tenant_id', ...) thu cong.
  *
- * 2. INSERT (tạo mới):
- *    → Phải inject tenant_id vào row trước khi insert.
- *    → Dùng helper `withTenantId()` để tự động thêm.
+ * 2. INSERT (tao moi):
+ *    -> Phai inject tenant_id vao row truoc khi insert.
+ *    -> Dung helper `withTenantId()` de tu dong them.
  *
  * 3. UPDATE/DELETE:
- *    → RLS policies đảm bảo chỉ sửa/xóa dữ liệu của tenant mình.
+ *    -> RLS policies dam bao chi sua/xoa du lieu cua tenant minh.
  *
  * Usage:
  *   import { withTenantId, getTenantId } from '@/services/supabase/tenant'
@@ -74,6 +74,13 @@ export async function getTenantId(): Promise<string> {
  */
 export function getCachedTenantId(): string | null {
   return cachedTenantId;
+}
+
+/**
+ * Set tenant ID directly (used by TenantProvider after DB fetch).
+ */
+export function setCachedTenantId(id: string): void {
+  cachedTenantId = id;
 }
 
 /**

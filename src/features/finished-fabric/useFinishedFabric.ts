@@ -12,42 +12,20 @@ import {
   fetchTraceChain,
 } from '@/api/finished-fabric.api';
 import type { InventoryStats } from '@/api/finished-fabric.api';
+import {
+  mapFinishedFabricFormToDb,
+  findDuplicateRollNumbers,
+} from '@/domain/inventory/InventoryDomain';
 
 import type {
   FinishedFabricFormValues,
   BulkFinishedInputFormValues,
 } from './finished-fabric.module';
-import { findDuplicateRollNumbers } from './finished-fabric.module';
-import type {
-  FinishedFabricFilter,
-  FinishedFabricRoll,
-  RawRollOption,
-} from './types';
+import type { FinishedFabricFilter, RawRollOption } from './types';
 
 export type { InventoryStats };
 
 const QUERY_KEY = ['finished-fabric'] as const;
-
-function toDbRow(
-  values: FinishedFabricFormValues,
-): Omit<FinishedFabricRoll, 'id' | 'created_at' | 'updated_at' | 'lot_number'> {
-  return {
-    roll_number: values.roll_number,
-    raw_roll_id: values.raw_roll_id,
-    fabric_type: values.fabric_type,
-    color_name: values.color_name?.trim() || null,
-    color_code: values.color_code?.trim() || null,
-    width_cm: values.width_cm ?? null,
-    length_m: values.length_m ?? null,
-    weight_kg: values.weight_kg ?? null,
-    quality_grade: values.quality_grade ?? null,
-    status: values.status,
-    warehouse_location: values.warehouse_location?.trim() || null,
-    production_date: values.production_date?.trim() || null,
-    reserved_for_order_id: values.reserved_for_order_id ?? null,
-    notes: values.notes?.trim() || null,
-  };
-}
 
 export function useFinishedFabricList(
   filters: FinishedFabricFilter = {},
@@ -63,7 +41,7 @@ export function useCreateFinishedFabric() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (values: FinishedFabricFormValues) =>
-      createFinishedFabric(toDbRow(values)),
+      createFinishedFabric(mapFinishedFabricFormToDb(values)),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
@@ -79,7 +57,7 @@ export function useUpdateFinishedFabric() {
     }: {
       id: string;
       values: FinishedFabricFormValues;
-    }) => updateFinishedFabric(id, toDbRow(values)),
+    }) => updateFinishedFabric(id, mapFinishedFabricFormToDb(values)),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
