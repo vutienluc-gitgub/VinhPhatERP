@@ -1,8 +1,12 @@
-import { ProgressTimeline } from '@/features/order-progress/ProgressTimeline';
-import { useOrderProgress } from '@/features/order-progress/useOrderProgress';
+import { ProgressTimeline } from '@/features/orders/progress/ProgressTimeline';
+import { useOrderProgress } from '@/features/orders/progress/useOrderProgress';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Button } from '@/shared/components/Button';
 import { formatCurrency } from '@/shared/utils/format';
+import {
+  calculateBalanceDue,
+  calculatePaymentPercentage,
+} from '@/domain/payments';
 
 import { ORDER_STATUS_LABELS } from './orders.module';
 import type { Order, OrderStatus } from './types';
@@ -71,11 +75,11 @@ export function OrderDetail({
       </div>
     );
 
-  const balanceDue = order.total_amount - order.paid_amount;
+  const balanceDue = calculateBalanceDue(order.total_amount, order.paid_amount);
   const items = order.order_items ?? [];
-  const paymentPct = Math.min(
-    100,
-    Math.round((order.paid_amount / order.total_amount) * 100),
+  const paymentPct = calculatePaymentPercentage(
+    order.total_amount,
+    order.paid_amount,
   );
 
   async function handleConfirm() {

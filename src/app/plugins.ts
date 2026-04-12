@@ -3,7 +3,7 @@ import { FeatureRegistry } from '@/shared/lib/FeatureRegistry';
 import { customersPlugin } from '@/features/customers';
 import { quotationsPlugin } from '@/features/quotations';
 import { ordersPlugin } from '@/features/orders';
-import { orderProgressPlugin } from '@/features/order-progress';
+import { orderProgressPlugin } from '@/features/orders/progress';
 import { orderKanbanPlugin } from '@/features/order-kanban';
 import { shipmentsPlugin } from '@/features/shipments';
 import { yarnReceiptsPlugin } from '@/features/yarn-receipts';

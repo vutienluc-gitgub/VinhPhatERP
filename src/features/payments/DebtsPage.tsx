@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { TabSwitcher } from '@/shared/components';
 import type { TabItem } from '@/shared/components';
 import { Icon } from '@/shared/components/Icon';
-import { DebtAgingSection } from '@/features/reports/DebtAgingSection';
-import { useDebtAging } from '@/features/reports/useReports';
+import { DebtAgingSection } from '@/shared/components/debt-aging/DebtAgingSection';
+import { useDebtAging } from '@/shared/components/debt-aging/useDebtAging';
 
 import { DebtSummary } from './DebtSummary';
 import { SupplierDebtSummary } from './SupplierDebtSummary';

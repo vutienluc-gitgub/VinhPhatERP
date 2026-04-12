@@ -8,6 +8,8 @@ import {
   deletePaymentRecord,
   fetchDebtSummary,
 } from '@/api/payments.api';
+import { mapPaymentFormToDb } from '@/domain/payments';
+import { DomainEventBus } from '@/domain/core/DomainEventBus';
 
 import type { PaymentsFormValues } from './payments.module';
 import type { DebtSummaryRow, Payment, PaymentsFilter } from './types';
@@ -42,19 +44,17 @@ export function useCreatePayment() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (values: PaymentsFormValues) =>
-      createPaymentRecord({
-        payment_number: values.paymentNumber.trim(),
-        order_id: values.orderId,
-        customer_id: values.customerId,
-        payment_date: values.paymentDate,
-        amount: values.amount,
-        payment_method: values.paymentMethod,
-        account_id: values.accountId || null,
-        reference_number: values.referenceNumber?.trim() || null,
-      }),
-    onSuccess: () => {
+      createPaymentRecord(mapPaymentFormToDb(values)),
+    onSuccess: (data) => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
-      void queryClient.invalidateQueries({ queryKey: ['orders'] });
+      DomainEventBus.publish({
+        eventName: 'PaymentCreatedEvent',
+        timestamp: new Date().toISOString(),
+        payload: {
+          paymentId: data.id,
+          orderId: data.order_id || undefined,
+        },
+      });
     },
   });
 }
@@ -63,9 +63,13 @@ export function useDeletePayment() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deletePaymentRecord,
-    onSuccess: () => {
+    onSuccess: (_, deletedId) => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
-      void queryClient.invalidateQueries({ queryKey: ['orders'] });
+      DomainEventBus.publish({
+        eventName: 'PaymentDeletedEvent',
+        timestamp: new Date().toISOString(),
+        payload: { paymentId: deletedId },
+      });
     },
   });
 }
