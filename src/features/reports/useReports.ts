@@ -5,7 +5,6 @@ import {
   fetchDebtByCustomer,
   fetchInventorySummary,
   fetchOverdueOrders,
-  fetchDebtAging,
   fetchProductionEfficiency,
   fetchRevenueByFabric,
   fetchMonthlyRevenue,
@@ -46,13 +45,6 @@ export function useOverdueOrders() {
 }
 
 // --- Deep analytics hooks ---
-
-export function useDebtAging() {
-  return useQuery({
-    queryKey: [...REPORTS_KEY, 'debt-aging'],
-    queryFn: fetchDebtAging,
-  });
-}
 
 export function useProductionEfficiency() {
   return useQuery({

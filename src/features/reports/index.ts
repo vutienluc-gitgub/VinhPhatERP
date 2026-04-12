@@ -4,7 +4,7 @@ export * from '@/features/reports/useReports';
 export * from '@/features/reports/ReportsFilter';
 export * from '@/features/reports/RevenueSection';
 export * from '@/features/reports/DebtSection';
-export * from '@/features/reports/DebtAgingSection';
+
 export * from '@/features/reports/InventorySection';
 export * from '@/features/reports/OverdueSection';
 export * from '@/features/reports/ProductionSection';

@@ -1,13 +1,18 @@
 import { Icon, DataTablePremium } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
+import {
+  calculateTotalDebt,
+  countOverdueDebts,
+  isDebtRisky,
+} from '@/domain/payments';
 
 import { useSupplierDebt } from './useCashFlow';
 
 export function SupplierDebtSummary() {
   const { data: debts = [], isLoading, error } = useSupplierDebt();
 
-  const totalDebt = debts.reduce((sum, d) => sum + d.balance_due, 0);
-  const overdueCount = debts.filter((d) => d.balance_due > 0).length;
+  const totalDebt = calculateTotalDebt(debts);
+  const overdueCount = countOverdueDebts(debts);
 
   if (error) {
     return (
@@ -77,6 +82,11 @@ export function SupplierDebtSummary() {
                   {d.supplier_code && (
                     <span className="text-xs text-muted">
                       {d.supplier_code}
+                    </span>
+                  )}
+                  {isDebtRisky(d.balance_due) && (
+                    <span className="text-xs text-danger bg-danger/10 px-1 rounded mt-1 w-fit">
+                      Đang nợ
                     </span>
                   )}
                 </div>

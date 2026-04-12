@@ -3,8 +3,9 @@ import { useState } from 'react';
 import type { ReportsFilter } from '@/api/reports.api';
 import { TabSwitcher, Icon } from '@/shared/components';
 import type { TabItem } from '@/shared/components';
+import { DebtAgingSection } from '@/shared/components/debt-aging/DebtAgingSection';
+import { useDebtAging } from '@/shared/components/debt-aging/useDebtAging';
 
-import { DebtAgingSection } from './DebtAgingSection';
 import { DebtSection } from './DebtSection';
 import { InventorySection } from './InventorySection';
 import { OverdueSection } from './OverdueSection';
@@ -17,7 +18,6 @@ import {
   useDebtByCustomer,
   useInventorySummary,
   useOverdueOrders,
-  useDebtAging,
   useProductionEfficiency,
   useOnTimeDelivery,
   useMonthlyRevenue,

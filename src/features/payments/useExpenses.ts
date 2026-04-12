@@ -7,6 +7,8 @@ import {
   updateExpense,
   deleteExpense,
 } from '@/api/payments.api';
+import { mapExpenseFormToDb } from '@/domain/payments';
+import { DomainEventBus } from '@/domain/core/DomainEventBus';
 
 import type { ExpenseFormValues } from './payments.module';
 import type { Expense, ExpensesFilter } from './types';
@@ -33,20 +35,14 @@ export function useCreateExpense() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (values: ExpenseFormValues) =>
-      createExpense({
-        expense_number: values.expenseNumber.trim(),
-        category: values.category,
-        amount: values.amount,
-        expense_date: values.expenseDate,
-        account_id: values.accountId || null,
-        supplier_id: values.supplierId || null,
-        description: values.description.trim(),
-        reference_number: values.referenceNumber?.trim() || null,
-        notes: values.notes?.trim() || null,
-      }),
-    onSuccess: () => {
+      createExpense(mapExpenseFormToDb(values)),
+    onSuccess: (data) => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
-      void queryClient.invalidateQueries({ queryKey: ['payment-accounts'] });
+      DomainEventBus.publish({
+        eventName: 'ExpenseCreatedEvent',
+        timestamp: new Date().toISOString(),
+        payload: { expenseId: data.id },
+      });
     },
   });
 }
@@ -55,20 +51,14 @@ export function useUpdateExpense() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, values }: { id: string; values: ExpenseFormValues }) =>
-      updateExpense(id, {
-        expense_number: values.expenseNumber.trim(),
-        category: values.category,
-        amount: values.amount,
-        expense_date: values.expenseDate,
-        account_id: values.accountId || null,
-        supplier_id: values.supplierId || null,
-        description: values.description.trim(),
-        reference_number: values.referenceNumber?.trim() || null,
-        notes: values.notes?.trim() || null,
-      }),
-    onSuccess: () => {
+      updateExpense(id, mapExpenseFormToDb(values)),
+    onSuccess: (data) => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
-      void queryClient.invalidateQueries({ queryKey: ['payment-accounts'] });
+      DomainEventBus.publish({
+        eventName: 'ExpenseUpdatedEvent',
+        timestamp: new Date().toISOString(),
+        payload: { expenseId: data.id },
+      });
     },
   });
 }
@@ -77,9 +67,13 @@ export function useDeleteExpense() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteExpense,
-    onSuccess: () => {
+    onSuccess: (_, deletedId) => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
-      void queryClient.invalidateQueries({ queryKey: ['payment-accounts'] });
+      DomainEventBus.publish({
+        eventName: 'ExpenseDeletedEvent',
+        timestamp: new Date().toISOString(),
+        payload: { expenseId: deletedId },
+      });
     },
   });
 }
