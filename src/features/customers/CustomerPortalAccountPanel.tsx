@@ -141,57 +141,133 @@ export function CustomerPortalAccountPanel({
 
   if (account === undefined) {
     return (
-      <p className="text-sm text-gray-400">Đang kiểm tra tài khoản Portal…</p>
+      <div className="border border-border rounded-lg p-4">
+        <p className="text-sm text-muted">Đang kiểm tra tài khoản Portal…</p>
+      </div>
     );
   }
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 space-y-3">
-      <p className="text-sm font-medium text-gray-900">
-        Tài khoản Customer Portal
-      </p>
+    <div
+      className="rounded-lg p-4 space-y-3"
+      style={{
+        border: '1px solid var(--border)',
+        background: 'var(--surface-subtle)',
+      }}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <span
+          style={{
+            fontSize: 12,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+            color: 'var(--muted)',
+          }}
+        >
+          Tài khoản Customer Portal
+        </span>
+        {account !== null && (
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              padding: '2px 8px',
+              borderRadius: 20,
+              background: account.is_active
+                ? 'rgba(22,163,74,0.1)'
+                : 'rgba(107,114,128,0.12)',
+              color: account.is_active ? '#16a34a' : 'var(--muted)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+            }}
+          >
+            <span
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                background: account.is_active ? '#16a34a' : '#9ca3af',
+                display: 'inline-block',
+              }}
+            />
+            {account.is_active ? 'Đang hoạt động' : 'Đã vô hiệu hóa'}
+          </span>
+        )}
+      </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      {success && <p className="text-sm text-green-600">{success}</p>}
+      {/* Feedback */}
+      {error && (
+        <div
+          style={{
+            fontSize: 12,
+            color: '#dc2626',
+            background: 'rgba(220,38,38,0.06)',
+            padding: '6px 10px',
+            borderRadius: 6,
+            border: '1px solid rgba(220,38,38,0.15)',
+          }}
+        >
+          {error}
+        </div>
+      )}
+      {success && (
+        <div
+          style={{
+            fontSize: 12,
+            color: '#16a34a',
+            background: 'rgba(22,163,74,0.06)',
+            padding: '6px 10px',
+            borderRadius: 6,
+            border: '1px solid rgba(22,163,74,0.15)',
+          }}
+        >
+          {success}
+        </div>
+      )}
 
       {account === null ? (
         <>
-          <p className="text-sm text-gray-500">
+          <p
+            style={{
+              fontSize: 13,
+              color: 'var(--muted)',
+            }}
+          >
             Khách hàng chưa có tài khoản Portal.
           </p>
           {!showForm ? (
             <button
               onClick={() => setShowForm(true)}
-              className="text-sm text-blue-600 hover:underline"
+              className="btn-secondary btn-sm"
+              style={{ fontSize: 12 }}
             >
               + Tạo tài khoản
             </button>
           ) : (
             <form onSubmit={handleCreate} className="space-y-3">
-              <div>
-                <label className="block text-xs text-gray-600 mb-1">
-                  Email
-                </label>
+              <div className="filter-field">
+                <label className="filter-label">Email</label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+                  className="field-input"
                   placeholder="khachhang@email.com"
                 />
               </div>
-              <div>
-                <label className="block text-xs text-gray-600 mb-1">
-                  Mật khẩu tạm thời
-                </label>
+              <div className="filter-field">
+                <label className="filter-label">Mật khẩu tạm thời</label>
                 <input
                   type="password"
                   required
                   minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+                  className="field-input"
                   placeholder="Tối thiểu 8 ký tự"
                 />
               </div>
@@ -199,14 +275,16 @@ export function CustomerPortalAccountPanel({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700 disabled:opacity-50"
+                  className="btn-primary btn-sm"
+                  style={{ fontSize: 12 }}
                 >
                   {loading ? 'Đang tạo…' : 'Tạo tài khoản'}
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="text-sm text-gray-500 hover:text-gray-800"
+                  className="btn-secondary btn-sm"
+                  style={{ fontSize: 12 }}
                 >
                   Hủy
                 </button>
@@ -215,33 +293,33 @@ export function CustomerPortalAccountPanel({
           )}
         </>
       ) : (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span
-              className={`text-xs px-2 py-0.5 rounded-full ${
-                account.is_active
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-red-100 text-red-600'
-              }`}
-            >
-              {account.is_active ? 'Đang hoạt động' : 'Đã vô hiệu hóa'}
-            </span>
-          </div>
+        <div>
           {account.is_active ? (
             <button
               onClick={handleDeactivate}
               disabled={loading}
-              className="text-sm text-red-600 hover:underline disabled:opacity-50"
+              style={{
+                fontSize: 12,
+                fontWeight: 600,
+                color: '#dc2626',
+                background: 'rgba(220,38,38,0.06)',
+                border: '1px solid rgba(220,38,38,0.2)',
+                borderRadius: 6,
+                padding: '5px 12px',
+                cursor: 'pointer',
+                opacity: loading ? 0.5 : 1,
+              }}
             >
-              Vô hiệu hóa tài khoản
+              {loading ? 'Đang xử lý…' : '⊘ Vô hiệu hóa tài khoản'}
             </button>
           ) : (
             <button
               onClick={handleReactivate}
               disabled={loading}
-              className="text-sm text-blue-600 hover:underline disabled:opacity-50"
+              className="btn-secondary btn-sm"
+              style={{ fontSize: 12 }}
             >
-              Kích hoạt lại
+              {loading ? 'Đang xử lý…' : '↺ Kích hoạt lại'}
             </button>
           )}
         </div>

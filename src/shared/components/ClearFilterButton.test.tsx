@@ -54,7 +54,7 @@ describe('ClearFilterButton', () => {
 
   it('renders default label when label prop is not provided', () => {
     render(<ClearFilterButton onClick={() => undefined} />);
-    expect(screen.getByRole('button')).toHaveTextContent('Xoa loc');
+    expect(screen.getByRole('button')).toHaveTextContent('Xóa lọc');
   });
 
   it('renders custom label when label prop is provided', () => {
