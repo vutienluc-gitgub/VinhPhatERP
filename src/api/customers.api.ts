@@ -3,7 +3,7 @@ import type {
   CustomerInsert,
   CustomerUpdate,
   CustomersFilter,
-} from '@/models';
+} from '@/features/customers/types';
 import { supabase } from '@/services/supabase/client';
 import { customerResponseSchema } from '@/schema/customer.schema';
 

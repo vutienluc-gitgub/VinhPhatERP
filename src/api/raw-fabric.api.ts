@@ -1,5 +1,7 @@
 import type {
   RawFabricRoll,
+  RawFabricRollInsert,
+  RawFabricRollUpdate,
   RawFabricFilter,
 } from '@/features/raw-fabric/types';
 import { supabase } from '@/services/supabase/client';
@@ -85,7 +87,7 @@ export async function fetchRawFabricAll(
 }
 
 export async function createRawFabric(
-  row: Omit<RawFabricRoll, 'id' | 'created_at' | 'updated_at'>,
+  row: RawFabricRollInsert,
 ): Promise<RawFabricRoll> {
   const { data, error } = await supabase
     .from(TABLE)
@@ -98,7 +100,7 @@ export async function createRawFabric(
 
 export async function updateRawFabric(
   id: string,
-  row: Omit<RawFabricRoll, 'id' | 'created_at' | 'updated_at'>,
+  row: RawFabricRollUpdate,
 ): Promise<RawFabricRoll> {
   const { data, error } = await supabase
     .from(TABLE)
@@ -116,7 +118,7 @@ export async function deleteRawFabric(id: string): Promise<void> {
 }
 
 export async function createRawFabricBulk(
-  rows: Omit<RawFabricRoll, 'id' | 'created_at' | 'updated_at'>[],
+  rows: RawFabricRollInsert[],
 ): Promise<RawFabricRoll[]> {
   // Check duplicates in DB
   const rollNumbers = rows.map((r) => r.roll_number);

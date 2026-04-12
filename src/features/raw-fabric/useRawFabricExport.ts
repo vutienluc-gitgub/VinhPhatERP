@@ -90,7 +90,9 @@ function toExportRows(rolls: RawFabricRoll[]): RollExportRow[] {
     fabric_type: roll.fabric_type,
     color_name: roll.color_name ?? '',
     quality_grade: roll.quality_grade
-      ? QUALITY_GRADE_LABELS[roll.quality_grade]
+      ? QUALITY_GRADE_LABELS[
+          roll.quality_grade as keyof typeof QUALITY_GRADE_LABELS
+        ] || roll.quality_grade
       : '',
     width_cm: roll.width_cm ?? '',
     length_m: roll.length_m ?? '',

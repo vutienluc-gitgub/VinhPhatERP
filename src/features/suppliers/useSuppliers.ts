@@ -9,15 +9,13 @@ import {
 } from '@/api/suppliers.api';
 
 import type { SupplierFormValues } from './suppliers.module';
-import type { Supplier, SupplierFilter } from './types';
+import type { Supplier, SupplierFilter, SupplierInsert } from './types';
 
 export type { Supplier, SupplierFilter };
 
 const QUERY_KEY = ['suppliers'] as const;
 
-function toInsertRow(
-  values: SupplierFormValues,
-): Omit<Supplier, 'id' | 'created_at' | 'updated_at'> {
+function toInsertRow(values: SupplierFormValues): SupplierInsert {
   return {
     code: values.code,
     name: values.name,

@@ -1,11 +1,11 @@
+import type { OrderStatus } from '@/schema/order.schema';
 import type {
   Order,
   OrderInsert,
   OrderUpdate,
   OrderItemInsert,
   OrdersFilter,
-  OrderStatus,
-} from '@/models';
+} from '@/features/orders/types';
 import { supabase } from '@/services/supabase/client';
 import type { Database } from '@/services/supabase/database.types';
 import type { PaginatedResult } from '@/shared/types/pagination';

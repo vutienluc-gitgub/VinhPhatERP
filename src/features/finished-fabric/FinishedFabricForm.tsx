@@ -42,7 +42,9 @@ function rollToFormValues(roll: FinishedFabricRoll): FinishedFabricFormValues {
     width_cm: roll.width_cm ?? undefined,
     length_m: roll.length_m ?? undefined,
     weight_kg: roll.weight_kg ?? undefined,
-    quality_grade: roll.quality_grade ?? undefined,
+    quality_grade:
+      (roll.quality_grade as FinishedFabricFormValues['quality_grade']) ??
+      undefined,
     status: roll.status,
     warehouse_location: roll.warehouse_location ?? '',
     production_date: roll.production_date ?? '',

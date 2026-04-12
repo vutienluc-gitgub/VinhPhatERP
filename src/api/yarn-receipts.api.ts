@@ -1,4 +1,7 @@
-import type { YarnReceipt, YarnReceiptsFilter } from '@/models';
+import type {
+  YarnReceipt,
+  YarnReceiptsFilter,
+} from '@/features/yarn-receipts/types';
 import { supabase } from '@/services/supabase/client';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';

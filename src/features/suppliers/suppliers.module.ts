@@ -1,7 +1,11 @@
 import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
-import type { Supplier, SupplierInsert, SupplierUpdate } from '@/models';
+import type {
+  Supplier,
+  SupplierInsert,
+  SupplierUpdate,
+} from '@/features/suppliers/types';
 import {
   SUPPLIER_CATEGORIES,
   SUPPLIER_CATEGORY_LABELS,

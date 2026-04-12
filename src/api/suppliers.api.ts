@@ -1,4 +1,8 @@
-import type { Supplier, SupplierInsert, SupplierUpdate } from '@/models';
+import type {
+  Supplier,
+  SupplierInsert,
+  SupplierUpdate,
+} from '@/features/suppliers/types';
 import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';

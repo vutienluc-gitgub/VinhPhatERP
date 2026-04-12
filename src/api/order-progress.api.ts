@@ -8,7 +8,7 @@ import type {
   OrderProgressInsert,
   OrderProgressUpdate,
   OrderProgressWithOrder,
-} from '@/models';
+} from '@/features/order-progress/types';
 import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';
 

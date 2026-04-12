@@ -1,4 +1,5 @@
-import type { Order, Payment } from '@/models';
+import type { Order } from '@/features/orders/types';
+import type { Payment } from '@/features/payments/types';
 
 /**
  * Tính tổng công nợ cho một đơn hàng.

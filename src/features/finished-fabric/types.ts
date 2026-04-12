@@ -1,30 +1,23 @@
+import type {
+  TableRow,
+  TableInsert,
+  TableUpdate,
+} from '@/shared/types/database.models';
+
 import type { QUALITY_GRADES, ROLL_STATUSES } from './finished-fabric.module';
 
 export type QualityGrade = (typeof QUALITY_GRADES)[number];
 export type RollStatus = (typeof ROLL_STATUSES)[number];
 
-export type FinishedFabricRoll = {
-  id: string;
-  roll_number: string;
-  raw_roll_id: string;
+export type FinishedFabricRoll = TableRow<'finished_fabric_rolls'> & {
+  gsm?: number | null;
+  composition?: string | null;
+  price_tier?: Record<string, unknown> | null;
   /** Populated via join from raw_fabric_rolls — source roll number for traceability */
   raw_roll_number?: string | null;
-  fabric_type: string;
-  color_name: string | null;
-  color_code: string | null;
-  width_cm: number | null;
-  length_m: number | null;
-  weight_kg: number | null;
-  quality_grade: QualityGrade | null;
-  status: RollStatus;
-  warehouse_location: string | null;
-  lot_number: string | null;
-  production_date: string | null;
-  notes: string | null;
-  reserved_for_order_id: string | null;
-  created_at: string;
-  updated_at: string;
 };
+export type FinishedFabricRollInsert = TableInsert<'finished_fabric_rolls'>;
+export type FinishedFabricRollUpdate = TableUpdate<'finished_fabric_rolls'>;
 
 export type FinishedFabricFilter = {
   status?: RollStatus;

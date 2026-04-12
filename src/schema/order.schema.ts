@@ -9,46 +9,6 @@ export type OrderStatus =
   | 'completed'
   | 'cancelled';
 
-export type OrderItem = {
-  id: string;
-  order_id: string;
-  fabric_type: string;
-  color_name: string | null;
-  color_code: string | null;
-  width_cm: number | null;
-  quantity: number;
-  unit: string;
-  unit_price: number;
-  amount: number | null;
-  notes: string | null;
-  sort_order: number;
-};
-
-export type Order = {
-  id: string;
-  order_number: string;
-  customer_id: string;
-  order_date: string;
-  delivery_date: string | null;
-  total_amount: number;
-  paid_amount: number;
-  source_quotation_id: string | null;
-  status: OrderStatus;
-  notes: string | null;
-  created_by: string | null;
-  created_at: string;
-  updated_at: string;
-  customers?: { name: string; code: string } | null;
-  quotations?: { quotation_number: string } | null;
-  order_items?: OrderItem[];
-};
-
-export type OrdersFilter = {
-  search?: string;
-  status?: OrderStatus;
-  customerId?: string;
-};
-
 /* ── Configs & Labels ── */
 
 export const ORDER_STATUSES = [

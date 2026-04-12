@@ -1,7 +1,10 @@
 import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
-import type { OrderProgress, OrderProgressWithOrder } from '@/models';
+import type {
+  OrderProgress,
+  OrderProgressWithOrder,
+} from '@/features/order-progress/types';
 import {
   PRODUCTION_STAGES,
   STAGE_LABELS,
