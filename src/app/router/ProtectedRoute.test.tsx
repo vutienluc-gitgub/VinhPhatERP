@@ -13,8 +13,11 @@ const mockAuth: AuthContextValue = {
   loading: false,
   isBlocked: false,
   signIn: vi.fn(),
+  signInWithGoogle: vi.fn(),
   signOut: vi.fn(),
   signUp: vi.fn(),
+  forgotPassword: vi.fn(),
+  resetPassword: vi.fn(),
 };
 
 vi.mock('@/features/auth/AuthProvider', () => ({
