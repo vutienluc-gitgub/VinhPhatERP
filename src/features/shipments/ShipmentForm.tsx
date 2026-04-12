@@ -8,15 +8,15 @@ import { useActiveShippingRates } from '@/shared/hooks/useShippingRateOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { useEmployees } from '@/shared/hooks/useEmployeeOptions';
-
-import { shipmentsDefaultValues, shipmentsSchema } from './shipments.module';
-import type { ShipmentsFormValues } from './shipments.module';
 import {
   useAvailableFinishedRolls,
   useCreateShipment,
   useDeliveryStaffList,
   useNextShipmentNumber,
-} from './useShipments';
+} from '@/application/shipments';
+
+import { shipmentsDefaultValues, shipmentsSchema } from './shipments.module';
+import type { ShipmentsFormValues } from './shipments.module';
 import { ShipmentRollPicker, type AvailableRoll } from './ShipmentRollPicker';
 
 type ShipmentFormProps = {

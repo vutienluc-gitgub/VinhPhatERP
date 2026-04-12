@@ -1,25 +1,63 @@
-import type {
-  FinishedFabricRollInsert,
-  RollStatus as FinishedRollStatus,
-} from '@/features/finished-fabric/types';
-import type {
-  RawFabricRollInsert,
-  RollStatus as RawRollStatus,
-} from '@/features/raw-fabric/types';
-
 /**
  * InventoryDomain — business logic cho ton kho.
  * Bounded Context: Inventory (raw-fabric, finished-fabric, yarn-receipts)
  *
  * Pure TypeScript, khong phu thuoc React hay Supabase.
  *
+ * DEPENDENCY RULE: KHONG DUOC import tu @/features, @/api, @/services.
+ *
  * Noi dung:
- * - Roll data mapping (form → DB payload)
+ * - Roll data mapping (form -> DB payload)
  * - Bulk import mapping
  * - Barcode generation
  * - Duplicate detection
  * - Stock calculations
  */
+
+// ─── Domain-owned Types ───────────────────────────────────────────────────────
+
+import type { ROLL_STATUSES as RAW_STATUSES } from '@/schema/raw-fabric.schema';
+import type { ROLL_STATUSES as FINISHED_STATUSES } from '@/schema/finished-fabric.schema';
+
+export type RawRollStatus = (typeof RAW_STATUSES)[number];
+export type FinishedRollStatus = (typeof FINISHED_STATUSES)[number];
+
+export interface RawFabricRollDbPayload {
+  roll_number: string;
+  fabric_type: string;
+  yarn_receipt_id: string | null;
+  weaving_partner_id: string | null;
+  color_name: string | null;
+  color_code: string | null;
+  width_cm: number | null;
+  length_m: number | null;
+  weight_kg: number | null;
+  quality_grade: string | null;
+  status: RawRollStatus;
+  warehouse_location: string | null;
+  production_date: string | null;
+  notes: string | null;
+  lot_number: string | null;
+  barcode: string;
+  work_order_id: string | null;
+}
+
+export interface FinishedFabricRollDbPayload {
+  roll_number: string;
+  raw_roll_id: string;
+  fabric_type: string;
+  color_name: string | null;
+  color_code: string | null;
+  width_cm: number | null;
+  length_m: number | null;
+  weight_kg: number | null;
+  quality_grade: string | null;
+  status: FinishedRollStatus;
+  warehouse_location: string | null;
+  production_date: string | null;
+  reserved_for_order_id: string | null;
+  notes: string | null;
+}
 
 // ─── Barcode ──────────────────────────────────────────────────────────────────
 
@@ -77,7 +115,7 @@ export function mapRawFabricFormToDb(values: {
   notes?: string;
   lot_number?: string;
   work_order_id?: string;
-}): RawFabricRollInsert {
+}): RawFabricRollDbPayload {
   return {
     roll_number: values.roll_number,
     fabric_type: values.fabric_type,
@@ -124,7 +162,7 @@ export function mapRawFabricBulkToDb(
     quality_grade?: string | null;
     notes?: string;
   }>,
-): RawFabricRollInsert[] {
+): RawFabricRollDbPayload[] {
   return rolls.map((row) => ({
     roll_number: row.roll_number.trim(),
     fabric_type: shared.fabric_type,
@@ -166,7 +204,7 @@ export function mapFinishedFabricFormToDb(values: {
   production_date?: string;
   reserved_for_order_id?: string | null;
   notes?: string;
-}): FinishedFabricRollInsert {
+}): FinishedFabricRollDbPayload {
   return {
     roll_number: values.roll_number,
     raw_roll_id: values.raw_roll_id,

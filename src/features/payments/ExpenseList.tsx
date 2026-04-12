@@ -13,10 +13,10 @@ import {
 } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { formatCurrency } from '@/shared/utils/format';
+import { useDeleteExpense, useExpenseList } from '@/application/payments';
 
 import { EXPENSE_CATEGORIES, EXPENSE_CATEGORY_LABELS } from './payments.module';
 import type { Expense, ExpenseCategory, ExpensesFilter } from './types';
-import { useDeleteExpense, useExpenseList } from './useExpenses';
 
 type ExpenseListProps = {
   onEdit: (expense: Expense) => void;

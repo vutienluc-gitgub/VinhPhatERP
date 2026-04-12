@@ -4,10 +4,10 @@ import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
 import { Icon, DataTablePremium, ClearFilterButton } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
+import { useDeletePayment, usePaymentList } from '@/application/payments';
 
 import { PAYMENT_METHOD_LABELS } from './payments.module';
 import type { PaymentsFilter } from './types';
-import { useDeletePayment, usePaymentList } from './usePayments';
 
 export function PaymentList() {
   const [searchInput, setSearchInput] = useState('');

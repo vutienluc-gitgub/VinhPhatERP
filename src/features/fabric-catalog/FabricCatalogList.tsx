@@ -12,6 +12,10 @@ import {
   ActionBar,
 } from '@/shared/components';
 import { Pagination } from '@/shared/components/Pagination';
+import {
+  useDeleteFabricCatalog,
+  useFabricCatalogList,
+} from '@/application/settings';
 
 import { FABRIC_CATALOG_STATUS_LABELS } from './fabric-catalog.module';
 import type {
@@ -19,10 +23,6 @@ import type {
   FabricCatalogFilter,
   FabricCatalogStatus,
 } from './types';
-import {
-  useDeleteFabricCatalog,
-  useFabricCatalogList,
-} from './useFabricCatalog';
 
 type FabricCatalogListProps = {
   onEdit: (catalog: FabricCatalog) => void;

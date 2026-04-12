@@ -15,8 +15,7 @@
  */
 
 import { Icon } from '@/shared/components/Icon';
-
-import type { CreateOrderError } from './useCreateOrderV2';
+import type { CreateOrderError } from '@/application/orders';
 
 interface CreditOverrideDialogProps {
   open: boolean;

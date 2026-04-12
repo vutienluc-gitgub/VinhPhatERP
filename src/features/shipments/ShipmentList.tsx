@@ -12,17 +12,17 @@ import {
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
-
-import { DeliveryConfirmForm } from './DeliveryConfirmForm';
-import { exportShipmentToPdf } from './shipment-document';
-import { SHIPMENT_STATUS_LABELS } from './shipments.module';
-import type { Shipment, ShipmentsFilter, ShipmentStatus } from './types';
 import {
   useConfirmShipment,
   useDeleteShipment,
   useExportShipmentPdf,
   useShipmentList,
-} from './useShipments';
+} from '@/application/shipments';
+
+import { DeliveryConfirmForm } from './DeliveryConfirmForm';
+import { exportShipmentToPdf } from './shipment-document';
+import { SHIPMENT_STATUS_LABELS } from './shipments.module';
+import type { Shipment, ShipmentsFilter, ShipmentStatus } from './types';
 
 function getVariant(status: ShipmentStatus): BadgeVariant {
   switch (status) {

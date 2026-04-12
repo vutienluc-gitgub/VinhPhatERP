@@ -11,13 +11,13 @@ import {
 import { customersSchema } from '@/schema/customer.schema';
 import type { CustomersFormValues } from '@/schema/customer.schema';
 import { Combobox } from '@/shared/components/Combobox';
-
-import type { Customer } from './types';
 import {
   useCreateCustomer,
   useNextCustomerCode,
   useUpdateCustomer,
-} from './useCustomers';
+} from '@/application/crm';
+
+import type { Customer } from './types';
 import { CustomerPortalAccountPanel } from './CustomerPortalAccountPanel';
 
 type CustomerFormProps = {

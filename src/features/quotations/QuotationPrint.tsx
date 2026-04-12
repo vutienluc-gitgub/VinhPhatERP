@@ -3,8 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import { useCompanySettings } from '@/shared/hooks/useCompanySettings';
 import { formatCurrency } from '@/shared/utils/format';
-
-import { useQuotation } from './useQuotations';
+import { useQuotation } from '@/application/quotations';
 
 function formatDateLong(dateStr: string | null): string {
   if (!dateStr) return '';

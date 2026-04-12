@@ -4,14 +4,14 @@ import { Icon, Badge, type BadgeVariant } from '@/shared/components';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { formatCurrency } from '@/shared/utils/format';
 import { DYEING_ORDER_STATUSES } from '@/schema/dyeing-order.schema';
-
-import type { DyeingOrder } from './types';
 import {
   useDyeingOrder,
   useSendDyeingOrder,
   useCompleteDyeingOrder,
   useDeleteDyeingOrder,
-} from './useDyeingOrders';
+} from '@/application/production';
+
+import type { DyeingOrder } from './types';
 
 type DyeingOrderDetailProps = {
   orderId: string;

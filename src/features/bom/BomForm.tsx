@@ -4,15 +4,15 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 
 import { Combobox } from '@/shared/components/Combobox';
 import { Icon } from '@/shared/components/Icon';
-
-import { bomTemplateSchema, BomTemplateFormData } from './bom.module';
-import { BomTemplate } from './types';
 import {
   useFabricCatalogs,
   useYarnCatalogs,
   useDraftBom,
   useUpdateDraftBom,
-} from './useBom';
+} from '@/application/production';
+
+import { bomTemplateSchema, BomTemplateFormData } from './bom.module';
+import { BomTemplate } from './types';
 
 interface BomFormProps {
   initialData?: BomTemplate;

@@ -9,14 +9,14 @@ import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { CancelButton } from '@/shared/components';
 import { useStepper } from '@/shared/hooks/useStepper';
 import { formatCurrency } from '@/shared/utils/format';
-
-import type { WeavingInvoice } from './types';
 import {
   useCreateWeavingInvoice,
   useUpdateWeavingInvoice,
   useNextWeavingInvoiceNumber,
   useWeavingSuppliers,
-} from './useWeavingInvoices';
+} from '@/application/production';
+
+import type { WeavingInvoice } from './types';
 import {
   weavingInvoiceFormSchema,
   weavingInvoiceDefaults,

@@ -1,5 +1,5 @@
 import { ProgressTimeline } from '@/features/orders/progress/ProgressTimeline';
-import { useOrderProgress } from '@/features/orders/progress/useOrderProgress';
+import { useOrderProgress } from '@/application/orders';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Button } from '@/shared/components/Button';
 import { formatCurrency } from '@/shared/utils/format';
@@ -7,15 +7,15 @@ import {
   calculateBalanceDue,
   calculatePaymentPercentage,
 } from '@/domain/payments';
-
-import { ORDER_STATUS_LABELS } from './orders.module';
-import type { Order, OrderStatus } from './types';
 import {
   useCancelOrder,
   useCompleteOrder,
   useConfirmOrder,
   useOrder,
-} from './useOrders';
+} from '@/application/orders';
+
+import { ORDER_STATUS_LABELS } from './orders.module';
+import type { Order, OrderStatus } from './types';
 
 type OrderDetailProps = {
   orderId: string;

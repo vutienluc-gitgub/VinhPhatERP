@@ -14,13 +14,13 @@ import {
 import type { ActionConfig } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { formatCurrency } from '@/shared/utils/format';
+import { useWorkOrders, useStartWorkOrder } from '@/application/production';
 
 import type {
   WorkOrderFilter,
   WorkOrderStatus,
   WorkOrderWithRelations,
 } from './types';
-import { useWorkOrders, useStartWorkOrder } from './useWorkOrders';
 import { WORK_ORDER_STATUSES } from './work-orders.module';
 
 function getStatusVariant(status: WorkOrderStatus): BadgeVariant {

@@ -4,6 +4,11 @@ import { useForm, Controller } from 'react-hook-form';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import {
+  useCreateFabricCatalog,
+  useNextFabricCatalogCode,
+  useUpdateFabricCatalog,
+} from '@/application/settings';
 
 import {
   fabricCatalogDefaultValues,
@@ -12,11 +17,6 @@ import {
 } from './fabric-catalog.module';
 import type { FabricCatalogFormValues } from './fabric-catalog.module';
 import type { FabricCatalog } from './types';
-import {
-  useCreateFabricCatalog,
-  useNextFabricCatalogCode,
-  useUpdateFabricCatalog,
-} from './useFabricCatalog';
 
 type FabricCatalogFormProps = {
   catalog: FabricCatalog | null;

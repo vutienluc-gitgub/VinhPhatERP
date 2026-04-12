@@ -7,8 +7,7 @@ import {
   tenantRegisterDefaults,
 } from '@/schema/tenant-register.schema';
 import type { TenantRegisterFormValues } from '@/schema/tenant-register.schema';
-
-import { useRegisterTenant } from './useRegisterTenant';
+import { useRegisterTenant } from '@/application/auth';
 import '@/styles/auth.css';
 
 function slugify(text: string): string {

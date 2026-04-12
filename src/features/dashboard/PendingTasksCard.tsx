@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import { Icon } from '@/shared/components';
-
-import type { PendingTask } from './useDashboardData';
+import type { PendingTask } from '@/application/analytics';
 
 type PendingTasksCardProps = {
   tasks: PendingTask[];

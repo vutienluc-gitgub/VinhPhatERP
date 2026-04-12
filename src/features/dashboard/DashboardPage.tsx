@@ -1,15 +1,15 @@
 import { KpiCardPremium, KpiGridPremium } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
-
-import { CustomerSourceChart } from './CustomerSourceChart';
-import { PendingTasksCard } from './PendingTasksCard';
-import { RecentOrdersCard } from './RecentOrdersCard';
 import {
   useDashboardStats,
   usePendingTasks,
   useRecentOrders,
   useCustomerSources,
-} from './useDashboardData';
+} from '@/application/analytics';
+
+import { CustomerSourceChart } from './CustomerSourceChart';
+import { PendingTasksCard } from './PendingTasksCard';
+import { RecentOrdersCard } from './RecentOrdersCard';
 
 export function DashboardPage() {
   const { data: stats, isLoading: statsLoading } = useDashboardStats();

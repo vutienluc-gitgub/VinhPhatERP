@@ -4,14 +4,13 @@
   DataTablePremium,
   type DataTableColumn,
 } from '@/shared/components';
-
 import {
   useRawFabricInventory,
   useFinishedFabricInventory,
   useYarnInventory,
   useAgingStock,
-} from './useInventory';
-import type { InventoryBreakdownRow, AgingRoll } from './useInventory';
+} from '@/application/inventory';
+import type { InventoryBreakdownRow, AgingRoll } from '@/application/inventory';
 
 type AgingSeverity = 'critical' | 'warning' | 'caution';
 

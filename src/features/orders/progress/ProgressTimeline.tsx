@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { Icon } from '@/shared/components/Icon';
+import { useUpdateStageStatus } from '@/application/orders';
 
 import {
   PRODUCTION_STAGES,
@@ -8,7 +9,6 @@ import {
   STAGE_STATUS_LABELS,
 } from './order-progress.module';
 import type { OrderProgress, StageStatus } from './types';
-import { useUpdateStageStatus } from './useOrderProgress';
 
 type ProgressTimelineProps = {
   stages: OrderProgress[];

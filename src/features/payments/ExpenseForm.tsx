@@ -5,6 +5,12 @@ import { useForm, Controller } from 'react-hook-form';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { formatCurrency } from '@/shared/utils/format';
+import { useAccountList } from '@/application/payments';
+import {
+  useCreateExpense,
+  useNextExpenseNumber,
+  useUpdateExpense,
+} from '@/application/payments';
 
 import {
   EXPENSE_CATEGORIES,
@@ -14,12 +20,6 @@ import {
 } from './payments.module';
 import type { ExpenseFormValues } from './payments.module';
 import type { Expense } from './types';
-import { useAccountList } from './useAccounts';
-import {
-  useCreateExpense,
-  useNextExpenseNumber,
-  useUpdateExpense,
-} from './useExpenses';
 
 type ExpenseFormProps = {
   expense: Expense | null;

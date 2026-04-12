@@ -12,6 +12,8 @@ import {
 } from '@/shared/components';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 import { AnomalyLegend } from '@/shared/components/roll-grid';
+import { useRawFabricList, useRawFabricStats } from '@/application/inventory';
+import { useRawFabricExport } from '@/application/inventory';
 
 import { ActionMenu } from './ActionMenu';
 import { KpiCard } from './KpiCard';
@@ -23,8 +25,6 @@ import type {
   RawFabricRoll,
   RollStatus,
 } from './types';
-import { useRawFabricList, useRawFabricStats } from './useRawFabric';
-import { useRawFabricExport } from './useRawFabricExport';
 import { DEFAULT_FILTER_STATE, type FilterState } from './helpers';
 
 type RawFabricListProps = {

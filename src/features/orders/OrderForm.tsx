@@ -14,6 +14,13 @@ import {
 } from '@/shared/hooks/useColorOptions';
 import { useStepper } from '@/shared/hooks/useStepper';
 import { formatCurrency } from '@/shared/utils/format';
+import {
+  useCreateOrderV2,
+  isCreditWarning,
+  type CreateOrderError,
+  type CreateOrderInput,
+} from '@/application/orders';
+import { useNextOrderNumber, useUpdateOrder } from '@/application/orders';
 
 import { CreditOverrideDialog } from './CreditOverrideDialog';
 import {
@@ -25,13 +32,6 @@ import {
 } from './orders.module';
 import type { OrdersFormValues } from './orders.module';
 import type { Order } from './types';
-import {
-  useCreateOrderV2,
-  isCreditWarning,
-  type CreateOrderError,
-  type CreateOrderInput,
-} from './useCreateOrderV2';
-import { useNextOrderNumber, useUpdateOrder } from './useOrders';
 
 const UNIT_LABELS: Record<string, string> = {
   m: 'm',

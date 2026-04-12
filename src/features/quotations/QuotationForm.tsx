@@ -11,6 +11,11 @@ import {
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
 import { formatCurrency } from '@/shared/utils/format';
+import {
+  useCreateQuotation,
+  useNextQuotationNumber,
+  useUpdateQuotation,
+} from '@/application/quotations';
 
 import {
   calculateQuotationTotals,
@@ -23,11 +28,6 @@ import {
 } from './quotations.module';
 import type { QuotationsFormValues } from './quotations.module';
 import type { DiscountType, Quotation } from './types';
-import {
-  useCreateQuotation,
-  useNextQuotationNumber,
-  useUpdateQuotation,
-} from './useQuotations';
 
 const UNIT_LABELS: Record<string, string> = {
   m: 'm',

@@ -10,6 +10,13 @@ import {
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
 import { useStepper } from '@/shared/hooks/useStepper';
+import {
+  useCreateRawFabric,
+  useUpdateRawFabric,
+  useWeavingPartners,
+  useWorkOrderOptions,
+  useYarnReceiptOptions,
+} from '@/application/inventory';
 
 import {
   QUALITY_GRADE_LABELS,
@@ -21,13 +28,6 @@ import {
 } from './raw-fabric.module';
 import type { RawFabricFormValues } from './raw-fabric.module';
 import type { RawFabricRoll } from './types';
-import {
-  useCreateRawFabric,
-  useUpdateRawFabric,
-  useWeavingPartners,
-  useWorkOrderOptions,
-  useYarnReceiptOptions,
-} from './useRawFabric';
 
 type RawFabricFormProps = {
   roll: RawFabricRoll | null;

@@ -12,6 +12,11 @@ import { useStepper } from '@/shared/hooks/useStepper';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 import type { RollMatrixItem } from '@/shared/components/roll-grid';
+import {
+  useCreateFinishedFabricBulk,
+  useRawRollsByLot,
+} from '@/application/inventory';
+import { useFinishedFabricExport } from '@/application/inventory';
 
 import {
   QUALITY_GRADE_LABELS,
@@ -24,11 +29,6 @@ import {
 } from './finished-fabric.module';
 import type { BulkFinishedInputFormValues } from './finished-fabric.module';
 import type { FinishedFabricRoll } from './types';
-import {
-  useCreateFinishedFabricBulk,
-  useRawRollsByLot,
-} from './useFinishedFabric';
-import { useFinishedFabricExport } from './useFinishedFabricExport';
 
 type Props = {
   onClose: () => void;

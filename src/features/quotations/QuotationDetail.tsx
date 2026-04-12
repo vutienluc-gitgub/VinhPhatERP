@@ -1,16 +1,16 @@
 ﻿import { Badge, type BadgeVariant, Icon } from '@/shared/components';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { formatCurrency } from '@/shared/utils/format';
-
-import { QUOTATION_STATUS_LABELS } from './quotations.module';
-import type { Quotation, QuotationStatus } from './types';
-import { useConvertToOrder } from './useConvertToOrder';
+import { useConvertToOrder } from '@/application/quotations';
 import {
   useConfirmQuotation,
   useQuotation,
   useRejectQuotation,
   useSendQuotation,
-} from './useQuotations';
+} from '@/application/quotations';
+
+import { QUOTATION_STATUS_LABELS } from './quotations.module';
+import type { Quotation, QuotationStatus } from './types';
 
 function getStatusVariant(status: QuotationStatus): BadgeVariant {
   switch (status) {

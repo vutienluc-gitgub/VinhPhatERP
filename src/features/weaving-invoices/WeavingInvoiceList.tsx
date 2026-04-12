@@ -13,13 +13,13 @@ import {
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
-
-import type { WeavingInvoice, WeavingInvoiceFilter } from './types';
 import {
   useWeavingInvoiceList,
   useConfirmWeavingInvoice,
   useDeleteWeavingInvoice,
-} from './useWeavingInvoices';
+} from '@/application/production';
+
+import type { WeavingInvoice, WeavingInvoiceFilter } from './types';
 import { WEAVING_STATUS_LABELS } from './weaving-invoices.module';
 
 type Props = {

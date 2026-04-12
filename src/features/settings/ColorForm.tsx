@@ -5,8 +5,7 @@ import toast from 'react-hot-toast';
 
 import { colorSchema, colorDefaultValues } from '@/schema/color.schema';
 import type { ColorFormValues, ColorRow } from '@/schema/color.schema';
-
-import { useColorMutations } from './hooks/useColors';
+import { useColorMutations } from '@/application/settings';
 
 type ColorFormProps = {
   initialData: ColorRow | null;

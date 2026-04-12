@@ -8,13 +8,13 @@ import {
   useColorOptions,
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
-
-import type { YarnCatalog } from './types';
 import {
   useCreateYarnCatalog,
   useNextYarnCatalogCode,
   useUpdateYarnCatalog,
-} from './useYarnCatalog';
+} from '@/application/settings';
+
+import type { YarnCatalog } from './types';
 import {
   yarnCatalogDefaultValues,
   yarnCatalogSchema,

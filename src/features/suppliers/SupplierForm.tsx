@@ -4,6 +4,11 @@ import { useForm, Controller } from 'react-hook-form';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import {
+  useCreateSupplier,
+  useNextSupplierCode,
+  useUpdateSupplier,
+} from '@/application/crm';
 
 import {
   SUPPLIER_CATEGORIES,
@@ -15,11 +20,6 @@ import {
 } from './suppliers.module';
 import type { SupplierFormValues } from './suppliers.module';
 import type { Supplier } from './types';
-import {
-  useCreateSupplier,
-  useNextSupplierCode,
-  useUpdateSupplier,
-} from './useSuppliers';
 
 type SupplierFormProps = {
   supplier: Supplier | null;

@@ -5,8 +5,7 @@ import {
   countOverdueDebts,
   isDebtRisky,
 } from '@/domain/payments';
-
-import { useSupplierDebt } from './useCashFlow';
+import { useSupplierDebt } from '@/application/payments';
 
 export function SupplierDebtSummary() {
   const { data: debts = [], isLoading, error } = useSupplierDebt();

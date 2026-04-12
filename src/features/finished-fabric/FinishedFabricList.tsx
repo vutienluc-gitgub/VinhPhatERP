@@ -15,6 +15,12 @@ import {
 } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
+import {
+  useDeleteFinishedFabric,
+  useFinishedFabricList,
+  useFinishedFabricStats,
+} from '@/application/inventory';
+import { useFinishedFabricExport } from '@/application/inventory';
 
 import {
   QUALITY_GRADE_LABELS,
@@ -34,12 +40,6 @@ import type {
   QualityGrade,
   RollStatus,
 } from './types';
-import {
-  useDeleteFinishedFabric,
-  useFinishedFabricList,
-  useFinishedFabricStats,
-} from './useFinishedFabric';
-import { useFinishedFabricExport } from './useFinishedFabricExport';
 
 type FinishedFabricListProps = {
   onEdit: (roll: FinishedFabricRoll) => void;

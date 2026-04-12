@@ -5,14 +5,6 @@ import { TabSwitcher, Icon } from '@/shared/components';
 import type { TabItem } from '@/shared/components';
 import { DebtAgingSection } from '@/shared/components/debt-aging/DebtAgingSection';
 import { useDebtAging } from '@/shared/components/debt-aging/useDebtAging';
-
-import { DebtSection } from './DebtSection';
-import { InventorySection } from './InventorySection';
-import { OverdueSection } from './OverdueSection';
-import { ProductionSection } from './ProductionSection';
-import { ReportsFilterBar } from './ReportsFilter';
-import { RevenueSection } from './RevenueSection';
-import { RevenueTrendSection } from './RevenueTrendSection';
 import {
   useRevenueSummary,
   useDebtByCustomer,
@@ -23,7 +15,15 @@ import {
   useMonthlyRevenue,
   useRevenueByFabric,
   usePaymentCollection,
-} from './useReports';
+} from '@/application/analytics';
+
+import { DebtSection } from './DebtSection';
+import { InventorySection } from './InventorySection';
+import { OverdueSection } from './OverdueSection';
+import { ProductionSection } from './ProductionSection';
+import { ReportsFilterBar } from './ReportsFilter';
+import { RevenueSection } from './RevenueSection';
+import { RevenueTrendSection } from './RevenueTrendSection';
 
 function defaultDateFrom(): string {
   const d = new Date();

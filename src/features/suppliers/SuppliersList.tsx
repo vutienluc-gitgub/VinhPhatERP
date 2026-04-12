@@ -11,6 +11,7 @@ import {
   ActionBar,
 } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
+import { useDeleteSupplier, useSuppliersList } from '@/application/crm';
 
 import {
   SUPPLIER_CATEGORIES,
@@ -19,7 +20,6 @@ import {
   SUPPLIER_STATUS_LABELS,
 } from './suppliers.module';
 import type { Supplier, SupplierCategory, SupplierFilter } from './types';
-import { useDeleteSupplier, useSuppliersList } from './useSuppliers';
 
 type SuppliersListProps = {
   onEdit: (supplier: Supplier) => void;

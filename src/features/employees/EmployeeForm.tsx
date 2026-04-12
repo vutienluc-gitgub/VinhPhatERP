@@ -11,12 +11,11 @@ import {
   type EmployeeFormValues,
   type Employee,
 } from '@/schema';
-
 import {
   useCreateEmployee,
   useUpdateEmployee,
   useNextEmployeeCode,
-} from './useEmployees';
+} from '@/application/crm';
 
 interface EmployeeFormProps {
   open: boolean;

@@ -7,11 +7,10 @@ import {
   companySettingsDefaultValues,
   type CompanySettingsFormValues,
 } from '@/schema/company-settings.schema';
-
 import {
   useCompanySettings,
   useUpdateCompanySettings,
-} from './useCompanySettings';
+} from '@/application/settings';
 
 export function CompanySettingsForm() {
   const { data: settings, isLoading, error: loadError } = useCompanySettings();

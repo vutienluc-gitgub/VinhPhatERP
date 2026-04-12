@@ -1,22 +1,53 @@
 /**
- * PaymentDomain — business logic cho quản lý thanh toán, thu/chi và công nợ.
- * Pure TypeScript, không phụ thuộc React hay Supabase.
+ * PaymentDomain — business logic cho quan ly thanh toan, thu/chi va cong no.
+ * Pure TypeScript, khong phu thuoc React hay Supabase.
+ *
+ * DEPENDENCY RULE: Chi import tu @/schema (contract layer).
+ * KHONG DUOC import tu @/features, @/api, @/services.
  */
 
-import type { PaymentInsert } from '@/features/payments/types';
 import type {
   PaymentsFormValues,
   ExpenseFormValues,
   ExpenseCategory,
+  PaymentMethod,
 } from '@/schema/payment.schema';
-import type { ExpenseInsertRow } from '@/api/payments.api';
+
+// ─── Domain-owned Output Types ────────────────────────────────────────────────
+
+/** Payload insert cho bang payments (domain dinh nghia, api/features tieu thu) */
+export interface PaymentDbPayload {
+  payment_number: string;
+  order_id: string;
+  customer_id: string;
+  payment_date: string;
+  amount: number;
+  payment_method: PaymentMethod;
+  account_id: string | null;
+  reference_number: string | null;
+}
+
+/** Payload insert cho bang expenses (domain dinh nghia, api/features tieu thu) */
+export interface ExpenseDbPayload {
+  expense_number: string;
+  category: ExpenseCategory;
+  amount: number;
+  expense_date: string;
+  account_id: string | null;
+  supplier_id: string | null;
+  description: string;
+  reference_number: string | null;
+  notes: string | null;
+}
 
 // ─── Data Mapping ─────────────────────────────────────────────────────────────
 
 /**
- * Ánh xạ form tạo Phiếu Thu (Payment) sang payload DB.
+ * Anh xa form tao Phieu Thu (Payment) sang payload DB.
  */
-export function mapPaymentFormToDb(values: PaymentsFormValues): PaymentInsert {
+export function mapPaymentFormToDb(
+  values: PaymentsFormValues,
+): PaymentDbPayload {
   return {
     payment_number: values.paymentNumber.trim(),
     order_id: values.orderId,
@@ -30,11 +61,11 @@ export function mapPaymentFormToDb(values: PaymentsFormValues): PaymentInsert {
 }
 
 /**
- * Ánh xạ form tạo/sửa Phiếu Chi (Expense) sang payload DB.
+ * Anh xa form tao/sua Phieu Chi (Expense) sang payload DB.
  */
 export function mapExpenseFormToDb(
   values: ExpenseFormValues,
-): ExpenseInsertRow {
+): ExpenseDbPayload {
   return {
     expense_number: values.expenseNumber.trim(),
     category: (values.category || 'other') as ExpenseCategory,

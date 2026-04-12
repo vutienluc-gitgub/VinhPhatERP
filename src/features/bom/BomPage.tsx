@@ -2,18 +2,18 @@ import { useState } from 'react';
 
 import { Icon, AddButton, ClearFilterButton } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
+import {
+  useBomList,
+  useApproveBom,
+  useDeprecateBom,
+  useReviseBom,
+} from '@/application/production';
 
 import { BOM_STATUSES, BOM_STATUS_LABELS } from './bom.module';
 import { BomDetail } from './BomDetail';
 import { BomForm } from './BomForm';
 import { BomList } from './BomList';
 import { BomTemplate, BomStatus, BomFilter } from './types';
-import {
-  useBomList,
-  useApproveBom,
-  useDeprecateBom,
-  useReviseBom,
-} from './useBom';
 
 export function BomPage() {
   const [filter, setFilter] = useState<BomFilter>({});

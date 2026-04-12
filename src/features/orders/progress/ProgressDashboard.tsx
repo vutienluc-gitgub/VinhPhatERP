@@ -1,6 +1,10 @@
+import {
+  useProgressDashboard,
+  useUpdateStageStatus,
+} from '@/application/orders';
+
 import { STAGE_LABELS, STAGE_STATUS_LABELS } from './order-progress.module';
 import type { OrderProgressWithOrder } from './types';
-import { useProgressDashboard, useUpdateStageStatus } from './useOrderProgress';
 
 type DashboardOrder = {
   orderId: string;

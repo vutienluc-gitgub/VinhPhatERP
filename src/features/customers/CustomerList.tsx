@@ -15,9 +15,9 @@ import {
   ActionBar,
 } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
+import { useCustomerList, useDeleteCustomer } from '@/application/crm';
 
 import type { Customer, CustomersFilter } from './types';
-import { useCustomerList, useDeleteCustomer } from './useCustomers';
 
 type CustomerListProps = {
   onEdit: (customer: Customer) => void;

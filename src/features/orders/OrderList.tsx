@@ -14,10 +14,10 @@ import {
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
+import { useDeleteOrder, useOrderList } from '@/application/orders';
 
 import { ORDER_STATUS_LABELS } from './orders.module';
 import type { Order, OrdersFilter, OrderStatus } from './types';
-import { useDeleteOrder, useOrderList } from './useOrders';
 
 type OrderListProps = {
   onEdit: (order: Order) => void;

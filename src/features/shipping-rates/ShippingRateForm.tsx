@@ -10,11 +10,10 @@ import {
 import { Combobox } from '@/shared/components/Combobox';
 import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { CancelButton } from '@/shared/components';
-
 import {
   useCreateShippingRate,
   useUpdateShippingRate,
-} from './useShippingRates';
+} from '@/application/shipments';
 
 type Props = {
   item: ShippingRate | null;

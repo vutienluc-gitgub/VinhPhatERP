@@ -7,6 +7,7 @@ import { Combobox } from '@/shared/components/Combobox';
 import { CancelButton } from '@/shared/components';
 import { createPaymentsSchema } from '@/schema/payment.schema';
 import { formatCurrency } from '@/shared/utils/format';
+import { useCreatePayment, useNextPaymentNumber } from '@/application/payments';
 
 import {
   PAYMENT_METHOD_LABELS,
@@ -14,7 +15,6 @@ import {
 } from './payments.module';
 import type { PaymentsFormValues } from './payments.module';
 import type { PaymentMethod } from './types';
-import { useCreatePayment, useNextPaymentNumber } from './usePayments';
 
 type PaymentFormProps = {
   orderId: string;

@@ -4,6 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import { useCreateAccount, useUpdateAccount } from '@/application/payments';
 
 import {
   ACCOUNT_TYPES,
@@ -13,7 +14,6 @@ import {
 } from './payments.module';
 import type { AccountFormValues } from './payments.module';
 import type { PaymentAccount } from './types';
-import { useCreateAccount, useUpdateAccount } from './useAccounts';
 
 type AccountFormProps = {
   account: PaymentAccount | null;

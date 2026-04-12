@@ -1,8 +1,8 @@
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { useTraceChain } from '@/application/inventory';
 
 import { QUALITY_GRADE_LABELS } from './finished-fabric.module';
 import type { FinishedFabricRoll } from './types';
-import { useTraceChain } from './useTraceChain';
 
 type TraceChainPanelProps = {
   roll: FinishedFabricRoll;

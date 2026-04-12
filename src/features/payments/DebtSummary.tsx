@@ -5,8 +5,7 @@ import {
   countOverdueDebts,
   isDebtRisky,
 } from '@/domain/payments';
-
-import { useDebtSummary } from './usePayments';
+import { useDebtSummary } from '@/application/payments';
 
 export function DebtSummary() {
   const { data: debts = [], isLoading, error } = useDebtSummary();
