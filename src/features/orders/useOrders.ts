@@ -11,6 +11,11 @@ import {
   completeOrder,
   deleteOrder,
 } from '@/api/orders.api';
+import {
+  calculateOrderTotal,
+  mapOrderFormToDb,
+  mapOrderItemsToDb,
+} from '@/domain/orders/OrderDomain';
 
 import type { OrdersFormValues } from './orders.module';
 import type { OrdersFilter } from './types';
@@ -51,30 +56,10 @@ export function useCreateOrder() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (values: OrdersFormValues) => {
-      const total = values.items.reduce(
-        (sum, it) => sum + it.quantity * it.unitPrice,
-        0,
-      );
-
+      const total = calculateOrderTotal(values.items);
       return createOrder(
-        {
-          order_number: values.orderNumber.trim(),
-          customer_id: values.customerId,
-          order_date: values.orderDate,
-          delivery_date: values.deliveryDate?.trim() || null,
-          total_amount: total,
-          notes: values.notes?.trim() || null,
-          status: 'draft' as const,
-        },
-        values.items.map((item, idx) => ({
-          fabric_type: item.fabricType.trim(),
-          color_name: item.colorName?.trim() || null,
-          color_code: item.colorCode?.trim() || null,
-          unit: item.unit ?? 'kg',
-          quantity: item.quantity,
-          unit_price: item.unitPrice,
-          sort_order: idx,
-        })),
+        mapOrderFormToDb(values, total),
+        mapOrderItemsToDb(values.items),
       );
     },
     onSuccess: () => {
@@ -95,30 +80,11 @@ export function useUpdateOrder() {
       id: string;
       values: OrdersFormValues;
     }) => {
-      const total = values.items.reduce(
-        (sum, it) => sum + it.quantity * it.unitPrice,
-        0,
-      );
-
+      const total = calculateOrderTotal(values.items);
       await updateOrderWithItems(
         id,
-        {
-          order_number: values.orderNumber.trim(),
-          customer_id: values.customerId,
-          order_date: values.orderDate,
-          delivery_date: values.deliveryDate?.trim() || null,
-          total_amount: total,
-          notes: values.notes?.trim() || null,
-        },
-        values.items.map((item, idx) => ({
-          fabric_type: item.fabricType.trim(),
-          color_name: item.colorName?.trim() || null,
-          color_code: item.colorCode?.trim() || null,
-          unit: item.unit ?? 'kg',
-          quantity: item.quantity,
-          unit_price: item.unitPrice,
-          sort_order: idx,
-        })),
+        mapOrderFormToDb(values, total),
+        mapOrderItemsToDb(values.items),
       );
     },
     onSuccess: () => {

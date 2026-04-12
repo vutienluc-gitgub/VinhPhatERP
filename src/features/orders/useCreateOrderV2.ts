@@ -18,6 +18,16 @@ import {
   getAccessToken,
   invokeCreateOrderFunction,
 } from '@/api/orders.api';
+import {
+  calculateOrderTotal,
+  mapOrderFormToDb,
+  mapOrderItemsToDb,
+  isConnectionError,
+  isCreditWarning,
+  isCreditBlocked,
+  isStockError,
+} from '@/domain/orders/OrderDomain';
+import type { OrderErrorCode } from '@/domain/orders/OrderDomain';
 
 import type { OrdersFormValues } from './orders.module';
 
@@ -25,18 +35,10 @@ import type { OrdersFormValues } from './orders.module';
 // Error types từ Edge Function
 // ---------------------------------------------------------------------------
 
-export type CreateOrderErrorCode =
-  | 'UNAUTHORIZED'
-  | 'FORBIDDEN'
-  | 'VALIDATION'
-  | 'NOT_FOUND'
-  | 'CREDIT_BLOCKED'
-  | 'CREDIT_OVERDUE'
-  | 'CREDIT_LIMIT_EXCEEDED'
-  | 'INSUFFICIENT_STOCK'
-  | 'CONCURRENT_RESERVATION'
-  | 'TRANSACTION_FAILED'
-  | 'INTERNAL_ERROR';
+/** Alias from OrderDomain — kept for backward compat with consumers */
+export type CreateOrderErrorCode = OrderErrorCode;
+
+export { isCreditWarning, isCreditBlocked, isStockError };
 
 export interface CreateOrderError {
   code: CreateOrderErrorCode;
@@ -85,24 +87,6 @@ export interface CreateOrderInput extends OrdersFormValues {
 
 // ---------------------------------------------------------------------------
 // Kiểm tra lỗi kết nối Edge Function
-// ---------------------------------------------------------------------------
-
-function isConnectionError(error: unknown): boolean {
-  if (!error) return false;
-  const msg = String(
-    (error as { message?: string }).message ?? error,
-  ).toLowerCase();
-  return (
-    msg.includes('failed to send a request') ||
-    msg.includes('edge function') ||
-    msg.includes('fetch') ||
-    msg.includes('network') ||
-    msg.includes('econnrefused') ||
-    msg.includes('timeout') ||
-    msg.includes('aborted')
-  );
-}
-
 // ---------------------------------------------------------------------------
 // Edge Function caller
 // ---------------------------------------------------------------------------
@@ -172,30 +156,11 @@ async function callCreateOrderFunction(
 async function createOrderDirectInsert(
   input: CreateOrderInput,
 ): Promise<CreateOrderResult> {
-  const total = input.items.reduce(
-    (sum, it) => sum + it.quantity * it.unitPrice,
-    0,
-  );
+  const total = calculateOrderTotal(input.items);
 
   const order = await createOrder(
-    {
-      order_number: input.orderNumber.trim(),
-      customer_id: input.customerId,
-      order_date: input.orderDate,
-      delivery_date: input.deliveryDate?.trim() || null,
-      total_amount: total,
-      notes: input.notes?.trim() || null,
-      status: 'draft' as const,
-    },
-    input.items.map((item, idx) => ({
-      fabric_type: item.fabricType.trim(),
-      color_name: item.colorName?.trim() || null,
-      color_code: item.colorCode?.trim() || null,
-      unit: item.unit ?? 'kg',
-      quantity: item.quantity,
-      unit_price: item.unitPrice,
-      sort_order: idx,
-    })),
+    mapOrderFormToDb(input, total),
+    mapOrderItemsToDb(input.items),
   );
 
   return {
@@ -210,7 +175,7 @@ async function createOrderDirectInsert(
       creditLimit: 0,
       managerOverride: false,
     },
-    message: `Đơn hàng ${input.orderNumber.trim()} đã được tạo thành công (direct).`,
+    message: `Don hang ${input.orderNumber.trim()} da duoc tao thanh cong (direct).`,
   };
 }
 
@@ -265,20 +230,4 @@ export function useCreateOrderV2() {
       console.error('[createOrder] ❌ Error:', code, err.message);
     },
   });
-}
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-export function isCreditWarning(code: CreateOrderErrorCode): boolean {
-  return code === 'CREDIT_OVERDUE' || code === 'CREDIT_LIMIT_EXCEEDED';
-}
-
-export function isCreditBlocked(code: CreateOrderErrorCode): boolean {
-  return code === 'CREDIT_BLOCKED';
-}
-
-export function isStockError(code: CreateOrderErrorCode): boolean {
-  return code === 'INSUFFICIENT_STOCK';
 }
