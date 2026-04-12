@@ -3,10 +3,12 @@ import type {
   RawFabricRollInsert,
   RawFabricRollUpdate,
   RawFabricFilter,
+} from '@/features/raw-fabric/types';
+import type {
   FinishedFabricRoll,
   FinishedFabricRollInsert,
   FinishedFabricRollUpdate,
-} from '@/models';
+} from '@/features/finished-fabric/types';
 import { supabase } from '@/services/supabase/client';
 
 // ─── Vải mộc ───

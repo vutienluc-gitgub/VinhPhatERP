@@ -1,4 +1,7 @@
-import type { InventoryAdjustment, InventoryAdjustmentInsert } from '@/models';
+import type {
+  InventoryAdjustment,
+  InventoryAdjustmentInsert,
+} from '@/features/inventory/types';
 import { supabase } from '@/services/supabase/client';
 
 const TABLE = 'inventory_adjustments';

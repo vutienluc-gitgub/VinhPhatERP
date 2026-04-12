@@ -1,5 +1,7 @@
 import type {
   FinishedFabricRoll,
+  FinishedFabricRollInsert,
+  FinishedFabricRollUpdate,
   FinishedFabricFilter,
   RawRollOption,
 } from '@/features/finished-fabric/types';
@@ -61,10 +63,7 @@ export async function fetchFinishedFabricPaginated(
 }
 
 export async function createFinishedFabric(
-  row: Omit<
-    FinishedFabricRoll,
-    'id' | 'created_at' | 'updated_at' | 'lot_number'
-  >,
+  row: FinishedFabricRollInsert,
 ): Promise<FinishedFabricRoll> {
   const { data, error } = await supabase
     .from(TABLE)
@@ -77,10 +76,7 @@ export async function createFinishedFabric(
 
 export async function updateFinishedFabric(
   id: string,
-  row: Omit<
-    FinishedFabricRoll,
-    'id' | 'created_at' | 'updated_at' | 'lot_number'
-  >,
+  row: FinishedFabricRollUpdate,
 ): Promise<FinishedFabricRoll> {
   const { data, error } = await supabase
     .from(TABLE)
@@ -123,10 +119,7 @@ export async function fetchRawRollsByLot(
 }
 
 export async function createFinishedFabricBulk(
-  rows: Omit<
-    FinishedFabricRoll,
-    'id' | 'created_at' | 'updated_at' | 'lot_number'
-  >[],
+  rows: FinishedFabricRollInsert[],
   lotNumber: string,
 ): Promise<FinishedFabricRoll[]> {
   // 1. Check duplicate roll numbers in DB

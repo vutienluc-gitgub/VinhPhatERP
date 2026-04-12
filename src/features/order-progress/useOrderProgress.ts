@@ -9,7 +9,10 @@ import {
   fetchRecentAuditLog,
   fetchProgressDashboard,
 } from '@/api/order-progress.api';
-import type { OrderProgress, OrderProgressWithOrder } from '@/models';
+import type {
+  OrderProgress,
+  OrderProgressWithOrder,
+} from '@/features/order-progress/types';
 
 import type {
   ProgressAuditLog,

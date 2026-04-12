@@ -1,3 +1,12 @@
+import type {
+  FinishedFabricRollInsert,
+  RollStatus as FinishedRollStatus,
+} from '@/features/finished-fabric/types';
+import type {
+  RawFabricRollInsert,
+  RollStatus as RawRollStatus,
+} from '@/features/raw-fabric/types';
+
 /**
  * InventoryDomain — business logic cho ton kho.
  * Bounded Context: Inventory (raw-fabric, finished-fabric, yarn-receipts)
@@ -48,34 +57,10 @@ export function findDuplicateRollNumbers(
 
 // ─── Raw Fabric Mapping ───────────────────────────────────────────────────────
 
-export interface RawFabricDbRow<S = string, Q = string> {
-  roll_number: string;
-  fabric_type: string;
-  yarn_receipt_id: string | null;
-  weaving_partner_id: string | null;
-  color_name: string | null;
-  color_code: string | null;
-  width_cm: number | null;
-  length_m: number | null;
-  weight_kg: number | null;
-  quality_grade: Q | null;
-  status: S;
-  warehouse_location: string | null;
-  production_date: string | null;
-  notes: string | null;
-  lot_number: string | null;
-  barcode: string;
-  work_order_id: string | null;
-}
-
 /**
  * Map form values sang DB row cho raw fabric.
- * Logic nay truoc day nam trong useRawFabric.ts dong 31-53.
  */
-export function mapRawFabricFormToDb<
-  S extends string,
-  Q extends string = string,
->(values: {
+export function mapRawFabricFormToDb(values: {
   roll_number: string;
   fabric_type: string;
   yarn_receipt_id?: string;
@@ -85,14 +70,14 @@ export function mapRawFabricFormToDb<
   width_cm?: number | null;
   length_m?: number | null;
   weight_kg?: number | null;
-  quality_grade?: Q | null;
-  status: S;
+  quality_grade?: string | null;
+  status: RawRollStatus;
   warehouse_location?: string;
   production_date?: string;
   notes?: string;
   lot_number?: string;
   work_order_id?: string;
-}): RawFabricDbRow<S, Q> {
+}): RawFabricRollInsert {
   return {
     roll_number: values.roll_number,
     fabric_type: values.fabric_type,
@@ -116,12 +101,8 @@ export function mapRawFabricFormToDb<
 
 /**
  * Map bulk import rows sang DB rows.
- * Logic nay truoc day nam trong useRawFabric.ts dong 123-141.
  */
-export function mapRawFabricBulkToDb<
-  S extends string,
-  Q extends string = string,
->(
+export function mapRawFabricBulkToDb(
   shared: {
     fabric_type: string;
     yarn_receipt_id?: string;
@@ -129,8 +110,8 @@ export function mapRawFabricBulkToDb<
     color_name?: string;
     color_code?: string;
     width_cm?: number | null;
-    quality_grade?: Q | null;
-    status: S;
+    quality_grade?: string | null;
+    status: RawRollStatus;
     warehouse_location?: string;
     production_date?: string;
     lot_number?: string;
@@ -140,10 +121,10 @@ export function mapRawFabricBulkToDb<
     roll_number: string;
     length_m?: number | null;
     weight_kg?: number | null;
-    quality_grade?: Q | null;
+    quality_grade?: string | null;
     notes?: string;
   }>,
-): RawFabricDbRow<S, Q>[] {
+): RawFabricRollInsert[] {
   return rolls.map((row) => ({
     roll_number: row.roll_number.trim(),
     fabric_type: shared.fabric_type,
@@ -167,31 +148,10 @@ export function mapRawFabricBulkToDb<
 
 // ─── Finished Fabric Mapping ──────────────────────────────────────────────────
 
-export interface FinishedFabricDbRow<S = string, Q = string> {
-  roll_number: string;
-  raw_roll_id: string;
-  fabric_type: string;
-  color_name: string | null;
-  color_code: string | null;
-  width_cm: number | null;
-  length_m: number | null;
-  weight_kg: number | null;
-  quality_grade: Q | null;
-  status: S;
-  warehouse_location: string | null;
-  production_date: string | null;
-  reserved_for_order_id: string | null;
-  notes: string | null;
-}
-
 /**
  * Map form values sang DB row cho finished fabric.
- * Logic nay truoc day nam trong useFinishedFabric.ts dong 31-49.
  */
-export function mapFinishedFabricFormToDb<
-  S extends string,
-  Q extends string = string,
->(values: {
+export function mapFinishedFabricFormToDb(values: {
   roll_number: string;
   raw_roll_id: string;
   fabric_type: string;
@@ -200,13 +160,13 @@ export function mapFinishedFabricFormToDb<
   width_cm?: number | null;
   length_m?: number | null;
   weight_kg?: number | null;
-  quality_grade?: Q | null;
-  status: S;
+  quality_grade?: string | null;
+  status: FinishedRollStatus;
   warehouse_location?: string;
   production_date?: string;
   reserved_for_order_id?: string | null;
   notes?: string;
-}): FinishedFabricDbRow<S, Q> {
+}): FinishedFabricRollInsert {
   return {
     roll_number: values.roll_number,
     raw_roll_id: values.raw_roll_id,

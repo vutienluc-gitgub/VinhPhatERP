@@ -34,6 +34,8 @@ const shipmentFixture: ShipmentDocument = {
   delivery_proof: null,
   receiver_name: null,
   receiver_phone: null,
+  employee_id: null,
+  tenant_id: null,
   orders: { order_number: 'DH2604-0012' },
   customers: {
     name: 'Cong ty Det <B>',
@@ -56,6 +58,9 @@ const shipmentFixture: ShipmentDocument = {
       roll_number: null,
       roll_length_m: null,
       warehouse_location: null,
+      price_per_meter: null,
+      tenant_id: null,
+      total_amount: null,
     },
     {
       id: 'item-1',
@@ -70,6 +75,9 @@ const shipmentFixture: ShipmentDocument = {
       roll_number: 'FIN-2604-0007',
       roll_length_m: 120.5,
       warehouse_location: 'A-R3',
+      price_per_meter: null,
+      tenant_id: null,
+      total_amount: null,
     },
   ],
 };

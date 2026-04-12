@@ -59,8 +59,9 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
               {roll.color_name && <span>{roll.color_name}</span>}
               {roll.quality_grade && (
                 <span className={`grade-badge grade-${roll.quality_grade}`}>
-                  {QUALITY_GRADE_LABELS[roll.quality_grade] ??
-                    roll.quality_grade}
+                  {QUALITY_GRADE_LABELS[
+                    roll.quality_grade as keyof typeof QUALITY_GRADE_LABELS
+                  ] ?? roll.quality_grade}
                 </span>
               )}
               <span>{fmtNum(roll.length_m, 'm')}</span>

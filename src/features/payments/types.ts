@@ -1,27 +1,18 @@
 import type {
+  TableRow,
+  TableInsert,
+  TableUpdate,
+} from '@/shared/types/database.models';
+import type {
   PaymentMethod,
   AccountType,
   ExpenseCategory,
 } from '@/schema/payment.schema';
+
 export type { PaymentMethod, AccountType, ExpenseCategory };
 
 /* ── Payment (Phiếu thu) ── */
-
-export type Payment = {
-  id: string;
-  payment_number: string;
-  order_id: string;
-  customer_id: string;
-  payment_date: string;
-  amount: number;
-  payment_method: PaymentMethod;
-  account_id: string | null;
-  reference_number: string | null;
-  notes: string | null;
-  created_by: string | null;
-  created_at: string;
-  updated_at: string;
-  /** Joined */
+export type Payment = TableRow<'payments'> & {
   orders?: {
     order_number: string;
     total_amount: number;
@@ -29,6 +20,8 @@ export type Payment = {
   } | null;
   customers?: { name: string; code: string } | null;
 };
+export type PaymentInsert = TableInsert<'payments'>;
+export type PaymentUpdate = TableUpdate<'payments'>;
 
 export type PaymentsFilter = {
   search?: string;
@@ -37,41 +30,17 @@ export type PaymentsFilter = {
 };
 
 /* ── Payment Account (Tài khoản thanh toán) ── */
-
-export type PaymentAccount = {
-  id: string;
-  name: string;
-  type: AccountType;
-  bank_name: string | null;
-  account_number: string | null;
-  initial_balance: number;
-  current_balance: number;
-  status: string;
-  notes: string | null;
-  created_at: string;
-  updated_at: string;
-};
+export type PaymentAccount = TableRow<'payment_accounts'>;
+export type PaymentAccountInsert = TableInsert<'payment_accounts'>;
+export type PaymentAccountUpdate = TableUpdate<'payment_accounts'>;
 
 /* ── Expense (Phiếu chi) ── */
-
-export type Expense = {
-  id: string;
-  expense_number: string;
-  category: ExpenseCategory;
-  amount: number;
-  expense_date: string;
-  account_id: string | null;
-  supplier_id: string | null;
-  description: string;
-  reference_number: string | null;
-  notes: string | null;
-  created_by: string | null;
-  created_at: string;
-  updated_at: string;
-  /** Joined */
+export type Expense = TableRow<'expenses'> & {
   suppliers?: { name: string; code: string } | null;
   payment_accounts?: { name: string } | null;
 };
+export type ExpenseInsert = TableInsert<'expenses'>;
+export type ExpenseUpdate = TableUpdate<'expenses'>;
 
 export type ExpensesFilter = {
   search?: string;
@@ -80,7 +49,6 @@ export type ExpensesFilter = {
 };
 
 /* ── Debt Summaries ── */
-
 export type DebtSummaryRow = {
   customer_id: string;
   customer_name: string;
@@ -104,7 +72,6 @@ export type SupplierDebtRow = {
 };
 
 /* ── Cash Flow ── */
-
 export type CashFlowRow = {
   period: string;
   total_inflow: number;

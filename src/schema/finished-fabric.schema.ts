@@ -41,19 +41,8 @@ export function formatBulkRollNumber(prefix: string, sequence: number): string {
   return `${prefix.trim()}${String(sequence).padStart(3, '0')}`;
 }
 
-export function findDuplicateRollNumbers(
-  rolls: Array<{ roll_number: string }>,
-): string[] {
-  const counts = new Map<string, number>();
-  for (const roll of rolls) {
-    const n = roll.roll_number.trim();
-    if (!n) continue;
-    counts.set(n, (counts.get(n) ?? 0) + 1);
-  }
-  return Array.from(counts.entries())
-    .filter(([, c]) => c > 1)
-    .map(([n]) => n);
-}
+import { findDuplicateRollNumbers as _findDuplicateRollNumbers } from '@/domain/inventory/InventoryDomain';
+export const findDuplicateRollNumbers = _findDuplicateRollNumbers;
 
 export const finishedFabricSchema = z.object({
   roll_number: z.string().trim().min(2, 'Mã cuộn phải có ít nhất 2 ký tự'),

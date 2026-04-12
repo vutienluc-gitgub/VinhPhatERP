@@ -33,9 +33,13 @@ export const ROLL_STATUS_LABELS: Record<
 
 const BULK_ROLL_NUMBER_PAD = 3;
 
-export function generateBarcode(rollNumber: string): string {
-  return `VP-${rollNumber.trim().toUpperCase()}`;
-}
+import {
+  generateBarcode as _generateBarcode,
+  findDuplicateRollNumbers as _findDuplicateRollNumbers,
+} from '@/domain/inventory/InventoryDomain';
+
+export const generateBarcode = _generateBarcode;
+export const findDuplicateRollNumbers = _findDuplicateRollNumbers;
 
 const optionalPositiveNum = z.preprocess(
   (val) =>
@@ -99,20 +103,6 @@ export type BulkRollRow = z.infer<typeof bulkRollRowSchema>;
 
 export function formatBulkRollNumber(prefix: string, sequence: number): string {
   return `${prefix.trim()}${String(sequence).padStart(BULK_ROLL_NUMBER_PAD, '0')}`;
-}
-
-export function findDuplicateRollNumbers(
-  rolls: Array<Pick<BulkRollRow, 'roll_number'>>,
-): string[] {
-  const counts = new Map<string, number>();
-  for (const roll of rolls) {
-    const n = roll.roll_number.trim();
-    if (!n) continue;
-    counts.set(n, (counts.get(n) ?? 0) + 1);
-  }
-  return Array.from(counts.entries())
-    .filter(([, c]) => c > 1)
-    .map(([n]) => n);
 }
 
 export const bulkInputSchema = z

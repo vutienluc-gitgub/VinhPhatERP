@@ -9,7 +9,7 @@ import type {
   DebtSummaryRow,
   ExpenseCategory,
 } from '@/features/payments/types';
-import type { Payment, PaymentInsert } from '@/models';
+import type { Payment, PaymentInsert } from '@/features/payments/types';
 import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';

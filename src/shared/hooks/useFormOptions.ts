@@ -8,7 +8,7 @@ import { fetchBomList } from '@/api/bom.api';
 import { fetchOrdersPaginated } from '@/api/orders.api';
 import { fetchSuppliersPaginated } from '@/api/suppliers.api';
 import type { BomFilter } from '@/features/bom/types';
-import type { OrdersFilter } from '@/models';
+import type { OrdersFilter } from '@/features/orders/types';
 import type { SupplierFilter } from '@/api/suppliers.api';
 
 /** BOM list — dùng cho WorkOrderForm */

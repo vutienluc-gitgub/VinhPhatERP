@@ -1,4 +1,5 @@
-import type { RawFabricRoll, FinishedFabricRoll, RollStatus } from '@/models';
+import type { RawFabricRoll, RollStatus } from '@/features/raw-fabric/types';
+import type { FinishedFabricRoll } from '@/features/finished-fabric/types';
 
 /**
  * Tính trọng lượng ước tính (kg) dựa trên chiều dài, chiều rộng, GSM.
@@ -60,22 +61,4 @@ export function summarizeFinishedFabric(rolls: FinishedFabricRoll[]) {
  */
 export function canShipRoll(status: RollStatus): boolean {
   return status === 'in_stock';
-}
-
-/**
- * Phát hiện mã cuộn trùng lặp trong danh sách nhập.
- */
-export function findDuplicateRollNumbers(rollNumbers: string[]): string[] {
-  const seen = new Set<string>();
-  const duplicates = new Set<string>();
-
-  for (const rn of rollNumbers) {
-    const normalized = rn.trim().toUpperCase();
-    if (seen.has(normalized)) {
-      duplicates.add(normalized);
-    }
-    seen.add(normalized);
-  }
-
-  return Array.from(duplicates);
 }

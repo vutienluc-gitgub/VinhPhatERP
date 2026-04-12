@@ -1,22 +1,21 @@
 import type {
+  TableRow,
+  TableInsert,
+  TableUpdate,
+} from '@/shared/types/database.models';
+import type {
   ProductionStage,
   StageStatus,
 } from '@/schema/order-progress.schema';
+
 export type { ProductionStage, StageStatus };
 
-export type OrderProgress = {
-  id: string;
+export type OrderProgress = Omit<TableRow<'order_progress'>, 'order_id'> & {
   order_id: string | null;
   work_order_id: string | null;
-  stage: ProductionStage;
-  status: StageStatus;
-  planned_date: string | null;
-  actual_date: string | null;
-  notes: string | null;
-  updated_by: string | null;
-  created_at: string;
-  updated_at: string;
 };
+export type OrderProgressInsert = TableInsert<'order_progress'>;
+export type OrderProgressUpdate = TableUpdate<'order_progress'>;
 
 export type OrderProgressWithOrder = OrderProgress & {
   orders?: {
@@ -28,6 +27,7 @@ export type OrderProgressWithOrder = OrderProgress & {
   work_orders?: {
     work_order_number: string;
     status: string;
+    end_date?: string | null;
     supplier?: { name: string } | null;
     bom_template?: { name: string } | null;
   } | null;
