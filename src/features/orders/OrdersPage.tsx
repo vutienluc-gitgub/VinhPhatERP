@@ -1,9 +1,6 @@
 import { useCallback, useState } from 'react';
 
-// eslint-disable-next-line boundaries/element-types, boundaries/dependencies
-import { PaymentForm } from '@/features/payments/PaymentForm';
-// eslint-disable-next-line boundaries/element-types, boundaries/dependencies
-import { ShipmentForm } from '@/features/shipments/ShipmentForm';
+import { useGlobalModal } from '@/shared/hooks/useGlobalModal';
 
 import { OrderDetail } from './OrderDetail';
 import { OrderForm } from './OrderForm';
@@ -17,9 +14,8 @@ export function OrdersPage() {
   const [view, setView] = useState<View>({ mode: 'list' });
   const [editOrder, setEditOrder] = useState<Order | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [shipmentOrder, setShipmentOrder] = useState<Order | null>(null);
-  const [paymentOrder, setPaymentOrder] = useState<Order | null>(null);
   const [reserveOrder, setReserveOrder] = useState<Order | null>(null);
+  const { openModal } = useGlobalModal();
 
   const openCreate = useCallback(() => {
     setEditOrder(null);
@@ -63,8 +59,21 @@ export function OrdersPage() {
           onEdit={(order) => {
             openEdit(order);
           }}
-          onCreateShipment={(order) => setShipmentOrder(order)}
-          onCreatePayment={(order) => setPaymentOrder(order)}
+          onCreateShipment={(order) =>
+            openModal('SHIPMENT_FORM', {
+              orderId: order.id,
+              customerId: order.customer_id,
+              orderNumber: order.order_number,
+            })
+          }
+          onCreatePayment={(order) =>
+            openModal('PAYMENT_FORM', {
+              orderId: order.id,
+              customerId: order.customer_id,
+              orderNumber: order.order_number,
+              balanceDue: order.total_amount - order.paid_amount,
+            })
+          }
           onReserveRolls={(order) => setReserveOrder(order)}
         />
       )}
@@ -72,27 +81,6 @@ export function OrdersPage() {
       {/* Order Form Modal */}
       {showForm && (
         <OrderForm order={editOrder ? editOrder : null} onClose={closeForm} />
-      )}
-
-      {/* Shipment form modal */}
-      {shipmentOrder && (
-        <ShipmentForm
-          orderId={shipmentOrder.id}
-          customerId={shipmentOrder.customer_id}
-          orderNumber={shipmentOrder.order_number}
-          onClose={() => setShipmentOrder(null)}
-        />
-      )}
-
-      {/* Payment form modal */}
-      {paymentOrder && (
-        <PaymentForm
-          orderId={paymentOrder.id}
-          customerId={paymentOrder.customer_id}
-          orderNumber={paymentOrder.order_number}
-          balanceDue={paymentOrder.total_amount - paymentOrder.paid_amount}
-          onClose={() => setPaymentOrder(null)}
-        />
       )}
 
       {/* Reserve rolls panel */}

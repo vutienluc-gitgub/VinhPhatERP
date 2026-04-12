@@ -1,6 +1,4 @@
-// eslint-disable-next-line boundaries/element-types, boundaries/dependencies
 import { ProgressTimeline } from '@/features/order-progress/ProgressTimeline';
-// eslint-disable-next-line boundaries/element-types, boundaries/dependencies
 import { useOrderProgress } from '@/features/order-progress/useOrderProgress';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Button } from '@/shared/components/Button';

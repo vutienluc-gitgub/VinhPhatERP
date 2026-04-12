@@ -7,6 +7,8 @@ import { AuthProvider } from '@/features/auth/AuthProvider';
 import { ConfirmProvider } from '@/shared/components/ConfirmDialog';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { TenantProvider } from '@/shared/context/TenantContext';
+import { GlobalModalProvider } from '@/shared/hooks/useGlobalModal';
+import { GlobalModalDispatcher } from '@/app/components/GlobalModalDispatcher';
 
 // Trigger plugin registration on app startup
 import '@/app/plugins';
@@ -31,8 +33,11 @@ export function AppProviders({ children }: PropsWithChildren) {
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <ConfirmProvider>
-              {children}
-              <Toaster position="top-center" />
+              <GlobalModalProvider>
+                {children}
+                <GlobalModalDispatcher />
+                <Toaster position="top-center" />
+              </GlobalModalProvider>
             </ConfirmProvider>
           </AuthProvider>
         </QueryClientProvider>
