@@ -68,10 +68,7 @@ const TenantRegisterPage = lazy(() =>
 
 const router = createBrowserRouter([
   // ---- Public routes ----
-  {
-    path: '/auth',
-    element: authRoute.element,
-  },
+  authRoute,
   {
     path: '/register',
     element: (

@@ -34,3 +34,22 @@ export const registerDefaultValues: RegisterFormValues = {
   password: '',
   confirmPassword: '',
 };
+// ── Forgot Password Schema ──
+export const forgotPasswordSchema = z.object({
+  email: z.string().trim().email('Email không hợp lệ'),
+});
+
+export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
+
+// ── Reset Password Schema ──
+export const resetPasswordSchema = z
+  .object({
+    password: z.string().min(8, 'Mật khẩu phải từ 8 ký tự trở lên'),
+    confirmPassword: z.string().min(8, 'Vui lòng xác nhận mật khẩu'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Mật khẩu xác nhận không khớp',
+    path: ['confirmPassword'],
+  });
+
+export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;

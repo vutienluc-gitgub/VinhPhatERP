@@ -6,8 +6,15 @@ export {
   authDefaultValues,
   registerSchema,
   registerDefaultValues,
+  forgotPasswordSchema,
+  resetPasswordSchema,
 } from '@/schema/auth.schema';
-export type { AuthFormValues, RegisterFormValues } from '@/schema/auth.schema';
+export type {
+  AuthFormValues,
+  RegisterFormValues,
+  ForgotPasswordFormValues,
+  ResetPasswordFormValues,
+} from '@/schema/auth.schema';
 
 export const authFeature: FeatureDefinition = {
   key: 'auth',

@@ -3,11 +3,14 @@ import { useState } from 'react';
 import { useAuth } from './AuthProvider';
 import { LoginForm } from './LoginForm';
 import { RegisterForm } from './RegisterForm';
+import { ForgotPasswordForm } from './ForgotPasswordForm';
 import '@/styles/auth.css';
 
 export function AuthPage() {
   const { session, loading } = useAuth();
-  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [mode, setMode] = useState<'login' | 'register' | 'forgot-password'>(
+    'login',
+  );
 
   if (loading) {
     return (
@@ -64,13 +67,13 @@ export function AuthPage() {
       <div className="auth-container">
         {mode === 'login' ? (
           <>
-            <LoginForm />
+            <LoginForm onForgotPassword={() => setMode('forgot-password')} />
             <div className="auth-switch">
               Chưa có tài khoản?
               <button onClick={() => setMode('register')}>Đăng ký ngay</button>
             </div>
           </>
-        ) : (
+        ) : mode === 'register' ? (
           <>
             <RegisterForm onSuccess={() => setMode('login')} />
             <div className="auth-switch">
@@ -78,6 +81,8 @@ export function AuthPage() {
               <button onClick={() => setMode('login')}>Đăng nhập</button>
             </div>
           </>
+        ) : (
+          <ForgotPasswordForm onBack={() => setMode('login')} />
         )}
       </div>
     </div>

@@ -6,7 +6,7 @@ Triển khai module theo kiến trúc feature-based của dự án (React + Type
 
 ## Tasks
 
-- [~] 1. Tạo migration database và cấu hình settings
+- [x] 1. Tạo migration database và cấu hình settings
   - Tạo file migration trong `supabase/migrations/` với các bảng: `contract_templates`, `contracts`, `contract_order_links`, `contract_audit_logs`
   - Thêm các settings keys mới vào bảng `settings`: `contract_sale_prefix`, `contract_purchase_prefix`, `company_representative`, `company_representative_title`, `company_bank_account`, `company_bank_name`
   - Tạo RLS policies cho từng bảng (authenticated users đọc được, chỉ admin mới sửa template)
@@ -14,7 +14,7 @@ Triển khai module theo kiến trúc feature-based của dự án (React + Type
   - _Requirements: 1.4, 3.5, 7.1_
 
 - [ ] 2. Định nghĩa types, schemas và service layer
-  - [~] 2.1 Tạo `src/features/contracts/contracts.module.ts`
+  - [x] 2.1 Tạo `src/features/contracts/contracts.module.ts`
     - Định nghĩa Zod schemas cho `Contract`, `ContractTemplate`, `ContractOrderLink`, `ContractAuditLog`
     - Định nghĩa TypeScript types: `ContractStatus`, `ContractType`, `PartyAType`, `CreateContractInput`, `UpdateContractInput`
     - Định nghĩa hàm `formatContractNumber(seq, year, type)` trả về chuỗi đúng định dạng
@@ -31,7 +31,7 @@ Triển khai module theo kiến trúc feature-based của dự án (React + Type
     - **Validates: Requirements 3.4**
     - Dùng fast-check, kiểm tra output không còn chuỗi `{{...}}` nào sau khi render với dữ liệu hợp lệ
 
-  - [~] 2.4 Tạo `src/features/contracts/contracts.service.ts`
+  - [x] 2.4 Tạo `src/features/contracts/contracts.service.ts`
     - Implement `getContracts(filters)`, `getContractById(id)`, `updateContract(id, data)`, `updateContractStatus(id, status, meta)`, `linkOrderToContract(contractId, orderId)`, `unlinkOrderFromContract(contractId, orderId)`
     - Implement `getContractsByOrderId(orderId)`, `getOrdersByContractId(contractId)`
     - _Requirements: 4.2, 4.3, 6.1, 6.2, 6.3, 8.1, 8.2, 8.3, 8.4_
@@ -41,10 +41,10 @@ Triển khai module theo kiến trúc feature-based của dự án (React + Type
     - Test `linkOrderToContract` bị chặn khi contract đã `signed`
     - _Requirements: 6.1, 8.4_
 
-- [~] 3. Checkpoint — Đảm bảo tất cả tests pass, hỏi người dùng nếu có thắc mắc.
+- [x] 3. Checkpoint — Đảm bảo tất cả tests pass, hỏi người dùng nếu có thắc mắc.
 
 - [ ] 4. Triển khai Edge Function `generate-contract`
-  - [~] 4.1 Tạo `supabase/functions/generate-contract/index.ts`
+  - [x] 4.1 Tạo `supabase/functions/generate-contract/index.ts`
     - Nhận input: `{ source_type: 'order' | 'customer' | 'supplier', source_id, type, effective_date, expiry_date, payment_term, notes }`
     - Validate nguồn: từ chối nếu Order `cancelled` hoặc Customer/Supplier `inactive`
     - Cảnh báo (không chặn) nếu Order đã có Contract liên kết
@@ -86,7 +86,7 @@ Triển khai module theo kiến trúc feature-based của dự án (React + Type
     - _Requirements: 1.1–1.7, 2.1–2.5_
 
 - [ ] 5. Triển khai Edge Function `export-contract-pdf`
-  - [~] 5.1 Tạo `supabase/functions/export-contract-pdf/index.ts`
+  - [x] 5.1 Tạo `supabase/functions/export-contract-pdf/index.ts`
     - Nhận input: `{ contract_id }`
     - Lấy Contract từ database, render HTML content
     - Tạo PDF từ HTML (dùng thư viện phù hợp với Deno runtime, ví dụ puppeteer hoặc html-pdf-node)
@@ -107,25 +107,25 @@ Triển khai module theo kiến trúc feature-based của dự án (React + Type
     - Test export thất bại → `status` không thay đổi
     - _Requirements: 5.4, 5.5_
 
-- [~] 6. Checkpoint — Đảm bảo tất cả tests pass, hỏi người dùng nếu có thắc mắc.
+- [x] 6. Checkpoint — Đảm bảo tất cả tests pass, hỏi người dùng nếu có thắc mắc.
 
 - [ ] 7. Xây dựng UI quản lý Contract
-  - [~] 7.1 Tạo `src/features/contracts/ContractStatusBadge.tsx`
+  - [x] 7.1 Tạo `src/features/contracts/ContractStatusBadge.tsx`
     - Hiển thị badge màu theo từng trạng thái: `draft`, `sent`, `signed`, `expired`, `cancelled`
     - _Requirements: 6.1_
 
-  - [~] 7.2 Tạo `src/features/contracts/ContractsPage.tsx`
+  - [x] 7.2 Tạo `src/features/contracts/ContractsPage.tsx`
     - Danh sách hợp đồng với bộ lọc: trạng thái, loại, khách hàng/nhà cung cấp, khoảng thời gian tạo
     - Mỗi row hiển thị: số hợp đồng, loại, Party_A, trạng thái, ngày tạo, actions
     - Nút "Tạo hợp đồng mới" mở `ContractForm`
     - _Requirements: 6.6_
 
-  - [~] 7.3 Tạo `src/features/contracts/ContractPreview.tsx`
+  - [x] 7.3 Tạo `src/features/contracts/ContractPreview.tsx`
     - Render HTML content của Contract trong iframe hoặc div styled
     - Hiển thị đúng định dạng hợp đồng (A4-like preview)
     - _Requirements: 4.4_
 
-  - [~] 7.4 Tạo `src/features/contracts/ContractForm.tsx`
+  - [x] 7.4 Tạo `src/features/contracts/ContractForm.tsx`
     - Form tạo hợp đồng: chọn nguồn (Order / Customer / Supplier), loại hợp đồng, ngày hiệu lực, ngày hết hạn, điều khoản thanh toán, ghi chú
     - Khi submit: gọi Edge Function `generate-contract`
     - Hiển thị cảnh báo nếu Order đã có Contract liên kết

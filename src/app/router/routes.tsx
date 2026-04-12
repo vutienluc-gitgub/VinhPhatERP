@@ -18,6 +18,12 @@ const AuthPage = lazy(() =>
   import('@/features/auth').then((m) => ({ default: m.AuthPage })),
 );
 
+const AuthCallback = lazy(() =>
+  import('@/features/auth/AuthCallback').then((m) => ({
+    default: m.AuthCallback,
+  })),
+);
+
 /**
  * Convert a FeaturePlugin to a RouteObject.
  * Uses React.lazy() with the plugin's component loader.
@@ -79,15 +85,40 @@ export function getNavigationItems(): NavigationItem[] {
 // Legacy compat
 export const navigationItems: NavigationItem[] = getNavigationItems();
 
-/* ── Route Generation ── */
+const ResetPasswordPage = lazy(() =>
+  import('@/features/auth/ResetPasswordPage').then((m) => ({
+    default: m.ResetPasswordPage,
+  })),
+);
 
 export const authRoute: RouteObject = {
   path: 'auth',
-  element: (
-    <LazyPage>
-      <AuthPage />
-    </LazyPage>
-  ),
+  children: [
+    {
+      index: true,
+      element: (
+        <LazyPage>
+          <AuthPage />
+        </LazyPage>
+      ),
+    },
+    {
+      path: 'callback',
+      element: (
+        <LazyPage>
+          <AuthCallback />
+        </LazyPage>
+      ),
+    },
+    {
+      path: 'reset-password',
+      element: (
+        <LazyPage>
+          <ResetPasswordPage />
+        </LazyPage>
+      ),
+    },
+  ],
 };
 
 /** Routes cho tất cả authenticated user (route không có routeGuard) */

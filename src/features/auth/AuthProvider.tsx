@@ -40,6 +40,9 @@ export interface AuthActions {
     error: AuthError | null;
   }>;
   signOut: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
+  forgotPassword: (email: string) => Promise<{ error: AuthError | null }>;
+  resetPassword: (password: string) => Promise<{ error: AuthError | null }>;
 }
 
 export type AuthContextValue = AuthState & AuthActions;
@@ -129,6 +132,34 @@ export function AuthProvider({ children }: PropsWithChildren) {
     await supabase.auth.signOut();
   }, []);
 
+  const signInWithGoogle = useCallback(async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'select_account',
+        },
+      },
+    });
+    if (error) throw error;
+  }, []);
+
+  const forgotPassword = useCallback(async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
+    });
+    return { error };
+  }, []);
+
+  const resetPassword = useCallback(async (password: string) => {
+    const { error } = await supabase.auth.updateUser({
+      password,
+    });
+    return { error };
+  }, []);
+
   const isBlocked = profile !== null && !profile.is_active;
 
   const value = useMemo<AuthContextValue>(
@@ -139,10 +170,25 @@ export function AuthProvider({ children }: PropsWithChildren) {
       loading,
       isBlocked,
       signIn,
+      signInWithGoogle,
       signUp,
       signOut,
+      forgotPassword,
+      resetPassword,
     }),
-    [session, user, profile, loading, isBlocked, signIn, signUp, signOut],
+    [
+      session,
+      user,
+      profile,
+      loading,
+      isBlocked,
+      signIn,
+      signInWithGoogle,
+      signUp,
+      signOut,
+      forgotPassword,
+      resetPassword,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
