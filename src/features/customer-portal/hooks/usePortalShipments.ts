@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { supabase } from '@/services/supabase/client';
 import type { PortalShipment } from '@/features/customer-portal/types';
@@ -89,5 +89,8 @@ export function usePortalShipments(shipmentId?: string) {
     shipment,
     loading,
     error,
+    prependShipment: useCallback((newShipment: PortalShipment) => {
+      setShipments((prev) => [newShipment, ...prev]);
+    }, []),
   };
 }

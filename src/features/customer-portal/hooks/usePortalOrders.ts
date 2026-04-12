@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { supabase } from '@/services/supabase/client';
 import { computeStageOverdue } from '@/features/customer-portal/utils';
 import type {
+  OrderStatus,
   PortalOrder,
   PortalProgressStage,
+  StageStatus,
 } from '@/features/customer-portal/types';
 
 const PAGE_SIZE = 20;
@@ -138,5 +140,47 @@ export function usePortalOrders(orderId?: string) {
     page,
     setPage,
     PAGE_SIZE,
+    updateOrderStatus: useCallback(
+      (targetOrderId: string, newStatus: OrderStatus) => {
+        setOrders((prev) =>
+          prev.map((o) =>
+            o.id === targetOrderId
+              ? {
+                  ...o,
+                  status: newStatus,
+                }
+              : o,
+          ),
+        );
+        setOrder((prev) =>
+          prev?.id === targetOrderId
+            ? {
+                ...prev,
+                status: newStatus,
+              }
+            : prev,
+        );
+      },
+      [],
+    ),
+    updateProgressStage: useCallback(
+      (stageId: string, newStatus: StageStatus) => {
+        setStages((prev) =>
+          prev.map((s) =>
+            s.id === stageId
+              ? {
+                  ...s,
+                  status: newStatus,
+                  ...computeStageOverdue({
+                    actual_date: s.actual_date,
+                    planned_date: s.planned_date,
+                  }),
+                }
+              : s,
+          ),
+        );
+      },
+      [],
+    ),
   };
 }
