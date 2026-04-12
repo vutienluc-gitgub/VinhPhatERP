@@ -6,6 +6,12 @@ import {
 } from 'react-hook-form';
 
 import { fetchBomById } from '@/api/bom.api';
+import {
+  calculateTargetWeightKg,
+  calculateYarnRequirements,
+  recalculateRequirementKg,
+} from '@/domain/production/ProductionDomain';
+import type { BomYarnItem } from '@/domain/production/ProductionDomain';
 
 import type { CreateWorkOrderInput } from './work-orders.module';
 
@@ -19,13 +25,14 @@ interface UseWorkOrderLogicParams {
 }
 
 /**
- * Domain hook: Handles BOM-based auto-calculation logic for Work Orders.
+ * UI hook: Handles BOM-based auto-calculation logic for Work Orders.
+ * Business logic delegated to ProductionDomain.
  *
  * Responsibilities:
- * - Watch `bom_template_id`, `target_quantity_m`, `standard_loss_pct`
- * - Auto-populate yarn requirements from BOM
- * - Auto-calculate `target_weight_kg` from consumption rates
- * - Recalculate kg when quantity changes during edit
+ * - Watch form fields
+ * - Fetch BOM data (API)
+ * - Delegate calculations to domain
+ * - Set form values
  */
 export function useWorkOrderLogic({
   watch,
@@ -47,46 +54,42 @@ export function useWorkOrderLogic({
         const bom = await fetchBomById(watchedBomId);
         if (!bom) return;
 
-        const yarns = bom.bom_yarn_items || [];
-        const loss = bom.standard_loss_pct || 0;
+        const bomYarns: BomYarnItem[] = (bom.bom_yarn_items || []).map((y) => ({
+          yarn_catalog_id: y.yarn_catalog_id,
+          ratio_pct: y.ratio_pct,
+          consumption_kg_per_m: y.consumption_kg_per_m || 0,
+        }));
+        const bomLoss = bom.standard_loss_pct || 0;
 
-        // Update loss pct if it's a new order or BOM changed
+        // Update loss pct if new order or BOM changed
         if (!isEditing || watchedBomId !== initialBomId) {
-          setValue('standard_loss_pct', loss);
+          setValue('standard_loss_pct', bomLoss);
         }
 
-        // Calculate target weight from consumption rates
-        const totalConsumptionPerM = yarns.reduce(
-          (sum, y) => sum + (y.consumption_kg_per_m || 0),
-          0,
-        );
-        const targetKg = watchedQty * totalConsumptionPerM;
-        setValue('target_weight_kg', Number(targetKg.toFixed(2)));
+        // Domain: calculate target weight
+        const targetKg = calculateTargetWeightKg(watchedQty, bomYarns);
+        setValue('target_weight_kg', targetKg);
 
-        // Calculate total yarn required (accounting for loss)
-        const currentLoss = watch('standard_loss_pct') || loss;
-        const totalRequiredYarnKg = targetKg / (1 - currentLoss / 100);
+        // Domain: calculate yarn requirements
+        const currentLoss = watch('standard_loss_pct') || bomLoss;
 
-        const newRequirements = yarns.map((y) => ({
-          yarn_catalog_id: y.yarn_catalog_id,
-          bom_ratio_pct: y.ratio_pct,
-          required_kg: Number(
-            (totalRequiredYarnKg * (y.ratio_pct / 100)).toFixed(2),
-          ),
-        }));
-
-        // Auto-replace only if Creating OR if BOM changed during Edit
         if (!isEditing || watchedBomId !== initialBomId) {
-          replace(newRequirements);
+          // New order or BOM changed: full recalc
+          const newReqs = calculateYarnRequirements(
+            watchedQty,
+            bomYarns,
+            currentLoss,
+          );
+          replace(newReqs);
         } else if (isEditing && watchedQty !== initialQty) {
-          // If only quantity changed during edit, recalculate kg for existing lines
+          // Only quantity changed: recalc kg for existing lines
           const currentReqs = watch('yarn_requirements');
-          const updatedReqs = currentReqs.map((r) => ({
-            ...r,
-            required_kg: Number(
-              (totalRequiredYarnKg * (r.bom_ratio_pct / 100)).toFixed(2),
-            ),
-          }));
+          const updatedReqs = recalculateRequirementKg(
+            currentReqs,
+            watchedQty,
+            bomYarns,
+            currentLoss,
+          );
           replace(updatedReqs);
         }
       } catch (err) {
