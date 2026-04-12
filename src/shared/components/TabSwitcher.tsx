@@ -4,6 +4,7 @@ export interface TabItem<T extends string> {
   key: T;
   label: string;
   icon?: ReactNode;
+  badge?: number;
 }
 
 interface Props<T extends string> {
@@ -33,6 +34,13 @@ export function TabSwitcher<T extends string>({
         >
           {tab.icon}
           {tab.label}
+          {tab.badge !== undefined && tab.badge > 0 && (
+            <span
+              className={`tab-badge${active === tab.key ? ' tab-badge--active' : ''}`}
+            >
+              {tab.badge > 99 ? '99+' : tab.badge}
+            </span>
+          )}
         </button>
       ))}
     </div>

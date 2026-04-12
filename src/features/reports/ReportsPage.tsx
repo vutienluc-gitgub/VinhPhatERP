@@ -37,7 +37,7 @@ function defaultDateTo(): string {
 
 type Tab = 'overview' | 'revenue' | 'debt' | 'production' | 'inventory';
 
-const TABS: TabItem<Tab>[] = [
+const BASE_TABS: TabItem<Tab>[] = [
   {
     key: 'overview',
     label: 'Tổng quan CEO',
@@ -78,6 +78,23 @@ export function ReportsPage() {
   const inventory = useInventorySummary();
   const overdue = useOverdueOrders();
 
+  const overdueCount = overdue.data?.length ?? 0;
+  const debtorCount = (debt.data ?? []).filter((d) => d.balance_due > 0).length;
+
+  const tabsWithBadge = BASE_TABS.map((t) => {
+    if (t.key === 'overview')
+      return {
+        ...t,
+        badge: overdueCount,
+      };
+    if (t.key === 'debt')
+      return {
+        ...t,
+        badge: debtorCount,
+      };
+    return t;
+  });
+
   // Deep analytics
   const debtAging = useDebtAging();
   const production = useProductionEfficiency();
@@ -103,7 +120,7 @@ export function ReportsPage() {
         <ReportsFilterBar filter={filter} onChange={setFilter} />
 
         <TabSwitcher
-          tabs={TABS}
+          tabs={tabsWithBadge}
           active={activeTab}
           onChange={setActiveTab}
           variant="underline"
