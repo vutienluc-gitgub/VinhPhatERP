@@ -1,0 +1,17 @@
+import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
+
+export const contractTemplatesPlugin: FeaturePlugin = {
+  key: 'contract-templates',
+  route: 'contract-templates',
+  label: 'Mau hop dong',
+  shortLabel: 'Mau HD',
+  description: 'Quan ly mau noi dung hop dong ban hang va mua hang.',
+  icon: 'FileEdit',
+  requiredRoles: ['admin'],
+  group: 'system',
+  order: 92,
+  component: () =>
+    import('./ContractTemplatesPage').then((m) => ({
+      default: m.ContractTemplatesPage,
+    })),
+};

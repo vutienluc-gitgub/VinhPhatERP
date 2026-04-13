@@ -1,6 +1,8 @@
 import { useCallback, useState } from 'react';
 
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { useGlobalModal } from '@/shared/hooks/useGlobalModal';
+import { ContractForm } from '@/features/contracts/ContractForm';
 
 import { OrderDetail } from './OrderDetail';
 import { OrderForm } from './OrderForm';
@@ -15,6 +17,7 @@ export function OrdersPage() {
   const [editOrder, setEditOrder] = useState<Order | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [reserveOrder, setReserveOrder] = useState<Order | null>(null);
+  const [contractOrder, setContractOrder] = useState<Order | null>(null);
   const { openModal } = useGlobalModal();
 
   const openCreate = useCallback(() => {
@@ -75,10 +78,11 @@ export function OrdersPage() {
             })
           }
           onReserveRolls={(order) => setReserveOrder(order)}
+          onCreateContract={(order) => setContractOrder(order)}
         />
       )}
 
-      {/* Order Form Modal */}
+      {/* Order Form */}
       {showForm && (
         <OrderForm order={editOrder ? editOrder : null} onClose={closeForm} />
       )}
@@ -90,6 +94,25 @@ export function OrdersPage() {
           onClose={() => setReserveOrder(null)}
         />
       )}
+
+      {/* Contract creation sheet */}
+      <AdaptiveSheet
+        open={!!contractOrder}
+        onClose={() => setContractOrder(null)}
+        title="Tao hop dong"
+      >
+        {contractOrder && (
+          <ContractForm
+            defaultSourceType="order"
+            defaultSourceId={contractOrder.id}
+            defaultSourceName={contractOrder.order_number}
+            onSuccess={() => {
+              setContractOrder(null);
+            }}
+            onCancel={() => setContractOrder(null)}
+          />
+        )}
+      </AdaptiveSheet>
     </>
   );
 }

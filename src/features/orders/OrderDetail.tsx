@@ -24,6 +24,7 @@ type OrderDetailProps = {
   onCreateShipment: (order: Order) => void;
   onCreatePayment: (order: Order) => void;
   onReserveRolls: (order: Order) => void;
+  onCreateContract: (order: Order) => void;
 };
 
 function statusClass(status: OrderStatus): string {
@@ -48,6 +49,7 @@ export function OrderDetail({
   onCreateShipment,
   onCreatePayment,
   onReserveRolls,
+  onCreateContract,
 }: OrderDetailProps) {
   const { data: order, isLoading, error } = useOrder(orderId);
   const { data: progressStages = [] } = useOrderProgress(orderId);
@@ -236,6 +238,15 @@ export function OrderDetail({
               Hoàn thành
             </Button>
           )}
+          {order.status !== 'cancelled' && (
+            <Button
+              variant="secondary"
+              leftIcon="FileText"
+              onClick={() => onCreateContract(order)}
+            >
+              Tao hop dong
+            </Button>
+          )}
           {order.status !== 'cancelled' && order.status !== 'completed' && (
             <Button
               variant="secondary"
@@ -244,7 +255,7 @@ export function OrderDetail({
               isLoading={cancelMutation.isPending}
               className="text-danger"
             >
-              Huỷ đơn
+              Huy don
             </Button>
           )}
         </div>

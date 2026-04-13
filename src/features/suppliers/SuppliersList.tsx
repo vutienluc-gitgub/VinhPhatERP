@@ -24,9 +24,14 @@ import type { Supplier, SupplierCategory, SupplierFilter } from './types';
 type SuppliersListProps = {
   onEdit: (supplier: Supplier) => void;
   onNew: () => void;
+  onCreateContract: (supplier: Supplier) => void;
 };
 
-export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
+export function SuppliersList({
+  onEdit,
+  onNew,
+  onCreateContract,
+}: SuppliersListProps) {
   const [filters, setFilters] = useState<SupplierFilter>({});
   const [searchInput, setSearchInput] = useState('');
   const [page, setPage] = useState(1);
@@ -261,14 +266,19 @@ export function SuppliersList({ onEdit, onNew }: SuppliersListProps) {
               <ActionBar
                 actions={[
                   {
+                    icon: 'FileText',
+                    onClick: () => onCreateContract(s),
+                    title: 'Tao hop dong',
+                  },
+                  {
                     icon: 'Pencil',
                     onClick: () => onEdit(s),
-                    title: 'Sửa',
+                    title: 'Sua',
                   },
                   {
                     icon: 'Trash2',
                     onClick: () => handleDelete(s),
-                    title: 'Xóa',
+                    title: 'Xoa',
                     variant: 'danger',
                     disabled: deleteMutation.isPending,
                   },

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { ContractForm } from '@/features/contracts/ContractForm';
 
 import { CustomerForm } from './CustomerForm';
 import { CustomerList } from './CustomerList';
@@ -9,6 +10,9 @@ import type { Customer } from './types';
 export function CustomersPage() {
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [contractCustomer, setContractCustomer] = useState<Customer | null>(
+    null,
+  );
 
   function openCreate() {
     setEditCustomer(null);
@@ -27,16 +31,36 @@ export function CustomersPage() {
 
   return (
     <>
-      <CustomerList onEdit={openEdit} onNew={openCreate} />
+      <CustomerList
+        onEdit={openEdit}
+        onNew={openCreate}
+        onCreateContract={(c) => setContractCustomer(c)}
+      />
 
       <AdaptiveSheet
         open={showForm}
         onClose={closeForm}
         title={
-          editCustomer ? `Sửa: ${editCustomer.name}` : 'Thêm khách hàng mới'
+          editCustomer ? `Sua: ${editCustomer.name}` : 'Them khach hang moi'
         }
       >
         <CustomerForm customer={editCustomer} onClose={closeForm} />
+      </AdaptiveSheet>
+
+      <AdaptiveSheet
+        open={!!contractCustomer}
+        onClose={() => setContractCustomer(null)}
+        title="Tao hop dong"
+      >
+        {contractCustomer && (
+          <ContractForm
+            defaultSourceType="customer"
+            defaultSourceId={contractCustomer.id}
+            defaultSourceName={contractCustomer.name}
+            onSuccess={() => setContractCustomer(null)}
+            onCancel={() => setContractCustomer(null)}
+          />
+        )}
       </AdaptiveSheet>
     </>
   );
