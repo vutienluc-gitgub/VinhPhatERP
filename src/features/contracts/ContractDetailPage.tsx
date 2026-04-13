@@ -8,6 +8,7 @@ import { Button, AdaptiveSheet, Icon, useConfirm } from '@/shared/components';
 import {
   useContract,
   useContractLinkedOrders,
+  useContractAuditLogs,
   useUpdateContract,
   useUpdateContractStatus,
   useLinkOrder,
@@ -16,9 +17,14 @@ import {
 
 import {
   CONTRACT_TYPE_LABELS,
+  CONTRACT_STATUS_LABELS,
   updateContractInputSchema,
 } from './contracts.module';
-import type { Contract, UpdateContractInput } from './contracts.module';
+import type {
+  Contract,
+  ContractAuditLog,
+  UpdateContractInput,
+} from './contracts.module';
 import { ContractStatusBadge } from './ContractStatusBadge';
 import { ContractPreview } from './ContractPreview';
 
@@ -462,6 +468,88 @@ function EditSheet({
   );
 }
 
+// ── Audit log entry ───────────────────────────────────────────────────────────
+
+const ACTION_LABELS: Record<string, string> = {
+  created: 'Hop dong duoc tao',
+  updated: 'Cap nhat thong tin',
+  status_changed: 'Chuyen trang thai',
+  order_linked: 'Lien ket don hang',
+  order_unlinked: 'Huy lien ket don hang',
+};
+
+const ACTION_ICONS: Record<string, string> = {
+  created: 'FilePlus',
+  updated: 'Pencil',
+  status_changed: 'RefreshCw',
+  order_linked: 'Link',
+  order_unlinked: 'Unlink',
+};
+
+type AuditLogEntryProps = {
+  log: ContractAuditLog;
+  isLast: boolean;
+};
+
+function AuditLogEntry({ log, isLast }: AuditLogEntryProps) {
+  const label = ACTION_LABELS[log.action] ?? log.action;
+  const iconName = (ACTION_ICONS[log.action] ?? 'Activity') as Parameters<
+    typeof Icon
+  >[0]['name'];
+
+  const formattedTime = new Date(log.performed_at).toLocaleString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  const newStatus =
+    log.action === 'status_changed' &&
+    log.new_values &&
+    typeof log.new_values['status'] === 'string'
+      ? (CONTRACT_STATUS_LABELS[
+          log.new_values['status'] as keyof typeof CONTRACT_STATUS_LABELS
+        ] ?? (log.new_values['status'] as string))
+      : null;
+
+  const cancelReason: string | null =
+    log.action === 'status_changed' &&
+    log.new_values &&
+    typeof log.new_values['reason'] === 'string'
+      ? (log.new_values['reason'] as string)
+      : null;
+
+  return (
+    <div className="flex gap-3 group">
+      {/* Timeline line */}
+      <div className="flex flex-col items-center shrink-0">
+        <div className="w-7 h-7 rounded-full bg-surface-subtle border border-border flex items-center justify-center text-muted group-hover:border-primary/30 transition-colors">
+          <Icon name={iconName} size={14} />
+        </div>
+        {!isLast && <div className="w-px flex-1 bg-border min-h-[20px] mt-1" />}
+      </div>
+
+      {/* Content */}
+      <div className={`pb-4 min-w-0 flex-1 ${isLast ? 'pb-0' : ''}`}>
+        <p className="text-sm font-medium text-foreground">{label}</p>
+        {newStatus && (
+          <p className="text-xs text-muted mt-0.5">
+            Trang thai moi: <span className="font-medium">{newStatus}</span>
+          </p>
+        )}
+        {cancelReason && (
+          <p className="text-xs italic text-muted mt-0.5">
+            Ly do: {cancelReason}
+          </p>
+        )}
+        <p className="text-xs text-muted mt-0.5">{formattedTime}</p>
+      </div>
+    </div>
+  );
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 export function ContractDetailPage({
@@ -471,6 +559,8 @@ export function ContractDetailPage({
   const { data: contract, isLoading, error } = useContract(contractId);
   const { data: linkedOrders = [], isLoading: ordersLoading } =
     useContractLinkedOrders(contractId);
+  const { data: auditLogs = [], isLoading: auditLoading } =
+    useContractAuditLogs(contractId);
 
   const updateMutation = useUpdateContract();
   const statusMutation = useUpdateContractStatus();
@@ -849,6 +939,29 @@ export function ContractDetailPage({
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+        </div>
+
+        {/* Audit log timeline */}
+        <div className="px-5 pb-5">
+          <h4 className="mb-3 flex items-center gap-2">
+            <Icon name="History" size={16} />
+            Lich su hoat dong
+          </h4>
+          {auditLoading ? (
+            <p className="table-empty text-sm">Dang tai...</p>
+          ) : auditLogs.length === 0 ? (
+            <p className="table-empty text-sm">Chua co hoat dong nao.</p>
+          ) : (
+            <div className="space-y-0">
+              {auditLogs.map((log, idx) => (
+                <AuditLogEntry
+                  key={log.id}
+                  log={log}
+                  isLast={idx === auditLogs.length - 1}
+                />
+              ))}
             </div>
           )}
         </div>

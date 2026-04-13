@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import {
   getContractById,
   getOrdersByContractId,
+  getAuditLogs,
   updateContract,
   updateContractStatus,
   linkOrderToContract,
@@ -49,7 +50,10 @@ export function useUpdateContract() {
         queryKey: [...CONTRACTS_KEY, updated.id],
       });
       void queryClient.invalidateQueries({ queryKey: CONTRACTS_KEY });
-      toast.success('Cập nhật hợp đồng thành công');
+      void queryClient.invalidateQueries({
+        queryKey: [...CONTRACTS_KEY, updated.id, 'audit-logs'],
+      });
+      toast.success('Cap nhat hop dong thanh cong');
     },
     onError: (err: Error) => {
       toast.error(err.message ?? 'Có lỗi xảy ra');
@@ -78,6 +82,9 @@ export function useUpdateContractStatus() {
         queryKey: [...CONTRACTS_KEY, updated.id],
       });
       void queryClient.invalidateQueries({ queryKey: CONTRACTS_KEY });
+      void queryClient.invalidateQueries({
+        queryKey: [...CONTRACTS_KEY, updated.id, 'audit-logs'],
+      });
     },
     onError: (err: Error) => {
       toast.error(err.message ?? 'Có lỗi xảy ra');
@@ -101,7 +108,10 @@ export function useLinkOrder() {
       void queryClient.invalidateQueries({
         queryKey: [...CONTRACTS_KEY, vars.contractId, 'orders'],
       });
-      toast.success('Đã liên kết đơn hàng');
+      void queryClient.invalidateQueries({
+        queryKey: [...CONTRACTS_KEY, vars.contractId, 'audit-logs'],
+      });
+      toast.success('Da lien ket don hang');
     },
     onError: (err: Error) => {
       toast.error(err.message ?? 'Có lỗi xảy ra');
@@ -125,10 +135,21 @@ export function useUnlinkOrder() {
       void queryClient.invalidateQueries({
         queryKey: [...CONTRACTS_KEY, vars.contractId, 'orders'],
       });
-      toast.success('Đã huỷ liên kết đơn hàng');
+      void queryClient.invalidateQueries({
+        queryKey: [...CONTRACTS_KEY, vars.contractId, 'audit-logs'],
+      });
+      toast.success('Da huy lien ket don hang');
     },
     onError: (err: Error) => {
-      toast.error(err.message ?? 'Có lỗi xảy ra');
+      toast.error(err.message ?? 'Co loi xay ra');
     },
+  });
+}
+
+export function useContractAuditLogs(contractId: string) {
+  return useQuery({
+    queryKey: [...CONTRACTS_KEY, contractId, 'audit-logs'],
+    queryFn: () => getAuditLogs(contractId),
+    enabled: !!contractId,
   });
 }
