@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { Button } from '@/shared/components';
 import { supabase } from '@/services/supabase/client';
 
 interface Props {
@@ -272,14 +273,15 @@ export function CustomerPortalAccountPanel({
                 />
               </div>
               <div className="flex gap-2">
-                <button
+                <Button
+                  variant="primary"
+                  className="btn-sm"
                   type="submit"
                   disabled={loading}
-                  className="btn-primary btn-sm"
                   style={{ fontSize: 12 }}
                 >
-                  {loading ? 'Đang tạo…' : 'Tạo tài khoản'}
-                </button>
+                  loading ? 'Đang tạo…' : 'Tạo tài khoản
+                </Button>
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
@@ -313,14 +315,15 @@ export function CustomerPortalAccountPanel({
               {loading ? 'Đang xử lý…' : '⊘ Vô hiệu hóa tài khoản'}
             </button>
           ) : (
-            <button
+            <Button
+              variant="secondary"
+              className="btn-sm"
               onClick={handleReactivate}
               disabled={loading}
-              className="btn-secondary btn-sm"
               style={{ fontSize: 12 }}
             >
-              {loading ? 'Đang xử lý…' : '↺ Kích hoạt lại'}
-            </button>
+              loading ? 'Đang xử lý…' : '↺ Kích hoạt lại
+            </Button>
           )}
         </div>
       )}

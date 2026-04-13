@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 
+import { Button } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { Icon } from '@/shared/components/Icon';
 import {
@@ -385,17 +386,17 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
 
         {/* Footer actions */}
         <div className="flex justify-end gap-3 pt-5 mt-4 border-t border-border">
-          <button
+          <Button
+            variant="secondary"
             type="button"
-            className="btn-secondary"
             onClick={onCancel}
             disabled={isSubmitting}
           >
             Huỷ bỏ
-          </button>
-          <button type="submit" className="btn-primary" disabled={isSubmitting}>
-            {isSubmitting ? 'Đang lưu...' : 'Lưu bản nháp'}
-          </button>
+          </Button>
+          <Button variant="primary" type="submit" disabled={isSubmitting}>
+            isSubmitting ? 'Đang lưu...' : 'Lưu bản nháp
+          </Button>
         </div>
       </form>
     </div>

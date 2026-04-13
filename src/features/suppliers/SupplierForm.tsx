@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import {
@@ -98,22 +99,22 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
       title={isEditing ? `Sửa NCC: ${supplier.name}` : 'Thêm nhà cung cấp mới'}
       footer={
         <>
-          <button
+          <Button
+            variant="secondary"
             type="button"
-            className="btn-secondary"
             onClick={onClose}
             disabled={isPending}
           >
             Hủy
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="primary"
             type="submit"
-            className="btn-primary"
             form="supplier-form"
             disabled={isPending}
           >
-            {isPending ? 'Đang lưu…' : isEditing ? 'Cập nhật' : 'Tạo mới'}
-          </button>
+            isPending ? 'Đang lưu…' : isEditing ? 'Cập nhật' : 'Tạo mới
+          </Button>
         </>
       }
     >

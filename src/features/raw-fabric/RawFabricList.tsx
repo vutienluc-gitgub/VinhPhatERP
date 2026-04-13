@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { Pagination } from '@/shared/components/Pagination';
 import { fetchRawFabricAll } from '@/api/raw-fabric.api';
 import {
+  Button,
   Icon,
   Badge,
   type BadgeVariant,
@@ -360,13 +361,14 @@ export function RawFabricList({
                 </p>
                 {/* Requirement 4.5: show clear filter button in empty state when filter is active */}
                 {hasFilter && (
-                  <button
-                    className="btn btn-secondary mt-4"
+                  <Button
+                    variant="secondary"
+                    leftIcon="X"
+                    className="btn mt-4"
                     onClick={handleClearFilter}
                   >
-                    <Icon name="X" size={14} />
                     Xóa bộ lọc
-                  </button>
+                  </Button>
                 )}
               </div>
             ) : (

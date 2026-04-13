@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import {
@@ -294,14 +295,14 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
             border: 'none',
           }}
         >
-          <button
-            className="btn-secondary"
+          <Button
+            variant="secondary"
             type="button"
             onClick={onClose}
             disabled={isPending}
           >
             Hủy
-          </button>
+          </Button>
           <button
             className="primary-button btn-standard"
             type="submit"

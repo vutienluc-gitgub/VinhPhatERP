@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import {
   useAvailableRolls,
@@ -188,8 +189,8 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                         )}
                       </td>
                       <td className="td-actions">
-                        <button
-                          className="btn-secondary"
+                        <Button
+                          variant="secondary"
                           type="button"
                           style={{
                             fontSize: '0.8rem',
@@ -198,8 +199,9 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                           onClick={() => handleUnreserve(roll.id)}
                           disabled={unreserveMutation.isPending}
                         >
+                          {' '}
                           Bỏ giữ
-                        </button>
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -317,13 +319,14 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
           border: 'none',
         }}
       >
-        <button
-          className="btn-secondary btn-standard"
+        <Button
+          variant="secondary"
+          className="btn-standard"
           type="button"
           onClick={onClose}
         >
           Đóng
-        </button>
+        </Button>
       </div>
     </AdaptiveSheet>
   );

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { Button } from '@/shared/components';
 import { supabase } from '@/services/supabase/client';
 
 /* ── Minimal schema for quick-create (only required fields) ── */
@@ -234,8 +235,8 @@ export function QuickSupplierForm({
               justifyContent: 'flex-end',
             }}
           >
-            <button
-              className="btn-secondary"
+            <Button
+              variant="secondary"
               type="button"
               onClick={onCancel}
               disabled={isPending}
@@ -245,7 +246,7 @@ export function QuickSupplierForm({
               }}
             >
               Hủy
-            </button>
+            </Button>
             <button
               className="primary-button"
               type="submit"

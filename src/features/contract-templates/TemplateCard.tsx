@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import DOMPurify from 'dompurify';
 
-import { Icon, Button, useConfirm } from '@/shared/components';
+import { Icon, useConfirm, Badge, ActionMenu } from '@/shared/components';
 import { CONTRACT_TYPE_LABELS, type ContractTemplate } from '@/schema';
 
 // ── Props ────────────────────────────────────────────────────────────────────
@@ -23,19 +23,7 @@ export function TemplateCard({
   onDelete,
   onToggleActive,
 }: TemplateCardProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
   const { confirm } = useConfirm();
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const sanitizedContent = useMemo(
     () => (template.content ? DOMPurify.sanitize(template.content) : ''),
@@ -56,7 +44,7 @@ export function TemplateCard({
   const isPurchase = template.type === 'purchase';
 
   return (
-    <div className="group relative panel-card card-flush border-border/60 rounded-3xl p-6 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1 h-full flex flex-col">
+    <div className="group relative panel-card card-flush border-border/60 rounded-3xl p-6 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1 h-full flex flex-col !overflow-visible">
       {/* Background Accent - isolated to not clip menus */}
       <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
         <div
@@ -96,81 +84,45 @@ export function TemplateCard({
           </div>
         </div>
 
-        <div className="relative" ref={menuRef}>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="w-8 h-8 rounded-full min-h-0 min-w-0"
-            onClick={() => setMenuOpen(!menuOpen)}
-            leftIcon="MoreVertical"
-          />
-
-          {menuOpen && (
-            <div className="absolute right-0 top-full mt-2 w-48 bg-surface shadow-2xl border border-border/60 rounded-xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
-              <div className="p-1.5 flex flex-col gap-0.5">
-                <button
-                  type="button"
-                  className="w-full text-left px-3 py-2 text-sm font-medium rounded-lg hover:bg-surface-subtle transition-colors flex items-center gap-2"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    onEdit(template);
-                  }}
-                >
-                  <Icon name="Eye" size={16} className="text-blue-500" />
-                  Xem / Chỉnh sửa
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left px-3 py-2 text-sm font-medium rounded-lg hover:bg-surface-subtle transition-colors flex items-center gap-2"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    onDuplicate(template);
-                  }}
-                >
-                  <Icon name="Copy" size={16} className="text-muted" />
-                  Nhân bản mẫu
-                </button>
-                <div className="h-px bg-border/40 my-1 mx-2" />
-                <button
-                  type="button"
-                  className="w-full text-left px-3 py-2 text-sm font-medium rounded-lg hover:bg-surface-subtle transition-colors flex items-center gap-2"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    onToggleActive(template);
-                  }}
-                >
-                  <Icon
-                    name={template.is_active ? 'PauseCircle' : 'PlayCircle'}
-                    size={16}
-                    className="text-muted"
-                  />
-                  {template.is_active ? 'Tạm dừng mẫu' : 'Kích hoạt mẫu'}
-                </button>
-                <button
-                  type="button"
-                  className="w-full text-left px-3 py-2 text-sm font-medium rounded-lg hover:bg-danger/10 hover:text-danger transition-colors flex items-center gap-2"
-                  onClick={async () => {
-                    setMenuOpen(false);
-                    const isConfirmed = await confirm({
-                      title: 'Xóa mẫu hợp đồng',
-                      message:
-                        'Bạn có chắc chắn muốn xóa mẫu hợp đồng này không? Hành động này không thể hoàn tác.',
-                      confirmLabel: 'Xóa',
-                      cancelLabel: 'Huỷ',
-                      variant: 'danger',
-                    });
-                    if (isConfirmed) {
-                      onDelete(template);
-                    }
-                  }}
-                >
-                  <Icon name="Trash2" size={16} className="text-danger/80" />
-                  Xóa mẫu
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+        <ActionMenu
+          items={[
+            {
+              label: 'Xem / Chỉnh sửa',
+              icon: 'Eye',
+              iconClass: 'text-blue-500',
+              onClick: () => onEdit(template),
+            },
+            {
+              label: 'Nhân bản mẫu',
+              icon: 'Copy',
+              onClick: () => onDuplicate(template),
+            },
+            {
+              label: template.is_active ? 'Tạm dừng mẫu' : 'Kích hoạt mẫu',
+              icon: template.is_active ? 'PauseCircle' : 'PlayCircle',
+              separated: true,
+              onClick: () => onToggleActive(template),
+            },
+            {
+              label: 'Xóa mẫu',
+              icon: 'Trash2',
+              danger: true,
+              onClick: async () => {
+                const isConfirmed = await confirm({
+                  title: 'Xóa mẫu hợp đồng',
+                  message:
+                    'Bạn có chắc chắn muốn xóa mẫu hợp đồng này không? Hành động này không thể hoàn tác.',
+                  confirmLabel: 'Xóa',
+                  cancelLabel: 'Huỷ',
+                  variant: 'danger',
+                });
+                if (isConfirmed) {
+                  onDelete(template);
+                }
+              },
+            },
+          ]}
+        />
       </div>
 
       {/* Modern Preview Section */}
@@ -214,22 +166,11 @@ export function TemplateCard({
 
       {/* Footer Action Area */}
       <div className="flex items-center justify-between pt-5 mt-auto border-t border-border/30 relative z-10">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-3">
-            <div
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-bold uppercase tracking-wide ${
-                template.is_active
-                  ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
-                  : 'bg-surface-subtle text-muted border-border'
-              }`}
-            >
-              <div
-                className={`w-1.5 h-1.5 rounded-full shrink-0 ${template.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-muted'}`}
-              />
-              <span className="whitespace-nowrap">
-                {template.is_active ? 'Đang hoạt động' : 'Tạm dừng'}
-              </span>
-            </div>
+        <div className="flex flex-col gap-1 w-full">
+          <div className="flex items-center justify-between gap-3 w-full">
+            <Badge variant={template.is_active ? 'success' : 'gray'}>
+              {template.is_active ? 'Đang hoạt động' : 'Tạm dừng'}
+            </Badge>
             <p className="text-xs font-medium text-muted whitespace-nowrap">
               Cập nhật: {formattedDate}
             </p>

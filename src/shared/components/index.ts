@@ -42,3 +42,5 @@ export { Button } from './Button';
 export type { ButtonProps } from './Button';
 export { ActionBar } from './ActionBar';
 export type { ActionConfig } from './ActionBar';
+export { ActionMenu } from './ActionMenu';
+export type { ActionMenuItem } from './ActionMenu';

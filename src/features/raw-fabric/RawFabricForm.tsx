@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useForm, Controller, useWatch } from 'react-hook-form';
 
+import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm';
@@ -530,14 +531,15 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
               </div>
 
               {!showQuickSupplier && (
-                <button
-                  className="btn-secondary"
+                <Button
+                  variant="secondary"
                   type="button"
                   onClick={() => setShowQuickSupplier(true)}
                   style={{ marginBottom: '1rem' }}
                 >
+                  {' '}
                   + Tạo nhà dệt mới
-                </button>
+                </Button>
               )}
               {showQuickSupplier && (
                 <div style={{ marginBottom: '1rem' }}>
@@ -589,24 +591,24 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
         >
           <div>
             {!stepper.isFirst && (
-              <button
-                className="btn-secondary"
+              <Button
+                variant="secondary"
                 type="button"
                 onClick={stepper.prev}
                 disabled={isPending}
               >
                 Quay lại
-              </button>
+              </Button>
             )}
             {stepper.isFirst && (
-              <button
-                className="btn-secondary"
+              <Button
+                variant="secondary"
                 type="button"
                 onClick={onClose}
                 disabled={isPending}
               >
                 Hủy
-              </button>
+              </Button>
             )}
           </div>
 

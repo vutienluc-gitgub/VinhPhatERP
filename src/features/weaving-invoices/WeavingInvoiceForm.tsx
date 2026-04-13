@@ -6,7 +6,7 @@ import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions'
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { CurrencyInput } from '@/shared/components/CurrencyInput';
-import { CancelButton } from '@/shared/components';
+import { CancelButton, Button } from '@/shared/components';
 import { useStepper } from '@/shared/hooks/useStepper';
 import { formatCurrency } from '@/shared/utils/format';
 import {
@@ -429,9 +429,9 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
               gap: '0.5rem',
             }}
           >
-            <button
+            <Button
+              variant="secondary"
               type="button"
-              className="btn-secondary"
               onClick={() =>
                 append({
                   roll_number: '',
@@ -444,8 +444,9 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
                 })
               }
             >
+              {' '}
               + Thêm cuộn
-            </button>
+            </Button>
             {[5, 10].map((n) => (
               <button
                 key={n}
@@ -471,13 +472,9 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
           </div>
 
           <div className="sheet-footer" style={{ marginTop: '1.5rem' }}>
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={stepper.prev}
-            >
+            <Button variant="secondary" type="button" onClick={stepper.prev}>
               ← Quay lại
-            </button>
+            </Button>
             <button
               type="submit"
               form="weaving-form"

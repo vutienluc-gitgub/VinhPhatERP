@@ -10,6 +10,7 @@ import {
   ViewToggle,
   type ViewMode,
   AddButton,
+  Button,
   ClearFilterButton,
   ActionBar,
 } from '@/shared/components';
@@ -154,13 +155,15 @@ export function FinishedFabricList({
 
           <div className="flex gap-2">
             <AddButton onClick={onNew} label="Nhập mới" />
-            <button
-              className="btn-secondary btn-standard"
+            <Button
+              variant="secondary"
+              leftIcon="Zap"
+              className="btn-standard"
               type="button"
               onClick={onBulkNew}
             >
-              <Icon name="Zap" size={16} /> Nhập mẻ
-            </button>
+              Nhập mẻ
+            </Button>
             <div className="w-px h-6 bg-border mx-1" />
             <button
               className="btn-icon btn-standard"

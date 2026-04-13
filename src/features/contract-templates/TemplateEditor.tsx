@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 import { TEMPLATE_PLACEHOLDERS } from '@/schema';
 import type { ContractTemplate, ContractType } from '@/schema';
-import { Icon } from '@/shared/components';
+import { Icon, Button } from '@/shared/components';
 
 // ── Schema ───────────────────────────────────────────────────────────────────
 
@@ -88,22 +88,24 @@ export function TemplateEditor({
               sử dụng nội dung mới.
             </p>
             <div className="flex gap-2 mt-3">
-              <button
+              <Button
+                variant="primary"
                 type="button"
-                className="btn-primary text-sm py-1.5 px-3"
+                className="text-sm py-1.5 px-3"
                 onClick={() => void handleConfirm()}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Đang lưu...' : 'Xác nhận lưu'}
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="secondary"
                 type="button"
-                className="btn-secondary text-sm py-1.5 px-3"
+                className="text-sm py-1.5 px-3"
                 onClick={handleCancelConfirm}
                 disabled={isSubmitting}
               >
                 Hủy
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -166,21 +168,21 @@ export function TemplateEditor({
         </div>
 
         <div className="flex justify-end gap-3 pt-5 mt-4 border-t border-border">
-          <button
+          <Button
+            variant="secondary"
             type="button"
-            className="btn-secondary"
             onClick={onCancel}
             disabled={isSubmitting}
           >
             Hủy
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="primary"
             type="submit"
-            className="btn-primary"
             disabled={isSubmitting || !isDirty || showConfirm}
           >
             Lưu thay đổi
-          </button>
+          </Button>
         </div>
       </form>
     </div>

@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef, useState } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
+import { Button } from '@/shared/components';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
@@ -583,13 +584,15 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                   ))}
                 </div>
 
-                <button
-                  className="btn-secondary w-full mt-4"
+                <Button
+                  variant="secondary"
+                  className="w-full mt-4"
                   type="button"
                   onClick={() => append({ ...emptyOrderItem })}
                 >
+                  {' '}
                   + Thêm dòng hàng mới
-                </button>
+                </Button>
 
                 <LineTotals control={control} />
               </div>
@@ -599,24 +602,24 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
           <div className="modal-footer mt-6 p-0 border-none justify-between">
             <div>
               {!stepper.isFirst && (
-                <button
-                  className="btn-secondary"
+                <Button
+                  variant="secondary"
                   type="button"
                   onClick={stepper.prev}
                   disabled={isPending}
                 >
                   Quay lại
-                </button>
+                </Button>
               )}
               {stepper.isFirst && (
-                <button
-                  className="btn-secondary"
+                <Button
+                  variant="secondary"
                   type="button"
                   onClick={onClose}
                   disabled={isPending}
                 >
                   Hủy
-                </button>
+                </Button>
               )}
             </div>
 

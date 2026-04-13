@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Icon, ClearFilterButton } from '@/shared/components';
+import { Button, ClearFilterButton } from '@/shared/components';
 import type { ReportsFilter } from '@/api/reports.api';
 
 type ReportsFilterBarProps = {
@@ -76,12 +76,14 @@ export function ReportsFilterBar({ filter, onChange }: ReportsFilterBarProps) {
         </div>
 
         <div className="flex gap-2 self-end mb-[4px]">
-          <button
-            className="btn-primary min-h-[42px] px-6 flex items-center gap-2"
+          <Button
+            variant="primary"
+            leftIcon="Filter"
+            className="min-h-[42px] px-6 flex items-center gap-2"
             type="submit"
           >
-            <Icon name="Filter" size={16} /> Áp dụng
-          </button>
+            Áp dụng
+          </Button>
 
           {hasCustomFilter && (
             <ClearFilterButton onClick={handleClear} label="Đặt lại" />

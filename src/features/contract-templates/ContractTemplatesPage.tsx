@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Icon, Button } from '@/shared/components';
+import { Icon, Button, SearchInput } from '@/shared/components';
 import { CONTRACT_TYPE_LABELS } from '@/schema';
 import type { ContractType, ContractTemplate } from '@/schema';
 import { useContractTemplates } from '@/application/contracts';
@@ -95,7 +95,7 @@ export function ContractTemplatesPage() {
     const editTemplate = isEdit ? view.template : view.base;
 
     return (
-      <div className="panel-card card-flush">
+      <div className="panel-card card-flush !overflow-visible">
         <div className="card-header-area card-header-premium">
           <div className="flex items-center gap-4">
             <Button
@@ -137,7 +137,7 @@ export function ContractTemplatesPage() {
   // ── List view ────────────────────────────────────────────────────────────
 
   return (
-    <div className="panel-card card-flush">
+    <div className="panel-card card-flush !overflow-visible">
       {/* Header Area */}
       <div className="card-header-area card-header-premium">
         <div>
@@ -152,22 +152,17 @@ export function ContractTemplatesPage() {
         <div className="filter-compact-premium">
           <div className="filter-field">
             <label htmlFor="template-search">Tìm kiếm</label>
-            <div className="search-input-wrapper">
-              <input
-                id="template-search"
-                className="field-input"
-                type="text"
-                placeholder="Tìm kiếm mẫu văn bản..."
-                value={filter.search}
-                onChange={(e) =>
-                  setFilter((prev) => ({
-                    ...prev,
-                    search: e.target.value,
-                  }))
-                }
-              />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </div>
+            <SearchInput
+              id="template-search"
+              placeholder="Tìm kiếm mẫu văn bản..."
+              value={filter.search}
+              onChange={(e) =>
+                setFilter((prev) => ({
+                  ...prev,
+                  search: e.target.value,
+                }))
+              }
+            />
           </div>
           <div className="filter-field">
             <label>Loại danh mục</label>

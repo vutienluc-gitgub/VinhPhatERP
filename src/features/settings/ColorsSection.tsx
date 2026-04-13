@@ -1,6 +1,7 @@
 ﻿import { useState } from 'react';
 import toast from 'react-hot-toast';
 
+import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Icon } from '@/shared/components/Icon';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
@@ -70,10 +71,14 @@ export function ColorsSection() {
           <p className="eyebrow-premium">Cài đặt hệ thống</p>
           <h3 className="title-premium">Danh mục màu sắc</h3>
         </div>
-        <button className="btn-primary" type="button" onClick={handleCreate}>
-          <Icon name="Plus" size={20} />
+        <Button
+          variant="primary"
+          leftIcon="Plus"
+          type="button"
+          onClick={handleCreate}
+        >
           Thêm màu
-        </button>
+        </Button>
       </div>
 
       {/* Content */}

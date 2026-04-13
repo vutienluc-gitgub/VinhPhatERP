@@ -4,19 +4,21 @@ interface CancelButtonProps {
   disabled?: boolean;
 }
 
+import { Button } from './Button';
+
 export function CancelButton({
   onClick,
   label = 'Hủy',
   disabled = false,
 }: CancelButtonProps) {
   return (
-    <button
+    <Button
+      variant="secondary"
       type="button"
-      className="btn-secondary"
       disabled={disabled}
       onClick={onClick}
     >
       {label}
-    </button>
+    </Button>
   );
 }

@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { Button } from '@/shared/components';
 import {
   companySettingsSchema,
   companySettingsDefaultValues,
@@ -247,16 +248,17 @@ export function CompanySettingsForm() {
           marginTop: '1.5rem',
         }}
       >
-        <button
-          className="btn-secondary"
+        <Button
+          variant="secondary"
           type="button"
           disabled={isSubmitting || !isDirty}
           onClick={() =>
             settings && reset(settings as CompanySettingsFormValues)
           }
         >
+          {' '}
           Hoàn tác
-        </button>
+        </Button>
         <button
           className="primary-button btn-standard"
           type="submit"
