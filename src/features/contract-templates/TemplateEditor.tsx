@@ -1,16 +1,11 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import toast from 'react-hot-toast';
 import { z } from 'zod';
 
+import { TEMPLATE_PLACEHOLDERS } from '@/schema';
+import type { ContractTemplate, ContractType } from '@/schema';
 import { Icon } from '@/shared/components';
-
-import {
-  TEMPLATE_PLACEHOLDERS,
-  updateTemplate,
-} from './contract-templates.module';
-import type { ContractTemplate } from './contract-templates.module';
 
 // ── Schema ───────────────────────────────────────────────────────────────────
 
@@ -24,8 +19,9 @@ type EditorValues = z.infer<typeof editorSchema>;
 // ── Props ────────────────────────────────────────────────────────────────────
 
 type TemplateEditorProps = {
-  template: ContractTemplate;
-  onSaved: (updated: ContractTemplate) => void;
+  template?: ContractTemplate;
+  defaultType?: ContractType;
+  onSaved: (data: EditorValues) => Promise<void>;
   onCancel: () => void;
 };
 
@@ -46,8 +42,8 @@ export function TemplateEditor({
   } = useForm<EditorValues>({
     resolver: zodResolver(editorSchema),
     defaultValues: {
-      name: template.name,
-      content: template.content,
+      name: template?.name ?? '',
+      content: template?.content ?? '',
     },
   });
 
@@ -59,15 +55,12 @@ export function TemplateEditor({
   async function handleConfirm() {
     if (!pendingValues) return;
     try {
-      const updated = await updateTemplate(template.id, pendingValues);
-      toast.success('Luu mau hop dong thanh cong');
+      await onSaved(pendingValues);
       setShowConfirm(false);
       setPendingValues(null);
-      onSaved(updated);
     } catch (err) {
-      toast.error((err as Error).message ?? 'Co loi xay ra');
+      // Error is handled by parent, but we can catch so we don't crash
       setShowConfirm(false);
-      setPendingValues(null);
     }
   }
 
@@ -88,11 +81,11 @@ export function TemplateEditor({
           />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-amber-800">
-              Thay doi chi ap dung cho hop dong moi
+              {template ? 'Lưu thay đổi mẫu văn bản' : 'Tạo mới mẫu văn bản'}
             </p>
             <p className="text-xs text-amber-700 mt-1">
-              Cac hop dong da tao truoc do se khong bi anh huong. Ban co chac
-              muon luu?
+              Bạn có chắc chắn muốn lưu mẫu này không? Những bản in tiếp theo sẽ
+              sử dụng nội dung mới.
             </p>
             <div className="flex gap-2 mt-3">
               <button

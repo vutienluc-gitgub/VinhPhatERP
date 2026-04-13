@@ -152,6 +152,81 @@ export type ContractAuditLog = z.infer<typeof contractAuditLogSchema>;
 export type CreateContractInput = z.infer<typeof createContractInputSchema>;
 export type UpdateContractInput = z.infer<typeof updateContractInputSchema>;
 
+// ── Template update schema ───────────────────────────────────────────────────
+
+export const updateTemplateInputSchema = z.object({
+  name: z.string().trim().min(1, 'Ten mau khong duoc de trong').optional(),
+  content: z.string().min(1, 'Noi dung mau khong duoc de trong').optional(),
+  is_active: z.boolean().optional(),
+});
+
+export type UpdateTemplateInput = z.infer<typeof updateTemplateInputSchema>;
+
+// ── Template placeholders ────────────────────────────────────────────────────
+
+export const TEMPLATE_PLACEHOLDERS: { key: string; label: string }[] = [
+  {
+    key: 'contract_number',
+    label: 'So hop dong',
+  },
+  {
+    key: 'contract_date',
+    label: 'Ngay ky',
+  },
+  {
+    key: 'party_a_name',
+    label: 'Ten ben A (Doi tac)',
+  },
+  {
+    key: 'party_a_address',
+    label: 'Dia chi ben A',
+  },
+  {
+    key: 'party_a_tax_code',
+    label: 'MST ben A',
+  },
+  {
+    key: 'party_a_representative',
+    label: 'Nguoi dai dien ben A',
+  },
+  {
+    key: 'party_a_title',
+    label: 'Chuc vu dai dien ben A',
+  },
+  {
+    key: 'party_b_name',
+    label: 'Ten cong ty Vinh Phat',
+  },
+  {
+    key: 'party_b_address',
+    label: 'Dia chi Vinh Phat',
+  },
+  {
+    key: 'party_b_tax_code',
+    label: 'MST Vinh Phat',
+  },
+  {
+    key: 'party_b_bank_account',
+    label: 'Tai khoan ngan hang',
+  },
+  {
+    key: 'party_b_representative',
+    label: 'Nguoi dai dien Vinh Phat',
+  },
+  {
+    key: 'payment_term',
+    label: 'Dieu khoan thanh toan',
+  },
+  {
+    key: 'effective_date',
+    label: 'Ngay hieu luc',
+  },
+  {
+    key: 'expiry_date',
+    label: 'Ngay het han',
+  },
+];
+
 // ── Filter type ──────────────────────────────────────────────────────────────
 
 export type ContractsFilter = {

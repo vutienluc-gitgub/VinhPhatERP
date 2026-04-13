@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS contract_templates (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     created_by UUID REFERENCES profiles(id),
-    tenant_id UUID NOT NULL DEFAULT (current_setting('app.current_tenant_id', true))::uuid
+    tenant_id UUID NOT NULL DEFAULT public.current_tenant_id()
 );
 CREATE TRIGGER trg_contract_templates_updated_at BEFORE
 UPDATE ON contract_templates FOR EACH ROW EXECUTE FUNCTION set_updated_at();
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS contracts (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     created_by UUID REFERENCES profiles(id),
-    tenant_id UUID NOT NULL DEFAULT (current_setting('app.current_tenant_id', true))::uuid
+    tenant_id UUID NOT NULL DEFAULT public.current_tenant_id()
 );
 CREATE TRIGGER trg_contracts_updated_at BEFORE
 UPDATE ON contracts FOR EACH ROW EXECUTE FUNCTION set_updated_at();
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS contract_order_links (
     order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
     linked_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     linked_by UUID REFERENCES profiles(id),
-    tenant_id UUID NOT NULL DEFAULT (current_setting('app.current_tenant_id', true))::uuid,
+    tenant_id UUID NOT NULL DEFAULT public.current_tenant_id(),
     UNIQUE (contract_id, order_id)
 );
 -- ─── 4. Bảng contract_audit_logs ─────────────────────────────
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS contract_audit_logs (
     new_values JSONB,
     performed_by UUID REFERENCES profiles(id),
     performed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    tenant_id UUID NOT NULL DEFAULT (current_setting('app.current_tenant_id', true))::uuid
+    tenant_id UUID NOT NULL DEFAULT public.current_tenant_id()
 );
 -- ─── 5. Indexes ───────────────────────────────────────────────
 CREATE INDEX IF NOT EXISTS idx_contracts_contract_number ON contracts (contract_number);
@@ -108,63 +108,63 @@ ALTER TABLE contract_audit_logs ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Authenticated users can read contract_templates" ON contract_templates;
 CREATE POLICY "Authenticated users can read contract_templates" ON contract_templates FOR
 SELECT TO authenticated USING (
-        tenant_id = (current_setting('app.current_tenant_id', true))::uuid
+    tenant_id = public.current_tenant_id()
     );
 DROP POLICY IF EXISTS "Admins can manage contract_templates" ON contract_templates;
 CREATE POLICY "Admins can manage contract_templates" ON contract_templates FOR ALL TO authenticated USING (
-    tenant_id = (current_setting('app.current_tenant_id', true))::uuid
+    tenant_id = public.current_tenant_id()
     AND current_user_role() = 'admin'
 ) WITH CHECK (
-    tenant_id = (current_setting('app.current_tenant_id', true))::uuid
+    tenant_id = public.current_tenant_id()
     AND current_user_role() = 'admin'
 );
 -- contracts: authenticated users đọc được, staff+ ghi được
 DROP POLICY IF EXISTS "Authenticated users can read contracts" ON contracts;
 CREATE POLICY "Authenticated users can read contracts" ON contracts FOR
 SELECT TO authenticated USING (
-        tenant_id = (current_setting('app.current_tenant_id', true))::uuid
+    tenant_id = public.current_tenant_id()
     );
 DROP POLICY IF EXISTS "Staff can insert contracts" ON contracts;
 CREATE POLICY "Staff can insert contracts" ON contracts FOR
 INSERT TO authenticated WITH CHECK (
-        tenant_id = (current_setting('app.current_tenant_id', true))::uuid
+    tenant_id = public.current_tenant_id()
         AND current_user_role() IN ('admin', 'manager', 'staff')
     );
 DROP POLICY IF EXISTS "Staff can update contracts" ON contracts;
 CREATE POLICY "Staff can update contracts" ON contracts FOR
 UPDATE TO authenticated USING (
-        tenant_id = (current_setting('app.current_tenant_id', true))::uuid
+    tenant_id = public.current_tenant_id()
         AND current_user_role() IN ('admin', 'manager', 'staff')
     );
 DROP POLICY IF EXISTS "Managers can delete contracts" ON contracts;
 CREATE POLICY "Managers can delete contracts" ON contracts FOR DELETE TO authenticated USING (
-    tenant_id = (current_setting('app.current_tenant_id', true))::uuid
+    tenant_id = public.current_tenant_id()
     AND current_user_role() IN ('admin', 'manager')
 );
 -- contract_order_links: authenticated users đọc được, staff+ ghi được
 DROP POLICY IF EXISTS "Authenticated users can read contract_order_links" ON contract_order_links;
 CREATE POLICY "Authenticated users can read contract_order_links" ON contract_order_links FOR
 SELECT TO authenticated USING (
-        tenant_id = (current_setting('app.current_tenant_id', true))::uuid
+    tenant_id = public.current_tenant_id()
     );
 DROP POLICY IF EXISTS "Staff can manage contract_order_links" ON contract_order_links;
 CREATE POLICY "Staff can manage contract_order_links" ON contract_order_links FOR ALL TO authenticated USING (
-    tenant_id = (current_setting('app.current_tenant_id', true))::uuid
+    tenant_id = public.current_tenant_id()
     AND current_user_role() IN ('admin', 'manager', 'staff')
 ) WITH CHECK (
-    tenant_id = (current_setting('app.current_tenant_id', true))::uuid
+    tenant_id = public.current_tenant_id()
     AND current_user_role() IN ('admin', 'manager', 'staff')
 );
 -- contract_audit_logs: authenticated users đọc được, staff+ insert được (không update/delete)
 DROP POLICY IF EXISTS "Authenticated users can read contract_audit_logs" ON contract_audit_logs;
 CREATE POLICY "Authenticated users can read contract_audit_logs" ON contract_audit_logs FOR
 SELECT TO authenticated USING (
-        tenant_id = (current_setting('app.current_tenant_id', true))::uuid
+    tenant_id = public.current_tenant_id()
     );
 DROP POLICY IF EXISTS "Staff can insert contract_audit_logs" ON contract_audit_logs;
 CREATE POLICY "Staff can insert contract_audit_logs" ON contract_audit_logs FOR
 INSERT TO authenticated WITH CHECK (
-        tenant_id = (current_setting('app.current_tenant_id', true))::uuid
+    tenant_id = public.current_tenant_id()
         AND current_user_role() IN ('admin', 'manager', 'staff')
     );
 -- ─── 7. Seed settings keys cho contract module ───────────────
