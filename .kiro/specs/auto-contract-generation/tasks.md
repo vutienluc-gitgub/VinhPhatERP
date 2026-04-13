@@ -132,7 +132,7 @@ Triển khai module theo kiến trúc feature-based của dự án (React + Type
     - Sau khi tạo thành công: chuyển sang `ContractDetailPage`
     - _Requirements: 1.1–1.7, 2.1–2.5_
 
-  - [~] 7.5 Tạo `src/features/contracts/ContractDetailPage.tsx`
+  - [-] 7.5 Tạo `src/features/contracts/ContractDetailPage.tsx`
     - Hiển thị thông tin Contract, `ContractPreview`, danh sách Orders liên kết
     - Actions theo trạng thái: Chỉnh sửa (draft/sent), Gửi, Ký, Huỷ, Xuất PDF
     - Form inline chỉnh sửa các trường nội dung (chỉ khi `draft` hoặc `sent`)

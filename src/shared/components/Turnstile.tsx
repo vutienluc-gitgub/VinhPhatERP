@@ -26,6 +26,7 @@ export const Turnstile: React.FC<TurnstileProps> = ({ onVerify, options }) => {
     // 2. Render Widget khi container đã sẵn sàng
     const renderWidget = () => {
       if (window.turnstile && containerRef.current && !widgetIdRef.current) {
+        console.log('Rendering Turnstile widget...');
         widgetIdRef.current = window.turnstile.render(containerRef.current, {
           sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
           callback: onVerify,
