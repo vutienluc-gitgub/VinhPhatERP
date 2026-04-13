@@ -22,9 +22,14 @@ import type { Customer, CustomersFilter } from './types';
 type CustomerListProps = {
   onEdit: (customer: Customer) => void;
   onNew: () => void;
+  onCreateContract: (customer: Customer) => void;
 };
 
-export function CustomerList({ onEdit, onNew }: CustomerListProps) {
+export function CustomerList({
+  onEdit,
+  onNew,
+  onCreateContract,
+}: CustomerListProps) {
   const [queryInput, setQueryInput] = useState('');
   const [filters, setFilters] = useState<CustomersFilter>({});
   const [page, setPage] = useState(1);
@@ -243,14 +248,19 @@ export function CustomerList({ onEdit, onNew }: CustomerListProps) {
               <ActionBar
                 actions={[
                   {
+                    icon: 'FileText',
+                    onClick: () => onCreateContract(c),
+                    title: 'Tao hop dong',
+                  },
+                  {
                     icon: 'Pencil',
                     onClick: () => onEdit(c),
-                    title: 'Sửa',
+                    title: 'Sua',
                   },
                   {
                     icon: 'Trash2',
                     onClick: () => handleDelete(c),
-                    title: 'Xóa',
+                    title: 'Xoa',
                     variant: 'danger',
                     disabled: deleteMutation.isPending,
                   },

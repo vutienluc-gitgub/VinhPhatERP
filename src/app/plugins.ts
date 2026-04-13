@@ -22,6 +22,8 @@ import { shippingRatesPlugin } from '@/features/shipping-rates';
 import { settingsPlugin } from '@/features/settings';
 import { dyeingOrdersPlugin } from '@/features/dyeing-orders';
 import { employeesPlugin } from '@/features/employees/employees.module';
+import { contractTemplatesPlugin } from '@/features/contract-templates';
+import { contractsPlugin } from '@/features/contracts';
 
 /**
  * Plugin Registry — Đăng ký tất cả features vào hệ thống.
@@ -36,6 +38,7 @@ const plugins: FeaturePlugin[] = [
   // ── SALES ──
   quotationsPlugin,
   ordersPlugin,
+  contractsPlugin,
   orderProgressPlugin,
   orderKanbanPlugin,
   customersPlugin,
@@ -63,6 +66,7 @@ const plugins: FeaturePlugin[] = [
   shippingRatesPlugin,
   settingsPlugin,
   employeesPlugin,
+  contractTemplatesPlugin,
 ];
 
 // Register all plugins
