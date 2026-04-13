@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
+import { Button } from '@/shared/components';
 import type { ShippingRate } from '@/shared/hooks/useShippingRateOptions';
 import { useActiveShippingRates } from '@/shared/hooks/useShippingRateOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
@@ -431,14 +432,14 @@ export function ShipmentForm({
             border: 'none',
           }}
         >
-          <button
-            className="btn-secondary"
+          <Button
+            variant="secondary"
             type="button"
             onClick={onClose}
             disabled={isSubmitting || createMutation.isPending}
           >
             Huỷ
-          </button>
+          </Button>
           <button
             className="primary-button btn-standard"
             type="submit"

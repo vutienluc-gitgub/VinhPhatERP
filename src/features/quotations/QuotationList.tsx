@@ -8,6 +8,7 @@ import {
   type BadgeVariant,
   DataTablePremium,
   AddButton,
+  Button,
   ClearFilterButton,
   ActionBar,
 } from '@/shared/components';
@@ -424,36 +425,40 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                 </div>
 
                 <div className="flex gap-2 pt-3 border-t border-border">
-                  <button
-                    className="btn-secondary flex-1 shadow-sm font-medium"
+                  <Button
+                    variant="secondary"
+                    className="flex-1 shadow-sm font-medium"
+                    leftIcon="Eye"
                     onClick={(e) => {
                       e.stopPropagation();
                       onView(q);
                     }}
                   >
-                    <Icon name="Eye" size={16} /> Chi tiết
-                  </button>
+                    Chi tiết
+                  </Button>
                   {q.status === 'draft' && (
                     <>
-                      <button
-                        className="btn-secondary flex-1 text-primary shadow-sm font-medium"
+                      <Button
+                        variant="secondary"
+                        className="flex-1 text-primary shadow-sm font-medium"
+                        leftIcon="Pencil"
                         onClick={(e) => {
                           e.stopPropagation();
                           onEdit(q);
                         }}
                       >
-                        <Icon name="Pencil" size={16} /> Sửa
-                      </button>
-                      <button
-                        className="btn-secondary text-danger px-3 shadow-sm"
+                        Sửa
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        className="text-danger px-3 shadow-sm"
+                        leftIcon="Trash2"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(q);
                         }}
                         disabled={deleteMutation.isPending}
-                      >
-                        <Icon name="Trash2" size={16} />
-                      </button>
+                      />
                     </>
                   )}
                 </div>

@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
+import { Button } from '@/shared/components';
 import {
   customersDefaultValues,
   CUSTOMER_SOURCES,
@@ -297,17 +298,17 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
       </div>
 
       <div className="flex justify-end gap-3 pt-5 mt-4 border-t border-border">
-        <button
-          className="btn-secondary"
+        <Button
+          variant="secondary"
           type="button"
           onClick={onClose}
           disabled={isPending}
         >
           Hủy
-        </button>
-        <button className="btn-primary" type="submit" disabled={isPending}>
-          {isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo mới'}
-        </button>
+        </Button>
+        <Button variant="primary" type="submit" disabled={isPending}>
+          isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo mới
+        </Button>
       </div>
     </form>
   );

@@ -1,22 +1,23 @@
-import { Icon } from './Icon';
-
 interface ClearFilterButtonProps {
   onClick: () => void;
   label?: string;
 }
+
+import { Button } from './Button';
 
 export function ClearFilterButton({
   onClick,
   label = 'Xóa lọc',
 }: ClearFilterButtonProps) {
   return (
-    <button
+    <Button
+      variant="secondary"
+      leftIcon="X"
+      className="text-danger border-danger/20"
       type="button"
-      className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
       onClick={onClick}
     >
-      <Icon name="X" size={14} />
       {label}
-    </button>
+    </Button>
   );
 }

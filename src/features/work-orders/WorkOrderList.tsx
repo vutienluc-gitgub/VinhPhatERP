@@ -8,6 +8,7 @@ import {
   type BadgeVariant,
   DataTablePremium,
   AddButton,
+  Button,
   ClearFilterButton,
   ActionBar,
 } from '@/shared/components';
@@ -357,37 +358,43 @@ export function WorkOrderList({
                 </div>
 
                 <div className="flex gap-2 pt-3 mt-1 border-t border-border/10">
-                  <button
-                    className="btn-secondary flex-1"
+                  <Button
+                    variant="secondary"
+                    className="flex-1"
+                    leftIcon="Eye"
                     onClick={(e) => {
                       e.stopPropagation();
                       onView(wo.id);
                     }}
                   >
-                    <Icon name="Eye" size={16} /> Chi tiết
-                  </button>
+                    Chi tiết
+                  </Button>
                   {wo.status === 'draft' && (
-                    <button
-                      className="btn-secondary flex-1 text-primary"
+                    <Button
+                      variant="secondary"
+                      className="flex-1 text-primary"
+                      leftIcon="Pencil"
                       onClick={(e) => {
                         e.stopPropagation();
                         onEdit(wo);
                       }}
                     >
-                      <Icon name="Pencil" size={16} /> Sửa
-                    </button>
+                      Sửa
+                    </Button>
                   )}
                   {wo.status === 'draft' && (
-                    <button
-                      className="btn-primary flex-1"
+                    <Button
+                      variant="primary"
+                      className="flex-1"
+                      leftIcon="Play"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleStart(wo.id);
                       }}
                       disabled={startMutation.isPending}
                     >
-                      <Icon name="Play" size={16} /> Bắt đầu
-                    </button>
+                      Bắt đầu
+                    </Button>
                   )}
                 </div>
               </div>

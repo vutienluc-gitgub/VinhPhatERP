@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 
+import { Button } from '@/shared/components';
 import { Icon } from '@/shared/components/Icon';
 
 interface ActionMenuProps {
@@ -57,19 +58,23 @@ export function ActionMenu({
         </div>
 
         {/* Nhập mẻ: secondary */}
-        <button
+        <Button
+          variant="secondary"
+          leftIcon="Zap"
+          className="btn-standard"
           type="button"
-          className="btn-secondary btn-standard"
           onClick={onBulkNew}
           disabled={isExporting}
         >
-          <Icon name="Zap" size={16} /> Nhập mẻ
-        </button>
+          Nhập mẻ
+        </Button>
 
         {/* Nhập mới: primary (rightmost) */}
-        <button
+        <Button
+          variant="primary"
+          leftIcon="Plus"
+          className="btn-standard"
           type="button"
-          className="btn-primary btn-standard"
           onClick={onNew}
           disabled={isExporting}
           style={{
@@ -80,8 +85,8 @@ export function ActionMenu({
             gap: '0.4rem',
           }}
         >
-          <Icon name="Plus" size={18} /> Nhập mới
-        </button>
+          Nhập mới
+        </Button>
       </div>
 
       {/* Mobile layout — hidden on desktop */}
@@ -132,9 +137,11 @@ export function ActionMenu({
         </div>
 
         {/* Nhập mới: full-width primary */}
-        <button
+        <Button
+          variant="primary"
+          leftIcon="Plus"
+          className="flex-1"
           type="button"
-          className="btn-primary flex-1"
           onClick={onNew}
           disabled={isExporting}
           style={{
@@ -145,8 +152,8 @@ export function ActionMenu({
             gap: '0.4rem',
           }}
         >
-          <Icon name="Plus" size={18} /> Nhập mới
-        </button>
+          Nhập mới
+        </Button>
       </div>
     </>
   );

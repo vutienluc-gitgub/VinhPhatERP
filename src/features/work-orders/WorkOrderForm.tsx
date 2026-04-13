@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { useEffect, useRef, useState } from 'react';
 
+import { Button } from '@/shared/components';
 import {
   useBomList,
   useOrderList,
@@ -533,24 +534,24 @@ export function WorkOrderForm({
             }}
           >
             {!stepper.isFirst && (
-              <button
-                className="btn-secondary"
+              <Button
+                variant="secondary"
                 type="button"
                 onClick={stepper.prev}
                 disabled={createMutation.isPending}
               >
                 Quay lại
-              </button>
+              </Button>
             )}
             {stepper.isFirst && (
-              <button
-                className="btn-secondary"
+              <Button
+                variant="secondary"
                 type="button"
                 onClick={onCancel}
                 disabled={createMutation.isPending}
               >
                 Hủy bỏ
-              </button>
+              </Button>
             )}
             {/* Save Status Indicator */}
             <SaveStatus status={saveStatus} lastSavedAt={lastSavedAt} />

@@ -1,3 +1,4 @@
+import { Button } from '@/shared/components';
 type Props = {
   onRestore: () => void;
   onDiscard: () => void;
@@ -49,21 +50,23 @@ export default function DraftBanner({
         }}
       >
         {!hasConflict && (
-          <button
+          <Button
+            variant="primary"
+            className="btn-sm"
             type="button"
-            className="btn-primary btn-sm"
             onClick={onRestore}
           >
             Khôi phục
-          </button>
+          </Button>
         )}
-        <button
+        <Button
+          variant="secondary"
+          className="btn-sm"
           type="button"
-          className="btn-secondary btn-sm"
           onClick={onDiscard}
         >
-          {hasConflict ? 'Bỏ qua' : 'Xóa nháp'}
-        </button>
+          hasConflict ? 'Bỏ qua' : 'Xóa nháp
+        </Button>
       </div>
     </div>
   );

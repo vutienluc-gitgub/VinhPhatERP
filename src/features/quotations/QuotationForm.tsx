@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
+import { Button } from '@/shared/components';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { Combobox } from '@/shared/components/Combobox';
 import { Icon } from '@/shared/components/Icon';
@@ -633,17 +634,17 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
       </div>
 
       <div className="modal-footer mt-6 p-0 border-none bg-transparent">
-        <button
-          className="btn-secondary"
+        <Button
+          variant="secondary"
           type="button"
           onClick={onClose}
           disabled={isPending}
         >
           Hủy
-        </button>
-        <button className="btn-primary" type="submit" disabled={isPending}>
-          {isPending ? 'Dang luu...' : isEditing ? 'Cap nhat' : 'Tao bao gia'}
-        </button>
+        </Button>
+        <Button variant="primary" type="submit" disabled={isPending}>
+          isPending ? 'Dang luu...' : isEditing ? 'Cap nhat' : 'Tao bao gia
+        </Button>
       </div>
     </form>
   );

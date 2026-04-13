@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   useCallback,
@@ -8,6 +7,9 @@ import {
   useState,
   type PropsWithChildren,
 } from 'react';
+
+import { Button } from '@/shared/components';
+/* eslint-disable react-refresh/only-export-components */
 
 import { AdaptiveSheet } from './AdaptiveSheet';
 
@@ -92,13 +94,9 @@ export function ConfirmProvider({ children }: PropsWithChildren) {
         footer={
           <>
             {!options.isAlert && (
-              <button
-                className="btn-secondary"
-                type="button"
-                onClick={handleCancel}
-              >
-                {options.cancelLabel ?? 'Huỷ'}
-              </button>
+              <Button variant="secondary" type="button" onClick={handleCancel}>
+                options.cancelLabel ?? 'Huỷ
+              </Button>
             )}
             <button
               className={

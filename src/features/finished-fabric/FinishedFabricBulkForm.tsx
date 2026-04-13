@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
+import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import {
@@ -400,20 +401,22 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
             Tùy chọn: xuất danh sách vừa nhập ra file
           </p>
           <div className="bulk-success-actions">
-            <button
-              className="btn-secondary"
+            <Button
+              variant="secondary"
               type="button"
               onClick={() => exportExcel(savedRolls, 'bien_ban_nhap_kho_tp')}
             >
+              {' '}
               📊 Xuất Excel
-            </button>
-            <button
-              className="btn-secondary"
+            </Button>
+            <Button
+              variant="secondary"
               type="button"
               onClick={() => exportPdf(savedRolls, 'bien_ban_nhap_kho_tp')}
             >
+              {' '}
               🖨 Xuất PDF
-            </button>
+            </Button>
             <button
               className="primary-button btn-standard"
               type="button"
@@ -796,13 +799,9 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                     marginTop: '1rem',
                   }}
                 >
-                  <button
-                    className="btn-secondary"
-                    type="button"
-                    onClick={addRow}
-                  >
+                  <Button variant="secondary" type="button" onClick={addRow}>
                     + 1 cuộn
-                  </button>
+                  </Button>
                   <span
                     style={{
                       alignSelf: 'center',
@@ -828,24 +827,24 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
             >
               <div>
                 {!stepper.isFirst && (
-                  <button
-                    className="btn-secondary"
+                  <Button
+                    variant="secondary"
                     type="button"
                     onClick={stepper.prev}
                     disabled={isPending}
                   >
                     Quay lại
-                  </button>
+                  </Button>
                 )}
                 {stepper.isFirst && (
-                  <button
-                    className="btn-secondary"
+                  <Button
+                    variant="secondary"
                     type="button"
                     onClick={onClose}
                     disabled={isPending}
                   >
                     Hủy
-                  </button>
+                  </Button>
                 )}
               </div>
 

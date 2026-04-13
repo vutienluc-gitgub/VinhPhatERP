@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
+import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { CurrencyInput } from '@/shared/components/CurrencyInput';
@@ -264,8 +265,8 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                   </span>
                 )}
                 {!showQuickSupplier && (
-                  <button
-                    className="btn-secondary"
+                  <Button
+                    variant="secondary"
                     type="button"
                     onClick={() => setShowQuickSupplier(true)}
                     style={{
@@ -275,8 +276,9 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                       marginTop: '0.5rem',
                     }}
                   >
+                    {' '}
                     + Tạo NCC mới
-                  </button>
+                  </Button>
                 )}
                 {showQuickSupplier && (
                   <div style={{ marginTop: '0.5rem' }}>
@@ -581,8 +583,8 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
               ))}
             </div>
 
-            <button
-              className="btn-secondary"
+            <Button
+              variant="secondary"
               type="button"
               onClick={() => append({ ...emptyItem })}
               style={{
@@ -590,8 +592,9 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                 width: '100%',
               }}
             >
+              {' '}
               + Thêm dòng sợi
-            </button>
+            </Button>
 
             <LineTotals control={control} />
           </FormSection>
@@ -620,14 +623,14 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
             border: 'none',
           }}
         >
-          <button
-            className="btn-secondary"
+          <Button
+            variant="secondary"
             type="button"
             onClick={onClose}
             disabled={isPending}
           >
             Hủy
-          </button>
+          </Button>
           <button
             className="primary-button btn-standard"
             type="submit"

@@ -1,4 +1,5 @@
-﻿import { Icon } from '@/shared/components/Icon';
+import { Button } from '@/shared/components';
+import { Icon } from '@/shared/components/Icon';
 import { Badge } from '@/shared/components/Badge';
 import { useBomVersions } from '@/application/production';
 
@@ -63,37 +64,40 @@ export function BomDetail({
         {/* Actions */}
         <div className="flex gap-2">
           {bom.status === 'draft' && (
-            <button
-              className="btn-primary flex items-center gap-2"
+            <Button
+              variant="primary"
+              leftIcon="CheckCircle"
+              className="flex items-center gap-2"
               type="button"
               onClick={onApprove}
               disabled={isSaving}
             >
-              <Icon name="CheckCircle" size={16} />
               Phe duyet
-            </button>
+            </Button>
           )}
 
           {bom.status === 'approved' && (
             <>
-              <button
-                className="btn-secondary flex items-center gap-2"
+              <Button
+                variant="secondary"
+                leftIcon="GitMerge"
+                className="flex items-center gap-2"
                 type="button"
                 onClick={onRevise}
                 disabled={isSaving}
               >
-                <Icon name="GitMerge" size={16} />
                 Tao Revision
-              </button>
-              <button
-                className="btn-secondary text-danger border-danger/20 flex items-center gap-2"
+              </Button>
+              <Button
+                variant="secondary"
+                leftIcon="FileX"
+                className="text-danger border-danger/20 flex items-center gap-2"
                 type="button"
                 onClick={onDeprecate}
                 disabled={isSaving}
               >
-                <Icon name="FileX" size={16} />
                 Bao phe
-              </button>
+              </Button>
             </>
           )}
         </div>

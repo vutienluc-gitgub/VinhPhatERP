@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
+import { Button } from '@/shared/components';
 import { colorSchema, colorDefaultValues } from '@/schema/color.schema';
 import type { ColorFormValues, ColorRow } from '@/schema/color.schema';
 import { useColorMutations } from '@/application/settings';
@@ -140,25 +141,22 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
       </div>
 
       <div className="flex justify-end gap-3 pt-4 border-t border-border mt-6">
-        <button
+        <Button
+          variant="secondary"
           type="button"
-          className="btn-secondary"
           onClick={onClose}
           disabled={upsertMutation.isPending}
         >
           Hủy
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="primary"
           type="submit"
-          className="btn-primary"
           disabled={upsertMutation.isPending}
         >
-          {upsertMutation.isPending
-            ? 'Đang lưu...'
-            : isEditing
-              ? 'Cập nhật'
-              : 'Thêm mới'}
-        </button>
+          upsertMutation.isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' :
+          'Thêm mới
+        </Button>
       </div>
     </form>
   );

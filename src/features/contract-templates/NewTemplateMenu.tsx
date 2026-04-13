@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Icon } from '@/shared/components';
+import { Icon, Button } from '@/shared/components';
 import type { ContractType } from '@/schema';
 
 // ── Props ────────────────────────────────────────────────────────────────────
@@ -39,9 +39,10 @@ export function NewTemplateMenu({ onSelect }: NewTemplateMenuProps) {
 
   return (
     <div className="relative" ref={menuRef}>
-      <button
+      <Button
+        variant="primary"
         type="button"
-        className="btn-primary h-[48px] px-6 shadow-lg shadow-primary/20 flex items-center gap-2.5 rounded-2xl font-black text-sm transition-all hover:-translate-y-0.5 active:scale-95"
+        className="h-[48px] px-6 shadow-lg shadow-primary/20 flex items-center gap-2.5 rounded-2xl font-black text-sm transition-all hover:-translate-y-0.5 active:scale-95"
         onClick={() => setOpen((v) => !v)}
       >
         <Icon name="Plus" size={20} />
@@ -51,7 +52,7 @@ export function NewTemplateMenu({ onSelect }: NewTemplateMenuProps) {
         >
           <Icon name="ChevronDown" size={14} />
         </div>
-      </button>
+      </Button>
 
       {open && (
         <div className="absolute right-0 top-full mt-2.5 z-[50] w-64 p-2 rounded-2xl border border-border/60 bg-surface shadow-2xl animate-in zoom-in-95 duration-200 origin-top-right">

@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
@@ -8,6 +8,7 @@ import {
   Icon,
   Combobox,
   CancelButton,
+  Button,
 } from '@/shared/components';
 import { fetchRawFabricAll } from '@/api/raw-fabric.api';
 import {
@@ -128,17 +129,14 @@ export function DyeingOrderForm({
       footer={
         <div className="flex justify-end gap-2 w-full">
           <CancelButton onClick={onClose} label="Huỷ" />
-          <button
-            className="btn-primary"
+          <Button
+            variant="primary"
             onClick={handleSubmit(onSubmit)}
             disabled={createMutation.isPending || updateMutation.isPending}
           >
-            {createMutation.isPending || updateMutation.isPending
-              ? 'Dang luu...'
-              : isEdit
-                ? 'Cap nhat'
-                : 'Tao lenh nhuom'}
-          </button>
+            createMutation.isPending || updateMutation.isPending ? 'Dang luu...'
+            : isEdit ? 'Cap nhat' : 'Tao lenh nhuom
+          </Button>
         </div>
       }
     >

@@ -8,6 +8,7 @@ import {
   type BadgeVariant,
   DataTablePremium,
   AddButton,
+  Button,
   ClearFilterButton,
   ActionBar,
 } from '@/shared/components';
@@ -359,40 +360,40 @@ export function YarnReceiptList({
               </div>
               <div className="flex gap-2 pt-1">
                 {r.status === 'draft' && canConfirm && (
-                  <button
-                    className="btn-secondary flex-1 text-success"
+                  <Button
+                    variant="secondary"
+                    className="flex-1 text-success"
+                    leftIcon="CheckCircle"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleConfirmReceipt(r);
                     }}
                   >
-                    <Icon name="CheckCircle" size={16} /> Xác nhận
-                  </button>
+                    Xác nhận
+                  </Button>
                 )}
-                <button
-                  className="btn-secondary flex-1"
+                <Button
+                  variant="secondary"
+                  className="flex-1"
+                  leftIcon={r.status === 'draft' ? 'Pencil' : 'Eye'}
                   onClick={(e) => {
                     e.stopPropagation();
                     onEdit(r);
                   }}
                 >
-                  <Icon
-                    name={r.status === 'draft' ? 'Pencil' : 'Eye'}
-                    size={16}
-                  />{' '}
                   {r.status === 'draft' ? 'Sửa' : 'Chi tiết'}
-                </button>
+                </Button>
                 {r.status === 'draft' && (
-                  <button
-                    className="btn-secondary text-danger px-3"
+                  <Button
+                    variant="secondary"
+                    className="text-danger px-3"
+                    leftIcon="Trash2"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDelete(r);
                     }}
                     disabled={deleteMutation.isPending}
-                  >
-                    <Icon name="Trash2" size={16} />
-                  </button>
+                  />
                 )}
               </div>
             </div>

@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
+import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { useMarkDelivered } from '@/application/shipments';
 
@@ -142,14 +143,14 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
             border: 'none',
           }}
         >
-          <button
-            className="btn-secondary"
+          <Button
+            variant="secondary"
             type="button"
             onClick={onClose}
             disabled={isSubmitting || deliverMutation.isPending}
           >
             Huỷ
-          </button>
+          </Button>
           <button
             className="primary-button btn-standard"
             type="submit"

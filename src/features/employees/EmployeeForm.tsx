@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
 
+import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import {
@@ -230,14 +231,14 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
             border: 'none',
           }}
         >
-          <button
+          <Button
+            variant="secondary"
             type="button"
-            className="btn-secondary"
             onClick={onClose}
             disabled={isPending}
           >
             Hủy
-          </button>
+          </Button>
           <button
             type="submit"
             className="primary-button btn-standard"
