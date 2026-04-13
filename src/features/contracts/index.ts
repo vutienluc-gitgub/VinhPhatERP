@@ -1,3 +1,4 @@
+export * from './ContractDetailPage';
 export * from './ContractForm';
 export * from './ContractsPage';
 export * from './ContractPreview';
