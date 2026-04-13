@@ -165,7 +165,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
                   value: '',
                   label: 'Tat ca trang thai',
                 },
-                ...CONTRACT_STATUSES.map((s) => ({
+                ...CONTRACT_STATUSES.map((s: ContractStatus) => ({
                   value: s,
                   label: CONTRACT_STATUS_LABELS[s],
                 })),
@@ -188,7 +188,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
                   value: '',
                   label: 'Tat ca loai',
                 },
-                ...CONTRACT_TYPES.map((t) => ({
+                ...CONTRACT_TYPES.map((t: ContractType) => ({
                   value: t,
                   label: CONTRACT_TYPE_LABELS[t],
                 })),

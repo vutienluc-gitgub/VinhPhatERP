@@ -31,6 +31,7 @@ export interface AuthActions {
   signIn: (
     email: string,
     password: string,
+    captchaToken?: string,
   ) => Promise<{ error: AuthError | null }>;
   signUp: (
     email: string,
@@ -108,13 +109,19 @@ export function AuthProvider({ children }: PropsWithChildren) {
     return () => subscription.unsubscribe();
   }, [fetchProfile]);
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
-  }, []);
+  const signIn = useCallback(
+    async (email: string, password: string, captchaToken?: string) => {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+        options: {
+          captchaToken,
+        },
+      });
+      return { error };
+    },
+    [],
+  );
 
   const signUp = useCallback(async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signUp({
