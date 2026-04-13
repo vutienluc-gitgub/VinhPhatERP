@@ -10,8 +10,8 @@ import { Icon } from '@/shared/components';
 // ── Schema ───────────────────────────────────────────────────────────────────
 
 const editorSchema = z.object({
-  name: z.string().trim().min(1, 'Ten mau khong duoc de trong'),
-  content: z.string().min(1, 'Noi dung mau khong duoc de trong'),
+  name: z.string().trim().min(1, 'Tên mẫu không được để trống'),
+  content: z.string().min(1, 'Nội dung mẫu không được để trống'),
 });
 
 type EditorValues = z.infer<typeof editorSchema>;
@@ -94,7 +94,7 @@ export function TemplateEditor({
                 onClick={() => void handleConfirm()}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Dang luu...' : 'Xac nhan luu'}
+                {isSubmitting ? 'Đang lưu...' : 'Xác nhận lưu'}
               </button>
               <button
                 type="button"
@@ -102,7 +102,7 @@ export function TemplateEditor({
                 onClick={handleCancelConfirm}
                 disabled={isSubmitting}
               >
-                Huy
+                Hủy
               </button>
             </div>
           </div>
@@ -114,7 +114,7 @@ export function TemplateEditor({
           {/* Template name */}
           <div className="form-field">
             <label htmlFor="template-name">
-              Ten mau <span className="field-required">*</span>
+              Tên mẫu <span className="field-required">*</span>
             </label>
             <input
               id="template-name"
@@ -129,7 +129,7 @@ export function TemplateEditor({
 
           {/* Placeholder reference */}
           <div className="form-field">
-            <label>Placeholders co san</label>
+            <label>Placeholders có sẵn</label>
             <div className="flex flex-wrap gap-1.5 p-3 rounded-lg border border-border bg-surface-subtle">
               {TEMPLATE_PLACEHOLDERS.map((p) => (
                 <span
@@ -142,21 +142,21 @@ export function TemplateEditor({
               ))}
             </div>
             <p className="text-xs text-muted mt-1">
-              Sao chep placeholder vao noi dung de tu dong dien du lieu khi tao
-              hop dong.
+              Sao chép placeholder vào nội dung để tự động điền dữ liệu khi tạo
+              hợp đồng.
             </p>
           </div>
 
           {/* Content editor */}
           <div className="form-field">
             <label htmlFor="template-content">
-              Noi dung HTML <span className="field-required">*</span>
+              Nội dung HTML <span className="field-required">*</span>
             </label>
             <textarea
               id="template-content"
               className={`field-textarea font-mono text-sm${errors.content ? ' is-error' : ''}`}
               rows={20}
-              placeholder="<p>Noi dung hop dong voi {{placeholder}}...</p>"
+              placeholder="<p>Nội dung hợp đồng với {{placeholder}}...</p>"
               {...register('content')}
             />
             {errors.content && (
@@ -172,14 +172,14 @@ export function TemplateEditor({
             onClick={onCancel}
             disabled={isSubmitting}
           >
-            Huy
+            Hủy
           </button>
           <button
             type="submit"
             className="btn-primary"
             disabled={isSubmitting || !isDirty || showConfirm}
           >
-            Luu thay doi
+            Lưu thay đổi
           </button>
         </div>
       </form>
