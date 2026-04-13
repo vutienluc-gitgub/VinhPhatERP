@@ -69,12 +69,12 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
       {/* Header */}
       <div className="card-header-area card-header-premium">
         <div>
-          <p className="eyebrow-premium">QUẢN LY HOP DONG</p>
-          <h3 className="title-premium">Danh sach hop dong</h3>
+          <p className="eyebrow-premium">QUẢN LÝ HỢP ĐỒNG</p>
+          <h3 className="title-premium">Danh sách hợp đồng</h3>
         </div>
         <AddButton
           onClick={onNew ?? (() => {})}
-          label="Tao hop dong moi"
+          label="Tạo hợp đồng mới"
           icon="FilePlus"
         />
       </div>
@@ -85,7 +85,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
           <div className="kpi-overlay" />
           <div className="kpi-content">
             <div className="kpi-info">
-              <p className="kpi-label">Tong hop dong</p>
+              <p className="kpi-label">Tổng hợp đồng</p>
               <p className="kpi-value">{contracts.length}</p>
             </div>
             <div className="kpi-icon-box">
@@ -93,7 +93,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
             </div>
           </div>
           <div className="kpi-footer text-xs opacity-80 italic">
-            Tat ca hop dong trong he thong
+            Tất cả hợp đồng trong hệ thống
           </div>
         </div>
 
@@ -101,7 +101,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
           <div className="kpi-overlay" />
           <div className="kpi-content">
             <div className="kpi-info">
-              <p className="kpi-label">Da ky</p>
+              <p className="kpi-label">Đã ký</p>
               <p className="kpi-value">
                 {contracts.filter((c) => c.status === 'signed').length}
               </p>
@@ -111,7 +111,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
             </div>
           </div>
           <div className="kpi-footer text-xs opacity-80 italic">
-            Hop dong da duoc ky ket
+            Hợp đồng đã được ký kết
           </div>
         </div>
 
@@ -119,7 +119,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
           <div className="kpi-overlay" />
           <div className="kpi-content">
             <div className="kpi-info">
-              <p className="kpi-label">Cho xu ly</p>
+              <p className="kpi-label">Chờ xử lý</p>
               <p className="kpi-value">
                 {
                   contracts.filter(
@@ -133,7 +133,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
             </div>
           </div>
           <div className="kpi-footer text-xs opacity-80 italic">
-            Nhap / Da gui
+            Nháp / Đã gửi
           </div>
         </div>
       </div>
@@ -142,13 +142,13 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
       <div className="filter-bar card-filter-section p-4 border-b border-border">
         <div className="filter-compact-premium">
           <div className="filter-field">
-            <label htmlFor="contract-search">Tim kiem</label>
+            <label htmlFor="contract-search">Tìm kiếm</label>
             <form className="search-input-wrapper" onSubmit={handleSearch}>
               <input
                 id="contract-search"
                 className="field-input"
                 type="text"
-                placeholder="So hop dong, ten doi tac..."
+                placeholder="Số hợp đồng, tên đối tác..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
               />
@@ -158,12 +158,12 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
           </div>
 
           <div className="filter-field">
-            <label>Trang thai</label>
+            <label>Trạng thái</label>
             <Combobox
               options={[
                 {
                   value: '',
-                  label: 'Tat ca trang thai',
+                  label: 'Tất cả trạng thái',
                 },
                 ...CONTRACT_STATUSES.map((s: ContractStatus) => ({
                   value: s,
@@ -181,12 +181,12 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
           </div>
 
           <div className="filter-field">
-            <label>Loai hop dong</label>
+            <label>Loại hợp đồng</label>
             <Combobox
               options={[
                 {
                   value: '',
-                  label: 'Tat ca loai',
+                  label: 'Tất cả loại',
                 },
                 ...CONTRACT_TYPES.map((t: ContractType) => ({
                   value: t,
@@ -204,7 +204,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
           </div>
 
           <div className="filter-field">
-            <label>Tu ngay</label>
+            <label>Từ ngày</label>
             <input
               className="field-input"
               type="date"
@@ -219,7 +219,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
           </div>
 
           <div className="filter-field">
-            <label>Den ngay</label>
+            <label>Đến ngày</label>
             <input
               className="field-input"
               type="date"
@@ -239,7 +239,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
 
       {error && (
         <div className="p-4">
-          <p className="error-inline">Loi: {(error as Error).message}</p>
+          <p className="error-inline">Lỗi: {(error as Error).message}</p>
         </div>
       )}
 
@@ -250,19 +250,19 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
         rowKey={(c) => c.id}
         onRowClick={onView}
         emptyStateTitle={
-          hasFilter ? 'Khong tim thay hop dong' : 'Chua co hop dong nao'
+          hasFilter ? 'Không tìm thấy hợp đồng' : 'Chưa có hợp đồng nào'
         }
         emptyStateDescription={
           hasFilter
-            ? 'Vui long thu dieu chinh lai bo loc.'
-            : 'Nhan nut tao hop dong moi de bat dau.'
+            ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
+            : 'Nhấn nút tạo hợp đồng mới để bắt đầu.'
         }
         emptyStateIcon={hasFilter ? 'Search' : 'FileText'}
-        emptyStateActionLabel={!hasFilter ? '+ Tao hop dong moi' : undefined}
+        emptyStateActionLabel={!hasFilter ? '+ Tạo hợp đồng mới' : undefined}
         onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={[
           {
-            header: 'So hop dong',
+            header: 'Số hợp đồng',
             cell: (c) => (
               <span className="font-bold text-primary font-mono text-sm">
                 {c.contract_number}
@@ -270,7 +270,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
             ),
           },
           {
-            header: 'Loai',
+            header: 'Loại',
             cell: (c) => (
               <span className="badge-outline text-xs">
                 {CONTRACT_TYPE_LABELS[c.type]}
@@ -278,7 +278,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
             ),
           },
           {
-            header: 'Ben A (Doi tac)',
+            header: 'Bên A (Đối tác)',
             cell: (c) => (
               <div className="flex flex-col">
                 <span className="font-medium">{c.party_a_name}</span>
@@ -291,16 +291,16 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
             ),
           },
           {
-            header: 'Trang thai',
+            header: 'Trạng thái',
             cell: (c) => <ContractStatusBadge status={c.status} />,
           },
           {
-            header: 'Ngay tao',
+            header: 'Ngày tạo',
             className: 'td-muted text-sm',
             cell: (c) => formatDate(c.created_at),
           },
           {
-            header: 'Thao tac',
+            header: 'Thao tác',
             className: 'text-right',
             onCellClick: () => {},
             cell: (c) => (
@@ -309,7 +309,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
                   {
                     icon: 'Eye',
                     onClick: () => onView?.(c),
-                    title: 'Xem chi tiet',
+                    title: 'Xem chi tiết',
                   },
                 ]}
               />
