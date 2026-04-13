@@ -53,7 +53,7 @@ export function useUpdateContract() {
       void queryClient.invalidateQueries({
         queryKey: [...CONTRACTS_KEY, updated.id, 'audit-logs'],
       });
-      toast.success('Cap nhat hop dong thanh cong');
+      toast.success('Cập nhật hợp đồng thành công');
     },
     onError: (err: Error) => {
       toast.error(err.message ?? 'Có lỗi xảy ra');
@@ -111,7 +111,7 @@ export function useLinkOrder() {
       void queryClient.invalidateQueries({
         queryKey: [...CONTRACTS_KEY, vars.contractId, 'audit-logs'],
       });
-      toast.success('Da lien ket don hang');
+      toast.success('Đã liên kết đơn hàng');
     },
     onError: (err: Error) => {
       toast.error(err.message ?? 'Có lỗi xảy ra');
@@ -138,10 +138,10 @@ export function useUnlinkOrder() {
       void queryClient.invalidateQueries({
         queryKey: [...CONTRACTS_KEY, vars.contractId, 'audit-logs'],
       });
-      toast.success('Da huy lien ket don hang');
+      toast.success('Đã huỷ liên kết đơn hàng');
     },
     onError: (err: Error) => {
-      toast.error(err.message ?? 'Co loi xay ra');
+      toast.error(err.message ?? 'Có lỗi xảy ra');
     },
   });
 }

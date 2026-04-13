@@ -239,7 +239,7 @@ function LinkOrderSheet({
     <AdaptiveSheet
       open={open}
       onClose={handleClose}
-      title="Lien ket don hang"
+      title="Liên kết đơn hàng"
       footer={
         <div className="flex gap-3 justify-end">
           <Button
@@ -247,34 +247,34 @@ function LinkOrderSheet({
             onClick={handleClose}
             disabled={isLoading}
           >
-            Thoat
+            Thoát
           </Button>
           <Button
             variant="primary"
             onClick={handleSubmit}
             isLoading={isLoading}
           >
-            Lien ket
+            Liên kết
           </Button>
         </div>
       }
     >
       <div className="form-field">
         <label>
-          Don hang <span className="field-required">*</span>
+          Đơn hàng <span className="field-required">*</span>
         </label>
         <Combobox
           options={orderOptions}
           value={selectedOrderId}
           onChange={(val) => setSelectedOrderId(val as string)}
-          placeholder="Tim kiem so don hang hoac ten khach hang..."
+          placeholder="Tìm kiếm số đơn hàng hoặc tên khách hàng..."
           hasError={hasError}
         />
         {hasError && (
-          <span className="field-error">Vui long chon don hang.</span>
+          <span className="field-error">Vui lòng chọn đơn hàng.</span>
         )}
         <p className="field-hint text-xs text-muted mt-1">
-          Chi hien thi don hang chua bi huy va chua duoc lien ket.
+          Chỉ hiển thị đơn hàng chưa bị huỷ và chưa được liên kết.
         </p>
       </div>
     </AdaptiveSheet>
@@ -641,7 +641,7 @@ export function ContractDetailPage({
 
   async function handleSend() {
     const ok = await confirm({
-      message: 'Xac nhan da gui hop dong cho doi tac?',
+      message: 'Xác nhận đã gửi hợp đồng cho đối tác?',
     });
     if (!ok) return;
     statusMutation.mutate(
@@ -649,7 +649,7 @@ export function ContractDetailPage({
         id: contractId,
         status: 'sent',
       },
-      { onSuccess: () => toast.success('Da cap nhat trang thai: Da gui') },
+      { onSuccess: () => toast.success('Đã cập nhật trạng thái: Đã gửi') },
     );
   }
 
@@ -663,7 +663,7 @@ export function ContractDetailPage({
       {
         onSuccess: () => {
           setShowCancel(false);
-          toast.success('Da huy hop dong');
+          toast.success('Đã huỷ hợp đồng');
         },
       },
     );
@@ -679,7 +679,7 @@ export function ContractDetailPage({
       {
         onSuccess: () => {
           setShowSign(false);
-          toast.success('Da xac nhan hop dong da ky');
+          toast.success('Đã xác nhận hợp đồng đã ký');
         },
       },
     );
@@ -698,9 +698,9 @@ export function ContractDetailPage({
         },
       );
       if (fnError) throw fnError;
-      toast.success('Xuat PDF thanh cong');
+      toast.success('Xuất PDF thành công');
     } catch (err) {
-      toast.error((err as Error).message ?? 'Xuat PDF that bai');
+      toast.error((err as Error).message ?? 'Xuất PDF thất bại');
     } finally {
       setPdfLoading(false);
     }
@@ -728,7 +728,7 @@ export function ContractDetailPage({
 
   async function handleUnlinkOrder(orderId: string, orderNumber: string) {
     const ok = await confirm({
-      message: `Huy lien ket don hang ${orderNumber}?`,
+      message: `Huỷ liên kết đơn hàng ${orderNumber}?`,
       variant: 'danger',
     });
     if (!ok) return;
@@ -747,7 +747,7 @@ export function ContractDetailPage({
         <div className="p-5">
           <div className="flex items-center gap-3 mb-4 flex-wrap">
             <Button variant="secondary" leftIcon="ArrowLeft" onClick={onBack}>
-              Quay lai
+              Quay lại
             </Button>
             <div className="flex-1 min-w-0">
               <h3 className="m-0 font-mono text-lg">
@@ -763,7 +763,7 @@ export function ContractDetailPage({
           {/* Info grid */}
           <div className="dashboard-summary-row mb-4">
             <div>
-              <div className="td-muted summary-label">Ben A</div>
+              <div className="td-muted summary-label">Bên A</div>
               <div className="font-medium">{contract.party_a_name}</div>
               {contract.party_a_tax_code && (
                 <div className="text-xs text-muted">
@@ -772,7 +772,7 @@ export function ContractDetailPage({
               )}
             </div>
             <div>
-              <div className="td-muted summary-label">Nguoi dai dien A</div>
+              <div className="td-muted summary-label">Người đại diện A</div>
               <div>{contract.party_a_representative ?? '—'}</div>
               {contract.party_a_title && (
                 <div className="text-xs text-muted">
@@ -781,15 +781,15 @@ export function ContractDetailPage({
               )}
             </div>
             <div>
-              <div className="td-muted summary-label">Ngay hieu luc</div>
+              <div className="td-muted summary-label">Ngày hiệu lực</div>
               <div>{formatDate(contract.effective_date)}</div>
             </div>
             <div>
-              <div className="td-muted summary-label">Ngay het han</div>
+              <div className="td-muted summary-label">Ngày hết hạn</div>
               <div>{formatDate(contract.expiry_date)}</div>
             </div>
             <div>
-              <div className="td-muted summary-label">Dieu khoan TT</div>
+              <div className="td-muted summary-label">Điều khoản TT</div>
               <div>{contract.payment_term ?? '—'}</div>
             </div>
           </div>
@@ -801,19 +801,19 @@ export function ContractDetailPage({
             <div className="info-box mb-4 text-sm space-y-1">
               {contract.sent_at && (
                 <p>
-                  <span className="font-medium">Da gui:</span>{' '}
+                  <span className="font-medium">Đã gửi:</span>{' '}
                   {formatDate(contract.sent_at)}
                 </p>
               )}
               {contract.signed_at && (
                 <p>
-                  <span className="font-medium">Da ky:</span>{' '}
+                  <span className="font-medium">Đã ký:</span>{' '}
                   {formatDate(contract.signed_at)}
                 </p>
               )}
               {contract.cancelled_at && (
                 <p>
-                  <span className="font-medium">Da huy:</span>{' '}
+                  <span className="font-medium">Đã huỷ:</span>{' '}
                   {formatDate(contract.cancelled_at)}
                   {contract.cancel_reason && (
                     <span className="text-muted">
@@ -831,7 +831,7 @@ export function ContractDetailPage({
                     rel="noopener noreferrer"
                     className="text-primary underline"
                   >
-                    Xem file hop dong da ky
+                    Xem file hợp đồng đã ký
                   </a>
                 </p>
               )}
@@ -840,7 +840,7 @@ export function ContractDetailPage({
 
           {contract.notes && (
             <div className="info-box mb-4">
-              <strong>Ghi chu:</strong> {contract.notes}
+              <strong>Ghi chú:</strong> {contract.notes}
             </div>
           )}
 
@@ -852,7 +852,7 @@ export function ContractDetailPage({
                 leftIcon="Pencil"
                 onClick={() => setShowEdit(true)}
               >
-                Chinh sua
+                Chỉnh sửa
               </Button>
             )}
             {canSend && (
@@ -862,7 +862,7 @@ export function ContractDetailPage({
                 onClick={() => void handleSend()}
                 isLoading={statusMutation.isPending && !showCancel && !showSign}
               >
-                Gui hop dong
+                Gửi hợp đồng
               </Button>
             )}
             {canSign && (
@@ -871,7 +871,7 @@ export function ContractDetailPage({
                 leftIcon="CheckCircle"
                 onClick={() => setShowSign(true)}
               >
-                Xac nhan da ky
+                Xác nhận đã ký
               </Button>
             )}
             <Button
@@ -880,7 +880,7 @@ export function ContractDetailPage({
               onClick={() => void handleExportPdf()}
               isLoading={pdfLoading}
             >
-              Xuat PDF
+              Xuất PDF
             </Button>
             {canLinkOrder && (
               <Button
@@ -888,7 +888,7 @@ export function ContractDetailPage({
                 leftIcon="Link"
                 onClick={() => setShowLinkOrder(true)}
               >
-                Lien ket don hang
+                Liên kết đơn hàng
               </Button>
             )}
             {canCancel && (
@@ -898,14 +898,14 @@ export function ContractDetailPage({
                 onClick={() => setShowCancel(true)}
                 className="text-danger"
               >
-                Huy hop dong
+                Huỷ hợp đồng
               </Button>
             )}
           </div>
 
           {statusMutation.error && (
             <p className="error-inline text-sm mt-2">
-              Loi: {(statusMutation.error as Error).message}
+              Lỗi: {(statusMutation.error as Error).message}
             </p>
           )}
         </div>
@@ -914,23 +914,23 @@ export function ContractDetailPage({
         <div className="px-5 pb-5">
           <h4 className="mb-3 flex items-center gap-2">
             <Icon name="Link" size={16} />
-            Don hang lien ket ({linkedOrders.length})
+            Đơn hàng liên kết ({linkedOrders.length})
           </h4>
           {ordersLoading ? (
-            <p className="table-empty text-sm">Dang tai...</p>
+            <p className="table-empty text-sm">Đang tải...</p>
           ) : linkedOrders.length === 0 ? (
             <p className="table-empty text-sm">
-              Chua co don hang nao duoc lien ket.
+              Chưa có đơn hàng nào được liên kết.
             </p>
           ) : (
             <div className="data-table-wrap">
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>So don hang</th>
-                    <th>Trang thai</th>
-                    <th>Ngay lien ket</th>
-                    {canLinkOrder && <th className="text-right">Thao tac</th>}
+                    <th>Số đơn hàng</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày liên kết</th>
+                    {canLinkOrder && <th className="text-right">Thao tác</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -978,12 +978,12 @@ export function ContractDetailPage({
         <div className="px-5 pb-5">
           <h4 className="mb-3 flex items-center gap-2">
             <Icon name="History" size={16} />
-            Lich su hoat dong
+            Lịch sử hoạt động
           </h4>
           {auditLoading ? (
-            <p className="table-empty text-sm">Dang tai...</p>
+            <p className="table-empty text-sm">Đang tải...</p>
           ) : auditLogs.length === 0 ? (
-            <p className="table-empty text-sm">Chua co hoat dong nao.</p>
+            <p className="table-empty text-sm">Chưa có hoạt động nào.</p>
           ) : (
             <div className="space-y-0">
               {auditLogs.map((log, idx) => (
@@ -1001,7 +1001,7 @@ export function ContractDetailPage({
         <div className="px-5 pb-5">
           <h4 className="mb-3 flex items-center gap-2">
             <Icon name="FileText" size={16} />
-            Xem truoc noi dung hop dong
+            Xem trước nội dung hợp đồng
           </h4>
           <ContractPreview
             content={contract.content}
