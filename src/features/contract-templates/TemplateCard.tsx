@@ -1,6 +1,8 @@
-import { Icon, Button } from '@/shared/components';
-import { CONTRACT_TYPE_LABELS } from '@/schema';
-import type { ContractTemplate } from '@/schema';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import DOMPurify from 'dompurify';
+
+import { Icon, Button, useConfirm } from '@/shared/components';
+import { CONTRACT_TYPE_LABELS, type ContractTemplate } from '@/schema';
 
 // ── Props ────────────────────────────────────────────────────────────────────
 
@@ -14,8 +16,6 @@ type TemplateCardProps = {
 
 // ── Component ────────────────────────────────────────────────────────────────
 
-import { useState, useRef, useEffect } from 'react';
-
 export function TemplateCard({
   template,
   onEdit,
@@ -25,6 +25,7 @@ export function TemplateCard({
 }: TemplateCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { confirm } = useConfirm();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -36,27 +37,32 @@ export function TemplateCard({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Mock metadata data based on template to be deterministic
-  const creatorStr = template.created_by ? 'Quản trị viên' : 'Hệ thống';
-  const usageCount = (template.id.charCodeAt(0) % 20) + 15;
-  const formattedDate = new Date(template.updated_at).toLocaleDateString(
-    'vi-VN',
-    {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    },
+  const sanitizedContent = useMemo(
+    () => (template.content ? DOMPurify.sanitize(template.content) : ''),
+    [template.content],
+  );
+
+  const formattedDate = useMemo(
+    () =>
+      new Date(template.updated_at).toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      }),
+    [template.updated_at],
   );
 
   const typeLabel = CONTRACT_TYPE_LABELS[template.type];
   const isPurchase = template.type === 'purchase';
 
   return (
-    <div className="group relative panel-card card-flush border-border/60 rounded-3xl p-6 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1 overflow-hidden h-full flex flex-col">
-      {/* Background Accent */}
-      <div
-        className={`absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full opacity-[0.03] transition-transform group-hover:scale-110 ${isPurchase ? 'bg-blue-600' : 'bg-emerald-600'}`}
-      />
+    <div className="group relative panel-card card-flush border-border/60 rounded-3xl p-6 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1 h-full flex flex-col">
+      {/* Background Accent - isolated to not clip menus */}
+      <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+        <div
+          className={`absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full opacity-[0.03] transition-transform group-hover:scale-110 ${isPurchase ? 'bg-blue-600' : 'bg-emerald-600'}`}
+        />
+      </div>
 
       {/* Header Info */}
       <div className="flex items-start justify-between gap-4 mb-5 relative z-10">
@@ -75,7 +81,7 @@ export function TemplateCard({
           </div>
           <div className="min-w-0">
             <h4
-              className="font-extrabold text-foreground leading-tight truncate-2-lines h-10 flex items-center"
+              className="font-extrabold text-foreground leading-tight line-clamp-2"
               title={template.name}
             >
               {template.name}
@@ -134,7 +140,7 @@ export function TemplateCard({
                   }}
                 >
                   <Icon
-                    name={template.is_active ? 'BellOff' : 'BellRing'}
+                    name={template.is_active ? 'PauseCircle' : 'PlayCircle'}
                     size={16}
                     className="text-muted"
                   />
@@ -143,13 +149,17 @@ export function TemplateCard({
                 <button
                   type="button"
                   className="w-full text-left px-3 py-2 text-sm font-medium rounded-lg hover:bg-danger/10 hover:text-danger transition-colors flex items-center gap-2"
-                  onClick={() => {
-                    if (
-                      confirm(
-                        'Bạn có chắc chắn muốn xóa mẫu hợp đồng này không?',
-                      )
-                    ) {
-                      setMenuOpen(false);
+                  onClick={async () => {
+                    setMenuOpen(false);
+                    const isConfirmed = await confirm({
+                      title: 'Xóa mẫu hợp đồng',
+                      message:
+                        'Bạn có chắc chắn muốn xóa mẫu hợp đồng này không? Hành động này không thể hoàn tác.',
+                      confirmLabel: 'Xóa',
+                      cancelLabel: 'Huỷ',
+                      variant: 'danger',
+                    });
+                    if (isConfirmed) {
                       onDelete(template);
                     }
                   }}
@@ -174,10 +184,10 @@ export function TemplateCard({
             <div className="w-2 h-2 rounded-full bg-border/40" />
             <div className="w-2 h-2 rounded-full bg-border/40" />
           </div>
-          {template.content ? (
+          {sanitizedContent ? (
             <div
               className="text-[11px] leading-relaxed text-muted/80 font-medium select-none ql-editor !p-0"
-              dangerouslySetInnerHTML={{ __html: template.content }}
+              dangerouslySetInnerHTML={{ __html: sanitizedContent }}
             />
           ) : (
             <p className="text-[11px] leading-relaxed text-muted/80 font-medium italic select-none">
@@ -207,37 +217,24 @@ export function TemplateCard({
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-3">
             <div
-              className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[9px] font-black uppercase tracking-widest ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-bold uppercase tracking-wide ${
                 template.is_active
                   ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
                   : 'bg-surface-subtle text-muted border-border'
               }`}
             >
               <div
-                className={`w-1.5 h-1.5 rounded-full ${template.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-muted'}`}
+                className={`w-1.5 h-1.5 rounded-full shrink-0 ${template.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-muted'}`}
               />
-              {template.is_active ? 'Đang hoạt động' : 'Tạm dừng'}
+              <span className="whitespace-nowrap">
+                {template.is_active ? 'Đang hoạt động' : 'Tạm dừng'}
+              </span>
             </div>
-            <p className="text-xs font-medium text-muted">
-              Tạo bởi:{' '}
-              <span className="font-bold text-foreground/80">{creatorStr}</span>
+            <p className="text-xs font-medium text-muted whitespace-nowrap">
+              Cập nhật: {formattedDate}
             </p>
           </div>
-          <p className="text-xs font-medium text-muted mt-1">
-            Đã dùng:{' '}
-            <span className="font-bold text-primary">{usageCount} lần</span> •
-            Lần sửa cuối {formattedDate}
-          </p>
         </div>
-
-        <Button
-          onClick={() => onEdit(template)}
-          leftIcon="Pencil"
-          variant="primary"
-          size="sm"
-        >
-          CHỈNH SỬA
-        </Button>
       </div>
     </div>
   );
