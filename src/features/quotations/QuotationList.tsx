@@ -119,8 +119,10 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
       {/* Header */}
       <div className="card-header-area card-header-premium">
         <div>
-          <p className="eyebrow-premium">BÁN HÀNG</p>
-          <h3 className="title-premium">Báo giá</h3>
+          <p className="eyebrow-premium">KINH DOANH</p>
+          <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+            Quản lý Báo giá
+          </h2>
         </div>
         <AddButton onClick={onNew} label="Tạo báo giá" />
       </div>
@@ -142,7 +144,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                   </div>
                 </div>
                 <div className="kpi-footer opacity-80 text-xs italic">
-                  Can theo doi sat voi khach hang
+                  Cần theo dõi sát với khách hàng
                 </div>
               </div>
             )}
@@ -159,7 +161,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                   </div>
                 </div>
                 <div className="kpi-footer opacity-80 text-xs italic">
-                  Khong con hieu luc (Da qua han chot)
+                  Không còn hiệu lực (Đã quá hạn chót)
                 </div>
               </div>
             )}
@@ -268,7 +270,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
         onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={[
           {
-            header: 'So bao gia / Bat dau',
+            header: 'Số báo giá / Ngày tạo',
             cell: (q) => (
               <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-1.5">
@@ -284,7 +286,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
             ),
           },
           {
-            header: 'Khach hang',
+            header: 'Khách hàng',
             cell: (q) => (
               <div className="flex flex-col gap-0.5">
                 <span className="font-bold truncate max-w-[200px]">
@@ -297,7 +299,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
             ),
           },
           {
-            header: 'Hieu luc',
+            header: 'Hiệu lực',
             cell: (q) => {
               const validity = validityInfo(q.valid_until);
               const isActiveQuote = q.status === 'draft' || q.status === 'sent';
@@ -316,7 +318,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
             },
           },
           {
-            header: 'Tong tien',
+            header: 'Tổng tiền',
             className: 'text-right',
             cell: (q) => (
               <span className="font-bold">
@@ -389,7 +391,9 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
 
               <div className="mobile-card-body">
                 <div className="flex flex-col mb-3">
-                  <span className="text-[0.72rem] text-muted">Khach hang</span>
+                  <span className="text-[0.72rem] text-muted uppercase tracking-wider">
+                    Khách hàng
+                  </span>
                   <span className="font-bold text-base leading-tight">
                     {q.customers?.name ?? '—'}
                   </span>
@@ -397,13 +401,17 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
 
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   <div className="flex flex-col">
-                    <span className="text-[0.72rem] text-muted">Tong tien</span>
-                    <span className="font-bold text-primary">
+                    <span className="text-[0.72rem] text-muted uppercase tracking-wider">
+                      Tổng tiền
+                    </span>
+                    <span className="font-bold text-lg text-primary">
                       {formatCurrency(q.total_amount)}đ
                     </span>
                   </div>
                   <div className="flex flex-col items-end">
-                    <span className="text-[0.72rem] text-muted">Thoi han</span>
+                    <span className="text-[0.72rem] text-muted uppercase tracking-wider">
+                      Thời hạn
+                    </span>
                     <span className="font-medium">{q.valid_until ?? '—'}</span>
                     {validity && isActiveQuote && (
                       <span
@@ -417,27 +425,27 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
 
                 <div className="flex gap-2 pt-3 border-t border-border">
                   <button
-                    className="btn-secondary flex-1"
+                    className="btn-secondary flex-1 shadow-sm font-medium"
                     onClick={(e) => {
                       e.stopPropagation();
                       onView(q);
                     }}
                   >
-                    <Icon name="Eye" size={16} /> Chi tiet
+                    <Icon name="Eye" size={16} /> Chi tiết
                   </button>
                   {q.status === 'draft' && (
                     <>
                       <button
-                        className="btn-secondary flex-1 text-primary"
+                        className="btn-secondary flex-1 text-primary shadow-sm font-medium"
                         onClick={(e) => {
                           e.stopPropagation();
                           onEdit(q);
                         }}
                       >
-                        <Icon name="Pencil" size={16} /> Sua
+                        <Icon name="Pencil" size={16} /> Sửa
                       </button>
                       <button
-                        className="btn-secondary text-danger px-3"
+                        className="btn-secondary text-danger px-3 shadow-sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(q);

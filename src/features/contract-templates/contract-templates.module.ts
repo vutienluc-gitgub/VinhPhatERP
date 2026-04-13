@@ -1,96 +1,9 @@
-import { z } from 'zod';
-
 import { untypedDb } from '@/services/supabase/untyped';
-import { ContractType, CONTRACT_TYPES } from '@/schema';
-
-// ── Zod Schema ───────────────────────────────────────────────────────────────
-
-export const contractTemplateSchema = z.object({
-  id: z.string().uuid(),
-  type: z.enum(CONTRACT_TYPES),
-  name: z.string().trim().min(1, 'Tên mẫu không được để trống'),
-  content: z.string().min(1, 'Nội dung mẫu không được để trống'),
-  is_active: z.boolean().default(true),
-  created_at: z.string(),
-  updated_at: z.string(),
-  created_by: z.string().uuid().nullable().optional(),
-});
-
-export const updateTemplateInputSchema = z.object({
-  name: z.string().trim().min(1, 'Tên mẫu không được để trống').optional(),
-  content: z.string().min(1, 'Nội dung mẫu không được để trống').optional(),
-  is_active: z.boolean().optional(),
-});
-
-// ── Types ────────────────────────────────────────────────────────────────────
-
-export type ContractTemplate = z.infer<typeof contractTemplateSchema>;
-export type UpdateTemplateInput = z.infer<typeof updateTemplateInputSchema>;
-
-// ── Placeholders reference ───────────────────────────────────────────────────
-
-export const TEMPLATE_PLACEHOLDERS: { key: string; label: string }[] = [
-  {
-    key: 'contract_number',
-    label: 'So hop dong',
-  },
-  {
-    key: 'contract_date',
-    label: 'Ngay ky',
-  },
-  {
-    key: 'party_a_name',
-    label: 'Ten ben A',
-  },
-  {
-    key: 'party_a_address',
-    label: 'Dia chi ben A',
-  },
-  {
-    key: 'party_a_tax_code',
-    label: 'MST ben A',
-  },
-  {
-    key: 'party_a_representative',
-    label: 'Nguoi dai dien ben A',
-  },
-  {
-    key: 'party_a_title',
-    label: 'Chuc vu dai dien ben A',
-  },
-  {
-    key: 'party_b_name',
-    label: 'Ten cong ty Vinh Phat',
-  },
-  {
-    key: 'party_b_address',
-    label: 'Dia chi Vinh Phat',
-  },
-  {
-    key: 'party_b_tax_code',
-    label: 'MST Vinh Phat',
-  },
-  {
-    key: 'party_b_bank_account',
-    label: 'Tai khoan ngan hang',
-  },
-  {
-    key: 'party_b_representative',
-    label: 'Nguoi dai dien Vinh Phat',
-  },
-  {
-    key: 'payment_term',
-    label: 'Dieu khoan thanh toan',
-  },
-  {
-    key: 'effective_date',
-    label: 'Ngay hieu luc',
-  },
-  {
-    key: 'expiry_date',
-    label: 'Ngay het han',
-  },
-];
+import type {
+  ContractType,
+  ContractTemplate,
+  UpdateTemplateInput,
+} from '@/schema';
 
 // ── Service helpers ──────────────────────────────────────────────────────────
 
@@ -126,6 +39,28 @@ export async function getTemplateById(id: string): Promise<ContractTemplate> {
     .single();
   if (error) throw error;
   return data as ContractTemplate;
+}
+
+/**
+ * Tao moi template.
+ */
+export async function createTemplate(data: {
+  type: ContractType;
+  name: string;
+  content: string;
+}): Promise<ContractTemplate> {
+  const { data: created, error } = await db
+    .templates()
+    .insert({
+      ...data,
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return created as ContractTemplate;
 }
 
 /**
