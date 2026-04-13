@@ -39,7 +39,7 @@ export function ContractTemplatesPage() {
       (old) => (old ?? []).map((t) => (t.id === updated.id ? updated : t)),
     );
     setSelectedTemplate(null);
-    toast.success('Mau hop dong da duoc cap nhat.');
+    toast.success('Mẫu hợp đồng đã được cập nhật.');
   }
 
   if (selectedTemplate) {
@@ -51,12 +51,12 @@ export function ContractTemplatesPage() {
               type="button"
               className="btn-ghost p-2 rounded-lg"
               onClick={handleClose}
-              title="Quay lai"
+              title="Quay lại"
             >
               <Icon name="ArrowLeft" size={20} />
             </button>
             <div>
-              <p className="eyebrow-premium">CHINH SUA MAU</p>
+              <p className="eyebrow-premium">CHỈNH SỬA MẪU</p>
               <h3 className="title-premium">
                 {selectedTemplate.name}
                 <span className="ml-2 text-sm font-normal text-muted">
@@ -83,8 +83,8 @@ export function ContractTemplatesPage() {
       {/* Header */}
       <div className="card-header-area card-header-premium">
         <div>
-          <p className="eyebrow-premium">QUAN TRI HE THONG</p>
-          <h3 className="title-premium">Mau Hop Dong</h3>
+          <p className="eyebrow-premium">QUẢN TRỊ HỆ THỐNG</p>
+          <h3 className="title-premium">Mẫu Hợp Đồng</h3>
         </div>
       </div>
 
@@ -98,12 +98,12 @@ export function ContractTemplatesPage() {
           />
           <div className="text-sm text-muted">
             <p className="font-medium text-foreground mb-1">
-              Quan ly mau hop dong
+              Quản lý mẫu hợp đồng
             </p>
             <p>
-              Chinh sua noi dung HTML cua tung loai hop dong. Cac thay doi chi
-              anh huong den hop dong duoc tao sau khi luu. Hop dong da tao truoc
-              do giu nguyen noi dung goc.
+              Chỉnh sửa nội dung HTML của từng loại hợp đồng. Các thay đổi chỉ
+              ảnh hưởng đến hợp đồng được tạo sau khi lưu. Hợp đồng đã tạo trước
+              đó giữ nguyên nội dung gốc.
             </p>
           </div>
         </div>
@@ -113,7 +113,7 @@ export function ContractTemplatesPage() {
       {error && (
         <div className="p-4">
           <p className="error-inline">
-            Loi tai du lieu: {(error as Error).message}
+            Lỗi tải dữ liệu: {(error as Error).message}
           </p>
         </div>
       )}
@@ -123,7 +123,7 @@ export function ContractTemplatesPage() {
         <div className="p-8 flex items-center justify-center">
           <div className="flex items-center gap-3 text-muted">
             <Icon name="Loader" size={20} className="animate-spin" />
-            <span>Dang tai danh sach mau...</span>
+            <span>Đang tải danh sách mẫu...</span>
           </div>
         </div>
       )}
@@ -138,9 +138,9 @@ export function ContractTemplatesPage() {
                 size={48}
                 className="text-muted/30 mx-auto mb-4"
               />
-              <p className="text-muted">Chua co mau hop dong nao.</p>
+              <p className="text-muted">Chưa có mẫu hợp đồng nào.</p>
               <p className="text-xs text-muted mt-1">
-                Vui long kiem tra ket noi co so du lieu hoac tao mau trong
+                Vui lòng kiểm tra kết nối cơ sở dữ liệu hoặc tạo mẫu trong
                 database.
               </p>
             </div>
@@ -214,7 +214,7 @@ function TemplateCard({ template, onEdit }: TemplateCardProps) {
               : 'bg-muted/10 text-muted border-muted/20'
           }`}
         >
-          {template.is_active ? 'Dang dung' : 'Khong dung'}
+          {template.is_active ? 'Đang dùng' : 'Không dùng'}
         </span>
       </div>
 
@@ -225,19 +225,19 @@ function TemplateCard({ template, onEdit }: TemplateCardProps) {
               .replace(/<[^>]+>/g, ' ')
               .trim()
               .slice(0, 200) + '...'
-          : 'Chua co noi dung.'}
+          : 'Chưa có nội dung.'}
       </div>
 
       {/* Footer */}
       <div className="flex items-center justify-between pt-1">
-        <p className="text-xs text-muted">Cap nhat: {formattedDate}</p>
+        <p className="text-xs text-muted">Cập nhật: {formattedDate}</p>
         <button
           type="button"
           className="btn-secondary text-sm py-1.5 px-3 flex items-center gap-1.5"
           onClick={() => onEdit(template)}
         >
           <Icon name="Pencil" size={14} />
-          Chinh sua
+          Chỉnh sửa
         </button>
       </div>
     </div>
