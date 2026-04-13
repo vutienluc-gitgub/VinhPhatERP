@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useQuery } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
 
 import { supabase } from '@/services/supabase/client';
 import { Button, AdaptiveSheet, Icon, useConfirm } from '@/shared/components';
+import { Combobox } from '@/shared/components/Combobox';
 import {
   useContract,
   useContractLinkedOrders,
@@ -177,11 +179,35 @@ function SignSheet({ open, onClose, onConfirm, isLoading }: SignSheetProps) {
 
 // ── Link order sheet ──────────────────────────────────────────────────────────
 
+function useAvailableOrders(excludeIds: string[]) {
+  return useQuery({
+    queryKey: ['orders', 'link-picker', excludeIds],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('id, order_number, customers(name)')
+        .not('status', 'eq', 'cancelled')
+        .order('order_date', { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      return (data ?? [])
+        .filter((o) => !excludeIds.includes(o.id))
+        .map((o) => ({
+          value: o.id,
+          label: o.order_number,
+          code: (o.customers as { name: string } | null)?.name ?? '',
+        }));
+    },
+    enabled: true,
+  });
+}
+
 type LinkOrderSheetProps = {
   open: boolean;
   onClose: () => void;
   onLink: (orderId: string) => void;
   isLoading: boolean;
+  linkedOrderIds: string[];
 };
 
 function LinkOrderSheet({
@@ -189,19 +215,22 @@ function LinkOrderSheet({
   onClose,
   onLink,
   isLoading,
+  linkedOrderIds,
 }: LinkOrderSheetProps) {
-  const [orderId, setOrderId] = useState('');
+  const [selectedOrderId, setSelectedOrderId] = useState('');
   const [touched, setTouched] = useState(false);
-  const hasError = touched && !orderId.trim();
+  const hasError = touched && !selectedOrderId;
+
+  const { data: orderOptions = [] } = useAvailableOrders(linkedOrderIds);
 
   function handleSubmit() {
     setTouched(true);
-    if (!orderId.trim()) return;
-    onLink(orderId.trim());
+    if (!selectedOrderId) return;
+    onLink(selectedOrderId);
   }
 
   function handleClose() {
-    setOrderId('');
+    setSelectedOrderId('');
     setTouched(false);
     onClose();
   }
@@ -210,7 +239,7 @@ function LinkOrderSheet({
     <AdaptiveSheet
       open={open}
       onClose={handleClose}
-      title="Liên kết đơn hàng"
+      title="Lien ket don hang"
       footer={
         <div className="flex gap-3 justify-end">
           <Button
@@ -218,33 +247,35 @@ function LinkOrderSheet({
             onClick={handleClose}
             disabled={isLoading}
           >
-            Thoát
+            Thoat
           </Button>
           <Button
             variant="primary"
             onClick={handleSubmit}
             isLoading={isLoading}
           >
-            Liên kết
+            Lien ket
           </Button>
         </div>
       }
     >
       <div className="form-field">
         <label>
-          ID đơn hàng <span className="field-required">*</span>
+          Don hang <span className="field-required">*</span>
         </label>
-        <input
-          type="text"
-          className={`field-input${hasError ? ' is-error' : ''}`}
-          placeholder="UUID của đơn hàng..."
-          value={orderId}
-          onChange={(e) => setOrderId(e.target.value)}
-          onBlur={() => setTouched(true)}
+        <Combobox
+          options={orderOptions}
+          value={selectedOrderId}
+          onChange={(val) => setSelectedOrderId(val as string)}
+          placeholder="Tim kiem so don hang hoac ten khach hang..."
+          hasError={hasError}
         />
         {hasError && (
-          <span className="field-error">Vui lòng nhập ID đơn hàng.</span>
+          <span className="field-error">Vui long chon don hang.</span>
         )}
+        <p className="field-hint text-xs text-muted mt-1">
+          Chi hien thi don hang chua bi huy va chua duoc lien ket.
+        </p>
       </div>
     </AdaptiveSheet>
   );
@@ -1009,6 +1040,7 @@ export function ContractDetailPage({
         onClose={() => setShowLinkOrder(false)}
         onLink={handleLinkOrder}
         isLoading={linkMutation.isPending}
+        linkedOrderIds={linkedOrders.map((o) => o.id)}
       />
     </>
   );
