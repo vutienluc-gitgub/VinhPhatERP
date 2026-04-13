@@ -268,17 +268,17 @@ export function SuppliersList({
                   {
                     icon: 'FileText',
                     onClick: () => onCreateContract(s),
-                    title: 'Tao hop dong',
+                    title: 'Tạo hợp đồng',
                   },
                   {
                     icon: 'Pencil',
                     onClick: () => onEdit(s),
-                    title: 'Sua',
+                    title: 'Sửa',
                   },
                   {
                     icon: 'Trash2',
                     onClick: () => handleDelete(s),
-                    title: 'Xoa',
+                    title: 'Xóa',
                     variant: 'danger',
                     disabled: deleteMutation.isPending,
                   },
