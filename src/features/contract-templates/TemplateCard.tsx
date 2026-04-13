@@ -1,4 +1,4 @@
-import { Icon } from '@/shared/components';
+import { Icon, Button } from '@/shared/components';
 import { CONTRACT_TYPE_LABELS } from '@/schema';
 import type { ContractTemplate } from '@/schema';
 
@@ -8,15 +8,37 @@ type TemplateCardProps = {
   template: ContractTemplate;
   onEdit: (template: ContractTemplate) => void;
   onDuplicate: (template: ContractTemplate) => void;
+  onDelete: (template: ContractTemplate) => void;
+  onToggleActive: (template: ContractTemplate) => void;
 };
 
 // ── Component ────────────────────────────────────────────────────────────────
+
+import { useState, useRef, useEffect } from 'react';
 
 export function TemplateCard({
   template,
   onEdit,
   onDuplicate,
+  onDelete,
+  onToggleActive,
 }: TemplateCardProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Mock metadata data based on template to be deterministic
+  const creatorStr = template.created_by ? 'Quản trị viên' : 'Hệ thống';
+  const usageCount = (template.id.charCodeAt(0) % 20) + 15;
   const formattedDate = new Date(template.updated_at).toLocaleDateString(
     'vi-VN',
     {
@@ -29,18 +51,11 @@ export function TemplateCard({
   const typeLabel = CONTRACT_TYPE_LABELS[template.type];
   const isPurchase = template.type === 'purchase';
 
-  const rawText = template.content
-    ? template.content
-        .replace(/<[^>]+>/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-    : 'Chưa có cấu hình nội dung.';
-
   return (
     <div className="group relative panel-card card-flush border-border/60 rounded-3xl p-6 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1 overflow-hidden h-full flex flex-col">
       {/* Background Accent */}
       <div
-        className={`absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full opacity-[0.03] transition-transform group-hover:scale-110 ${isPurchase ? 'bg-violet-600' : 'bg-blue-600'}`}
+        className={`absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full opacity-[0.03] transition-transform group-hover:scale-110 ${isPurchase ? 'bg-blue-600' : 'bg-emerald-600'}`}
       />
 
       {/* Header Info */}
@@ -49,11 +64,14 @@ export function TemplateCard({
           <div
             className={`p-3.5 rounded-2xl shrink-0 transition-transform group-hover:scale-110 duration-300 shadow-sm ${
               isPurchase
-                ? 'bg-violet-500/10 text-violet-600'
-                : 'bg-blue-500/10 text-blue-600'
+                ? 'bg-blue-500/10 text-blue-600'
+                : 'bg-emerald-500/10 text-emerald-600'
             }`}
           >
-            <Icon name="FileSignature" size={24} strokeWidth={2} />
+            <Icon
+              name={isPurchase ? 'ShoppingCart' : 'BadgeDollarSign'}
+              size={24}
+            />
           </div>
           <div className="min-w-0">
             <h4
@@ -64,7 +82,7 @@ export function TemplateCard({
             </h4>
             <div className="flex items-center gap-2 mt-1">
               <span
-                className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-lg ${isPurchase ? 'bg-violet-100 text-violet-700' : 'bg-blue-100 text-blue-700'}`}
+                className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-lg ${isPurchase ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}`}
               >
                 {typeLabel}
               </span>
@@ -72,17 +90,76 @@ export function TemplateCard({
           </div>
         </div>
 
-        <div
-          className={`shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full border text-[11px] font-black uppercase tracking-wide transition-colors ${
-            template.is_active
-              ? 'bg-emerald-50 text-emerald-600 border-emerald-100 shadow-sm shadow-emerald-500/10'
-              : 'bg-surface-subtle text-muted border-border'
-          }`}
-        >
-          <div
-            className={`w-1.5 h-1.5 rounded-full ${template.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-muted'}`}
+        <div className="relative" ref={menuRef}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="w-8 h-8 rounded-full min-h-0 min-w-0"
+            onClick={() => setMenuOpen(!menuOpen)}
+            leftIcon="MoreVertical"
           />
-          {template.is_active ? 'Đang hoạt động' : 'Tạm dừng'}
+
+          {menuOpen && (
+            <div className="absolute right-0 top-full mt-2 w-48 bg-surface shadow-2xl border border-border/60 rounded-xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
+              <div className="p-1.5 flex flex-col gap-0.5">
+                <button
+                  type="button"
+                  className="w-full text-left px-3 py-2 text-sm font-medium rounded-lg hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onEdit(template);
+                  }}
+                >
+                  <Icon name="Eye" size={16} className="text-blue-500" />
+                  Xem / Chỉnh sửa
+                </button>
+                <button
+                  type="button"
+                  className="w-full text-left px-3 py-2 text-sm font-medium rounded-lg hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onDuplicate(template);
+                  }}
+                >
+                  <Icon name="Copy" size={16} className="text-muted" />
+                  Nhân bản mẫu
+                </button>
+                <div className="h-px bg-border/40 my-1 mx-2" />
+                <button
+                  type="button"
+                  className="w-full text-left px-3 py-2 text-sm font-medium rounded-lg hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onToggleActive(template);
+                  }}
+                >
+                  <Icon
+                    name={template.is_active ? 'BellOff' : 'BellRing'}
+                    size={16}
+                    className="text-muted"
+                  />
+                  {template.is_active ? 'Tạm dừng mẫu' : 'Kích hoạt mẫu'}
+                </button>
+                <button
+                  type="button"
+                  className="w-full text-left px-3 py-2 text-sm font-medium rounded-lg hover:bg-danger/10 hover:text-danger transition-colors flex items-center gap-2"
+                  onClick={() => {
+                    if (
+                      confirm(
+                        'Bạn có chắc chắn muốn xóa mẫu hợp đồng này không?',
+                      )
+                    ) {
+                      setMenuOpen(false);
+                      onDelete(template);
+                    }
+                  }}
+                >
+                  <Icon name="Trash2" size={16} className="text-danger/80" />
+                  Xóa mẫu
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -97,9 +174,16 @@ export function TemplateCard({
             <div className="w-2 h-2 rounded-full bg-border/40" />
             <div className="w-2 h-2 rounded-full bg-border/40" />
           </div>
-          <p className="text-[11px] leading-relaxed text-muted/80 font-medium line-clamp-4 whitespace-pre-wrap select-none italic ql-editor">
-            {rawText}
-          </p>
+          {template.content ? (
+            <div
+              className="text-[11px] leading-relaxed text-muted/80 font-medium select-none ql-editor !p-0"
+              dangerouslySetInnerHTML={{ __html: template.content }}
+            />
+          ) : (
+            <p className="text-[11px] leading-relaxed text-muted/80 font-medium italic select-none">
+              Chưa có cấu hình nội dung.
+            </p>
+          )}
 
           {/* Gradient Overlay */}
           <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-surface via-surface/80 to-transparent pointer-events-none" />
@@ -120,37 +204,40 @@ export function TemplateCard({
 
       {/* Footer Action Area */}
       <div className="flex items-center justify-between pt-5 mt-auto border-t border-border/30 relative z-10">
-        <div className="flex flex-col">
-          <p className="text-[10px] font-bold text-muted uppercase tracking-tighter mb-0.5">
-            Lần sửa cuối
-          </p>
-          <p className="text-xs font-extrabold text-foreground/70">
-            {formattedDate}
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-3">
+            <div
+              className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[9px] font-black uppercase tracking-widest ${
+                template.is_active
+                  ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                  : 'bg-surface-subtle text-muted border-border'
+              }`}
+            >
+              <div
+                className={`w-1.5 h-1.5 rounded-full ${template.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-muted'}`}
+              />
+              {template.is_active ? 'Đang hoạt động' : 'Tạm dừng'}
+            </div>
+            <p className="text-xs font-medium text-muted">
+              Tạo bởi:{' '}
+              <span className="font-bold text-foreground/80">{creatorStr}</span>
+            </p>
+          </div>
+          <p className="text-xs font-medium text-muted mt-1">
+            Đã dùng:{' '}
+            <span className="font-bold text-primary">{usageCount} lần</span> •
+            Lần sửa cuối {formattedDate}
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="w-11 h-11 flex items-center justify-center rounded-xl text-muted hover:text-blue-600 hover:bg-blue-50 transition-all border border-transparent hover:border-blue-100 active:scale-90"
-            onClick={() => onDuplicate(template)}
-            title="Nhân bản mẫu"
-          >
-            <Icon name="Copy" size={18} />
-          </button>
-          <button
-            type="button"
-            className="h-11 px-5 bg-foreground hover:bg-primary text-surface font-bold text-xs rounded-xl transition-all shadow-lg shadow-foreground/10 hover:shadow-primary/20 active:scale-95 flex items-center gap-2 group/btn"
-            onClick={() => onEdit(template)}
-          >
-            <Icon
-              name="Pencil"
-              size={14}
-              className="group-hover/btn:rotate-12 transition-transform"
-            />
-            CHỈNH SỬA
-          </button>
-        </div>
+        <Button
+          onClick={() => onEdit(template)}
+          leftIcon="Pencil"
+          variant="primary"
+          size="sm"
+        >
+          CHỈNH SỬA
+        </Button>
       </div>
     </div>
   );

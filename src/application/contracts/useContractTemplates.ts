@@ -7,6 +7,7 @@ import {
   getTemplates,
   createTemplate,
   updateTemplate,
+  deleteTemplate,
 } from '@/features/contract-templates/contract-templates.module';
 
 // ── Query Key ────────────────────────────────────────────────────────────────
@@ -67,7 +68,7 @@ export function useContractTemplates() {
       data,
     }: {
       id: string;
-      data: { name?: string; content?: string };
+      data: { name?: string; content?: string; is_active?: boolean };
     }) => updateTemplate(id, data),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: TEMPLATES_KEY });
@@ -77,6 +78,27 @@ export function useContractTemplates() {
       toast.error('Lỗi khi lưu: ' + err.message);
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteTemplate,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: TEMPLATES_KEY });
+      toast.success('Đã xoá mẫu hợp đồng.');
+    },
+    onError: (err: Error) => {
+      toast.error('Lỗi khi xoá: ' + err.message);
+    },
+  });
+
+  const toggleTemplate = async (template: {
+    id: string;
+    is_active: boolean;
+  }) => {
+    await updateMutation.mutateAsync({
+      id: template.id,
+      data: { is_active: !template.is_active },
+    });
+  };
 
   async function seedDefaults() {
     const loading = toast.loading('Đang khởi tạo mẫu mặc định...');
@@ -133,8 +155,11 @@ export function useContractTemplates() {
 
     createTemplate: createMutation.mutateAsync,
     updateTemplate: updateMutation.mutateAsync,
+    deleteTemplate: deleteMutation.mutateAsync,
+    toggleTemplate,
     isCreating: createMutation.isPending,
     isUpdating: updateMutation.isPending,
+    isDeleting: deleteMutation.isPending,
 
     seedDefaults,
   };
