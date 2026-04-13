@@ -38,7 +38,11 @@ export function LoginForm({
       return;
     }
     setServerError(null);
-    const { error } = await signIn(values.email, values.password);
+    const { error } = await signIn(
+      values.email,
+      values.password,
+      captchaToken ?? undefined,
+    );
     if (error) {
       setServerError(vietnameseAuthError(error.message));
       // Reset Turnstile on error
