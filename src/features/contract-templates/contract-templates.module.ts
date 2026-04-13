@@ -102,3 +102,11 @@ export async function getActiveTemplateByType(
   if (error) throw error;
   return data as ContractTemplate | null;
 }
+
+/**
+ * Xoa template.
+ */
+export async function deleteTemplate(id: string): Promise<void> {
+  const { error } = await db.templates().delete().eq('id', id);
+  if (error) throw error;
+}
