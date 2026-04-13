@@ -21,12 +21,12 @@ Triển khai module theo kiến trúc feature-based của dự án (React + Type
     - Định nghĩa hàm `renderTemplate(content, data)` thay thế tất cả `{{placeholder}}` bằng dữ liệu thực
     - _Requirements: 1.4, 3.4, 7.2_
 
-  - [ ]\* 2.2 Viết property test cho `formatContractNumber`
+  - [x]\* 2.2 Viết property test cho `formatContractNumber`
     - **Property 4: Contract_Number luôn đúng định dạng và duy nhất**
     - **Validates: Requirements 1.4, 7.1, 7.2**
     - Dùng fast-check, kiểm tra output match `/^\d{3}\/\d{4}\/HĐNT–\w+\/TKS$/` với mọi `seq` và `year` hợp lệ
 
-  - [ ]\* 2.3 Viết property test cho `renderTemplate`
+  - [x]\* 2.3 Viết property test cho `renderTemplate`
     - **Property 6: Template placeholder được render đầy đủ**
     - **Validates: Requirements 3.4**
     - Dùng fast-check, kiểm tra output không còn chuỗi `{{...}}` nào sau khi render với dữ liệu hợp lệ
@@ -36,7 +36,7 @@ Triển khai module theo kiến trúc feature-based của dự án (React + Type
     - Implement `getContractsByOrderId(orderId)`, `getOrdersByContractId(contractId)`
     - _Requirements: 4.2, 4.3, 6.1, 6.2, 6.3, 8.1, 8.2, 8.3, 8.4_
 
-  - [ ]\* 2.5 Viết unit tests cho `contracts.service.ts`
+  - [x]\* 2.5 Viết unit tests cho `contracts.service.ts`
     - Test `updateContractStatus` với các transition hợp lệ và không hợp lệ
     - Test `linkOrderToContract` bị chặn khi contract đã `signed`
     - _Requirements: 6.1, 8.4_
@@ -58,27 +58,27 @@ Triển khai module theo kiến trúc feature-based của dự án (React + Type
     - Insert vào `contract_audit_logs` với `action = 'created'`
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 2.1, 2.2, 2.3, 2.4, 2.5, 3.4, 4.1, 7.1, 7.2, 7.3_
 
-  - [ ]\* 4.2 Viết property test cho logic validate nguồn trong Edge Function
+  - [x]\* 4.2 Viết property test cho logic validate nguồn trong Edge Function
     - **Property 5: Từ chối tạo Contract từ nguồn không hợp lệ**
     - **Validates: Requirements 1.6, 1.7, 2.5**
     - Dùng fast-check, kiểm tra mọi order `cancelled` hoặc customer/supplier `inactive` đều trả về lỗi và không tạo bản ghi
 
-  - [ ]\* 4.3 Viết property test cho Party_A mapping
+  - [x]\* 4.3 Viết property test cho Party_A mapping
     - **Property 1: Party_A luôn khớp với nguồn dữ liệu**
     - **Validates: Requirements 1.1, 2.1, 2.2**
     - Dùng fast-check, kiểm tra `party_a_name`, `party_a_tax_code`, `party_a_address` trong Contract khớp với nguồn
 
-  - [ ]\* 4.4 Viết property test cho Party_B mapping
+  - [x]\* 4.4 Viết property test cho Party_B mapping
     - **Property 2: Party_B luôn là thông tin công ty từ settings**
     - **Validates: Requirements 1.2, 3.5**
     - Dùng fast-check, kiểm tra các trường Party_B khớp với giá trị trong `settings` tại thời điểm tạo
 
-  - [ ]\* 4.5 Viết property test cho trạng thái draft khi tạo mới
+  - [x]\* 4.5 Viết property test cho trạng thái draft khi tạo mới
     - **Property 3: Contract mới tạo luôn có trạng thái draft**
     - **Validates: Requirements 4.1**
     - Dùng fast-check, kiểm tra mọi Contract được tạo thành công đều có `status = 'draft'`
 
-  - [ ]\* 4.6 Viết unit tests cho `generate-contract`
+  - [x]\* 4.6 Viết unit tests cho `generate-contract`
     - Test tạo từ Order đầy đủ dữ liệu → kiểm tra tất cả fields
     - Test tạo từ Customer không có Order → `source_order_id = null`, quy cách để trống
     - Test tạo từ Supplier → `type = 'purchase'`
@@ -97,12 +97,12 @@ Triển khai module theo kiến trúc feature-based của dự án (React + Type
     - Timeout sau 10 giây
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-  - [ ]\* 5.2 Viết property test cho PDF export không thay đổi trạng thái khi thất bại
+  - [x]\* 5.2 Viết property test cho PDF export không thay đổi trạng thái khi thất bại
     - **Property 10: PDF export không thay đổi trạng thái Contract khi thất bại**
     - **Validates: Requirements 5.5**
     - Kiểm tra `status` Contract giữ nguyên sau khi export thất bại với mọi trạng thái ban đầu
 
-  - [ ]\* 5.3 Viết unit tests cho `export-contract-pdf`
+  - [x]\* 5.3 Viết unit tests cho `export-contract-pdf`
     - Test export thành công → `pdf_url` được cập nhật
     - Test export thất bại → `status` không thay đổi
     - _Requirements: 5.4, 5.5_
@@ -140,113 +140,113 @@ Triển khai module theo kiến trúc feature-based của dự án (React + Type
     - Nút "Link/Unlink Order" (chỉ khi chưa `signed`)
     - _Requirements: 4.1–4.5, 5.1–5.5, 6.1–6.5, 8.1–8.4_
 
-  - [ ]\* 7.6 Viết unit tests cho ContractDetailPage
+  - [x]\* 7.6 Viết unit tests cho ContractDetailPage
     - Test form chỉnh sửa bị disabled khi `status = 'signed'`
     - Test nút Huỷ yêu cầu nhập lý do
     - _Requirements: 4.2, 4.3, 6.5_
 
 - [ ] 8. Xây dựng UI quản lý Contract Template (Admin)
-  - [ ] 8.1 Tạo `src/features/contract-templates/contract-templates.module.ts`
+  - [x] 8.1 Tạo `src/features/contract-templates/contract-templates.module.ts`
     - Zod schema và types cho `ContractTemplate`
     - Service functions: `getTemplates()`, `getTemplateById(id)`, `updateTemplate(id, data)`
     - _Requirements: 3.1, 3.2, 3.3_
 
-  - [~] 8.2 Tạo `src/features/contract-templates/TemplateEditor.tsx`
+  - [x] 8.2 Tạo `src/features/contract-templates/TemplateEditor.tsx`
     - Textarea/rich editor cho nội dung template HTML
     - Hiển thị danh sách placeholders có sẵn để tham khảo
     - Nút lưu với xác nhận "Thay đổi chỉ áp dụng cho hợp đồng mới"
     - _Requirements: 3.2, 3.3, 3.4_
 
-  - [~] 8.3 Tạo `src/features/contract-templates/ContractTemplatesPage.tsx`
+  - [x] 8.3 Tạo `src/features/contract-templates/ContractTemplatesPage.tsx`
     - Danh sách templates (sale, purchase)
     - Mở `TemplateEditor` khi chọn template
     - Chỉ hiển thị cho Admin
     - _Requirements: 3.1, 3.2_
 
-  - [ ]\* 8.4 Viết property test cho template immutability
+  - [x]\* 8.4 Viết property test cho template immutability
     - **Property 7: Thay đổi template không ảnh hưởng Contract cũ**
     - **Validates: Requirements 3.3**
     - Kiểm tra `content` của Contract đã tạo không thay đổi sau khi Admin cập nhật template
 
-- [ ] 9. Tích hợp với module Orders, Customers, Suppliers
-  - [~] 9.1 Thêm nút "Tạo hợp đồng" vào `OrderDetailPage`
+- [x] 9. Tích hợp với module Orders, Customers, Suppliers
+  - [x] 9.1 Thêm nút "Tạo hợp đồng" vào `OrderDetailPage`
     - Nút mở `ContractForm` với `source_type = 'order'` và `source_id` đã điền sẵn
     - Hiển thị danh sách Contracts đã liên kết với Order
     - _Requirements: 8.2_
 
-  - [~] 9.2 Thêm nút "Tạo hợp đồng" vào `CustomerDetailPage`
+  - [x] 9.2 Thêm nút "Tạo hợp đồng" vào `CustomerDetailPage`
     - Nút mở `ContractForm` với `source_type = 'customer'` và `source_id` đã điền sẵn
     - _Requirements: 2.1_
 
-  - [~] 9.3 Thêm nút "Tạo hợp đồng" vào `SupplierDetailPage`
+  - [x] 9.3 Thêm nút "Tạo hợp đồng" vào `SupplierDetailPage`
     - Nút mở `ContractForm` với `source_type = 'supplier'` và `source_id` đã điền sẵn
     - _Requirements: 2.2_
 
-  - [~] 9.4 Thêm route và navigation cho module Contracts
+  - [x] 9.4 Thêm route và navigation cho module Contracts
     - Thêm route `/contracts` và `/contracts/:id` vào router
     - Thêm link "Hợp đồng" vào sidebar navigation
     - _Requirements: 6.6_
 
 - [ ] 10. Triển khai logic vòng đời và auto-expiry
-  - [~] 10.1 Implement state machine validation trong `contracts.service.ts`
+  - [x] 10.1 Implement state machine validation trong `contracts.service.ts`
     - Hàm `validateStatusTransition(currentStatus, newStatus)` trả về `true/false`
     - Các transition hợp lệ: `draft→sent`, `draft→cancelled`, `sent→signed`, `sent→cancelled`, `sent→expired`
     - Từ chối mọi transition không hợp lệ với thông báo lỗi rõ ràng
     - _Requirements: 6.1_
 
-  - [ ]\* 10.2 Viết property test cho state machine
+  - [x]\* 10.2 Viết property test cho state machine
     - **Property 11: Vòng đời trạng thái hợp lệ**
     - **Validates: Requirements 6.1**
     - Dùng fast-check, kiểm tra mọi transition hợp lệ được chấp nhận và mọi transition không hợp lệ bị từ chối
 
-  - [~] 10.3 Implement metadata ghi nhận khi chuyển trạng thái
+  - [x] 10.3 Implement metadata ghi nhận khi chuyển trạng thái
     - Khi `→ sent`: ghi `sent_at`, `sent_by`
     - Khi `→ signed`: ghi `signed_at`, `signed_by`, cho phép upload `signed_file_url`
     - Khi `→ cancelled`: yêu cầu `cancel_reason`, ghi `cancelled_at`, `cancelled_by`
     - _Requirements: 6.2, 6.3, 6.5_
 
-  - [ ]\* 10.4 Viết property test cho metadata transition
+  - [x]\* 10.4 Viết property test cho metadata transition
     - **Property 12: Transition sang sent/signed ghi nhận metadata**
     - **Validates: Requirements 6.2, 6.3**
     - Kiểm tra `sent_at`/`sent_by` và `signed_at`/`signed_by` luôn được ghi khi chuyển trạng thái tương ứng
 
-  - [ ]\* 10.5 Viết property test cho cancel yêu cầu lý do
+  - [x]\* 10.5 Viết property test cho cancel yêu cầu lý do
     - **Property 14: Huỷ hợp đồng yêu cầu lý do**
     - **Validates: Requirements 6.5**
     - Kiểm tra mọi yêu cầu huỷ không có `cancel_reason` đều bị từ chối
 
-  - [~] 10.6 Tạo Supabase scheduled function hoặc cron job cho auto-expiry
+  - [x] 10.6 Tạo Supabase scheduled function hoặc cron job cho auto-expiry
     - Query contracts có `expiry_date < CURRENT_DATE` và `status NOT IN ('signed', 'cancelled')`
     - Cập nhật `status = 'expired'` và ghi audit log
     - _Requirements: 6.4_
 
-  - [ ]\* 10.7 Viết property test cho auto-expiry
+  - [x]\* 10.7 Viết property test cho auto-expiry
     - **Property 13: Auto-expiry đúng điều kiện**
     - **Validates: Requirements 6.4**
     - Kiểm tra mọi Contract có `expiry_date < CURRENT_DATE` và status không phải `signed`/`cancelled` đều được cập nhật thành `expired`
 
 - [ ] 11. Triển khai audit log
-  - [~] 11.1 Implement hàm `writeAuditLog(contractId, action, oldValues, newValues, performedBy)` trong `contracts.service.ts`
+  - [x] 11.1 Implement hàm `writeAuditLog(contractId, action, oldValues, newValues, performedBy)` trong `contracts.service.ts`
     - Gọi hàm này sau mọi thao tác chỉnh sửa nội dung và chuyển trạng thái
     - _Requirements: 4.5_
 
-  - [ ]\* 11.2 Viết property test cho audit log
+  - [x]\* 11.2 Viết property test cho audit log
     - **Property 9: Mọi thay đổi nội dung đều có audit log**
     - **Validates: Requirements 4.5**
     - Kiểm tra mọi thao tác chỉnh sửa thành công đều tạo ít nhất một entry trong `contract_audit_logs` với đúng `contract_id` và `performed_by`
 
 - [ ] 12. Triển khai logic link/unlink Contract–Order
-  - [~] 12.1 Implement `linkOrderToContract` và `unlinkOrderFromContract` với validation
+  - [x] 12.1 Implement `linkOrderToContract` và `unlinkOrderFromContract` với validation
     - Từ chối nếu Contract có `status = 'signed'`
     - Ghi audit log khi link/unlink
     - _Requirements: 8.1, 8.4_
 
-  - [ ]\* 12.2 Viết property test cho link/unlink bị chặn khi đã ký
+  - [x]\* 12.2 Viết property test cho link/unlink bị chặn khi đã ký
     - **Property 15: Liên kết Contract–Order bị chặn khi đã ký**
     - **Validates: Requirements 8.4**
     - Kiểm tra mọi thao tác link/unlink trên Contract `signed` đều bị từ chối; trên Contract chưa `signed` đều thành công
 
-- [~] 13. Checkpoint cuối — Đảm bảo tất cả tests pass, hỏi người dùng nếu có thắc mắc.
+- [x] 13. Checkpoint cuối — Đảm bảo tất cả tests pass, hỏi người dùng nếu có thắc mắc.
 
 ## Ghi Chú
 
