@@ -10,6 +10,7 @@ import { useTheme } from '@/shared/hooks/useTheme';
 import { Icon } from '@/shared/components/Icon';
 
 import { MobileMoreDrawer } from './MobileMoreDrawer';
+import { NotificationBell } from './NotificationBell';
 
 function getCurrentItem(pathname: string) {
   return navigationItems.find((item) =>
@@ -358,6 +359,9 @@ export function AppShell() {
                 strokeWidth={1.5}
               />
             </button>
+
+            {profile?.role !== 'customer' && <NotificationBell />}
+
             {profile && (
               <button
                 type="button"

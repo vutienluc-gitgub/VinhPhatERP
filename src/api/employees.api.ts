@@ -1,4 +1,5 @@
 import { supabase } from '@/services/supabase/client';
+import { getTenantId } from '@/services/supabase/tenant';
 import type { Employee, EmployeeFormValues } from '@/schema';
 
 const TABLE = 'employees';
@@ -42,9 +43,16 @@ export async function getEmployeeById(id: string): Promise<Employee> {
 export async function createEmployee(
   row: EmployeeFormValues & { code: string },
 ): Promise<Employee> {
+  const tenantId = await getTenantId();
+
   const { data, error } = await supabase
     .from(TABLE)
-    .insert([row])
+    .insert([
+      {
+        ...row,
+        tenant_id: tenantId,
+      },
+    ])
     .select()
     .single();
   if (error) throw error;

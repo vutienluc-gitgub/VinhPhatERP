@@ -27,6 +27,8 @@ type OrderListProps = {
 
 function getVariant(status: OrderStatus): BadgeVariant {
   switch (status) {
+    case 'pending_review':
+      return 'warning';
     case 'confirmed':
       return 'info';
     case 'in_progress':
@@ -81,6 +83,10 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
   const deleteMutation = useDeleteOrder();
   const { confirm, alert: showAlert } = useConfirm();
 
+  const pendingReviewCount = orders.filter(
+    (o) => o.status === 'pending_review',
+  ).length;
+
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     setPage(1);
@@ -119,19 +125,21 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
 
       {/* 📊 KPI Dashboard - Premium Visuals */}
       <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
-        <div className="kpi-card-premium kpi-primary">
+        <div
+          className={`kpi-card-premium ${pendingReviewCount > 0 ? 'kpi-warning' : 'kpi-primary'}`}
+        >
           <div className="kpi-overlay" />
           <div className="kpi-content">
             <div className="kpi-info">
-              <p className="kpi-label">Đơn hàng mới</p>
-              <p className="kpi-value">{orders.length}</p>
+              <p className="kpi-label">Yêu cầu chờ duyệt</p>
+              <p className="kpi-value">{pendingReviewCount}</p>
             </div>
             <div className="kpi-icon-box">
-              <Icon name="ShoppingCart" size={32} />
+              <Icon name="Bell" size={32} />
             </div>
           </div>
           <div className="kpi-footer text-xs opacity-80 italic">
-            Đơn hàng trong kỳ hiện tại
+            Yêu cầu từ Customer Portal
           </div>
         </div>
 

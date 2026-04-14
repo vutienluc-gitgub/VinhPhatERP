@@ -88,6 +88,9 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
             toast.success('Cập nhật nhân viên thành công');
             onClose();
           },
+          onError: (error) => {
+            toast.error(error.message);
+          },
         },
       );
     } else {
@@ -101,9 +104,17 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
             toast.success('Thêm nhân viên thành công');
             onClose();
           },
+          onError: (error) => {
+            toast.error(error.message || 'Có lỗi xảy ra');
+          },
         },
       );
     }
+  };
+
+  const onInvalid = (errors: unknown) => {
+    console.error('Form validation failed:', errors);
+    toast.error('Vui lòng kiểm tra lại thông tin nhập hợp lệ');
   };
 
   const isPending = createMutation.isPending || updateMutation.isPending;
@@ -114,7 +125,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
       onClose={onClose}
       title={isEditing ? 'Cập nhật nhân viên' : 'Thêm nhân viên mới'}
     >
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)}>
         {isEditing && (
           <div style={{ marginBottom: '1rem' }}>
             <span className="td-muted">
@@ -239,13 +250,9 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
           >
             Hủy
           </Button>
-          <button
-            type="submit"
-            className="primary-button btn-standard"
-            disabled={isPending}
-          >
+          <Button variant="primary" type="submit" disabled={isPending}>
             {isPending ? 'Đang lưu...' : 'Lưu nhân viên'}
-          </button>
+          </Button>
         </div>
       </form>
     </AdaptiveSheet>

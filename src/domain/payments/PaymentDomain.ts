@@ -35,6 +35,7 @@ export interface ExpenseDbPayload {
   expense_date: string;
   account_id: string | null;
   supplier_id: string | null;
+  employee_id: string | null;
   description: string;
   reference_number: string | null;
   notes: string | null;
@@ -73,6 +74,7 @@ export function mapExpenseFormToDb(
     expense_date: values.expenseDate,
     account_id: values.accountId || null,
     supplier_id: values.supplierId || null,
+    employee_id: values.employeeId || null,
     description: values.description.trim(),
     reference_number: values.referenceNumber?.trim() || null,
     notes: values.notes?.trim() || null,

@@ -1,6 +1,7 @@
 import type { OrderStatus, ProductionStage, StageStatus } from './types';
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  pending_review: 'Chờ duyệt',
   draft: 'Nháp',
   confirmed: 'Đã xác nhận',
   in_progress: 'Đang sản xuất',

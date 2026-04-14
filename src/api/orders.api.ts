@@ -181,6 +181,22 @@ export async function updateOrderStatus(
     .update({ status })
     .eq('id', id);
   if (error) throw error;
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) {
+    await supabase.from('business_audit_log').insert({
+      entity_type: 'orders',
+      entity_id: id,
+      event_type: 'ORDER_STATUS_CHANGED',
+      payload: {
+        new_status: status,
+        action: 'update_status',
+      },
+      user_id: user.id,
+    });
+  }
 }
 
 /* ── Confirm order: recalculate total, update status, create progress rows ── */
@@ -250,4 +266,27 @@ export async function invokeCreateOrderFunction<TResult>(
   );
   if (error) throw error;
   return data as TResult;
+}
+
+/* ── Fetch Audit Logs for Order ── */
+
+export async function fetchOrderAuditLogs(orderId: string) {
+  const { data, error } = await supabase
+    .from('business_audit_log')
+    .select(
+      `
+      id,
+      created_at,
+      event_type,
+      payload,
+      user_id,
+      profiles!business_audit_log_user_id_fkey(full_name, role)
+    `,
+    )
+    .eq('entity_type', 'orders')
+    .eq('entity_id', orderId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
 }

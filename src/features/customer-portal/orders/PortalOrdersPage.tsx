@@ -1,9 +1,14 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { usePortalOrders } from '@/features/customer-portal/hooks/usePortalOrders';
 import { formatCurrency } from '@/shared/utils/format';
+import { Button, Icon } from '@/shared/components';
+
+import { OrderRequestModal } from './OrderRequestModal';
 
 const STATUS_LABEL: Record<string, string> = {
+  pending_review: 'Chờ duyệt',
   draft: 'Nháp',
   confirmed: 'Đã xác nhận',
   in_progress: 'Đang sản xuất',
@@ -12,6 +17,7 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 const STATUS_BADGE: Record<string, string> = {
+  pending_review: 'portal-badge portal-badge--draft',
   draft: 'portal-badge portal-badge--draft',
   confirmed: 'portal-badge portal-badge--confirmed',
   in_progress: 'portal-badge portal-badge--in-progress',
@@ -22,6 +28,7 @@ const STATUS_BADGE: Record<string, string> = {
 export function PortalOrdersPage() {
   const { orders, loading, error, page, setPage, PAGE_SIZE } =
     usePortalOrders();
+  const [showRequestModal, setShowRequestModal] = useState(false);
 
   if (loading)
     return (
@@ -44,8 +51,14 @@ export function PortalOrdersPage() {
   if (error) return <div className="portal-error">{error}</div>;
 
   return (
-    <div className="portal-section">
-      <h1 className="portal-page-title">Đơn hàng</h1>
+    <div className="portal-section relative">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="portal-page-title mb-0">Đơn hàng</h1>
+        <Button variant="primary" onClick={() => setShowRequestModal(true)}>
+          <Icon name="Plus" size={16} className="mr-1.5" />
+          Tạo yêu cầu
+        </Button>
+      </div>
 
       {orders.length === 0 ? (
         <div className="portal-table-wrap">
@@ -66,7 +79,10 @@ export function PortalOrdersPage() {
                 />
               </svg>
             </div>
-            <p>Chưa có đơn hàng nào.</p>
+            <p className="mb-4">Chưa có đơn hàng nào.</p>
+            <Button variant="outline" onClick={() => setShowRequestModal(true)}>
+              Tạo yêu cầu đầu tiên
+            </Button>
           </div>
         </div>
       ) : (
@@ -186,6 +202,10 @@ export function PortalOrdersPage() {
             </button>
           </div>
         </div>
+      )}
+
+      {showRequestModal && (
+        <OrderRequestModal onClose={() => setShowRequestModal(false)} />
       )}
     </div>
   );

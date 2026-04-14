@@ -8,6 +8,8 @@ import {
   ClearFilterButton,
 } from '@/shared/components';
 import { Pagination } from '@/shared/components/Pagination';
+import { Button } from '@/shared/components';
+import { OrderRequestModal } from '@/features/customer-portal/orders/OrderRequestModal';
 
 export function PortalFabricCatalogPage() {
   const [searchInput, setSearchInput] = useState('');
@@ -24,6 +26,8 @@ export function PortalFabricCatalogPage() {
     },
     page,
   );
+
+  const [selectedFabric, setSelectedFabric] = useState<string | null>(null);
 
   const catalogs = data?.data ?? [];
 
@@ -153,6 +157,21 @@ export function PortalFabricCatalogPage() {
                 </div>
               ),
             },
+            {
+              header: 'Thao tác',
+              className: 'text-right',
+              cell: (c) => (
+                <div className="flex justify-end">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedFabric(c.name)}
+                  >
+                    Yêu cầu đặt
+                  </Button>
+                </div>
+              ),
+            },
           ]}
           renderMobileCard={(c) => (
             <div className="portal-mobile-card">
@@ -196,6 +215,15 @@ export function PortalFabricCatalogPage() {
                 <span className="px-2 py-1 rounded-md bg-primary/5 text-primary text-[10px] font-bold border border-primary/10 uppercase">
                   Có sẵn
                 </span>
+                <div className="ml-auto flex items-center justify-end">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedFabric(c.name)}
+                  >
+                    Yêu cầu
+                  </Button>
+                </div>
               </div>
             </div>
           )}
@@ -220,10 +248,21 @@ export function PortalFabricCatalogPage() {
             Vĩnh Phát để được hỗ trợ.
           </p>
         </div>
-        <button className="btn-primary" type="button">
+        <button
+          className="btn-primary"
+          type="button"
+          onClick={() => setSelectedFabric('')}
+        >
           Liên hệ ngay
         </button>
       </div>
+
+      {selectedFabric !== null && (
+        <OrderRequestModal
+          initialFabricType={selectedFabric}
+          onClose={() => setSelectedFabric(null)}
+        />
+      )}
     </div>
   );
 }
