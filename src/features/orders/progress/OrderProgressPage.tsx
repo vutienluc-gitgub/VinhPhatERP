@@ -48,19 +48,31 @@ export function OrderProgressPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="panel-card card-flush">
-        <div className="card-header-area card-header-premium">
-          <div>
-            <p className="eyebrow-premium">SAN XUAT</p>
-            <h3 className="title-premium">Tien do San xuat</h3>
+        <div className="card-header-area">
+          <div className="card-header-row">
+            <div>
+              <p className="eyebrow">Sản xuất</p>
+              <h3
+                style={{
+                  margin: 0,
+                  fontSize: '1rem',
+                  fontWeight: 700,
+                }}
+              >
+                Tiến độ Sản xuất
+              </h3>
+            </div>
           </div>
         </div>
 
-        <TabSwitcher
-          tabs={tabsWithBadge}
-          active={tab}
-          onChange={setTab}
-          variant="underline"
-        />
+        <div style={{ padding: '0.75rem 1.25rem 1rem' }}>
+          <TabSwitcher
+            tabs={tabsWithBadge}
+            active={tab}
+            onChange={setTab}
+            variant="pill"
+          />
+        </div>
       </div>
 
       {tab === 'dashboard' && <ProgressDashboard />}

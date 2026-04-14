@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 
 import { TabSwitcher, Icon } from '@/shared/components';
 import type { TabItem } from '@/shared/components';
@@ -69,18 +69,30 @@ export function PaymentsPage() {
     <div className="flex flex-col gap-6">
       {/* Premium Tab Header */}
       <div className="panel-card card-flush">
-        <div className="card-header-area card-header-premium">
-          <div>
-            <p className="eyebrow-premium">TÀI CHÍNH</p>
-            <h3 className="title-premium">Quản lý Tiền tệ</h3>
+        <div className="card-header-area">
+          <div className="card-header-row">
+            <div>
+              <p className="eyebrow">Tài chính</p>
+              <h3
+                style={{
+                  margin: 0,
+                  fontSize: '1rem',
+                  fontWeight: 700,
+                }}
+              >
+                Quản lý Tiền tệ
+              </h3>
+            </div>
           </div>
         </div>
-        <TabSwitcher
-          tabs={TAB_CONFIG}
-          active={tab}
-          onChange={setTab}
-          variant="underline"
-        />
+        <div style={{ padding: '0.75rem 1.25rem 1rem' }}>
+          <TabSwitcher
+            tabs={TAB_CONFIG}
+            active={tab}
+            onChange={setTab}
+            variant="pill"
+          />
+        </div>
       </div>
 
       {/* Tab content */}

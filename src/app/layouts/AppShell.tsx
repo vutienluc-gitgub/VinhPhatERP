@@ -58,6 +58,23 @@ const GROUP_LABELS: Record<string, { label: string; icon: string }> = {
 const GROUP_ORDER = ['sales', 'production', 'master-data', 'system'];
 
 const STORAGE_KEY = 'erp-sidebar-collapsed';
+const SIDEBAR_WIDTH_KEY = 'erp-sidebar-width-collapsed';
+
+function loadSidebarCollapsed(): boolean {
+  try {
+    return localStorage.getItem(SIDEBAR_WIDTH_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function saveSidebarCollapsed(state: boolean): void {
+  try {
+    localStorage.setItem(SIDEBAR_WIDTH_KEY, String(state));
+  } catch {
+    /* ignore */
+  }
+}
 
 function loadCollapsed(): Record<string, boolean> {
   try {
@@ -91,10 +108,20 @@ export function AppShell() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [collapsed, setCollapsed] =
     useState<Record<string, boolean>>(loadCollapsed);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] =
+    useState<boolean>(loadSidebarCollapsed);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const currentItem = getCurrentItem(pathname);
   const { data: stats } = useDashboardStats();
   const { theme, toggleTheme } = useTheme();
+
+  const toggleSidebar = useCallback(() => {
+    setIsSidebarCollapsed((prev) => {
+      const next = !prev;
+      saveSidebarCollapsed(next);
+      return next;
+    });
+  }, []);
 
   const userRole = profile?.role;
   const visibleNavItems = navigationItems.filter((item) =>
@@ -185,6 +212,7 @@ export function AppShell() {
         to={item.path}
         className={({ isActive }) => `nav-link${isActive ? ' is-active' : ''}`}
         end={item.path === '/'}
+        title={isSidebarCollapsed ? item.label : undefined}
       >
         <div className="nav-link-inner">
           <span className="nav-icon" aria-hidden="true">
@@ -192,9 +220,13 @@ export function AppShell() {
           </span>
           <span className="nav-link-title">{item.label}</span>
         </div>
-        {item.path === '/orders' && stats?.overdueOrders ? (
+        {!isSidebarCollapsed &&
+        item.path === '/orders' &&
+        stats?.overdueOrders ? (
           <span className="nav-badge danger">{stats.overdueOrders}</span>
-        ) : item.path === '/quotations' && stats?.expiringQuotations ? (
+        ) : !isSidebarCollapsed &&
+          item.path === '/quotations' &&
+          stats?.expiringQuotations ? (
           <span className="nav-badge warning">{stats.expiringQuotations}</span>
         ) : null}
       </NavLink>
@@ -202,11 +234,37 @@ export function AppShell() {
   }
 
   return (
-    <div className="shell-layout">
+    <div className={`shell-layout${isSidebarCollapsed ? ' is-collapsed' : ''}`}>
       <aside className="sidebar-nav">
-        <div className="brand-block">
-          <p className="eyebrow">Vĩnh Phát</p>
-          <h1>ERP Sản xuất</h1>
+        <div className="brand-block" style={{ position: 'relative' }}>
+          {!isSidebarCollapsed ? (
+            <div>
+              <p className="eyebrow">Vĩnh Phát</p>
+              <h1>ERP Sản xuất</h1>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '42px',
+              }}
+            >
+              <Icon name="Hexagon" size={24} className="text-primary-strong" />
+            </div>
+          )}
+          <button
+            type="button"
+            className="sidebar-collapse-btn hidden lg:flex"
+            onClick={toggleSidebar}
+            title={isSidebarCollapsed ? 'Mở rộng menu' : 'Thu gọn menu'}
+          >
+            <Icon
+              name={isSidebarCollapsed ? 'ChevronRight' : 'ChevronLeft'}
+              size={14}
+            />
+          </button>
         </div>
 
         <nav className="nav-stack" aria-label="Main navigation">

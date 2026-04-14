@@ -31,15 +31,31 @@ export function DebtsPage() {
   return (
     <div className="page-container p-4">
       <div className="panel-card card-flush mb-6">
-        {/* Premium Header */}
-        <div className="card-header-area card-header-premium">
-          <div>
-            <p className="eyebrow-premium">TÀI CHÍNH</p>
-            <h3 className="title-premium">Quản Lý Công Nợ</h3>
+        <div className="card-header-area">
+          <div className="card-header-row">
+            <div>
+              <p className="eyebrow">Tài chính</p>
+              <h3
+                style={{
+                  margin: 0,
+                  fontSize: '1rem',
+                  fontWeight: 700,
+                }}
+              >
+                Quản lý Công nợ
+              </h3>
+            </div>
           </div>
         </div>
 
-        <TabSwitcher tabs={TABS} active={activeTab} onChange={setActiveTab} />
+        <div style={{ padding: '0.75rem 1.25rem 1rem' }}>
+          <TabSwitcher
+            tabs={TABS}
+            active={activeTab}
+            onChange={setActiveTab}
+            variant="pill"
+          />
+        </div>
       </div>
 
       {/* Content - Responsive Gap */}

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 
 import { Icon } from '@/shared/components';
 import type { PendingTask } from '@/application/analytics';
@@ -12,28 +12,36 @@ export function PendingTasksCard({ tasks }: PendingTasksCardProps) {
 
   return (
     <div className="panel-card card-flush">
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">HÀNH ĐỘNG</p>
-          <h3 className="title-premium">
-            Nhiệm vụ cần xử lý
-            {totalTasks > 0 && (
-              <span
-                className="badge badge-info ml-2"
-                style={{ fontSize: '0.65rem' }}
-              >
-                {totalTasks}
-              </span>
-            )}
-          </h3>
+      <div className="card-header-area">
+        <div className="card-header-row">
+          <div>
+            <p className="eyebrow">Hành động</p>
+            <h3
+              style={{
+                margin: 0,
+                fontSize: '1rem',
+                fontWeight: 700,
+              }}
+            >
+              Nhiệm vụ cần xử lý
+              {totalTasks > 0 && (
+                <span
+                  className="badge badge-info ml-2"
+                  style={{ fontSize: '0.65rem' }}
+                >
+                  {totalTasks}
+                </span>
+              )}
+            </h3>
+          </div>
         </div>
       </div>
 
-      <div className="p-4">
+      <div style={{ paddingTop: '0.75rem' }}>
         {tasks.length === 0 ? (
-          <div className="task-empty py-6 text-success flex items-center justify-center gap-2">
+          <div className="task-empty text-success flex items-center justify-center gap-2">
             <Icon name="Sparkles" size={20} />
-            Tuyệt vời! Bạn không còn nhiệm vụ nào chưa xử lý.
+            Tuyệt vời! Không còn nhiệm vụ nào chưa xử lý.
           </div>
         ) : (
           <div className="task-list">

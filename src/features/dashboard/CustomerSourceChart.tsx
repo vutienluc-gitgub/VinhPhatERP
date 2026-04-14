@@ -13,14 +13,8 @@ export function CustomerSourceChart({
   const maxCount = Math.max(...sources.map((s) => s.count), 1);
 
   return (
-    <div
-      className="panel-card"
-      style={{
-        padding: 0,
-        overflow: 'hidden',
-      }}
-    >
-      <div style={{ padding: '1.25rem 1.25rem 0' }}>
+    <div className="panel-card card-flush">
+      <div className="card-header-area">
         <div className="card-header-row">
           <div>
             <p className="eyebrow">Phân tích</p>
@@ -32,13 +26,14 @@ export function CustomerSourceChart({
           style={{
             fontSize: '0.85rem',
             marginTop: '0.35rem',
+            marginBottom: 0,
           }}
         >
           Phân bổ theo nguồn tiếp cận
         </p>
       </div>
 
-      <div style={{ padding: '1rem 1.25rem 1.25rem' }}>
+      <div style={{ padding: '0.75rem 1.25rem 1.25rem' }}>
         {isLoading ? (
           <div
             style={{

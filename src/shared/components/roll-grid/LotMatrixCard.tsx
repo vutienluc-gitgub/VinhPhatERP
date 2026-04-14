@@ -95,72 +95,41 @@ export function LotMatrixCard({
 
   return (
     <div
-      className={cn('overflow-hidden transition-all', className)}
-      style={{
-        borderRadius: 'var(--radius-lg)',
-        border: '1px solid var(--border)',
-        background: 'var(--surface-strong)',
-      }}
+      className={cn(
+        'transition-all rounded-xl border border-border bg-surface-strong overflow-hidden',
+        className,
+      )}
     >
       {/* Compact single-line header */}
-      <div
-        className="flex items-center justify-between px-3 py-2 gap-3"
-        style={{
-          borderBottom: '1px solid var(--border)',
-          background: 'var(--surface-subtle)',
-        }}
-      >
+      <div className="flex items-center justify-between px-3 py-2 gap-3 border-b border-border bg-surface-subtle">
         {/* Left: title + index badge — flex-1 min-w-0 để title co giãn tự nhiên */}
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <Icon
             name="Layers"
             size={13}
-            style={{
-              color: 'var(--primary)',
-              flexShrink: 0,
-            }}
+            className="text-primary flex-shrink-0"
           />
-          <span
-            style={{
-              fontWeight: 800,
-              fontSize: '12px',
-              color: 'var(--text)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
+          <span className="font-extrabold text-[12px] text-[var(--text)] uppercase tracking-widest truncate">
             {title}
           </span>
           {lotIndex !== undefined && totalLots !== undefined && (
-            <span
-              style={{
-                fontSize: '10px',
-                fontWeight: 700,
-                background: 'rgba(11,107,203,0.1)',
-                color: 'var(--primary)',
-                padding: '1px 6px',
-                borderRadius: 4,
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-              }}
-            >
+            <span className="text-[10px] font-bold bg-primary/10 text-primary px-1.5 py-[1px] rounded whitespace-nowrap flex-shrink-0">
               {lotIndex}/{totalLots}
             </span>
           )}
           {colorName && (
-            <span
-              style={{
-                fontSize: '10px',
-                color: 'var(--muted)',
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-              }}
-            >
+            <span className="text-[10px] text-muted whitespace-nowrap flex-shrink-0">
               · {colorName}
             </span>
+          )}
+          {standardWeightKg && (
+            <div className="flex items-center gap-1 ml-2 bg-[var(--surface-subtle)] px-2 py-0.5 rounded text-[10px] border border-border flex-shrink-0">
+              <Icon name="Target" size={10} className="text-muted" />
+              <span className="text-muted font-medium">Chuẩn:</span>
+              <span className="font-extrabold text-amber-600">
+                {standardWeightKg}kg
+              </span>
+            </div>
           )}
         </div>
 
@@ -168,52 +137,50 @@ export function LotMatrixCard({
         <div className="flex items-center gap-2 flex-shrink-0">
           {mode === 'select' ? (
             selectedCount > 0 ? (
-              <span
-                style={{
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  color: 'var(--success)',
-                }}
-              >
+              <span className="text-[11px] font-bold text-success">
                 {selectedCount} đã chọn · {selectedWeight.toFixed(1)} kg
               </span>
             ) : (
-              <span
-                style={{
-                  fontSize: '10px',
-                  color: 'var(--muted)',
-                }}
-              >
-                Nhấn để chọn
-              </span>
+              <span className="text-[10px] text-muted">Nhấn để chọn</span>
             )
           ) : (
-            <span
-              style={{
-                fontSize: '11px',
-                fontWeight: 700,
-                color: isCountMatch ? 'var(--success)' : 'var(--text)',
-              }}
-            >
-              {totals.rollCount}/{expectedRollsCount}
+            <div className="flex flex-col items-end gap-1.5">
               <span
-                style={{
-                  fontWeight: 500,
-                  color: 'var(--muted)',
-                  marginLeft: 4,
-                }}
+                className={cn(
+                  'text-[11px] font-bold flex items-center gap-1.5',
+                  isCountMatch ? 'text-success' : 'text-[var(--text)]',
+                )}
               >
-                · {totals.totalWeight.toFixed(1)} kg
+                {isCountMatch && <Icon name="CheckCircle2" size={12} />}
+                <span>
+                  {totals.rollCount} / {expectedRollsCount} cuộn
+                </span>
+                <span className="font-medium text-muted">
+                  · {totals.totalWeight.toFixed(1)} kg
+                </span>
               </span>
-            </span>
+
+              {/* Warehouse Progress Bar */}
+              <div className="h-1.5 w-24 bg-[var(--surface-subtle)] rounded-full overflow-hidden flex border border-border/50">
+                <div
+                  className={cn(
+                    'h-full transition-all duration-500',
+                    isCountMatch ? 'bg-success' : 'bg-primary',
+                  )}
+                  style={{
+                    width: `${Math.min(100, (totals.rollCount / Math.max(1, expectedRollsCount)) * 100)}%`,
+                  }}
+                />
+              </div>
+            </div>
           )}
         </div>
       </div>
 
       {/* Grid — không có AnomalyLegend ở đây nữa, đã chuyển lên RawFabricList */}
-      <div className="p-2" style={{ background: 'var(--surface-strong)' }}>
+      <div className="p-2 bg-surface-strong overflow-x-auto">
         <div
-          className="grid gap-1"
+          className="grid gap-1 min-w-[480px] md:min-w-0"
           style={{ gridTemplateColumns: 'repeat(20, minmax(0, 1fr))' }}
         >
           {displayRolls.map((roll, index) => {
