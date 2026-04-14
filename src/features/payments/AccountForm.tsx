@@ -5,6 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { useCreateAccount, useUpdateAccount } from '@/application/payments';
 
 import {
@@ -178,16 +179,20 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
                 Số dư ban đầu (đ){' '}
                 {!isEditing && <span className="field-required">*</span>}
               </label>
-              <input
-                id="initialBalance"
-                className={`field-input${errors.initialBalance ? ' is-error' : ''}`}
-                type="number"
-                step="1000"
-                inputMode="numeric"
-                placeholder="0"
-                style={{ fontVariantNumeric: 'tabular-nums' }}
-                readOnly={isEditing}
-                {...register('initialBalance', { valueAsNumber: true })}
+              <Controller
+                name="initialBalance"
+                control={control}
+                render={({ field }) => (
+                  <CurrencyInput
+                    id="initialBalance"
+                    className={`field-input${errors.initialBalance ? ' is-error' : ''}`}
+                    value={field.value}
+                    onChange={(v) => field.onChange(v ?? 0)}
+                    onBlur={field.onBlur}
+                    disabled={isEditing}
+                    placeholder="0"
+                  />
+                )}
               />
               {errors.initialBalance && (
                 <span className="field-error">

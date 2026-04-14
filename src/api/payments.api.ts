@@ -12,6 +12,7 @@ import type { Payment } from '@/features/payments/types';
 import type { PaymentDbPayload, ExpenseDbPayload } from '@/domain/payments';
 import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';
+import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import { paymentResponseSchema } from '@/schema/payment.schema';
@@ -231,9 +232,13 @@ export async function fetchNextExpenseNumber(): Promise<string> {
 }
 
 export async function createExpense(row: ExpenseDbPayload): Promise<Expense> {
+  const tenantId = await getTenantId();
   const { data, error } = await untypedDb
     .from('expenses')
-    .insert(row)
+    .insert({
+      ...row,
+      tenant_id: tenantId,
+    })
     .select()
     .single();
   if (error) throw error;

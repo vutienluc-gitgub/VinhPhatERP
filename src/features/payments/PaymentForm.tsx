@@ -5,6 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { CancelButton } from '@/shared/components';
+import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { createPaymentsSchema } from '@/schema/payment.schema';
 import { formatCurrency } from '@/shared/utils/format';
 import { useCreatePayment, useNextPaymentNumber } from '@/application/payments';
@@ -175,13 +176,18 @@ export function PaymentForm({
               <label>
                 Số tiền (đ) <span className="field-required">*</span>
               </label>
-              <input
-                className={`field-input${errors.amount ? ' is-error' : ''}`}
-                type="number"
-                step="1000"
-                inputMode="numeric"
-                {...register('amount', { valueAsNumber: true })}
-                style={{ fontVariantNumeric: 'tabular-nums' }}
+              <Controller
+                name="amount"
+                control={control}
+                render={({ field }) => (
+                  <CurrencyInput
+                    className={`field-input${errors.amount ? ' is-error' : ''}`}
+                    value={field.value}
+                    onChange={(v) => field.onChange(v ?? 0)}
+                    onBlur={field.onBlur}
+                    placeholder="VD: 5.000.000"
+                  />
+                )}
               />
               {errors.amount && (
                 <p className="field-error">{errors.amount.message}</p>
@@ -244,7 +250,7 @@ export function PaymentForm({
             type="submit"
             disabled={isSubmitting || createMutation.isPending}
           >
-            {createMutation.isPending ? 'Đang lưu...' : '💰 Xác nhận thu'}
+            {createMutation.isPending ? 'Đang lưu...' : 'Xác nhận thu'}
           </button>
         </div>
       </form>

@@ -22,6 +22,3 @@ export const shipmentsPlugin: FeaturePlugin = {
     },
   ],
 };
-
-// Export fallback for internal feature code if needed
-export { SHIPMENT_STATUS_LABELS } from '@/schema/shipment.schema';
