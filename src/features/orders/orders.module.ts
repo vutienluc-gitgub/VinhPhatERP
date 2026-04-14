@@ -69,8 +69,13 @@ export const ordersPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'sales',
   order: 10,
-  component: () =>
-    import('./OrdersPage').then((m) => ({ default: m.OrdersPage })),
+  routes: [
+    {
+      path: 'orders',
+      component: () =>
+        import('./OrdersPage').then((m) => ({ default: m.OrdersPage })),
+    },
+  ],
 };
 
 export default createModule(ordersFeature);

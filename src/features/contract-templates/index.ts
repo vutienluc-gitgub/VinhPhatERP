@@ -10,8 +10,13 @@ export const contractTemplatesPlugin: FeaturePlugin = {
   requiredRoles: ['admin'],
   group: 'system',
   order: 92,
-  component: () =>
-    import('./ContractTemplatesPage').then((m) => ({
-      default: m.ContractTemplatesPage,
-    })),
+  routes: [
+    {
+      path: 'contract-templates',
+      component: () =>
+        import('./ContractTemplatesPage').then((m) => ({
+          default: m.ContractTemplatesPage,
+        })),
+    },
+  ],
 };

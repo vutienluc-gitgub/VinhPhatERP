@@ -52,8 +52,15 @@ export const yarnReceiptsPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'production',
   order: 10,
-  component: () =>
-    import('./YarnReceiptsPage').then((m) => ({ default: m.YarnReceiptsPage })),
+  routes: [
+    {
+      path: 'yarn-receipts',
+      component: () =>
+        import('./YarnReceiptsPage').then((m) => ({
+          default: m.YarnReceiptsPage,
+        })),
+    },
+  ],
 };
 
 export default createModule(yarnReceiptsFeature);

@@ -10,8 +10,8 @@ export interface FeaturePlugin {
   /** Unique key, dùng làm identifier. Ví dụ: 'work-orders' */
   key: string;
 
-  /** Route path (không có '/'), ví dụ: 'work-orders' */
-  route: string;
+  /** Route path (không có '/'), ví dụ: 'work-orders'. (Legacy: Dùng routes thay thế) */
+  route?: string;
 
   /** Tên hiển thị đầy đủ trên menu. Ví dụ: 'Lệnh Sản Xuất' */
   label: string;
@@ -42,8 +42,8 @@ export interface FeaturePlugin {
   /** Hiển thị trên mobile bottom bar */
   primaryMobile?: boolean;
 
-  /** Lazy-loaded page component */
-  component: () => Promise<{ default: React.ComponentType }>;
+  /** Lazy-loaded page component (Legacy: Dùng routes thay thế) */
+  component?: () => Promise<{ default: React.ComponentType }>;
 
   /** Thứ tự hiển thị trên menu (nhỏ = ưu tiên cao) */
   order?: number;
@@ -57,10 +57,23 @@ export interface FeaturePlugin {
     component: () => Promise<{ default: React.ComponentType }>;
   }>;
 
-  /** Sub-routes (ví dụ: detail page) */
+  /** Sub-routes (Legacy - Will be replaced by routes) */
   subRoutes?: Array<{
     path: string;
     component: () => Promise<{ default: React.ComponentType }>;
+  }>;
+
+  /**
+   * New Unified Routing Structure
+   * Supports Nested Routes directly in the plugin definition.
+   */
+  routes?: Array<{
+    path: string;
+    component: () => Promise<{ default: React.ComponentType }>;
+    children?: Array<{
+      path: string;
+      component: () => Promise<{ default: React.ComponentType }>;
+    }>;
   }>;
 }
 

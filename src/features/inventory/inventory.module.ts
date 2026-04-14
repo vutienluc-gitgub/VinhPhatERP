@@ -46,8 +46,13 @@ export const inventoryPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'master-data',
   order: 20,
-  component: () =>
-    import('./InventoryPage').then((m) => ({ default: m.InventoryPage })),
+  routes: [
+    {
+      path: 'inventory',
+      component: () =>
+        import('./InventoryPage').then((m) => ({ default: m.InventoryPage })),
+    },
+  ],
 };
 
 export default createModule(inventoryFeature);

@@ -68,8 +68,13 @@ export const shipmentsPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'sales',
   order: 70,
-  component: () =>
-    import('./ShipmentsPage').then((m) => ({ default: m.ShipmentsPage })),
+  routes: [
+    {
+      path: 'shipments',
+      component: () =>
+        import('./ShipmentsPage').then((m) => ({ default: m.ShipmentsPage })),
+    },
+  ],
 };
 
 export default createModule(shipmentsFeature);

@@ -51,8 +51,15 @@ export const yarnCatalogPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'production',
   order: 30,
-  component: () =>
-    import('./YarnCatalogPage').then((m) => ({ default: m.YarnCatalogPage })),
+  routes: [
+    {
+      path: 'yarn-catalog',
+      component: () =>
+        import('./YarnCatalogPage').then((m) => ({
+          default: m.YarnCatalogPage,
+        })),
+    },
+  ],
 };
 
 export default createModule(yarnCatalogFeature);

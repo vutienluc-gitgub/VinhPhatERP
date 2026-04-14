@@ -12,6 +12,13 @@ export const dyeingOrdersPlugin: FeaturePlugin = {
   order: 58,
   requiredRoles: ['admin', 'manager'],
   routeGuard: 'manager',
-  component: () =>
-    import('./DyeingOrdersPage').then((m) => ({ default: m.DyeingOrdersPage })),
+  routes: [
+    {
+      path: 'dyeing-orders',
+      component: () =>
+        import('./DyeingOrdersPage').then((m) => ({
+          default: m.DyeingOrdersPage,
+        })),
+    },
+  ],
 };

@@ -26,6 +26,11 @@ export const weavingInvoicesPlugin: FeaturePlugin = {
   order: 57,
   requiredRoles: ['admin', 'manager'],
   routeGuard: 'manager',
-  component: () =>
-    import('./index').then((m) => ({ default: m.WeavingInvoicesPage })),
+  routes: [
+    {
+      path: 'weaving-invoices',
+      component: () =>
+        import('./index').then((m) => ({ default: m.WeavingInvoicesPage })),
+    },
+  ],
 };

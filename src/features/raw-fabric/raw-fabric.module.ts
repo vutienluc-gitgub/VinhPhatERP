@@ -72,8 +72,13 @@ export const rawFabricPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'production',
   order: 25,
-  component: () =>
-    import('./RawFabricPage').then((m) => ({ default: m.RawFabricPage })),
+  routes: [
+    {
+      path: 'raw-fabric',
+      component: () =>
+        import('./RawFabricPage').then((m) => ({ default: m.RawFabricPage })),
+    },
+  ],
 };
 
 export default createModule(rawFabricFeature);

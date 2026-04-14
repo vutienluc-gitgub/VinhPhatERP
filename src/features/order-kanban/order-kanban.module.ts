@@ -9,6 +9,11 @@ export const orderKanbanPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager', 'sale'],
   group: 'sales',
   order: 27,
-  component: () =>
-    import('./index').then((m) => ({ default: m.OrderKanbanPage })),
+  routes: [
+    {
+      path: 'order-kanban',
+      component: () =>
+        import('./index').then((m) => ({ default: m.OrderKanbanPage })),
+    },
+  ],
 };

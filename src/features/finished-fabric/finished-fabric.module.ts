@@ -70,10 +70,15 @@ export const finishedFabricPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'production',
   order: 30,
-  component: () =>
-    import('./FinishedFabricPage').then((m) => ({
-      default: m.FinishedFabricPage,
-    })),
+  routes: [
+    {
+      path: 'finished-fabric',
+      component: () =>
+        import('./FinishedFabricPage').then((m) => ({
+          default: m.FinishedFabricPage,
+        })),
+    },
+  ],
 };
 
 export default createModule(finishedFabricFeature);

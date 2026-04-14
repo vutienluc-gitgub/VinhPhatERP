@@ -67,8 +67,13 @@ export const quotationsPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'sales',
   order: 5,
-  component: () =>
-    import('./QuotationsPage').then((m) => ({ default: m.QuotationsPage })),
+  routes: [
+    {
+      path: 'quotations',
+      component: () =>
+        import('./QuotationsPage').then((m) => ({ default: m.QuotationsPage })),
+    },
+  ],
 };
 
 export default createModule(quotationsFeature);

@@ -44,10 +44,15 @@ export const shippingRatesPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager'],
   group: 'system',
   order: 110,
-  component: () =>
-    import('./ShippingRatesPage').then((m) => ({
-      default: m.ShippingRatesPage,
-    })),
+  routes: [
+    {
+      path: 'shipping-rates',
+      component: () =>
+        import('./ShippingRatesPage').then((m) => ({
+          default: m.ShippingRatesPage,
+        })),
+    },
+  ],
 };
 
 export default createModule(shippingRatesFeature);

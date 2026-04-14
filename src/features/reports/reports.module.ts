@@ -42,8 +42,13 @@ export const reportsPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager'],
   group: 'system',
   order: 100,
-  component: () =>
-    import('./ReportsPage').then((m) => ({ default: m.ReportsPage })),
+  routes: [
+    {
+      path: 'reports',
+      component: () =>
+        import('./ReportsPage').then((m) => ({ default: m.ReportsPage })),
+    },
+  ],
 };
 
 export default createModule(reportsFeature);
