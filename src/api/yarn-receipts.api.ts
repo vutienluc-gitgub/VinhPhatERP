@@ -7,7 +7,6 @@ import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 
 const HEADER_TABLE = 'yarn_receipts';
-const ITEMS_TABLE = 'yarn_receipt_items';
 
 export type YarnSupplierOption = { id: string; code: string; name: string };
 
@@ -126,25 +125,21 @@ export type YarnReceiptCreateInput = {
 export async function createYarnReceiptFull(
   input: YarnReceiptCreateInput,
 ): Promise<YarnReceipt> {
-  const { data: header, error: headerErr } = await supabase
-    .from(HEADER_TABLE)
-    .insert({
-      receipt_number: input.receiptNumber.trim(),
-      supplier_id: input.supplierId,
-      receipt_date: input.receiptDate,
-      notes: input.notes,
-      status: 'draft' as const,
-    })
-    .select(
-      'id, receipt_number, supplier_id, receipt_date, total_amount, status, notes, created_by, created_at, updated_at',
-    )
-    .single();
+  const total = input.items.reduce(
+    (sum, it) => sum + it.quantity * it.unitPrice,
+    0,
+  );
 
-  if (headerErr) throw headerErr;
+  const headerInsert = {
+    receipt_number: input.receiptNumber.trim(),
+    supplier_id: input.supplierId,
+    receipt_date: input.receiptDate,
+    notes: input.notes,
+    status: 'draft',
+    total_amount: total,
+  };
 
-  const headerId = header.id;
-  const items = input.items.map((item, idx) => ({
-    receipt_id: headerId,
+  const itemsInsert = input.items.map((item, idx) => ({
     yarn_type: item.yarnType.trim(),
     color_name: item.colorName?.trim() || null,
     unit: 'kg',
@@ -158,22 +153,13 @@ export async function createYarnReceiptFull(
     sort_order: idx,
   }));
 
-  const { error: itemsErr } = await supabase.from(ITEMS_TABLE).insert(items);
-  if (itemsErr) {
-    await supabase.from(HEADER_TABLE).delete().eq('id', headerId);
-    throw itemsErr;
-  }
+  const { data, error } = await supabase.rpc('atomic_create_yarn_receipt', {
+    p_header: headerInsert as unknown as never,
+    p_items: itemsInsert as unknown as never[],
+  });
 
-  const total = input.items.reduce(
-    (sum, it) => sum + it.quantity * it.unitPrice,
-    0,
-  );
-  await supabase
-    .from(HEADER_TABLE)
-    .update({ total_amount: total })
-    .eq('id', headerId);
-
-  return header as YarnReceipt;
+  if (error) throw error;
+  return data as unknown as YarnReceipt;
 }
 
 export async function updateYarnReceiptFull(
@@ -185,27 +171,15 @@ export async function updateYarnReceiptFull(
     0,
   );
 
-  const { error: headerErr } = await supabase
-    .from(HEADER_TABLE)
-    .update({
-      receipt_number: input.receiptNumber.trim(),
-      supplier_id: input.supplierId,
-      receipt_date: input.receiptDate,
-      notes: input.notes,
-      total_amount: total,
-    })
-    .eq('id', id);
+  const headerUpdate = {
+    receipt_number: input.receiptNumber.trim(),
+    supplier_id: input.supplierId,
+    receipt_date: input.receiptDate,
+    notes: input.notes || null,
+    total_amount: total,
+  };
 
-  if (headerErr) throw headerErr;
-
-  const { error: delErr } = await supabase
-    .from(ITEMS_TABLE)
-    .delete()
-    .eq('receipt_id', id);
-  if (delErr) throw delErr;
-
-  const items = input.items.map((item, idx) => ({
-    receipt_id: id,
+  const itemsInsert = input.items.map((item, idx) => ({
     yarn_type: item.yarnType.trim(),
     color_name: item.colorName?.trim() || null,
     unit: 'kg',
@@ -219,8 +193,13 @@ export async function updateYarnReceiptFull(
     sort_order: idx,
   }));
 
-  const { error: insertErr } = await supabase.from(ITEMS_TABLE).insert(items);
-  if (insertErr) throw insertErr;
+  const { error } = await supabase.rpc('atomic_update_yarn_receipt', {
+    p_id: id,
+    p_header: headerUpdate as unknown as never,
+    p_items: itemsInsert as unknown as never[],
+  });
+
+  if (error) throw error;
 }
 
 export async function deleteYarnReceiptRecord(id: string): Promise<void> {
