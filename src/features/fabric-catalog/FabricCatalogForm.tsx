@@ -29,6 +29,8 @@ function catalogToFormValues(catalog: FabricCatalog): FabricCatalogFormValues {
     code: catalog.code,
     name: catalog.name,
     composition: catalog.composition ?? '',
+    target_width_cm: catalog.target_width_cm,
+    target_gsm: catalog.target_gsm,
     unit: catalog.unit,
     notes: catalog.notes ?? '',
     status: catalog.status,
@@ -199,6 +201,48 @@ export function FabricCatalogForm({
               />
               {errors.unit && (
                 <span className="field-error">{errors.unit.message}</span>
+              )}
+            </div>
+          </div>
+
+          {/* Quy cách */}
+          <div
+            className="form-grid"
+            style={{
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            }}
+          >
+            <div className="form-field">
+              <label htmlFor="fc-target-width">Khổ chuẩn (cm)</label>
+              <input
+                id="fc-target-width"
+                className={`field-input${errors.target_width_cm ? ' is-error' : ''}`}
+                type="number"
+                step="0.1"
+                min="0"
+                placeholder="VD: 160"
+                {...register('target_width_cm', { valueAsNumber: true })}
+              />
+              {errors.target_width_cm && (
+                <span className="field-error">
+                  {errors.target_width_cm.message}
+                </span>
+              )}
+            </div>
+
+            <div className="form-field">
+              <label htmlFor="fc-target-weight">K/L chuẩn (gsm)</label>
+              <input
+                id="fc-target-weight"
+                className={`field-input${errors.target_gsm ? ' is-error' : ''}`}
+                type="number"
+                step="1"
+                min="0"
+                placeholder="VD: 250"
+                {...register('target_gsm', { valueAsNumber: true })}
+              />
+              {errors.target_gsm && (
+                <span className="field-error">{errors.target_gsm.message}</span>
               )}
             </div>
           </div>

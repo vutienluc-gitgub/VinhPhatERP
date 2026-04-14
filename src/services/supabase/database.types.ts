@@ -1195,6 +1195,8 @@ export type Database = {
           name: string;
           notes: string | null;
           status: Database['public']['Enums']['active_status'];
+          target_gsm: number | null;
+          target_width_cm: number | null;
           tenant_id: string | null;
           unit: string;
           updated_at: string;
@@ -1207,6 +1209,8 @@ export type Database = {
           name: string;
           notes?: string | null;
           status?: Database['public']['Enums']['active_status'];
+          target_gsm?: number | null;
+          target_width_cm?: number | null;
           tenant_id?: string | null;
           unit?: string;
           updated_at?: string;
@@ -1219,6 +1223,8 @@ export type Database = {
           name?: string;
           notes?: string | null;
           status?: Database['public']['Enums']['active_status'];
+          target_gsm?: number | null;
+          target_width_cm?: number | null;
           tenant_id?: string | null;
           unit?: string;
           updated_at?: string;

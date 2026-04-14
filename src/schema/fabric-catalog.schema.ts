@@ -22,6 +22,8 @@ export const fabricCatalogSchema = z.object({
     .max(200, 'Tên tối đa 200 ký tự'),
   composition: z.string().trim().max(200).optional().or(z.literal('')),
   unit: z.string().trim().min(1, 'Chọn đơn vị').max(20).default('kg'),
+  target_width_cm: z.number().min(0).optional().nullable(),
+  target_gsm: z.number().min(0).optional().nullable(),
   notes: z.string().trim().max(500).optional().or(z.literal('')),
   status: z.enum(FABRIC_CATALOG_STATUSES),
 });
@@ -32,6 +34,8 @@ export const fabricCatalogDefaultValues: FabricCatalogFormValues = {
   code: '',
   name: '',
   composition: '',
+  target_width_cm: null,
+  target_gsm: null,
   unit: 'kg',
   notes: '',
   status: 'active',

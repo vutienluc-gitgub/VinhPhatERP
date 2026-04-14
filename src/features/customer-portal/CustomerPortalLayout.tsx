@@ -66,6 +66,10 @@ function PortalLayoutInner() {
             end: true,
           },
           {
+            to: '/portal/fabric-catalog',
+            label: 'Danh mục sản phẩm',
+          },
+          {
             to: '/portal/orders',
             label: 'Đơn hàng',
           },

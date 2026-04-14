@@ -5,6 +5,8 @@ export type FabricCatalog = {
   code: string;
   name: string;
   composition: string | null;
+  target_width_cm: number | null;
+  target_gsm: number | null;
   unit: string;
   notes: string | null;
   status: FabricCatalogStatus;
