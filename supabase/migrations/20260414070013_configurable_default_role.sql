@@ -28,7 +28,7 @@ BEGIN
 
   IF v_role IS NULL THEN
     v_role := 'staff'::user_role;
-  END;
+  END IF;
 
   -- Tạo profile mới
   INSERT INTO profiles (id, full_name, role)

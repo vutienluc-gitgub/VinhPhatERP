@@ -223,6 +223,25 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
             ),
           },
           {
+            header: 'Quy cách (chuẩn)',
+            cell: (c) => (
+              <div className="flex flex-col gap-0.5 text-sm">
+                <span className="text-muted">
+                  Khổ:{' '}
+                  <span className="font-medium text-text">
+                    {c.target_width_cm ? `${c.target_width_cm} cm` : '—'}
+                  </span>
+                </span>
+                <span className="text-muted">
+                  K/L:{' '}
+                  <span className="font-medium text-text">
+                    {c.target_gsm ? `${c.target_gsm} gsm` : '—'}
+                  </span>
+                </span>
+              </div>
+            ),
+          },
+          {
             header: 'Đơn vị',
             cell: (c) => <span className="text-sm">{c.unit}</span>,
           },
@@ -271,6 +290,24 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
               <p className="text-xs text-muted italic">
                 {c.composition || '—'}
               </p>
+              {(c.target_width_cm || c.target_gsm) && (
+                <div className="text-xs text-muted bg-surface p-2 rounded border border-border">
+                  {c.target_width_cm && (
+                    <div>
+                      Khổ:{' '}
+                      <span className="font-medium">
+                        {c.target_width_cm} cm
+                      </span>
+                    </div>
+                  )}
+                  {c.target_gsm && (
+                    <div>
+                      K/L:{' '}
+                      <span className="font-medium">{c.target_gsm} gsm</span>
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="flex justify-between items-center text-xs text-muted pt-2 border-t border-border/10">
                 <span>Đơn vị: {c.unit}</span>
                 <div className="flex gap-2">

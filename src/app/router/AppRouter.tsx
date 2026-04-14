@@ -49,6 +49,11 @@ const PortalShipmentDetail = lazy(() =>
     (m) => ({ default: m.PortalShipmentDetail }),
   ),
 );
+const PortalFabricCatalogPage = lazy(() =>
+  import('@/features/customer-portal/fabric-catalog/PortalFabricCatalogPage').then(
+    (m) => ({ default: m.PortalFabricCatalogPage }),
+  ),
+);
 
 function PortalPage({ children }: { children: React.ReactNode }) {
   return (
@@ -147,6 +152,14 @@ const router = createBrowserRouter([
             element: (
               <PortalPage>
                 <PortalShipmentDetail />
+              </PortalPage>
+            ),
+          },
+          {
+            path: 'fabric-catalog',
+            element: (
+              <PortalPage>
+                <PortalFabricCatalogPage />
               </PortalPage>
             ),
           },

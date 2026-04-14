@@ -36,6 +36,11 @@ const PortalShipmentDetail = lazy(() =>
     default: m.PortalShipmentDetail,
   })),
 );
+const PortalFabricCatalogPage = lazy(() =>
+  import('./fabric-catalog/PortalFabricCatalogPage').then((m) => ({
+    default: m.PortalFabricCatalogPage,
+  })),
+);
 
 export function CustomerPortalRouter() {
   return (
@@ -51,6 +56,7 @@ export function CustomerPortalRouter() {
           <Route path="payments" element={<PortalPaymentsPage />} />
           <Route path="shipments" element={<PortalShipmentsPage />} />
           <Route path="shipments/:id" element={<PortalShipmentDetail />} />
+          <Route path="fabric-catalog" element={<PortalFabricCatalogPage />} />
         </Route>
       </Routes>
     </Suspense>
