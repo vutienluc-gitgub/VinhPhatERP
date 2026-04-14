@@ -4,12 +4,12 @@ import { useForm } from 'react-hook-form';
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { useMarkDelivered } from '@/application/shipments';
-
 import {
   deliveryConfirmSchema,
   deliveryConfirmDefaultValues,
-} from './shipments.module';
-import type { DeliveryConfirmFormValues } from './shipments.module';
+  type DeliveryConfirmFormValues,
+} from '@/schema/shipment.schema';
+
 import type { Shipment } from './types';
 
 type Props = {

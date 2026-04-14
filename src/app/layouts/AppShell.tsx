@@ -238,9 +238,22 @@ export function AppShell() {
       <aside className="sidebar-nav">
         <div className="brand-block" style={{ position: 'relative' }}>
           {!isSidebarCollapsed ? (
-            <div>
-              <p className="eyebrow">Vĩnh Phát</p>
-              <h1>ERP Sản xuất</h1>
+            <div className="flex items-center gap-3">
+              <div className="brand-icon-wrapper">
+                <Icon
+                  name="Hexagon"
+                  size={24}
+                  className="text-primary-strong"
+                />
+              </div>
+              <div className="flex flex-col">
+                <p className="eyebrow-premium text-[10px] uppercase tracking-widest opacity-70 mb-0">
+                  Vĩnh Phát
+                </p>
+                <h1 className="title-premium-gradient text-lg font-black tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-r from-primary-strong to-primary">
+                  ERP Sản xuất
+                </h1>
+              </div>
             </div>
           ) : (
             <div

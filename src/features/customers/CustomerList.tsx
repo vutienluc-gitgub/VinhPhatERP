@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import {
   CUSTOMER_SOURCE_LABELS,
+  CUSTOMER_SOURCE_ICONS,
   CUSTOMER_STATUS_LABELS,
 } from '@/schema/customer.schema';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
@@ -13,6 +14,7 @@ import {
   AddButton,
   ClearFilterButton,
   ActionBar,
+  type IconName,
 } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { useCustomerList, useDeleteCustomer } from '@/application/crm';
@@ -148,14 +150,17 @@ export function CustomerList({
                 {
                   value: '',
                   label: 'Tất cả trạng thái',
+                  icon: 'Filter',
                 },
                 {
                   value: 'active',
                   label: 'Hoạt động',
+                  icon: 'CheckCircle2',
                 },
                 {
                   value: 'inactive',
                   label: 'Ngừng hoạt động',
+                  icon: 'XCircle',
                 },
               ]}
               value={filters.status ?? ''}
@@ -226,16 +231,24 @@ export function CustomerList({
           },
           {
             header: 'Nguồn',
-            cell: (c) => (
-              <span className="badge-outline">
-                {CUSTOMER_SOURCE_LABELS[c.source || 'other'] ?? 'Khác'}
-              </span>
-            ),
+            cell: (c) => {
+              const sourceKey = c.source || 'other';
+              const iconName = CUSTOMER_SOURCE_ICONS[sourceKey];
+              return (
+                <div className="flex items-center gap-1.5 badge-subtle px-2 py-0.5 rounded-full border border-border/50 text-xs text-muted-foreground bg-surface-raised/50">
+                  <Icon name={iconName as IconName} size={14} />
+                  <span>{CUSTOMER_SOURCE_LABELS[sourceKey]}</span>
+                </div>
+              );
+            },
           },
           {
             header: 'Trạng thái',
             cell: (c) => (
-              <Badge variant={c.status === 'active' ? 'success' : 'gray'}>
+              <Badge
+                variant={c.status === 'active' ? 'success' : 'gray'}
+                icon={c.status === 'active' ? 'CheckCircle2' : 'XCircle'}
+              >
                 {CUSTOMER_STATUS_LABELS[c.status]}
               </Badge>
             ),
@@ -275,6 +288,7 @@ export function CustomerList({
               <span className="mobile-card-title">{customer.code}</span>
               <Badge
                 variant={customer.status === 'active' ? 'success' : 'gray'}
+                icon={customer.status === 'active' ? 'CheckCircle2' : 'XCircle'}
               >
                 {CUSTOMER_STATUS_LABELS[customer.status]}
               </Badge>
@@ -294,9 +308,19 @@ export function CustomerList({
                 </div>
               )}
               <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/10">
-                <span className="text-[10px] uppercase font-bold text-muted bg-surface-subtle px-1.5 py-0.5 rounded">
-                  {CUSTOMER_SOURCE_LABELS[customer.source || 'other']}
-                </span>
+                <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-muted bg-surface-subtle px-2 py-1 rounded-md border border-border/10">
+                  <Icon
+                    name={
+                      CUSTOMER_SOURCE_ICONS[
+                        customer.source || 'other'
+                      ] as IconName
+                    }
+                    size={12}
+                  />
+                  <span>
+                    {CUSTOMER_SOURCE_LABELS[customer.source || 'other']}
+                  </span>
+                </div>
                 <Icon name="ChevronRight" size={16} className="text-muted" />
               </div>
             </div>

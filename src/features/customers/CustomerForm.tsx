@@ -8,6 +8,7 @@ import {
   customersDefaultValues,
   CUSTOMER_SOURCES,
   CUSTOMER_SOURCE_LABELS,
+  CUSTOMER_SOURCE_ICONS,
 } from '@/schema';
 import { customersSchema } from '@/schema/customer.schema';
 import type { CustomersFormValues } from '@/schema/customer.schema';
@@ -243,6 +244,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
                   options={CUSTOMER_SOURCES.map((s) => ({
                     value: s,
                     label: CUSTOMER_SOURCE_LABELS[s],
+                    icon: CUSTOMER_SOURCE_ICONS[s],
                   }))}
                   value={field.value}
                   onChange={field.onChange}
@@ -262,10 +264,12 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
                     {
                       value: 'active',
                       label: 'Hoạt động',
+                      icon: 'CheckCircle2',
                     },
                     {
                       value: 'inactive',
                       label: 'Ngừng hoạt động',
+                      icon: 'XCircle',
                     },
                   ]}
                   value={field.value}

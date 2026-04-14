@@ -33,20 +33,33 @@
 }
 
 .brand-block {
-  padding: 1rem 1.25rem;
-  margin-bottom: 1.5rem;
+  padding: 1.5rem 1.25rem 2rem;
+  margin-bottom: 0.5rem;
   background: transparent;
 }
 
-.brand-block .eyebrow {
-  margin-bottom: 0.25rem;
+.brand-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 12px rgba(11, 107, 203, 0.08);
+  flex-shrink: 0;
 }
 
-.brand-block h1 {
+.title-premium-gradient {
   margin: 0;
-  font-size: 1.15rem;
-  font-weight: 800;
-  line-height: 1.2;
+  font-size: 1.125rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--primary-strong), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .nav-stack {
@@ -135,11 +148,21 @@
 }
 
 .nav-link-title {
-  font-weight: 500;
-  font-size: 0.875rem;
+  font-weight: 600;
+  font-size: 0.9rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+.eyebrow-premium {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--primary);
+  margin-bottom: 2px;
 }
 
 .nav-link.is-active .nav-link-title {

@@ -18,10 +18,10 @@ import {
   useExportShipmentPdf,
   useShipmentList,
 } from '@/application/shipments';
+import { SHIPMENT_STATUS_LABELS } from '@/schema/shipment.schema';
 
 import { DeliveryConfirmForm } from './DeliveryConfirmForm';
 import { exportShipmentToPdf } from './shipment-document';
-import { SHIPMENT_STATUS_LABELS } from './shipments.module';
 import type { Shipment, ShipmentsFilter, ShipmentStatus } from './types';
 
 function getVariant(status: ShipmentStatus): BadgeVariant {

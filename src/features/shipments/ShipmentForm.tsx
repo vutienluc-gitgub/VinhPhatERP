@@ -15,9 +15,12 @@ import {
   useDeliveryStaffList,
   useNextShipmentNumber,
 } from '@/application/shipments';
+import {
+  shipmentsDefaultValues,
+  shipmentsSchema,
+  type ShipmentsFormValues,
+} from '@/schema/shipment.schema';
 
-import { shipmentsDefaultValues, shipmentsSchema } from './shipments.module';
-import type { ShipmentsFormValues } from './shipments.module';
 import { ShipmentRollPicker, type AvailableRoll } from './ShipmentRollPicker';
 
 type ShipmentFormProps = {

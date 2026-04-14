@@ -1,4 +1,4 @@
-﻿import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
@@ -369,12 +369,12 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
               >
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-[0.85rem] font-bold text-muted uppercase tracking-wider">
-                    Dong {index + 1}
+                    Dòng {index + 1}
                   </span>
                   <button
                     className="btn-icon text-danger"
                     type="button"
-                    title="Xoa dong"
+                    title="Xóa dòng"
                     onClick={() => remove(index)}
                   >
                     <Icon name="X" size={16} />
@@ -536,7 +536,7 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
             type="button"
             onClick={() => append({ ...emptyQuotationItem })}
           >
-            <Icon name="Plus" size={16} /> Them dong hang
+            <Icon name="Plus" size={16} /> Thêm dòng hàng
           </button>
         </div>
 

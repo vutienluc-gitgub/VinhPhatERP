@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 
 import { Search, ChevronDown, Check } from '@/shared/icons';
+import { Icon, type IconName } from '@/shared/components/Icon';
 
 export type ComboboxOption = {
   value: string;
   label: string;
   code?: string;
   phone?: string;
+  icon?: string;
 };
 
 type ComboboxProps = {
@@ -179,13 +181,22 @@ export function Combobox({
                   }}
                   className={`combobox-option${isSelected ? ' is-selected' : ''}`}
                 >
-                  <div className="flex flex-col">
-                    <span>{opt.label}</span>
-                    {opt.code && (
-                      <span className="text-xs text-muted mt-0.5">
-                        Ma: {opt.code}
-                      </span>
+                  <div className="flex flex-row items-center gap-2">
+                    {opt.icon && (
+                      <Icon
+                        name={opt.icon as IconName}
+                        size={16}
+                        className="text-muted"
+                      />
                     )}
+                    <div className="flex flex-col">
+                      <span>{opt.label}</span>
+                      {opt.code && (
+                        <span className="text-xs text-muted mt-0.5">
+                          Ma: {opt.code}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   {isSelected && (
                     <Check
@@ -220,11 +231,20 @@ export function Combobox({
           minHeight: '44px',
         }}
       >
-        <span className="truncate">
+        <span className="flex items-center gap-2 truncate">
           {selectedOption ? (
-            <span style={{ color: 'var(--text-primary)' }}>
-              {selectedOption.label}
-            </span>
+            <>
+              {selectedOption.icon && (
+                <Icon
+                  name={selectedOption.icon as IconName}
+                  size={16}
+                  className="text-primary flex-shrink-0"
+                />
+              )}
+              <span style={{ color: 'var(--text-primary)' }}>
+                {selectedOption.label}
+              </span>
+            </>
           ) : (
             <span style={{ color: 'var(--text-secondary)' }}>
               {placeholder}
@@ -288,14 +308,23 @@ export function Combobox({
                     }}
                     className={`combobox-option${isSelected ? ' is-selected' : ''}`}
                   >
-                    <div className="flex flex-col">
-                      <span>{opt.label}</span>
-                      {(opt.code || opt.phone) && (
-                        <span className="text-xs text-muted mt-0.5">
-                          {opt.code && `Ma: ${opt.code} `}
-                          {opt.phone && `SDT: ${opt.phone}`}
-                        </span>
+                    <div className="flex flex-row items-center gap-2">
+                      {opt.icon && (
+                        <Icon
+                          name={opt.icon as IconName}
+                          size={16}
+                          className="text-muted"
+                        />
                       )}
+                      <div className="flex flex-col">
+                        <span>{opt.label}</span>
+                        {(opt.code || opt.phone) && (
+                          <span className="text-xs text-muted mt-0.5">
+                            {opt.code && `Ma: ${opt.code} `}
+                            {opt.phone && `SDT: ${opt.phone}`}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     {isSelected && (
                       <Check
