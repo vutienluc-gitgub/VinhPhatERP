@@ -1,4 +1,4 @@
-﻿import { Badge, type BadgeVariant, Icon } from '@/shared/components';
+import { Badge, type BadgeVariant, Icon } from '@/shared/components';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { formatCurrency } from '@/shared/utils/format';
 import { useConvertToOrder } from '@/application/quotations';
@@ -65,7 +65,7 @@ export function QuotationDetail({
   if (error)
     return (
       <div className="panel-card p-4">
-        <p className="error-inline">Loi: {(error as Error).message}</p>
+        <p className="error-inline">Lỗi: {(error as Error).message}</p>
       </div>
     );
   if (!quotation)
@@ -126,7 +126,7 @@ export function QuotationDetail({
       <div className="card-header-premium p-5 border-b border-border flex flex-col sm:flex-row gap-4">
         <div className="flex items-center gap-3 flex-1">
           <button className="btn-secondary" type="button" onClick={onBack}>
-            <Icon name="ArrowLeft" size={16} /> Quay lai
+            <Icon name="ArrowLeft" size={16} /> Quay lại
           </button>
           <div className="flex-1">
             <h3 className="title-premium flex items-center gap-2">
@@ -151,7 +151,7 @@ export function QuotationDetail({
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-6 mt-4 p-5 bg-surface/50 rounded-lg mx-5">
         <div>
           <div className="text-xs text-muted font-bold uppercase tracking-wider mb-1">
-            Ngay bao gia
+            Ngày báo giá
           </div>
           <div className="font-medium">
             {formatDate(quotation.quotation_date)}
@@ -159,13 +159,13 @@ export function QuotationDetail({
         </div>
         <div>
           <div className="text-xs text-muted font-bold uppercase tracking-wider mb-1">
-            Hieu luc den
+            Hiệu lực đến
           </div>
           <div className="font-medium">{formatDate(quotation.valid_until)}</div>
         </div>
         <div>
           <div className="text-xs text-muted font-bold uppercase tracking-wider mb-1">
-            Tam tinh
+            Tạm tính
           </div>
           <div className="font-medium text-primary">
             {formatCurrency(quotation.subtotal)}đ
@@ -173,7 +173,7 @@ export function QuotationDetail({
         </div>
         <div>
           <div className="text-xs text-muted font-bold uppercase tracking-wider mb-1">
-            Chiet khau
+            Chiết khấu
           </div>
           <div
             className={
@@ -189,7 +189,7 @@ export function QuotationDetail({
                   (
                   {quotation.discount_type === 'percent'
                     ? `${quotation.discount_value}%`
-                    : 'co dinh'}
+                    : 'cố định'}
                   )
                 </span>
               </>
@@ -208,7 +208,7 @@ export function QuotationDetail({
         </div>
         <div>
           <div className="text-xs text-muted font-bold uppercase tracking-wider mb-1">
-            Tong cong
+            Tổng cộng
           </div>
           <div className="font-extrabold text-lg text-primary">
             {formatCurrency(quotation.total_amount)}đ
@@ -222,7 +222,7 @@ export function QuotationDetail({
           {quotation.delivery_terms && (
             <div className="p-3 bg-surface border border-border rounded-lg text-sm">
               <span className="font-bold text-muted uppercase text-[0.7rem] block mb-1">
-                DK giao hang
+                ĐK giao hàng
               </span>
               {quotation.delivery_terms}
             </div>
@@ -230,7 +230,7 @@ export function QuotationDetail({
           {quotation.payment_terms && (
             <div className="p-3 bg-surface border border-border rounded-lg text-sm">
               <span className="font-bold text-muted uppercase text-[0.7rem] block mb-1">
-                DK thanh toan
+                ĐK thanh toán
               </span>
               {quotation.payment_terms}
             </div>
@@ -242,7 +242,7 @@ export function QuotationDetail({
       {quotation.notes && (
         <div className="p-3 bg-surface border border-border rounded-lg text-sm mb-4 mx-5">
           <span className="font-bold text-muted uppercase text-[0.7rem] block mb-1">
-            Ghi chu
+            Ghi chú
           </span>
           {quotation.notes}
         </div>
@@ -257,7 +257,7 @@ export function QuotationDetail({
               type="button"
               onClick={() => onEdit(quotation)}
             >
-              <Icon name="Pencil" size={16} /> Sua
+              <Icon name="Pencil" size={16} /> Sửa
             </button>
             <button
               className="btn-primary"
@@ -266,7 +266,7 @@ export function QuotationDetail({
               disabled={sendMutation.isPending}
             >
               <Icon name="Send" size={16} />{' '}
-              {sendMutation.isPending ? 'Dang gui...' : 'Gui khach'}
+              {sendMutation.isPending ? 'Đang gửi...' : 'Gửi khách'}
             </button>
             <button
               className="btn-secondary"
@@ -275,7 +275,7 @@ export function QuotationDetail({
               disabled={confirmMutation.isPending}
             >
               <Icon name="CheckCircle" size={16} />{' '}
-              {confirmMutation.isPending ? 'Dang xu ly...' : 'Duyet luon'}
+              {confirmMutation.isPending ? 'Đang xử lý...' : 'Duyệt luôn'}
             </button>
           </>
         )}
@@ -288,7 +288,7 @@ export function QuotationDetail({
               disabled={confirmMutation.isPending}
             >
               <Icon name="CheckCircle" size={16} />{' '}
-              {confirmMutation.isPending ? 'Dang xu ly...' : 'Khach duyet'}
+              {confirmMutation.isPending ? 'Đang xử lý...' : 'Khách duyệt'}
             </button>
             <button
               className="btn-secondary text-danger"
@@ -297,14 +297,14 @@ export function QuotationDetail({
               disabled={rejectMutation.isPending}
             >
               <Icon name="XCircle" size={16} />{' '}
-              {rejectMutation.isPending ? 'Dang xu ly...' : 'Khach tu choi'}
+              {rejectMutation.isPending ? 'Đang xử lý...' : 'Khách từ chối'}
             </button>
             <button
               className="btn-secondary"
               type="button"
               onClick={() => onEdit(quotation)}
             >
-              <Icon name="Pencil" size={16} /> Sua doi
+              <Icon name="Pencil" size={16} /> Sửa đổi
             </button>
           </>
         )}
@@ -317,8 +317,8 @@ export function QuotationDetail({
           >
             <Icon name="ArrowRightLeft" size={16} />{' '}
             {convertMutation.isPending
-              ? 'Dang chuyen...'
-              : 'Chuyen thanh Don hang'}
+              ? 'Đang chuyển...'
+              : 'Chuyển thành Đơn hàng'}
           </button>
         )}
         {quotation.status === 'converted' && quotation.converted_order_id && (
@@ -327,7 +327,7 @@ export function QuotationDetail({
             type="button"
             onClick={() => onViewOrder(quotation.converted_order_id!)}
           >
-            <Icon name="Package" size={16} /> Xem Don hang
+            <Icon name="Package" size={16} /> Xem Đơn hàng
           </button>
         )}
         <button
@@ -336,7 +336,7 @@ export function QuotationDetail({
           onClick={() =>
             window.open(`/print/quotation/${quotationId}`, '_blank')
           }
-          title="In Bao gia hoac luu PDF"
+          title="In Báo giá hoặc lưu PDF"
         >
           <Icon name="Printer" size={16} /> In / PDF
         </button>
@@ -344,30 +344,30 @@ export function QuotationDetail({
 
       {anyMutationError && (
         <p className="text-danger text-sm px-5 mb-4">
-          Loi: {(anyMutationError as Error).message}
+          Lỗi: {(anyMutationError as Error).message}
         </p>
       )}
 
       <div className="px-5 pb-5">
         <h4 className="mb-3 text-base flex items-center gap-2">
           <Icon name="List" size={20} className="text-muted" />
-          Dong hang ({items.length})
+          Dòng hàng ({items.length})
         </h4>
         <div className="data-table-wrap">
           {items.length === 0 ? (
-            <p className="table-empty">Chua co dong hang.</p>
+            <p className="table-empty">Chưa có dòng hàng.</p>
           ) : (
             <table className="data-table">
               <thead>
                 <tr>
                   <th className="w-10">#</th>
-                  <th>Loai vai</th>
-                  <th>Mau</th>
-                  <th className="hide-mobile">Kho (cm)</th>
-                  <th className="text-right">So luong</th>
-                  <th className="text-right">Don gia</th>
-                  <th className="text-right">Thanh tien</th>
-                  <th className="hide-mobile">SX (ngay)</th>
+                  <th>Loại vải</th>
+                  <th>Màu</th>
+                  <th className="hide-mobile">Khổ (cm)</th>
+                  <th className="text-right">Số lượng</th>
+                  <th className="text-right">Đơn giá</th>
+                  <th className="text-right">Thành tiền</th>
+                  <th className="hide-mobile">SX (ngày)</th>
                 </tr>
               </thead>
               <tbody>
@@ -400,7 +400,7 @@ export function QuotationDetail({
                   ))}
                 <tr className="font-bold bg-surface/30">
                   <td colSpan={6} className="text-right">
-                    Tam tinh
+                    Tạm tính
                   </td>
                   <td className="text-right tabular-nums">
                     {formatCurrency(quotation.subtotal)}đ
@@ -413,7 +413,7 @@ export function QuotationDetail({
                       Chiet khau (
                       {quotation.discount_type === 'percent'
                         ? `${quotation.discount_value}%`
-                        : 'co dinh'}
+                        : 'cố định'}
                       )
                     </td>
                     <td className="text-right tabular-nums">
@@ -435,7 +435,7 @@ export function QuotationDetail({
                 )}
                 <tr className="font-extrabold text-primary bg-surface/50">
                   <td colSpan={6} className="text-right">
-                    Tong cong
+                    Tổng cộng
                   </td>
                   <td className="text-right text-lg tabular-nums">
                     {formatCurrency(quotation.total_amount)}đ

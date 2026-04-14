@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { Button } from '@/shared/components';
@@ -9,6 +9,7 @@ import { EmptyState } from '@/shared/components/EmptyState';
 import { getColorHex } from '@/schema/color.schema';
 import type { ColorRow } from '@/schema/color.schema';
 import { useColorMutations, useColors } from '@/application/settings';
+import { TabSwitcher, type TabItem } from '@/shared/components/TabSwitcher';
 
 import { ColorForm } from './ColorForm';
 
@@ -17,6 +18,9 @@ export function ColorsSection() {
   const { deleteMutation } = useColorMutations();
   const [editingColor, setEditingColor] = useState<ColorRow | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [activeTab, setActiveTab] = useState<
+    'all' | 'dark' | 'middle' | 'light' | 'none'
+  >('all');
 
   const handleCreate = () => {
     setEditingColor(null);
@@ -45,22 +49,59 @@ export function ColorsSection() {
 
   const list = colors ?? [];
 
+  const tabItems: TabItem<'all' | 'dark' | 'middle' | 'light' | 'none'>[] = [
+    {
+      key: 'all' as const,
+      label: 'Tất cả',
+      badge: list.length,
+    },
+    {
+      key: 'dark' as const,
+      label: 'Đậm',
+      badge: list.filter((c) => c.color_group === 'Màu Đậm').length,
+    },
+    {
+      key: 'middle' as const,
+      label: 'Trung',
+      badge: list.filter((c) => c.color_group === 'Màu Trung').length,
+    },
+    {
+      key: 'light' as const,
+      label: 'Lợt',
+      badge: list.filter((c) => c.color_group === 'Màu Lợt').length,
+    },
+    {
+      key: 'none' as const,
+      label: 'Khác',
+      badge: list.filter((c) => !c.color_group).length,
+    },
+  ].filter((t) => t.key === 'all' || (t.badge && t.badge > 0));
+
+  const filteredItems = list.filter((c) => {
+    if (activeTab === 'all') return true;
+    if (activeTab === 'dark') return c.color_group === 'Màu Đậm';
+    if (activeTab === 'middle') return c.color_group === 'Màu Trung';
+    if (activeTab === 'light') return c.color_group === 'Màu Lợt';
+    if (activeTab === 'none') return !c.color_group;
+    return true;
+  });
+
   const groups = [
     {
       title: 'Màu Đậm',
-      items: list.filter((c) => c.color_group === 'Màu Đậm'),
+      items: filteredItems.filter((c) => c.color_group === 'Màu Đậm'),
     },
     {
       title: 'Màu Trung',
-      items: list.filter((c) => c.color_group === 'Màu Trung'),
+      items: filteredItems.filter((c) => c.color_group === 'Màu Trung'),
     },
     {
       title: 'Màu Lợt',
-      items: list.filter((c) => c.color_group === 'Màu Lợt'),
+      items: filteredItems.filter((c) => c.color_group === 'Màu Lợt'),
     },
     {
       title: 'Chưa phân nhóm',
-      items: list.filter((c) => !c.color_group),
+      items: filteredItems.filter((c) => !c.color_group),
     },
   ].filter((g) => g.items.length > 0);
   return (
@@ -82,6 +123,15 @@ export function ColorsSection() {
       </div>
 
       {/* Content */}
+      <div className="px-4 py-2 border-b border-border bg-surface-subtle">
+        <TabSwitcher
+          tabs={tabItems}
+          active={activeTab}
+          onChange={setActiveTab}
+          variant="pill"
+        />
+      </div>
+
       {isLoading ? (
         <TableSkeleton rows={6} columns={3} />
       ) : list.length === 0 ? (

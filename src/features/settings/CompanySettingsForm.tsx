@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
 import {
@@ -12,6 +12,7 @@ import {
   useCompanySettings,
   useUpdateCompanySettings,
 } from '@/application/settings';
+import { Combobox } from '@/shared/components/Combobox';
 
 export function CompanySettingsForm() {
   const { data: settings, isLoading, error: loadError } = useCompanySettings();
@@ -21,6 +22,7 @@ export function CompanySettingsForm() {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<CompanySettingsFormValues>({
     resolver: zodResolver(companySettingsSchema),
@@ -236,6 +238,59 @@ export function CompanySettingsForm() {
               {...register('bank_account')}
             />
           </div>
+        </div>
+
+        {/* Default User Role */}
+        <div className="form-field">
+          <label htmlFor="cs-default-role">
+            Vai trò mặc định cho người dùng mới
+          </label>
+          <Controller
+            name="default_user_role"
+            control={control}
+            render={({ field }) => (
+              <Combobox
+                options={[
+                  {
+                    value: 'admin',
+                    label: 'Admin',
+                    icon: 'Shield',
+                  },
+                  {
+                    value: 'manager',
+                    label: 'Manager',
+                    icon: 'UserCog',
+                  },
+                  {
+                    value: 'staff',
+                    label: 'Staff',
+                    icon: 'User',
+                  },
+                  {
+                    value: 'viewer',
+                    label: 'Viewer',
+                    icon: 'Eye',
+                  },
+                  {
+                    value: 'sale',
+                    label: 'Sale',
+                    icon: 'DollarSign',
+                  },
+                  {
+                    value: 'customer',
+                    label: 'Customer',
+                    icon: 'Users',
+                  },
+                ]}
+                value={field.value}
+                onChange={field.onChange}
+              />
+            )}
+          />
+          <p className="text-xs text-muted mt-1 italic">
+            Vai trò này sẽ được tự động gán cho những tài khoản mới đăng ký qua
+            hệ thống.
+          </p>
         </div>
       </div>
 

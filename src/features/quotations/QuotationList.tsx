@@ -247,7 +247,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
       {error && (
         <div className="p-4">
           <p className="error-inline">
-            Loi tai du lieu: {(error as Error).message}
+            Lỗi tải dữ liệu: {(error as Error).message}
           </p>
         </div>
       )}

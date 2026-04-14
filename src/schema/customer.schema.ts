@@ -25,6 +25,20 @@ export const CUSTOMER_SOURCE_LABELS: Record<
   other: 'Khác',
 };
 
+export const CUSTOMER_SOURCE_ICONS: Record<
+  (typeof CUSTOMER_SOURCES)[number],
+  string
+> = {
+  referral: 'UserPlus',
+  exhibition: 'Tent',
+  zalo: 'MessageCircle',
+  facebook: 'Facebook',
+  online: 'Globe',
+  direct: 'User',
+  cold_call: 'Phone',
+  other: 'MoreHorizontal',
+};
+
 export const customersSchema = z.object({
   code: z.string().trim().min(2, 'Mã tối thiểu 2 ký tự'),
   name: z.string().trim().min(2, 'Tên tối thiểu 2 ký tự'),

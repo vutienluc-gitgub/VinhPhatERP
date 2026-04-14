@@ -23,7 +23,7 @@ import { exportShipmentToPdf } from '@/features/shipments/shipment-document';
 import type {
   ShipmentsFormValues,
   DeliveryConfirmFormValues,
-} from '@/features/shipments/shipments.module';
+} from '@/schema/shipment.schema';
 import type {
   ShipmentDocument,
   ShipmentsFilter,

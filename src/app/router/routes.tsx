@@ -101,7 +101,7 @@ export function getNavigationItems(): NavigationItem[] {
     shortLabel: 'Home',
     description:
       'Tổng quan scaffold, trạng thái hiện tại và các bước tiếp theo.',
-    icon: 'home',
+    icon: 'Home',
     primaryMobile: true,
   };
 
