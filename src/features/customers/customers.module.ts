@@ -33,7 +33,7 @@ export const customersFeature: FeatureDefinition = {
 
 export const customersPlugin: FeaturePlugin = {
   key: 'customers',
-  route: 'customers',
+  route: 'customers', // keep fallback to avoid errors if any other part expects it
   label: 'Khách hàng',
   shortLabel: 'Khách',
   description: 'Danh mục khách hàng và quản lý công nợ khách hàng.',
@@ -41,8 +41,18 @@ export const customersPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'sales',
   order: 60,
-  component: () =>
-    import('./CustomersPage').then((m) => ({ default: m.CustomersPage })),
+  routes: [
+    {
+      path: 'customers',
+      component: () =>
+        import('./CustomersPage').then((m) => ({ default: m.CustomersPage })),
+    },
+    // Ví dụ minh hoạ Nested Route (Tạo mới) - nếu có module thật
+    // {
+    //   path: 'customers/create',
+    //   component: () => import('./CustomerCreate').then((m) => ({ default: m.CustomerCreate })),
+    // }
+  ],
 };
 
 export default createModule(customersFeature);

@@ -10,6 +10,13 @@ export const employeesPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager'],
   group: 'master-data',
   order: 100,
-  component: () =>
-    import('./EmployeeListPage').then((m) => ({ default: m.EmployeeListPage })),
+  routes: [
+    {
+      path: 'employees',
+      component: () =>
+        import('./EmployeeListPage').then((m) => ({
+          default: m.EmployeeListPage,
+        })),
+    },
+  ],
 };

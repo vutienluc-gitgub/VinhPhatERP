@@ -56,10 +56,15 @@ export const fabricCatalogPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'production',
   order: 40,
-  component: () =>
-    import('./FabricCatalogPage').then((m) => ({
-      default: m.FabricCatalogPage,
-    })),
+  routes: [
+    {
+      path: 'fabric-catalog',
+      component: () =>
+        import('./FabricCatalogPage').then((m) => ({
+          default: m.FabricCatalogPage,
+        })),
+    },
+  ],
 };
 
 export default createModule(fabricCatalogFeature);

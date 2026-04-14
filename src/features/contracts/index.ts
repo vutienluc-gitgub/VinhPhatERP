@@ -17,6 +17,13 @@ export const contractsPlugin: FeaturePlugin = {
   icon: 'FileText',
   group: 'sales',
   order: 15,
-  component: () =>
-    import('./ContractsFeature').then((m) => ({ default: m.ContractsFeature })),
+  routes: [
+    {
+      path: 'contracts',
+      component: () =>
+        import('./ContractsFeature').then((m) => ({
+          default: m.ContractsFeature,
+        })),
+    },
+  ],
 };

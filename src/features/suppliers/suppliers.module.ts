@@ -65,8 +65,13 @@ export const suppliersPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager'],
   group: 'master-data',
   order: 50,
-  component: () =>
-    import('./SuppliersPage').then((m) => ({ default: m.SuppliersPage })),
+  routes: [
+    {
+      path: 'suppliers',
+      component: () =>
+        import('./SuppliersPage').then((m) => ({ default: m.SuppliersPage })),
+    },
+  ],
 };
 
 export default createModule(suppliersFeature);

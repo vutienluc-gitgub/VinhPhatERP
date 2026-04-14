@@ -48,8 +48,13 @@ export const settingsPlugin: FeaturePlugin = {
   icon: 'Settings',
   requiredRoles: ['admin'],
   group: 'system',
-  component: () =>
-    import('./SettingsPage').then((m) => ({ default: m.SettingsPage })),
+  routes: [
+    {
+      path: 'settings',
+      component: () =>
+        import('./SettingsPage').then((m) => ({ default: m.SettingsPage })),
+    },
+  ],
 };
 
 export default createModule(settingsFeature);

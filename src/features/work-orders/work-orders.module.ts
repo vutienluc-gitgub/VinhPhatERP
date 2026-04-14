@@ -58,8 +58,13 @@ export const workOrdersPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'production',
   order: 20,
-  component: () =>
-    import('./WorkOrderPage').then((m) => ({ default: m.WorkOrdersPage })),
+  routes: [
+    {
+      path: 'work-orders',
+      component: () =>
+        import('./WorkOrderPage').then((m) => ({ default: m.WorkOrdersPage })),
+    },
+  ],
 };
 
 export default createModule(workOrdersFeature);

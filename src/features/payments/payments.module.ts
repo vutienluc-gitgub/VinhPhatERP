@@ -81,8 +81,13 @@ export const paymentsPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager'],
   group: 'system',
   order: 100,
-  component: () =>
-    import('./PaymentsPage').then((m) => ({ default: m.PaymentsPage })),
+  routes: [
+    {
+      path: 'payments',
+      component: () =>
+        import('./PaymentsPage').then((m) => ({ default: m.PaymentsPage })),
+    },
+  ],
 };
 
 export const debtsPlugin: FeaturePlugin = {
@@ -95,8 +100,13 @@ export const debtsPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager'],
   group: 'system',
   order: 101,
-  component: () =>
-    import('./DebtsPage').then((m) => ({ default: m.DebtsPage })),
+  routes: [
+    {
+      path: 'debts',
+      component: () =>
+        import('./DebtsPage').then((m) => ({ default: m.DebtsPage })),
+    },
+  ],
 };
 
 export default createModule(paymentsFeature);

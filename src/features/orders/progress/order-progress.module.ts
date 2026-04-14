@@ -50,10 +50,15 @@ export const orderProgressPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager'],
   group: 'production',
   order: 90,
-  component: () =>
-    import('./OrderProgressPage').then((m) => ({
-      default: m.OrderProgressPage,
-    })),
+  routes: [
+    {
+      path: 'order-progress',
+      component: () =>
+        import('./OrderProgressPage').then((m) => ({
+          default: m.OrderProgressPage,
+        })),
+    },
+  ],
 };
 
 export default createModule(orderProgressFeature);

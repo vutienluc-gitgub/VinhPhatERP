@@ -52,7 +52,13 @@ export const bomPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager'],
   group: 'production',
   order: 45,
-  component: () => import('./BomPage').then((m) => ({ default: m.BomPage })),
+  routes: [
+    {
+      path: 'bom',
+      component: () =>
+        import('./BomPage').then((m) => ({ default: m.BomPage })),
+    },
+  ],
 };
 
 export default createModule(bomFeature);
