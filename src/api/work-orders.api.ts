@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 import type { BomYarnItem } from '@/features/bom/types';
 import type {
   WorkOrder,
@@ -5,10 +7,7 @@ import type {
   WorkOrderFilter,
   WorkOrderYarnRequirementWithRelations,
 } from '@/features/work-orders/types';
-import type {
-  CreateWorkOrderInput,
-  CompleteWorkOrderInput,
-} from '@/features/work-orders/work-orders.module';
+import type { CreateWorkOrderInput } from '@/features/work-orders/work-orders.module';
 import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';
 
@@ -143,55 +142,57 @@ export async function createWorkOrder(
     targetKg = input.target_quantity_m * totalConsumptionPerM;
   }
 
-  const { data: workOrder, error: createError } = await supabase
-    .from(TABLE)
-    .insert({
-      work_order_number: input.work_order_number,
-      order_id: input.order_id || null,
-      bom_template_id: input.bom_template_id,
-      bom_version: bomVersion,
-      target_quantity_m: input.target_quantity_m,
-      target_unit: input.target_unit || 'm',
-      target_weight_kg: targetKg,
-      standard_loss_pct: lossPct,
-      status: 'draft',
-      start_date: input.start_date || null,
-      end_date: input.end_date || null,
-      supplier_id: input.supplier_id,
-      weaving_unit_price: input.weaving_unit_price || 0,
-      notes: input.notes || null,
-    })
-    .select()
-    .single();
-  if (createError) throw createError;
+  const workOrderInsert = {
+    work_order_number: input.work_order_number,
+    order_id: input.order_id || null,
+    bom_template_id: input.bom_template_id,
+    bom_version: bomVersion,
+    target_quantity_m: input.target_quantity_m,
+    target_unit: input.target_unit || 'm',
+    target_weight_kg: targetKg,
+    standard_loss_pct: lossPct,
+    status: 'draft',
+    start_date: input.start_date || null,
+    end_date: input.end_date || null,
+    supplier_id: input.supplier_id,
+    weaving_unit_price: input.weaving_unit_price || 0,
+    notes: input.notes || null,
+  };
 
   // 4. Generate Yarn Requirements (using Table Data if provided)
+  let reqInserts: {
+    yarn_catalog_id: string;
+    bom_ratio_pct: number;
+    required_kg: number;
+    allocated_kg: number;
+  }[] = [];
   const yarnReqsFromInput = input.yarn_requirements || [];
 
   if (yarnReqsFromInput.length > 0) {
     // USE TABLE DATA FROM UI
-    const reqInserts = yarnReqsFromInput.map((req) => ({
-      work_order_id: workOrder.id,
+    reqInserts = yarnReqsFromInput.map((req) => ({
       yarn_catalog_id: req.yarn_catalog_id,
       bom_ratio_pct: req.bom_ratio_pct,
       required_kg: req.required_kg,
       allocated_kg: 0,
     }));
-    await supabase.from('work_order_y_requirements').insert(reqInserts);
   } else if (targetKg > 0 && bomYarns) {
     // FALLBACK TO AUTO-CALCULATION
     const totalRequiredYarnKg = targetKg / (1 - lossPct / 100);
-    const reqInserts = (bomYarns as BomYarnItem[]).map((yarn) => ({
-      work_order_id: workOrder.id,
+    reqInserts = (bomYarns as BomYarnItem[]).map((yarn) => ({
       yarn_catalog_id: yarn.yarn_catalog_id,
       bom_ratio_pct: yarn.ratio_pct,
       required_kg: totalRequiredYarnKg * (yarn.ratio_pct / 100),
       allocated_kg: 0,
     }));
-    await supabase.from('work_order_y_requirements').insert(reqInserts);
   }
 
   // 5. Auto-create progress rows for standalone work orders (no order linked)
+  let progressRows: {
+    order_id: string | null;
+    stage: string;
+    status: string;
+  }[] = [];
   if (!input.order_id) {
     const stages = [
       'warping',
@@ -202,24 +203,21 @@ export async function createWorkOrder(
       'final_check',
       'packing',
     ] as const;
-    const progressRows = stages.map((stage) => ({
-      work_order_id: workOrder.id,
-      order_id: null as string | null,
+    progressRows = stages.map((stage) => ({
+      order_id: null,
       stage,
-      status: 'pending' as const,
+      status: 'pending',
     }));
-    const { error: progressErr } = await untypedDb
-      .from('order_progress')
-      .insert(progressRows);
-    if (progressErr) {
-      console.error(
-        'Failed to create progress rows for work order',
-        progressErr,
-      );
-    }
   }
 
-  return workOrder as WorkOrder;
+  const { data, error } = await supabase.rpc('atomic_create_work_order', {
+    p_wo_data: workOrderInsert as unknown as never,
+    p_reqs_data: reqInserts as unknown as never[],
+    p_progress_data: progressRows as unknown as never[],
+  });
+
+  if (error) throw error;
+  return data as unknown as WorkOrder;
 }
 
 /* ── Update work order ── */
@@ -318,46 +316,37 @@ export async function updateWorkOrder(
     update.target_weight_kg = targetKg;
 
     // Save WO update
-    const { error: woUpdateErr } = await supabase
-      .from(TABLE)
-      .update(update)
-      .eq('id', id);
+    const { error: woUpdateErr } = await supabase.rpc(
+      'atomic_update_work_order',
+      {
+        p_wo_id: id,
+        p_wo_data: update as unknown as never,
+        p_reqs_data:
+          input.yarn_requirements && input.yarn_requirements.length > 0
+            ? (input.yarn_requirements as unknown as never[])
+            : bomYarns && targetKg > 0
+              ? bomYarns.map((y) => ({
+                  yarn_catalog_id: y.yarn_catalog_id,
+                  bom_ratio_pct: y.ratio_pct,
+                  required_kg:
+                    (targetKg / (1 - (update.standard_loss_pct || 0) / 100)) *
+                    (y.ratio_pct / 100),
+                  allocated_kg: 0,
+                }))
+              : null,
+      },
+    );
     if (woUpdateErr) throw woUpdateErr;
-
-    // Update requirements: Delete and re-create
-    await supabase
-      .from('work_order_y_requirements')
-      .delete()
-      .eq('work_order_id', id);
-
-    const yarnReqsFromInput = input.yarn_requirements || [];
-    if (yarnReqsFromInput.length > 0) {
-      const reqInserts = yarnReqsFromInput.map((req) => ({
-        work_order_id: id,
-        yarn_catalog_id: req.yarn_catalog_id,
-        bom_ratio_pct: req.bom_ratio_pct,
-        required_kg: req.required_kg,
-        allocated_kg: 0,
-      }));
-      await supabase.from('work_order_y_requirements').insert(reqInserts);
-    } else if (targetKg > 0 && bomYarns) {
-      const loss = update.standard_loss_pct || 0;
-      const totalRequiredYarnKg = targetKg / (1 - loss / 100);
-      const reqInserts = bomYarns.map((yarn) => ({
-        work_order_id: id,
-        yarn_catalog_id: yarn.yarn_catalog_id,
-        bom_ratio_pct: yarn.ratio_pct,
-        required_kg: totalRequiredYarnKg * (yarn.ratio_pct / 100),
-        allocated_kg: 0,
-      }));
-      await supabase.from('work_order_y_requirements').insert(reqInserts);
-    }
   } else {
     // Basic update
-    const { error: woUpdateErr } = await supabase
-      .from(TABLE)
-      .update(update)
-      .eq('id', id);
+    const { error: woUpdateErr } = await supabase.rpc(
+      'atomic_update_work_order',
+      {
+        p_wo_id: id,
+        p_wo_data: update as unknown as never,
+        p_reqs_data: null,
+      },
+    );
     if (woUpdateErr) throw woUpdateErr;
   }
 
@@ -377,88 +366,33 @@ export async function issueYarn(id: string): Promise<WorkOrder> {
   return fetchWorkOrderById(id);
 }
 
-export async function startWorkOrder(id: string): Promise<WorkOrder> {
-  const { data: wo, error: woError } = await supabase
-    .from(TABLE)
-    .update({
-      status: 'in_progress',
-      start_date: new Date().toISOString(),
-    })
-    .eq('id', id)
-    .select('id, order_id')
-    .single();
+export async function startWorkOrder(id: string): Promise<void> {
+  const { error } = await supabase.rpc('atomic_start_work_order', {
+    p_wo_id: id,
+    p_today: dayjs().format('YYYY-MM-DD'),
+  });
 
-  if (woError) throw woError;
-
-  const today = new Date().toISOString().slice(0, 10);
-
-  // Sync to order_progress
-  if (wo.order_id) {
-    await supabase
-      .from('order_progress')
-      .update({
-        status: 'in_progress',
-        actual_date: today,
-      })
-      .eq('order_id', wo.order_id)
-      .eq('stage', 'weaving')
-      .eq('status', 'pending');
-  } else {
-    // Standalone work order
-    await untypedDb
-      .from('order_progress')
-      .update({
-        status: 'in_progress',
-        actual_date: today,
-      })
-      .eq('work_order_id', id)
-      .eq('stage', 'weaving')
-      .eq('status', 'pending');
+  if (error) {
+    console.error('Failed to change status', error);
+    throw error;
   }
-
-  return fetchWorkOrderById(id);
 }
 
+/* ── Work order completion ── */
 export async function completeWorkOrder(
   id: string,
-  input: CompleteWorkOrderInput,
-): Promise<WorkOrder> {
-  const { data: wo, error: woError } = await supabase
-    .from(TABLE)
-    .update({
-      status: 'completed',
-      actual_yield_m: input.actual_yield_m,
-      end_date: new Date().toISOString(),
-    })
-    .eq('id', id)
-    .select('id, order_id')
-    .single();
+  actualYieldM: number,
+): Promise<void> {
+  const { error } = await supabase.rpc('atomic_complete_work_order', {
+    p_wo_id: id,
+    p_yield_m: actualYieldM,
+    p_today: dayjs().format('YYYY-MM-DD'),
+  });
 
-  if (woError) throw woError;
-
-  const today = new Date().toISOString().slice(0, 10);
-
-  if (wo.order_id) {
-    await supabase
-      .from('order_progress')
-      .update({
-        status: 'done',
-        actual_date: today,
-      })
-      .eq('order_id', wo.order_id)
-      .eq('stage', 'weaving');
-  } else {
-    await untypedDb
-      .from('order_progress')
-      .update({
-        status: 'done',
-        actual_date: today,
-      })
-      .eq('work_order_id', id)
-      .eq('stage', 'weaving');
+  if (error) {
+    console.error('Failed to change status', error);
+    throw error;
   }
-
-  return fetchWorkOrderById(id);
 }
 
 export async function cancelWorkOrder(id: string): Promise<WorkOrder> {

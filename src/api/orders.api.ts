@@ -171,42 +171,12 @@ export async function updateOrderWithItems(
   header: OrderUpdate,
   items: Omit<OrderItemInsert, 'order_id'>[],
 ): Promise<void> {
-  // 1. Update header
-  const { error: headerErr } = await supabase
-    .from(HEADER_TABLE)
-    .update(header)
-    .eq('id', id);
-  if (headerErr) throw headerErr;
-
-  // 2. Save existing items for rollback
-  const { data: oldItems } = await supabase
-    .from(ITEMS_TABLE)
-    .select('*')
-    .eq('order_id', id);
-
-  // 3. Delete old items
-  const { error: delErr } = await supabase
-    .from(ITEMS_TABLE)
-    .delete()
-    .eq('order_id', id);
-  if (delErr) throw delErr;
-
-  // 4. Insert new items — rollback if fails
-  const itemsWithOrderId = items.map((item) => ({
-    ...item,
-    order_id: id,
-  }));
-  const { error: insertErr } = await supabase
-    .from(ITEMS_TABLE)
-    .insert(itemsWithOrderId);
-
-  if (insertErr) {
-    // Rollback: restore old items
-    if (oldItems && oldItems.length > 0) {
-      await supabase.from(ITEMS_TABLE).insert(oldItems);
-    }
-    throw insertErr;
-  }
+  const { error } = await supabase.rpc('update_order_with_items', {
+    p_order_id: id,
+    p_header_data: header,
+    p_items_data: items,
+  });
+  if (error) throw error;
 }
 
 /* ── Delete order ── */
@@ -232,51 +202,10 @@ export async function updateOrderStatus(
 /* ── Confirm order: recalculate total, update status, create progress rows ── */
 
 export async function confirmOrder(orderId: string): Promise<void> {
-  // Existing logic unchanged – kept for reference
-  // 1. Fetch items to recalculate total
-  const { data: items, error: itemsErr } = await supabase
-    .from(ITEMS_TABLE)
-    .select('quantity, unit_price')
-    .eq('order_id', orderId);
-  if (itemsErr) throw itemsErr;
-
-  const newTotal = (items ?? []).reduce(
-    (sum, it) => sum + Number(it.quantity) * Number(it.unit_price),
-    0,
-  );
-
-  // 2. Update status + recalculate total
-  const { error: statusErr } = await supabase
-    .from(HEADER_TABLE)
-    .update({
-      status: 'confirmed' as OrderStatus,
-      total_amount: newTotal,
-    })
-    .eq('id', orderId)
-    .eq('status', 'draft');
-  if (statusErr) throw statusErr;
-
-  // 3. Create 7 progress rows (unchanged)
-  const stages = [
-    'warping',
-    'weaving',
-    'greige_check',
-    'dyeing',
-    'finishing',
-    'final_check',
-    'packing',
-  ] as const;
-
-  const progressRows = stages.map((stage) => ({
-    order_id: orderId,
-    stage,
-    status: 'pending' as const,
-  }));
-
-  const { error: progressErr } = await supabase
-    .from('order_progress')
-    .insert(progressRows);
-  if (progressErr) throw progressErr;
+  const { error } = await supabase.rpc('confirm_order', {
+    p_order_id: orderId,
+  });
+  if (error) throw error;
 }
 
 /* ── Create and confirm order ── */

@@ -64,6 +64,23 @@ export interface ExpenseDeletedEvent extends DomainEvent {
   payload: { expenseId: string };
 }
 
+// ─── Receivables (Realtime) Events ─────────────────────────────────────────────
+
+export interface ReceivableCreatedEvent extends DomainEvent {
+  eventName: 'ReceivableCreatedEvent';
+  payload: { entityId: string; customerId: string };
+}
+
+export interface ReceivableUpdatedEvent extends DomainEvent {
+  eventName: 'ReceivableUpdatedEvent';
+  payload: { entityId: string; customerId: string };
+}
+
+export interface ReceivableDeletedEvent extends DomainEvent {
+  eventName: 'ReceivableDeletedEvent';
+  payload: { entityId: string; customerId: string };
+}
+
 // ─── Event Type Union ─────────────────────────────────────────────────────────
 
 export type AppDomainEvent =
@@ -75,4 +92,7 @@ export type AppDomainEvent =
   | PaymentDeletedEvent
   | ExpenseCreatedEvent
   | ExpenseUpdatedEvent
-  | ExpenseDeletedEvent;
+  | ExpenseDeletedEvent
+  | ReceivableCreatedEvent
+  | ReceivableUpdatedEvent
+  | ReceivableDeletedEvent;

@@ -76,11 +76,11 @@ export function useUpdateWorkOrder() {
 
 export function useStartWorkOrder() {
   const queryClient = useQueryClient();
-  return useMutation<WorkOrder, PostgrestError, string>({
+  return useMutation<void, PostgrestError, string>({
     mutationFn: startWorkOrder,
-    onSuccess: (data) => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['work_orders'] });
-      queryClient.invalidateQueries({ queryKey: ['work_order', data.id] });
+      queryClient.invalidateQueries({ queryKey: ['work_order', variables] });
     },
   });
 }
@@ -88,14 +88,14 @@ export function useStartWorkOrder() {
 export function useCompleteWorkOrder() {
   const queryClient = useQueryClient();
   return useMutation<
-    WorkOrder,
+    void,
     PostgrestError,
     { id: string; input: CompleteWorkOrderInput }
   >({
-    mutationFn: ({ id, input }) => completeWorkOrder(id, input),
-    onSuccess: (data) => {
+    mutationFn: ({ id, input }) => completeWorkOrder(id, input.actual_yield_m),
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['work_orders'] });
-      queryClient.invalidateQueries({ queryKey: ['work_order', data.id] });
+      queryClient.invalidateQueries({ queryKey: ['work_order', variables.id] });
     },
   });
 }
