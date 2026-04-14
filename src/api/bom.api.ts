@@ -4,9 +4,9 @@ import type {
   BomVersion,
   BomFilter,
   FabricCatalog,
-  BomYarnItem,
 } from '@/features/bom/types';
 import { supabase } from '@/services/supabase/client';
+import { untypedDb } from '@/services/supabase/untyped';
 
 /* ── Reference data for BOM forms ── */
 
@@ -143,44 +143,17 @@ export async function createBomDraft(
     finalCode = parts.join('-');
   }
 
-  const { data: header, error: headerError } = await supabase
-    .from('bom_templates')
-    .insert([
-      {
-        ...headerData,
-        code: finalCode,
-        status: 'draft',
-        active_version: 1,
-        created_by: userId,
-      },
-    ])
-    .select()
-    .single();
+  const { data, error } = await untypedDb.rpc('atomic_create_bom', {
+    p_header: {
+      ...headerData,
+      code: finalCode,
+    },
+    p_items: bomYarnItems,
+    p_user_id: userId,
+  });
 
-  if (headerError) throw headerError;
-
-  if (bomYarnItems && bomYarnItems.length > 0) {
-    const itemsToInsert = bomYarnItems.map((item, index) => ({
-      bom_template_id: header.id,
-      version: 1,
-      yarn_catalog_id: item.yarn_catalog_id,
-      ratio_pct: item.ratio_pct,
-      consumption_kg_per_m: item.consumption_kg_per_m,
-      notes: item.notes,
-      sort_order: item.sort_order || index,
-    }));
-
-    const { error: itemsError } = await supabase
-      .from('bom_yarn_items')
-      .insert(itemsToInsert);
-
-    if (itemsError) {
-      await supabase.from('bom_templates').delete().eq('id', header.id);
-      throw itemsError;
-    }
-  }
-
-  return header;
+  if (error) throw error;
+  return data as { id: string };
 }
 
 /* ── Update BOM draft ── */
@@ -189,48 +162,19 @@ export async function updateBomDraft(
   id: string,
   formData: BomTemplateFormData,
 ): Promise<string> {
-  const { data: existing, error: checkErr } = await supabase
-    .from('bom_templates')
-    .select('status')
-    .eq('id', id)
-    .single();
-  if (checkErr) throw checkErr;
-  if (existing.status !== 'draft') {
-    throw new Error('Chỉ có thể sửa khi BOM đang ở trạng thái Nháp (Draft).');
-  }
-
   const { bom_yarn_items: bomYarnItems, ...headerData } = formData;
 
-  const { error: updateErr } = await supabase
-    .from('bom_templates')
-    .update({
-      ...headerData,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', id);
-  if (updateErr) throw updateErr;
+  const { error } = await untypedDb.rpc('atomic_update_bom', {
+    p_bom_id: id,
+    p_header: headerData,
+    p_items: bomYarnItems,
+  });
 
-  const { error: delErr } = await supabase
-    .from('bom_yarn_items')
-    .delete()
-    .eq('bom_template_id', id);
-  if (delErr) throw delErr;
-
-  if (bomYarnItems && bomYarnItems.length > 0) {
-    const itemsToInsert = bomYarnItems.map((item, index) => ({
-      bom_template_id: id,
-      version: 1,
-      yarn_catalog_id: item.yarn_catalog_id,
-      ratio_pct: item.ratio_pct,
-      consumption_kg_per_m: item.consumption_kg_per_m,
-      notes: item.notes,
-      sort_order: item.sort_order || index,
-    }));
-
-    const { error: insErr } = await supabase
-      .from('bom_yarn_items')
-      .insert(itemsToInsert);
-    if (insErr) throw insErr;
+  if (error) {
+    if (error.message?.includes('BOM_NOT_DRAFT')) {
+      throw new Error('Chỉ có thể sửa khi BOM đang ở trạng thái Nháp (Draft).');
+    }
+    throw error;
   }
 
   return id;
@@ -242,57 +186,24 @@ export async function approveBom(id: string, reason?: string): Promise<string> {
   const auth = await supabase.auth.getUser();
   const userId = auth.data.user?.id;
 
-  const { data: bom, error: checkErr } = await supabase
-    .from('bom_templates')
-    .select('*, bom_yarn_items(*)')
-    .eq('id', id)
-    .single();
-  if (checkErr) throw checkErr;
-  if (bom.status !== 'draft') {
-    throw new Error('BOM đã được duyệt hoặc huỷ, không thể duyệt lại.');
+  const { error } = await untypedDb.rpc('atomic_approve_bom', {
+    p_bom_id: id,
+    p_reason: reason || null,
+    p_user_id: userId,
+  });
+
+  if (error) {
+    if (error.message?.includes('BOM_NOT_DRAFT')) {
+      throw new Error('BOM đã được duyệt hoặc huỷ, không thể duyệt lại.');
+    }
+    if (error.message?.includes('BOM_EMPTY')) {
+      throw new Error('Không thể duyệt BOM rỗng chưa có thành phần sợi.');
+    }
+    if (error.message?.includes('INVALID_RATIO_SUM')) {
+      throw new Error('Tổng tỉ lệ nguyên liệu phải bằng 100%.');
+    }
+    throw error;
   }
-  if (!bom.bom_yarn_items || bom.bom_yarn_items.length === 0) {
-    throw new Error('Không thể duyệt BOM rỗng chưa có thành phần sợi.');
-  }
-
-  const totalRatio = (bom.bom_yarn_items as BomYarnItem[]).reduce(
-    (sum, item) => sum + item.ratio_pct,
-    0,
-  );
-  if (Math.abs(totalRatio - 100) > 0.01) {
-    throw new Error('Tổng tỉ lệ nguyên liệu phải bằng 100%.');
-  }
-
-  const now = new Date().toISOString();
-
-  const snapshotPayload = {
-    bom_yarn_items: bom.bom_yarn_items,
-    target_width_cm: bom.target_width_cm,
-    target_gsm: bom.target_gsm,
-    standard_loss_pct: bom.standard_loss_pct,
-  };
-
-  const { error: vErr } = await supabase.from('bom_versions').insert([
-    {
-      bom_template_id: id,
-      version: bom.active_version,
-      change_reason: reason || 'Phê duyệt ban đầu',
-      snapshot: snapshotPayload,
-      created_by: userId,
-    },
-  ]);
-  if (vErr) throw vErr;
-
-  const { error: updErr } = await supabase
-    .from('bom_templates')
-    .update({
-      status: 'approved',
-      approved_by: userId,
-      approved_at: now,
-      updated_at: now,
-    })
-    .eq('id', id);
-  if (updErr) throw updErr;
 
   return id;
 }
@@ -323,36 +234,16 @@ export async function deprecateBom(
 export async function reviseBom(id: string, reason: string): Promise<string> {
   if (!reason) throw new Error('Bày tỏ lý do vì sao lập phiên bản mới.');
 
-  const { data: bom, error: bomErr } = await supabase
-    .from('bom_templates')
-    .select('*, bom_yarn_items(*)')
-    .eq('id', id)
-    .single();
-  if (bomErr) throw bomErr;
-  if (bom.status !== 'approved')
-    throw new Error('Chỉ lập version mới từ BOM đang duyệt.');
+  const { error } = await untypedDb.rpc('atomic_revise_bom', {
+    p_bom_id: id,
+    p_reason: reason,
+  });
 
-  const newVersion = bom.active_version + 1;
-
-  const { error: updErr } = await supabase
-    .from('bom_templates')
-    .update({
-      status: 'draft',
-      active_version: newVersion,
-      notes: reason,
-      approved_by: null,
-      approved_at: null,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', id);
-  if (updErr) throw updErr;
-
-  if (bom.bom_yarn_items && bom.bom_yarn_items.length > 0) {
-    const { error: itemsErr } = await supabase
-      .from('bom_yarn_items')
-      .update({ version: newVersion })
-      .eq('bom_template_id', id);
-    if (itemsErr) throw itemsErr;
+  if (error) {
+    if (error.message?.includes('BOM_NOT_APPROVED')) {
+      throw new Error('Chỉ lập version mới từ BOM đang duyệt.');
+    }
+    throw error;
   }
 
   return id;

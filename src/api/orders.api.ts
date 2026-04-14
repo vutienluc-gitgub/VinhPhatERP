@@ -11,9 +11,9 @@ import type { Database } from '@/services/supabase/database.types';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import { orderResponseSchema } from '@/schema/order.schema';
+import { untypedDb } from '@/services/supabase/untyped';
 
 const HEADER_TABLE = 'orders';
-const ITEMS_TABLE = 'order_items';
 
 type DbOrderStatus = Database['public']['Enums']['order_status'];
 
@@ -122,30 +122,14 @@ export async function createOrder(
   header: OrderInsert,
   items: Omit<OrderItemInsert, 'order_id'>[],
 ): Promise<Order> {
-  const { data, error: headerErr } = await supabase
-    .from(HEADER_TABLE)
-    .insert(header)
-    .select()
-    .single();
+  const { data, error } = await untypedDb.rpc('atomic_create_order', {
+    p_header: header,
+    p_items: items,
+  });
 
-  if (headerErr) throw headerErr;
+  if (error) throw error;
 
-  const headerId = (data as Order).id;
-  const itemsWithOrderId = items.map((item) => ({
-    ...item,
-    order_id: headerId,
-  }));
-
-  const { error: itemsErr } = await supabase
-    .from(ITEMS_TABLE)
-    .insert(itemsWithOrderId);
-
-  if (itemsErr) {
-    await supabase.from(HEADER_TABLE).delete().eq('id', headerId);
-    throw itemsErr;
-  }
-
-  return data as Order;
+  return data as unknown as Order;
 }
 
 /* ── Update order header ── */
@@ -228,21 +212,9 @@ export async function createAndConfirmOrder(
 /* ── Cancel order: release reserved rolls → cancel ── */
 
 export async function cancelOrder(orderId: string): Promise<void> {
-  // 1. Release all reserved rolls back to in_stock
-  await supabase
-    .from('finished_fabric_rolls')
-    .update({
-      status: 'in_stock',
-      reserved_for_order_id: null,
-    })
-    .eq('reserved_for_order_id', orderId)
-    .eq('status', 'reserved');
-
-  // 2. Cancel the order
-  const { error } = await supabase
-    .from(HEADER_TABLE)
-    .update({ status: 'cancelled' as OrderStatus })
-    .eq('id', orderId);
+  const { error } = await untypedDb.rpc('atomic_cancel_order', {
+    p_order_id: orderId,
+  });
   if (error) throw error;
 }
 

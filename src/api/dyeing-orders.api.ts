@@ -9,7 +9,6 @@ import type {
 } from '@/features/dyeing-orders/types';
 
 const TABLE = 'dyeing_orders';
-const ITEMS_TABLE = 'dyeing_order_items';
 
 /* ── List (paginated) ── */
 
@@ -102,27 +101,20 @@ export async function createDyeingOrder(
 ): Promise<DyeingOrder> {
   const { data: userData } = await supabase.auth.getUser();
 
-  const { data: header, error: headerErr } = await db
-    .from(TABLE)
-    .insert({
-      dyeing_order_number: values.dyeing_order_number.trim(),
-      supplier_id: values.supplier_id,
-      order_date: values.order_date,
-      expected_return_date: values.expected_return_date || null,
-      unit_price_per_kg: values.unit_price_per_kg,
-      work_order_id: values.work_order_id || null,
-      notes: values.notes?.trim() || null,
-      status: 'draft',
-      created_by: userData.user?.id ?? null,
-    })
-    .select('id')
-    .single();
+  const headerInsert = {
+    dyeing_order_number: values.dyeing_order_number.trim(),
+    supplier_id: values.supplier_id,
+    order_date: values.order_date,
+    expected_return_date: values.expected_return_date || null,
+    unit_price_per_kg: values.unit_price_per_kg,
+    work_order_id: values.work_order_id || null,
+    notes: values.notes?.trim() || null,
+    status: 'draft',
+    created_by: userData.user?.id ?? null,
+  };
 
-  if (headerErr) throw headerErr;
-
-  const items = values.items.map(
+  const itemsInsert = values.items.map(
     (item: DyeingOrderFormValues['items'][number], idx: number) => ({
-      dyeing_order_id: header.id,
       raw_fabric_roll_id: item.raw_fabric_roll_id,
       weight_kg: item.weight_kg,
       length_m: item.length_m || null,
@@ -133,13 +125,13 @@ export async function createDyeingOrder(
     }),
   );
 
-  const { error: itemsErr } = await db.from(ITEMS_TABLE).insert(items);
-  if (itemsErr) {
-    await db.from(TABLE).delete().eq('id', header.id);
-    throw itemsErr;
-  }
+  const { data, error } = await db.rpc('atomic_create_dyeing_order', {
+    p_header: headerInsert,
+    p_items: itemsInsert,
+  });
 
-  return fetchDyeingOrderById(header.id);
+  if (error) throw error;
+  return data as unknown as DyeingOrder;
 }
 
 /* ── Update (draft only) ── */
@@ -148,32 +140,18 @@ export async function updateDyeingOrder(
   id: string,
   values: DyeingOrderFormValues,
 ): Promise<void> {
-  const { error: headerErr } = await db
-    .from(TABLE)
-    .update({
-      dyeing_order_number: values.dyeing_order_number.trim(),
-      supplier_id: values.supplier_id,
-      order_date: values.order_date,
-      expected_return_date: values.expected_return_date || null,
-      unit_price_per_kg: values.unit_price_per_kg,
-      work_order_id: values.work_order_id || null,
-      notes: values.notes?.trim() || null,
-    })
-    .eq('id', id)
-    .eq('status', 'draft');
+  const headerUpdate = {
+    dyeing_order_number: values.dyeing_order_number.trim(),
+    supplier_id: values.supplier_id,
+    order_date: values.order_date,
+    expected_return_date: values.expected_return_date || null,
+    unit_price_per_kg: values.unit_price_per_kg,
+    work_order_id: values.work_order_id || null,
+    notes: values.notes?.trim() || null,
+  };
 
-  if (headerErr) throw headerErr;
-
-  // Replace items
-  const { error: delErr } = await db
-    .from(ITEMS_TABLE)
-    .delete()
-    .eq('dyeing_order_id', id);
-  if (delErr) throw delErr;
-
-  const items = values.items.map(
+  const itemsInsert = values.items.map(
     (item: DyeingOrderFormValues['items'][number], idx: number) => ({
-      dyeing_order_id: id,
       raw_fabric_roll_id: item.raw_fabric_roll_id,
       weight_kg: item.weight_kg,
       length_m: item.length_m || null,
@@ -184,8 +162,17 @@ export async function updateDyeingOrder(
     }),
   );
 
-  const { error: insertErr } = await db.from(ITEMS_TABLE).insert(items);
-  if (insertErr) throw insertErr;
+  const { error } = await db.rpc('atomic_update_dyeing_order', {
+    p_id: id,
+    p_header: headerUpdate,
+    p_items: itemsInsert,
+  });
+
+  if (error) {
+    if (error.message?.includes('DYEING_ORDER_NOT_DRAFT'))
+      throw new Error('Chi co the cap nhat lenh nhuom o trang thai nhap.');
+    throw error;
+  }
 }
 
 /* ── Send to dyeing (draft → sent) ── */
