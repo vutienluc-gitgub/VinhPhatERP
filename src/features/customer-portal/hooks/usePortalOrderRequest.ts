@@ -40,14 +40,14 @@ export function usePortalOrderRequest() {
       // Generate order number: PO-YYYYMMDD-XXXX
       const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
       const rand = Math.floor(Math.random() * 9000) + 1000;
-      const order_number = `PO-${dateStr}-${rand}`;
+      const orderNumber = `PO-${dateStr}-${rand}`;
 
       const { data: order, error: orderErr } = await supabase
         .from('orders')
         .insert({
           tenant_id: profile.tenant_id,
           customer_id: profile.customer_id,
-          order_number,
+          order_number: orderNumber,
           order_date: new Date().toISOString().slice(0, 10),
           delivery_date: payload.delivery_date,
           notes: payload.notes || null,

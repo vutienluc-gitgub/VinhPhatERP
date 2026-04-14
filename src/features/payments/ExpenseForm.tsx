@@ -5,6 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { formatCurrency } from '@/shared/utils/format';
 import { useAccountList } from '@/application/payments';
 import { useEmployees } from '@/application/crm';
@@ -189,15 +190,19 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
               <label htmlFor="amount">
                 Số tiền (đ) <span className="field-required">*</span>
               </label>
-              <input
-                id="amount"
-                className={`field-input${errors.amount ? ' is-error' : ''}`}
-                type="number"
-                step="1000"
-                inputMode="numeric"
-                placeholder="VD: 5000000"
-                style={{ fontVariantNumeric: 'tabular-nums' }}
-                {...register('amount', { valueAsNumber: true })}
+              <Controller
+                name="amount"
+                control={control}
+                render={({ field }) => (
+                  <CurrencyInput
+                    id="amount"
+                    className={`field-input${errors.amount ? ' is-error' : ''}`}
+                    value={field.value}
+                    onChange={(v) => field.onChange(v ?? 0)}
+                    onBlur={field.onBlur}
+                    placeholder="VD: 5.000.000"
+                  />
+                )}
               />
               {errors.amount && (
                 <span className="field-error">{errors.amount.message}</span>
