@@ -13,9 +13,7 @@ import { untypedDb } from '@/services/supabase/untyped';
 import { shipmentResponseSchema } from '@/schema/shipment.schema';
 
 const HEADER_TABLE = 'shipments';
-const ITEMS_TABLE = 'shipment_items';
 
-type ShipmentHeaderRow = Database['public']['Tables']['shipments']['Row'];
 type FinishedRollAvailabilityRow = Pick<
   Database['public']['Tables']['finished_fabric_rolls']['Row'],
   'id' | 'fabric_type' | 'color_name'
@@ -252,37 +250,26 @@ export async function createShipmentFull(
     .filter((id): id is string => !!id);
   const selectedRollMap = await fetchReservableRolls(selectedRollIds);
 
-  const { data: header, error: headerErr } = await supabase
-    .from(HEADER_TABLE)
-    .insert({
-      shipment_number: input.shipmentNumber.trim(),
-      order_id: input.orderId,
-      customer_id: input.customerId,
-      shipment_date: input.shipmentDate,
-      delivery_address: input.deliveryAddress,
-      delivery_staff_id: input.deliveryStaffId,
-      employee_id: input.employeeId,
-      shipping_rate_id: input.shippingRateId,
-      shipping_cost: input.shippingCost,
-      loading_fee: input.loadingFee,
-      vehicle_info: input.vehicleInfo,
-      status: 'preparing' as const,
-    })
-    .select()
-    .single();
+  const headerInsert = {
+    shipment_number: input.shipmentNumber.trim(),
+    order_id: input.orderId,
+    customer_id: input.customerId,
+    shipment_date: input.shipmentDate,
+    delivery_address: input.deliveryAddress,
+    delivery_staff_id: input.deliveryStaffId,
+    employee_id: input.employeeId,
+    shipping_rate_id: input.shippingRateId,
+    shipping_cost: input.shippingCost,
+    loading_fee: input.loadingFee,
+    vehicle_info: input.vehicleInfo,
+  };
 
-  if (headerErr) throw headerErr;
-
-  const shipmentHeader = header as ShipmentHeaderRow;
-  const headerId = shipmentHeader.id;
-
-  const items = input.items.map((item, idx) => {
+  const itemsInsert = input.items.map((item, idx) => {
     const finishedRollId = item.finishedRollId?.trim() || null;
     const selectedRoll = finishedRollId
       ? selectedRollMap.get(finishedRollId)
       : undefined;
     return {
-      shipment_id: headerId,
       finished_roll_id: finishedRollId,
       fabric_type: selectedRoll?.fabric_type ?? item.fabricType.trim(),
       color_name: selectedRoll?.color_name ?? null,
@@ -292,23 +279,20 @@ export async function createShipmentFull(
     };
   });
 
-  const { error: itemsErr } = await supabase.from(ITEMS_TABLE).insert(items);
-  if (itemsErr) {
-    await supabase.from(HEADER_TABLE).delete().eq('id', headerId);
-    throw itemsErr;
-  }
+  const { data, error } = await untypedDb.rpc('atomic_create_shipment', {
+    p_header: headerInsert,
+    p_items: itemsInsert,
+    p_reserve_roll_ids: selectedRollIds,
+  });
 
-  if (selectedRollIds.length > 0) {
-    await supabase
-      .from('finished_fabric_rolls')
-      .update({
-        status: 'reserved',
-        reserved_for_order_id: input.orderId,
-      })
-      .in('id', selectedRollIds);
+  if (error) {
+    if (error.message?.includes('ROLL_NOT_AVAILABLE'))
+      throw new Error(
+        'Mot hoac nhieu cuon thanh pham khong con san sang de xuat.',
+      );
+    throw error;
   }
-
-  return shipmentHeader as Shipment;
+  return data as unknown as Shipment;
 }
 
 /* ── Confirm shipment (preparing → shipped) ── */
@@ -316,34 +300,14 @@ export async function createShipmentFull(
 export async function confirmShipmentFull(
   shipmentId: string,
 ): Promise<ShipmentDocument> {
-  const { data: items } = await supabase
-    .from(ITEMS_TABLE)
-    .select('finished_roll_id')
-    .eq('shipment_id', shipmentId);
+  const { error } = await untypedDb.rpc('atomic_confirm_shipment', {
+    p_shipment_id: shipmentId,
+  });
 
-  const { error } = await supabase
-    .from(HEADER_TABLE)
-    .update({
-      status: 'shipped' as ShipmentStatus,
-      shipped_at: new Date().toISOString(),
-    })
-    .eq('id', shipmentId)
-    .eq('status', 'preparing');
-
-  if (error) throw error;
-
-  const rollIds = (items ?? [])
-    .map((i) => i.finished_roll_id)
-    .filter((id): id is string => !!id);
-
-  if (rollIds.length > 0) {
-    await supabase
-      .from('finished_fabric_rolls')
-      .update({
-        status: 'shipped',
-        reserved_for_order_id: null,
-      })
-      .in('id', rollIds);
+  if (error) {
+    if (error.message?.includes('SHIPMENT_NOT_PREPARING'))
+      throw new Error('Phieu xuat khong o trang thai chuan bi.');
+    throw error;
   }
 
   return fetchShipmentDocument(shipmentId);
@@ -410,28 +374,15 @@ export async function fetchDeliveryStaff(): Promise<DeliveryStaffSummary[]> {
 /* ── Delete shipment (preparing only) ── */
 
 export async function deleteShipmentFull(shipmentId: string): Promise<void> {
-  const { data: items } = await supabase
-    .from(ITEMS_TABLE)
-    .select('finished_roll_id')
-    .eq('shipment_id', shipmentId);
+  const { error } = await untypedDb.rpc('atomic_delete_shipment', {
+    p_shipment_id: shipmentId,
+  });
 
-  const rollIds = (items ?? [])
-    .map((i) => i.finished_roll_id)
-    .filter((id): id is string => !!id);
-
-  if (rollIds.length > 0) {
-    await supabase
-      .from('finished_fabric_rolls')
-      .update({ status: 'in_stock' })
-      .in('id', rollIds);
+  if (error) {
+    if (error.message?.includes('SHIPMENT_NOT_PREPARING'))
+      throw new Error('Chi co the xoa phieu xuat o trang thai chuan bi.');
+    throw error;
   }
-
-  const { error } = await supabase
-    .from(HEADER_TABLE)
-    .delete()
-    .eq('id', shipmentId)
-    .eq('status', 'preparing');
-  if (error) throw error;
 }
 /* ── Create shipment from finished fabric rolls (calls atomic RPC) ── */
 

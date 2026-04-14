@@ -9,7 +9,6 @@ import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 
 const TABLE = 'weaving_invoices';
-const ROLLS_TABLE = 'weaving_invoice_rolls';
 
 /* ── List (paginated) ── */
 
@@ -92,24 +91,7 @@ export async function createWeavingInvoice(
 ): Promise<WeavingInvoice> {
   const { data: userData } = await supabase.auth.getUser();
 
-  const { data: header, error: headerErr } = await db
-    .from(TABLE)
-    .insert({
-      invoice_number: values.invoice_number.trim(),
-      supplier_id: values.supplier_id,
-      invoice_date: values.invoice_date,
-      fabric_type: values.fabric_type.trim(),
-      unit_price_per_kg: values.unit_price_per_kg,
-      notes: values.notes?.trim() || null,
-      status: 'draft',
-      created_by: userData.user?.id ?? null,
-    })
-    .select('id, invoice_number')
-    .single();
-
-  if (headerErr) throw headerErr;
-
-  // Fetch supplier code for prefix
+  // Fetch supplier code for roll_number prefix (read-only, before transaction)
   const { data: supplierData, error: supplierErr } = await supabase
     .from('suppliers')
     .select('code')
@@ -118,9 +100,18 @@ export async function createWeavingInvoice(
   if (supplierErr) throw supplierErr;
   const supplierCode = supplierData?.code ?? 'SUP';
 
-  const rolls = values.rolls.map((r, idx) => ({
-    invoice_id: header.id,
-    // Auto‑generate roll number if not provided
+  const headerInsert = {
+    invoice_number: values.invoice_number.trim(),
+    supplier_id: values.supplier_id,
+    invoice_date: values.invoice_date,
+    fabric_type: values.fabric_type.trim(),
+    unit_price_per_kg: values.unit_price_per_kg,
+    notes: values.notes?.trim() || null,
+    status: 'draft',
+    created_by: userData.user?.id ?? null,
+  };
+
+  const rollsInsert = values.rolls.map((r, idx) => ({
     roll_number:
       r.roll_number?.trim() || `${supplierCode}-${Date.now()}-${idx + 1}`,
     weight_kg: r.weight_kg,
@@ -132,13 +123,13 @@ export async function createWeavingInvoice(
     sort_order: idx,
   }));
 
-  const { error: rollsErr } = await db.from(ROLLS_TABLE).insert(rolls);
-  if (rollsErr) {
-    await db.from(TABLE).delete().eq('id', header.id);
-    throw rollsErr;
-  }
+  const { data, error } = await db.rpc('atomic_create_weaving_invoice', {
+    p_header: headerInsert,
+    p_rolls: rollsInsert,
+  });
 
-  return fetchWeavingInvoiceById(header.id);
+  if (error) throw error;
+  return data as unknown as WeavingInvoice;
 }
 
 /* ── Update invoice (draft only) ── */
@@ -147,29 +138,16 @@ export async function updateWeavingInvoice(
   id: string,
   values: WeavingInvoiceFormValues,
 ): Promise<void> {
-  const { error: headerErr } = await db
-    .from(TABLE)
-    .update({
-      invoice_number: values.invoice_number.trim(),
-      supplier_id: values.supplier_id,
-      invoice_date: values.invoice_date,
-      fabric_type: values.fabric_type.trim(),
-      unit_price_per_kg: values.unit_price_per_kg,
-      notes: values.notes?.trim() || null,
-    })
-    .eq('id', id)
-    .eq('status', 'draft');
+  const headerUpdate = {
+    invoice_number: values.invoice_number.trim(),
+    supplier_id: values.supplier_id,
+    invoice_date: values.invoice_date,
+    fabric_type: values.fabric_type.trim(),
+    unit_price_per_kg: values.unit_price_per_kg,
+    notes: values.notes?.trim() || null,
+  };
 
-  if (headerErr) throw headerErr;
-
-  const { error: delErr } = await db
-    .from(ROLLS_TABLE)
-    .delete()
-    .eq('invoice_id', id);
-  if (delErr) throw delErr;
-
-  const rolls = values.rolls.map((r, idx) => ({
-    invoice_id: id,
+  const rollsInsert = values.rolls.map((r, idx) => ({
     roll_number: r.roll_number.trim(),
     weight_kg: r.weight_kg,
     length_m: r.length_m ?? null,
@@ -180,8 +158,17 @@ export async function updateWeavingInvoice(
     sort_order: idx,
   }));
 
-  const { error: insertErr } = await db.from(ROLLS_TABLE).insert(rolls);
-  if (insertErr) throw insertErr;
+  const { error } = await db.rpc('atomic_update_weaving_invoice', {
+    p_id: id,
+    p_header: headerUpdate,
+    p_rolls: rollsInsert,
+  });
+
+  if (error) {
+    if (error.message?.includes('INVOICE_NOT_DRAFT'))
+      throw new Error('Chi co the cap nhat phieu nhap o trang thai nhap.');
+    throw error;
+  }
 }
 
 /* ── Confirm invoice → trigger insert to raw_fabric_rolls ── */

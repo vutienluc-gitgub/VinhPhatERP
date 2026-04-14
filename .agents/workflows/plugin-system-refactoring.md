@@ -1,8 +1,8 @@
 ---
-description: Implement Level 7 Architecture Plugin System & Feature Registry
+description: Implement Level 9 Architecture Plugin System & Feature Registry
 ---
 
-# Workflow: Triển khai Kiến trúc Plugin & Feature Registry (Level 7)
+# Workflow: Triển khai Kiến trúc Plugin & Feature Registry (Level 9)
 
 Workflow này hướng dẫn các bước tiêu chuẩn để chuyển đổi cấu trúc ứng dụng từ "Hard-coded Router & Sidebar Menu" sang hệ thống Plugin Registry phi tập trung (Decentralized Feature Modules).
 
