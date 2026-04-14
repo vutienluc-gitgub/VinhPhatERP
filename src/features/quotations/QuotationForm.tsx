@@ -102,17 +102,17 @@ function TotalsSummary({
   return (
     <div className="border-t-2 border-border py-3 flex flex-col gap-1.5 text-[0.92rem]">
       <div className="flex justify-between">
-        <span>Tam tinh:</span>
+        <span>Tạm tính:</span>
         <span>{formatCurrency(totals.subtotal)}đ</span>
       </div>
       {totals.discountAmount > 0 && (
         <div className="flex justify-between text-danger">
-          <span>Chiet khau:</span>
+          <span>Chiết khấu:</span>
           <span>-{formatCurrency(totals.discountAmount)}đ</span>
         </div>
       )}
       <div className="flex justify-between">
-        <span>Truoc VAT:</span>
+        <span>Trước VAT:</span>
         <span>{formatCurrency(totals.totalBeforeVat)}đ</span>
       </div>
       {totals.vatAmount > 0 && (
@@ -122,7 +122,7 @@ function TotalsSummary({
         </div>
       )}
       <div className="flex justify-between font-bold text-[1.05rem] border-t border-border pt-2">
-        <span>Tong cong:</span>
+        <span>Tổng cộng:</span>
         <span>{formatCurrency(totals.totalAmount)}đ</span>
       </div>
     </div>
@@ -262,7 +262,7 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
     <form id="quotation-form" onSubmit={handleSubmit(onSubmit)} noValidate>
       {mutationError && (
         <p className="error-inline mb-4">
-          Loi: {(mutationError as Error).message}
+          Lỗi: {(mutationError as Error).message}
         </p>
       )}
 
@@ -643,7 +643,7 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
           Hủy
         </Button>
         <Button variant="primary" type="submit" disabled={isPending}>
-          isPending ? 'Dang luu...' : isEditing ? 'Cap nhat' : 'Tao bao gia
+          {isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo báo giá'}
         </Button>
       </div>
     </form>

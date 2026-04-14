@@ -140,9 +140,13 @@ export async function fetchPaymentAccounts(
 export async function createPaymentAccount(
   row: AccountInsertRow,
 ): Promise<PaymentAccount> {
+  const tenantId = await getTenantId();
   const { data, error } = await untypedDb
     .from('payment_accounts')
-    .insert(row)
+    .insert({
+      ...row,
+      tenant_id: tenantId,
+    })
     .select()
     .single();
   if (error) throw error;

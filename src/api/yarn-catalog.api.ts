@@ -3,6 +3,7 @@ import type {
   YarnCatalogFilter,
 } from '@/features/yarn-catalog/types';
 import { supabase } from '@/services/supabase/client';
+import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 
@@ -97,9 +98,15 @@ export async function fetchNextYarnCatalogCode(): Promise<string> {
 export async function createYarnCatalog(
   row: YarnCatalogRow,
 ): Promise<YarnCatalog> {
+  const tenantId = await getTenantId();
   const { data, error } = await supabase
     .from(TABLE)
-    .insert([row])
+    .insert([
+      {
+        ...row,
+        tenant_id: tenantId,
+      },
+    ])
     .select()
     .single();
   if (error) throw error;

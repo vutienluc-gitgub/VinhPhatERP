@@ -5,6 +5,7 @@ import type {
 } from '@/features/suppliers/types';
 import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';
+import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 
@@ -84,9 +85,15 @@ export async function fetchNextSupplierCode(): Promise<string> {
 }
 
 export async function createSupplier(row: SupplierInsert): Promise<Supplier> {
+  const tenantId = await getTenantId();
   const { data, error } = await supabase
     .from(TABLE)
-    .insert([row])
+    .insert([
+      {
+        ...row,
+        tenant_id: tenantId,
+      },
+    ])
     .select()
     .single();
   if (error) throw error;

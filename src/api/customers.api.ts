@@ -5,6 +5,7 @@ import type {
   CustomersFilter,
 } from '@/features/customers/types';
 import { supabase } from '@/services/supabase/client';
+import { getTenantId } from '@/services/supabase/tenant';
 import { customerResponseSchema } from '@/schema/customer.schema';
 
 const TABLE = 'customers';
@@ -31,9 +32,15 @@ export async function fetchCustomers(
 }
 
 export async function createCustomer(row: CustomerInsert): Promise<Customer> {
+  const tenantId = await getTenantId();
   const { data, error } = await supabase
     .from(TABLE)
-    .insert([row])
+    .insert([
+      {
+        ...row,
+        tenant_id: tenantId,
+      },
+    ])
     .select()
     .single();
   if (error) throw error;

@@ -6,6 +6,7 @@ import type {
   RawRollOption,
 } from '@/features/finished-fabric/types';
 import { supabase } from '@/services/supabase/client';
+import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 
@@ -65,9 +66,15 @@ export async function fetchFinishedFabricPaginated(
 export async function createFinishedFabric(
   row: FinishedFabricRollInsert,
 ): Promise<FinishedFabricRoll> {
+  const tenantId = await getTenantId();
   const { data, error } = await supabase
     .from(TABLE)
-    .insert([row])
+    .insert([
+      {
+        ...row,
+        tenant_id: tenantId,
+      },
+    ])
     .select()
     .single();
   if (error) throw error;
@@ -159,7 +166,16 @@ export async function createFinishedFabricBulk(
   }
 
   // 3. Insert
-  const { data, error } = await supabase.from(TABLE).insert(rows).select();
+  const tenantId = await getTenantId();
+  const { data, error } = await supabase
+    .from(TABLE)
+    .insert(
+      rows.map((r) => ({
+        ...r,
+        tenant_id: tenantId,
+      })),
+    )
+    .select();
   if (error) throw error;
   return (data ?? []) as FinishedFabricRoll[];
 }
