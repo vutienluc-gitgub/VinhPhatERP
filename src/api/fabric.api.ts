@@ -10,6 +10,7 @@ import type {
   FinishedFabricRollUpdate,
 } from '@/features/finished-fabric/types';
 import { supabase } from '@/services/supabase/client';
+import { getTenantId } from '@/services/supabase/tenant';
 
 // ─── Vải mộc ───
 
@@ -38,7 +39,16 @@ export async function fetchRawFabricRolls(
 export async function createRawFabricRolls(
   rows: RawFabricRollInsert[],
 ): Promise<RawFabricRoll[]> {
-  const { data, error } = await supabase.from(RAW_TABLE).insert(rows).select();
+  const tenantId = await getTenantId();
+  const { data, error } = await supabase
+    .from(RAW_TABLE)
+    .insert(
+      rows.map((r) => ({
+        ...r,
+        tenant_id: tenantId,
+      })),
+    )
+    .select();
   if (error) throw error;
   return (data ?? []) as RawFabricRoll[];
 }
@@ -92,9 +102,15 @@ export async function fetchFinishedFabricRolls(): Promise<
 export async function createFinishedFabricRoll(
   row: FinishedFabricRollInsert,
 ): Promise<FinishedFabricRoll> {
+  const tenantId = await getTenantId();
   const { data, error } = await supabase
     .from(FINISHED_TABLE)
-    .insert([row])
+    .insert([
+      {
+        ...row,
+        tenant_id: tenantId,
+      },
+    ])
     .select()
     .single();
   if (error) throw error;

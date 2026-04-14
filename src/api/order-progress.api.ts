@@ -11,6 +11,7 @@ import type {
 } from '@/features/orders/progress/types';
 import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';
+import { getTenantId } from '@/services/supabase/tenant';
 
 const TABLE = 'order_progress';
 const auditTable = () => untypedDb.from('progress_audit_log');
@@ -218,9 +219,15 @@ export async function fetchProgressDashboard() {
 export async function createOrderProgress(
   row: OrderProgressInsert,
 ): Promise<OrderProgress> {
+  const tenantId = await getTenantId();
   const { data, error } = await supabase
     .from(TABLE)
-    .insert([row])
+    .insert([
+      {
+        ...row,
+        tenant_id: tenantId,
+      },
+    ])
     .select()
     .single();
   if (error) throw error;

@@ -154,8 +154,11 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
           type="submit"
           disabled={upsertMutation.isPending}
         >
-          upsertMutation.isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' :
-          'Thêm mới
+          {upsertMutation.isPending
+            ? 'Đang lưu...'
+            : isEditing
+              ? 'Cập nhật'
+              : 'Thêm mới'}
         </Button>
       </div>
     </form>

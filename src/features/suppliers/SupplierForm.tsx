@@ -113,7 +113,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
             form="supplier-form"
             disabled={isPending}
           >
-            isPending ? 'Đang lưu…' : isEditing ? 'Cập nhật' : 'Tạo mới
+            {isPending ? 'Đang lưu…' : isEditing ? 'Cập nhật' : 'Tạo mới'}
           </Button>
         </>
       }

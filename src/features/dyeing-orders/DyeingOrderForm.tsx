@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
@@ -121,21 +121,49 @@ export function DyeingOrderForm({
     roll: r,
   }));
 
+  // Danh sach lo vai moc doc lap (lot_number != null)
+  const lotOptions = useMemo(() => {
+    const lots = new Map<string, { count: number; totalKg: number }>();
+    for (const r of availableRolls) {
+      const lot = r.lot_number as string | null;
+      if (!lot) continue;
+      const existing = lots.get(lot);
+      if (existing) {
+        existing.count += 1;
+        existing.totalKg += r.weight_kg ?? 0;
+      } else {
+        lots.set(lot, {
+          count: 1,
+          totalKg: r.weight_kg ?? 0,
+        });
+      }
+    }
+    return Array.from(lots.entries()).map(([lot, info]) => ({
+      value: lot,
+      label: `Lô ${lot} — ${info.count} cuộn, ${info.totalKg.toFixed(1)} kg`,
+    }));
+  }, [availableRolls]);
+
+  const [selectedLot, setSelectedLot] = useState<string>('');
+
   return (
     <AdaptiveSheet
       open={isOpen}
       onClose={onClose}
-      title={isEdit ? 'Sua lenh nhuom' : 'Tao lenh nhuom moi'}
+      title={isEdit ? 'Sửa lệnh nhuộm' : 'Tạo lệnh nhuộm mới'}
       footer={
         <div className="flex justify-end gap-2 w-full">
-          <CancelButton onClick={onClose} label="Huỷ" />
+          <CancelButton onClick={onClose} label="Hủy" />
           <Button
             variant="primary"
             onClick={handleSubmit(onSubmit)}
             disabled={createMutation.isPending || updateMutation.isPending}
           >
-            createMutation.isPending || updateMutation.isPending ? 'Dang luu...'
-            : isEdit ? 'Cap nhat' : 'Tao lenh nhuom
+            {createMutation.isPending || updateMutation.isPending
+              ? 'Đang lưu...'
+              : isEdit
+                ? 'Cập nhật'
+                : 'Tạo lệnh nhuộm'}
           </Button>
         </div>
       }
@@ -144,12 +172,12 @@ export function DyeingOrderForm({
         {/* Basic Info */}
         <section className="bg-surface p-4 rounded-xl border border-border">
           <h4 className="flex items-center gap-2 mb-4 text-sm font-bold uppercase tracking-wider text-muted">
-            <Icon name="Info" size={16} /> Thong tin chung
+            <Icon name="Info" size={16} /> Thông tin chung
           </h4>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-muted uppercase">
-                Ma lenh
+                Mã lệnh
               </label>
               <input
                 {...register('dyeing_order_number')}
@@ -165,13 +193,13 @@ export function DyeingOrderForm({
 
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-muted uppercase">
-                Nha nhuom
+                Nhà nhuộm
               </label>
               <Combobox
                 options={supplierOptions}
                 value={watch('supplier_id')}
                 onChange={(val) => setValue('supplier_id', val)}
-                placeholder="Chon nha nhuom..."
+                placeholder="Chọn nhà nhuộm..."
               />
               {errors.supplier_id && (
                 <span className="text-[10px] text-danger mt-1">
@@ -182,7 +210,7 @@ export function DyeingOrderForm({
 
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-muted uppercase">
-                Ngay gui
+                Ngày gởi
               </label>
               <input
                 type="date"
@@ -193,7 +221,7 @@ export function DyeingOrderForm({
 
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-muted uppercase">
-                Hen tra hang
+                Hẹn trả hàng
               </label>
               <input
                 type="date"
@@ -204,7 +232,7 @@ export function DyeingOrderForm({
 
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-muted uppercase">
-                Don gia (d/kg)
+                Đơn giá (đ/kg)
               </label>
               <input
                 type="number"
@@ -219,7 +247,7 @@ export function DyeingOrderForm({
         <section className="bg-surface p-4 rounded-xl border border-border">
           <div className="flex justify-between items-center mb-4">
             <h4 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted">
-              <Icon name="Layers" size={16} /> Danh sach cay vai (
+              <Icon name="Layers" size={16} /> Danh sách cây vải (
               {fields.length})
             </h4>
             <button
@@ -227,9 +255,52 @@ export function DyeingOrderForm({
               className="btn-secondary py-1.5 text-xs"
               onClick={() => append({ ...emptyDyeingOrderItem })}
             >
-              <Icon name="Plus" size={16} /> Them cay vai
+              <Icon name="Plus" size={16} /> Thêm cây vải
             </button>
           </div>
+
+          {/* Bulk select by lot */}
+          {lotOptions.length > 0 && (
+            <div className="mb-4 p-3 bg-primary/5 rounded-lg border border-primary/15">
+              <label className="text-[10px] font-bold text-muted uppercase block mb-2">
+                Nhập theo lô vải mộc
+              </label>
+              <div className="flex gap-2 items-center">
+                <div className="flex-1">
+                  <Combobox
+                    options={lotOptions}
+                    value={selectedLot}
+                    onChange={(val) => setSelectedLot(val)}
+                    placeholder="Chọn lô — tự động thêm toàn bộ cuộn..."
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="btn-primary py-2 px-3 text-xs whitespace-nowrap flex items-center gap-1"
+                  disabled={!selectedLot}
+                  onClick={() => {
+                    const rolls = availableRolls.filter(
+                      (r) => (r.lot_number as string | null) === selectedLot,
+                    );
+                    for (const r of rolls) {
+                      append({
+                        ...emptyDyeingOrderItem,
+                        raw_fabric_roll_id: r.id,
+                        weight_kg: r.weight_kg ?? 0,
+                        length_m: r.length_m ?? 0,
+                      });
+                    }
+                    setSelectedLot('');
+                  }}
+                >
+                  <Icon name="PackagePlus" size={16} />
+                  {selectedLot
+                    ? `Thêm ${availableRolls.filter((r) => (r.lot_number as string | null) === selectedLot).length} cuộn`
+                    : 'Thêm'}
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col gap-4">
             {fields.map((field, index) => (
@@ -248,7 +319,7 @@ export function DyeingOrderForm({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
                   <div className="flex flex-col gap-1">
                     <label className="text-[10px] font-bold text-muted uppercase">
-                      Cay vai moc
+                      Cây vải mộc
                     </label>
                     <Combobox
                       options={rollOptions}
@@ -267,25 +338,25 @@ export function DyeingOrderForm({
                           );
                         }
                       }}
-                      placeholder="Chon cay vai..."
+                      placeholder="Chọn cây vải..."
                     />
                   </div>
 
                   <div className="flex flex-col gap-1">
                     <label className="text-[10px] font-bold text-muted uppercase">
-                      Mau nhuộm muc tieu
+                      Màu nhuộm mục tiêu
                     </label>
                     <input
                       {...register(`items.${index}.color_name`)}
                       className="field-input h-10"
-                      placeholder="Ten mau..."
+                      placeholder="Tên màu..."
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="flex flex-col gap-1">
                       <label className="text-[10px] font-bold text-muted uppercase">
-                        Trong luong (kg)
+                        Trọng lượng (kg)
                       </label>
                       <input
                         type="number"
@@ -298,7 +369,7 @@ export function DyeingOrderForm({
                     </div>
                     <div className="flex flex-col gap-1">
                       <label className="text-[10px] font-bold text-muted uppercase">
-                        Chieu dai (m)
+                        Chiều dài (m)
                       </label>
                       <input
                         type="number"
@@ -313,7 +384,7 @@ export function DyeingOrderForm({
 
                   <div className="flex flex-col gap-1">
                     <label className="text-[10px] font-bold text-muted uppercase">
-                      Ghi chu item
+                      Ghi chú item
                     </label>
                     <input
                       {...register(`items.${index}.notes`)}
@@ -329,7 +400,7 @@ export function DyeingOrderForm({
           {/* Totals Summary */}
           <div className="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/10 flex justify-between items-center">
             <span className="text-sm font-bold text-muted italic">
-              Tong trong luong:
+              Tổng trọng lượng:
             </span>
             <span className="text-xl font-extrabold text-primary tabular-nums">
               {totalWeight.toFixed(2)} kg
@@ -340,12 +411,12 @@ export function DyeingOrderForm({
         {/* Global Notes */}
         <section className="bg-surface p-4 rounded-xl border border-border">
           <label className="text-xs font-bold text-muted uppercase block mb-2">
-            Ghi chu chung
+            Ghi chú chung
           </label>
           <textarea
             {...register('notes')}
             className="field-input min-h-[80px]"
-            placeholder="Noi dung ghi chu neu co..."
+            placeholder="Nội dung ghi chú nếu có..."
           />
         </section>
       </form>

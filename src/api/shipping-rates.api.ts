@@ -3,6 +3,7 @@ import type {
   ShippingRateFilter,
 } from '@/features/shipping-rates/types';
 import { supabase } from '@/services/supabase/client';
+import { getTenantId } from '@/services/supabase/tenant';
 
 const TABLE = 'shipping_rates';
 
@@ -50,9 +51,15 @@ export async function fetchActiveShippingRates(): Promise<ShippingRate[]> {
 export async function createShippingRate(
   row: ShippingRateRow,
 ): Promise<ShippingRate> {
+  const tenantId = await getTenantId();
   const { data, error } = await supabase
     .from(TABLE)
-    .insert([row])
+    .insert([
+      {
+        ...row,
+        tenant_id: tenantId,
+      },
+    ])
     .select()
     .single();
   if (error) throw error;
