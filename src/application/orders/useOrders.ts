@@ -10,6 +10,8 @@ import {
   cancelOrder,
   completeOrder,
   deleteOrder,
+  updateOrderStatus,
+  fetchOrderAuditLogs,
 } from '@/api/orders.api';
 import {
   calculateOrderTotal,
@@ -141,5 +143,35 @@ export function useDeleteOrder() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
+  });
+}
+/* ── Approve/Reject Order Request ── */
+
+export function useApproveOrderRequest() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => updateOrderStatus(id, 'draft'),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+  });
+}
+
+export function useRejectOrderRequest() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => updateOrderStatus(id, 'cancelled'),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+  });
+}
+
+/* ── Audit Logs ── */
+export function useOrderAuditLogs(orderId: string | undefined) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'audit-logs', orderId],
+    enabled: !!orderId,
+    queryFn: () => fetchOrderAuditLogs(orderId!),
   });
 }

@@ -11,6 +11,8 @@ import { StateMachine } from '@/domain/shared/StateMachine';
 import type { OrderStatus } from '@/schema/order.schema';
 
 export type OrderTransition =
+  | 'approve'
+  | 'reject'
   | 'confirm'
   | 'start_production'
   | 'complete'
@@ -19,6 +21,7 @@ export type OrderTransition =
 export const orderStateMachine = new StateMachine<OrderStatus, OrderTransition>(
   // Allowed transitions per status
   {
+    pending_review: ['approve', 'reject'],
     draft: ['confirm', 'cancel'],
     confirmed: ['start_production', 'cancel'],
     in_progress: ['complete'],
@@ -27,6 +30,8 @@ export const orderStateMachine = new StateMachine<OrderStatus, OrderTransition>(
   },
   // Result of each transition
   {
+    approve: 'draft',
+    reject: 'cancelled',
     confirm: 'confirmed',
     start_production: 'in_progress',
     complete: 'completed',
@@ -35,6 +40,8 @@ export const orderStateMachine = new StateMachine<OrderStatus, OrderTransition>(
 );
 
 export const ORDER_TRANSITION_LABELS: Record<OrderTransition, string> = {
+  approve: 'Duyet yeu cau',
+  reject: 'Tu choi',
   confirm: 'Xac nhan don',
   start_production: 'Bat dau san xuat',
   complete: 'Hoan thanh',
@@ -43,7 +50,7 @@ export const ORDER_TRANSITION_LABELS: Record<OrderTransition, string> = {
 
 /** Guard: don hang co the chinh sua khong */
 export function isOrderEditable(status: OrderStatus): boolean {
-  return status === 'draft';
+  return status === 'draft' || status === 'pending_review';
 }
 
 /** Guard: don hang co the xac nhan khong */

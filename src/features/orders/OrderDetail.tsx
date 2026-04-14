@@ -12,8 +12,11 @@ import {
   useCompleteOrder,
   useConfirmOrder,
   useOrder,
+  useApproveOrderRequest,
+  useRejectOrderRequest,
 } from '@/application/orders';
 
+import { OrderAuditLogViewer } from './OrderAuditLogViewer';
 import { ORDER_STATUS_LABELS } from './orders.module';
 import type { Order, OrderStatus } from './types';
 
@@ -56,6 +59,8 @@ export function OrderDetail({
   const confirmMutation = useConfirmOrder();
   const cancelMutation = useCancelOrder();
   const completeMutation = useCompleteOrder();
+  const approveMutation = useApproveOrderRequest();
+  const rejectMutation = useRejectOrderRequest();
   const { confirm } = useConfirm();
 
   if (isLoading)
@@ -106,6 +111,23 @@ export function OrderDetail({
     const ok = await confirm({ message: 'Hoàn thành đơn hàng?' });
     if (!ok) return;
     completeMutation.mutate(orderId);
+  }
+
+  async function handleApprove() {
+    const ok = await confirm({
+      message: 'Chấp nhận đơn yêu cầu này và chuyển thành đơn nháp?',
+    });
+    if (!ok) return;
+    approveMutation.mutate(orderId);
+  }
+
+  async function handleReject() {
+    const ok = await confirm({
+      message: 'Từ chối đơn yêu cầu này?',
+      variant: 'danger',
+    });
+    if (!ok) return;
+    rejectMutation.mutate(orderId);
   }
 
   return (
@@ -184,6 +206,28 @@ export function OrderDetail({
 
         {/* Actions */}
         <div className="flex flex-wrap gap-2 mb-4">
+          {order.status === 'pending_review' && (
+            <>
+              <Button
+                variant="primary"
+                leftIcon="CheckCircle"
+                onClick={handleApprove}
+                isLoading={approveMutation.isPending}
+              >
+                Duyệt yêu cầu
+              </Button>
+              <Button
+                variant="secondary"
+                leftIcon="X"
+                onClick={handleReject}
+                isLoading={rejectMutation.isPending}
+                className="text-danger"
+              >
+                Từ chối
+              </Button>
+            </>
+          )}
+
           {order.status === 'draft' && (
             <>
               <Button
@@ -342,6 +386,9 @@ export function OrderDetail({
           />
         </div>
       )}
+
+      {/* Lịch sử hoạt động (Audit Logs) */}
+      <OrderAuditLogViewer orderId={orderId} />
     </div>
   );
 }

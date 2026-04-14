@@ -3,6 +3,7 @@ import { z } from 'zod';
 /* ── Types ── */
 
 export type OrderStatus =
+  | 'pending_review'
   | 'draft'
   | 'confirmed'
   | 'in_progress'
@@ -12,6 +13,7 @@ export type OrderStatus =
 /* ── Configs & Labels ── */
 
 export const ORDER_STATUSES = [
+  'pending_review',
   'draft',
   'confirmed',
   'in_progress',
@@ -20,6 +22,7 @@ export const ORDER_STATUSES = [
 ] as const;
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  pending_review: 'Chờ duyệt',
   draft: 'Nháp',
   confirmed: 'Đã xác nhận',
   in_progress: 'Đang xử lý',

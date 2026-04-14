@@ -7,6 +7,7 @@ import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { formatCurrency } from '@/shared/utils/format';
 import { useAccountList } from '@/application/payments';
+import { useEmployees } from '@/application/crm';
 import {
   useCreateExpense,
   useNextExpenseNumber,
@@ -35,6 +36,8 @@ function expenseToFormValues(expense: Expense): ExpenseFormValues {
     expenseDate: expense.expense_date,
     accountId: expense.account_id ?? '',
     supplierId: expense.supplier_id ?? '',
+    employeeId:
+      (expense as Expense & { employee_id?: string | null }).employee_id ?? '',
     description: expense.description,
     referenceNumber: expense.reference_number ?? '',
     notes: expense.notes ?? '',
@@ -45,6 +48,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
   const isEditing = expense !== null;
   const { data: nextNumber } = useNextExpenseNumber();
   const { data: accounts = [] } = useAccountList();
+  const { data: employees = [] } = useEmployees();
   const createMutation = useCreateExpense();
   const updateMutation = useUpdateExpense();
 
@@ -253,6 +257,26 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                 {...register('referenceNumber')}
               />
             </div>
+          </div>
+
+          {/* Nhân viên phụ trách */}
+          <div className="form-field">
+            <label htmlFor="employeeId">Nhân viên phụ trách</label>
+            <Controller
+              name="employeeId"
+              control={control}
+              render={({ field }) => (
+                <Combobox
+                  options={employees.map((e) => ({
+                    value: e.id,
+                    label: `${e.name} (${e.code})`,
+                  }))}
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="— Không chọn —"
+                />
+              )}
+            />
           </div>
 
           {/* Ghi chú */}

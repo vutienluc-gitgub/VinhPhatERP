@@ -183,14 +183,16 @@ describe('ordersSchema', () => {
 });
 
 describe('constants and defaults', () => {
-  it('has 5 order statuses', () => {
-    expect(ORDER_STATUSES).toHaveLength(5);
+  it('has 6 order statuses', () => {
+    expect(ORDER_STATUSES).toHaveLength(6);
+    expect(ORDER_STATUSES).toContain('pending_review');
     expect(ORDER_STATUSES).toContain('draft');
     expect(ORDER_STATUSES).toContain('cancelled');
   });
 
   it('keeps stable status labels', () => {
     expect(ORDER_STATUS_LABELS).toEqual({
+      pending_review: 'Chờ duyệt',
       draft: 'Nháp',
       confirmed: 'Đã xác nhận',
       in_progress: 'Đang xử lý',

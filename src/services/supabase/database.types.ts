@@ -4233,6 +4233,7 @@ export type Database = {
         | 'other';
       inventory_item_type: 'yarn' | 'raw_fabric' | 'finished_fabric';
       order_status:
+        | 'pending_review'
         | 'draft'
         | 'confirmed'
         | 'in_progress'
@@ -4464,6 +4465,7 @@ export const Constants = {
       ],
       inventory_item_type: ['yarn', 'raw_fabric', 'finished_fabric'],
       order_status: [
+        'pending_review',
         'draft',
         'confirmed',
         'in_progress',
