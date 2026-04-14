@@ -15,9 +15,9 @@ import { LotMatrixCard } from '@/shared/components/roll-grid';
 import { AnomalyLegend } from '@/shared/components/roll-grid';
 import { useRawFabricList, useRawFabricStats } from '@/application/inventory';
 import { useRawFabricExport } from '@/application/inventory';
+import { StatWidget } from '@/shared/components/StatWidget';
 
 import { ActionMenu } from './ActionMenu';
-import { KpiCard } from './KpiCard';
 import { FilterBar } from './FilterBar';
 import { ROLL_STATUS_LABELS } from './raw-fabric.module';
 import type {
@@ -166,21 +166,30 @@ export function RawFabricList({
 
       {/* KPI Dashboard */}
       {stats && (
-        <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
-          <KpiCard
-            type="rolls"
-            value={stats.totalRolls}
-            footerLabel="Chỉ tính cuộn đang trong kho (in_stock)"
-            colorVariant="primary"
+        <div
+          className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '1rem',
+          }}
+        >
+          <StatWidget
+            title="Tổng số cuộn"
+            icon="Box"
+            value={stats.totalRolls.toLocaleString()}
+            subtitle="Cuộn đang trong kho"
+            color="primary"
             onClick={() => {
               handleClearFilter();
             }}
           />
-          <KpiCard
-            type="length"
-            value={stats.totalLengthM}
-            footerLabel="Chỉ tính cuộn đang trong kho (in_stock)"
-            colorVariant="success"
+          <StatWidget
+            title="Tổng chiều dài"
+            icon="Ruler"
+            value={`${stats.totalLengthM.toLocaleString()}m`}
+            subtitle="Cuộn đang trong kho"
+            color="success"
             onClick={() => {
               handleFilterChange({
                 ...DEFAULT_FILTER_STATE,
@@ -188,11 +197,17 @@ export function RawFabricList({
               });
             }}
           />
-          <KpiCard
-            type="weight"
-            value={stats.totalWeightKg}
-            footerLabel="Trọng lượng tịnh thực tế"
-            colorVariant="info"
+          <StatWidget
+            title="Trọng lượng tịnh"
+            icon="Scale"
+            value={`${stats.totalWeightKg.toLocaleString()}kg`}
+            subtitle="Trọng lượng tịnh thực tế"
+            color="amber"
+            legend={
+              viewMode === 'grid' && rolls.length > 0 ? (
+                <AnomalyLegend />
+              ) : undefined
+            }
             onClick={() => {
               handleFilterChange({
                 ...DEFAULT_FILTER_STATE,
@@ -211,11 +226,6 @@ export function RawFabricList({
           fabricTypeOptions={fabricTypeOptions}
           resultCount={result?.total}
         />
-        {viewMode === 'grid' && rolls.length > 0 && (
-          <div className="mt-2">
-            <AnomalyLegend />
-          </div>
-        )}
       </div>
 
       {error && (

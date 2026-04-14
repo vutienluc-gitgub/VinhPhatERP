@@ -107,24 +107,42 @@ export function ReportsPage() {
     <div className="page-container p-4">
       {/* Header + filter */}
       <div className="panel-card card-flush mb-6">
-        <div className="card-header-area card-header-premium">
-          <div>
-            <p className="eyebrow-premium">BẢNG ĐIỀU KHIỂN</p>
-            <h3 className="title-premium">Báo cáo CEO</h3>
-            <p className="text-xs text-muted mt-1">
-              Phân tích hoạt động kinh doanh đa chiều theo thời gian cụ thể
-            </p>
+        <div className="card-header-area">
+          <div className="card-header-row">
+            <div>
+              <p className="eyebrow">Bảng điều khiển</p>
+              <h3
+                style={{
+                  margin: '0 0 0.25rem',
+                  fontSize: '1rem',
+                  fontWeight: 700,
+                }}
+              >
+                Báo cáo CEO
+              </h3>
+              <p
+                className="td-muted"
+                style={{
+                  fontSize: '0.82rem',
+                  margin: 0,
+                }}
+              >
+                Phân tích hoạt động kinh doanh đa chiều theo thời gian cụ thể
+              </p>
+            </div>
           </div>
         </div>
 
         <ReportsFilterBar filter={filter} onChange={setFilter} />
 
-        <TabSwitcher
-          tabs={tabsWithBadge}
-          active={activeTab}
-          onChange={setActiveTab}
-          variant="underline"
-        />
+        <div style={{ padding: '0.75rem 1.25rem 1rem' }}>
+          <TabSwitcher
+            tabs={tabsWithBadge}
+            active={activeTab}
+            onChange={setActiveTab}
+            variant="pill"
+          />
+        </div>
       </div>
 
       {/* Content wrapper with spacing */}

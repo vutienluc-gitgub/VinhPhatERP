@@ -62,6 +62,31 @@
   transition: 160ms ease;
 }
 
+.sidebar-collapse-btn {
+  position: absolute;
+  top: 50%;
+  right: -18px; /* Push exactly onto the border boundary between sidebar and content */
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  cursor: pointer;
+  z-index: 50;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+  transition: all 150ms ease;
+}
+
+.sidebar-collapse-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
 .nav-link {
   display: flex;
   align-items: center;
@@ -426,10 +451,49 @@
 @media (min-width: 1100px) {
   .shell-layout {
     display: grid;
-    grid-template-columns: 320px minmax(0, 1fr);
+    grid-template-columns: 260px minmax(0, 1fr);
     gap: 1.25rem;
     width: min(1380px, 100% - 2rem);
     margin: 0 auto;
+    transition: grid-template-columns 250ms ease;
+  }
+
+  .shell-layout.is-collapsed {
+    grid-template-columns: 90px minmax(0, 1fr);
+  }
+
+  .shell-layout.is-collapsed .nav-link-title,
+  .shell-layout.is-collapsed .nav-group-label,
+  .shell-layout.is-collapsed .nav-group-chevron {
+    display: none;
+  }
+
+  /* Make nav links icons centered when collapsed */
+  .shell-layout.is-collapsed .nav-link {
+    justify-content: center;
+    padding: 0.6rem;
+  }
+  .shell-layout.is-collapsed .nav-link-inner {
+    justify-content: center;
+    gap: 0;
+  }
+
+  /* Reset grouped menus when collapsed to always show icons */
+  .shell-layout.is-collapsed .nav-group-toggle {
+    display: none;
+  }
+  .shell-layout.is-collapsed .nav-group-items {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    pointer-events: auto;
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .shell-layout.is-collapsed .nav-group:first-of-type .nav-group-items {
+    padding-top: 0;
+    margin-top: 0;
+    border-top: none;
   }
 
   .sidebar-nav,

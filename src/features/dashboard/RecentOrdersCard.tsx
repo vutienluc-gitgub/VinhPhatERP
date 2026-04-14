@@ -11,10 +11,10 @@ type RecentOrdersCardProps = {
 
 const STATUS_LABELS: Record<string, string> = {
   draft: 'Nháp',
-  confirmed: 'Chờ SX',
+  confirmed: 'Chợ SX',
   in_progress: 'Đang SX',
-  completed: 'Hoàn thành',
-  cancelled: 'Đã huỷ',
+  completed: 'Xong',
+  cancelled: 'Huỷ',
 };
 
 const STATUS_CSS: Record<string, string> = {
@@ -35,64 +35,118 @@ function formatDate(iso: string): string {
 export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
   return (
     <div className="panel-card card-flush">
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">GIAO DỊCH</p>
-          <h3 className="title-premium">Đơn hàng mới</h3>
+      <div className="card-header-area">
+        <div className="card-header-row">
+          <div>
+            <p className="eyebrow">Giao dịch</p>
+            <h3
+              style={{
+                margin: 0,
+                fontSize: '1rem',
+                fontWeight: 700,
+              }}
+            >
+              Đơn hàng mới
+            </h3>
+          </div>
+          <Link to="/orders" className="card-action-link">
+            Tất cả <Icon name="ChevronRight" size={16} />
+          </Link>
         </div>
-        <Link to="/orders" className="card-action-link flex items-center gap-1">
-          Tất cả <Icon name="ChevronRight" size={16} />
-        </Link>
       </div>
 
-      <div className="card-table-section mt-1">
+      <div style={{ paddingTop: '0.5rem' }}>
         {isLoading ? (
-          <div className="p-4 space-y-3">
+          <div
+            style={{
+              padding: '0.75rem 1.25rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+            }}
+          >
             {[1, 2, 3].map((i) => (
-              <div key={i} className="skeleton-block h-10 w-full" />
+              <div
+                key={i}
+                className="skeleton-block"
+                style={{
+                  height: '56px',
+                  borderRadius: '8px',
+                }}
+              />
             ))}
           </div>
         ) : orders.length === 0 ? (
-          <p className="table-empty py-10">Chưa có đơn hàng nào.</p>
+          <p className="task-empty">Chưa có đơn hàng nào.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Mã đơn</th>
-                  <th className="hide-mobile">Khách hàng</th>
-                  <th className="text-right">Tổng tiền</th>
-                  <th className="text-right">Trạng thái</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr key={order.id}>
-                    <td>
-                      <div className="flex flex-col">
-                        <span className="font-bold">{order.order_number}</span>
-                        <span className="text-[11px] text-muted">
-                          {formatDate(order.created_at)}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="td-muted hide-mobile">
-                      {order.customer_name ?? '—'}
-                    </td>
-                    <td className="numeric-cell font-medium">
-                      {formatCurrency(order.total_amount)}đ
-                    </td>
-                    <td className="text-right">
-                      <span
-                        className={`roll-status ${STATUS_CSS[order.status] ?? 'in_stock'}`}
-                      >
-                        {STATUS_LABELS[order.status] ?? order.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="task-list">
+            {orders.map((order) => (
+              <Link
+                key={order.id}
+                to={`/orders/${order.id}`}
+                className="task-item"
+                style={{
+                  flexDirection: 'column',
+                  alignItems: 'stretch',
+                  gap: '0.25rem',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontWeight: 700,
+                      fontSize: '0.875rem',
+                      color: 'var(--primary)',
+                    }}
+                  >
+                    {order.order_number}
+                  </span>
+                  <span
+                    className={`roll-status ${STATUS_CSS[order.status] ?? 'in_stock'}`}
+                  >
+                    {STATUS_LABELS[order.status] ?? order.status}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <span
+                    className="td-muted"
+                    style={{
+                      fontSize: '0.8rem',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {order.customer_name ?? '—'} ·{' '}
+                    {formatDate(order.created_at)}
+                  </span>
+                  <span
+                    style={{
+                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      flexShrink: 0,
+                      fontVariantNumeric: 'tabular-nums',
+                    }}
+                  >
+                    {formatCurrency(order.total_amount)}đ
+                  </span>
+                </div>
+              </Link>
+            ))}
           </div>
         )}
       </div>

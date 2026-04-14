@@ -44,3 +44,6 @@ export { ActionBar } from './ActionBar';
 export type { ActionConfig } from './ActionBar';
 export { ActionMenu } from './ActionMenu';
 export type { ActionMenuItem } from './ActionMenu';
+
+export * from './ChartLegend';
+export * from './StatWidget';
