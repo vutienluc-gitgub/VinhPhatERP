@@ -2,6 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { Turnstile } from '@/shared/components/Turnstile';
+
 import {
   forgotPasswordSchema,
   type ForgotPasswordFormValues,
@@ -16,6 +18,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
   const { forgotPassword } = useAuth();
   const [serverError, setServerError] = useState<string | null>(null);
   const [isSent, setIsSent] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const {
     register,
@@ -27,10 +30,17 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
   });
 
   const onSubmit = async (values: ForgotPasswordFormValues) => {
+    if (!captchaToken) {
+      setServerError('Vui lòng hoàn thành xác thực bảo mật.');
+      return;
+    }
     setServerError(null);
-    const { error } = await forgotPassword(values.email);
+    const { error } = await forgotPassword(values.email, captchaToken);
     if (error) {
-      setServerError(error.message);
+      setServerError(vietnameseAuthError(error.message));
+      // Reset Turnstile on error
+      window.turnstile?.reset();
+      setCaptchaToken(null);
       return;
     }
     setIsSent(true);
@@ -100,10 +110,12 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
 
       {serverError && <p className="form-error-banner">{serverError}</p>}
 
+      <Turnstile onVerify={setCaptchaToken} />
+
       <button
         type="submit"
         className="auth-submit-btn"
-        disabled={isSubmitting}
+        disabled={isSubmitting || !captchaToken}
         style={{ marginTop: '1rem' }}
       >
         {isSubmitting ? 'Đang gửi yêu cầu…' : 'Gửi yêu cầu'}
@@ -124,4 +136,15 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
       </button>
     </form>
   );
+}
+
+function vietnameseAuthError(message: string): string {
+  if (/user not found/i.test(message))
+    return 'Email không tồnate hoặc chưa đăng ký.';
+  if (/captcha/i.test(message))
+    return 'Xác thực bảo mật không thành công. Vui lòng thử lại.';
+  if (/too many requests/i.test(message))
+    return 'Thao tác quá nhanh. Vui lòng thử lại sau vài phút.';
+  if (/network/i.test(message)) return 'Lỗi kết nối mạng.';
+  return message;
 }

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { hasSupabaseEnv } from '@/services/supabase/client';
+import { Turnstile } from '@/shared/components/Turnstile';
 
 import {
   registerSchema,
@@ -19,6 +20,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
   const { signUp } = useAuth();
   const [serverError, setServerError] = useState<string | null>(null);
   const [isDone, setIsDone] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const {
     register,
@@ -30,11 +32,18 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
   });
 
   const onSubmit = async (values: RegisterFormValues) => {
+    if (!captchaToken) {
+      setServerError('Vui lòng hoàn thành xác thực bảo mật.');
+      return;
+    }
     setServerError(null);
-    const { error } = await signUp(values.email, values.password);
+    const { error } = await signUp(values.email, values.password, captchaToken);
 
     if (error) {
       setServerError(vietnameseAuthError(error.message));
+      // Reset Turnstile on error
+      window.turnstile?.reset();
+      setCaptchaToken(null);
       return;
     }
 
@@ -132,7 +141,13 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
       {serverError && <p className="form-error-banner">{serverError}</p>}
 
-      <button type="submit" className="auth-submit-btn" disabled={isSubmitting}>
+      <Turnstile onVerify={setCaptchaToken} />
+
+      <button
+        type="submit"
+        className="auth-submit-btn"
+        disabled={isSubmitting || !captchaToken}
+      >
         {isSubmitting ? 'Đang xử lý…' : 'Đăng ký ngay'}
       </button>
     </form>
@@ -142,6 +157,8 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 function vietnameseAuthError(message: string): string {
   if (/user already registered/i.test(message))
     return 'Email này đã được đăng ký.';
+  if (/captcha/i.test(message))
+    return 'Xác thực bảo mật không thành công. Vui lòng thử lại.';
   if (/network/i.test(message)) return 'Lỗi kết nối mạng.';
   return message;
 }

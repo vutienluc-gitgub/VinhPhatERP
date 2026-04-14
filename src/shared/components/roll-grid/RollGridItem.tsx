@@ -115,8 +115,10 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
     const isCompact = mode === 'view';
 
     const baseClass = cn(
-      'relative flex flex-col justify-center items-center transition-all duration-200',
-      isCompact ? 'p-1' : 'p-2 min-h-[72px] min-w-[64px]',
+      'relative flex flex-col justify-center items-center transition-all duration-200 rounded-[var(--radius-sm)]',
+      isCompact
+        ? 'p-1.5 min-h-[44px] min-w-[44px]'
+        : 'p-3 min-h-[72px] min-w-[64px]',
       mode === 'select' && isSelected ? 'scale-[1.02] z-10' : '',
       mode !== 'input'
         ? 'cursor-pointer hover:border-primary active:scale-95 select-none'

@@ -1,4 +1,4 @@
-﻿import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 
@@ -395,7 +395,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
             Huỷ bỏ
           </Button>
           <Button variant="primary" type="submit" disabled={isSubmitting}>
-            isSubmitting ? 'Đang lưu...' : 'Lưu bản nháp
+            {isSubmitting ? 'Đang lưu...' : 'Lưu bản nháp'}
           </Button>
         </div>
       </form>
