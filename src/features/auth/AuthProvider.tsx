@@ -36,13 +36,17 @@ export interface AuthActions {
   signUp: (
     email: string,
     password: string,
+    captchaToken?: string,
   ) => Promise<{
     data: { user: User | null; session: Session | null };
     error: AuthError | null;
   }>;
   signOut: () => Promise<void>;
   signInWithGoogle: () => Promise<void>;
-  forgotPassword: (email: string) => Promise<{ error: AuthError | null }>;
+  forgotPassword: (
+    email: string,
+    captchaToken?: string,
+  ) => Promise<{ error: AuthError | null }>;
   resetPassword: (password: string) => Promise<{ error: AuthError | null }>;
 }
 
@@ -123,16 +127,22 @@ export function AuthProvider({ children }: PropsWithChildren) {
     [],
   );
 
-  const signUp = useCallback(async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    return {
-      data,
-      error,
-    };
-  }, []);
+  const signUp = useCallback(
+    async (email: string, password: string, captchaToken?: string) => {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          captchaToken,
+        },
+      });
+      return {
+        data,
+        error,
+      };
+    },
+    [],
+  );
 
   const signOut = useCallback(async () => {
     resetTenantCache();
@@ -153,12 +163,16 @@ export function AuthProvider({ children }: PropsWithChildren) {
     if (error) throw error;
   }, []);
 
-  const forgotPassword = useCallback(async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
-    });
-    return { error };
-  }, []);
+  const forgotPassword = useCallback(
+    async (email: string, captchaToken?: string) => {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+        captchaToken,
+      });
+      return { error };
+    },
+    [],
+  );
 
   const resetPassword = useCallback(async (password: string) => {
     const { error } = await supabase.auth.updateUser({

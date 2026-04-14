@@ -307,7 +307,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
           Hủy
         </Button>
         <Button variant="primary" type="submit" disabled={isPending}>
-          isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo mới
+          {isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo mới'}
         </Button>
       </div>
     </form>
