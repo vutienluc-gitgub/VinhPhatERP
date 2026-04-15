@@ -57,7 +57,7 @@ export const dyeingOrderItemSchema = z.object({
 export type DyeingOrderItemFormValues = z.infer<typeof dyeingOrderItemSchema>;
 
 export const dyeingOrderSchema = z.object({
-  dyeing_order_number: z.string().min(3, 'Mã lệnh nhuộm tối thiểu 3 ký tự'),
+  dyeing_order_number: z.string().optional().default(''),
   supplier_id: z.string().min(1, 'Chọn nhà nhuộm'),
   order_date: z.string().min(1, 'Chọn ngày gửi'),
   expected_return_date: z.string().optional().or(z.literal('')),

@@ -13,7 +13,6 @@ import {
   useAvailableFinishedRolls,
   useCreateShipment,
   useDeliveryStaffList,
-  useNextShipmentNumber,
 } from '@/application/shipments';
 import {
   shipmentsDefaultValues,
@@ -63,7 +62,6 @@ export function ShipmentForm({
   orderNumber,
   onClose,
 }: ShipmentFormProps) {
-  const { data: nextNumber } = useNextShipmentNumber();
   const { data: availableRolls = [] } = useAvailableFinishedRolls(orderId);
   const { data: shippingRates = [] } = useActiveShippingRates();
   const { data: deliveryStaff = [] } = useDeliveryStaffList();
@@ -112,11 +110,6 @@ export function ShipmentForm({
       rolls: selected,
     };
   }, [availableRolls, selectedRollIds]);
-
-  // Auto-fill shipment number
-  useEffect(() => {
-    if (nextNumber) setValue('shipmentNumber', nextNumber);
-  }, [nextNumber, setValue]);
 
   // Sync selected rolls → form items
   useEffect(() => {
@@ -206,18 +199,18 @@ export function ShipmentForm({
             }}
           >
             <div className="form-field">
-              <label>
-                Số phiếu xuất <span className="field-required">*</span>
-              </label>
+              <label>Số phiếu xuất</label>
               <input
-                className={`field-input${errors.shipmentNumber ? ' is-error' : ''}`}
-                {...register('shipmentNumber')}
+                className="field-input"
+                value="Tự động"
                 readOnly
-                style={{ background: 'var(--surface-disabled)' }}
+                disabled
+                style={{
+                  background: 'var(--surface-disabled)',
+                  color: 'var(--text-tertiary)',
+                  fontStyle: 'italic',
+                }}
               />
-              {errors.shipmentNumber && (
-                <p className="field-error">{errors.shipmentNumber.message}</p>
-              )}
             </div>
             <div className="form-field">
               <label>

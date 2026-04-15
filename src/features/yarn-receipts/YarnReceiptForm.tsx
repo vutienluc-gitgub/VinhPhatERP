@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
@@ -17,7 +18,6 @@ import type { YarnReceipt } from './types';
 import {
   useActiveSuppliers,
   useCreateYarnReceipt,
-  useNextReceiptNumber,
   useUpdateYarnReceipt,
   useYarnCatalogOptions,
 } from './useYarnReceipts';
@@ -120,7 +120,6 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
   const [showQuickSupplier, setShowQuickSupplier] = useState(false);
   const createMutation = useCreateYarnReceipt();
   const updateMutation = useUpdateYarnReceipt();
-  const { data: nextNumber } = useNextReceiptNumber();
   const { data: suppliers = [] } = useActiveSuppliers();
   const { data: yarnCatalogs = [] } = useYarnCatalogOptions();
   const { data: colorOptions = [] } = useColorOptions();
@@ -148,12 +147,6 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
     reset(isEditing ? receiptToFormValues(receipt) : yarnReceiptsDefaultValues);
   }, [receipt, isEditing, reset]);
 
-  useEffect(() => {
-    if (!isEditing && nextNumber) {
-      setValue('receiptNumber', nextNumber);
-    }
-  }, [isEditing, nextNumber, setValue]);
-
   async function onSubmit(values: YarnReceiptsFormValues) {
     try {
       if (isEditing) {
@@ -165,8 +158,9 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
         await createMutation.mutateAsync(values);
       }
       onClose();
-    } catch {
-      // Error displayed via mutationError below
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Co loi xay ra';
+      toast.error(msg);
     }
   }
 
@@ -190,7 +184,31 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
         </p>
       )}
 
-      <form id="yarn-receipt-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form
+        id="yarn-receipt-form"
+        onSubmit={handleSubmit(onSubmit, (validationErrors) => {
+          // Build first error message for toast
+          const messages: string[] = [];
+          for (const val of Object.values(validationErrors)) {
+            const msg = val && 'message' in val ? val.message : undefined;
+            if (msg) messages.push(String(msg));
+            if (messages.length >= 2) break;
+          }
+          toast.error(messages.join('. ') || 'Vui long kiem tra lai form');
+          // Scroll to first error field
+          const firstKey = Object.keys(validationErrors)[0];
+          if (firstKey) {
+            const el =
+              document.getElementById(firstKey) ??
+              document.querySelector(`[name="${firstKey}"]`);
+            el?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
+          }
+        })}
+        noValidate
+      >
         <div className="form-grid">
           {/* ── Section 1: Thông tin phiếu ── */}
           <FormSection title="Thông tin phiếu" defaultOpen={true}>
@@ -202,21 +220,28 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                 }}
               >
                 <div className="form-field">
-                  <label htmlFor="receiptNumber">
-                    Số phiếu <span className="field-required">*</span>
-                  </label>
-                  <input
-                    id="receiptNumber"
-                    className={`field-input${errors.receiptNumber ? ' is-error' : ''}`}
-                    type="text"
-                    placeholder="VD: NS-001"
-                    readOnly={!isEditing}
-                    {...register('receiptNumber')}
-                  />
-                  {errors.receiptNumber && (
-                    <span className="field-error">
-                      {errors.receiptNumber.message}
-                    </span>
+                  <label htmlFor="receiptNumber">Số phiếu</label>
+                  {isEditing ? (
+                    <input
+                      id="receiptNumber"
+                      className="field-input"
+                      type="text"
+                      readOnly
+                      {...register('receiptNumber')}
+                    />
+                  ) : (
+                    <input
+                      id="receiptNumber"
+                      className="field-input"
+                      type="text"
+                      value="Tự động"
+                      readOnly
+                      disabled
+                      style={{
+                        color: 'var(--text-tertiary)',
+                        fontStyle: 'italic',
+                      }}
+                    />
                   )}
                 </div>
 

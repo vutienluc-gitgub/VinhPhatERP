@@ -98,7 +98,7 @@ export type QuotationItemFormValues = z.infer<typeof quotationItemSchema>;
 
 export const quotationsSchema = z
   .object({
-    quotationNumber: z.string().trim().min(3, 'Số báo giá tối thiểu 3 ký tự'),
+    quotationNumber: z.string().trim().optional().default(''),
     customerId: z.string().uuid('Chọn khách hàng'),
     quotationDate: z.string().trim().min(1, 'Chọn ngày báo giá'),
     validUntil: z.string().trim().optional().or(z.literal('')),

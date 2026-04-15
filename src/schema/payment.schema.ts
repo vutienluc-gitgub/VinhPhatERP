@@ -55,7 +55,7 @@ export const EXPENSE_CATEGORY_LABELS: Record<ExpenseCategory, string> = {
 };
 
 export const paymentsSchema = z.object({
-  paymentNumber: z.string().trim().min(3, 'Nhập số phiếu thu'),
+  paymentNumber: z.string().trim().optional().default(''),
   orderId: z.string().uuid('Chọn đơn hàng'),
   customerId: z.string().uuid('Chọn khách hàng'),
   paymentDate: z.string().trim().min(1, 'Chọn ngày thu'),
@@ -103,7 +103,7 @@ export const paymentsDefaultValues: PaymentsFormValues = {
 };
 
 export const expenseSchema = z.object({
-  expenseNumber: z.string().trim().min(3, 'Nhập số phiếu chi'),
+  expenseNumber: z.string().trim().optional().default(''),
   category: z.enum(EXPENSE_CATEGORIES),
   amount: z.number().positive('Số tiền phải > 0'),
   expenseDate: z.string().trim().min(1, 'Chọn ngày chi'),
