@@ -159,7 +159,8 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
       }
       onClose();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Co loi xay ra';
+      const msg =
+        err instanceof Error ? err.message : 'C\u00f3 l\u1ed7i x\u1ea3y ra';
       toast.error(msg);
     }
   }
@@ -194,7 +195,9 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
             if (msg) messages.push(String(msg));
             if (messages.length >= 2) break;
           }
-          toast.error(messages.join('. ') || 'Vui long kiem tra lai form');
+          toast.error(
+            messages.join('. ') || 'Vui l\u00f2ng ki\u1ec3m tra l\u1ea1i form',
+          );
           // Scroll to first error field
           const firstKey = Object.keys(validationErrors)[0];
           if (firstKey) {

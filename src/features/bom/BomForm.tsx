@@ -138,7 +138,9 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
           <div>
             <p className="eyebrow-premium">KY THUAT</p>
             <h3 className="title-premium">
-              {isEdit ? 'Cap nhat ban nhap' : 'Tao ban nhap dinh muc (BOM)'}
+              {isEdit
+                ? 'C\u1eadp nh\u1eadt b\u1ea3n nh\u00e1p'
+                : 'T\u1ea1o b\u1ea3n nh\u00e1p \u0111\u1ecbnh m\u1ee9c (BOM)'}
             </h3>
           </div>
         </div>
