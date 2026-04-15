@@ -64,19 +64,13 @@ export async function fetchYarnReceiptById(id: string): Promise<YarnReceipt> {
 }
 
 export async function fetchNextReceiptNumber(): Promise<string> {
-  const { data, error } = await supabase
-    .from(HEADER_TABLE)
-    .select('receipt_number')
-    .ilike('receipt_number', 'NS-%')
-    .order('receipt_number', { ascending: false })
-    .limit(1);
-
-  if (error) throw error;
-  if (!data || data.length === 0) return 'NS-001';
-  const last = data[0]?.receipt_number ?? '';
-  const match = last.match(/^NS-(\d+)$/);
-  if (!match?.[1]) return 'NS-001';
-  return `NS-${String(parseInt(match[1], 10) + 1).padStart(3, '0')}`;
+  const { fetchNextDocNumber } = await import('@/api/helpers/next-doc-number');
+  return fetchNextDocNumber({
+    table: 'yarn_receipts',
+    column: 'receipt_number',
+    prefix: 'NS-',
+    pad: 3,
+  });
 }
 
 export async function fetchYarnSuppliers(): Promise<YarnSupplierOption[]> {
@@ -105,7 +99,8 @@ export async function fetchYarnCatalogOptionsForReceipt(): Promise<
 }
 
 export type YarnReceiptCreateInput = {
-  receiptNumber: string;
+  /** Only used for updates; create auto-generates via RPC */
+  receiptNumber?: string;
   supplierId: string;
   receiptDate: string;
   notes: string | null;
@@ -131,7 +126,6 @@ export async function createYarnReceiptFull(
   );
 
   const headerInsert = {
-    receipt_number: input.receiptNumber.trim(),
     supplier_id: input.supplierId,
     receipt_date: input.receiptDate,
     notes: input.notes,
@@ -172,7 +166,7 @@ export async function updateYarnReceiptFull(
   );
 
   const headerUpdate = {
-    receipt_number: input.receiptNumber.trim(),
+    receipt_number: input.receiptNumber?.trim() ?? '',
     supplier_id: input.supplierId,
     receipt_date: input.receiptDate,
     notes: input.notes || null,

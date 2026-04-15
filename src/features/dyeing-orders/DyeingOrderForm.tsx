@@ -21,7 +21,6 @@ import {
   useCreateDyeingOrder,
   useDyeingSuppliers,
   useUpdateDyeingOrder,
-  useNextDyeingOrderNumber,
 } from '@/application/production';
 
 import type { DyeingOrder } from './types';
@@ -40,7 +39,6 @@ export function DyeingOrderForm({
   const isEdit = !!editingOrder;
   const createMutation = useCreateDyeingOrder();
   const updateMutation = useUpdateDyeingOrder();
-  const { data: nextNumber } = useNextDyeingOrderNumber();
   const { data: suppliers = [] } = useDyeingSuppliers();
   const { data: availableRolls = [] } = useQuery({
     queryKey: ['raw-fabric', 'available'],
@@ -90,11 +88,8 @@ export function DyeingOrderForm({
       });
     } else {
       reset(dyeingOrderDefaults);
-      if (nextNumber && !isEdit) {
-        setValue('dyeing_order_number', nextNumber);
-      }
     }
-  }, [editingOrder, nextNumber, reset, setValue, isEdit]);
+  }, [editingOrder, reset, isEdit]);
 
   const onSubmit = (values: DyeingOrderFormValues) => {
     if (isEdit && editingOrder) {
@@ -179,15 +174,23 @@ export function DyeingOrderForm({
               <label className="text-xs font-bold text-muted uppercase">
                 Mã lệnh
               </label>
-              <input
-                {...register('dyeing_order_number')}
-                className="field-input font-bold text-primary"
-                placeholder="VD: DN2404-001"
-              />
-              {errors.dyeing_order_number && (
-                <span className="text-[10px] text-danger mt-1">
-                  {errors.dyeing_order_number.message}
-                </span>
+              {isEdit ? (
+                <input
+                  {...register('dyeing_order_number')}
+                  className="field-input font-bold text-primary"
+                  readOnly
+                />
+              ) : (
+                <input
+                  className="field-input"
+                  value="Tự động"
+                  readOnly
+                  disabled
+                  style={{
+                    color: 'var(--text-tertiary)',
+                    fontStyle: 'italic',
+                  }}
+                />
               )}
             </div>
 

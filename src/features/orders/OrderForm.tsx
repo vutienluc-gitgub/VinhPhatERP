@@ -21,7 +21,7 @@ import {
   type CreateOrderError,
   type CreateOrderInput,
 } from '@/application/orders';
-import { useNextOrderNumber, useUpdateOrder } from '@/application/orders';
+import { useUpdateOrder } from '@/application/orders';
 
 import { CreditOverrideDialog } from './CreditOverrideDialog';
 import {
@@ -164,7 +164,6 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
 
   const createMutationV2 = useCreateOrderV2();
   const updateMutation = useUpdateOrder();
-  const { data: nextNumber } = useNextOrderNumber();
   const { data: customers = [] } = useActiveCustomers();
   const { data: fabricOptions = [] } = useFabricCatalogOptions();
   const { data: colorOptions = [] } = useColorOptions();
@@ -204,12 +203,6 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
       setLastOrderId(currentId);
     }
   }, [order, isEditing, reset, lastOrderId]);
-
-  useEffect(() => {
-    if (!isEditing && nextNumber) {
-      setValue('orderNumber', nextNumber);
-    }
-  }, [isEditing, nextNumber, setValue]);
 
   async function handleNextStep(e: React.MouseEvent) {
     e.preventDefault();
@@ -324,21 +317,30 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                   }}
                 >
                   <div className="form-field">
-                    <label htmlFor="orderNumber">
-                      Số đơn hàng <span className="field-required">*</span>
-                    </label>
-                    <input
-                      id="orderNumber"
-                      className={`field-input${errors.orderNumber ? ' is-error' : ''}`}
-                      type="text"
-                      readOnly
-                      style={{ background: 'var(--surface)' }}
-                      {...register('orderNumber')}
-                    />
-                    {errors.orderNumber && (
-                      <span className="field-error">
-                        {errors.orderNumber.message}
-                      </span>
+                    <label htmlFor="orderNumber">Số đơn hàng</label>
+                    {isEditing ? (
+                      <input
+                        id="orderNumber"
+                        className="field-input"
+                        type="text"
+                        readOnly
+                        style={{ background: 'var(--surface)' }}
+                        {...register('orderNumber')}
+                      />
+                    ) : (
+                      <input
+                        id="orderNumber"
+                        className="field-input"
+                        type="text"
+                        value="Tự động"
+                        readOnly
+                        disabled
+                        style={{
+                          background: 'var(--surface-disabled)',
+                          color: 'var(--text-tertiary)',
+                          fontStyle: 'italic',
+                        }}
+                      />
                     )}
                   </div>
 

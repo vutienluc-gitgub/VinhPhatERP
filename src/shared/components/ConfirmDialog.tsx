@@ -95,7 +95,7 @@ export function ConfirmProvider({ children }: PropsWithChildren) {
           <>
             {!options.isAlert && (
               <Button variant="secondary" type="button" onClick={handleCancel}>
-                options.cancelLabel ?? 'Huỷ
+                {options.cancelLabel ?? 'Huỷ'}
               </Button>
             )}
             <button

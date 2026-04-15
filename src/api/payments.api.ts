@@ -67,36 +67,23 @@ export async function fetchPaymentsByOrder(
 }
 
 export async function fetchNextPaymentNumber(): Promise<string> {
-  const now = new Date();
-  const yy = String(now.getFullYear()).slice(-2);
-  const mm = String(now.getMonth() + 1).padStart(2, '0');
-  const prefix = `TT${yy}${mm}-`;
-
-  const { data, error } = await supabase
-    .from(PAYMENTS_TABLE)
-    .select('payment_number')
-    .ilike('payment_number', `${prefix}%`)
-    .order('payment_number', { ascending: false })
-    .limit(1);
-
-  if (error) throw error;
-  if (!data || data.length === 0) return `${prefix}0001`;
-  const last = data[0]?.payment_number ?? '';
-  const match = last.match(/(\d{4})$/);
-  if (!match?.[1]) return `${prefix}0001`;
-  return `${prefix}${String(parseInt(match[1], 10) + 1).padStart(4, '0')}`;
+  const { fetchNextDocNumber, monthlyPrefix } =
+    await import('@/api/helpers/next-doc-number');
+  return fetchNextDocNumber({
+    table: 'payments',
+    column: 'payment_number',
+    prefix: monthlyPrefix('TT'),
+  });
 }
 
 export async function createPaymentRecord(
   row: PaymentDbPayload,
 ): Promise<Payment> {
-  const { data, error } = await supabase
-    .from(PAYMENTS_TABLE)
-    .insert([row])
-    .select()
-    .single();
+  const { data, error } = await untypedDb.rpc('atomic_create_payment', {
+    p_data: row,
+  });
   if (error) throw error;
-  return data as Payment;
+  return data as unknown as Payment;
 }
 
 export async function deletePaymentRecord(id: string): Promise<void> {
@@ -215,38 +202,21 @@ export async function fetchExpensesPaginated(
 }
 
 export async function fetchNextExpenseNumber(): Promise<string> {
-  const now = new Date();
-  const yy = String(now.getFullYear()).slice(-2);
-  const mm = String(now.getMonth() + 1).padStart(2, '0');
-  const prefix = `PC${yy}${mm}-`;
-
-  const { data, error } = await supabase
-    .from(EXPENSES_TABLE)
-    .select('expense_number')
-    .ilike('expense_number', `${prefix}%`)
-    .order('expense_number', { ascending: false })
-    .limit(1);
-
-  if (error) throw error;
-  if (!data || data.length === 0) return `${prefix}0001`;
-  const last = data[0]?.expense_number ?? '';
-  const match = last.match(/(\d{4})$/);
-  if (!match?.[1]) return `${prefix}0001`;
-  return `${prefix}${String(parseInt(match[1], 10) + 1).padStart(4, '0')}`;
+  const { fetchNextDocNumber, monthlyPrefix } =
+    await import('@/api/helpers/next-doc-number');
+  return fetchNextDocNumber({
+    table: 'expenses',
+    column: 'expense_number',
+    prefix: monthlyPrefix('PC'),
+  });
 }
 
 export async function createExpense(row: ExpenseDbPayload): Promise<Expense> {
-  const tenantId = await getTenantId();
-  const { data, error } = await untypedDb
-    .from('expenses')
-    .insert({
-      ...row,
-      tenant_id: tenantId,
-    })
-    .select()
-    .single();
+  const { data, error } = await untypedDb.rpc('atomic_create_expense', {
+    p_data: row,
+  });
   if (error) throw error;
-  return data as Expense;
+  return data as unknown as Expense;
 }
 
 export async function updateExpense(

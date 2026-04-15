@@ -14,7 +14,6 @@ import {
 import { formatCurrency } from '@/shared/utils/format';
 import {
   useCreateQuotation,
-  useNextQuotationNumber,
   useUpdateQuotation,
 } from '@/application/quotations';
 
@@ -202,7 +201,6 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
   const isEditing = quotation !== null;
   const createMutation = useCreateQuotation();
   const updateMutation = useUpdateQuotation();
-  const { data: nextNumber } = useNextQuotationNumber();
   const { data: customers = [] } = useActiveCustomers();
   const { data: fabricOptions = [] } = useFabricCatalogOptions();
   const { data: colorOptions = [] } = useColorOptions();
@@ -231,12 +229,6 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
       isEditing ? quotationToFormValues(quotation) : quotationsDefaultValues,
     );
   }, [quotation, isEditing, reset]);
-
-  useEffect(() => {
-    if (!isEditing && nextNumber) {
-      setValue('quotationNumber', nextNumber);
-    }
-  }, [isEditing, nextNumber, setValue]);
 
   async function onSubmit(values: QuotationsFormValues) {
     try {
@@ -270,20 +262,28 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
         {/* Row 1: So BG + Ngay BG */}
         <div className="form-grid sm:grid-cols-2">
           <div className="form-field">
-            <label htmlFor="quotationNumber">
-              Số báo giá <span className="field-required">*</span>
-            </label>
-            <input
-              id="quotationNumber"
-              className={`field-input${errors.quotationNumber ? ' is-error' : ''}`}
-              type="text"
-              readOnly={!isEditing}
-              {...register('quotationNumber')}
-            />
-            {errors.quotationNumber && (
-              <span className="field-error">
-                {errors.quotationNumber.message}
-              </span>
+            <label htmlFor="quotationNumber">Số báo giá</label>
+            {isEditing ? (
+              <input
+                id="quotationNumber"
+                className="field-input"
+                type="text"
+                readOnly
+                {...register('quotationNumber')}
+              />
+            ) : (
+              <input
+                id="quotationNumber"
+                className="field-input"
+                type="text"
+                value="Tự động"
+                readOnly
+                disabled
+                style={{
+                  color: 'var(--text-tertiary)',
+                  fontStyle: 'italic',
+                }}
+              />
             )}
           </div>
 

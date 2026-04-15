@@ -9,11 +9,7 @@ import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { formatCurrency } from '@/shared/utils/format';
 import { useAccountList } from '@/application/payments';
 import { useEmployees } from '@/application/crm';
-import {
-  useCreateExpense,
-  useNextExpenseNumber,
-  useUpdateExpense,
-} from '@/application/payments';
+import { useCreateExpense, useUpdateExpense } from '@/application/payments';
 
 import {
   EXPENSE_CATEGORIES,
@@ -47,7 +43,6 @@ function expenseToFormValues(expense: Expense): ExpenseFormValues {
 
 export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
   const isEditing = expense !== null;
-  const { data: nextNumber } = useNextExpenseNumber();
   const { data: accounts = [] } = useAccountList();
   const { data: employees = [] } = useEmployees();
   const createMutation = useCreateExpense();
@@ -58,7 +53,6 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
     handleSubmit,
     control,
     reset,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseSchema),
@@ -70,12 +64,6 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
   useEffect(() => {
     reset(isEditing ? expenseToFormValues(expense) : expenseDefaultValues);
   }, [expense, isEditing, reset]);
-
-  useEffect(() => {
-    if (!isEditing && nextNumber) {
-      setValue('expenseNumber', nextNumber);
-    }
-  }, [isEditing, nextNumber, setValue]);
 
   async function onSubmit(values: ExpenseFormValues) {
     try {
@@ -123,23 +111,29 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
             }}
           >
             <div className="form-field">
-              <label htmlFor="expenseNumber">
-                Số phiếu chi <span className="field-required">*</span>
-              </label>
-              <input
-                id="expenseNumber"
-                className={`field-input${errors.expenseNumber ? ' is-error' : ''}`}
-                type="text"
-                readOnly={!isEditing}
-                style={
-                  !isEditing ? { background: 'var(--surface)' } : undefined
-                }
-                {...register('expenseNumber')}
-              />
-              {errors.expenseNumber && (
-                <span className="field-error">
-                  {errors.expenseNumber.message}
-                </span>
+              <label htmlFor="expenseNumber">Số phiếu chi</label>
+              {isEditing ? (
+                <input
+                  id="expenseNumber"
+                  className="field-input"
+                  type="text"
+                  readOnly
+                  {...register('expenseNumber')}
+                />
+              ) : (
+                <input
+                  id="expenseNumber"
+                  className="field-input"
+                  type="text"
+                  value="Tự động"
+                  readOnly
+                  disabled
+                  style={{
+                    background: 'var(--surface-disabled)',
+                    color: 'var(--text-tertiary)',
+                    fontStyle: 'italic',
+                  }}
+                />
               )}
             </div>
             <div className="form-field">

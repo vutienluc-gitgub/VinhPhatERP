@@ -29,7 +29,7 @@ export const yarnReceiptItemSchema = z.object({
 export type YarnReceiptItemFormValues = z.infer<typeof yarnReceiptItemSchema>;
 
 export const yarnReceiptsSchema = z.object({
-  receiptNumber: z.string().trim().min(3, 'Số phiếu tối thiểu 3 ký tự'),
+  receiptNumber: z.string().trim().optional().default(''),
   supplierId: z.string().uuid('Chọn nhà cung cấp'),
   receiptDate: z.string().trim().min(1, 'Chọn ngày nhập'),
   notes: z.string().trim().max(500).optional().or(z.literal('')),

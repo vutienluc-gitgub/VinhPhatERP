@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
@@ -8,7 +8,7 @@ import { CancelButton } from '@/shared/components';
 import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { createPaymentsSchema } from '@/schema/payment.schema';
 import { formatCurrency } from '@/shared/utils/format';
-import { useCreatePayment, useNextPaymentNumber } from '@/application/payments';
+import { useCreatePayment } from '@/application/payments';
 
 import {
   PAYMENT_METHOD_LABELS,
@@ -32,7 +32,6 @@ export function PaymentForm({
   balanceDue,
   onClose,
 }: PaymentFormProps) {
-  const { data: nextNumber } = useNextPaymentNumber();
   const createMutation = useCreatePayment();
 
   const schema = useMemo(() => createPaymentsSchema(balanceDue), [balanceDue]);
@@ -42,7 +41,6 @@ export function PaymentForm({
     handleSubmit,
     control,
     reset,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<PaymentsFormValues>({
     resolver: zodResolver(schema),
@@ -53,10 +51,6 @@ export function PaymentForm({
       amount: balanceDue > 0 ? balanceDue : 0,
     },
   });
-
-  useEffect(() => {
-    if (nextNumber) setValue('paymentNumber', nextNumber);
-  }, [nextNumber, setValue]);
 
   async function onSubmit(values: PaymentsFormValues) {
     await createMutation.mutateAsync(values);
@@ -137,18 +131,18 @@ export function PaymentForm({
             }}
           >
             <div className="form-field">
-              <label>
-                Số phiếu thu <span className="field-required">*</span>
-              </label>
+              <label>Số phiếu thu</label>
               <input
-                className={`field-input${errors.paymentNumber ? ' is-error' : ''}`}
-                {...register('paymentNumber')}
+                className="field-input"
+                value="Tự động"
                 readOnly
-                style={{ background: 'var(--surface-disabled)' }}
+                disabled
+                style={{
+                  background: 'var(--surface-disabled)',
+                  color: 'var(--text-tertiary)',
+                  fontStyle: 'italic',
+                }}
               />
-              {errors.paymentNumber && (
-                <p className="field-error">{errors.paymentNumber.message}</p>
-              )}
             </div>
             <div className="form-field">
               <label>

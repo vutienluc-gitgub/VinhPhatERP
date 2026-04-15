@@ -91,29 +91,13 @@ export async function fetchOrderById(id: string): Promise<Order> {
 /* ── Generate next order number ── */
 
 export async function fetchNextOrderNumber(): Promise<string> {
-  const now = new Date();
-  const yy = String(now.getFullYear()).slice(-2);
-  const mm = String(now.getMonth() + 1).padStart(2, '0');
-  const prefix = `DH${yy}${mm}-`;
-
-  const { data, error } = await supabase
-    .from(HEADER_TABLE)
-    .select('order_number')
-    .ilike('order_number', `${prefix}%`)
-    .order('order_number', { ascending: false })
-    .limit(1);
-
-  if (error) throw error;
-  if (!data || data.length === 0) return `${prefix}0001`;
-
-  const first = data[0];
-  if (!first) return `${prefix}0001`;
-  const last = first.order_number;
-  const match = last.match(/(\d{4})$/);
-  if (!match?.[1]) return `${prefix}0001`;
-
-  const nextNum = parseInt(match[1], 10) + 1;
-  return `${prefix}${String(nextNum).padStart(4, '0')}`;
+  const { fetchNextDocNumber, monthlyPrefix } =
+    await import('@/api/helpers/next-doc-number');
+  return fetchNextDocNumber({
+    table: 'orders',
+    column: 'order_number',
+    prefix: monthlyPrefix('DH'),
+  });
 }
 
 /* ── Create order (header + items) ── */

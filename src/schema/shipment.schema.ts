@@ -30,7 +30,7 @@ export const emptyShipmentItem: ShipmentItemFormValues = {
 };
 
 export const shipmentsSchema = z.object({
-  shipmentNumber: z.string().trim().min(3, 'Nhập số phiếu xuất'),
+  shipmentNumber: z.string().trim().optional().default(''),
   orderId: z.string().uuid('Chọn đơn hàng'),
   customerId: z.string().uuid('Chọn khách hàng'),
   shipmentDate: z.string().trim().min(1, 'Chọn ngày giao'),

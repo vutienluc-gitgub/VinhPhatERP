@@ -59,24 +59,13 @@ export async function fetchDyeingOrderById(id: string): Promise<DyeingOrder> {
 /* ── Next number ── */
 
 export async function fetchNextDyeingOrderNumber(): Promise<string> {
-  const now = new Date();
-  const yy = String(now.getFullYear()).slice(-2);
-  const mm = String(now.getMonth() + 1).padStart(2, '0');
-  const prefix = `DN${yy}${mm}-`;
-
-  const { data, error } = await db
-    .from(TABLE)
-    .select('dyeing_order_number')
-    .ilike('dyeing_order_number', `${prefix}%`)
-    .order('dyeing_order_number', { ascending: false })
-    .limit(1);
-
-  if (error) throw error;
-  if (!data || data.length === 0) return `${prefix}0001`;
-  const last = data[0]?.dyeing_order_number ?? '';
-  const match = last.match(/(\d{4})$/);
-  if (!match?.[1]) return `${prefix}0001`;
-  return `${prefix}${String(parseInt(match[1], 10) + 1).padStart(4, '0')}`;
+  const { fetchNextDocNumber, monthlyPrefix } =
+    await import('@/api/helpers/next-doc-number');
+  return fetchNextDocNumber({
+    table: 'dyeing_orders',
+    column: 'dyeing_order_number',
+    prefix: monthlyPrefix('DN'),
+  });
 }
 
 /* ── Fetch dyeing suppliers ── */
