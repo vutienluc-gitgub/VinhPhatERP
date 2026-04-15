@@ -126,7 +126,7 @@ export async function fetchShipmentsPaginated(
   let query = supabase
     .from(HEADER_TABLE)
     .select(
-      '*, orders(order_number), customers(name, code), delivery_staff:profiles!shipments_delivery_staff_id_fkey(full_name, phone)',
+      '*, orders(order_number), customers(name, code, address), delivery_staff:profiles!shipments_delivery_staff_id_fkey(full_name, phone)',
       { count: 'exact' },
     )
     .order('shipment_date', { ascending: false })

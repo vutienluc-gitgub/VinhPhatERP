@@ -11,7 +11,7 @@ export type ShipmentItemInsert = TableInsert<'shipment_items'>;
 
 export type Shipment = TableRow<'shipments'> & {
   orders?: { order_number: string } | null;
-  customers?: { name: string; code: string } | null;
+  customers?: { name: string; code: string; address?: string | null } | null;
   shipment_items?: ShipmentItem[];
   delivery_staff?: { full_name: string; phone: string | null } | null;
 };
