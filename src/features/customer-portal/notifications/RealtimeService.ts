@@ -9,6 +9,7 @@ import type {
   OrderRow,
   OrderProgressRow,
   ShipmentRow,
+  QuotationRow,
 } from './types';
 import {
   createOrderNotification,
@@ -16,6 +17,8 @@ import {
   createProgressNotification,
   createProgressDataEvent,
   createShipmentNotification,
+  createQuotationNotification,
+  createQuotationDataEvent,
   processPayload,
 } from './notificationFactory';
 
@@ -208,7 +211,41 @@ export function start(config: RealtimeServiceConfig): void {
       if (status === 'CHANNEL_ERROR') handleChannelError();
     });
 
-  channels = [ordersChannel, progressChannel, shipmentsChannel];
+  // Channel 4: quotations — INSERT + UPDATE, filter by customer_id
+  const quotationsChannel = supabase
+    .channel(`portal-quotations-${customerId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*', // Listen to all status changes (draft -> sent, confirmed, etc.)
+        schema: 'public',
+        table: 'quotations',
+        filter: `customer_id=eq.${customerId}`,
+      },
+      (payload) => {
+        const safe = processPayload(
+          payload as unknown as RealtimePayload<QuotationRow>,
+          customerId,
+        );
+        if (!safe) return;
+
+        const notification = createQuotationNotification(safe);
+        if (notification) onNotification(notification);
+
+        const dataEvent = createQuotationDataEvent(safe);
+        if (dataEvent) onDataUpdate(dataEvent);
+      },
+    )
+    .subscribe((status) => {
+      if (status === 'CHANNEL_ERROR') handleChannelError();
+    });
+
+  channels = [
+    ordersChannel,
+    progressChannel,
+    shipmentsChannel,
+    quotationsChannel,
+  ];
 }
 
 export function stop(): void {

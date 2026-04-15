@@ -41,6 +41,16 @@ const PortalFabricCatalogPage = lazy(() =>
     default: m.PortalFabricCatalogPage,
   })),
 );
+const PortalQuotationsPage = lazy(() =>
+  import('./quotations/PortalQuotationsPage').then((m) => ({
+    default: m.PortalQuotationsPage,
+  })),
+);
+const PortalQuotationDetail = lazy(() =>
+  import('./quotations/PortalQuotationDetail').then((m) => ({
+    default: m.PortalQuotationDetail,
+  })),
+);
 
 export function CustomerPortalRouter() {
   return (
@@ -57,6 +67,8 @@ export function CustomerPortalRouter() {
           <Route path="shipments" element={<PortalShipmentsPage />} />
           <Route path="shipments/:id" element={<PortalShipmentDetail />} />
           <Route path="fabric-catalog" element={<PortalFabricCatalogPage />} />
+          <Route path="quotations" element={<PortalQuotationsPage />} />
+          <Route path="quotations/:id" element={<PortalQuotationDetail />} />
         </Route>
       </Routes>
     </Suspense>

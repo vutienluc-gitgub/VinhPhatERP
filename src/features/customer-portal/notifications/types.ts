@@ -3,9 +3,11 @@ import type {
   ProductionStage,
   StageStatus,
   PortalShipment,
+  PortalQuotation,
+  QuotationStatus,
 } from '@/features/customer-portal/types';
 
-export type { OrderStatus, ProductionStage, StageStatus };
+export type { OrderStatus, ProductionStage, StageStatus, QuotationStatus };
 
 // ---------------------------------------------------------------------------
 // NotificationItem
@@ -13,11 +15,12 @@ export type { OrderStatus, ProductionStage, StageStatus };
 
 export interface NotificationItem {
   id: string;
-  type: 'order_status' | 'order_progress' | 'shipment';
+  type: 'order_status' | 'order_progress' | 'shipment' | 'quotation';
   title: string;
   body: string;
   orderId?: string;
   shipmentId?: string;
+  quotationId?: string;
   createdAt: string; // ISO 8601
   isRead: boolean;
 }
@@ -34,7 +37,8 @@ export type PortalDataEvent =
       orderId: string;
       newStatus: StageStatus;
     }
-  | { type: 'shipment_created'; shipment: PortalShipment };
+  | { type: 'shipment_created'; shipment: PortalShipment }
+  | { type: 'quotation_received'; quotation: PortalQuotation };
 
 // ---------------------------------------------------------------------------
 // Supabase Realtime payload shape
@@ -76,4 +80,14 @@ export interface ShipmentRow {
   status: string;
   delivery_address: string | null;
   shipment_date: string;
+}
+
+export interface QuotationRow {
+  id: string;
+  quotation_number: string;
+  customer_id: string;
+  status: QuotationStatus;
+  total_amount: number;
+  quotation_date: string;
+  valid_until: string | null;
 }

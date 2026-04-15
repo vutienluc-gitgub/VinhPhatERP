@@ -12,6 +12,7 @@ const TYPE_ICON: Record<NotificationItem['type'], string> = {
   order_status: '📦',
   order_progress: '🏭',
   shipment: '🚚',
+  quotation: '📄',
 };
 
 export function NotificationCenter({ onClose }: Props) {
@@ -40,6 +41,8 @@ export function NotificationCenter({ onClose }: Props) {
       navigate(`/portal/orders/${item.orderId}`);
     } else if (item.shipmentId) {
       navigate(`/portal/shipments/${item.shipmentId}`);
+    } else if (item.quotationId) {
+      navigate(`/portal/quotations/${item.quotationId}`);
     }
     onClose();
   }
@@ -124,7 +127,10 @@ export function NotificationCenter({ onClose }: Props) {
               style={{
                 padding: '0.75rem 1rem',
                 borderBottom: '1px solid rgba(16,35,61,0.05)',
-                cursor: item.orderId || item.shipmentId ? 'pointer' : 'default',
+                cursor:
+                  item.orderId || item.shipmentId || item.quotationId
+                    ? 'pointer'
+                    : 'default',
                 background: item.isRead
                   ? 'transparent'
                   : 'rgba(11,107,203,0.04)',
