@@ -70,6 +70,10 @@ function PortalLayoutInner() {
             label: 'Danh mục sản phẩm',
           },
           {
+            to: '/portal/quotations',
+            label: 'Báo giá',
+          },
+          {
             to: '/portal/orders',
             label: 'Đơn hàng',
           },

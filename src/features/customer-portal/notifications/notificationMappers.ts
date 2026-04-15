@@ -1,4 +1,9 @@
-import type { OrderStatus, ProductionStage, StageStatus } from './types';
+import type {
+  OrderStatus,
+  ProductionStage,
+  StageStatus,
+  QuotationStatus,
+} from './types';
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   pending_review: 'Chờ duyệt',
@@ -26,6 +31,15 @@ export const STAGE_STATUS_LABELS: Record<StageStatus, string> = {
   skipped: 'Bỏ qua',
 };
 
+export const QUOTATION_STATUS_LABELS: Record<QuotationStatus, string> = {
+  draft: 'Nháp',
+  sent: 'Đã gửi',
+  confirmed: 'Đã duyệt',
+  rejected: 'Từ chối',
+  expired: 'Hết hạn',
+  converted: 'Đã chuyển đơn hàng',
+};
+
 export function mapOrderStatus(status: OrderStatus): string {
   return ORDER_STATUS_LABELS[status] ?? status;
 }
@@ -36,4 +50,8 @@ export function mapProductionStage(stage: ProductionStage): string {
 
 export function mapStageStatus(status: StageStatus): string {
   return STAGE_STATUS_LABELS[status] ?? status;
+}
+
+export function mapQuotationStatus(status: QuotationStatus): string {
+  return QUOTATION_STATUS_LABELS[status] ?? status;
 }

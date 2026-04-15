@@ -6,6 +6,8 @@ export type ShipmentStatus = Database['public']['Enums']['shipment_status'];
 export type ProductionStage = Database['public']['Enums']['production_stage'];
 export type StageStatus = Database['public']['Enums']['stage_status'];
 
+export type QuotationStatus = Database['public']['Enums']['quotation_status'];
+
 export interface PortalOrderItem {
   id: string;
   fabric_name: string;
@@ -25,6 +27,29 @@ export interface PortalOrder {
   status: OrderStatus;
   customer_id: string;
   items?: PortalOrderItem[];
+}
+
+export interface PortalQuotationItem {
+  id: string;
+  fabric_type: string;
+  color_name: string | null;
+  quantity: number;
+  unit: string;
+  unit_price: number;
+  amount: number;
+  notes: string | null;
+}
+
+export interface PortalQuotation {
+  id: string;
+  quotation_number: string;
+  quotation_date: string;
+  valid_until: string | null;
+  total_amount: number;
+  status: QuotationStatus;
+  customer_id: string;
+  items?: PortalQuotationItem[];
+  notes: string | null;
 }
 
 export interface PortalProgressStage {

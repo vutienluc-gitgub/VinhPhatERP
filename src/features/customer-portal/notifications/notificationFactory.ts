@@ -5,11 +5,13 @@ import type {
   OrderRow,
   OrderProgressRow,
   ShipmentRow,
+  QuotationRow,
 } from './types';
 import {
   mapOrderStatus,
   mapProductionStage,
   mapStageStatus,
+  mapQuotationStatus,
 } from './notificationMappers';
 
 function makeId(): string {
@@ -110,6 +112,63 @@ export function createShipmentNotification(
     shipmentId: newRow.id,
     createdAt: new Date().toISOString(),
     isRead: false,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Quotation events
+// ---------------------------------------------------------------------------
+
+export function createQuotationNotification(
+  payload: RealtimePayload<QuotationRow>,
+): NotificationItem | null {
+  const { new: newRow, old, eventType } = payload;
+
+  // Only notify when sent or status changed to confirmed/rejected/etc.
+  if (eventType === 'UPDATE' && newRow.status === old.status) return null;
+
+  // Don't notify for draft
+  if (newRow.status === 'draft') return null;
+
+  let title = `Báo giá ${newRow.quotation_number}`;
+  let body = `Trạng thái: ${mapQuotationStatus(newRow.status)}`;
+
+  if (
+    eventType === 'INSERT' ||
+    (old?.status === 'draft' && newRow.status === 'sent')
+  ) {
+    title = `Báo giá mới: ${newRow.quotation_number}`;
+    body = `Bạn nhận được báo giá mới trị giá ${newRow.total_amount.toLocaleString('vi-VN')}đ`;
+  }
+
+  return {
+    id: makeId(),
+    type: 'quotation',
+    title,
+    body,
+    quotationId: newRow.id,
+    createdAt: new Date().toISOString(),
+    isRead: false,
+  };
+}
+
+export function createQuotationDataEvent(
+  payload: RealtimePayload<QuotationRow>,
+): PortalDataEvent | null {
+  const { new: newRow } = payload;
+  return {
+    type: 'quotation_received',
+    quotation: {
+      id: newRow.id,
+      quotation_number: newRow.quotation_number,
+      quotation_date: newRow.quotation_date,
+      valid_until: newRow.valid_until,
+      total_amount: newRow.total_amount,
+      status: newRow.status,
+      customer_id: newRow.customer_id,
+      items: [], // will be fetched by detail hook
+      notes: null,
+    },
   };
 }
 
