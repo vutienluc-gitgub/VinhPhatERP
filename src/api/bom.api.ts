@@ -140,7 +140,26 @@ export async function createBomDraft(
     }
 
     const parts = ['BOM', fabric?.code ?? 'XX', yarnCode].filter(Boolean);
-    finalCode = parts.join('-');
+    const baseCode = parts.join('-');
+
+    finalCode = baseCode;
+    let counter = 1;
+    let exists = true;
+    // Check until we find a unique code
+    while (exists) {
+      const { data: existing } = await supabase
+        .from('bom_templates')
+        .select('id')
+        .eq('code', finalCode)
+        .maybeSingle();
+
+      if (!existing) {
+        exists = false;
+        break;
+      }
+      counter++;
+      finalCode = `${baseCode}-${counter.toString().padStart(2, '0')}`;
+    }
   }
 
   const { data, error } = await untypedDb.rpc('atomic_create_bom', {
@@ -217,11 +236,28 @@ export async function deprecateBom(
   if (!reason)
     throw new Error('Bắt buộc phải có lý do khi ngưng áp dụng (Báo Phế).');
 
+  // 1. Kiem tra status hien tai
+  const { data: currentBom, error: fetchError } = await supabase
+    .from('bom_templates')
+    .select('status, notes')
+    .eq('id', id)
+    .single();
+
+  if (fetchError) throw fetchError;
+  if (currentBom.status !== 'approved') {
+    throw new Error('Chỉ có thể báo phế BOM đã được duyệt (approved).');
+  }
+
+  // 2. Wrap notes cu vao thay vi ghi de
+  const updatedNotes = currentBom.notes
+    ? `${currentBom.notes}\n[Báo phế]: ${reason}`
+    : `[Báo phế]: ${reason}`;
+
   const { error } = await supabase
     .from('bom_templates')
     .update({
       status: 'deprecated',
-      notes: reason,
+      notes: updatedNotes,
       updated_at: new Date().toISOString(),
     })
     .eq('id', id);

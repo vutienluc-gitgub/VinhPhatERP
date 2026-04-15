@@ -47,6 +47,15 @@ export const bomTemplateSchema = z.object({
     .array(bomYarnItemSchema)
     .min(1, 'BOM phải có ít nhất 1 loại nguyên liệu sợi')
     .superRefine((items, ctx) => {
+      const yarnIds = items.map((item) => item.yarn_catalog_id);
+      const duplicates = yarnIds.filter((id, i) => yarnIds.indexOf(id) !== i);
+      if (duplicates.length > 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Không được chọn trùng lặp loại sợi trong cùng một BOM',
+        });
+      }
+
       const totalRatio = items.reduce(
         (sum, item) => sum + (item.ratio_pct || 0),
         0,
