@@ -262,48 +262,116 @@ export function ShipmentList() {
         emptyStateIcon={hasFilter ? 'Search' : 'Truck'}
         columns={[
           {
-            header: 'Số phiếu',
-            cell: (s) => <strong>{s.shipment_number}</strong>,
+            header: 'Mã & Trạng thái',
+            cell: (s) => (
+              <div className="flex flex-col gap-1 items-start">
+                <Badge variant={getVariant(s.status)}>
+                  {SHIPMENT_STATUS_LABELS[s.status]}
+                </Badge>
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <span className="text-muted-foreground text-[0.75rem] font-medium">
+                    #{s.shipment_number}
+                  </span>
+                  {s.orders?.order_number && (
+                    <>
+                      <span className="w-1 h-1 rounded-full bg-border" />
+                      <span className="text-muted-foreground text-[0.75rem]">
+                        {s.orders.order_number}
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+            ),
           },
           {
-            header: 'Đơn hàng',
-            className: 'td-muted',
-            cell: (s) => s.orders?.order_number ?? '—',
-          },
-          {
-            header: 'Khách hàng',
-            cell: (s) => s.customers?.name ?? '—',
-          },
-          {
-            header: 'NV giao hàng',
-            className: 'td-muted',
-            cell: (s) =>
-              s.delivery_staff?.full_name ?? (
-                <span className="text-warning text-[0.82rem]">
-                  Chưa phân công
-                </span>
-              ),
-          },
-          {
-            header: 'Cước VC',
-            className: 'td-muted',
+            header: 'Thời gian & Cước',
             cell: (s) => {
               const totalCost = (s.shipping_cost || 0) + (s.loading_fee || 0);
-              return totalCost ? `${formatCurrency(totalCost)}đ` : '—';
+              const dateParts = s.shipment_date.split('-');
+              const displayDate =
+                dateParts.length === 3
+                  ? `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`
+                  : s.shipment_date;
+
+              return (
+                <div className="flex flex-col gap-1 items-start">
+                  <span className="font-semibold text-foreground text-[0.85rem]">
+                    {displayDate}
+                  </span>
+                  <span className="text-muted-foreground text-[0.75rem] mt-1">
+                    Cước:{' '}
+                    <span className="font-medium text-foreground">
+                      {totalCost ? `${formatCurrency(totalCost)}đ` : '—'}
+                    </span>
+                  </span>
+                </div>
+              );
             },
           },
           {
-            header: 'Ngày giao',
-            className: 'td-muted',
-            cell: (s) => s.shipment_date,
+            header: 'Lộ trình',
+            className: 'w-[280px]',
+            cell: (s) => {
+              const origin = 'Kho Vĩnh Phát';
+              const isCompleted = s.status === 'delivered';
+              const destination =
+                s.delivery_address ||
+                s.customers?.address ||
+                s.customers?.name ||
+                'Chưa rõ địa chỉ đích';
+
+              return (
+                <div className="flex bg-transparent w-full group cursor-default">
+                  <div className="flex flex-col items-center mr-3 mt-1 shrink-0">
+                    <div className="w-2.5 h-2.5 rounded-full bg-slate-300 ring-2 ring-slate-100 dark:ring-slate-800" />
+                    <div className="w-[1.5px] h-[22px] bg-slate-200 border-l border-dashed border-slate-300 dark:border-slate-600 my-0.5" />
+                    <div
+                      className={`w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-800 ${isCompleted ? 'bg-success' : s.status === 'preparing' ? 'bg-slate-300' : 'bg-orange-500 animate-pulse'}`}
+                    />
+                  </div>
+                  <div className="flex w-[220px] flex-col justify-between py-[1px]">
+                    <span
+                      className="text-[0.85rem] font-medium text-foreground truncate"
+                      title={origin}
+                    >
+                      {origin}
+                    </span>
+                    <span
+                      className="text-[0.85rem] text-muted-foreground truncate mt-1.5 transition-colors group-hover:text-foreground"
+                      title={destination}
+                    >
+                      {destination}
+                    </span>
+                  </div>
+                </div>
+              );
+            },
           },
           {
-            header: 'Trạng thái',
-            cell: (s) => (
-              <Badge variant={getVariant(s.status)}>
-                {SHIPMENT_STATUS_LABELS[s.status]}
-              </Badge>
-            ),
+            header: 'Tài xế',
+            cell: (s) => {
+              if (!s.delivery_staff) {
+                return (
+                  <span className="text-warning text-[0.82rem] font-medium">
+                    [Tìm tài xế] Chưa phân công
+                  </span>
+                );
+              }
+              return (
+                <div className="flex flex-col gap-1 items-start">
+                  <span className="font-semibold text-foreground text-[0.85rem]">
+                    {s.delivery_staff.full_name}
+                  </span>
+                  <div className="flex items-center gap-1 mt-1 text-muted-foreground">
+                    <Icon name="Phone" size={12} />
+                    <span className="text-[0.75rem]">
+                      {s.delivery_staff.phone || 'Không rõ sđt'}
+                    </span>
+                  </div>
+                </div>
+              );
+            },
           },
           {
             header: '',
