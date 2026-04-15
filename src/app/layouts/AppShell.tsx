@@ -30,10 +30,10 @@ const roleLabel: Record<UserRole, string> = {
   admin: 'Admin',
   manager: 'Manager',
   staff: 'Staff',
-  driver: 'Tai xe',
+  driver: 'Tài xế',
   viewer: 'Viewer',
   sale: 'Sale',
-  customer: 'Khach hang',
+  customer: 'Khách hàng',
 };
 
 /** Group display metadata */

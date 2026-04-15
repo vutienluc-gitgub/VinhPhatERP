@@ -60,7 +60,8 @@ export function DyeingOrderDetail({
 
   const handleSend = async () => {
     const ok = await confirm.confirm({
-      message: 'Xac nhan gui lenh nhuom nay di nha cung cap?',
+      message:
+        'X\u00e1c nh\u1eadn g\u1edfi l\u1ec7nh nhu\u1ed9m n\u00e0y \u0111i nh\u00e0 cung c\u1ea5p?',
     });
     if (ok) sendMutation.mutate(orderId);
   };

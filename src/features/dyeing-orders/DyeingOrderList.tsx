@@ -1,4 +1,4 @@
-﻿import dayjs from 'dayjs';
+import dayjs from 'dayjs';
 
 import {
   DataTablePremium,
@@ -46,7 +46,7 @@ export function DyeingOrderList({
 }: DyeingOrderListProps) {
   const columns: DataTableColumn<DyeingOrder>[] = [
     {
-      header: 'Ma lenh',
+      header: 'Mã lệnh',
       cell: (row: DyeingOrder) => (
         <div className="flex flex-col">
           <span className="font-bold text-primary">
@@ -59,7 +59,7 @@ export function DyeingOrderList({
       ),
     },
     {
-      header: 'Nha nhuom',
+      header: 'Nhà nhuộm',
       cell: (row: DyeingOrder) => (
         <div className="flex flex-col">
           <span className="font-medium">{row.suppliers?.name ?? '—'}</span>
@@ -70,7 +70,7 @@ export function DyeingOrderList({
       ),
     },
     {
-      header: 'Trang thai',
+      header: 'Trạng thái',
       cell: (row: DyeingOrder) => (
         <Badge variant={getStatusVariant(row.status)}>
           {DYEING_ORDER_STATUSES[row.status]?.label ?? row.status}
@@ -78,7 +78,7 @@ export function DyeingOrderList({
       ),
     },
     {
-      header: 'Don gia (kg)',
+      header: 'Đơn giá (kg)',
       className: 'text-right',
       cell: (row: DyeingOrder) => (
         <span className="tabular-nums font-medium">
@@ -87,7 +87,7 @@ export function DyeingOrderList({
       ),
     },
     {
-      header: 'Tra hang (DK)',
+      header: 'Trả hàng (DK)',
       className: 'hide-mobile',
       cell: (row: DyeingOrder) => (
         <div className="flex items-center gap-1.5 text-muted">
@@ -132,7 +132,7 @@ export function DyeingOrderList({
       isLoading={isLoading}
       rowKey={(row) => row.id}
       onRowClick={(row) => onView(row.id)}
-      emptyStateTitle="Chua co lenh nhuộm nao."
+      emptyStateTitle="Chưa có lệnh nhuộm nào."
       renderMobileCard={(row: DyeingOrder) => (
         <div className="mobile-card">
           <div className="flex justify-between items-start mb-2">

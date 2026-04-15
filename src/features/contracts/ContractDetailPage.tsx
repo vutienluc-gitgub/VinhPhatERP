@@ -502,11 +502,11 @@ function EditSheet({
 // ── Audit log entry ───────────────────────────────────────────────────────────
 
 const ACTION_LABELS: Record<string, string> = {
-  created: 'Hop dong duoc tao',
-  updated: 'Cap nhat thong tin',
-  status_changed: 'Chuyen trang thai',
-  order_linked: 'Lien ket don hang',
-  order_unlinked: 'Huy lien ket don hang',
+  created: 'Hợp đồng được tạo',
+  updated: 'Cập nhật thông tin',
+  status_changed: 'Chuyển trạng thái',
+  order_linked: 'Liên kết đơn hàng',
+  order_unlinked: 'Huỷ liên kết đơn hàng',
 };
 
 const ACTION_ICONS: Record<string, string> = {
@@ -567,12 +567,12 @@ function AuditLogEntry({ log, isLast }: AuditLogEntryProps) {
         <p className="text-sm font-medium text-foreground">{label}</p>
         {newStatus && (
           <p className="text-xs text-muted mt-0.5">
-            Trang thai moi: <span className="font-medium">{newStatus}</span>
+            Trạng thái mới: <span className="font-medium">{newStatus}</span>
           </p>
         )}
         {cancelReason && (
           <p className="text-xs italic text-muted mt-0.5">
-            Ly do: {cancelReason}
+            Lý do: {cancelReason}
           </p>
         )}
         <p className="text-xs text-muted mt-0.5">{formattedTime}</p>
@@ -610,7 +610,7 @@ export function ContractDetailPage({
   if (isLoading) {
     return (
       <div className="panel-card">
-        <p className="table-empty">Dang tai...</p>
+        <p className="table-empty">Đang tải...</p>
       </div>
     );
   }
@@ -618,7 +618,7 @@ export function ContractDetailPage({
   if (error) {
     return (
       <div className="panel-card">
-        <p className="error-inline">Loi: {(error as Error).message}</p>
+        <p className="error-inline">Lỗi: {(error as Error).message}</p>
       </div>
     );
   }
@@ -626,7 +626,7 @@ export function ContractDetailPage({
   if (!contract) {
     return (
       <div className="panel-card">
-        <p className="table-empty">Khong tim thay hop dong.</p>
+        <p className="table-empty">Không tìm thấy hợp đồng.</p>
       </div>
     );
   }
