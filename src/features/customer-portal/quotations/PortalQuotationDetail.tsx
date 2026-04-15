@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { usePortalQuotationDetail } from '@/features/customer-portal/hooks/usePortalQuotations';
 import { formatCurrency } from '@/shared/utils/format';
 import { Button, Icon } from '@/shared/components';
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 
 export function PortalQuotationDetail() {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +15,12 @@ export function PortalQuotationDetail() {
     usePortalQuotationDetail(id!);
   const [isProcessing, setIsProcessing] = useState(false);
   const [timeLeft, setTimeLeft] = useState<string | null>(null);
+
+  // States for Modals
+  const [acceptSheetOpen, setAcceptSheetOpen] = useState(false);
+  const [rejectSheetOpen, setRejectSheetOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   useEffect(() => {
     if (!quotation?.valid_until || quotation.status !== 'sent') return;
@@ -44,13 +51,7 @@ export function PortalQuotationDetail() {
       <div className="portal-error">{error || 'Không tìm thấy dữ liệu'}</div>
     );
 
-  const handleAccept = async () => {
-    if (
-      !window.confirm(
-        'Bạn đồng ý với các điều khoản và đơn giá trong báo giá này?',
-      )
-    )
-      return;
+  const handleAcceptConfirm = async () => {
     setIsProcessing(true);
     const result = await acceptQuotation();
     setIsProcessing(false);
@@ -58,21 +59,23 @@ export function PortalQuotationDetail() {
       toast.success(
         'Đã chấp nhận báo giá. Chúng tôi sẽ sớm lên đơn hàng cho bạn.',
       );
+      setAcceptSheetOpen(false);
     } else {
       toast.error(result?.error || 'Không thể chấp nhận báo giá');
     }
   };
 
-  const handleReject = async () => {
-    const reason = window.prompt(
-      'Vui lòng cho biết lý do bạn từ chối báo giá này:',
-    );
-    if (reason === null) return;
+  const handleRejectConfirm = async () => {
+    if (!rejectReason.trim()) {
+      toast.error('Vui lòng nhập lý do từ chối.');
+      return;
+    }
     setIsProcessing(true);
-    const result = await rejectQuotation(reason);
+    const result = await rejectQuotation(rejectReason);
     setIsProcessing(false);
     if (result && result.success) {
       toast.success('Đã phản hồi từ chối báo giá.');
+      setRejectSheetOpen(false);
     } else {
       toast.error(result?.error || 'Không thể từ chối báo giá');
     }
@@ -202,41 +205,166 @@ export function PortalQuotationDetail() {
                   <>
                     <Button
                       variant="primary"
-                      className="w-full h-12 text-lg"
-                      onClick={handleAccept}
-                      disabled={isProcessing}
+                      className="w-full h-12 text-lg font-bold shadow-md hover:shadow-lg transition-shadow"
+                      onClick={() => setAcceptSheetOpen(true)}
                     >
-                      {isProcessing ? 'Đang xử lý...' : 'Chấp nhận báo giá'}
+                      <Icon name="CheckCircle" size={20} className="mr-2" />
+                      Chấp nhận báo giá
                     </Button>
                     <Button
                       variant="outline"
                       className="w-full text-red-600 border-red-200 hover:bg-red-50"
-                      onClick={handleReject}
-                      disabled={isProcessing}
+                      onClick={() => setRejectSheetOpen(true)}
                     >
-                      Từ chối
+                      Từ chối báo giá
                     </Button>
+                    <p className="text-[10px] text-gray-400 text-center italic mt-4">
+                      Cam kết báo giá được bảo lưu trong thời gian hiệu lực.
+                    </p>
                   </>
+                ) : quotation.status === 'confirmed' ? (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-5">
+                    <div className="text-green-700 font-bold mb-4 flex items-center gap-2">
+                      <Icon name="CheckCircle2" size={24} />
+                      Đã xác nhận đặt hàng
+                    </div>
+                    <div className="relative border-l-2 border-green-200 ml-3 space-y-6">
+                      <div className="relative">
+                        <div className="absolute -left-[21px] bg-green-500 w-3 h-3 rounded-full border-4 border-white"></div>
+                        <div className="pl-4">
+                          <h4 className="text-sm font-bold text-gray-800">
+                            Báo giá được duyệt
+                          </h4>
+                          <p className="text-xs text-gray-500">
+                            Chờ kinh doanh lên đơn
+                          </p>
+                        </div>
+                      </div>
+                      <div className="relative">
+                        <div className="absolute -left-[21px] bg-gray-300 w-3 h-3 rounded-full border-4 border-white"></div>
+                        <div className="pl-4">
+                          <h4 className="text-sm font-bold text-gray-400">
+                            Lên đơn hàng (SO)
+                          </h4>
+                        </div>
+                      </div>
+                      <div className="relative">
+                        <div className="absolute -left-[21px] bg-gray-300 w-3 h-3 rounded-full border-4 border-white"></div>
+                        <div className="pl-4">
+                          <h4 className="text-sm font-bold text-gray-400">
+                            Chuẩn bị sản xuất
+                          </h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ) : (
                   <div className="p-4 bg-gray-50 rounded-lg text-center font-bold text-gray-500">
                     Báo giá này{' '}
-                    {quotation.status === 'confirmed'
-                      ? 'đã được chấp nhận'
-                      : quotation.status === 'rejected'
-                        ? 'đã bị từ chối'
-                        : 'đã hết hiệu lực'}
+                    {quotation.status === 'rejected'
+                      ? 'đã bị từ chối'
+                      : 'đã hết hiệu lực'}
                   </div>
                 )}
               </div>
-
-              <p className="text-[10px] text-gray-400 text-center italic mt-4">
-                Bằng việc nhấn "Chấp nhận", bạn đồng ý chuyển báo giá này thành
-                yêu cầu đặt hàng chính thức.
-              </p>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Accept Sheet */}
+      <AdaptiveSheet
+        open={acceptSheetOpen}
+        onClose={() => setAcceptSheetOpen(false)}
+        title="Xác nhận đặt hàng"
+        maxWidth={500}
+        footer={
+          <div className="flex gap-3 w-full">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => setAcceptSheetOpen(false)}
+            >
+              Quay lại
+            </Button>
+            <Button
+              variant="primary"
+              className="flex-1"
+              onClick={handleAcceptConfirm}
+              disabled={!termsAccepted || isProcessing}
+            >
+              <Icon name="Check" size={18} className="mr-2" />
+              {isProcessing ? 'Đang xử lý...' : 'Xác nhận'}
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-4 text-gray-700 py-2">
+          <div className="bg-blue-50 text-blue-800 p-4 rounded-lg flex items-start gap-3">
+            <Icon name="Info" size={20} className="mt-0.5 shrink-0" />
+            <p className="text-sm">
+              Bạn đang xác nhận chuyển đổi báo giá{' '}
+              <strong>{quotation.quotation_number}</strong> thành đơn hàng chính
+              thức với tổng giá trị{' '}
+              <strong>{formatCurrency(quotation.total_amount)} đ</strong>.
+            </p>
+          </div>
+
+          <label className="flex items-start gap-3 cursor-pointer p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors mt-6">
+            <input
+              type="checkbox"
+              className="mt-1 w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+            />
+            <span className="text-sm select-none">
+              Tôi xác nhận đồng ý với các điều khoản, đơn giá và số lượng trong
+              báo giá này.
+            </span>
+          </label>
+        </div>
+      </AdaptiveSheet>
+
+      {/* Reject Sheet */}
+      <AdaptiveSheet
+        open={rejectSheetOpen}
+        onClose={() => setRejectSheetOpen(false)}
+        title="Từ chối báo giá"
+        maxWidth={500}
+        footer={
+          <div className="flex gap-3 w-full">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => setRejectSheetOpen(false)}
+            >
+              Hủy
+            </Button>
+            <Button
+              variant="danger"
+              className="flex-1"
+              onClick={handleRejectConfirm}
+              disabled={isProcessing}
+            >
+              {isProcessing ? 'Đang xử lý...' : 'Xác nhận từ chối'}
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-4 py-2">
+          <p className="text-sm text-gray-600">
+            Vui lòng cho chúng tôi biết lý do bạn từ chối báo giá này để Vĩnh
+            Phát có thể cải thiện chất lượng dịch vụ:
+          </p>
+          <textarea
+            className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none resize-none"
+            rows={4}
+            placeholder="Ví dụ: Đơn giá cao, thời gian giao hàng lâu..."
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+          />
+        </div>
+      </AdaptiveSheet>
     </div>
   );
 }

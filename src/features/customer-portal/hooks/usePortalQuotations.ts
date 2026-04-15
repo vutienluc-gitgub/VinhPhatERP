@@ -3,6 +3,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/services/supabase/client';
 import type { PortalQuotation } from '@/features/customer-portal/types';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- RPCs chưa được sync vào database.types.ts
+const rpc = supabase.rpc.bind(supabase) as (
+  fn: string,
+  args: Record<string, unknown>,
+) => ReturnType<typeof supabase.rpc>;
+
 const PAGE_SIZE = 10;
 
 export function usePortalQuotations() {
@@ -128,45 +134,60 @@ export function usePortalQuotationDetail(id: string) {
   }, [id, fetchDetail]);
 
   const acceptQuotation = async () => {
-    if (!quotation) return;
+    if (!quotation)
+      return {
+        success: false,
+        error: 'Quotation not found',
+      };
     try {
-      const { error: updateError } = await supabase
-        .from('quotations')
-        .update({
-          status: 'confirmed',
-          confirmed_at: new Date().toISOString(),
-        })
-        .eq('id', id);
+      const { data, error: updateError } = await rpc(
+        'rpc_portal_accept_quotation',
+        {
+          p_quotation_id: id,
+        },
+      );
 
       if (updateError) throw updateError;
+
       setQuotation({
         ...quotation,
         status: 'confirmed',
       });
-      return { success: true };
+      return {
+        success: true,
+        ...(data as Record<string, unknown>),
+      };
     } catch (err: unknown) {
       console.error('Error accepting quotation:', err);
+      const e = err as Error;
+      // Extra message extraction logic matching Supabase error format
+      const errorMessage = e?.message?.includes('QUOTATION_EXPIRED')
+        ? 'Báo giá đã hết hạn, vui lòng liên hệ Sale để nhận báo giá mới'
+        : e?.message?.includes('QUOTATION_ALREADY_ACCEPTED')
+          ? 'Báo giá này đã được chấp nhận'
+          : 'Không thể duyệt báo giá này do lỗi hệ thống';
+
       return {
         success: false,
-        error: 'Không thể duyệt báo giá này',
+        error: errorMessage,
       };
     }
   };
 
   const rejectQuotation = async (reason: string) => {
-    if (!quotation) return;
+    if (!quotation)
+      return {
+        success: false,
+        error: 'Quotation not found',
+      };
     try {
-      const { error: updateError } = await supabase
-        .from('quotations')
-        .update({
-          status: 'rejected',
-          notes: quotation.notes
-            ? `${quotation.notes}\nLý do từ chối: ${reason}`
-            : `Lý do từ chối: ${reason}`,
-        })
-        .eq('id', id);
+      const { error: updateError } = await rpc('rpc_portal_reject_quotation', {
+        p_quotation_id: id,
+        p_reason: reason,
+      });
 
       if (updateError) throw updateError;
+
       setQuotation({
         ...quotation,
         status: 'rejected',
@@ -174,9 +195,16 @@ export function usePortalQuotationDetail(id: string) {
       return { success: true };
     } catch (err: unknown) {
       console.error('Error rejecting quotation:', err);
+      const e = err as Error;
+      const errorMessage = e?.message?.includes('QUOTATION_ALREADY_ACCEPTED')
+        ? 'Báo giá này đã được chấp nhận trước đó'
+        : e?.message?.includes('QUOTATION_ALREADY_REJECTED')
+          ? 'Báo giá này đã bị từ chối'
+          : 'Không thể từ chối báo giá';
+
       return {
         success: false,
-        error: 'Không thể từ chối báo giá',
+        error: errorMessage,
       };
     }
   };
