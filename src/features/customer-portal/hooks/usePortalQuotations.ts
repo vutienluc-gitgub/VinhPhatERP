@@ -133,7 +133,11 @@ export function usePortalQuotationDetail(id: string) {
     if (id) fetchDetail();
   }, [id, fetchDetail]);
 
-  const acceptQuotation = async () => {
+  const acceptQuotation = async (): Promise<{
+    success: boolean;
+    error?: string;
+    [key: string]: unknown;
+  }> => {
     if (!quotation)
       return {
         success: false,
@@ -174,7 +178,9 @@ export function usePortalQuotationDetail(id: string) {
     }
   };
 
-  const rejectQuotation = async (reason: string) => {
+  const rejectQuotation = async (
+    reason: string,
+  ): Promise<{ success: boolean; error?: string; [key: string]: unknown }> => {
     if (!quotation)
       return {
         success: false,
