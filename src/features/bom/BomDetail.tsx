@@ -7,11 +7,12 @@ import { BOM_STATUS_LABELS } from './bom.module';
 import { BomTemplate, BomStatus } from './types';
 
 interface BomDetailProps {
-  bom: BomTemplate;
+  bomId: string;
+  bom: BomTemplate | null;
   onBack: () => void;
-  onApprove: () => void;
-  onDeprecate: () => void;
-  onRevise: () => void;
+  onApprove: (id: string, code: string) => void;
+  onDeprecate: (id: string, code: string) => void;
+  onRevise: (id: string, code: string) => void;
   isSaving: boolean;
 }
 
@@ -27,6 +28,7 @@ function getStatusVariant(status: BomStatus) {
 }
 
 export function BomDetail({
+  bomId,
   bom,
   onBack,
   onApprove,
@@ -34,7 +36,18 @@ export function BomDetail({
   onRevise,
   isSaving,
 }: BomDetailProps) {
-  const { data: versions = [] } = useBomVersions(bom.id);
+  const { data: versions = [] } = useBomVersions(bomId);
+
+  if (!bom) {
+    return (
+      <div className="panel-card card-flush">
+        <div className="p-8 text-center text-sm text-muted">
+          Dang tai du lieu...
+        </div>
+      </div>
+    );
+  }
+
   const statusLabel = BOM_STATUS_LABELS[bom.status as BomStatus] || bom.status;
 
   return (
@@ -69,7 +82,7 @@ export function BomDetail({
               leftIcon="CheckCircle"
               className="flex items-center gap-2"
               type="button"
-              onClick={onApprove}
+              onClick={() => onApprove(bom.id, bom.code)}
               disabled={isSaving}
             >
               Phe duyet
@@ -83,7 +96,7 @@ export function BomDetail({
                 leftIcon="GitMerge"
                 className="flex items-center gap-2"
                 type="button"
-                onClick={onRevise}
+                onClick={() => onRevise(bom.id, bom.code)}
                 disabled={isSaving}
               >
                 Tao Revision
@@ -93,7 +106,7 @@ export function BomDetail({
                 leftIcon="FileX"
                 className="text-danger border-danger/20 flex items-center gap-2"
                 type="button"
-                onClick={onDeprecate}
+                onClick={() => onDeprecate(bom.id, bom.code)}
                 disabled={isSaving}
               >
                 Bao phe
@@ -119,8 +132,8 @@ export function BomDetail({
           <div className="form-field">
             <label>Quy cach (Width / GSM)</label>
             <p>
-              {bom.target_width_cm ? `${bom.target_width_cm} cm` : '—'} /{' '}
-              {bom.target_gsm ? `${bom.target_gsm} gsm` : '—'}
+              {bom.target_width_cm ? `${bom.target_width_cm} cm` : '\u2014'} /{' '}
+              {bom.target_gsm ? `${bom.target_gsm} gsm` : '\u2014'}
             </p>
           </div>
           <div className="form-field">
@@ -164,7 +177,7 @@ export function BomDetail({
                   </div>
                 </td>
                 <td className="hide-mobile td-muted">
-                  {item.yarn_catalogs?.composition || '—'}
+                  {item.yarn_catalogs?.composition || '\u2014'}
                 </td>
                 <td className="text-right font-bold">{item.ratio_pct}%</td>
                 <td className="text-right td-muted">

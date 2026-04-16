@@ -1,9 +1,13 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 import { Icon, AddButton, ClearFilterButton } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { Button } from '@/shared/components';
 import {
   useBomList,
+  useBomDetail,
   useApproveBom,
   useDeprecateBom,
   useReviseBom,
@@ -13,122 +17,167 @@ import { BOM_STATUSES, BOM_STATUS_LABELS } from './bom.module';
 import { BomDetail } from './BomDetail';
 import { BomForm } from './BomForm';
 import { BomList } from './BomList';
-import { BomTemplate, BomStatus, BomFilter } from './types';
+import { BomStatus, BomFilter } from './types';
+
+type ViewState = 'list' | 'create' | 'edit' | 'detail';
+
+type ActionSheetState =
+  | { type: 'idle' }
+  | { type: 'approve'; bomId: string; bomCode: string }
+  | { type: 'deprecate'; bomId: string; bomCode: string }
+  | { type: 'revise'; bomId: string; bomCode: string };
 
 export function BomPage() {
   const [filter, setFilter] = useState<BomFilter>({});
-  const [viewState, setViewState] = useState<
-    'list' | 'create' | 'edit' | 'detail'
-  >('list');
-  const [selectedBom, setSelectedBom] = useState<BomTemplate | null>(null);
+  const [viewState, setViewState] = useState<ViewState>('list');
+  const [selectedBomId, setSelectedBomId] = useState<string | null>(null);
+  const [actionSheet, setActionSheet] = useState<ActionSheetState>({
+    type: 'idle',
+  });
+  const [actionReason, setActionReason] = useState('');
 
   const { data: boms = [], isLoading } = useBomList(filter);
+  const { data: selectedBom } = useBomDetail(
+    viewState === 'detail' ? selectedBomId : null,
+  );
   const approveBom = useApproveBom();
   const deprecateBom = useDeprecateBom();
   const reviseBom = useReviseBom();
 
   const handleCreate = () => {
-    setSelectedBom(null);
+    setSelectedBomId(null);
     setViewState('create');
   };
 
-  const handleEdit = (bom: BomTemplate) => {
-    setSelectedBom(bom);
+  const handleEdit = (bomId: string) => {
+    setSelectedBomId(bomId);
     setViewState('edit');
   };
 
-  const handleSelect = (bom: BomTemplate) => {
-    setSelectedBom(bom);
+  const handleSelect = (bomId: string) => {
+    setSelectedBomId(bomId);
     setViewState('detail');
   };
 
   const handleCancelForm = () => {
     setViewState('list');
-    setSelectedBom(null);
+    setSelectedBomId(null);
   };
 
   const handleSuccessForm = () => {
     setViewState('list');
-    setSelectedBom(null);
+    setSelectedBomId(null);
   };
 
-  // --- Task-based actions ---
-  const handleApprove = async () => {
-    if (!selectedBom) return;
-    const ok = window.confirm(
-      `Bạn có chắc chắn muốn duyệt BOM ${selectedBom.code}?`,
-    );
-    if (!ok) return;
+  const closeActionSheet = () => {
+    setActionSheet({ type: 'idle' });
+    setActionReason('');
+  };
+
+  // --- Mở BottomSheet xác nhận ---
+  const openApproveSheet = (bomId: string, bomCode: string) => {
+    setActionSheet({
+      type: 'approve',
+      bomId,
+      bomCode,
+    });
+  };
+
+  const openDeprecateSheet = (bomId: string, bomCode: string) => {
+    setActionSheet({
+      type: 'deprecate',
+      bomId,
+      bomCode,
+    });
+  };
+
+  const openReviseSheet = (bomId: string, bomCode: string) => {
+    setActionSheet({
+      type: 'revise',
+      bomId,
+      bomCode,
+    });
+  };
+
+  // --- Thực thi hành động ---
+  const handleConfirmAction = async () => {
+    if (actionSheet.type === 'idle') return;
+
     try {
-      await approveBom.mutateAsync({
-        id: selectedBom.id,
-        reason: 'Phê duyệt ban đầu',
-      });
+      if (actionSheet.type === 'approve') {
+        await approveBom.mutateAsync({
+          id: actionSheet.bomId,
+          reason: actionReason || 'Phe duyet',
+        });
+        toast.success(`Da phe duyet BOM ${actionSheet.bomCode}`);
+      }
+
+      if (actionSheet.type === 'deprecate') {
+        if (!actionReason.trim()) {
+          toast.error('Vui long nhap ly do bao phe.');
+          return;
+        }
+        await deprecateBom.mutateAsync({
+          id: actionSheet.bomId,
+          reason: actionReason,
+        });
+        toast.success(`Da bao phe BOM ${actionSheet.bomCode}`);
+      }
+
+      if (actionSheet.type === 'revise') {
+        if (!actionReason.trim()) {
+          toast.error('Vui long nhap ly do tao phien ban moi.');
+          return;
+        }
+        await reviseBom.mutateAsync({
+          id: actionSheet.bomId,
+          reason: actionReason,
+        });
+        toast.success(`Da tao phien ban moi cho BOM ${actionSheet.bomCode}`);
+      }
+
+      closeActionSheet();
       setViewState('list');
+      setSelectedBomId(null);
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Có lỗi xảy ra');
+      toast.error(e instanceof Error ? e.message : 'Co loi xay ra');
     }
   };
 
-  const handleDeprecate = async (bom?: BomTemplate) => {
-    const target = bom ?? selectedBom;
-    if (!target) return;
-    const reason = window.prompt(
-      `Lý do ngưng áp dụng (báo phế) BOM ${target.code}?`,
-    );
-    if (!reason) return;
-    try {
-      await deprecateBom.mutateAsync({
-        id: target.id,
-        reason,
-      });
-      setViewState('list');
-      setSelectedBom(null);
-    } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Có lỗi xảy ra');
-    }
-  };
+  const isMutating =
+    approveBom.isPending || deprecateBom.isPending || reviseBom.isPending;
 
-  const handleRevise = async () => {
-    if (!selectedBom) return;
-    const reason = window.prompt(
-      `Lý do tạo phiên bản mới từ BOM ${selectedBom.code}?`,
-    );
-    if (!reason) return;
-    try {
-      await reviseBom.mutateAsync({
-        id: selectedBom.id,
-        reason,
-      });
-      setViewState('list');
-    } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Có lỗi xảy ra');
-    }
-  };
-
-  // --- Form / Detail views ---
+  // --- Form views ---
   if (viewState === 'create' || viewState === 'edit') {
+    // Tìm BOM từ danh sách đã fetch cho form edit
+    const editBom =
+      viewState === 'edit'
+        ? (boms.find((b) => b.id === selectedBomId) ?? undefined)
+        : undefined;
     return (
       <BomForm
-        initialData={selectedBom ?? undefined}
+        initialData={editBom}
         onSuccess={handleSuccessForm}
         onCancel={handleCancelForm}
       />
     );
   }
 
-  if (viewState === 'detail' && selectedBom) {
+  // --- Detail view ---
+  if (viewState === 'detail' && selectedBomId) {
     return (
-      <BomDetail
-        bom={selectedBom}
-        onBack={handleCancelForm}
-        onApprove={handleApprove}
-        onDeprecate={() => handleDeprecate()}
-        onRevise={handleRevise}
-        isSaving={
-          approveBom.isPending || deprecateBom.isPending || reviseBom.isPending
-        }
-      />
+      <>
+        <BomDetail
+          bomId={selectedBomId}
+          bom={selectedBom ?? null}
+          onBack={handleCancelForm}
+          onApprove={(id, code) => openApproveSheet(id, code)}
+          onDeprecate={(id, code) => openDeprecateSheet(id, code)}
+          onRevise={(id, code) => openReviseSheet(id, code)}
+          isSaving={isMutating}
+        />
+        {renderActionSheet()}
+      </>
     );
   }
 
@@ -140,10 +189,10 @@ export function BomPage() {
       {/* Header */}
       <div className="card-header-area card-header-premium">
         <div>
-          <p className="eyebrow-premium">KỸ THUẬT</p>
-          <h3 className="title-premium">Định Mức Nguyên Liệu (BOM)</h3>
+          <p className="eyebrow-premium">KY THUAT</p>
+          <h3 className="title-premium">Dinh Muc Nguyen Lieu (BOM)</h3>
         </div>
-        <AddButton onClick={handleCreate} label="Tạo bản nháp" />
+        <AddButton onClick={handleCreate} label="Tao ban nhap" />
       </div>
 
       {/* KPI Dashboard */}
@@ -152,7 +201,7 @@ export function BomPage() {
           <div className="kpi-overlay" />
           <div className="kpi-content">
             <div className="kpi-info">
-              <p className="kpi-label">Tổng số định mức</p>
+              <p className="kpi-label">Tong so dinh muc</p>
               <p className="kpi-value">{boms.length}</p>
             </div>
             <div className="kpi-icon-box">
@@ -160,7 +209,7 @@ export function BomPage() {
             </div>
           </div>
           <div className="kpi-footer text-xs opacity-80 italic">
-            Tất cả thẻ định mức
+            Tat ca the dinh muc
           </div>
         </div>
 
@@ -168,7 +217,7 @@ export function BomPage() {
           <div className="kpi-overlay" />
           <div className="kpi-content">
             <div className="kpi-info">
-              <p className="kpi-label">Đang áp dụng</p>
+              <p className="kpi-label">Dang ap dung</p>
               <p className="kpi-value">
                 {boms.filter((b) => b.status === 'approved').length}
               </p>
@@ -178,7 +227,7 @@ export function BomPage() {
             </div>
           </div>
           <div className="kpi-footer text-xs opacity-80 italic">
-            BOM đã duyệt
+            BOM da duyet
           </div>
         </div>
       </div>
@@ -187,13 +236,13 @@ export function BomPage() {
       <div className="filter-bar card-filter-section p-4 border-b border-border">
         <div className="filter-compact-premium">
           <div className="filter-field">
-            <label htmlFor="bom-search">Tìm kiếm</label>
+            <label htmlFor="bom-search">Tim kiem</label>
             <div className="search-input-wrapper">
               <input
                 id="bom-search"
                 className="field-input"
                 type="text"
-                placeholder="Mã hoặc tên BOM..."
+                placeholder="Ma hoac ten BOM..."
                 value={filter.search ?? ''}
                 onChange={(e) =>
                   setFilter({
@@ -207,12 +256,12 @@ export function BomPage() {
           </div>
 
           <div className="filter-field">
-            <label>Trạng thái</label>
+            <label>Trang thai</label>
             <Combobox
               options={[
                 {
                   value: '',
-                  label: 'Tất cả trạng thái',
+                  label: 'Tat ca trang thai',
                 },
                 ...BOM_STATUSES.map((s) => ({
                   value: s,
@@ -238,11 +287,94 @@ export function BomPage() {
         boms={boms}
         isLoading={isLoading}
         hasFilter={hasFilter}
-        onSelect={handleSelect}
-        onEdit={handleEdit}
-        onDeprecate={(bom) => handleDeprecate(bom)}
+        onSelect={(bom) => handleSelect(bom.id)}
+        onEdit={(bom) => handleEdit(bom.id)}
+        onDeprecate={(bom) => openDeprecateSheet(bom.id, bom.code)}
         onCreate={handleCreate}
       />
+
+      {/* Action Sheet */}
+      {renderActionSheet()}
     </div>
   );
+
+  function renderActionSheet() {
+    if (actionSheet.type === 'idle') return null;
+
+    const titles: Record<string, string> = {
+      approve: `Phe duyet BOM ${actionSheet.bomCode}`,
+      deprecate: `Bao phe BOM ${actionSheet.bomCode}`,
+      revise: `Tao phien ban moi — ${actionSheet.bomCode}`,
+    };
+
+    const needsReason = actionSheet.type !== 'approve';
+    const reasonLabels: Record<string, string> = {
+      deprecate: 'Ly do ngung ap dung',
+      revise: 'Ly do tao phien ban moi',
+    };
+
+    return (
+      <AdaptiveSheet
+        open
+        onClose={closeActionSheet}
+        title={titles[actionSheet.type] ?? ''}
+        footer={
+          <div className="flex gap-3 w-full">
+            <Button
+              variant="secondary"
+              className="flex-1"
+              type="button"
+              onClick={closeActionSheet}
+              disabled={isMutating}
+            >
+              Huy
+            </Button>
+            <Button
+              variant="primary"
+              className="flex-1"
+              type="button"
+              onClick={handleConfirmAction}
+              disabled={isMutating}
+            >
+              {isMutating ? 'Dang xu ly...' : 'Xac nhan'}
+            </Button>
+          </div>
+        }
+      >
+        <div className="flex flex-col gap-4">
+          {actionSheet.type === 'approve' && (
+            <p className="text-sm text-muted">
+              Ban co chac chan muon phe duyet BOM nay? Sau khi duyet, BOM se
+              duoc ap dung cho san xuat.
+            </p>
+          )}
+
+          {needsReason && (
+            <div className="form-field">
+              <label>{reasonLabels[actionSheet.type]}</label>
+              <textarea
+                className="field-input min-h-[80px]"
+                placeholder="Nhap ly do..."
+                value={actionReason}
+                onChange={(e) => setActionReason(e.target.value)}
+                autoFocus
+              />
+            </div>
+          )}
+
+          {actionSheet.type === 'approve' && (
+            <div className="form-field">
+              <label>Ghi chu (tuy chon)</label>
+              <textarea
+                className="field-input min-h-[60px]"
+                placeholder="Ghi chu phe duyet..."
+                value={actionReason}
+                onChange={(e) => setActionReason(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
+      </AdaptiveSheet>
+    );
+  }
 }

@@ -50,21 +50,15 @@ export async function fetchBomList(filters: BomFilter): Promise<BomTemplate[]> {
     query = query.eq('status', filters.status);
   }
 
+  if (filters.search) {
+    const search = `%${filters.search}%`;
+    query = query.or(`code.ilike.${search},name.ilike.${search}`);
+  }
+
   const { data, error } = await query;
   if (error) throw error;
 
-  let result = data as unknown as BomTemplate[];
-  if (filters.search) {
-    const search = filters.search.toLowerCase();
-    result = result.filter(
-      (item) =>
-        item.code.toLowerCase().includes(search) ||
-        item.name.toLowerCase().includes(search) ||
-        item.fabric_catalogs?.name.toLowerCase().includes(search),
-    );
-  }
-
-  return result;
+  return data as unknown as BomTemplate[];
 }
 
 /* ── BOM detail ── */
@@ -236,32 +230,24 @@ export async function deprecateBom(
   if (!reason)
     throw new Error('Bắt buộc phải có lý do khi ngưng áp dụng (Báo Phế).');
 
-  // 1. Kiem tra status hien tai
-  const { data: currentBom, error: fetchError } = await supabase
-    .from('bom_templates')
-    .select('status, notes')
-    .eq('id', id)
-    .single();
+  const auth = await supabase.auth.getUser();
+  const userId = auth.data.user?.id;
 
-  if (fetchError) throw fetchError;
-  if (currentBom.status !== 'approved') {
-    throw new Error('Chỉ có thể báo phế BOM đã được duyệt (approved).');
+  const { error } = await untypedDb.rpc('atomic_deprecate_bom', {
+    p_bom_id: id,
+    p_reason: reason,
+    p_user_id: userId,
+  });
+
+  if (error) {
+    if (error.message?.includes('BOM_NOT_APPROVED')) {
+      throw new Error('Chỉ có thể báo phế BOM đã được duyệt (Approved).');
+    }
+    if (error.message?.includes('MISSING_REASON')) {
+      throw new Error('Bắt buộc phải có lý do khi ngưng áp dụng.');
+    }
+    throw error;
   }
-
-  // 2. Wrap notes cu vao thay vi ghi de
-  const updatedNotes = currentBom.notes
-    ? `${currentBom.notes}\n[Báo phế]: ${reason}`
-    : `[Báo phế]: ${reason}`;
-
-  const { error } = await supabase
-    .from('bom_templates')
-    .update({
-      status: 'deprecated',
-      notes: updatedNotes,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', id);
-  if (error) throw error;
   return id;
 }
 
