@@ -17,6 +17,7 @@ import {
   useDeleteShipment,
   useExportShipmentPdf,
   useShipmentList,
+  useDeliveryStaffList,
 } from '@/application/shipments';
 import { SHIPMENT_STATUS_LABELS } from '@/schema/shipment.schema';
 
@@ -54,6 +55,7 @@ export function ShipmentList() {
   const confirmMutation = useConfirmShipment();
   const deleteMutation = useDeleteShipment();
   const exportPdfMutation = useExportShipmentPdf();
+  const staffListResult = useDeliveryStaffList();
   const { confirm, alert: showAlert } = useConfirm();
 
   function getErrorMessage(error: unknown): string {
@@ -76,6 +78,14 @@ export function ShipmentList() {
     setFilters((prev) => ({
       ...prev,
       status: (val as ShipmentStatus) || undefined,
+    }));
+  }
+
+  function handleStaffChange(val: string) {
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      deliveryStaffId: val || undefined,
     }));
   }
 
@@ -121,7 +131,11 @@ export function ShipmentList() {
     }
   }
 
-  const hasFilter = !!(filters.search || filters.status);
+  const hasFilter = !!(
+    filters.search ||
+    filters.status ||
+    filters.deliveryStaffId
+  );
 
   return (
     <div className="panel-card card-flush">
@@ -194,8 +208,8 @@ export function ShipmentList() {
       </div>
 
       {/* Filter Section */}
-      <div className="filter-bar card-filter-section">
-        <div className="filter-grid-premium">
+      <div className="filter-bar card-filter-section flex-col items-start gap-4">
+        <div className="filter-grid-premium w-full">
           <div className="filter-field">
             <label>Tìm kiếm</label>
             <form className="search-input-wrapper" onSubmit={handleSearch}>
@@ -213,30 +227,70 @@ export function ShipmentList() {
           </div>
 
           <div className="filter-field">
-            <label>Trạng thái</label>
+            <label>Tài xế giao hàng</label>
             <select
               className="field-select"
-              value={filters.status ?? ''}
-              onChange={(e) => handleStatusChange(e.target.value)}
+              value={filters.deliveryStaffId ?? ''}
+              onChange={(e) => handleStaffChange(e.target.value)}
             >
-              <option value="">Tất cả</option>
-              <option value="preparing">Đang chuẩn bị</option>
-              <option value="shipped">Đã giao</option>
-              <option value="delivered">Đã nhận</option>
+              <option value="">Tất cả tài xế</option>
+              {staffListResult.data?.map((staff) => (
+                <option key={staff.id} value={staff.id}>
+                  {staff.full_name}
+                </option>
+              ))}
             </select>
           </div>
         </div>
 
-        {hasFilter && (
-          <ClearFilterButton
-            onClick={() => {
-              setFilters({});
-              setSearchInput('');
-              setPage(1);
-            }}
-            label="Xóa lọc nhanh"
-          />
-        )}
+        <div className="flex w-full items-center justify-between">
+          <div className="flex bg-muted/50 p-1 rounded-md w-fit border border-border/50">
+            {[
+              {
+                label: 'Tất cả',
+                value: '',
+              },
+              {
+                label: 'Đang chuẩn bị',
+                value: 'preparing',
+              },
+              {
+                label: 'Đang đi giao',
+                value: 'shipped',
+              },
+              {
+                label: 'Đã nhận hàng',
+                value: 'delivered',
+              },
+            ].map((tab) => {
+              const isActive = (filters.status || '') === tab.value;
+              return (
+                <button
+                  key={tab.value}
+                  onClick={() => handleStatusChange(tab.value)}
+                  className={`px-4 py-1.5 text-[0.82rem] font-medium rounded transition-all ${
+                    isActive
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {hasFilter && (
+            <ClearFilterButton
+              onClick={() => {
+                setFilters({});
+                setSearchInput('');
+                setPage(1);
+              }}
+              label="Xóa lọc nhanh"
+            />
+          )}
+        </div>
       </div>
 
       {/* Error */}

@@ -20,6 +20,7 @@ const ROLE_LABELS: Record<string, string> = {
   admin: 'Quản trị viên',
   sales: 'Kinh doanh',
   warehouse: 'Kho bãi',
+  driver: 'Tài xế',
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -43,6 +44,10 @@ const ROLE_FILTER_OPTIONS = [
   {
     value: 'warehouse',
     label: 'Kho bãi',
+  },
+  {
+    value: 'driver',
+    label: 'Tài xế',
   },
 ];
 
@@ -160,6 +165,24 @@ export function EmployeeListPage() {
           </div>
           <div className="kpi-footer text-xs opacity-80 italic">
             Nhân viên kinh doanh
+          </div>
+        </div>
+
+        <div className="kpi-card-premium kpi-info">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Tài xế (Driver)</p>
+              <p className="kpi-value">
+                {employees?.filter((e) => e.role === 'driver').length ?? 0}
+              </p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="Truck" size={32} />
+            </div>
+          </div>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Nhân viên giao nhận
           </div>
         </div>
       </div>
