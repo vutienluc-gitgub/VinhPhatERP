@@ -1318,7 +1318,7 @@
   background: var(--surface-strong);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  overflow: hidden;
+  overflow-x: auto;
   box-shadow: 0 4px 12px rgba(16, 35, 61, 0.03);
 }
 
