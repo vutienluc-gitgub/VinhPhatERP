@@ -9,6 +9,8 @@ import {
   updateContractStatus,
   linkOrderToContract,
   unlinkOrderFromContract,
+  exportContractPdf,
+  getAvailableOrdersForContract,
 } from '@/features/contracts/contracts.service';
 import type {
   ContractStatus,
@@ -151,5 +153,25 @@ export function useContractAuditLogs(contractId: string) {
     queryKey: [...CONTRACTS_KEY, contractId, 'audit-logs'],
     queryFn: () => getAuditLogs(contractId),
     enabled: !!contractId,
+  });
+}
+
+export function useAvailableOrders(excludeIds: string[]) {
+  return useQuery({
+    queryKey: [...CONTRACTS_KEY, 'link-picker', excludeIds],
+    queryFn: () => getAvailableOrdersForContract(excludeIds),
+    enabled: true,
+  });
+}
+
+export function useExportContractPdf() {
+  return useMutation({
+    mutationFn: (contractId: string) => exportContractPdf(contractId),
+    onSuccess: () => {
+      toast.success('Xuất PDF thành công');
+    },
+    onError: (err: Error) => {
+      toast.error(err.message ?? 'Xuất PDF thất bại');
+    },
   });
 }

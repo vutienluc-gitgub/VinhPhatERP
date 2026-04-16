@@ -39,7 +39,7 @@ export function ResourceBay({
           !isFull &&
           !isOver &&
           'border-indigo-300 border-dashed animate-pulse cursor-pointer',
-        !isOver && !isBayWaiting && 'border-slate-200 bg-white shadow-sm',
+        !isOver && !isBayWaiting && 'border-slate-200 bg-surface shadow-sm',
       )}
     >
       {/* BAY HEADER */}

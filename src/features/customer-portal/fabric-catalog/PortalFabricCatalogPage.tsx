@@ -147,11 +147,11 @@ export function PortalFabricCatalogPage() {
               cell: (c) => (
                 <div className="flex gap-1 flex-wrap">
                   {c.composition && (
-                    <span className="px-2 py-0.5 rounded-md bg-surface text-[0.65rem] font-bold border border-border shadow-sm">
+                    <span className="px-2 py-0.5 rounded-lg bg-surface text-[0.65rem] font-bold border border-border shadow-sm">
                       {c.composition.split('/')[0]}
                     </span>
                   )}
-                  <span className="px-2 py-0.5 rounded-md bg-surface text-[0.65rem] font-bold border border-border shadow-sm uppercase">
+                  <span className="px-2 py-0.5 rounded-lg bg-surface text-[0.65rem] font-bold border border-border shadow-sm uppercase">
                     Premium
                   </span>
                 </div>
@@ -209,10 +209,10 @@ export function PortalFabricCatalogPage() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <span className="px-2 py-1 rounded-md bg-surface-subtle text-[10px] font-bold border border-border">
+                <span className="px-2 py-1 rounded-lg bg-surface-subtle text-[10px] font-bold border border-border">
                   {c.composition?.split('/')[0] || 'Fabric'}
                 </span>
-                <span className="px-2 py-1 rounded-md bg-primary/5 text-primary text-[10px] font-bold border border-primary/10 uppercase">
+                <span className="px-2 py-1 rounded-lg bg-primary/5 text-primary text-[10px] font-bold border border-primary/10 uppercase">
                   Có sẵn
                 </span>
                 <div className="ml-auto flex items-center justify-end">
@@ -235,7 +235,7 @@ export function PortalFabricCatalogPage() {
       </div>
 
       <div className="mt-6 p-5 bg-primary/5 rounded-2xl border border-primary/10 flex flex-col md:flex-row items-center gap-4">
-        <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-primary shadow-sm flex-shrink-0">
+        <div className="w-12 h-12 rounded-full bg-surface flex items-center justify-center text-primary shadow-sm flex-shrink-0">
           <Icon name="Info" size={24} />
         </div>
         <div className="flex-1">

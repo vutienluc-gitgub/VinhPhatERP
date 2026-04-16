@@ -14,3 +14,9 @@ export type CustomersFilter = {
   query?: string;
   status?: 'active' | 'inactive';
 };
+
+export interface PortalAccount {
+  id: string;
+  email: string;
+  is_active: boolean;
+}

@@ -55,7 +55,7 @@ const PortalQuotationDetail = lazy(() =>
 export function CustomerPortalRouter() {
   return (
     <Suspense
-      fallback={<div className="p-4 text-sm text-gray-500">Đang tải…</div>}
+      fallback={<div className="p-4 text-sm text-slate-500">Đang tải…</div>}
     >
       <Routes>
         <Route element={<CustomerPortalLayout />}>

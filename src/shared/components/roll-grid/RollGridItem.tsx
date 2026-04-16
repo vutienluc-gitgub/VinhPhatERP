@@ -50,7 +50,7 @@ function Tooltip({
         className={cn(
           'pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-50',
           'whitespace-nowrap rounded px-2 py-1 text-[10px] font-semibold',
-          'bg-gray-900 text-white shadow-lg',
+          'bg-slate-900 text-white shadow-lg',
           'opacity-0 group-hover/tip:opacity-100 transition-opacity duration-150',
         )}
       >

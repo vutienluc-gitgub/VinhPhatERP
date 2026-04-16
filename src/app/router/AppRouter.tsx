@@ -60,7 +60,7 @@ const PortalFabricCatalogPage = lazy(() =>
 function PortalPage({ children }: { children: React.ReactNode }) {
   return (
     <Suspense
-      fallback={<div className="p-4 text-sm text-gray-500">Đang tải…</div>}
+      fallback={<div className="p-4 text-sm text-slate-500">Đang tải…</div>}
     >
       {children}
     </Suspense>

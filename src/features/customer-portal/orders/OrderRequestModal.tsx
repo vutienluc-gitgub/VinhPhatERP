@@ -195,7 +195,7 @@ export function OrderRequestModal({
                     <button
                       type="button"
                       onClick={() => remove(index)}
-                      className="absolute top-2 right-2 p-1 text-muted hover:text-danger rounded-md bg-background"
+                      className="absolute top-2 right-2 p-1 text-muted hover:text-danger rounded-lg bg-background"
                     >
                       <Icon name="X" size={14} />
                     </button>

@@ -72,11 +72,11 @@ export function ContractPreview({
   return (
     <div className="flex flex-col gap-2 w-full">
       {contractNumber && (
-        <p className="text-xs text-gray-500 font-mono">
+        <p className="text-xs text-slate-500 font-mono">
           Số hợp đồng: {contractNumber}
         </p>
       )}
-      <div className="w-full overflow-x-auto rounded-lg border border-gray-200 bg-gray-100">
+      <div className="w-full overflow-x-auto rounded-lg border border-slate-200 bg-slate-100">
         <iframe
           ref={iframeRef}
           srcDoc={wrappedContent}
