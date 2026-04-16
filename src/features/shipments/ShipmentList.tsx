@@ -11,8 +11,8 @@ import {
   ClearFilterButton,
   ActionBar,
   TabSwitcher,
+  type ActionConfig,
 } from '@/shared/components';
-import type { ActionConfig } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import {
   useConfirmShipment,

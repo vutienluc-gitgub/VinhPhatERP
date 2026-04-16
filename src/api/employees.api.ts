@@ -1,7 +1,7 @@
 import { supabase } from '@/services/supabase/client';
+import { untypedDb } from '@/services/supabase/untyped';
 import { getTenantId } from '@/services/supabase/tenant';
 import type { Employee, EmployeeFormValues } from '@/schema';
-
 const TABLE = 'employees';
 
 export async function fetchEmployees(filters?: {
@@ -98,8 +98,6 @@ export async function fetchNextEmployeeCode(): Promise<string> {
   const nextNum = parseInt(match[1], 10) + 1;
   return `NV${String(nextNum).padStart(3, '0')}`;
 }
-
-import { untypedDb } from '@/services/supabase/untyped';
 
 export type DriverProfileSummary = {
   id: string;
