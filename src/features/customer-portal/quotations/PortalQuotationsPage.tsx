@@ -40,7 +40,7 @@ export function PortalQuotationsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="portal-page-title mb-1">Báo giá</h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-slate-500">
             Danh sách các báo giá Vĩnh Phát gửi tới bạn.
           </p>
         </div>
@@ -87,10 +87,10 @@ export function PortalQuotationsPage() {
                           {q.quotation_number}
                         </Link>
                       </td>
-                      <td className="text-gray-500 text-sm">
+                      <td className="text-slate-500 text-sm">
                         {dayjs(q.quotation_date).format('DD/MM/YYYY')}
                       </td>
-                      <td className="text-gray-500 text-sm">
+                      <td className="text-slate-500 text-sm">
                         {q.valid_until ? (
                           <span className={isExpired ? 'text-red-500' : ''}>
                             {dayjs(q.valid_until).format('DD/MM/YYYY')}
@@ -99,7 +99,7 @@ export function PortalQuotationsPage() {
                           '—'
                         )}
                       </td>
-                      <td className="right font-bold text-gray-800">
+                      <td className="right font-bold text-slate-800">
                         {formatCurrency(q.total_amount)} đ
                       </td>
                       <td>
@@ -138,7 +138,7 @@ export function PortalQuotationsPage() {
                 <Link
                   key={q.id}
                   to={`/portal/quotations/${q.id}`}
-                  className="block portal-order-card hover:bg-gray-50 transition-colors"
+                  className="block portal-order-card hover:bg-slate-50 transition-colors"
                 >
                   <div className="flex justify-between items-start mb-2">
                     <span className="font-bold text-primary">
@@ -151,7 +151,7 @@ export function PortalQuotationsPage() {
                     </span>
                   </div>
                   <div className="flex justify-between items-end">
-                    <div className="text-xs text-gray-500 space-y-0.5">
+                    <div className="text-xs text-slate-500 space-y-0.5">
                       <div>
                         Gửi: {dayjs(q.quotation_date).format('DD/MM/YYYY')}
                       </div>
@@ -165,7 +165,7 @@ export function PortalQuotationsPage() {
                         </div>
                       )}
                     </div>
-                    <div className="font-bold text-gray-800">
+                    <div className="font-bold text-slate-800">
                       {formatCurrency(q.total_amount)} đ
                     </div>
                   </div>

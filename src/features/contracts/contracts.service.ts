@@ -1,4 +1,5 @@
 import { untypedDb } from '@/services/supabase/untyped';
+import { supabase } from '@/services/supabase/client';
 
 import type {
   Contract,
@@ -374,4 +375,108 @@ export async function getAuditLogs(
     .order('performed_at', { ascending: false });
   if (error) throw error;
   return (data ?? []) as ContractAuditLog[];
+}
+
+// ── Export ───────────────────────────────────────────────────────────────────
+
+export async function exportContractPdf(contractId: string): Promise<void> {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData?.session?.access_token ?? '';
+  const { error: fnError } = await supabase.functions.invoke(
+    'export-contract-pdf',
+    {
+      body: { contract_id: contractId },
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    },
+  );
+  if (fnError) throw fnError;
+}
+
+// ── Link Picker ──────────────────────────────────────────────────────────────
+
+export async function getAvailableOrdersForContract(
+  excludeIds: string[],
+): Promise<{ value: string; label: string; code: string }[]> {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('id, order_number, customers(name)')
+    .not('status', 'eq', 'cancelled')
+    .order('order_date', { ascending: false })
+    .limit(200);
+  if (error) throw error;
+  return (data ?? [])
+    .filter((o) => !excludeIds.includes(o.id))
+    .map((o) => ({
+      value: o.id,
+      label: o.order_number,
+      code: (o.customers as { name: string } | null)?.name ?? '',
+    }));
+}
+
+export async function getOrderOptions() {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('id, order_number, customers(name)')
+    .not('status', 'eq', 'cancelled')
+    .order('order_date', { ascending: false })
+    .limit(200);
+  if (error) throw error;
+  return (data ?? []).map((o) => ({
+    value: o.id,
+    label: o.order_number,
+    code: (o.customers as { name: string } | null)?.name ?? '',
+  }));
+}
+
+export async function getCustomerOptions() {
+  const { data, error } = await supabase
+    .from('customers')
+    .select('id, code, name')
+    .eq('status', 'active')
+    .order('name');
+  if (error) throw error;
+  return (data ?? []).map((c) => ({
+    value: c.id,
+    label: c.name,
+    code: c.code,
+  }));
+}
+
+export async function getSupplierOptions() {
+  const { data, error } = await supabase
+    .from('suppliers')
+    .select('id, code, name')
+    .eq('status', 'active')
+    .order('name');
+  if (error) throw error;
+  return (data ?? []).map((s) => ({
+    value: s.id,
+    label: s.name,
+    code: s.code,
+  }));
+}
+
+// ── Generate Contract ────────────────────────────────────────────────────────
+
+export type GenerateContractResponse = {
+  contractId: string;
+  contractNumber: string;
+  warning?: string;
+};
+
+export async function generateContract(
+  payload: Record<string, unknown>,
+): Promise<GenerateContractResponse> {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData?.session?.access_token ?? '';
+  const { data, error } =
+    await supabase.functions.invoke<GenerateContractResponse>(
+      'generate-contract',
+      {
+        body: payload,
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      },
+    );
+  if (error) throw error;
+  return data as GenerateContractResponse;
 }

@@ -6,6 +6,9 @@ import {
   updateCustomer,
   deleteCustomer,
   fetchNextCustomerCode,
+  fetchCustomerPortalAccount,
+  createCustomerPortalAccount,
+  updateCustomerPortalAccountStatus,
 } from '@/api/customers.api';
 import type {
   Customer,
@@ -87,6 +90,44 @@ export function useDeleteCustomer() {
     mutationFn: deleteCustomer,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+  });
+}
+
+export function usePortalAccount(customerId: string) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, customerId, 'portal-account'],
+    queryFn: () => fetchCustomerPortalAccount(customerId),
+    enabled: !!customerId,
+  });
+}
+
+export function useCreatePortalAccount(customerId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: {
+      customer_id: string;
+      full_name: string;
+      email: string;
+      password?: string;
+    }) => createCustomerPortalAccount(payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEY, customerId, 'portal-account'],
+      });
+    },
+  });
+}
+
+export function useUpdatePortalAccountStatus(customerId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
+      updateCustomerPortalAccountStatus(id, isActive),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEY, customerId, 'portal-account'],
+      });
     },
   });
 }

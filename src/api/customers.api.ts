@@ -3,6 +3,7 @@ import type {
   CustomerInsert,
   CustomerUpdate,
   CustomersFilter,
+  PortalAccount,
 } from '@/features/customers/types';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
@@ -86,4 +87,72 @@ export async function fetchNextCustomerCode(): Promise<string> {
 
   const nextNum = parseInt(match[1], 10) + 1;
   return `KH-${String(nextNum).padStart(3, '0')}`;
+}
+
+export async function fetchCustomerPortalAccount(
+  customerId: string,
+): Promise<PortalAccount | null> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, is_active')
+    .eq('customer_id', customerId)
+    .eq('role', 'customer')
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return null;
+
+  return {
+    id: data.id,
+    email: '(đã có tài khoản)', // Email from auth is not natively queried here
+    is_active: data.is_active,
+  };
+}
+
+export async function createCustomerPortalAccount(payload: {
+  customer_id: string;
+  full_name: string;
+  email: string;
+  password?: string;
+}): Promise<void> {
+  const { data: sessionData, error: sessionError } =
+    await supabase.auth.getSession();
+  if (sessionError || !sessionData?.session) {
+    throw new Error('Phiên đăng nhập không hợp lệ hoặc đã hết hạn.');
+  }
+
+  const res = await fetch(
+    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-customer-account`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${sessionData.session.access_token}`,
+      },
+      body: JSON.stringify(payload),
+    },
+  );
+
+  let json;
+  try {
+    json = await res.json();
+  } catch {
+    throw new Error('Đã có lỗi xảy ra. Hãy kiểm tra lại kết nối mạng.');
+  }
+
+  if (!res.ok || !json.ok) {
+    throw new Error(json.error?.message ?? 'Tạo tài khoản thất bại.');
+  }
+}
+
+export async function updateCustomerPortalAccountStatus(
+  id: string,
+  isActive: boolean,
+): Promise<void> {
+  const { error } = await supabase
+    .from('profiles')
+    .update({ is_active: isActive })
+    .eq('id', id);
+
+  if (error) throw error;
 }

@@ -1,146 +1,96 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 import { Button } from '@/shared/components';
-import { supabase } from '@/services/supabase/client';
+import {
+  usePortalAccount,
+  useCreatePortalAccount,
+  useUpdatePortalAccountStatus,
+} from '@/application/crm';
 
 interface Props {
   customerId: string;
   customerName: string;
 }
 
-interface PortalAccount {
-  id: string;
-  email: string;
-  is_active: boolean;
-}
-
 export function CustomerPortalAccountPanel({
   customerId,
   customerName,
 }: Props) {
-  const [account, setAccount] = useState<PortalAccount | null | undefined>(
-    undefined,
-  );
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const { data: account, isLoading: isFetching } = usePortalAccount(customerId);
+  const createMutation = useCreatePortalAccount(customerId);
+  const updateStatusMutation = useUpdatePortalAccountStatus(customerId);
 
   // Form state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showForm, setShowForm] = useState(false);
 
-  // Load account status on mount
-  useState(() => {
-    loadAccount();
-  });
+  const loading = createMutation.isPending || updateStatusMutation.isPending;
 
-  async function loadAccount() {
-    const { data } = await supabase
-      .from('profiles')
-      .select('id, is_active')
-      .eq('customer_id', customerId)
-      .eq('role', 'customer')
-      .maybeSingle();
-
-    if (data) {
-      // Get email from auth — not available via profiles directly, show id
-      setAccount({
-        id: data.id,
-        email: '(đã có tài khoản)',
-        is_active: data.is_active,
-      });
-    } else {
-      setAccount(null);
-    }
-  }
-
-  async function handleCreate(e: React.FormEvent) {
+  function handleCreate(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
-
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (!session) {
-      setError('Phiên đăng nhập hết hạn.');
-      setLoading(false);
-      return;
-    }
-
-    const res = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-customer-account`,
+    createMutation.mutate(
       {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
+        customer_id: customerId,
+        full_name: customerName,
+        email,
+        password,
+      },
+      {
+        onSuccess: () => {
+          toast.success(`Tài khoản Portal đã được tạo cho ${customerName}.`);
+          setShowForm(false);
+          setEmail('');
+          setPassword('');
         },
-        body: JSON.stringify({
-          email,
-          password,
-          customer_id: customerId,
-          full_name: customerName,
-        }),
+        onError: (err) => {
+          toast.error((err as Error).message ?? 'Tạo tài khoản thất bại.');
+        },
       },
     );
-
-    const json = await res.json();
-    if (!res.ok || !json.ok) {
-      setError(json.error?.message ?? 'Tạo tài khoản thất bại.');
-    } else {
-      setSuccess(`Tài khoản Portal đã được tạo cho ${customerName}.`);
-      setShowForm(false);
-      setEmail('');
-      setPassword('');
-      await loadAccount();
-    }
-    setLoading(false);
   }
 
-  async function handleDeactivate() {
+  function handleDeactivate() {
     if (!account) return;
     if (!confirm(`Vô hiệu hóa tài khoản Portal của ${customerName}?`)) return;
 
-    setLoading(true);
-    setError(null);
-
-    const { error: err } = await supabase
-      .from('profiles')
-      .update({ is_active: false })
-      .eq('id', account.id);
-
-    if (err) {
-      setError(err.message);
-    } else {
-      setSuccess('Tài khoản đã bị vô hiệu hóa.');
-      await loadAccount();
-    }
-    setLoading(false);
+    updateStatusMutation.mutate(
+      {
+        id: account.id,
+        isActive: false,
+      },
+      {
+        onSuccess: () => {
+          toast.success('Tài khoản đã bị vô hiệu hóa.');
+        },
+        onError: (err) => {
+          toast.error((err as Error).message);
+        },
+      },
+    );
   }
 
-  async function handleReactivate() {
+  function handleReactivate() {
     if (!account) return;
-    setLoading(true);
-    setError(null);
 
-    const { error: err } = await supabase
-      .from('profiles')
-      .update({ is_active: true })
-      .eq('id', account.id);
-
-    if (err) {
-      setError(err.message);
-    } else {
-      setSuccess('Tài khoản đã được kích hoạt lại.');
-      await loadAccount();
-    }
-    setLoading(false);
+    updateStatusMutation.mutate(
+      {
+        id: account.id,
+        isActive: true,
+      },
+      {
+        onSuccess: () => {
+          toast.success('Tài khoản đã được kích hoạt lại.');
+        },
+        onError: (err) => {
+          toast.error((err as Error).message);
+        },
+      },
+    );
   }
 
-  if (account === undefined) {
+  if (isFetching || account === undefined) {
     return (
       <div className="border border-border rounded-lg p-4">
         <p className="text-sm text-muted">Đang kiểm tra tài khoản Portal…</p>
@@ -198,36 +148,6 @@ export function CustomerPortalAccountPanel({
           </span>
         )}
       </div>
-
-      {/* Feedback */}
-      {error && (
-        <div
-          style={{
-            fontSize: 12,
-            color: '#dc2626',
-            background: 'rgba(220,38,38,0.06)',
-            padding: '6px 10px',
-            borderRadius: 6,
-            border: '1px solid rgba(220,38,38,0.15)',
-          }}
-        >
-          {error}
-        </div>
-      )}
-      {success && (
-        <div
-          style={{
-            fontSize: 12,
-            color: '#16a34a',
-            background: 'rgba(22,163,74,0.06)',
-            padding: '6px 10px',
-            borderRadius: 6,
-            border: '1px solid rgba(22,163,74,0.15)',
-          }}
-        >
-          {success}
-        </div>
-      )}
 
       {account === null ? (
         <>

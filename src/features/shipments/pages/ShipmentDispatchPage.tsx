@@ -148,7 +148,7 @@ export function ShipmentDispatchPage() {
               </h2>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm max-h-[70vh] overflow-y-auto">
+            <div className="rounded-2xl border border-slate-200 bg-surface p-4 shadow-sm max-h-[70vh] overflow-y-auto">
               {unassignedRolls.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-slate-400">
                   <Icon

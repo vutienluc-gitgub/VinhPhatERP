@@ -2,12 +2,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { useQuery } from '@tanstack/react-query';
 import { z } from 'zod';
 
-import { supabase } from '@/services/supabase/client';
 import { Combobox } from '@/shared/components/Combobox';
 import { AlertTriangle } from '@/shared/icons';
+import {
+  useOrderOptions,
+  useCustomerOptions,
+  useSupplierOptions,
+  useGenerateContract,
+} from '@/application/contracts';
 
 import { CONTRACT_TYPE_LABELS, CONTRACT_TYPES } from './contracts.module';
 
@@ -67,91 +71,6 @@ const SOURCE_TYPE_OPTIONS = [
   },
 ];
 
-// ── Data hooks ───────────────────────────────────────────────────────────────
-
-function useOrderOptions() {
-  return useQuery({
-    queryKey: ['orders', 'contract-picker'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('id, order_number, customers(name)')
-        .not('status', 'eq', 'cancelled')
-        .order('order_date', { ascending: false })
-        .limit(200);
-      if (error) throw error;
-      return (data ?? []).map((o) => ({
-        value: o.id,
-        label: o.order_number,
-        code: (o.customers as { name: string } | null)?.name ?? '',
-      }));
-    },
-  });
-}
-
-function useCustomerOptions() {
-  return useQuery({
-    queryKey: ['customers', 'contract-picker'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('customers')
-        .select('id, code, name')
-        .eq('status', 'active')
-        .order('name');
-      if (error) throw error;
-      return (data ?? []).map((c) => ({
-        value: c.id,
-        label: c.name,
-        code: c.code,
-      }));
-    },
-  });
-}
-
-function useSupplierOptions() {
-  return useQuery({
-    queryKey: ['suppliers', 'contract-picker'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('suppliers')
-        .select('id, code, name')
-        .eq('status', 'active')
-        .order('name');
-      if (error) throw error;
-      return (data ?? []).map((s) => ({
-        value: s.id,
-        label: s.name,
-        code: s.code,
-      }));
-    },
-  });
-}
-
-// ── Edge function call ───────────────────────────────────────────────────────
-
-type GenerateContractResponse = {
-  contractId: string;
-  contractNumber: string;
-  warning?: string;
-};
-
-async function invokeGenerateContract(
-  payload: ContractFormValues,
-): Promise<GenerateContractResponse> {
-  const { data: sessionData } = await supabase.auth.getSession();
-  const token = sessionData?.session?.access_token ?? '';
-  const { data, error } =
-    await supabase.functions.invoke<GenerateContractResponse>(
-      'generate-contract',
-      {
-        body: payload,
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      },
-    );
-  if (error) throw error;
-  return data as GenerateContractResponse;
-}
-
 // ── Component ────────────────────────────────────────────────────────────────
 
 export function ContractForm({
@@ -168,6 +87,7 @@ export function ContractForm({
   const { data: orderOptions = [] } = useOrderOptions();
   const { data: customerOptions = [] } = useCustomerOptions();
   const { data: supplierOptions = [] } = useSupplierOptions();
+  const generateMutation = useGenerateContract();
 
   const {
     register,
@@ -203,20 +123,24 @@ export function ContractForm({
   }
 
   async function submitForm(values: ContractFormValues) {
-    const result = await invokeGenerateContract(values);
-    if (result.warning) {
-      setWarning(result.warning);
-      setPendingValues(values);
-      return;
+    try {
+      const result = await generateMutation.mutateAsync(values);
+      if (result.warning) {
+        setWarning(result.warning);
+        setPendingValues(values);
+        return;
+      }
+      toast.success(`Tạo hợp đồng ${result.contractNumber} thành công`);
+      onSuccess(result.contractId);
+    } catch (err) {
+      toast.error((err as Error).message ?? 'Có lỗi xảy ra');
     }
-    toast.success(`Tạo hợp đồng ${result.contractNumber} thành công`);
-    onSuccess(result.contractId);
   }
 
   async function handleConfirmWarning() {
     if (!pendingValues) return;
     try {
-      const result = await invokeGenerateContract(pendingValues);
+      const result = await generateMutation.mutateAsync(pendingValues);
       toast.success(`Tạo hợp đồng ${result.contractNumber} thành công`);
       setWarning(null);
       setPendingValues(null);

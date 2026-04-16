@@ -108,7 +108,7 @@ export function NotificationBell() {
                     }}
                     className="p-3 border-b border-border text-left hover:bg-hover active:bg-active transition-colors flex gap-3 items-start"
                   >
-                    <div className="bg-danger/10 text-danger p-1.5 rounded-md mt-0.5 shrink-0 flex items-center justify-center">
+                    <div className="bg-danger/10 text-danger p-1.5 rounded-lg mt-0.5 shrink-0 flex items-center justify-center">
                       <Icon name="Megaphone" size={18} strokeWidth={1.5} />
                     </div>
                     <div className="flex-1 min-w-0 pr-2">

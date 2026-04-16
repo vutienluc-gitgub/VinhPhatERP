@@ -308,7 +308,7 @@ export function CustomerList({
                 </div>
               )}
               <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/10">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-muted bg-surface-subtle px-2 py-1 rounded-md border border-border/10">
+                <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-muted bg-surface-subtle px-2 py-1 rounded-lg border border-border/10">
                   <Icon
                     name={
                       CUSTOMER_SOURCE_ICONS[

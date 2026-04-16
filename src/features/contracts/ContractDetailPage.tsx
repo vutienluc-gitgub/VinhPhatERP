@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useQuery } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
 
-import { supabase } from '@/services/supabase/client';
 import { Button, AdaptiveSheet, Icon, useConfirm } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import {
@@ -15,6 +13,8 @@ import {
   useUpdateContractStatus,
   useLinkOrder,
   useUnlinkOrder,
+  useAvailableOrders,
+  useExportContractPdf,
 } from '@/application/contracts';
 
 import {
@@ -175,31 +175,6 @@ function SignSheet({ open, onClose, onConfirm, isLoading }: SignSheetProps) {
       </div>
     </AdaptiveSheet>
   );
-}
-
-// ── Link order sheet ──────────────────────────────────────────────────────────
-
-function useAvailableOrders(excludeIds: string[]) {
-  return useQuery({
-    queryKey: ['orders', 'link-picker', excludeIds],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('id, order_number, customers(name)')
-        .not('status', 'eq', 'cancelled')
-        .order('order_date', { ascending: false })
-        .limit(200);
-      if (error) throw error;
-      return (data ?? [])
-        .filter((o) => !excludeIds.includes(o.id))
-        .map((o) => ({
-          value: o.id,
-          label: o.order_number,
-          code: (o.customers as { name: string } | null)?.name ?? '',
-        }));
-    },
-    enabled: true,
-  });
 }
 
 type LinkOrderSheetProps = {
@@ -597,13 +572,13 @@ export function ContractDetailPage({
   const statusMutation = useUpdateContractStatus();
   const linkMutation = useLinkOrder();
   const unlinkMutation = useUnlinkOrder();
+  const exportPdfMutation = useExportContractPdf();
   const { confirm } = useConfirm();
 
   const [showEdit, setShowEdit] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
   const [showSign, setShowSign] = useState(false);
   const [showLinkOrder, setShowLinkOrder] = useState(false);
-  const [pdfLoading, setPdfLoading] = useState(false);
 
   // ── Loading / error states ──────────────────────────────────────────────────
 
@@ -685,25 +660,8 @@ export function ContractDetailPage({
     );
   }
 
-  async function handleExportPdf() {
-    setPdfLoading(true);
-    try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData?.session?.access_token ?? '';
-      const { error: fnError } = await supabase.functions.invoke(
-        'export-contract-pdf',
-        {
-          body: { contract_id: contractId },
-          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-        },
-      );
-      if (fnError) throw fnError;
-      toast.success('Xuất PDF thành công');
-    } catch (err) {
-      toast.error((err as Error).message ?? 'Xuất PDF thất bại');
-    } finally {
-      setPdfLoading(false);
-    }
+  function handleExportPdf() {
+    exportPdfMutation.mutate(contractId);
   }
 
   function handleSaveEdit(data: UpdateContractInput) {
@@ -878,7 +836,7 @@ export function ContractDetailPage({
               variant="outline"
               leftIcon="FileDown"
               onClick={() => void handleExportPdf()}
-              isLoading={pdfLoading}
+              isLoading={exportPdfMutation.isPending}
             >
               Xuất PDF
             </Button>
