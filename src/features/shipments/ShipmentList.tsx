@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
@@ -141,11 +142,17 @@ export function ShipmentList() {
   return (
     <div className="panel-card card-flush">
       {/* Header Area */}
-      <div className="card-header-area card-header-premium">
+      <div className="card-header-area card-header-premium flex justify-between items-center">
         <div>
           <p className="eyebrow-premium">KHO & GIAO HÀNG</p>
           <h3 className="title-premium">Quản lý Xuất kho</h3>
         </div>
+        <Link to="/shipments/dispatch">
+          <button className="btn-primary bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 flex items-center gap-2">
+            <Icon name="Navigation" size={18} />
+            Sa Bàn Điều Phối
+          </button>
+        </Link>
       </div>
 
       {/* Stats Section */}

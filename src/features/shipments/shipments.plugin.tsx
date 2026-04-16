@@ -20,5 +20,12 @@ export const shipmentsPlugin: FeaturePlugin = {
       component: () =>
         import('./ShipmentsPage').then((m) => ({ default: m.ShipmentsPage })),
     },
+    {
+      path: 'shipments/dispatch',
+      component: () =>
+        import('./pages/ShipmentDispatchPage').then((m) => ({
+          default: m.ShipmentDispatchPage,
+        })),
+    },
   ],
 };
