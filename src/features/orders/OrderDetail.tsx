@@ -100,7 +100,7 @@ export function OrderDetail({
 
   async function handleCancel() {
     const ok = await confirm({
-      message: 'Huỷ đơn hàng này?',
+      message: 'Hủy đơn hàng này?',
       variant: 'danger',
     });
     if (!ok) return;

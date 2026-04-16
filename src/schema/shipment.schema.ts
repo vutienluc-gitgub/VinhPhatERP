@@ -66,6 +66,8 @@ export const deliveryConfirmSchema = z.object({
   receiverPhone: z.string().trim().optional().or(z.literal('')),
   deliveryProof: z.string().trim().min(1, 'Bắt buộc chụp ảnh biên nhận'),
   notes: z.string().trim().optional().or(z.literal('')),
+  driverCommission: z.number().min(0).optional().or(z.literal(0)),
+  accountId: z.string().uuid().optional().or(z.literal('')),
 });
 
 export type DeliveryConfirmFormValues = z.infer<typeof deliveryConfirmSchema>;
@@ -75,6 +77,8 @@ export const deliveryConfirmDefaultValues: DeliveryConfirmFormValues = {
   receiverPhone: '',
   deliveryProof: '',
   notes: '',
+  driverCommission: 0,
+  accountId: '',
 };
 
 export const shipmentResponseSchema = z

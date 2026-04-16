@@ -434,10 +434,10 @@ export function ShipmentForm({
             onClick={onClose}
             disabled={isSubmitting || createMutation.isPending}
           >
-            Huỷ
+            Hủy
           </Button>
-          <button
-            className="primary-button btn-standard"
+          <Button
+            variant="primary"
             type="submit"
             disabled={
               isSubmitting ||
@@ -448,7 +448,7 @@ export function ShipmentForm({
             {createMutation.isPending
               ? 'Đang lưu...'
               : `Tạo phiếu xuất (${selectedRollIds.size} cuộn)`}
-          </button>
+          </Button>
         </div>
       </form>
     </AdaptiveSheet>

@@ -106,6 +106,9 @@ export interface DeliveryConfirmPayload {
   receiverPhone: string | null;
   deliveryProof: string;
   notes: string | null;
+  driverCommission: number | null;
+  accountId: string | null;
+  employeeId: string | null;
 }
 
 /**
@@ -116,12 +119,21 @@ export function mapDeliveryConfirmToPayload(values: {
   receiverPhone?: string;
   deliveryProof: string;
   notes?: string;
+  driverCommission?: number;
+  accountId?: string;
+  employeeId?: string;
 }): DeliveryConfirmPayload {
   return {
     receiverName: values.receiverName,
     receiverPhone: values.receiverPhone ?? null,
     deliveryProof: values.deliveryProof,
     notes: values.notes ?? null,
+    driverCommission:
+      values.driverCommission && values.driverCommission > 0
+        ? values.driverCommission
+        : null,
+    accountId: values.accountId?.trim() || null,
+    employeeId: values.employeeId?.trim() || null,
   };
 }
 

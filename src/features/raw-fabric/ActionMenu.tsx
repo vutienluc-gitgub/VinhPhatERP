@@ -89,8 +89,8 @@ export function ActionMenu({
         </Button>
       </div>
 
-      {/* Mobile layout — hidden on desktop */}
-      <div className="hidden items-center gap-2 w-full">
+      {/* Mobile layout — shown only on mobile */}
+      <div className="flex md:hidden items-center gap-2 w-full">
         {/* ... dropdown menu */}
         <div className="relative" ref={menuRef}>
           <button

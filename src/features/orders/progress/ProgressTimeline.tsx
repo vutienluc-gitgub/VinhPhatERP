@@ -292,7 +292,7 @@ export function ProgressTimeline({
                       onClick={() => setEditingId(null)}
                       style={{ fontSize: '0.78rem' }}
                     >
-                      Huỷ
+                      Hủy
                     </button>
                   </div>
                 )}

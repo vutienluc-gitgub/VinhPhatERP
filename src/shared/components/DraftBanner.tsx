@@ -65,7 +65,7 @@ export default function DraftBanner({
           type="button"
           onClick={onDiscard}
         >
-          hasConflict ? 'Bỏ qua' : 'Xóa nháp
+          {hasConflict ? 'Bỏ qua' : 'Xóa bản nháp'}
         </Button>
       </div>
     </div>

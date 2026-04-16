@@ -32,6 +32,11 @@ export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps = {}) {
     return <Navigate to="/portal" replace />;
   }
 
+  // Driver role belongs in the driver portal, not the ERP shell
+  if (profile?.role === 'driver') {
+    return <Navigate to="/driver" replace />;
+  }
+
   if (allowedRoles && allowedRoles.length > 0) {
     const role = profile?.role;
     if (!role || !allowedRoles.includes(role)) {

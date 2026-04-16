@@ -113,7 +113,7 @@ export function TemplateCard({
                   message:
                     'Bạn có chắc chắn muốn xóa mẫu hợp đồng này không? Hành động này không thể hoàn tác.',
                   confirmLabel: 'Xóa',
-                  cancelLabel: 'Huỷ',
+                  cancelLabel: 'Hủy',
                   variant: 'danger',
                 });
                 if (isConfirmed) {

@@ -126,7 +126,7 @@ export async function fetchShipmentsPaginated(
   let query = supabase
     .from(HEADER_TABLE)
     .select(
-      '*, orders(order_number), customers(name, code, address), delivery_staff:profiles!shipments_delivery_staff_id_fkey(full_name, phone)',
+      '*, orders(order_number), customers(name, code, address), delivery_staff:employees!shipments_delivery_staff_id_fkey(full_name:name, phone)',
       { count: 'exact' },
     )
     .order('shipment_date', { ascending: false })
@@ -304,6 +304,9 @@ export type DeliveryConfirmInput = {
   receiverPhone: string | null;
   deliveryProof: string;
   notes: string | null;
+  driverCommission: number | null;
+  accountId: string | null;
+  employeeId: string | null;
 };
 
 export async function markShipmentDelivered(
@@ -323,6 +326,34 @@ export async function markShipmentDelivered(
     .eq('id', shipmentId)
     .eq('status', 'shipped');
   if (error) throw error;
+
+  // Auto-create expense record for driver commission if provided
+  const commission = values.driverCommission ?? 0;
+  if (commission > 0 && values.employeeId) {
+    const { fetchNextDocNumber, monthlyPrefix } =
+      await import('@/api/helpers/next-doc-number');
+    const expenseNumber = await fetchNextDocNumber({
+      table: 'expenses',
+      column: 'expense_number',
+      prefix: monthlyPrefix('PC'),
+    });
+
+    const { error: expError } = await untypedDb.rpc('atomic_create_expense', {
+      p_data: {
+        expense_number: expenseNumber,
+        category: 'logistics',
+        amount: commission,
+        expense_date: new Date().toISOString().slice(0, 10),
+        account_id: values.accountId || null,
+        supplier_id: null,
+        employee_id: values.employeeId,
+        description: `Thu lào giao hàng — phiếu xuất #${shipmentId.slice(0, 8)}`,
+        reference_number: shipmentId,
+        notes: null,
+      },
+    });
+    if (expError) throw expError;
+  }
 }
 
 /* ── Assign delivery staff ── */
@@ -346,11 +377,11 @@ export async function assignDeliveryStaff(
 
 export async function fetchDeliveryStaff(): Promise<DeliveryStaffSummary[]> {
   const { data, error } = await supabase
-    .from('profiles')
-    .select('id, full_name, phone')
+    .from('employees')
+    .select('id, full_name:name, phone')
     .eq('role', 'driver')
-    .eq('is_active', true)
-    .order('full_name');
+    .eq('status', 'active')
+    .order('name');
   if (error) throw error;
   return (data ?? []) as DeliveryStaffSummary[];
 }

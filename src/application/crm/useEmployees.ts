@@ -7,6 +7,7 @@ import {
   updateEmployee,
   deactivateEmployee,
   fetchNextEmployeeCode,
+  fetchAvailableDriverProfiles,
 } from '@/api';
 import type { EmployeeFormValues } from '@/schema';
 
@@ -75,3 +76,14 @@ export function useDeactivateEmployee() {
     },
   });
 }
+
+export function useAvailableDriverProfiles(employeeId?: string) {
+  return useQuery({
+    queryKey: ['available-driver-profiles', employeeId],
+    queryFn: () => fetchAvailableDriverProfiles(employeeId),
+  });
+}
+
+// We don't expose a separate mutation hook for linking because we will merge
+// the linking process directly into the onSuccess callback of create/update employee
+// or run it directly inside the form's submit handler.

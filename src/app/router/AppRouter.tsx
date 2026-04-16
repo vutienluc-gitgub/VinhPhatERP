@@ -6,6 +6,8 @@ import { AppShell } from '@/app/layouts/AppShell';
 import { ProtectedRoute } from '@/app/router/ProtectedRoute';
 import { PortalRoute } from '@/features/customer-portal/PortalRoute';
 import { CustomerPortalLayout } from '@/features/customer-portal/CustomerPortalLayout';
+import { DriverRoute } from '@/features/driver-portal/DriverRoute';
+import { DriverPortalLayout } from '@/features/driver-portal/DriverPortalLayout';
 import {
   appRoutes,
   adminRoutes,
@@ -71,6 +73,12 @@ const TenantRegisterPage = lazy(() =>
   })),
 );
 
+const DriverPortalPage = lazy(() =>
+  import('@/features/driver-portal/DriverPortalPage').then((m) => ({
+    default: m.DriverPortalPage,
+  })),
+);
+
 const router = createBrowserRouter([
   // ---- Public routes ----
   authRoute,
@@ -89,6 +97,27 @@ const router = createBrowserRouter([
   {
     path: '/blocked',
     element: <BlockedPage />,
+  },
+
+  // ---- Driver Portal ----
+  {
+    path: '/driver',
+    element: <DriverRoute />,
+    children: [
+      {
+        element: <DriverPortalLayout />,
+        children: [
+          {
+            index: true,
+            element: (
+              <Suspense fallback={<div />}>
+                <DriverPortalPage />
+              </Suspense>
+            ),
+          },
+        ],
+      },
+    ],
   },
 
   // ---- Customer Portal ----
