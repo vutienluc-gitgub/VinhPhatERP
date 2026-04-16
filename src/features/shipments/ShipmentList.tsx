@@ -9,6 +9,7 @@ import {
   DataTablePremium,
   ClearFilterButton,
   ActionBar,
+  TabSwitcher,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
@@ -244,41 +245,29 @@ export function ShipmentList() {
         </div>
 
         <div className="flex w-full items-center justify-between">
-          <div className="flex bg-muted/50 p-1 rounded-md w-fit border border-border/50">
-            {[
+          <TabSwitcher
+            tabs={[
               {
+                key: '',
                 label: 'Tất cả',
-                value: '',
               },
               {
+                key: 'preparing',
                 label: 'Đang chuẩn bị',
-                value: 'preparing',
               },
               {
+                key: 'shipped',
                 label: 'Đang đi giao',
-                value: 'shipped',
               },
               {
+                key: 'delivered',
                 label: 'Đã nhận hàng',
-                value: 'delivered',
               },
-            ].map((tab) => {
-              const isActive = (filters.status || '') === tab.value;
-              return (
-                <button
-                  key={tab.value}
-                  onClick={() => handleStatusChange(tab.value)}
-                  className={`px-4 py-1.5 text-[0.82rem] font-medium rounded transition-all ${
-                    isActive
-                      ? 'bg-background text-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
+            ]}
+            active={filters.status || ''}
+            onChange={handleStatusChange}
+            variant="boxed"
+          />
 
           {hasFilter && (
             <ClearFilterButton

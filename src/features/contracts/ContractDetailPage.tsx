@@ -83,7 +83,7 @@ function CancelSheet({
     <AdaptiveSheet
       open={open}
       onClose={handleClose}
-      title="Huỷ hợp đồng"
+      title="Hủy hợp đồng"
       footer={
         <div className="flex gap-3 justify-end">
           <Button
@@ -506,7 +506,7 @@ const ACTION_LABELS: Record<string, string> = {
   updated: 'Cập nhật thông tin',
   status_changed: 'Chuyển trạng thái',
   order_linked: 'Liên kết đơn hàng',
-  order_unlinked: 'Huỷ liên kết đơn hàng',
+  order_unlinked: 'Hủy liên kết đơn hàng',
 };
 
 const ACTION_ICONS: Record<string, string> = {
@@ -728,7 +728,7 @@ export function ContractDetailPage({
 
   async function handleUnlinkOrder(orderId: string, orderNumber: string) {
     const ok = await confirm({
-      message: `Huỷ liên kết đơn hàng ${orderNumber}?`,
+      message: `Hủy liên kết đơn hàng ${orderNumber}?`,
       variant: 'danger',
     });
     if (!ok) return;
@@ -898,7 +898,7 @@ export function ContractDetailPage({
                 onClick={() => setShowCancel(true)}
                 className="text-danger"
               >
-                Huỷ hợp đồng
+                Hủy hợp đồng
               </Button>
             )}
           </div>

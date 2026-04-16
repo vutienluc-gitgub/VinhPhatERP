@@ -98,3 +98,44 @@ export async function fetchNextEmployeeCode(): Promise<string> {
   const nextNum = parseInt(match[1], 10) + 1;
   return `NV${String(nextNum).padStart(3, '0')}`;
 }
+
+import { untypedDb } from '@/services/supabase/untyped';
+
+export type DriverProfileSummary = {
+  id: string;
+  email: string;
+  full_name: string;
+  employee_id?: string | null;
+};
+
+export async function fetchAvailableDriverProfiles(
+  currentEmployeeId?: string,
+): Promise<DriverProfileSummary[]> {
+  // Lấy các tài khoản nội bộ (staff, sale, driver) chưa link hoặc đang link với nhân viên hiện tại
+  const query = untypedDb
+    .from('profiles')
+    .select('id, email, full_name, employee_id')
+    .in('role', ['staff', 'driver', 'sale', 'viewer']);
+
+  const { data, error } = await query;
+  if (error) throw error;
+
+  return (data as DriverProfileSummary[]).filter(
+    (p) =>
+      !(p as { employee_id?: string | null }).employee_id ||
+      (p as { employee_id?: string | null }).employee_id === currentEmployeeId,
+  );
+}
+
+export async function linkProfileToEmployee(
+  employeeId: string,
+  profileId: string | null,
+): Promise<void> {
+  // Goi RPC de bypass RLS (Admin co the cap nhat profile cua user khac)
+  const { error } = await untypedDb.rpc('atomic_link_profile_to_employee', {
+    p_employee_id: employeeId,
+    p_profile_id: profileId,
+  });
+
+  if (error) throw error;
+}

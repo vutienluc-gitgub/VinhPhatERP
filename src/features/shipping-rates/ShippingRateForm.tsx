@@ -261,7 +261,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
           border: 'none',
         }}
       >
-        <CancelButton onClick={onClose} label="Huỷ" />
+        <CancelButton onClick={onClose} label="Hủy" />
         <button
           className="primary-button btn-standard"
           type="submit"

@@ -14,7 +14,7 @@ const STATUS_LABELS: Record<string, string> = {
   confirmed: 'Chợ SX',
   in_progress: 'Đang SX',
   completed: 'Xong',
-  cancelled: 'Huỷ',
+  cancelled: 'Hủy',
 };
 
 const STATUS_CSS: Record<string, string> = {

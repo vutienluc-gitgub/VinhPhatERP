@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
@@ -17,7 +17,9 @@ import {
   useCreateEmployee,
   useUpdateEmployee,
   useNextEmployeeCode,
+  useAvailableDriverProfiles,
 } from '@/application/crm';
+import { linkProfileToEmployee } from '@/api';
 
 interface EmployeeFormProps {
   open: boolean;
@@ -61,6 +63,12 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
   const updateMutation = useUpdateEmployee();
   const { data: nextCode } = useNextEmployeeCode();
 
+  // State for login account link
+  const [linkedProfileId, setLinkedProfileId] = useState<string | null>(null);
+
+  const { data: availableProfiles = [], isLoading: isLoadingProfiles } =
+    useAvailableDriverProfiles(employee?.id);
+
   const form = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeFormSchema),
     defaultValues: employeeDefaultValues,
@@ -81,7 +89,24 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
     }
   }, [open, employee, form]);
 
-  const onSubmit = (values: EmployeeFormValues) => {
+  useEffect(() => {
+    if (open && availableProfiles.length > 0) {
+      // Find the profile currently linked to this employee
+      const currentLinked = availableProfiles.find(
+        (p) => p.employee_id === employee?.id,
+      );
+      if (currentLinked) {
+        setLinkedProfileId(currentLinked.id);
+      } else {
+        setLinkedProfileId(null);
+      }
+    } else if (!open) {
+      // Reset when closed
+      setLinkedProfileId(null);
+    }
+  }, [open, availableProfiles, employee?.id]);
+
+  const onSubmit = async (values: EmployeeFormValues) => {
     if (isEditing) {
       updateMutation.mutate(
         {
@@ -89,7 +114,16 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
           data: values,
         },
         {
-          onSuccess: () => {
+          onSuccess: async () => {
+            if (values.role === 'driver') {
+              try {
+                await linkProfileToEmployee(employee.id, linkedProfileId);
+              } catch (err) {
+                toast.error(
+                  'Lưu hồ sơ thành công nhưng lỗi khi liên kết tài khoản',
+                );
+              }
+            }
             toast.success('Cập nhật nhân viên thành công');
             onClose();
           },
@@ -105,7 +139,16 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
           code: nextCode ?? '',
         },
         {
-          onSuccess: () => {
+          onSuccess: async (newEmp) => {
+            if (values.role === 'driver') {
+              try {
+                await linkProfileToEmployee(newEmp.id, linkedProfileId);
+              } catch (err) {
+                toast.error(
+                  'Lưu hồ sơ thành công nhưng lỗi khi liên kết tài khoản',
+                );
+              }
+            }
             toast.success('Thêm nhân viên thành công');
             onClose();
           },
@@ -238,6 +281,46 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
             )}
           </div>
         </div>
+
+        {form.watch('role') === 'driver' && (
+          <div
+            className="form-field"
+            style={{
+              marginTop: '1rem',
+              padding: '1rem',
+              background: 'var(--surface-accent)',
+              borderRadius: 'var(--radius)',
+            }}
+          >
+            <label>Tài khoản đăng nhập (Cổng tài xế)</label>
+            <p
+              style={{
+                fontSize: '0.8rem',
+                color: 'var(--text-secondary)',
+                marginBottom: '0.5rem',
+              }}
+            >
+              Liên kết hồ sơ này với một tài khoản (email) có Role = Tài xế trên
+              hệ thống để họ đăng nhập vào Cổng Tài Xế.
+            </p>
+            <Combobox
+              options={[
+                {
+                  label: '— Không liên kết —',
+                  value: '',
+                },
+                ...availableProfiles.map((p) => ({
+                  label: `${p.full_name} (${p.email})`,
+                  value: p.id,
+                })),
+              ]}
+              value={linkedProfileId || ''}
+              onChange={(val) => setLinkedProfileId(val || null)}
+              disabled={isPending || isLoadingProfiles}
+              placeholder="Chọn tài khoản để liên kết..."
+            />
+          </div>
+        )}
 
         <div
           className="modal-footer"

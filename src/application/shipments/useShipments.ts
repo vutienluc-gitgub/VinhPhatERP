@@ -132,14 +132,23 @@ export function useMarkDelivered() {
     mutationFn: ({
       shipmentId,
       values,
+      employeeId,
     }: {
       shipmentId: string;
       values: DeliveryConfirmFormValues;
+      employeeId?: string;
     }) =>
-      markShipmentDelivered(shipmentId, mapDeliveryConfirmToPayload(values)),
+      markShipmentDelivered(
+        shipmentId,
+        mapDeliveryConfirmToPayload({
+          ...values,
+          employeeId,
+        }),
+      ),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: ['orders'] });
+      void queryClient.invalidateQueries({ queryKey: ['expenses'] });
     },
   });
 }

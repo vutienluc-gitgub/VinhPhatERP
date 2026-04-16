@@ -171,7 +171,7 @@ export function CreditOverrideDialog({
             onClick={onCancel}
             disabled={isLoading}
           >
-            Huỷ bỏ
+            Hủy bỏ
           </button>
 
           {canOverride && (

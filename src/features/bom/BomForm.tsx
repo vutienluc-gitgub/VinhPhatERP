@@ -395,7 +395,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
             onClick={onCancel}
             disabled={isSubmitting}
           >
-            Huỷ bỏ
+            Hủy bỏ
           </Button>
           <Button variant="primary" type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Đang lưu...' : 'Lưu bản nháp'}

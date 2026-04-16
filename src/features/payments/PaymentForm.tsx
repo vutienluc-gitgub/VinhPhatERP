@@ -236,7 +236,7 @@ export function PaymentForm({
         >
           <CancelButton
             onClick={onClose}
-            label="Huỷ"
+            label="Hủy"
             disabled={isSubmitting || createMutation.isPending}
           />
           <button
