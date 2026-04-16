@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 
 import { Pagination } from '@/shared/components/Pagination';
-import { fetchRawFabricAll } from '@/api/raw-fabric.api';
 import {
   Button,
   Icon,
@@ -13,7 +12,11 @@ import {
 } from '@/shared/components';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 import { AnomalyLegend } from '@/shared/components/roll-grid';
-import { useRawFabricList, useRawFabricStats } from '@/application/inventory';
+import {
+  useRawFabricList,
+  useRawFabricStats,
+  useRawFabricAll,
+} from '@/application/inventory';
 import { useRawFabricExport } from '@/application/inventory';
 import { StatWidget } from '@/shared/components/StatWidget';
 
@@ -79,13 +82,16 @@ export function RawFabricList({
   const { data: result, isLoading, error } = useRawFabricList(filters, page);
   const rolls = useMemo(() => result?.data ?? [], [result?.data]);
   const { data: stats } = useRawFabricStats();
+  const { refetch: fetchAllExport } = useRawFabricAll(filters);
   const { exportExcel } = useRawFabricExport();
 
   async function handleExportExcel() {
     setIsExporting(true);
     try {
-      const all = await fetchRawFabricAll(filters);
-      await exportExcel(all);
+      const resp = await fetchAllExport();
+      if (resp.data) {
+        await exportExcel(resp.data);
+      }
     } finally {
       setIsExporting(false);
     }

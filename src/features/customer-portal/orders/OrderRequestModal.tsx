@@ -3,7 +3,7 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-import { usePortalOrderRequest } from '@/features/customer-portal/hooks/usePortalOrderRequest';
+import { usePortalOrderRequest } from '@/application/crm/portal';
 import { Button, Icon, AdaptiveSheet, Combobox } from '@/shared/components';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import {

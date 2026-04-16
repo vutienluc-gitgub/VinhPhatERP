@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { usePortalShipments } from '@/features/customer-portal/hooks/usePortalShipments';
+import { usePortalShipments } from '@/application/crm/portal';
 
 const STATUS_LABEL: Record<string, string> = {
   preparing: 'Đang chuẩn bị',

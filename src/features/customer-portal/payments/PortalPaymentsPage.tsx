@@ -1,4 +1,4 @@
-import { usePortalPayments } from '@/features/customer-portal/hooks/usePortalPayments';
+import { usePortalPayments } from '@/application/crm/portal';
 import { formatCurrency } from '@/shared/utils/format';
 
 const METHOD_LABEL: Record<string, string> = {

@@ -13,14 +13,14 @@ import {
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
 import { formatCurrency } from '@/shared/utils/format';
-
-import type { YarnReceipt } from './types';
 import {
   useActiveSuppliers,
   useCreateYarnReceipt,
   useUpdateYarnReceipt,
   useYarnCatalogOptions,
-} from './useYarnReceipts';
+} from '@/application/inventory';
+
+import type { YarnReceipt } from './types';
 import {
   emptyItem,
   yarnReceiptsDefaultValues,

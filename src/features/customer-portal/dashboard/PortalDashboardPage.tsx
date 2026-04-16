@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 
-import { usePortalOrders } from '@/features/customer-portal/hooks/usePortalOrders';
-import { usePortalDebt } from '@/features/customer-portal/hooks/usePortalDebt';
-import { usePortalShipments } from '@/features/customer-portal/hooks/usePortalShipments';
+import { usePortalOrders } from '@/application/crm/portal';
+import { usePortalDebt } from '@/application/crm/portal';
+import { usePortalShipments } from '@/application/crm/portal';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { formatCurrency } from '@/shared/utils/format';
 

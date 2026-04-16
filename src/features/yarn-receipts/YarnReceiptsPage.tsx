@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
+import { useYarnReceipt, useYarnReceiptList } from '@/application/inventory';
+
 import type { YarnReceipt } from './types';
-import { useYarnReceipt, useYarnReceiptList } from './useYarnReceipts';
 import { YarnReceiptForm } from './YarnReceiptForm';
 import { YarnReceiptList } from './YarnReceiptList';
 
