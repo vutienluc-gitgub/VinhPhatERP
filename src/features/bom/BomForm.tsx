@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 import { Button } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
@@ -118,7 +119,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
       onSuccess();
     } catch (err) {
       console.error(err);
-      alert('Có lỗi xảy ra: ' + (err as Error).message);
+      toast.error('Co loi xay ra: ' + (err as Error).message);
     }
   };
 
