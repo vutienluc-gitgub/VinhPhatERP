@@ -74,7 +74,7 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
           <input
             type="text"
             className="drawer-search-input"
-            placeholder="Tim module..."
+            placeholder="Tìm module..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             autoFocus
@@ -84,7 +84,7 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
               type="button"
               className="drawer-search-clear"
               onClick={() => setSearch('')}
-              aria-label="Xoa tim kiem"
+              aria-label="Xóa tìm kiếm"
             >
               <Icon name="X" size={14} strokeWidth={2} />
             </button>
@@ -94,7 +94,7 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
         {/* Content */}
         <div className="drawer-content">
           {noResults && (
-            <p className="drawer-empty">Khong tim thay module nao</p>
+            <p className="drawer-empty">Không tìm thấy module nào</p>
           )}
 
           {/* Ungrouped items */}

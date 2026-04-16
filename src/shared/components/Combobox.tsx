@@ -277,7 +277,7 @@ export function Combobox({
             <input
               type="text"
               className="w-full text-sm outline-none bg-transparent text-[var(--text-primary)] border-none min-h-[32px]"
-              placeholder="Tim kiem..."
+              placeholder="Tìm kiếm..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onClick={(e) => e.stopPropagation()}

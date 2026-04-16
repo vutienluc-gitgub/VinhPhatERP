@@ -11,6 +11,7 @@ import {
   employeeDefaultValues,
   type EmployeeFormValues,
   type Employee,
+  type EmployeeRole,
 } from '@/schema';
 import {
   useCreateEmployee,
@@ -36,6 +37,10 @@ const ROLE_OPTIONS = [
   {
     value: 'warehouse',
     label: 'Kho bãi',
+  },
+  {
+    value: 'driver',
+    label: 'Tài xế',
   },
 ];
 
@@ -197,7 +202,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
               options={ROLE_OPTIONS}
               value={form.watch('role')}
               onChange={(val) =>
-                form.setValue('role', val as 'admin' | 'warehouse' | 'sales', {
+                form.setValue('role', val as EmployeeRole, {
                   shouldValidate: true,
                 })
               }

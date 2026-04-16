@@ -236,7 +236,7 @@ export function BomPage() {
       <div className="filter-bar card-filter-section p-4 border-b border-border">
         <div className="filter-compact-premium">
           <div className="filter-field">
-            <label htmlFor="bom-search">Tim kiem</label>
+            <label htmlFor="bom-search">Tìm kiếm</label>
             <div className="search-input-wrapper">
               <input
                 id="bom-search"
