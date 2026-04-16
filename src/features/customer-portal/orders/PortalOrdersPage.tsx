@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { usePortalOrders } from '@/features/customer-portal/hooks/usePortalOrders';
+import { usePortalOrders } from '@/application/crm/portal';
 import { formatCurrency } from '@/shared/utils/format';
 import { Button, Icon } from '@/shared/components';
 

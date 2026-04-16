@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
 
 import {
   AdaptiveSheet,
@@ -10,7 +9,6 @@ import {
   CancelButton,
   Button,
 } from '@/shared/components';
-import { fetchRawFabricAll } from '@/api/raw-fabric.api';
 import {
   dyeingOrderSchema,
   dyeingOrderDefaults,
@@ -22,6 +20,7 @@ import {
   useDyeingSuppliers,
   useUpdateDyeingOrder,
 } from '@/application/production';
+import { useAvailableRawRolls } from '@/application/inventory';
 
 import type { DyeingOrder } from './types';
 
@@ -40,10 +39,7 @@ export function DyeingOrderForm({
   const createMutation = useCreateDyeingOrder();
   const updateMutation = useUpdateDyeingOrder();
   const { data: suppliers = [] } = useDyeingSuppliers();
-  const { data: availableRolls = [] } = useQuery({
-    queryKey: ['raw-fabric', 'available'],
-    queryFn: () => fetchRawFabricAll({ status: 'in_stock' }),
-  });
+  const { data: availableRolls = [] } = useAvailableRawRolls();
 
   const {
     register,

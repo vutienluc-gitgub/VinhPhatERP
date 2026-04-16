@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-import { usePortalQuotations } from '@/features/customer-portal/hooks/usePortalQuotations';
+import { usePortalQuotations } from '@/application/crm/portal';
 import { formatCurrency } from '@/shared/utils/format';
 import { Icon } from '@/shared/components';
 

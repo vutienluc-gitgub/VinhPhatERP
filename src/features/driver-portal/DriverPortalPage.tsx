@@ -4,13 +4,13 @@ import toast from 'react-hot-toast';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { Icon } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
-
 import {
   useMyDriverEmployee,
   useDriverShipments,
   useJourneyLogs,
   useUpdateJourneyStatus,
-} from './useDriverPortal';
+} from '@/application/shipments';
+
 import { JOURNEY_STATUS_LABELS, JOURNEY_STATUS_ORDER } from './types';
 import type { DriverShipment, JourneyStatus } from './types';
 

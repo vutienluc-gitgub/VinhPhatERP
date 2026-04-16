@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { usePortalDebt } from '@/features/customer-portal/hooks/usePortalDebt';
+import { usePortalDebt } from '@/application/crm/portal';
 import { formatCurrency } from '@/shared/utils/format';
 
 export function PortalDebtPage() {

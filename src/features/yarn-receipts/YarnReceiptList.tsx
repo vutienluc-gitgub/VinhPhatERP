@@ -16,13 +16,13 @@ import type { ActionConfig } from '@/shared/components';
 import { Pagination } from '@/shared/components/Pagination';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { formatCurrency } from '@/shared/utils/format';
-
-import type { DocStatus, YarnReceipt, YarnReceiptsFilter } from './types';
 import {
   useDeleteYarnReceipt,
   useYarnReceiptList,
   useConfirmYarnReceipt,
-} from './useYarnReceipts';
+} from '@/application/inventory';
+
+import type { DocStatus, YarnReceipt, YarnReceiptsFilter } from './types';
 import { DOC_STATUS_LABELS } from './yarn-receipts.module';
 
 type YarnReceiptListProps = {

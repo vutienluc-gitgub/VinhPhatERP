@@ -18,3 +18,4 @@ export type {
 } from './useFinishedFabric';
 export * from './useFinishedFabricExport';
 export * from './useInventory';
+export * from './useYarnReceipts';

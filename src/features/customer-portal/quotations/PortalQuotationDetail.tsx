@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import { toast } from 'react-hot-toast';
 import { useState, useEffect } from 'react';
 
-import { usePortalQuotationDetail } from '@/features/customer-portal/hooks/usePortalQuotations';
+import { usePortalQuotationDetail } from '@/application/crm/portal';
 import { formatCurrency } from '@/shared/utils/format';
 import { Button, Icon } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
