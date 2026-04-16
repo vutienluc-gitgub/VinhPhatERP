@@ -280,7 +280,7 @@ export function CustomerPortalAccountPanel({
                   disabled={loading}
                   style={{ fontSize: 12 }}
                 >
-                  loading ? 'Đang tạo…' : 'Tạo tài khoản
+                  {loading ? 'Đang tạo…' : 'Tạo tài khoản'}
                 </Button>
                 <button
                   type="button"
@@ -322,7 +322,7 @@ export function CustomerPortalAccountPanel({
               disabled={loading}
               style={{ fontSize: 12 }}
             >
-              loading ? 'Đang xử lý…' : '↺ Kích hoạt lại
+              {loading ? 'Đang xử lý…' : '↺ Kích hoạt lại'}
             </Button>
           )}
         </div>
