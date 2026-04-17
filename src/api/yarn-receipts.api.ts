@@ -173,7 +173,7 @@ export async function updateYarnReceiptFull(
   );
 
   const headerUpdate = {
-    receipt_number: input.receiptNumber?.trim() ?? '',
+    receipt_number: input.receiptNumber?.trim() || null,
     supplier_id: input.supplierId,
     receipt_date: input.receiptDate,
     notes: input.notes || null,

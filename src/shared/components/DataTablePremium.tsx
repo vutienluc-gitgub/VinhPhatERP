@@ -1,6 +1,7 @@
 import { clsx } from 'clsx';
 import type { ReactNode } from 'react';
 
+import { Icon } from './Icon';
 import { EmptyState } from './EmptyState';
 import { TableSkeleton } from './TableSkeleton';
 
@@ -11,6 +12,10 @@ export interface Column<T> {
   className?: string;
   /** Custom click handler for specific cell, stops propagation if provided */
   onCellClick?: (item: T, e: React.MouseEvent) => void;
+  /** Unique ID for the column, required if the column is sortable */
+  id?: string;
+  /** Whether the column can be sorted */
+  sortable?: boolean;
 }
 
 interface DataTablePremiumProps<T> {
@@ -31,6 +36,10 @@ interface DataTablePremiumProps<T> {
   /** Additional container classes */
   className?: string;
   rowKey: (item: T) => string | number;
+  /** Sort configuration */
+  sortColumn?: string;
+  sortDirection?: 'asc' | 'desc';
+  onSort?: (columnId: string) => void;
 }
 
 /**
@@ -51,6 +60,9 @@ export function DataTablePremium<T>({
   onRowClick,
   className,
   rowKey,
+  sortColumn,
+  sortDirection,
+  onSort,
 }: DataTablePremiumProps<T>) {
   if (isLoading) {
     return <TableSkeleton rows={skeletonRows} columns={columns.length} />;
@@ -80,8 +92,52 @@ export function DataTablePremium<T>({
           <thead>
             <tr>
               {columns.map((col, idx) => (
-                <th key={idx} className={col.className}>
-                  {col.header}
+                <th
+                  key={col.id || idx}
+                  className={clsx(
+                    col.className,
+                    col.sortable &&
+                      'cursor-pointer select-none hover:opacity-80 transition-opacity whitespace-nowrap',
+                  )}
+                  onClick={() => {
+                    if (col.sortable && col.id && onSort) {
+                      onSort(col.id);
+                    }
+                  }}
+                >
+                  <div
+                    className={clsx(
+                      'flex items-center',
+                      col.sortable && 'gap-1',
+                    )}
+                  >
+                    {col.header}
+                    {col.sortable && (
+                      <span className="shrink-0 flex items-center justify-center">
+                        {sortColumn === col.id ? (
+                          sortDirection === 'asc' ? (
+                            <Icon
+                              name="arrow-up"
+                              className="w-4 h-4 text-foreground"
+                              strokeWidth={1.5}
+                            />
+                          ) : (
+                            <Icon
+                              name="arrow-down"
+                              className="w-4 h-4 text-foreground"
+                              strokeWidth={1.5}
+                            />
+                          )
+                        ) : (
+                          <Icon
+                            name="chevrons-up-down"
+                            className="w-4 h-4 text-muted-foreground/50"
+                            strokeWidth={1.5}
+                          />
+                        )}
+                      </span>
+                    )}
+                  </div>
                 </th>
               ))}
             </tr>
