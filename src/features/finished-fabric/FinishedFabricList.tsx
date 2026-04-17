@@ -11,10 +11,10 @@ import {
   type ViewMode,
   AddButton,
   Button,
-  ClearFilterButton,
   ActionBar,
+  FilterBarPremium,
+  type FilterFieldConfig,
 } from '@/shared/components';
-import { Combobox } from '@/shared/components/Combobox';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 import {
   useDeleteFinishedFabric,
@@ -38,7 +38,6 @@ import {
 import type {
   FinishedFabricFilter,
   FinishedFabricRoll,
-  QualityGrade,
   RollStatus,
 } from './types';
 
@@ -80,7 +79,6 @@ export function FinishedFabricList({
   onTrace,
 }: FinishedFabricListProps) {
   const [filters, setFilters] = useState<FinishedFabricFilter>({});
-  const [fabricTypeInput, setFabricTypeInput] = useState('');
   const [page, setPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
@@ -135,11 +133,40 @@ export function FinishedFabricList({
     });
   }, [rolls]);
 
-  const hasFilter = !!(
-    filters.status ||
-    filters.quality_grade ||
-    filters.fabric_type
-  );
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'fabric_type',
+      type: 'search',
+      label: 'Loại vải',
+      placeholder: 'Tìm loại vải...',
+    },
+    {
+      key: 'status',
+      type: 'combobox',
+      label: 'Trạng thái',
+      options: ROLL_STATUSES.map((s) => ({
+        value: s,
+        label: ROLL_STATUS_LABELS[s],
+      })),
+    },
+    {
+      key: 'quality_grade',
+      type: 'combobox',
+      label: 'Chất lượng',
+      options: QUALITY_GRADES.map((g) => ({
+        value: g,
+        label: QUALITY_GRADE_LABELS[g],
+      })),
+    },
+  ];
+
+  function handleFilterChange(key: string, value: string | undefined) {
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value || undefined,
+    }));
+  }
 
   return (
     <div className="panel-card card-flush">
@@ -251,90 +278,16 @@ export function FinishedFabricList({
         </div>
       )}
 
-      {/* Filters */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-grid-premium">
-          <div className="filter-field">
-            <label>Loại vải</label>
-            <div className="search-input-wrapper">
-              <input
-                className="field-input"
-                type="text"
-                placeholder="Tìm sản phẩm..."
-                value={fabricTypeInput}
-                onChange={(e) => setFabricTypeInput(e.target.value)}
-                onBlur={() => {
-                  setFilters((prev) => ({
-                    ...prev,
-                    fabric_type: fabricTypeInput.trim() || undefined,
-                  }));
-                  setPage(1);
-                }}
-              />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </div>
-          </div>
-
-          <div className="filter-field">
-            <label>Trạng thái</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tất cả trạng thái',
-                },
-                ...ROLL_STATUSES.map((s) => ({
-                  value: s,
-                  label: ROLL_STATUS_LABELS[s],
-                })),
-              ]}
-              value={filters.status ?? ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  status: (val as RollStatus) || undefined,
-                }));
-              }}
-            />
-          </div>
-
-          <div className="filter-field">
-            <label>Chất lượng</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tất cả loại',
-                },
-                ...QUALITY_GRADES.map((g) => ({
-                  value: g,
-                  label: QUALITY_GRADE_LABELS[g],
-                })),
-              ]}
-              value={filters.quality_grade ?? ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  quality_grade: (val as QualityGrade) || undefined,
-                }));
-              }}
-            />
-          </div>
-        </div>
-
-        {hasFilter && (
-          <ClearFilterButton
-            onClick={() => {
-              setFilters({});
-              setFabricTypeInput('');
-              setPage(1);
-            }}
-            label="Xóa lọc nhanh"
-          />
-        )}
-      </div>
+      {/* Filters (Config-Driven) */}
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => {
+          setFilters({});
+          setPage(1);
+        }}
+      />
 
       {error && (
         <div className="p-4">

@@ -19,7 +19,7 @@ The user will provide text, markdown content, or simply reference a previous res
 ## Your Tasks
 
 1. **Analyze Content**: Read the provided content and understand its structure (headings, paragraphs, lists, bold text, etc.).
-2. **Convert to HTML**: Map the content to appropriate semantic HTML tags (`<h1>` to `<h6>`, `<p>`, `<ul>`, `<ol>`, `<li>`, `<strong>`, `<em>`, `<blockquote>`).
+2. **Convert to HTML**: Map the content to appropriate semantic HTML tags (`<h1>` to `<h6>`,`<table>`, `<p>`, `<ul>`, `<ol>`, `<li>`, `<strong>`, `<em>`, `<blockquote>`).
 3. **Strip all Styles**:
    - DO NOT include `<style>` tags.
    - DO NOT include `class="..."` or `style="..."` attributes on any element.

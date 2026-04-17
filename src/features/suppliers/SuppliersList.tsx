@@ -7,10 +7,10 @@ import {
   Badge,
   DataTablePremium,
   AddButton,
-  ClearFilterButton,
   ActionBar,
+  FilterBarPremium,
+  type FilterFieldConfig,
 } from '@/shared/components';
-import { Combobox } from '@/shared/components/Combobox';
 import { useDeleteSupplier, useSuppliersList } from '@/application/crm';
 
 import {
@@ -19,7 +19,7 @@ import {
   SUPPLIER_STATUSES,
   SUPPLIER_STATUS_LABELS,
 } from './suppliers.module';
-import type { Supplier, SupplierCategory, SupplierFilter } from './types';
+import type { Supplier, SupplierFilter } from './types';
 
 type SuppliersListProps = {
   onEdit: (supplier: Supplier) => void;
@@ -33,7 +33,6 @@ export function SuppliersList({
   onCreateContract,
 }: SuppliersListProps) {
   const [filters, setFilters] = useState<SupplierFilter>({});
-  const [searchInput, setSearchInput] = useState('');
   const [page, setPage] = useState(1);
 
   const { data: result, isLoading, error } = useSuppliersList(filters, page);
@@ -43,19 +42,39 @@ export function SuppliersList({
 
   const hasFilter = !!(filters.search || filters.category || filters.status);
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'search',
+      type: 'search',
+      label: 'Tìm kiếm',
+      placeholder: 'Tên hoặc mã NCC...',
+    },
+    {
+      key: 'category',
+      type: 'combobox',
+      label: 'Danh mục',
+      options: SUPPLIER_CATEGORIES.map((cat) => ({
+        value: cat,
+        label: SUPPLIER_CATEGORY_LABELS[cat],
+      })),
+    },
+    {
+      key: 'status',
+      type: 'combobox',
+      label: 'Trạng thái',
+      options: SUPPLIER_STATUSES.map((st) => ({
+        value: st,
+        label: SUPPLIER_STATUS_LABELS[st],
+      })),
+    },
+  ];
+
+  function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
     setFilters((prev) => ({
       ...prev,
-      search: searchInput.trim() || undefined,
+      [key]: value || undefined,
     }));
-  }
-
-  function clearFilters() {
-    setFilters({});
-    setSearchInput('');
-    setPage(1);
   }
 
   async function handleDelete(supplier: Supplier) {
@@ -115,76 +134,16 @@ export function SuppliersList({
         </div>
       </div>
 
-      {/* Bộ lọc */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-compact-premium" onSubmit={handleSearch}>
-          <div className="filter-field">
-            <label htmlFor="filter-search">Tìm kiếm</label>
-            <form className="search-input-wrapper" onSubmit={handleSearch}>
-              <input
-                id="filter-search"
-                className="field-input"
-                type="text"
-                placeholder="Tên hoặc mã NCC..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-              />
-              <button type="submit" className="hidden" />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </form>
-          </div>
-
-          <div className="filter-field">
-            <label>Danh mục</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tất cả danh mục',
-                },
-                ...SUPPLIER_CATEGORIES.map((cat) => ({
-                  value: cat,
-                  label: SUPPLIER_CATEGORY_LABELS[cat],
-                })),
-              ]}
-              value={filters.category ?? ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  category: (val as SupplierCategory) || undefined,
-                }));
-              }}
-            />
-          </div>
-
-          <div className="filter-field">
-            <label>Trạng thái</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tất cả trạng thái',
-                },
-                ...SUPPLIER_STATUSES.map((st) => ({
-                  value: st,
-                  label: SUPPLIER_STATUS_LABELS[st],
-                })),
-              ]}
-              value={filters.status ?? ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  status: (val as 'active' | 'inactive') || undefined,
-                }));
-              }}
-            />
-          </div>
-
-          {hasFilter && <ClearFilterButton onClick={clearFilters} />}
-        </div>
-      </div>
+      {/* Filter (Config-Driven) */}
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => {
+          setFilters({});
+          setPage(1);
+        }}
+      />
 
       {error && (
         <div className="p-4">

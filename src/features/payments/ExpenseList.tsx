@@ -8,10 +8,10 @@ import {
   type BadgeVariant,
   DataTablePremium,
   AddButton,
-  ClearFilterButton,
   ActionBar,
+  FilterBarPremium,
+  type FilterFieldConfig,
 } from '@/shared/components';
-import { Combobox } from '@/shared/components/Combobox';
 import { formatCurrency } from '@/shared/utils/format';
 import { useDeleteExpense, useExpenseList } from '@/application/payments';
 
@@ -42,7 +42,6 @@ function getCategoryVariant(category: ExpenseCategory): BadgeVariant {
 }
 
 export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
-  const [searchInput, setSearchInput] = useState('');
   const [filters, setFilters] = useState<ExpensesFilter>({});
   const [page, setPage] = useState(1);
 
@@ -51,12 +50,29 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
   const deleteMutation = useDeleteExpense();
   const { confirm } = useConfirm();
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'search',
+      type: 'search',
+      label: 'Tìm kiếm',
+      placeholder: 'Số phiếu, mô tả...',
+    },
+    {
+      key: 'category',
+      type: 'combobox',
+      label: 'Danh mục',
+      options: EXPENSE_CATEGORIES.map((c) => ({
+        value: c,
+        label: EXPENSE_CATEGORY_LABELS[c],
+      })),
+    },
+  ];
+
+  function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
     setFilters((prev) => ({
       ...prev,
-      search: searchInput.trim() || undefined,
+      [key]: value || undefined,
     }));
   }
 
@@ -82,59 +98,16 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
         <AddButton onClick={onNew} label="Tạo phiếu chi" />
       </div>
 
-      {/* Filters */}
-      <div className="card-filter-section p-4 border-b border-border">
-        <div className="filter-grid-premium">
-          <div className="filter-field">
-            <label htmlFor="filter-expense-search">Tìm kiếm</label>
-            <form className="search-input-wrapper" onSubmit={handleSearch}>
-              <input
-                id="filter-expense-search"
-                className="field-input"
-                type="text"
-                placeholder="Số phiếu, mô tả..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-              />
-              <button type="submit" className="hidden" />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </form>
-          </div>
-
-          <div className="filter-field">
-            <label>Danh mục</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tất cả danh mục',
-                },
-                ...EXPENSE_CATEGORIES.map((c) => ({
-                  value: c,
-                  label: EXPENSE_CATEGORY_LABELS[c],
-                })),
-              ]}
-              value={filters.category ?? ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  category: (val as ExpenseCategory) || undefined,
-                }));
-              }}
-            />
-          </div>
-        </div>
-
-        {hasFilter && (
-          <ClearFilterButton
-            onClick={() => {
-              setFilters({});
-              setSearchInput('');
-            }}
-          />
-        )}
-      </div>
+      {/* Filters (Config-Driven) */}
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => {
+          setFilters({});
+          setPage(1);
+        }}
+      />
 
       {/* Error */}
       {error && (

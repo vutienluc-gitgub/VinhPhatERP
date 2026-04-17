@@ -39,8 +39,21 @@ export async function fetchPaymentsPaginated(
 
   if (filters.orderId) query = query.eq('order_id', filters.orderId);
   if (filters.customerId) query = query.eq('customer_id', filters.customerId);
-  if (filters.search?.trim())
-    query = query.ilike('payment_number', `%${filters.search.trim()}%`);
+  if (filters.search?.trim()) {
+    const term = filters.search.trim();
+    const { data: cus } = await supabase
+      .from('customers')
+      .select('id')
+      .ilike('name', `%${term}%`);
+    const cIds = cus?.map((c) => c.id) || [];
+    if (cIds.length > 0) {
+      query = query.or(
+        `payment_number.ilike.%${term}%,customer_id.in.(${cIds.join(',')})`,
+      );
+    } else {
+      query = query.or(`payment_number.ilike.%${term}%`);
+    }
+  }
 
   const { data, error, count } = await query;
   if (error) throw error;
@@ -79,7 +92,7 @@ export async function fetchNextPaymentNumber(): Promise<string> {
 export async function createPaymentRecord(
   row: PaymentDbPayload,
 ): Promise<Payment> {
-  const { data, error } = await untypedDb.rpc('atomic_create_payment', {
+  const { data, error } = await untypedDb.rpc('rpc_create_payment', {
     p_data: row,
   });
   if (error) throw error;
@@ -92,7 +105,7 @@ export async function deletePaymentRecord(id: string): Promise<void> {
 }
 
 export async function fetchDebtSummary(): Promise<DebtSummaryRow[]> {
-  const { data, error } = await supabase.rpc('get_debt_summary');
+  const { data, error } = await supabase.rpc('rpc_get_debt_summary');
   if (error) throw error;
   return (data ?? []) as DebtSummaryRow[];
 }
@@ -185,8 +198,21 @@ export async function fetchExpensesPaginated(
   if (filters.category) query = query.eq('category', filters.category);
   if (filters.supplierId) query = query.eq('supplier_id', filters.supplierId);
   if (filters.search?.trim()) {
-    const q = filters.search.trim();
-    query = query.or(`expense_number.ilike.%${q}%,description.ilike.%${q}%`);
+    const term = filters.search.trim();
+    const { data: sups } = await supabase
+      .from('suppliers')
+      .select('id')
+      .ilike('name', `%${term}%`);
+    const sIds = sups?.map((s) => s.id) || [];
+    if (sIds.length > 0) {
+      query = query.or(
+        `expense_number.ilike.%${term}%,description.ilike.%${term}%,supplier_id.in.(${sIds.join(',')})`,
+      );
+    } else {
+      query = query.or(
+        `expense_number.ilike.%${term}%,description.ilike.%${term}%`,
+      );
+    }
   }
 
   const { data, error, count } = await query;
@@ -212,7 +238,7 @@ export async function fetchNextExpenseNumber(): Promise<string> {
 }
 
 export async function createExpense(row: ExpenseDbPayload): Promise<Expense> {
-  const { data, error } = await untypedDb.rpc('atomic_create_expense', {
+  const { data, error } = await untypedDb.rpc('rpc_create_expense', {
     p_data: row,
   });
   if (error) throw error;
@@ -244,7 +270,7 @@ export async function fetchCashFlowSummary(
   fromDate: string,
   toDate: string,
 ): Promise<CashFlowRow[]> {
-  const { data, error } = await supabase.rpc('get_cash_flow_summary', {
+  const { data, error } = await supabase.rpc('rpc_get_cash_flow_summary', {
     p_from: fromDate,
     p_to: toDate,
   });
@@ -256,7 +282,7 @@ export async function fetchExpenseByCategory(
   fromDate: string,
   toDate: string,
 ): Promise<ExpenseByCategoryRow[]> {
-  const { data, error } = await supabase.rpc('get_expense_by_category', {
+  const { data, error } = await supabase.rpc('rpc_get_expense_by_category', {
     p_from: fromDate,
     p_to: toDate,
   });

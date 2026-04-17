@@ -38,8 +38,26 @@ export async function fetchYarnReceiptsPaginated(
   if (filters.supplierId) query = query.eq('supplier_id', filters.supplierId);
   if (filters.dateFrom) query = query.gte('receipt_date', filters.dateFrom);
   if (filters.dateTo) query = query.lte('receipt_date', filters.dateTo);
-  if (filters.search?.trim())
-    query = query.ilike('receipt_number', `%${filters.search.trim()}%`);
+  if (filters.search?.trim()) {
+    const q = filters.search.trim();
+
+    // Buoc 1: Tim nha cung cap co ten khop tu khoa
+    const { data: matchedSuppliers } = await supabase
+      .from('suppliers')
+      .select('id')
+      .ilike('name', `%${q}%`);
+
+    const supplierIds = (matchedSuppliers ?? []).map((s) => s.id);
+
+    // Buoc 2: Ket hop OR tren bang chinh (receipt_number, notes, supplier_id)
+    if (supplierIds.length > 0) {
+      query = query.or(
+        `receipt_number.ilike.%${q}%,notes.ilike.%${q}%,supplier_id.in.(${supplierIds.join(',')})`,
+      );
+    } else {
+      query = query.or(`receipt_number.ilike.%${q}%,notes.ilike.%${q}%`);
+    }
+  }
 
   const { data, error, count } = await query;
   if (error) throw error;
@@ -151,7 +169,7 @@ export async function createYarnReceiptFull(
     sort_order: idx,
   }));
 
-  const { data, error } = await supabase.rpc('atomic_create_yarn_receipt', {
+  const { data, error } = await supabase.rpc('rpc_create_yarn_receipt', {
     p_header: headerInsert as unknown as never,
     p_items: itemsInsert as unknown as never[],
   });
@@ -195,7 +213,7 @@ export async function updateYarnReceiptFull(
     sort_order: idx,
   }));
 
-  const { error } = await supabase.rpc('atomic_update_yarn_receipt', {
+  const { error } = await supabase.rpc('rpc_update_yarn_receipt', {
     p_id: id,
     p_header: headerUpdate as unknown as never,
     p_items: itemsInsert as unknown as never[],

@@ -3998,7 +3998,7 @@ export type Database = {
         Args: { p_progress_data: Json; p_reqs_data: Json; p_wo_data: Json };
         Returns: Json;
       };
-      atomic_create_yarn_receipt: {
+      rpc_create_yarn_receipt: {
         Args: { p_header: Json; p_items: Json };
         Returns: Json;
       };
@@ -4034,7 +4034,7 @@ export type Database = {
         Args: { p_reqs_data: Json; p_wo_data: Json; p_wo_id: string };
         Returns: undefined;
       };
-      atomic_update_yarn_receipt: {
+      rpc_update_yarn_receipt: {
         Args: { p_header: Json; p_id: string; p_items: Json };
         Returns: undefined;
       };
@@ -4119,7 +4119,7 @@ export type Database = {
         };
         Returns: Json;
       };
-      get_cash_flow_summary: {
+      rpc_get_cash_flow_summary: {
         Args: { p_from?: string; p_to?: string };
         Returns: {
           inflow_count: number;
@@ -4130,7 +4130,7 @@ export type Database = {
           total_outflow: number;
         }[];
       };
-      get_debt_summary: {
+      rpc_get_debt_summary: {
         Args: never;
         Returns: {
           balance_due: number;
@@ -4142,7 +4142,7 @@ export type Database = {
           total_paid: number;
         }[];
       };
-      get_expense_by_category: {
+      rpc_get_expense_by_category: {
         Args: { p_from?: string; p_to?: string };
         Returns: {
           category: Database['public']['Enums']['expense_category'];
@@ -4153,11 +4153,11 @@ export type Database = {
       get_tenant_user_count: { Args: { p_tenant_id: string }; Returns: number };
       next_dyeing_order_number: { Args: never; Returns: string };
       next_weaving_invoice_number: { Args: never; Returns: string };
-      pay_customer_debt: {
+      rpc_pay_customer_debt: {
         Args: { p_amount: number; p_customer_id: string; p_notes: string };
         Returns: undefined;
       };
-      pay_supplier_debt: {
+      rpc_pay_supplier_debt: {
         Args: { p_amount: number; p_notes: string; p_supplier_id: string };
         Returns: undefined;
       };
@@ -4167,7 +4167,7 @@ export type Database = {
       };
       show_limit: { Args: never; Returns: number };
       show_trgm: { Args: { '': string }; Returns: string[] };
-      sync_shipment_debt: {
+      rpc_sync_shipment_debt: {
         Args: { p_shipment_id: string };
         Returns: undefined;
       };

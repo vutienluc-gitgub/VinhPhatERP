@@ -7,8 +7,9 @@ import {
   type BadgeVariant,
   DataTablePremium,
   AddButton,
-  ClearFilterButton,
   ActionBar,
+  FilterBarPremium,
+  type FilterFieldConfig,
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import {
@@ -41,7 +42,6 @@ function getStatusVariant(isActive: boolean): BadgeVariant {
 }
 
 export function ShippingRateList({ onEdit, onNew }: Props) {
-  const [searchInput, setSearchInput] = useState('');
   const [filters, setFilters] = useState<ShippingRateFilter>({});
 
   const { data, isLoading, error } = useShippingRateList(filters);
@@ -49,11 +49,19 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
   const deleteMutation = useDeleteShippingRate();
   const { confirm } = useConfirm();
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'query',
+      type: 'search',
+      label: 'Tìm kiếm',
+      placeholder: 'Tên hoặc khu vực...',
+    },
+  ];
+
+  function handleFilterChange(key: string, value: string | undefined) {
     setFilters((prev) => ({
       ...prev,
-      query: searchInput.trim() || undefined,
+      [key]: value || undefined,
     }));
   }
 
@@ -80,34 +88,14 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
       </div>
 
       {/* Filters */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-compact-premium">
-          <div className="filter-field">
-            <label htmlFor="filter-rate-search">Tìm kiếm</label>
-            <form className="search-input-wrapper" onSubmit={handleSearch}>
-              <input
-                id="filter-rate-search"
-                className="field-input"
-                type="text"
-                placeholder="Tên hoặc khu vực..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-              />
-              <button type="submit" className="hidden" />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </form>
-          </div>
-
-          {hasFilter && (
-            <ClearFilterButton
-              onClick={() => {
-                setFilters({});
-                setSearchInput('');
-              }}
-            />
-          )}
-        </div>
-      </div>
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => {
+          setFilters({});
+        }}
+      />
 
       {/* Error */}
       {error && (

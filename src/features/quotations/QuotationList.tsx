@@ -9,11 +9,11 @@ import {
   DataTablePremium,
   AddButton,
   Button,
-  ClearFilterButton,
   ActionBar,
+  FilterBarPremium,
+  type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
-import { Combobox } from '@/shared/components/Combobox';
 import { formatCurrency } from '@/shared/utils/format';
 import {
   useDeleteQuotation,
@@ -81,23 +81,40 @@ function validityInfo(
 }
 
 export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
-  const [searchInput, setSearchInput] = useState('');
   const [filters, setFilters] = useState<QuotationsFilter>({});
   const [page, setPage] = useState(1);
 
   const { data: result, isLoading, error } = useQuotationList(filters, page);
   const quotations = result?.data ?? [];
-
   const deleteMutation = useDeleteQuotation();
   const { data: expiringData } = useExpiringQuotationsCount();
   const { confirm, alert: showAlert } = useConfirm();
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'search',
+      type: 'search',
+      label: 'Tìm kiếm',
+      placeholder: 'So bao gia, ten khach hang...',
+    },
+    {
+      key: 'status',
+      type: 'combobox',
+      label: 'Trạng thái',
+      options: Object.entries(QUOTATION_STATUS_LABELS).map(
+        ([value, label]) => ({
+          value,
+          label,
+        }),
+      ),
+    },
+  ];
+
+  function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
     setFilters((prev) => ({
       ...prev,
-      search: searchInput.trim() || undefined,
+      [key]: value || undefined,
     }));
   }
 
@@ -170,79 +187,16 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
           </div>
         )}
 
-      {/* Filters */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-compact-premium">
-          <div className="filter-field">
-            <label htmlFor="filter-quote-search">Tìm kiếm</label>
-            <form className="search-input-wrapper" onSubmit={handleSearch}>
-              <input
-                id="filter-quote-search"
-                className="field-input"
-                type="text"
-                placeholder="Số báo giá..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-              />
-              <button type="submit" className="hidden" />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </form>
-          </div>
-
-          <div className="filter-field">
-            <label>Trạng thái</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tất cả trạng thái',
-                },
-                {
-                  value: 'draft',
-                  label: 'Nháp',
-                },
-                {
-                  value: 'sent',
-                  label: 'Đã gửi',
-                },
-                {
-                  value: 'confirmed',
-                  label: 'Đã duyệt',
-                },
-                {
-                  value: 'rejected',
-                  label: 'Từ chối',
-                },
-                {
-                  value: 'expired',
-                  label: 'Hết hạn',
-                },
-                {
-                  value: 'converted',
-                  label: 'Đã chuyển ĐH',
-                },
-              ]}
-              value={filters.status ?? ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  status: (val as QuotationStatus) || undefined,
-                }));
-              }}
-            />
-          </div>
-
-          {hasFilter && (
-            <ClearFilterButton
-              onClick={() => {
-                setFilters({});
-                setSearchInput('');
-              }}
-            />
-          )}
-        </div>
-      </div>
+      {/* Filter Bar (Config-Driven) */}
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => {
+          setFilters({});
+          setPage(1);
+        }}
+      />
 
       {/* Error */}
       {error && (

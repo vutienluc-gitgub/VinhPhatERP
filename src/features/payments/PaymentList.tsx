@@ -2,7 +2,12 @@ import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
-import { Icon, DataTablePremium, ClearFilterButton } from '@/shared/components';
+import {
+  Icon,
+  DataTablePremium,
+  FilterBarPremium,
+  type FilterFieldConfig,
+} from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import { useDeletePayment, usePaymentList } from '@/application/payments';
 
@@ -10,7 +15,6 @@ import { PAYMENT_METHOD_LABELS } from './payments.module';
 import type { PaymentsFilter } from './types';
 
 export function PaymentList() {
-  const [searchInput, setSearchInput] = useState('');
   const [filters, setFilters] = useState<PaymentsFilter>({});
   const [page, setPage] = useState(1);
 
@@ -19,12 +23,20 @@ export function PaymentList() {
   const deleteMutation = useDeletePayment();
   const { confirm } = useConfirm();
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'search',
+      type: 'search',
+      label: 'Tìm kiếm',
+      placeholder: 'Số phiếu thu, khách hàng...',
+    },
+  ];
+
+  function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
     setFilters((prev) => ({
       ...prev,
-      search: searchInput.trim() || undefined,
+      [key]: value || undefined,
     }));
   }
 
@@ -49,34 +61,16 @@ export function PaymentList() {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="card-filter-section p-4 border-b border-border">
-        <div className="filter-grid-premium">
-          <div className="filter-field">
-            <label htmlFor="filter-search">Tìm kiếm</label>
-            <form className="search-input-wrapper" onSubmit={handleSearch}>
-              <input
-                id="filter-search"
-                className="field-input"
-                type="text"
-                placeholder="Số phiếu thu..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-              />
-              <button type="submit" className="hidden" />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </form>
-          </div>
-        </div>
-        {hasFilter && (
-          <ClearFilterButton
-            onClick={() => {
-              setFilters({});
-              setSearchInput('');
-            }}
-          />
-        )}
-      </div>
+      {/* Filters (Config-Driven) */}
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => {
+          setFilters({});
+          setPage(1);
+        }}
+      />
 
       {/* Error */}
       {error && (

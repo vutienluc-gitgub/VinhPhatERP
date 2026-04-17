@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
-import { Icon, AddButton, ClearFilterButton } from '@/shared/components';
-import { Combobox } from '@/shared/components/Combobox';
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import {
+  Icon,
+  AddButton,
+  FilterBarPremium,
+  type FilterFieldConfig,
+} from '@/shared/components';
 import { Button } from '@/shared/components';
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import {
   useBomList,
   useBomDetail,
@@ -17,7 +21,7 @@ import { BOM_STATUSES, BOM_STATUS_LABELS } from './bom.module';
 import { BomDetail } from './BomDetail';
 import { BomForm } from './BomForm';
 import { BomList } from './BomList';
-import { BomStatus, BomFilter } from './types';
+import type { BomFilter } from './types';
 
 type ViewState = 'list' | 'create' | 'edit' | 'detail';
 
@@ -43,6 +47,31 @@ export function BomPage() {
   const approveBom = useApproveBom();
   const deprecateBom = useDeprecateBom();
   const reviseBom = useReviseBom();
+
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'search',
+      type: 'search',
+      label: 'Tìm kiếm',
+      placeholder: 'Mã hoặc tên BOM...',
+    },
+    {
+      key: 'status',
+      type: 'combobox',
+      label: 'Trạng thái',
+      options: BOM_STATUSES.map((s) => ({
+        value: s,
+        label: BOM_STATUS_LABELS[s],
+      })),
+    },
+  ];
+
+  function handleFilterChange(key: string, value: string | undefined) {
+    setFilter((prev) => ({
+      ...prev,
+      [key]: value || undefined,
+    }));
+  }
 
   const handleCreate = () => {
     setSelectedBomId(null);
@@ -140,7 +169,7 @@ export function BomPage() {
       setViewState('list');
       setSelectedBomId(null);
     } catch (e: unknown) {
-      toast.error(e instanceof Error ? e.message : 'Co loi xay ra');
+      toast.error(e instanceof Error ? e.message : 'Có lỗi xảy ra');
     }
   };
 
@@ -233,54 +262,12 @@ export function BomPage() {
       </div>
 
       {/* Filters */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-compact-premium">
-          <div className="filter-field">
-            <label htmlFor="bom-search">Tìm kiếm</label>
-            <div className="search-input-wrapper">
-              <input
-                id="bom-search"
-                className="field-input"
-                type="text"
-                placeholder="Ma hoac ten BOM..."
-                value={filter.search ?? ''}
-                onChange={(e) =>
-                  setFilter({
-                    ...filter,
-                    search: e.target.value || undefined,
-                  })
-                }
-              />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </div>
-          </div>
-
-          <div className="filter-field">
-            <label>Trang thai</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tat ca trang thai',
-                },
-                ...BOM_STATUSES.map((s) => ({
-                  value: s,
-                  label: BOM_STATUS_LABELS[s],
-                })),
-              ]}
-              value={filter.status ?? ''}
-              onChange={(val) =>
-                setFilter({
-                  ...filter,
-                  status: (val as BomStatus) || undefined,
-                })
-              }
-            />
-          </div>
-
-          {hasFilter && <ClearFilterButton onClick={() => setFilter({})} />}
-        </div>
-      </div>
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filter}
+        onChange={handleFilterChange}
+        onClear={() => setFilter({})}
+      />
 
       {/* Table */}
       <BomList

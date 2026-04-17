@@ -9,11 +9,11 @@ import {
   DataTablePremium,
   AddButton,
   Button,
-  ClearFilterButton,
   ActionBar,
+  FilterBarPremium,
+  type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
-import { Combobox } from '@/shared/components/Combobox';
 import { formatCurrency } from '@/shared/utils/format';
 import { useWorkOrders, useStartWorkOrder } from '@/application/production';
 
@@ -65,6 +65,50 @@ export function WorkOrderList({
     filter.search ||
     (filter.status && filter.status !== 'all')
   );
+
+  // Adapter: FilterBarPremium dung '' cho 'all'
+  const filterBarValue = {
+    search: filter.search || '',
+    status: filter.status === 'all' ? '' : (filter.status ?? ''),
+  };
+
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'search',
+      type: 'search',
+      label: 'Tìm kiếm',
+      placeholder: 'Mã lệnh sản xuất...',
+    },
+    {
+      key: 'status',
+      type: 'combobox',
+      label: 'Trạng thái',
+      options: (
+        Object.entries(WORK_ORDER_STATUSES) as [
+          WorkOrderStatus,
+          { label: string },
+        ][]
+      ).map(([value, cfg]) => ({
+        value,
+        label: cfg.label,
+      })),
+    },
+  ];
+
+  function handleFilterChange(key: string, value: string | undefined) {
+    setPage(1);
+    if (key === 'status') {
+      setFilter((f) => ({
+        ...f,
+        status: (value as WorkOrderStatus) || 'all',
+      }));
+    } else {
+      setFilter((f) => ({
+        ...f,
+        [key]: value ?? '',
+      }));
+    }
+  }
 
   const handleStart = async (id: string) => {
     const ok = await confirm({
@@ -122,77 +166,19 @@ export function WorkOrderList({
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-compact-premium">
-          <div className="filter-field">
-            <label htmlFor="wo-search">Tìm kiếm</label>
-            <div className="search-input-wrapper">
-              <input
-                id="wo-search"
-                className="field-input"
-                type="text"
-                placeholder="Nhập mã lệnh để tìm..."
-                value={filter.search}
-                onChange={(e) =>
-                  setFilter((f) => ({
-                    ...f,
-                    search: e.target.value,
-                  }))
-                }
-              />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </div>
-          </div>
-
-          <div className="filter-field">
-            <label>Trạng thái</label>
-            <Combobox
-              options={[
-                {
-                  value: 'all',
-                  label: 'Tất cả trạng thái',
-                },
-                {
-                  value: 'draft',
-                  label: 'Bản nháp',
-                },
-                {
-                  value: 'in_progress',
-                  label: 'Đang sản xuất',
-                },
-                {
-                  value: 'completed',
-                  label: 'Hoàn thành',
-                },
-                {
-                  value: 'cancelled',
-                  label: 'Đã hủy',
-                },
-              ]}
-              value={filter.status || 'all'}
-              onChange={(val) =>
-                setFilter((f) => ({
-                  ...f,
-                  status: val as WorkOrderStatus | 'all',
-                }))
-              }
-            />
-          </div>
-
-          {hasFilter && (
-            <ClearFilterButton
-              onClick={() =>
-                setFilter({
-                  status: 'all',
-                  search: '',
-                })
-              }
-              label="Xóa lọc nhanh"
-            />
-          )}
-        </div>
-      </div>
+      {/* Filters (Config-Driven) */}
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filterBarValue}
+        onChange={handleFilterChange}
+        onClear={() => {
+          setFilter({
+            status: 'all',
+            search: '',
+          });
+          setPage(1);
+        }}
+      />
 
       {/* Table & Cards */}
       <DataTablePremium

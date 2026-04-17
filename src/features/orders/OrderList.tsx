@@ -2,15 +2,15 @@ import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
-import { Combobox } from '@/shared/components/Combobox';
 import {
   Icon,
   Badge,
   type BadgeVariant,
   DataTablePremium,
   AddButton,
-  ClearFilterButton,
   ActionBar,
+  FilterBarPremium,
+  type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
@@ -74,7 +74,6 @@ function daysUntilDelivery(
 }
 
 export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
-  const [searchInput, setSearchInput] = useState('');
   const [filters, setFilters] = useState<OrdersFilter>({});
   const [page, setPage] = useState(1);
 
@@ -87,12 +86,29 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
     (o) => o.status === 'pending_review',
   ).length;
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'search',
+      type: 'search',
+      label: 'Tìm kiếm',
+      placeholder: 'Ma don, ten khach hang...',
+    },
+    {
+      key: 'status',
+      type: 'combobox',
+      label: 'Trạng thái',
+      options: Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => ({
+        value,
+        label,
+      })),
+    },
+  ];
+
+  function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
     setFilters((prev) => ({
       ...prev,
-      search: searchInput.trim() || undefined,
+      [key]: value || undefined,
     }));
   }
 
@@ -194,61 +210,16 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
         </div>
       </div>
 
-      {/* 🔍 Filter Bar */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-compact-premium">
-          <div className="filter-field">
-            <label>Tìm kiếm khách hàng / Số đơn</label>
-            <form className="search-input-wrapper" onSubmit={handleSearch}>
-              <input
-                className="field-input"
-                type="text"
-                placeholder="Nhập mã đơn hoặc tên khách..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-              />
-              <button type="submit" className="hidden" />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </form>
-          </div>
-
-          <div className="filter-field">
-            <label>Trạng thái</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tất cả trạng thái',
-                },
-                ...Object.entries(ORDER_STATUS_LABELS).map(
-                  ([value, label]) => ({
-                    value,
-                    label,
-                  }),
-                ),
-              ]}
-              value={filters.status ?? ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  status: (val as OrderStatus) || undefined,
-                }));
-              }}
-            />
-          </div>
-
-          {hasFilter && (
-            <ClearFilterButton
-              onClick={() => {
-                setFilters({});
-                setSearchInput('');
-                setPage(1);
-              }}
-            />
-          )}
-        </div>
-      </div>
+      {/* Filter Bar (Config-Driven) */}
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => {
+          setFilters({});
+          setPage(1);
+        }}
+      />
 
       {/* Error State */}
       {error && (

@@ -12,11 +12,11 @@ import {
   Badge,
   DataTablePremium,
   AddButton,
-  ClearFilterButton,
   ActionBar,
+  FilterBarPremium,
+  type FilterFieldConfig,
   type IconName,
 } from '@/shared/components';
-import { Combobox } from '@/shared/components/Combobox';
 import { useCustomerList, useDeleteCustomer } from '@/application/crm';
 
 import type { Customer, CustomersFilter } from './types';
@@ -32,7 +32,6 @@ export function CustomerList({
   onNew,
   onCreateContract,
 }: CustomerListProps) {
-  const [queryInput, setQueryInput] = useState('');
   const [filters, setFilters] = useState<CustomersFilter>({});
   const [page, setPage] = useState(1);
 
@@ -41,12 +40,35 @@ export function CustomerList({
   const deleteMutation = useDeleteCustomer();
   const { confirm } = useConfirm();
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'query',
+      type: 'search',
+      label: 'Tim kiem khach hang',
+      placeholder: 'Ten, ma, so dien thoai...',
+    },
+    {
+      key: 'status',
+      type: 'combobox',
+      label: 'Trạng thái',
+      options: [
+        {
+          value: 'active',
+          label: 'Hoat dong',
+        },
+        {
+          value: 'inactive',
+          label: 'Ngung hoat dong',
+        },
+      ],
+    },
+  ];
+
+  function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
     setFilters((prev) => ({
       ...prev,
-      query: queryInput.trim() || undefined,
+      [key]: value || undefined,
     }));
   }
 
@@ -120,72 +142,21 @@ export function CustomerList({
             </div>
           </div>
           <div className="kpi-footer text-xs opacity-80 italic">
-            Đã thêm trong kỳ
+            Da them trong ky
           </div>
         </div>
       </div>
 
-      {/* 🔍 Filter Area */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-compact-premium">
-          <div className="filter-field">
-            <label>Tìm kiếm khách hàng</label>
-            <form className="search-input-wrapper" onSubmit={handleSearch}>
-              <input
-                className="field-input"
-                type="text"
-                placeholder="Tên, mã, số điện thoại..."
-                value={queryInput}
-                onChange={(e) => setQueryInput(e.target.value)}
-              />
-              <button type="submit" className="hidden" />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </form>
-          </div>
-
-          <div className="filter-field">
-            <label>Trạng thái</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tất cả trạng thái',
-                  icon: 'Filter',
-                },
-                {
-                  value: 'active',
-                  label: 'Hoạt động',
-                  icon: 'CheckCircle2',
-                },
-                {
-                  value: 'inactive',
-                  label: 'Ngừng hoạt động',
-                  icon: 'XCircle',
-                },
-              ]}
-              value={filters.status ?? ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  status: (val as 'active' | 'inactive') || undefined,
-                }));
-              }}
-            />
-          </div>
-        </div>
-
-        {hasFilter && (
-          <ClearFilterButton
-            onClick={() => {
-              setFilters({});
-              setQueryInput('');
-              setPage(1);
-            }}
-            label="Xóa lọc nhanh"
-          />
-        )}
-      </div>
+      {/* Filter Area (Config-Driven) */}
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => {
+          setFilters({});
+          setPage(1);
+        }}
+      />
 
       {/* 📑 Data Section */}
       <DataTablePremium

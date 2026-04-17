@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import { Combobox } from '@/shared/components/Combobox';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
@@ -9,8 +8,9 @@ import {
   DataTablePremium,
   AddButton,
   Button,
-  ClearFilterButton,
   ActionBar,
+  FilterBarPremium,
+  type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
 import { Pagination } from '@/shared/components/Pagination';
@@ -51,7 +51,6 @@ export function YarnReceiptList({
   pendingCount,
   supplierCount,
 }: YarnReceiptListProps) {
-  const [searchInput, setSearchInput] = useState('');
   const [filters, setFilters] = useState<YarnReceiptsFilter>({});
   const [page, setPage] = useState(1);
 
@@ -64,12 +63,40 @@ export function YarnReceiptList({
 
   const canConfirm = profile?.role === 'admin' || profile?.role === 'manager';
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
+  // Schema cho bộ lọc (Level 8 Architecture)
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'search',
+      type: 'search',
+      label: 'Tìm kiếm',
+      placeholder: 'Số phiếu, nhà cung cấp, ghi chú...',
+    },
+    {
+      key: 'status',
+      type: 'combobox',
+      label: 'Trạng thái',
+      options: [
+        {
+          value: 'draft',
+          label: 'Nháp',
+        },
+        {
+          value: 'confirmed',
+          label: 'Đã xác nhận',
+        },
+        {
+          value: 'cancelled',
+          label: 'Đã huỷ',
+        },
+      ],
+    },
+  ];
+
+  function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
     setFilters((prev) => ({
       ...prev,
-      search: searchInput.trim() || undefined,
+      [key]: value || undefined,
     }));
   }
 
@@ -163,67 +190,13 @@ export function YarnReceiptList({
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="card-filter-section p-4 border-b border-border">
-        <div className="filter-grid-premium">
-          <div className="filter-field">
-            <label htmlFor="filter-search">Tìm kiếm</label>
-            <form className="search-input-wrapper" onSubmit={handleSearch}>
-              <input
-                id="filter-search"
-                className="field-input"
-                type="text"
-                placeholder="Số phiếu nhập..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-              />
-              <button type="submit" className="hidden" />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </form>
-          </div>
-
-          <div className="filter-field">
-            <label>Trạng thái</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tất cả',
-                },
-                {
-                  value: 'draft',
-                  label: 'Nháp',
-                },
-                {
-                  value: 'confirmed',
-                  label: 'Đã xác nhận',
-                },
-                {
-                  value: 'cancelled',
-                  label: 'Đã huỷ',
-                },
-              ]}
-              value={filters.status ?? ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  status: (val as DocStatus) || undefined,
-                }));
-              }}
-            />
-          </div>
-        </div>
-
-        {hasFilter && (
-          <ClearFilterButton
-            onClick={() => {
-              setFilters({});
-              setSearchInput('');
-            }}
-          />
-        )}
-      </div>
+      {/* Filters (Config-Driven Pattern) */}
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => setFilters({})}
+      />
 
       {/* Error */}
       {error && (
