@@ -66,7 +66,14 @@ export const orderItemEditSchema = orderItemBaseSchema.extend({
 
 // 2. Định nghĩa ORDER schema cơ bản (chưa có refine)
 export const ordersBaseSchema = z.object({
-  orderNumber: z.string().trim().optional().default(''),
+  orderNumber: z
+    .string()
+    .trim()
+    .refine((val) => val === '' || val.length >= 3, {
+      message: 'Mã đơn hàng phải từ 3 ký tự (hoặc để trống)',
+    })
+    .optional()
+    .default(''),
   customerId: z.string().uuid('Chọn khách hàng'),
   orderDate: z.string().trim().min(1, 'Chọn ngày đặt hàng'),
   deliveryDate: z.string().trim().optional().or(z.literal('')),
