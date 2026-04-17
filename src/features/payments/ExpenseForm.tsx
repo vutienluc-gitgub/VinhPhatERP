@@ -96,7 +96,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
       }
     >
       {mutationError && (
-        <p className="error-inline" style={{ marginBottom: '1rem' }}>
+        <p className="error-inline mb-4">
           Lỗi: {(mutationError as Error).message}
         </p>
       )}
@@ -104,12 +104,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
       <form id="expense-form" onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="form-grid">
           {/* Số phiếu chi + Ngày chi */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="expenseNumber">Số phiếu chi</label>
               {isEditing ? (
@@ -123,16 +118,11 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
               ) : (
                 <input
                   id="expenseNumber"
-                  className="field-input"
+                  className="field-input bg-[var(--surface-disabled)] text-[var(--text-tertiary)] italic"
                   type="text"
                   value="Tự động"
                   readOnly
                   disabled
-                  style={{
-                    background: 'var(--surface-disabled)',
-                    color: 'var(--text-tertiary)',
-                    fontStyle: 'italic',
-                  }}
                 />
               )}
             </div>
@@ -155,12 +145,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
           </div>
 
           {/* Danh mục + Số tiền */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="category">
                 Danh mục <span className="field-required">*</span>
@@ -222,12 +207,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
           </div>
 
           {/* Tài khoản chi + Số CT */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="accountId">Tài khoản chi</label>
               <Controller
@@ -291,14 +271,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
           </div>
         </div>
 
-        <div
-          className="modal-footer"
-          style={{
-            marginTop: '1.5rem',
-            padding: 0,
-            border: 'none',
-          }}
-        >
+        <div className="modal-footer mt-6 p-0 border-none">
           <Button
             variant="secondary"
             type="button"

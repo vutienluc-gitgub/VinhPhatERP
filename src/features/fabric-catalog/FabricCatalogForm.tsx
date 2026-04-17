@@ -99,7 +99,7 @@ export function FabricCatalogForm({
       title={isEditing ? `Sửa: ${catalog.name}` : 'Thêm loại vải'}
     >
       {mutationError && (
-        <p className="error-inline" style={{ marginBottom: '1rem' }}>
+        <p className="error-inline mb-4">
           Lỗi: {(mutationError as Error).message}
         </p>
       )}
@@ -111,12 +111,7 @@ export function FabricCatalogForm({
       >
         <div className="form-grid">
           {/* Mã + Tên */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="fc-code">
                 Mã vải <span className="field-required">*</span>
@@ -152,12 +147,7 @@ export function FabricCatalogForm({
           </div>
 
           {/* Thành phần + Đơn vị */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="fc-composition">Thành phần</label>
               <input
@@ -206,12 +196,7 @@ export function FabricCatalogForm({
           </div>
 
           {/* Quy cách */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="fc-target-width">Khổ chuẩn (cm)</label>
               <input
@@ -248,12 +233,7 @@ export function FabricCatalogForm({
           </div>
 
           {/* Trạng thái */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label>Trạng thái</label>
               <Controller
@@ -287,14 +267,7 @@ export function FabricCatalogForm({
           </div>
         </div>
 
-        <div
-          className="modal-footer"
-          style={{
-            marginTop: '1.5rem',
-            padding: 0,
-            border: 'none',
-          }}
-        >
+        <div className="modal-footer mt-6 p-0 border-none">
           <Button
             variant="secondary"
             type="button"

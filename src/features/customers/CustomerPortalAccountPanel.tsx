@@ -99,50 +99,18 @@ export function CustomerPortalAccountPanel({
   }
 
   return (
-    <div
-      className="rounded-lg p-4 space-y-3"
-      style={{
-        border: '1px solid var(--border)',
-        background: 'var(--surface-subtle)',
-      }}
-    >
+    <div className="rounded-lg p-4 space-y-3 border border-border bg-[var(--surface-subtle)]">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <span
-          style={{
-            fontSize: 12,
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            color: 'var(--muted)',
-          }}
-        >
+        <span className="text-[12px] font-bold uppercase tracking-[0.06em] text-muted-foreground">
           Tài khoản Customer Portal
         </span>
         {account !== null && (
           <span
-            style={{
-              fontSize: 11,
-              fontWeight: 600,
-              padding: '2px 8px',
-              borderRadius: 20,
-              background: account.is_active
-                ? 'rgba(22,163,74,0.1)'
-                : 'rgba(107,114,128,0.12)',
-              color: account.is_active ? '#16a34a' : 'var(--muted)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-            }}
+            className={`text-[11px] font-semibold px-2 py-0.5 rounded-[20px] flex items-center gap-1 ${account.is_active ? 'bg-[#16a34a]/10 text-[#16a34a]' : 'bg-gray-500/12 text-muted-foreground'}`}
           >
             <span
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: '50%',
-                background: account.is_active ? '#16a34a' : '#9ca3af',
-                display: 'inline-block',
-              }}
+              className={`w-[6px] h-[6px] rounded-full inline-block ${account.is_active ? 'bg-[#16a34a]' : 'bg-[#9ca3af]'}`}
             />
             {account.is_active ? 'Đang hoạt động' : 'Đã vô hiệu hóa'}
           </span>
@@ -151,19 +119,13 @@ export function CustomerPortalAccountPanel({
 
       {account === null ? (
         <>
-          <p
-            style={{
-              fontSize: 13,
-              color: 'var(--muted)',
-            }}
-          >
+          <p className="text-[13px] text-muted-foreground">
             Khách hàng chưa có tài khoản Portal.
           </p>
           {!showForm ? (
             <button
               onClick={() => setShowForm(true)}
-              className="btn-secondary btn-sm"
-              style={{ fontSize: 12 }}
+              className="btn-secondary btn-sm text-[12px]"
             >
               + Tạo tài khoản
             </button>
@@ -195,18 +157,16 @@ export function CustomerPortalAccountPanel({
               <div className="flex gap-2">
                 <Button
                   variant="primary"
-                  className="btn-sm"
+                  className="btn-sm text-[12px]"
                   type="submit"
                   disabled={loading}
-                  style={{ fontSize: 12 }}
                 >
                   {loading ? 'Đang tạo…' : 'Tạo tài khoản'}
                 </Button>
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="btn-secondary btn-sm"
-                  style={{ fontSize: 12 }}
+                  className="btn-secondary btn-sm text-[12px]"
                 >
                   Hủy
                 </button>
@@ -220,27 +180,16 @@ export function CustomerPortalAccountPanel({
             <button
               onClick={handleDeactivate}
               disabled={loading}
-              style={{
-                fontSize: 12,
-                fontWeight: 600,
-                color: '#dc2626',
-                background: 'rgba(220,38,38,0.06)',
-                border: '1px solid rgba(220,38,38,0.2)',
-                borderRadius: 6,
-                padding: '5px 12px',
-                cursor: 'pointer',
-                opacity: loading ? 0.5 : 1,
-              }}
+              className={`text-[12px] font-semibold text-[#dc2626] bg-[#dc2626]/[0.06] border border-[#dc2626]/20 rounded-md px-3 py-[5px] cursor-pointer ${loading ? 'opacity-50' : 'opacity-100'}`}
             >
               {loading ? 'Đang xử lý…' : '⊘ Vô hiệu hóa tài khoản'}
             </button>
           ) : (
             <Button
               variant="secondary"
-              className="btn-sm"
+              className="btn-sm text-[12px]"
               onClick={handleReactivate}
               disabled={loading}
-              style={{ fontSize: 12 }}
             >
               {loading ? 'Đang xử lý…' : '↺ Kích hoạt lại'}
             </Button>

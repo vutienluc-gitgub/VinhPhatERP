@@ -52,55 +52,16 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   const entry = payload[0];
 
   return (
-    <div
-      style={{
-        background: 'var(--surface)',
-        border: '1px solid var(--border)',
-        borderRadius: '10px',
-        padding: '10px 14px',
-        boxShadow: '0 4px 20px rgba(16,35,61,0.12)',
-        minWidth: '180px',
-      }}
-    >
-      <p
-        style={{
-          color: 'var(--muted)',
-          fontWeight: 700,
-          fontSize: '10px',
-          textTransform: 'uppercase',
-          letterSpacing: '0.06em',
-          marginBottom: '6px',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          maxWidth: '200px',
-        }}
-      >
+    <div className="bg-surface border border-border rounded-[10px] py-2.5 px-3.5 shadow-[0_4px_20px_rgba(16,35,61,0.12)] min-w-[180px]">
+      <p className="text-[var(--muted)] font-bold text-[10px] uppercase tracking-wider mb-1.5 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]">
         {label}
       </p>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-        }}
-      >
+      <div className="flex items-center gap-2">
         <div
-          style={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '2px',
-            background: entry?.color ?? '#3b82f6',
-            flexShrink: 0,
-          }}
+          className="w-2 h-2 rounded-[2px] shrink-0"
+          style={{ background: entry?.color ?? '#3b82f6' }}
         />
-        <span
-          style={{
-            color: 'var(--text)',
-            fontWeight: 700,
-            fontSize: '13px',
-          }}
-        >
+        <span className="text-[var(--text)] font-bold text-[13px]">
           {formatShort(entry?.value ?? 0)} đ
         </span>
       </div>
@@ -118,14 +79,7 @@ export function FabricRevenueChart({
 }: FabricRevenueChartProps) {
   if (isLoading) {
     return (
-      <div
-        style={{
-          height: '280px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
+      <div className="h-[280px] flex items-center justify-center">
         <div className="spinner" />
       </div>
     );
@@ -133,16 +87,7 @@ export function FabricRevenueChart({
 
   if (data.length === 0) {
     return (
-      <div
-        style={{
-          height: '280px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'var(--muted)',
-          fontSize: '13px',
-        }}
-      >
+      <div className="h-[280px] flex items-center justify-center text-[var(--muted)] text-[13px]">
         Chưa có dữ liệu cơ cấu vải
       </div>
     );

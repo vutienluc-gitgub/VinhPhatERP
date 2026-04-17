@@ -45,71 +45,22 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload || payload.length === 0) return null;
 
   return (
-    <div
-      style={{
-        background: 'var(--surface)',
-        border: '1px solid var(--border)',
-        borderRadius: '10px',
-        padding: '10px 14px',
-        boxShadow: '0 4px 20px rgba(16,35,61,0.12)',
-        fontSize: '12px',
-        minWidth: '160px',
-      }}
-    >
-      <p
-        style={{
-          color: 'var(--muted)',
-          fontWeight: 700,
-          fontSize: '10px',
-          textTransform: 'uppercase',
-          letterSpacing: '0.06em',
-          marginBottom: '8px',
-        }}
-      >
+    <div className="bg-surface border border-border rounded-[10px] py-2.5 px-3.5 shadow-[0_4px_20px_rgba(16,35,61,0.12)] text-xs min-w-[160px]">
+      <p className="text-[var(--muted)] font-bold text-[10px] uppercase tracking-wider mb-2">
         {label}
       </p>
       {payload.map((entry, idx) => (
-        <div
-          key={idx}
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            gap: '16px',
-            marginBottom: '4px',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
-          >
+        <div key={idx} className="flex justify-between gap-4 mb-1">
+          <div className="flex items-center gap-1.5">
             <div
-              style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '2px',
-                background: entry.color,
-                flexShrink: 0,
-              }}
+              className="w-2 h-2 rounded-[2px] shrink-0"
+              style={{ background: entry.color }}
             />
-            <span
-              style={{
-                color: 'var(--muted)',
-                fontSize: '11px',
-              }}
-            >
+            <span className="text-[var(--muted)] text-[11px]">
               {String(entry.name)}
             </span>
           </div>
-          <span
-            style={{
-              fontWeight: 700,
-              color: 'var(--text)',
-              fontSize: '12px',
-            }}
-          >
+          <span className="font-bold text-[var(--text)] text-[12px]">
             {formatShort(Number(entry.value ?? 0))} đ
           </span>
         </div>
@@ -128,14 +79,7 @@ export function RevenueBarChart({
 }: RevenueBarChartProps) {
   if (isLoading) {
     return (
-      <div
-        style={{
-          height: '220px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
+      <div className="h-[220px] flex items-center justify-center">
         <div className="spinner" />
       </div>
     );
@@ -143,16 +87,7 @@ export function RevenueBarChart({
 
   if (data.length === 0) {
     return (
-      <div
-        style={{
-          height: '220px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'var(--muted)',
-          fontSize: '13px',
-        }}
-      >
+      <div className="h-[220px] flex items-center justify-center text-[var(--muted)] text-[13px]">
         Chưa có dữ liệu doanh thu theo tháng
       </div>
     );

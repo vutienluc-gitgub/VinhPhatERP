@@ -429,13 +429,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
       ) : (
         <>
           {bulkMutation.error && (
-            <p
-              className="error-inline"
-              style={{
-                marginBottom: '1rem',
-                whiteSpace: 'pre-line',
-              }}
-            >
+            <p className="error-inline mb-4 whitespace-pre-line">
               Lỗi: {(bulkMutation.error as Error).message}
             </p>
           )}
@@ -446,18 +440,11 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
             noValidate
           >
             {/* ── BƯỚC 1: CẤU HÌNH NHẬP & NHẢY MÃ ── */}
-            <div
-              style={{ display: stepper.currentStep === 0 ? 'block' : 'none' }}
-            >
+            <div className={stepper.currentStep === 0 ? 'block' : 'hidden'}>
               <fieldset className="bulk-section">
                 <legend>Thông tin lô & chung</legend>
 
-                <div
-                  className="form-grid"
-                  style={{
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                  }}
-                >
+                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="bulk_lot_number">
                       Số lô (Lot number){' '}
@@ -475,15 +462,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                         {errors.lot_number.message}
                       </span>
                     )}
-                    <span
-                      className="field-hint"
-                      style={{
-                        fontSize: '0.8rem',
-                        color: '#666',
-                        marginTop: '0.25rem',
-                        display: 'block',
-                      }}
-                    >
+                    <span className="field-hint text-[0.8rem] text-[#666] mt-1 block">
                       Bắt buộc. Hệ thống sẽ đối chiếu với lô cuộn mộc nguồn.
                       {rawRollsForLot.length > 0 && (
                         <strong>
@@ -523,12 +502,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                   </div>
                 </div>
 
-                <div
-                  className="form-grid"
-                  style={{
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                  }}
-                >
+                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="bulk_color_name">Màu vải</label>
                     <Controller
@@ -556,12 +530,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                   </div>
                 </div>
 
-                <div
-                  className="form-grid"
-                  style={{
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                  }}
-                >
+                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="bulk_width_cm">Khổ vải (cm)</label>
                     <input
@@ -607,12 +576,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                   </div>
                 </div>
 
-                <div
-                  className="form-grid"
-                  style={{
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                  }}
-                >
+                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="bulk_status">Trạng thái</label>
                     <Controller
@@ -658,12 +622,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
 
               <fieldset className="bulk-section">
                 <legend>Cấu hình mã cuộn tự động</legend>
-                <div
-                  className="form-grid"
-                  style={{
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                  }}
-                >
+                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="bulk_roll_prefix">
                       Tiền tố mã cuộn <span className="field-required">*</span>
@@ -703,31 +662,21 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
             </div>
 
             {/* ── BƯỚC 2: BẢNG NHẬP LIỆU (DATA TABLE) ── */}
-            <div
-              style={{ display: stepper.currentStep === 1 ? 'block' : 'none' }}
-            >
+            <div className={stepper.currentStep === 1 ? 'block' : 'hidden'}>
               <fieldset className="bulk-section">
                 <legend>Import từ Excel / CSV</legend>
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: '0.75rem',
-                    alignItems: 'center',
-                    flexWrap: 'wrap',
-                  }}
-                >
+                <div className="flex gap-3 items-center flex-wrap">
                   <input
-                    className="field-input"
+                    className="field-input text-[0.88rem]"
                     ref={fileInputRef}
                     type="file"
                     accept=".xlsx,.xls,.csv"
                     onChange={handleFileImport}
-                    style={{ fontSize: '0.88rem' }}
                   />
                   <span className="bulk-hint">
                     Header: Mã cuộn, Cuộn mộc, Cân, Dài, CL, Ghi chú.
                     {lotNumber && rawRollsForLot.length === 0 && (
-                      <strong style={{ color: '#c0392b' }}>
+                      <strong className="text-[#c0392b]">
                         {' '}
                         Chưa tìm thấy cuộn mộc nào trong lô "{lotNumber}" — hãy
                         kiểm tra lại số lô.
@@ -736,13 +685,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                   </span>
                 </div>
                 {importError && (
-                  <p
-                    style={{
-                      color: '#c07020',
-                      fontSize: '0.85rem',
-                      marginTop: '0.5rem',
-                    }}
-                  >
+                  <p className="text-[#c07020] text-[0.85rem] mt-2">
                     {importError}
                   </p>
                 )}
@@ -752,13 +695,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                 <legend>Nhập số tịnh từng cuộn thành phẩm</legend>
 
                 {rawRollsForLot.length > 0 && (
-                  <p
-                    style={{
-                      fontSize: '0.82rem',
-                      color: 'var(--muted)',
-                      marginBottom: '0.75rem',
-                    }}
-                  >
+                  <p className="text-[0.82rem] text-muted-foreground mb-3">
                     Đã ghép <strong>{rawRollsForLot.length} cuộn mộc</strong> từ
                     lô. Nhãn nhỏ trong ô = Mã cuộn mộc nguồn.
                   </p>
@@ -781,34 +718,16 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                 />
 
                 {errors.rolls?.message && (
-                  <span
-                    className="field-error"
-                    style={{
-                      marginTop: '0.75rem',
-                      display: 'block',
-                    }}
-                  >
+                  <span className="field-error mt-3 block">
                     {errors.rolls.message}
                   </span>
                 )}
 
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: '0.5rem',
-                    marginTop: '1rem',
-                  }}
-                >
+                <div className="flex gap-2 mt-4">
                   <Button variant="secondary" type="button" onClick={addRow}>
                     + 1 cuộn
                   </Button>
-                  <span
-                    style={{
-                      alignSelf: 'center',
-                      fontSize: '0.78rem',
-                      color: 'var(--muted)',
-                    }}
-                  >
+                  <span className="self-center text-[0.78rem] text-muted-foreground">
                     Gõ số tịnh → nhấn Enter để chuyển ô tiếp theo
                   </span>
                 </div>
@@ -816,15 +735,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
             </div>
 
             {/* ===== ACTIONS ===== */}
-            <div
-              className="modal-footer"
-              style={{
-                marginTop: '1.5rem',
-                padding: 0,
-                border: 'none',
-                justifyContent: 'space-between',
-              }}
-            >
+            <div className="modal-footer mt-6 p-0 border-none justify-between">
               <div>
                 {!stepper.isFirst && (
                   <Button

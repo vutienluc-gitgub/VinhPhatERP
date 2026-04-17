@@ -72,13 +72,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
       onClose={onClose}
       title={`🔒 Giữ cuộn — ${order.order_number}`}
     >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem',
-        }}
-      >
+      <div className="flex flex-col gap-4">
         {/* Order items as filter tabs */}
         {items.length > 1 && (
           <div className="reserve-item-tabs">
@@ -146,12 +140,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
         {/* Reserved rolls table */}
         {reservedRolls.length > 0 && (
           <div>
-            <h4
-              style={{
-                fontSize: '0.88rem',
-                marginBottom: '0.5rem',
-              }}
-            >
+            <h4 className="text-[0.88rem] mb-2">
               Cuộn đang giữ ({reservedRolls.length})
             </h4>
             <div className="data-table-wrap">
@@ -192,10 +181,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                         <Button
                           variant="secondary"
                           type="button"
-                          style={{
-                            fontSize: '0.8rem',
-                            padding: '0.3rem 0.6rem',
-                          }}
+                          className="!text-[0.8rem] !px-[0.6rem] !py-[0.3rem]"
                           onClick={() => handleUnreserve(roll.id)}
                           disabled={unreserveMutation.isPending}
                         >
@@ -213,12 +199,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
 
         {/* Available rolls to reserve */}
         <div>
-          <h4
-            style={{
-              fontSize: '0.88rem',
-              marginBottom: '0.5rem',
-            }}
-          >
+          <h4 className="text-[0.88rem] mb-2">
             Cuộn khả dụng
             {selectedItem && (
               <span className="td-muted">
@@ -279,12 +260,8 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                       </td>
                       <td className="td-actions">
                         <button
-                          className="primary-button"
+                          className="primary-button !text-[0.8rem] !px-[0.6rem] !py-[0.3rem]"
                           type="button"
-                          style={{
-                            fontSize: '0.8rem',
-                            padding: '0.3rem 0.6rem',
-                          }}
                           onClick={() => handleReserve(roll.id)}
                           disabled={reserveMutation.isPending}
                         >
@@ -300,7 +277,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
         </div>
 
         {(reserveMutation.error || unreserveMutation.error) && (
-          <p className="error-inline" style={{ marginTop: '0.75rem' }}>
+          <p className="error-inline mt-3">
             Lỗi:{' '}
             {
               ((reserveMutation.error ?? unreserveMutation.error) as Error)
@@ -311,14 +288,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
       </div>
 
       {/* Footer using modal-footer convention inside sheet */}
-      <div
-        className="modal-footer"
-        style={{
-          marginTop: '1.5rem',
-          padding: 0,
-          border: 'none',
-        }}
-      >
+      <div className="modal-footer mt-6 p-0 border-none">
         <Button
           variant="secondary"
           className="btn-standard"

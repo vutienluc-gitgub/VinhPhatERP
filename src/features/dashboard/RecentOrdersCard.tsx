@@ -39,15 +39,7 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
         <div className="card-header-row">
           <div>
             <p className="eyebrow">Giao dịch</p>
-            <h3
-              style={{
-                margin: 0,
-                fontSize: '1rem',
-                fontWeight: 700,
-              }}
-            >
-              Đơn hàng mới
-            </h3>
+            <h3 className="m-0 text-base font-bold">Đơn hàng mới</h3>
           </div>
           <Link to="/orders" className="card-action-link">
             Tất cả <Icon name="ChevronRight" size={16} />
@@ -55,25 +47,11 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
         </div>
       </div>
 
-      <div style={{ paddingTop: '0.5rem' }}>
+      <div className="pt-2">
         {isLoading ? (
-          <div
-            style={{
-              padding: '0.75rem 1.25rem',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-            }}
-          >
+          <div className="px-5 py-3 flex flex-col gap-2">
             {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="skeleton-block"
-                style={{
-                  height: '56px',
-                  borderRadius: '8px',
-                }}
-              />
+              <div key={i} className="skeleton-block h-[56px] rounded-lg" />
             ))}
           </div>
         ) : orders.length === 0 ? (
@@ -84,28 +62,10 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
               <Link
                 key={order.id}
                 to={`/orders/${order.id}`}
-                className="task-item"
-                style={{
-                  flexDirection: 'column',
-                  alignItems: 'stretch',
-                  gap: '0.25rem',
-                }}
+                className="task-item flex-col items-stretch gap-1"
               >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '0.5rem',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontWeight: 700,
-                      fontSize: '0.875rem',
-                      color: 'var(--primary)',
-                    }}
-                  >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-bold text-sm text-primary">
                     {order.order_number}
                   </span>
                   <span
@@ -114,34 +74,12 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
                     {STATUS_LABELS[order.status] ?? order.status}
                   </span>
                 </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '0.5rem',
-                  }}
-                >
-                  <span
-                    className="td-muted"
-                    style={{
-                      fontSize: '0.8rem',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="td-muted text-[0.8rem] overflow-hidden text-ellipsis whitespace-nowrap">
                     {order.customer_name ?? '—'} ·{' '}
                     {formatDate(order.created_at)}
                   </span>
-                  <span
-                    style={{
-                      fontWeight: 700,
-                      fontSize: '0.85rem',
-                      flexShrink: 0,
-                      fontVariantNumeric: 'tabular-nums',
-                    }}
-                  >
+                  <span className="font-bold text-[0.85rem] shrink-0 tabular-nums">
                     {formatCurrency(order.total_amount)}đ
                   </span>
                 </div>

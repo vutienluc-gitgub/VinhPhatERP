@@ -5,14 +5,46 @@ const mappings = {
   'order.ts': 'orders',
   'order-progress.ts': 'order-progress',
   'shipment.ts': 'shipments',
-  'payment.ts': 'payments'
+  'payment.ts': 'payments',
 };
 
 const exportedTypesForFeature = {
-  'orders': ['Order', 'OrderInsert', 'OrderUpdate', 'OrderItem', 'OrderItemInsert', 'OrderItemUpdate', 'OrdersFilter'],
-  'order-progress': ['OrderProgress', 'OrderProgressInsert', 'OrderProgressUpdate', 'OrderProgressWithOrder'],
-  'shipments': ['ShipmentItem', 'ShipmentItemInsert', 'Shipment', 'ShipmentInsert', 'ShipmentUpdate', 'ShipmentsFilter'],
-  'payments': ['Payment', 'PaymentInsert', 'PaymentUpdate', 'PaymentsFilter', 'DebtSummaryRow', 'Expense', 'ExpenseInsert', 'ExpenseUpdate', 'PaymentAccount', 'PaymentAccountInsert', 'PaymentAccountUpdate']
+  orders: [
+    'Order',
+    'OrderInsert',
+    'OrderUpdate',
+    'OrderItem',
+    'OrderItemInsert',
+    'OrderItemUpdate',
+    'OrdersFilter',
+  ],
+  'order-progress': [
+    'OrderProgress',
+    'OrderProgressInsert',
+    'OrderProgressUpdate',
+    'OrderProgressWithOrder',
+  ],
+  shipments: [
+    'ShipmentItem',
+    'ShipmentItemInsert',
+    'Shipment',
+    'ShipmentInsert',
+    'ShipmentUpdate',
+    'ShipmentsFilter',
+  ],
+  payments: [
+    'Payment',
+    'PaymentInsert',
+    'PaymentUpdate',
+    'PaymentsFilter',
+    'DebtSummaryRow',
+    'Expense',
+    'ExpenseInsert',
+    'ExpenseUpdate',
+    'PaymentAccount',
+    'PaymentAccountInsert',
+    'PaymentAccountUpdate',
+  ],
 };
 
 const modelsDir = path.join(process.cwd(), 'src/models');
@@ -22,10 +54,10 @@ const srcDir = path.join(process.cwd(), 'src');
 for (const [file, feature] of Object.entries(mappings)) {
   const srcPath = path.join(modelsDir, file);
   if (!fs.existsSync(srcPath)) continue;
-  
+
   let content = fs.readFileSync(srcPath, 'utf8');
   const featTypesPath = path.join(featuresDir, feature, 'types.ts');
-  
+
   // To avoid duplicate export/import issues, we replace "import type { TableRow, ... } from '@/shared/types/database.models';"
   // with "export type { TableRow, TableInsert, TableUpdate } from '@/shared/types/database.models';" IF we want them re-exported.
   // Actually, we don't need to re-export TableRow. We will just leave them as imports.
@@ -38,7 +70,7 @@ for (const [file, feature] of Object.entries(mappings)) {
     fs.mkdirSync(path.join(featuresDir, feature), { recursive: true });
     fs.writeFileSync(featTypesPath, content);
   }
-  
+
   fs.unlinkSync(srcPath);
   console.log(`Moved ${file} to ${feature}/types.ts`);
 }
@@ -48,7 +80,10 @@ if (fs.existsSync(indexPath)) {
   let indexContent = fs.readFileSync(indexPath, 'utf8');
   for (const file of Object.keys(mappings)) {
     const base = file.replace('.ts', '');
-    indexContent = indexContent.replace(new RegExp(`export \\* from '\\.\\/${base}';\\n?`, 'g'), '');
+    indexContent = indexContent.replace(
+      new RegExp(`export \\* from '\\.\\/${base}';\\n?`, 'g'),
+      '',
+    );
   }
   fs.writeFileSync(indexPath, indexContent);
 }
@@ -85,13 +120,17 @@ walk(srcDir, (p) => {
     }
   }
 
-  const importRegex = /import\s+(type\s+)?{([^}]+)}\s+from\s+['"]@\/models['"];?/g;
+  const importRegex =
+    /import\s+(type\s+)?{([^}]+)}\s+from\s+['"]@\/models['"];?/g;
   let newContent = content.replace(importRegex, (match, typeKw, inside) => {
     typeKw = typeKw || '';
-    const items = inside.split(',').map(s => s.trim()).filter(Boolean);
+    const items = inside
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
     const kept = [];
     const moved = {};
-    
+
     for (const item of items) {
       const typeName = item.split(' as ')[0].trim();
       if (typeToFeatPath[typeName]) {
@@ -102,9 +141,9 @@ walk(srcDir, (p) => {
         kept.push(item);
       }
     }
-    
+
     if (Object.keys(moved).length === 0) return match;
-    
+
     let result = '';
     if (kept.length > 0) {
       result += `import ${typeKw}{ ${kept.join(', ')} } from '@/models';\n`;
@@ -112,7 +151,7 @@ walk(srcDir, (p) => {
     for (const [featPath, importedTypes] of Object.entries(moved)) {
       result += `import ${typeKw}{ ${importedTypes.join(', ')} } from '${featPath}';\n`;
     }
-    
+
     return result.trim();
   });
 

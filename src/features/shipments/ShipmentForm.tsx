@@ -185,31 +185,21 @@ export function ShipmentForm({
     >
       <form id="shipment-form" onSubmit={handleSubmit(onSubmit)}>
         {createMutation.error && (
-          <p className="error-inline" style={{ marginBottom: '1rem' }}>
+          <p className="error-inline mb-4">
             Lỗi: {(createMutation.error as Error).message}
           </p>
         )}
 
         <div className="form-grid">
           {/* Shipment number + date */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label>Số phiếu xuất</label>
               <input
-                className="field-input"
+                className="field-input italic bg-[var(--surface-disabled)] text-[var(--text-tertiary)]"
                 value="Tự động"
                 readOnly
                 disabled
-                style={{
-                  background: 'var(--surface-disabled)',
-                  color: 'var(--text-tertiary)',
-                  fontStyle: 'italic',
-                }}
               />
             </div>
             <div className="form-field">
@@ -228,12 +218,7 @@ export function ShipmentForm({
           </div>
 
           {/* Employee & Delivery address */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label>Nhân viên kho</label>
               <Controller
@@ -267,12 +252,7 @@ export function ShipmentForm({
           </div>
 
           {/* Delivery staff + vehicle */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label>Nhân viên giao hàng</label>
               <Controller
@@ -306,12 +286,7 @@ export function ShipmentForm({
           </div>
 
           {/* Shipping rate + cost */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label>Bảng giá cước</label>
               <Controller
@@ -342,12 +317,7 @@ export function ShipmentForm({
           </div>
 
           {/* Loading fee */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label>Phí bốc xếp (VNĐ)</label>
               <input
@@ -362,12 +332,7 @@ export function ShipmentForm({
 
           {/* ─── Roll Picker Grid ─── */}
           <div className="form-field">
-            <label
-              style={{
-                margin: 0,
-                marginBottom: '0.5rem',
-              }}
-            >
+            <label className="m-0 mb-2 block">
               Chọn cuộn xuất kho <span className="field-required">*</span>
             </label>
 
@@ -379,35 +344,11 @@ export function ShipmentForm({
 
             {/* Selection summary */}
             {selectedRollsSummary.count > 0 && (
-              <div
-                style={{
-                  marginTop: '0.75rem',
-                  padding: '0.75rem 1rem',
-                  borderRadius: 'var(--radius)',
-                  background: '#ecfdf5',
-                  border: '1px solid #a7f3d0',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '0.5rem',
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                    color: '#065f46',
-                  }}
-                >
+              <div className="mt-3 px-4 py-3 rounded-[var(--radius)] bg-[#ecfdf5] border border-[#a7f3d0] flex justify-between items-center flex-wrap gap-2">
+                <span className="text-[0.85rem] font-semibold text-[#065f46]">
                   ✓ {selectedRollsSummary.count} cuộn đã chọn
                 </span>
-                <span
-                  style={{
-                    fontSize: '0.85rem',
-                    color: '#047857',
-                  }}
-                >
+                <span className="text-[0.85rem] text-[#047857]">
                   Tổng: {selectedRollsSummary.totalWeight.toFixed(1)} kg
                   {selectedRollsSummary.totalLength > 0 &&
                     ` • ${selectedRollsSummary.totalLength.toFixed(1)} m`}
@@ -420,14 +361,7 @@ export function ShipmentForm({
             )}
           </div>
         </div>
-        <div
-          className="modal-footer"
-          style={{
-            marginTop: '1.5rem',
-            padding: 0,
-            border: 'none',
-          }}
-        >
+        <div className="modal-footer mt-6 p-0 border-none">
           <Button
             variant="secondary"
             type="button"

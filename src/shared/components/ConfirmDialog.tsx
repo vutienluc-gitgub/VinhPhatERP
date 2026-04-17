@@ -111,7 +111,7 @@ export function ConfirmProvider({ children }: PropsWithChildren) {
           </>
         }
       >
-        <p id="confirm-dialog-message" style={{ lineHeight: 1.5 }}>
+        <p id="confirm-dialog-message" className="leading-relaxed">
           {options.message}
         </p>
       </AdaptiveSheet>

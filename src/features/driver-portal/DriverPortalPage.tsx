@@ -34,80 +34,40 @@ function JourneyStepButton({
       type="button"
       onClick={onClick}
       disabled={disabled || isDone}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-        width: '100%',
-        padding: '0.875rem 1rem',
-        borderRadius: 'var(--radius)',
-        border: isActive
-          ? '2px solid var(--primary)'
+      className={`flex items-center gap-3 w-full py-[0.875rem] px-4 rounded-[var(--radius)] text-left ${
+        isActive
+          ? 'border-2 border-primary bg-[rgba(11,107,203,0.07)]'
           : isDone
-            ? '1.5px solid var(--success)'
-            : '1.5px solid var(--border)',
-        background: isActive
-          ? 'rgba(11, 107, 203, 0.07)'
-          : isDone
-            ? 'rgba(10, 128, 92, 0.06)'
-            : 'var(--surface)',
-        cursor: isDone || disabled ? 'default' : 'pointer',
-        textAlign: 'left',
-      }}
+            ? 'border-[1.5px] border-success bg-[rgba(10,128,92,0.06)] cursor-default'
+            : 'border-[1.5px] border-border bg-surface'
+      } ${isDone || disabled ? 'cursor-default' : 'cursor-pointer'}`}
     >
       <div
-        style={{
-          width: 28,
-          height: 28,
-          borderRadius: '50%',
-          background: isDone
-            ? 'var(--success)'
-            : isActive
-              ? 'var(--primary)'
-              : 'var(--surface-muted)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-        }}
+        className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white ${
+          isDone ? 'bg-success' : isActive ? 'bg-primary' : 'bg-muted'
+        }`}
       >
         {isDone ? (
-          <Icon name="Check" size={14} style={{ color: '#fff' }} />
+          <Icon name="Check" size={14} />
         ) : isActive ? (
-          <Icon name="ChevronRight" size={14} style={{ color: '#fff' }} />
+          <Icon name="ChevronRight" size={14} />
         ) : (
-          <Icon
-            name="Circle"
-            size={14}
-            style={{ color: 'var(--text-tertiary)' }}
-          />
+          <Icon name="Circle" size={14} className="text-muted-foreground" />
         )}
       </div>
       <span
-        style={{
-          fontSize: '0.9rem',
-          fontWeight: isActive || isDone ? 600 : 400,
-          color: isDone
-            ? 'var(--success)'
+        className={`text-[0.9rem] ${isActive || isDone ? 'font-semibold' : 'font-normal'} ${
+          isDone
+            ? 'text-success'
             : isActive
-              ? 'var(--primary)'
-              : 'var(--text-tertiary)',
-        }}
+              ? 'text-primary'
+              : 'text-muted-foreground'
+        }`}
       >
         {label}
       </span>
       {isActive && !isDone && (
-        <span
-          style={{
-            marginLeft: 'auto',
-            fontSize: '0.75rem',
-            fontWeight: 600,
-            color: 'var(--primary)',
-            background: 'rgba(11, 107, 203, 0.12)',
-            padding: '2px 8px',
-            borderRadius: 99,
-          }}
-        >
+        <span className="ml-auto text-xs font-semibold text-primary bg-[rgba(11,107,203,0.12)] px-2 py-0.5 rounded-full">
           Nhấn để cập nhật
         </span>
       )}
@@ -153,84 +113,26 @@ function ShipmentCard({
   const totalCost = (shipment.shipping_cost ?? 0) + (shipment.loading_fee ?? 0);
 
   return (
-    <div
-      style={{
-        background: 'var(--surface)',
-        borderRadius: 'var(--radius-lg)',
-        border: '1.5px solid var(--border)',
-        overflow: 'hidden',
-        marginBottom: '1rem',
-      }}
-    >
+    <div className="bg-surface rounded-xl border-[1.5px] border-border overflow-hidden mb-4">
       {/* Card header */}
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          width: '100%',
-          padding: '1rem',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          gap: '0.75rem',
-        }}
+        className="flex items-center justify-between w-full p-4 bg-transparent border-none cursor-pointer gap-3"
       >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: '0.75rem',
-          }}
-        >
-          <div
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 'var(--radius)',
-              background: 'rgba(11, 107, 203, 0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-          >
-            <Icon name="Truck" size={20} style={{ color: 'var(--primary)' }} />
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-[var(--radius)] bg-[rgba(11,107,203,0.1)] flex items-center justify-center shrink-0">
+            <Icon name="Truck" size={20} className="text-primary" />
           </div>
-          <div style={{ textAlign: 'left' }}>
-            <p
-              style={{
-                fontWeight: 700,
-                fontSize: '0.95rem',
-                color: 'var(--text-primary)',
-              }}
-            >
+          <div className="text-left">
+            <p className="font-bold text-[0.95rem] text-[var(--text-primary)]">
               {shipment.shipment_number}
             </p>
-            <p
-              style={{
-                fontSize: '0.8rem',
-                color: 'var(--text-secondary)',
-                marginTop: 2,
-              }}
-            >
+            <p className="text-[0.8rem] text-[var(--text-secondary)] mt-[2px]">
               {shipment.customers?.name ?? 'Khách hàng'}
             </p>
             {shipment.journey_status && (
-              <span
-                style={{
-                  display: 'inline-block',
-                  marginTop: 4,
-                  fontSize: '0.72rem',
-                  fontWeight: 600,
-                  color: 'var(--primary)',
-                  background: 'rgba(11, 107, 203, 0.1)',
-                  padding: '2px 8px',
-                  borderRadius: 99,
-                }}
-              >
+              <span className="inline-block mt-1 text-[0.72rem] font-semibold text-primary bg-[rgba(11,107,203,0.1)] px-2 py-0.5 rounded-full">
                 {JOURNEY_STATUS_LABELS[shipment.journey_status]}
               </span>
             )}
@@ -239,79 +141,44 @@ function ShipmentCard({
         <Icon
           name={expanded ? 'ChevronUp' : 'ChevronDown'}
           size={18}
-          style={{
-            color: 'var(--text-tertiary)',
-            flexShrink: 0,
-          }}
+          className="text-muted-foreground shrink-0"
         />
       </button>
 
       {/* Details */}
       {expanded && (
-        <div style={{ padding: '0 1rem 1rem' }}>
+        <div className="px-4 pb-4">
           {/* Info row */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '0.5rem',
-              padding: '0.75rem',
-              background: 'var(--surface-accent)',
-              borderRadius: 'var(--radius)',
-              marginBottom: '1rem',
-              fontSize: '0.82rem',
-            }}
-          >
+          <div className="grid grid-cols-2 gap-2 p-3 bg-[var(--surface-accent)] rounded-[var(--radius)] mb-4 text-[0.82rem]">
             <div>
-              <p style={{ color: 'var(--text-tertiary)' }}>Ngày giao</p>
-              <p style={{ fontWeight: 600 }}>{shipment.shipment_date}</p>
+              <p className="text-[var(--text-tertiary)]">Ngày giao</p>
+              <p className="font-semibold">{shipment.shipment_date}</p>
             </div>
             <div>
-              <p style={{ color: 'var(--text-tertiary)' }}>Cước vận chuyển</p>
-              <p
-                style={{
-                  fontWeight: 600,
-                  color: 'var(--primary)',
-                }}
-              >
+              <p className="text-[var(--text-tertiary)]">Cước vận chuyển</p>
+              <p className="font-semibold text-primary">
                 {totalCost ? `${formatCurrency(totalCost)}đ` : 'Miễn phí'}
               </p>
             </div>
             {shipment.delivery_address && (
-              <div style={{ gridColumn: '1 / -1' }}>
-                <p style={{ color: 'var(--text-tertiary)' }}>Địa chỉ giao</p>
-                <p style={{ fontWeight: 500 }}>{shipment.delivery_address}</p>
+              <div className="col-span-full">
+                <p className="text-[var(--text-tertiary)]">Địa chỉ giao</p>
+                <p className="font-medium">{shipment.delivery_address}</p>
               </div>
             )}
             {shipment.vehicle_info && (
               <div>
-                <p style={{ color: 'var(--text-tertiary)' }}>Xe</p>
-                <p style={{ fontWeight: 500 }}>{shipment.vehicle_info}</p>
+                <p className="text-[var(--text-tertiary)]">Xe</p>
+                <p className="font-medium">{shipment.vehicle_info}</p>
               </div>
             )}
           </div>
 
           {/* Journey steps */}
-          <p
-            style={{
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              color: 'var(--text-tertiary)',
-              letterSpacing: '0.06em',
-              marginBottom: '0.5rem',
-            }}
-          >
+          <p className="text-xs font-bold uppercase text-[var(--text-tertiary)] tracking-[0.06em] mb-2">
             Cập nhật hành trình
           </p>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              marginBottom: '1rem',
-            }}
-          >
+          <div className="flex flex-col gap-2 mb-4">
             {JOURNEY_STATUS_ORDER.map((step, idx) => {
               const isDone = currentJourneyIdx >= idx;
               const isNext =
@@ -335,15 +202,8 @@ function ShipmentCard({
           </div>
 
           {nextStatus && shipment.status !== 'delivered' && (
-            <div style={{ marginBottom: '0.75rem' }}>
-              <label
-                style={{
-                  fontSize: '0.8rem',
-                  color: 'var(--text-secondary)',
-                  display: 'block',
-                  marginBottom: 4,
-                }}
-              >
+            <div className="mb-3">
+              <label className="text-[0.8rem] text-[var(--text-secondary)] block mb-1">
                 Ghi chú (tùy chọn)
               </label>
               <input
@@ -358,54 +218,22 @@ function ShipmentCard({
           {/* Journey log */}
           {logs.length > 0 && (
             <div>
-              <p
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  color: 'var(--text-tertiary)',
-                  letterSpacing: '0.06em',
-                  marginBottom: '0.5rem',
-                }}
-              >
+              <p className="text-xs font-bold uppercase text-[var(--text-tertiary)] tracking-[0.06em] mb-2">
                 Lịch sử hành trình
               </p>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.25rem',
-                }}
-              >
+              <div className="flex flex-col gap-1">
                 {logs.map((log) => (
                   <div
                     key={log.id}
-                    style={{
-                      display: 'flex',
-                      gap: '0.5rem',
-                      fontSize: '0.78rem',
-                      color: 'var(--text-secondary)',
-                    }}
+                    className="flex gap-2 text-[0.78rem] text-[var(--text-secondary)]"
                   >
-                    <Icon
-                      name="Clock"
-                      size={13}
-                      style={{
-                        flexShrink: 0,
-                        marginTop: 2,
-                      }}
-                    />
+                    <Icon name="Clock" size={13} className="shrink-0 mt-0.5" />
                     <div>
-                      <span style={{ fontWeight: 600 }}>
+                      <span className="font-semibold">
                         {JOURNEY_STATUS_LABELS[log.journey_status]}
                       </span>
                       {log.notes && <span> — {log.notes}</span>}
-                      <span
-                        style={{
-                          color: 'var(--text-tertiary)',
-                          marginLeft: 4,
-                        }}
-                      >
+                      <span className="text-[var(--text-tertiary)] ml-1">
                         {new Date(log.created_at).toLocaleTimeString('vi-VN', {
                           hour: '2-digit',
                           minute: '2-digit',
@@ -438,57 +266,19 @@ export function DriverPortalPage() {
   if (loadingEmployee || (!myEmployee && !employeeId)) {
     if (loadingEmployee) {
       return (
-        <div
-          style={{
-            textAlign: 'center',
-            padding: '3rem',
-            color: 'var(--text-tertiary)',
-          }}
-        >
+        <div className="text-center p-12 text-[var(--text-tertiary)]">
           <Icon name="Loader2" size={32} />
-          <p
-            style={{
-              marginTop: '0.5rem',
-              fontSize: '0.85rem',
-            }}
-          >
-            Đang tải thông tin tài xế...
-          </p>
+          <p className="mt-2 text-[0.85rem]">Đang tải thông tin tài xế...</p>
         </div>
       );
     }
     return (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '60vh',
-          gap: '1rem',
-          padding: '2rem',
-          textAlign: 'center',
-        }}
-      >
-        <Icon
-          name="UserX"
-          size={48}
-          style={{ color: 'var(--text-tertiary)' }}
-        />
-        <p
-          style={{
-            fontWeight: 700,
-            fontSize: '1rem',
-          }}
-        >
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 p-8 text-center">
+        <Icon name="UserX" size={48} className="text-[var(--text-tertiary)]" />
+        <p className="font-bold text-base">
           Tài khoản chưa liên kết với nhân viên
         </p>
-        <p
-          style={{
-            fontSize: '0.85rem',
-            color: 'var(--text-secondary)',
-          }}
-        >
+        <p className="text-[0.85rem] text-[var(--text-secondary)]">
           Vui lòng liên hệ quản trị viên để liên kết tài khoản này với hồ sơ
           nhân viên tài xế.
         </p>
@@ -498,37 +288,12 @@ export function DriverPortalPage() {
 
   if (!employeeId) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '60vh',
-          gap: '1rem',
-          padding: '2rem',
-          textAlign: 'center',
-        }}
-      >
-        <Icon
-          name="UserX"
-          size={48}
-          style={{ color: 'var(--text-tertiary)' }}
-        />
-        <p
-          style={{
-            fontWeight: 700,
-            fontSize: '1rem',
-          }}
-        >
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 p-8 text-center">
+        <Icon name="UserX" size={48} className="text-[var(--text-tertiary)]" />
+        <p className="font-bold text-base">
           Tài khoản chưa liên kết với nhân viên
         </p>
-        <p
-          style={{
-            fontSize: '0.85rem',
-            color: 'var(--text-secondary)',
-          }}
-        >
+        <p className="text-[0.85rem] text-[var(--text-secondary)]">
           Vui lòng liên hệ quản trị viên để liên kết tài khoản này với hồ sơ
           nhân viên tài xế.
         </p>
@@ -537,64 +302,25 @@ export function DriverPortalPage() {
   }
 
   return (
-    <div
-      style={{
-        maxWidth: 600,
-        margin: '0 auto',
-        padding: '1rem',
-      }}
-    >
+    <div className="max-w-[600px] mx-auto p-4">
       {/* Header */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        <p
-          style={{
-            fontSize: '0.75rem',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            color: 'var(--text-tertiary)',
-          }}
-        >
+      <div className="mb-6">
+        <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
           CỔNG TÀI XẾ
         </p>
-        <h1
-          style={{
-            fontSize: '1.5rem',
-            fontWeight: 800,
-            color: 'var(--text-primary)',
-            margin: '4px 0 2px',
-          }}
-        >
+        <h1 className="text-2xl font-extrabold text-[var(--text-primary)] mt-1 mb-0.5 mx-0">
           Đơn giao hôm nay
         </h1>
-        <p
-          style={{
-            fontSize: '0.85rem',
-            color: 'var(--text-secondary)',
-          }}
-        >
+        <p className="text-[0.85rem] text-[var(--text-secondary)]">
           Xin chào, {profile?.full_name ?? 'Tài xế'}
         </p>
       </div>
 
       {/* Loading */}
       {isLoading && (
-        <div
-          style={{
-            textAlign: 'center',
-            padding: '3rem',
-            color: 'var(--text-tertiary)',
-          }}
-        >
+        <div className="text-center p-12 text-[var(--text-tertiary)]">
           <Icon name="Loader2" size={32} />
-          <p
-            style={{
-              marginTop: '0.5rem',
-              fontSize: '0.85rem',
-            }}
-          >
-            Đang tải đơn giao hàng...
-          </p>
+          <p className="mt-2 text-[0.85rem]">Đang tải đơn giao hàng...</p>
         </div>
       )}
 
@@ -607,31 +333,10 @@ export function DriverPortalPage() {
 
       {/* Empty state */}
       {!isLoading && shipments.length === 0 && (
-        <div
-          style={{
-            textAlign: 'center',
-            padding: '3rem 1rem',
-            color: 'var(--text-tertiary)',
-            background: 'var(--surface)',
-            borderRadius: 'var(--radius-lg)',
-            border: '1.5px dashed var(--border)',
-          }}
-        >
+        <div className="text-center py-12 px-4 text-[var(--text-tertiary)] bg-surface rounded-xl border-[1.5px] border-dashed border-border">
           <Icon name="PackageCheck" size={40} />
-          <p
-            style={{
-              fontWeight: 700,
-              marginTop: '0.75rem',
-            }}
-          >
-            Không có đơn giao nào
-          </p>
-          <p
-            style={{
-              fontSize: '0.82rem',
-              marginTop: 4,
-            }}
-          >
+          <p className="font-bold mt-3">Không có đơn giao nào</p>
+          <p className="text-[0.82rem] mt-1">
             Hiện tại bạn chưa được phân công đơn giao hàng nào.
           </p>
         </div>

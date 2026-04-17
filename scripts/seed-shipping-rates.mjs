@@ -8,11 +8,15 @@ dotenv.config({ path: resolve(__dirname, '../.env.local') });
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL,
-  process.env.VITE_SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY
+  process.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.VITE_SUPABASE_ANON_KEY,
 );
 
 async function main() {
-  const { data: tenants } = await supabase.from('tenants').select('id').limit(1);
+  const { data: tenants } = await supabase
+    .from('tenants')
+    .select('id')
+    .limit(1);
   const tenantId = tenants?.[0]?.id || null;
 
   const { data, error } = await supabase.from('shipping_rates').insert([
@@ -26,7 +30,7 @@ async function main() {
       loading_fee: 50000,
       min_charge: 350000,
       is_active: true,
-      notes: 'Giao hàng trong ngày'
+      notes: 'Giao hàng trong ngày',
     },
     {
       tenant_id: tenantId,
@@ -38,7 +42,7 @@ async function main() {
       loading_fee: 50000,
       min_charge: 500000,
       is_active: true,
-      notes: 'Củ Chi, Cần Giờ, Nhà Bè'
+      notes: 'Củ Chi, Cần Giờ, Nhà Bè',
     },
     {
       tenant_id: tenantId,
@@ -50,8 +54,8 @@ async function main() {
       loading_fee: 100000,
       min_charge: 300000,
       is_active: true,
-      notes: 'Giá theo kiện/kg gửi chành xe'
-    }
+      notes: 'Giá theo kiện/kg gửi chành xe',
+    },
   ]);
   console.log('Error:', error);
   console.log('Inserted seed data:', data);

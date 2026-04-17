@@ -84,8 +84,7 @@ export function ContractPreview({
             contractNumber ? `Hợp đồng ${contractNumber}` : 'Xem trước hợp đồng'
           }
           sandbox="allow-same-origin"
-          className="w-full border-0"
-          style={{ minHeight: '600px' }}
+          className="w-full border-0 min-h-[600px]"
         />
       </div>
     </div>

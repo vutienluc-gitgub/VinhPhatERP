@@ -306,40 +306,27 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
 
           <div className="form-grid">
             {/* ── BƯỚC 1: THÔNG TIN CHUNG ── */}
-            <div
-              style={{ display: stepper.currentStep === 0 ? 'block' : 'none' }}
-            >
+            <div className={stepper.currentStep === 0 ? 'block' : 'hidden'}>
               <div className="form-grid">
-                <div
-                  className="form-grid"
-                  style={{
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                  }}
-                >
+                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="orderNumber">Số đơn hàng</label>
                     {isEditing ? (
                       <input
                         id="orderNumber"
-                        className="field-input"
+                        className="field-input bg-[var(--surface)]"
                         type="text"
                         readOnly
-                        style={{ background: 'var(--surface)' }}
                         {...register('orderNumber')}
                       />
                     ) : (
                       <input
                         id="orderNumber"
-                        className="field-input"
+                        className="field-input italic bg-[var(--surface-disabled)] text-[var(--text-tertiary)]"
                         type="text"
                         value="Tự động"
                         readOnly
                         disabled
-                        style={{
-                          background: 'var(--surface-disabled)',
-                          color: 'var(--text-tertiary)',
-                          fontStyle: 'italic',
-                        }}
                       />
                     )}
                   </div>
@@ -362,12 +349,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                   </div>
                 </div>
 
-                <div
-                  className="form-grid"
-                  style={{
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                  }}
-                >
+                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="customerId">
                       Khách hàng <span className="field-required">*</span>
@@ -429,9 +411,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
             </div>
 
             {/* ── BƯỚC 2: CHI TIẾT HÀNG HÓA ── */}
-            <div
-              style={{ display: stepper.currentStep === 1 ? 'block' : 'none' }}
-            >
+            <div className={stepper.currentStep === 1 ? 'block' : 'hidden'}>
               <div className="form-field">
                 <label>
                   Dòng hàng <span className="field-required">*</span>
@@ -462,13 +442,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                       </div>
 
                       <div className="form-grid">
-                        <div
-                          className="form-grid"
-                          style={{
-                            gridTemplateColumns:
-                              'repeat(auto-fit, minmax(200px, 1fr))',
-                          }}
-                        >
+                        <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                           <div className="form-field">
                             <label htmlFor={`items.${index}.fabricType`}>
                               Loại vải <span className="field-required">*</span>
@@ -527,13 +501,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                           </div>
                         </div>
 
-                        <div
-                          className="form-grid"
-                          style={{
-                            gridTemplateColumns:
-                              'repeat(auto-fit, minmax(140px, 1fr))',
-                          }}
-                        >
+                        <div className="form-grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))]">
                           <div className="form-field">
                             <label htmlFor={`items.${index}.colorCode`}>
                               Mã màu
@@ -567,13 +535,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                           </div>
                         </div>
 
-                        <div
-                          className="form-grid"
-                          style={{
-                            gridTemplateColumns:
-                              'repeat(auto-fit, minmax(160px, 1fr))',
-                          }}
-                        >
+                        <div className="form-grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))]">
                           <ItemQuantityFields
                             control={control}
                             index={index}

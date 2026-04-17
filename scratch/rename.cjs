@@ -23,12 +23,12 @@ const renameMap = {
   'raw-fabric.schema.ts': 'raw-fabrics.schema.ts',
   'finished-fabric.schema.ts': 'finished-fabrics.schema.ts',
   'weaving-invoice.schema.ts': 'weaving-invoices.schema.ts',
-  'shipment.schema.ts': 'shipments.schema.ts'
+  'shipment.schema.ts': 'shipments.schema.ts',
 };
 
 const importMap = Object.entries(renameMap).map(([oldName, newName]) => ({
   oldImport: oldName.replace('.ts', ''),
-  newImport: newName.replace('.ts', '')
+  newImport: newName.replace('.ts', ''),
 }));
 
 // 1. Rename files in src/schema
@@ -38,9 +38,11 @@ if (fs.existsSync(schemaDir)) {
     const oldPath = path.join(schemaDir, oldName);
     const newPath = path.join(schemaDir, newName);
     if (fs.existsSync(oldPath)) {
-      if(fs.existsSync(newPath)) {
+      if (fs.existsSync(newPath)) {
         // if newPath already exists, don't overwrite blindly
-        console.log(`Skipping renaming ${oldName} to ${newName} because target already exists`);
+        console.log(
+          `Skipping renaming ${oldName} to ${newName} because target already exists`,
+        );
       } else {
         fs.renameSync(oldPath, newPath);
         console.log(`Renamed: ${oldName} -> ${newName}`);
@@ -71,7 +73,7 @@ function processDir(dir) {
           // ensure the character right before is / or .
           return `${p1}${p2}${newImport}${p4}`;
         });
-        
+
         if (content !== newContent) {
           content = newContent;
           changed = true;

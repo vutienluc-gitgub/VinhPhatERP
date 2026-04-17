@@ -15,14 +15,7 @@ export function TableSkeleton({
             <tr>
               {Array.from({ length: columns }).map((_, i) => (
                 <th key={i}>
-                  <div
-                    className="skeleton-block"
-                    style={{
-                      height: '1rem',
-                      width: '60%',
-                      minWidth: '40px',
-                    }}
-                  />
+                  <div className="skeleton-block h-4 w-[60%] min-w-[40px]" />
                 </th>
               ))}
             </tr>
@@ -34,12 +27,7 @@ export function TableSkeleton({
               {Array.from({ length: columns }).map((_, c) => (
                 <td key={c}>
                   <div
-                    className="skeleton-block"
-                    style={{
-                      height: '1.5rem',
-                      width: c === 0 ? '80%' : '100%',
-                      minWidth: '60px',
-                    }}
+                    className={`skeleton-block h-6 min-w-[60px] ${c === 0 ? 'w-[80%]' : 'w-full'}`}
                   />
                 </td>
               ))}

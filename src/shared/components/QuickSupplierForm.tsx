@@ -126,63 +126,32 @@ export function QuickSupplierForm({
   const isPending = isSubmitting || createMutation.isPending;
 
   return (
-    <div
-      style={{
-        border: '1.5px solid var(--primary)',
-        borderRadius: 'var(--radius-sm)',
-        padding: '0.75rem',
-        background: 'rgba(11, 107, 203, 0.03)',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '0.5rem',
-        }}
-      >
-        <span
-          style={{
-            fontSize: '0.8rem',
-            fontWeight: 700,
-            color: 'var(--primary)',
-          }}
-        >
+    <div className="border-[1.5px] border-primary rounded-sm p-3 bg-[rgba(11,107,203,0.03)]">
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-[0.8rem] font-bold text-primary">
           + Tạo NCC nhanh
         </span>
         <button
-          className="btn-icon"
+          className="btn-icon w-[26px] h-[26px] text-[0.8rem]"
           type="button"
           onClick={onCancel}
           aria-label="Đóng"
-          style={{
-            width: 26,
-            height: 26,
-            fontSize: '0.8rem',
-          }}
         >
           ✕
         </button>
       </div>
 
       {createMutation.error && (
-        <p
-          style={{
-            color: '#c0392b',
-            fontSize: '0.82rem',
-            marginBottom: '0.4rem',
-          }}
-        >
+        <p className="text-[#c0392b] text-[0.82rem] mb-[0.4rem]">
           {(createMutation.error as Error).message}
         </p>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <div className="form-grid" style={{ gap: '0.6rem' }}>
+        <div className="form-grid gap-[0.6rem]">
           <div className="form-grid form-grid-2">
             <div className="form-field">
-              <label style={{ fontSize: '0.75rem' }}>Mã NCC</label>
+              <label className="text-[0.75rem]">Mã NCC</label>
               <input
                 className={`field-input${errors.code ? ' is-error' : ''}`}
                 type="text"
@@ -191,7 +160,7 @@ export function QuickSupplierForm({
               />
             </div>
             <div className="form-field">
-              <label style={{ fontSize: '0.75rem' }}>Danh mục</label>
+              <label className="text-[0.75rem]">Danh mục</label>
               <select className="field-select" {...register('category')}>
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>
@@ -203,7 +172,7 @@ export function QuickSupplierForm({
           </div>
 
           <div className="form-field">
-            <label style={{ fontSize: '0.75rem' }}>
+            <label className="text-[0.75rem]">
               Tên NCC <span className="field-required">*</span>
             </label>
             <input
@@ -219,7 +188,7 @@ export function QuickSupplierForm({
           </div>
 
           <div className="form-field">
-            <label style={{ fontSize: '0.75rem' }}>SĐT</label>
+            <label className="text-[0.75rem]">SĐT</label>
             <input
               className="field-input"
               type="tel"
@@ -228,33 +197,20 @@ export function QuickSupplierForm({
             />
           </div>
 
-          <div
-            style={{
-              display: 'flex',
-              gap: '0.5rem',
-              justifyContent: 'flex-end',
-            }}
-          >
+          <div className="flex gap-2 justify-end">
             <Button
               variant="secondary"
               type="button"
               onClick={onCancel}
               disabled={isPending}
-              style={{
-                fontSize: '0.82rem',
-                padding: '0.4rem 0.75rem',
-              }}
+              className="text-[0.82rem] px-3 py-1.5"
             >
               Hủy
             </Button>
             <button
-              className="primary-button"
+              className="primary-button text-[0.82rem] px-3 py-1.5"
               type="submit"
               disabled={isPending}
-              style={{
-                fontSize: '0.82rem',
-                padding: '0.4rem 0.75rem',
-              }}
             >
               {isPending ? 'Đang tạo…' : 'Tạo NCC'}
             </button>

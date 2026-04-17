@@ -44,7 +44,7 @@ export function CompanySettingsForm() {
     return (
       <div className="skeleton-list">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="skeleton-block" style={{ height: 56 }} />
+          <div key={i} className="skeleton-block h-[56px]" />
         ))}
       </div>
     );
@@ -62,37 +62,21 @@ export function CompanySettingsForm() {
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       {/* Success feedback */}
       {updateMutation.isSuccess && (
-        <div
-          className="success-inline"
-          style={{
-            marginBottom: '1rem',
-            padding: '0.75rem 1rem',
-            borderRadius: 8,
-            background: 'var(--color-emerald-50, #ecfdf5)',
-            color: 'var(--color-emerald-700, #047857)',
-            fontSize: '0.875rem',
-          }}
-        >
+        <div className="success-inline mb-4 px-4 py-3 rounded-lg bg-[var(--color-emerald-50,#ecfdf5)] text-[var(--color-emerald-700,#047857)] text-sm">
           ✅ Đã lưu thông tin công ty thành công!
         </div>
       )}
 
       {/* Error feedback */}
       {updateMutation.error && (
-        <p className="error-inline" style={{ marginBottom: '1rem' }}>
+        <p className="error-inline mb-4">
           Lỗi: {(updateMutation.error as Error).message}
         </p>
       )}
 
-      <div className="form-grid" style={{ gap: '1rem' }}>
+      <div className="form-grid gap-4">
         {/* Tên công ty */}
-        <div
-          className="form-grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '1rem',
-          }}
-        >
+        <div className="form-grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
           <div className="form-field">
             <label htmlFor="cs-company-name">
               Tên công ty <span className="field-required">*</span>
@@ -142,13 +126,7 @@ export function CompanySettingsForm() {
         </div>
 
         {/* SĐT + Email */}
-        <div
-          className="form-grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '1rem',
-          }}
-        >
+        <div className="form-grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
           <div className="form-field">
             <label htmlFor="cs-phone">Số điện thoại</label>
             <input
@@ -179,13 +157,7 @@ export function CompanySettingsForm() {
         </div>
 
         {/* Website + Logo */}
-        <div
-          className="form-grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '1rem',
-          }}
-        >
+        <div className="form-grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
           <div className="form-field">
             <label htmlFor="cs-website">Website</label>
             <input
@@ -210,13 +182,7 @@ export function CompanySettingsForm() {
         </div>
 
         {/* Bank info */}
-        <div
-          className="form-grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '1rem',
-          }}
-        >
+        <div className="form-grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
           <div className="form-field">
             <label htmlFor="cs-bank-name">Tên ngân hàng</label>
             <input
@@ -295,14 +261,7 @@ export function CompanySettingsForm() {
       </div>
 
       {/* Actions */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          gap: '0.75rem',
-          marginTop: '1.5rem',
-        }}
-      >
+      <div className="flex justify-end gap-3 mt-6">
         <Button
           variant="secondary"
           type="button"

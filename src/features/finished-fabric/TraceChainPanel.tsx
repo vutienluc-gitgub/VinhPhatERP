@@ -168,19 +168,11 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
           ))}
       </div>
 
-      <div
-        className="modal-footer"
-        style={{
-          marginTop: '1.5rem',
-          padding: 0,
-          border: 'none',
-        }}
-      >
+      <div className="modal-footer mt-6 p-0 border-none">
         <button
-          className="primary-button btn-standard"
+          className="primary-button btn-standard ml-auto"
           type="button"
           onClick={onClose}
-          style={{ marginLeft: 'auto' }}
         >
           Đóng
         </button>

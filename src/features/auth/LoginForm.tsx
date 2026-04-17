@@ -119,30 +119,10 @@ export function LoginForm({
         )}
       </div>
 
-      <div
-        className="form-group row"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '0.5rem',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
+      <div className="form-group row flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
           <input type="checkbox" id="rememberMe" {...register('rememberMe')} />
-          <label
-            htmlFor="rememberMe"
-            style={{
-              margin: 0,
-              fontSize: '0.8rem',
-            }}
-          >
+          <label htmlFor="rememberMe" className="m-0 text-[0.8rem]">
             Ghi nhớ đăng nhập
           </label>
         </div>
@@ -151,15 +131,7 @@ export function LoginForm({
           <button
             type="button"
             onClick={onForgotPassword}
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              color: 'var(--primary-color, #4f46e5)',
-              fontSize: '0.8rem',
-              cursor: 'pointer',
-              textDecoration: 'underline',
-            }}
+            className="bg-transparent border-none p-0 text-[var(--primary-color,#4f46e5)] text-[0.8rem] cursor-pointer underline"
           >
             Quên mật khẩu?
           </button>

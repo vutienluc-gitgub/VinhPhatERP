@@ -15,19 +15,9 @@ type KpiCardProps = {
 export function KpiCard({ label, value, color, icon }: KpiCardProps) {
   return (
     <div className="stat-card">
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.4rem',
-        }}
-      >
+      <div className="flex items-center gap-1.5">
         {icon && (
-          <span
-            className="stat-icon"
-            aria-hidden="true"
-            style={{ fontSize: '1rem' }}
-          >
+          <span className="stat-icon text-base" aria-hidden="true">
             {icon}
           </span>
         )}
@@ -49,15 +39,6 @@ type KpiGridProps = {
  */
 export function KpiGrid({ children }: KpiGridProps) {
   return (
-    <div
-      className="stats-bar"
-      style={{
-        padding: '0.75rem 0',
-        background: 'transparent',
-        border: 'none',
-      }}
-    >
-      {children}
-    </div>
+    <div className="stats-bar py-3 bg-transparent border-none">{children}</div>
   );
 }

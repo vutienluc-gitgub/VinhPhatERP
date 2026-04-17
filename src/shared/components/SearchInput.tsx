@@ -25,51 +25,19 @@ export function SearchInput({
   }, []);
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
-        width: '100%',
-        ...style,
-      }}
-    >
+    <div className="relative flex items-center w-full" style={style}>
       <Icon
         name="search"
         size={16}
-        style={{
-          position: 'absolute',
-          left: '0.75rem',
-          color: 'var(--fg-muted)',
-          pointerEvents: 'none',
-        }}
+        className="absolute left-3 text-[var(--fg-muted)] pointer-events-none"
       />
       <input
         ref={inputRef}
         type="text"
-        className={`field-input ${className}`}
-        style={{
-          paddingLeft: '2.25rem',
-          paddingRight: '3rem',
-          width: '100%',
-        }}
+        className={`field-input pl-9 pr-12 w-full ${className}`}
         {...props}
       />
-      <div
-        style={{
-          position: 'absolute',
-          right: '0.4rem',
-          fontSize: '0.65rem',
-          color: 'var(--fg-muted)',
-          background: 'var(--surface-strong)',
-          padding: '0.15rem 0.35rem',
-          borderRadius: '4px',
-          border: '1px solid var(--border)',
-          pointerEvents: 'none',
-          fontWeight: 600,
-          fontFamily: 'monospace',
-        }}
-      >
+      <div className="absolute right-1.5 text-[0.65rem] text-[var(--fg-muted)] bg-[var(--surface-strong)] px-1.5 py-0.5 rounded border border-[var(--border)] pointer-events-none font-semibold font-mono">
         ⌘K
       </div>
     </div>

@@ -91,12 +91,7 @@ export function Combobox({
     return (
       <div className={`relative ${className}`} ref={containerRef}>
         <div
-          className={`field-input flex items-center${hasError ? ' is-error' : ''}${disabled ? ' opacity-50' : ''}`}
-          style={{
-            padding: 0,
-            display: 'flex',
-            alignItems: 'center',
-          }}
+          className={`field-input flex items-center p-0${hasError ? ' is-error' : ''}${disabled ? ' opacity-50' : ''}`}
         >
           <input
             ref={inputRef}
@@ -104,15 +99,7 @@ export function Combobox({
             disabled={disabled}
             value={search}
             placeholder={placeholder}
-            className="field-input"
-            style={{
-              border: 'none',
-              outline: 'none',
-              background: 'transparent',
-              flex: 1,
-              minHeight: '44px',
-              padding: '0 0.75rem',
-            }}
+            className="field-input border-none outline-none bg-transparent flex-1 min-h-[44px] px-3 focus:ring-0"
             onChange={(e) => {
               setSearch(e.target.value);
               setIsOpen(true);
@@ -147,14 +134,7 @@ export function Combobox({
             }}
           />
           <ChevronDown
-            style={{
-              width: '1rem',
-              height: '1rem',
-              color: 'var(--text-secondary)',
-              marginRight: '0.75rem',
-              flexShrink: 0,
-              cursor: 'pointer',
-            }}
+            className="w-4 h-4 text-[var(--text-secondary)] mr-3 shrink-0 cursor-pointer"
             onClick={() => {
               setIsOpen(!isOpen);
               inputRef.current?.focus();
@@ -163,10 +143,7 @@ export function Combobox({
         </div>
 
         {isOpen && filteredOptions.length > 0 && (
-          <div
-            className="absolute z-50 w-full mt-1 border border-[var(--border)] rounded-lg shadow-lg max-h-[240px] overflow-y-auto"
-            style={{ backgroundColor: 'var(--surface)' }}
-          >
+          <div className="absolute z-50 w-full mt-1 border border-[var(--border)] rounded-lg shadow-lg max-h-[240px] overflow-y-auto bg-surface">
             {filteredOptions.map((opt) => {
               const isSelected = value === opt.value;
               return (
@@ -223,13 +200,9 @@ export function Combobox({
         onBlur={() => {
           if (!isOpen) onBlur?.();
         }}
-        className={`field-select flex items-center justify-between w-full text-left bg-surface relative ${
+        className={`field-select flex items-center justify-between w-full text-left bg-surface relative pr-10 min-h-[44px] ${
           hasError ? 'is-error' : ''
         } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-        style={{
-          paddingRight: '2.5rem',
-          minHeight: '44px',
-        }}
       >
         <span className="flex items-center gap-2 truncate">
           {selectedOption ? (
@@ -241,38 +214,20 @@ export function Combobox({
                   className="text-primary flex-shrink-0"
                 />
               )}
-              <span style={{ color: 'var(--text-primary)' }}>
+              <span className="text-[var(--text-primary)]">
                 {selectedOption.label}
               </span>
             </>
           ) : (
-            <span style={{ color: 'var(--text-secondary)' }}>
-              {placeholder}
-            </span>
+            <span className="text-muted">{placeholder}</span>
           )}
         </span>
-        <ChevronDown
-          style={{
-            width: '1rem',
-            height: '1rem',
-            color: 'var(--text-secondary)',
-            position: 'absolute',
-            right: '0.75rem',
-            top: '50%',
-            transform: 'translateY(-50%)',
-          }}
-        />
+        <ChevronDown className="w-4 h-4 text-[var(--text-secondary)] absolute right-3 top-1/2 -translate-y-1/2" />
       </button>
 
       {isOpen && (
-        <div
-          className="absolute z-50 w-full mt-1 border border-[var(--border)] rounded-lg shadow-lg max-h-[240px] overflow-y-auto"
-          style={{ backgroundColor: 'var(--surface)' }}
-        >
-          <div
-            className="sticky top-0 p-2 border-b border-[var(--border-light)] flex flex-row items-center gap-2 z-10"
-            style={{ backgroundColor: 'var(--surface)' }}
-          >
+        <div className="absolute z-50 w-full mt-1 border border-[var(--border)] rounded-lg shadow-lg max-h-[240px] overflow-y-auto bg-surface">
+          <div className="sticky top-0 p-2 border-b border-[var(--border-light)] flex flex-row items-center gap-2 z-10 bg-surface">
             <Search className="w-4 h-4 text-[var(--text-secondary)]" />
             <input
               type="text"

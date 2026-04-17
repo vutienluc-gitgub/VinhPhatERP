@@ -137,25 +137,13 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
 
       if (statusIcon === 'locked')
         return (
-          <div
-            className="absolute top-1 right-1 p-0.5 rounded-[var(--radius-sm)] text-[var(--text-muted)]"
-            style={{
-              background: 'var(--surface-subtle)',
-              opacity: 0.8,
-            }}
-          >
+          <div className="absolute top-1 right-1 p-0.5 rounded-[var(--radius-sm)] text-[var(--text-muted)] bg-[var(--surface-subtle)] opacity-80">
             <Icon name="Lock" size={10} />
           </div>
         );
       if (statusIcon === 'cut')
         return (
-          <div
-            className="absolute top-1 right-1 p-0.5 rounded-[var(--radius-sm)] text-[var(--text-muted)]"
-            style={{
-              background: 'var(--surface-subtle)',
-              opacity: 0.8,
-            }}
-          >
+          <div className="absolute top-1 right-1 p-0.5 rounded-[var(--radius-sm)] text-[var(--text-muted)] bg-[var(--surface-subtle)] opacity-80">
             <Icon name="Scissors" size={10} />
           </div>
         );
@@ -202,10 +190,10 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
       if (!value)
         return (
           <span
-            style={{
-              opacity: 0.3,
-              fontSize: isCompact ? 10 : 14,
-            }}
+            className={cn(
+              'opacity-30',
+              isCompact ? 'text-[10px]' : 'text-[14px]',
+            )}
           >
             -
           </span>
@@ -213,14 +201,7 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
       if (isCompact) {
         // Compact: show value only, no unit suffix to save space
         return (
-          <span
-            style={{
-              fontSize: 11,
-              fontWeight: 800,
-              letterSpacing: '-0.02em',
-              lineHeight: 1,
-            }}
-          >
+          <span className="text-[11px] font-extrabold tracking-[-0.02em] leading-none">
             {value}
           </span>
         );
@@ -262,21 +243,7 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
         const shortLabel = label.length > 6 ? label.slice(-5) : label;
         return (
           <Tooltip content={labelTooltipContent}>
-            <span
-              style={{
-                fontSize: 8,
-                fontWeight: 700,
-                opacity: 0.6,
-                lineHeight: 1,
-                letterSpacing: '0.02em',
-                textTransform: 'uppercase',
-                display: 'block',
-                textAlign: 'center',
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                maxWidth: '100%',
-              }}
-            >
+            <span className="text-[8px] font-bold opacity-60 leading-none tracking-[0.02em] uppercase block text-center overflow-hidden whitespace-nowrap max-w-full">
               {shortLabel}
             </span>
           </Tooltip>

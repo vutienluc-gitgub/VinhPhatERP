@@ -24,25 +24,25 @@ module.exports = {
     },
     'boundaries/elements': [
       {
- type: 'feature',
-pattern: ['src/features/*'] 
-},
+        type: 'feature',
+        pattern: ['src/features/*'],
+      },
       {
- type: 'shared',
-pattern: ['src/shared/*'] 
-},
+        type: 'shared',
+        pattern: ['src/shared/*'],
+      },
       {
- type: 'api',
-pattern: ['src/api/*'] 
-},
+        type: 'api',
+        pattern: ['src/api/*'],
+      },
       {
- type: 'schema',
-pattern: ['src/schema/*'] 
-},
+        type: 'schema',
+        pattern: ['src/schema/*'],
+      },
       {
- type: 'models',
-pattern: ['src/models/*'] 
-},
+        type: 'models',
+        pattern: ['src/models/*'],
+      },
     ],
   },
 
@@ -150,11 +150,12 @@ pattern: ['src/models/*']
     // ========================
     'linebreak-style': ['error', 'unix'],
     'object-curly-newline': [
-'warn', {
- multiline: true,
-consistent: true 
-}
-],
+      'warn',
+      {
+        multiline: true,
+        consistent: true,
+      },
+    ],
     'array-bracket-newline': ['warn', { multiline: true }],
     'object-property-newline': [
       'warn',
@@ -182,7 +183,11 @@ consistent: true
     },
     {
       // Portal infrastructure files need auth access
-      files: ['**/PortalRoute.tsx', '**/CustomerPortalLayout.tsx', '**/CustomerPortalRouter.tsx'],
+      files: [
+        '**/PortalRoute.tsx',
+        '**/CustomerPortalLayout.tsx',
+        '**/CustomerPortalRouter.tsx',
+      ],
       rules: {
         'boundaries/dependencies': 'off',
       },

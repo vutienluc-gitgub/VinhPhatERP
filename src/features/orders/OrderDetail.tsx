@@ -165,7 +165,7 @@ export function OrderDetail({
           </div>
           <div>
             <div className="td-muted summary-label">Đã thu</div>
-            <div className="summary-value" style={{ color: 'var(--success)' }}>
+            <div className="summary-value text-[var(--success)]">
               {formatCurrency(order.paid_amount)} đ
             </div>
           </div>
@@ -194,11 +194,8 @@ export function OrderDetail({
             </div>
             <div className="h-2 bg-border rounded">
               <div
-                className="h-full rounded transition-all duration-300"
-                style={{
-                  width: `${paymentPct}%`,
-                  background: balanceDue <= 0 ? '#0c8f68' : '#0b6bcb',
-                }}
+                className={`h-full rounded transition-all duration-300 ${balanceDue <= 0 ? 'bg-[#0c8f68]' : 'bg-[#0b6bcb]'}`}
+                style={{ width: `${paymentPct}%` }}
               />
             </div>
           </div>

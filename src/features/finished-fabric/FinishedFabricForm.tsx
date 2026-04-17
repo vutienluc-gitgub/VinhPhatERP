@@ -119,45 +119,22 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
         {lockReason && (
           <div
             role="alert"
-            style={{
-              background: '#fff3cd',
-              border: '1px solid #ffc107',
-              borderRadius: 6,
-              padding: '0.6rem 0.9rem',
-              marginBottom: '1rem',
-              fontSize: '0.875rem',
-              color: '#856404',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-            }}
+            className="bg-[#fff3cd] border border-[#ffc107] rounded-md py-[0.6rem] px-[0.9rem] mb-4 text-sm text-[#856404] flex items-center gap-[0.4rem]"
           >
             🔒 {lockReason}
           </div>
         )}
 
         {mutationError && (
-          <p className="error-inline" style={{ marginBottom: '1rem' }}>
+          <p className="error-inline mb-4">
             Lỗi: {(mutationError as Error).message}
           </p>
         )}
 
-        <fieldset
-          disabled={isLocked}
-          style={{
-            border: 'none',
-            padding: 0,
-            margin: 0,
-          }}
-        >
+        <fieldset disabled={isLocked} className="border-none p-0 m-0">
           <div className="form-grid">
             {/* Hàng 1: Mã cuộn + Loại vải */}
-            <div
-              className="form-grid"
-              style={{
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              }}
-            >
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
               <div className="form-field">
                 <label htmlFor="roll_number">
                   Mã cuộn <span className="field-required">*</span>
@@ -237,12 +214,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
             </div>
 
             {/* Hàng 2: Màu */}
-            <div
-              className="form-grid"
-              style={{
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              }}
-            >
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
               <div className="form-field">
                 <label htmlFor="color_name">Màu vải</label>
                 <Controller
@@ -281,12 +253,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
             </div>
 
             {/* Hàng 3: Khổ + Dài */}
-            <div
-              className="form-grid"
-              style={{
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              }}
-            >
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
               <div className="form-field">
                 <label htmlFor="width_cm">Khổ vải (cm)</label>
                 <input
@@ -321,12 +288,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
             </div>
 
             {/* Hàng 4: Trọng lượng + Chất lượng */}
-            <div
-              className="form-grid"
-              style={{
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              }}
-            >
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
               <div className="form-field">
                 <label htmlFor="weight_kg">Trọng lượng (kg)</label>
                 <input
@@ -371,12 +333,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
             </div>
 
             {/* Hàng 5: Trạng thái + Ngày sản xuất */}
-            <div
-              className="form-grid"
-              style={{
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              }}
-            >
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
               <div className="form-field">
                 <label htmlFor="status">Trạng thái</label>
                 <Controller
@@ -431,14 +388,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
           </div>
         </fieldset>
 
-        <div
-          className="modal-footer"
-          style={{
-            marginTop: '1.5rem',
-            padding: 0,
-            border: 'none',
-          }}
-        >
+        <div className="modal-footer mt-6 p-0 border-none">
           <Button
             variant="secondary"
             type="button"

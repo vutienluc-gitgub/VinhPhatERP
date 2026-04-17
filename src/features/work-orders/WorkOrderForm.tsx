@@ -249,12 +249,7 @@ export function WorkOrderForm({
       <form
         id="work-order-form"
         onSubmit={handleSubmit(onSubmit)}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-          minHeight: 0,
-        }}
+        className="flex flex-col h-full min-h-0"
         noValidate
       >
         {/* Draft Restoration Banner */}
@@ -269,9 +264,7 @@ export function WorkOrderForm({
         {/* Scrollable Content Area */}
         <div className="form-grid">
           {/* ── BƯỚC 1: THÔNG TIN CƠ BẢN ── */}
-          <div
-            style={{ display: stepper.currentStep === 0 ? 'block' : 'none' }}
-          >
+          <div className={stepper.currentStep === 0 ? 'block' : 'hidden'}>
             <div className="form-grid">
               <div className="form-field">
                 <label>
@@ -367,9 +360,7 @@ export function WorkOrderForm({
           </div>
 
           {/* ── BƯỚC 2: MỤC TIÊU SẢN XUẤT ── */}
-          <div
-            style={{ display: stepper.currentStep === 1 ? 'block' : 'none' }}
-          >
+          <div className={stepper.currentStep === 1 ? 'block' : 'hidden'}>
             <div className="form-grid">
               <div className="form-field">
                 <label>
@@ -423,28 +414,19 @@ export function WorkOrderForm({
                 )}
               </div>
 
-              <div
-                className="form-grid"
-                style={{ gridTemplateColumns: '1fr 1fr 1fr' }}
-              >
-                <div className="form-field" style={{ gridColumn: 'span 2' }}>
+              <div className="form-grid grid-cols-3">
+                <div className="form-field col-span-2">
                   <label>
                     Sản lượng mục tiêu <span className="field-required">*</span>
                   </label>
-                  <div
-                    style={{
-                      display: 'flex',
-                      gap: '0.5rem',
-                    }}
-                  >
+                  <div className="flex gap-2">
                     <input
                       type="number"
                       step="0.01"
                       {...register('target_quantity_m', {
                         valueAsNumber: true,
                       })}
-                      className={`field-input${errors.target_quantity_m ? ' is-error' : ''}`}
-                      style={{ flex: 1 }}
+                      className={`field-input flex-1${errors.target_quantity_m ? ' is-error' : ''}`}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
@@ -452,7 +434,7 @@ export function WorkOrderForm({
                         }
                       }}
                     />
-                    <div style={{ width: '100px' }}>
+                    <div className="w-[100px]">
                       <Controller
                         name="target_unit"
                         control={control}
@@ -484,7 +466,7 @@ export function WorkOrderForm({
                     {...register('target_weight_kg', { valueAsNumber: true })}
                     className={`field-input${errors.target_weight_kg ? ' is-error' : ''}`}
                   />
-                  <span className="field-hint" style={{ whiteSpace: 'nowrap' }}>
+                  <span className="field-hint whitespace-nowrap">
                     Tự tính từ BOM nếu trống
                   </span>
                   {errors.target_weight_kg && (
@@ -516,23 +498,8 @@ export function WorkOrderForm({
         </div>
 
         {/* Sticky Footer */}
-        <div
-          className="modal-footer"
-          style={{
-            marginTop: '1.5rem',
-            padding: 0,
-            border: 'none',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-            }}
-          >
+        <div className="modal-footer mt-6 p-0 border-none justify-between items-center">
+          <div className="flex items-center gap-3">
             {!stepper.isFirst && (
               <Button
                 variant="secondary"

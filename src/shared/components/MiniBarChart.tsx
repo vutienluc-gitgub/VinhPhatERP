@@ -47,94 +47,46 @@ export function MiniBarChart({
     valueFormatter ?? ((val: number) => val.toLocaleString('vi-VN'));
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '10px',
-      }}
-    >
+    <div className="flex flex-col gap-2.5">
       {data.map((d, i) => {
         const color = d.color ?? PALETTE[i % PALETTE.length]!;
         const pct =
           maxValue > 0 ? Math.min((d.value / maxValue) * 100, 100) : 0;
 
         return (
-          <div
-            key={i}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-            }}
-          >
+          <div key={i} className="flex items-center gap-2.5">
             {/* Rank — từ codebase */}
             {showRank && (
-              <span
-                style={{
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  color: 'var(--muted)',
-                  width: '16px',
-                  textAlign: 'right',
-                  flexShrink: 0,
-                }}
-              >
+              <span className="text-[11px] font-bold text-[var(--muted)] w-4 text-right shrink-0">
                 {i + 1}
               </span>
             )}
 
             {/* Label — fixed width + truncate */}
             <span
-              style={{
-                width: '100px',
-                maxWidth: '100px',
-                fontSize: '13px',
-                color: 'var(--muted)',
-                flexShrink: 0,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
+              className="w-[100px] max-w-[100px] text-[13px] text-[var(--muted)] shrink-0 truncate"
               title={d.label}
             >
               {d.label}
             </span>
 
             {/* Track */}
-            <div
-              style={{
-                flex: 1,
-                height: '10px',
-                backgroundColor: 'rgba(16,35,61,0.07)',
-                borderRadius: '999px',
-                position: 'relative',
-              }}
-            >
+            <div className="flex-1 h-2.5 bg-[rgba(16,35,61,0.07)] rounded-full relative">
               {/* Fill — full opacity gradient, shine removed for light backgrounds */}
               <div
+                className="h-full rounded-full transition-all duration-700 ease-out"
                 style={{
                   width: `${pct}%`,
-                  height: '100%',
-                  borderRadius: '999px',
                   background: `linear-gradient(90deg, ${color}dd, ${color})`,
                   boxShadow: `0 1px 6px ${color}44`,
-                  transition: 'width 0.7s ease-out',
                 }}
               />
             </div>
 
             {/* Value — CSS var từ codebase, formatter từ codebase */}
             <span
-              style={{
-                fontSize: '13px',
-                fontWeight: 700,
-                minWidth: '52px',
-                textAlign: 'right',
-                color,
-                flexShrink: 0,
-                fontVariantNumeric: 'tabular-nums',
-              }}
+              className="text-[13px] font-bold min-w-[52px] text-right shrink-0 tabular-nums"
+              style={{ color }}
             >
               {format(d.value)}
             </span>

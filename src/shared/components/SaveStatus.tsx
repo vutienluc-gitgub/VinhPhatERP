@@ -8,36 +8,21 @@ import { formatTime } from '@/shared/hooks/useAutoSave';
 export default function SaveStatus({ status, lastSavedAt }: Props) {
   if (status === 'saving')
     return (
-      <span
-        style={{
-          fontSize: '0.8rem',
-          color: 'var(--muted)',
-        }}
-      >
+      <span className="text-[0.8rem] text-[var(--muted)]">
         Đang lưu bản nháp...
       </span>
     );
 
   if (status === 'saved')
     return (
-      <span
-        style={{
-          fontSize: '0.8rem',
-          color: 'var(--success)',
-        }}
-      >
+      <span className="text-[0.8rem] text-[var(--success)]">
         Đã lưu lúc {formatTime(lastSavedAt)} ✓
       </span>
     );
 
   if (status === 'conflict')
     return (
-      <span
-        style={{
-          fontSize: '0.8rem',
-          color: 'var(--danger)',
-        }}
-      >
+      <span className="text-[0.8rem] text-[var(--danger)]">
         Có thay đổi ở tab khác ⚠
       </span>
     );

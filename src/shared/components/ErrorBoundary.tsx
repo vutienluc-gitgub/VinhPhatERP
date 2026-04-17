@@ -38,57 +38,18 @@ export class ErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '60vh',
-            padding: '2rem',
-            textAlign: 'center',
-            gap: '1rem',
-          }}
-        >
-          <h2
-            style={{
-              margin: 0,
-              fontSize: '1.25rem',
-            }}
-          >
-            Đã xảy ra lỗi
-          </h2>
-          <p
-            style={{
-              color: 'var(--text-muted, #666)',
-              maxWidth: 420,
-              lineHeight: 1.5,
-            }}
-          >
+        <div className="flex flex-col items-center justify-center min-h-[60vh] p-8 text-center gap-4">
+          <h2 className="m-0 text-xl">Đã xảy ra lỗi</h2>
+          <p className="text-[var(--text-muted,#666)] max-w-[420px] leading-relaxed">
             Ứng dụng gặp lỗi không mong muốn. Bạn có thể thử tải lại trang hoặc
             quay về trang chủ.
           </p>
           {this.state.error && (
-            <pre
-              style={{
-                fontSize: '0.8rem',
-                background: 'var(--surface-strong, #f4f4f4)',
-                padding: '0.75rem 1rem',
-                borderRadius: '6px',
-                maxWidth: '100%',
-                overflow: 'auto',
-                color: '#c0392b',
-              }}
-            >
+            <pre className="text-[0.8rem] bg-[var(--surface-strong,#f4f4f4)] py-3 px-4 rounded-md max-w-full overflow-auto text-[#c0392b]">
               {this.state.error.message}
             </pre>
           )}
-          <div
-            style={{
-              display: 'flex',
-              gap: '0.75rem',
-            }}
-          >
+          <div className="flex gap-3">
             <button
               className="secondary-button"
               type="button"

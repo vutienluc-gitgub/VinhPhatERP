@@ -46,21 +46,14 @@ export function ResetPasswordPage() {
             <span className="logo-text">vinhphat.app</span>
             <h2>Mật khẩu đã đổi!</h2>
           </div>
-          <p
-            className="auth-status-body"
-            style={{
-              textAlign: 'center',
-              color: 'rgba(255,255,255,0.7)',
-            }}
-          >
+          <p className="auth-status-body text-center text-white/70">
             Mật khẩu của bạn đã được cập nhật thành công. Bạn có thể đăng nhập
             bằng mật khẩu mới ngay bây giờ.
           </p>
           <button
             type="button"
-            className="auth-submit-btn"
+            className="auth-submit-btn mt-6"
             onClick={() => navigate('/auth', { replace: true })}
-            style={{ marginTop: '1.5rem' }}
           >
             Đăng nhập ngay
           </button>
@@ -81,15 +74,7 @@ export function ResetPasswordPage() {
             <span className="logo-text">vinhphat.app</span>
             <h2>Đặt lại mật khẩu</h2>
           </div>
-          <p
-            className="auth-subtitle"
-            style={{
-              textAlign: 'center',
-              marginBottom: '1.5rem',
-              fontSize: '0.85rem',
-              color: 'rgba(255,255,255,0.6)',
-            }}
-          >
+          <p className="auth-subtitle text-center mb-6 text-[0.85rem] text-white/60">
             Vui lòng nhập mật khẩu mới cho tài khoản của bạn.
           </p>
 
@@ -131,9 +116,8 @@ export function ResetPasswordPage() {
 
           <button
             type="submit"
-            className="auth-submit-btn"
+            className="auth-submit-btn mt-4"
             disabled={isSubmitting}
-            style={{ marginTop: '1rem' }}
           >
             {isSubmitting ? 'Đang cập nhật…' : 'Cập nhật mật khẩu'}
           </button>
