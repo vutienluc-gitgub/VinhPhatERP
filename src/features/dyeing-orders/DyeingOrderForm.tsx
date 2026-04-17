@@ -178,14 +178,10 @@ export function DyeingOrderForm({
                 />
               ) : (
                 <input
-                  className="field-input"
+                  className="field-input text-muted italic"
                   value="Tự động"
                   readOnly
                   disabled
-                  style={{
-                    color: 'var(--text-tertiary)',
-                    fontStyle: 'italic',
-                  }}
                 />
               )}
             </div>
