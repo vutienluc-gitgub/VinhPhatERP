@@ -164,6 +164,8 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
         columns={[
           {
             header: 'Số phiếu / Ngày',
+            id: 'expense_number',
+            sortable: true,
             cell: (exp) => (
               <div className="flex flex-col">
                 <span className="font-bold text-primary">
@@ -175,6 +177,8 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
           },
           {
             header: 'Danh mục',
+            id: 'category',
+            sortable: true,
             cell: (exp) => (
               <Badge variant={getCategoryVariant(exp.category)}>
                 {EXPENSE_CATEGORY_LABELS[exp.category]}
@@ -183,6 +187,8 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
           },
           {
             header: 'Mô tả',
+            id: 'description',
+            sortable: true,
             cell: (exp) => (
               <div className="flex flex-col">
                 <span>{exp.description}</span>
@@ -196,6 +202,8 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
           },
           {
             header: 'Số tiền',
+            id: 'amount',
+            sortable: true,
             className: 'text-right',
             cell: (exp) => (
               <span className="font-bold text-danger">
@@ -205,6 +213,9 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
           },
           {
             header: 'Tài khoản',
+            id: 'payment_accounts',
+            sortable: true,
+            accessor: (exp) => exp.payment_accounts?.name,
             className: 'td-muted',
             cell: (exp) => exp.payment_accounts?.name ?? '—',
           },

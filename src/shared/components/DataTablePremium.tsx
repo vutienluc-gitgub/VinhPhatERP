@@ -1,4 +1,5 @@
 import { clsx } from 'clsx';
+import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 
 import { Icon } from './Icon';
@@ -16,6 +17,8 @@ export interface Column<T> {
   id?: string;
   /** Whether the column can be sorted */
   sortable?: boolean;
+  /** Hàm trích xuất dữ liệu nội bộ (Dành riêng cho Local Sort tự động đối với cột nested) */
+  accessor?: (item: T) => string | number | null | undefined;
 }
 
 interface DataTablePremiumProps<T> {
@@ -40,6 +43,8 @@ interface DataTablePremiumProps<T> {
   sortColumn?: string;
   sortDirection?: 'asc' | 'desc';
   onSort?: (columnId: string) => void;
+  /** Tùy chọn Bật/Tắt tính tự sắp xếp phía Client nếu không cấu hình API Sort (Mặc định: Bật) */
+  enableClientSort?: boolean;
 }
 
 /**
@@ -63,7 +68,54 @@ export function DataTablePremium<T>({
   sortColumn,
   sortDirection,
   onSort,
+  enableClientSort = true,
 }: DataTablePremiumProps<T>) {
+  // --- NATIVE AUTO-SORT LOGIC ---
+  const [internalSortCol, setInternalSortCol] = useState<string | undefined>();
+  const [internalSortDir, setInternalSortDir] = useState<'asc' | 'desc'>('asc');
+
+  // Ưu tiên Props (Controlled) nếu có, nếu không thì dùng State Nội Bộ (Uncontrolled)
+  const activeSortCol = sortColumn !== undefined ? sortColumn : internalSortCol;
+  const activeSortDir =
+    sortDirection !== undefined ? sortDirection : internalSortDir;
+
+  const handleToggleSort = (colId: string) => {
+    if (onSort) {
+      onSort(colId); // Trả quyền quyết định về Màn hình (API Sort)
+    } else {
+      // Tự động sắp xếp nội bộ
+      if (activeSortCol === colId) {
+        setInternalSortDir((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+      } else {
+        setInternalSortCol(colId);
+        setInternalSortDir('asc');
+      }
+    }
+  };
+
+  // Tự động phân tích dữ liệu mảng và hoán đổi vị trí theo Active State
+  const ProcessedData = useMemo(() => {
+    if (!enableClientSort || !activeSortCol || onSort) return data; // Nếu màn hình có `onSort`, ta ưu tiên API Data
+
+    return [...data].sort((a, b) => {
+      const colDef = columns.find((c) => c.id === activeSortCol);
+      // Lấy giá trị so sánh (Dùng accessor nếu có khai báo, nếu không lấy key obj)
+      const aVal = colDef?.accessor
+        ? colDef.accessor(a)
+        : (a as Record<string, unknown>)[activeSortCol];
+      const bVal = colDef?.accessor
+        ? colDef.accessor(b)
+        : (b as Record<string, unknown>)[activeSortCol];
+
+      if (aVal === bVal) return 0;
+      if (aVal == null) return activeSortDir === 'asc' ? 1 : -1;
+      if (bVal == null) return activeSortDir === 'asc' ? -1 : 1;
+      if (aVal < bVal) return activeSortDir === 'asc' ? -1 : 1;
+      return activeSortDir === 'asc' ? 1 : -1;
+    });
+  }, [data, activeSortCol, activeSortDir, enableClientSort, columns, onSort]);
+  // ------------------------------
+
   if (isLoading) {
     return <TableSkeleton rows={skeletonRows} columns={columns.length} />;
   }
@@ -100,8 +152,8 @@ export function DataTablePremium<T>({
                       'cursor-pointer select-none hover:opacity-80 transition-opacity whitespace-nowrap',
                   )}
                   onClick={() => {
-                    if (col.sortable && col.id && onSort) {
-                      onSort(col.id);
+                    if (col.sortable && col.id) {
+                      handleToggleSort(col.id);
                     }
                   }}
                 >
@@ -114,23 +166,23 @@ export function DataTablePremium<T>({
                     {col.header}
                     {col.sortable && (
                       <span className="shrink-0 flex items-center justify-center">
-                        {sortColumn === col.id ? (
-                          sortDirection === 'asc' ? (
+                        {activeSortCol === col.id ? (
+                          activeSortDir === 'asc' ? (
                             <Icon
-                              name="arrow-up"
+                              name="ArrowUp"
                               className="w-4 h-4 text-foreground"
                               strokeWidth={1.5}
                             />
                           ) : (
                             <Icon
-                              name="arrow-down"
+                              name="ArrowDown"
                               className="w-4 h-4 text-foreground"
                               strokeWidth={1.5}
                             />
                           )
                         ) : (
                           <Icon
-                            name="chevrons-up-down"
+                            name="ChevronsUpDown"
                             className="w-4 h-4 text-muted-foreground/50"
                             strokeWidth={1.5}
                           />
@@ -143,7 +195,7 @@ export function DataTablePremium<T>({
             </tr>
           </thead>
           <tbody>
-            {data.map((item) => (
+            {ProcessedData.map((item) => (
               <tr
                 key={rowKey(item)}
                 className={clsx(
@@ -185,7 +237,7 @@ export function DataTablePremium<T>({
 
       {/* Mobile View */}
       <div className="md:hidden space-y-3 p-3">
-        {data.map((item) => (
+        {ProcessedData.map((item) => (
           <div
             key={rowKey(item)}
             className="mobile-card-wrapper"

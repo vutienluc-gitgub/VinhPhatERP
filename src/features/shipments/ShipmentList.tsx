@@ -295,6 +295,8 @@ export function ShipmentList() {
         columns={[
           {
             header: 'Mã & Trạng thái',
+            id: 'shipment_number',
+            sortable: true,
             cell: (s) => (
               <div className="flex flex-col gap-1 items-start">
                 <Badge variant={getVariant(s.status)}>
@@ -318,6 +320,8 @@ export function ShipmentList() {
           },
           {
             header: 'Thời gian & Cước',
+            id: 'shipment_date',
+            sortable: true,
             cell: (s) => {
               const totalCost = (s.shipping_cost || 0) + (s.loading_fee || 0);
               const dateParts = s.shipment_date.split('-');
@@ -343,6 +347,13 @@ export function ShipmentList() {
           },
           {
             header: 'Lộ trình',
+            id: 'destination',
+            sortable: true,
+            accessor: (s) =>
+              s.delivery_address ||
+              s.customers?.address ||
+              s.customers?.name ||
+              'Z',
             className: 'w-[280px]',
             cell: (s) => {
               const origin = 'Kho Vĩnh Phát';
@@ -382,6 +393,9 @@ export function ShipmentList() {
           },
           {
             header: 'Tài xế',
+            id: 'delivery_staff',
+            sortable: true,
+            accessor: (s) => s.delivery_staff?.full_name || 'Z',
             cell: (s) => {
               if (!s.delivery_staff) {
                 return (

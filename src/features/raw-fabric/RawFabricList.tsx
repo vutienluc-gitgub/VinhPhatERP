@@ -252,6 +252,8 @@ export function RawFabricList({
             columns={[
               {
                 header: 'Mã cuộn',
+                id: 'roll_number',
+                sortable: true,
                 cell: (r) => (
                   <span className="font-bold text-primary">
                     {r.roll_number}
@@ -260,6 +262,8 @@ export function RawFabricList({
               },
               {
                 header: 'Số lô',
+                id: 'lot_number',
+                sortable: true,
                 cell: (r) => (
                   <span className="font-medium text-muted">
                     {r.lot_number || '—'}
@@ -268,6 +272,8 @@ export function RawFabricList({
               },
               {
                 header: 'Loại vải / Màu',
+                id: 'fabric_type',
+                sortable: true,
                 cell: (r) => (
                   <div className="flex flex-col">
                     <span className="font-medium">{r.fabric_type}</span>
@@ -277,6 +283,8 @@ export function RawFabricList({
               },
               {
                 header: 'Khối lượng',
+                id: 'weight_kg',
+                sortable: true,
                 className: 'text-right',
                 cell: (r) => (
                   <span className="font-medium">
@@ -287,6 +295,8 @@ export function RawFabricList({
               },
               {
                 header: 'Chiều dài',
+                id: 'length_m',
+                sortable: true,
                 className: 'text-right',
                 cell: (r) => (
                   <span className="font-medium text-success">
@@ -297,6 +307,8 @@ export function RawFabricList({
               },
               {
                 header: 'Trạng thái',
+                id: 'status',
+                sortable: true,
                 cell: (r) => (
                   <Badge variant={getStatusVariant(r.status)}>
                     {ROLL_STATUS_LABELS[r.status]}

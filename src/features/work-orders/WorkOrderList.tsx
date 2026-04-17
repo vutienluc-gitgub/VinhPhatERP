@@ -214,6 +214,8 @@ export function WorkOrderList({
         columns={[
           {
             header: 'Mã Lệnh',
+            id: 'work_order_number',
+            sortable: true,
             cell: (wo) => (
               <div className="flex flex-col">
                 <span className="font-bold text-primary">
@@ -229,6 +231,9 @@ export function WorkOrderList({
           },
           {
             header: 'Công Thức (BOM)',
+            id: 'bom_template',
+            sortable: true,
+            accessor: (wo) => wo.bom_template?.code,
             cell: (wo) => (
               <div className="flex flex-col">
                 <span className="font-bold">{wo.bom_template?.code}</span>
@@ -238,6 +243,9 @@ export function WorkOrderList({
           },
           {
             header: 'Đối tác dệt',
+            id: 'supplier',
+            sortable: true,
+            accessor: (wo) => wo.supplier?.name,
             cell: (wo) => (
               <div className="flex flex-col">
                 <span className="font-medium">{wo.supplier?.name}</span>
@@ -249,6 +257,8 @@ export function WorkOrderList({
           },
           {
             header: 'Mục Tiêu',
+            id: 'target_quantity_m',
+            sortable: true,
             className: 'text-right',
             cell: (wo) => (
               <div className="flex flex-col text-right">
@@ -265,6 +275,8 @@ export function WorkOrderList({
           },
           {
             header: 'Trạng Thái',
+            id: 'status',
+            sortable: true,
             cell: (wo) => {
               const statusConfig = WORK_ORDER_STATUSES[wo.status];
               return (
@@ -276,6 +288,8 @@ export function WorkOrderList({
           },
           {
             header: 'Bắt Đầu',
+            id: 'start_date',
+            sortable: true,
             className: 'td-muted',
             cell: (wo) =>
               wo.start_date
