@@ -26,7 +26,7 @@ describe('AddButton', () => {
           expect(btn).not.toBeNull();
           expect(btn!.getAttribute('type')).toBe('button');
           expect(btn!.className).toContain('btn-primary');
-          expect(btn!.style.minHeight).toBe('42px');
+          expect(btn!.className).toContain('min-h-[42px]');
           unmount();
           document.body.removeChild(container);
         },
