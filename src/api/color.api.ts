@@ -1,5 +1,6 @@
 import { untypedDb } from '@/services/supabase/untyped';
-import type { ColorFormValues, ColorInsert } from '@/schema/color.schema';
+import type { ColorFormValues } from '@/schema/color.schema';
+import { getTenantId } from '@/services/supabase/tenant';
 
 export const colorApi = {
   list: async () => {
@@ -13,11 +14,13 @@ export const colorApi = {
   },
 
   upsert: async (values: ColorFormValues) => {
-    const payload: ColorInsert = {
+    const tenantId = await getTenantId();
+    const payload = {
       code: values.code.trim().toUpperCase(),
       name: values.name.trim(),
       note: values.note || null,
       trend_year: values.trend_year || null,
+      tenant_id: tenantId,
     };
 
     const { data, error } = await untypedDb

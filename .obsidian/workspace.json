@@ -186,6 +186,7 @@
   },
   "active": "dfcacc4f8d061a96",
   "lastOpenFiles": [
+    "src/shared/utils/form.ts",
     "src/schema/customer.schema.ts",
     "public/thumbnail.png",
     "typecheck.txt",
@@ -197,7 +198,6 @@
     "eslint.json",
     "lint_output_utf8.txt",
     "src/schema/yarn-catalogs.schema.ts",
-    "src/schema/work-orders.schema.ts",
     "README.md",
     "task.md"
   ]

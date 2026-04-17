@@ -13,6 +13,7 @@ import {
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
 import { formatCurrency } from '@/shared/utils/format';
+import { extractFormErrorMessage } from '@/shared/utils/form';
 import {
   useActiveSuppliers,
   useCreateYarnReceipt,
@@ -180,16 +181,8 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
       <form
         id="yarn-receipt-form"
         onSubmit={handleSubmit(onSubmit, (validationErrors) => {
-          // Build first error message for toast
-          const messages: string[] = [];
-          for (const val of Object.values(validationErrors)) {
-            const msg = val && 'message' in val ? val.message : undefined;
-            if (msg) messages.push(String(msg));
-            if (messages.length >= 2) break;
-          }
-          toast.error(
-            messages.join('. ') || 'Vui l\u00f2ng ki\u1ec3m tra l\u1ea1i form',
-          );
+          const errorMessage = extractFormErrorMessage(validationErrors);
+          toast.error(errorMessage);
           // Scroll to first error field
           const firstKey = Object.keys(validationErrors)[0];
           if (firstKey) {
