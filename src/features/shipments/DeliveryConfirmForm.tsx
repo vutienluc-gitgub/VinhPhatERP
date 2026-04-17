@@ -78,12 +78,7 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
     >
       <form id="delivery-confirm-form" onSubmit={handleSubmit(onSubmit)}>
         {/* Receiver info */}
-        <div
-          className="form-grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          }}
-        >
+        <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
           <div className="form-field">
             <label className="form-label" htmlFor="receiverName">
               Tên người nhận <span className="field-required">*</span>
@@ -131,34 +126,12 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
 
         {/* Driver commission section */}
         {hasDriver && (
-          <div
-            style={{
-              padding: '1rem',
-              borderRadius: 'var(--radius)',
-              background: 'var(--surface-accent)',
-              border: '1px solid var(--border)',
-              marginBottom: '0.75rem',
-            }}
-          >
-            <p
-              style={{
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                color: 'var(--text-tertiary)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                marginBottom: '0.75rem',
-              }}
-            >
+          <div className="p-4 rounded-[var(--radius)] bg-[var(--surface-accent)] border border-border mb-3">
+            <p className="text-[0.8rem] font-bold text-[var(--text-tertiary)] uppercase tracking-[0.06em] mb-3">
               Thù lao tài xế
             </p>
-            <div
-              className="form-grid"
-              style={{
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              }}
-            >
-              <div className="form-field" style={{ marginBottom: 0 }}>
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+              <div className="form-field mb-0">
                 <label className="form-label" htmlFor="driverCommission">
                   Số tiền thù lao (VNĐ)
                 </label>
@@ -172,19 +145,13 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
                   placeholder="0"
                 />
                 {commission > 0 && (
-                  <p
-                    style={{
-                      fontSize: '0.75rem',
-                      color: 'var(--success)',
-                      marginTop: '4px',
-                    }}
-                  >
+                  <p className="text-xs text-[var(--success)] mt-1">
                     = {formatCurrency(commission)} VND
                   </p>
                 )}
               </div>
 
-              <div className="form-field" style={{ marginBottom: 0 }}>
+              <div className="form-field mb-0">
                 <label className="form-label">Tài khoản ngân hàng</label>
                 <Controller
                   name="accountId"
@@ -201,13 +168,7 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
               </div>
             </div>
             {commission > 0 && (
-              <p
-                style={{
-                  fontSize: '0.75rem',
-                  color: 'var(--text-secondary)',
-                  marginTop: '0.5rem',
-                }}
-              >
+              <p className="text-xs text-[var(--text-secondary)] mt-2">
                 Hệ thống sẽ tự động tạo phiếu chi danh mục Logistics khi hoàn
                 tất giao hàng.
               </p>
@@ -231,20 +192,13 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
 
         {/* Error */}
         {deliverMutation.error && (
-          <p className="error-inline" style={{ marginTop: '0.5rem' }}>
+          <p className="error-inline mt-2">
             Lỗi: {(deliverMutation.error as Error).message}
           </p>
         )}
 
         {/* Actions */}
-        <div
-          className="modal-footer"
-          style={{
-            marginTop: '1.5rem',
-            padding: 0,
-            border: 'none',
-          }}
-        >
+        <div className="modal-footer mt-6 p-0 border-none">
           <Button
             variant="secondary"
             type="button"

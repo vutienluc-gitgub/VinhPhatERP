@@ -175,7 +175,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
     >
       <form onSubmit={form.handleSubmit(onSubmit, onInvalid)}>
         {isEditing && (
-          <div style={{ marginBottom: '1rem' }}>
+          <div className="mb-4">
             <span className="td-muted">
               Mã nhân viên: <strong>{employee.code}</strong>
             </span>
@@ -283,23 +283,9 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
         </div>
 
         {form.watch('role') === 'driver' && (
-          <div
-            className="form-field"
-            style={{
-              marginTop: '1rem',
-              padding: '1rem',
-              background: 'var(--surface-accent)',
-              borderRadius: 'var(--radius)',
-            }}
-          >
+          <div className="form-field mt-4 p-4 bg-[var(--surface-accent)] rounded-[var(--radius)]">
             <label>Tài khoản đăng nhập (Cổng tài xế)</label>
-            <p
-              style={{
-                fontSize: '0.8rem',
-                color: 'var(--text-secondary)',
-                marginBottom: '0.5rem',
-              }}
-            >
+            <p className="text-[0.8rem] text-[var(--text-secondary)] mb-2">
               Liên kết hồ sơ này với một tài khoản (email) có Role = Tài xế trên
               hệ thống để họ đăng nhập vào Cổng Tài Xế.
             </p>
@@ -322,14 +308,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
           </div>
         )}
 
-        <div
-          className="modal-footer"
-          style={{
-            marginTop: '1.5rem',
-            padding: 0,
-            border: 'none',
-          }}
-        >
+        <div className="modal-footer mt-6 p-0 border-none">
           <Button
             variant="secondary"
             type="button"

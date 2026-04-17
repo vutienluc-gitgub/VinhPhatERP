@@ -86,7 +86,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
       title={isEditing ? `Sửa: ${account.name}` : 'Thêm tài khoản mới'}
     >
       {mutationError && (
-        <p className="error-inline" style={{ marginBottom: '1rem' }}>
+        <p className="error-inline mb-4">
           Lỗi: {(mutationError as Error).message}
         </p>
       )}
@@ -94,12 +94,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
       <form id="account-form" onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="form-grid">
           {/* Tên + Loại */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="name">
                 Tên tài khoản <span className="field-required">*</span>
@@ -138,12 +133,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
 
           {/* Bank info - only for bank accounts */}
           {accountType === 'bank' && (
-            <div
-              className="form-grid"
-              style={{
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              }}
-            >
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
               <div className="form-field">
                 <label htmlFor="bankName">Tên ngân hàng</label>
                 <input
@@ -168,12 +158,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
           )}
 
           {/* Số dư ban đầu + Trạng thái */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="initialBalance">
                 Số dư ban đầu (đ){' '}
@@ -238,14 +223,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
           </div>
         </div>
 
-        <div
-          className="modal-footer"
-          style={{
-            marginTop: '1.5rem',
-            padding: 0,
-            border: 'none',
-          }}
-        >
+        <div className="modal-footer mt-6 p-0 border-none">
           <Button
             variant="secondary"
             type="button"

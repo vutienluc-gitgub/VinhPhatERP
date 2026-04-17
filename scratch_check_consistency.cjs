@@ -16,7 +16,7 @@ function findInconsistencies() {
     }
     return results;
   }
-  
+
   const allFiles = traverse(dir);
   let metrics = {
     huyY: 0,
@@ -24,17 +24,21 @@ function findInconsistencies() {
     nativeButtonSubmit: 0,
     uiButtonSubmit: 0,
     nativeButtonHuy: 0,
-    uiButtonHuy: 0
+    uiButtonHuy: 0,
   };
 
   for (const file of allFiles) {
     const content = fs.readFileSync(file, 'utf8');
     if (content.includes('Huỷ')) metrics.huyY++;
     if (content.includes('Hủy')) metrics.huyU++;
-    if (/<button[^>]*type=['"]submit['"][^>]*>/i.test(content)) metrics.nativeButtonSubmit++;
-    if (/<Button[^>]*type=['"]submit['"][^>]*>/i.test(content)) metrics.uiButtonSubmit++;
-    if (content.includes('>Hủy</button>') || content.includes('>Huỷ</button>')) metrics.nativeButtonHuy++;
-    if (content.includes('>Hủy</Button>') || content.includes('>Huỷ</Button>')) metrics.uiButtonHuy++;
+    if (/<button[^>]*type=['"]submit['"][^>]*>/i.test(content))
+      metrics.nativeButtonSubmit++;
+    if (/<Button[^>]*type=['"]submit['"][^>]*>/i.test(content))
+      metrics.uiButtonSubmit++;
+    if (content.includes('>Hủy</button>') || content.includes('>Huỷ</button>'))
+      metrics.nativeButtonHuy++;
+    if (content.includes('>Hủy</Button>') || content.includes('>Huỷ</Button>'))
+      metrics.uiButtonHuy++;
   }
   console.log(JSON.stringify(metrics, null, 2));
 }

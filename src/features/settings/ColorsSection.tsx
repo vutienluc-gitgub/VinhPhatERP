@@ -147,67 +147,24 @@ export function ColorsSection() {
       ) : (
         <div>
           {/* Desktop header row */}
-          <div
-            className="hidden md:grid"
-            style={{
-              gridTemplateColumns: '100px 1fr auto auto',
-              padding: '0.5rem 1.25rem',
-              borderBottom: '1px solid var(--border)',
-              background: 'rgba(16,35,61,0.03)',
-            }}
-          >
-            <span
-              style={{
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                color: 'var(--muted)',
-              }}
-            >
+          <div className="hidden md:grid grid-cols-[100px_1fr_auto_auto] px-5 py-2 border-b border-border bg-[rgba(16,35,61,0.03)]">
+            <span className="text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
               Mã
             </span>
-            <span
-              style={{
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                color: 'var(--muted)',
-              }}
-            >
+            <span className="text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
               Tên màu
             </span>
-            <span
-              style={{
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                color: 'var(--muted)',
-                width: '7rem',
-                textAlign: 'center',
-              }}
-            >
+            <span className="text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[var(--muted)] w-28 text-center">
               Xu hướng
             </span>
-            <span style={{ width: '5rem' }} />
+            <span className="w-20" />
           </div>
 
           {/* Groups & Rows */}
           {groups.map((group) => (
             <div key={group.title}>
               {/* Group Header */}
-              <div
-                style={{
-                  padding: '0.75rem 1.25rem',
-                  backgroundColor: 'var(--surface)',
-                  borderBottom: '1px solid var(--border)',
-                  fontWeight: 700,
-                  fontSize: '0.85rem',
-                  color: 'var(--primary)',
-                }}
-              >
+              <div className="px-5 py-3 bg-[var(--surface)] border-b border-border font-bold text-[0.85rem] text-[var(--primary)]">
                 {group.title}
               </div>
 
@@ -220,71 +177,24 @@ export function ColorsSection() {
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') handleEdit(item);
                   }}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr auto',
-                    alignItems: 'center',
-                    padding: '0.65rem 1.25rem',
-                    borderBottom: '1px solid var(--border)',
-                    cursor: 'pointer',
-                    transition: 'background 0.12s ease',
-                    minHeight: '48px',
-                  }}
-                  className="color-row"
+                  className="color-row grid grid-cols-[1fr_auto] items-center px-5 py-[0.65rem] border-b border-border cursor-pointer min-h-[48px] transition-colors"
                 >
                   {/* Left: code + name */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.75rem',
-                      minWidth: 0,
-                    }}
-                  >
+                  <div className="flex items-center gap-3 min-w-0">
                     {/* Color preview dot */}
                     <span
                       title={getColorHex(item.code)}
-                      style={{
-                        display: 'inline-block',
-                        width: '16px',
-                        height: '16px',
-                        minWidth: '16px',
-                        borderRadius: '50%',
-                        background: getColorHex(item.code),
-                        border: '1.5px solid var(--border)',
-                        flexShrink: 0,
-                      }}
+                      className="inline-block w-4 h-4 min-w-[16px] rounded-full border-[1.5px] border-border shrink-0"
+                      style={{ background: getColorHex(item.code) }}
                     />
-                    <span
-                      style={{
-                        fontFamily: 'monospace',
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
-                        color: 'var(--primary)',
-                        whiteSpace: 'nowrap',
-                        minWidth: '4.5rem',
-                      }}
-                    >
+                    <span className="font-mono text-xs font-bold text-[var(--primary)] whitespace-nowrap min-w-[4.5rem]">
                       {item.code}
                     </span>
-                    <span
-                      style={{
-                        fontWeight: 500,
-                        color: 'var(--text)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
+                    <span className="font-medium text-[var(--text)] overflow-hidden text-ellipsis whitespace-nowrap">
                       {item.name}
                     </span>
                     {item.trend_year && (
-                      <span
-                        className="badge badge-info hidden md:inline-flex"
-                        style={{
-                          fontSize: '0.68rem',
-                        }}
-                      >
+                      <span className="badge badge-info hidden md:inline-flex text-[0.68rem]">
                         {item.trend_year}
                       </span>
                     )}
@@ -292,11 +202,7 @@ export function ColorsSection() {
 
                   {/* Right: actions */}
                   <div
-                    style={{
-                      display: 'flex',
-                      gap: '0.25rem',
-                      flexShrink: 0,
-                    }}
+                    className="flex gap-1 shrink-0"
                     onClick={(e) => e.stopPropagation()}
                     onKeyDown={(e) => e.stopPropagation()}
                     role="presentation"

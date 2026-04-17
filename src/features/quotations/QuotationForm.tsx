@@ -274,15 +274,11 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
             ) : (
               <input
                 id="quotationNumber"
-                className="field-input"
+                className="field-input italic text-[var(--text-tertiary)]"
                 type="text"
                 value="Tự động"
                 readOnly
                 disabled
-                style={{
-                  color: 'var(--text-tertiary)',
-                  fontStyle: 'italic',
-                }}
               />
             )}
           </div>

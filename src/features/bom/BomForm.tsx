@@ -284,7 +284,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
           </div>
 
           {errors.bom_yarn_items?.root && (
-            <p className="field-error" style={{ marginBottom: '0.75rem' }}>
+            <p className="field-error mb-3">
               {errors.bom_yarn_items.root.message}
             </p>
           )}
@@ -295,12 +295,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
                 key={field.id}
                 className="flex gap-2 items-start p-3 border border-border rounded-lg"
               >
-                <div
-                  className="form-grid flex-1"
-                  style={{
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                  }}
-                >
+                <div className="form-grid flex-1 grid-cols-[repeat(auto-fit,minmax(140px,1fr))]">
                   <div className="form-field">
                     <label>Loại sợi</label>
                     <Controller

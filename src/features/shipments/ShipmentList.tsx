@@ -158,13 +158,7 @@ export function ShipmentList() {
       {/* Stats Section */}
       <div className="stats-grid-premium">
         <div className="stat-item-premium">
-          <div
-            className="stat-icon-wrapper"
-            style={{
-              background: 'rgba(11, 107, 203, 0.1)',
-              color: 'var(--primary)',
-            }}
-          >
+          <div className="stat-icon-wrapper bg-[rgba(11,107,203,0.1)] text-[var(--primary)]">
             <Icon name="Truck" size={24} />
           </div>
           <div className="stat-content-premium">
@@ -174,13 +168,7 @@ export function ShipmentList() {
         </div>
 
         <div className="stat-item-premium">
-          <div
-            className="stat-icon-wrapper"
-            style={{
-              background: 'rgba(10, 128, 92, 0.1)',
-              color: 'var(--success)',
-            }}
-          >
+          <div className="stat-icon-wrapper bg-[rgba(10,128,92,0.1)] text-[var(--success)]">
             <Icon name="Banknote" size={24} />
           </div>
           <div className="stat-content-premium">
@@ -199,13 +187,7 @@ export function ShipmentList() {
         </div>
 
         <div className="stat-item-premium">
-          <div
-            className="stat-icon-wrapper"
-            style={{
-              background: 'rgba(245, 158, 11, 0.1)',
-              color: '#f59e0b',
-            }}
-          >
+          <div className="stat-icon-wrapper bg-[rgba(245,158,11,0.1)] text-[#f59e0b]">
             <Icon name="Clock" size={24} />
           </div>
           <div className="stat-content-premium">
@@ -229,7 +211,7 @@ export function ShipmentList() {
                 onChange={(e) => setSearchInput(e.target.value)}
                 onBlur={handleSearch}
               />
-              <button type="submit" style={{ display: 'none' }}></button>
+              <button type="submit" className="hidden"></button>
               <Icon name="Search" size={16} className="search-input-icon" />
             </form>
           </div>

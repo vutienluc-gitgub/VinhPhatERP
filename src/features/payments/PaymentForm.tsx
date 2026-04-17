@@ -65,27 +65,10 @@ export function PaymentForm({
         onClose={onClose}
         title={`Thu tiền — ${orderNumber}`}
       >
-        <div
-          style={{
-            padding: '1rem',
-            background: 'var(--surface-success)',
-            color: 'var(--success-strong)',
-            borderRadius: 'var(--radius)',
-            fontSize: '0.9rem',
-            border: '1px solid var(--success)',
-            textAlign: 'center',
-          }}
-        >
+        <div className="p-4 bg-[var(--surface-success)] text-[var(--success-strong)] rounded text-[0.9rem] border border-[var(--success)] text-center">
           ✅ Đơn hàng đã được thanh toán đầy đủ.
         </div>
-        <div
-          className="modal-footer"
-          style={{
-            marginTop: '1.5rem',
-            padding: 0,
-            border: 'none',
-          }}
-        >
+        <div className="modal-footer mt-6 p-0 border-none">
           <CancelButton onClick={onClose} label="Đóng" />
         </div>
       </AdaptiveSheet>
@@ -101,47 +84,27 @@ export function PaymentForm({
       <form id="payment-form" onSubmit={handleSubmit(onSubmit)}>
         {/* Balance due info */}
         {balanceDue > 0 && (
-          <div
-            style={{
-              padding: '0.75rem',
-              background: 'var(--surface-warning)',
-              color: 'var(--warning-strong)',
-              borderRadius: 'var(--radius)',
-              fontSize: '0.88rem',
-              border: '1px solid var(--warning)',
-              marginBottom: '1rem',
-            }}
-          >
+          <div className="p-3 bg-[var(--surface-warning)] text-[var(--warning-strong)] rounded text-[0.88rem] border border-[var(--warning)] mb-4">
             Còn nợ: <strong>{formatCurrency(balanceDue)} đ</strong>
           </div>
         )}
 
         {createMutation.error && (
-          <p className="error-inline" style={{ marginBottom: '1rem' }}>
+          <p className="error-inline mb-4">
             Lỗi: {(createMutation.error as Error).message}
           </p>
         )}
 
         <div className="form-grid">
           {/* Payment number + date */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label>Số phiếu thu</label>
               <input
-                className="field-input"
+                className="field-input bg-[var(--surface-disabled)] text-[var(--text-tertiary)] italic"
                 value="Tự động"
                 readOnly
                 disabled
-                style={{
-                  background: 'var(--surface-disabled)',
-                  color: 'var(--text-tertiary)',
-                  fontStyle: 'italic',
-                }}
               />
             </div>
             <div className="form-field">
@@ -160,12 +123,7 @@ export function PaymentForm({
           </div>
 
           {/* Amount + method */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label>
                 Số tiền (đ) <span className="field-required">*</span>
@@ -226,14 +184,7 @@ export function PaymentForm({
         </div>
 
         {/* Actions */}
-        <div
-          className="modal-footer"
-          style={{
-            marginTop: '1.5rem',
-            padding: 0,
-            border: 'none',
-          }}
-        >
+        <div className="modal-footer mt-6 p-0 border-none">
           <CancelButton
             onClick={onClose}
             label="Hủy"

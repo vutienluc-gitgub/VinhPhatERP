@@ -84,14 +84,7 @@ export function ProgressBoard() {
   if (error) {
     return (
       <div className="panel-card">
-        <p
-          style={{
-            color: '#c0392b',
-            padding: '1rem',
-          }}
-        >
-          Lỗi: {(error as Error).message}
-        </p>
+        <p className="text-[#c0392b] p-4">Lỗi: {(error as Error).message}</p>
       </div>
     );
   }
@@ -149,13 +142,12 @@ export function ProgressBoard() {
 
         {(stageFilter || statusFilter) && (
           <button
-            className="btn-secondary"
+            className="btn-secondary self-end"
             type="button"
             onClick={() => {
               setStageFilter('');
               setStatusFilter('');
             }}
-            style={{ alignSelf: 'flex-end' }}
           >
             ✕ Xóa lọc
           </button>
@@ -163,7 +155,7 @@ export function ProgressBoard() {
       </div>
 
       {/* Board */}
-      <div style={{ padding: '0 1.25rem 1.25rem' }}>
+      <div className="px-5 pb-5">
         {isLoading ? (
           <p className="table-empty">Đang tải...</p>
         ) : filtered.length === 0 ? (
@@ -173,13 +165,7 @@ export function ProgressBoard() {
               : 'Chưa có đơn hàng nào được xác nhận.'}
           </p>
         ) : (
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1rem',
-            }}
-          >
+          <div className="flex flex-col gap-4">
             {filtered.map((group) => {
               const overdue = isOverdue(group.deliveryDate);
               const doneCount = group.stages.filter(
@@ -194,49 +180,23 @@ export function ProgressBoard() {
               return (
                 <div
                   key={group.orderId}
-                  style={{
-                    border: `1px solid ${overdue ? '#e74c3c44' : 'var(--border)'}`,
-                    borderRadius: 'var(--radius-sm)',
-                    padding: '0.75rem',
-                    background: overdue ? '#fef2f210' : 'var(--bg)',
-                  }}
+                  className={`border rounded-sm p-3 ${overdue ? 'border-[#e74c3c44] bg-[#fef2f210]' : 'border-border bg-bg'}`}
                 >
                   {/* Order header */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '0.5rem',
-                      flexWrap: 'wrap',
-                      gap: '0.4rem',
-                    }}
-                  >
+                  <div className="flex justify-between items-center mb-2 flex-wrap gap-[0.4rem]">
                     <div>
                       <strong>{group.orderNumber}</strong>
-                      <span
-                        className="td-muted"
-                        style={{ marginLeft: '0.5rem' }}
-                      >
+                      <span className="td-muted ml-2">
                         {group.customerName}
                       </span>
                     </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        fontSize: '0.82rem',
-                      }}
-                    >
-                      <span style={{ fontVariantNumeric: 'tabular-nums' }}>
-                        {pct}%
-                      </span>
+                    <div className="flex items-center gap-2 text-[0.82rem]">
+                      <span className="tabular-nums">{pct}%</span>
                       {group.deliveryDate && (
                         <span
-                          style={{
-                            color: overdue ? '#c0392b' : 'var(--muted)',
-                          }}
+                          className={
+                            overdue ? 'text-[#c0392b]' : 'text-muted-foreground'
+                          }
                         >
                           📅 {group.deliveryDate}
                           {overdue && ' ⚠️'}
@@ -246,33 +206,18 @@ export function ProgressBoard() {
                   </div>
 
                   {/* Mini progress bar */}
-                  <div
-                    style={{
-                      height: 4,
-                      background: 'var(--border)',
-                      borderRadius: 2,
-                      marginBottom: '0.5rem',
-                    }}
-                  >
+                  <div className="h-1 bg-border rounded-[2px] mb-2">
                     <div
+                      className="h-full rounded-[2px] transition-[width] duration-300 ease-in-out"
                       style={{
-                        height: '100%',
                         width: `${pct}%`,
-                        background: pct === 100 ? '#0c8f68' : '#0b6bcb',
-                        borderRadius: 2,
-                        transition: 'width 300ms ease',
+                        backgroundColor: pct === 100 ? '#0c8f68' : '#0b6bcb',
                       }}
                     />
                   </div>
 
                   {/* Stage chips */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      gap: '0.3rem',
-                    }}
-                  >
+                  <div className="flex flex-wrap gap-[0.3rem]">
                     {PRODUCTION_STAGES.map((stageKey) => {
                       const row = group.stages.find(
                         (s) => s.stage === stageKey,
@@ -293,14 +238,9 @@ export function ProgressBoard() {
                         <button
                           key={row.id}
                           type="button"
-                          className={`roll-status ${statusCls}`}
+                          className={`roll-status ${statusCls} ${clickable ? 'cursor-pointer' : 'cursor-default'} text-[0.72rem] border-none`}
                           disabled={updateMutation.isPending || !clickable}
                           onClick={() => clickable && handleQuickAdvance(row)}
-                          style={{
-                            cursor: clickable ? 'pointer' : 'default',
-                            fontSize: '0.72rem',
-                            border: 'none',
-                          }}
                           title={`${STAGE_LABELS[stageKey]}: ${STAGE_STATUS_LABELS[row.status]}${clickable ? ' — Nhấn để chuyển trạng thái' : ''}`}
                         >
                           {STAGE_LABELS[stageKey]}
@@ -316,13 +256,7 @@ export function ProgressBoard() {
       </div>
 
       {updateMutation.error && (
-        <p
-          style={{
-            color: '#c0392b',
-            fontSize: '0.85rem',
-            padding: '0 1.25rem 1rem',
-          }}
-        >
+        <p className="text-[#c0392b] text-[0.85rem] px-5 pb-4">
           Lỗi cập nhật: {(updateMutation.error as Error).message}
         </p>
       )}

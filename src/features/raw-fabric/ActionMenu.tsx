@@ -73,17 +73,10 @@ export function ActionMenu({
         <Button
           variant="primary"
           leftIcon="Plus"
-          className="btn-standard"
+          className="btn-standard flex items-center min-h-[42px] px-5 gap-[0.4rem]"
           type="button"
           onClick={onNew}
           disabled={isExporting}
-          style={{
-            minHeight: 42,
-            padding: '0 1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-          }}
         >
           Nhập mới
         </Button>
@@ -140,17 +133,10 @@ export function ActionMenu({
         <Button
           variant="primary"
           leftIcon="Plus"
-          className="flex-1"
+          className="flex-1 flex items-center justify-center min-h-[42px] gap-[0.4rem]"
           type="button"
           onClick={onNew}
           disabled={isExporting}
-          style={{
-            minHeight: 42,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.4rem',
-          }}
         >
           Nhập mới
         </Button>

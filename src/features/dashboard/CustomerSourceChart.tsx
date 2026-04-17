@@ -18,36 +18,19 @@ export function CustomerSourceChart({
         <div className="card-header-row">
           <div>
             <p className="eyebrow">Phân tích</p>
-            <h3 style={{ margin: 0 }}>Nguồn khách hàng</h3>
+            <h3 className="m-0">Nguồn khách hàng</h3>
           </div>
         </div>
-        <p
-          className="td-muted"
-          style={{
-            fontSize: '0.85rem',
-            marginTop: '0.35rem',
-            marginBottom: 0,
-          }}
-        >
+        <p className="td-muted text-[0.85rem] mt-[0.35rem] mb-0">
           Phân bổ theo nguồn tiếp cận
         </p>
       </div>
 
-      <div style={{ padding: '0.75rem 1.25rem 1.25rem' }}>
+      <div className="px-5 pb-5 pt-3">
         {isLoading ? (
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.6rem',
-            }}
-          >
+          <div className="flex flex-col gap-[0.6rem]">
             {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="skeleton-block"
-                style={{ height: '22px' }}
-              />
+              <div key={i} className="skeleton-block h-[22px]" />
             ))}
           </div>
         ) : sources.length === 0 ? (

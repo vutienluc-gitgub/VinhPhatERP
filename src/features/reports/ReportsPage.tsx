@@ -111,22 +111,8 @@ export function ReportsPage() {
           <div className="card-header-row">
             <div>
               <p className="eyebrow">Bảng điều khiển</p>
-              <h3
-                style={{
-                  margin: '0 0 0.25rem',
-                  fontSize: '1rem',
-                  fontWeight: 700,
-                }}
-              >
-                Báo cáo CEO
-              </h3>
-              <p
-                className="td-muted"
-                style={{
-                  fontSize: '0.82rem',
-                  margin: 0,
-                }}
-              >
+              <h3 className="m-0 mb-1 text-base font-bold">Báo cáo CEO</h3>
+              <p className="td-muted text-[0.82rem] m-0">
                 Phân tích hoạt động kinh doanh đa chiều theo thời gian cụ thể
               </p>
             </div>
@@ -135,7 +121,7 @@ export function ReportsPage() {
 
         <ReportsFilterBar filter={filter} onChange={setFilter} />
 
-        <div style={{ padding: '0.75rem 1.25rem 1rem' }}>
+        <div className="px-5 pb-4 pt-3">
           <TabSwitcher
             tabs={tabsWithBadge}
             active={activeTab}

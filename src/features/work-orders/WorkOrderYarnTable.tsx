@@ -1,4 +1,4 @@
-﻿import {
+import {
   Control,
   useFieldArray,
   UseFormRegister,
@@ -52,24 +52,14 @@ export function WorkOrderYarnTable({
         </div>
       </div>
 
-      <div
-        className="card-table-section"
-        style={{
-          maxHeight: '300px',
-          overflowY: 'auto',
-        }}
-      >
+      <div className="card-table-section max-h-[300px] overflow-y-auto">
         <table className="data-table table-sm">
           <thead>
             <tr>
-              <th style={{ width: '45%' }}>Loai soi</th>
-              <th className="text-right" style={{ width: '20%' }}>
-                % BOM
-              </th>
-              <th className="text-right" style={{ width: '25%' }}>
-                Can (kg)
-              </th>
-              <th style={{ width: '10%' }} />
+              <th className="w-[45%]">Loai soi</th>
+              <th className="text-right w-[20%]">% BOM</th>
+              <th className="text-right w-[25%]">Can (kg)</th>
+              <th className="w-[10%]" />
             </tr>
           </thead>
           <tbody>

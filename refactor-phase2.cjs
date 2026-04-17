@@ -5,14 +5,23 @@ const mappings = {
   'customer.ts': 'customers',
   'supplier.ts': 'suppliers',
   'inventory.ts': 'inventory',
-  'profile.ts': 'settings' // going to settings since profile feature usually pairs with settings
+  'profile.ts': 'settings', // going to settings since profile feature usually pairs with settings
 };
 
 const exportedTypesForFeature = {
-  customers: ['Customer', 'CustomerInsert', 'CustomerUpdate', 'CustomersFilter'],
+  customers: [
+    'Customer',
+    'CustomerInsert',
+    'CustomerUpdate',
+    'CustomersFilter',
+  ],
   suppliers: ['Supplier', 'SupplierInsert', 'SupplierUpdate', 'SupplierFilter'],
-  inventory: ['InventoryAdjustment', 'InventoryAdjustmentInsert', 'InventoryAdjustmentUpdate'],
-  settings: ['Profile', 'ProfileInsert', 'ProfileUpdate']
+  inventory: [
+    'InventoryAdjustment',
+    'InventoryAdjustmentInsert',
+    'InventoryAdjustmentUpdate',
+  ],
+  settings: ['Profile', 'ProfileInsert', 'ProfileUpdate'],
 };
 
 const modelsDir = path.join(process.cwd(), 'src/models');
@@ -23,17 +32,17 @@ const srcDir = path.join(process.cwd(), 'src');
 for (const [file, feature] of Object.entries(mappings)) {
   const srcPath = path.join(modelsDir, file);
   if (!fs.existsSync(srcPath)) continue;
-  
+
   const content = fs.readFileSync(srcPath, 'utf8');
   const featTypesPath = path.join(featuresDir, feature, 'types.ts');
-  
+
   if (fs.existsSync(featTypesPath)) {
     fs.appendFileSync(featTypesPath, '\n' + content);
   } else {
     fs.mkdirSync(path.join(featuresDir, feature), { recursive: true });
     fs.writeFileSync(featTypesPath, content);
   }
-  
+
   fs.unlinkSync(srcPath);
   console.log(`Moved ${file} to ${feature}/types.ts`);
 }
@@ -44,7 +53,10 @@ if (fs.existsSync(indexPath)) {
   let indexContent = fs.readFileSync(indexPath, 'utf8');
   for (const file of Object.keys(mappings)) {
     const base = file.replace('.ts', '');
-    indexContent = indexContent.replace(new RegExp(`export \\* from '\\.\\/${base}';\\n?`, 'g'), '');
+    indexContent = indexContent.replace(
+      new RegExp(`export \\* from '\\.\\/${base}';\\n?`, 'g'),
+      '',
+    );
   }
   fs.writeFileSync(indexPath, indexContent);
 }
@@ -85,13 +97,17 @@ walk(srcDir, (p) => {
   }
 
   // Handle grouped imports: import type { Customer, Order } from '@/models';
-  const importRegex = /import\s+(type\s+)?{([^}]+)}\s+from\s+['"]@\/models['"];?/g;
+  const importRegex =
+    /import\s+(type\s+)?{([^}]+)}\s+from\s+['"]@\/models['"];?/g;
   let newContent = content.replace(importRegex, (match, typeKw, inside) => {
     typeKw = typeKw || '';
-    const items = inside.split(',').map(s => s.trim()).filter(Boolean);
+    const items = inside
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
     const kept = [];
     const moved = {};
-    
+
     for (const item of items) {
       // item might be "Customer", or "Customer as Cust"
       const typeName = item.split(' as ')[0].trim();
@@ -103,9 +119,9 @@ walk(srcDir, (p) => {
         kept.push(item);
       }
     }
-    
+
     if (Object.keys(moved).length === 0) return match; // nothing to rewrite
-    
+
     let result = '';
     if (kept.length > 0) {
       result += `import ${typeKw}{ ${kept.join(', ')} } from '@/models';\n`;
@@ -113,7 +129,7 @@ walk(srcDir, (p) => {
     for (const [featPath, importedTypes] of Object.entries(moved)) {
       result += `import ${typeKw}{ ${importedTypes.join(', ')} } from '${featPath}';\n`;
     }
-    
+
     return result.trim(); // replace original block
   });
 

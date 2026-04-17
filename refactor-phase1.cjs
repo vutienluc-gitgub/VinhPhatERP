@@ -10,12 +10,15 @@ for (const file of files) {
   if (!fs.statSync(filePath).isFile()) continue;
 
   let content = fs.readFileSync(filePath, 'utf8');
-  content = content.replace(/from '\.\/common'/g, "from '@/shared/types/database.models'");
-  
+  content = content.replace(
+    /from '\.\/common'/g,
+    "from '@/shared/types/database.models'",
+  );
+
   if (file === 'index.ts') {
-    content = content.replace(/export \* from '\.\/common';\n?/g, "");
+    content = content.replace(/export \* from '\.\/common';\n?/g, '');
   }
-  
+
   fs.writeFileSync(filePath, content);
 }
 

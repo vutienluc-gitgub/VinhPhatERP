@@ -35,20 +35,12 @@ export function DebtsPage() {
           <div className="card-header-row">
             <div>
               <p className="eyebrow">Tài chính</p>
-              <h3
-                style={{
-                  margin: 0,
-                  fontSize: '1rem',
-                  fontWeight: 700,
-                }}
-              >
-                Quản lý Công nợ
-              </h3>
+              <h3 className="m-0 text-base font-bold">Quản lý Công nợ</h3>
             </div>
           </div>
         </div>
 
-        <div style={{ padding: '0.75rem 1.25rem 1rem' }}>
+        <div className="px-5 pb-4 pt-3">
           <TabSwitcher
             tabs={TABS}
             active={activeTab}

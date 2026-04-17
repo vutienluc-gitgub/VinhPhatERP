@@ -119,7 +119,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
       }
     >
       {mutationError && (
-        <p className="field-error" style={{ marginBottom: '1rem' }}>
+        <p className="field-error mb-4">
           Lỗi: {(mutationError as Error).message}
         </p>
       )}

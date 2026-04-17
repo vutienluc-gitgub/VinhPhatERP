@@ -178,10 +178,7 @@ export function LotMatrixCard({
 
       {/* Grid — không có AnomalyLegend ở đây nữa, đã chuyển lên RawFabricList */}
       <div className="p-4 pt-3 bg-surface-strong overflow-x-auto">
-        <div
-          className="grid gap-2 min-w-[480px] md:min-w-0"
-          style={{ gridTemplateColumns: 'repeat(20, minmax(0, 1fr))' }}
-        >
+        <div className="grid gap-2 min-w-[480px] md:min-w-0 grid-cols-[repeat(20,minmax(0,1fr))]">
           {displayRolls.map((roll, index) => {
             const isGhost = roll.status === 'ghost';
             const anomalyStatus = isGhost

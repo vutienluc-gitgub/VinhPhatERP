@@ -21,7 +21,7 @@ export function SettingsPage() {
               <h2 className="title-premium">Thông tin công ty</h2>
             </div>
           </div>
-          <div style={{ padding: '1.5rem' }}>
+          <div className="p-6">
             <CompanySettingsForm />
           </div>
         </div>

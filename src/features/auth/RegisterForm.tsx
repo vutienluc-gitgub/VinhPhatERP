@@ -69,12 +69,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           <span className="logo-text">Vinh Phat ERP</span>
           <h2>Đăng ký thành công!</h2>
         </div>
-        <p
-          style={{
-            textAlign: 'center',
-            color: 'rgba(255,255,255,0.7)',
-          }}
-        >
+        <p className="text-center text-white/70">
           Vui lòng kiểm tra email để xác nhận tài khoản trước khi đăng nhập.
           Đang chuyển hướng về trang đăng nhập...
         </p>

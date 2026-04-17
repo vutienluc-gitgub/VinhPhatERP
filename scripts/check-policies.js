@@ -18,12 +18,12 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
 async function main() {
   const { data, error } = await supabaseAdmin.auth.admin.listUsers();
-  
+
   if (error) {
     console.error(error);
     return;
   }
-  
+
   // We can't directly query pg_policies via standard Supabase REST API from client.
   // Wait, we can query using a stored proc if one exists, but we can just use psql via supabse cli.
 }

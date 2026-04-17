@@ -12,28 +12,10 @@ export default function DraftBanner({
 }: Props) {
   return (
     <div
-      style={{
-        background: hasConflict
-          ? 'rgba(239, 68, 68, 0.1)'
-          : 'rgba(245, 158, 11, 0.1)',
-        border: `1px solid ${hasConflict ? 'var(--danger)' : 'var(--warning)'}`,
-        padding: '12px 16px',
-        marginBottom: '16px',
-        borderRadius: '8px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        fontSize: '0.9rem',
-      }}
+      className={`px-4 py-3 mb-4 rounded-lg flex justify-between items-center text-[0.9rem] border ${hasConflict ? 'bg-[rgba(239,68,68,0.1)] border-[var(--danger)]' : 'bg-[rgba(245,158,11,0.1)] border-[var(--warning)]'}`}
     >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-        }}
-      >
-        <span style={{ fontWeight: 600 }}>
+      <div className="flex items-center gap-2">
+        <span className="font-semibold">
           {hasConflict ? '⚠️ Xung đột dữ liệu:' : '📝 Bản nháp:'}
         </span>
         <span>
@@ -43,12 +25,7 @@ export default function DraftBanner({
         </span>
       </div>
 
-      <div
-        style={{
-          display: 'flex',
-          gap: '8px',
-        }}
-      >
+      <div className="flex gap-2">
         {!hasConflict && (
           <Button
             variant="primary"

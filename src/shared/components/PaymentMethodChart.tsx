@@ -33,51 +33,17 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   const entry = payload[0];
 
   return (
-    <div
-      style={{
-        background: 'var(--surface)',
-        border: '1px solid var(--border)',
-        borderRadius: '10px',
-        padding: '10px 14px',
-        boxShadow: '0 4px 20px rgba(16,35,61,0.12)',
-        minWidth: '170px',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          marginBottom: '4px',
-        }}
-      >
+    <div className="bg-surface border border-border rounded-[10px] py-2.5 px-3.5 shadow-[0_4px_20px_rgba(16,35,61,0.12)] min-w-[170px]">
+      <div className="flex items-center gap-2 mb-1">
         <div
-          style={{
-            width: '10px',
-            height: '10px',
-            borderRadius: '2px',
-            background: entry?.payload?.color ?? '#3b82f6',
-            flexShrink: 0,
-          }}
+          className="w-2.5 h-2.5 rounded-[2px] shrink-0"
+          style={{ background: entry?.payload?.color ?? '#3b82f6' }}
         />
-        <span
-          style={{
-            fontSize: '12px',
-            fontWeight: 700,
-            color: 'var(--text)',
-          }}
-        >
+        <span className="text-[12px] font-bold text-[var(--text)]">
           {entry?.name}
         </span>
       </div>
-      <p
-        style={{
-          fontSize: '13px',
-          fontWeight: 700,
-          color: 'var(--text)',
-          paddingLeft: '18px',
-        }}
-      >
+      <p className="text-[13px] font-bold text-[var(--text)] pl-[18px]">
         {formatCurrency(entry?.value ?? 0)} đ
       </p>
     </div>
@@ -94,14 +60,7 @@ export function PaymentMethodChart({
 }: PaymentMethodChartProps) {
   if (isLoading) {
     return (
-      <div
-        style={{
-          height: '220px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
+      <div className="h-[220px] flex items-center justify-center">
         <div className="spinner" />
       </div>
     );
@@ -109,16 +68,7 @@ export function PaymentMethodChart({
 
   if (data.length === 0) {
     return (
-      <div
-        style={{
-          height: '220px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'var(--muted)',
-          fontSize: '13px',
-        }}
-      >
+      <div className="h-[220px] flex items-center justify-center text-[var(--muted)] text-[13px]">
         Chưa có dữ liệu thu tiền
       </div>
     );
@@ -133,13 +83,7 @@ export function PaymentMethodChart({
   }));
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px',
-      }}
-    >
+    <div className="flex flex-col gap-4">
       {/* Donut chart */}
       <ResponsiveContainer width="100%" height={200}>
         <PieChart>
@@ -163,73 +107,30 @@ export function PaymentMethodChart({
       </ResponsiveContainer>
 
       {/* Legend */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-          padding: '0 8px 4px',
-        }}
-      >
+      <div className="flex flex-col gap-2 px-2 pb-1">
         {slices.map((s, i) => (
-          <div
-            key={i}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-            }}
-          >
+          <div key={i} className="flex items-center gap-2.5">
             {/* Color dot */}
             <div
-              style={{
-                width: '10px',
-                height: '10px',
-                borderRadius: '3px',
-                background: s.color,
-                flexShrink: 0,
-              }}
+              className="w-2.5 h-2.5 rounded-[3px] shrink-0"
+              style={{ background: s.color }}
             />
             {/* Label */}
-            <span
-              style={{
-                flex: 1,
-                fontSize: '12px',
-                fontWeight: 600,
-                color: 'var(--muted)',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-            >
+            <span className="flex-1 text-[12px] font-semibold text-[var(--muted)] truncate">
               {s.label}
             </span>
             {/* Percentage badge */}
             <span
+              className="text-[11px] font-bold rounded-md px-[7px] py-[1px] shrink-0"
               style={{
-                fontSize: '11px',
-                fontWeight: 700,
                 color: s.color,
-                background: `${s.color}18`,
-                borderRadius: '6px',
-                padding: '1px 7px',
-                flexShrink: 0,
+                backgroundColor: `${s.color}18`,
               }}
             >
               {s.pct}%
             </span>
             {/* Value */}
-            <span
-              style={{
-                fontSize: '12px',
-                fontWeight: 700,
-                color: 'var(--text)',
-                flexShrink: 0,
-                minWidth: '72px',
-                textAlign: 'right',
-                fontVariantNumeric: 'tabular-nums',
-              }}
-            >
+            <span className="text-[12px] font-bold text-[var(--text)] shrink-0 min-w-[72px] text-right tabular-nums">
               {formatCurrency(s.value)} đ
             </span>
           </div>

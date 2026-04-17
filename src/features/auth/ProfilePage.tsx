@@ -61,12 +61,7 @@ export function ProfilePage() {
       <div className="panel-card">
         <h2>Đăng xuất</h2>
         <p>Kết thúc phiên làm việc hiện tại.</p>
-        <button
-          type="button"
-          className="primary-button"
-          style={{ marginTop: '1rem' }}
-          onClick={signOut}
-        >
+        <button type="button" className="primary-button mt-4" onClick={signOut}>
           Đăng xuất
         </button>
       </div>

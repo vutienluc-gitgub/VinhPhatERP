@@ -149,22 +149,15 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
       maxWidth={900}
     >
       {mutationError && (
-        <p className="error-inline" style={{ marginBottom: '1rem' }}>
-          {(mutationError as Error).message}
-        </p>
+        <p className="error-inline mb-4">{(mutationError as Error).message}</p>
       )}
 
       <form id="weaving-form" onSubmit={handleSubmit(onSubmit)} noValidate>
         {/* ── BƯỚC 1: THÔNG TIN PHIẾU ── */}
-        <div style={{ display: stepper.currentStep === 0 ? 'block' : 'none' }}>
+        <div className={stepper.currentStep === 0 ? 'block' : 'hidden'}>
           <fieldset className="bulk-section">
             <legend>Thông tin phiếu gia công</legend>
-            <div
-              className="form-grid"
-              style={{
-                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-              }}
-            >
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))]">
               {/* Số phiếu */}
               <div className="form-field">
                 <label>
@@ -278,7 +271,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
               </div>
 
               {/* Ghi chú */}
-              <div className="form-field" style={{ gridColumn: '1 / -1' }}>
+              <div className="form-field col-span-full">
                 <label>Ghi chú</label>
                 <textarea
                   className="field-input"
@@ -289,7 +282,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
             </div>
           </fieldset>
 
-          <div className="sheet-footer" style={{ marginTop: '1.5rem' }}>
+          <div className="sheet-footer mt-6">
             <CancelButton onClick={onClose} label="Hủy" />
             <button
               type="button"
@@ -302,21 +295,9 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
         </div>
 
         {/* ── BƯỚC 2: NHẬP CUỘN VẢI ── */}
-        <div style={{ display: stepper.currentStep === 1 ? 'block' : 'none' }}>
+        <div className={stepper.currentStep === 1 ? 'block' : 'hidden'}>
           {/* Summary bar */}
-          <div
-            className="bulk-summary"
-            style={{
-              marginBottom: '1rem',
-              padding: '0.75rem 1rem',
-              background: 'var(--surface-raised)',
-              borderRadius: 'var(--radius)',
-              display: 'flex',
-              gap: '1.5rem',
-              flexWrap: 'wrap',
-              fontSize: '0.875rem',
-            }}
-          >
+          <div className="bulk-summary mb-4 px-4 py-3 bg-[var(--surface-raised)] rounded-[var(--radius)] flex gap-6 flex-wrap text-sm">
             <span>
               Tổng <strong>{fields.length}</strong> cuộn
             </span>
@@ -329,36 +310,31 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
           </div>
 
           {errors.rolls?.root && (
-            <p className="error-inline" style={{ marginBottom: '0.5rem' }}>
-              {errors.rolls.root.message}
-            </p>
+            <p className="error-inline mb-2">{errors.rolls.root.message}</p>
           )}
 
           {/* Rolls table */}
-          <div className="data-table-wrap" style={{ overflowX: 'auto' }}>
-            <table className="data-table" style={{ minWidth: 700 }}>
+          <div className="data-table-wrap overflow-x-auto">
+            <table className="data-table min-w-[700px]">
               <thead>
                 <tr>
-                  <th style={{ width: 40 }}>#</th>
+                  <th className="w-[40px]">#</th>
                   <th>Mã cuộn *</th>
                   <th>KG *</th>
                   <th>Dài (m)</th>
                   <th>Loại</th>
                   <th>Vị trí kho</th>
-                  <th style={{ width: 40 }} />
+                  <th className="w-[40px]" />
                 </tr>
               </thead>
               <tbody>
                 {fields.map((field, idx) => (
                   <tr key={field.id}>
-                    <td style={{ color: 'var(--text-secondary)' }}>
-                      {idx + 1}
-                    </td>
+                    <td className="text-[var(--text-secondary)]">{idx + 1}</td>
                     <td>
                       <input
-                        className={`field-input${errors.rolls?.[idx]?.roll_number ? ' is-error' : ''}`}
+                        className={`field-input min-w-[120px]${errors.rolls?.[idx]?.roll_number ? ' is-error' : ''}`}
                         placeholder="VD: VP-001"
-                        style={{ minWidth: 120 }}
                         {...register(`rolls.${idx}.roll_number`)}
                       />
                     </td>
@@ -367,8 +343,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
                         type="number"
                         step="0.1"
                         min="0.1"
-                        className={`field-input${errors.rolls?.[idx]?.weight_kg ? ' is-error' : ''}`}
-                        style={{ width: 90 }}
+                        className={`field-input w-[90px]${errors.rolls?.[idx]?.weight_kg ? ' is-error' : ''}`}
                         {...register(`rolls.${idx}.weight_kg`)}
                       />
                     </td>
@@ -377,15 +352,13 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
                         type="number"
                         step="0.1"
                         min="0"
-                        className="field-input"
-                        style={{ width: 80 }}
+                        className="field-input w-[80px]"
                         {...register(`rolls.${idx}.length_m`)}
                       />
                     </td>
                     <td>
                       <select
-                        className="field-select"
-                        style={{ width: 90 }}
+                        className="field-select w-[90px]"
                         {...register(`rolls.${idx}.quality_grade`)}
                       >
                         <option value="">—</option>
@@ -398,9 +371,8 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
                     </td>
                     <td>
                       <input
-                        className="field-input"
+                        className="field-input w-[100px]"
                         placeholder="A1-R3"
-                        style={{ width: 100 }}
                         {...register(`rolls.${idx}.warehouse_location`)}
                       />
                     </td>
@@ -422,13 +394,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
             </table>
           </div>
 
-          <div
-            style={{
-              marginTop: '0.75rem',
-              display: 'flex',
-              gap: '0.5rem',
-            }}
-          >
+          <div className="mt-3 flex gap-2">
             <Button
               variant="secondary"
               type="button"
@@ -471,7 +437,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
             ))}
           </div>
 
-          <div className="sheet-footer" style={{ marginTop: '1.5rem' }}>
+          <div className="sheet-footer mt-6">
             <Button variant="secondary" type="button" onClick={stepper.prev}>
               ← Quay lại
             </Button>

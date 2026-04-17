@@ -17,14 +17,7 @@ export function AddButton({
   return (
     <button
       type="button"
-      className="btn-primary"
-      style={{
-        minHeight: 42,
-        padding: '0 1.25rem',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.4rem',
-      }}
+      className="btn-primary min-h-[42px] px-5 flex items-center gap-1.5"
       disabled={disabled}
       onClick={onClick}
     >

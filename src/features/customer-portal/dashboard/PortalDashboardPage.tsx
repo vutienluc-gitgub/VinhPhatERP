@@ -33,59 +33,18 @@ export function PortalDashboardPage() {
   return (
     <div className="portal-section">
       {/* Welcome Banner */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, #0f1f3d 0%, #1a3a6e 100%)',
-          borderRadius: '14px',
-          padding: '1.25rem 1.5rem',
-          color: '#fff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '1rem',
-          flexWrap: 'wrap',
-        }}
-      >
+      <div className="bg-gradient-to-br from-[#0f1f3d] to-[#1a3a6e] rounded-[14px] px-6 py-5 text-white flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <p
-            style={{
-              margin: 0,
-              fontSize: '0.78rem',
-              color: 'rgba(255,255,255,0.55)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              fontWeight: 600,
-            }}
-          >
+          <p className="m-0 text-[0.78rem] text-white/55 uppercase tracking-[0.06em] font-semibold">
             Chào mừng
           </p>
-          <p
-            style={{
-              margin: '0.2rem 0 0',
-              fontSize: '1.15rem',
-              fontWeight: 700,
-              letterSpacing: '-0.01em',
-            }}
-          >
+          <p className="mt-1 mb-0 text-[1.15rem] font-bold tracking-[-0.01em]">
             {profile?.full_name ?? 'Khách hàng'}
           </p>
         </div>
-        <div
-          style={{
-            fontSize: '0.78rem',
-            color: 'rgba(255,255,255,0.5)',
-            textAlign: 'right',
-          }}
-        >
-          <p style={{ margin: 0 }}>Cổng khách hàng</p>
-          <p
-            style={{
-              margin: '0.2rem 0 0',
-              color: 'rgba(255,255,255,0.3)',
-            }}
-          >
-            Vĩnh Phát ERP
-          </p>
+        <div className="text-[0.78rem] text-white/50 text-right">
+          <p className="m-0">Cổng khách hàng</p>
+          <p className="mt-1 mb-0 text-white/30">Vĩnh Phát ERP</p>
         </div>
       </div>
 
@@ -172,33 +131,15 @@ export function PortalDashboardPage() {
             <p className="portal-stat-value">…</p>
           ) : latestShipment ? (
             <>
-              <p
-                className="portal-stat-value"
-                style={{
-                  fontSize: '1rem',
-                  marginBottom: '0.125rem',
-                }}
-              >
+              <p className="portal-stat-value text-base mb-0.5">
                 {latestShipment.shipment_number}
               </p>
-              <p
-                style={{
-                  fontSize: '0.75rem',
-                  color: '#647284',
-                  margin: 0,
-                }}
-              >
+              <p className="text-[0.75rem] text-[#647284] m-0">
                 {latestShipment.shipment_date}
               </p>
             </>
           ) : (
-            <p
-              className="portal-stat-value"
-              style={{
-                fontSize: '0.95rem',
-                color: '#647284',
-              }}
-            >
+            <p className="portal-stat-value text-[0.95rem] text-[#647284]">
               Chưa có
             </p>
           )}
@@ -219,7 +160,7 @@ export function PortalDashboardPage() {
           </div>
 
           {/* Desktop table */}
-          <div className="portal-table-desktop" style={{ overflowX: 'auto' }}>
+          <div className="portal-table-desktop overflow-x-auto">
             <table className="portal-table">
               <thead>
                 <tr>
@@ -240,15 +181,10 @@ export function PortalDashboardPage() {
                         {o.order_number}
                       </Link>
                     </td>
-                    <td
-                      style={{
-                        color: '#647284',
-                        fontSize: '0.82rem',
-                      }}
-                    >
+                    <td className="text-[#647284] text-[0.82rem]">
                       {o.order_date}
                     </td>
-                    <td className="right" style={{ fontWeight: 600 }}>
+                    <td className="right font-semibold">
                       {formatCurrency(o.total_amount)} đ
                     </td>
                     <td>
@@ -265,14 +201,13 @@ export function PortalDashboardPage() {
           </div>
 
           {/* Mobile cards */}
-          <div className="portal-order-cards" style={{ padding: '0.75rem' }}>
+          <div className="portal-order-cards p-3">
             {orders.slice(0, 5).map((o) => (
               <div key={o.id} className="portal-order-card">
                 <div className="portal-order-card-row">
                   <Link
                     to={`/portal/orders/${o.id}`}
-                    className="portal-link"
-                    style={{ fontSize: '0.9rem' }}
+                    className="portal-link text-[0.9rem]"
                   >
                     {o.order_number}
                   </Link>

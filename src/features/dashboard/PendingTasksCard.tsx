@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { Icon } from '@/shared/components';
 import type { PendingTask } from '@/application/analytics';
@@ -16,19 +16,10 @@ export function PendingTasksCard({ tasks }: PendingTasksCardProps) {
         <div className="card-header-row">
           <div>
             <p className="eyebrow">Hành động</p>
-            <h3
-              style={{
-                margin: 0,
-                fontSize: '1rem',
-                fontWeight: 700,
-              }}
-            >
+            <h3 className="m-0 text-base font-bold">
               Nhiệm vụ cần xử lý
               {totalTasks > 0 && (
-                <span
-                  className="badge badge-info ml-2"
-                  style={{ fontSize: '0.65rem' }}
-                >
+                <span className="badge badge-info ml-2 text-[0.65rem]">
                   {totalTasks}
                 </span>
               )}
@@ -37,7 +28,7 @@ export function PendingTasksCard({ tasks }: PendingTasksCardProps) {
         </div>
       </div>
 
-      <div style={{ paddingTop: '0.75rem' }}>
+      <div className="pt-3">
         {tasks.length === 0 ? (
           <div className="task-empty text-success flex items-center justify-center gap-2">
             <Icon name="Sparkles" size={20} />

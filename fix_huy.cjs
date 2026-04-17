@@ -16,7 +16,7 @@ function replaceHuy() {
     }
     return results;
   }
-  
+
   const allFiles = traverse(dir);
   let changed = 0;
   for (const file of allFiles) {

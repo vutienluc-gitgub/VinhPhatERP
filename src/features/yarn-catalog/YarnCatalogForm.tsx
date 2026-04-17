@@ -100,7 +100,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
       title={isEditing ? `Sửa: ${catalog.name}` : 'Thêm loại sợi'}
     >
       {mutationError && (
-        <p className="error-inline" style={{ marginBottom: '1rem' }}>
+        <p className="error-inline mb-4">
           Lỗi: {(mutationError as Error).message}
         </p>
       )}
@@ -108,12 +108,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
       <form id="yarn-catalog-form" onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="form-grid">
           {/* Mã + Tên */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="code">
                 Mã sợi <span className="field-required">*</span>
@@ -149,12 +144,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
           </div>
 
           {/* Thành phần + Màu mặc định */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="composition">Thành phần</label>
               <input
@@ -184,12 +174,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
           </div>
 
           {/* Cường lực + Xuất xứ */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="tensile_strength">Cường lực</label>
               <input
@@ -214,12 +199,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
           </div>
 
           {/* Đơn vị + Trạng thái */}
-          <div
-            className="form-grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            }}
-          >
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="unit">
                 Đơn vị <span className="field-required">*</span>
@@ -287,14 +267,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
           </div>
         </div>
 
-        <div
-          className="modal-footer"
-          style={{
-            marginTop: '1.5rem',
-            padding: 0,
-            border: 'none',
-          }}
-        >
+        <div className="modal-footer mt-6 p-0 border-none">
           <Button
             variant="secondary"
             type="button"

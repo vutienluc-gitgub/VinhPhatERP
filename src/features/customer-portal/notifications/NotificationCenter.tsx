@@ -50,50 +50,16 @@ export function NotificationCenter({ onClose }: Props) {
   return (
     <div
       ref={panelRef}
-      style={{
-        position: 'absolute',
-        top: 'calc(100% + 8px)',
-        right: 0,
-        width: '320px',
-        maxHeight: '400px',
-        overflowY: 'auto',
-        background: 'var(--surface-strong)',
-        border: '1px solid var(--border)',
-        borderRadius: 'var(--radius-md)',
-        boxShadow: 'var(--shadow)',
-        zIndex: 100,
-      }}
+      className="absolute top-[calc(100%+8px)] right-0 w-[320px] max-h-[400px] overflow-y-auto bg-[var(--surface-strong)] border border-border rounded-md shadow-[var(--shadow)] z-[100]"
     >
       {/* Header */}
-      <div
-        style={{
-          padding: '0.75rem 1rem',
-          borderBottom: '1px solid var(--border)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <span
-          style={{
-            fontSize: '0.875rem',
-            fontWeight: 600,
-            color: 'var(--text)',
-          }}
-        >
+      <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+        <span className="text-[0.875rem] font-semibold text-[var(--text)]">
           Thông báo
         </span>
         <button
           onClick={onClose}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--muted)',
-            fontSize: '1rem',
-            padding: 0,
-            lineHeight: 1,
-          }}
+          className="bg-transparent border-none cursor-pointer text-muted-foreground text-base p-0 leading-none"
           aria-label="Đóng"
         >
           ✕
@@ -102,89 +68,30 @@ export function NotificationCenter({ onClose }: Props) {
 
       {/* Items */}
       {items.length === 0 ? (
-        <div
-          style={{
-            padding: '2rem 1rem',
-            textAlign: 'center',
-            fontSize: '0.875rem',
-            color: 'var(--muted)',
-          }}
-        >
+        <div className="py-8 px-4 text-center text-[0.875rem] text-muted-foreground">
           Không có thông báo nào
         </div>
       ) : (
-        <ul
-          style={{
-            listStyle: 'none',
-            margin: 0,
-            padding: 0,
-          }}
-        >
+        <ul className="list-none m-0 p-0">
           {items.map((item) => (
             <li
               key={item.id}
               onClick={() => handleItemClick(item)}
-              style={{
-                padding: '0.75rem 1rem',
-                borderBottom: '1px solid rgba(16,35,61,0.05)',
-                cursor:
-                  item.orderId || item.shipmentId || item.quotationId
-                    ? 'pointer'
-                    : 'default',
-                background: item.isRead
-                  ? 'transparent'
-                  : 'rgba(11,107,203,0.04)',
-                transition: 'background 0.15s',
-                display: 'flex',
-                gap: '0.625rem',
-                alignItems: 'flex-start',
-              }}
+              className={`px-4 py-3 border-b border-[#10233d]/5 ${item.orderId || item.shipmentId || item.quotationId ? 'cursor-pointer' : 'cursor-default'} ${item.isRead ? 'bg-transparent' : 'bg-[#0b6bcb]/5'} transition-colors duration-150 flex gap-[0.625rem] items-start`}
             >
-              <span
-                style={{
-                  fontSize: '1rem',
-                  flexShrink: 0,
-                  marginTop: '1px',
-                }}
-              >
+              <span className="text-base shrink-0 mt-[1px]">
                 {TYPE_ICON[item.type]}
               </span>
-              <div
-                style={{
-                  flex: 1,
-                  minWidth: 0,
-                }}
-              >
+              <div className="flex-1 min-w-0">
                 <p
-                  style={{
-                    margin: 0,
-                    fontSize: '0.8rem',
-                    fontWeight: item.isRead ? 400 : 600,
-                    color: 'var(--text)',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
+                  className={`m-0 text-[0.8rem] ${item.isRead ? 'font-normal' : 'font-semibold'} text-[var(--text)] whitespace-nowrap overflow-hidden text-ellipsis`}
                 >
                   {item.title}
                 </p>
-                <p
-                  style={{
-                    margin: '0.15rem 0 0',
-                    fontSize: '0.75rem',
-                    color: 'var(--muted)',
-                  }}
-                >
+                <p className="mt-[0.15rem] mb-0 text-[0.75rem] text-muted-foreground">
                   {item.body}
                 </p>
-                <p
-                  style={{
-                    margin: '0.2rem 0 0',
-                    fontSize: '0.7rem',
-                    color: 'var(--muted)',
-                    opacity: 0.7,
-                  }}
-                >
+                <p className="mt-[0.2rem] mb-0 text-[0.7rem] text-muted-foreground/70">
                   {new Date(item.createdAt).toLocaleTimeString('vi-VN', {
                     hour: '2-digit',
                     minute: '2-digit',

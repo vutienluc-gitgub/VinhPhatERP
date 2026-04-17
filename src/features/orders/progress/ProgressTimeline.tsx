@@ -75,47 +75,25 @@ export function ProgressTimeline({
   return (
     <div>
       {/* Progress bar */}
-      <div style={{ marginBottom: '1rem' }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            fontSize: '0.8rem',
-            marginBottom: '0.25rem',
-          }}
-        >
+      <div className="mb-4">
+        <div className="flex justify-between text-[0.8rem] mb-1">
           <span>Tiến độ sản xuất</span>
           <span>
             {progressPercent}% ({doneCount}/{totalCount})
           </span>
         </div>
-        <div
-          style={{
-            height: 8,
-            background: 'var(--border)',
-            borderRadius: 4,
-          }}
-        >
+        <div className="h-2 bg-border rounded">
           <div
-            style={{
-              height: '100%',
-              width: `${progressPercent}%`,
-              background: progressPercent === 100 ? '#0c8f68' : '#0b6bcb',
-              borderRadius: 4,
-              transition: 'width 300ms ease',
-            }}
+            className={`h-full rounded transition-[width] duration-300 ease-in-out ${
+              progressPercent === 100 ? 'bg-success' : 'bg-primary'
+            }`}
+            style={{ width: `${progressPercent}%` }}
           />
         </div>
       </div>
 
       {/* Timeline */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 0,
-        }}
-      >
+      <div className="flex flex-col gap-0">
         {PRODUCTION_STAGES.map((stageKey, idx) => {
           const row = stageMap.get(stageKey);
           if (!row) return null;
@@ -123,57 +101,28 @@ export function ProgressTimeline({
           const color = STATUS_COLORS[row.status];
 
           return (
-            <div
-              key={row.id}
-              style={{
-                display: 'flex',
-                gap: '1rem',
-                minHeight: 64,
-              }}
-            >
+            <div key={row.id} className="flex gap-4 min-h-[64px]">
               {/* Timeline node + connector line */}
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  width: 24,
-                }}
-              >
+              <div className="flex flex-col items-center w-6">
                 <div
+                  className={`rounded-full shrink-0 flex items-center justify-center ${
+                    row.status === 'in_progress' || row.status === 'done'
+                      ? 'w-6 h-6 mt-0'
+                      : 'w-4 h-4 mt-1'
+                  } ${
+                    row.status === 'in_progress'
+                      ? 'border-2 shadow-[0_0_0_4px_#eff6ff]'
+                      : 'border-[2.5px]'
+                  }`}
                   style={{
-                    width:
-                      row.status === 'in_progress' || row.status === 'done'
-                        ? 24
-                        : 16,
-                    height:
-                      row.status === 'in_progress' || row.status === 'done'
-                        ? 24
-                        : 16,
-                    borderRadius: '50%',
-                    background:
+                    backgroundColor:
                       row.status === 'done'
                         ? color
                         : row.status === 'in_progress'
                           ? '#eff6ff'
                           : 'var(--bg)',
-                    border:
-                      row.status === 'in_progress'
-                        ? `2px solid ${color}`
-                        : `2.5px solid ${color}`,
-                    flexShrink: 0,
-                    marginTop:
-                      row.status === 'in_progress' || row.status === 'done'
-                        ? 0
-                        : 4,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    borderColor: color,
                     color: color,
-                    boxShadow:
-                      row.status === 'in_progress'
-                        ? `0 0 0 4px #eff6ff`
-                        : 'none',
                   }}
                 >
                   {row.status === 'in_progress' && (
@@ -185,15 +134,14 @@ export function ProgressTimeline({
                 </div>
                 {!isLast && (
                   <div
+                    className={`w-[2px] flex-1 ${
+                      row.status === 'in_progress' || row.status === 'done'
+                        ? 'mt-1'
+                        : 'mt-0.5'
+                    }`}
                     style={{
-                      width: 2,
-                      flex: 1,
-                      background:
+                      backgroundColor:
                         row.status === 'done' ? color : 'var(--border)',
-                      marginTop:
-                        row.status === 'in_progress' || row.status === 'done'
-                          ? 4
-                          : 2,
                     }}
                   />
                 )}
@@ -201,96 +149,66 @@ export function ProgressTimeline({
 
               {/* Content */}
               <div
-                style={{
-                  flex: 1,
-                  paddingBottom: isLast ? 0 : '1.25rem',
-                  ...(row.status === 'in_progress' && {
-                    background: '#f8fafc',
-                    border: `1px solid ${color}`,
-                    borderRadius: 'var(--radius)',
-                    padding: '0.75rem',
-                    marginBottom: isLast ? 0 : '0.75rem',
-                    boxShadow: '0 2px 4px rgba(11, 107, 203, 0.05)',
-                  }),
-                }}
+                className={`flex-1 ${isLast ? 'pb-0' : 'pb-5'} ${
+                  row.status === 'in_progress'
+                    ? `bg-slate-50 rounded-[var(--radius)] p-3 shadow-[0_2px_4px_rgba(11,107,203,0.05)] ${
+                        isLast ? 'mb-0' : 'mb-3'
+                      }`
+                    : ''
+                }`}
+                style={
+                  row.status === 'in_progress'
+                    ? {
+                        borderColor: color,
+                        borderWidth: 1,
+                        borderStyle: 'solid',
+                      }
+                    : {}
+                }
               >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <strong style={{ fontSize: '0.9rem' }}>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <strong className="text-[0.9rem]">
                     {STAGE_LABELS[stageKey]}
                   </strong>
                   <span
-                    className={`roll-status ${row.status === 'done' ? 'in_stock' : row.status === 'in_progress' ? 'in_process' : row.status === 'skipped' ? 'damaged' : 'shipped'}`}
-                    style={{ fontSize: '0.72rem' }}
+                    className={`roll-status text-[0.72rem] ${row.status === 'done' ? 'in_stock' : row.status === 'in_progress' ? 'in_process' : row.status === 'skipped' ? 'damaged' : 'shipped'}`}
                   >
                     {STAGE_STATUS_LABELS[row.status]}
                   </span>
                 </div>
 
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: '0.4rem',
-                    fontSize: '0.8rem',
-                    color: 'var(--muted)',
-                    marginTop: 2,
-                  }}
-                >
+                <div className="flex gap-1.5 text-[0.8rem] text-muted-foreground mt-[2px]">
                   {row.planned_date && <span>Dự kiến: {row.planned_date}</span>}
                   {row.actual_date && <span>| Thực tế: {row.actual_date}</span>}
                 </div>
 
                 {row.notes && editingId !== row.id && (
-                  <div
-                    style={{
-                      fontSize: '0.82rem',
-                      color: 'var(--muted)',
-                      marginTop: 2,
-                    }}
-                  >
+                  <div className="text-[0.82rem] text-muted-foreground mt-[2px]">
                     📝 {row.notes}
                   </div>
                 )}
 
                 {/* Inline note editor */}
                 {editingId === row.id && (
-                  <div
-                    style={{
-                      display: 'flex',
-                      gap: '0.3rem',
-                      marginTop: 4,
-                    }}
-                  >
+                  <div className="flex gap-1.5 mt-1">
                     <input
-                      className="field-input"
+                      className="field-input flex-1 text-[0.82rem]"
                       type="text"
                       value={noteText}
                       onChange={(e) => setNoteText(e.target.value)}
                       placeholder="Ghi chú..."
-                      style={{
-                        flex: 1,
-                        fontSize: '0.82rem',
-                      }}
                     />
                     <button
-                      className="btn-secondary"
+                      className="btn-secondary text-[0.78rem]"
                       type="button"
                       onClick={() => handleSaveNote(row)}
-                      style={{ fontSize: '0.78rem' }}
                     >
                       Lưu
                     </button>
                     <button
-                      className="btn-secondary"
+                      className="btn-secondary text-[0.78rem]"
                       type="button"
                       onClick={() => setEditingId(null)}
-                      style={{ fontSize: '0.78rem' }}
                     >
                       Hủy
                     </button>
@@ -299,23 +217,13 @@ export function ProgressTimeline({
 
                 {/* Actions */}
                 {!readonly && (
-                  <div
-                    style={{
-                      display: 'flex',
-                      gap: '0.4rem',
-                      marginTop: 4,
-                    }}
-                  >
+                  <div className="flex gap-1.5 mt-1">
                     {row.status !== 'done' && row.status !== 'skipped' && (
                       <button
-                        className="btn-secondary"
+                        className="btn-secondary text-[0.78rem] px-2 py-1"
                         type="button"
                         onClick={() => handleAdvance(row)}
                         disabled={updateMutation.isPending}
-                        style={{
-                          fontSize: '0.78rem',
-                          padding: '0.25rem 0.5rem',
-                        }}
                       >
                         {row.status === 'pending'
                           ? '▶ Bắt đầu'
@@ -324,30 +232,21 @@ export function ProgressTimeline({
                     )}
                     {row.status === 'pending' && (
                       <button
-                        className="btn-secondary"
+                        className="btn-secondary text-[0.78rem] px-2 py-1 text-muted-foreground"
                         type="button"
                         onClick={() => handleSkip(row)}
                         disabled={updateMutation.isPending}
-                        style={{
-                          fontSize: '0.78rem',
-                          padding: '0.25rem 0.5rem',
-                          color: 'var(--muted)',
-                        }}
                       >
                         Bỏ qua
                       </button>
                     )}
                     {editingId !== row.id && (
                       <button
-                        className="btn-secondary"
+                        className="btn-secondary text-[0.78rem] px-2 py-1"
                         type="button"
                         onClick={() => {
                           setEditingId(row.id);
                           setNoteText(row.notes ?? '');
-                        }}
-                        style={{
-                          fontSize: '0.78rem',
-                          padding: '0.25rem 0.5rem',
                         }}
                       >
                         📝
@@ -362,13 +261,7 @@ export function ProgressTimeline({
       </div>
 
       {updateMutation.error && (
-        <p
-          style={{
-            color: '#c0392b',
-            fontSize: '0.85rem',
-            marginTop: '0.5rem',
-          }}
-        >
+        <p className="text-danger-fg text-[0.85rem] mt-2">
           Lỗi cập nhật: {(updateMutation.error as Error).message}
         </p>
       )}

@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 
 import { TabSwitcher, Icon } from '@/shared/components';
 import type { TabItem } from '@/shared/components';
@@ -73,19 +73,11 @@ export function PaymentsPage() {
           <div className="card-header-row">
             <div>
               <p className="eyebrow">Tài chính</p>
-              <h3
-                style={{
-                  margin: 0,
-                  fontSize: '1rem',
-                  fontWeight: 700,
-                }}
-              >
-                Quản lý Tiền tệ
-              </h3>
+              <h3 className="m-0 text-base font-bold">Quản lý Tiền tệ</h3>
             </div>
           </div>
         </div>
-        <div style={{ padding: '0.75rem 1.25rem 1rem' }}>
+        <div className="px-5 pb-4 pt-3">
           <TabSwitcher
             tabs={TAB_CONFIG}
             active={tab}

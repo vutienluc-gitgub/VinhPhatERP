@@ -29,29 +29,13 @@ export function AuthPage() {
             <span className="logo-text">Đã đăng nhập</span>
             <h2>Xin chào, {session.user.email}</h2>
           </div>
-          <p
-            style={{
-              textAlign: 'center',
-              marginBottom: '2rem',
-              color: 'rgba(255,255,255,0.7)',
-            }}
-          >
+          <p className="text-center mb-8 text-white/70">
             Bạn đã đăng nhập thành công vào hệ thống.
           </p>
-          <div
-            style={{
-              display: 'flex',
-              gap: '1rem',
-              justifyContent: 'center',
-            }}
-          >
+          <div className="flex gap-4 justify-center">
             <a
               href="/"
-              className="auth-submit-btn"
-              style={{
-                textDecoration: 'none',
-                padding: '0.8rem 2rem',
-              }}
+              className="auth-submit-btn no-underline px-8 py-[0.8rem]"
             >
               Vào trang chủ
             </a>
@@ -94,12 +78,7 @@ function SignOutButton() {
   return (
     <button
       type="button"
-      className="auth-submit-btn"
-      style={{
-        background: 'transparent',
-        border: '1px solid rgba(255,255,255,0.2)',
-        boxShadow: 'none',
-      }}
+      className="auth-submit-btn bg-transparent border border-white/20 shadow-none"
       onClick={signOut}
     >
       Đăng xuất

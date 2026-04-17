@@ -19,40 +19,9 @@ export function AuthCallback() {
   }, [navigate]);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        height: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column',
-        gap: '1rem',
-        background: 'var(--bg-main, #f8fafc)',
-      }}
-    >
-      <div
-        style={{
-          width: '40px',
-          height: '40px',
-          border: '3px solid #e2e8f0',
-          borderTopColor: '#0f172a',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite',
-        }}
-      />
-      <p
-        style={{
-          color: '#64748b',
-          fontSize: '0.875rem',
-        }}
-      >
-        Đang hoàn tất đăng nhập...
-      </p>
-      <style>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
+    <div className="flex h-screen items-center justify-center flex-col gap-4 bg-[var(--bg-main,#f8fafc)]">
+      <div className="w-10 h-10 border-[3px] border-[#e2e8f0] border-t-[#0f172a] rounded-full animate-spin" />
+      <p className="text-[#64748b] text-sm">Đang hoàn tất đăng nhập...</p>
     </div>
   );
 }

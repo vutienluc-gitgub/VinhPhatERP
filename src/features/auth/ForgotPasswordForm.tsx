@@ -53,21 +53,10 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
           <span className="logo-text">vinhphat.app</span>
           <h2>Kiểm tra hộp thư</h2>
         </div>
-        <p
-          className="auth-status-body"
-          style={{
-            textAlign: 'center',
-            color: 'rgba(255,255,255,0.7)',
-          }}
-        >
+        <p className="auth-status-body text-center text-white/70">
           Chúng tôi đã gửi hướng dẫn đặt lại mật khẩu đến email của bạn.
         </p>
-        <button
-          type="button"
-          className="auth-submit-btn"
-          onClick={onBack}
-          style={{ marginTop: '1.5rem' }}
-        >
+        <button type="button" className="auth-submit-btn mt-6" onClick={onBack}>
           Quay lại đăng nhập
         </button>
       </div>
@@ -80,15 +69,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
         <span className="logo-text">vinhphat.app</span>
         <h2>Quên mật khẩu?</h2>
       </div>
-      <p
-        className="auth-subtitle"
-        style={{
-          textAlign: 'center',
-          marginBottom: '1.5rem',
-          fontSize: '0.85rem',
-          color: 'rgba(255,255,255,0.6)',
-        }}
-      >
+      <p className="auth-subtitle text-center mb-6 text-[0.85rem] text-white/60">
         Nhập email của bạn để nhận liên kết khôi phục mật khẩu.
       </p>
 
@@ -114,23 +95,16 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
 
       <button
         type="submit"
-        className="auth-submit-btn"
+        className="auth-submit-btn mt-4"
         disabled={isSubmitting || !captchaToken}
-        style={{ marginTop: '1rem' }}
       >
         {isSubmitting ? 'Đang gửi yêu cầu…' : 'Gửi yêu cầu'}
       </button>
 
       <button
         type="button"
-        className="auth-submit-btn"
+        className="auth-submit-btn mt-3 bg-transparent border border-white/20 shadow-none"
         onClick={onBack}
-        style={{
-          marginTop: '0.75rem',
-          background: 'transparent',
-          border: '1px solid rgba(255,255,255,0.2)',
-          boxShadow: 'none',
-        }}
       >
         Quay lại
       </button>

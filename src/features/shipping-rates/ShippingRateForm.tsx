@@ -66,13 +66,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
 
   return (
     <form id="shipping-rate-form" onSubmit={handleSubmit(onSubmit)}>
-      <div
-        className="form-grid"
-        style={{
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: '1rem',
-        }}
-      >
+      <div className="form-grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
         {/* Name */}
         <div className="form-field">
           <label>
@@ -235,7 +229,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
       </div>
 
       {/* Notes */}
-      <div className="form-field" style={{ marginTop: '1rem' }}>
+      <div className="form-field mt-4">
         <label>Ghi chú</label>
         <textarea
           className="field-textarea"
@@ -247,20 +241,13 @@ export function ShippingRateForm({ item, onClose }: Props) {
 
       {/* Error display */}
       {mutationError && (
-        <p className="error-inline" style={{ marginTop: '1rem' }}>
+        <p className="error-inline mt-4">
           Lỗi: {(mutationError as Error).message}
         </p>
       )}
 
       {/* Footer is handled by AdaptiveSheet via portal props, but we keep buttons for convenience if not using footer prop */}
-      <div
-        className="modal-footer"
-        style={{
-          marginTop: '1.5rem',
-          padding: 0,
-          border: 'none',
-        }}
-      >
+      <div className="modal-footer mt-6 p-0 border-none">
         <CancelButton onClick={onClose} label="Hủy" />
         <button
           className="primary-button btn-standard"

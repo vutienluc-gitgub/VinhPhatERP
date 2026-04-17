@@ -25,44 +25,13 @@ export function EmptyState({
     typeof icon === 'string' && /^[A-Z][a-zA-Z]+$/.test(icon);
 
   return (
-    <div
-      style={{
-        padding: '3rem 1.5rem',
-        textAlign: 'center',
-        backgroundColor: 'var(--surface)',
-        borderRadius: 'var(--radius-sm)',
-      }}
-    >
-      <div
-        style={{
-          fontSize: '3rem',
-          marginBottom: '0.75rem',
-          opacity: 0.9,
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
+    <div className="py-12 px-6 text-center bg-[var(--surface)] rounded-[var(--radius-sm)]">
+      <div className="text-5xl mb-3 opacity-90 flex justify-center">
         {isLucideIcon ? <Icon name={icon as IconName} size={48} /> : icon}
       </div>
-      <h3
-        style={{
-          margin: '0 0 0.5rem',
-          fontWeight: 700,
-        }}
-      >
-        {title}
-      </h3>
+      <h3 className="m-0 mb-2 font-bold">{title}</h3>
       {description && (
-        <p
-          className="td-muted"
-          style={{
-            fontSize: '0.92rem',
-            marginBottom: '1.5rem',
-            maxWidth: '400px',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-          }}
-        >
+        <p className="td-muted text-[0.92rem] mb-6 max-w-[400px] mx-auto">
           {description}
         </p>
       )}
@@ -71,11 +40,7 @@ export function EmptyState({
         (actionHref ? (
           <Link
             to={actionHref}
-            className="primary-button"
-            style={{
-              display: 'inline-block',
-              lineHeight: '1.2',
-            }}
+            className="primary-button inline-block leading-[1.2]"
           >
             {actionLabel}
           </Link>
