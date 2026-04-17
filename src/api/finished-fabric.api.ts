@@ -141,28 +141,36 @@ export async function createFinishedFabricBulk(
     throw new Error(`Mã cuộn đã tồn tại: ${taken.join(', ')}`);
   }
 
-  // 2. Validate raw_roll_id belongs to correct lot_number
-  const rawRollIds = [...new Set(rows.map((r) => r.raw_roll_id))];
-  const { data: rawRolls, error: rawErr } = await supabase
-    .from('raw_fabric_rolls')
-    .select('id, roll_number, lot_number')
-    .in('id', rawRollIds);
-  if (rawErr) throw rawErr;
+  // 2. Validate raw_roll_id belongs to correct lot_number (optional field — skip empty)
+  const validRawRollIds = [
+    ...new Set(
+      rows.map((r) => r.raw_roll_id).filter((id): id is string => !!id),
+    ),
+  ];
 
-  const rawMap = new Map((rawRolls ?? []).map((r) => [r.id, r]));
-  const mismatches: string[] = [];
-  for (const row of rows) {
-    const raw = rawMap.get(row.raw_roll_id);
-    if (!raw) {
-      mismatches.push(`Cuộn mộc ${row.raw_roll_id} không tồn tại`);
-    } else if (raw.lot_number !== lotNumber.trim()) {
-      mismatches.push(
-        `Cuộn mộc ${raw.roll_number} thuộc lô "${raw.lot_number ?? '(trống)'}" — không khớp lô "${lotNumber}"`,
-      );
+  if (validRawRollIds.length > 0) {
+    const { data: rawRolls, error: rawErr } = await supabase
+      .from('raw_fabric_rolls')
+      .select('id, roll_number, lot_number')
+      .in('id', validRawRollIds);
+    if (rawErr) throw rawErr;
+
+    const rawMap = new Map((rawRolls ?? []).map((r) => [r.id, r]));
+    const mismatches: string[] = [];
+    for (const row of rows) {
+      if (!row.raw_roll_id) continue; // tuy chon, bo qua neu khong co
+      const raw = rawMap.get(row.raw_roll_id);
+      if (!raw) {
+        mismatches.push(`Cuộn mộc ${row.raw_roll_id} không tồn tại`);
+      } else if (raw.lot_number !== lotNumber.trim()) {
+        mismatches.push(
+          `Cuộn mộc ${raw.roll_number} thuộc lô "${raw.lot_number ?? '(trống)'}" — không khớp lô "${lotNumber}"`,
+        );
+      }
     }
-  }
-  if (mismatches.length > 0) {
-    throw new Error(`Lỗi đối chiếu lô:\n${mismatches.join('\n')}`);
+    if (mismatches.length > 0) {
+      throw new Error(`Lỗi đối chiếu lô:\n${mismatches.join('\n')}`);
+    }
   }
 
   // 3. Insert
