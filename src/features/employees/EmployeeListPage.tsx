@@ -6,11 +6,11 @@ import {
   Badge,
   DataTablePremium,
   AddButton,
-  ClearFilterButton,
   ActionBar,
+  FilterBarPremium,
+  type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
-import { Combobox } from '@/shared/components/Combobox';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { useEmployees, useDeactivateEmployee } from '@/application/crm';
 
@@ -28,41 +28,59 @@ const STATUS_LABELS: Record<string, string> = {
   inactive: 'Ngừng hoạt động',
 };
 
-const ROLE_FILTER_OPTIONS = [
-  {
-    value: '',
-    label: 'Tất cả vai trò',
-  },
-  {
-    value: 'admin',
-    label: 'Quản trị viên',
-  },
-  {
-    value: 'sales',
-    label: 'Kinh doanh',
-  },
-  {
-    value: 'warehouse',
-    label: 'Kho bãi',
-  },
-  {
-    value: 'driver',
-    label: 'Tài xế',
-  },
-];
-
 export function EmployeeListPage() {
-  const [roleFilter, setRoleFilter] = useState<string>('');
-  const [search, setSearch] = useState('');
+  const [filterValues, setFilterValues] = useState<Record<string, string>>({
+    query: '',
+    role: '',
+  });
 
   const {
     data: employees,
     isLoading,
     isError,
   } = useEmployees({
-    role: roleFilter || undefined,
-    query: search || undefined,
+    role: filterValues.role || undefined,
+    query: filterValues.query || undefined,
   });
+
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'query',
+      type: 'search',
+      label: 'Tìm kiếm',
+      placeholder: 'Tên, mã, SĐT...',
+    },
+    {
+      key: 'role',
+      type: 'combobox',
+      label: 'Vai trò',
+      options: [
+        {
+          value: 'admin',
+          label: 'Quản trị viên',
+        },
+        {
+          value: 'sales',
+          label: 'Kinh doanh',
+        },
+        {
+          value: 'warehouse',
+          label: 'Kho bãi',
+        },
+        {
+          value: 'driver',
+          label: 'Tài xế',
+        },
+      ],
+    },
+  ];
+
+  function handleFilterChange(key: string, value: string | undefined) {
+    setFilterValues((prev) => ({
+      ...prev,
+      [key]: value ?? '',
+    }));
+  }
 
   const deactivateMutation = useDeactivateEmployee();
   const { confirm } = useConfirm();
@@ -187,41 +205,18 @@ export function EmployeeListPage() {
         </div>
       </div>
 
-      {/* 🔍 Filter Area */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-compact-premium">
-          <div className="filter-field">
-            <label htmlFor="emp-search">Tìm kiếm</label>
-            <div className="search-input-wrapper">
-              <input
-                id="emp-search"
-                className="field-input"
-                type="text"
-                placeholder="Tên, mã, SĐT..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </div>
-          </div>
-          <div className="filter-field">
-            <label>Vai trò</label>
-            <Combobox
-              options={ROLE_FILTER_OPTIONS}
-              value={roleFilter}
-              onChange={setRoleFilter}
-            />
-          </div>
-          {(search || roleFilter) && (
-            <ClearFilterButton
-              onClick={() => {
-                setSearch('');
-                setRoleFilter('');
-              }}
-            />
-          )}
-        </div>
-      </div>
+      {/* Filter Area (Config-Driven) */}
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filterValues}
+        onChange={handleFilterChange}
+        onClear={() =>
+          setFilterValues({
+            query: '',
+            role: '',
+          })
+        }
+      />
 
       {/* 📑 Data Table / Cards */}
       <DataTablePremium
@@ -230,20 +225,26 @@ export function EmployeeListPage() {
         rowKey={(e) => e.id}
         onRowClick={handleEdit}
         emptyStateTitle={
-          search || roleFilter
+          filterValues.query || filterValues.role
             ? 'Không tìm thấy nhân viên'
             : 'Chưa có dữ liệu nhân viên'
         }
         emptyStateDescription={
-          search || roleFilter
+          filterValues.query || filterValues.role
             ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
             : 'Hãy thêm nhân viên mới để bắt đầu quản lý.'
         }
-        emptyStateIcon={search || roleFilter ? 'Search' : 'Users'}
-        emptyStateActionLabel={
-          !(search || roleFilter) ? '+ Thêm nhân viên' : undefined
+        emptyStateIcon={
+          filterValues.query || filterValues.role ? 'Search' : 'Users'
         }
-        onEmptyStateAction={!(search || roleFilter) ? handleCreate : undefined}
+        emptyStateActionLabel={
+          !(filterValues.query || filterValues.role)
+            ? '+ Thêm nhân viên'
+            : undefined
+        }
+        onEmptyStateAction={
+          !(filterValues.query || filterValues.role) ? handleCreate : undefined
+        }
         columns={[
           {
             header: 'Mã NV',

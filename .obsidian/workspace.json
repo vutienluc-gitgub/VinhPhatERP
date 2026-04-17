@@ -186,6 +186,9 @@
   },
   "active": "dfcacc4f8d061a96",
   "lastOpenFiles": [
+    "fix_tieng_viet.cjs",
+    "fix_tieng_viet.js",
+    "src/shared/components/FilterBarPremium.tsx",
     "src/shared/utils/form.ts",
     "src/schema/customer.schema.ts",
     "public/thumbnail.png",
@@ -195,9 +198,6 @@
     "parse_eslint.js",
     "eslint_parsed.txt",
     "parse_eslint.cjs",
-    "eslint.json",
-    "lint_output_utf8.txt",
-    "src/schema/yarn-catalogs.schema.ts",
     "README.md",
     "task.md"
   ]

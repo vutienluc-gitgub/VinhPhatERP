@@ -8,10 +8,10 @@ import {
   type BadgeVariant,
   DataTablePremium,
   AddButton,
-  ClearFilterButton,
   ActionBar,
+  FilterBarPremium,
+  type FilterFieldConfig,
 } from '@/shared/components';
-import { Combobox } from '@/shared/components/Combobox';
 import {
   useDeleteYarnCatalog,
   useYarnCatalogList,
@@ -34,7 +34,6 @@ function getStatusVariant(status: YarnCatalogStatus): BadgeVariant {
 }
 
 export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
-  const [searchInput, setSearchInput] = useState('');
   const [filters, setFilters] = useState<YarnCatalogFilter>({});
   const [page, setPage] = useState(1);
 
@@ -44,18 +43,9 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
 
   const catalogs = data?.data ?? [];
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
-    setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      search: searchInput.trim() || undefined,
-    }));
-  }
-
   async function handleDelete(catalog: YarnCatalog) {
     const ok = await confirm({
-      message: `Xóa loại sợi "${catalog.name}"? Hành động này không thể hoàn tác.`,
+      message: `Xoa loai soi "${catalog.name}"? Hanh dong nay khong the hoan tac.`,
       variant: 'danger',
     });
     if (!ok) return;
@@ -63,6 +53,38 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
   }
 
   const hasFilter = !!(filters.search || filters.status);
+
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'search',
+      type: 'search',
+      label: 'Tìm kiếm',
+      placeholder: 'Tên, mã, thành phần...',
+    },
+    {
+      key: 'status',
+      type: 'combobox',
+      label: 'Trạng thái',
+      options: [
+        {
+          value: 'active',
+          label: 'Đang dùng',
+        },
+        {
+          value: 'inactive',
+          label: 'Ngừng dùng',
+        },
+      ],
+    },
+  ];
+
+  function handleFilterChange(key: string, value: string | undefined) {
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value || undefined,
+    }));
+  }
 
   return (
     <div className="panel-card card-flush">
@@ -75,64 +97,16 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
         <AddButton onClick={onNew} label="Thêm loại sợi" />
       </div>
 
-      {/* Filters */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-compact-premium">
-          <div className="filter-field">
-            <label htmlFor="filter-yarn-search">Tìm kiếm</label>
-            <form className="search-input-wrapper" onSubmit={handleSearch}>
-              <input
-                id="filter-yarn-search"
-                className="field-input"
-                type="text"
-                placeholder="Tên, mã, thành phần..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-              />
-              <button type="submit" className="hidden" />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </form>
-          </div>
-
-          <div className="filter-field">
-            <label>Trạng thái</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tất cả trạng thái',
-                },
-                {
-                  value: 'active',
-                  label: 'Đang dùng',
-                },
-                {
-                  value: 'inactive',
-                  label: 'Ngưng dùng',
-                },
-              ]}
-              value={filters.status ?? ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  status: (val as YarnCatalogStatus) || undefined,
-                }));
-              }}
-            />
-          </div>
-
-          {hasFilter && (
-            <ClearFilterButton
-              onClick={() => {
-                setFilters({});
-                setSearchInput('');
-                setPage(1);
-              }}
-            />
-          )}
-        </div>
-      </div>
+      {/* Filters (Config-Driven) */}
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => {
+          setFilters({});
+          setPage(1);
+        }}
+      />
 
       {/* Error */}
       {error && (

@@ -11,6 +11,8 @@ import {
   ClearFilterButton,
   ActionBar,
   TabSwitcher,
+  FilterBarPremium,
+  type FilterFieldConfig,
   type ActionConfig,
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
@@ -45,7 +47,6 @@ function getVariant(status: ShipmentStatus): BadgeVariant {
 }
 
 export function ShipmentList() {
-  const [searchInput, setSearchInput] = useState('');
   const [filters, setFilters] = useState<ShipmentsFilter>({});
   const [page, setPage] = useState(1);
   const [deliveryShipment, setDeliveryShipment] = useState<Shipment | null>(
@@ -66,28 +67,31 @@ export function ShipmentList() {
       : 'Đã xảy ra lỗi không xác định.';
   }
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
-    setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      search: searchInput.trim() || undefined,
-    }));
-  }
+  const staffOptions = (staffListResult.data ?? []).map((s) => ({
+    value: s.id,
+    label: s.full_name,
+  }));
 
-  function handleStatusChange(val: string) {
-    setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      status: (val as ShipmentStatus) || undefined,
-    }));
-  }
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'search',
+      type: 'search',
+      label: 'Tìm kiếm',
+      placeholder: 'So phieu xuat, ten khach...',
+    },
+    {
+      key: 'deliveryStaffId',
+      type: 'combobox',
+      label: 'Tai xe giao hang',
+      options: staffOptions,
+    },
+  ];
 
-  function handleStaffChange(val: string) {
+  function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
     setFilters((prev) => ({
       ...prev,
-      deliveryStaffId: val || undefined,
+      [key]: value || undefined,
     }));
   }
 
@@ -197,64 +201,43 @@ export function ShipmentList() {
         </div>
       </div>
 
-      {/* Filter Section */}
-      <div className="filter-bar card-filter-section flex-col items-start gap-4">
-        <div className="filter-grid-premium w-full">
-          <div className="filter-field">
-            <label>Tìm kiếm</label>
-            <form className="search-input-wrapper" onSubmit={handleSearch}>
-              <input
-                className="field-input"
-                type="text"
-                placeholder="Số phiếu xuất..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                onBlur={handleSearch}
-              />
-              <button type="submit" className="hidden"></button>
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </form>
-          </div>
+      {/* Filter Section (Config-Driven) */}
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={undefined}
+      />
 
-          <div className="filter-field">
-            <label>Tài xế giao hàng</label>
-            <select
-              className="field-select"
-              value={filters.deliveryStaffId ?? ''}
-              onChange={(e) => handleStaffChange(e.target.value)}
-            >
-              <option value="">Tất cả tài xế</option>
-              {staffListResult.data?.map((staff) => (
-                <option key={staff.id} value={staff.id}>
-                  {staff.full_name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
+      <div className="filter-bar card-filter-section flex-col items-start gap-4 px-4 pb-4">
         <div className="flex w-full items-center justify-between">
           <TabSwitcher
             tabs={[
               {
                 key: '',
-                label: 'Tất cả',
+                label: 'Tat ca',
               },
               {
                 key: 'preparing',
-                label: 'Đang chuẩn bị',
+                label: 'Dang chuan bi',
               },
               {
                 key: 'shipped',
-                label: 'Đang đi giao',
+                label: 'Dang di giao',
               },
               {
                 key: 'delivered',
-                label: 'Đã nhận hàng',
+                label: 'Da nhan hang',
               },
             ]}
             active={filters.status || ''}
-            onChange={handleStatusChange}
+            onChange={(val) => {
+              setPage(1);
+              setFilters((prev) => ({
+                ...prev,
+                status: (val as ShipmentStatus) || undefined,
+              }));
+            }}
             variant="boxed"
           />
 
@@ -262,10 +245,9 @@ export function ShipmentList() {
             <ClearFilterButton
               onClick={() => {
                 setFilters({});
-                setSearchInput('');
                 setPage(1);
               }}
-              label="Xóa lọc nhanh"
+              label="Xoa loc nhanh"
             />
           )}
         </div>

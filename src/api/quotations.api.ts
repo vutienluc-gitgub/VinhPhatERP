@@ -28,7 +28,19 @@ export async function fetchQuotationsPaginated(
   if (filters.status) query = query.eq('status', filters.status);
   if (filters.customerId) query = query.eq('customer_id', filters.customerId);
   if (filters.search?.trim()) {
-    query = query.ilike('quotation_number', `%${filters.search.trim()}%`);
+    const term = filters.search.trim();
+    const { data: cus } = await supabase
+      .from('customers')
+      .select('id')
+      .ilike('name', `%${term}%`);
+    const cIds = cus?.map((c) => c.id) || [];
+    if (cIds.length > 0) {
+      query = query.or(
+        `quotation_number.ilike.%${term}%,customer_id.in.(${cIds.join(',')})`,
+      );
+    } else {
+      query = query.or(`quotation_number.ilike.%${term}%`);
+    }
   }
 
   const { data, error, count } = await query;

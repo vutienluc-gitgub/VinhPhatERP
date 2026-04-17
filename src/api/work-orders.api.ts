@@ -42,8 +42,20 @@ export async function fetchWorkOrders(
   if (filter?.status && filter.status !== 'all') {
     query = query.eq('status', filter.status);
   }
-  if (filter?.search) {
-    query = query.ilike('work_order_number', `%${filter.search}%`);
+  if (filter?.search?.trim()) {
+    const term = filter.search.trim();
+    const { data: sups } = await supabase
+      .from('suppliers')
+      .select('id')
+      .ilike('name', `%${term}%`);
+    const sIds = sups?.map((s) => s.id) || [];
+    if (sIds.length > 0) {
+      query = query.or(
+        `work_order_number.ilike.%${term}%,supplier_id.in.(${sIds.join(',')})`,
+      );
+    } else {
+      query = query.or(`work_order_number.ilike.%${term}%`);
+    }
   }
 
   const from = (page - 1) * pageSize;

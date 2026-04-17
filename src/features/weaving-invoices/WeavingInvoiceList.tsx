@@ -8,11 +8,11 @@ import {
   type BadgeVariant,
   DataTablePremium,
   AddButton,
-  ClearFilterButton,
   ActionBar,
+  FilterBarPremium,
+  type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
-import { Combobox } from '@/shared/components/Combobox';
 import {
   useWeavingInvoiceList,
   useConfirmWeavingInvoice,
@@ -27,8 +27,6 @@ type Props = {
   onEdit: (invoice: WeavingInvoice) => void;
 };
 
-type WeavingStatus = WeavingInvoiceFilter['status'];
-
 function getStatusVariant(status: string): BadgeVariant {
   if (status === 'confirmed') return 'success';
   if (status === 'paid') return 'info';
@@ -41,7 +39,6 @@ function fmt(n: number) {
 
 export function WeavingInvoiceList({ onNew, onEdit }: Props) {
   const [filters, setFilters] = useState<WeavingInvoiceFilter>({});
-  const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
 
   const {
@@ -74,6 +71,42 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
   }
 
   const hasFilter = !!(filters.search || filters.status);
+
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'search',
+      type: 'search',
+      label: 'Tìm kiếm',
+      placeholder: 'Số phiếu gia công...',
+    },
+    {
+      key: 'status',
+      type: 'combobox',
+      label: 'Trạng thái',
+      options: [
+        {
+          value: 'draft',
+          label: 'Nháp',
+        },
+        {
+          value: 'confirmed',
+          label: 'Đã xác nhận',
+        },
+        {
+          value: 'paid',
+          label: 'Đã thanh toán',
+        },
+      ],
+    },
+  ];
+
+  function handleFilterChange(key: string, value: string | undefined) {
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value || undefined,
+    }));
+  }
 
   return (
     <div className="panel-card card-flush">
@@ -123,76 +156,16 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-compact-premium">
-          <div className="filter-field">
-            <label htmlFor="wi-search">Tìm kiếm</label>
-            <form
-              className="search-input-wrapper"
-              onSubmit={(e) => {
-                e.preventDefault();
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  search: search.trim() || undefined,
-                }));
-              }}
-            >
-              <input
-                id="wi-search"
-                className="field-input"
-                placeholder="Số phiếu..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-              <button type="submit" className="hidden" />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </form>
-          </div>
-
-          <div className="filter-field">
-            <label>Trạng thái</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tất cả trạng thái',
-                },
-                {
-                  value: 'draft',
-                  label: 'Nháp',
-                },
-                {
-                  value: 'confirmed',
-                  label: 'Đã xác nhận',
-                },
-                {
-                  value: 'paid',
-                  label: 'Đã thanh toán',
-                },
-              ]}
-              value={filters.status ?? ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  status: (val as WeavingStatus) || undefined,
-                }));
-              }}
-            />
-          </div>
-
-          {hasFilter && (
-            <ClearFilterButton
-              onClick={() => {
-                setFilters({});
-                setSearch('');
-              }}
-            />
-          )}
-        </div>
-      </div>
+      {/* Filters (Config-Driven) */}
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => {
+          setFilters({});
+          setPage(1);
+        }}
+      />
 
       {/* Errors */}
       {error && (

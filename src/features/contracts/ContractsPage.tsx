@@ -6,8 +6,9 @@ import {
   AddButton,
   ClearFilterButton,
   ActionBar,
+  FilterBarPremium,
+  type FilterFieldConfig,
 } from '@/shared/components';
-import { Combobox } from '@/shared/components/Combobox';
 import { useContractsList } from '@/application/contracts';
 
 import {
@@ -31,7 +32,6 @@ type ContractsPageProps = {
 
 export function ContractsPage({ onView, onNew }: ContractsPageProps) {
   const [filters, setFilters] = useState<ContractsFilter>({});
-  const [searchInput, setSearchInput] = useState('');
 
   const { data: contracts = [], isLoading, error } = useContractsList(filters);
 
@@ -43,17 +43,38 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
     filters.dateTo
   );
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'search',
+      type: 'search',
+      label: 'Tìm kiếm',
+      placeholder: 'Số hợp đồng, tên đối tác...',
+    },
+    {
+      key: 'status',
+      type: 'combobox',
+      label: 'Trạng thái',
+      options: CONTRACT_STATUSES.map((s: ContractStatus) => ({
+        value: s,
+        label: CONTRACT_STATUS_LABELS[s],
+      })),
+    },
+    {
+      key: 'type',
+      type: 'combobox',
+      label: 'Loại hợp đồng',
+      options: CONTRACT_TYPES.map((t: ContractType) => ({
+        value: t,
+        label: CONTRACT_TYPE_LABELS[t],
+      })),
+    },
+  ];
+
+  function handleFilterChange(key: string, value: string | undefined) {
     setFilters((prev) => ({
       ...prev,
-      search: searchInput.trim() || undefined,
+      [key]: value || undefined,
     }));
-  }
-
-  function clearFilters() {
-    setFilters({});
-    setSearchInput('');
   }
 
   function formatDate(dateStr: string) {
@@ -138,73 +159,19 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
         </div>
       </div>
 
-      {/* Filter */}
+      {/* Filter (Config-Driven) */}
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={undefined}
+      />
+
+      {/* Date Filters */}
       <div className="filter-bar card-filter-section p-4 border-b border-border">
         <div className="filter-compact-premium">
           <div className="filter-field">
-            <label htmlFor="contract-search">Tìm kiếm</label>
-            <form className="search-input-wrapper" onSubmit={handleSearch}>
-              <input
-                id="contract-search"
-                className="field-input"
-                type="text"
-                placeholder="Số hợp đồng, tên đối tác..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-              />
-              <button type="submit" className="hidden" />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </form>
-          </div>
-
-          <div className="filter-field">
-            <label>Trạng thái</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tất cả trạng thái',
-                },
-                ...CONTRACT_STATUSES.map((s: ContractStatus) => ({
-                  value: s,
-                  label: CONTRACT_STATUS_LABELS[s],
-                })),
-              ]}
-              value={filters.status ?? ''}
-              onChange={(val) => {
-                setFilters((prev) => ({
-                  ...prev,
-                  status: (val as ContractStatus) || undefined,
-                }));
-              }}
-            />
-          </div>
-
-          <div className="filter-field">
-            <label>Loại hợp đồng</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tất cả loại',
-                },
-                ...CONTRACT_TYPES.map((t: ContractType) => ({
-                  value: t,
-                  label: CONTRACT_TYPE_LABELS[t],
-                })),
-              ]}
-              value={filters.type ?? ''}
-              onChange={(val) => {
-                setFilters((prev) => ({
-                  ...prev,
-                  type: (val as ContractType) || undefined,
-                }));
-              }}
-            />
-          </div>
-
-          <div className="filter-field">
-            <label>Từ ngày</label>
+            <label>Tu ngay</label>
             <input
               className="field-input"
               type="date"
@@ -219,7 +186,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
           </div>
 
           <div className="filter-field">
-            <label>Đến ngày</label>
+            <label>Den ngay</label>
             <input
               className="field-input"
               type="date"
@@ -233,7 +200,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
             />
           </div>
 
-          {hasFilter && <ClearFilterButton onClick={clearFilters} />}
+          {hasFilter && <ClearFilterButton onClick={() => setFilters({})} />}
         </div>
       </div>
 

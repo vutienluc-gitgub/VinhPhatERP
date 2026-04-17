@@ -35,7 +35,7 @@ export async function paySupplierDebt(
   notes: string,
 ): Promise<void> {
   if (amount <= 0) throw new Error('Số tiền thanh toán phải lớn hơn 0');
-  const { error } = await untypedDb.rpc('pay_supplier_debt', {
+  const { error } = await untypedDb.rpc('rpc_pay_supplier_debt', {
     p_supplier_id: supplierId,
     p_amount: amount,
     p_notes: notes,

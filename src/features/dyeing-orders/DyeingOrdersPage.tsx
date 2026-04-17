@@ -1,6 +1,11 @@
 import { useState } from 'react';
 
-import { KpiCardPremium, Icon, AddButton } from '@/shared/components';
+import {
+  KpiCardPremium,
+  AddButton,
+  FilterBarPremium,
+  type FilterFieldConfig,
+} from '@/shared/components';
 import { useDyeingOrderList } from '@/application/production';
 
 import { DyeingOrderList } from './DyeingOrderList';
@@ -9,13 +14,20 @@ import { DyeingOrderDetail } from './DyeingOrderDetail';
 import type { DyeingOrder, DyeingOrderFilter } from './types';
 
 export function DyeingOrdersPage() {
-  const [filter, setFilter] = useState<DyeingOrderFilter>({
-    search: '',
-  });
+  const [filter, setFilter] = useState<DyeingOrderFilter>({ search: '' });
   const [page] = useState(1);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState<DyeingOrder | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const filterSchema: FilterFieldConfig[] = [
+    {
+      key: 'search',
+      type: 'search',
+      label: 'Tìm kiếm',
+      placeholder: 'Mã lệnh, nhà cung cấp...',
+    },
+  ];
 
   const { data, isLoading } = useDyeingOrderList(filter, page);
 
@@ -84,28 +96,18 @@ export function DyeingOrdersPage() {
         />
       </div>
 
-      {/* Filters Container */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-grid-premium">
-          <div className="filter-field max-w-[320px]">
-            <label>Tìm kiếm</label>
-            <div className="search-input-wrapper">
-              <input
-                className="field-input"
-                placeholder="Tìm mã lệnh, nhà cung cấp..."
-                value={filter.search || ''}
-                onChange={(e) =>
-                  setFilter({
-                    ...filter,
-                    search: e.target.value,
-                  })
-                }
-              />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Filters (Config-Driven) */}
+      <FilterBarPremium
+        schema={filterSchema}
+        value={filter}
+        onChange={(key, value) =>
+          setFilter((prev) => ({
+            ...prev,
+            [key]: value ?? '',
+          }))
+        }
+        onClear={() => setFilter({ search: '' })}
+      />
 
       {/* Main Content View */}
       <div className="card-table-section min-h-[400px]">
