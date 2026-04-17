@@ -120,6 +120,9 @@ export type YarnReceiptCreateInput = {
 export async function createYarnReceiptFull(
   input: YarnReceiptCreateInput,
 ): Promise<YarnReceipt> {
+  const { getTenantId } = await import('@/services/supabase/tenant');
+  const tenantId = await getTenantId();
+
   const total = input.items.reduce(
     (sum, it) => sum + it.quantity * it.unitPrice,
     0,
@@ -131,6 +134,7 @@ export async function createYarnReceiptFull(
     notes: input.notes,
     status: 'draft',
     total_amount: total,
+    tenant_id: tenantId,
   };
 
   const itemsInsert = input.items.map((item, idx) => ({
@@ -160,6 +164,9 @@ export async function updateYarnReceiptFull(
   id: string,
   input: YarnReceiptCreateInput,
 ): Promise<void> {
+  const { getTenantId } = await import('@/services/supabase/tenant');
+  const tenantId = await getTenantId();
+
   const total = input.items.reduce(
     (sum, it) => sum + it.quantity * it.unitPrice,
     0,
@@ -171,6 +178,7 @@ export async function updateYarnReceiptFull(
     receipt_date: input.receiptDate,
     notes: input.notes || null,
     total_amount: total,
+    tenant_id: tenantId,
   };
 
   const itemsInsert = input.items.map((item, idx) => ({
