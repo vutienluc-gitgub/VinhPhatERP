@@ -47,6 +47,8 @@ export function DyeingOrderList({
   const columns: DataTableColumn<DyeingOrder>[] = [
     {
       header: 'Mã lệnh',
+      id: 'dyeing_order_number',
+      sortable: true,
       cell: (row: DyeingOrder) => (
         <div className="flex flex-col">
           <span className="font-bold text-primary">
@@ -60,6 +62,9 @@ export function DyeingOrderList({
     },
     {
       header: 'Nhà nhuộm',
+      id: 'suppliers',
+      sortable: true,
+      accessor: (row: DyeingOrder) => row.suppliers?.name,
       cell: (row: DyeingOrder) => (
         <div className="flex flex-col">
           <span className="font-medium">{row.suppliers?.name ?? '—'}</span>
@@ -71,6 +76,8 @@ export function DyeingOrderList({
     },
     {
       header: 'Trạng thái',
+      id: 'status',
+      sortable: true,
       cell: (row: DyeingOrder) => (
         <Badge variant={getStatusVariant(row.status)}>
           {DYEING_ORDER_STATUSES[row.status]?.label ?? row.status}
@@ -79,6 +86,8 @@ export function DyeingOrderList({
     },
     {
       header: 'Đơn giá (kg)',
+      id: 'unit_price_per_kg',
+      sortable: true,
       className: 'text-right',
       cell: (row: DyeingOrder) => (
         <span className="tabular-nums font-medium">
@@ -88,6 +97,8 @@ export function DyeingOrderList({
     },
     {
       header: 'Trả hàng (DK)',
+      id: 'expected_return_date',
+      sortable: true,
       className: 'hide-mobile',
       cell: (row: DyeingOrder) => (
         <div className="flex items-center gap-1.5 text-muted">

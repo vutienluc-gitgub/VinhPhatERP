@@ -279,6 +279,8 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
         columns={[
           {
             header: 'Số đơn / Khách hàng',
+            id: 'order_number',
+            sortable: true,
             cell: (order) => (
               <div className="flex flex-col">
                 <span className="font-bold text-primary">
@@ -297,11 +299,15 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           },
           {
             header: 'Ngày đặt',
+            id: 'order_date',
+            sortable: true,
             className: 'text-muted text-sm',
             cell: (order) => order.order_date,
           },
           {
             header: 'Dự kiến giao',
+            id: 'delivery_date',
+            sortable: true,
             cell: (order) => {
               const due = daysUntilDelivery(order.delivery_date);
               return (
@@ -320,11 +326,16 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           },
           {
             header: 'Tổng tiền',
+            id: 'total_amount',
+            sortable: true,
             className: 'text-right numeric-cell font-medium',
             cell: (order) => `${formatCurrency(order.total_amount)}đ`,
           },
           {
             header: 'Còn nợ',
+            id: 'paid_amount',
+            sortable: true,
+            accessor: (order) => order.total_amount - (order.paid_amount || 0),
             className: 'text-right numeric-cell font-bold',
             cell: (order) => {
               const balanceDue = order.total_amount - order.paid_amount;
@@ -339,6 +350,8 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           },
           {
             header: 'Trạng thái',
+            id: 'status',
+            sortable: true,
             cell: (order) => (
               <Badge variant={getVariant(order.status)}>
                 {ORDER_STATUS_LABELS[order.status]}

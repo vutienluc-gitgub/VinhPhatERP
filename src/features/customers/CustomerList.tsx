@@ -209,12 +209,16 @@ export function CustomerList({
         columns={[
           {
             header: 'Mã KH',
+            id: 'code',
+            sortable: true,
             cell: (c) => (
               <span className="font-bold text-primary">{c.code}</span>
             ),
           },
           {
             header: 'Tên & Địa chỉ',
+            id: 'name',
+            sortable: true,
             cell: (c) => (
               <div className="flex flex-col">
                 <span className="font-bold">{c.name}</span>
@@ -226,11 +230,15 @@ export function CustomerList({
           },
           {
             header: 'Liên hệ',
+            id: 'phone',
+            sortable: true,
             className: 'text-sm font-medium',
             cell: (c) => c.phone ?? '—',
           },
           {
             header: 'Nguồn',
+            id: 'source',
+            sortable: true,
             cell: (c) => {
               const sourceKey = c.source || 'other';
               const iconName = CUSTOMER_SOURCE_ICONS[sourceKey];
@@ -244,6 +252,8 @@ export function CustomerList({
           },
           {
             header: 'Trạng thái',
+            id: 'status',
+            sortable: true,
             cell: (c) => (
               <Badge
                 variant={c.status === 'active' ? 'success' : 'gray'}

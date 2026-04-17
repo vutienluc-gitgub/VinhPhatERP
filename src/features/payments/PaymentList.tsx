@@ -104,12 +104,17 @@ export function PaymentList() {
         columns={[
           {
             header: 'Số phiếu',
+            id: 'payment_number',
+            sortable: true,
             cell: (p) => (
               <span className="font-bold text-primary">{p.payment_number}</span>
             ),
           },
           {
             header: 'Đơn hàng',
+            id: 'orders',
+            sortable: true,
+            accessor: (p) => p.orders?.order_number,
             cell: (p) => (
               <span className="text-muted">
                 {p.orders?.order_number ?? '—'}
@@ -118,17 +123,24 @@ export function PaymentList() {
           },
           {
             header: 'Khách hàng',
+            id: 'customers',
+            sortable: true,
+            accessor: (p) => p.customers?.name,
             cell: (p) => (
               <span className="font-medium">{p.customers?.name ?? '—'}</span>
             ),
           },
           {
             header: 'Ngày thu',
+            id: 'payment_date',
+            sortable: true,
             className: 'td-muted',
             cell: (p) => p.payment_date,
           },
           {
             header: 'Số tiền',
+            id: 'amount',
+            sortable: true,
             className: 'text-right',
             cell: (p) => (
               <span className="font-bold text-success">
@@ -138,6 +150,8 @@ export function PaymentList() {
           },
           {
             header: 'Hình thức',
+            id: 'payment_method',
+            sortable: true,
             className: 'td-muted',
             cell: (p) => PAYMENT_METHOD_LABELS[p.payment_method],
           },

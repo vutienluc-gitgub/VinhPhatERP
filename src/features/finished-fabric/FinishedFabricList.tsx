@@ -399,6 +399,8 @@ export function FinishedFabricList({
             columns={[
               {
                 header: 'Mã cuộn',
+                id: 'roll_number',
+                sortable: true,
                 cell: (r) => (
                   <div className="flex flex-col">
                     <span className="font-bold text-primary">
@@ -412,10 +414,14 @@ export function FinishedFabricList({
               },
               {
                 header: 'Loại vải',
+                id: 'fabric_type',
+                sortable: true,
                 cell: (r) => r.fabric_type,
               },
               {
                 header: 'CL',
+                id: 'quality_grade',
+                sortable: true,
                 cell: (r) =>
                   r.quality_grade ? (
                     <span className={`grade-badge grade-${r.quality_grade}`}>
@@ -427,6 +433,8 @@ export function FinishedFabricList({
               },
               {
                 header: 'Khổ × Dài',
+                id: 'length_m',
+                sortable: true,
                 className: 'text-muted',
                 cell: (r) => (
                   <div className="flex flex-col text-xs">
@@ -442,6 +450,8 @@ export function FinishedFabricList({
               },
               {
                 header: 'Trọng lượng',
+                id: 'weight_kg',
+                sortable: true,
                 className: 'text-right',
                 cell: (r) => (
                   <span className="font-medium">
@@ -451,6 +461,8 @@ export function FinishedFabricList({
               },
               {
                 header: 'Trạng thái',
+                id: 'status',
+                sortable: true,
                 cell: (r) => (
                   <Badge variant={getStatusVariant(r.status)}>
                     {ROLL_STATUS_LABELS[r.status]}
@@ -459,6 +471,8 @@ export function FinishedFabricList({
               },
               {
                 header: 'Vị trí',
+                id: 'warehouse_location',
+                sortable: true,
                 cell: (r) => (
                   <span className="text-xs text-muted">
                     {r.warehouse_location ?? '—'}

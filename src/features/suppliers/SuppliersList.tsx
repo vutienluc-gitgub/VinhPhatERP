@@ -212,12 +212,16 @@ export function SuppliersList({
         columns={[
           {
             header: 'Mã NCC',
+            id: 'code',
+            sortable: true,
             cell: (s) => (
               <span className="font-bold text-primary">{s.code}</span>
             ),
           },
           {
             header: 'Tên nhà cung cấp',
+            id: 'name',
+            sortable: true,
             cell: (s) => (
               <div className="flex flex-col">
                 <span className="font-bold">{s.name}</span>
@@ -231,6 +235,8 @@ export function SuppliersList({
           },
           {
             header: 'Danh mục',
+            id: 'category',
+            sortable: true,
             cell: (s) => (
               <span className="badge-outline">
                 {SUPPLIER_CATEGORY_LABELS[s.category]}
@@ -239,6 +245,8 @@ export function SuppliersList({
           },
           {
             header: 'Liên hệ',
+            id: 'phone',
+            sortable: true,
             className: 'td-muted',
             cell: (s) => (
               <div className="flex flex-col text-sm">
@@ -252,6 +260,8 @@ export function SuppliersList({
           },
           {
             header: 'Trạng thái',
+            id: 'status',
+            sortable: true,
             cell: (s) => (
               <Badge variant={s.status === 'active' ? 'success' : 'gray'}>
                 {SUPPLIER_STATUS_LABELS[s.status]}

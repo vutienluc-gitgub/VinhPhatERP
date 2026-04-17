@@ -87,6 +87,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
 
   const { data: result, isLoading, error } = useQuotationList(filters, page);
   const quotations = result?.data ?? [];
+
   const deleteMutation = useDeleteQuotation();
   const { data: expiringData } = useExpiringQuotationsCount();
   const { confirm, alert: showAlert } = useConfirm();
@@ -272,6 +273,8 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
         columns={[
           {
             header: 'Số báo giá / Ngày tạo',
+            id: 'quotation_number',
+            sortable: true,
             cell: (q) => (
               <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-1.5">
@@ -288,6 +291,9 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
           },
           {
             header: 'Khách hàng',
+            id: 'customers',
+            sortable: true,
+            accessor: (q) => q.customers?.name,
             cell: (q) => (
               <div className="flex flex-col gap-0.5">
                 <span className="font-bold truncate max-w-[200px]">
@@ -301,6 +307,8 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
           },
           {
             header: 'Hiệu lực',
+            id: 'valid_until',
+            sortable: true,
             cell: (q) => {
               const validity = validityInfo(q.valid_until);
               const isActiveQuote = q.status === 'draft' || q.status === 'sent';
@@ -320,6 +328,8 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
           },
           {
             header: 'Tổng tiền',
+            id: 'total_amount',
+            sortable: true,
             className: 'text-right',
             cell: (q) => (
               <span className="font-bold">
@@ -329,6 +339,8 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
           },
           {
             header: 'Trạng thái',
+            id: 'status',
+            sortable: true,
             cell: (q) => (
               <Badge variant={getStatusVariant(q.status)}>
                 {QUOTATION_STATUS_LABELS[q.status]}

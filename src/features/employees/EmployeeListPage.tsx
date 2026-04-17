@@ -247,21 +247,29 @@ export function EmployeeListPage() {
         columns={[
           {
             header: 'Mã NV',
+            id: 'code',
+            sortable: true,
             cell: (emp) => (
               <span className="font-bold text-primary">{emp.code}</span>
             ),
           },
           {
             header: 'Họ tên',
+            id: 'name',
+            sortable: true,
             cell: (emp) => <span className="font-bold">{emp.name}</span>,
           },
           {
             header: 'SĐT',
+            id: 'phone',
+            sortable: true,
             className: 'text-sm font-medium',
             cell: (emp) => emp.phone || '—',
           },
           {
             header: 'Vai trò',
+            id: 'role',
+            sortable: true,
             cell: (emp) => (
               <span className="badge-outline">
                 {ROLE_LABELS[emp.role] ?? emp.role}
@@ -270,6 +278,8 @@ export function EmployeeListPage() {
           },
           {
             header: 'Trạng thái',
+            id: 'status',
+            sortable: true,
             cell: (emp) => (
               <Badge variant={emp.status === 'active' ? 'success' : 'gray'}>
                 {STATUS_LABELS[emp.status] ?? emp.status}

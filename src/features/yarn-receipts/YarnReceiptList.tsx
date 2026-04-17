@@ -254,12 +254,17 @@ export function YarnReceiptList({
         columns={[
           {
             header: 'Số phiếu',
+            id: 'receipt_number',
+            sortable: true,
             cell: (r) => (
               <span className="font-bold text-primary">{r.receipt_number}</span>
             ),
           },
           {
             header: 'Nhà cung cấp',
+            id: 'suppliers',
+            sortable: true,
+            accessor: (r) => r.suppliers?.name,
             cell: (r) => (
               <div className="flex flex-col">
                 <span className="font-medium">{r.suppliers?.name ?? '—'}</span>
@@ -269,10 +274,14 @@ export function YarnReceiptList({
           },
           {
             header: 'Ngày nhập',
+            id: 'receipt_date',
+            sortable: true,
             cell: (r) => <span className="text-muted">{r.receipt_date}</span>,
           },
           {
             header: 'Tổng tiền',
+            id: 'total_amount',
+            sortable: true,
             className: 'text-right',
             cell: (r) => (
               <span className="font-medium">
@@ -282,6 +291,8 @@ export function YarnReceiptList({
           },
           {
             header: 'Trạng thái',
+            id: 'status',
+            sortable: true,
             cell: (r) => (
               <Badge variant={getStatusVariant(r.status)}>
                 {DOC_STATUS_LABELS[r.status]}
