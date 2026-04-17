@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "task.md",
+                "file": "AGENT.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "task"
+              "title": "AGENT"
             }
           }
         ]
@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "579bcd3a4e1bf079",
@@ -94,7 +95,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "task.md",
+                "file": "AGENT.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +105,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Liên kết đến của task"
+              "title": "Liên kết đến của AGENT"
             }
           },
           {
@@ -113,12 +114,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "task.md",
+                "file": "AGENT.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Liên kết đi ra từ task"
+              "title": "Liên kết đi ra từ AGENT"
             }
           },
           {
@@ -156,13 +157,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "task.md",
+                "file": "AGENT.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Đề cương của task"
+              "title": "Đề cương của AGENT"
             }
           }
         ]
@@ -184,5 +185,19 @@
     }
   },
   "active": "dfcacc4f8d061a96",
-  "lastOpenFiles": []
+  "lastOpenFiles": [
+    "typecheck.txt",
+    "lint_source.txt",
+    "fix_lint.js",
+    "parse_eslint.js",
+    "eslint_parsed.txt",
+    "parse_eslint.cjs",
+    "eslint.json",
+    "lint_output_utf8.txt",
+    "src/schema/yarn-catalogs.schema.ts",
+    "src/schema/work-orders.schema.ts",
+    "src/schema/weaving-invoices.schema.ts",
+    "README.md",
+    "task.md"
+  ]
 }

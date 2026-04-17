@@ -105,12 +105,12 @@ pattern: ['src/models/*']
       'warn',
       {
         selector: 'variableLike',
-        format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
+        format: ['camelCase', 'PascalCase', 'UPPER_CASE', 'snake_case'],
         leadingUnderscore: 'allow',
       },
       {
         selector: 'parameter',
-        format: ['camelCase', 'PascalCase'],
+        format: ['camelCase', 'PascalCase', 'snake_case'],
         leadingUnderscore: 'allow',
       },
       {
