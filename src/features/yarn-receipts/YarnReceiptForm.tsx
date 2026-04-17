@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-import { Button } from '@/shared/components';
+import { Button, CancelButton } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { CurrencyInput } from '@/shared/components/CurrencyInput';
@@ -554,14 +554,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
         </div>
 
         <div className="modal-footer mt-6 p-0 border-none">
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={onClose}
-            disabled={isPending}
-          >
-            Hủy
-          </Button>
+          <CancelButton onClick={onClose} disabled={isPending} />
           <button
             className="primary-button btn-standard"
             type="submit"
