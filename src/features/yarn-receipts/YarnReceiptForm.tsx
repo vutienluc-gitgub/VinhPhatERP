@@ -101,15 +101,7 @@ function LineTotals({
     0,
   );
   return (
-    <div
-      style={{
-        textAlign: 'right',
-        fontWeight: 600,
-        fontSize: '1rem',
-        padding: '0.6rem 0',
-        borderTop: '2px solid var(--border)',
-      }}
-    >
+    <div className="text-right font-semibold text-base py-2.5 border-t-2 border-[var(--border)]">
       Tổng cộng: {formatCurrency(total)} đ
     </div>
   );
@@ -180,7 +172,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
       }
     >
       {mutationError && (
-        <p className="error-inline" style={{ marginBottom: '1rem' }}>
+        <p className="error-inline mb-4">
           Lỗi: {(mutationError as Error).message}
         </p>
       )}
@@ -216,12 +208,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
           {/* ── Section 1: Thông tin phiếu ── */}
           <FormSection title="Thông tin phiếu" defaultOpen={true}>
             <div className="form-grid">
-              <div
-                className="form-grid"
-                style={{
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                }}
-              >
+              <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                 <div className="form-field">
                   <label htmlFor="receiptNumber">Số phiếu</label>
                   {isEditing ? (
@@ -235,15 +222,11 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                   ) : (
                     <input
                       id="receiptNumber"
-                      className="field-input"
+                      className="field-input text-muted italic"
                       type="text"
                       value="Tự động"
                       readOnly
                       disabled
-                      style={{
-                        color: 'var(--text-tertiary)',
-                        fontStyle: 'italic',
-                      }}
                     />
                   )}
                 </div>
@@ -297,19 +280,14 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                     variant="secondary"
                     type="button"
                     onClick={() => setShowQuickSupplier(true)}
-                    style={{
-                      fontSize: '0.8rem',
-                      padding: '0.35rem 0.7rem',
-                      alignSelf: 'flex-start',
-                      marginTop: '0.5rem',
-                    }}
+                    className="text-[0.8rem] py-1.5 px-3 self-start mt-2"
                   >
                     {' '}
                     + Tạo NCC mới
                   </Button>
                 )}
                 {showQuickSupplier && (
-                  <div style={{ marginTop: '0.5rem' }}>
+                  <div className="mt-2">
                     <QuickSupplierForm
                       defaultCategory="yarn"
                       onCreated={(created) => {
@@ -327,76 +305,35 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
           {/* ── Section 2: Danh sách sợi ── */}
           <FormSection title="Danh sách sợi" defaultOpen={true}>
             {errors.items?.root && (
-              <span
-                className="field-error"
-                style={{
-                  marginBottom: '0.5rem',
-                  display: 'block',
-                }}
-              >
+              <span className="field-error mb-2 block">
                 {errors.items.root.message}
               </span>
             )}
 
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.75rem',
-              }}
-            >
+            <div className="flex flex-col gap-3">
               {fields.map((field, index) => (
                 <div
                   key={field.id}
-                  style={{
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-sm)',
-                    padding: '0.75rem',
-                    position: 'relative',
-                    background: 'var(--surface)',
-                  }}
+                  className="border border-[var(--border)] rounded-[var(--radius-sm)] p-3 relative bg-[var(--surface)]"
                 >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '0.5rem',
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: '0.85rem',
-                        fontWeight: 600,
-                        color: 'var(--text-secondary)',
-                      }}
-                    >
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[0.85rem] font-semibold text-muted">
                       Dòng {index + 1}
                     </span>
                     {fields.length > 1 && (
                       <button
-                        className="btn-icon danger"
+                        className="btn-icon danger text-[0.85rem]"
                         type="button"
                         title="Xóa dòng"
                         onClick={() => remove(index)}
-                        style={{ fontSize: '0.85rem' }}
                       >
                         ✕
                       </button>
                     )}
                   </div>
 
-                  <div
-                    className="form-grid"
-                    style={{
-                      gridTemplateColumns:
-                        'repeat(auto-fit, minmax(200px, 1fr))',
-                    }}
-                  >
-                    <div
-                      className="form-field"
-                      style={{ gridColumn: '1 / -1' }}
-                    >
+                  <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+                    <div className="form-field col-span-full">
                       <label htmlFor={`items.${index}.yarnCatalogId`}>
                         Chọn từ danh mục sợi
                       </label>
@@ -443,13 +380,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                     </div>
                   </div>
 
-                  <div
-                    className="form-grid"
-                    style={{
-                      gridTemplateColumns:
-                        'repeat(auto-fit, minmax(200px, 1fr))',
-                    }}
-                  >
+                  <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                     <div className="form-field">
                       <label htmlFor={`items.${index}.yarnType`}>
                         Loại sợi <span className="field-required">*</span>
@@ -487,13 +418,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                     </div>
                   </div>
 
-                  <div
-                    className="form-grid"
-                    style={{
-                      gridTemplateColumns:
-                        'repeat(auto-fit, minmax(200px, 1fr))',
-                    }}
-                  >
+                  <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                     <div className="form-field">
                       <label htmlFor={`items.${index}.quantity`}>
                         Số lượng (kg) <span className="field-required">*</span>
@@ -542,13 +467,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                     </div>
                   </div>
 
-                  <div
-                    className="form-grid"
-                    style={{
-                      gridTemplateColumns:
-                        'repeat(auto-fit, minmax(200px, 1fr))',
-                    }}
-                  >
+                  <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                     <div className="form-field">
                       <label htmlFor={`items.${index}.lotNumber`}>
                         Số lô (Lot)
@@ -576,13 +495,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                     </div>
                   </div>
 
-                  <div
-                    className="form-grid"
-                    style={{
-                      gridTemplateColumns:
-                        'repeat(auto-fit, minmax(200px, 1fr))',
-                    }}
-                  >
+                  <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                     <div className="form-field">
                       <label htmlFor={`items.${index}.composition`}>
                         Thành phần
@@ -615,10 +528,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
               variant="secondary"
               type="button"
               onClick={() => append({ ...emptyItem })}
-              style={{
-                marginTop: '0.5rem',
-                width: '100%',
-              }}
+              className="mt-2 w-full"
             >
               {' '}
               + Thêm dòng sợi
@@ -643,14 +553,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
           </FormSection>
         </div>
 
-        <div
-          className="modal-footer"
-          style={{
-            marginTop: '1.5rem',
-            padding: 0,
-            border: 'none',
-          }}
-        >
+        <div className="modal-footer mt-6 p-0 border-none">
           <Button
             variant="secondary"
             type="button"

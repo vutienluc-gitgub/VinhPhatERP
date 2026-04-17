@@ -172,14 +172,7 @@ export function RawFabricList({
 
       {/* KPI Dashboard */}
       {stats && (
-        <div
-          className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '1rem',
-          }}
-        >
+        <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
           <StatWidget
             title="Tổng số cuộn"
             icon="Box"
