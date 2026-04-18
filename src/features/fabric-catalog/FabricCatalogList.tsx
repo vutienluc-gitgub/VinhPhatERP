@@ -206,16 +206,22 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
         columns={[
           {
             header: 'Mã',
+            id: 'code',
+            sortable: true,
             cell: (c) => (
               <span className="font-bold text-primary">{c.code}</span>
             ),
           },
           {
             header: 'Tên loại vải',
+            id: 'name',
+            sortable: true,
             cell: (c) => <span className="font-medium">{c.name}</span>,
           },
           {
             header: 'Thành phần',
+            id: 'composition',
+            sortable: true,
             cell: (c) => (
               <span className="text-muted text-sm italic">
                 {c.composition ?? '—'}
@@ -224,6 +230,8 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
           },
           {
             header: 'Quy cách (chuẩn)',
+            id: 'specs',
+            sortable: false,
             cell: (c) => (
               <div className="flex flex-col gap-0.5 text-sm">
                 <span className="text-muted">
@@ -243,10 +251,14 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
           },
           {
             header: 'Đơn vị',
+            id: 'unit',
+            sortable: true,
             cell: (c) => <span className="text-sm">{c.unit}</span>,
           },
           {
             header: 'Trạng thái',
+            id: 'status',
+            sortable: true,
             cell: (c) => (
               <Badge variant={getStatusVariant(c.status)}>
                 {FABRIC_CATALOG_STATUS_LABELS[c.status]}

@@ -64,6 +64,8 @@ export function BomList({
       columns={[
         {
           header: 'Mã BOM / Tên Công Thức',
+          id: 'code',
+          sortable: true,
           cell: (bom) => (
             <div className="flex flex-col">
               <span className="font-bold text-primary">{bom.code}</span>
@@ -75,6 +77,9 @@ export function BomList({
         },
         {
           header: 'Sản Phẩm Mục Tiêu',
+          id: 'fabric_name',
+          sortable: true,
+          accessor: (bom) => bom.fabric_catalogs?.name || '',
           cell: (bom) => (
             <div className="flex flex-col">
               <span className="font-medium">
@@ -90,12 +95,16 @@ export function BomList({
         },
         {
           header: 'Phiên Bản',
+          id: 'active_version',
+          sortable: true,
           cell: (bom) => (
             <span className="font-medium text-sm">v{bom.active_version}</span>
           ),
         },
         {
           header: 'Trạng Thái',
+          id: 'status',
+          sortable: true,
           cell: (bom) => (
             <Badge variant={getStatusVariant(bom.status)}>
               {BOM_STATUS_LABELS[bom.status] || bom.status}
@@ -104,6 +113,9 @@ export function BomList({
         },
         {
           header: 'Người Tạo',
+          id: 'created_by',
+          sortable: true,
+          accessor: (bom) => bom.created_by_profile?.full_name || '',
           className: 'td-muted text-sm',
           cell: (bom) => bom.created_by_profile?.full_name || 'N/A',
         },

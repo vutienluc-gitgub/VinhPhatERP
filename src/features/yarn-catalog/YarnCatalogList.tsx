@@ -42,6 +42,8 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
   const { confirm } = useConfirm();
 
   const catalogs = data?.data ?? [];
+  const activeCount = catalogs.filter((c) => c.status === 'active').length;
+  const inactiveCount = catalogs.filter((c) => c.status === 'inactive').length;
 
   async function handleDelete(catalog: YarnCatalog) {
     const ok = await confirm({
@@ -97,6 +99,57 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
         <AddButton onClick={onNew} label="Thêm loại sợi" />
       </div>
 
+      {/* 📊 KPI Dashboard - Premium Visuals */}
+      <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
+        <div className="kpi-card-premium kpi-primary">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Tổng loại sợi</p>
+              <p className="kpi-value">{data?.total ?? 0}</p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="Layers" size={32} />
+            </div>
+          </div>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Tổng số lượng danh mục
+          </div>
+        </div>
+
+        <div className="kpi-card-premium kpi-success">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Đang dùng</p>
+              <p className="kpi-value">{activeCount}</p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="CheckCircle2" size={32} />
+            </div>
+          </div>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Thuộc trang hiện tại
+          </div>
+        </div>
+
+        <div className="kpi-card-premium kpi-danger">
+          <div className="kpi-overlay" />
+          <div className="kpi-content">
+            <div className="kpi-info">
+              <p className="kpi-label">Ngừng dùng</p>
+              <p className="kpi-value">{inactiveCount}</p>
+            </div>
+            <div className="kpi-icon-box">
+              <Icon name="XCircle" size={32} strokeWidth={2} />
+            </div>
+          </div>
+          <div className="kpi-footer text-xs opacity-80 italic">
+            Thuộc trang hiện tại
+          </div>
+        </div>
+      </div>
+
       {/* Filters (Config-Driven) */}
       <FilterBarPremium
         schema={filterSchema}
@@ -137,32 +190,45 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
         columns={[
           {
             header: 'Mã / Tên',
+            id: 'code',
+            sortable: true,
             cell: (c) => (
               <div className="flex flex-col">
                 <span className="font-bold text-primary">{c.code}</span>
                 <span className="text-sm">{c.name}</span>
                 {c.color_name && (
-                  <span className="text-xs text-muted">{c.color_name}</span>
+                  <span className="text-xs text-muted">
+                    Màu: {c.color_name}
+                  </span>
                 )}
               </div>
             ),
           },
           {
             header: 'Thành phần',
+            id: 'composition',
+            sortable: true,
             cell: (c) => (
               <span className="text-sm text-muted">{c.composition ?? '—'}</span>
             ),
           },
           {
             header: 'Xuất xứ',
+            id: 'origin',
+            sortable: true,
             cell: (c) => <span className="text-sm">{c.origin ?? '—'}</span>,
           },
           {
             header: 'Đơn vị',
-            cell: (c) => <span className="text-sm font-medium">{c.unit}</span>,
+            id: 'unit',
+            sortable: true,
+            className: 'font-medium',
+            cell: (c) => c.unit,
           },
           {
             header: 'Trạng thái',
+            id: 'status',
+            sortable: true,
             cell: (c) => (
               <Badge variant={getStatusVariant(c.status)}>
                 {YARN_CATALOG_STATUS_LABELS[c.status]}
