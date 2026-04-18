@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 import { Icon } from './Icon';
 
-interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+type SearchInputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 export function SearchInput({
   className = '',

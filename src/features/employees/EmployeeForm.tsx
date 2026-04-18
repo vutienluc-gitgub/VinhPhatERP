@@ -118,7 +118,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
             if (values.role === 'driver') {
               try {
                 await linkProfileToEmployee(employee.id, linkedProfileId);
-              } catch (err) {
+              } catch (_err) {
                 toast.error(
                   'Lưu hồ sơ thành công nhưng lỗi khi liên kết tài khoản',
                 );
@@ -143,7 +143,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
             if (values.role === 'driver') {
               try {
                 await linkProfileToEmployee(newEmp.id, linkedProfileId);
-              } catch (err) {
+              } catch (_err) {
                 toast.error(
                   'Lưu hồ sơ thành công nhưng lỗi khi liên kết tài khoản',
                 );

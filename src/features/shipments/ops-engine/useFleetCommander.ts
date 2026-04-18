@@ -356,7 +356,7 @@ export function useFleetCommander(availableRolls: AvailableRoll[]) {
 
         // Clear the board (Reset Assignments) sau khi xuất kho thành công
         setAssignments(new Map());
-      } catch (e) {
+      } catch (_e) {
         toast.error('Có lỗi xảy ra trong lúc phát lệnh. Xin thử lại.');
       } finally {
         setIsCommitting(false);
