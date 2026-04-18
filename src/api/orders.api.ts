@@ -194,7 +194,15 @@ export async function updateOrderStatus(
     data: { user },
   } = await supabase.auth.getUser();
   if (user) {
+    // Cần lấy tenant_id vì policy yêu cầu
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('tenant_id')
+      .eq('id', user.id)
+      .single();
+
     await supabase.from('business_audit_log').insert({
+      tenant_id: profile?.tenant_id,
       entity_type: 'orders',
       entity_id: id,
       event_type: 'ORDER_STATUS_CHANGED',

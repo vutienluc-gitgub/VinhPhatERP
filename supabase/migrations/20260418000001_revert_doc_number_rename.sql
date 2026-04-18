@@ -1,0 +1,11 @@
+-- =============================================================================
+-- Migration: Revert the renaming of generate_next_doc_number
+-- Reason: This is an internal Postgres helper function used extensively inside
+-- the bodies of atomic_create_* (now rpc_create_*) functions.
+-- Renaming it to `rpc_generate_next_doc_number` without updating all dependent
+-- function bodies caused runtime errors where PostgreSQL couldn't resolve the
+-- old function name at execution time.
+-- Note: Internal scalar helpers shouldn't have `rpc_` prefixes anyway since
+-- they are not public data-mutating Remote Procedure Calls.
+-- =============================================================================
+ALTER FUNCTION public.rpc_generate_next_doc_number(TEXT, TEXT, TEXT, INT) RENAME TO generate_next_doc_number;
