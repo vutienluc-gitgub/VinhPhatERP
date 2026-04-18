@@ -58,7 +58,7 @@ export function TemplateEditor({
       await onSaved(pendingValues);
       setShowConfirm(false);
       setPendingValues(null);
-    } catch (err) {
+    } catch (_err) {
       // Error is handled by parent, but we can catch so we don't crash
       setShowConfirm(false);
     }

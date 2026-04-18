@@ -188,7 +188,7 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
         await createMutation.mutateAsync(values);
       }
       onClose();
-    } catch (err) {
+    } catch (_err) {
       // Lỗi được hiển thị qua mutation.error bên dưới
     }
   }

@@ -1,5 +1,3 @@
-import type { FieldErrors } from 'react-hook-form';
-
 /**
  * Extracts a flat, readable error message from deeply nested react-hook-form FieldErrors.
  * Useful for displaying generic Toast notifications on form submit failure.
@@ -8,37 +6,67 @@ import type { FieldErrors } from 'react-hook-form';
  * @param defaultMessage The fallback message if no specific message could be extracted
  * @returns A single string describing the first encountered validation error
  */
-export function extractFormErrorMessage(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  errors: FieldErrors<any>,
+export function extractFormErrorMessage<
+  T extends import('react-hook-form').FieldValues,
+>(
+  errors: import('react-hook-form').FieldErrors<T>,
   defaultMessage = 'Vui lòng kiểm tra lại form',
 ): string {
   if (!errors || Object.keys(errors).length === 0) return defaultMessage;
 
-  const firstErrorKey = Object.keys(errors)[0];
+  const firstErrorKey = Object.keys(
+    errors,
+  )[0] as keyof import('react-hook-form').FieldErrors<T>;
   if (!firstErrorKey) return defaultMessage;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const errorObj = errors[firstErrorKey] as any;
+  const errorObj = errors[firstErrorKey];
   if (!errorObj) return defaultMessage;
 
+  // Type-guards an toàn
+  const hasMessage = (obj: unknown): obj is { message: string } => {
+    return (
+      typeof obj === 'object' &&
+      obj !== null &&
+      'message' in obj &&
+      typeof (obj as Record<string, unknown>).message === 'string'
+    );
+  };
+
+  const hasRootMessage = (
+    obj: unknown,
+  ): obj is { root: { message: string } } => {
+    return (
+      typeof obj === 'object' &&
+      obj !== null &&
+      'root' in obj &&
+      hasMessage((obj as Record<string, unknown>).root)
+    );
+  };
+
   // Case 1: Direct root string message
-  if (errorObj?.root?.message) {
-    return String(errorObj.root.message);
+  if (hasRootMessage(errorObj)) {
+    return errorObj.root.message;
   }
 
   // Case 2: Standard field message
-  if (errorObj?.message) {
-    return String(errorObj.message);
+  if (hasMessage(errorObj)) {
+    return errorObj.message;
   }
 
   // Case 3: Deep nested array field (e.g. `items[0].quantity.message`)
   if (Array.isArray(errorObj)) {
-    const firstItemError = errorObj.find((e) => e !== undefined && e !== null);
-    if (firstItemError) {
+    const firstItemError = errorObj.find(
+      (e) => e !== undefined && e !== null,
+    ) as unknown;
+    if (typeof firstItemError === 'object' && firstItemError !== null) {
       const nestedFirstKey = Object.keys(firstItemError)[0];
-      if (nestedFirstKey && firstItemError[nestedFirstKey]?.message) {
-        return String(firstItemError[nestedFirstKey].message);
+      if (nestedFirstKey) {
+        const nestedObj = (firstItemError as Record<string, unknown>)[
+          nestedFirstKey
+        ];
+        if (hasMessage(nestedObj)) {
+          return nestedObj.message;
+        }
       }
     }
   }

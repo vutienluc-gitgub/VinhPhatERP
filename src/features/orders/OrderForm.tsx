@@ -259,7 +259,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
         setOverrideWarning(null);
         onClose();
       }
-    } catch (err) {
+    } catch (_err) {
       // Error handled via mutationError
     }
   }
