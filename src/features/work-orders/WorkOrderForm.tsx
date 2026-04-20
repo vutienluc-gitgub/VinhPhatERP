@@ -178,6 +178,7 @@ export function WorkOrderForm({
           yarn_catalog_id: r.yarn_catalog_id,
           bom_ratio_pct: r.bom_ratio_pct,
           required_kg: r.required_kg,
+          allocated_kg: r.allocated_kg,
         })),
       );
     }

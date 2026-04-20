@@ -52,6 +52,7 @@ export const createWorkOrderSchema = z.object({
         yarn_catalog_id: z.string().min(1, 'Chọn loại sợi'),
         bom_ratio_pct: z.number().min(0).max(100),
         required_kg: z.number().min(0),
+        allocated_kg: z.number().optional(),
       }),
     )
     .min(1, 'Cần phân bổ ít nhất một loại sợi'),

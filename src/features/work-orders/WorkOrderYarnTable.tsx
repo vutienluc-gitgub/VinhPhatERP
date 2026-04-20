@@ -63,107 +63,136 @@ export function WorkOrderYarnTable({
             </tr>
           </thead>
           <tbody>
-            {fields.map((field, index) => (
-              <tr key={field.id}>
-                <td>
-                  <Controller
-                    name={`yarn_requirements.${index}.yarn_catalog_id`}
-                    control={control}
-                    render={({ field: comboField }) => (
-                      <Combobox
-                        options={yarnOptions.map((y) => ({
-                          value: y.id,
-                          label: `${y.name} ${y.color_name ? `(${y.color_name})` : ''}`,
-                          code: y.code,
-                        }))}
-                        value={comboField.value}
-                        onChange={comboField.onChange}
-                        placeholder="Chọn sợi..."
-                      />
+            {fields.map((field, index) => {
+              const yarns = watch('yarn_requirements') || [];
+              const allocatedKg = yarns[index]?.allocated_kg || 0;
+              const isLocked = allocatedKg > 0;
+
+              return (
+                <tr key={field.id}>
+                  <td>
+                    <Controller
+                      name={`yarn_requirements.${index}.yarn_catalog_id`}
+                      control={control}
+                      render={({ field: comboField }) => (
+                        <Combobox
+                          options={yarnOptions.map((y) => ({
+                            value: y.id,
+                            label: `${y.name} ${y.color_name ? `(${y.color_name})` : ''}`,
+                            code: y.code,
+                          }))}
+                          value={comboField.value}
+                          onChange={comboField.onChange}
+                          placeholder="Chọn sợi..."
+                          disabled={isLocked}
+                        />
+                      )}
+                    />
+                    {isLocked && (
+                      <div className="text-xs text-success mt-1 flex items-center gap-1 font-medium">
+                        <Icon name="CheckCircle2" size={12} />
+                        Đã xuất:{' '}
+                        {allocatedKg.toLocaleString(undefined, {
+                          maximumFractionDigits: 2,
+                        })}{' '}
+                        kg
+                      </div>
                     )}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    step="0.1"
-                    {...register(`yarn_requirements.${index}.bom_ratio_pct`, {
-                      valueAsNumber: true,
-                    })}
-                    className="field-input text-right"
-                    placeholder="%"
-                    onKeyDown={(e) => {
-                      if (e.key === 'ArrowDown') {
-                        e.preventDefault();
-                        const next = document.getElementsByName(
-                          `yarn_requirements.${index + 1}.bom_ratio_pct`,
-                        )[0];
-                        if (next) (next as HTMLInputElement).focus();
-                      }
-                      if (e.key === 'ArrowUp') {
-                        e.preventDefault();
-                        const prev = document.getElementsByName(
-                          `yarn_requirements.${index - 1}.bom_ratio_pct`,
-                        )[0];
-                        if (prev) (prev as HTMLInputElement).focus();
-                      }
-                    }}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    step="0.01"
-                    {...register(`yarn_requirements.${index}.required_kg`, {
-                      valueAsNumber: true,
-                    })}
-                    className="field-input text-right font-bold text-primary"
-                    placeholder="kg"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        if (index === fields.length - 1) {
-                          append({
-                            yarn_catalog_id: '',
-                            bom_ratio_pct: 0,
-                            required_kg: 0,
-                          });
-                          setTimeout(() => {
-                            const next = document.getElementsByName(
-                              `yarn_requirements.${index + 1}.bom_ratio_pct`,
-                            )[0];
-                            if (next) (next as HTMLInputElement).focus();
-                          }, 10);
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      step="0.1"
+                      {...register(`yarn_requirements.${index}.bom_ratio_pct`, {
+                        valueAsNumber: true,
+                      })}
+                      className="field-input text-right"
+                      placeholder="%"
+                      onKeyDown={(e) => {
+                        if (e.key === 'ArrowDown') {
+                          e.preventDefault();
+                          const next = document.getElementsByName(
+                            `yarn_requirements.${index + 1}.bom_ratio_pct`,
+                          )[0];
+                          if (next) (next as HTMLInputElement).focus();
                         }
-                      }
-                      if (e.key === 'ArrowDown') {
-                        e.preventDefault();
-                        const next = document.getElementsByName(
-                          `yarn_requirements.${index + 1}.required_kg`,
-                        )[0];
-                        if (next) (next as HTMLInputElement).focus();
-                      }
-                      if (e.key === 'ArrowUp') {
-                        e.preventDefault();
-                        const prev = document.getElementsByName(
-                          `yarn_requirements.${index - 1}.required_kg`,
-                        )[0];
-                        if (prev) (prev as HTMLInputElement).focus();
-                      }
-                    }}
-                  />
-                </td>
-                <td className="text-center">
-                  <button
-                    type="button"
-                    className="btn-icon text-danger"
-                    onClick={() => remove(index)}
-                  >
-                    <Icon name="Trash2" size={16} />
-                  </button>
-                </td>
-              </tr>
-            ))}
+                        if (e.key === 'ArrowUp') {
+                          e.preventDefault();
+                          const prev = document.getElementsByName(
+                            `yarn_requirements.${index - 1}.bom_ratio_pct`,
+                          )[0];
+                          if (prev) (prev as HTMLInputElement).focus();
+                        }
+                      }}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      step="0.01"
+                      {...register(`yarn_requirements.${index}.required_kg`, {
+                        valueAsNumber: true,
+                      })}
+                      className="field-input text-right font-bold text-primary"
+                      placeholder="kg"
+                      min={allocatedKg > 0 ? allocatedKg : 0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (index === fields.length - 1) {
+                            append({
+                              yarn_catalog_id: '',
+                              bom_ratio_pct: 0,
+                              required_kg: 0,
+                            });
+                            setTimeout(() => {
+                              const next = document.getElementsByName(
+                                `yarn_requirements.${index + 1}.bom_ratio_pct`,
+                              )[0];
+                              if (next) (next as HTMLInputElement).focus();
+                            }, 10);
+                          }
+                        }
+                        if (e.key === 'ArrowDown') {
+                          e.preventDefault();
+                          const next = document.getElementsByName(
+                            `yarn_requirements.${index + 1}.required_kg`,
+                          )[0];
+                          if (next) (next as HTMLInputElement).focus();
+                        }
+                        if (e.key === 'ArrowUp') {
+                          e.preventDefault();
+                          const prev = document.getElementsByName(
+                            `yarn_requirements.${index - 1}.required_kg`,
+                          )[0];
+                          if (prev) (prev as HTMLInputElement).focus();
+                        }
+                      }}
+                    />
+                  </td>
+                  <td className="text-center">
+                    {isLocked ? (
+                      <button
+                        type="button"
+                        className="btn-icon text-muted cursor-not-allowed opacity-50 block mx-auto"
+                        title="Đã xuất kho, không thể xoá"
+                        disabled
+                      >
+                        <Icon name="Lock" size={16} />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btn-icon text-danger block mx-auto"
+                        onClick={() => remove(index)}
+                      >
+                        <Icon name="Trash2" size={16} />
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
           <tfoot>
             <tr className="font-bold">
