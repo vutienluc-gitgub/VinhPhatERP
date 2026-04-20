@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { hasSupabaseEnv } from '@/services/supabase/client';
 import { Turnstile } from '@/shared/components/Turnstile';
+import { Button } from '@/shared/components/Button';
 
 import {
   authSchema,
@@ -45,7 +46,6 @@ export function LoginForm({
     );
     if (error) {
       setServerError(vietnameseAuthError(error.message));
-      // Reset Turnstile on error
       window.turnstile?.reset();
       setCaptchaToken(null);
       return;
@@ -66,12 +66,26 @@ export function LoginForm({
 
   if (!hasSupabaseEnv()) {
     return (
-      <div className="login-env-warning">
-        <p className="eyebrow">Cấu hình chưa đủ</p>
-        <h2>Chưa có thông tin Supabase</h2>
-        <p>
-          Tạo file <code>.env.local</code> và điền{' '}
-          <code>VITE_SUPABASE_URL</code> và <code>VITE_SUPABASE_ANON_KEY</code>{' '}
+      <div className="bg-amber-500/10 border border-amber-500/20 p-6 rounded-2xl text-center">
+        <p className="text-amber-500 font-semibold text-sm uppercase tracking-wider mb-2">
+          Cấu hình chưa đủ
+        </p>
+        <h2 className="text-xl font-bold text-white mb-4">
+          Chưa có thông tin Supabase
+        </h2>
+        <p className="text-white/70 text-sm leading-relaxed">
+          Tạo file{' '}
+          <code className="px-1.5 py-0.5 bg-black/30 rounded text-amber-400">
+            .env.local
+          </code>{' '}
+          và điền{' '}
+          <code className="px-1.5 py-0.5 bg-black/30 rounded text-amber-400">
+            VITE_SUPABASE_URL
+          </code>{' '}
+          và{' '}
+          <code className="px-1.5 py-0.5 bg-black/30 rounded text-amber-400">
+            VITE_SUPABASE_ANON_KEY
+          </code>{' '}
           từ trang Supabase Project Settings.
         </p>
       </div>
@@ -79,75 +93,115 @@ export function LoginForm({
   }
 
   return (
-    <form className="auth-form" onSubmit={handleSubmit(onSubmit)} noValidate>
-      <div className="auth-header">
-        <span className="logo-text">Vinh Phat V2</span>
-        <h2>Chào mừng trở lại</h2>
+    <form
+      className="flex flex-col gap-6"
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+    >
+      <div className="text-center mb-2">
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+          Chào mừng trở lại
+        </h2>
+        <p className="text-white/50 text-sm">Vui lòng đăng nhập để tiếp tục</p>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="email">Email</label>
-        <div className="input-wrapper">
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            placeholder="admin@vinhphat.vn"
-            aria-invalid={Boolean(errors.email)}
-            {...register('email')}
-          />
-        </div>
-        {errors.email && (
-          <span className="error-message">{errors.email.message}</span>
-        )}
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="password">Mật khẩu</label>
-        <div className="input-wrapper">
-          <input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            placeholder="••••••••"
-            aria-invalid={Boolean(errors.password)}
-            {...register('password')}
-          />
-        </div>
-        {errors.password && (
-          <span className="error-message">{errors.password.message}</span>
-        )}
-      </div>
-
-      <div className="form-group row flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <input type="checkbox" id="rememberMe" {...register('rememberMe')} />
-          <label htmlFor="rememberMe" className="m-0 text-[0.8rem]">
-            Ghi nhớ đăng nhập
-          </label>
-        </div>
-
-        {onForgotPassword && (
-          <button
-            type="button"
-            onClick={onForgotPassword}
-            className="bg-transparent border-none p-0 text-[var(--primary-color,#4f46e5)] text-[0.8rem] cursor-pointer underline"
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-2">
+          <label
+            htmlFor="email"
+            className="text-sm font-medium text-white/80 ml-1"
           >
-            Quên mật khẩu?
-          </button>
-        )}
+            Email
+          </label>
+          <div className="relative">
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              placeholder="admin@vinhphat.vn"
+              aria-invalid={Boolean(errors.email)}
+              className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-all duration-200"
+              {...register('email')}
+            />
+          </div>
+          {errors.email && (
+            <span className="text-rose-400 text-xs ml-1 font-medium">
+              {errors.email.message}
+            </span>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label
+            htmlFor="password"
+            className="text-sm font-medium text-white/80 ml-1"
+          >
+            Mật khẩu
+          </label>
+          <div className="relative">
+            <input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              placeholder="••••••••"
+              aria-invalid={Boolean(errors.password)}
+              className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-all duration-200"
+              {...register('password')}
+            />
+          </div>
+          {errors.password && (
+            <span className="text-rose-400 text-xs ml-1 font-medium">
+              {errors.password.message}
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="rememberMe"
+              className="w-4 h-4 rounded border-white/20 bg-black/20 text-[#6366f1] focus:ring-[#6366f1] focus:ring-offset-0 transition-all cursor-pointer"
+              {...register('rememberMe')}
+            />
+            <label
+              htmlFor="rememberMe"
+              className="text-sm text-white/70 cursor-pointer select-none"
+            >
+              Ghi nhớ
+            </label>
+          </div>
+
+          {onForgotPassword && (
+            <button
+              type="button"
+              onClick={onForgotPassword}
+              className="text-[#818cf8] hover:text-white text-sm font-medium transition-colors"
+            >
+              Quên mật khẩu?
+            </button>
+          )}
+        </div>
       </div>
 
-      {serverError && <p className="form-error-banner">{serverError}</p>}
+      {serverError && (
+        <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-center">
+          <p className="text-rose-400 text-sm font-medium">{serverError}</p>
+        </div>
+      )}
 
-      <div className="auth-divider">
-        <span>Hoặc tiếp tục với</span>
+      <div className="flex items-center gap-4 my-2">
+        <div className="flex-1 h-px bg-white/10" />
+        <span className="text-xs font-medium text-white/40 uppercase tracking-wider">
+          Hoặc
+        </span>
+        <div className="flex-1 h-px bg-white/10" />
       </div>
 
       <button
         type="button"
-        className="google-auth-btn"
         onClick={handleGoogleLogin}
+        className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white hover:bg-slate-50 text-slate-900 rounded-xl font-semibold transition-all duration-200 shadow-sm active:scale-[0.98]"
       >
         <svg width="20" height="20" viewBox="0 0 24 24">
           <path
@@ -167,18 +221,23 @@ export function LoginForm({
             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
           />
         </svg>
-        <span>Tiếp tục với Google</span>
+        Tiếp tục với Google
       </button>
 
-      <Turnstile onVerify={setCaptchaToken} />
+      <div className="flex justify-center min-h-[65px]">
+        <Turnstile onVerify={setCaptchaToken} />
+      </div>
 
-      <button
+      <Button
         type="submit"
-        className="auth-submit-btn"
+        fullWidth
+        size="lg"
         disabled={isSubmitting || !captchaToken}
+        isLoading={isSubmitting}
+        className="bg-gradient-to-r from-[#6366f1] to-[#4f46e5] hover:from-[#818cf8] hover:to-[#6366f1] border-none shadow-lg shadow-[#6366f1]/30 text-white font-bold py-3.5"
       >
-        {isSubmitting ? 'Đang truy cập…' : 'Đăng nhập'}
-      </button>
+        {isSubmitting ? 'Đang xác thực…' : 'Đăng nhập vào hệ thống'}
+      </Button>
     </form>
   );
 }
@@ -189,7 +248,7 @@ function vietnameseAuthError(message: string): string {
   if (/email not confirmed/i.test(message))
     return 'Email chưa được xác nhận. Vui lòng kiểm tra hộp thư.';
   if (/too many requests/i.test(message))
-    return 'Đăng nhập thất bại quá nhiều lần. Vui lòng thử lại sau.';
+    return 'Đăng nhập thất bại. Vui lòng thử lại sau.';
   if (/network/i.test(message))
     return 'Không thể kết nối đến máy chủ. Kiểm tra kết nối mạng.';
   return message;
