@@ -2,9 +2,10 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 import {
-  Icon,
   AddButton,
   FilterBarPremium,
+  KpiCardPremium,
+  KpiGridPremium,
   type FilterFieldConfig,
 } from '@/shared/components';
 import { Button } from '@/shared/components';
@@ -136,33 +137,33 @@ export function BomPage() {
       if (actionSheet.type === 'approve') {
         await approveBom.mutateAsync({
           id: actionSheet.bomId,
-          reason: actionReason || 'Phe duyet',
+          reason: actionReason || 'Phê duyệt',
         });
-        toast.success(`Da phe duyet BOM ${actionSheet.bomCode}`);
+        toast.success(`Đã phê duyệt BOM ${actionSheet.bomCode}`);
       }
 
       if (actionSheet.type === 'deprecate') {
         if (!actionReason.trim()) {
-          toast.error('Vui long nhap ly do bao phe.');
+          toast.error('Vui lòng nhập lý do báo phế.');
           return;
         }
         await deprecateBom.mutateAsync({
           id: actionSheet.bomId,
           reason: actionReason,
         });
-        toast.success(`Da bao phe BOM ${actionSheet.bomCode}`);
+        toast.success(`Đã báo phế BOM ${actionSheet.bomCode}`);
       }
 
       if (actionSheet.type === 'revise') {
         if (!actionReason.trim()) {
-          toast.error('Vui long nhap ly do tao phien ban moi.');
+          toast.error('Vui lòng nhập lý do tạo phiên bản mới.');
           return;
         }
         await reviseBom.mutateAsync({
           id: actionSheet.bomId,
           reason: actionReason,
         });
-        toast.success(`Da tao phien ban moi cho BOM ${actionSheet.bomCode}`);
+        toast.success(`Đã tạo phiên bản mới cho BOM ${actionSheet.bomCode}`);
       }
 
       closeActionSheet();
@@ -218,48 +219,30 @@ export function BomPage() {
       {/* Header */}
       <div className="card-header-area card-header-premium">
         <div>
-          <p className="eyebrow-premium">KY THUAT</p>
-          <h3 className="title-premium">Dinh Muc Nguyen Lieu (BOM)</h3>
+          <p className="eyebrow-premium">KỸ THUẬT</p>
+          <h3 className="title-premium">Định Mức Nguyên Liệu (BOM)</h3>
         </div>
-        <AddButton onClick={handleCreate} label="Tao ban nhap" />
+        <AddButton onClick={handleCreate} label="Tạo bản nháp" />
       </div>
 
       {/* KPI Dashboard */}
-      <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
-        <div className="kpi-card-premium kpi-primary">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Tong so dinh muc</p>
-              <p className="kpi-value">{boms.length}</p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="Layers" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Tat ca the dinh muc
-          </div>
-        </div>
+      <KpiGridPremium className="p-4 md:p-6 bg-surface-subtle border-b border-border">
+        <KpiCardPremium
+          variant="primary"
+          label="Tổng số định mức"
+          value={boms.length}
+          icon="Layers"
+          footer="Tất cả thẻ định mức"
+        />
 
-        <div className="kpi-card-premium kpi-success">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Dang ap dung</p>
-              <p className="kpi-value">
-                {boms.filter((b) => b.status === 'approved').length}
-              </p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="CheckCircle" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            BOM da duyet
-          </div>
-        </div>
-      </div>
+        <KpiCardPremium
+          variant="success"
+          label="Đang áp dụng"
+          value={boms.filter((b) => b.status === 'approved').length}
+          icon="CheckCircle"
+          footer="BOM đã duyệt"
+        />
+      </KpiGridPremium>
 
       {/* Filters */}
       <FilterBarPremium
@@ -289,15 +272,15 @@ export function BomPage() {
     if (actionSheet.type === 'idle') return null;
 
     const titles: Record<string, string> = {
-      approve: `Phe duyet BOM ${actionSheet.bomCode}`,
-      deprecate: `Bao phe BOM ${actionSheet.bomCode}`,
-      revise: `Tao phien ban moi — ${actionSheet.bomCode}`,
+      approve: `Phê duyệt BOM ${actionSheet.bomCode}`,
+      deprecate: `Báo phế BOM ${actionSheet.bomCode}`,
+      revise: `Tạo phiên bản mới — ${actionSheet.bomCode}`,
     };
 
     const needsReason = actionSheet.type !== 'approve';
     const reasonLabels: Record<string, string> = {
-      deprecate: 'Ly do ngung ap dung',
-      revise: 'Ly do tao phien ban moi',
+      deprecate: 'Lý do ngừng áp dụng',
+      revise: 'Lý do tạo phiên bản mới',
     };
 
     return (
@@ -314,7 +297,7 @@ export function BomPage() {
               onClick={closeActionSheet}
               disabled={isMutating}
             >
-              Huy
+              Hủy
             </Button>
             <Button
               variant="primary"
@@ -323,7 +306,7 @@ export function BomPage() {
               onClick={handleConfirmAction}
               disabled={isMutating}
             >
-              {isMutating ? 'Dang xu ly...' : 'Xac nhan'}
+              {isMutating ? 'Đang xử lý...' : 'Xác nhận'}
             </Button>
           </div>
         }
@@ -331,8 +314,8 @@ export function BomPage() {
         <div className="flex flex-col gap-4">
           {actionSheet.type === 'approve' && (
             <p className="text-sm text-muted">
-              Ban co chac chan muon phe duyet BOM nay? Sau khi duyet, BOM se
-              duoc ap dung cho san xuat.
+              Bạn có chắc chắn muốn phê duyệt BOM này? Sau khi duyệt, BOM sẽ
+              được áp dụng cho sản xuất.
             </p>
           )}
 
@@ -341,7 +324,7 @@ export function BomPage() {
               <label>{reasonLabels[actionSheet.type]}</label>
               <textarea
                 className="field-input min-h-[80px]"
-                placeholder="Nhap ly do..."
+                placeholder="Nhập lý do..."
                 value={actionReason}
                 onChange={(e) => setActionReason(e.target.value)}
                 autoFocus
@@ -351,10 +334,10 @@ export function BomPage() {
 
           {actionSheet.type === 'approve' && (
             <div className="form-field">
-              <label>Ghi chu (tuy chon)</label>
+              <label>Ghi chú (tùy chọn)</label>
               <textarea
                 className="field-input min-h-[60px]"
-                placeholder="Ghi chu phe duyet..."
+                placeholder="Ghi chú phê duyệt..."
                 value={actionReason}
                 onChange={(e) => setActionReason(e.target.value)}
               />
