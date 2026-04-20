@@ -72,3 +72,14 @@ export const supplierDefaults: SupplierFormValues = {
   notes: '',
   status: 'active',
 };
+
+/* ── Quick-create schema (minimal fields only) ── */
+
+export const quickSupplierSchema = z.object({
+  code: z.string().min(1, 'Ma NCC la bat buoc'),
+  name: z.string().min(1, 'Ten NCC la bat buoc'),
+  category: z.enum(SUPPLIER_CATEGORIES),
+  phone: z.string().optional(),
+});
+
+export type QuickSupplierValues = z.infer<typeof quickSupplierSchema>;

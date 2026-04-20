@@ -1,59 +1,42 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
-import { Button } from '@/shared/components';
-import { supabase } from '@/services/supabase/client';
+import { fetchNextSupplierCode, createSupplier } from '@/api/suppliers.api';
+import {
+  SUPPLIER_CATEGORIES,
+  SUPPLIER_CATEGORY_LABELS,
+  quickSupplierSchema,
+  type QuickSupplierValues,
+} from '@/schema/supplier.schema';
+import { Button } from '@/shared/components/Button';
+import { Combobox } from '@/shared/components/Combobox';
+import type { ComboboxOption } from '@/shared/components/Combobox';
+import { Icon } from '@/shared/components/Icon';
 
-/* ── Minimal schema for quick-create (only required fields) ── */
+/* ── Static derived data ── */
 
-const CATEGORIES = ['yarn', 'dye', 'weaving', 'accessories', 'other'] as const;
+const CATEGORY_OPTIONS: ComboboxOption[] = SUPPLIER_CATEGORIES.map((c) => ({
+  value: c,
+  label: SUPPLIER_CATEGORY_LABELS[c],
+}));
 
-const CATEGORY_LABELS: Record<(typeof CATEGORIES)[number], string> = {
-  yarn: 'Sợi',
-  dye: 'Thuốc nhuộm',
-  weaving: 'Nhà dệt',
-  accessories: 'Phụ liệu',
-  other: 'Khác',
-};
-
-const quickSupplierSchema = z.object({
-  code: z.string().min(1, 'Mã NCC là bắt buộc'),
-  name: z.string().min(1, 'Tên NCC là bắt buộc'),
-  category: z.enum(CATEGORIES),
-  phone: z.string().optional(),
-});
-
-type QuickSupplierValues = z.infer<typeof quickSupplierSchema>;
+/* ── Types ── */
 
 type QuickSupplierFormProps = {
   /** Pre-select category, e.g. 'yarn' for yarn receipt, 'weaving' for raw fabric */
-  defaultCategory?: (typeof CATEGORIES)[number];
+  defaultCategory?: (typeof SUPPLIER_CATEGORIES)[number];
   onCreated: (supplier: { id: string; code: string; name: string }) => void;
   onCancel: () => void;
 };
 
+/* ── Hooks ── */
+
 function useNextSupplierCode() {
   return useQuery({
     queryKey: ['suppliers', 'next-code'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('suppliers')
-        .select('code')
-        .ilike('code', 'NCC-%')
-        .order('code', { ascending: false })
-        .limit(1);
-      if (error) throw error;
-      if (!data || data.length === 0) return 'NCC-001';
-      const first = data[0];
-      if (!first) return 'NCC-001';
-      const match = first.code.match(/^NCC-(\d+)$/);
-      if (!match?.[1]) return 'NCC-001';
-      const nextNum = parseInt(match[1], 10) + 1;
-      return `NCC-${String(nextNum).padStart(3, '0')}`;
-    },
+    queryFn: fetchNextSupplierCode,
   });
 }
 
@@ -61,27 +44,26 @@ function useQuickCreateSupplier() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (values: QuickSupplierValues) => {
-      const { data, error } = await supabase
-        .from('suppliers')
-        .insert([
-          {
-            code: values.code,
-            name: values.name,
-            category: values.category,
-            phone: values.phone?.trim() || null,
-            status: 'active',
-          },
-        ])
-        .select('id, code, name')
-        .single();
-      if (error) throw error;
-      return data as { id: string; code: string; name: string };
+      const result = await createSupplier({
+        code: values.code,
+        name: values.name,
+        category: values.category,
+        phone: values.phone?.trim() || null,
+        status: 'active',
+      });
+      return {
+        id: result.id,
+        code: result.code,
+        name: result.name,
+      };
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['suppliers'] });
     },
   });
 }
+
+/* ── Component ── */
 
 export function QuickSupplierForm({
   defaultCategory = 'other',
@@ -90,12 +72,12 @@ export function QuickSupplierForm({
 }: QuickSupplierFormProps) {
   const { data: nextCode } = useNextSupplierCode();
   const createMutation = useQuickCreateSupplier();
-  const [show, setShow] = useState(true);
 
   const {
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<QuickSupplierValues>({
     resolver: zodResolver(quickSupplierSchema),
@@ -111,47 +93,47 @@ export function QuickSupplierForm({
     if (nextCode) setValue('code', nextCode);
   }, [nextCode, setValue]);
 
-  if (!show) return null;
-
   async function onSubmit(values: QuickSupplierValues) {
     try {
       const result = await createMutation.mutateAsync(values);
-      setShow(false);
       onCreated(result);
     } catch {
-      // error shown below
+      // error hien thi phia duoi
     }
   }
 
   const isPending = isSubmitting || createMutation.isPending;
 
   return (
-    <div className="border-[1.5px] border-primary rounded-sm p-3 bg-[rgba(11,107,203,0.03)]">
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-[0.8rem] font-bold text-primary">
-          + Tạo NCC nhanh
-        </span>
-        <button
-          className="btn-icon w-[26px] h-[26px] text-[0.8rem]"
+    <div className="border-[1.5px] border-primary rounded-lg p-3 bg-[rgba(11,107,203,0.03)]">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-3">
+        <span className="text-sm font-bold text-primary">+ Tao NCC nhanh</span>
+        <Button
+          variant="ghost"
+          size="icon"
           type="button"
           onClick={onCancel}
-          aria-label="Đóng"
+          aria-label="Dong"
+          className="min-h-[44px] min-w-[44px]"
         >
-          ✕
-        </button>
+          <Icon name="x" size={16} />
+        </Button>
       </div>
 
+      {/* Error */}
       {createMutation.error && (
-        <p className="text-[#c0392b] text-[0.82rem] mb-[0.4rem]">
+        <p className="text-danger text-xs mb-2">
           {(createMutation.error as Error).message}
         </p>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <div className="form-grid gap-[0.6rem]">
-          <div className="form-grid form-grid-2">
+        <div className="flex flex-col gap-3">
+          {/* Ma NCC + Danh muc */}
+          <div className="grid grid-cols-2 gap-2">
             <div className="form-field">
-              <label className="text-[0.75rem]">Mã NCC</label>
+              <label className="text-xs">Ma NCC</label>
               <input
                 className={`field-input${errors.code ? ' is-error' : ''}`}
                 type="text"
@@ -160,25 +142,33 @@ export function QuickSupplierForm({
               />
             </div>
             <div className="form-field">
-              <label className="text-[0.75rem]">Danh mục</label>
-              <select className="field-select" {...register('category')}>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {CATEGORY_LABELS[c]}
-                  </option>
-                ))}
-              </select>
+              <label className="text-xs">Danh muc</label>
+              <Controller
+                name="category"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={CATEGORY_OPTIONS}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    hasError={!!errors.category}
+                    placeholder="Chon danh muc..."
+                  />
+                )}
+              />
             </div>
           </div>
 
+          {/* Ten NCC */}
           <div className="form-field">
-            <label className="text-[0.75rem]">
-              Tên NCC <span className="field-required">*</span>
+            <label className="text-xs">
+              Ten NCC <span className="field-required">*</span>
             </label>
             <input
               className={`field-input${errors.name ? ' is-error' : ''}`}
               type="text"
-              placeholder="VD: Công ty TNHH ABC"
+              placeholder="VD: Cong ty TNHH ABC"
               autoFocus
               {...register('name')}
             />
@@ -187,8 +177,9 @@ export function QuickSupplierForm({
             )}
           </div>
 
+          {/* SDT */}
           <div className="form-field">
-            <label className="text-[0.75rem]">SĐT</label>
+            <label className="text-xs">SDT</label>
             <input
               className="field-input"
               type="tel"
@@ -197,23 +188,25 @@ export function QuickSupplierForm({
             />
           </div>
 
+          {/* Actions */}
           <div className="flex gap-2 justify-end">
             <Button
               variant="secondary"
+              size="sm"
               type="button"
               onClick={onCancel}
               disabled={isPending}
-              className="text-[0.82rem] px-3 py-1.5"
             >
-              Hủy
+              Huy
             </Button>
-            <button
-              className="primary-button text-[0.82rem] px-3 py-1.5"
+            <Button
+              variant="primary"
+              size="sm"
               type="submit"
-              disabled={isPending}
+              isLoading={isPending}
             >
-              {isPending ? 'Đang tạo…' : 'Tạo NCC'}
-            </button>
+              Tao NCC
+            </Button>
           </div>
         </div>
       </form>
