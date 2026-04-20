@@ -73,7 +73,6 @@ export function usePortalOrderRequest() {
             quantity: item.quantity,
             unit: item.unit,
             unit_price: 0,
-            amount: 0,
             notes: item.notes || null,
             sort_order: idx,
           })),
