@@ -312,6 +312,13 @@ export async function updateWorkOrder(
       .eq('bom_template_id', bomId)
       .eq('version', bom?.active_version || current.bom_version);
 
+    // Lấy requirements hiện hữu để bảo toàn allocated_kg (nếu đang sản xuất đã xuất kho)
+    let existingReqs: WorkOrderYarnRequirementWithRelations[] = [];
+    if (yarnsProvided) {
+      const existingReqsData = await fetchWorkOrderRequirements(id);
+      existingReqs = existingReqsData || [];
+    }
+
     if (bomChanged && bom) {
       update.bom_version = bom.active_version;
       if (input.standard_loss_pct === undefined) {
@@ -339,7 +346,15 @@ export async function updateWorkOrder(
         p_wo_data: update as unknown as never,
         p_reqs_data:
           input.yarn_requirements && input.yarn_requirements.length > 0
-            ? (input.yarn_requirements as unknown as never[])
+            ? (input.yarn_requirements.map((req) => {
+                const existing = existingReqs.find(
+                  (e) => e.yarn_catalog_id === req.yarn_catalog_id,
+                );
+                return {
+                  ...req,
+                  allocated_kg: existing ? existing.allocated_kg : 0,
+                };
+              }) as unknown as never[])
             : bomYarns && targetKg > 0
               ? bomYarns.map((y) => ({
                   yarn_catalog_id: y.yarn_catalog_id,
