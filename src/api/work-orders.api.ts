@@ -245,9 +245,13 @@ export async function updateWorkOrder(
     .single();
 
   if (fetchErr) throw fetchErr;
-  if (current.status !== 'draft')
+
+  const { data: roleData } = await supabase.rpc('current_user_role');
+  const isAdmin = roleData === 'admin';
+
+  if (current.status !== 'draft' && !isAdmin)
     throw new Error(
-      'Chỉ được phép sửa lệnh dệt ở trạng thái Bản nháp (Draft).',
+      'Chỉ được phép sửa lệnh dệt ở trạng thái Bản nháp (Draft) hoặc bạn phải là Quản trị viên.',
     );
 
   // 1. Prepare update object — using typed interface to avoid generic Record

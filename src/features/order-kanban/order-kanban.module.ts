@@ -13,7 +13,9 @@ export const orderKanbanPlugin: FeaturePlugin = {
     {
       path: 'order-kanban',
       component: () =>
-        import('./index').then((m) => ({ default: m.OrderKanbanPage })),
+        import('./OrderKanbanPage').then((m) => ({
+          default: m.OrderKanbanPage,
+        })),
     },
   ],
 };

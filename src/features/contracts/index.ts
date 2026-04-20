@@ -1,9 +1,5 @@
 import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 
-export * from './ContractDetailPage';
-export * from './ContractForm';
-export * from './ContractsPage';
-export * from './ContractsFeature';
 export * from './ContractPreview';
 export * from './ContractStatusBadge';
 export * from './contracts.module';

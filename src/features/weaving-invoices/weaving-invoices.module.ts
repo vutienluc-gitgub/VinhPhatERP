@@ -30,7 +30,9 @@ export const weavingInvoicesPlugin: FeaturePlugin = {
     {
       path: 'weaving-invoices',
       component: () =>
-        import('./index').then((m) => ({ default: m.WeavingInvoicesPage })),
+        import('./WeavingInvoicesPage').then((m) => ({
+          default: m.WeavingInvoicesPage,
+        })),
     },
   ],
 };
