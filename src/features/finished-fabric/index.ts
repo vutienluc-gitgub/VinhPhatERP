@@ -1,7 +1,4 @@
-export * from '@/features/finished-fabric/FinishedFabricBulkForm';
-export * from '@/features/finished-fabric/FinishedFabricForm';
 export * from '@/features/finished-fabric/FinishedFabricList';
-export * from '@/features/finished-fabric/FinishedFabricPage';
 export * from '@/features/finished-fabric/TraceChainPanel';
 export * from '@/features/finished-fabric/finished-fabric.module';
 export * from '@/features/finished-fabric/transitions';

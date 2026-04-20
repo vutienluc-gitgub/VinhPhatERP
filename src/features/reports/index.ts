@@ -1,4 +1,3 @@
-export * from '@/features/reports/ReportsPage';
 export * from '@/features/reports/reports.module';
 export * from '@/application/analytics';
 export * from '@/features/reports/ReportsFilter';

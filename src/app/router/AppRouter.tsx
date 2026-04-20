@@ -1,7 +1,9 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 
-import { BlockedPage, ProfilePage, UnauthorizedPage } from '@/features/auth';
+import { BlockedPage } from '@/features/auth/BlockedPage';
+import { ProfilePage } from '@/features/auth/ProfilePage';
+import { UnauthorizedPage } from '@/features/auth/UnauthorizedPage';
 import { AppShell } from '@/app/layouts/AppShell';
 import { ProtectedRoute } from '@/app/router/ProtectedRoute';
 import { PortalRoute } from '@/features/customer-portal/PortalRoute';

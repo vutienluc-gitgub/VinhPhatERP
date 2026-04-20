@@ -15,7 +15,7 @@ const DashboardPage = lazy(() =>
 
 /* ── Auth (special route, not a plugin) ── */
 const AuthPage = lazy(() =>
-  import('@/features/auth').then((m) => ({ default: m.AuthPage })),
+  import('@/features/auth/AuthPage').then((m) => ({ default: m.AuthPage })),
 );
 
 const AuthCallback = lazy(() =>

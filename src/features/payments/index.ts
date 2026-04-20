@@ -1,5 +1,3 @@
-export * from '@/features/payments/PaymentsPage';
-export * from '@/features/payments/DebtsPage';
 export * from '@/features/payments/payments.module';
 export type {
   PaymentMethod,
@@ -39,12 +37,9 @@ export {
   useExpenseByCategory,
   useSupplierDebt,
 } from '@/application/payments';
-export * from '@/features/payments/PaymentForm';
 export * from '@/features/payments/PaymentList';
 export * from '@/features/payments/DebtSummary';
-export * from '@/features/payments/ExpenseForm';
 export * from '@/features/payments/ExpenseList';
-export * from '@/features/payments/AccountForm';
 export * from '@/features/payments/AccountList';
 export * from '@/features/payments/CashFlowDashboard';
 export * from '@/features/payments/SupplierDebtSummary';
