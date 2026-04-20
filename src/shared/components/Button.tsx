@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 import type { ButtonHTMLAttributes } from 'react';
 import { clsx } from 'clsx';
-import { Slot } from '@radix-ui/react-slot';
+import { Slot, Slottable } from '@radix-ui/react-slot';
 
 import { Icon } from './Icon';
 import type { IconName } from './Icon';
@@ -71,7 +71,7 @@ const ICON_SIZE: Record<NonNullable<ButtonProps['size']>, number> = {
 };
 
 const BASE_STYLES =
-  'inline-flex items-center justify-center font-bold transition-all duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 select-none';
+  'inline-flex items-center justify-center font-bold transition-all duration-200 active:scale-[0.98] aria-disabled:pointer-events-none aria-disabled:opacity-50 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 select-none';
 
 /**
  * Premium Button component following the project's design system.
@@ -102,12 +102,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const Component = asChild ? Slot : 'button';
     const iconSize = ICON_SIZE[size];
+    const isDisabled = isLoading || disabled;
 
     return (
       <Component
         ref={ref}
         type={asChild ? undefined : type}
-        disabled={isLoading || disabled}
+        disabled={asChild ? undefined : isDisabled}
+        aria-disabled={isDisabled}
+        aria-busy={isLoading}
         className={clsx(
           BASE_STYLES,
           VARIANT_CLASSES[variant],
@@ -129,7 +132,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           leftIcon && <Icon name={leftIcon} size={iconSize} />
         )}
 
-        {children}
+        <Slottable>{children}</Slottable>
 
         {!isLoading && rightIcon && <Icon name={rightIcon} size={iconSize} />}
       </Component>
