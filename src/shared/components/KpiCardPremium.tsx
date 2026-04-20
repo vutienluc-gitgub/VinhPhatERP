@@ -16,11 +16,19 @@ interface Props {
   variant?: KpiVariant;
   footer?: ReactNode;
   isLoading?: boolean;
+  /** (1) Mức độ biến động (VD: '15%', '2,000') */
+  trendValue?: string | number;
+  /** Hướng biến động để hiện mũi tên và màu sắc */
+  trendDirection?: 'up' | 'down' | 'neutral';
+  /** (3) Thêm khả năng tương tác, biến thẻ thành một component điều hướng */
+  onClick?: () => void;
+  /** (5) Định dạng số tự động hiển thị */
+  formatMode?: 'number' | 'currency' | 'percent' | 'none';
 }
 
 /**
  * Premium KPI Card with glassmorphism overlay and modern styling.
- * Uses CSS classes from data-ui.css (.kpi-card-premium).
+ * Enhanced with trend, interactivity, and auto-formatting.
  */
 export function KpiCardPremium({
   label,
@@ -29,6 +37,10 @@ export function KpiCardPremium({
   variant = 'primary',
   footer,
   isLoading,
+  trendValue,
+  trendDirection,
+  onClick,
+  formatMode = 'none',
 }: Props) {
   if (isLoading) {
     return (
@@ -46,21 +58,88 @@ export function KpiCardPremium({
     );
   }
 
+  // 1. Tự động Formatting
+  let displayValue = value;
+  if (typeof value === 'number') {
+    if (formatMode === 'number') {
+      displayValue = new Intl.NumberFormat('vi-VN').format(value);
+    } else if (formatMode === 'currency') {
+      displayValue = `${new Intl.NumberFormat('vi-VN').format(value)} ₫`;
+    } else if (formatMode === 'percent') {
+      displayValue = `${value}%`;
+    }
+  }
+
+  // 2. Tương tác mượt mà
+  const isClickable = !!onClick;
+  const cardClasses = [
+    'kpi-card-premium',
+    `kpi-${variant}`,
+    isClickable &&
+      'cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98]',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  // 3. Xử lý UI Trend
+  const renderTrend = () => {
+    if (!trendValue) return null;
+    const isUp = trendDirection === 'up';
+    const isDown = trendDirection === 'down';
+
+    let colorClass = 'text-muted';
+    let trendIcon: IconName = 'Minus';
+
+    if (isUp) {
+      colorClass = 'text-success';
+      trendIcon = 'TrendingUp';
+    } else if (isDown) {
+      colorClass = 'text-danger';
+      trendIcon = 'TrendingDown';
+    }
+
+    return (
+      <span
+        className={`inline-flex items-center gap-1 font-semibold text-xs ${colorClass}`}
+      >
+        <Icon name={trendIcon} size={14} />
+        {trendValue}
+      </span>
+    );
+  };
+
   return (
-    <div className={`kpi-card-premium kpi-${variant}`}>
+    <div
+      className={cardClasses}
+      onClick={onClick}
+      role={isClickable ? 'button' : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+    >
       <div className="kpi-overlay" />
       <div className="kpi-content">
         <div className="kpi-info">
           <p className="kpi-label">{label}</p>
-          <p className="kpi-value">{value}</p>
+          <p className="kpi-value">{displayValue}</p>
         </div>
         <div className="kpi-icon-box">
           <Icon name={icon} size={32} />
         </div>
       </div>
-      {footer && (
-        <div className="kpi-footer text-xs font-medium italic opacity-90">
-          {footer}
+
+      {(footer || trendValue) && (
+        <div className="kpi-footer text-xs font-medium opacity-90 flex flex-row items-center justify-between gap-2">
+          {footer ? (
+            <span className="italic truncate">{footer}</span>
+          ) : (
+            <span />
+          )}
+          {renderTrend()}
         </div>
       )}
     </div>
