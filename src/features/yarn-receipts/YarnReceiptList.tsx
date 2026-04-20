@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
-  Icon,
   Badge,
   type BadgeVariant,
   DataTablePremium,
@@ -10,6 +9,8 @@ import {
   Button,
   ActionBar,
   FilterBarPremium,
+  KpiCardPremium,
+  KpiGridPremium,
   type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
@@ -138,57 +139,31 @@ export function YarnReceiptList({
       </div>
 
       {/* KPI Dashboard */}
-      <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
-        <div className="kpi-card-premium kpi-primary">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Tổng lượng sợi nhập</p>
-              <p className="kpi-value">
-                {totalWeight.toLocaleString('vi-VN')} kg
-              </p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="Package" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Cập nhật trong tháng này
-          </div>
-        </div>
+      <KpiGridPremium className="p-4 md:p-6 bg-surface-subtle border-b border-border">
+        <KpiCardPremium
+          variant="primary"
+          label="Tổng lượng sợi nhập"
+          value={`${totalWeight.toLocaleString('vi-VN')} kg`}
+          icon="Package"
+          footer="Cập nhật trong tháng này"
+        />
 
-        <div className="kpi-card-premium kpi-warning">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Phiếu chờ xác nhận</p>
-              <p className="kpi-value">{pendingCount}</p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="Activity" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Yêu cầu kiểm tra & xác nhận
-          </div>
-        </div>
+        <KpiCardPremium
+          variant="warning"
+          label="Phiếu chờ xác nhận"
+          value={pendingCount}
+          icon="Activity"
+          footer="Yêu cầu kiểm tra & xác nhận"
+        />
 
-        <div className="kpi-card-premium kpi-success">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Nhà cung cấp</p>
-              <p className="kpi-value">{supplierCount}</p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="Users" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Đối tác cung ứng hiện có
-          </div>
-        </div>
-      </div>
+        <KpiCardPremium
+          variant="success"
+          label="Nhà cung cấp"
+          value={supplierCount}
+          icon="Users"
+          footer="Đối tác cung ứng hiện có"
+        />
+      </KpiGridPremium>
 
       {/* Filters (Config-Driven Pattern) */}
       <FilterBarPremium
