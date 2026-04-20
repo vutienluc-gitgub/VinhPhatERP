@@ -122,3 +122,80 @@ p {
 
   --shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
 }
+
+/* ============================================================
+   Premium Effects & Animations
+   ============================================================ */
+
+.bg-glow {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme='dark'] .bg-glow {
+  opacity: 0.08;
+}
+
+.bg-glow-1 {
+  top: -100px;
+  right: 10%;
+  background: var(--accent);
+}
+.bg-glow-2 {
+  bottom: -80px;
+  left: 20%;
+  background: var(--primary);
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up {
+  animation: fadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.fade-up:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.fade-up:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.fade-up:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.fade-up:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+@keyframes pulse-live {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--success);
+  border-radius: 50%;
+  animation: pulse-live 2s infinite;
+  display: inline-block;
+}

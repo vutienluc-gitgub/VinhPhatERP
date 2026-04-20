@@ -4,7 +4,6 @@ import {
   Icon,
   DataTablePremium,
   AddButton,
-  ClearFilterButton,
   ActionBar,
   FilterBarPremium,
   type FilterFieldConfig,
@@ -67,6 +66,16 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
         value: t,
         label: CONTRACT_TYPE_LABELS[t],
       })),
+    },
+    {
+      key: 'dateFrom',
+      type: 'date',
+      label: 'Từ ngày',
+    },
+    {
+      key: 'dateTo',
+      type: 'date',
+      label: 'Đến ngày',
     },
   ];
 
@@ -164,45 +173,8 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
         schema={filterSchema}
         value={filters}
         onChange={handleFilterChange}
-        onClear={undefined}
+        onClear={() => setFilters({})}
       />
-
-      {/* Date Filters */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-compact-premium">
-          <div className="filter-field">
-            <label>Tu ngay</label>
-            <input
-              className="field-input"
-              type="date"
-              value={filters.dateFrom ?? ''}
-              onChange={(e) =>
-                setFilters((prev) => ({
-                  ...prev,
-                  dateFrom: e.target.value || undefined,
-                }))
-              }
-            />
-          </div>
-
-          <div className="filter-field">
-            <label>Den ngay</label>
-            <input
-              className="field-input"
-              type="date"
-              value={filters.dateTo ?? ''}
-              onChange={(e) =>
-                setFilters((prev) => ({
-                  ...prev,
-                  dateTo: e.target.value || undefined,
-                }))
-              }
-            />
-          </div>
-
-          {hasFilter && <ClearFilterButton onClick={() => setFilters({})} />}
-        </div>
-      </div>
 
       {error && (
         <div className="p-4">

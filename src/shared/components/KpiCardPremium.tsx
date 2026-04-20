@@ -74,6 +74,7 @@ export function KpiCardPremium({
   const isClickable = !!onClick;
   const cardClasses = [
     'kpi-card-premium',
+    'fade-up',
     `kpi-${variant}`,
     isClickable &&
       'cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98]',

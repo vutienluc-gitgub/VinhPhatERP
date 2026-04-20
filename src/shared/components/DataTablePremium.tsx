@@ -45,6 +45,8 @@ interface DataTablePremiumProps<T> {
   onSort?: (columnId: string) => void;
   /** Tùy chọn Bật/Tắt tính tự sắp xếp phía Client nếu không cấu hình API Sort (Mặc định: Bật) */
   enableClientSort?: boolean;
+  /** Sử dụng giao diện thu gọn, tiết kiệm diện tích */
+  compact?: boolean;
 }
 
 /**
@@ -69,6 +71,7 @@ export function DataTablePremium<T>({
   sortDirection,
   onSort,
   enableClientSort = true,
+  compact = false,
 }: DataTablePremiumProps<T>) {
   // --- NATIVE AUTO-SORT LOGIC ---
   const [internalSortCol, setInternalSortCol] = useState<string | undefined>();
@@ -140,7 +143,7 @@ export function DataTablePremium<T>({
     <div className={clsx('card-table-section', className)}>
       {/* Desktop View */}
       <div className="hidden md:block overflow-x-auto">
-        <table className="data-table">
+        <table className={clsx('data-table', compact && 'data-table-compact')}>
           <thead>
             <tr>
               {columns.map((col, idx) => (

@@ -16,6 +16,8 @@ interface BadgeProps {
   variant?: BadgeVariant;
   className?: string;
   icon?: IconName;
+  /** (Premium) Hiển thị điểm sáng màu trạng thái, mặc định true nếu không có icon */
+  showDot?: boolean;
 }
 
 /**
@@ -27,16 +29,24 @@ export function Badge({
   variant = 'gray',
   className,
   icon,
+  showDot,
 }: BadgeProps) {
+  // Nếu không chỉ định định dạng nào, tự động hiển thị chấm trạng thái đối với các Badge không có icon
+  const renderDot = showDot ?? !icon;
+
   return (
     <span
       className={clsx(
-        'badge inline-flex items-center gap-1',
+        'badge inline-flex items-center gap-1.5',
         `badge-${variant}`,
         className,
       )}
     >
-      {icon && <Icon name={icon} size={14} />}
+      {icon ? (
+        <Icon name={icon} size={14} />
+      ) : renderDot ? (
+        <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0 shadow-[0_0_6px_currentColor]" />
+      ) : null}
       {children}
     </span>
   );
