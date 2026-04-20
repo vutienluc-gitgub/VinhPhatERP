@@ -236,6 +236,10 @@ export function AppShell() {
 
   return (
     <div className={`shell-layout${isSidebarCollapsed ? ' is-collapsed' : ''}`}>
+      {/* Hiệu ứng Glow Premium */}
+      <div className="bg-glow bg-glow-1" />
+      <div className="bg-glow bg-glow-2" />
+
       <aside className="sidebar-nav">
         <div className="brand-block" style={{ position: 'relative' }}>
           {!isSidebarCollapsed ? (

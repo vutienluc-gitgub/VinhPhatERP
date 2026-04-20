@@ -49,3 +49,8 @@ export type { ActionMenuItem } from './ActionMenu';
 
 export * from './ChartLegend';
 export * from './StatWidget';
+
+export { FadeUp } from './FadeUp';
+export { LiveIndicator } from './LiveIndicator';
+export { TimelineProgress } from './TimelineProgress';
+export type { TimelineStep } from './TimelineProgress';

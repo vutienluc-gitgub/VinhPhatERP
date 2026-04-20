@@ -4,7 +4,7 @@ import { Icon } from './Icon';
 import { Combobox } from './Combobox';
 import { ClearFilterButton } from './ClearFilterButton';
 
-export type FilterFieldType = 'search' | 'combobox';
+export type FilterFieldType = 'search' | 'combobox' | 'date';
 
 export interface FilterFieldBase {
   key: string;
@@ -22,7 +22,14 @@ export interface ComboboxFilterField extends FilterFieldBase {
   options: { value: string; label: string; icon?: string }[];
 }
 
-export type FilterFieldConfig = SearchFilterField | ComboboxFilterField;
+export interface DateFilterField extends FilterFieldBase {
+  type: 'date';
+}
+
+export type FilterFieldConfig =
+  | SearchFilterField
+  | ComboboxFilterField
+  | DateFilterField;
 
 interface FilterBarPremiumProps {
   /** Mảng cấu hình các trường lọc */
@@ -140,6 +147,22 @@ export function FilterBarPremium({
                   ]}
                   value={(value[field.key] as string) ?? ''}
                   onChange={(val) => onChange(field.key, val || undefined)}
+                />
+              </div>
+            );
+          }
+
+          if (field.type === 'date') {
+            return (
+              <div key={field.key} className="filter-field">
+                <label>{field.label}</label>
+                <input
+                  className="field-input"
+                  type="date"
+                  value={(value[field.key] as string) ?? ''}
+                  onChange={(e) =>
+                    onChange(field.key, e.target.value || undefined)
+                  }
                 />
               </div>
             );

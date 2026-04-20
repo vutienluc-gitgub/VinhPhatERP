@@ -11,6 +11,8 @@ import {
   ActionBar,
   FilterBarPremium,
   type FilterFieldConfig,
+  FadeUp,
+  LiveIndicator,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
@@ -132,7 +134,10 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
       {/* Header Area */}
       <div className="card-header-area card-header-premium">
         <div>
-          <p className="eyebrow-premium">BÁN HÀNG</p>
+          <div className="flex items-center gap-3 mb-1">
+            <p className="eyebrow-premium mb-0">BÁN HÀNG</p>
+            <LiveIndicator label="Trực tiếp" />
+          </div>
           <h3 className="title-premium">Quản lý Đơn hàng</h3>
         </div>
 
@@ -211,15 +216,17 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
       </div>
 
       {/* Filter Bar (Config-Driven) */}
-      <FilterBarPremium
-        schema={filterSchema}
-        value={filters}
-        onChange={handleFilterChange}
-        onClear={() => {
-          setFilters({});
-          setPage(1);
-        }}
-      />
+      <FadeUp delay={0.1}>
+        <FilterBarPremium
+          schema={filterSchema}
+          value={filters}
+          onChange={handleFilterChange}
+          onClear={() => {
+            setFilters({});
+            setPage(1);
+          }}
+        />
+      </FadeUp>
 
       {/* Error State */}
       {error && (
@@ -231,191 +238,198 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
       )}
 
       {/* 📑 Data Table / List */}
-      <DataTablePremium
-        data={orders}
-        isLoading={isLoading}
-        rowKey={(o) => o.id}
-        onRowClick={onView}
-        emptyStateTitle={
-          hasFilter ? 'Không tìm thấy đơn hàng' : 'Chưa có đơn hàng nào'
-        }
-        emptyStateDescription={
-          hasFilter
-            ? 'Hãy thử thay đổi điều kiện lọc.'
-            : 'Nhấn nút tạo đơn để bắt đầu.'
-        }
-        emptyStateIcon={hasFilter ? 'Search' : 'Package'}
-        emptyStateActionLabel={!hasFilter ? '+ Tạo đơn hàng' : undefined}
-        onEmptyStateAction={!hasFilter ? onNew : undefined}
-        columns={[
-          {
-            header: 'Số đơn / Khách hàng',
-            id: 'order_number',
-            sortable: true,
-            cell: (order) => (
-              <div className="flex flex-col">
-                <span className="font-bold text-primary">
-                  {order.order_number}
-                </span>
-                <span className="text-sm">
-                  {order.customers?.name ?? '—'}
-                  {order.customers?.code && (
-                    <span className="text-xs text-muted ml-1 italic">
-                      ({order.customers.code})
-                    </span>
-                  )}
-                </span>
-              </div>
-            ),
-          },
-          {
-            header: 'Ngày đặt',
-            id: 'order_date',
-            sortable: true,
-            className: 'text-muted text-sm',
-            cell: (order) => order.order_date,
-          },
-          {
-            header: 'Dự kiến giao',
-            id: 'delivery_date',
-            sortable: true,
-            cell: (order) => {
-              const due = daysUntilDelivery(order.delivery_date);
-              return (
+      <FadeUp delay={0.2}>
+        <DataTablePremium
+          data={orders}
+          isLoading={isLoading}
+          rowKey={(o) => o.id}
+          onRowClick={onView}
+          emptyStateTitle={
+            hasFilter ? 'Không tìm thấy đơn hàng' : 'Chưa có đơn hàng nào'
+          }
+          emptyStateDescription={
+            hasFilter
+              ? 'Hãy thử thay đổi điều kiện lọc.'
+              : 'Nhấn nút tạo đơn để bắt đầu.'
+          }
+          emptyStateIcon={hasFilter ? 'Search' : 'Package'}
+          emptyStateActionLabel={!hasFilter ? '+ Tạo đơn hàng' : undefined}
+          onEmptyStateAction={!hasFilter ? onNew : undefined}
+          columns={[
+            {
+              header: 'Số đơn / Khách hàng',
+              id: 'order_number',
+              sortable: true,
+              cell: (order) => (
                 <div className="flex flex-col">
-                  <span className="text-sm">{order.delivery_date ?? '—'}</span>
-                  {due && (
-                    <span
-                      className={`text-[10px] font-bold uppercase ${due.urgent ? 'text-danger animate-pulse' : 'text-muted'}`}
-                    >
-                      {due.text}
-                    </span>
-                  )}
+                  <span className="font-bold text-primary">
+                    {order.order_number}
+                  </span>
+                  <span className="text-sm">
+                    {order.customers?.name ?? '—'}
+                    {order.customers?.code && (
+                      <span className="text-xs text-muted ml-1 italic">
+                        ({order.customers.code})
+                      </span>
+                    )}
+                  </span>
                 </div>
-              );
+              ),
             },
-          },
-          {
-            header: 'Tổng tiền',
-            id: 'total_amount',
-            sortable: true,
-            className: 'text-right numeric-cell font-medium',
-            cell: (order) => `${formatCurrency(order.total_amount)}đ`,
-          },
-          {
-            header: 'Còn nợ',
-            id: 'paid_amount',
-            sortable: true,
-            accessor: (order) => order.total_amount - (order.paid_amount || 0),
-            className: 'text-right numeric-cell font-bold',
-            cell: (order) => {
-              const balanceDue = order.total_amount - order.paid_amount;
-              return (
-                <span
-                  className={balanceDue > 0 ? 'text-danger' : 'text-success'}
-                >
-                  {formatCurrency(balanceDue)}đ
-                </span>
-              );
+            {
+              header: 'Ngày đặt',
+              id: 'order_date',
+              sortable: true,
+              className: 'text-muted text-sm',
+              cell: (order) => order.order_date,
             },
-          },
-          {
-            header: 'Trạng thái',
-            id: 'status',
-            sortable: true,
-            cell: (order) => (
-              <Badge variant={getVariant(order.status)}>
-                {ORDER_STATUS_LABELS[order.status]}
-              </Badge>
-            ),
-          },
-          {
-            header: 'Thao tác',
-            className: 'text-right',
-            onCellClick: () => {}, // prevent row click
-            cell: (order) => (
-              <ActionBar
-                actions={
-                  [
-                    order.status === 'draft'
-                      ? {
-                          icon: 'Edit3',
-                          onClick: () => onEdit(order),
-                        }
-                      : null,
-                    order.status === 'draft'
-                      ? {
-                          icon: 'Trash2',
-                          onClick: () => handleDelete(order),
-                          variant: 'danger',
-                        }
-                      : null,
-                    order.status !== 'draft'
-                      ? {
-                          icon: 'Eye',
-                          onClick: () => onView(order),
-                        }
-                      : null,
-                  ].filter(Boolean) as ActionConfig[]
-                }
-              />
-            ),
-          },
-        ]}
-        renderMobileCard={(order) => {
-          const due = daysUntilDelivery(order.delivery_date);
-          const balanceDue = order.total_amount - order.paid_amount;
-          return (
-            <div className="mobile-card">
-              <div className="mobile-card-header border-b border-border/10 pb-2 mb-2">
-                <span className="font-bold text-primary">
-                  {order.order_number}
-                </span>
+            {
+              header: 'Dự kiến giao',
+              id: 'delivery_date',
+              sortable: true,
+              cell: (order) => {
+                const due = daysUntilDelivery(order.delivery_date);
+                return (
+                  <div className="flex flex-col">
+                    <span className="text-sm">
+                      {order.delivery_date ?? '—'}
+                    </span>
+                    {due && (
+                      <span
+                        className={`text-[10px] font-bold uppercase ${due.urgent ? 'text-danger animate-pulse' : 'text-muted'}`}
+                      >
+                        {due.text}
+                      </span>
+                    )}
+                  </div>
+                );
+              },
+            },
+            {
+              header: 'Tổng tiền',
+              id: 'total_amount',
+              sortable: true,
+              className: 'text-right numeric-cell font-medium',
+              cell: (order) => `${formatCurrency(order.total_amount)}đ`,
+            },
+            {
+              header: 'Còn nợ',
+              id: 'paid_amount',
+              sortable: true,
+              accessor: (order) =>
+                order.total_amount - (order.paid_amount || 0),
+              className: 'text-right numeric-cell font-bold',
+              cell: (order) => {
+                const balanceDue = order.total_amount - order.paid_amount;
+                return (
+                  <span
+                    className={balanceDue > 0 ? 'text-danger' : 'text-success'}
+                  >
+                    {formatCurrency(balanceDue)}đ
+                  </span>
+                );
+              },
+            },
+            {
+              header: 'Trạng thái',
+              id: 'status',
+              sortable: true,
+              cell: (order) => (
                 <Badge variant={getVariant(order.status)}>
                   {ORDER_STATUS_LABELS[order.status]}
                 </Badge>
-              </div>
-              <div className="mobile-card-body space-y-2">
-                <div className="flex justify-between items-start">
-                  <span className="text-sm font-bold">
-                    {order.customers?.name}
+              ),
+            },
+            {
+              header: 'Thao tác',
+              className: 'text-right',
+              onCellClick: () => {}, // prevent row click
+              cell: (order) => (
+                <ActionBar
+                  actions={
+                    [
+                      order.status === 'draft'
+                        ? {
+                            icon: 'Edit3',
+                            onClick: () => onEdit(order),
+                          }
+                        : null,
+                      order.status === 'draft'
+                        ? {
+                            icon: 'Trash2',
+                            onClick: () => handleDelete(order),
+                            variant: 'danger',
+                          }
+                        : null,
+                      order.status !== 'draft'
+                        ? {
+                            icon: 'Eye',
+                            onClick: () => onView(order),
+                          }
+                        : null,
+                    ].filter(Boolean) as ActionConfig[]
+                  }
+                />
+              ),
+            },
+          ]}
+          renderMobileCard={(order) => {
+            const due = daysUntilDelivery(order.delivery_date);
+            const balanceDue = order.total_amount - order.paid_amount;
+            return (
+              <div className="mobile-card">
+                <div className="mobile-card-header border-b border-border/10 pb-2 mb-2">
+                  <span className="font-bold text-primary">
+                    {order.order_number}
                   </span>
-                  <span className="text-xs text-muted">{order.order_date}</span>
+                  <Badge variant={getVariant(order.status)}>
+                    {ORDER_STATUS_LABELS[order.status]}
+                  </Badge>
                 </div>
-                <div className="grid grid-cols-2 gap-4 pt-2">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase text-muted">
-                      Tổng tiền
+                <div className="mobile-card-body space-y-2">
+                  <div className="flex justify-between items-start">
+                    <span className="text-sm font-bold">
+                      {order.customers?.name}
                     </span>
-                    <span className="text-sm font-medium">
-                      {formatCurrency(order.total_amount)}đ
+                    <span className="text-xs text-muted">
+                      {order.order_date}
                     </span>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase text-muted">
-                      Còn nợ
-                    </span>
-                    <span
-                      className={`text-sm font-bold ${balanceDue > 0 ? 'text-danger' : 'text-success'}`}
+                  <div className="grid grid-cols-2 gap-4 pt-2">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase text-muted">
+                        Tổng tiền
+                      </span>
+                      <span className="text-sm font-medium">
+                        {formatCurrency(order.total_amount)}đ
+                      </span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase text-muted">
+                        Còn nợ
+                      </span>
+                      <span
+                        className={`text-sm font-bold ${balanceDue > 0 ? 'text-danger' : 'text-success'}`}
+                      >
+                        {formatCurrency(balanceDue)}đ
+                      </span>
+                    </div>
+                  </div>
+                  {due && (
+                    <div
+                      className={`mt-2 p-1.5 rounded text-[10px] font-bold text-center uppercase ${due.urgent ? 'bg-danger/10 text-danger' : 'bg-surface-subtle text-muted'}`}
                     >
-                      {formatCurrency(balanceDue)}đ
-                    </span>
-                  </div>
+                      Giao hàng: {due.text} ({order.delivery_date})
+                    </div>
+                  )}
                 </div>
-                {due && (
-                  <div
-                    className={`mt-2 p-1.5 rounded text-[10px] font-bold text-center uppercase ${due.urgent ? 'bg-danger/10 text-danger' : 'bg-surface-subtle text-muted'}`}
-                  >
-                    Giao hàng: {due.text} ({order.delivery_date})
-                  </div>
-                )}
               </div>
-            </div>
-          );
-        }}
-      />
+            );
+          }}
+        />
 
-      <Pagination result={result} onPageChange={setPage} />
+        <Pagination result={result} onPageChange={setPage} />
+      </FadeUp>
     </div>
   );
 }

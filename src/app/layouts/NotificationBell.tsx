@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 
 import { supabase } from '@/services/supabase/client';
 import { Icon } from '@/shared/components';
@@ -9,6 +10,7 @@ export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // Đóng khi click ngoài
   useEffect(() => {
@@ -23,6 +25,42 @@ export function NotificationBell() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Kích hoạt WebSocket Realtime cho Bảng Orders
+  useEffect(() => {
+    const channel = supabase
+      .channel('realtime_pending_orders')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'orders',
+        },
+        (payload) => {
+          // Báo cho React Query update lại chuông
+          queryClient.invalidateQueries({
+            queryKey: ['pending-review-notifications'],
+          });
+
+          // Hiển thị Popup Toast nổi ngay lập tức nếu là Đơn Vừa Mới Đặt (INSERT)
+          if (
+            payload.eventType === 'INSERT' &&
+            payload.new.status === 'pending_review'
+          ) {
+            toast.success(
+              `Có yêu cầu đặt hàng mới mã ${payload.new.order_number}!`,
+              { icon: '🔔' },
+            );
+          }
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   // Fetch đơn hàng đang chờ duyệt
   type PendingOrder = {
@@ -53,7 +91,7 @@ export function NotificationBell() {
       if (error) throw error;
       return (data || []) as PendingOrder[];
     },
-    refetchInterval: 30000, // Poll mỗi 30s
+    // refetchInterval không cần nữa vì đã có WebSocket lo!
   });
 
   const unreadCount = pendingOrders.length;
@@ -68,7 +106,7 @@ export function NotificationBell() {
       >
         <Icon name="Bell" size={20} strokeWidth={1.5} />
         {unreadCount > 0 && (
-          <span className="absolute top-1.5 right-1.5 bg-danger w-2 h-2 rounded-full border border-surface shadow-sm"></span>
+          <span className="absolute top-1.5 right-1.5 bg-danger w-2 h-2 rounded-full border border-surface shadow-sm animate-pulse"></span>
         )}
       </button>
 
