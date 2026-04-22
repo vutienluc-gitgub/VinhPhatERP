@@ -14,7 +14,7 @@ You are NOT allowed to use supabase.insert directly.
 - Chia nhỏ task cực nhỏ, cẩn thận và an toàn.
 - **MANDATORY VERIFICATION LOOP**: Ngay sau mỗi lần sửa code (modified), Agent **PHẢI TỰ ĐỘNG sử dụng terminal tool** để chạy:
   1. `npm run typecheck`
-  2. `npm run lint -- --max-warnings=0`
+  2. `npm run lint -- --fix && npm run lint -- --max-warnings=0`
 - Tuyệt đối **không được kết thúc lượt (end turn)** hay báo cáo hoàn thành nếu kết quả không phải là `0 problems (0 errors, 0 warnings)`. Nếu có lỗi hoặc cảnh báo, Agent phải tự đọc lỗi và gỡ ngay lập tức.
 
 ## 2. Quy tắc TypeScript & Code Quality

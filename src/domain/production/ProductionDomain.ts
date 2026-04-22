@@ -243,7 +243,11 @@ export function calculateGreigeCostEstimation(
 ): GreigeCostEstimation {
   const processingCost = weavingUnitPrice * targetQuantity;
   const wasteCost = Math.round((directYarnCost * standardLossPct) / 100);
-  const totalCost = directYarnCost + wasteCost + processingCost;
+
+  // directYarnCost (từ yarn_requirements) đã bao gồm cả lượng sợi bù hao hụt.
+  // Vì vậy totalCost chỉ là directYarnCost + processingCost.
+  // Không cộng thêm wasteCost nữa (tránh double count).
+  const totalCost = directYarnCost + processingCost;
   const finalPrice = Math.round(totalCost * (1 + profitMarginPct / 100));
 
   return { directYarnCost, wasteCost, processingCost, totalCost, finalPrice };
