@@ -38,13 +38,13 @@ describe('calculateGreigeFabricPrice', () => {
       ],
     });
 
-    expect(result.baseCost).toBe(5_000_000);
-    expect(result.wasteCost).toBe(250_000); // 5% of 5,000,000
+    expect(result.baseCost).toBe(5_250_000); // 105kg * 50,000
+    expect(result.wasteCost).toBe(250_000); // 5% of 100kg * 50,000
 
     // Total Additional Costs: 500k + 100k + 1M
     expect(result.additionalCostTotal).toBe(1_600_000);
 
-    // Total Cost = 5,000,000 + 250,000 + 1,600,000 = 6,850,000
+    // Total Cost = 5,250,000 + 1,600,000 = 6,850,000
     expect(result.totalCost).toBe(6_850_000);
 
     // Final Price = 6,850,000 + 10% profit
