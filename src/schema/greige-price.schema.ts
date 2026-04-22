@@ -46,9 +46,9 @@ export type CalculatePriceInput = z.input<typeof calculatePriceInputSchema>;
 /* ── Calculation Result ── */
 
 export interface CalculatePriceResult {
-  /** Base material cost = effectiveWeight * unitPricePerKg */
+  /** Base material cost = effectiveWeight * unitPricePerKg (đã bao gồm hao hụt) */
   baseCost: number;
-  /** Waste cost = weight * (wastePercent/100) * unitPricePerKg */
+  /** Waste cost = weight * (wastePercent/100) * unitPricePerKg (chỉ để report) */
   wasteCost: number;
   /** Effective weight after waste = weightKg * (1 + wastePercent/100) */
   effectiveWeightKg: number;
@@ -56,7 +56,7 @@ export interface CalculatePriceResult {
   additionalCostTotal: number;
   /** Breakdown of each additional cost component */
   additionalCostBreakdown: AdditionalCost[];
-  /** Total cost before profit = baseCost + wasteCost + additionalCostTotal */
+  /** Total cost before profit = baseCost + additionalCostTotal (chống double count) */
   totalCost: number;
   /** Final price after profit margin = totalCost * (1 + profitMarginPercent/100) */
   finalPrice: number;

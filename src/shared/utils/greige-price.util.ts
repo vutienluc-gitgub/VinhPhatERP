@@ -32,10 +32,15 @@ export function calculateGreigeFabricPrice(
   } = data;
 
   // 2. Base cost calculation
-  // Hao hụt (waste) được tính dựa trên khối lượng (weight)
-  const baseCost = Math.round(weightKg * unitPricePerKg);
-  const wasteCost = Math.round(baseCost * (wastePercent / 100));
+  // Hao hụt (waste) được tính dựa trên khối lượng (weight).
+  // Theo business-rules.md, baseCost (Tiền sợi) phải TÍNH CẢ HAO HỤT.
   const effectiveWeightKg = weightKg * (1 + wastePercent / 100);
+  const baseCost = Math.round(effectiveWeightKg * unitPricePerKg);
+
+  // wasteCost chỉ dùng để report (không cộng vào totalCost nữa vì baseCost đã bao gồm)
+  const wasteCost = Math.round(
+    weightKg * (wastePercent / 100) * unitPricePerKg,
+  );
 
   // 3. Additional costs aggregation
   // Tích hợp các chi phí phụ và chi phí động
@@ -67,8 +72,8 @@ export function calculateGreigeFabricPrice(
     additionalCostTotal += item.amount;
   }
 
-  // 4. Total Cost Calculation
-  const totalCost = Math.round(baseCost + wasteCost + additionalCostTotal);
+  // 4. Total Cost Calculation (tuân thủ chống Double Count)
+  const totalCost = Math.round(baseCost + additionalCostTotal);
 
   // 5. Final Selling Price Calculation
   // Lợi nhuận (profit margin) được áp dụng SAU khi đã cộng tất cả các khoản phí
