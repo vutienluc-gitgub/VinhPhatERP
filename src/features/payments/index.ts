@@ -1,4 +1,5 @@
 export * from '@/features/payments/payments.module';
+export * from '@/features/payments/payments.plugin';
 export type {
   PaymentMethod,
   AccountType,

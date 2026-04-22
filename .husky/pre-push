@@ -1,6 +1,8 @@
 
 echo "🚀 Running AI Audit before push..."
-
 npm run ai:audit || exit 1
+
+echo "🧪 Running E2E Tests before push..."
+npm run test:e2e || exit 1
 
 echo "✅ Push allowed."

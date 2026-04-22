@@ -16,6 +16,8 @@ import {
   useDeleteYarnCatalog,
   useYarnCatalogList,
 } from '@/application/settings';
+import { useColorOptions } from '@/shared/hooks/useColorOptions';
+import { getColorHex } from '@/schema/color.schema';
 
 import type {
   YarnCatalog,
@@ -31,6 +33,26 @@ type YarnCatalogListProps = {
 
 function getStatusVariant(status: YarnCatalogStatus): BadgeVariant {
   return status === 'active' ? 'success' : 'gray';
+}
+
+function YarnColorBadge({ colorName }: { colorName: string | null }) {
+  const { data: colorOptions = [] } = useColorOptions();
+  if (!colorName) return null;
+
+  const option = colorOptions.find((c) => c.name === colorName);
+  const hex = getColorHex(option ? option.code : colorName);
+
+  return (
+    <div className="flex items-center gap-1.5 mt-0.5 text-xs text-muted">
+      <span>Màu:</span>
+      <span
+        title={colorName}
+        className="inline-block w-3 h-3 rounded-full border border-border shrink-0 shadow-sm"
+        style={{ background: hex }}
+      />
+      <span>{colorName}</span>
+    </div>
+  );
 }
 
 export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
@@ -196,11 +218,7 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
               <div className="flex flex-col">
                 <span className="font-bold text-primary">{c.code}</span>
                 <span className="text-sm">{c.name}</span>
-                {c.color_name && (
-                  <span className="text-xs text-muted">
-                    Màu: {c.color_name}
-                  </span>
-                )}
+                <YarnColorBadge colorName={c.color_name} />
               </div>
             ),
           },
@@ -285,9 +303,7 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
                   <span className="font-medium">{c.unit}</span>
                 </div>
               </div>
-              {c.color_name && (
-                <div className="text-xs text-muted">Màu: {c.color_name}</div>
-              )}
+              <YarnColorBadge colorName={c.color_name} />
               <div className="flex gap-2 pt-2 border-t border-border/10">
                 <button
                   className="btn-secondary flex-1 text-primary"
