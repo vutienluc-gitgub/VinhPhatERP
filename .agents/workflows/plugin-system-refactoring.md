@@ -2,85 +2,344 @@
 description: Implement Level 9 Architecture Plugin System & Feature Registry
 ---
 
-# Workflow: Triển khai Kiến trúc Plugin & Feature Registry (Level 9)
+---
 
-Workflow này hướng dẫn các bước tiêu chuẩn để chuyển đổi cấu trúc ứng dụng từ "Hard-coded Router & Sidebar Menu" sang hệ thống Plugin Registry phi tập trung (Decentralized Feature Modules).
+## description: Implement Level 9 Architecture — Plugin System & Feature Registry
 
-Mỗi tính năng (vd: shipments, orders, customers) sẽ tự đóng gói toàn bộ logic (Route, Menu Item, Hooks) của riêng nó.
+# Plugin System & Feature Registry (Level 9)
+
+Chuyển đổi từ "Hard-coded Router & Sidebar" sang Decentralized Feature Modules.
+Mỗi feature tự đóng gói toàn bộ Route, Menu, Hooks của riêng nó.
+
+> **Môi trường:** React SPA (CSR) + React Router v6.4+ + Vite.
+> SSR (Next.js/Remix): thay Singleton bằng factory per-request để tránh state leak giữa các request.
+
+---
 
 ## Pre-requisites
 
-- [ ] Ứng dụng React đang rảnh, mọi luồng chức năng quan trọng (Nhập/Xuất/Tài chính) đều đã hoạt động trơn tru.
+- [ ] App ổn định, các luồng chính hoạt động trơn tru.
+- [ ] React Router v6.4+, `lucide-react` đã cài.
 
-## Step 1: Khởi tạo Core Registry
+---
 
-Thiết lập thư viện cốt lõi (`FeatureRegistry`) để lưu trữ và quản lý quyền hoạt động của các module độc lập.
+## Step 1 — Types & Registry
 
-1. Khởi tạo interface tiêu chuẩn cho Feature:
-   - `id`: Tên module định danh (vd: `feature-orders`).
-   - `name`: Tên tiếng Việt để hiển thị Menu.
-   - `icon`: Lucide icon component.
-   - `requiredRoles`: Mảng các quyền được phép truy cập (RBAC) (vd: `['admin', 'sale']`).
-   - `group`: Nhóm menu (vd: `sales`, `production`, `inventory`) để Sidebar tự động gom nhóm, tránh danh sách phẳng lộn xộn.
-   - `order`: Số thứ tự ưu tiên hiển thị trên Sidebar.
-   - `routes`: Mảng định tuyến (React Router data objects - có khả năng chứa cấu trúc nested routes).
-2. Viết file `src/app/plugins.ts` làm bộ chứa Singleton (Registry Class / Hoặc Array Export) để khai báo các plugins.
-3. Tạo file `src/app/types/plugin.ts` để lưu `interface ERPPlugin`.
+**`src/app/types/plugin.ts`**
 
-## Step 2: Cấu hình Menu Động (Dynamic Sidebar)
+```ts
+import type { ComponentType, ReactNode } from 'react';
+import type { RouteObject } from 'react-router-dom';
 
-1. Truy cập `src/app/layouts/Sidebar.tsx` hoặc file cấu hình layout tương đương.
-2. Xoá mảng tĩnh `MENU_ITEMS` hiện hữu.
-3. Cập nhật Sidebar để duyệt qua toàn bộ biến `plugins` đã đăng ký ở Bước 1.
-   - Lọc các plugins theo quyền (Roles) của user hiện tại.
-   - Group (Gom nhóm) các tính năng đồng dạng theo thuộc tính `group`.
-   - Sắp xếp (Sort) theo thuộc tính `order`.
-   - Hiển thị `name` và `icon` tương ứng lên Sidebar. Chèn đường link dẫn vào trang chủ của module bằng `routes[0].path`.
+export type PluginGroup =
+  | 'sales'
+  | 'production'
+  | 'inventory'
+  | 'finance'
+  | 'hr'
+  | 'settings'
+  | (string & {});
 
-## Step 3: Đóng Gói (Encapsulate) Các Feature (TUYỆT ĐỐI CẦN LAZY LOADING)
+export interface ERPPlugin {
+  id: string;
+  name: string;
+  icon: ComponentType<{ className?: string }>;
+  requiredRoles: string[];
+  requiredPermissions?: string[]; // granular RBAC — user cần ≥1 permission
+  group: PluginGroup;
+  order: number;
+  entryPath: string; // link Sidebar — KHÔNG dùng routes[0].path
+  routes: RouteObject[];
+  dependencies?: string[]; // ['module-customers'] — load trước plugin này
+  onInit?: () => Promise<void>;
+  badge?: () => ReactNode;
+}
+```
 
-Đây là phần việc tốn nhiều thời gian nhất. Lặp lại với **TUYỆT ĐỐI TẤT CẢ** các folder bên trong `src/features/*`:
+**`src/app/registry/FeatureRegistry.ts`**
 
-1. Tạo file `[feature_name].plugin.tsx` ngay tại thư mục gốc của feature (Vd: `src/features/orders/orders.plugin.tsx`).
-2. Mở file mới này, khởi tạo Plugin object bằng kỹ thuật **Lazy Loading** (Nhằm tối ưu hoá Bundle Size, tránh việc tải toàn bộ code cùng một lúc làm đứng app):
+```ts
+import type { ERPPlugin } from '@/app/types/plugin';
+import type { RouteObject } from 'react-router-dom';
 
-   ```tsx
-   import { BookOpen } from 'lucide-react';
-   import { lazy } from 'react';
-   import type { ERPPlugin } from '@/app/types/plugin';
+class FeatureRegistryClass {
+  private plugins = new Map<string, ERPPlugin>();
+  private initialized = false;
 
-   // BẮT BUỘC SỬ DỤNG LAZY ĐỂ TRÁNH VI PHẠM "BUNDLE SIZE" LAZY LOADING
-   const OrdersPage = lazy(() => import('./OrdersPage'));
-   const OrderDetail = lazy(() => import('./OrderDetail'));
-   const OrderCreate = lazy(() => import('./OrderCreate'));
+  register(plugin: ERPPlugin): this {
+    if (this.plugins.has(plugin.id))
+      throw new Error(`[Registry] Plugin "${plugin.id}" đã tồn tại.`);
+    this.plugins.set(plugin.id, plugin);
+    return this; // hỗ trợ chaining
+  }
 
-   export const ordersPlugin: ERPPlugin = {
-     id: 'module-orders',
-     name: 'Đơn hàng',
-     icon: BookOpen,
-     requiredRoles: ['admin', 'sale'],
-     group: 'sales',
-     order: 1,
-     routes: [
-       { path: '/orders', element: <OrdersPage /> },
-       { path: '/orders/create', element: <OrderCreate /> },
-       { path: '/orders/:id', element: <OrderDetail /> },
-     ],
-   };
-   ```
+  async init(): Promise<void> {
+    if (this.initialized) return;
+    for (const plugin of this.resolveDependencyOrder()) {
+      try {
+        await plugin.onInit?.();
+      } catch (e) {
+        console.error(`[Registry] onInit "${plugin.id}" thất bại:`, e);
+      }
+    }
+    this.initialized = true;
+  }
 
-3. Đem file của tính năng vừa đóng gói import vào biến cấu hình chính trong `src/app/plugins.ts`.
+  getVisiblePlugins(roles: string[], perms: string[] = []): ERPPlugin[] {
+    return [...this.plugins.values()].filter((p) => {
+      if (!p.requiredRoles.some((r) => roles.includes(r))) return false;
+      if (p.requiredPermissions?.length)
+        return p.requiredPermissions.some((p2) => perms.includes(p2));
+      return true;
+    });
+  }
 
-## Step 4: Cơ Sở Chuyển Đổi Router & Xử lý Nested Routes
+  getAllRoutes(): RouteObject[] {
+    return [...this.plugins.values()].flatMap((p) => p.routes);
+  }
 
-1. Trong file `src/app/router/routes.tsx` (hoặc `App.tsx` tùy kiến trúc):
-2. Bọc các khu vực hiển thị Content bởi một thẻ `<Suspense fallback={<LoadingIndicator />}>` để đảm bảo tương thích với Lazy Loading.
-3. Load danh sách routes từ `FeatureRegistry.getAllRoutes()`.
-4. Vì mảng routes của Plugin sẽ chứa nhiều objects rời rạc (cả list, chi tiết, tạo mới), bộ chuyển đổi Router cần phải lặp qua danh sách mảng phẳng (flat array) một cách trơn tru để tương thích mượt mà với React Router, nhằm lồng nó dưới thẻ `<Outlet />` (hoặc layout chính).
+  // Topological sort — phát hiện circular dependency
+  private resolveDependencyOrder(): ERPPlugin[] {
+    const result: ERPPlugin[] = [],
+      visited = new Set<string>(),
+      visiting = new Set<string>();
+    const visit = (id: string) => {
+      if (visited.has(id)) return;
+      if (visiting.has(id))
+        throw new Error(`[Registry] Circular dependency: "${id}"`);
+      const p = this.plugins.get(id);
+      if (!p) throw new Error(`[Registry] Plugin "${id}" chưa được đăng ký.`);
+      visiting.add(id);
+      p.dependencies?.forEach(visit);
+      visiting.delete(id);
+      visited.add(id);
+      result.push(p);
+    };
+    this.plugins.forEach((_, id) => visit(id));
+    return result;
+  }
+}
 
-## Step 5: Dọn dẹp & Xác Vận
+export const FeatureRegistry = new FeatureRegistryClass();
+```
 
-1. Xoá mọi liên kết rác, routes tĩnh dư thừa đi.
-2. Trải nghiệm bằng cách ngắt bình luận comment (disable) biến đăng ký của một Feature bất kì (ví dụ `// ordersPlugin`). Nếu Sidebar mất biểu tượng "Đơn hàng" và URL `localhost:5173/orders` báo lỗi 404 Not Found thì tức là Hệ thống Plugin Decouple đã hoạt động 100% chuẩn xác.
+---
 
-> **Note cho AI**: Khi kích hoạt `/plugin-system-refactoring`, hãy thực hiện làm mẫu đúng 1 module đầu tiên (vd: Customer) để User nắm được đường lối thiết kế, sau đó đợi User xác nhận rồi mới tiến hành hàng loạt.
+## Step 2 — Dynamic Sidebar
+
+Xóa `MENU_ITEMS` tĩnh, thay bằng (`src/app/layouts/Sidebar.tsx`):
+
+```tsx
+const GROUP_ORDER = [
+  'sales',
+  'production',
+  'inventory',
+  'finance',
+  'hr',
+  'settings',
+];
+const GROUP_LABELS: Record<string, string> = {
+  sales: 'Bán hàng',
+  production: 'Sản xuất',
+  inventory: 'Kho hàng',
+  finance: 'Tài chính',
+  hr: 'Nhân sự',
+  settings: 'Cài đặt',
+};
+
+export function Sidebar() {
+  const { user } = useAuth();
+  const plugins = FeatureRegistry.getVisiblePlugins(
+    user.roles,
+    user.permissions,
+  );
+
+  const grouped = plugins.reduce<Record<string, ERPPlugin[]>>((acc, p) => {
+    (acc[p.group] ??= []).push(p);
+    return acc;
+  }, {});
+  Object.values(grouped).forEach((g) => g.sort((a, b) => a.order - b.order));
+  const sortedGroups = [
+    ...GROUP_ORDER.filter((g) => grouped[g]),
+    ...Object.keys(grouped).filter((g) => !GROUP_ORDER.includes(g)),
+  ];
+
+  return (
+    <nav>
+      {sortedGroups.map((group) => (
+        <div key={group}>
+          <span>{GROUP_LABELS[group] ?? group}</span>
+          {grouped[group].map((p) => (
+            <NavLink key={p.id} to={p.entryPath}>
+              <p.icon /> <span>{p.name}</span> {p.badge?.()}
+            </NavLink>
+          ))}
+        </div>
+      ))}
+    </nav>
+  );
+}
+```
+
+---
+
+## Step 3 — Đóng Gói Feature (Lazy Loading bắt buộc)
+
+Tạo `[name].plugin.tsx` trong thư mục gốc của **mỗi** feature:
+
+```tsx
+// src/features/orders/orders.plugin.tsx
+import { BookOpen } from 'lucide-react';
+import { lazy, Suspense } from 'react';
+import type { ERPPlugin } from '@/app/types/plugin';
+
+const OrdersPage = lazy(() => import('./OrdersPage'));
+const OrderDetail = lazy(() => import('./OrderDetail'));
+const OrderCreate = lazy(() => import('./OrderCreate'));
+
+// Wrapper chuẩn: ErrorBoundary + Suspense cho mọi route element
+const wrap = (C: ReturnType<typeof lazy>) => (
+  <ModuleErrorBoundary>
+    <Suspense fallback={<LoadingIndicator />}>
+      <C />
+    </Suspense>
+  </ModuleErrorBoundary>
+);
+
+export const ordersPlugin: ERPPlugin = {
+  id: 'module-orders',
+  name: 'Đơn hàng',
+  icon: BookOpen,
+  requiredRoles: ['admin', 'sale'],
+  requiredPermissions: ['orders.view'],
+  group: 'sales',
+  order: 1,
+  entryPath: '/orders',
+  dependencies: ['module-customers'],
+  routes: [
+    { path: '/orders', element: wrap(OrdersPage) },
+    { path: '/orders/create', element: wrap(OrderCreate) },
+    { path: '/orders/:id', element: wrap(OrderDetail) },
+  ],
+  onInit: async () => {
+    /* preload config, setup store... */
+  },
+  badge: () => <OrdersPendingBadge />,
+};
+```
+
+**`ModuleErrorBoundary`** — bắt lỗi lazy chunk thất bại (`src/components/ui/ModuleErrorBoundary.tsx`):
+
+```tsx
+export class ModuleErrorBoundary extends Component<
+  { children: ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(e: Error) {
+    console.error('[ModuleErrorBoundary]', e);
+  }
+  render() {
+    return this.state.hasError ? (
+      <div>
+        <p>Không thể tải module.</p>
+        <button onClick={() => this.setState({ hasError: false })}>
+          Thử lại
+        </button>
+      </div>
+    ) : (
+      this.props.children
+    );
+  }
+}
+```
+
+---
+
+## Step 4 — Đăng ký & Khởi tạo
+
+**`src/app/plugins.ts`** — đăng ký theo thứ tự dependency:
+
+```ts
+import { FeatureRegistry } from './registry/FeatureRegistry';
+import { customersPlugin } from '@/features/customers/customers.plugin';
+import { ordersPlugin } from '@/features/orders/orders.plugin';
+// customers trước vì orders depends on it
+FeatureRegistry.register(customersPlugin).register(ordersPlugin);
+export { FeatureRegistry };
+```
+
+**`src/app/router/AppRouter.tsx`**:
+
+```tsx
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <AppLayout />,
+    children: [
+      {
+        element: (
+          <ModuleErrorBoundary>
+            <Suspense fallback={<LoadingIndicator />}>
+              <Outlet />
+            </Suspense>
+          </ModuleErrorBoundary>
+        ),
+        children: FeatureRegistry.getAllRoutes(),
+      },
+    ],
+  },
+  { path: '*', element: <NotFoundPage /> },
+]);
+
+export const AppRouter = () => <RouterProvider router={router} />;
+```
+
+**`src/main.tsx`** — init trước khi render:
+
+```tsx
+async function bootstrap() {
+  await FeatureRegistry.init();
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+  );
+}
+bootstrap().catch(console.error);
+```
+
+---
+
+## Step 5 — Dọn dẹp & Xác Vận
+
+**Checklist:**
+
+- [ ] Xóa `MENU_ITEMS` tĩnh trong Sidebar.
+- [ ] Xóa routes hard-coded trong `App.tsx`.
+- [ ] Xóa import page component trực tiếp (không qua lazy).
+
+**Smoke test:**
+
+```
+1. Comment out một plugin: // .register(ordersPlugin)
+2. Kết quả kỳ vọng:
+   ✅ Sidebar mất mục "Đơn hàng"
+   ✅ /orders → 404 Not Found
+   ✅ Không có console error liên quan module khác
+   ✅ App không crash
+```
+
+**Bundle check:**
+
+```bash
+npx vite build
+# orders-[hash].js, customers-[hash].js → mỗi feature là 1 chunk riêng ✅
+```
+
+---
+
+> **Note cho AI:** Khi kích hoạt `/plugin-system-refactoring`, làm mẫu **1 module đầu tiên** (vd: `customers`) để User nắm đường lối, đợi xác nhận rồi mới tiến hành hàng loạt. Ưu tiên tạo `ModuleErrorBoundary` và `FeatureRegistry` trước tất cả các bước khác.

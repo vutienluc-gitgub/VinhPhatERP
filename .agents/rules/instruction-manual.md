@@ -258,7 +258,7 @@ If a conflict cannot be resolved within the current task scope, report to the re
 
 ### 5.1 After Every Modification
 
-- Always re-run `npm run typecheck` and `npm run lint -- --max-warnings=0`.
+- Always re-run `npm run typecheck` and `npm run lint -- --fix && npm run lint -- --max-warnings=0`.
 - **Zero-Tolerance for Warnings**: The task is NEVER considered complete until both typecheck and lint return EXACTLY `0 problems (0 errors, 0 warnings)`. You must actively fix all warnings (like `no-console`, `no-await-in-loop`, `boundaries`) or use proper `eslint-disable` comments if strictly necessary. Do not report success if warnings exist.
 
 ### 5.2 CSS / Render Errors
