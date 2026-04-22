@@ -13,6 +13,8 @@ interface BomDetailProps {
   onApprove: (id: string, code: string) => void;
   onDeprecate: (id: string, code: string) => void;
   onRevise: (id: string, code: string) => void;
+  onEdit?: (id: string) => void;
+  onCreateWorkOrder?: (id: string) => void;
   isSaving: boolean;
 }
 
@@ -34,6 +36,8 @@ export function BomDetail({
   onApprove,
   onDeprecate,
   onRevise,
+  onEdit,
+  onCreateWorkOrder,
   isSaving,
 }: BomDetailProps) {
   const { data: versions = [] } = useBomVersions(bomId);
@@ -42,7 +46,7 @@ export function BomDetail({
     return (
       <div className="panel-card card-flush">
         <div className="p-8 text-center text-sm text-muted">
-          Dang tai du lieu...
+          Đang tải dữ liệu...
         </div>
       </div>
     );
@@ -64,7 +68,7 @@ export function BomDetail({
             <Icon name="ArrowLeft" size={20} />
           </button>
           <div>
-            <p className="eyebrow-premium">CHI TIET DINH MUC</p>
+            <p className="eyebrow-premium">CHI TIẾT ĐỊNH MỨC</p>
             <h3 className="title-premium flex items-center gap-3">
               {bom.code}
               <Badge variant={getStatusVariant(bom.status as BomStatus)}>
@@ -76,6 +80,17 @@ export function BomDetail({
 
         {/* Actions */}
         <div className="flex gap-2">
+          {bom.status === 'draft' && onEdit && (
+            <Button
+              variant="secondary"
+              leftIcon="Pencil"
+              type="button"
+              onClick={() => onEdit(bom.id)}
+              disabled={isSaving}
+            >
+              Sửa bản nháp
+            </Button>
+          )}
           {bom.status === 'draft' && (
             <Button
               variant="primary"
@@ -85,12 +100,24 @@ export function BomDetail({
               onClick={() => onApprove(bom.id, bom.code)}
               disabled={isSaving}
             >
-              Phe duyet
+              Phê duyệt
             </Button>
           )}
 
           {bom.status === 'approved' && (
             <>
+              {onCreateWorkOrder && (
+                <Button
+                  variant="primary"
+                  leftIcon="ArrowRight"
+                  className="flex items-center gap-2"
+                  type="button"
+                  onClick={() => onCreateWorkOrder(bom.id)}
+                  disabled={isSaving}
+                >
+                  Tạo Lệnh Dệt
+                </Button>
+              )}
               <Button
                 variant="secondary"
                 leftIcon="GitMerge"
@@ -99,7 +126,7 @@ export function BomDetail({
                 onClick={() => onRevise(bom.id, bom.code)}
                 disabled={isSaving}
               >
-                Tao Revision
+                Tạo Revision
               </Button>
               <Button
                 variant="secondary"
@@ -109,7 +136,7 @@ export function BomDetail({
                 onClick={() => onDeprecate(bom.id, bom.code)}
                 disabled={isSaving}
               >
-                Bao phe
+                Báo phế
               </Button>
             </>
           )}
@@ -120,28 +147,28 @@ export function BomDetail({
       <div className="p-5">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           <div className="form-field">
-            <label>Ten cong thuc</label>
+            <label>Tên công thức</label>
             <p className="font-bold">{bom.name}</p>
           </div>
           <div className="form-field">
-            <label>San pham moc</label>
+            <label>Sản phẩm mộc</label>
             <p className="font-bold">
               {bom.fabric_catalogs?.code} — {bom.fabric_catalogs?.name ?? 'N/A'}
             </p>
           </div>
           <div className="form-field">
-            <label>Quy cach (Width / GSM)</label>
+            <label>Quy cách (Width / GSM)</label>
             <p>
               {bom.target_width_cm ? `${bom.target_width_cm} cm` : '\u2014'} /{' '}
               {bom.target_gsm ? `${bom.target_gsm} gsm` : '\u2014'}
             </p>
           </div>
           <div className="form-field">
-            <label>Hao hut mac dinh</label>
+            <label>Hao hụt mặc định</label>
             <p className="font-bold text-primary">{bom.standard_loss_pct}%</p>
           </div>
           <div className="form-field">
-            <label>Phien ban</label>
+            <label>Phiên bản</label>
             <p>v{bom.active_version}</p>
           </div>
         </div>
@@ -154,17 +181,17 @@ export function BomDetail({
       {/* Yarn Items Table */}
       <div className="px-5 pb-2">
         <p className="eyebrow-premium">
-          Thanh phan nguyen lieu (v{bom.active_version})
+          Thành phần nguyên liệu (v{bom.active_version})
         </p>
       </div>
       <div className="card-table-section">
         <table className="data-table">
           <thead>
             <tr>
-              <th>Loai Soi</th>
-              <th className="hide-mobile">Thanh phan</th>
-              <th className="text-right">Ti le (%)</th>
-              <th className="text-right">Tieu hao (kg/m)</th>
+              <th>Loại Sợi</th>
+              <th className="hide-mobile">Thành phần</th>
+              <th className="text-right">Tỉ lệ (%)</th>
+              <th className="text-right">Tiêu hao (kg/m)</th>
             </tr>
           </thead>
           <tbody>
@@ -189,7 +216,7 @@ export function BomDetail({
               <tr>
                 <td colSpan={4}>
                   <div className="py-8 text-center text-sm text-muted">
-                    Chua co du lieu nguyen lieu
+                    Chưa có dữ liệu nguyên liệu
                   </div>
                 </td>
               </tr>
@@ -203,7 +230,7 @@ export function BomDetail({
         <p className="eyebrow-premium mb-3">Lich su phien ban</p>
         {versions.length === 0 ? (
           <p className="td-muted text-sm italic">
-            Chua co lich su (chua tung duoc duyet).
+            Chưa có lịch sử (chưa từng được duyệt).
           </p>
         ) : (
           <div className="flex flex-col gap-2">
@@ -215,7 +242,7 @@ export function BomDetail({
                 <Badge variant="info">v{ver.version}</Badge>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold">
-                    {ver.change_reason || 'Phe duyet ban dau'}
+                    {ver.change_reason || 'Phê duyệt ban đầu'}
                   </p>
                   <p className="td-muted text-xs mt-0.5">
                     {ver.created_by_profile?.full_name ?? 'N/A'} •{' '}

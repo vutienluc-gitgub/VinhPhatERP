@@ -2,11 +2,10 @@ import { useState } from 'react';
 
 import { useProgressBoard, useUpdateStageStatus } from '@/application/orders';
 
-import {
-  PRODUCTION_STAGES,
-  STAGE_LABELS,
-  STAGE_STATUS_LABELS,
-} from './order-progress.module';
+import { OpsLevelPath } from './OpsLevelPath';
+import { ProgressExpBar } from './ProgressExpBar';
+import { calculateOrderProgress } from './utils';
+import { PRODUCTION_STAGES, STAGE_LABELS } from './order-progress.module';
 import type {
   OrderProgressWithOrder,
   ProductionStage,
@@ -17,6 +16,7 @@ type GroupedByOrder = {
   orderId: string;
   orderNumber: string;
   customerName: string;
+  fabricInfo: string;
   deliveryDate: string | null;
   stages: OrderProgressWithOrder[];
 };
@@ -36,6 +36,9 @@ function groupByOrder(rows: OrderProgressWithOrder[]): GroupedByOrder[] {
         customerName: isStandalone
           ? (row.work_orders?.supplier?.name ?? 'LSX độc lập')
           : (row.orders?.customers?.name ?? '—'),
+        fabricInfo: isStandalone
+          ? (row.work_orders?.bom_template?.name ?? '')
+          : (row.orders?.order_items?.[0]?.fabric_type ?? ''),
         deliveryDate: isStandalone ? null : (row.orders?.delivery_date ?? null),
         stages: [],
       };
@@ -168,14 +171,7 @@ export function ProgressBoard() {
           <div className="flex flex-col gap-4">
             {filtered.map((group) => {
               const overdue = isOverdue(group.deliveryDate);
-              const doneCount = group.stages.filter(
-                (s) => s.status === 'done',
-              ).length;
-              const totalCount = group.stages.filter(
-                (s) => s.status !== 'skipped',
-              ).length;
-              const pct =
-                totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+              const pct = calculateOrderProgress(group.stages);
 
               return (
                 <div
@@ -189,6 +185,11 @@ export function ProgressBoard() {
                       <span className="td-muted ml-2">
                         {group.customerName}
                       </span>
+                      {group.fabricInfo && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-secondary text-secondary-foreground ml-2">
+                          {group.fabricInfo}
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center gap-2 text-[0.82rem]">
                       <span className="tabular-nums">{pct}%</span>
@@ -205,49 +206,14 @@ export function ProgressBoard() {
                     </div>
                   </div>
 
-                  {/* Mini progress bar */}
-                  <div className="h-1 bg-border rounded-[2px] mb-2">
-                    <div
-                      className="h-full rounded-[2px] transition-[width] duration-300 ease-in-out"
-                      style={{
-                        width: `${pct}%`,
-                        backgroundColor: pct === 100 ? '#0c8f68' : '#0b6bcb',
-                      }}
-                    />
-                  </div>
+                  <ProgressExpBar percentage={pct} />
 
-                  {/* Stage chips */}
-                  <div className="flex flex-wrap gap-[0.3rem]">
-                    {PRODUCTION_STAGES.map((stageKey) => {
-                      const row = group.stages.find(
-                        (s) => s.stage === stageKey,
-                      );
-                      if (!row) return null;
-                      const statusCls =
-                        row.status === 'done'
-                          ? 'in_stock'
-                          : row.status === 'in_progress'
-                            ? 'in_process'
-                            : row.status === 'skipped'
-                              ? 'damaged'
-                              : 'shipped';
-                      const clickable =
-                        row.status !== 'done' && row.status !== 'skipped';
-
-                      return (
-                        <button
-                          key={row.id}
-                          type="button"
-                          className={`roll-status ${statusCls} ${clickable ? 'cursor-pointer' : 'cursor-default'} text-[0.72rem] border-none`}
-                          disabled={updateMutation.isPending || !clickable}
-                          onClick={() => clickable && handleQuickAdvance(row)}
-                          title={`${STAGE_LABELS[stageKey]}: ${STAGE_STATUS_LABELS[row.status]}${clickable ? ' — Nhấn để chuyển trạng thái' : ''}`}
-                        >
-                          {STAGE_LABELS[stageKey]}
-                        </button>
-                      );
-                    })}
-                  </div>
+                  {/* Level Path Game Nodes */}
+                  <OpsLevelPath
+                    stages={group.stages}
+                    isPendingUpdate={updateMutation.isPending}
+                    onAdvance={handleQuickAdvance}
+                  />
                 </div>
               );
             })}

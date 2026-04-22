@@ -5,6 +5,7 @@ import {
   DataTablePremium,
   type DataTableColumn,
 } from '@/shared/components';
+import { sumBy } from '@/shared/utils/array.util';
 
 type InventorySectionProps = {
   data: InventorySummary | undefined;
@@ -12,12 +13,10 @@ type InventorySectionProps = {
 };
 
 export function InventorySection({ data, isLoading }: InventorySectionProps) {
-  const rawRolls = data?.raw.reduce((s, r) => s + r.roll_count, 0) ?? 0;
-  const rawLength = data?.raw.reduce((s, r) => s + r.total_length_m, 0) ?? 0;
-  const finishedRolls =
-    data?.finished.reduce((s, r) => s + r.roll_count, 0) ?? 0;
-  const finishedLength =
-    data?.finished.reduce((s, r) => s + r.total_length_m, 0) ?? 0;
+  const rawRolls = sumBy(data?.raw, (r) => r.roll_count) ?? 0;
+  const rawLength = sumBy(data?.raw, (r) => r.total_length_m) ?? 0;
+  const finishedRolls = sumBy(data?.finished, (r) => r.roll_count) ?? 0;
+  const finishedLength = sumBy(data?.finished, (r) => r.total_length_m) ?? 0;
 
   return (
     <div className="panel-card card-flush">
@@ -98,9 +97,9 @@ function InventoryTable({
   rows: InventoryItem[];
   isLoading: boolean;
 }) {
-  const totalRolls = rows.reduce((s, r) => s + r.roll_count, 0);
-  const totalLength = rows.reduce((s, r) => s + r.total_length_m, 0);
-  const totalWeight = rows.reduce((s, r) => s + r.total_weight_kg, 0);
+  const totalRolls = sumBy(rows, (r) => r.roll_count);
+  const totalLength = sumBy(rows, (r) => r.total_length_m);
+  const totalWeight = sumBy(rows, (r) => r.total_weight_kg);
 
   const columns: DataTableColumn<InventoryItem>[] = [
     {

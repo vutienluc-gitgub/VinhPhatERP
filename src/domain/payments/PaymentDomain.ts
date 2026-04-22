@@ -39,6 +39,11 @@ export interface ExpenseDbPayload {
   description: string;
   reference_number: string | null;
   notes: string | null;
+  allocations?: Array<{
+    document_type: 'weaving_invoice' | 'yarn_receipt';
+    document_id: string;
+    allocated_amount: number;
+  }>;
 }
 
 // ─── Data Mapping ─────────────────────────────────────────────────────────────
@@ -78,6 +83,7 @@ export function mapExpenseFormToDb(
     description: values.description.trim(),
     reference_number: values.referenceNumber?.trim() || null,
     notes: values.notes?.trim() || null,
+    allocations: values.allocations,
   };
 }
 

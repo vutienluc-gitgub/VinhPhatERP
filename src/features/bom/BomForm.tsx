@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 
 import { Button } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
+import { NumberInput } from '@/shared/components/NumberInput';
 import { Icon } from '@/shared/components/Icon';
 import {
   useFabricCatalogs,
@@ -12,6 +13,7 @@ import {
   useDraftBom,
   useUpdateDraftBom,
 } from '@/application/production';
+import { sumBy } from '@/shared/utils/array.util';
 
 import { bomTemplateSchema, BomTemplateFormData } from './bom.module';
 import { BomTemplate } from './types';
@@ -75,10 +77,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
   });
 
   const watchItems = watch('bom_yarn_items');
-  const totalRatio = watchItems.reduce(
-    (acc, curr) => acc + (Number(curr.ratio_pct) || 0),
-    0,
-  );
+  const totalRatio = sumBy(watchItems, (curr) => Number(curr.ratio_pct) || 0);
 
   // ── Tự sinh mã BOM: BOM-<mã sản phẩm mộc>-<mã sợi đầu tiên> ──
   const watchFabricId = watch('target_fabric_id');
@@ -106,6 +105,35 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
     setValue,
   ]);
 
+  // ── Tự động tính Tiêu hao (kg/m) ──
+  const watchWidthCm = watch('target_width_cm');
+  const watchGsm = watch('target_gsm');
+  const watchLoss = watch('standard_loss_pct') || 0;
+
+  useEffect(() => {
+    if (watchWidthCm && watchGsm) {
+      // 1 mét chiều dài -> Trọng lượng = (Width_cm / 100) * 1m * GSM / 1000 (kg)
+      const totalKgPerM = (watchWidthCm * watchGsm) / 100000;
+
+      watchItems.forEach((item, index) => {
+        const ratio = Number(item.ratio_pct) || 0;
+        // Chia tỉ lệ sợi, giới hạn 4 số thập phân để chính xác
+        const consumption = Number(((totalKgPerM * ratio) / 100).toFixed(4));
+
+        // Tránh infinite loop: chỉ set nếu thực sự có sự sai lệch
+        if (Math.abs((item.consumption_kg_per_m || 0) - consumption) > 0.0001) {
+          setValue(
+            `bom_yarn_items.${index}.consumption_kg_per_m`,
+            consumption,
+            {
+              shouldValidate: true,
+            },
+          );
+        }
+      });
+    }
+  }, [watchWidthCm, watchGsm, watchItems, setValue]);
+
   const onSubmit = async (data: BomTemplateFormData) => {
     try {
       if (isEdit) {
@@ -113,13 +141,15 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
           id: initialData.id,
           data,
         });
+        toast.success('Cap nhat dinh muc thanh cong!');
       } else {
         await createDraft.mutateAsync(data);
+        toast.success('Tao ban nhap dinh muc thanh cong!');
       }
       onSuccess();
     } catch (err) {
-      console.error(err);
-      toast.error('Co loi xay ra: ' + (err as Error).message);
+      const msg = err instanceof Error ? err.message : JSON.stringify(err);
+      toast.error('Co loi xay ra: ' + msg);
     }
   };
 
@@ -216,7 +246,9 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
             <label>Khổ vải (cm)</label>
             <input
               type="number"
-              {...register('target_width_cm', { valueAsNumber: true })}
+              {...register('target_width_cm', {
+                setValueAs: (v) => (v === '' || isNaN(v) ? null : Number(v)),
+              })}
               className="field-input"
             />
           </div>
@@ -224,7 +256,9 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
             <label>Định lượng (gsm)</label>
             <input
               type="number"
-              {...register('target_gsm', { valueAsNumber: true })}
+              {...register('target_gsm', {
+                setValueAs: (v) => (v === '' || isNaN(v) ? null : Number(v)),
+              })}
               className="field-input"
             />
           </div>
@@ -233,7 +267,9 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
             <input
               type="number"
               step="0.01"
-              {...register('standard_loss_pct', { valueAsNumber: true })}
+              {...register('standard_loss_pct', {
+                setValueAs: (v) => (v === '' || isNaN(v) ? null : Number(v)),
+              })}
               className="field-input"
             />
           </div>
@@ -326,13 +362,18 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
 
                   <div className="form-field">
                     <label>Tỉ lệ (%)</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      {...register(`bom_yarn_items.${index}.ratio_pct`, {
-                        valueAsNumber: true,
-                      })}
-                      className={`field-input${errors.bom_yarn_items?.[index]?.ratio_pct ? ' is-error' : ''}`}
+                    <Controller
+                      name={`bom_yarn_items.${index}.ratio_pct` as const}
+                      control={control}
+                      render={({ field }) => (
+                        <NumberInput
+                          className={`field-input${errors.bom_yarn_items?.[index]?.ratio_pct ? ' is-error' : ''}`}
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          step="0.01"
+                        />
+                      )}
                     />
                     {errors.bom_yarn_items?.[index]?.ratio_pct && (
                       <span className="field-error">
@@ -342,16 +383,46 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
                   </div>
 
                   <div className="form-field">
-                    <label>Tiêu hao (kg/m)</label>
-                    <input
-                      type="number"
-                      step="0.0001"
-                      {...register(
-                        `bom_yarn_items.${index}.consumption_kg_per_m`,
-                        { valueAsNumber: true },
+                    <label>
+                      Tiêu hao (kg/m)
+                      {watchWidthCm && watchGsm && (
+                        <span className="text-[10px] text-muted ml-1 font-normal">
+                          (Tự động)
+                        </span>
                       )}
-                      className={`field-input${errors.bom_yarn_items?.[index]?.consumption_kg_per_m ? ' is-error' : ''}`}
+                    </label>
+                    <Controller
+                      name={
+                        `bom_yarn_items.${index}.consumption_kg_per_m` as const
+                      }
+                      control={control}
+                      render={({ field }) => (
+                        <NumberInput
+                          className={`field-input${watchWidthCm && watchGsm ? ' bg-surface-raised cursor-default' : ''}${errors.bom_yarn_items?.[index]?.consumption_kg_per_m ? ' is-error' : ''}`}
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          step="0.0001"
+                          readOnly={!!(watchWidthCm && watchGsm)}
+                        />
+                      )}
                     />
+                    {watchWidthCm && watchGsm && (
+                      <span className="field-hint text-[11px] mt-1 block h-[18px]">
+                        Thực cấp mộc (gồm {watchLoss}% hao hụt):{' '}
+                        <strong className="text-secondary">
+                          {watchLoss < 100
+                            ? (
+                                Number(
+                                  watchItems[index]?.consumption_kg_per_m || 0,
+                                ) /
+                                (1 - watchLoss / 100)
+                              ).toFixed(4)
+                            : 0}{' '}
+                          kg
+                        </strong>
+                      </span>
+                    )}
                     {errors.bom_yarn_items?.[index]?.consumption_kg_per_m && (
                       <span className="field-error">
                         {
@@ -380,6 +451,82 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
               </div>
             )}
           </div>
+
+          {/* Summary Bar */}
+          {fields.length > 0 && watchWidthCm && watchGsm && (
+            <div className="mt-4 p-4 rounded-xl bg-surface-subtle border border-border">
+              <p className="eyebrow-premium mb-3">
+                Tổng kết định mức / 1 mét vải
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* Net */}
+                <div className="flex flex-col gap-0.5 p-3 rounded-lg bg-surface border border-border">
+                  <span className="text-[11px] text-muted uppercase tracking-wide">
+                    Tiêu hao tịnh (Net)
+                  </span>
+                  <span className="text-xl font-bold text-text tabular-nums">
+                    {sumBy(
+                      watchItems,
+                      (item) => Number(item.consumption_kg_per_m) || 0,
+                    ).toFixed(4)}{' '}
+                    <span className="text-sm font-normal text-muted">kg/m</span>
+                  </span>
+                  <span className="text-[10px] text-muted">
+                    Không tính hao hụt
+                  </span>
+                </div>
+
+                {/* Gross */}
+                <div className="flex flex-col gap-0.5 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                  <span className="text-[11px] text-primary uppercase tracking-wide font-semibold">
+                    Thực cấp mộc (Gross)
+                  </span>
+                  <span className="text-xl font-bold text-primary tabular-nums">
+                    {watchLoss < 100
+                      ? (
+                          sumBy(
+                            watchItems,
+                            (item) => Number(item.consumption_kg_per_m) || 0,
+                          ) /
+                          (1 - watchLoss / 100)
+                        ).toFixed(4)
+                      : '0.0000'}{' '}
+                    <span className="text-sm font-normal text-primary/70">
+                      kg/m
+                    </span>
+                  </span>
+                  <span className="text-[10px] text-primary/70">
+                    Gồm {watchLoss}% hao hụt
+                  </span>
+                </div>
+
+                {/* 1000m reference */}
+                <div className="flex flex-col gap-0.5 p-3 rounded-lg bg-success/5 border border-success/20">
+                  <span className="text-[11px] text-success uppercase tracking-wide font-semibold">
+                    Xuất kho cho 1.000m
+                  </span>
+                  <span className="text-xl font-bold text-success tabular-nums">
+                    {watchLoss < 100
+                      ? (
+                          (sumBy(
+                            watchItems,
+                            (item) => Number(item.consumption_kg_per_m) || 0,
+                          ) /
+                            (1 - watchLoss / 100)) *
+                          1000
+                        ).toFixed(1)
+                      : '0.0'}{' '}
+                    <span className="text-sm font-normal text-success/70">
+                      kg
+                    </span>
+                  </span>
+                  <span className="text-[10px] text-success/70">
+                    Ước tính đặt hàng nguyên liệu
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer actions */}
@@ -392,8 +539,13 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
           >
             Hủy bỏ
           </Button>
-          <Button variant="primary" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Đang lưu...' : 'Lưu bản nháp'}
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={isSubmitting}
+            isLoading={isSubmitting}
+          >
+            Lưu bản nháp
           </Button>
         </div>
       </form>

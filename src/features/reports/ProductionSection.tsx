@@ -8,6 +8,7 @@ import {
   DataTablePremium,
   type DataTableColumn,
 } from '@/shared/components';
+import { sumBy, maxBy } from '@/shared/utils/array.util';
 
 type ProductionSectionProps = {
   efficiencyData: ProductionEfficiencyRow[];
@@ -55,7 +56,7 @@ function computeStages(data: ProductionEfficiencyRow[]): StageSummary[] {
     const onTimeCount = rows.filter((r) => r.is_late === false).length;
     const avgDeviation =
       withDeviation.length > 0
-        ? withDeviation.reduce((s, r) => s + (r.deviation_days ?? 0), 0) /
+        ? sumBy(withDeviation, (r) => r.deviation_days ?? 0) /
           withDeviation.length
         : 0;
 
@@ -83,12 +84,10 @@ export function ProductionSection({
   const onTimePct =
     totalDeliveries > 0 ? Math.round((onTimeCount / totalDeliveries) * 100) : 0;
   const worstStage =
-    stages.length > 0
-      ? stages.reduce((a, b) => (a.latePct > b.latePct ? a : b))
-      : null;
+    stages.length > 0 ? maxBy(stages, (st) => st.latePct) : null;
   const avgOverallDeviation =
     stages.length > 0
-      ? stages.reduce((s, st) => s + st.avgDeviation, 0) / stages.length
+      ? sumBy(stages, (st) => st.avgDeviation) / stages.length
       : 0;
 
   const columns: DataTableColumn<StageSummary>[] = [

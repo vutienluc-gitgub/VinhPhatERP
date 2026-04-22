@@ -42,6 +42,23 @@ export type Expense = TableRow<'expenses'> & {
 export type ExpenseInsert = TableInsert<'expenses'>;
 export type ExpenseUpdate = TableUpdate<'expenses'>;
 
+export type DocumentAllocation = {
+  document_type: 'weaving_invoice' | 'yarn_receipt';
+  document_id: string;
+  allocated_amount: number;
+};
+
+export type UnpaidDocument = {
+  document_type: 'weaving_invoice' | 'yarn_receipt';
+  document_id: string;
+  document_number: string;
+  supplier_id: string;
+  document_date: string;
+  total_amount: number;
+  paid_amount: number;
+  remaining_amount: number;
+};
+
 export type ExpensesFilter = {
   search?: string;
   category?: ExpenseCategory;

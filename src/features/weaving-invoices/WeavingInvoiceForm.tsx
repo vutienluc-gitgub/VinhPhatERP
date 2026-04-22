@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
-import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
+import { useCallback, useEffect, useState } from 'react';
+import { useFieldArray, useForm, Controller } from 'react-hook-form';
 
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
@@ -9,21 +9,29 @@ import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { CancelButton, Button } from '@/shared/components';
 import { useStepper } from '@/shared/hooks/useStepper';
 import { formatCurrency } from '@/shared/utils/format';
+import { useAutoSave, loadDraft, clearDraft } from '@/shared/hooks/useAutoSave';
+import DraftBanner from '@/shared/components/DraftBanner';
+import SaveStatus from '@/shared/components/SaveStatus';
 import {
   useCreateWeavingInvoice,
   useUpdateWeavingInvoice,
   useNextWeavingInvoiceNumber,
   useWeavingSuppliers,
+  useWorkOrders,
 } from '@/application/production';
 
+import { RollProgressBar } from './components/RollProgressBar';
+import { PasteExcelParser } from './components/PasteExcelParser';
+import { BulkRollStation } from './components/BulkRollStation';
+import { useWeavingInvoiceCalculator } from './hooks/useWeavingInvoiceCalculator';
 import type { WeavingInvoice } from './types';
 import {
   weavingInvoiceFormSchema,
   weavingInvoiceDefaults,
-  QUALITY_GRADE_LABELS,
-  QUALITY_GRADES,
 } from './weaving-invoices.module';
 import type { WeavingInvoiceFormValues } from './weaving-invoices.module';
+
+const DRAFT_KEY = 'weaving-invoice-draft';
 
 type Props = {
   invoice?: WeavingInvoice | null;
@@ -40,16 +48,24 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
   const createMutation = useCreateWeavingInvoice();
   const updateMutation = useUpdateWeavingInvoice();
 
+  // Draft restoration state
+  const [showDraftBanner, setShowDraftBanner] = useState(false);
+  const [savedDraft, setSavedDraft] = useState<WeavingInvoiceFormValues | null>(
+    null,
+  );
+
   const {
     register,
     control,
     handleSubmit,
     trigger,
     setValue,
+    reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<WeavingInvoiceFormValues>({
     resolver: zodResolver(weavingInvoiceFormSchema),
-    defaultValues: invoice
+    defaultValues: isEdit
       ? {
           invoice_number: invoice.invoice_number,
           supplier_id: invoice.supplier_id,
@@ -72,31 +88,115 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
     mode: 'onTouched',
   });
 
+  // ── AUTO SAVE ──
+  const formValues = watch();
+
+  const selectedSupplierId = formValues.supplier_id;
+  const { data: woData } = useWorkOrders(
+    selectedSupplierId
+      ? {
+          supplier_id: selectedSupplierId,
+          status: 'in_progress',
+        }
+      : undefined,
+  );
+
+  const workOrderOptions = (woData?.data || [])
+    .filter((wo) => wo.supplier_id === selectedSupplierId)
+    .map((wo) => ({
+      label: `${wo.work_order_number} ${wo.bom_template?.target_fabric ? `(${wo.bom_template.target_fabric.name})` : ''}`,
+      value: wo.id,
+      raw: wo,
+    }));
+
+  const { status: saveStatus, lastSavedAt } = useAutoSave({
+    key: DRAFT_KEY,
+    data: formValues,
+    delay: 800,
+  });
+
+  // ── BUSINESS LOGIC CALCULATIONS ──
+  const { scannedCount, totalKg, totalAmount } = useWeavingInvoiceCalculator(
+    formValues.rolls || [],
+    formValues.unit_price_per_kg || 0,
+  );
+
+  // ── DRAFT RESTORATION ──
+  useEffect(() => {
+    if (isEdit) return;
+    const draft = loadDraft<WeavingInvoiceFormValues>(DRAFT_KEY);
+    if (draft && draft.invoice_number) {
+      setSavedDraft(draft);
+      setShowDraftBanner(true);
+    }
+  }, [isEdit]);
+
+  function handleRestoreDraft() {
+    if (!savedDraft) return;
+    reset(savedDraft);
+    setShowDraftBanner(false);
+    setSavedDraft(null);
+  }
+
+  function handleDiscardDraft() {
+    clearDraft(DRAFT_KEY);
+    setShowDraftBanner(false);
+    setSavedDraft(null);
+  }
+
   // Auto-fill invoice number for new invoices
   useEffect(() => {
-    if (!isEdit && nextNumber) setValue('invoice_number', nextNumber);
-  }, [nextNumber, isEdit, setValue]);
+    if (!isEdit && nextNumber) {
+      // Only set if we haven't restored a draft or if draft is empty
+      if (!formValues.invoice_number) {
+        setValue('invoice_number', nextNumber);
+      }
+    }
+  }, [nextNumber, isEdit, setValue, formValues.invoice_number]);
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'rolls',
   });
-  const watchedRolls = useWatch({
-    control,
-    name: 'rolls',
-  });
-  const unitPrice =
-    useWatch({
-      control,
-      name: 'unit_price_per_kg',
-    }) ?? 0;
 
-  // Live total calculation
-  const totalKg = (watchedRolls ?? []).reduce(
-    (sum, r) => sum + (parseFloat(String(r.weight_kg)) || 0),
-    0,
+  // ── OPS UI: Active roll index for scanning station ──
+  const [activeRollIndex, setActiveRollIndex] = useState(0);
+
+  // ── Import rolls from Excel paste or auto-generate ──
+  const handleImportRolls = useCallback(
+    (
+      imported: { roll_number: string; weight_kg: number; length_m?: number }[],
+    ) => {
+      // Remove existing empty placeholder rows first
+      const emptyIndices = fields
+        .map((f, i) => {
+          const rn = (f as Record<string, unknown>).roll_number;
+          const wk = (f as Record<string, unknown>).weight_kg;
+          return !rn && (!wk || wk === 0) ? i : -1;
+        })
+        .filter((i) => i >= 0)
+        .reverse(); // reverse to remove from end first
+      for (const idx of emptyIndices) {
+        remove(idx);
+      }
+
+      for (const r of imported) {
+        append({
+          roll_number: r.roll_number,
+          weight_kg:
+            r.weight_kg > 0 ? r.weight_kg : (undefined as unknown as number),
+          length_m: r.length_m,
+          quality_grade: undefined,
+          warehouse_location: '',
+          lot_number: '',
+          notes: '',
+        });
+      }
+      // Focus on first new roll
+      setActiveRollIndex(Math.max(0, fields.length - emptyIndices.length));
+    },
+    [fields, append, remove],
   );
-  const totalAmount = totalKg * (unitPrice ?? 0);
 
   async function handleNext() {
     const valid = await trigger([
@@ -111,16 +211,26 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
 
   async function onSubmit(values: WeavingInvoiceFormValues) {
     if (!stepper.isLast) return;
-    if (isEdit && invoice) {
-      await updateMutation.mutateAsync({
-        id: invoice.id,
-        values,
-      });
-    } else {
-      await createMutation.mutateAsync(values);
+    try {
+      if (isEdit && invoice) {
+        await updateMutation.mutateAsync({
+          id: invoice.id,
+          values,
+        });
+      } else {
+        await createMutation.mutateAsync(values);
+      }
+      clearDraft(DRAFT_KEY);
+      onClose();
+    } catch (e) {
+      // Lỗi đã được bắt bởi react-query error state và sẽ hiển thị ở mutationError
+      console.error('Submit failed', e);
     }
-    onClose();
   }
+
+  // Auto Prefix derived from invoice number to ensure global uniqueness and logical grouping
+  const invoiceNum = formValues.invoice_number;
+  const autoPrefix = invoiceNum ? `${invoiceNum}-` : 'VP-';
 
   const isPending =
     isSubmitting || createMutation.isPending || updateMutation.isPending;
@@ -150,6 +260,13 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
     >
       {mutationError && (
         <p className="error-inline mb-4">{(mutationError as Error).message}</p>
+      )}
+
+      {showDraftBanner && savedDraft && (
+        <DraftBanner
+          onRestore={handleRestoreDraft}
+          onDiscard={handleDiscardDraft}
+        />
       )}
 
       <form id="weaving-form" onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -213,6 +330,57 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
                 {errors.invoice_date && (
                   <span className="field-error">
                     {errors.invoice_date.message}
+                  </span>
+                )}
+              </div>
+
+              {/* Lệnh dệt (Tùy chọn) */}
+              <div className="form-field">
+                <label>Lệnh dệt</label>
+                <Controller
+                  control={control}
+                  name="work_order_id"
+                  render={({ field }) => (
+                    <Combobox
+                      options={workOrderOptions}
+                      value={field.value}
+                      onChange={(val) => {
+                        field.onChange(val);
+                        // Auto-fill fabric & price from Work Order
+                        const wo = workOrderOptions.find(
+                          (o) => o.value === val,
+                        )?.raw;
+                        if (wo) {
+                          if (wo.bom_template?.target_fabric) {
+                            setValue(
+                              'fabric_type',
+                              wo.bom_template.target_fabric.name,
+                            );
+                          }
+                          if (wo.weaving_unit_price) {
+                            setValue(
+                              'unit_price_per_kg',
+                              wo.weaving_unit_price,
+                            );
+                          }
+                        }
+                      }}
+                      onBlur={field.onBlur}
+                      placeholder={
+                        selectedSupplierId
+                          ? 'Chọn lệnh dệt...'
+                          : 'Chọn nhà dệt trước...'
+                      }
+                      hasError={!!errors.work_order_id}
+                      disabled={
+                        !selectedSupplierId || workOrderOptions.length === 0
+                      }
+                    />
+                  )}
+                />
+                {errors.work_order_id && (
+                  <span className="field-error">
+                    {errors.work_order_id.message}
                   </span>
                 )}
               </div>
@@ -282,8 +450,11 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
             </div>
           </fieldset>
 
-          <div className="sheet-footer mt-6">
-            <CancelButton onClick={onClose} label="Hủy" />
+          <div className="sheet-footer mt-6 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <CancelButton onClick={onClose} label="Hủy" />
+              <SaveStatus status={saveStatus} lastSavedAt={lastSavedAt} />
+            </div>
             <button
               type="button"
               className="primary-button btn-standard"
@@ -294,152 +465,79 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
           </div>
         </div>
 
-        {/* ── BƯỚC 2: NHẬP CUỘN VẢI ── */}
-        <div className={stepper.currentStep === 1 ? 'block' : 'hidden'}>
-          {/* Summary bar */}
-          <div className="bulk-summary mb-4 px-4 py-3 bg-[var(--surface-raised)] rounded-[var(--radius)] flex gap-6 flex-wrap text-sm">
-            <span>
-              Tổng <strong>{fields.length}</strong> cuộn
-            </span>
-            <span>
-              Tổng KG: <strong>{totalKg.toFixed(2)} kg</strong>
-            </span>
-            <span>
-              Thành tiền: <strong>{formatCurrency(totalAmount)} đ</strong>
-            </span>
-          </div>
+        {/* ── BƯỚC 2: NHẬP CUỘN VẢI (OPS UI) ── */}
+        <div
+          className={
+            stepper.currentStep === 1 ? 'flex flex-col gap-4' : 'hidden'
+          }
+        >
+          {/* Gamification Progress Bar */}
+          <RollProgressBar
+            scanned={scannedCount}
+            total={fields.length}
+            totalKg={totalKg}
+            totalAmount={totalAmount}
+            formatCurrency={formatCurrency}
+          />
 
           {errors.rolls?.root && (
-            <p className="error-inline mb-2">{errors.rolls.root.message}</p>
+            <p className="error-inline">{errors.rolls.root.message}</p>
           )}
 
-          {/* Rolls table */}
-          <div className="data-table-wrap overflow-x-auto">
-            <table className="data-table min-w-[700px]">
-              <thead>
-                <tr>
-                  <th className="w-[40px]">#</th>
-                  <th>Mã cuộn *</th>
-                  <th>KG *</th>
-                  <th>Dài (m)</th>
-                  <th>Loại</th>
-                  <th>Vị trí kho</th>
-                  <th className="w-[40px]" />
-                </tr>
-              </thead>
-              <tbody>
-                {fields.map((field, idx) => (
-                  <tr key={field.id}>
-                    <td className="text-[var(--text-secondary)]">{idx + 1}</td>
-                    <td>
-                      <input
-                        className={`field-input min-w-[120px]${errors.rolls?.[idx]?.roll_number ? ' is-error' : ''}`}
-                        placeholder="VD: VP-001"
-                        {...register(`rolls.${idx}.roll_number`)}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        step="0.1"
-                        min="0.1"
-                        className={`field-input w-[90px]${errors.rolls?.[idx]?.weight_kg ? ' is-error' : ''}`}
-                        {...register(`rolls.${idx}.weight_kg`)}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        className="field-input w-[80px]"
-                        {...register(`rolls.${idx}.length_m`)}
-                      />
-                    </td>
-                    <td>
-                      <select
-                        className="field-select w-[90px]"
-                        {...register(`rolls.${idx}.quality_grade`)}
-                      >
-                        <option value="">—</option>
-                        {QUALITY_GRADES.map((g) => (
-                          <option key={g} value={g}>
-                            {QUALITY_GRADE_LABELS[g]}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <input
-                        className="field-input w-[100px]"
-                        placeholder="A1-R3"
-                        {...register(`rolls.${idx}.warehouse_location`)}
-                      />
-                    </td>
-                    <td>
-                      {fields.length > 1 && (
-                        <button
-                          type="button"
-                          className="btn-icon danger"
-                          onClick={() => remove(idx)}
-                          title="Xóa dòng"
-                        >
-                          ✕
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {/* Import tools: Paste Excel / Auto-gen */}
+          <PasteExcelParser
+            onImport={handleImportRolls}
+            autoPrefix={autoPrefix}
+          />
 
-          <div className="mt-3 flex gap-2">
+          {/* Ops UI: Scanning Station + Roll Grid */}
+          <BulkRollStation
+            fields={fields}
+            register={register}
+            control={control}
+            remove={remove}
+            errors={errors}
+            activeIndex={activeRollIndex}
+            onActiveIndexChange={setActiveRollIndex}
+          />
+
+          {/* Add single & Validation Summary */}
+          <div className="flex flex-wrap gap-2 items-center justify-between">
             <Button
               variant="secondary"
               type="button"
-              onClick={() =>
+              onClick={() => {
+                const nextNumMatch = String(fields.length + 1).padStart(3, '0');
                 append({
-                  roll_number: '',
+                  roll_number: `${autoPrefix}${nextNumMatch}`,
                   weight_kg: undefined as unknown as number,
                   length_m: undefined,
                   quality_grade: undefined,
                   warehouse_location: '',
                   lot_number: '',
                   notes: '',
-                })
-              }
+                });
+                setActiveRollIndex(fields.length);
+              }}
             >
-              {' '}
-              + Thêm cuộn
+              + Thêm 1 cuộn
             </Button>
-            {[5, 10].map((n) => (
-              <button
-                key={n}
-                type="button"
-                className="btn-secondary"
-                onClick={() => {
-                  for (let i = 0; i < n; i++) {
-                    append({
-                      roll_number: '',
-                      weight_kg: undefined as unknown as number,
-                      length_m: undefined,
-                      quality_grade: undefined,
-                      warehouse_location: '',
-                      lot_number: '',
-                      notes: '',
-                    });
-                  }
-                }}
-              >
-                +{n}
-              </button>
-            ))}
+
+            {errors.rolls &&
+              Array.isArray(errors.rolls) &&
+              errors.rolls.some(Boolean) && (
+                <div className="text-sm font-semibold text-red-600 bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg animate-pulse">
+                  ⚠️ Không thể lưu: Tồn tại{' '}
+                  {errors.rolls.filter(Boolean).length} cuộn bị lỗi dữ liệu
+                  (chưa điền KG hoặc sai mã). Hãy điền đủ hoặc Xóa cuộn dư.
+                </div>
+              )}
           </div>
 
-          <div className="sheet-footer mt-6">
+          {/* Footer */}
+          <div className="sheet-footer mt-2">
             <Button variant="secondary" type="button" onClick={stepper.prev}>
-              ← Quay lại
+              Quay lại
             </Button>
             <button
               type="submit"

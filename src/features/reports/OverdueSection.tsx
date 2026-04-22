@@ -6,6 +6,7 @@ import {
   type DataTableColumn,
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
+import { sumBy } from '@/shared/utils/array.util';
 
 type OverdueSectionProps = {
   data: OverdueOrderRow[];
@@ -14,7 +15,7 @@ type OverdueSectionProps = {
 
 export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
   const severeCount = data.filter((r) => r.days_overdue > 7).length;
-  const totalBalance = data.reduce((s, r) => s + r.balance_due, 0);
+  const totalBalance = sumBy(data, (r) => r.balance_due);
 
   const columns: DataTableColumn<OverdueOrderRow>[] = [
     {

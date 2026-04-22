@@ -3,6 +3,7 @@ import { useCallback, useMemo } from 'react';
 import { Icon } from '@/shared/components/Icon';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 import type { RollMatrixItem } from '@/shared/components/roll-grid';
+import { sumBy } from '@/shared/utils/array.util';
 
 /** Shape of a roll from the available rolls API */
 type AvailableRoll = {
@@ -97,9 +98,10 @@ export function ShipmentRollPicker({
   );
 
   const totalSelected = selectedRollIds.size;
-  const totalSelectedWeight = availableRolls
-    .filter((r) => selectedRollIds.has(r.id))
-    .reduce((sum, r) => sum + (r.weight_kg ?? 0), 0);
+  const totalSelectedWeight = sumBy(
+    availableRolls.filter((r) => selectedRollIds.has(r.id)),
+    (r) => r.weight_kg ?? 0,
+  );
 
   /** Handle roll press → toggle selection */
   const handleRollPress = useCallback(

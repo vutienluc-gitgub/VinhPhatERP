@@ -3382,7 +3382,7 @@ export type Database = {
           start_date: string | null;
           status: Database['public']['Enums']['work_order_status'];
           supplier_id: string | null;
-          target_quantity_m: number;
+          target_quantity: number;
           target_unit: string | null;
           target_weight_kg: number | null;
           tenant_id: string | null;
@@ -3406,7 +3406,7 @@ export type Database = {
           start_date?: string | null;
           status?: Database['public']['Enums']['work_order_status'];
           supplier_id?: string | null;
-          target_quantity_m: number;
+          target_quantity: number;
           target_unit?: string | null;
           target_weight_kg?: number | null;
           tenant_id?: string | null;
@@ -3430,7 +3430,7 @@ export type Database = {
           start_date?: string | null;
           status?: Database['public']['Enums']['work_order_status'];
           supplier_id?: string | null;
-          target_quantity_m?: number;
+          target_quantity?: number;
           target_unit?: string | null;
           target_weight_kg?: number | null;
           tenant_id?: string | null;
@@ -3916,6 +3916,20 @@ export type Database = {
           roll_count: number | null;
           total_length_m: number | null;
           total_weight_kg: number | null;
+        };
+        Relationships: [];
+      };
+      v_unpaid_documents: {
+        Row: {
+          document_type: string | null;
+          document_id: string | null;
+          document_number: string | null;
+          supplier_id: string | null;
+          document_date: string | null;
+          total_amount: number | null;
+          paid_amount: number | null;
+          remaining_amount: number | null;
+          tenant_id: string | null;
         };
         Relationships: [];
       };

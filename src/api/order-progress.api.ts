@@ -34,7 +34,7 @@ export async function fetchProgressBoard(): Promise<OrderProgressWithOrder[]> {
     .select(
       `
       *,
-      orders(order_number, delivery_date, customers(name)),
+      orders(order_number, delivery_date, customers(name), order_items(fabric_type, color_name)),
       work_orders(work_order_number, status, supplier:suppliers(name), bom_template:bom_templates(name))
     `,
     )
@@ -122,7 +122,7 @@ export async function fetchProgressDashboard() {
     .select(
       `
       *,
-      orders(id, order_number, delivery_date, status, customers(name)),
+      orders(id, order_number, delivery_date, status, customers(name), order_items(fabric_type, color_name)),
       work_orders(id, work_order_number, status, end_date, supplier:suppliers(name), bom_template:bom_templates(name))
     `,
     )
@@ -139,6 +139,7 @@ export async function fetchProgressDashboard() {
       orderId: string;
       orderNumber: string;
       customerName: string;
+      fabricInfo: string;
       deliveryDate: string | null;
       orderStatus: string;
       stages: OrderProgressWithOrder[];
@@ -159,6 +160,9 @@ export async function fetchProgressDashboard() {
         customerName: isStandalone
           ? (row.work_orders?.supplier?.name ?? 'LSX độc lập')
           : (row.orders?.customers?.name ?? '—'),
+        fabricInfo: isStandalone
+          ? (row.work_orders?.bom_template?.name ?? '')
+          : (row.orders?.order_items?.[0]?.fabric_type ?? ''),
         deliveryDate: isStandalone
           ? (row.work_orders?.end_date ?? null)
           : (row.orders?.delivery_date ?? null),

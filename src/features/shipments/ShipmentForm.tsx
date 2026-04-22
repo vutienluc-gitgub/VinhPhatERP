@@ -19,6 +19,7 @@ import {
   shipmentsSchema,
   type ShipmentsFormValues,
 } from '@/schema/shipment.schema';
+import { sumBy } from '@/shared/utils/array.util';
 
 import { ShipmentRollPicker, type AvailableRoll } from './ShipmentRollPicker';
 
@@ -105,8 +106,8 @@ export function ShipmentForm({
     const selected = availableRolls.filter((r) => selectedRollIds.has(r.id));
     return {
       count: selected.length,
-      totalWeight: selected.reduce((sum, r) => sum + (r.weight_kg ?? 0), 0),
-      totalLength: selected.reduce((sum, r) => sum + (r.length_m ?? 0), 0),
+      totalWeight: sumBy(selected, (r) => r.weight_kg ?? 0),
+      totalLength: sumBy(selected, (r) => r.length_m ?? 0),
       rolls: selected,
     };
   }, [availableRolls, selectedRollIds]);

@@ -5,6 +5,7 @@ import type {
 import type { WeavingInvoiceFormValues } from '@/schema/weaving-invoice.schema';
 import { supabase } from '@/services/supabase/client';
 import { untypedDb as db } from '@/services/supabase/untyped';
+import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 
@@ -59,14 +60,30 @@ export async function fetchWeavingInvoiceById(
 /* ── Next invoice number ── */
 
 export async function fetchNextWeavingInvoiceNumber(): Promise<string> {
-  const { data, error } = await db.rpc('next_weaving_invoice_number');
+  const now = new Date();
+  const yy = String(now.getFullYear()).slice(-2);
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const prefix = `GC${yy}${mm}-`;
+
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select('invoice_number')
+    .ilike('invoice_number', `${prefix}%`)
+    .order('invoice_number', { ascending: false })
+    .limit(1);
+
   if (error) {
-    const now = new Date();
-    const yy = String(now.getFullYear()).slice(-2);
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    return `GC${yy}${mm}-001`;
+    return `${prefix}001`;
   }
-  return (data as string) ?? 'GC0001-001';
+
+  if (!data || data.length === 0) return `${prefix}001`;
+
+  const lastInvoice = data[0]?.invoice_number ?? '';
+  const match = lastInvoice.match(new RegExp(`^${prefix}(\\d+)$`));
+  if (!match?.[1]) return `${prefix}001`;
+
+  const nextNum = parseInt(match[1], 10) + 1;
+  return `${prefix}${String(nextNum).padStart(3, '0')}`;
 }
 
 /* ── Fetch weaving suppliers ── */
@@ -89,6 +106,44 @@ export async function fetchWeavingSuppliers(): Promise<
 export async function createWeavingInvoice(
   values: WeavingInvoiceFormValues,
 ): Promise<WeavingInvoice> {
+  const tenantId = await getTenantId();
+  const invoiceNumber = values.invoice_number.trim();
+
+  // 1. Database Safety: Check uniqueness of invoice_number
+  const { data: exist, error: checkErr } = await supabase
+    .from(TABLE)
+    .select('id')
+    .eq('tenant_id', tenantId)
+    .eq('invoice_number', invoiceNumber);
+
+  if (checkErr) throw checkErr;
+  if (exist && exist.length > 0) {
+    throw new Error(
+      `Số phiếu gia công "${invoiceNumber}" đã tồn tại. Vui lòng sử dụng số khác.`,
+    );
+  }
+
+  // 2. Database Safety: Check if explicitly provided roll_numbers already exist in raw_fabric_rolls
+  const explicitRollNumbers = values.rolls
+    .map((r) => r.roll_number?.trim())
+    .filter(Boolean) as string[];
+
+  if (explicitRollNumbers.length > 0) {
+    const { data: duplicateRolls, error: checkRollsErr } = await supabase
+      .from('raw_fabric_rolls')
+      .select('roll_number')
+      .eq('tenant_id', tenantId)
+      .in('roll_number', explicitRollNumbers);
+
+    if (checkRollsErr) throw checkRollsErr;
+    if (duplicateRolls && duplicateRolls.length > 0) {
+      const dups = duplicateRolls.map((d) => d.roll_number).join(', ');
+      throw new Error(
+        `Các mã cuộn vải sau đã tồn tại trong kho mộc: ${dups}. Vui lòng nhập mã khác.`,
+      );
+    }
+  }
+
   const { data: userData } = await supabase.auth.getUser();
 
   // Fetch supplier code for roll_number prefix (read-only, before transaction)
@@ -101,6 +156,7 @@ export async function createWeavingInvoice(
   const supplierCode = supplierData?.code ?? 'SUP';
 
   const headerInsert = {
+    tenant_id: tenantId,
     invoice_number: values.invoice_number.trim(),
     supplier_id: values.supplier_id,
     invoice_date: values.invoice_date,
@@ -123,12 +179,22 @@ export async function createWeavingInvoice(
     sort_order: idx,
   }));
 
-  const { data, error } = await db.rpc('atomic_create_weaving_invoice', {
+  const { data, error } = await db.rpc('rpc_create_weaving_invoice', {
     p_header: headerInsert,
     p_rolls: rollsInsert,
   });
 
-  if (error) throw error;
+  if (error) {
+    if (
+      error.code === '23505' ||
+      error.message?.includes('duplicate key value')
+    ) {
+      throw new Error(
+        `Lỗi dữ liệu: Số phiếu "${headerInsert.invoice_number}" bị trùng lặp.`,
+      );
+    }
+    throw error;
+  }
   return data as unknown as WeavingInvoice;
 }
 
@@ -138,8 +204,47 @@ export async function updateWeavingInvoice(
   id: string,
   values: WeavingInvoiceFormValues,
 ): Promise<void> {
+  const tenantId = await getTenantId();
+  const invoiceNumber = values.invoice_number.trim();
+
+  // 1. Database Safety: Check uniqueness of invoice_number internally
+  const { data: exist, error: checkErr } = await supabase
+    .from(TABLE)
+    .select('id')
+    .eq('tenant_id', tenantId)
+    .eq('invoice_number', invoiceNumber)
+    .neq('id', id);
+
+  if (checkErr) throw checkErr;
+  if (exist && exist.length > 0) {
+    throw new Error(
+      `Số phiếu gia công "${invoiceNumber}" đã được sử dụng bởi phiếu khác.`,
+    );
+  }
+
+  // 2. Database Safety: Check if explicitly provided roll_numbers already exist in raw_fabric_rolls
+  const explicitRollNumbers = values.rolls
+    .map((r) => r.roll_number?.trim())
+    .filter(Boolean) as string[];
+
+  if (explicitRollNumbers.length > 0) {
+    const { data: duplicateRolls, error: checkRollsErr } = await supabase
+      .from('raw_fabric_rolls')
+      .select('roll_number')
+      .eq('tenant_id', tenantId)
+      .in('roll_number', explicitRollNumbers);
+
+    if (checkRollsErr) throw checkRollsErr;
+    if (duplicateRolls && duplicateRolls.length > 0) {
+      const dups = duplicateRolls.map((d) => d.roll_number).join(', ');
+      throw new Error(
+        `Các mã cuộn vải sau đã tồn tại trong kho mộc: ${dups}. Vui lòng nhập mã khác hoặc để trống.`,
+      );
+    }
+  }
+
   const headerUpdate = {
-    invoice_number: values.invoice_number.trim(),
+    invoice_number: invoiceNumber,
     supplier_id: values.supplier_id,
     invoice_date: values.invoice_date,
     fabric_type: values.fabric_type.trim(),
@@ -158,15 +263,21 @@ export async function updateWeavingInvoice(
     sort_order: idx,
   }));
 
-  const { error } = await db.rpc('atomic_update_weaving_invoice', {
+  const { error } = await db.rpc('rpc_update_weaving_invoice', {
     p_id: id,
     p_header: headerUpdate,
     p_rolls: rollsInsert,
   });
 
   if (error) {
+    if (
+      error.code === '23505' ||
+      error.message?.includes('duplicate key value')
+    ) {
+      throw new Error(`Lỗi dữ liệu: Số phiếu "${invoiceNumber}" bị trùng lặp.`);
+    }
     if (error.message?.includes('INVOICE_NOT_DRAFT'))
-      throw new Error('Chi co the cap nhat phieu nhap o trang thai nhap.');
+      throw new Error('Chỉ có thể cập nhật phiếu ở trạng thái nháp (draft).');
     throw error;
   }
 }
@@ -174,7 +285,7 @@ export async function updateWeavingInvoice(
 /* ── Confirm invoice → trigger insert to raw_fabric_rolls ── */
 
 export async function confirmWeavingInvoice(id: string): Promise<void> {
-  const { error } = await db.rpc('confirm_weaving_invoice', {
+  const { error } = await db.rpc('rpc_confirm_weaving_invoice', {
     p_invoice_id: id,
   });
   if (error) {
@@ -182,6 +293,14 @@ export async function confirmWeavingInvoice(id: string): Promise<void> {
       throw new Error('Phiếu này đã được xác nhận rồi.');
     if (error.message?.includes('INVOICE_NOT_FOUND'))
       throw new Error('Không tìm thấy phiếu gia công.');
+    if (
+      error.code === '23505' ||
+      error.message?.includes('duplicate key value')
+    ) {
+      throw new Error(
+        'Lỗi dữ liệu kho mộc: Có ít nhất 1 mã cuộn trong phiếu này đã tồn tại trong kho. Vui lòng Huỷ xác nhận hoặc sửa lại mã cuộn trước khi nhập kho.',
+      );
+    }
     throw error;
   }
 }

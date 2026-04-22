@@ -24,6 +24,7 @@ import {
   useDeliveryStaffList,
 } from '@/application/shipments';
 import { SHIPMENT_STATUS_LABELS } from '@/schema/shipment.schema';
+import { sumBy } from '@/shared/utils/array.util';
 
 import { DeliveryConfirmForm } from './DeliveryConfirmForm';
 import { exportShipmentToPdf } from './shipment-document';
@@ -77,7 +78,7 @@ export function ShipmentList() {
       key: 'search',
       type: 'search',
       label: 'Tìm kiếm',
-      placeholder: 'So phieu xuat, ten khach...',
+      placeholder: 'Số phiếu xuất, tên khách...',
     },
     {
       key: 'deliveryStaffId',
@@ -179,10 +180,9 @@ export function ShipmentList() {
             <p>Tổng cước (Trang)</p>
             <p>
               {formatCurrency(
-                shipments.reduce(
-                  (sum, s) =>
-                    sum + (s.shipping_cost || 0) + (s.loading_fee || 0),
-                  0,
+                sumBy(
+                  shipments,
+                  (s) => (s.shipping_cost || 0) + (s.loading_fee || 0),
                 ),
               )}{' '}
               đ

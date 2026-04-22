@@ -6,6 +6,7 @@ import {
   useCashFlowSummary,
   useExpenseByCategory,
 } from '@/application/payments';
+import { sumBy } from '@/shared/utils/array.util';
 
 import { EXPENSE_CATEGORY_LABELS } from './payments.module';
 
@@ -33,13 +34,10 @@ export function CashFlowDashboard() {
   const { data: accounts = [] } = useAccountList();
 
   // Aggregated totals
-  const totalInflow = cashFlow.reduce((s, r) => s + r.total_inflow, 0);
-  const totalOutflow = cashFlow.reduce((s, r) => s + r.total_outflow, 0);
+  const totalInflow = sumBy(cashFlow, (r) => r.total_inflow);
+  const totalOutflow = sumBy(cashFlow, (r) => r.total_outflow);
   const netFlow = totalInflow - totalOutflow;
-  const totalAccountBalance = accounts.reduce(
-    (s, a) => s + a.current_balance,
-    0,
-  );
+  const totalAccountBalance = sumBy(accounts, (a) => a.current_balance);
 
   const isLoading = loadingCashFlow || loadingExpenses;
 

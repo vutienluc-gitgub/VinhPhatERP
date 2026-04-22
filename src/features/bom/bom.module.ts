@@ -45,9 +45,9 @@ export const bomFeature: FeatureDefinition = {
 export const bomPlugin: FeaturePlugin = {
   key: 'bom',
   route: 'bom',
-  label: 'Định mức (BOM)',
+  label: 'Dinh muc (BOM)',
   shortLabel: 'BOM',
-  description: 'Cấu hình định mức nguyên vật liệu sợi cho từng mã vải mộc.',
+  description: 'Cau hinh dinh muc nguyen vat lieu soi cho tung ma vai moc.',
   icon: 'GitMerge',
   requiredRoles: ['admin', 'manager'],
   group: 'production',
@@ -56,7 +56,22 @@ export const bomPlugin: FeaturePlugin = {
     {
       path: 'bom',
       component: () =>
-        import('./BomPage').then((m) => ({ default: m.BomPage })),
+        import('./BomListPage').then((m) => ({ default: m.BomListPage })),
+    },
+    {
+      path: 'bom/create',
+      component: () =>
+        import('./BomCreatePage').then((m) => ({ default: m.BomCreatePage })),
+    },
+    {
+      path: 'bom/:id',
+      component: () =>
+        import('./BomDetailPage').then((m) => ({ default: m.BomDetailPage })),
+    },
+    {
+      path: 'bom/:id/edit',
+      component: () =>
+        import('./BomEditPage').then((m) => ({ default: m.BomEditPage })),
     },
   ],
 };

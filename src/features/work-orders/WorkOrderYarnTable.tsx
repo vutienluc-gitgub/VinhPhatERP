@@ -9,6 +9,10 @@ import {
 import { Icon } from '@/shared/components/Icon';
 import { Combobox } from '@/shared/components/Combobox';
 import { useYarnCatalogOptions } from '@/shared/hooks/useYarnCatalogOptions';
+import {
+  calcTotalBomRatio,
+  calcTotalRequiredKg,
+} from '@/shared/utils/yarn-requirement.util';
 
 import type { CreateWorkOrderInput } from './work-orders.module';
 
@@ -34,7 +38,7 @@ export function WorkOrderYarnTable({
     <div className="panel-card card-flush mt-4">
       <div className="card-header-area">
         <div className="flex justify-between items-center">
-          <h4 className="text-sm font-bold">Phan bo soi (Editable Table)</h4>
+          <h4 className="text-sm font-bold">Phân bổ sợi</h4>
           <button
             type="button"
             className="btn-secondary flex items-center gap-1.5"
@@ -47,7 +51,7 @@ export function WorkOrderYarnTable({
             }
           >
             <Icon name="Plus" size={16} />
-            Them soi
+            Thêm sợi
           </button>
         </div>
       </div>
@@ -56,9 +60,9 @@ export function WorkOrderYarnTable({
         <table className="data-table table-sm">
           <thead>
             <tr>
-              <th className="w-[45%]">Loai soi</th>
+              <th className="w-[45%]">Loại sợi</th>
               <th className="text-right w-[20%]">% BOM</th>
-              <th className="text-right w-[25%]">Can (kg)</th>
+              <th className="text-right w-[25%]">Cần (kg)</th>
               <th className="w-[10%]" />
             </tr>
           </thead>
@@ -196,23 +200,15 @@ export function WorkOrderYarnTable({
           </tbody>
           <tfoot>
             <tr className="font-bold">
-              <td className="text-right">TONG:</td>
+              <td className="text-right">TỔNG:</td>
               <td className="text-right">
-                {watch('yarn_requirements')
-                  ?.reduce(
-                    (sum, item) => sum + (Number(item.bom_ratio_pct) || 0),
-                    0,
-                  )
-                  .toFixed(1)}
+                {calcTotalBomRatio(watch('yarn_requirements') || []).toFixed(1)}
                 %
               </td>
               <td className="text-right text-primary">
-                {watch('yarn_requirements')
-                  ?.reduce(
-                    (sum, item) => sum + (Number(item.required_kg) || 0),
-                    0,
-                  )
-                  .toFixed(2)}{' '}
+                {calcTotalRequiredKg(watch('yarn_requirements') || []).toFixed(
+                  2,
+                )}{' '}
                 kg
               </td>
               <td />
@@ -222,8 +218,8 @@ export function WorkOrderYarnTable({
       </div>
 
       <div className="px-4 py-2 text-xs text-muted border-t border-border">
-        * Enter o cot KG dong cuoi de them dong moi. Mui ten Len/Xuong de di
-        chuyen nhanh.
+        * Enter ở cột KG dòng cuối để thêm dòng mới. Mũi tên Lên/Xuống để di
+        chuyển nhanh.
       </div>
     </div>
   );

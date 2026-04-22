@@ -87,7 +87,7 @@ export function WorkOrderForm({
           supplier_id: initialData.supplier_id,
           weaving_unit_price: initialData.weaving_unit_price,
           bom_template_id: initialData.bom_template_id,
-          target_quantity_m: initialData.target_quantity_m,
+          target_quantity: initialData.target_quantity,
           target_unit: initialData.target_unit,
           target_weight_kg: initialData.target_weight_kg,
           standard_loss_pct: initialData.standard_loss_pct || 0,
@@ -106,7 +106,7 @@ export function WorkOrderForm({
           supplier_id: '',
           weaving_unit_price: 0,
           bom_template_id: '',
-          target_quantity_m: 0,
+          target_quantity: 0,
           target_unit: 'm',
           target_weight_kg: 0,
           standard_loss_pct: 0,
@@ -191,7 +191,7 @@ export function WorkOrderForm({
     replace,
     isEditing,
     initialBomId: initialData?.bom_template_id,
-    initialQty: initialData?.target_quantity_m,
+    initialQty: initialData?.target_quantity,
   });
 
   // ── Submit ──
@@ -424,10 +424,10 @@ export function WorkOrderForm({
                     <input
                       type="number"
                       step="0.01"
-                      {...register('target_quantity_m', {
+                      {...register('target_quantity', {
                         valueAsNumber: true,
                       })}
-                      className={`field-input flex-1${errors.target_quantity_m ? ' is-error' : ''}`}
+                      className={`field-input flex-1${errors.target_quantity ? ' is-error' : ''}`}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
@@ -452,9 +452,9 @@ export function WorkOrderForm({
                       />
                     </div>
                   </div>
-                  {errors.target_quantity_m && (
+                  {errors.target_quantity && (
                     <span className="field-error">
-                      {errors.target_quantity_m.message}
+                      {errors.target_quantity.message}
                     </span>
                   )}
                 </div>

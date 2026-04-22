@@ -11,6 +11,7 @@ import {
   PaymentMethodChart,
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
+import { sumBy } from '@/shared/utils/array.util';
 
 type RevenueTrendSectionProps = {
   monthlyData: MonthlyRevenueRow[];
@@ -46,8 +47,8 @@ export function RevenueTrendSection({
   paymentData,
   isLoading,
 }: RevenueTrendSectionProps) {
-  const totalRevenue = monthlyData.reduce((s, r) => s + r.total_revenue, 0);
-  const totalCollected = monthlyData.reduce((s, r) => s + r.total_collected, 0);
+  const totalRevenue = sumBy(monthlyData, (r) => r.total_revenue);
+  const totalCollected = sumBy(monthlyData, (r) => r.total_collected);
   const collectionRate =
     totalRevenue > 0 ? Math.round((totalCollected / totalRevenue) * 100) : 0;
   const growth = computeGrowth(monthlyData);

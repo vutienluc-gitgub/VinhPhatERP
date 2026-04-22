@@ -23,7 +23,10 @@ export const weavingRollSchema = z.object({
     (v) => (v === '' || v === null || v === undefined ? undefined : Number(v)),
     z.number().positive().optional(),
   ),
-  quality_grade: z.enum(['A', 'B', 'C']).optional(),
+  quality_grade: z.preprocess(
+    (v) => (v === '' || v === null ? undefined : v),
+    z.enum(['A', 'B', 'C']).optional(),
+  ),
   warehouse_location: z.string().trim().max(120).optional(),
   lot_number: z.string().trim().max(60).optional(),
   notes: z.string().trim().optional(),
@@ -34,6 +37,11 @@ export type WeavingRollFormValues = z.infer<typeof weavingRollSchema>;
 export const weavingInvoiceHeaderSchema = z.object({
   invoice_number: z.string().trim().min(1, 'Số phiếu không được để trống'),
   supplier_id: z.string().uuid('Chọn nhà dệt'),
+  work_order_id: z
+    .string()
+    .uuid('Lệnh dệt không hợp lệ')
+    .optional()
+    .or(z.literal('')),
   invoice_date: z.string().min(1, 'Chọn ngày'),
   fabric_type: z.string().trim().min(1, 'Chọn loại vải'),
   unit_price_per_kg: z.preprocess(
@@ -56,6 +64,7 @@ export type WeavingInvoiceFormValues = z.infer<typeof weavingInvoiceFormSchema>;
 export const weavingInvoiceDefaults: WeavingInvoiceFormValues = {
   invoice_number: '',
   supplier_id: '',
+  work_order_id: '',
   invoice_date: new Date().toISOString().slice(0, 10),
   fabric_type: '',
   unit_price_per_kg: 0,

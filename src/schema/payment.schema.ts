@@ -113,6 +113,16 @@ export const expenseSchema = z.object({
   description: z.string().trim().min(2, 'Nhập mô tả chi phí'),
   referenceNumber: z.string().trim().max(120).optional().or(z.literal('')),
   notes: z.string().trim().optional().or(z.literal('')),
+  allocations: z
+    .array(
+      z.object({
+        document_type: z.enum(['weaving_invoice', 'yarn_receipt']),
+        document_id: z.string().uuid(),
+        allocated_amount: z.number().positive(),
+      }),
+    )
+    .optional()
+    .default([]),
 });
 
 export type ExpenseFormValues = z.infer<typeof expenseSchema>;
@@ -128,6 +138,7 @@ export const expenseDefaultValues: ExpenseFormValues = {
   description: '',
   referenceNumber: '',
   notes: '',
+  allocations: [],
 };
 
 export const accountSchema = z.object({

@@ -1,9 +1,7 @@
-# Coding Rules (Single Source of Truth)
-
-This is the ONLY file that defines coding standards.
-Do not use any other file for code rules.
-
 # VinhPhat App V2 — Quy tắc lập trình
+
+> Tài liệu này định nghĩa các quy tắc cốt lõi cho dự án.
+> Dành cho cả lập trình viên và AI Agent. AI Agent cần tuân thủ thêm các quy định thực thi nghiêm ngặt tại `.agents/rules/`.
 
 > Tài liệu này định nghĩa các quy tắc bắt buộc và khuyến nghị cho dự án.
 > Mọi thành viên và AI assistant đều phải tuân theo.
@@ -12,9 +10,7 @@ Do not use any other file for code rules.
 
 ## Priority
 
-This file has higher priority than any other coding-related document.
-
-All code must follow this file strictly.
+Tài liệu này đóng vai trò là nền tảng (Base rules). Các file trong `.agents/rules/` là sự mở rộng và đặc tả chặt chẽ hơn dành riêng cho AI.
 
 ## 1. TypeScript — tránh lỗi kiểu dữ liệu
 
@@ -122,14 +118,14 @@ features/customers/
 
 ## 6. Bảo mật — OWASP Top 10
 
-| Rủi ro                | Quy tắc bắt buộc                                                  |
-| --------------------- | ----------------------------------------------------------------- |
-| SQL Injection         | Dùng Supabase client — **tuyệt đối không nối chuỗi SQL thủ công** |
-| XSS                   | Không dùng `dangerouslySetInnerHTML`                              |
-| Broken Access Control | Mọi bảng đều phải bật RLS và có policy rõ ràng                    |
-| Secrets lộ            | Không commit `.env*`, chỉ dùng `VITE_` prefix cho biến public     |
-| Phụ thuộc lỗi thời    | Chạy `npm audit` định kỳ, cập nhật dep mỗi sprint                 |
-| Service key lộ        | **Không bao giờ** dùng `service_role` key ở frontend              |
+| Rủi ro                | Quy tắc bắt buộc                                                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| SQL Injection         | Dùng Supabase client — **tuyệt đối không nối chuỗi SQL thủ công**. Đặc biệt Insert/Upsert phải thông qua `src/lib/db-guard.ts` |
+| XSS                   | Không dùng `dangerouslySetInnerHTML`                                                                                           |
+| Broken Access Control | Mọi bảng đều phải bật RLS và có policy rõ ràng                                                                                 |
+| Secrets lộ            | Không commit `.env*`, chỉ dùng `VITE_` prefix cho biến public                                                                  |
+| Phụ thuộc lỗi thời    | Chạy `npm audit` định kỳ, cập nhật dep mỗi sprint                                                                              |
+| Service key lộ        | **Không bao giờ** dùng `service_role` key ở frontend                                                                           |
 
 ---
 
@@ -161,7 +157,7 @@ features/customers/
 
 ## 9. UI & CSS Standards (Anti-guessing Layout)
 
-- **CSS Framework**: Tuyệt đối KHÔNG dùng TailwindCSS, Bootstrap hay đoán utility classes (như `p-4`, `space-y`).
+- **CSS Framework**: Tuyệt đối KHÔNG dùng Bootstrap. Với TailwindCSS, tránh lạm dụng utility classes tự do (như `p-4`, `space-y`); bắt buộc ưu tiên dùng Design Tokens/Class chuẩn.
 - **Audit Requirement**: Trước khi code UI, Model PHẢI dùng `view_file` xem `src/index.css` để lấy mã màu (`--primary`, `--surface`, `--border-color`) và các class chuẩn.
 - **Allowed Components/Classes**:
   - **Inputs**: Bắt buộc dùng `.field-input`.

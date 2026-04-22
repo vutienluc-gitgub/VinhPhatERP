@@ -39,7 +39,7 @@ export const createWorkOrderSchema = z.object({
   supplier_id: z.string().min(1, 'Vui lòng chọn nhà dệt gia công'),
   bom_template_id: z.string().min(1, 'Cần chọn BOM để sản xuất'),
   weaving_unit_price: z.number().min(0, 'Đơn giá không được âm').default(0),
-  target_quantity_m: z.number().positive('Sản lượng mục tiêu phải lớn hơn 0'),
+  target_quantity: z.number().positive('Sản lượng mục tiêu phải lớn hơn 0'),
   target_unit: z.string().default('m'),
   target_weight_kg: z.number().nullable().optional(),
   start_date: z.string().nullable().optional(),

@@ -6,15 +6,29 @@ import {
   createExpense,
   updateExpense,
   deleteExpense,
+  fetchUnpaidDocuments,
 } from '@/api/payments.api';
 import { mapExpenseFormToDb } from '@/domain/payments';
 import { DomainEventBus } from '@/domain/core/DomainEventBus';
 import type { ExpenseFormValues } from '@/features/payments/payments.module';
-import type { Expense, ExpensesFilter } from '@/features/payments/types';
+import type {
+  Expense,
+  ExpensesFilter,
+  UnpaidDocument,
+} from '@/features/payments/types';
 
 export type { Expense, ExpensesFilter };
 
 const QUERY_KEY = ['expenses'] as const;
+
+export function useUnpaidDocuments(supplierId?: string) {
+  return useQuery({
+    queryKey: ['unpaid-documents', supplierId],
+    queryFn: () =>
+      supplierId ? fetchUnpaidDocuments(supplierId) : Promise.resolve([]),
+    enabled: !!supplierId,
+  }) as { data: UnpaidDocument[]; isLoading: boolean };
+}
 
 export function useExpenseList(filters: ExpensesFilter = {}, page = 1) {
   return useQuery({

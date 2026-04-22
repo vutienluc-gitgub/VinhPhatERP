@@ -95,9 +95,18 @@ export function AdaptiveSheet({
     }
   }, [open]);
 
+  const isMouseDownOnOverlay = useRef(false);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    isMouseDownOnOverlay.current = e.target === e.currentTarget;
+  }, []);
+
   const handleOverlayClick = useCallback(
     (e: React.MouseEvent) => {
-      if (e.target === e.currentTarget) onClose();
+      if (e.target === e.currentTarget && isMouseDownOnOverlay.current) {
+        onClose();
+      }
+      isMouseDownOnOverlay.current = false;
     },
     [onClose],
   );
@@ -108,7 +117,11 @@ export function AdaptiveSheet({
   if (!mount) return null;
 
   return createPortal(
-    <div className="modal-overlay" onClick={handleOverlayClick}>
+    <div
+      className="modal-overlay"
+      onClick={handleOverlayClick}
+      onPointerDown={handlePointerDown}
+    >
       <div
         ref={sheetRef}
         className="modal-sheet"

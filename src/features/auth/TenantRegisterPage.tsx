@@ -134,7 +134,7 @@ export function TenantRegisterPage() {
                 id="tenant-company"
                 type="text"
                 autoComplete="organization"
-                placeholder="Cong ty TNHH ABC"
+                placeholder="Công ty TNHH ABC"
                 {...register('companyName')}
               />
             </div>
@@ -212,7 +212,7 @@ export function TenantRegisterPage() {
                 id="tenant-password"
                 type="password"
                 autoComplete="new-password"
-                placeholder="It nhat 6 ky tu"
+                placeholder="Ít nhất 6 ký tự"
                 {...register('password')}
               />
             </div>
@@ -229,7 +229,7 @@ export function TenantRegisterPage() {
                 id="tenant-confirm"
                 type="password"
                 autoComplete="new-password"
-                placeholder="Nhap lai mat khau"
+                placeholder="Nhập lại mật khẩu"
                 {...register('confirmPassword')}
               />
             </div>

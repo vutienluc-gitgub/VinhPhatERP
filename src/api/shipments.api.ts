@@ -263,7 +263,7 @@ export async function createShipmentFull(
     };
   });
 
-  const { data, error } = await untypedDb.rpc('atomic_create_shipment', {
+  const { data, error } = await untypedDb.rpc('rpc_create_shipment', {
     p_header: headerInsert,
     p_items: itemsInsert,
     p_reserve_roll_ids: selectedRollIds,
@@ -284,7 +284,7 @@ export async function createShipmentFull(
 export async function confirmShipmentFull(
   shipmentId: string,
 ): Promise<ShipmentDocument> {
-  const { error } = await untypedDb.rpc('atomic_confirm_shipment', {
+  const { error } = await untypedDb.rpc('rpc_confirm_shipment', {
     p_shipment_id: shipmentId,
   });
 
@@ -338,7 +338,7 @@ export async function markShipmentDelivered(
       prefix: monthlyPrefix('PC'),
     });
 
-    const { error: expError } = await untypedDb.rpc('atomic_create_expense', {
+    const { error: expError } = await untypedDb.rpc('rpc_create_expense', {
       p_data: {
         expense_number: expenseNumber,
         category: 'logistics',
@@ -389,7 +389,7 @@ export async function fetchDeliveryStaff(): Promise<DeliveryStaffSummary[]> {
 /* ── Delete shipment (preparing only) ── */
 
 export async function deleteShipmentFull(shipmentId: string): Promise<void> {
-  const { error } = await untypedDb.rpc('atomic_delete_shipment', {
+  const { error } = await untypedDb.rpc('rpc_delete_shipment', {
     p_shipment_id: shipmentId,
   });
 

@@ -9,6 +9,7 @@ export { Badge } from './Badge';
 export type { BadgeVariant } from './Badge';
 export { Combobox } from './Combobox';
 export { CurrencyInput } from './CurrencyInput';
+export { NumberInput } from './NumberInput';
 export { ConfirmProvider, ConfirmContext, useConfirm } from './ConfirmDialog';
 export { DataTablePremium } from './DataTablePremium';
 export type { Column as DataTableColumn } from './DataTablePremium';

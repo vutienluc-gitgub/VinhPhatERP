@@ -1,4 +1,4 @@
-﻿import {
+import {
   Icon,
   Badge,
   DataTablePremium,

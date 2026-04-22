@@ -44,8 +44,8 @@ export function CustomerList({
     {
       key: 'query',
       type: 'search',
-      label: 'Tim kiem khach hang',
-      placeholder: 'Ten, ma, so dien thoai...',
+      label: 'Tìm kiếm khách hàng',
+      placeholder: 'Tên, mã, số điện thoại...',
     },
     {
       key: 'status',

@@ -20,6 +20,7 @@ import {
   useUpdateYarnReceipt,
   useYarnCatalogOptions,
 } from '@/application/inventory';
+import { sumBy } from '@/shared/utils/array.util';
 
 import type { YarnReceipt } from './types';
 import {
@@ -97,9 +98,9 @@ function LineTotals({
     control,
     name: 'items',
   });
-  const total = (items ?? []).reduce(
-    (sum, it) => sum + (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0),
-    0,
+  const total = sumBy(
+    items ?? [],
+    (it) => (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0),
   );
   return (
     <div className="text-right font-semibold text-base py-2.5 border-t-2 border-[var(--border)]">

@@ -7,7 +7,7 @@ export interface WorkOrder {
   order_id: string | null;
   bom_template_id: string;
   bom_version: number;
-  target_quantity_m: number;
+  target_quantity: number;
   target_unit: string;
   target_weight_kg: number | null;
   standard_loss_pct: number;
@@ -75,4 +75,5 @@ export interface WorkOrderYarnRequirementWithRelations extends WorkOrderYarnRequ
 export type WorkOrderFilter = {
   status?: WorkOrderStatus | 'all';
   search?: string;
+  supplier_id?: string;
 };

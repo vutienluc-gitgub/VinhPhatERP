@@ -78,7 +78,7 @@ export async function updateJourneyStatus(
   notes: string | null,
   updatedBy: string | null,
 ): Promise<void> {
-  const { error } = await untypedDb.rpc('atomic_update_shipment_journey', {
+  const { error } = await untypedDb.rpc('rpc_update_shipment_journey', {
     p_shipment_id: shipmentId,
     p_journey_status: journeyStatus,
     p_notes: notes,

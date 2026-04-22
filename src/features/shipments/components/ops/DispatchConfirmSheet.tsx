@@ -6,6 +6,7 @@ import { Button } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { useOrderList } from '@/shared/hooks/useFormOptions';
 import type { TruckSlot } from '@/features/shipments/ops-engine/useFleetCommander';
+import { sumBy } from '@/shared/utils/array.util';
 
 interface DispatchConfirmSheetProps {
   isOpen: boolean;
@@ -48,7 +49,7 @@ export function DispatchConfirmSheet({
     label: `${o.order_number} - ${o.customers?.name || 'Khách lẻ'}`,
   }));
 
-  const totalRolls = activeTrucks.reduce((sum, t) => sum + t.rolls.length, 0);
+  const totalRolls = sumBy(activeTrucks, (t) => t.rolls.length);
 
   if (!isOpen) return null;
 

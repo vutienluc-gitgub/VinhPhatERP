@@ -1,6 +1,7 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 
 import { formatCurrency } from '@/shared/utils/format';
+import { sumBy } from '@/shared/utils/array.util';
 
 type PaymentSlice = {
   label: string;
@@ -74,7 +75,7 @@ export function PaymentMethodChart({
     );
   }
 
-  const total = data.reduce((s, d) => s + d.value, 0);
+  const total = sumBy(data, (d) => d.value);
 
   const slices = data.map((d, i) => ({
     ...d,

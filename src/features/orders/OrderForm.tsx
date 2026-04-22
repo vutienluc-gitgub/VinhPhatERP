@@ -22,6 +22,7 @@ import {
   type CreateOrderInput,
 } from '@/application/orders';
 import { useUpdateOrder } from '@/application/orders';
+import { sumBy } from '@/shared/utils/array.util';
 
 import { CreditOverrideDialog } from './CreditOverrideDialog';
 import {
@@ -73,9 +74,9 @@ function LineTotals({
     control,
     name: 'items',
   });
-  const total = (items ?? []).reduce(
-    (sum, it) => sum + (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0),
-    0,
+  const total = sumBy(
+    items ?? [],
+    (it) => (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0),
   );
   return (
     <div className="text-right font-semibold text-base py-2 border-t-2 border-border mt-3">

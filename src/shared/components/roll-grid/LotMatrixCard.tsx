@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from 'clsx';
 
 import { Icon } from '@/shared/components/Icon';
+import { sumBy } from '@/shared/utils/array.util';
 
 import { RollGridItem, type RollGridItemMode } from './RollGridItem';
 import { useRollMatrixLogic, type RollMatrixItem } from './useRollMatrixLogic';
@@ -70,10 +71,7 @@ export function LotMatrixCard({
       ? rolls.filter((r) => selectedRollIds.has(r.id))
       : [];
   const selectedCount = selectedInGroup.length;
-  const selectedWeight = selectedInGroup.reduce(
-    (sum, r) => sum + (r.weight_kg ?? 0),
-    0,
-  );
+  const selectedWeight = sumBy(selectedInGroup, (r) => r.weight_kg ?? 0);
 
   // Check progress matching
   const isCountMatch = totals.rollCount === expectedRollsCount;
