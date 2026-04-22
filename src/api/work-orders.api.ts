@@ -146,12 +146,12 @@ export async function createWorkOrder(
 
   // 3. Create the Work Order
   let targetKg = input.target_weight_kg || 0;
-  if (targetKg === 0 && input.target_quantity_m > 0 && bomYarns) {
+  if (targetKg === 0 && input.target_quantity > 0 && bomYarns) {
     const totalConsumptionPerM = bomYarns.reduce(
       (sum, item) => sum + (item.consumption_kg_per_m || 0),
       0,
     );
-    targetKg = input.target_quantity_m * totalConsumptionPerM;
+    targetKg = input.target_quantity * totalConsumptionPerM;
   }
 
   const workOrderInsert = {
@@ -159,7 +159,7 @@ export async function createWorkOrder(
     order_id: input.order_id || null,
     bom_template_id: input.bom_template_id,
     bom_version: bomVersion,
-    target_quantity_m: input.target_quantity_m,
+    target_quantity: input.target_quantity,
     target_unit: input.target_unit || 'm',
     target_weight_kg: targetKg,
     standard_loss_pct: lossPct,
@@ -259,7 +259,7 @@ export async function updateWorkOrder(
     work_order_number: string | undefined;
     order_id: string | null;
     bom_template_id: string;
-    target_quantity_m: number;
+    target_quantity: number;
     target_unit: string;
     start_date: string | null;
     end_date: string | null;
@@ -276,7 +276,7 @@ export async function updateWorkOrder(
     order_id:
       input.order_id === 'none' ? null : input.order_id || current.order_id,
     bom_template_id: input.bom_template_id || current.bom_template_id,
-    target_quantity_m: input.target_quantity_m ?? current.target_quantity_m,
+    target_quantity: input.target_quantity ?? current.target_quantity,
     target_unit: input.target_unit || current.target_unit || 'm',
     start_date: input.start_date || current.start_date,
     end_date: input.end_date || current.end_date,
@@ -292,8 +292,8 @@ export async function updateWorkOrder(
   const bomChanged =
     input.bom_template_id && input.bom_template_id !== current.bom_template_id;
   const qtyChanged =
-    input.target_quantity_m !== undefined &&
-    input.target_quantity_m !== current.target_quantity_m;
+    input.target_quantity !== undefined &&
+    input.target_quantity !== current.target_quantity;
   const yarnsProvided =
     input.yarn_requirements && input.yarn_requirements.length > 0;
 
@@ -334,7 +334,7 @@ export async function updateWorkOrder(
         (sum, item) => sum + (item.consumption_kg_per_m || 0),
         0,
       );
-      targetKg = update.target_quantity_m * totalConsumptionPerM;
+      targetKg = update.target_quantity * totalConsumptionPerM;
     }
     update.target_weight_kg = targetKg;
 

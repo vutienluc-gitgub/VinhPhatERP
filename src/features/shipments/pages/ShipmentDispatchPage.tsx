@@ -8,6 +8,7 @@ import { useFleetCommander } from '@/features/shipments/ops-engine/useFleetComma
 import { ShipmentRollBlock } from '@/features/shipments/components/ops/ShipmentRollBlock';
 import { TruckBay } from '@/features/shipments/components/ops/TruckBay';
 import { DispatchConfirmSheet } from '@/features/shipments/components/ops/DispatchConfirmSheet';
+import { sumBy } from '@/shared/utils/array.util';
 
 /**
  * ShipmentDispatchPage — Tactical Ops UI for dispatching rolls to trucks.
@@ -38,7 +39,7 @@ export function ShipmentDispatchPage() {
   const poolStats = useMemo(
     () => ({
       count: unassignedRolls.length,
-      totalKg: unassignedRolls.reduce((s, r) => s + (r.weight_kg ?? 0), 0),
+      totalKg: sumBy(unassignedRolls, (r) => r.weight_kg ?? 0),
     }),
     [unassignedRolls],
   );

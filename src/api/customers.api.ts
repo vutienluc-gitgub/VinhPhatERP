@@ -34,6 +34,33 @@ export async function fetchCustomers(
 
 export async function createCustomer(row: CustomerInsert): Promise<Customer> {
   const tenantId = await getTenantId();
+
+  // 1. Kiểm tra tồn tại trước khi insert (Database Safety)
+  if (row.code || row.email || row.phone) {
+    let checkQuery = supabase
+      .from(TABLE)
+      .select('id')
+      .eq('tenant_id', tenantId);
+
+    const conditions = [];
+    if (row.code) conditions.push(`code.eq.${row.code}`);
+    if (row.email) conditions.push(`email.eq.${row.email}`);
+    if (row.phone) conditions.push(`phone.eq.${row.phone}`);
+
+    if (conditions.length > 0) {
+      checkQuery = checkQuery.or(conditions.join(','));
+      const { data: existData, error: checkError } = await checkQuery;
+
+      if (checkError) throw checkError;
+      if (existData && existData.length > 0) {
+        throw new Error(
+          'Khách hàng đã tồn tại (trùng Mã, Email hoặc SDT). Vui lòng kiểm tra lại.',
+        );
+      }
+    }
+  }
+
+  // 2. Insert an toàn (sau khi đã check unique constraint)
   const { data, error } = await supabase
     .from(TABLE)
     .insert([
@@ -44,7 +71,16 @@ export async function createCustomer(row: CustomerInsert): Promise<Customer> {
     ])
     .select()
     .single();
-  if (error) throw error;
+
+  if (error) {
+    // Dự phòng bắt lỗi cấp Database
+    if (error.code === '23505') {
+      throw new Error(
+        'Khách hàng bị trùng lặp dữ liệu (Unique Constraint) trong hệ thống.',
+      );
+    }
+    throw error;
+  }
   return data as Customer;
 }
 
@@ -58,7 +94,15 @@ export async function updateCustomer(
     .eq('id', id)
     .select()
     .single();
-  if (error) throw error;
+
+  if (error) {
+    if (error.code === '23505') {
+      throw new Error(
+        'Cập nhật thất bại: Mã, Email hoặc SDT đã được sử dụng bởi khách hàng khác.',
+      );
+    }
+    throw error;
+  }
   return data as Customer;
 }
 

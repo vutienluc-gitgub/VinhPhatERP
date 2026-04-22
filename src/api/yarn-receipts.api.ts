@@ -243,3 +243,38 @@ export async function confirmYarnReceipt(id: string): Promise<void> {
     throw error;
   }
 }
+
+export async function fetchLatestYarnPrices(
+  catalogIds: string[],
+): Promise<Record<string, number>> {
+  if (!catalogIds || catalogIds.length === 0) return {};
+
+  // Join with yarn_receipts to sort by real receipt_date, not UUID id
+  // Only consider confirmed receipts (not draft/cancelled)
+  const { data, error } = await supabase
+    .from('yarn_receipt_items')
+    .select(
+      'yarn_catalog_id, unit_price, yarn_receipts!inner(receipt_date, created_at, status)',
+    )
+    .in('yarn_catalog_id', catalogIds)
+    .eq('yarn_receipts.status', 'confirmed')
+    .order('receipt_date', {
+      ascending: false,
+      referencedTable: 'yarn_receipts',
+    })
+    .order('created_at', {
+      ascending: false,
+      referencedTable: 'yarn_receipts',
+    });
+
+  if (error) throw error;
+
+  // First occurrence per yarn_catalog_id = most recent receipt date
+  const priceMap: Record<string, number> = {};
+  for (const item of data || []) {
+    if (item.yarn_catalog_id && !priceMap[item.yarn_catalog_id]) {
+      priceMap[item.yarn_catalog_id] = item.unit_price;
+    }
+  }
+  return priceMap;
+}

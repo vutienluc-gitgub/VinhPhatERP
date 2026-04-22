@@ -4,6 +4,11 @@ import { TimelineProgress, type TimelineStep } from '@/shared/components';
 import { FadeUp } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import {
+  calcTotalBomRatio,
+  calcTotalRequiredKg,
+  calcTotalAllocatedKg,
+} from '@/shared/utils/yarn-requirement.util';
+import {
   useWorkOrderDetail,
   useWorkOrderRequirements,
   useStartWorkOrder,
@@ -62,7 +67,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
     {
       id: 'step-1',
       title: 'Khởi tạo lệnh dệt',
-      subtitle: `BOM: ${wo.bom_template?.code || 'N/A'}, Mục tiêu: ${wo.target_quantity_m}m`,
+      subtitle: `BOM: ${wo.bom_template?.code || 'N/A'}, Mục tiêu: ${wo.target_quantity}m`,
       status: 'completed',
       date: new Date(wo.created_at).toLocaleDateString('vi-VN'),
       icon: 'FileText',
@@ -169,7 +174,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                   type="button"
                   onClick={() => {
                     const yieldP = prompt(
-                      `Nhập sản lượng mộc thu được thực tế (m)\nMục tiêu: ${wo.target_quantity_m}m`,
+                      `Nhập sản lượng mộc thu được thực tế (m)\nMục tiêu: ${wo.target_quantity}m`,
                     );
                     if (yieldP) {
                       completeMutation.mutate({
@@ -230,8 +235,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
               <div className="form-field">
                 <label>Tổng phí dự kiến</label>
                 <p className="font-bold text-success">
-                  {formatCurrency(wo.target_quantity_m * wo.weaving_unit_price)}
-                  đ
+                  {formatCurrency(wo.target_quantity * wo.weaving_unit_price)}đ
                 </p>
               </div>
             </div>
@@ -305,26 +309,24 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                         TONG CONG:
                       </td>
                       <td className="text-right">
-                        {requirements.reduce(
-                          (sum, r) => sum + Number(r.bom_ratio_pct),
-                          0,
-                        )}
-                        %
+                        {calcTotalBomRatio(requirements)}%
                       </td>
                       <td className="text-right text-primary">
-                        {requirements
-                          .reduce((sum, r) => sum + Number(r.required_kg), 0)
-                          .toLocaleString(undefined, {
+                        {calcTotalRequiredKg(requirements).toLocaleString(
+                          undefined,
+                          {
                             maximumFractionDigits: 1,
-                          })}{' '}
+                          },
+                        )}{' '}
                         kg
                       </td>
                       <td className="text-right text-success">
-                        {requirements
-                          .reduce((sum, r) => sum + Number(r.allocated_kg), 0)
-                          .toLocaleString(undefined, {
+                        {calcTotalAllocatedKg(requirements).toLocaleString(
+                          undefined,
+                          {
                             maximumFractionDigits: 1,
-                          })}{' '}
+                          },
+                        )}{' '}
                         kg
                       </td>
                     </tr>
@@ -345,7 +347,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
               <div className="stat-card">
                 <span className="stat-label">Tổng mét mục tiêu</span>
                 <span className="stat-value text-primary">
-                  {wo.target_quantity_m.toLocaleString()} m
+                  {wo.target_quantity.toLocaleString()} m
                 </span>
               </div>
               <div className="stat-card">
@@ -373,7 +375,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                   <span className="stat-label">Hiệu suất (Yield Rate)</span>
                   <span className="stat-value">
                     {(
-                      ((wo.actual_yield_m || 0) / wo.target_quantity_m) *
+                      ((wo.actual_yield_m || 0) / wo.target_quantity) *
                       100
                     ).toFixed(1)}
                     %

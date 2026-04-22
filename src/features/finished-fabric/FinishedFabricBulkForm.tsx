@@ -18,6 +18,7 @@ import {
   useRawRollsByLot,
 } from '@/application/inventory';
 import { useFinishedFabricExport } from '@/application/inventory';
+import { sumBy } from '@/shared/utils/array.util';
 
 import {
   QUALITY_GRADE_LABELS,
@@ -391,9 +392,10 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
           <p className="bulk-success-sub">
             Đã lưu <strong>{savedRolls.length} cuộn</strong> ·{' '}
             <strong>
-              {savedRolls
-                .reduce((sum, r) => sum + (r.weight_kg ?? 0), 0)
-                .toLocaleString('vi-VN', { maximumFractionDigits: 2 })}{' '}
+              {sumBy(savedRolls, (r) => r.weight_kg ?? 0).toLocaleString(
+                'vi-VN',
+                { maximumFractionDigits: 2 },
+              )}{' '}
               kg
             </strong>
           </p>

@@ -39,9 +39,11 @@ export async function fetchRawFabricPaginated(
   const sortCol = filters.sort_by ?? 'created_at';
   const sortAsc = filters.sort_dir === 'asc';
 
+  const tenantId = await getTenantId();
   let query = supabase
     .from(TABLE)
     .select('*', { count: 'exact' })
+    .eq('tenant_id', tenantId)
     .order(sortCol, { ascending: sortAsc })
     .range(from, to);
 
@@ -69,9 +71,11 @@ export async function fetchRawFabricPaginated(
 export async function fetchRawFabricAll(
   filters: RawFabricFilter = {},
 ): Promise<RawFabricRoll[]> {
+  const tenantId = await getTenantId();
   let query = supabase
     .from(TABLE)
     .select('*')
+    .eq('tenant_id', tenantId)
     .order('roll_number', { ascending: true });
 
   if (filters.status) query = query.eq('status', filters.status);
@@ -189,11 +193,15 @@ export async function fetchWorkOrderOptions(): Promise<WorkOrderOption[]> {
 }
 
 export async function fetchRawFabricStats(): Promise<InventoryStats> {
+  const tenantId = await getTenantId();
   const { data, error } = await supabase
-    .from('v_raw_fabric_inventory')
-    .select('roll_count, total_length_m, total_weight_kg');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .from('v_raw_fabric_inventory' as any)
+    .select('roll_count, total_length_m, total_weight_kg')
+    .eq('tenant_id', tenantId);
   if (error) throw error;
-  const rows = data ?? [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rows = (data as any[]) ?? [];
   return {
     totalRolls: rows.reduce((s, r) => s + (r.roll_count ?? 0), 0),
     totalLengthM: rows.reduce((s, r) => s + (r.total_length_m ?? 0), 0),

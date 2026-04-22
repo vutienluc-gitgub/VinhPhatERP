@@ -10,6 +10,7 @@ import {
   useCompleteDyeingOrder,
   useDeleteDyeingOrder,
 } from '@/application/production';
+import { sumBy } from '@/shared/utils/array.util';
 
 import type { DyeingOrder } from './types';
 
@@ -256,9 +257,10 @@ export function DyeingOrderDetail({
                   Tong cong
                 </td>
                 <td className="text-right tabular-nums">
-                  {order.dyeing_order_items
-                    ?.reduce((s, it) => s + it.weight_kg, 0)
-                    .toFixed(1)}{' '}
+                  {sumBy(
+                    order.dyeing_order_items,
+                    (it) => it.weight_kg,
+                  ).toFixed(1)}{' '}
                   kg
                 </td>
                 <td colSpan={2}></td>

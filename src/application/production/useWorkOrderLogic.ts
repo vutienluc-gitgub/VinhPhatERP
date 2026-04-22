@@ -36,7 +36,7 @@ export function useWorkOrderLogic({
   initialQty,
 }: UseWorkOrderLogicParams) {
   const watchedBomId = watch('bom_template_id');
-  const watchedQty = watch('target_quantity_m');
+  const watchedQty = watch('target_quantity');
   const watchedLoss = watch('standard_loss_pct');
 
   useEffect(() => {

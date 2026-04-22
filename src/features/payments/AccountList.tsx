@@ -10,6 +10,7 @@ import {
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import { useAllAccounts, useDeleteAccount } from '@/application/payments';
+import { sumBy } from '@/shared/utils/array.util';
 
 import { ACCOUNT_TYPE_LABELS } from './payments.module';
 import type { PaymentAccount } from './types';
@@ -38,7 +39,7 @@ export function AccountList({ onEdit, onNew }: AccountListProps) {
     ? accounts
     : accounts.filter((a) => a.status === 'active');
 
-  const totalBalance = filtered.reduce((sum, a) => sum + a.current_balance, 0);
+  const totalBalance = sumBy(filtered, (a) => a.current_balance);
 
   return (
     <div className="panel-card card-flush">

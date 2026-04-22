@@ -246,13 +246,13 @@ export function WorkOrderList({
           },
           {
             header: 'Mục Tiêu',
-            id: 'target_quantity_m',
+            id: 'target_quantity',
             sortable: true,
             className: 'text-right',
             cell: (wo) => (
               <div className="flex flex-col text-right">
                 <span className="font-bold">
-                  {wo.target_quantity_m.toLocaleString()} m
+                  {wo.target_quantity.toLocaleString()} m
                 </span>
                 {wo.target_weight_kg && (
                   <span className="text-xs text-muted">
@@ -340,7 +340,7 @@ export function WorkOrderList({
                   <div className="flex flex-col text-right">
                     <span className="text-xs text-muted">Mục tiêu</span>
                     <span className="font-bold text-primary">
-                      {wo.target_quantity_m.toLocaleString()} m
+                      {wo.target_quantity.toLocaleString()} m
                     </span>
                   </div>
                 </div>

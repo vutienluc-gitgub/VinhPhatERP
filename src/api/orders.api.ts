@@ -12,6 +12,10 @@ import type { PaginatedResult } from '@/shared/types/pagination';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import { orderResponseSchema } from '@/schema/order.schema';
 import { untypedDb } from '@/services/supabase/untyped';
+import {
+  fetchNextDocNumber,
+  monthlyPrefix,
+} from '@/api/helpers/next-doc-number';
 
 const HEADER_TABLE = 'orders';
 
@@ -115,8 +119,6 @@ export async function fetchOrderById(id: string): Promise<Order> {
 /* ── Generate next order number ── */
 
 export async function fetchNextOrderNumber(): Promise<string> {
-  const { fetchNextDocNumber, monthlyPrefix } =
-    await import('@/api/helpers/next-doc-number');
   return fetchNextDocNumber({
     table: 'orders',
     column: 'order_number',
@@ -130,7 +132,7 @@ export async function createOrder(
   header: OrderInsert,
   items: Omit<OrderItemInsert, 'order_id'>[],
 ): Promise<Order> {
-  const { data, error } = await untypedDb.rpc('atomic_create_order', {
+  const { data, error } = await untypedDb.rpc('rpc_create_order', {
     p_header: header,
     p_items: items,
   });
@@ -163,7 +165,7 @@ export async function updateOrderWithItems(
   header: OrderUpdate,
   items: Omit<OrderItemInsert, 'order_id'>[],
 ): Promise<void> {
-  const { error } = await supabase.rpc('update_order_with_items', {
+  const { error } = await untypedDb.rpc('update_order_with_items', {
     p_order_id: id,
     p_header_data: header,
     p_items_data: items,
@@ -218,7 +220,7 @@ export async function updateOrderStatus(
 /* ── Confirm order: recalculate total, update status, create progress rows ── */
 
 export async function confirmOrder(orderId: string): Promise<void> {
-  const { error } = await supabase.rpc('confirm_order', {
+  const { error } = await untypedDb.rpc('confirm_order', {
     p_order_id: orderId,
   });
   if (error) throw error;
@@ -244,7 +246,7 @@ export async function createAndConfirmOrder(
 /* ── Cancel order: release reserved rolls → cancel ── */
 
 export async function cancelOrder(orderId: string): Promise<void> {
-  const { error } = await untypedDb.rpc('atomic_cancel_order', {
+  const { error } = await untypedDb.rpc('rpc_cancel_order', {
     p_order_id: orderId,
   });
   if (error) throw error;

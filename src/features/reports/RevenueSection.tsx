@@ -6,6 +6,7 @@ import {
   type DataTableColumn,
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
+import { sumBy } from '@/shared/utils/array.util';
 
 type RevenueSectionProps = {
   data: RevenueRow[];
@@ -13,9 +14,9 @@ type RevenueSectionProps = {
 };
 
 export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
-  const totalRevenue = data.reduce((sum, r) => sum + r.total_amount, 0);
-  const totalPaid = data.reduce((sum, r) => sum + r.paid_amount, 0);
-  const totalBalance = data.reduce((sum, r) => sum + r.balance_due, 0);
+  const totalRevenue = sumBy(data, (r) => r.total_amount);
+  const totalPaid = sumBy(data, (r) => r.paid_amount);
+  const totalBalance = sumBy(data, (r) => r.balance_due);
 
   const columns: DataTableColumn<RevenueRow>[] = [
     {

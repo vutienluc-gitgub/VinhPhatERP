@@ -8,6 +8,7 @@ import {
   useReserveRoll,
   useUnreserveRoll,
 } from '@/application/orders';
+import { sumBy } from '@/shared/utils/array.util';
 
 import type { Order, OrderItem } from './types';
 
@@ -46,14 +47,8 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
   );
 
   // Calc totals for reserved rolls
-  const reservedLengthM = reservedRolls.reduce(
-    (s, r) => s + (r.length_m ?? 0),
-    0,
-  );
-  const reservedWeightKg = reservedRolls.reduce(
-    (s, r) => s + (r.weight_kg ?? 0),
-    0,
-  );
+  const reservedLengthM = sumBy(reservedRolls, (r) => r.length_m ?? 0);
+  const reservedWeightKg = sumBy(reservedRolls, (r) => r.weight_kg ?? 0);
 
   function handleReserve(rollId: string) {
     reserveMutation.mutate({

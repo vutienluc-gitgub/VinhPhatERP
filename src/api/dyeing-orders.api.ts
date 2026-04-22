@@ -114,7 +114,7 @@ export async function createDyeingOrder(
     }),
   );
 
-  const { data, error } = await db.rpc('atomic_create_dyeing_order', {
+  const { data, error } = await db.rpc('rpc_create_dyeing_order', {
     p_header: headerInsert,
     p_items: itemsInsert,
   });
@@ -151,7 +151,7 @@ export async function updateDyeingOrder(
     }),
   );
 
-  const { error } = await db.rpc('atomic_update_dyeing_order', {
+  const { error } = await db.rpc('rpc_update_dyeing_order', {
     p_id: id,
     p_header: headerUpdate,
     p_items: itemsInsert,

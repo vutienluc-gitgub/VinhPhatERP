@@ -201,23 +201,33 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
         onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={[
           {
+            id: 'invoice_number',
+            sortable: true,
+            accessor: (inv) => inv.invoice_number,
             header: 'Số phiếu',
             cell: (inv) => (
               <div className="flex flex-col">
                 <span className="font-bold text-primary">
                   {inv.invoice_number}
                 </span>
-                <span className="text-xs text-muted">{inv.invoice_date}</span>
+                <span className="text-xs text-muted mt-0.5">
+                  {inv.invoice_date}
+                </span>
               </div>
             ),
           },
           {
+            id: 'supplier',
+            sortable: true,
+            accessor: (inv) => inv.suppliers?.name || '',
             header: 'Nhà dệt',
             cell: (inv) => (
               <div className="flex flex-col">
-                <span className="font-bold">{inv.suppliers?.name ?? '—'}</span>
+                <span className="font-bold text-slate-800">
+                  {inv.suppliers?.name ?? '—'}
+                </span>
                 {inv.suppliers?.code && (
-                  <span className="text-xs text-muted">
+                  <span className="text-xs font-semibold text-primary/80 mt-0.5">
                     {inv.suppliers.code}
                   </span>
                 )}
@@ -225,12 +235,18 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
             ),
           },
           {
+            id: 'fabric_type',
+            sortable: true,
+            accessor: (inv) => inv.fabric_type,
             header: 'Loại vải',
             cell: (inv) => (
               <span className="font-medium">{inv.fabric_type}</span>
             ),
           },
           {
+            id: 'total_weight_kg',
+            sortable: true,
+            accessor: (inv) => inv.total_weight_kg,
             header: 'Tổng KG',
             className: 'text-right',
             cell: (inv) => (
@@ -238,6 +254,9 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
             ),
           },
           {
+            id: 'total_amount',
+            sortable: true,
+            accessor: (inv) => inv.total_amount,
             header: 'Thành tiền',
             className: 'text-right',
             cell: (inv) => (
@@ -245,6 +264,9 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
             ),
           },
           {
+            id: 'paid_amount',
+            sortable: true,
+            accessor: (inv) => inv.paid_amount,
             header: 'Đã trả',
             className: 'text-right',
             cell: (inv) => (
@@ -256,6 +278,9 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
             ),
           },
           {
+            id: 'status',
+            sortable: true,
+            accessor: (inv) => inv.status,
             header: 'Trạng thái',
             cell: (inv) => (
               <Badge variant={getStatusVariant(inv.status)}>

@@ -118,7 +118,7 @@ export async function createQuotation(
   header: QuotationHeaderInsert,
   items: Omit<QuotationItemInsert, 'quotation_id'>[],
 ): Promise<Quotation> {
-  const { data, error } = await untypedDb.rpc('atomic_create_quotation', {
+  const { data, error } = await untypedDb.rpc('rpc_create_quotation', {
     p_header: header,
     p_items: items,
   });
@@ -134,7 +134,7 @@ export async function updateQuotationWithItems(
   header: Omit<QuotationHeaderInsert, 'status'>,
   items: Omit<QuotationItemInsert, 'quotation_id'>[],
 ): Promise<void> {
-  const { error } = await untypedDb.rpc('atomic_update_quotation', {
+  const { error } = await untypedDb.rpc('rpc_update_quotation', {
     p_quotation_id: id,
     p_header: header,
     p_items: items,
@@ -231,7 +231,7 @@ export async function convertQuotationToOrder(
   quotationId: string,
 ): Promise<{ orderId: string; orderNumber: string }> {
   const { data, error } = await untypedDb.rpc(
-    'atomic_convert_quotation_to_order',
+    'rpc_convert_quotation_to_order',
     {
       p_quotation_id: quotationId,
     },

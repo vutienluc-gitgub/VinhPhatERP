@@ -1,4 +1,6 @@
-import type { UserRole } from '@/services/supabase/database.types';
+import type { Database } from '@/services/supabase/database.types';
+
+export type UserRole = Database['public']['Enums']['user_role'];
 
 /**
  * FeaturePlugin — Interface chuẩn cho mỗi module/plugin trong hệ thống.

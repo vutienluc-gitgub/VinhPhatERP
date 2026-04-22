@@ -153,7 +153,7 @@ export function QuickSupplierForm({
                     onChange={field.onChange}
                     onBlur={field.onBlur}
                     hasError={!!errors.category}
-                    placeholder="Chon danh muc..."
+                    placeholder="Chọn danh mục..."
                   />
                 )}
               />

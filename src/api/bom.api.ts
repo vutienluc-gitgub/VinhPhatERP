@@ -110,10 +110,23 @@ export async function createBomDraft(
 ): Promise<{ id: string }> {
   const auth = await supabase.auth.getUser();
   const userId = auth.data.user?.id;
+  if (!userId) throw new Error('User not authenticated');
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('tenant_id')
+    .eq('id', userId)
+    .single();
+
+  const tenantId = profile?.tenant_id;
+  if (!tenantId)
+    throw new Error(
+      'User does not have an assigned tenant (tenant_id is missing).',
+    );
 
   const { bom_yarn_items: bomYarnItems, ...headerData } = formData;
 
-  // Tự sinh mã BOM nếu chưa có: BOM-<mã sản phẩm mộc>-<mã sợi đầu tiên>
+  // Tự sinh mã BOM nếu chưa có: BOM-XX-XX
   let finalCode = headerData.code?.trim() || '';
   if (!finalCode) {
     const { data: fabric } = await supabase
@@ -141,9 +154,10 @@ export async function createBomDraft(
     let exists = true;
     // Check until we find a unique code
     while (exists) {
-      const { data: existing } = await supabase
+      const { data: existing } = await untypedDb
         .from('bom_templates')
         .select('id')
+        .eq('tenant_id', tenantId)
         .eq('code', finalCode)
         .maybeSingle();
 
@@ -154,19 +168,65 @@ export async function createBomDraft(
       counter++;
       finalCode = `${baseCode}-${counter.toString().padStart(2, '0')}`;
     }
+  } else {
+    // Verify if manually entered code already exists
+    const { data: existing } = await untypedDb
+      .from('bom_templates')
+      .select('id')
+      .eq('tenant_id', tenantId)
+      .eq('code', finalCode)
+      .maybeSingle();
+
+    if (existing) {
+      throw new Error(
+        `Mã định mức "${finalCode}" đã tồn tại trên hệ thống. Vui lòng nhập mã khác.`,
+      );
+    }
   }
 
-  const { data, error } = await untypedDb.rpc('atomic_create_bom', {
-    p_header: {
-      ...headerData,
+  // Native Supabase insert with explicit tenant_id injection
+  const { data: headerResult, error: headerError } = await supabase
+    .from('bom_templates')
+    .insert({
+      tenant_id: tenantId,
       code: finalCode,
-    },
-    p_items: bomYarnItems,
-    p_user_id: userId,
-  });
+      name: headerData.name,
+      target_fabric_id: headerData.target_fabric_id,
+      target_width_cm: headerData.target_width_cm,
+      target_gsm: headerData.target_gsm,
+      standard_loss_pct: headerData.standard_loss_pct || 0,
+      notes: headerData.notes,
+      status: 'draft',
+      active_version: 1,
+      created_by: userId,
+    })
+    .select('id')
+    .single();
 
-  if (error) throw error;
-  return data as { id: string };
+  if (headerError) throw headerError;
+  const bomId = headerResult.id;
+
+  if (bomYarnItems && bomYarnItems.length > 0) {
+    const { error: itemsError } = await supabase.from('bom_yarn_items').insert(
+      bomYarnItems.map((item) => ({
+        tenant_id: tenantId,
+        bom_template_id: bomId,
+        version: 1,
+        yarn_catalog_id: item.yarn_catalog_id,
+        ratio_pct: item.ratio_pct,
+        consumption_kg_per_m: item.consumption_kg_per_m,
+        notes: item.notes,
+        sort_order: item.sort_order || 0,
+      })),
+    );
+
+    if (itemsError) {
+      await supabase.from('bom_templates').delete().eq('id', bomId);
+      throw itemsError;
+    }
+  }
+
+  return { id: bomId };
 }
 
 /* ── Update BOM draft ── */
@@ -175,20 +235,58 @@ export async function updateBomDraft(
   id: string,
   formData: BomTemplateFormData,
 ): Promise<string> {
+  const auth = await supabase.auth.getUser();
+  const userId = auth.data.user?.id;
+  if (!userId) throw new Error('User not authenticated');
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('tenant_id')
+    .eq('id', userId)
+    .single();
+
+  const tenantId = profile?.tenant_id;
+  if (!tenantId)
+    throw new Error(
+      'User does not have an assigned tenant (tenant_id is missing).',
+    );
+
   const { bom_yarn_items: bomYarnItems, ...headerData } = formData;
 
-  const { error } = await untypedDb.rpc('atomic_update_bom', {
+  const { data: existingBom, error: fetchError } = await supabase
+    .from('bom_templates')
+    .select('status, active_version, code')
+    .eq('id', id)
+    .single();
+
+  if (fetchError) throw fetchError;
+  if (existingBom.status !== 'draft') {
+    throw new Error('Chỉ có thể sửa khi BOM đang ở trạng thái Nháp (Draft).');
+  }
+
+  // Use the atomic RPC to prevent race conditions and ensure old items are deleted properly
+  const { error: rpcError } = await untypedDb.rpc('atomic_update_bom', {
     p_bom_id: id,
-    p_header: headerData,
-    p_items: bomYarnItems,
+    p_header: {
+      code: existingBom.code,
+      name: headerData.name,
+      target_fabric_id: headerData.target_fabric_id,
+      target_width_cm: headerData.target_width_cm,
+      target_gsm: headerData.target_gsm,
+      standard_loss_pct: headerData.standard_loss_pct || 0,
+      notes: headerData.notes,
+    },
+    p_items:
+      bomYarnItems?.map((item) => ({
+        yarn_catalog_id: item.yarn_catalog_id,
+        ratio_pct: item.ratio_pct,
+        consumption_kg_per_m: item.consumption_kg_per_m,
+        notes: item.notes,
+        sort_order: item.sort_order || 0,
+      })) || [],
   });
 
-  if (error) {
-    if (error.message?.includes('BOM_NOT_DRAFT')) {
-      throw new Error('Chỉ có thể sửa khi BOM đang ở trạng thái Nháp (Draft).');
-    }
-    throw error;
-  }
+  if (rpcError) throw rpcError;
 
   return id;
 }
@@ -199,7 +297,7 @@ export async function approveBom(id: string, reason?: string): Promise<string> {
   const auth = await supabase.auth.getUser();
   const userId = auth.data.user?.id;
 
-  const { error } = await untypedDb.rpc('atomic_approve_bom', {
+  const { error } = await untypedDb.rpc('rpc_approve_bom', {
     p_bom_id: id,
     p_reason: reason || null,
     p_user_id: userId,
@@ -233,7 +331,7 @@ export async function deprecateBom(
   const auth = await supabase.auth.getUser();
   const userId = auth.data.user?.id;
 
-  const { error } = await untypedDb.rpc('atomic_deprecate_bom', {
+  const { error } = await untypedDb.rpc('rpc_deprecate_bom', {
     p_bom_id: id,
     p_reason: reason,
     p_user_id: userId,
@@ -256,7 +354,7 @@ export async function deprecateBom(
 export async function reviseBom(id: string, reason: string): Promise<string> {
   if (!reason) throw new Error('Bày tỏ lý do vì sao lập phiên bản mới.');
 
-  const { error } = await untypedDb.rpc('atomic_revise_bom', {
+  const { error } = await untypedDb.rpc('rpc_revise_bom', {
     p_bom_id: id,
     p_reason: reason,
   });

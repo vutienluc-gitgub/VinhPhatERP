@@ -3,13 +3,16 @@ import {
   useUpdateStageStatus,
 } from '@/application/orders';
 
-import { STAGE_LABELS, STAGE_STATUS_LABELS } from './order-progress.module';
+import { OpsLevelPath } from './OpsLevelPath';
+import { ProgressExpBar } from './ProgressExpBar';
+import { calculateOrderProgress } from './utils';
 import type { OrderProgressWithOrder } from './types';
 
 type DashboardOrder = {
   orderId: string;
   orderNumber: string;
   customerName: string;
+  fabricInfo: string;
   deliveryDate: string | null;
   orderStatus: string;
   stages: OrderProgressWithOrder[];
@@ -156,14 +159,7 @@ function DashboardSection({
 
       <div className="px-5 pb-5 flex flex-col gap-3">
         {orders.map((order) => {
-          const doneCount = order.stages.filter(
-            (s) => s.status === 'done',
-          ).length;
-          const totalCount = order.stages.filter(
-            (s) => s.status !== 'skipped',
-          ).length;
-          const pct =
-            totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+          const pct = calculateOrderProgress(order.stages);
           const daysOverdue = order.deliveryDate
             ? getDaysOverdue(order.deliveryDate)
             : 0;
@@ -178,6 +174,11 @@ function DashboardSection({
                 <div>
                   <strong>{order.orderNumber}</strong>
                   <span className="td-muted ml-2">{order.customerName}</span>
+                  {order.fabricInfo && (
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-secondary text-secondary-foreground ml-2">
+                      {order.fabricInfo}
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-2 text-[0.82rem]">
                   <span className="tabular-nums">{pct}%</span>
@@ -196,53 +197,21 @@ function DashboardSection({
                 </div>
               </div>
 
-              {/* Mini progress bar */}
-              <div className="h-1 bg-border rounded-[2px] mb-2">
-                <div
-                  className="h-full rounded-[2px] transition-[width] duration-300 ease-in-out"
-                  style={{
-                    width: `${pct}%`,
-                    backgroundColor: pct === 100 ? '#0c8f68' : '#0b6bcb',
-                  }}
-                />
-              </div>
+              <ProgressExpBar percentage={pct} />
 
-              {/* Stage chips */}
-              <div className="flex flex-wrap gap-[0.3rem]">
-                {order.stages.map((row) => {
-                  const clickable =
-                    row.status !== 'done' && row.status !== 'skipped';
-                  const statusCls =
-                    row.status === 'done'
-                      ? 'in_stock'
-                      : row.status === 'in_progress'
-                        ? 'in_process'
-                        : row.status === 'skipped'
-                          ? 'damaged'
-                          : 'shipped';
-
-                  return (
-                    <button
-                      key={row.id}
-                      type="button"
-                      className={`roll-status ${statusCls} ${clickable ? 'cursor-pointer' : 'cursor-default'} text-[0.72rem] border-none`}
-                      disabled={updateMutation.isPending || !clickable}
-                      onClick={() => {
-                        if (!clickable) return;
-                        const nextStatus =
-                          row.status === 'pending' ? 'in_progress' : 'done';
-                        updateMutation.mutate({
-                          progressId: row.id,
-                          status: nextStatus,
-                        });
-                      }}
-                      title={`${STAGE_LABELS[row.stage]}: ${STAGE_STATUS_LABELS[row.status]}${clickable ? ' — Nhấn để chuyển' : ''}`}
-                    >
-                      {STAGE_LABELS[row.stage]}
-                    </button>
-                  );
-                })}
-              </div>
+              {/* Level Path Game Nodes */}
+              <OpsLevelPath
+                stages={order.stages}
+                isPendingUpdate={updateMutation.isPending}
+                onAdvance={(row) => {
+                  const nextStatus =
+                    row.status === 'pending' ? 'in_progress' : 'done';
+                  updateMutation.mutate({
+                    progressId: row.id,
+                    status: nextStatus,
+                  });
+                }}
+              />
             </div>
           );
         })}

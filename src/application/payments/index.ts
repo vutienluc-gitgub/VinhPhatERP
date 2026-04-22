@@ -14,6 +14,7 @@ export {
   useCreateExpense,
   useUpdateExpense,
   useDeleteExpense,
+  useUnpaidDocuments,
 } from './useExpenses';
 export type { Expense, ExpensesFilter } from './useExpenses';
 

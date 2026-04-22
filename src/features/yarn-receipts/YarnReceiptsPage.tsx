@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { useYarnReceipt, useYarnReceiptList } from '@/application/inventory';
+import { sumBy } from '@/shared/utils/array.util';
 
 import type { YarnReceipt } from './types';
 import { YarnReceiptForm } from './YarnReceiptForm';
@@ -15,14 +16,10 @@ export function YarnReceiptsPage() {
   const { data: listResult } = useYarnReceiptList({}, 1);
   const receipts = listResult?.data ?? [];
 
-  const totalWeight = receipts.reduce((acc, r: YarnReceipt) => {
-    const itemWeight =
-      r.yarn_receipt_items?.reduce(
-        (sum: number, it) => sum + (Number(it.quantity) || 0),
-        0,
-      ) || 0;
-    return acc + itemWeight;
-  }, 0);
+  const totalWeight = sumBy(
+    receipts,
+    (r) => sumBy(r.yarn_receipt_items, (it) => Number(it.quantity) || 0) || 0,
+  );
 
   const pendingCount = receipts.filter((r) => r.status === 'draft').length;
   const supplierCount = Array.from(

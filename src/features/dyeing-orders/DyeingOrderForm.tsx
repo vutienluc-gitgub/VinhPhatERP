@@ -21,6 +21,7 @@ import {
   useUpdateDyeingOrder,
 } from '@/application/production';
 import { useAvailableRawRolls } from '@/application/inventory';
+import { sumBy } from '@/shared/utils/array.util';
 
 import type { DyeingOrder } from './types';
 
@@ -60,7 +61,7 @@ export function DyeingOrderForm({
   });
 
   const watchItems = watch('items');
-  const totalWeight = watchItems.reduce((s, it) => s + (it.weight_kg || 0), 0);
+  const totalWeight = sumBy(watchItems, (it) => it.weight_kg || 0);
 
   // Initialize form
   useEffect(() => {

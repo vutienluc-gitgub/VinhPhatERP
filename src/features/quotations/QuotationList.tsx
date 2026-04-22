@@ -95,7 +95,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
       key: 'search',
       type: 'search',
       label: 'Tìm kiếm',
-      placeholder: 'So bao gia, ten khach hang...',
+      placeholder: 'Số báo giá, tên khách hàng...',
     },
     {
       key: 'status',

@@ -129,6 +129,10 @@ export function Combobox({
                 }
               }
               if (e.key === 'Escape') {
+                e.stopPropagation();
+                if (e.nativeEvent) {
+                  e.nativeEvent.stopImmediatePropagation();
+                }
                 setIsOpen(false);
               }
             }}

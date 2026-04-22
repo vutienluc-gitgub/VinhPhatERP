@@ -23,6 +23,7 @@ export type OrderProgressWithOrder = OrderProgress & {
     delivery_date: string | null;
     status?: string;
     customers?: { name: string } | null;
+    order_items?: { fabric_type: string; color_name?: string | null }[] | null;
   } | null;
   work_orders?: {
     work_order_number: string;

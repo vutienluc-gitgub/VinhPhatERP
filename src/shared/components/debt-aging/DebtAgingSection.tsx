@@ -6,6 +6,7 @@ import {
   type DataTableColumn,
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
+import { sumBy } from '@/shared/utils/array.util';
 
 type DebtAgingSectionProps = {
   data: DebtAgingRow[];
@@ -45,10 +46,10 @@ type BucketSummary = {
 };
 
 function computeBuckets(data: DebtAgingRow[]): BucketSummary[] {
-  const grandTotal = data.reduce((s, r) => s + r.balance_due, 0);
+  const grandTotal = sumBy(data, (r) => r.balance_due);
   return BUCKET_ORDER.map((bucket) => {
     const rows = data.filter((r) => r.aging_bucket === bucket);
-    const total = rows.reduce((s, r) => s + r.balance_due, 0);
+    const total = sumBy(rows, (r) => r.balance_due);
     return {
       bucket,
       label: BUCKET_LABELS[bucket] ?? bucket,
@@ -62,7 +63,7 @@ function computeBuckets(data: DebtAgingRow[]): BucketSummary[] {
 }
 
 export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
-  const totalDebt = data.reduce((s, r) => s + r.balance_due, 0);
+  const totalDebt = sumBy(data, (r) => r.balance_due);
   const buckets = computeBuckets(data);
   const criticalRows = data.filter((r) => r.aging_bucket === '90+');
 

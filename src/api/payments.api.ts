@@ -13,6 +13,10 @@ import type { PaymentDbPayload, ExpenseDbPayload } from '@/domain/payments';
 import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';
 import { getTenantId } from '@/services/supabase/tenant';
+import {
+  fetchNextDocNumber,
+  monthlyPrefix,
+} from '@/api/helpers/next-doc-number';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import { paymentResponseSchema } from '@/schema/payment.schema';
@@ -228,8 +232,6 @@ export async function fetchExpensesPaginated(
 }
 
 export async function fetchNextExpenseNumber(): Promise<string> {
-  const { fetchNextDocNumber, monthlyPrefix } =
-    await import('@/api/helpers/next-doc-number');
   return fetchNextDocNumber({
     table: 'expenses',
     column: 'expense_number',
@@ -238,7 +240,7 @@ export async function fetchNextExpenseNumber(): Promise<string> {
 }
 
 export async function createExpense(row: ExpenseDbPayload): Promise<Expense> {
-  const { data, error } = await untypedDb.rpc('rpc_create_expense', {
+  const { data, error } = await untypedDb.rpc('atomic_create_expense', {
     p_data: row,
   });
   if (error) throw error;
@@ -294,4 +296,14 @@ export async function fetchSupplierDebt(): Promise<SupplierDebtRow[]> {
   const { data, error } = await supabase.from('v_supplier_debt').select('*');
   if (error) throw error;
   return (data ?? []) as unknown as SupplierDebtRow[];
+}
+
+export async function fetchUnpaidDocuments(supplierId: string) {
+  const { data, error } = await untypedDb
+    .from('v_unpaid_documents')
+    .select('*')
+    .eq('supplier_id', supplierId)
+    .order('document_date', { ascending: true });
+  if (error) throw error;
+  return data;
 }

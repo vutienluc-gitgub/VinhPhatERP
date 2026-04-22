@@ -17,6 +17,7 @@ import {
 import type { ActionConfig } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import { useDeleteOrder, useOrderList } from '@/application/orders';
+import { sumBy } from '@/shared/utils/array.util';
 
 import { ORDER_STATUS_LABELS } from './orders.module';
 import type { Order, OrdersFilter, OrderStatus } from './types';
@@ -93,7 +94,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
       key: 'search',
       type: 'search',
       label: 'Tìm kiếm',
-      placeholder: 'Ma don, ten khach hang...',
+      placeholder: 'Mã đơn, tên khách hàng...',
     },
     {
       key: 'status',
@@ -171,9 +172,10 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               <p className="kpi-label">Doanh thu dự kiến</p>
               <div className="flex items-baseline gap-1">
                 <p className="kpi-value">
-                  {formatCurrency(
-                    orders.reduce((sum, o) => sum + o.total_amount, 0),
-                  ).replace(' đ', '')}
+                  {formatCurrency(sumBy(orders, (o) => o.total_amount)).replace(
+                    ' đ',
+                    '',
+                  )}
                 </p>
                 <span className="text-lg font-bold opacity-80">đ</span>
               </div>
@@ -195,10 +197,8 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               <div className="flex items-baseline gap-1">
                 <p className="kpi-value">
                   {formatCurrency(
-                    orders.reduce(
-                      (sum, o) =>
-                        sum + Math.max(0, o.total_amount - o.paid_amount),
-                      0,
+                    sumBy(orders, (o) =>
+                      Math.max(0, o.total_amount - o.paid_amount),
                     ),
                   ).replace(' đ', '')}
                 </p>
