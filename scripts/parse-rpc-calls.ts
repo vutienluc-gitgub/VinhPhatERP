@@ -24,14 +24,15 @@ export type ParamType =
   | 'jsonb';
 
 export type RpcParam = {
-  name: string;     // tên param, vd: p_id
-  type: ParamType;  // SQL type được infer
+  name: string; // tên param, vd: p_id
+  type: ParamType; // SQL type được infer
   optional: boolean;
 };
 
 export type RpcCall = {
   fnName: string;
   params: RpcParam[];
+  hasSpread: boolean; // true if params object uses spread (...row)
   sourceFile: string;
   line: number;
 };
@@ -40,19 +41,22 @@ export type RpcCall = {
 // Inference rules: tên field → SQL type
 // ──────────────────────────────────────────────
 const TYPE_RULES: Array<{ pattern: RegExp; type: ParamType }> = [
-  { pattern: /(_id|^id)$/i,              type: 'uuid' },
-  { pattern: /(_at|_date|_time)$/i,      type: 'timestamptz' },
+  { pattern: /(_id|^id)$/i, type: 'uuid' },
+  { pattern: /(_at|_date|_time)$/i, type: 'timestamptz' },
   { pattern: /(_count|_qty|_quantity|_order|_index|_position)$/i, type: 'int' },
-  { pattern: /(_amount|_price|_cost|_total|_rate|_percent)$/i, type: 'numeric' },
+  {
+    pattern: /(_amount|_price|_cost|_total|_rate|_percent)$/i,
+    type: 'numeric',
+  },
   { pattern: /^(is_|has_|can_|_flag|_enabled|_active)/i, type: 'boolean' },
-  { pattern: /(_data|_meta|_config|_payload|_json)$/i,   type: 'jsonb' },
+  { pattern: /(_data|_meta|_config|_payload|_json)$/i, type: 'jsonb' },
 ];
 
 function inferSqlType(paramName: string, tsType?: string): ParamType {
   // Nếu có TypeScript type rõ ràng
   if (tsType) {
     if (tsType.includes('boolean')) return 'boolean';
-    if (tsType.includes('number'))  return 'numeric';
+    if (tsType.includes('number')) return 'numeric';
   }
 
   for (const rule of TYPE_RULES) {
@@ -64,27 +68,45 @@ function inferSqlType(paramName: string, tsType?: string): ParamType {
 
 function isOptionalParam(paramName: string, valueText: string): boolean {
   // Nếu value có ?? '' hoặc ?? null thì là optional
-  return valueText.includes("?? ''") || valueText.includes('?? null') || valueText.includes('?? undefined');
+  return (
+    valueText.includes("?? ''") ||
+    valueText.includes('?? null') ||
+    valueText.includes('?? undefined')
+  );
 }
 
 // ──────────────────────────────────────────────
 // Extract params từ object literal: { p_id: id, p_name: name }
 // ──────────────────────────────────────────────
-function extractParams(objNode: Node): RpcParam[] {
-  if (!objNode || !Node.isObjectLiteralExpression(objNode)) return [];
+function extractParams(objNode: Node): {
+  params: RpcParam[];
+  hasSpread: boolean;
+} {
+  if (!objNode || !Node.isObjectLiteralExpression(objNode))
+    return { params: [], hasSpread: false };
 
   const obj = objNode as ObjectLiteralExpression;
   const params: RpcParam[] = [];
+  let hasSpread = false;
 
   for (const prop of obj.getProperties()) {
-    if (!Node.isPropertyAssignment(prop) && !Node.isShorthandPropertyAssignment(prop)) continue;
+    // Detect spread operator: { ...row }
+    if (Node.isSpreadAssignment(prop)) {
+      hasSpread = true;
+      continue;
+    }
+
+    if (
+      !Node.isPropertyAssignment(prop) &&
+      !Node.isShorthandPropertyAssignment(prop)
+    )
+      continue;
 
     const name = prop.getName();
     const valueText = Node.isPropertyAssignment(prop)
-      ? prop.getInitializer()?.getText() ?? ''
+      ? (prop.getInitializer()?.getText() ?? '')
       : name;
 
-    // Lấy TypeScript type của value nếu có
     let tsType: string | undefined;
     try {
       if (Node.isPropertyAssignment(prop)) {
@@ -101,7 +123,7 @@ function extractParams(objNode: Node): RpcParam[] {
     });
   }
 
-  return params;
+  return { params, hasSpread };
 }
 
 // ──────────────────────────────────────────────
@@ -155,13 +177,15 @@ export function parseRpcCalls(srcDir: string): RpcCall[] {
         if (!Node.isStringLiteral(fnArg)) return; // bỏ qua dynamic fn names
         const fnName = fnArg.getLiteralText();
 
-        // Arg 1: params object (optional — một số call không truyền params)
+        // Arg 1: params object (optional)
         const paramsArg = args[1];
-        const params = paramsArg ? extractParams(paramsArg) : [];
+        const { params, hasSpread } = paramsArg
+          ? extractParams(paramsArg)
+          : { params: [], hasSpread: false };
 
         const line = callExpr.getStartLineNumber();
 
-        calls.push({ fnName, params, sourceFile: filePath, line });
+        calls.push({ fnName, params, hasSpread, sourceFile: filePath, line });
       });
   }
 
