@@ -36,6 +36,7 @@ const shipmentFixture: ShipmentDocument = {
   receiver_phone: null,
   employee_id: null,
   tenant_id: null,
+  journey_status: null,
   orders: { order_number: 'DH2604-0012' },
   customers: {
     name: 'Cong ty Det <B>',

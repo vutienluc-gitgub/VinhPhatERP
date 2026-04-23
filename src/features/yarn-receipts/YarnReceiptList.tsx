@@ -25,6 +25,7 @@ import {
 
 import type { DocStatus, YarnReceipt, YarnReceiptsFilter } from './types';
 import { DOC_STATUS_LABELS } from './yarn-receipts.module';
+import { getReceiptUnitPriceDisplay } from './utils';
 
 type YarnReceiptListProps = {
   onEdit: (receipt: YarnReceipt) => void;
@@ -227,6 +228,17 @@ export function YarnReceiptList({
             cell: (r) => <span className="text-muted">{r.receipt_date}</span>,
           },
           {
+            header: 'Đơn giá',
+            id: 'unit_price',
+            sortable: false,
+            className: 'text-right',
+            cell: (r) => (
+              <span className="font-medium text-muted">
+                {getReceiptUnitPriceDisplay(r)}
+              </span>
+            ),
+          },
+          {
             header: 'Tổng tiền',
             id: 'total_amount',
             sortable: true,
@@ -306,11 +318,21 @@ export function YarnReceiptList({
                 <span className="font-medium">{r.suppliers?.name}</span>
               </div>
               <div className="grid grid-cols-2 gap-4 pb-2 border-b border-border/10">
-                <div className="flex flex-col">
-                  <span className="text-xs text-muted">Ngày nhập</span>
-                  <span className="font-medium text-sm">{r.receipt_date}</span>
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-col">
+                    <span className="text-xs text-muted">Ngày nhập</span>
+                    <span className="font-medium text-sm">
+                      {r.receipt_date}
+                    </span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-muted">Đơn giá</span>
+                    <span className="font-medium text-sm">
+                      {getReceiptUnitPriceDisplay(r)}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex flex-col text-right">
+                <div className="flex flex-col text-right justify-end">
                   <span className="text-xs text-muted">Tổng tiền</span>
                   <span className="font-bold text-primary">
                     {formatCurrency(r.total_amount ?? 0)}đ

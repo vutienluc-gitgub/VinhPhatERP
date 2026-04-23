@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -11,31 +11,6 @@ export type Database = {
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: '14.4';
-  };
-  graphql_public: {
-    Tables: {
-      [_ in never]: never;
-    };
-    Views: {
-      [_ in never]: never;
-    };
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json;
-          operationName?: string;
-          query?: string;
-          variables?: Json;
-        };
-        Returns: Json;
-      };
-    };
-    Enums: {
-      [_ in never]: never;
-    };
-    CompositeTypes: {
-      [_ in never]: never;
-    };
   };
   public: {
     Tables: {
@@ -719,6 +694,68 @@ export type Database = {
           },
         ];
       };
+      cost_estimations: {
+        Row: {
+          created_at: string;
+          created_by: string | null;
+          est_additional_costs: Json;
+          est_profit_margin_pct: number;
+          est_total_cost: number;
+          est_transport_cost: number;
+          est_yarn_price: number;
+          id: string;
+          reference_id: string;
+          reference_type: Database['public']['Enums']['cost_estimation_ref_type'];
+          suggested_price: number;
+          target_gsm: number | null;
+          target_width_cm: number | null;
+          tenant_id: string;
+          version: number;
+        };
+        Insert: {
+          created_at?: string;
+          created_by?: string | null;
+          est_additional_costs?: Json;
+          est_profit_margin_pct?: number;
+          est_total_cost?: number;
+          est_transport_cost?: number;
+          est_yarn_price?: number;
+          id?: string;
+          reference_id: string;
+          reference_type: Database['public']['Enums']['cost_estimation_ref_type'];
+          suggested_price?: number;
+          target_gsm?: number | null;
+          target_width_cm?: number | null;
+          tenant_id: string;
+          version?: number;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string | null;
+          est_additional_costs?: Json;
+          est_profit_margin_pct?: number;
+          est_total_cost?: number;
+          est_transport_cost?: number;
+          est_yarn_price?: number;
+          id?: string;
+          reference_id?: string;
+          reference_type?: Database['public']['Enums']['cost_estimation_ref_type'];
+          suggested_price?: number;
+          target_gsm?: number | null;
+          target_width_cm?: number | null;
+          tenant_id?: string;
+          version?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'cost_estimations_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       customer_debt: {
         Row: {
           balance: number;
@@ -1099,6 +1136,47 @@ export type Database = {
           },
         ];
       };
+      expense_allocations: {
+        Row: {
+          allocated_amount: number;
+          created_at: string;
+          document_id: string;
+          document_type: Database['public']['Enums']['payment_document_type'];
+          expense_id: string;
+          id: string;
+          tenant_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          allocated_amount: number;
+          created_at?: string;
+          document_id: string;
+          document_type: Database['public']['Enums']['payment_document_type'];
+          expense_id: string;
+          id?: string;
+          tenant_id?: string;
+          updated_at?: string;
+        };
+        Update: {
+          allocated_amount?: number;
+          created_at?: string;
+          document_id?: string;
+          document_type?: Database['public']['Enums']['payment_document_type'];
+          expense_id?: string;
+          id?: string;
+          tenant_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'expense_allocations_expense_id_fkey';
+            columns: ['expense_id'];
+            isOneToOne: false;
+            referencedRelation: 'expenses';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       expenses: {
         Row: {
           account_id: string | null;
@@ -1107,6 +1185,7 @@ export type Database = {
           created_at: string;
           created_by: string | null;
           description: string;
+          employee_id: string | null;
           expense_date: string;
           expense_number: string;
           id: string;
@@ -1123,6 +1202,7 @@ export type Database = {
           created_at?: string;
           created_by?: string | null;
           description: string;
+          employee_id?: string | null;
           expense_date?: string;
           expense_number: string;
           id?: string;
@@ -1139,6 +1219,7 @@ export type Database = {
           created_at?: string;
           created_by?: string | null;
           description?: string;
+          employee_id?: string | null;
           expense_date?: string;
           expense_number?: string;
           id?: string;
@@ -1161,6 +1242,13 @@ export type Database = {
             columns: ['created_by'];
             isOneToOne: false;
             referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'expenses_employee_id_fkey';
+            columns: ['employee_id'];
+            isOneToOne: false;
+            referencedRelation: 'employees';
             referencedColumns: ['id'];
           },
           {
@@ -1935,6 +2023,7 @@ export type Database = {
           avatar_url: string | null;
           created_at: string;
           customer_id: string | null;
+          employee_id: string | null;
           full_name: string;
           id: string;
           is_active: boolean;
@@ -1947,6 +2036,7 @@ export type Database = {
           avatar_url?: string | null;
           created_at?: string;
           customer_id?: string | null;
+          employee_id?: string | null;
           full_name?: string;
           id: string;
           is_active?: boolean;
@@ -1959,6 +2049,7 @@ export type Database = {
           avatar_url?: string | null;
           created_at?: string;
           customer_id?: string | null;
+          employee_id?: string | null;
           full_name?: string;
           id?: string;
           is_active?: boolean;
@@ -1973,6 +2064,13 @@ export type Database = {
             columns: ['customer_id'];
             isOneToOne: false;
             referencedRelation: 'customers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'profiles_employee_id_fkey';
+            columns: ['employee_id'];
+            isOneToOne: false;
+            referencedRelation: 'employees';
             referencedColumns: ['id'];
           },
           {
@@ -2516,6 +2614,48 @@ export type Database = {
           },
         ];
       };
+      shipment_journey_logs: {
+        Row: {
+          created_at: string;
+          id: string;
+          journey_status: string;
+          notes: string | null;
+          shipment_id: string;
+          updated_by: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          journey_status: string;
+          notes?: string | null;
+          shipment_id: string;
+          updated_by?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          journey_status?: string;
+          notes?: string | null;
+          shipment_id?: string;
+          updated_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'shipment_journey_logs_shipment_id_fkey';
+            columns: ['shipment_id'];
+            isOneToOne: false;
+            referencedRelation: 'shipments';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'shipment_journey_logs_updated_by_fkey';
+            columns: ['updated_by'];
+            isOneToOne: false;
+            referencedRelation: 'employees';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       shipments: {
         Row: {
           carrier: string | null;
@@ -2528,6 +2668,7 @@ export type Database = {
           delivery_staff_id: string | null;
           employee_id: string | null;
           id: string;
+          journey_status: string | null;
           loading_fee: number;
           notes: string | null;
           order_id: string | null;
@@ -2558,6 +2699,7 @@ export type Database = {
           delivery_staff_id?: string | null;
           employee_id?: string | null;
           id?: string;
+          journey_status?: string | null;
           loading_fee?: number;
           notes?: string | null;
           order_id?: string | null;
@@ -2588,6 +2730,7 @@ export type Database = {
           delivery_staff_id?: string | null;
           employee_id?: string | null;
           id?: string;
+          journey_status?: string | null;
           loading_fee?: number;
           notes?: string | null;
           order_id?: string | null;
@@ -2619,7 +2762,7 @@ export type Database = {
             foreignKeyName: 'shipments_delivery_staff_id_fkey';
             columns: ['delivery_staff_id'];
             isOneToOne: false;
-            referencedRelation: 'profiles';
+            referencedRelation: 'employees';
             referencedColumns: ['id'];
           },
           {
@@ -3232,6 +3375,7 @@ export type Database = {
           invoice_number: string;
           notes: string | null;
           paid_amount: number;
+          payment_status: string | null;
           status: string;
           supplier_id: string;
           tenant_id: string | null;
@@ -3239,6 +3383,7 @@ export type Database = {
           total_weight_kg: number;
           unit_price_per_kg: number;
           updated_at: string;
+          work_order_id: string | null;
         };
         Insert: {
           created_at?: string;
@@ -3249,6 +3394,7 @@ export type Database = {
           invoice_number: string;
           notes?: string | null;
           paid_amount?: number;
+          payment_status?: string | null;
           status?: string;
           supplier_id: string;
           tenant_id?: string | null;
@@ -3256,6 +3402,7 @@ export type Database = {
           total_weight_kg?: number;
           unit_price_per_kg?: number;
           updated_at?: string;
+          work_order_id?: string | null;
         };
         Update: {
           created_at?: string;
@@ -3266,6 +3413,7 @@ export type Database = {
           invoice_number?: string;
           notes?: string | null;
           paid_amount?: number;
+          payment_status?: string | null;
           status?: string;
           supplier_id?: string;
           tenant_id?: string | null;
@@ -3273,6 +3421,7 @@ export type Database = {
           total_weight_kg?: number;
           unit_price_per_kg?: number;
           updated_at?: string;
+          work_order_id?: string | null;
         };
         Relationships: [
           {
@@ -3301,6 +3450,13 @@ export type Database = {
             columns: ['tenant_id'];
             isOneToOne: false;
             referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'weaving_invoices_work_order_id_fkey';
+            columns: ['work_order_id'];
+            isOneToOne: false;
+            referencedRelation: 'work_orders';
             referencedColumns: ['id'];
           },
         ];
@@ -3663,6 +3819,8 @@ export type Database = {
           created_by: string | null;
           id: string;
           notes: string | null;
+          paid_amount: number;
+          payment_status: string | null;
           receipt_date: string;
           receipt_number: string;
           status: Database['public']['Enums']['doc_status'];
@@ -3676,6 +3834,8 @@ export type Database = {
           created_by?: string | null;
           id?: string;
           notes?: string | null;
+          paid_amount?: number;
+          payment_status?: string | null;
           receipt_date?: string;
           receipt_number: string;
           status?: Database['public']['Enums']['doc_status'];
@@ -3689,6 +3849,8 @@ export type Database = {
           created_by?: string | null;
           id?: string;
           notes?: string | null;
+          paid_amount?: number;
+          payment_status?: string | null;
           receipt_date?: string;
           receipt_number?: string;
           status?: Database['public']['Enums']['doc_status'];
@@ -3919,20 +4081,6 @@ export type Database = {
         };
         Relationships: [];
       };
-      v_unpaid_documents: {
-        Row: {
-          document_type: string | null;
-          document_id: string | null;
-          document_number: string | null;
-          supplier_id: string | null;
-          document_date: string | null;
-          total_amount: number | null;
-          paid_amount: number | null;
-          remaining_amount: number | null;
-          tenant_id: string | null;
-        };
-        Relationships: [];
-      };
       v_revenue_by_fabric: {
         Row: {
           avg_unit_price: number | null;
@@ -3961,105 +4109,37 @@ export type Database = {
         };
         Relationships: [];
       };
+      v_unpaid_documents: {
+        Row: {
+          document_date: string | null;
+          document_id: string | null;
+          document_number: string | null;
+          document_type: string | null;
+          paid_amount: number | null;
+          remaining_amount: number | null;
+          supplier_id: string | null;
+          tenant_id: string | null;
+          total_amount: number | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       accept_invitation: {
         Args: { p_token: string; p_user_id: string };
         Returns: boolean;
       };
-      rpc_approve_bom: {
-        Args: { p_bom_id: string; p_reason: string; p_user_id: string };
-        Returns: undefined;
-      };
-      rpc_cancel_order: { Args: { p_order_id: string }; Returns: undefined };
-      rpc_complete_work_order: {
-        Args: { p_today: string; p_wo_id: string; p_yield_m: number };
-        Returns: undefined;
-      };
-      rpc_confirm_shipment: {
-        Args: { p_shipment_id: string };
-        Returns: undefined;
-      };
-      rpc_convert_quotation_to_order: {
-        Args: { p_quotation_id: string };
-        Returns: Json;
-      };
-      rpc_create_bom: {
-        Args: { p_header: Json; p_items: Json; p_user_id: string };
-        Returns: Json;
-      };
-      rpc_create_dyeing_order: {
+      atomic_create_expense: { Args: { p_data: Json }; Returns: Json };
+      atomic_create_yarn_receipt: {
         Args: { p_header: Json; p_items: Json };
         Returns: Json;
       };
-      rpc_create_order: {
-        Args: { p_header: Json; p_items: Json };
-        Returns: Json;
-      };
-      rpc_create_quotation: {
-        Args: { p_header: Json; p_items: Json };
-        Returns: Json;
-      };
-      rpc_create_shipment: {
-        Args: { p_header: Json; p_items: Json; p_reserve_roll_ids: string[] };
-        Returns: Json;
-      };
-      rpc_create_weaving_invoice: {
-        Args: { p_header: Json; p_rolls: Json };
-        Returns: Json;
-      };
-      rpc_create_work_order: {
-        Args: { p_progress_data: Json; p_reqs_data: Json; p_wo_data: Json };
-        Returns: Json;
-      };
-      rpc_create_yarn_receipt: {
-        Args: { p_header: Json; p_items: Json };
-        Returns: Json;
-      };
-      rpc_delete_shipment: {
-        Args: { p_shipment_id: string };
-        Returns: undefined;
-      };
-      rpc_revise_bom: {
-        Args: { p_bom_id: string; p_reason: string };
-        Returns: undefined;
-      };
-      rpc_start_work_order: {
-        Args: { p_today: string; p_wo_id: string };
-        Returns: undefined;
-      };
-      rpc_update_bom: {
-        Args: { p_bom_id: string; p_header: Json; p_items: Json };
-        Returns: undefined;
-      };
-      rpc_update_dyeing_order: {
-        Args: { p_header: Json; p_id: string; p_items: Json };
-        Returns: undefined;
-      };
-      rpc_update_quotation: {
-        Args: { p_header: Json; p_items: Json; p_quotation_id: string };
-        Returns: undefined;
-      };
-      rpc_update_weaving_invoice: {
-        Args: { p_header: Json; p_id: string; p_rolls: Json };
-        Returns: undefined;
-      };
-      rpc_update_work_order: {
+      atomic_update_work_order: {
         Args: { p_reqs_data: Json; p_wo_data: Json; p_wo_id: string };
         Returns: undefined;
       };
-      rpc_update_yarn_receipt: {
+      atomic_update_yarn_receipt: {
         Args: { p_header: Json; p_id: string; p_items: Json };
-        Returns: undefined;
-      };
-      rpc_check_slug_available: { Args: { p_slug: string }; Returns: boolean };
-      rpc_complete_dyeing_order: {
-        Args: { p_actual_return_date?: string; p_dyeing_order_id: string };
-        Returns: undefined;
-      };
-      rpc_confirm_order: { Args: { p_order_id: string }; Returns: undefined };
-      rpc_confirm_weaving_invoice: {
-        Args: { p_invoice_id: string };
         Returns: undefined;
       };
       create_shipment_from_finished_fabric:
@@ -4086,6 +4166,92 @@ export type Database = {
               shipment_id: string;
             }[];
           };
+      current_tenant_id: { Args: never; Returns: string };
+      current_user_role: {
+        Args: never;
+        Returns: Database['public']['Enums']['user_role'];
+      };
+      fn_create_order_atomic: {
+        Args: {
+          p_allocations: Json;
+          p_created_by: string;
+          p_customer_id: string;
+          p_delivery_date: string;
+          p_items: Json;
+          p_manager_override: boolean;
+          p_notes: string;
+          p_order_date: string;
+          p_order_number: string;
+          p_override_user_id: string;
+          p_source_quotation_id: string;
+          p_total_amount: number;
+        };
+        Returns: Json;
+      };
+      generate_next_doc_number: {
+        Args: {
+          p_column: string;
+          p_pad?: number;
+          p_prefix: string;
+          p_table: string;
+        };
+        Returns: string;
+      };
+      get_tenant_user_count: { Args: { p_tenant_id: string }; Returns: number };
+      next_dyeing_order_number: { Args: never; Returns: string };
+      release_order_allocations: {
+        Args: { p_order_id: string; p_reason: string };
+        Returns: undefined;
+      };
+      rpc_approve_bom: {
+        Args: { p_bom_id: string; p_reason: string; p_user_id: string };
+        Returns: undefined;
+      };
+      rpc_cancel_order: { Args: { p_order_id: string }; Returns: undefined };
+      rpc_check_slug_available: { Args: { p_slug: string }; Returns: boolean };
+      rpc_complete_dyeing_order: {
+        Args: { p_actual_return_date?: string; p_dyeing_order_id: string };
+        Returns: undefined;
+      };
+      rpc_complete_work_order: {
+        Args: { p_today: string; p_wo_id: string; p_yield_m: number };
+        Returns: undefined;
+      };
+      rpc_confirm_order: { Args: { p_order_id: string }; Returns: undefined };
+      rpc_confirm_shipment: {
+        Args: { p_shipment_id: string };
+        Returns: undefined;
+      };
+      rpc_confirm_weaving_invoice: {
+        Args: { p_invoice_id: string };
+        Returns: undefined;
+      };
+      rpc_convert_quotation_to_order: {
+        Args: { p_quotation_id: string };
+        Returns: Json;
+      };
+      rpc_create_bom: {
+        Args: { p_header: Json; p_items: Json; p_user_id: string };
+        Returns: Json;
+      };
+      rpc_create_dyeing_order: {
+        Args: { p_header: Json; p_items: Json };
+        Returns: Json;
+      };
+      rpc_create_expense: { Args: { p_data: Json }; Returns: Json };
+      rpc_create_order: {
+        Args: { p_header: Json; p_items: Json };
+        Returns: Json;
+      };
+      rpc_create_payment: { Args: { p_data: Json }; Returns: Json };
+      rpc_create_quotation: {
+        Args: { p_header: Json; p_items: Json };
+        Returns: Json;
+      };
+      rpc_create_shipment: {
+        Args: { p_header: Json; p_items: Json; p_reserve_roll_ids: string[] };
+        Returns: Json;
+      };
       rpc_create_tenant: {
         Args: { p_name: string; p_owner_id: string; p_slug: string };
         Returns: {
@@ -4111,27 +4277,27 @@ export type Database = {
           isSetofReturn: false;
         };
       };
-      current_tenant_id: { Args: never; Returns: string };
-      current_user_role: {
-        Args: never;
-        Returns: Database['public']['Enums']['user_role'];
-      };
-      fn_create_order_atomic: {
-        Args: {
-          p_allocations: Json;
-          p_created_by: string;
-          p_customer_id: string;
-          p_delivery_date: string;
-          p_items: Json;
-          p_manager_override: boolean;
-          p_notes: string;
-          p_order_date: string;
-          p_order_number: string;
-          p_override_user_id: string;
-          p_source_quotation_id: string;
-          p_total_amount: number;
-        };
+      rpc_create_weaving_invoice: {
+        Args: { p_header: Json; p_rolls: Json };
         Returns: Json;
+      };
+      rpc_create_work_order:
+        | { Args: { p_wo_data: Json }; Returns: string }
+        | {
+            Args: { p_progress_data: Json; p_reqs_data: Json; p_wo_data: Json };
+            Returns: Json;
+          };
+      rpc_create_yarn_receipt: {
+        Args: { p_header: Json; p_items: Json };
+        Returns: Json;
+      };
+      rpc_delete_shipment: {
+        Args: { p_shipment_id: string };
+        Returns: undefined;
+      };
+      rpc_deprecate_bom: {
+        Args: { p_bom_id: string; p_reason: string; p_user_id: string };
+        Returns: undefined;
       };
       rpc_get_cash_flow_summary: {
         Args: { p_from?: string; p_to?: string };
@@ -4164,8 +4330,10 @@ export type Database = {
           total_amount: number;
         }[];
       };
-      get_tenant_user_count: { Args: { p_tenant_id: string }; Returns: number };
-      next_dyeing_order_number: { Args: never; Returns: string };
+      rpc_link_profile_to_employee: {
+        Args: { p_employee_id: string; p_profile_id?: string };
+        Returns: undefined;
+      };
       rpc_next_weaving_invoice_number: { Args: never; Returns: string };
       rpc_pay_customer_debt: {
         Args: { p_amount: number; p_customer_id: string; p_notes: string };
@@ -4175,19 +4343,49 @@ export type Database = {
         Args: { p_amount: number; p_notes: string; p_supplier_id: string };
         Returns: undefined;
       };
-      release_order_allocations: {
-        Args: { p_order_id: string; p_reason: string };
+      rpc_portal_accept_quotation: {
+        Args: { p_quotation_id: string };
+        Returns: Json;
+      };
+      rpc_portal_reject_quotation: {
+        Args: { p_quotation_id: string; p_reason: string };
+        Returns: Json;
+      };
+      rpc_revise_bom: {
+        Args: { p_bom_id: string; p_reason: string };
         Returns: undefined;
       };
-      show_limit: { Args: never; Returns: number };
-      show_trgm: { Args: { '': string }; Returns: string[] };
+      rpc_start_work_order: {
+        Args: { p_today: string; p_wo_id: string };
+        Returns: undefined;
+      };
       rpc_sync_shipment_debt: {
         Args: { p_shipment_id: string };
         Returns: undefined;
       };
-      tenant_can_add_user: { Args: { p_tenant_id: string }; Returns: boolean };
+      rpc_update_bom: {
+        Args: { p_bom_id: string; p_header: Json; p_items: Json };
+        Returns: undefined;
+      };
+      rpc_update_dyeing_order: {
+        Args: { p_header: Json; p_id: string; p_items: Json };
+        Returns: undefined;
+      };
       rpc_update_order_with_items: {
         Args: { p_header_data: Json; p_items_data: Json; p_order_id: string };
+        Returns: undefined;
+      };
+      rpc_update_quotation: {
+        Args: { p_header: Json; p_items: Json; p_quotation_id: string };
+        Returns: undefined;
+      };
+      rpc_update_shipment_journey: {
+        Args: {
+          p_journey_status: string;
+          p_notes?: string;
+          p_shipment_id: string;
+          p_updated_by?: string;
+        };
         Returns: undefined;
       };
       rpc_update_supplier: {
@@ -4206,12 +4404,28 @@ export type Database = {
         };
         Returns: string;
       };
+      rpc_update_weaving_invoice: {
+        Args: { p_header: Json; p_id: string; p_rolls: Json };
+        Returns: undefined;
+      };
+      rpc_update_work_order: {
+        Args: { p_wo_data: Json; p_wo_id: string };
+        Returns: undefined;
+      };
+      rpc_update_yarn_receipt: {
+        Args: { p_header: Json; p_id: string; p_items: Json };
+        Returns: undefined;
+      };
+      show_limit: { Args: never; Returns: number };
+      show_trgm: { Args: { '': string }; Returns: string[] };
+      tenant_can_add_user: { Args: { p_tenant_id: string }; Returns: boolean };
     };
     Enums: {
       account_type: 'cash' | 'bank';
       active_status: 'active' | 'inactive';
       adjustment_type: 'increase' | 'decrease' | 'correction';
       bom_status: 'draft' | 'approved' | 'deprecated';
+      cost_estimation_ref_type: 'work_order' | 'bom' | 'quotation';
       credit_status: 'active' | 'on_hold' | 'blocked';
       customer_source:
         | 'referral'
@@ -4253,6 +4467,7 @@ export type Database = {
         | 'in_progress'
         | 'completed'
         | 'cancelled';
+      payment_document_type: 'weaving_invoice' | 'yarn_receipt';
       payment_method: 'cash' | 'bank_transfer' | 'check' | 'other';
       production_stage:
         | 'warping'
@@ -4431,15 +4646,13 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       account_type: ['cash', 'bank'],
       active_status: ['active', 'inactive'],
       adjustment_type: ['increase', 'decrease', 'correction'],
       bom_status: ['draft', 'approved', 'deprecated'],
+      cost_estimation_ref_type: ['work_order', 'bom', 'quotation'],
       credit_status: ['active', 'on_hold', 'blocked'],
       customer_source: [
         'referral',
@@ -4486,6 +4699,7 @@ export const Constants = {
         'completed',
         'cancelled',
       ],
+      payment_document_type: ['weaving_invoice', 'yarn_receipt'],
       payment_method: ['cash', 'bank_transfer', 'check', 'other'],
       production_stage: [
         'warping',
@@ -4547,5 +4761,6 @@ export const Constants = {
   },
 } as const;
 
+// Custom type aliases for backward compatibility
 export type UserRole = Database['public']['Enums']['user_role'];
 export type Profile = Database['public']['Tables']['profiles']['Row'];
