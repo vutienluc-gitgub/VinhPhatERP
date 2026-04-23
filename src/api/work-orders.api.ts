@@ -337,45 +337,48 @@ export async function updateWorkOrder(
       targetKg = update.target_quantity * totalConsumptionPerM;
     }
     update.target_weight_kg = targetKg;
+    // Build yarn_requirements to embed inside p_wo_data
+    const yarnRequirements =
+      input.yarn_requirements && input.yarn_requirements.length > 0
+        ? input.yarn_requirements.map((req) => {
+            const existing = existingReqs.find(
+              (e) => e.yarn_catalog_id === req.yarn_catalog_id,
+            );
+            return {
+              ...req,
+              allocated_kg: existing ? existing.allocated_kg : 0,
+            };
+          })
+        : bomYarns && targetKg > 0
+          ? bomYarns.map((y) => ({
+              yarn_catalog_id: y.yarn_catalog_id,
+              bom_ratio_pct: y.ratio_pct,
+              required_kg:
+                (targetKg / (1 - (update.standard_loss_pct || 0) / 100)) *
+                (y.ratio_pct / 100),
+              allocated_kg: 0,
+            }))
+          : null;
 
-    // Save WO update
-    const { error: woUpdateErr } = await supabase.rpc(
+    // Save WO update — DB function reads yarn_requirements from p_wo_data
+    const { error: woUpdateErr } = await untypedDb.rpc(
       'rpc_update_work_order',
       {
         p_wo_id: id,
-        p_wo_data: update as unknown as never,
-        p_reqs_data:
-          input.yarn_requirements && input.yarn_requirements.length > 0
-            ? (input.yarn_requirements.map((req) => {
-                const existing = existingReqs.find(
-                  (e) => e.yarn_catalog_id === req.yarn_catalog_id,
-                );
-                return {
-                  ...req,
-                  allocated_kg: existing ? existing.allocated_kg : 0,
-                };
-              }) as unknown as never[])
-            : bomYarns && targetKg > 0
-              ? bomYarns.map((y) => ({
-                  yarn_catalog_id: y.yarn_catalog_id,
-                  bom_ratio_pct: y.ratio_pct,
-                  required_kg:
-                    (targetKg / (1 - (update.standard_loss_pct || 0) / 100)) *
-                    (y.ratio_pct / 100),
-                  allocated_kg: 0,
-                }))
-              : null,
+        p_wo_data: {
+          ...update,
+          yarn_requirements: yarnRequirements,
+        } as unknown as never,
       },
     );
     if (woUpdateErr) throw woUpdateErr;
   } else {
     // Basic update
-    const { error: woUpdateErr } = await supabase.rpc(
+    const { error: woUpdateErr } = await untypedDb.rpc(
       'rpc_update_work_order',
       {
         p_wo_id: id,
         p_wo_data: update as unknown as never,
-        p_reqs_data: null,
       },
     );
     if (woUpdateErr) throw woUpdateErr;

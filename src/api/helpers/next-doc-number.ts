@@ -20,7 +20,7 @@ export async function fetchNextDocNumber({
   prefix,
   pad = 4,
 }: DocNumberParams): Promise<string> {
-  const { data, error } = await untypedDb.rpc('rpc_generate_next_doc_number', {
+  const { data, error } = await untypedDb.rpc('generate_next_doc_number', {
     p_table: table,
     p_column: column,
     p_prefix: prefix,

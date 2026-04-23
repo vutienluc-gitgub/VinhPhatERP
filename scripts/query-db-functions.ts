@@ -7,8 +7,9 @@
 import postgres from 'postgres';
 
 export type DbParam = {
-  name: string;   // tên param, vd: p_id
-  type: string;   // SQL type, vd: uuid, text, integer
+  name: string; // tên param, vd: p_id
+  type: string; // SQL type, vd: uuid, text, integer
+  hasDefault: boolean; // true if param has DEFAULT value (optional)
 };
 
 export type DbFunction = {
@@ -31,25 +32,26 @@ function parseArgString(rawArgs: string): DbParam[] {
     .map((segment) => segment.trim())
     .filter(Boolean)
     .map((segment) => {
-      // Bỏ DEFAULT clause nếu có
+      // Detect DEFAULT clause
+      const hasDefault = /\bDEFAULT\b/i.test(segment);
       const withoutDefault = segment.replace(/\s+DEFAULT\s+.+$/i, '').trim();
 
-      // Format: "name type" hoặc "IN/OUT name type"
+      // Format: "name type" or "IN/OUT name type"
       const parts = withoutDefault.split(/\s+/);
 
-      // Bỏ qua mode keyword (IN, OUT, INOUT, VARIADIC)
+      // Skip mode keywords (IN, OUT, INOUT, VARIADIC)
       const modeKeywords = new Set(['in', 'out', 'inout', 'variadic']);
       const filtered = parts.filter((p) => !modeKeywords.has(p.toLowerCase()));
 
       if (filtered.length < 2) {
-        // Unnamed param, chỉ có type
-        return { name: '', type: filtered[0] ?? 'unknown' };
+        // Unnamed param, only type
+        return { name: '', type: filtered[0] ?? 'unknown', hasDefault };
       }
 
       const name = filtered[0];
-      const type = filtered.slice(1).join(' '); // vd: "character varying" → giữ nguyên
+      const type = filtered.slice(1).join(' ');
 
-      return { name, type };
+      return { name, type, hasDefault };
     })
     .filter((p) => p.name !== ''); // bỏ unnamed params
 }
@@ -62,16 +64,16 @@ export function normalizeType(sqlType: string): string {
   const t = sqlType.toLowerCase().trim();
   const map: Record<string, string> = {
     'character varying': 'text',
-    'varchar':           'text',
-    'character':         'text',
-    'char':              'text',
-    'integer':           'int',
-    'int4':              'int',
-    'int8':              'bigint',
-    'float4':            'numeric',
-    'float8':            'numeric',
-    'double precision':  'numeric',
-    'bool':              'boolean',
+    varchar: 'text',
+    character: 'text',
+    char: 'text',
+    integer: 'int',
+    int4: 'int',
+    int8: 'bigint',
+    float4: 'numeric',
+    float8: 'numeric',
+    'double precision': 'numeric',
+    bool: 'boolean',
     'timestamp with time zone': 'timestamptz',
     'timestamp without time zone': 'timestamp',
   };
@@ -81,7 +83,9 @@ export function normalizeType(sqlType: string): string {
 // ──────────────────────────────────────────────
 // Main: query database
 // ──────────────────────────────────────────────
-export async function getDbFunctions(connectionString: string): Promise<DbFunction[]> {
+export async function getDbFunctions(
+  connectionString: string,
+): Promise<DbFunction[]> {
   const sql = postgres(connectionString, {
     max: 1,
     idle_timeout: 10,
@@ -90,11 +94,13 @@ export async function getDbFunctions(connectionString: string): Promise<DbFuncti
   });
 
   try {
-    const rows = await sql<{
-      name: string;
-      args: string;
-      return_type: string;
-    }[]>`
+    const rows = await sql<
+      {
+        name: string;
+        args: string;
+        return_type: string;
+      }[]
+    >`
       SELECT
         p.proname                          AS name,
         pg_get_function_arguments(p.oid)   AS args,

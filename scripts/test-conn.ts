@@ -7,17 +7,21 @@ async function test(url: string) {
     const [{ now }] = await sql`SELECT now()`;
     console.log('✅ Success!', now);
     await sql.end();
-  } catch (err: any) {
-    console.log('❌ Failed:', err.message);
+  } catch (err: unknown) {
+    console.log('❌ Failed:', err instanceof Error ? err.message : err);
   }
 }
 
 async function run() {
-  const p1 = 'postgresql://postgres.sxphijrofljxkccdwtub:jhVVQpMHZXAtOXba@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres';
-  const p2 = 'postgresql://postgres.sxphijrofljxkccdwtub:jhVVQpMHZXAtOXba@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres';
-  const p3 = 'postgresql://postgres.sxphijrofljxkccdwtub:jhVVQpMHZXAtOXba@aws-0-us-west-1.pooler.supabase.com:6543/postgres';
-  const p4 = 'postgresql://postgres.sxphijrofljxkccdwtub:jhVVQpMHZXAtOXba@aws-0-eu-central-1.pooler.supabase.com:6543/postgres';
-  
+  const p1 =
+    'postgresql://postgres.sxphijrofljxkccdwtub:jhVVQpMHZXAtOXba@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres';
+  const p2 =
+    'postgresql://postgres.sxphijrofljxkccdwtub:jhVVQpMHZXAtOXba@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres';
+  const p3 =
+    'postgresql://postgres.sxphijrofljxkccdwtub:jhVVQpMHZXAtOXba@aws-0-us-west-1.pooler.supabase.com:6543/postgres';
+  const p4 =
+    'postgresql://postgres.sxphijrofljxkccdwtub:jhVVQpMHZXAtOXba@aws-0-eu-central-1.pooler.supabase.com:6543/postgres';
+
   await test(p1);
   await test(p2);
   await test(p3);
