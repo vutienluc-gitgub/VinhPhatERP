@@ -8,6 +8,7 @@ import { untypedDb } from '@/services/supabase/untyped';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
+import { safeUpsert } from '@/lib/db-guard';
 
 const TABLE = 'suppliers';
 
@@ -87,24 +88,39 @@ export async function fetchNextSupplierCode(): Promise<string> {
 export async function createSupplier(row: SupplierInsert): Promise<Supplier> {
   const tenantId = await getTenantId();
 
+  const sanitizedRow = {
+    ...row,
+    email: row.email?.trim() || null,
+    phone: row.phone?.trim() || null,
+    tax_code: row.tax_code?.trim() || null,
+  };
+
   // 1. Kiểm tra tồn tại trước khi insert (Database Safety)
-  if (row.code || row.email || row.phone) {
-    let checkQuery = supabase
-      .from(TABLE)
-      .select('id')
-      .eq('tenant_id', tenantId);
+  if (sanitizedRow.code || sanitizedRow.email || sanitizedRow.phone) {
+    const promises = [];
+    if (sanitizedRow.code) {
+      promises.push(
+        supabase.from(TABLE).select('id').eq('tenant_id', tenantId).eq('code', sanitizedRow.code)
+      );
+    }
+    if (sanitizedRow.email) {
+      promises.push(
+        supabase.from(TABLE).select('id').eq('tenant_id', tenantId).eq('email', sanitizedRow.email)
+      );
+    }
+    if (sanitizedRow.phone) {
+      promises.push(
+        supabase.from(TABLE).select('id').eq('tenant_id', tenantId).eq('phone', sanitizedRow.phone)
+      );
+    }
 
-    const conditions = [];
-    if (row.code) conditions.push(`code.eq.${row.code}`);
-    if (row.email) conditions.push(`email.eq.${row.email}`);
-    if (row.phone) conditions.push(`phone.eq.${row.phone}`);
+    if (promises.length > 0) {
+      const results = await Promise.all(promises);
+      const hasDuplicate = results.some(
+        (res) => !res.error && res.data && res.data.length > 0
+      );
 
-    if (conditions.length > 0) {
-      checkQuery = checkQuery.or(conditions.join(','));
-      const { data: existData, error: checkError } = await checkQuery;
-
-      if (checkError) throw checkError;
-      if (existData && existData.length > 0) {
+      if (hasDuplicate) {
         throw new Error(
           'Nhà cung cấp đã tồn tại (trùng Mã, Email hoặc SDT). Vui lòng kiểm tra lại.',
         );
@@ -113,33 +129,36 @@ export async function createSupplier(row: SupplierInsert): Promise<Supplier> {
   }
 
   // 2. Insert an toàn
-  const { data, error } = await supabase
-    .from(TABLE)
-    .insert([
-      {
-        ...row,
+  try {
+    const inserted = await safeUpsert({
+      table: TABLE,
+      data: {
+        ...sanitizedRow,
+        id: crypto.randomUUID(),
         tenant_id: tenantId,
       },
-    ])
-    .select()
-    .single();
+      conflictKey: 'id',
+    });
 
-  if (error) {
-    if (error.code === '23505') {
+    if (Array.isArray(inserted) && inserted.length > 0) {
+      return inserted[0] as unknown as Supplier;
+    }
+    return inserted as unknown as Supplier;
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'code' in error && (error as { code: string }).code === '23505') {
       throw new Error(
         'Nhà cung cấp bị trùng lặp dữ liệu (Unique Constraint) trong hệ thống.',
       );
     }
     throw error;
   }
-  return data as Supplier;
 }
 
 export async function updateSupplierRpc(
   id: string,
   row: Record<string, unknown>,
 ): Promise<unknown> {
-  const { data, error } = await untypedDb.rpc('update_supplier', {
+  const { data, error } = await untypedDb.rpc('rpc_update_supplier', {
     p_id: id,
     ...row,
   });
@@ -161,9 +180,16 @@ export async function updateSupplier(
   id: string,
   row: SupplierUpdate,
 ): Promise<Supplier> {
+  const sanitizedRow = {
+    ...row,
+    email: row.email?.trim() || null,
+    phone: row.phone?.trim() || null,
+    tax_code: row.tax_code?.trim() || null,
+  };
+
   const { data, error } = await supabase
     .from(TABLE)
-    .update(row)
+    .update(sanitizedRow)
     .eq('id', id)
     .select()
     .single();

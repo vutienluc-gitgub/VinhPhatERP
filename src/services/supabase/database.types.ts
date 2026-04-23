@@ -3967,48 +3967,48 @@ export type Database = {
         Args: { p_token: string; p_user_id: string };
         Returns: boolean;
       };
-      atomic_approve_bom: {
+      rpc_approve_bom: {
         Args: { p_bom_id: string; p_reason: string; p_user_id: string };
         Returns: undefined;
       };
-      atomic_cancel_order: { Args: { p_order_id: string }; Returns: undefined };
-      atomic_complete_work_order: {
+      rpc_cancel_order: { Args: { p_order_id: string }; Returns: undefined };
+      rpc_complete_work_order: {
         Args: { p_today: string; p_wo_id: string; p_yield_m: number };
         Returns: undefined;
       };
-      atomic_confirm_shipment: {
+      rpc_confirm_shipment: {
         Args: { p_shipment_id: string };
         Returns: undefined;
       };
-      atomic_convert_quotation_to_order: {
+      rpc_convert_quotation_to_order: {
         Args: { p_quotation_id: string };
         Returns: Json;
       };
-      atomic_create_bom: {
+      rpc_create_bom: {
         Args: { p_header: Json; p_items: Json; p_user_id: string };
         Returns: Json;
       };
-      atomic_create_dyeing_order: {
+      rpc_create_dyeing_order: {
         Args: { p_header: Json; p_items: Json };
         Returns: Json;
       };
-      atomic_create_order: {
+      rpc_create_order: {
         Args: { p_header: Json; p_items: Json };
         Returns: Json;
       };
-      atomic_create_quotation: {
+      rpc_create_quotation: {
         Args: { p_header: Json; p_items: Json };
         Returns: Json;
       };
-      atomic_create_shipment: {
+      rpc_create_shipment: {
         Args: { p_header: Json; p_items: Json; p_reserve_roll_ids: string[] };
         Returns: Json;
       };
-      atomic_create_weaving_invoice: {
+      rpc_create_weaving_invoice: {
         Args: { p_header: Json; p_rolls: Json };
         Returns: Json;
       };
-      atomic_create_work_order: {
+      rpc_create_work_order: {
         Args: { p_progress_data: Json; p_reqs_data: Json; p_wo_data: Json };
         Returns: Json;
       };
@@ -4016,35 +4016,35 @@ export type Database = {
         Args: { p_header: Json; p_items: Json };
         Returns: Json;
       };
-      atomic_delete_shipment: {
+      rpc_delete_shipment: {
         Args: { p_shipment_id: string };
         Returns: undefined;
       };
-      atomic_revise_bom: {
+      rpc_revise_bom: {
         Args: { p_bom_id: string; p_reason: string };
         Returns: undefined;
       };
-      atomic_start_work_order: {
+      rpc_start_work_order: {
         Args: { p_today: string; p_wo_id: string };
         Returns: undefined;
       };
-      atomic_update_bom: {
+      rpc_update_bom: {
         Args: { p_bom_id: string; p_header: Json; p_items: Json };
         Returns: undefined;
       };
-      atomic_update_dyeing_order: {
+      rpc_update_dyeing_order: {
         Args: { p_header: Json; p_id: string; p_items: Json };
         Returns: undefined;
       };
-      atomic_update_quotation: {
+      rpc_update_quotation: {
         Args: { p_header: Json; p_items: Json; p_quotation_id: string };
         Returns: undefined;
       };
-      atomic_update_weaving_invoice: {
+      rpc_update_weaving_invoice: {
         Args: { p_header: Json; p_id: string; p_rolls: Json };
         Returns: undefined;
       };
-      atomic_update_work_order: {
+      rpc_update_work_order: {
         Args: { p_reqs_data: Json; p_wo_data: Json; p_wo_id: string };
         Returns: undefined;
       };
@@ -4052,13 +4052,13 @@ export type Database = {
         Args: { p_header: Json; p_id: string; p_items: Json };
         Returns: undefined;
       };
-      check_slug_available: { Args: { p_slug: string }; Returns: boolean };
-      complete_dyeing_order: {
+      rpc_check_slug_available: { Args: { p_slug: string }; Returns: boolean };
+      rpc_complete_dyeing_order: {
         Args: { p_actual_return_date?: string; p_dyeing_order_id: string };
         Returns: undefined;
       };
-      confirm_order: { Args: { p_order_id: string }; Returns: undefined };
-      confirm_weaving_invoice: {
+      rpc_confirm_order: { Args: { p_order_id: string }; Returns: undefined };
+      rpc_confirm_weaving_invoice: {
         Args: { p_invoice_id: string };
         Returns: undefined;
       };
@@ -4086,7 +4086,7 @@ export type Database = {
               shipment_id: string;
             }[];
           };
-      create_tenant: {
+      rpc_create_tenant: {
         Args: { p_name: string; p_owner_id: string; p_slug: string };
         Returns: {
           created_at: string | null;
@@ -4166,7 +4166,7 @@ export type Database = {
       };
       get_tenant_user_count: { Args: { p_tenant_id: string }; Returns: number };
       next_dyeing_order_number: { Args: never; Returns: string };
-      next_weaving_invoice_number: { Args: never; Returns: string };
+      rpc_next_weaving_invoice_number: { Args: never; Returns: string };
       rpc_pay_customer_debt: {
         Args: { p_amount: number; p_customer_id: string; p_notes: string };
         Returns: undefined;
@@ -4186,11 +4186,11 @@ export type Database = {
         Returns: undefined;
       };
       tenant_can_add_user: { Args: { p_tenant_id: string }; Returns: boolean };
-      update_order_with_items: {
+      rpc_update_order_with_items: {
         Args: { p_header_data: Json; p_items_data: Json; p_order_id: string };
         Returns: undefined;
       };
-      update_supplier: {
+      rpc_update_supplier: {
         Args: {
           p_address?: string;
           p_category: Database['public']['Enums']['supplier_category'];

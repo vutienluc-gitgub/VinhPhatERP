@@ -165,7 +165,7 @@ export async function updateOrderWithItems(
   header: OrderUpdate,
   items: Omit<OrderItemInsert, 'order_id'>[],
 ): Promise<void> {
-  const { error } = await untypedDb.rpc('update_order_with_items', {
+  const { error } = await untypedDb.rpc('rpc_update_order_with_items', {
     p_order_id: id,
     p_header_data: header,
     p_items_data: items,
@@ -220,7 +220,7 @@ export async function updateOrderStatus(
 /* ── Confirm order: recalculate total, update status, create progress rows ── */
 
 export async function confirmOrder(orderId: string): Promise<void> {
-  const { error } = await untypedDb.rpc('confirm_order', {
+  const { error } = await untypedDb.rpc('rpc_confirm_order', {
     p_order_id: orderId,
   });
   if (error) throw error;
