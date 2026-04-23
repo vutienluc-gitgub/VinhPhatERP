@@ -1,4 +1,7 @@
 
+echo "🔍 Checking RPC sync..."
+npm run rpc:check || exit 1
+
 echo "🚀 Running AI Audit before push..."
 npm run ai:audit || exit 1
 

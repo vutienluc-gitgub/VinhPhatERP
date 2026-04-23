@@ -181,7 +181,7 @@ export async function completeDyeingOrder(
   id: string,
   actualReturnDate: string,
 ): Promise<void> {
-  const { error } = await db.rpc('complete_dyeing_order', {
+  const { error } = await db.rpc('rpc_complete_dyeing_order', {
     p_dyeing_order_id: id,
     p_actual_return_date: actualReturnDate,
   });

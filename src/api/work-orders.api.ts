@@ -222,7 +222,7 @@ export async function createWorkOrder(
     }));
   }
 
-  const { data, error } = await supabase.rpc('atomic_create_work_order', {
+  const { data, error } = await supabase.rpc('rpc_create_work_order', {
     p_wo_data: workOrderInsert as unknown as never,
     p_reqs_data: reqInserts as unknown as never[],
     p_progress_data: progressRows as unknown as never[],
@@ -340,7 +340,7 @@ export async function updateWorkOrder(
 
     // Save WO update
     const { error: woUpdateErr } = await supabase.rpc(
-      'atomic_update_work_order',
+      'rpc_update_work_order',
       {
         p_wo_id: id,
         p_wo_data: update as unknown as never,
@@ -371,7 +371,7 @@ export async function updateWorkOrder(
   } else {
     // Basic update
     const { error: woUpdateErr } = await supabase.rpc(
-      'atomic_update_work_order',
+      'rpc_update_work_order',
       {
         p_wo_id: id,
         p_wo_data: update as unknown as never,
@@ -398,7 +398,7 @@ export async function issueYarn(id: string): Promise<WorkOrder> {
 }
 
 export async function startWorkOrder(id: string): Promise<void> {
-  const { error } = await supabase.rpc('atomic_start_work_order', {
+  const { error } = await supabase.rpc('rpc_start_work_order', {
     p_wo_id: id,
     p_today: dayjs().format('YYYY-MM-DD'),
   });
@@ -414,7 +414,7 @@ export async function completeWorkOrder(
   id: string,
   actualYieldM: number,
 ): Promise<void> {
-  const { error } = await supabase.rpc('atomic_complete_work_order', {
+  const { error } = await supabase.rpc('rpc_complete_work_order', {
     p_wo_id: id,
     p_yield_m: actualYieldM,
     p_today: dayjs().format('YYYY-MM-DD'),

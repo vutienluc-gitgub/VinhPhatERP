@@ -25,7 +25,7 @@ export function useRegisterTenant() {
 
   const checkSlugAvailable = useCallback(
     async (slug: string): Promise<boolean> => {
-      const { data } = (await untypedDb.rpc('check_slug_available', {
+      const { data } = (await untypedDb.rpc('rpc_check_slug_available', {
         p_slug: slug,
       })) as { data: boolean | null };
       return data === true;
@@ -81,7 +81,7 @@ export function useRegisterTenant() {
           };
         }
 
-        const { error: rpcError } = (await untypedDb.rpc('create_tenant', {
+        const { error: rpcError } = (await untypedDb.rpc('rpc_create_tenant', {
           p_name: values.companyName.trim(),
           p_slug: values.slug.trim(),
           p_owner_id: userId,

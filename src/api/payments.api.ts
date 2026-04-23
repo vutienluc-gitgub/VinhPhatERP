@@ -240,7 +240,7 @@ export async function fetchNextExpenseNumber(): Promise<string> {
 }
 
 export async function createExpense(row: ExpenseDbPayload): Promise<Expense> {
-  const { data, error } = await untypedDb.rpc('atomic_create_expense', {
+  const { data, error } = await untypedDb.rpc('rpc_create_expense', {
     p_data: row,
   });
   if (error) throw error;

@@ -8,6 +8,7 @@ import type {
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { customerResponseSchema } from '@/schema/customer.schema';
+import { safeUpsert } from '@/lib/db-guard';
 
 const TABLE = 'customers';
 
@@ -35,24 +36,39 @@ export async function fetchCustomers(
 export async function createCustomer(row: CustomerInsert): Promise<Customer> {
   const tenantId = await getTenantId();
 
+  const sanitizedRow = {
+    ...row,
+    email: row.email?.trim() || null,
+    phone: row.phone?.trim() || null,
+    tax_code: row.tax_code?.trim() || null,
+  };
+
   // 1. Kiểm tra tồn tại trước khi insert (Database Safety)
-  if (row.code || row.email || row.phone) {
-    let checkQuery = supabase
-      .from(TABLE)
-      .select('id')
-      .eq('tenant_id', tenantId);
+  if (sanitizedRow.code || sanitizedRow.email || sanitizedRow.phone) {
+    const promises = [];
+    if (sanitizedRow.code) {
+      promises.push(
+        supabase.from(TABLE).select('id').eq('tenant_id', tenantId).eq('code', sanitizedRow.code)
+      );
+    }
+    if (sanitizedRow.email) {
+      promises.push(
+        supabase.from(TABLE).select('id').eq('tenant_id', tenantId).eq('email', sanitizedRow.email)
+      );
+    }
+    if (sanitizedRow.phone) {
+      promises.push(
+        supabase.from(TABLE).select('id').eq('tenant_id', tenantId).eq('phone', sanitizedRow.phone)
+      );
+    }
 
-    const conditions = [];
-    if (row.code) conditions.push(`code.eq.${row.code}`);
-    if (row.email) conditions.push(`email.eq.${row.email}`);
-    if (row.phone) conditions.push(`phone.eq.${row.phone}`);
+    if (promises.length > 0) {
+      const results = await Promise.all(promises);
+      const hasDuplicate = results.some(
+        (res) => !res.error && res.data && res.data.length > 0
+      );
 
-    if (conditions.length > 0) {
-      checkQuery = checkQuery.or(conditions.join(','));
-      const { data: existData, error: checkError } = await checkQuery;
-
-      if (checkError) throw checkError;
-      if (existData && existData.length > 0) {
+      if (hasDuplicate) {
         throw new Error(
           'Khách hàng đã tồn tại (trùng Mã, Email hoặc SDT). Vui lòng kiểm tra lại.',
         );
@@ -61,36 +77,45 @@ export async function createCustomer(row: CustomerInsert): Promise<Customer> {
   }
 
   // 2. Insert an toàn (sau khi đã check unique constraint)
-  const { data, error } = await supabase
-    .from(TABLE)
-    .insert([
-      {
-        ...row,
+  try {
+    const inserted = await safeUpsert({
+      table: TABLE,
+      data: {
+        ...sanitizedRow,
+        id: crypto.randomUUID(),
         tenant_id: tenantId,
       },
-    ])
-    .select()
-    .single();
+      conflictKey: 'id',
+    });
 
-  if (error) {
-    // Dự phòng bắt lỗi cấp Database
-    if (error.code === '23505') {
+    if (Array.isArray(inserted) && inserted.length > 0) {
+      return inserted[0] as unknown as Customer;
+    }
+    return inserted as unknown as Customer;
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'code' in error && (error as { code: string }).code === '23505') {
       throw new Error(
         'Khách hàng bị trùng lặp dữ liệu (Unique Constraint) trong hệ thống.',
       );
     }
     throw error;
   }
-  return data as Customer;
 }
 
 export async function updateCustomer(
   id: string,
   row: CustomerUpdate,
 ): Promise<Customer> {
+  const sanitizedRow = {
+    ...row,
+    email: row.email?.trim() || null,
+    phone: row.phone?.trim() || null,
+    tax_code: row.tax_code?.trim() || null,
+  };
+
   const { data, error } = await supabase
     .from(TABLE)
-    .update(row)
+    .update(sanitizedRow)
     .eq('id', id)
     .select()
     .single();

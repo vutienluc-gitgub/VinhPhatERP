@@ -265,7 +265,7 @@ export async function updateBomDraft(
   }
 
   // Use the atomic RPC to prevent race conditions and ensure old items are deleted properly
-  const { error: rpcError } = await untypedDb.rpc('atomic_update_bom', {
+  const { error: rpcError } = await untypedDb.rpc('rpc_update_bom', {
     p_bom_id: id,
     p_header: {
       code: existingBom.code,
