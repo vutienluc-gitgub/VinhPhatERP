@@ -28,3 +28,23 @@ export function getReceiptUnitPriceDisplay(receipt: YarnReceipt): string {
 
   return `${formatCurrency(min)}đ - ${formatCurrency(max)}đ`;
 }
+
+/**
+ * Returns the average unit price (numeric) for sorting purposes.
+ * Returns null when no valid prices exist.
+ */
+export function getReceiptAvgUnitPrice(receipt: YarnReceipt): number | null {
+  if (!receipt.yarn_receipt_items || receipt.yarn_receipt_items.length === 0) {
+    return null;
+  }
+
+  const prices = receipt.yarn_receipt_items
+    .map((item) => Number(item.unit_price))
+    .filter((p) => !isNaN(p) && p > 0);
+
+  if (prices.length === 0) {
+    return null;
+  }
+
+  return prices.reduce((sum, p) => sum + p, 0) / prices.length;
+}

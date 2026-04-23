@@ -25,7 +25,7 @@ import {
 
 import type { DocStatus, YarnReceipt, YarnReceiptsFilter } from './types';
 import { DOC_STATUS_LABELS } from './yarn-receipts.module';
-import { getReceiptUnitPriceDisplay } from './utils';
+import { getReceiptUnitPriceDisplay, getReceiptAvgUnitPrice } from './utils';
 
 type YarnReceiptListProps = {
   onEdit: (receipt: YarnReceipt) => void;
@@ -230,7 +230,8 @@ export function YarnReceiptList({
           {
             header: 'Đơn giá',
             id: 'unit_price',
-            sortable: false,
+            sortable: true,
+            accessor: (r) => getReceiptAvgUnitPrice(r),
             className: 'text-right',
             cell: (r) => (
               <span className="font-medium text-muted">

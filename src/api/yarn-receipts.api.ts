@@ -30,7 +30,9 @@ export async function fetchYarnReceiptsPaginated(
 
   let query = supabase
     .from(HEADER_TABLE)
-    .select('*, suppliers(name, code)', { count: 'exact' })
+    .select('*, suppliers(name, code), yarn_receipt_items(unit_price)', {
+      count: 'exact',
+    })
     .order('receipt_date', { ascending: false })
     .range(from, to);
 
