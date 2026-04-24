@@ -106,9 +106,9 @@ export function OrderKanbanPage() {
               </button>
             )}
           </div>
-          <div className="search-input-wrapper">
+          <div className="search-input-wrapper w-full sm:w-auto">
             <input
-              className="field-input h-10 w-[260px]"
+              className="field-input h-10 w-full sm:w-[260px]"
               placeholder="Tìm mã đơn, tên khách..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}

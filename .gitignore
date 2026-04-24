@@ -40,6 +40,11 @@ lerna-debug.log*
 # 🧪 TEST
 # =========================
 coverage
+/.auth
+/test-results
+/playwright-report
+/blob-report
+/playwright/.cache
 
 # =========================
 # 🖥 EDITOR

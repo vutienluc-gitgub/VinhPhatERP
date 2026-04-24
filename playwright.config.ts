@@ -7,14 +7,34 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
+  globalSetup: './e2e/global-setup.ts',
   use: {
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
   },
   projects: [
     {
+      // Default: chưa auth (auth.spec.ts cần test login form)
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      testIgnore: [
+        '**/mobile-overflow.spec.ts',
+        '**/core-smoke.spec.ts',
+        '**/operations-dnd.spec.ts',
+      ],
+    },
+    {
+      // Auth project: reuse storageState đã login từ globalSetup
+      name: 'chromium-authed',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: '.auth/storageState.json',
+      },
+      testMatch: [
+        '**/mobile-overflow.spec.ts',
+        '**/core-smoke.spec.ts',
+        '**/operations-dnd.spec.ts',
+      ],
     },
   ],
   webServer: {
