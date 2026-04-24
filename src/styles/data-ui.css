@@ -3,6 +3,24 @@
    Dùng chung cho các màn hình CRUD trong toàn app.
    ============================================================ */
 
+/* ---- Page container (responsive safety net) ----
+   Đảm bảo mọi trang dùng .page-container:
+   - Không bao giờ tràn ngang trên mobile (overflow-x: hidden)
+   - Có padding hợp lý theo breakpoint (sm < md < lg)
+   - min-width: 0 để con có thể truncate/co lại thay vì đẩy layout
+   Các trang có thể vẫn override bằng utility Tailwind khi cần. */
+.page-container {
+  min-width: 0;
+  overflow-x: hidden;
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .page-container {
+    padding: 1.5rem;
+  }
+}
+
 /* ---- Filter bar ---- */
 .filter-bar {
   display: flex;
@@ -1208,6 +1226,29 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02);
+  /* Prevent horizontal overflow on narrow viewports: scroll internally
+     instead of getting clipped by parent `.card-flush` (overflow: hidden). */
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tab-bar-premium::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .tab-bar-premium {
+    display: flex;
+    width: 100%;
+  }
+
+  .tab-item-premium {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.82rem;
+    flex-shrink: 0;
+  }
 }
 
 .tab-item-premium {

@@ -107,7 +107,7 @@ export function ColorCatalogPage() {
   ].filter((g) => g.items.length > 0);
 
   return (
-    <div className="page-container">
+    <div className="page-container p-4 md:p-6 overflow-x-hidden">
       <div className="page-header">
         <div>
           <h1 className="page-title">Danh mục màu sắc</h1>
