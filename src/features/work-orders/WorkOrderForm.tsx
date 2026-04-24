@@ -499,59 +499,71 @@ export function WorkOrderForm({
         </div>
 
         {/* Sticky Footer */}
-        <div className="modal-footer mt-6 p-0 border-none justify-between items-center">
-          <div className="flex items-center gap-3">
-            {!stepper.isFirst && (
-              <Button
-                variant="secondary"
-                type="button"
-                onClick={stepper.prev}
-                disabled={createMutation.isPending}
-              >
-                Quay lại
-              </Button>
-            )}
-            {stepper.isFirst && (
-              <Button
-                variant="secondary"
-                type="button"
-                onClick={onCancel}
-                disabled={createMutation.isPending}
-              >
-                Hủy bỏ
-              </Button>
-            )}
+        <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div className="flex flex-col-reverse sm:flex-row items-center gap-3 w-full sm:w-auto">
+            <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-3">
+              {!stepper.isFirst && (
+                <Button
+                  variant="secondary"
+                  type="button"
+                  onClick={stepper.prev}
+                  disabled={createMutation.isPending}
+                  className="w-full sm:w-auto justify-center"
+                >
+                  Quay lại
+                </Button>
+              )}
+              {stepper.isFirst && (
+                <Button
+                  variant="secondary"
+                  type="button"
+                  onClick={onCancel}
+                  disabled={createMutation.isPending}
+                  className="w-full sm:w-auto justify-center"
+                >
+                  Hủy bỏ
+                </Button>
+              )}
+            </div>
             {/* Save Status Indicator */}
-            <SaveStatus status={saveStatus} lastSavedAt={lastSavedAt} />
+            <div className="hidden sm:block">
+              <SaveStatus status={saveStatus} lastSavedAt={lastSavedAt} />
+            </div>
           </div>
 
-          <div>
+          <div className="w-full sm:w-auto">
             {!stepper.isLast ? (
-              <button
-                className="primary-button btn-standard"
+              <Button
+                variant="primary"
                 type="button"
                 onClick={handleNextStep}
                 disabled={createMutation.isPending}
+                className="w-full sm:w-auto justify-center"
               >
                 Tiếp tục
-              </button>
+              </Button>
             ) : (
-              <button
-                className="primary-button btn-standard"
+              <Button
+                variant="primary"
                 type="submit"
                 disabled={
                   createMutation.isPending ||
                   updateMutation.isPending ||
                   !isValid
                 }
+                className="w-full sm:w-auto justify-center"
               >
                 {createMutation.isPending || updateMutation.isPending
                   ? 'Đang lưu...'
                   : isEditing
                     ? 'Cập nhật lệnh SX'
                     : 'Xác nhận lệnh SX'}
-              </button>
+              </Button>
             )}
+          </div>
+          {/* Mobile Save Status */}
+          <div className="sm:hidden flex justify-center mt-[-8px]">
+            <SaveStatus status={saveStatus} lastSavedAt={lastSavedAt} />
           </div>
         </div>
       </form>

@@ -301,16 +301,22 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         )}
       </div>
 
-      <div className="flex justify-end gap-3 pt-5 mt-4 border-t border-border">
+      <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
         <Button
           variant="secondary"
           type="button"
           onClick={onClose}
           disabled={isPending}
+          className="w-full sm:w-auto justify-center"
         >
           Hủy
         </Button>
-        <Button variant="primary" type="submit" disabled={isPending}>
+        <Button
+          variant="primary"
+          type="submit"
+          disabled={isPending}
+          className="w-full sm:w-auto justify-center"
+        >
           {isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo mới'}
         </Button>
       </div>

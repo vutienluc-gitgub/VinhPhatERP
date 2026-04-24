@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
-import { CancelButton } from '@/shared/components';
+import { CancelButton, Button } from '@/shared/components';
 import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { createPaymentsSchema } from '@/schema/payment.schema';
 import { formatCurrency } from '@/shared/utils/format';
@@ -184,19 +184,24 @@ export function PaymentForm({
         </div>
 
         {/* Actions */}
-        <div className="modal-footer mt-6 p-0 border-none">
-          <CancelButton
+        <div className="mt-8 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+          <Button
+            variant="secondary"
+            type="button"
             onClick={onClose}
-            label="Hủy"
             disabled={isSubmitting || createMutation.isPending}
-          />
-          <button
-            className="primary-button btn-standard"
+            className="w-full sm:w-auto justify-center"
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="primary"
             type="submit"
             disabled={isSubmitting || createMutation.isPending}
+            className="w-full sm:w-auto justify-center"
           >
             {createMutation.isPending ? 'Đang lưu...' : 'Xác nhận thu'}
-          </button>
+          </Button>
         </div>
       </form>
     </AdaptiveSheet>

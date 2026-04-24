@@ -56,7 +56,7 @@ export function WorkOrderYarnTable({
         </div>
       </div>
 
-      <div className="card-table-section max-h-[300px] overflow-y-auto">
+      <div className="card-table-section max-h-[300px] overflow-y-auto overflow-x-auto hide-scrollbar">
         <table className="data-table table-sm">
           <thead>
             <tr>

@@ -145,7 +145,7 @@ export function GreigePriceEstimator({
         </p>
       )}
 
-      <div className="flex gap-4 mb-4">
+      <div className="flex flex-col sm:flex-row gap-4 mb-4">
         <div className="flex-1 form-field">
           <label className="text-xs">Giá sợi TB từ phiếu nhập (VNĐ/kg)</label>
           <div className="field-input text-sm bg-surface cursor-default">
@@ -172,7 +172,7 @@ export function GreigePriceEstimator({
       </div>
 
       {isPriceLoading && (
-        <div className="grid grid-cols-2 gap-4 text-sm bg-surface p-3 rounded border border-border/50 animate-pulse">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-surface p-3 rounded border border-border/50 animate-pulse">
           {[1, 2, 3, 4].map((i) => (
             <div key={i}>
               <div className="h-3 bg-border rounded w-2/3 mb-2" />
@@ -183,7 +183,7 @@ export function GreigePriceEstimator({
       )}
 
       {!isPriceLoading && result && (
-        <div className="grid grid-cols-2 gap-4 text-sm bg-surface p-3 rounded border border-border/50">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-surface p-3 rounded border border-border/50">
           <div>
             <p className="text-muted mb-1">Chi phí Sợi (từ phiếu nhập):</p>
             <p className="font-semibold">
