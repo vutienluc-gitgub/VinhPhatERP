@@ -547,15 +547,20 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
           </FormSection>
         </div>
 
-        <div className="modal-footer mt-6 p-0 border-none">
-          <CancelButton onClick={onClose} disabled={isPending} />
-          <button
-            className="primary-button btn-standard"
+        <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
+          <CancelButton
+            onClick={onClose}
+            disabled={isPending}
+            className="w-full sm:w-auto justify-center"
+          />
+          <Button
+            variant="primary"
             type="submit"
             disabled={isPending}
+            className="w-full sm:w-auto justify-center"
           >
             {isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo phiếu'}
-          </button>
+          </Button>
         </div>
       </form>
     </AdaptiveSheet>

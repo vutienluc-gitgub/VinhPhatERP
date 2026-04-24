@@ -282,11 +282,11 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
         )}
       </div>
 
-      {/* Footer using modal-footer convention inside sheet */}
-      <div className="modal-footer mt-6 p-0 border-none">
+      {/* Footer using flex layout for responsiveness */}
+      <div className="mt-6 pt-4 border-t border-border flex flex-col sm:flex-row sm:justify-end gap-3">
         <Button
           variant="secondary"
-          className="btn-standard"
+          className="w-full sm:w-auto justify-center"
           type="button"
           onClick={onClose}
         >

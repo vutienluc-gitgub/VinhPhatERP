@@ -450,18 +450,29 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
             </div>
           </fieldset>
 
-          <div className="sheet-footer mt-6 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <CancelButton onClick={onClose} label="Hủy" />
-              <SaveStatus status={saveStatus} lastSavedAt={lastSavedAt} />
+          <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div className="flex flex-col-reverse sm:flex-row items-center gap-3 w-full sm:w-auto">
+              <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-3">
+                <CancelButton
+                  onClick={onClose}
+                  label="Hủy"
+                  className="w-full sm:w-auto justify-center"
+                />
+              </div>
+              <div className="text-center sm:text-left w-full sm:w-auto">
+                <SaveStatus status={saveStatus} lastSavedAt={lastSavedAt} />
+              </div>
             </div>
-            <button
-              type="button"
-              className="primary-button btn-standard"
-              onClick={handleNext}
-            >
-              Tiếp theo → Nhập cuộn vải
-            </button>
+            <div className="w-full sm:w-auto">
+              <Button
+                variant="primary"
+                type="button"
+                className="w-full sm:w-auto justify-center"
+                onClick={handleNext}
+              >
+                Tiếp theo → Nhập cuộn vải
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -535,14 +546,20 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
           </div>
 
           {/* Footer */}
-          <div className="sheet-footer mt-2">
-            <Button variant="secondary" type="button" onClick={stepper.prev}>
+          <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+            <Button
+              variant="secondary"
+              type="button"
+              onClick={stepper.prev}
+              className="w-full sm:w-auto justify-center"
+            >
               Quay lại
             </Button>
-            <button
+            <Button
+              variant="primary"
               type="submit"
               form="weaving-form"
-              className="primary-button btn-standard"
+              className="w-full sm:w-auto justify-center"
               disabled={isPending}
             >
               {isPending
@@ -550,7 +567,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
                 : isEdit
                   ? 'Lưu thay đổi'
                   : 'Lưu phiếu nháp'}
-            </button>
+            </Button>
           </div>
         </div>
       </form>

@@ -2,6 +2,7 @@ interface CancelButtonProps {
   onClick: () => void;
   label?: string;
   disabled?: boolean;
+  className?: string;
 }
 
 import { Button } from './Button';
@@ -10,6 +11,7 @@ export function CancelButton({
   onClick,
   label = 'Hủy',
   disabled = false,
+  className,
 }: CancelButtonProps) {
   return (
     <Button
@@ -17,6 +19,7 @@ export function CancelButton({
       type="button"
       disabled={disabled}
       onClick={onClick}
+      className={className}
     >
       {label}
     </Button>

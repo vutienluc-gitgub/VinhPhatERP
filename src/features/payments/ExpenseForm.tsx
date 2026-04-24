@@ -203,7 +203,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
       <form id="expense-form" onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="form-grid">
           {/* Số phiếu chi + Ngày chi */}
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="form-field">
               <label htmlFor="expenseNumber">Số phiếu chi</label>
               {isEditing ? (
@@ -244,7 +244,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
           </div>
 
           {/* Danh mục + Số tiền */}
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="form-field">
               <label htmlFor="category">
                 Danh mục <span className="field-required">*</span>
@@ -288,7 +288,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
             </div>
           </div>
 
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="form-field">
               <label htmlFor="supplierId">Nhà cung cấp / Đối tác</label>
               <Controller
@@ -332,7 +332,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
           </div>
 
           {/* Tài khoản chi + Số CT */}
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="form-field">
               <label htmlFor="accountId">Tài khoản chi</label>
               <Controller
@@ -409,26 +409,28 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
           </div>
         </div>
 
-        <div className="modal-footer mt-6 p-0 border-none">
+        <div className="mt-8 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
           <Button
             variant="secondary"
             type="button"
             onClick={onClose}
             disabled={isPending}
+            className="w-full sm:w-auto justify-center"
           >
             Hủy
           </Button>
-          <button
-            className="primary-button btn-standard"
+          <Button
+            variant="primary"
             type="submit"
             disabled={isPending}
+            className="w-full sm:w-auto justify-center"
           >
             {isPending
               ? 'Đang lưu...'
               : isEditing
                 ? 'Cập nhật'
                 : 'Tạo phiếu chi'}
-          </button>
+          </Button>
         </div>
       </form>
     </AdaptiveSheet>

@@ -564,14 +564,15 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
             </div>
           </div>
 
-          <div className="modal-footer mt-6 p-0 border-none justify-between">
-            <div>
+          <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-between gap-3">
+            <div className="w-full sm:w-auto">
               {!stepper.isFirst && (
                 <Button
                   variant="secondary"
                   type="button"
                   onClick={stepper.prev}
                   disabled={isPending}
+                  className="w-full sm:w-auto justify-center"
                 >
                   Quay lại
                 </Button>
@@ -582,34 +583,37 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                   type="button"
                   onClick={onClose}
                   disabled={isPending}
+                  className="w-full sm:w-auto justify-center"
                 >
                   Hủy
                 </Button>
               )}
             </div>
 
-            <div>
+            <div className="w-full sm:w-auto">
               {!stepper.isLast ? (
-                <button
-                  className="primary-button btn-standard"
+                <Button
+                  variant="primary"
                   type="button"
                   onClick={handleNextStep}
                   disabled={isPending}
+                  className="w-full sm:w-auto justify-center"
                 >
                   Tiếp tục
-                </button>
+                </Button>
               ) : (
-                <button
-                  className="primary-button btn-standard"
+                <Button
+                  variant="primary"
                   type="submit"
                   disabled={isPending}
+                  className="w-full sm:w-auto justify-center"
                 >
                   {isPending
                     ? 'Đang lưu...'
                     : isEditing
                       ? 'Lưu thay đổi'
                       : 'Tạo đơn mới'}
-                </button>
+                </Button>
               )}
             </div>
           </div>

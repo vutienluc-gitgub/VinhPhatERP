@@ -78,7 +78,7 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
     >
       <form id="delivery-confirm-form" onSubmit={handleSubmit(onSubmit)}>
         {/* Receiver info */}
-        <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
             <label className="form-label" htmlFor="receiverName">
               Tên người nhận <span className="field-required">*</span>
@@ -130,7 +130,7 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
             <p className="text-[0.8rem] font-bold text-[var(--text-tertiary)] uppercase tracking-[0.06em] mb-3">
               Thù lao tài xế
             </p>
-            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="form-field mb-0">
                 <label className="form-label" htmlFor="driverCommission">
                   Số tiền thù lao (VNĐ)
@@ -198,12 +198,13 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
         )}
 
         {/* Actions */}
-        <div className="modal-footer mt-6 p-0 border-none">
+        <div className="mt-8 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
           <Button
             variant="secondary"
             type="button"
             onClick={onClose}
             disabled={isSubmitting || deliverMutation.isPending}
+            className="w-full sm:w-auto justify-center"
           >
             Hủy
           </Button>
@@ -211,6 +212,7 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
             variant="primary"
             type="submit"
             disabled={isSubmitting || deliverMutation.isPending}
+            className="w-full sm:w-auto justify-center py-3 sm:py-2"
           >
             {deliverMutation.isPending ? 'Đang lưu...' : 'Hoàn tất giao hàng'}
           </Button>

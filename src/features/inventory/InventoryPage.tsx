@@ -136,26 +136,36 @@ function AgingMobileCard({ roll }: { roll: AgingRoll }) {
   return (
     <div className="mobile-card">
       <div className="mobile-card-header">
-        <span className="mobile-card-title">{roll.roll_number}</span>
+        <div className="flex flex-col">
+          <span className="mobile-card-title">{roll.roll_number}</span>
+          <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
+            {roll.source === 'raw' ? 'Vải mộc' : 'Thành phẩm'}
+          </span>
+        </div>
         <Badge variant={cfg.variant}>{cfg.label}</Badge>
       </div>
-      <div className="mobile-card-body space-y-1">
-        <p className="font-bold">{roll.fabric_type}</p>
-        <div className="grid grid-cols-2 gap-2 text-sm">
-          <div className="flex items-center gap-2 text-muted">
-            <Icon name="Layers" size={16} />
-            <span>{roll.source === 'raw' ? 'Mộc' : 'Thành phẩm'}</span>
-          </div>
-          {roll.color_name && (
-            <div className="flex items-center gap-2 text-muted">
-              <Icon name="Palette" size={16} />
-              <span>{roll.color_name}</span>
+      <div className="mobile-card-body space-y-3">
+        <div className="flex justify-between items-start">
+          <p className="font-bold text-slate-800">{roll.fabric_type}</p>
+          {roll.warehouse_location && (
+            <div className="flex items-center gap-1 text-xs text-muted">
+              <Icon name="MapPin" size={14} />
+              <span>{roll.warehouse_location}</span>
             </div>
           )}
         </div>
-        <div className="flex justify-between items-center pt-2 mt-1 border-t border-border/10">
-          <span className="text-xs text-muted">Tồn kho</span>
-          <span className="font-bold text-sm">{roll.age_days} ngày</span>
+
+        <div className="flex items-center gap-4">
+          {roll.color_name && (
+            <div className="flex items-center gap-1.5 text-xs bg-surface-subtle px-2 py-1 rounded border border-border/50">
+              <Icon name="Palette" size={14} className="text-primary/70" />
+              <span className="font-medium">{roll.color_name}</span>
+            </div>
+          )}
+          <div className="flex items-center gap-1.5 text-xs bg-surface-subtle px-2 py-1 rounded border border-border/50">
+            <Icon name="Clock" size={14} className="text-orange-500/70" />
+            <span className="font-bold">{roll.age_days} ngày</span>
+          </div>
         </div>
       </div>
     </div>
@@ -166,7 +176,14 @@ function BreakdownMobileCard({ row }: { row: InventoryBreakdownRow }) {
   return (
     <div className="mobile-card">
       <div className="mobile-card-header">
-        <span className="mobile-card-title">{row.fabric_type ?? '—'}</span>
+        <div className="flex flex-col">
+          <span className="mobile-card-title">{row.fabric_type ?? '—'}</span>
+          {row.color_name && (
+            <span className="text-[10px] text-muted font-bold uppercase">
+              {row.color_name}
+            </span>
+          )}
+        </div>
         {row.quality_grade && (
           <span className={`grade-badge grade-${row.quality_grade}`}>
             {row.quality_grade}
@@ -174,20 +191,32 @@ function BreakdownMobileCard({ row }: { row: InventoryBreakdownRow }) {
         )}
       </div>
       <div className="mobile-card-body">
-        <div className="grid grid-cols-3 gap-2 text-center mt-1">
+        <div className="grid grid-cols-3 gap-2 text-center bg-surface-subtle/50 p-2 rounded-lg border border-border/30">
           <div>
-            <p className="text-[10px] uppercase text-muted">Cuộn</p>
-            <p className="font-bold">{row.roll_count ?? 0}</p>
-          </div>
-          <div>
-            <p className="text-[10px] uppercase text-muted">Dài</p>
-            <p className="font-bold text-primary">
-              {fmt(row.total_length_m ?? 0)} m
+            <p className="text-[9px] uppercase text-muted font-bold mb-0.5">
+              Cuộn
+            </p>
+            <p className="text-sm font-black text-slate-700">
+              {row.roll_count ?? 0}
             </p>
           </div>
           <div>
-            <p className="text-[10px] uppercase text-muted">Nặng</p>
-            <p className="font-medium">{fmt(row.total_weight_kg ?? 0)} kg</p>
+            <p className="text-[9px] uppercase text-muted font-bold mb-0.5">
+              Tổng dài
+            </p>
+            <p className="text-sm font-black text-primary">
+              {fmt(row.total_length_m ?? 0)}
+              <span className="text-[10px] ml-0.5">m</span>
+            </p>
+          </div>
+          <div>
+            <p className="text-[9px] uppercase text-muted font-bold mb-0.5">
+              Trọng lượng
+            </p>
+            <p className="text-sm font-black text-slate-700">
+              {fmt(row.total_weight_kg ?? 0)}
+              <span className="text-[10px] ml-0.5">kg</span>
+            </p>
           </div>
         </div>
       </div>
@@ -414,7 +443,7 @@ export function InventoryPage() {
 
           {/* Aging Stock Panel */}
           <div className="panel-card card-flush">
-            <div className="card-header-area card-header-premium">
+            <div className="card-header-area card-header-premium flex-col sm:flex-row items-start sm:items-center gap-4">
               <div>
                 <p className="eyebrow-premium">CẢNH BÁO TỒN KHO</p>
                 <h3 className="title-premium">
@@ -422,14 +451,14 @@ export function InventoryPage() {
                 </h3>
               </div>
               {agingRolls.length > 0 && (
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-2 flex-wrap w-full sm:w-auto">
                   {criticalCount > 0 && (
-                    <span className="badge-outline text-danger border-danger/30 text-xs">
+                    <span className="badge-outline text-danger border-danger/30 text-[10px] py-0.5 px-2 bg-danger/5">
                       {criticalCount} cuộn &gt; 90 ngày
                     </span>
                   )}
                   {warningCount > 0 && (
-                    <span className="badge-outline text-warning border-warning/30 text-xs">
+                    <span className="badge-outline text-warning border-warning/30 text-[10px] py-0.5 px-2 bg-warning/5">
                       {warningCount} cuộn 60–90 ngày
                     </span>
                   )}

@@ -98,12 +98,13 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
       onClose={onClose}
       title={isEditing ? `Sửa NCC: ${supplier.name}` : 'Thêm nhà cung cấp mới'}
       footer={
-        <>
+        <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-end gap-3 w-full">
           <Button
             variant="secondary"
             type="button"
             onClick={onClose}
             disabled={isPending}
+            className="w-full sm:w-auto justify-center"
           >
             Hủy
           </Button>
@@ -112,10 +113,11 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
             type="submit"
             form="supplier-form"
             disabled={isPending}
+            className="w-full sm:w-auto justify-center"
           >
             {isPending ? 'Đang lưu…' : isEditing ? 'Cập nhật' : 'Tạo mới'}
           </Button>
-        </>
+        </div>
       }
     >
       {mutationError && (
@@ -127,7 +129,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
       <form id="supplier-form" onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="form-grid">
           {/* Mã NCC + Tên NCC */}
-          <div className="form-grid form-grid-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="form-field">
               <label htmlFor="code">
                 Mã NCC <span className="field-required">*</span>
@@ -163,7 +165,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
           </div>
 
           {/* Điện thoại + Email */}
-          <div className="form-grid form-grid-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="form-field">
               <label htmlFor="phone">Số điện thoại</label>
               <input
@@ -206,7 +208,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
           </div>
 
           {/* Mã số thuế + Người liên hệ */}
-          <div className="form-grid form-grid-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="form-field">
               <label htmlFor="tax_code">Mã số thuế</label>
               <input
@@ -234,7 +236,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
           </div>
 
           {/* Danh mục + Trạng thái */}
-          <div className="form-grid form-grid-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="form-field">
               <label htmlFor="category">
                 Danh mục <span className="field-required">*</span>

@@ -144,12 +144,17 @@ export function DyeingOrderForm({
       onClose={onClose}
       title={isEdit ? 'Sửa lệnh nhuộm' : 'Tạo lệnh nhuộm mới'}
       footer={
-        <div className="flex justify-end gap-2 w-full">
-          <CancelButton onClick={onClose} label="Hủy" />
+        <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-end gap-3 w-full">
+          <CancelButton
+            onClick={onClose}
+            label="Hủy"
+            className="w-full sm:w-auto justify-center"
+          />
           <Button
             variant="primary"
             onClick={handleSubmit(onSubmit)}
             disabled={createMutation.isPending || updateMutation.isPending}
+            className="w-full sm:w-auto justify-center"
           >
             {createMutation.isPending || updateMutation.isPending
               ? 'Đang lưu...'
@@ -261,8 +266,8 @@ export function DyeingOrderForm({
               <label className="text-[10px] font-bold text-muted uppercase block mb-2">
                 Nhập theo lô vải mộc
               </label>
-              <div className="flex gap-2 items-center">
-                <div className="flex-1">
+              <div className="flex flex-col sm:flex-row gap-2 items-center">
+                <div className="w-full sm:flex-1">
                   <Combobox
                     options={lotOptions}
                     value={selectedLot}
@@ -270,9 +275,9 @@ export function DyeingOrderForm({
                     placeholder="Chọn lô — tự động thêm toàn bộ cuộn..."
                   />
                 </div>
-                <button
-                  type="button"
-                  className="btn-primary py-2 px-3 text-xs whitespace-nowrap flex items-center gap-1"
+                <Button
+                  variant="primary"
+                  className="w-full sm:w-auto py-2 px-3 text-xs whitespace-nowrap flex items-center justify-center gap-1"
                   disabled={!selectedLot}
                   onClick={() => {
                     const rolls = availableRolls.filter(
@@ -293,7 +298,7 @@ export function DyeingOrderForm({
                   {selectedLot
                     ? `Thêm ${availableRolls.filter((r) => (r.lot_number as string | null) === selectedLot).length} cuộn`
                     : 'Thêm'}
-                </button>
+                </Button>
               </div>
             </div>
           )}

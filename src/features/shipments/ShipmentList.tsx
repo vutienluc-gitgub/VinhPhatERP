@@ -210,45 +210,49 @@ export function ShipmentList() {
       />
 
       <div className="filter-bar card-filter-section flex-col items-start gap-4 px-4 pb-4">
-        <div className="flex w-full items-center justify-between">
-          <TabSwitcher
-            tabs={[
-              {
-                key: '',
-                label: 'Tat ca',
-              },
-              {
-                key: 'preparing',
-                label: 'Dang chuan bi',
-              },
-              {
-                key: 'shipped',
-                label: 'Dang di giao',
-              },
-              {
-                key: 'delivered',
-                label: 'Da nhan hang',
-              },
-            ]}
-            active={filters.status || ''}
-            onChange={(val) => {
-              setPage(1);
-              setFilters((prev) => ({
-                ...prev,
-                status: (val as ShipmentStatus) || undefined,
-              }));
-            }}
-            variant="boxed"
-          />
+        <div className="flex w-full items-center justify-between gap-4">
+          <div className="overflow-x-auto pb-1 flex-1 no-scrollbar">
+            <TabSwitcher
+              tabs={[
+                {
+                  key: '',
+                  label: 'Tat ca',
+                },
+                {
+                  key: 'preparing',
+                  label: 'Dang chuan bi',
+                },
+                {
+                  key: 'shipped',
+                  label: 'Dang di giao',
+                },
+                {
+                  key: 'delivered',
+                  label: 'Da nhan hang',
+                },
+              ]}
+              active={filters.status || ''}
+              onChange={(val) => {
+                setPage(1);
+                setFilters((prev) => ({
+                  ...prev,
+                  status: (val as ShipmentStatus) || undefined,
+                }));
+              }}
+              variant="boxed"
+            />
+          </div>
 
           {hasFilter && (
-            <ClearFilterButton
-              onClick={() => {
-                setFilters({});
-                setPage(1);
-              }}
-              label="Xoa loc nhanh"
-            />
+            <div className="shrink-0">
+              <ClearFilterButton
+                onClick={() => {
+                  setFilters({});
+                  setPage(1);
+                }}
+                label="Xoa loc"
+              />
+            </div>
           )}
         </div>
       </div>
@@ -483,11 +487,11 @@ export function ShipmentList() {
                   </span>
                 </div>
               </div>
-              <div className="mobile-card-actions">
+              <div className="flex flex-col sm:flex-row gap-2 mt-4 pt-3 border-t border-border/10">
                 {s.status === 'preparing' && (
-                  <>
+                  <div className="flex flex-row gap-2 w-full">
                     <button
-                      className="btn-secondary flex-1 text-success"
+                      className="btn-secondary flex-1 py-2.5 justify-center text-success text-xs font-bold"
                       onClick={(e) => {
                         e.stopPropagation();
                         void handleConfirm(s);
@@ -497,7 +501,7 @@ export function ShipmentList() {
                       <Icon name="CheckCircle" size={16} /> Xác nhận
                     </button>
                     <button
-                      className="btn-secondary flex-1 text-danger"
+                      className="btn-secondary flex-1 py-2.5 justify-center text-danger text-xs font-bold"
                       onClick={(e) => {
                         e.stopPropagation();
                         void handleDelete(s.id);
@@ -506,29 +510,29 @@ export function ShipmentList() {
                     >
                       <Icon name="Trash2" size={16} /> Xóa
                     </button>
-                  </>
+                  </div>
                 )}
                 {s.status !== 'preparing' && (
                   <button
-                    className="btn-secondary flex-1"
+                    className="btn-secondary w-full py-2.5 justify-center text-xs font-bold"
                     onClick={(e) => {
                       e.stopPropagation();
                       void handleExportPdf(s);
                     }}
                     disabled={exportPdfMutation.isPending}
                   >
-                    <Icon name="Printer" size={16} /> In PDF
+                    <Icon name="Printer" size={16} /> In phiếu PDF
                   </button>
                 )}
                 {s.status === 'shipped' && (
                   <button
-                    className="btn-primary flex-1"
+                    className="btn-primary w-full py-3 justify-center text-xs font-black shadow-lg shadow-primary/20"
                     onClick={(e) => {
                       e.stopPropagation();
                       setDeliveryShipment(s);
                     }}
                   >
-                    <Icon name="Check" size={16} /> Nhận hàng
+                    <Icon name="Check" size={18} /> XÁC NHẬN GIAO HÀNG
                   </button>
                 )}
               </div>

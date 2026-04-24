@@ -81,36 +81,46 @@ export function CashFlowDashboard() {
       ) : (
         <>
           {/* Summary Cards */}
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3 p-4">
-            <div className="p-3 rounded-sm bg-surface border border-border">
-              <div className="td-muted text-[0.78rem] mb-1">Tổng thu</div>
-              <div className="text-[1.15rem] font-semibold text-[#27ae60] tabular-nums">
-                {formatCurrency(totalInflow)} đ
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 p-4">
+            <div className="p-3 rounded-xl bg-surface border border-border shadow-sm">
+              <div className="td-muted text-[0.7rem] font-bold uppercase tracking-wider mb-1">
+                Tổng thu
+              </div>
+              <div className="text-[1rem] sm:text-[1.15rem] font-black text-emerald-600 tabular-nums">
+                {formatCurrency(totalInflow)}
+                <span className="text-[10px] ml-1">đ</span>
               </div>
             </div>
-            <div className="p-3 rounded-sm bg-surface border border-border">
-              <div className="td-muted text-[0.78rem] mb-1">Tổng chi</div>
-              <div className="text-[1.15rem] font-semibold text-[#c0392b] tabular-nums">
-                {formatCurrency(totalOutflow)} đ
+            <div className="p-3 rounded-xl bg-surface border border-border shadow-sm">
+              <div className="td-muted text-[0.7rem] font-bold uppercase tracking-wider mb-1">
+                Tổng chi
+              </div>
+              <div className="text-[1rem] sm:text-[1.15rem] font-black text-rose-600 tabular-nums">
+                {formatCurrency(totalOutflow)}
+                <span className="text-[10px] ml-1">đ</span>
               </div>
             </div>
-            <div className="p-3 rounded-sm bg-surface border border-border">
-              <div className="td-muted text-[0.78rem] mb-1">Chênh lệch</div>
+            <div className="p-3 rounded-xl bg-surface border border-border shadow-sm">
+              <div className="td-muted text-[0.7rem] font-bold uppercase tracking-wider mb-1">
+                Chênh lệch
+              </div>
               <div
-                className={`text-[1.15rem] font-semibold tabular-nums ${netFlow >= 0 ? 'text-[#27ae60]' : 'text-[#c0392b]'}`}
+                className={`text-[1rem] sm:text-[1.15rem] font-black tabular-nums ${netFlow >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}
               >
                 {netFlow >= 0 ? '+' : ''}
-                {formatCurrency(netFlow)} đ
+                {formatCurrency(netFlow)}
+                <span className="text-[10px] ml-1">đ</span>
               </div>
             </div>
-            <div className="p-3 rounded-sm bg-surface border border-border">
-              <div className="td-muted text-[0.78rem] mb-1">
+            <div className="p-3 rounded-xl bg-surface border border-border shadow-sm">
+              <div className="td-muted text-[0.7rem] font-bold uppercase tracking-wider mb-1">
                 Số dư tài khoản
               </div>
               <div
-                className={`text-[1.15rem] font-semibold tabular-nums ${totalAccountBalance >= 0 ? 'text-[#2980b9]' : 'text-[#c0392b]'}`}
+                className={`text-[1rem] sm:text-[1.15rem] font-black tabular-nums ${totalAccountBalance >= 0 ? 'text-blue-600' : 'text-rose-600'}`}
               >
-                {formatCurrency(totalAccountBalance)} đ
+                {formatCurrency(totalAccountBalance)}
+                <span className="text-[10px] ml-1">đ</span>
               </div>
             </div>
           </div>
