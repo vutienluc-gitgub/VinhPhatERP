@@ -82,7 +82,7 @@ export function PaymentsPage() {
             tabs={TAB_CONFIG}
             active={tab}
             onChange={setTab}
-            variant="pill"
+            variant="premium"
           />
         </div>
       </div>
