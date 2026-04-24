@@ -349,52 +349,57 @@ export function OperationsPage() {
   };
 
   return (
-    <div className="page-container p-6 space-y-6 bg-zinc-50/30 min-h-screen">
+    <div className="page-container p-4 md:p-6 space-y-6 bg-zinc-50/30 min-h-screen overflow-x-hidden">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <h1 className="text-3xl font-extrabold text-zinc-900 tracking-tight">
+        <div className="fade-up">
+          <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-900 tracking-tight">
             {OPERATIONS_MESSAGES.TITLE}
           </h1>
-          <p className="text-zinc-500 text-sm mt-1">
+          <p className="text-zinc-500 text-xs md:text-sm mt-1">
             {OPERATIONS_MESSAGES.SUBTITLE}
           </p>
         </div>
-        <div className="flex items-center gap-3 bg-white p-2 rounded-2xl shadow-sm border border-zinc-100">
-          <div className="w-64">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-white p-2 rounded-2xl shadow-sm border border-zinc-100 w-full md:w-auto overflow-hidden">
+          <div className="w-full sm:w-64">
             <SearchInput
               placeholder={OPERATIONS_MESSAGES.SEARCH_PLACEHOLDER}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="border-none bg-zinc-50/50"
+              className="border-none bg-zinc-50/50 w-full"
             />
           </div>
-          <div className="w-48">
-            <Combobox
-              options={[
-                { value: '', label: OPERATIONS_MESSAGES.ALL_PERSONNEL },
-                ...employees.map((e) => ({ value: e.id, label: e.name })),
-              ]}
-              value={assigneeFilter ?? ''}
-              onChange={(val) => setAssigneeFilter(val || undefined)}
-              placeholder={OPERATIONS_MESSAGES.FILTER_ASSIGNEE}
-              className="border-none bg-zinc-50/50"
-            />
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex-1 sm:w-48">
+              <Combobox
+                options={[
+                  { value: '', label: OPERATIONS_MESSAGES.ALL_PERSONNEL },
+                  ...employees.map((e) => ({ value: e.id, label: e.name })),
+                ]}
+                value={assigneeFilter ?? ''}
+                onChange={(val) => setAssigneeFilter(val || undefined)}
+                placeholder={OPERATIONS_MESSAGES.FILTER_ASSIGNEE}
+                className="border-none bg-zinc-50/50 w-full"
+              />
+            </div>
+            <Button
+              variant="primary"
+              leftIcon="Plus"
+              onClick={() => {
+                setSelectedTask(null);
+                setIsFormOpen(true);
+              }}
+              className="rounded-xl px-4 whitespace-nowrap"
+            >
+              <span className="hidden sm:inline">
+                {OPERATIONS_MESSAGES.CREATE_TASK}
+              </span>
+              <span className="sm:hidden">Thêm</span>
+            </Button>
           </div>
-          <Button
-            variant="primary"
-            leftIcon="Plus"
-            onClick={() => {
-              setSelectedTask(null);
-              setIsFormOpen(true);
-            }}
-            className="rounded-xl px-6"
-          >
-            {OPERATIONS_MESSAGES.CREATE_TASK}
-          </Button>
         </div>
       </div>
 
-      <KpiGridPremium>
+      <KpiGridPremium className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         <KpiCardPremium
           label="Tổng task"
           value={tasks.length}
