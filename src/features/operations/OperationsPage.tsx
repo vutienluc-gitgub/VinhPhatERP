@@ -119,6 +119,7 @@ function SortableTaskCard({
     <div
       ref={setNodeRef}
       style={style}
+      data-testid={`kanban-task-${task.id}`}
       {...attributes}
       {...listeners}
       onClick={(e) => {
@@ -190,7 +191,10 @@ function KanbanColumn({
   const { setNodeRef } = useDroppable({ id });
 
   return (
-    <div className="flex flex-col min-w-[240px] h-full">
+    <div
+      className="flex flex-col min-w-[240px] h-full"
+      data-testid={`kanban-column-${id}`}
+    >
       <div className="flex items-center justify-between mb-3 px-2">
         <div className="flex items-center gap-2">
           <span className={`h-2 w-2 rounded-full ${tone.split(' ')[0]}`} />
@@ -203,6 +207,7 @@ function KanbanColumn({
 
       <div
         ref={setNodeRef}
+        data-testid={`kanban-dropzone-${id}`}
         className="flex-1 space-y-3 p-3 rounded-2xl bg-zinc-50/80 border border-zinc-100/50 min-h-[500px] transition-colors"
       >
         <SortableContext
@@ -240,6 +245,7 @@ export function OperationsPage() {
   // Local state for smoother DnD transitions
   const [localTasks, setLocalTasks] = useState<Task[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [isPersistingDrag, setIsPersistingDrag] = useState(false);
 
   // UI State
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -251,8 +257,9 @@ export function OperationsPage() {
 
   // Sync local tasks when server data changes
   useEffect(() => {
-    if (tasks.length > 0) setLocalTasks(tasks);
-  }, [tasks]);
+    if (activeId || isPersistingDrag) return;
+    setLocalTasks(tasks);
+  }, [tasks, activeId, isPersistingDrag]);
 
   // Filters
   const filteredTasks = useMemo(() => {
@@ -272,10 +279,10 @@ export function OperationsPage() {
     }),
   );
 
-  const activeTask = useMemo(
-    () => tasks.find((t) => t.id === activeId),
-    [activeId, tasks],
-  );
+  const activeTask = useMemo(() => {
+    const list = localTasks.length > 0 ? localTasks : tasks;
+    return list.find((t) => t.id === activeId);
+  }, [activeId, localTasks, tasks]);
 
   if (isLoading && tasks.length === 0) {
     return (
@@ -335,6 +342,14 @@ export function OperationsPage() {
       : localTasks.find((t) => t.id === targetId)?.status;
 
     if (newStatus) {
+      const prevTasks = localTasks;
+      const nextTasks = prevTasks.map((t) =>
+        t.id === taskId ? { ...t, status: newStatus } : t,
+      );
+
+      setLocalTasks(nextTasks);
+      setIsPersistingDrag(true);
+
       try {
         await updateTaskMutation.mutateAsync({
           id: taskId,
@@ -342,8 +357,10 @@ export function OperationsPage() {
         });
       } catch (err) {
         // Rollback local state if API fails
-        setLocalTasks(tasks);
+        setLocalTasks(prevTasks);
         console.error('Failed to update task status', err);
+      } finally {
+        setIsPersistingDrag(false);
       }
     }
   };

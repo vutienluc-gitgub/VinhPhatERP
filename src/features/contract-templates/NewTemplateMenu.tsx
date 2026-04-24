@@ -55,7 +55,7 @@ export function NewTemplateMenu({ onSelect }: NewTemplateMenuProps) {
       </Button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2.5 z-[50] w-64 p-2 rounded-2xl border border-border/60 bg-surface shadow-2xl animate-in zoom-in-95 duration-200 origin-top-right">
+        <div className="absolute right-0 top-full mt-2.5 z-[50] w-[calc(100vw-2rem)] sm:w-64 max-w-[16rem] p-2 rounded-2xl border border-border/60 bg-surface shadow-2xl animate-in zoom-in-95 duration-200 origin-top-right">
           <button
             type="button"
             className="w-full text-left px-4 py-3.5 rounded-xl text-sm font-bold hover:bg-emerald-600 hover:text-surface flex items-center gap-3 transition-all group"

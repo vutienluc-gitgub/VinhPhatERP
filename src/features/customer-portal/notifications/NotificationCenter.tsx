@@ -50,7 +50,7 @@ export function NotificationCenter({ onClose }: Props) {
   return (
     <div
       ref={panelRef}
-      className="absolute top-[calc(100%+8px)] right-0 w-[320px] max-h-[400px] overflow-y-auto bg-[var(--surface-strong)] border border-border rounded-md shadow-[var(--shadow)] z-[100]"
+      className="absolute top-[calc(100%+8px)] right-0 w-[calc(100vw-2rem)] sm:w-[320px] max-w-[320px] max-h-[400px] overflow-y-auto bg-[var(--surface-strong)] border border-border rounded-md shadow-[var(--shadow)] z-[100]"
     >
       {/* Header */}
       <div className="px-4 py-3 border-b border-border flex items-center justify-between">
