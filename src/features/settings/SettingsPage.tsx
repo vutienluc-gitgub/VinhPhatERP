@@ -2,7 +2,7 @@ import { CompanySettingsForm } from './CompanySettingsForm';
 
 export function SettingsPage() {
   return (
-    <div className="page-container">
+    <div className="page-container p-4 md:p-6 overflow-x-hidden">
       <div className="page-header">
         <div>
           <h1 className="page-title">Cài đặt hệ thống</h1>

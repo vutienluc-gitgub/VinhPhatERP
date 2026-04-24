@@ -66,7 +66,7 @@ export function PaymentsPage() {
   const [showAccountForm, setShowAccountForm] = useState(false);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="page-container p-4 md:p-6 flex flex-col gap-6 overflow-x-hidden">
       {/* Premium Tab Header */}
       <div className="panel-card card-flush">
         <div className="card-header-area">
