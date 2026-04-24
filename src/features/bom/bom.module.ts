@@ -39,15 +39,15 @@ export const bomFeature: FeatureDefinition = {
   highlights: ['BOM định nghĩa tỷ lệ hao hụt.', 'Quản lý phiên bản bất biến.'],
   entities: ['bom_templates', 'bom_yarn_items', 'bom_versions'],
   nextMilestones: [
-    'Tich hop BOM vao tinh ke hoach nguyen lieu trong Work Orders.',
+    'Tích hợp BOM vào tính kế hoạch nguyên liệu trong Work Orders.',
   ],
 };
 export const bomPlugin: FeaturePlugin = {
   key: 'bom',
   route: 'bom',
-  label: 'Dinh muc (BOM)',
+  label: 'Định mức (BOM)',
   shortLabel: 'BOM',
-  description: 'Cau hinh dinh muc nguyen vat lieu soi cho tung ma vai moc.',
+  description: 'Cấu hình định mức nguyên vật liệu sợi cho từng mã vải mộc.',
   icon: 'GitMerge',
   requiredRoles: ['admin', 'manager'],
   group: 'production',

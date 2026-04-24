@@ -1,5 +1,4 @@
 import { CompanySettingsForm } from './CompanySettingsForm';
-import { ColorsSection } from './ColorsSection';
 
 export function SettingsPage() {
   return (
@@ -8,7 +7,7 @@ export function SettingsPage() {
         <div>
           <h1 className="page-title">Cài đặt hệ thống</h1>
           <p className="page-subtitle">
-            Quản lý cấu hình công ty và danh mục dùng chung.
+            Quản lý cấu hình công ty và các tham số vận hành.
           </p>
         </div>
       </div>
@@ -25,8 +24,6 @@ export function SettingsPage() {
             <CompanySettingsForm />
           </div>
         </div>
-
-        <ColorsSection />
       </div>
     </div>
   );
