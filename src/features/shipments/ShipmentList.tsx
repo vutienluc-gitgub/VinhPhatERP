@@ -239,7 +239,7 @@ export function ShipmentList() {
                   status: (val as ShipmentStatus) || undefined,
                 }));
               }}
-              variant="boxed"
+              variant="premium"
             />
           </div>
 

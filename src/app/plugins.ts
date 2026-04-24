@@ -22,6 +22,7 @@ import { reportsPlugin } from '@/features/reports';
 import { shippingRatesPlugin } from '@/features/shipping-rates';
 import { settingsPlugin } from '@/features/settings';
 import { dyeingOrdersPlugin } from '@/features/dyeing-orders';
+import { operationsPlugin } from '@/features/operations';
 import { employeesPlugin } from '@/features/employees/employees.module';
 import { contractTemplatesPlugin } from '@/features/contract-templates';
 import { contractsPlugin } from '@/features/contracts';
@@ -62,6 +63,7 @@ const plugins: FeaturePlugin[] = [
   colorCatalogPlugin,
 
   // ── SYSTEM ──
+  operationsPlugin,
   paymentsPlugin,
   debtsPlugin,
   reportsPlugin,

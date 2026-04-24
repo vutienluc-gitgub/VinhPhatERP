@@ -11,7 +11,7 @@ interface Props<T extends string> {
   tabs: TabItem<T>[];
   active: T;
   onChange: (key: T) => void;
-  variant?: 'boxed' | 'underline' | 'pill';
+  variant?: 'boxed' | 'underline' | 'pill' | 'premium';
 }
 
 export function TabSwitcher<T extends string>({
@@ -25,13 +25,17 @@ export function TabSwitcher<T extends string>({
       ? 'tab-bar-underline'
       : variant === 'pill'
         ? 'tab-bar-pill'
-        : 'tab-bar';
+        : variant === 'premium'
+          ? 'tab-bar-premium'
+          : 'tab-bar';
   const itemClass =
     variant === 'underline'
       ? 'tab-item-underline'
       : variant === 'pill'
         ? 'tab-item-pill'
-        : 'tab-item';
+        : variant === 'premium'
+          ? 'tab-item-premium'
+          : 'tab-item';
 
   return (
     <div className={barClass}>

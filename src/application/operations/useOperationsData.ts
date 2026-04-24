@@ -1,0 +1,186 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+import {
+  fetchTasks,
+  fetchEmployees,
+  fetchKpis,
+  fetchActivities,
+  fetchWorkload,
+  createTask,
+  updateTask,
+  deleteTask,
+  completeTask,
+} from '@/api/operations.api';
+import { fetchOrders } from '@/api/orders.api';
+import { fetchWorkOrders } from '@/api/work-orders.api';
+import { Task } from '@/features/operations/types';
+
+export function useTasks() {
+  return useQuery({
+    queryKey: ['operations-tasks'],
+    queryFn: fetchTasks,
+  });
+}
+
+// ... (other query hooks)
+
+export function useCreateTask() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (values: Partial<Task>) => createTask(values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['operations-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['operations-workload'] });
+      queryClient.invalidateQueries({ queryKey: ['operations-activities'] });
+    },
+  });
+}
+
+export function useUpdateTask() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, values }: { id: string; values: Partial<Task> }) =>
+      updateTask(id, values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['operations-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['operations-workload'] });
+      queryClient.invalidateQueries({ queryKey: ['operations-activities'] });
+    },
+  });
+}
+
+export function useDeleteTask() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteTask(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['operations-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['operations-workload'] });
+      queryClient.invalidateQueries({ queryKey: ['operations-activities'] });
+    },
+  });
+}
+
+export function useCompleteTask() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      taskId,
+      actualHours,
+    }: {
+      taskId: string;
+      actualHours?: number;
+    }) => completeTask(taskId, actualHours),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['operations-tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['operations-workload'] });
+      queryClient.invalidateQueries({ queryKey: ['operations-activities'] });
+    },
+  });
+}
+
+export function useEmployees() {
+  return useQuery({
+    queryKey: ['operations-employees'],
+    queryFn: fetchEmployees,
+  });
+}
+
+export function useKpis() {
+  return useQuery({
+    queryKey: ['operations-kpis'],
+    queryFn: fetchKpis,
+  });
+}
+
+export function useActivities() {
+  return useQuery({
+    queryKey: ['operations-activities'],
+    queryFn: fetchActivities,
+  });
+}
+
+export function useWorkload() {
+  return useQuery({
+    queryKey: ['operations-workload'],
+    queryFn: fetchWorkload,
+  });
+}
+
+export function useOrders() {
+  return useQuery({
+    queryKey: ['orders-minimal'],
+    queryFn: () => fetchOrders(), // You might want to use a minimal fetch if available
+  });
+}
+
+export function useWorkOrders() {
+  return useQuery({
+    queryKey: ['work-orders-minimal'],
+    queryFn: () => fetchWorkOrders(),
+  });
+}
+
+export function useOperationsData() {
+  const tasksQuery = useTasks();
+  const employeesQuery = useEmployees();
+  const kpisQuery = useKpis();
+  const activitiesQuery = useActivities();
+  const workloadQuery = useWorkload();
+  const ordersQuery = useOrders();
+  const workOrdersQuery = useWorkOrders();
+
+  const isLoading =
+    tasksQuery.isLoading ||
+    employeesQuery.isLoading ||
+    kpisQuery.isLoading ||
+    activitiesQuery.isLoading ||
+    workloadQuery.isLoading ||
+    ordersQuery.isLoading ||
+    workOrdersQuery.isLoading;
+
+  const isError =
+    tasksQuery.isError ||
+    employeesQuery.isError ||
+    kpisQuery.isError ||
+    activitiesQuery.isError ||
+    workloadQuery.isError;
+
+  const tasks = tasksQuery.data ?? [];
+  const doneCount = tasks.filter((t) => t.status === 'done').length;
+  const openTasksList = tasks.filter(
+    (t) => t.status !== 'done' && t.status !== 'cancelled',
+  );
+  const overdueCount = openTasksList.filter(
+    (t) => t.due_date && new Date(t.due_date) < new Date(),
+  ).length;
+  const onTimeRate = tasks.length
+    ? Math.round(((tasks.length - overdueCount) / tasks.length) * 100)
+    : 100;
+
+  // Safe data extraction for paginated results
+  const orders = Array.isArray(ordersQuery.data)
+    ? ordersQuery.data
+    : ((ordersQuery.data as unknown as { data: unknown[] })?.data ?? []);
+
+  const workOrders = Array.isArray(workOrdersQuery.data)
+    ? workOrdersQuery.data
+    : ((workOrdersQuery.data as unknown as { data: unknown[] })?.data ?? []);
+
+  return {
+    tasks,
+    employees: employeesQuery.data ?? [],
+    kpis: kpisQuery.data ?? [],
+    activities: activitiesQuery.data ?? [],
+    workload: workloadQuery.data ?? [],
+    orders,
+    workOrders,
+    stats: {
+      doneCount,
+      overdueCount,
+      onTimeRate,
+    },
+    isLoading,
+    isError,
+  };
+}

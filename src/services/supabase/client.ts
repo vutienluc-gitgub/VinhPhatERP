@@ -47,3 +47,10 @@ function createSupabaseClient() {
 }
 
 export const supabase = createSupabaseClient();
+
+/**
+ * UNTYPED DB CLIENT
+ * Use this when database.types.ts is out of sync with actual DB schema
+ * or when calling RPCs that haven't been generated yet.
+ */
+export const untypedDb = createClient(url || '', anonKey || '');

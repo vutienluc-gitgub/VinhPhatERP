@@ -127,7 +127,7 @@ export function ReportsPage() {
               tabs={tabsWithBadge}
               active={activeTab}
               onChange={setActiveTab}
-              variant="pill"
+              variant="premium"
             />
           </div>
         </div>

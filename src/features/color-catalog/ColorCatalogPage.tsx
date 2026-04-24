@@ -133,7 +133,7 @@ export function ColorCatalogPage() {
               tabs={tabItems}
               active={activeTab}
               onChange={setActiveTab}
-              variant="pill"
+              variant="premium"
             />
           </div>
 
