@@ -121,13 +121,15 @@ export function ReportsPage() {
 
         <ReportsFilterBar filter={filter} onChange={setFilter} />
 
-        <div className="px-5 pb-4 pt-3">
-          <TabSwitcher
-            tabs={tabsWithBadge}
-            active={activeTab}
-            onChange={setActiveTab}
-            variant="pill"
-          />
+        <div className="px-5 pb-4 pt-3 overflow-x-auto hide-scrollbar">
+          <div className="min-w-max pb-1">
+            <TabSwitcher
+              tabs={tabsWithBadge}
+              active={activeTab}
+              onChange={setActiveTab}
+              variant="pill"
+            />
+          </div>
         </div>
       </div>
 

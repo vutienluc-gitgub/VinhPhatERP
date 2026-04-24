@@ -75,11 +75,11 @@ export function ReportsFilterBar({ filter, onChange }: ReportsFilterBarProps) {
           />
         </div>
 
-        <div className="flex gap-2 self-end mb-[4px]">
+        <div className="flex gap-2 self-end mb-[4px] w-full sm:w-auto mt-2 sm:mt-0">
           <Button
             variant="primary"
             leftIcon="Filter"
-            className="min-h-[42px] px-6 flex items-center gap-2"
+            className="min-h-[42px] px-6 flex items-center gap-2 flex-1 sm:flex-none justify-center"
             type="submit"
           >
             Áp dụng

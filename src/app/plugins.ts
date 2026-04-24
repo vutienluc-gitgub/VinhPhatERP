@@ -16,6 +16,7 @@ import { suppliersPlugin } from '@/features/suppliers';
 import { yarnCatalogPlugin } from '@/features/yarn-catalog';
 import { fabricCatalogPlugin } from '@/features/fabric-catalog';
 import { inventoryPlugin } from '@/features/inventory';
+import { colorCatalogPlugin } from '@/features/color-catalog';
 import { paymentsPlugin, debtsPlugin } from '@/features/payments';
 import { reportsPlugin } from '@/features/reports';
 import { shippingRatesPlugin } from '@/features/shipping-rates';
@@ -58,6 +59,7 @@ const plugins: FeaturePlugin[] = [
   yarnCatalogPlugin,
   fabricCatalogPlugin,
   inventoryPlugin,
+  colorCatalogPlugin,
 
   // ── SYSTEM ──
   paymentsPlugin,
