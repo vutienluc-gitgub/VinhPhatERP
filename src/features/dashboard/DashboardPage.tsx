@@ -19,7 +19,7 @@ export function DashboardPage() {
     useCustomerSources();
 
   return (
-    <div className="page-container p-4">
+    <div className="page-container p-4 md:p-6 overflow-x-hidden">
       <h1 className="sr-only">Dashboard</h1>
 
       <div className="grid grid-cols-12 gap-6">

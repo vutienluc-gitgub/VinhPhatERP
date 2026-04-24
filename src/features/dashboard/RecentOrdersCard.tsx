@@ -64,17 +64,18 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
                 to={`/orders/${order.id}`}
                 className="task-item flex-col items-stretch gap-1"
               >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="font-bold text-sm text-primary">
+                <div className="flex items-center justify-between gap-2 min-w-0">
+                  <span className="font-bold text-sm text-primary truncate min-w-0">
                     {order.order_number}
                   </span>
                   <span
                     className={`roll-status ${STATUS_CSS[order.status] ?? 'in_stock'}`}
+                    style={{ flexShrink: 0 }}
                   >
                     {STATUS_LABELS[order.status] ?? order.status}
                   </span>
                 </div>
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-2 min-w-0">
                   <span className="td-muted text-[0.8rem] overflow-hidden text-ellipsis whitespace-nowrap">
                     {order.customer_name ?? '—'} ·{' '}
                     {formatDate(order.created_at)}

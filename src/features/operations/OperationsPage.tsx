@@ -369,7 +369,7 @@ export function OperationsPage() {
             />
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <div className="flex-1 sm:w-48">
+            <div className="flex-1 sm:w-48 min-w-0">
               <Combobox
                 options={[
                   { value: '', label: OPERATIONS_MESSAGES.ALL_PERSONNEL },
@@ -378,7 +378,7 @@ export function OperationsPage() {
                 value={assigneeFilter ?? ''}
                 onChange={(val) => setAssigneeFilter(val || undefined)}
                 placeholder={OPERATIONS_MESSAGES.FILTER_ASSIGNEE}
-                className="border-none bg-zinc-50/50 w-full"
+                className="border-none bg-zinc-50/50 w-full min-w-0"
               />
             </div>
             <Button
