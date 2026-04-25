@@ -137,3 +137,38 @@ Danh sách 29 thư mục chính ánh xạ 1:1 với sơ đồ trên:
 - **Logistics:** `inventory`, `shipments`, `shipping-rates`, `driver-portal`
 - **Finance:** `payments`
 - **System:** `auth`, `dashboard`, `employees`, `reports`, `settings`
+
+## 4. Trạng thái và Luân chuyển Dữ liệu (State & Data Triggers)
+
+### 4.1. Status Flow của từng Entity
+
+| Entity                    | Chuỗi trạng thái (Status Flow)                                                       | Ghi chú                                                                    |
+| :------------------------ | :----------------------------------------------------------------------------------- | :------------------------------------------------------------------------- |
+| **Báo giá (Quotations)**  | `draft` → `sent` → `approved` / `rejected`                                           |                                                                            |
+| **Đơn hàng (Orders)**     | `pending_review` → `draft` → `confirmed` → `in_progress` → `completed` / `cancelled` | Chuyển `in_progress` khi bắt đầu thi công. Chuyển `completed` khi giao đủ. |
+| **Lệnh SX (Work Orders)** | `draft` → `in_progress` → `completed` / `cancelled`                                  | `draft`: chờ duyệt/kế hoạch. `in_progress`: đang dệt.                      |
+| **Lệnh Nhuộm (Dyeing)**   | `draft` → `in_progress` → `completed` / `cancelled`                                  |                                                                            |
+| **Giao hàng (Shipments)** | `draft` → `preparing` → `shipped` → `delivered` / `cancelled`                        | `shipped`: xe đang chạy. `delivered`: khách đã nhận.                       |
+
+### 4.2. Trigger Rules (Quy tắc Kích hoạt)
+
+Hệ thống ứng dụng các Trigger để tự động hóa dòng chảy dữ liệu:
+
+- **Khi `work_orders.status = completed`** → Tự động tạo mộc thành phẩm (`raw_fabric_rolls`), số lượng bằng mộc thực tế thu được (Yield).
+- **Khi `shipments.status = shipped`** → Tự động trừ tồn kho (Inventory deduction).
+- **Khi `shipments.status = delivered`** → Tự động kiểm tra: Nếu tổng số lượng đã giao >= số lượng Đơn hàng (Sale Order) yêu cầu → Tự động chuyển `orders.status = completed`.
+- **Khi `weaving_invoices` được Xác nhận** → Tự động tăng `supplier_debt` (Nợ phải trả xưởng gia công).
+- **Khi `payments` (Phiếu thu) được Xác nhận** → Tự động giảm `customer_debt` (Công nợ khách hàng).
+
+### 4.3. Phương thức Kích hoạt (Manual vs Auto)
+
+> **M** = Thủ công (Manual - Người dùng click/gõ dữ liệu)  
+> **A** = Tự động (Auto - Hệ thống/Trigger tự chạy ngầm)
+
+- **[M] Lên Đơn hàng** → Người dùng (Sales) tạo từ Báo giá hoặc nhập tay.
+- **[A] Cập nhật tiến độ Đơn hàng** → Lắng nghe từ các module Sản xuất (Operations / WorkOrders).
+- **[M] Tạo Lệnh sản xuất** → Quản lý xưởng dệt tạo lệnh dựa trên nhu cầu của Đơn hàng.
+- **[M] Chuyển trạng thái Lệnh SX thành In Progress** → Phải được người dùng click "Bắt đầu dệt".
+- **[A] Tính toán hao hụt sợi (BOM)** → Tự động nội suy từ `target_weight` và Định mức.
+- **[A] Tạo Mộc thành phẩm** → Trigger khi Lệnh dệt hoàn tất (đã nghiệm thu kcs).
+- **[A] Báo cáo Lợi nhuận / Doanh thu / Tồn kho** → Realtime cập nhật dựa trên Database Views.
