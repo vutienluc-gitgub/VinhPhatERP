@@ -65,6 +65,8 @@ coverage
 tmp-*
 *.tmp
 *.cache
+scripts/junk/
+scratch/
 
 # =========================
 # ⚙️ OS

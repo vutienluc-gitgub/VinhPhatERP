@@ -26,7 +26,7 @@ export function RawFabricPage() {
   }
 
   return (
-    <div className="page-container overflow-x-hidden pb-20">
+    <div className="page-container">
       <RawFabricList
         onEdit={openEdit}
         onNew={openCreate}

@@ -36,7 +36,7 @@ export function OrdersPage() {
   }, []);
 
   return (
-    <>
+    <div className="page-container">
       {view.mode === 'list' ? (
         <OrderList
           onNew={openCreate}
@@ -113,6 +113,6 @@ export function OrdersPage() {
           />
         )}
       </AdaptiveSheet>
-    </>
+    </div>
   );
 }

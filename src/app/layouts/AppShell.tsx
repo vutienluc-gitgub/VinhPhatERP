@@ -10,7 +10,6 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { useDashboardStats } from '@/application/analytics';
-import { useCompanySettings } from '@/application/settings';
 import { getNavigationItems } from '@/app/router/routes';
 import type { NavigationItem } from '@/app/router/routes';
 import type { UserRole } from '@/services/supabase/database.types';
@@ -119,18 +118,36 @@ export function AppShell() {
     useState<Record<string, boolean>>(loadCollapsed);
   const [isSidebarCollapsed, setIsSidebarCollapsed] =
     useState<boolean>(loadSidebarCollapsed);
-  const { data: companySettings } = useCompanySettings();
-  const layoutMode = companySettings?.layout_mode || 'boxed';
   const userMenuRef = useRef<HTMLDivElement>(null);
   const currentItem = getCurrentItem(pathname);
   const { data: stats } = useDashboardStats();
   const { theme, toggleTheme } = useTheme();
   const navigationItems = getNavigationItems();
 
+  // Khi bật fluid → tự động thu gọn sidebar (user vẫn toggle được bình thường)
+  useEffect(() => {
+    const handleFluidChange = () => {
+      const isFluid = localStorage.getItem('erp-fluid-dashboard') === 'true';
+      if (isFluid) {
+        setIsSidebarCollapsed(true);
+        saveSidebarCollapsed(true);
+      }
+    };
+    window.addEventListener('layout-mode-changed', handleFluidChange);
+    return () =>
+      window.removeEventListener('layout-mode-changed', handleFluidChange);
+  }, []);
+
   const toggleSidebar = useCallback(() => {
     setIsSidebarCollapsed((prev) => {
       const next = !prev;
       saveSidebarCollapsed(next);
+      // Khi mở sidebar từ icon-only → reset tất cả group về trạng thái mở
+      // để tránh animation kẹt (CSS override biến mất, JS state cũ chiếm quyền)
+      if (!next) {
+        setCollapsed({});
+        saveCollapsed({});
+      }
       return next;
     });
   }, []);
@@ -246,9 +263,7 @@ export function AppShell() {
   }
 
   return (
-    <div
-      className={`shell-layout${isSidebarCollapsed ? ' is-collapsed' : ''}${layoutMode === 'fluid' ? ' is-fluid' : ''}`}
-    >
+    <div className={`shell-layout${isSidebarCollapsed ? ' is-collapsed' : ''}`}>
       {/* Hiệu ứng Glow Premium */}
       <div className="bg-glow bg-glow-1" />
       <div className="bg-glow bg-glow-2" />
@@ -327,7 +342,7 @@ export function AppShell() {
                 <div
                   className={`nav-group-items${isCollapsed ? ' is-collapsed' : ''}`}
                 >
-                  {g.items.map(renderNavLink)}
+                  <div>{g.items.map(renderNavLink)}</div>
                 </div>
               </div>
             );
@@ -337,42 +352,55 @@ export function AppShell() {
 
       <div className="content-shell">
         <header className="topbar">
-          <div>
-            <p className="eyebrow">{currentItem?.shortLabel ?? 'MVP V2'}</p>
-            <h2>{currentItem?.label ?? 'Dashboard'}</h2>
-          </div>
-          <div
-            className="topbar-actions"
-            ref={userMenuRef}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-            }}
-          >
+          {/* Breadcrumb */}
+          <nav className="topbar-breadcrumb" aria-label="Breadcrumb">
+            <NavLink to="/">
+              <Icon name="Home" size={15} strokeWidth={1.5} />
+            </NavLink>
+            {currentItem && currentItem.path !== '/' && (
+              <>
+                <Icon
+                  name="ChevronRight"
+                  size={12}
+                  className="topbar-breadcrumb-sep"
+                />
+                {currentItem.shortLabel &&
+                  currentItem.shortLabel !== currentItem.label && (
+                    <>
+                      <span className="topbar-breadcrumb-current">
+                        {currentItem.shortLabel}
+                      </span>
+                      <Icon
+                        name="ChevronRight"
+                        size={12}
+                        className="topbar-breadcrumb-sep"
+                      />
+                    </>
+                  )}
+                <span className="topbar-breadcrumb-current">
+                  {currentItem.label}
+                </span>
+              </>
+            )}
+            {!currentItem && (
+              <span className="topbar-breadcrumb-current">Tổng quan</span>
+            )}
+          </nav>
+
+          <div className="topbar-spacer" />
+
+          {/* Action icons */}
+          <div className="topbar-actions" ref={userMenuRef}>
             <button
               type="button"
+              className="topbar-icon-btn"
               onClick={toggleTheme}
               title={theme === 'dark' ? 'Chế độ Sáng' : 'Chế độ Tối'}
               aria-label="Toggle Theme"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                borderRadius: '50%',
-                width: '38px',
-                height: '38px',
-                cursor: 'pointer',
-                fontSize: '1.15rem',
-                color: 'var(--text)',
-                padding: 0,
-              }}
             >
               <Icon
                 name={theme === 'dark' ? 'Sun' : 'Moon'}
-                size={18}
+                size={17}
                 strokeWidth={1.5}
               />
             </button>

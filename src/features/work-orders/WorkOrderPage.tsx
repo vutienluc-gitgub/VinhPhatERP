@@ -69,7 +69,7 @@ export function WorkOrdersPage() {
   }
 
   return (
-    <>
+    <div className="page-container">
       <WorkOrderList
         onView={handleView}
         onEdit={handleEdit}
@@ -88,6 +88,6 @@ export function WorkOrdersPage() {
           }}
         />
       )}
-    </>
+    </div>
   );
 }

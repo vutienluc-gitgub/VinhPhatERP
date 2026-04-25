@@ -103,7 +103,7 @@ export function OperationsPage() {
   const workloadRows = workload.slice(0, 6);
 
   return (
-    <div className="page-container p-4 md:p-6 space-y-6 bg-zinc-50/30 min-h-screen overflow-x-hidden">
+    <div className="page-container space-y-6 bg-zinc-50/30 min-h-screen">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="fade-up">
           <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-900 tracking-tight">

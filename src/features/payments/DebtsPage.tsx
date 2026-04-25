@@ -29,7 +29,7 @@ export function DebtsPage() {
   const debtAging = useDebtAging();
 
   return (
-    <div className="page-container p-4 md:p-6 overflow-x-hidden">
+    <div className="page-container">
       <div className="panel-card card-flush mb-6">
         <div className="card-header-area">
           <div className="card-header-row">

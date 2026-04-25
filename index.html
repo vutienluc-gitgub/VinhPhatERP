@@ -45,6 +45,12 @@
   <body>
     <div id="root"></div>
     <div id="modal-root"></div>
+    <script>
+      // Áp dụng fluid layout TRƯỚC khi React render — tránh flash
+      if (localStorage.getItem('erp-fluid-dashboard') === 'true') {
+        document.documentElement.classList.add('fluid');
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

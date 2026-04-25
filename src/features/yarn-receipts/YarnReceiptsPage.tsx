@@ -42,7 +42,7 @@ export function YarnReceiptsPage() {
   }
 
   return (
-    <>
+    <div className="page-container">
       <YarnReceiptList
         onEdit={openEdit}
         onNew={openCreate}
@@ -60,6 +60,6 @@ export function YarnReceiptsPage() {
           onClose={closeForm}
         />
       )}
-    </>
+    </div>
   );
 }

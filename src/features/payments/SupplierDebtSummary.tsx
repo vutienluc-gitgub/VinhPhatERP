@@ -25,7 +25,7 @@ export function SupplierDebtSummary() {
     <div className="panel-card card-flush">
       {/* KPI Summary */}
       {debts.length > 0 && (
-        <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
+        <div className="kpi-section kpi-grid">
           <div className="kpi-card-premium kpi-danger">
             <div className="kpi-overlay" />
             <div className="kpi-content">

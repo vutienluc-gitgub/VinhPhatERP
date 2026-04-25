@@ -28,7 +28,7 @@ export function FinishedFabricPage() {
   }
 
   return (
-    <>
+    <div className="page-container">
       <FinishedFabricList
         onEdit={openEdit}
         onNew={openCreate}
@@ -42,6 +42,6 @@ export function FinishedFabricPage() {
       {traceRoll && (
         <TraceChainPanel roll={traceRoll} onClose={() => setTraceRoll(null)} />
       )}
-    </>
+    </div>
   );
 }
