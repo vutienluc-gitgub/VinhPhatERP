@@ -91,23 +91,21 @@ export function ContractTemplatesPage() {
     const heading = isEdit
       ? view.template.name
       : CONTRACT_TYPE_LABELS[view.type];
-    const eyebrow = isEdit ? 'ĐIỀU CHỈNH MẪU' : 'KHỞI TẠO CẤU HÌNH';
     const editTemplate = isEdit ? view.template : view.base;
 
     return (
-      <div className="panel-card card-flush !overflow-visible">
-        <div className="card-header-area card-header-premium">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleClose}
-              title="Quay lại"
-              leftIcon="ArrowLeft"
-            />
-            <div>
-              <p className="eyebrow-premium">{eyebrow}</p>
-              <h3 className="title-premium">
+      <div className="page-container">
+        <div className="panel-card card-flush !overflow-visible">
+          <div className="card-header-area">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleClose}
+                title="Quay lại"
+                leftIcon="ArrowLeft"
+              />
+              <span className="font-bold text-lg">
                 {heading}
                 {isEdit && (
                   <span
@@ -116,19 +114,19 @@ export function ContractTemplatesPage() {
                     {CONTRACT_TYPE_LABELS[view.template.type]}
                   </span>
                 )}
-              </h3>
+              </span>
             </div>
           </div>
-        </div>
 
-        <div className="p-4 md:p-6">
-          <TemplateEditor
-            template={
-              editTemplate && editTemplate.id ? editTemplate : undefined
-            }
-            onSaved={handleSaved}
-            onCancel={handleClose}
-          />
+          <div className="p-4 md:p-6">
+            <TemplateEditor
+              template={
+                editTemplate && editTemplate.id ? editTemplate : undefined
+              }
+              onSaved={handleSaved}
+              onCancel={handleClose}
+            />
+          </div>
         </div>
       </div>
     );
@@ -137,98 +135,96 @@ export function ContractTemplatesPage() {
   // ── List view ────────────────────────────────────────────────────────────
 
   return (
-    <div className="panel-card card-flush !overflow-visible">
-      {/* Header Area */}
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">QUẢN TRỊ HỆ THỐNG</p>
-          <h3 className="title-premium">Mẫu hợp đồng</h3>
+    <div className="page-container">
+      <div className="panel-card card-flush !overflow-visible">
+        {/* Header Area */}
+        <div className="card-header-area">
+          <NewTemplateMenu onSelect={handleCreateNew} />
         </div>
-        <NewTemplateMenu onSelect={handleCreateNew} />
-      </div>
 
-      {/* Toolbar: Search + Filter */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-compact-premium">
-          <div className="filter-field">
-            <label htmlFor="template-search">Tìm kiếm</label>
-            <SearchInput
-              id="template-search"
-              placeholder="Tìm kiếm mẫu văn bản..."
-              value={filter.search}
-              onChange={(e) =>
-                setFilter((prev) => ({
-                  ...prev,
-                  search: e.target.value,
-                }))
-              }
-            />
-          </div>
-          <div className="filter-field">
-            <label>Loại danh mục</label>
-            <select
-              className="field-input"
-              value={filter.type}
-              onChange={(e) =>
-                setFilter((prev) => ({
-                  ...prev,
-                  type: e.target.value as 'all' | ContractType,
-                }))
-              }
-            >
-              <option value="all">Tất cả danh mục</option>
-              <option value="sale">Mẫu Bán hàng</option>
-              <option value="purchase">Mẫu Mua hàng</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Content Section */}
-      <div className="p-4 md:p-6">
-        {/* Error state */}
-        {error && (
-          <div className="p-4">
-            <p className="error-inline">Lỗi: {(error as Error).message}</p>
-          </div>
-        )}
-
-        {/* Loading state */}
-        {isLoading && <TemplatesLoadingSkeleton />}
-
-        {/* Template list */}
-        {!isLoading && !error && (
-          <div className="grid gap-4 lg:grid-cols-2">
-            {templates.length === 0 && (
-              <TemplatesEmptyState onSeed={() => void seedDefaults()} />
-            )}
-
-            {templates.length > 0 && filteredTemplates.length === 0 && (
-              <div className="col-span-full py-12 flex flex-col items-center text-center">
-                <div className="p-4 bg-surface-subtle rounded-xl mb-4">
-                  <Icon name="Search" size={32} className="text-muted/50" />
-                </div>
-                <p className="text-lg font-bold text-foreground">
-                  Không tìm thấy mẫu phù hợp
-                </p>
-                <p className="text-muted mt-2 text-sm">
-                  Dữ liệu không khớp với từ khóa &quot;{filter.search}&quot;
-                </p>
-              </div>
-            )}
-
-            {filteredTemplates.map((template) => (
-              <TemplateCard
-                key={template.id}
-                template={template}
-                onEdit={handleEdit}
-                onDuplicate={handleDuplicate}
-                onDelete={(t) => deleteTemplate(t.id)}
-                onToggleActive={toggleTemplate}
+        {/* Toolbar: Search + Filter */}
+        <div className="filter-bar card-filter-section p-4 border-b border-border">
+          <div className="filter-compact-premium">
+            <div className="filter-field">
+              <label htmlFor="template-search">Tìm kiếm</label>
+              <SearchInput
+                id="template-search"
+                placeholder="Tìm kiếm mẫu văn bản..."
+                value={filter.search}
+                onChange={(e) =>
+                  setFilter((prev) => ({
+                    ...prev,
+                    search: e.target.value,
+                  }))
+                }
               />
-            ))}
+            </div>
+            <div className="filter-field">
+              <label>Loại danh mục</label>
+              <select
+                className="field-input"
+                value={filter.type}
+                onChange={(e) =>
+                  setFilter((prev) => ({
+                    ...prev,
+                    type: e.target.value as 'all' | ContractType,
+                  }))
+                }
+              >
+                <option value="all">Tất cả danh mục</option>
+                <option value="sale">Mẫu Bán hàng</option>
+                <option value="purchase">Mẫu Mua hàng</option>
+              </select>
+            </div>
           </div>
-        )}
+        </div>
+
+        {/* Content Section */}
+        <div className="p-4 md:p-6">
+          {/* Error state */}
+          {error && (
+            <div className="p-4">
+              <p className="error-inline">Lỗi: {(error as Error).message}</p>
+            </div>
+          )}
+
+          {/* Loading state */}
+          {isLoading && <TemplatesLoadingSkeleton />}
+
+          {/* Template list */}
+          {!isLoading && !error && (
+            <div className="grid gap-4 lg:grid-cols-2">
+              {templates.length === 0 && (
+                <TemplatesEmptyState onSeed={() => void seedDefaults()} />
+              )}
+
+              {templates.length > 0 && filteredTemplates.length === 0 && (
+                <div className="col-span-full py-12 flex flex-col items-center text-center">
+                  <div className="p-4 bg-surface-subtle rounded-xl mb-4">
+                    <Icon name="Search" size={32} className="text-muted/50" />
+                  </div>
+                  <p className="text-lg font-bold text-foreground">
+                    Không tìm thấy mẫu phù hợp
+                  </p>
+                  <p className="text-muted mt-2 text-sm">
+                    Dữ liệu không khớp với từ khóa &quot;{filter.search}&quot;
+                  </p>
+                </div>
+              )}
+
+              {filteredTemplates.map((template) => (
+                <TemplateCard
+                  key={template.id}
+                  template={template}
+                  onEdit={handleEdit}
+                  onDuplicate={handleDuplicate}
+                  onDelete={(t) => deleteTemplate(t.id)}
+                  onToggleActive={toggleTemplate}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
