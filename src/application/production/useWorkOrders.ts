@@ -55,6 +55,7 @@ export function useCreateWorkOrder() {
     mutationFn: createWorkOrder,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work_orders'] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
     },
   });
 }
@@ -70,6 +71,7 @@ export function useUpdateWorkOrder() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['work_orders'] });
       queryClient.invalidateQueries({ queryKey: ['work_order', data.id] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
     },
   });
 }
@@ -81,6 +83,7 @@ export function useStartWorkOrder() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['work_orders'] });
       queryClient.invalidateQueries({ queryKey: ['work_order', variables] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
     },
   });
 }
@@ -96,6 +99,7 @@ export function useCompleteWorkOrder() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['work_orders'] });
       queryClient.invalidateQueries({ queryKey: ['work_order', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
     },
   });
 }
@@ -107,6 +111,7 @@ export function useCancelWorkOrder() {
     onSuccess: (data: WorkOrderWithRelations) => {
       queryClient.invalidateQueries({ queryKey: ['work_orders'] });
       queryClient.invalidateQueries({ queryKey: ['work_order', data.id] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
     },
   });
 }

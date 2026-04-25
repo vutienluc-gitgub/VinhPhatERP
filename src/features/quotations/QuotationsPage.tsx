@@ -30,7 +30,7 @@ export function QuotationsPage() {
   }
 
   return (
-    <>
+    <div className="page-container overflow-x-hidden">
       {view.mode === 'list' ? (
         <QuotationList
           onNew={openCreate}
@@ -73,6 +73,6 @@ export function QuotationsPage() {
       >
         <QuotationForm quotation={editQuotation} onClose={closeForm} />
       </AdaptiveSheet>
-    </>
+    </div>
   );
 }

@@ -97,6 +97,7 @@ export function useConfirmWeavingInvoice() {
       void qc.invalidateQueries({ queryKey: QK });
       void qc.invalidateQueries({ queryKey: ['raw-fabric'] });
       void qc.invalidateQueries({ queryKey: ['inventory'] });
+      void qc.invalidateQueries({ queryKey: ['payments'] });
     },
   });
 }

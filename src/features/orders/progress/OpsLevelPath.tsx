@@ -19,10 +19,7 @@ export function OpsLevelPath({
   onAdvance,
 }: OpsLevelPathProps) {
   return (
-    <div
-      className="relative flex items-center w-full overflow-x-auto pb-1 mt-3 mb-1"
-      style={{ scrollbarWidth: 'none' }}
-    >
+    <div className="relative flex items-center w-full overflow-x-auto scrollbar-none pb-1 mt-3 mb-1">
       <div className="flex items-center min-w-max px-1 pt-1">
         {PRODUCTION_STAGES.map((stageKey, idx) => {
           const row = stages.find((s) => s.stage === stageKey);

@@ -46,7 +46,7 @@ export function OrderProgressPage() {
   });
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 pb-20 page-container overflow-x-hidden">
       <div className="panel-card card-flush">
         <div className="card-header-area">
           <div className="card-header-row">

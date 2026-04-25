@@ -8,6 +8,7 @@ import {
   settingsMapToUpsertRows,
 } from '@/schema/company-settings.schema';
 import { untypedDb as supa } from '@/services/supabase/untyped';
+import { safeUpsert } from '@/lib/db-guard';
 
 const TABLE = 'company_settings';
 
@@ -21,18 +22,9 @@ export async function upsertCompanySettings(
   values: CompanySettingsFormValues,
 ): Promise<void> {
   const rows = settingsMapToUpsertRows(values);
-  for (const row of rows) {
-    const { error } = await supa
-      .from(TABLE)
-      .update({ value: row.value })
-      .eq('key', row.key);
-
-    if (error) {
-      const { error: insertErr } = await supa.from(TABLE).insert({
-        key: row.key,
-        value: row.value,
-      });
-      if (insertErr) throw insertErr;
-    }
-  }
+  await safeUpsert({
+    table: TABLE,
+    data: rows,
+    conflictKey: 'key',
+  });
 }
