@@ -52,25 +52,17 @@ export function OrderProgressPage() {
           <div className="card-header-row">
             <div>
               <p className="eyebrow">Sản xuất</p>
-              <h3
-                style={{
-                  margin: 0,
-                  fontSize: '1rem',
-                  fontWeight: 700,
-                }}
-              >
-                Tiến độ Sản xuất
-              </h3>
+              <h3 className="m-0 text-base font-bold">Tiến độ Sản xuất</h3>
             </div>
           </div>
         </div>
 
-        <div style={{ padding: '0.75rem 1.25rem 1rem' }}>
+        <div className="px-5 pb-4 pt-3">
           <TabSwitcher
             tabs={tabsWithBadge}
             active={tab}
             onChange={setTab}
-            variant="pill"
+            variant="premium"
           />
         </div>
       </div>

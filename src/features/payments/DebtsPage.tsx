@@ -45,7 +45,7 @@ export function DebtsPage() {
             tabs={TABS}
             active={activeTab}
             onChange={setActiveTab}
-            variant="pill"
+            variant="premium"
           />
         </div>
       </div>

@@ -22,6 +22,7 @@ import {
   AdaptiveSheet,
   SearchInput,
   Combobox,
+  LiveIndicator,
 } from '@/shared/components';
 
 import { BlockedTransitionsWidget } from './components/BlockedTransitionsWidget';
@@ -279,7 +280,12 @@ export function OperationsPage() {
         </Card>
         <Card className="lg:col-span-5 border-none shadow-sm bg-white/50 backdrop-blur-sm">
           <CardHeader className="border-b border-zinc-100/50">
-            <CardTitle className="text-zinc-800">Hoạt động tức thời</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-zinc-800">
+                Hoạt động tức thời
+              </CardTitle>
+              <LiveIndicator label="Trực tiếp" />
+            </div>
           </CardHeader>
           <CardContent className="p-0 overflow-y-auto max-h-[400px]">
             <ActivityFeed items={activities} />

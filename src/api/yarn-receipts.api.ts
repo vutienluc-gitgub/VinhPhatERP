@@ -18,6 +18,7 @@ export type YarnCatalogOption = {
   color_name: string | null;
   tensile_strength: string | null;
   origin: string | null;
+  grade: string | null;
   unit: string;
 };
 
@@ -110,7 +111,7 @@ export async function fetchYarnCatalogOptionsForReceipt(): Promise<
   const { data, error } = await supabase
     .from('yarn_catalogs')
     .select(
-      'id, code, name, composition, color_name, tensile_strength, origin, unit',
+      'id, code, name, composition, color_name, tensile_strength, origin, grade, unit',
     )
     .eq('status', 'active')
     .order('name');
@@ -130,6 +131,8 @@ export type YarnReceiptCreateInput = {
     quantity: number;
     unitPrice: number;
     lotNumber: string | null;
+    grade: string | null;
+    unit: string;
     tensileStrength: string | null;
     composition: string | null;
     origin: string | null;
@@ -160,10 +163,11 @@ export async function createYarnReceiptFull(
   const itemsInsert = input.items.map((item, idx) => ({
     yarn_type: item.yarnType.trim(),
     color_name: item.colorName?.trim() || null,
-    unit: 'kg',
+    unit: item.unit.trim(),
     quantity: item.quantity,
     unit_price: item.unitPrice,
     lot_number: item.lotNumber?.trim() || null,
+    grade: item.grade?.trim() || null,
     tensile_strength: item.tensileStrength?.trim() || null,
     composition: item.composition?.trim() || null,
     origin: item.origin?.trim() || null,
@@ -204,10 +208,11 @@ export async function updateYarnReceiptFull(
   const itemsInsert = input.items.map((item, idx) => ({
     yarn_type: item.yarnType.trim(),
     color_name: item.colorName?.trim() || null,
-    unit: 'kg',
+    unit: item.unit.trim(),
     quantity: item.quantity,
     unit_price: item.unitPrice,
     lot_number: item.lotNumber?.trim() || null,
+    grade: item.grade?.trim() || null,
     tensile_strength: item.tensileStrength?.trim() || null,
     composition: item.composition?.trim() || null,
     origin: item.origin?.trim() || null,

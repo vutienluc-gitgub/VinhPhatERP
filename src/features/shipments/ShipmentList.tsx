@@ -11,6 +11,7 @@ import {
   ClearFilterButton,
   ActionBar,
   TabSwitcher,
+  type TabItem,
   FilterBarPremium,
   type FilterFieldConfig,
   type ActionConfig,
@@ -46,6 +47,31 @@ function getVariant(status: ShipmentStatus): BadgeVariant {
       return 'gray';
   }
 }
+
+function calcShipmentCost(s: Shipment): number {
+  return (s.shipping_cost || 0) + (s.loading_fee || 0);
+}
+
+type ShipmentTab = '' | 'preparing' | 'shipped' | 'delivered';
+
+const BASE_TABS: TabItem<ShipmentTab>[] = [
+  { key: '', label: 'Tất cả', icon: <Icon name="List" size={16} /> },
+  {
+    key: 'preparing',
+    label: 'Đang chuẩn bị',
+    icon: <Icon name="Clock" size={16} />,
+  },
+  {
+    key: 'shipped',
+    label: 'Đang đi giao',
+    icon: <Icon name="Truck" size={16} />,
+  },
+  {
+    key: 'delivered',
+    label: 'Đã nhận hàng',
+    icon: <Icon name="CircleCheck" size={16} />,
+  },
+];
 
 export function ShipmentList() {
   const [filters, setFilters] = useState<ShipmentsFilter>({});
@@ -83,7 +109,7 @@ export function ShipmentList() {
     {
       key: 'deliveryStaffId',
       type: 'combobox',
-      label: 'Tai xe giao hang',
+      label: 'Tài xế giao hàng',
       options: staffOptions,
     },
   ];
@@ -144,6 +170,15 @@ export function ShipmentList() {
     filters.deliveryStaffId
   );
 
+  const preparingCount = shipments.filter(
+    (s) => s.status === 'preparing',
+  ).length;
+
+  const tabsWithBadge = BASE_TABS.map((t) => {
+    if (t.key === 'preparing') return { ...t, badge: preparingCount };
+    return t;
+  });
+
   return (
     <div className="panel-card card-flush">
       {/* Header Area */}
@@ -178,15 +213,7 @@ export function ShipmentList() {
           </div>
           <div className="stat-content-premium">
             <p>Tổng cước (Trang)</p>
-            <p>
-              {formatCurrency(
-                sumBy(
-                  shipments,
-                  (s) => (s.shipping_cost || 0) + (s.loading_fee || 0),
-                ),
-              )}{' '}
-              đ
-            </p>
+            <p>{formatCurrency(sumBy(shipments, calcShipmentCost))} đ</p>
           </div>
         </div>
 
@@ -196,7 +223,7 @@ export function ShipmentList() {
           </div>
           <div className="stat-content-premium">
             <p>Chờ xác nhận</p>
-            <p>{shipments.filter((s) => s.status === 'preparing').length}</p>
+            <p>{preparingCount}</p>
           </div>
         </div>
       </div>
@@ -213,30 +240,13 @@ export function ShipmentList() {
         <div className="flex w-full items-center justify-between gap-4">
           <div className="overflow-x-auto pb-1 flex-1 no-scrollbar">
             <TabSwitcher
-              tabs={[
-                {
-                  key: '',
-                  label: 'Tat ca',
-                },
-                {
-                  key: 'preparing',
-                  label: 'Dang chuan bi',
-                },
-                {
-                  key: 'shipped',
-                  label: 'Dang di giao',
-                },
-                {
-                  key: 'delivered',
-                  label: 'Da nhan hang',
-                },
-              ]}
+              tabs={tabsWithBadge}
               active={filters.status || ''}
               onChange={(val) => {
                 setPage(1);
                 setFilters((prev) => ({
                   ...prev,
-                  status: (val as ShipmentStatus) || undefined,
+                  status: val ? (val as ShipmentStatus) : undefined,
                 }));
               }}
               variant="premium"
@@ -250,7 +260,7 @@ export function ShipmentList() {
                   setFilters({});
                   setPage(1);
                 }}
-                label="Xoa loc"
+                label="Xóa lọc"
               />
             </div>
           )}
@@ -260,7 +270,7 @@ export function ShipmentList() {
       {/* Error */}
       {error && (
         <p className="error-inline">
-          Lỗi tải dữ liệu: {(error as Error).message}
+          Lỗi tải dữ liệu: {getErrorMessage(error)}
         </p>
       )}
 
@@ -309,7 +319,7 @@ export function ShipmentList() {
             id: 'shipment_date',
             sortable: true,
             cell: (s) => {
-              const totalCost = (s.shipping_cost || 0) + (s.loading_fee || 0);
+              const totalCost = calcShipmentCost(s);
               const dateParts = s.shipment_date.split('-');
               const displayDate =
                 dateParts.length === 3
@@ -546,13 +556,11 @@ export function ShipmentList() {
         exportPdfMutation.error) && (
         <p className="error-inline-sm">
           Lỗi:{' '}
-          {
-            (
-              (confirmMutation.error ||
-                deleteMutation.error ||
-                exportPdfMutation.error) as Error
-            ).message
-          }
+          {getErrorMessage(
+            confirmMutation.error ||
+              deleteMutation.error ||
+              exportPdfMutation.error,
+          )}
         </p>
       )}
 
