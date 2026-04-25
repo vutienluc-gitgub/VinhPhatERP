@@ -24,9 +24,9 @@ export function FabricCatalogPage() {
   }
 
   return (
-    <>
+    <div className="page-container">
       <FabricCatalogList onEdit={openEdit} onNew={openCreate} />
       {showForm && <FabricCatalogForm catalog={editItem} onClose={closeForm} />}
-    </>
+    </div>
   );
 }

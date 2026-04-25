@@ -259,38 +259,6 @@ export function CompanySettingsForm() {
             hệ thống.
           </p>
         </div>
-
-        {/* Global Layout Mode */}
-        <div className="form-field">
-          <label htmlFor="cs-layout-mode">
-            Cấu trúc giao diện hệ thống (Layout)
-          </label>
-          <Controller
-            name="layout_mode"
-            control={control}
-            render={({ field }) => (
-              <Combobox
-                options={[
-                  {
-                    value: 'boxed',
-                    label: 'Boxed (1380px - Tiêu chuẩn)',
-                    icon: 'Layout',
-                  },
-                  {
-                    value: 'fluid',
-                    label: 'Fluid (Tràn viền - Tối đa màn hình)',
-                    icon: 'LayoutTemplate',
-                  },
-                ]}
-                value={field.value || 'boxed'}
-                onChange={field.onChange}
-              />
-            )}
-          />
-          <p className="text-xs text-muted mt-1 italic">
-            Thay đổi này sẽ lập tức áp dụng cho TẤT CẢ nhân viên trong công ty.
-          </p>
-        </div>
       </div>
 
       {/* Actions */}

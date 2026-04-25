@@ -30,7 +30,7 @@ export function CustomersPage() {
   }
 
   return (
-    <>
+    <div className="page-container">
       <CustomerList
         onEdit={openEdit}
         onNew={openCreate}
@@ -62,6 +62,6 @@ export function CustomersPage() {
           />
         )}
       </AdaptiveSheet>
-    </>
+    </div>
   );
 }

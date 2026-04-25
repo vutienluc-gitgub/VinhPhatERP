@@ -38,7 +38,7 @@ export function DyeingOrdersPage() {
 
   if (selectedId) {
     return (
-      <>
+      <div className="page-container">
         <DyeingOrderDetail
           orderId={selectedId}
           onBack={() => setSelectedId(null)}
@@ -53,80 +53,78 @@ export function DyeingOrdersPage() {
           onClose={() => setIsFormOpen(false)}
           editingOrder={editingOrder}
         />
-      </>
+      </div>
     );
   }
 
   return (
-    <div className="panel-card card-flush">
-      {/* Premium Header Area */}
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">SẢN XUẤT</p>
-          <h3 className="title-premium">Lệnh nhuộm</h3>
+    <div className="page-container">
+      <div className="panel-card card-flush">
+        {/* Action bar */}
+        <div className="card-header-area">
+          <AddButton
+            onClick={() => {
+              setEditingOrder(null);
+              setIsFormOpen(true);
+            }}
+            label="Tạo lệnh nhuộm"
+          />
         </div>
-        <AddButton
-          onClick={() => {
-            setEditingOrder(null);
-            setIsFormOpen(true);
-          }}
-          label="Tạo lệnh nhuộm"
+
+        {/* KPI Dashboard */}
+        <div className="kpi-section kpi-grid">
+          <KpiCardPremium
+            label="Tổng lệnh"
+            value={totalCount}
+            icon="Layers"
+            variant="primary"
+          />
+          <KpiCardPremium
+            label="Đang nhuộm"
+            value={inProgressCount}
+            icon="Loader2"
+            variant="warning"
+          />
+          <KpiCardPremium
+            label="Bản nháp"
+            value={draftCount}
+            icon="Pencil"
+            variant="secondary"
+          />
+        </div>
+
+        {/* Filters (Config-Driven) */}
+        <FilterBarPremium
+          schema={filterSchema}
+          value={filter}
+          onChange={(key, value) =>
+            setFilter((prev) => ({
+              ...prev,
+              [key]: value ?? '',
+            }))
+          }
+          onClear={() => setFilter({ search: '' })}
+        />
+
+        {/* Main Content View */}
+        <div className="card-table-section min-h-[400px]">
+          <DyeingOrderList
+            data={data?.data ?? []}
+            isLoading={isLoading}
+            onView={(id) => setSelectedId(id)}
+            onEdit={(order) => {
+              setEditingOrder(order);
+              setIsFormOpen(true);
+            }}
+          />
+        </div>
+
+        <DyeingOrderForm
+          isOpen={isFormOpen}
+          onClose={() => setIsFormOpen(false)}
+          editingOrder={editingOrder}
         />
       </div>
-
-      {/* KPI Dashboard */}
-      <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
-        <KpiCardPremium
-          label="Tổng lệnh"
-          value={totalCount}
-          icon="Layers"
-          variant="primary"
-        />
-        <KpiCardPremium
-          label="Đang nhuộm"
-          value={inProgressCount}
-          icon="Loader2"
-          variant="warning"
-        />
-        <KpiCardPremium
-          label="Bản nháp"
-          value={draftCount}
-          icon="Pencil"
-          variant="secondary"
-        />
-      </div>
-
-      {/* Filters (Config-Driven) */}
-      <FilterBarPremium
-        schema={filterSchema}
-        value={filter}
-        onChange={(key, value) =>
-          setFilter((prev) => ({
-            ...prev,
-            [key]: value ?? '',
-          }))
-        }
-        onClear={() => setFilter({ search: '' })}
-      />
-
-      {/* Main Content View */}
-      <div className="card-table-section min-h-[400px]">
-        <DyeingOrderList
-          data={data?.data ?? []}
-          isLoading={isLoading}
-          onView={(id) => setSelectedId(id)}
-          onEdit={(order) => {
-            setEditingOrder(order);
-            setIsFormOpen(true);
-          }}
-        />
-      </div>
-
-      <DyeingOrderForm
-        isOpen={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
-        editingOrder={editingOrder}
-      />
     </div>
   );
 }

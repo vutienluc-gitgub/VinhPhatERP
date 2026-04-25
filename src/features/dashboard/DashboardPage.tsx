@@ -27,7 +27,7 @@ export function DashboardPage() {
     useCustomerSources();
 
   return (
-    <div className="page-container p-4 md:p-6 overflow-x-hidden">
+    <div className="page-container">
       <div className="flex items-center justify-between mb-4">
         <h1 className="sr-only">Dashboard</h1>
         <LiveIndicator label="Đang cập nhật" />

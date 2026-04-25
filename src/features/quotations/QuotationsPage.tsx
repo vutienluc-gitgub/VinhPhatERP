@@ -30,7 +30,7 @@ export function QuotationsPage() {
   }
 
   return (
-    <div className="page-container overflow-x-hidden">
+    <div className="page-container">
       {view.mode === 'list' ? (
         <QuotationList
           onNew={openCreate}

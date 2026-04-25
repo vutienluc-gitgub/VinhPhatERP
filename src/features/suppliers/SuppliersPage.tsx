@@ -30,7 +30,7 @@ export function SuppliersPage() {
   }
 
   return (
-    <>
+    <div className="page-container">
       <SuppliersList
         onEdit={openEdit}
         onNew={openCreate}
@@ -54,6 +54,6 @@ export function SuppliersPage() {
           />
         )}
       </AdaptiveSheet>
-    </>
+    </div>
   );
 }

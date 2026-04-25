@@ -78,12 +78,8 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
 
   return (
     <div className="panel-card card-flush">
-      {/* Header */}
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">VẬN CHUYỂN</p>
-          <h3 className="title-premium">Giá Cước Vận Chuyển</h3>
-        </div>
+      {/* Action bar */}
+      <div className="card-header-area">
         <AddButton onClick={onNew} label="Thêm bảng giá" />
       </div>
 

@@ -152,13 +152,8 @@ export function RawFabricList({
 
   return (
     <div className="panel-card card-flush">
-      {/* Header Area */}
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">KHO VẢI MỘC</p>
-          <h3 className="title-premium">Quản lý cuộn vải mộc</h3>
-        </div>
-
+      {/* Action bar */}
+      <div className="card-header-area">
         <div className="flex items-center gap-4">
           <ViewToggle value={viewMode} onChange={setViewMode} />
           <ActionMenu
@@ -172,7 +167,7 @@ export function RawFabricList({
 
       {/* KPI Dashboard */}
       {stats && (
-        <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
+        <div className="kpi-section kpi-grid grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
           <StatWidget
             title="Tổng số cuộn"
             icon="Box"

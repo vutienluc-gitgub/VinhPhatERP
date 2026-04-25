@@ -58,7 +58,7 @@ export function WeavingInvoicesPage() {
   }
 
   return (
-    <>
+    <div className="page-container">
       <WeavingInvoiceList onNew={openCreate} onEdit={openEdit} />
       {showForm && (
         <WeavingInvoiceFormWrapper
@@ -66,6 +66,6 @@ export function WeavingInvoicesPage() {
           onClose={closeForm}
         />
       )}
-    </>
+    </div>
   );
 }

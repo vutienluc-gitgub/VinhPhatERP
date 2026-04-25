@@ -65,7 +65,7 @@ export function AccountList({ onEdit, onNew }: AccountListProps) {
 
       {/* KPI - Total Balance */}
       {filtered.length > 0 && (
-        <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
+        <div className="kpi-section kpi-grid">
           <div
             className={`kpi-card-premium ${totalBalance >= 0 ? 'kpi-success' : 'kpi-danger'}`}
           >

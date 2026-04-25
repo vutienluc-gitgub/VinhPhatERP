@@ -132,21 +132,14 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
 
   return (
     <div className="panel-card card-flush">
-      {/* Header Area */}
-      <div className="card-header-area card-header-premium">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <p className="eyebrow-premium mb-0">BÁN HÀNG</p>
-            <LiveIndicator label="Trực tiếp" />
-          </div>
-          <h3 className="title-premium">Quản lý Đơn hàng</h3>
-        </div>
-
+      {/* Action bar */}
+      <div className="card-header-area">
+        <LiveIndicator label="Trực tiếp" />
         <AddButton onClick={onNew} label="Tạo đơn hàng" />
       </div>
 
       {/* 📊 KPI Dashboard - Premium Visuals */}
-      <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
+      <div className="kpi-section kpi-grid">
         <div
           className={`kpi-card-premium ${pendingReviewCount > 0 ? 'kpi-warning' : 'kpi-primary'}`}
         >

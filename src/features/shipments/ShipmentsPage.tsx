@@ -1,5 +1,9 @@
 import { ShipmentList } from './ShipmentList';
 
 export function ShipmentsPage() {
-  return <ShipmentList />;
+  return (
+    <div className="page-container">
+      <ShipmentList />
+    </div>
+  );
 }

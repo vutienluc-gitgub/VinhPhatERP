@@ -26,7 +26,7 @@ export function ShippingRatesPage() {
   }
 
   return (
-    <>
+    <div className="page-container">
       <ShippingRateList onEdit={openEdit} onNew={openCreate} />
 
       <AdaptiveSheet
@@ -36,6 +36,6 @@ export function ShippingRatesPage() {
       >
         <ShippingRateForm item={editItem} onClose={closeForm} />
       </AdaptiveSheet>
-    </>
+    </div>
   );
 }

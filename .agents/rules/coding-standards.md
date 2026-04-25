@@ -8,6 +8,9 @@ trigger: always_on
 
 ---
 
+Must follow:
+agents/rules/refactor-checklist.md
+
 ## Database Safety (CRITICAL)
 
 Helper: `src/lib/db-guard.ts`

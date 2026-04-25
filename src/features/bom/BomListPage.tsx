@@ -130,58 +130,56 @@ export function BomListPage() {
   const handleEdit = (bom: BomTemplate) => navigate(`/bom/${bom.id}/edit`);
 
   return (
-    <div className="panel-card card-flush">
-      {/* Header */}
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">KỸ THUẬT</p>
-          <h3 className="title-premium">Định Mức Nguyên Liệu (BOM)</h3>
+    <div className="page-container">
+      <div className="panel-card card-flush">
+        {/* Header */}
+        <div className="card-header-area">
+          <AddButton
+            onClick={() => navigate('/bom/create')}
+            label="Tạo bản nháp"
+          />
         </div>
-        <AddButton
-          onClick={() => navigate('/bom/create')}
-          label="Tạo bản nháp"
+
+        {/* KPI */}
+        <KpiGridPremium className="kpi-section">
+          <KpiCardPremium
+            variant="primary"
+            label="Tổng số định mức"
+            value={boms.length}
+            icon="Layers"
+            footer="Tất cả thẻ định mức"
+          />
+          <KpiCardPremium
+            variant="success"
+            label="Đang áp dụng"
+            value={boms.filter((b) => b.status === 'approved').length}
+            icon="CheckCircle"
+            footer="BOM đã duyệt"
+          />
+        </KpiGridPremium>
+
+        {/* Filters */}
+        <FilterBarPremium
+          schema={filterSchema}
+          value={filter}
+          onChange={handleFilterChange}
+          onClear={() => setFilter({})}
         />
+
+        {/* Table */}
+        <BomList
+          boms={boms}
+          isLoading={isLoading}
+          hasFilter={hasFilter}
+          onSelect={handleSelect}
+          onEdit={handleEdit}
+          onDeprecate={(bom) => openDeprecateSheet(bom.id, bom.code)}
+          onCreate={() => navigate('/bom/create')}
+        />
+
+        {/* Action Sheet */}
+        {renderActionSheet()}
       </div>
-
-      {/* KPI */}
-      <KpiGridPremium className="p-4 md:p-6 bg-surface-subtle border-b border-border">
-        <KpiCardPremium
-          variant="primary"
-          label="Tổng số định mức"
-          value={boms.length}
-          icon="Layers"
-          footer="Tất cả thẻ định mức"
-        />
-        <KpiCardPremium
-          variant="success"
-          label="Đang áp dụng"
-          value={boms.filter((b) => b.status === 'approved').length}
-          icon="CheckCircle"
-          footer="BOM đã duyệt"
-        />
-      </KpiGridPremium>
-
-      {/* Filters */}
-      <FilterBarPremium
-        schema={filterSchema}
-        value={filter}
-        onChange={handleFilterChange}
-        onClear={() => setFilter({})}
-      />
-
-      {/* Table */}
-      <BomList
-        boms={boms}
-        isLoading={isLoading}
-        hasFilter={hasFilter}
-        onSelect={handleSelect}
-        onEdit={handleEdit}
-        onDeprecate={(bom) => openDeprecateSheet(bom.id, bom.code)}
-        onCreate={() => navigate('/bom/create')}
-      />
-
-      {/* Action Sheet */}
-      {renderActionSheet()}
     </div>
   );
 

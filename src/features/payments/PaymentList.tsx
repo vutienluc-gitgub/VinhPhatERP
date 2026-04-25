@@ -53,14 +53,6 @@ export function PaymentList() {
 
   return (
     <div className="panel-card card-flush">
-      {/* Header */}
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">TÀI CHÍNH</p>
-          <h3 className="title-premium">Phiếu Thu</h3>
-        </div>
-      </div>
-
       {/* Filters (Config-Driven) */}
       <FilterBarPremium
         schema={filterSchema}

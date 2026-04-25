@@ -129,18 +129,13 @@ export function YarnReceiptList({
 
   return (
     <div className="panel-card card-flush">
-      {/* Header Area */}
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">NGHIỆP VỤ KHO</p>
-          <h3 className="title-premium">Quản lý phiếu nhập sợi</h3>
-        </div>
-
+      {/* Action bar */}
+      <div className="card-header-area">
         <AddButton onClick={onNew} label="Tạo phiếu nhập" />
       </div>
 
       {/* KPI Dashboard */}
-      <KpiGridPremium className="p-4 md:p-6 bg-surface-subtle border-b border-border">
+      <KpiGridPremium className="kpi-section">
         <KpiCardPremium
           variant="primary"
           label="Tổng lượng sợi nhập"

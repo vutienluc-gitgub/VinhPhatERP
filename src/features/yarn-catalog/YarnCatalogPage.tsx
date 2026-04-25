@@ -31,7 +31,7 @@ export function YarnCatalogPage() {
   }
 
   return (
-    <div className="page-container p-4 md:p-6 overflow-x-hidden">
+    <div className="page-container">
       {/* 📊 KPI Dashboard area */}
       <div className="kpi-grid mb-6">
         <div className="kpi-card-premium kpi-primary">

@@ -69,17 +69,13 @@ export function LoomList({ onEdit, onNew }: LoomListProps) {
 
   return (
     <div className="panel-card card-flush">
-      {/* Header */}
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">SẢN XUẤT</p>
-          <h3 className="title-premium">Danh mục Máy dệt</h3>
-        </div>
+      {/* Action bar */}
+      <div className="card-header-area">
         <AddButton onClick={onNew} label="Thêm máy dệt" />
       </div>
 
       {/* KPI Dashboard */}
-      <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
+      <div className="kpi-section kpi-grid">
         <div className="kpi-card-premium kpi-primary">
           <div className="kpi-overlay" />
           <div className="kpi-content">

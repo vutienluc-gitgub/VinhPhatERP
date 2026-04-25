@@ -31,6 +31,7 @@ export { default as SaveStatus } from './SaveStatus';
 export { TableSkeleton } from './TableSkeleton';
 export { TabSwitcher } from './TabSwitcher';
 export type { TabItem } from './TabSwitcher';
+export { Switch } from './Switch';
 export { ViewToggle } from './ViewToggle';
 export type { ViewMode } from './ViewToggle';
 export { MiniBarChart } from './MiniBarChart';

@@ -12,12 +12,12 @@
 .page-container {
   min-width: 0;
   overflow-x: hidden;
-  padding: 1rem;
+  padding: 0 1rem 1rem;
 }
 
 @media (min-width: 768px) {
   .page-container {
-    padding: 1.5rem;
+    padding: 0 1.5rem 1.5rem;
   }
 }
 
@@ -1958,6 +1958,25 @@
 /* ============================================================
    Shared KPI Card & Grid
    ============================================================ */
+
+/* kpi-section: standard wrapper cho mọi KPI dashboard area.
+   Thay thế inline: p-4 md:p-6 bg-surface-subtle border-b border-border
+   Dùng CSS token --kpi-pad để đảm bảo 1 nguồn sự thật duy nhất. */
+:root {
+  --kpi-pad: 1rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --kpi-pad: 1.5rem;
+  }
+}
+
+.kpi-section {
+  padding: var(--kpi-pad);
+  background: var(--surface-subtle);
+  border-bottom: 1px solid var(--border);
+}
 
 .kpi-grid {
   display: grid;

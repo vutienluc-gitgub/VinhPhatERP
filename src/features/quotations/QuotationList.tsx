@@ -135,14 +135,8 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
 
   return (
     <div className="panel-card card-flush">
-      {/* Header */}
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">KINH DOANH</p>
-          <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-            Quản lý Báo giá
-          </h2>
-        </div>
+      {/* Action bar */}
+      <div className="card-header-area">
         <AddButton onClick={onNew} label="Tạo báo giá" />
       </div>
 
