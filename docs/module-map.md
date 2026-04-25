@@ -1,6 +1,8 @@
 # Sơ đồ Module & Quan hệ - Vinh Phat ERP v3
 
-Tài liệu này ánh xạ cấu trúc của 29 core modules trong hệ thống Vĩnh Phát ERP và cách dữ liệu luân chuyển giữa các mảng nghiệp vụ: Kinh doanh, Mua hàng, Sản xuất, Kho bãi, và Tài chính.
+Tài liệu này ánh xạ cấu trúc của 31 core modules trong hệ thống Vĩnh Phát ERP và cách dữ liệu luân chuyển giữa các mảng nghiệp vụ: Kinh doanh, Mua hàng, Sản xuất, Kho bãi, và Tài chính.
+
+> **Cập nhật lần cuối:** 2026-04-25 — Bổ sung module Máy dệt (Looms), Operations, và Mẫu hợp đồng (Contract Templates).
 
 ## 1. Sơ đồ Kiến trúc Tổng thể (Mermaid Flowchart)
 
@@ -43,6 +45,7 @@ flowchart TD
     subgraph Production ["Sản Xuất (Manufacturing)"]
         FabricCat[Danh mục Vải Mộc]:::production
         ColorCat[Danh mục Màu]:::production
+        Looms[Máy dệt]:::production
         BOM[Định mức BOM]:::production
         WorkOrders[Lệnh Sản Xuất]:::production
         RawFabric[Kho Vải Mộc]:::production
@@ -53,6 +56,8 @@ flowchart TD
         FabricCat --> BOM
         ColorCat --> BOM
         BOM --> WorkOrders
+        Suppliers --> Looms
+        Looms --> WorkOrders
         YarnReceipts --> WorkOrders
         WorkOrders --> RawFabric
         RawFabric --> DyeingOrders
@@ -90,11 +95,15 @@ flowchart TD
         Auth[Phân quyền]:::system
         Dashboard[Bảng điều khiển]:::system
         Reports[Báo cáo tổng hợp]:::system
+        ContractTemplates[Mẫu hợp đồng]:::system
     end
 
     %% Cross-domain relations
     Orders ==> WorkOrders
     WorkOrders -.-> WeavingInvoices
+    WorkOrders -.-> Looms
+    Looms -.-> RawFabric
+    ContractTemplates -.-> Contracts
     Shipments ==> Orders
 ```
 
@@ -112,8 +121,21 @@ Luồng khởi nguồn từ phân hệ Sales:
 
 Vĩnh Phát là xưởng dệt nhuộm, quy trình sản xuất trải qua 2 giai đoạn chính:
 
-- **Mộc (Greige):** Nguyên liệu đầu vào là **Sợi (`yarn-receipts`)**. Dựa trên **Định mức (`bom`)**, xưởng lên **Lệnh sản xuất (`work-orders`)** dệt sợi thành mộc. Sản phẩm nhập vào **Kho Mộc (`raw-fabric`)**. Gia công bên ngoài sẽ sinh ra **Hóa đơn dệt (`weaving-invoices`)**.
+- **Mộc (Greige):** Nguyên liệu đầu vào là **Sợi (`yarn-receipts`)**. Dựa trên **Định mức (`bom`)**, xưởng lên **Lệnh sản xuất (`work-orders`)** dệt sợi thành mộc. Mỗi Lệnh SX có thể gắn **Máy dệt (`looms`)** để truy xuất nguồn gốc cuộn mộc. Sản phẩm nhập vào **Kho Mộc (`raw-fabric`)**. Gia công bên ngoài sẽ sinh ra **Hóa đơn dệt (`weaving-invoices`)**.
 - **Nhuộm (Dyeing):** Từ Kho Mộc, hệ thống tạo **Lệnh nhuộm (`dyeing-orders`)** kèm theo **Màu sắc (`color-catalog`)**. Vải sau khi nhuộm được kiểm tra chất lượng và nhập vào **Kho Thành Phẩm (`finished-fabric`)**.
+
+### 2.5. Nhóm Quản lý Máy dệt (Loom Management)
+
+- **Máy dệt (`looms`)** là danh mục thiết bị sản xuất, mỗi máy liên kết với một **Nhà dệt (`suppliers`)**.
+- Mỗi máy dệt ghi nhận thông số kỹ thuật: loại máy (rapier, air_jet, water_jet, shuttle), khổ dệt tối đa, tốc độ, công suất/ngày, năm sản xuất.
+- Bảng `work_orders` và `raw_fabric_rolls` đều có cột `loom_id` (FK) để truy xuất cuộn mộc được sản xuất từ máy dệt nào.
+- Trạng thái máy dệt: `active` (hoạt động) | `maintenance` (bảo trì) | `inactive` (ngừng dùng).
+
+### 2.6. Nhóm Điều hành & KPI (Operations)
+
+- Module **Operations (`operations`)** quản lý tiến độ công việc nội bộ (Tasks) và KPI.
+- Mỗi Task có thể liên kết đến **Đơn hàng (`orders`)** hoặc **Lệnh SX (`work-orders`)** để theo dõi tiến độ sản xuất.
+- Task gắn KPI, người thực hiện (`assignee`), người duyệt (`reviewer`) từ danh sách **Nhân viên (`employees`)**.
 
 ### 2.3. Nhóm Kho và Giao hàng (Make to Deliver)
 
@@ -129,14 +151,14 @@ Vĩnh Phát là xưởng dệt nhuộm, quy trình sản xuất trải qua 2 gia
 
 ## 3. Cấu trúc Thư mục Tương ứng (`src/features`)
 
-Danh sách 29 thư mục chính ánh xạ 1:1 với sơ đồ trên:
+Danh sách 31 thư mục chính ánh xạ 1:1 với sơ đồ trên:
 
 - **Sales:** `customers`, `quotations`, `contracts`, `orders`, `order-kanban`, `customer-portal`
 - **Supply:** `suppliers`, `yarn-catalog`, `yarn-receipts`
-- **Production:** `fabric-catalog`, `color-catalog`, `bom`, `work-orders`, `raw-fabric`, `dyeing-orders`, `finished-fabric`, `operations`, `weaving-invoices`
+- **Production:** `fabric-catalog`, `color-catalog`, `bom`, `work-orders`, `raw-fabric`, `dyeing-orders`, `finished-fabric`, `operations`, `weaving-invoices`, `looms`
 - **Logistics:** `inventory`, `shipments`, `shipping-rates`, `driver-portal`
 - **Finance:** `payments`
-- **System:** `auth`, `dashboard`, `employees`, `reports`, `settings`
+- **System:** `auth`, `dashboard`, `employees`, `reports`, `settings`, `contract-templates`
 
 ## 4. Trạng thái và Luân chuyển Dữ liệu (State & Data Triggers)
 
@@ -149,6 +171,8 @@ Danh sách 29 thư mục chính ánh xạ 1:1 với sơ đồ trên:
 | **Lệnh SX (Work Orders)** | `draft` → `in_progress` → `completed` / `cancelled`                                  | `draft`: chờ duyệt/kế hoạch. `in_progress`: đang dệt.                      |
 | **Lệnh Nhuộm (Dyeing)**   | `draft` → `in_progress` → `completed` / `cancelled`                                  |                                                                            |
 | **Giao hàng (Shipments)** | `draft` → `preparing` → `shipped` → `delivered` / `cancelled`                        | `shipped`: xe đang chạy. `delivered`: khách đã nhận.                       |
+| **Máy dệt (Looms)**       | `active` → `maintenance` → `inactive`                                                | `active`: đang chạy. `maintenance`: đang bảo trì. `inactive`: ngừng dùng.  |
+| **Task (Operations)**     | `todo` → `in_progress` → `blocked` / `review` → `done` / `cancelled`                 | `blocked`: chờ xử lý. `review`: chờ duyệt. `done`: hoàn thành.             |
 
 ### 4.2. Trigger Rules (Quy tắc Kích hoạt)
 
@@ -168,7 +192,36 @@ Hệ thống ứng dụng các Trigger để tự động hóa dòng chảy dữ
 - **[M] Lên Đơn hàng** → Người dùng (Sales) tạo từ Báo giá hoặc nhập tay.
 - **[A] Cập nhật tiến độ Đơn hàng** → Lắng nghe từ các module Sản xuất (Operations / WorkOrders).
 - **[M] Tạo Lệnh sản xuất** → Quản lý xưởng dệt tạo lệnh dựa trên nhu cầu của Đơn hàng.
+- **[M] Gán Máy dệt vào Lệnh SX** → Người dùng chọn máy dệt (looms) khi tạo hoặc sửa Lệnh SX.
 - **[M] Chuyển trạng thái Lệnh SX thành In Progress** → Phải được người dùng click "Bắt đầu dệt".
+- **[M] Quản lý trạng thái Máy dệt** → Người dùng chuyển máy sang Bảo trì / Ngừng dùng khi cần.
 - **[A] Tính toán hao hụt sợi (BOM)** → Tự động nội suy từ `target_weight` và Định mức.
 - **[A] Tạo Mộc thành phẩm** → Trigger khi Lệnh dệt hoàn tất (đã nghiệm thu kcs).
 - **[A] Báo cáo Lợi nhuận / Doanh thu / Tồn kho** → Realtime cập nhật dựa trên Database Views.
+- **[M] Tạo/quản lý Tasks** → Người dùng tạo task từ module Operations, gán người thực hiện và KPI.
+- **[A] Cập nhật tiến độ Tasks** → Hệ thống ghi nhận thời gian thực tế khi task hoàn thành.
+
+## 5. Quan hệ Dữ liệu (Database Relations)
+
+### 5.1. Bảng `looms`
+
+| Cột           | Kiểu      | Quan hệ                                    |
+| :------------ | :-------- | :----------------------------------------- |
+| `id`          | uuid (PK) |                                            |
+| `supplier_id` | uuid (FK) | → `suppliers.id`                           |
+| `loom_type`   | text      | rapier, air_jet, water_jet, shuttle, other |
+| `status`      | text      | active, maintenance, inactive              |
+
+**FK ngược (truy xuất nguồn gốc):**
+
+- `work_orders.loom_id` → `looms.id` — Lệnh SX nào dùng máy dệt nào.
+- `raw_fabric_rolls.loom_id` → `looms.id` — Cuộn mộc được dệt từ máy nào.
+
+### 5.2. Bảng `tasks` (Operations)
+
+| Cột             | Kiểu      | Quan hệ          |
+| :-------------- | :-------- | :--------------- |
+| `id`            | uuid (PK) |                  |
+| `assignee_id`   | uuid (FK) | → `employees.id` |
+| `reviewer_id`   | uuid (FK) | → `employees.id` |
+| `linked_kpi_id` | uuid (FK) | → `kpis.id`      |
