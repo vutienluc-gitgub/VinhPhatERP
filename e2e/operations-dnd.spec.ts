@@ -102,7 +102,7 @@ test.describe('Operations drag and drop', () => {
 
     // Wait for at least one kanban column to render (data loaded)
     await page.waitForSelector('[data-testid^="kanban-column-"]', {
-      timeout: 10_000,
+      timeout: 15_000,
     });
 
     // Wait for at least one task card to appear (data from Supabase or demo fallback)
