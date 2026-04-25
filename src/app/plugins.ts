@@ -73,7 +73,15 @@ const plugins: FeaturePlugin[] = [
   contractTemplatesPlugin,
 ];
 
-// Register all plugins
-FeatureRegistry.registerAll(plugins);
+let pluginsInitialized = false;
+
+export function initPlugins() {
+  if (pluginsInitialized) {
+    return;
+  }
+
+  FeatureRegistry.registerAll(plugins);
+  pluginsInitialized = true;
+}
 
 export { FeatureRegistry };
