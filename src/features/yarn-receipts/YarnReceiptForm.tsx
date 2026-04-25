@@ -7,6 +7,7 @@ import { Button, CancelButton } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { CurrencyInput } from '@/shared/components/CurrencyInput';
+import { NumericInput } from '@/shared/components/NumericInput';
 import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm';
 import {
   useColorOptions,
@@ -29,6 +30,12 @@ import {
   yarnReceiptsSchema,
 } from './yarn-receipts.module';
 import type { YarnReceiptsFormValues } from './yarn-receipts.module';
+
+const YARN_UNIT_OPTIONS = [
+  { value: 'kg', label: 'kg' },
+  { value: 'cuộn', label: 'cuộn' },
+  { value: 'tấn', label: 'tấn' },
+];
 
 /* ── Collapsible form section ── */
 function FormSection({
@@ -80,6 +87,8 @@ function receiptToFormValues(receipt: YarnReceipt): YarnReceiptsFormValues {
       quantity: Number(it.quantity),
       unitPrice: Number(it.unit_price),
       lotNumber: it.lot_number ?? '',
+      grade: it.grade ?? '',
+      unit: it.unit ?? 'kg',
       tensileStrength: it.tensile_strength ?? '',
       composition: it.composition ?? '',
       origin: it.origin ?? '',
@@ -175,7 +184,10 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
     >
       {mutationError && (
         <p className="error-inline mb-4">
-          Lỗi: {(mutationError as Error).message}
+          Lỗi:{' '}
+          {mutationError instanceof Error
+            ? mutationError.message
+            : String(mutationError)}
         </p>
       )}
 
@@ -365,6 +377,14 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                                   `items.${index}.origin`,
                                   cat.origin ?? '',
                                 );
+                                setValue(
+                                  `items.${index}.grade`,
+                                  cat.grade ?? '',
+                                );
+                                setValue(
+                                  `items.${index}.unit`,
+                                  cat.unit ?? 'kg',
+                                );
                               }
                             }}
                             placeholder="— Chọn từ danh mục (tuỳ chọn) —"
@@ -415,18 +435,21 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                   <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                     <div className="form-field">
                       <label htmlFor={`items.${index}.quantity`}>
-                        Số lượng (kg) <span className="field-required">*</span>
+                        Số lượng <span className="field-required">*</span>
                       </label>
-                      <input
-                        id={`items.${index}.quantity`}
-                        className={`field-input${errors.items?.[index]?.quantity ? ' is-error' : ''}`}
-                        type="number"
-                        step="0.001"
-                        min="0"
-                        placeholder="0"
-                        {...register(`items.${index}.quantity`, {
-                          valueAsNumber: true,
-                        })}
+                      <Controller
+                        name={`items.${index}.quantity` as const}
+                        control={control}
+                        render={({ field }) => (
+                          <NumericInput
+                            id={`items.${index}.quantity`}
+                            className={`field-input${errors.items?.[index]?.quantity ? ' is-error' : ''}`}
+                            value={field.value}
+                            onChange={(val) => field.onChange(val ?? 0)}
+                            onBlur={field.onBlur}
+                            placeholder="0"
+                          />
+                        )}
                       />
                       {errors.items?.[index]?.quantity && (
                         <span className="field-error">
@@ -472,6 +495,37 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                         type="text"
                         placeholder="VD: LOT-2026-03-A"
                         {...register(`items.${index}.lotNumber`)}
+                      />
+                    </div>
+
+                    <div className="form-field">
+                      <label htmlFor={`items.${index}.grade`}>
+                        Phân loại (Grade)
+                      </label>
+                      <input
+                        id={`items.${index}.grade`}
+                        className="field-input"
+                        type="text"
+                        placeholder="VD: A, B..."
+                        {...register(`items.${index}.grade`)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+                    <div className="form-field">
+                      <label htmlFor={`items.${index}.unit`}>Đơn vị</label>
+                      <Controller
+                        name={`items.${index}.unit` as const}
+                        control={control}
+                        render={({ field }) => (
+                          <Combobox
+                            options={YARN_UNIT_OPTIONS}
+                            value={field.value}
+                            onChange={field.onChange}
+                            placeholder="Chọn..."
+                          />
+                        )}
                       />
                     </div>
 

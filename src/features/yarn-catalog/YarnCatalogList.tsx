@@ -100,6 +100,18 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
         },
       ],
     },
+    {
+      key: 'lot_no',
+      type: 'search',
+      label: 'Mã lô',
+      placeholder: 'Tìm theo lô...',
+    },
+    {
+      key: 'grade',
+      type: 'search',
+      label: 'Phân loại',
+      placeholder: 'Loại A, B...',
+    },
   ];
 
   function handleFilterChange(key: string, value: string | undefined) {
@@ -237,6 +249,31 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
             cell: (c) => <span className="text-sm">{c.origin ?? '—'}</span>,
           },
           {
+            header: 'Mã lô',
+            id: 'lot_no',
+            sortable: true,
+            cell: (c) => (
+              <span className="text-sm font-mono text-primary">
+                {c.lot_no ?? '—'}
+              </span>
+            ),
+          },
+          {
+            header: 'Loại',
+            id: 'grade',
+            sortable: true,
+            className: 'text-center',
+            cell: (c) => (
+              <Badge
+                variant="gray"
+                className="min-w-[40px] justify-center"
+                showDot={false}
+              >
+                {c.grade ?? '—'}
+              </Badge>
+            ),
+          },
+          {
             header: 'Đơn vị',
             id: 'unit',
             sortable: true,
@@ -251,6 +288,15 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
               <Badge variant={getStatusVariant(c.status)}>
                 {YARN_CATALOG_STATUS_LABELS[c.status]}
               </Badge>
+            ),
+          },
+          {
+            header: 'Ghi chú',
+            id: 'notes',
+            cell: (c) => (
+              <span className="text-sm text-muted italic truncate max-w-[200px] block">
+                {c.notes ?? '—'}
+              </span>
             ),
           },
           {
@@ -289,7 +335,7 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
               </Badge>
             </div>
             <div className="mobile-card-body space-y-2">
-              <div className="grid grid-cols-3 gap-2 text-sm">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                 <div className="flex flex-col">
                   <span className="text-xs text-muted">Thành phần</span>
                   <span className="font-medium">{c.composition ?? '—'}</span>
@@ -298,11 +344,27 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
                   <span className="text-xs text-muted">Xuất xứ</span>
                   <span className="font-medium">{c.origin ?? '—'}</span>
                 </div>
-                <div className="flex flex-col text-right">
+                <div className="flex flex-col">
+                  <span className="text-xs text-muted">Mã lô / Loại</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-primary">{c.lot_no}</span>
+                    {c.grade && (
+                      <span className="text-xs bg-muted px-1.5 rounded">
+                        {c.grade}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex flex-col">
                   <span className="text-xs text-muted">Đơn vị</span>
                   <span className="font-medium">{c.unit}</span>
                 </div>
               </div>
+              {c.notes && (
+                <div className="bg-surface-subtle p-2 rounded text-[11px] text-muted-foreground border-l-2 border-primary/30 italic">
+                  {c.notes}
+                </div>
+              )}
               <YarnColorBadge colorName={c.color_name} />
               <div className="flex gap-2 pt-2 border-t border-border/10">
                 <button

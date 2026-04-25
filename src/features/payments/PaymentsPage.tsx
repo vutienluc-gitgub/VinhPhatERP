@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { useDebtSummary, useSupplierDebt } from '@/application/payments';
+import { countOverdueDebts } from '@/domain/payments';
 import { TabSwitcher, Icon } from '@/shared/components';
 import type { TabItem } from '@/shared/components';
 
@@ -21,7 +23,7 @@ type Tab =
   | 'supplier-debt'
   | 'accounts';
 
-const TAB_CONFIG: TabItem<Tab>[] = [
+const BASE_TABS: TabItem<Tab>[] = [
   {
     key: 'cashflow',
     label: 'Dòng tiền',
@@ -57,6 +59,19 @@ const TAB_CONFIG: TabItem<Tab>[] = [
 export function PaymentsPage() {
   const [tab, setTab] = useState<Tab>('cashflow');
 
+  // Badge data
+  const { data: customerDebts = [] } = useDebtSummary();
+  const { data: supplierDebts = [] } = useSupplierDebt();
+
+  const customerDebtCount = countOverdueDebts(customerDebts);
+  const supplierDebtCount = countOverdueDebts(supplierDebts);
+
+  const tabsWithBadge = BASE_TABS.map((t) => {
+    if (t.key === 'customer-debt') return { ...t, badge: customerDebtCount };
+    if (t.key === 'supplier-debt') return { ...t, badge: supplierDebtCount };
+    return t;
+  });
+
   // Expense form state
   const [editExpense, setEditExpense] = useState<Expense | null>(null);
   const [showExpenseForm, setShowExpenseForm] = useState(false);
@@ -79,7 +94,7 @@ export function PaymentsPage() {
         </div>
         <div className="px-5 pb-4 pt-3">
           <TabSwitcher
-            tabs={TAB_CONFIG}
+            tabs={tabsWithBadge}
             active={tab}
             onChange={setTab}
             variant="premium"

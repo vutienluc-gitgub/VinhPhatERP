@@ -1,6 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 
-import { KpiCardPremium, KpiGridPremium, Button } from '@/shared/components';
+import {
+  KpiCardPremium,
+  KpiGridPremium,
+  Button,
+  LiveIndicator,
+} from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import {
   useDashboardStats,
@@ -25,6 +30,7 @@ export function DashboardPage() {
     <div className="page-container p-4 md:p-6 overflow-x-hidden">
       <div className="flex items-center justify-between mb-4">
         <h1 className="sr-only">Dashboard</h1>
+        <LiveIndicator label="Đang cập nhật" />
         <Button
           id="dashboard-new-order"
           variant="primary"

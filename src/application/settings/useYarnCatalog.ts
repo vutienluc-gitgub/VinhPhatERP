@@ -26,6 +26,8 @@ function toDbRow(
     color_name: values.color_name?.trim() || null,
     tensile_strength: values.tensile_strength?.trim() || null,
     origin: values.origin?.trim() || null,
+    lot_no: values.lot_no?.trim() || null,
+    grade: values.grade?.trim() || null,
     unit: values.unit.trim(),
     notes: values.notes?.trim() || null,
     status: values.status,

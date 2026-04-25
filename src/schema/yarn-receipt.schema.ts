@@ -21,6 +21,8 @@ export const yarnReceiptItemSchema = z.object({
     .number({ required_error: 'Nhập đơn giá' })
     .min(0, 'Đơn giá >= 0'),
   lotNumber: z.string().trim().max(100).optional().or(z.literal('')),
+  grade: z.string().trim().max(20).optional().or(z.literal('')),
+  unit: z.string().trim().min(1, 'Chọn đơn vị').max(20).default('kg'),
   tensileStrength: z.string().trim().max(50).optional().or(z.literal('')),
   composition: z.string().trim().max(200).optional().or(z.literal('')),
   origin: z.string().trim().max(100).optional().or(z.literal('')),
@@ -45,6 +47,8 @@ export const emptyYarnReceiptItem: YarnReceiptItemFormValues = {
   quantity: 0,
   unitPrice: 0,
   lotNumber: '',
+  grade: '',
+  unit: 'kg',
   tensileStrength: '',
   composition: '',
   origin: '',

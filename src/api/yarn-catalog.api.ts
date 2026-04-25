@@ -3,6 +3,7 @@ import type {
   YarnCatalogFilter,
 } from '@/features/yarn-catalog/types';
 import { supabase } from '@/services/supabase/client';
+import { safeUpsert } from '@/lib/db-guard';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
@@ -60,7 +61,7 @@ export async function fetchYarnCatalogOptions(): Promise<
   const { data, error } = await supabase
     .from(TABLE)
     .select(
-      'id, code, name, composition, color_name, tensile_strength, origin, unit',
+      'id, code, name, composition, color_name, tensile_strength, origin, lot_no, grade, unit',
     )
     .eq('status', 'active')
     .order('name');
@@ -99,18 +100,15 @@ export async function createYarnCatalog(
   row: YarnCatalogRow,
 ): Promise<YarnCatalog> {
   const tenantId = await getTenantId();
-  const { data, error } = await supabase
-    .from(TABLE)
-    .insert([
-      {
-        ...row,
-        tenant_id: tenantId,
-      },
-    ])
-    .select()
-    .single();
-  if (error) throw error;
-  return data as YarnCatalog;
+  const [data] = await safeUpsert<YarnCatalogRow & { tenant_id: string }>({
+    table: TABLE,
+    data: {
+      ...row,
+      tenant_id: tenantId,
+    },
+    conflictKey: 'code',
+  });
+  return data as unknown as YarnCatalog;
 }
 
 export async function updateYarnCatalog(

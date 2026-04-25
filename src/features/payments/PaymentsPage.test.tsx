@@ -18,6 +18,15 @@ vi.mock('./SupplierDebtSummary', () => ({
   SupplierDebtSummary: () => <div data-testid="supplier-debt-summary" />,
 }));
 
+vi.mock('@/application/payments', () => ({
+  useDebtSummary: () => ({ data: [], isLoading: false }),
+  useSupplierDebt: () => ({ data: [], isLoading: false }),
+}));
+
+vi.mock('@/domain/payments', () => ({
+  countOverdueDebts: () => 0,
+}));
+
 vi.mock('./ExpenseList', () => ({
   ExpenseList: ({
     onEdit,

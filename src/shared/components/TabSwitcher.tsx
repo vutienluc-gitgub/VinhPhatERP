@@ -1,3 +1,4 @@
+import { clsx } from 'clsx';
 import type { ReactNode } from 'react';
 
 export interface TabItem<T extends string> {
@@ -12,6 +13,9 @@ interface Props<T extends string> {
   active: T;
   onChange: (key: T) => void;
   variant?: 'boxed' | 'underline' | 'pill' | 'premium';
+  /** sm: compact mode for use inside widget headers or tight spaces */
+  size?: 'default' | 'sm';
+  className?: string;
 }
 
 export function TabSwitcher<T extends string>({
@@ -19,6 +23,8 @@ export function TabSwitcher<T extends string>({
   active,
   onChange,
   variant = 'boxed',
+  size = 'default',
+  className,
 }: Props<T>) {
   const barClass =
     variant === 'underline'
@@ -37,13 +43,22 @@ export function TabSwitcher<T extends string>({
           ? 'tab-item-premium'
           : 'tab-item';
 
+  const smBarClass = size === 'sm' ? 'p-0.5' : undefined;
+  const smItemClass = size === 'sm' ? 'px-2 py-1 text-[11px]' : undefined;
+
   return (
-    <div className={barClass}>
+    <div className={clsx(barClass, smBarClass, className)} role="tablist">
       {tabs.map((tab) => (
         <button
           key={tab.key}
           type="button"
-          className={`${itemClass}${active === tab.key ? ' is-active' : ''}`}
+          role="tab"
+          aria-selected={active === tab.key}
+          className={clsx(
+            itemClass,
+            smItemClass,
+            active === tab.key && 'is-active',
+          )}
           onClick={() => onChange(tab.key)}
         >
           {tab.icon}

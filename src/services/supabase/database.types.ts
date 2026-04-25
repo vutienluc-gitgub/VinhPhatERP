@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -11,6 +11,31 @@ export type Database = {
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: '14.4';
+  };
+  graphql_public: {
+    Tables: {
+      [_ in never]: never;
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json;
+          operationName?: string;
+          query?: string;
+          variables?: Json;
+        };
+        Returns: Json;
+      };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
   };
   public: {
     Tables: {
@@ -1252,6 +1277,13 @@ export type Database = {
             referencedColumns: ['id'];
           },
           {
+            foreignKeyName: 'expenses_employee_id_fkey';
+            columns: ['employee_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_employee_workload';
+            referencedColumns: ['employee_id'];
+          },
+          {
             foreignKeyName: 'expenses_supplier_id_fkey';
             columns: ['supplier_id'];
             isOneToOne: false;
@@ -1495,6 +1527,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: 'inventory_adjustments_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      kpis: {
+        Row: {
+          active: boolean | null;
+          code: string;
+          created_at: string | null;
+          description: string | null;
+          id: string;
+          name: string;
+          tenant_id: string | null;
+          unit: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          active?: boolean | null;
+          code: string;
+          created_at?: string | null;
+          description?: string | null;
+          id?: string;
+          name: string;
+          tenant_id?: string | null;
+          unit: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          active?: boolean | null;
+          code?: string;
+          created_at?: string | null;
+          description?: string | null;
+          id?: string;
+          name?: string;
+          tenant_id?: string | null;
+          unit?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'kpis_tenant_id_fkey';
             columns: ['tenant_id'];
             isOneToOne: false;
             referencedRelation: 'tenants';
@@ -2072,6 +2148,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'employees';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'profiles_employee_id_fkey';
+            columns: ['employee_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_employee_workload';
+            referencedColumns: ['employee_id'];
           },
           {
             foreignKeyName: 'profiles_tenant_id_fkey';
@@ -2654,6 +2737,13 @@ export type Database = {
             referencedRelation: 'employees';
             referencedColumns: ['id'];
           },
+          {
+            foreignKeyName: 'shipment_journey_logs_updated_by_fkey';
+            columns: ['updated_by'];
+            isOneToOne: false;
+            referencedRelation: 'v_employee_workload';
+            referencedColumns: ['employee_id'];
+          },
         ];
       };
       shipments: {
@@ -2766,11 +2856,25 @@ export type Database = {
             referencedColumns: ['id'];
           },
           {
+            foreignKeyName: 'shipments_delivery_staff_id_fkey';
+            columns: ['delivery_staff_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_employee_workload';
+            referencedColumns: ['employee_id'];
+          },
+          {
             foreignKeyName: 'shipments_employee_id_fkey';
             columns: ['employee_id'];
             isOneToOne: false;
             referencedRelation: 'employees';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'shipments_employee_id_fkey';
+            columns: ['employee_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_employee_workload';
+            referencedColumns: ['employee_id'];
           },
           {
             foreignKeyName: 'shipments_order_id_fkey';
@@ -3117,6 +3221,151 @@ export type Database = {
             columns: ['tenant_id'];
             isOneToOne: false;
             referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      tasks: {
+        Row: {
+          actual_hours: number | null;
+          assignee_id: string | null;
+          created_at: string | null;
+          description: string | null;
+          due_date: string | null;
+          estimated_hours: number | null;
+          id: string;
+          linked_kpi_id: string | null;
+          order_id: string | null;
+          priority: string;
+          reviewer_id: string | null;
+          status: string;
+          task_type: string;
+          tenant_id: string | null;
+          title: string;
+          updated_at: string | null;
+          work_order_id: string | null;
+        };
+        Insert: {
+          actual_hours?: number | null;
+          assignee_id?: string | null;
+          created_at?: string | null;
+          description?: string | null;
+          due_date?: string | null;
+          estimated_hours?: number | null;
+          id?: string;
+          linked_kpi_id?: string | null;
+          order_id?: string | null;
+          priority?: string;
+          reviewer_id?: string | null;
+          status?: string;
+          task_type?: string;
+          tenant_id?: string | null;
+          title: string;
+          updated_at?: string | null;
+          work_order_id?: string | null;
+        };
+        Update: {
+          actual_hours?: number | null;
+          assignee_id?: string | null;
+          created_at?: string | null;
+          description?: string | null;
+          due_date?: string | null;
+          estimated_hours?: number | null;
+          id?: string;
+          linked_kpi_id?: string | null;
+          order_id?: string | null;
+          priority?: string;
+          reviewer_id?: string | null;
+          status?: string;
+          task_type?: string;
+          tenant_id?: string | null;
+          title?: string;
+          updated_at?: string | null;
+          work_order_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'tasks_assignee_id_fkey';
+            columns: ['assignee_id'];
+            isOneToOne: false;
+            referencedRelation: 'employees';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tasks_assignee_id_fkey';
+            columns: ['assignee_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_employee_workload';
+            referencedColumns: ['employee_id'];
+          },
+          {
+            foreignKeyName: 'tasks_linked_kpi_id_fkey';
+            columns: ['linked_kpi_id'];
+            isOneToOne: false;
+            referencedRelation: 'kpis';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tasks_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'orders';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tasks_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_debt_aging';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'tasks_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_on_time_delivery';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'tasks_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_order_summary';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tasks_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_overdue_orders';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'tasks_reviewer_id_fkey';
+            columns: ['reviewer_id'];
+            isOneToOne: false;
+            referencedRelation: 'employees';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tasks_reviewer_id_fkey';
+            columns: ['reviewer_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_employee_workload';
+            referencedColumns: ['employee_id'];
+          },
+          {
+            foreignKeyName: 'tasks_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tasks_work_order_id_fkey';
+            columns: ['work_order_id'];
+            isOneToOne: false;
+            referencedRelation: 'work_orders';
             referencedColumns: ['id'];
           },
         ];
@@ -3681,7 +3930,9 @@ export type Database = {
           color_name: string | null;
           composition: string | null;
           created_at: string;
+          grade: string | null;
           id: string;
+          lot_no: string | null;
           name: string;
           notes: string | null;
           origin: string | null;
@@ -3696,7 +3947,9 @@ export type Database = {
           color_name?: string | null;
           composition?: string | null;
           created_at?: string;
+          grade?: string | null;
           id?: string;
+          lot_no?: string | null;
           name: string;
           notes?: string | null;
           origin?: string | null;
@@ -3711,7 +3964,9 @@ export type Database = {
           color_name?: string | null;
           composition?: string | null;
           created_at?: string;
+          grade?: string | null;
           id?: string;
+          lot_no?: string | null;
           name?: string;
           notes?: string | null;
           origin?: string | null;
@@ -3737,6 +3992,7 @@ export type Database = {
           color_code: string | null;
           color_name: string | null;
           composition: string | null;
+          grade: string | null;
           id: string;
           lot_number: string | null;
           notes: string | null;
@@ -3756,6 +4012,7 @@ export type Database = {
           color_code?: string | null;
           color_name?: string | null;
           composition?: string | null;
+          grade?: string | null;
           id?: string;
           lot_number?: string | null;
           notes?: string | null;
@@ -3775,6 +4032,7 @@ export type Database = {
           color_code?: string | null;
           color_name?: string | null;
           composition?: string | null;
+          grade?: string | null;
           id?: string;
           lot_number?: string | null;
           notes?: string | null;
@@ -3931,6 +4189,26 @@ export type Database = {
             columns: ['customer_id'];
             isOneToOne: false;
             referencedRelation: 'customers';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      v_employee_workload: {
+        Row: {
+          blocked_tasks: number | null;
+          employee_id: string | null;
+          in_progress_tasks: number | null;
+          name: string | null;
+          open_tasks: number | null;
+          overdue_tasks: number | null;
+          tenant_id: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'employees_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
             referencedColumns: ['id'];
           },
         ];
@@ -4130,18 +4408,22 @@ export type Database = {
         Returns: boolean;
       };
       atomic_create_expense: { Args: { p_data: Json }; Returns: Json };
-      atomic_create_yarn_receipt: {
-        Args: { p_header: Json; p_items: Json };
-        Returns: Json;
-      };
+      atomic_create_yarn_receipt:
+        | { Args: { p_header: Json; p_items: Json }; Returns: Json }
+        | { Args: { p_header: Json; p_items: Json }; Returns: Json };
       atomic_update_work_order: {
         Args: { p_reqs_data: Json; p_wo_data: Json; p_wo_id: string };
         Returns: undefined;
       };
-      atomic_update_yarn_receipt: {
-        Args: { p_header: Json; p_id: string; p_items: Json };
-        Returns: undefined;
-      };
+      atomic_update_yarn_receipt:
+        | {
+            Args: { p_header: Json; p_id: string; p_items: Json };
+            Returns: undefined;
+          }
+        | {
+            Args: { p_header: Json; p_id: string; p_items: Json };
+            Returns: undefined;
+          };
       create_shipment_from_finished_fabric:
         | {
             Args: {
@@ -4211,6 +4493,10 @@ export type Database = {
       rpc_check_slug_available: { Args: { p_slug: string }; Returns: boolean };
       rpc_complete_dyeing_order: {
         Args: { p_actual_return_date?: string; p_dyeing_order_id: string };
+        Returns: undefined;
+      };
+      rpc_complete_task: {
+        Args: { p_actual_hours?: number; p_task_id: string };
         Returns: undefined;
       };
       rpc_complete_work_order: {
@@ -4646,6 +4932,9 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       account_type: ['cash', 'bank'],
