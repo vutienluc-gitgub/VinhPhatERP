@@ -15,7 +15,6 @@ import {
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
-import { useAuth } from '@/shared/hooks/useAuth';
 import { useWorkOrders, useStartWorkOrder } from '@/application/production';
 
 import type {
@@ -60,8 +59,6 @@ export function WorkOrderList({
   const { data, isLoading } = useWorkOrders(filter, page, 20);
   const startMutation = useStartWorkOrder();
   const { confirm } = useConfirm();
-  const { profile } = useAuth();
-  const isAdmin = profile?.role === 'admin';
 
   const orders = data?.data ?? [];
   const hasFilter = !!(
@@ -298,7 +295,7 @@ export function WorkOrderList({
                       onClick: () => onView(wo.id),
                       title: 'Chi tiết',
                     },
-                    wo.status === 'draft' || isAdmin
+                    wo.status === 'draft'
                       ? {
                           icon: 'Pencil',
                           onClick: () => onEdit(wo),
@@ -372,7 +369,7 @@ export function WorkOrderList({
                   >
                     Chi tiết
                   </Button>
-                  {(wo.status === 'draft' || isAdmin) && (
+                  {wo.status === 'draft' && (
                     <Button
                       variant="secondary"
                       className="flex-1 text-primary"

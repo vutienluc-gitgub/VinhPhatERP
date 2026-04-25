@@ -14,7 +14,6 @@ import {
   useStartWorkOrder,
   useCompleteWorkOrder,
 } from '@/application/production';
-import { useAuth } from '@/shared/hooks/useAuth';
 
 import type { WorkOrder } from './types';
 import { WORK_ORDER_STATUSES } from './work-orders.module';
@@ -44,8 +43,6 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
     useWorkOrderRequirements(id);
   const startMutation = useStartWorkOrder();
   const completeMutation = useCompleteWorkOrder();
-  const { profile } = useAuth();
-  const isAdmin = profile?.role === 'admin';
 
   if (isLoading)
     return (
@@ -145,9 +142,8 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex gap-2">
-              {(wo.status === 'draft' || isAdmin) && (
+              {wo.status === 'draft' && (
                 <button
                   className="btn-secondary flex items-center gap-2"
                   type="button"

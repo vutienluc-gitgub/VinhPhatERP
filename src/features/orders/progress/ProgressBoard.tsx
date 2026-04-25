@@ -179,20 +179,20 @@ export function ProgressBoard() {
                   className={`border rounded-sm p-3 ${overdue ? 'border-[#e74c3c44] bg-[#fef2f210]' : 'border-border bg-bg'}`}
                 >
                   {/* Order header */}
-                  <div className="flex justify-between items-center mb-2 flex-wrap gap-[0.4rem]">
-                    <div>
-                      <strong>{group.orderNumber}</strong>
-                      <span className="td-muted ml-2">
+                  <div className="grid grid-cols-[1fr_auto] gap-2 items-start mb-2">
+                    <div className="flex flex-wrap items-center gap-2 min-w-0">
+                      <strong className="shrink-0">{group.orderNumber}</strong>
+                      <span className="td-muted truncate max-w-full">
                         {group.customerName}
                       </span>
                       {group.fabricInfo && (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-secondary text-secondary-foreground ml-2">
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-secondary text-secondary-foreground truncate shrink-0 max-w-[120px]">
                           {group.fabricInfo}
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 text-[0.82rem]">
-                      <span className="tabular-nums">{pct}%</span>
+                    <div className="flex flex-col items-end gap-0.5 text-[0.82rem] shrink-0">
+                      <span className="tabular-nums font-bold">{pct}%</span>
                       {group.deliveryDate && (
                         <span
                           className={

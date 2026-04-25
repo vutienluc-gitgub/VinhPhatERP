@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import { Button } from '@/shared/components';
+import { Button, Icon } from '@/shared/components';
 import {
   companySettingsSchema,
   companySettingsDefaultValues,
@@ -62,8 +62,9 @@ export function CompanySettingsForm() {
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       {/* Success feedback */}
       {updateMutation.isSuccess && (
-        <div className="success-inline mb-4 px-4 py-3 rounded-lg bg-[var(--color-emerald-50,#ecfdf5)] text-[var(--color-emerald-700,#047857)] text-sm">
-          ✅ Đã lưu thông tin công ty thành công!
+        <div className="success-inline mb-4 px-4 py-3 rounded-lg bg-[var(--color-emerald-50,#ecfdf5)] text-[var(--color-emerald-700,#047857)] text-sm flex items-center gap-2">
+          <Icon name="CheckCircle2" size={16} strokeWidth={2} />
+          Đã lưu thông tin công ty thành công!
         </div>
       )}
 
@@ -261,24 +262,24 @@ export function CompanySettingsForm() {
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 mt-6">
+      <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-8">
         <Button
           variant="secondary"
           type="button"
+          className="w-full sm:w-auto"
           disabled={isSubmitting || !isDirty}
           onClick={() =>
             settings && reset(settings as CompanySettingsFormValues)
           }
         >
-          {' '}
           Hoàn tác
         </Button>
         <button
-          className="primary-button btn-standard"
+          className="primary-button btn-standard w-full sm:w-auto"
           type="submit"
           disabled={isSubmitting || !isDirty}
         >
-          {isSubmitting ? 'Đang lưu...' : '💾 Lưu thông tin'}
+          {isSubmitting ? 'Đang lưu...' : 'Lưu thông tin'}
         </button>
       </div>
     </form>

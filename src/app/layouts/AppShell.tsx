@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
@@ -412,12 +419,31 @@ export function AppShell() {
         </header>
 
         <main className="route-content">
-          <Outlet />
+          <Suspense
+            fallback={
+              <div className="flex-center p-10">
+                <div className="spinner" />
+              </div>
+            }
+          >
+            <Outlet />
+          </Suspense>
         </main>
       </div>
 
       {/* ── Mobile Bottom Nav (3 tabs + Menu) ── */}
-      <nav className="mobile-nav" aria-label="Bottom navigation">
+      <nav
+        className="mobile-nav fixed left-0 right-0 w-full z-50 bg-surface-strong border-t border-border pb-[env(safe-area-inset-bottom)]"
+        aria-label="Bottom navigation"
+        style={{
+          position: 'fixed',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100%',
+          margin: 0,
+        }}
+      >
         {bottomTabs.map((item) => {
           const iconName =
             item.icon ?? (item.path === '/' ? 'Home' : 'Component');

@@ -26,7 +26,7 @@ export function RawFabricPage() {
   }
 
   return (
-    <>
+    <div className="page-container overflow-x-hidden pb-20">
       <RawFabricList
         onEdit={openEdit}
         onNew={openCreate}
@@ -36,6 +36,6 @@ export function RawFabricPage() {
       {showBulkForm && (
         <RawFabricBulkForm onClose={() => setShowBulkForm(false)} />
       )}
-    </>
+    </div>
   );
 }

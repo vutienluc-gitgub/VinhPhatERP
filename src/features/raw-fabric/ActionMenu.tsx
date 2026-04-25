@@ -34,7 +34,7 @@ export function ActionMenu({
   return (
     <>
       {/* Desktop layout */}
-      <div className="flex items-center gap-2">
+      <div className="hidden md:flex items-center gap-2">
         {/* Xuất Excel: icon-only with tooltip */}
         <div className="relative group">
           <button
