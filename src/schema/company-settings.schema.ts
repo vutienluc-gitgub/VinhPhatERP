@@ -25,6 +25,7 @@ export const COMPANY_SETTING_KEYS = [
   'bank_name',
   'logo_url',
   'default_user_role',
+  'layout_mode',
 ] as const;
 
 export type CompanySettingKey = (typeof COMPANY_SETTING_KEYS)[number];
@@ -52,6 +53,7 @@ export const companySettingsSchema = z.object({
   default_user_role: z
     .enum(['admin', 'manager', 'staff', 'viewer', 'sale', 'customer'])
     .default('staff'),
+  layout_mode: z.enum(['boxed', 'fluid']).default('boxed'),
 });
 
 export type CompanySettingsFormValues = z.infer<typeof companySettingsSchema>;
@@ -67,6 +69,7 @@ export const companySettingsDefaultValues: CompanySettingsFormValues = {
   bank_name: '',
   logo_url: '',
   default_user_role: 'staff',
+  layout_mode: 'boxed',
 };
 
 /* ── Helpers ── */
