@@ -53,4 +53,5 @@ export const supabase = createSupabaseClient();
  * Use this when database.types.ts is out of sync with actual DB schema
  * or when calling RPCs that haven't been generated yet.
  */
-export const untypedDb = createClient(url || '', anonKey || '');
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const untypedDb = supabase as any;
