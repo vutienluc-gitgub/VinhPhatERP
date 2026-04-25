@@ -1,6 +1,7 @@
-import { lazy, Suspense } from 'react';
+import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
 
+import { withSuspense } from '@/app/router/routeWrappers';
 import { DriverPortalLayout } from '@/features/driver-portal/DriverPortalLayout';
 import { DriverRoute } from '@/features/driver-portal/DriverRoute';
 
@@ -20,11 +21,7 @@ export const driverRoutes: RouteObject[] = [
         children: [
           {
             index: true,
-            element: (
-              <Suspense fallback={<div />}>
-                <DriverPortalPage />
-              </Suspense>
-            ),
+            element: withSuspense(<DriverPortalPage />),
           },
         ],
       },

@@ -127,9 +127,6 @@ export function getNavigationItems(): NavigationItem[] {
   return [dashboardItem, ...pluginItems];
 }
 
-// Legacy compat
-export const navigationItems: NavigationItem[] = getNavigationItems();
-
 const ResetPasswordPage = lazy(() =>
   import('@/features/auth/ResetPasswordPage').then((m) => ({
     default: m.ResetPasswordPage,
@@ -167,19 +164,21 @@ export const authRoute: RouteObject = {
 };
 
 /** Routes cho tất cả authenticated user (route không có routeGuard) */
-export const appRoutes: RouteObject[] = [
-  {
-    index: true,
-    element: <DashboardPage />,
-  },
-  ...FeatureRegistry.getAll()
-    .filter((p) => !p.routeGuard)
-    .flatMap(pluginToRoute),
-];
+export function createAppRoutes(): RouteObject[] {
+  return [
+    {
+      index: true,
+      element: <DashboardPage />,
+    },
+    ...FeatureRegistry.getAll()
+      .filter((p) => !p.routeGuard)
+      .flatMap(pluginToRoute),
+  ];
+}
 
 /** Print routes from all plugins */
-export const printRoutes: RouteObject[] = FeatureRegistry.getPrintRoutes().map(
-  (pr) => {
+export function createPrintRoutes(): RouteObject[] {
+  return FeatureRegistry.getPrintRoutes().map((pr) => {
     const LazyComponent = lazy(pr.component);
     return {
       path: pr.path,
@@ -189,15 +188,19 @@ export const printRoutes: RouteObject[] = FeatureRegistry.getPrintRoutes().map(
         </LazyPage>
       ),
     };
-  },
-);
+  });
+}
 
 /** Routes chỉ dành cho admin và manager (routeGuard === 'manager') */
-export const managerRoutes: RouteObject[] = FeatureRegistry.getAll()
-  .filter((p) => p.routeGuard === 'manager')
-  .flatMap(pluginToRoute);
+export function createManagerRoutes(): RouteObject[] {
+  return FeatureRegistry.getAll()
+    .filter((p) => p.routeGuard === 'manager')
+    .flatMap(pluginToRoute);
+}
 
 /** Routes chỉ dành cho admin (routeGuard === 'admin') */
-export const adminRoutes: RouteObject[] = FeatureRegistry.getAll()
-  .filter((p) => p.routeGuard === 'admin')
-  .flatMap(pluginToRoute);
+export function createAdminRoutes(): RouteObject[] {
+  return FeatureRegistry.getAll()
+    .filter((p) => p.routeGuard === 'admin')
+    .flatMap(pluginToRoute);
+}

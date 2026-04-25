@@ -34,6 +34,7 @@ interface RegisteredHandler {
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 const registeredHandlers: RegisteredHandler[] = [];
+let integrationsInitialized = false;
 
 function registerHandler<
   T extends { eventName: string; timestamp: string; payload: unknown },
@@ -50,66 +51,74 @@ function registerHandler<
   });
 }
 
-// ─── Saga: Order → Inventory ──────────────────────────────────────────────────
+export function initIntegration() {
+  if (integrationsInitialized) {
+    return;
+  }
 
-/**
- * Khi đơn hàng được xác nhận (OrderConfirmedEvent):
- * - Tạo 7 công đoạn tiến độ tự động (đã có DB Trigger).
- * - Thông báo Inventory Context chuẩn bị giữ cuộn vải.
- * - Log sự kiện vào Audit trail.
- *
- * Hiện tại: Log và chuẩn bị hook point cho tương lai.
- * Khi hệ thống scale, thay console.log bằng API call thực tế.
- */
-registerHandler<OrderConfirmedEvent>(
-  'OrderConfirmedEvent',
-  'Order → Inventory: Chuẩn bị giữ kho khi đơn hàng xác nhận',
-  (event) => {
-    console.info(
-      `[Integration] OrderConfirmed → Preparing inventory reservation for order ${event.payload.orderNumber}`,
-    );
-    // TODO: Gọi API giữ cuộn vải khi sẵn sàng
-    // await reserveRollsForOrder(event.payload.orderId);
-  },
-);
+  // ─── Saga: Order → Inventory ────────────────────────────────────────────────
 
-// ─── Saga: Order → Shipments ──────────────────────────────────────────────────
+  /**
+   * Khi đơn hàng được xác nhận (OrderConfirmedEvent):
+   * - Tạo 7 công đoạn tiến độ tự động (đã có DB Trigger).
+   * - Thông báo Inventory Context chuẩn bị giữ cuộn vải.
+   * - Log sự kiện vào Audit trail.
+   *
+   * Hiện tại: Log và chuẩn bị hook point cho tương lai.
+   * Khi hệ thống scale, thay console.log bằng API call thực tế.
+   */
+  registerHandler<OrderConfirmedEvent>(
+    'OrderConfirmedEvent',
+    'Order → Inventory: Chuẩn bị giữ kho khi đơn hàng xác nhận',
+    (event) => {
+      console.info(
+        `[Integration] OrderConfirmed → Preparing inventory reservation for order ${event.payload.orderNumber}`,
+      );
+      // TODO: Gọi API giữ cuộn vải khi sẵn sàng
+      // await reserveRollsForOrder(event.payload.orderId);
+    },
+  );
 
-/**
- * Khi đơn hàng hoàn thành (OrderCompletedEvent):
- * - Đánh dấu tất cả cuộn vải liên quan đã xuất kho (shipped).
- * - Cập nhật công nợ khách hàng.
- */
-registerHandler<OrderCompletedEvent>(
-  'OrderCompletedEvent',
-  'Order → Payments: Cập nhật công nợ khi đơn hàng hoàn thành',
-  (event) => {
-    console.info(
-      `[Integration] OrderCompleted → Finalizing payments for order ${event.payload.orderId}`,
-    );
-    // TODO: Gọi API cập nhật trạng thái thanh toán
-    // await finalizeOrderPayments(event.payload.orderId);
-  },
-);
+  // ─── Saga: Order → Shipments ────────────────────────────────────────────────
 
-// ─── Saga: Inventory → Production ─────────────────────────────────────────────
+  /**
+   * Khi đơn hàng hoàn thành (OrderCompletedEvent):
+   * - Đánh dấu tất cả cuộn vải liên quan đã xuất kho (shipped).
+   * - Cập nhật công nợ khách hàng.
+   */
+  registerHandler<OrderCompletedEvent>(
+    'OrderCompletedEvent',
+    'Order → Payments: Cập nhật công nợ khi đơn hàng hoàn thành',
+    (event) => {
+      console.info(
+        `[Integration] OrderCompleted → Finalizing payments for order ${event.payload.orderId}`,
+      );
+      // TODO: Gọi API cập nhật trạng thái thanh toán
+      // await finalizeOrderPayments(event.payload.orderId);
+    },
+  );
 
-/**
- * Khi nhận vải mộc mới (FabricReceivedEvent):
- * - Cập nhật tồn kho tổng.
- * - Kiểm tra xem có Work Order nào đang chờ nguyên liệu không.
- */
-registerHandler<FabricReceivedEvent>(
-  'FabricReceivedEvent',
-  'Inventory → Production: Kiểm tra Work Order chờ nguyên liệu',
-  (event) => {
-    console.info(
-      `[Integration] FabricReceived → ${event.payload.rollsCount} rolls (${event.payload.totalWeight}kg) received. Checking pending work orders...`,
-    );
-    // TODO: Gọi API kiểm tra Work Orders đang thiếu nguyên liệu
-    // await checkPendingWorkOrders(event.payload.receiptId);
-  },
-);
+  // ─── Saga: Inventory → Production ───────────────────────────────────────────
+
+  /**
+   * Khi nhận vải mộc mới (FabricReceivedEvent):
+   * - Cập nhật tồn kho tổng.
+   * - Kiểm tra xem có Work Order nào đang chờ nguyên liệu không.
+   */
+  registerHandler<FabricReceivedEvent>(
+    'FabricReceivedEvent',
+    'Inventory → Production: Kiểm tra Work Order chờ nguyên liệu',
+    (event) => {
+      console.info(
+        `[Integration] FabricReceived → ${event.payload.rollsCount} rolls (${event.payload.totalWeight}kg) received. Checking pending work orders...`,
+      );
+      // TODO: Gọi API kiểm tra Work Orders đang thiếu nguyên liệu
+      // await checkPendingWorkOrders(event.payload.receiptId);
+    },
+  );
+
+  integrationsInitialized = true;
+}
 
 // ─── Lifecycle ────────────────────────────────────────────────────────────────
 
@@ -132,4 +141,5 @@ export function getRegisteredIntegrations(): ReadonlyArray<{
 export function teardownIntegrations() {
   registeredHandlers.forEach((h) => h.unsubscribe());
   registeredHandlers.length = 0;
+  integrationsInitialized = false;
 }

@@ -7,6 +7,15 @@ import { OPERATIONS_MESSAGES } from '@/features/operations/constants';
 import { fetchEmployees as fetchCentralEmployees } from './employees.api';
 import { demoTasks, demoKpis, demoActivities } from './operations.demo';
 
+export interface BlockedTransitionTelemetryEvent {
+  taskId: string;
+  fromStatus: string;
+  targetStatus: string;
+  reason: string;
+  source: 'preview' | 'commit';
+  timestamp: string;
+}
+
 export async function fetchTasks(): Promise<Task[]> {
   const { data, error } = await untypedDb
     .from('tasks')
@@ -82,20 +91,49 @@ export async function updateTask(
   id: string,
   values: Partial<Task>,
 ): Promise<Task> {
-  const results = await safeUpsert<Partial<Task>>({
-    table: 'tasks',
-    data: { ...values, id },
-    conflictKey: 'id',
-  });
+  const { data, error } = await untypedDb
+    .from('tasks')
+    .update(values)
+    .eq('id', id)
+    .select()
+    .maybeSingle();
 
-  const updated = (results as unknown as Task[])[0];
-  if (!updated) throw new Error('Failed to update task');
-  return updated;
+  if (error) throw error;
+  if (!data) {
+    throw new Error('Failed to update task');
+  }
+
+  return data as unknown as Task;
 }
 
 export async function deleteTask(id: string): Promise<void> {
   const { error } = await untypedDb.from('tasks').delete().eq('id', id);
   if (error) throw error;
+}
+
+export async function logBlockedTransitionEvent(
+  event: BlockedTransitionTelemetryEvent,
+): Promise<void> {
+  const tenantId = await getTenantId();
+
+  const { data: authData } = await untypedDb.auth.getUser();
+  const userId = authData?.user?.id ?? null;
+
+  const { error } = await untypedDb.from('business_audit_log').insert({
+    tenant_id: tenantId,
+    entity_type: 'operations_task_board',
+    entity_id: event.taskId,
+    event_type: 'OPS_TASK_TRANSITION_BLOCKED',
+    payload: {
+      ...event,
+      module: 'operations-board',
+    },
+    user_id: userId,
+  });
+
+  if (error) {
+    throw error;
+  }
 }
 
 /**

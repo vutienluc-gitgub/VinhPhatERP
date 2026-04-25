@@ -10,9 +10,6 @@ import { TenantProvider } from '@/shared/context/TenantContext';
 import { GlobalModalProvider } from '@/shared/hooks/useGlobalModal';
 import { GlobalModalDispatcher } from '@/app/components/GlobalModalDispatcher';
 
-// Trigger plugin registration on app startup
-import '@/app/plugins';
-
 export function AppProviders({ children }: PropsWithChildren) {
   const [queryClient] = useState(
     () =>

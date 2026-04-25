@@ -3,7 +3,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { useDashboardStats } from '@/application/analytics';
-import { navigationItems } from '@/app/router/routes';
+import { getNavigationItems } from '@/app/router/routes';
 import type { NavigationItem } from '@/app/router/routes';
 import type { UserRole } from '@/services/supabase/database.types';
 import { useTheme } from '@/shared/hooks/useTheme';
@@ -13,7 +13,7 @@ import { MobileMoreDrawer } from './MobileMoreDrawer';
 import { NotificationBell } from './NotificationBell';
 
 function getCurrentItem(pathname: string) {
-  return navigationItems.find((item) =>
+  return getNavigationItems().find((item) =>
     item.path === '/' ? pathname === '/' : pathname.startsWith(item.path),
   );
 }
@@ -115,6 +115,7 @@ export function AppShell() {
   const currentItem = getCurrentItem(pathname);
   const { data: stats } = useDashboardStats();
   const { theme, toggleTheme } = useTheme();
+  const navigationItems = getNavigationItems();
 
   const toggleSidebar = useCallback(() => {
     setIsSidebarCollapsed((prev) => {

@@ -10,6 +10,8 @@ import {
   updateTask,
   deleteTask,
   completeTask,
+  logBlockedTransitionEvent,
+  type BlockedTransitionTelemetryEvent,
 } from '@/api/operations.api';
 import { fetchOrders } from '@/api/orders.api';
 import { fetchWorkOrders } from '@/api/work-orders.api';
@@ -41,10 +43,14 @@ export function useUpdateTask() {
   return useMutation({
     mutationFn: ({ id, values }: { id: string; values: Partial<Task> }) =>
       updateTask(id, values),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['operations-tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['operations-workload'] });
-      queryClient.invalidateQueries({ queryKey: ['operations-activities'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['operations-tasks'] });
+      await queryClient.invalidateQueries({
+        queryKey: ['operations-workload'],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['operations-activities'],
+      });
     },
   });
 }
@@ -76,6 +82,13 @@ export function useCompleteTask() {
       queryClient.invalidateQueries({ queryKey: ['operations-workload'] });
       queryClient.invalidateQueries({ queryKey: ['operations-activities'] });
     },
+  });
+}
+
+export function useLogBlockedTransitionEvent() {
+  return useMutation({
+    mutationFn: (event: BlockedTransitionTelemetryEvent) =>
+      logBlockedTransitionEvent(event),
   });
 }
 
