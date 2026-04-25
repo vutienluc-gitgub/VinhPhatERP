@@ -26,6 +26,7 @@ import { operationsPlugin } from '@/features/operations';
 import { employeesPlugin } from '@/features/employees/employees.module';
 import { contractTemplatesPlugin } from '@/features/contract-templates';
 import { contractsPlugin } from '@/features/contracts';
+import { loomPlugin } from '@/features/looms';
 
 /**
  * Plugin Registry — Đăng ký tất cả features vào hệ thống.
@@ -61,6 +62,7 @@ const plugins: FeaturePlugin[] = [
   fabricCatalogPlugin,
   inventoryPlugin,
   colorCatalogPlugin,
+  loomPlugin,
 
   // ── SYSTEM ──
   operationsPlugin,
