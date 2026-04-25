@@ -1,4 +1,6 @@
-import { KpiCardPremium, KpiGridPremium } from '@/shared/components';
+import { useNavigate } from 'react-router-dom';
+
+import { KpiCardPremium, KpiGridPremium, Button } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import {
   useDashboardStats,
@@ -12,6 +14,7 @@ import { PendingTasksCard } from './PendingTasksCard';
 import { RecentOrdersCard } from './RecentOrdersCard';
 
 export function DashboardPage() {
+  const navigate = useNavigate();
   const { data: stats, isLoading: statsLoading } = useDashboardStats();
   const pendingTasks = usePendingTasks(stats);
   const { data: recentOrders, isLoading: ordersLoading } = useRecentOrders();
@@ -20,7 +23,19 @@ export function DashboardPage() {
 
   return (
     <div className="page-container p-4 md:p-6 overflow-x-hidden">
-      <h1 className="sr-only">Dashboard</h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="sr-only">Dashboard</h1>
+        <Button
+          id="dashboard-new-order"
+          variant="primary"
+          leftIcon="Plus"
+          onClick={() => navigate('/orders/new')}
+          className="rounded-xl px-4 ml-auto"
+        >
+          <span className="hidden sm:inline">Tạo đơn mới</span>
+          <span className="sm:hidden">Thêm</span>
+        </Button>
+      </div>
 
       <div className="grid grid-cols-12 gap-6">
         {/* ── Cột chính (Main Content) - Chiếm 8/12 màn hình lớn ── */}
