@@ -515,6 +515,13 @@ body {
     transition: grid-template-columns 250ms ease;
   }
 
+  /* THÊM MỚI: Ghi đè chỉ khi có class is-fluid */
+  .shell-layout.is-fluid {
+    width: 100%;
+    margin: 0;
+    padding-right: 1.5rem;
+  }
+
   .shell-layout.is-collapsed {
     grid-template-columns: 90px minmax(0, 1fr);
   }

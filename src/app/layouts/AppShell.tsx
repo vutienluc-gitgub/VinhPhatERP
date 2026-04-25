@@ -10,6 +10,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { useDashboardStats } from '@/application/analytics';
+import { useCompanySettings } from '@/application/settings';
 import { getNavigationItems } from '@/app/router/routes';
 import type { NavigationItem } from '@/app/router/routes';
 import type { UserRole } from '@/services/supabase/database.types';
@@ -118,6 +119,8 @@ export function AppShell() {
     useState<Record<string, boolean>>(loadCollapsed);
   const [isSidebarCollapsed, setIsSidebarCollapsed] =
     useState<boolean>(loadSidebarCollapsed);
+  const { data: companySettings } = useCompanySettings();
+  const layoutMode = companySettings?.layout_mode || 'boxed';
   const userMenuRef = useRef<HTMLDivElement>(null);
   const currentItem = getCurrentItem(pathname);
   const { data: stats } = useDashboardStats();
@@ -243,7 +246,9 @@ export function AppShell() {
   }
 
   return (
-    <div className={`shell-layout${isSidebarCollapsed ? ' is-collapsed' : ''}`}>
+    <div
+      className={`shell-layout${isSidebarCollapsed ? ' is-collapsed' : ''}${layoutMode === 'fluid' ? ' is-fluid' : ''}`}
+    >
       {/* Hiệu ứng Glow Premium */}
       <div className="bg-glow bg-glow-1" />
       <div className="bg-glow bg-glow-2" />
