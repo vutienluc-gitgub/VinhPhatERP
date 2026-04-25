@@ -225,23 +225,18 @@ function BreakdownMobileCard({ row }: { row: InventoryBreakdownRow }) {
 }
 
 function InventoryBreakdownPanel({
-  eyebrow,
   title,
   rows,
   isLoading,
 }: {
-  eyebrow: string;
   title: string;
   rows: InventoryBreakdownRow[];
   isLoading: boolean;
 }) {
   return (
     <div className="panel-card card-flush">
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">{eyebrow}</p>
-          <h3 className="title-premium">{title}</h3>
-        </div>
+      <div className="card-header-area">
+        <span className="font-bold text-lg">{title}</span>
       </div>
       <DataTablePremium
         data={rows}
@@ -280,220 +275,210 @@ export function InventoryPage() {
   ).length;
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* KPI Dashboard Card */}
-      <div className="panel-card card-flush">
-        <div className="card-header-area card-header-premium">
-          <div>
-            <p className="eyebrow-premium">TỒN KHO</p>
-            <h3 className="title-premium">Dashboard tồn kho tổng hợp</h3>
+    <div className="page-container">
+      <div className="flex flex-col gap-6">
+        {/* KPI Dashboard Card */}
+        <div className="panel-card card-flush">
+          {hasError && (
+            <div className="p-4">
+              <p className="error-inline">
+                Lỗi tải dữ liệu: {(hasError as Error).message}
+              </p>
+            </div>
+          )}
+
+          <div className="kpi-section kpi-grid">
+            {/* Yarn KPIs */}
+            <div className="kpi-card-premium kpi-primary">
+              <div className="kpi-overlay" />
+              <div className="kpi-content">
+                <div className="kpi-info">
+                  <p className="kpi-label">Sợi — Phiếu nhập</p>
+                  <p className="kpi-value">{yarnStats?.totalReceipts ?? 0}</p>
+                </div>
+                <div className="kpi-icon-box">
+                  <Icon name="ScrollText" size={32} />
+                </div>
+              </div>
+              <div className="kpi-footer text-xs opacity-80 italic">
+                Phiếu nhập kho sợi
+              </div>
+            </div>
+
+            <div className="kpi-card-premium kpi-secondary">
+              <div className="kpi-overlay" />
+              <div className="kpi-content">
+                <div className="kpi-info">
+                  <p className="kpi-label">Sợi — Giá trị</p>
+                  <p className="kpi-value">
+                    {fmtCurrency(yarnStats?.totalAmount ?? 0)}
+                    <span className="text-base font-semibold ml-1 opacity-80">
+                      đ
+                    </span>
+                  </p>
+                </div>
+                <div className="kpi-icon-box">
+                  <Icon name="Wallet" size={32} />
+                </div>
+              </div>
+              <div className="kpi-footer text-xs opacity-80 italic">
+                Tổng giá trị nhập sợi
+              </div>
+            </div>
+
+            {/* Raw fabric KPIs */}
+            <div className="kpi-card-premium kpi-success">
+              <div className="kpi-overlay" />
+              <div className="kpi-content">
+                <div className="kpi-info">
+                  <p className="kpi-label">Vải mộc — Cuộn</p>
+                  <p className="kpi-value">
+                    {(rawStats?.totalRolls ?? 0).toLocaleString('vi-VN')}
+                  </p>
+                </div>
+                <div className="kpi-icon-box">
+                  <Icon name="Layers" size={32} />
+                </div>
+              </div>
+              <div className="kpi-footer text-xs opacity-80 italic">
+                Sẵn sàng đưa vào nhuộm
+              </div>
+            </div>
+
+            <div className="kpi-card-premium kpi-warning">
+              <div className="kpi-overlay" />
+              <div className="kpi-content">
+                <div className="kpi-info">
+                  <p className="kpi-label">Vải mộc — Tổng dài</p>
+                  <div className="flex items-baseline gap-1">
+                    <p className="kpi-value">
+                      {fmt(rawStats?.totalLengthM ?? 0)}
+                    </p>
+                    <span className="text-base font-bold opacity-80 uppercase">
+                      m
+                    </span>
+                  </div>
+                </div>
+                <div className="kpi-icon-box">
+                  <Icon name="Ruler" size={32} />
+                </div>
+              </div>
+              <div className="kpi-footer text-xs opacity-80 italic">
+                Chiều dài tồn kho vải mộc
+              </div>
+            </div>
+
+            {/* Finished fabric KPIs */}
+            <div className="kpi-card-premium kpi-primary">
+              <div className="kpi-overlay" />
+              <div className="kpi-content">
+                <div className="kpi-info">
+                  <p className="kpi-label">Thành phẩm — Cuộn</p>
+                  <p className="kpi-value">
+                    {(finishedStats?.totalRolls ?? 0).toLocaleString('vi-VN')}
+                  </p>
+                </div>
+                <div className="kpi-icon-box">
+                  <Icon name="Package" size={32} />
+                </div>
+              </div>
+              <div className="kpi-footer text-xs opacity-80 italic">
+                Đã hoàn tất công đoạn nhuộm
+              </div>
+            </div>
+
+            <div className="kpi-card-premium kpi-success">
+              <div className="kpi-overlay" />
+              <div className="kpi-content">
+                <div className="kpi-info">
+                  <p className="kpi-label">Thành phẩm — Tổng dài</p>
+                  <div className="flex items-baseline gap-1">
+                    <p className="kpi-value">
+                      {fmt(finishedStats?.totalLengthM ?? 0)}
+                    </p>
+                    <span className="text-base font-bold opacity-80 uppercase">
+                      m
+                    </span>
+                  </div>
+                </div>
+                <div className="kpi-icon-box">
+                  <Icon name="CheckCheck" size={32} />
+                </div>
+              </div>
+              <div className="kpi-footer text-xs opacity-80 italic">
+                Đã kiểm tra chất lượng (QC)
+              </div>
+            </div>
           </div>
         </div>
 
-        {hasError && (
-          <div className="p-4">
-            <p className="error-inline">
-              Lỗi tải dữ liệu: {(hasError as Error).message}
-            </p>
-          </div>
-        )}
+        {!isLoading && !hasError && (
+          <>
+            {/* Raw Fabric Breakdown */}
+            <InventoryBreakdownPanel
+              title="Chi tiết tồn kho vải mộc"
+              rows={rawQuery.data?.breakdown ?? []}
+              isLoading={rawQuery.isLoading}
+            />
 
-        <div className="kpi-grid p-4 md:p-6 bg-surface-subtle border-b border-border">
-          {/* Yarn KPIs */}
-          <div className="kpi-card-premium kpi-primary">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">Sợi — Phiếu nhập</p>
-                <p className="kpi-value">{yarnStats?.totalReceipts ?? 0}</p>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="ScrollText" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              Phiếu nhập kho sợi
-            </div>
-          </div>
+            {/* Finished Fabric Breakdown */}
+            <InventoryBreakdownPanel
+              title="Chi tiết tồn kho thành phẩm"
+              rows={finishedQuery.data?.breakdown ?? []}
+              isLoading={finishedQuery.isLoading}
+            />
 
-          <div className="kpi-card-premium kpi-secondary">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">Sợi — Giá trị</p>
-                <p className="kpi-value">
-                  {fmtCurrency(yarnStats?.totalAmount ?? 0)}
-                  <span className="text-base font-semibold ml-1 opacity-80">
-                    đ
-                  </span>
-                </p>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="Wallet" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              Tổng giá trị nhập sợi
-            </div>
-          </div>
-
-          {/* Raw fabric KPIs */}
-          <div className="kpi-card-premium kpi-success">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">Vải mộc — Cuộn</p>
-                <p className="kpi-value">
-                  {(rawStats?.totalRolls ?? 0).toLocaleString('vi-VN')}
-                </p>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="Layers" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              Sẵn sàng đưa vào nhuộm
-            </div>
-          </div>
-
-          <div className="kpi-card-premium kpi-warning">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">Vải mộc — Tổng dài</p>
-                <div className="flex items-baseline gap-1">
-                  <p className="kpi-value">
-                    {fmt(rawStats?.totalLengthM ?? 0)}
-                  </p>
-                  <span className="text-base font-bold opacity-80 uppercase">
-                    m
-                  </span>
-                </div>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="Ruler" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              Chiều dài tồn kho vải mộc
-            </div>
-          </div>
-
-          {/* Finished fabric KPIs */}
-          <div className="kpi-card-premium kpi-primary">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">Thành phẩm — Cuộn</p>
-                <p className="kpi-value">
-                  {(finishedStats?.totalRolls ?? 0).toLocaleString('vi-VN')}
-                </p>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="Package" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              Đã hoàn tất công đoạn nhuộm
-            </div>
-          </div>
-
-          <div className="kpi-card-premium kpi-success">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">Thành phẩm — Tổng dài</p>
-                <div className="flex items-baseline gap-1">
-                  <p className="kpi-value">
-                    {fmt(finishedStats?.totalLengthM ?? 0)}
-                  </p>
-                  <span className="text-base font-bold opacity-80 uppercase">
-                    m
-                  </span>
-                </div>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="CheckCheck" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              Đã kiểm tra chất lượng (QC)
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {!isLoading && !hasError && (
-        <>
-          {/* Raw Fabric Breakdown */}
-          <InventoryBreakdownPanel
-            eyebrow="VẢI MỘC"
-            title="Chi tiết tồn kho vải mộc"
-            rows={rawQuery.data?.breakdown ?? []}
-            isLoading={rawQuery.isLoading}
-          />
-
-          {/* Finished Fabric Breakdown */}
-          <InventoryBreakdownPanel
-            eyebrow="THÀNH PHẨM"
-            title="Chi tiết tồn kho thành phẩm"
-            rows={finishedQuery.data?.breakdown ?? []}
-            isLoading={finishedQuery.isLoading}
-          />
-
-          {/* Aging Stock Panel */}
-          <div className="panel-card card-flush">
-            <div className="card-header-area card-header-premium flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div>
-                <p className="eyebrow-premium">CẢNH BÁO TỒN KHO</p>
-                <h3 className="title-premium">
+            {/* Aging Stock Panel */}
+            <div className="panel-card card-flush">
+              <div className="card-header-area flex-col sm:flex-row items-start sm:items-center gap-4">
+                <span className="font-bold text-lg">
                   Cuộn tồn kho lâu (Aging Stock)
-                </h3>
+                </span>
+                {agingRolls.length > 0 && (
+                  <div className="flex gap-2 flex-wrap w-full sm:w-auto">
+                    {criticalCount > 0 && (
+                      <span className="badge-outline text-danger border-danger/30 text-[10px] py-0.5 px-2 bg-danger/5">
+                        {criticalCount} cuộn &gt; 90 ngày
+                      </span>
+                    )}
+                    {warningCount > 0 && (
+                      <span className="badge-outline text-warning border-warning/30 text-[10px] py-0.5 px-2 bg-warning/5">
+                        {warningCount} cuộn 60–90 ngày
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
-              {agingRolls.length > 0 && (
-                <div className="flex gap-2 flex-wrap w-full sm:w-auto">
-                  {criticalCount > 0 && (
-                    <span className="badge-outline text-danger border-danger/30 text-[10px] py-0.5 px-2 bg-danger/5">
-                      {criticalCount} cuộn &gt; 90 ngày
-                    </span>
-                  )}
-                  {warningCount > 0 && (
-                    <span className="badge-outline text-warning border-warning/30 text-[10px] py-0.5 px-2 bg-warning/5">
-                      {warningCount} cuộn 60–90 ngày
-                    </span>
-                  )}
+
+              {agingQuery.error ? (
+                <div className="p-4">
+                  <p className="error-inline">
+                    Lỗi: {(agingQuery.error as Error).message}
+                  </p>
                 </div>
+              ) : (
+                <DataTablePremium
+                  data={agingRolls}
+                  columns={AGING_COLUMNS}
+                  isLoading={agingQuery.isLoading}
+                  rowKey={(r) => r.id}
+                  emptyStateTitle="Không có cuộn nào tồn kho quá 30 ngày"
+                  emptyStateDescription="Tất cả cuộn đang ở trạng thái lưu thông tốt."
+                  emptyStateIcon="CheckCircle"
+                  renderMobileCard={(r) => <AgingMobileCard roll={r} />}
+                />
               )}
             </div>
+          </>
+        )}
 
-            {agingQuery.error ? (
-              <div className="p-4">
-                <p className="error-inline">
-                  Lỗi: {(agingQuery.error as Error).message}
-                </p>
-              </div>
-            ) : (
-              <DataTablePremium
-                data={agingRolls}
-                columns={AGING_COLUMNS}
-                isLoading={agingQuery.isLoading}
-                rowKey={(r) => r.id}
-                emptyStateTitle="Không có cuộn nào tồn kho quá 30 ngày"
-                emptyStateDescription="Tất cả cuộn đang ở trạng thái lưu thông tốt."
-                emptyStateIcon="CheckCircle"
-                renderMobileCard={(r) => <AgingMobileCard roll={r} />}
-              />
-            )}
+        {isLoading && (
+          <div className="panel-card p-12 flex flex-col items-center gap-3">
+            <div className="spinner" />
+            <p className="text-muted text-sm">Đang tải dữ liệu tồn kho...</p>
           </div>
-        </>
-      )}
-
-      {isLoading && (
-        <div className="panel-card p-12 flex flex-col items-center gap-3">
-          <div className="spinner" />
-          <p className="text-muted text-sm">Đang tải dữ liệu tồn kho...</p>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
