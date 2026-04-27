@@ -110,8 +110,7 @@ export function ReportsPage() {
         <div className="card-header-area">
           <div className="card-header-row">
             <div>
-              <p className="eyebrow">Bảng điều khiển</p>
-              <h3 className="m-0 mb-1 text-base font-bold">Báo cáo CEO</h3>
+              <h3 className="text-lg font-bold m-0 mb-1">Báo cáo CEO</h3>
               <p className="td-muted text-[0.82rem] m-0">
                 Phân tích hoạt động kinh doanh đa chiều theo thời gian cụ thể
               </p>

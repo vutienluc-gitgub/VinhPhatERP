@@ -37,10 +37,7 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
     <div className="panel-card card-flush">
       <div className="card-header-area">
         <div className="card-header-row">
-          <div>
-            <p className="eyebrow">Giao dịch</p>
-            <h3 className="m-0 text-base font-bold">Đơn hàng mới</h3>
-          </div>
+          <h3 className="text-lg font-bold m-0">Đơn hàng mới</h3>
           <Link to="/orders" className="card-action-link">
             Tất cả <Icon name="ChevronRight" size={16} />
           </Link>

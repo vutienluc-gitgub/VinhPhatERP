@@ -57,7 +57,7 @@ export function BomDetail({
   return (
     <div className="panel-card card-flush">
       {/* Header */}
-      <div className="card-header-area card-header-premium">
+      <div className="card-header-area">
         <div className="flex items-center gap-3">
           <button
             className="btn-icon"
@@ -67,15 +67,12 @@ export function BomDetail({
           >
             <Icon name="ArrowLeft" size={20} />
           </button>
-          <div>
-            <p className="eyebrow-premium">CHI TIẾT ĐỊNH MỨC</p>
-            <h3 className="title-premium flex items-center gap-3">
-              {bom.code}
-              <Badge variant={getStatusVariant(bom.status as BomStatus)}>
-                {statusLabel}
-              </Badge>
-            </h3>
-          </div>
+          <span className="font-bold text-lg flex items-center gap-3">
+            {bom.code}
+            <Badge variant={getStatusVariant(bom.status as BomStatus)}>
+              {statusLabel}
+            </Badge>
+          </span>
         </div>
 
         {/* Actions */}
@@ -180,9 +177,9 @@ export function BomDetail({
 
       {/* Yarn Items Table */}
       <div className="px-5 pb-2">
-        <p className="eyebrow-premium">
+        <span className="font-bold text-lg">
           Thành phần nguyên liệu (v{bom.active_version})
-        </p>
+        </span>
       </div>
       <div className="card-table-section">
         <table className="data-table">
@@ -227,7 +224,7 @@ export function BomDetail({
 
       {/* Version History */}
       <div className="p-5">
-        <p className="eyebrow-premium mb-3">Lich su phien ban</p>
+        <span className="font-bold text-lg block mb-3">Lich su phien ban</span>
         {versions.length === 0 ? (
           <p className="td-muted text-sm italic">
             Chưa có lịch sử (chưa từng được duyệt).

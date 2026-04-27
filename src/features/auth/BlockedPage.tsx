@@ -10,8 +10,9 @@ export function BlockedPage() {
   return (
     <div className="auth-page">
       <div className="auth-status-card">
-        <p className="eyebrow">Tài khoản bị khoá</p>
-        <h2>Không thể đăng nhập</h2>
+        <h2 className="text-xl font-bold mt-0 text-danger">
+          Không thể đăng nhập
+        </h2>
         <p className="auth-status-body">
           Tài khoản <strong>{user?.email}</strong> đã bị vô hiệu hoá. Vui lòng
           liên hệ quản trị viên để được hỗ trợ.

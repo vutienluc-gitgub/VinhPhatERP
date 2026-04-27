@@ -33,10 +33,7 @@ export function DebtsPage() {
       <div className="panel-card card-flush mb-6">
         <div className="card-header-area">
           <div className="card-header-row">
-            <div>
-              <p className="eyebrow">Tài chính</p>
-              <h3 className="m-0 text-base font-bold">Quản lý Công nợ</h3>
-            </div>
+            <h3 className="text-lg font-bold m-0">Quản lý Công nợ</h3>
           </div>
         </div>
 

@@ -44,11 +44,8 @@ export function AccountList({ onEdit, onNew }: AccountListProps) {
   return (
     <div className="panel-card card-flush">
       {/* Header */}
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">TÀI CHÍNH</p>
-          <h3 className="title-premium">Tài Khoản Thanh Toán</h3>
-        </div>
+      <div className="card-header-area">
+        <span className="font-bold text-lg">Tài Khoản Thanh Toán</span>
         <div className="flex items-center gap-3">
           <label className="flex items-center gap-2 text-sm text-muted cursor-pointer">
             <input

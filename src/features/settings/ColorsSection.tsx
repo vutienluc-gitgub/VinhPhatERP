@@ -107,11 +107,8 @@ export function ColorsSection() {
   return (
     <div className="panel-card card-flush">
       {/* Header */}
-      <div className="card-header-premium">
-        <div>
-          <p className="eyebrow-premium">Cài đặt hệ thống</p>
-          <h3 className="title-premium">Danh mục màu sắc</h3>
-        </div>
+      <div className="card-header-area">
+        <span className="font-bold text-lg">Danh mục màu sắc</span>
         <Button
           variant="primary"
           leftIcon="Plus"

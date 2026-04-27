@@ -142,11 +142,8 @@ export function ProductionSection({
 
   return (
     <div className="panel-card card-flush">
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">HIỆU SUẤT</p>
-          <h3 className="title-premium">Sản xuất & Giao hàng</h3>
-        </div>
+      <div className="card-header-area">
+        <span className="font-bold text-lg">Sản xuất & Giao hàng</span>
       </div>
 
       <KpiGridPremium className="px-5 py-4">

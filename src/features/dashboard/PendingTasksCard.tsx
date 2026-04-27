@@ -14,17 +14,14 @@ export function PendingTasksCard({ tasks }: PendingTasksCardProps) {
     <div className="panel-card card-flush">
       <div className="card-header-area">
         <div className="card-header-row">
-          <div>
-            <p className="eyebrow">Hành động</p>
-            <h3 className="m-0 text-base font-bold">
-              Nhiệm vụ cần xử lý
-              {totalTasks > 0 && (
-                <span className="badge badge-info ml-2 text-[0.65rem]">
-                  {totalTasks}
-                </span>
-              )}
-            </h3>
-          </div>
+          <h3 className="text-lg font-bold m-0 flex items-center">
+            Nhiệm vụ cần xử lý
+            {totalTasks > 0 && (
+              <span className="badge badge-info ml-2 text-[0.65rem]">
+                {totalTasks}
+              </span>
+            )}
+          </h3>
         </div>
       </div>
 

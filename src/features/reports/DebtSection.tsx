@@ -57,11 +57,8 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
 
   return (
     <div className="panel-card card-flush">
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">CÔNG NỢ</p>
-          <h3 className="title-premium">Dư nợ khách hàng</h3>
-        </div>
+      <div className="card-header-area">
+        <span className="font-bold text-lg">Dư nợ khách hàng</span>
       </div>
 
       <KpiGridPremium className="px-5 py-4">

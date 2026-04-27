@@ -17,8 +17,7 @@ export function ProfilePage() {
   return (
     <div className="profile-page">
       <div className="hero-card">
-        <p className="eyebrow">Tài khoản</p>
-        <h2>Thông tin cá nhân</h2>
+        <h2 className="text-xl font-bold mt-0 mb-4">Thông tin cá nhân</h2>
 
         <div className="profile-grid">
           <div className="profile-row">

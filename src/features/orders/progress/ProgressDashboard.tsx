@@ -71,7 +71,6 @@ export function ProgressDashboard() {
       {overdue.length > 0 && (
         <DashboardSection
           title="Đơn trễ hạn"
-          eyebrow="Cần xử lý"
           orders={overdue}
           variant="danger"
           updateMutation={updateMutation}
@@ -82,7 +81,6 @@ export function ProgressDashboard() {
       {readyToShip.length > 0 && (
         <DashboardSection
           title="Sẵn sàng giao hàng"
-          eyebrow="Hoàn thành sản xuất"
           orders={readyToShip}
           variant="success"
           updateMutation={updateMutation}
@@ -93,7 +91,6 @@ export function ProgressDashboard() {
       {inProgress.length > 0 && (
         <DashboardSection
           title="Đang sản xuất"
-          eyebrow="Đang xử lý"
           orders={inProgress}
           variant="primary"
           updateMutation={updateMutation}
@@ -104,7 +101,6 @@ export function ProgressDashboard() {
       {waitingToStart.length > 0 && (
         <DashboardSection
           title="Chờ bắt đầu sản xuất"
-          eyebrow="Chưa khởi động"
           orders={waitingToStart}
           variant="muted"
           updateMutation={updateMutation}
@@ -125,13 +121,11 @@ export function ProgressDashboard() {
 
 function DashboardSection({
   title,
-  eyebrow,
   orders,
   variant,
   updateMutation,
 }: {
   title: string;
-  eyebrow: string;
   orders: DashboardOrder[];
   variant: 'danger' | 'success' | 'primary' | 'muted';
 
@@ -147,14 +141,9 @@ function DashboardSection({
   return (
     <div className="panel-card card-flush">
       <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">{eyebrow}</p>
-            <h3>
-              {title} ({orders.length})
-            </h3>
-          </div>
-        </div>
+        <span className="font-bold text-lg">
+          {title} ({orders.length})
+        </span>
       </div>
 
       <div className="px-5 pb-5 flex flex-col gap-3">

@@ -90,11 +90,8 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
   return (
     <div className="panel-card card-flush">
       {/* Header */}
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">TÀI CHÍNH</p>
-          <h3 className="title-premium">Phiếu Chi</h3>
-        </div>
+      <div className="card-header-area">
+        <span className="font-bold text-lg">Phiếu Chi</span>
         <AddButton onClick={onNew} label="Tạo phiếu chi" />
       </div>
 

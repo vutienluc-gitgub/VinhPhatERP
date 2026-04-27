@@ -20,11 +20,8 @@ export function InventorySection({ data, isLoading }: InventorySectionProps) {
 
   return (
     <div className="panel-card card-flush">
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">TỒN KHO</p>
-          <h3 className="title-premium">Cơ cấu kho hiện tại</h3>
-        </div>
+      <div className="card-header-area">
+        <span className="font-bold text-lg">Cơ cấu kho hiện tại</span>
       </div>
 
       <KpiGridPremium className="px-5 py-4">

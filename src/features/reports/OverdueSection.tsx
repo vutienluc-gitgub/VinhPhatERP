@@ -61,11 +61,8 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
 
   return (
     <div className="panel-card card-flush">
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">GIAO HÀNG</p>
-          <h3 className="title-premium">Đơn hàng trễ hạn</h3>
-        </div>
+      <div className="card-header-area">
+        <span className="font-bold text-lg">Đơn hàng trễ hạn</span>
       </div>
 
       <KpiGridPremium className="px-5 py-4">

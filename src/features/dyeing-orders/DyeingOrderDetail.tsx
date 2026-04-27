@@ -93,15 +93,15 @@ export function DyeingOrderDetail({
   return (
     <div className="panel-card card-flush">
       {/* Header */}
-      <div className="card-header-premium p-5 border-b border-border flex flex-col sm:flex-row gap-4">
+      <div className="card-header-area border-b border-border flex flex-col sm:flex-row gap-4">
         <div className="flex items-center gap-3 flex-1">
           <button className="btn-secondary" onClick={onBack}>
             <Icon name="ArrowLeft" size={16} /> Quay lai
           </button>
           <div className="flex-1">
-            <h3 className="title-premium flex items-center gap-2">
+            <span className="font-bold text-lg flex items-center gap-2">
               {order.dyeing_order_number}
-            </h3>
+            </span>
             <p className="text-muted mt-0.5 font-medium">
               {order.suppliers?.name}
             </p>

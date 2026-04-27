@@ -44,12 +44,7 @@ export function CashFlowDashboard() {
   return (
     <div className="panel-card card-flush">
       <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Tài chính</p>
-            <h3>Dòng tiền</h3>
-          </div>
-        </div>
+        <span className="font-bold text-lg">Dòng tiền</span>
       </div>
 
       {/* Date range filter */}

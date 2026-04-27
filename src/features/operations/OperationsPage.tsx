@@ -201,7 +201,7 @@ export function OperationsPage() {
             Không thể chuyển task: {blockedTransition.reason}
           </div>
         )}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 overflow-x-auto pb-8 scrollbar-hide">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 overflow-x-auto pb-8 scrollbar-hide overscroll-x-contain">
           {KANBAN_COLUMNS.map((col) => {
             const colTasks = filteredTasks.filter((t) => t.status === col.key);
             return (

@@ -28,15 +28,12 @@ export function SettingsPage() {
 
       <div className="route-content flex flex-col gap-6">
         <div className="panel-card card-flush">
-          <div className="card-header-premium">
+          <div className="card-header-area">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0">
                 <Icon name="Building2" size={20} strokeWidth={1.5} />
               </div>
-              <div>
-                <p className="eyebrow-premium">Cài đặt hệ thống</p>
-                <h2 className="title-premium m-0">Thông tin công ty</h2>
-              </div>
+              <span className="font-bold text-lg">Thông tin công ty</span>
             </div>
           </div>
           <div className="p-6">
@@ -46,17 +43,12 @@ export function SettingsPage() {
 
         {isAdmin && (
           <div className="panel-card card-flush">
-            <div className="card-header-premium">
+            <div className="card-header-area">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0">
                   <Icon name="LayoutTemplate" size={20} strokeWidth={1.5} />
                 </div>
-                <div>
-                  <p className="eyebrow-premium text-purple-600">
-                    Quyền quản trị
-                  </p>
-                  <h2 className="title-premium m-0">Hiển thị hệ thống</h2>
-                </div>
+                <span className="font-bold text-lg">Hiển thị hệ thống</span>
               </div>
             </div>
             <div className="p-6">

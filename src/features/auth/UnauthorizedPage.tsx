@@ -19,8 +19,7 @@ export function UnauthorizedPage() {
   return (
     <div className="auth-page">
       <div className="auth-status-card">
-        <p className="eyebrow">Từ chối truy cập</p>
-        <h2>Không đủ quyền</h2>
+        <h2 className="text-xl font-bold mt-0">Không đủ quyền</h2>
         <p className="auth-status-body">
           Tài khoản của bạn có vai trò{' '}
           <strong>{roleLabel[profile?.role ?? ''] ?? profile?.role}</strong> và

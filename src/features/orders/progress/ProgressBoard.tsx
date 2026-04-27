@@ -96,12 +96,7 @@ export function ProgressBoard() {
     <div className="panel-card card-flush">
       {/* Header */}
       <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Sản xuất</p>
-            <h3>Tiến độ đơn hàng</h3>
-          </div>
-        </div>
+        <span className="font-bold text-lg">Tiến độ đơn hàng</span>
       </div>
 
       {/* Filters */}

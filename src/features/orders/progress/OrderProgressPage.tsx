@@ -50,10 +50,7 @@ export function OrderProgressPage() {
       <div className="panel-card card-flush">
         <div className="card-header-area">
           <div className="card-header-row">
-            <div>
-              <p className="eyebrow">Sản xuất</p>
-              <h3 className="m-0 text-base font-bold">Tiến độ Sản xuất</h3>
-            </div>
+            <h3 className="text-lg font-bold m-0">Tiến độ Sản xuất</h3>
           </div>
         </div>
 
