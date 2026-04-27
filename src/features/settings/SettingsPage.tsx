@@ -1,14 +1,14 @@
 import { useAuth } from '@/features/auth/AuthProvider';
 import { Icon } from '@/shared/components/Icon';
 import { Switch } from '@/shared/components/Switch';
-import { useFluidDashboard } from '@/shared/hooks/useLayoutMode';
+import { usePreferences } from '@/shared/context/preferences-context';
 
 import { CompanySettingsForm } from './CompanySettingsForm';
 
 export function SettingsPage() {
   const { profile } = useAuth();
   const isAdmin = profile?.role === 'admin';
-  const { isFluid, setIsFluid } = useFluidDashboard();
+  const { prefs, setFluidLayout } = usePreferences();
 
   return (
     <div className="page-container pb-20">
@@ -55,8 +55,8 @@ export function SettingsPage() {
               <div className="max-w-lg">
                 <Switch
                   id="layout-mode-switch"
-                  checked={isFluid}
-                  onChange={setIsFluid}
+                  checked={prefs.fluid_layout}
+                  onChange={setFluidLayout}
                   label="Chế độ tràn viền (Fluid Dashboard)"
                   description="Bật công tắc này để giao diện mở rộng 100% diện tích màn hình."
                 />
