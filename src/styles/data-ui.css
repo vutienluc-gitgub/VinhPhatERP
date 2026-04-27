@@ -4,20 +4,23 @@
    ============================================================ */
 
 /* ---- Page container (responsive safety net) ----
-   Đảm bảo mọi trang dùng .page-container:
-   - Không bao giờ tràn ngang trên mobile (overflow-x: hidden)
-   - Có padding hợp lý theo breakpoint (sm < md < lg)
-   - min-width: 0 để con có thể truncate/co lại thay vì đẩy layout
-   Các trang có thể vẫn override bằng utility Tailwind khi cần. */
+   INSET: padding-x = 0 (CẤM thêm inset ngang)
+   Screen-edge inset do .content-shell quản lý qua --shell-inset.
+
+   .page-container chỉ được dùng để:
+   - overflow-x: hidden (chặn tràn ngang)
+   - min-width: 0 (cho phép child truncate)
+   - padding-bottom (tránh content bị che bởi bottom nav)
+   ------------------------------------------------------------ */
 .page-container {
   min-width: 0;
   overflow-x: hidden;
-  padding: 0 1rem 1rem;
+  padding: 0 0 1rem; /* x = 0 (locked), bottom = 1rem */
 }
 
 @media (min-width: 768px) {
   .page-container {
-    padding: 0 1.5rem 1.5rem;
+    padding-bottom: 1.5rem; /* chỉ điều chỉnh bottom, KHÔNG thêm padding-x */
   }
 }
 

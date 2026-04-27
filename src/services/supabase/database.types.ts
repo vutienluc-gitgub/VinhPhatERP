@@ -2104,6 +2104,7 @@ export type Database = {
           id: string;
           is_active: boolean;
           phone: string | null;
+          preferences: Json;
           role: Database['public']['Enums']['user_role'];
           tenant_id: string | null;
           updated_at: string;
@@ -2117,6 +2118,7 @@ export type Database = {
           id: string;
           is_active?: boolean;
           phone?: string | null;
+          preferences?: Json;
           role?: Database['public']['Enums']['user_role'];
           tenant_id?: string | null;
           updated_at?: string;
@@ -2130,6 +2132,7 @@ export type Database = {
           id?: string;
           is_active?: boolean;
           phone?: string | null;
+          preferences?: Json;
           role?: Database['public']['Enums']['user_role'];
           tenant_id?: string | null;
           updated_at?: string;

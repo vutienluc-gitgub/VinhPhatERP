@@ -15,7 +15,10 @@ export { ConfirmProvider, ConfirmContext, useConfirm } from './ConfirmDialog';
 export { DataTablePremium } from './DataTablePremium';
 export type { Column as DataTableColumn } from './DataTablePremium';
 export { FilterBarPremium } from './FilterBarPremium';
-export type { FilterFieldConfig } from './FilterBarPremium';
+export type {
+  FilterFieldConfig,
+  DateRangeFilterField,
+} from './FilterBarPremium';
 export { default as DraftBanner } from './DraftBanner';
 export { EmptyState } from './EmptyState';
 export { ErrorBoundary } from './ErrorBoundary';

@@ -4,7 +4,7 @@ import { Icon } from './Icon';
 import { Combobox } from './Combobox';
 import { ClearFilterButton } from './ClearFilterButton';
 
-export type FilterFieldType = 'search' | 'combobox' | 'date';
+export type FilterFieldType = 'search' | 'combobox' | 'date' | 'date_range';
 
 export interface FilterFieldBase {
   key: string;
@@ -26,10 +26,20 @@ export interface DateFilterField extends FilterFieldBase {
   type: 'date';
 }
 
+/** DX: Render 2 date input (from-to) trong 1 field group. */
+export interface DateRangeFilterField extends FilterFieldBase {
+  type: 'date_range';
+  keyFrom: string;
+  keyTo: string;
+  labelFrom?: string;
+  labelTo?: string;
+}
+
 export type FilterFieldConfig =
   | SearchFilterField
   | ComboboxFilterField
-  | DateFilterField;
+  | DateFilterField
+  | DateRangeFilterField;
 
 interface FilterBarPremiumProps {
   /** Mảng cấu hình các trường lọc */
@@ -42,6 +52,12 @@ interface FilterBarPremiumProps {
   /** Hàm callback khi bấm "Xóa bộ lọc". Nếu có biến onClear, nút xoá mới hiện. */
   onClear?: () => void;
 }
+
+// ── Constants ───────────────────────────────────────────────────────────────
+/** Thời gian debounce cho ô tìm kiếm (ms). Tránh magic number rải rắc. */
+const SEARCH_DEBOUNCE_MS = 500;
+
+// ── Sub-components ──────────────────────────────────────────────────────────
 
 /**
  * DebouncedSearchInput - Ô tìm kiếm có chức năng "Trì hoãn thông minh" (Debounce).
@@ -61,7 +77,6 @@ function DebouncedSearchInput({
   onChange: (key: string, value: string) => void;
 }) {
   const [localValue, setLocalValue] = useState(initialValue);
-  // Lưu callback bằng Ref để tránh bị reset timer khi parent re-render
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 
@@ -70,12 +85,11 @@ function DebouncedSearchInput({
     setLocalValue(initialValue);
   }, [initialValue]);
 
-  // Bộ đếm Debounce 500ms - chỉ phụ thuộc vào localValue và initialValue
   useEffect(() => {
     if (localValue === initialValue) return;
     const timer = setTimeout(() => {
       onChangeRef.current(fieldKey, localValue);
-    }, 500);
+    }, SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [localValue, initialValue, fieldKey]);
 
@@ -95,9 +109,47 @@ function DebouncedSearchInput({
 }
 
 /**
+ * FilterDateInput — Input date tái sử dụng cho cả date field và date_range.
+ * Giải quyết duplicate JSX giữa keyFrom và keyTo trong date_range.
+ */
+function FilterDateInput({
+  id,
+  label,
+  value,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string | undefined) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-1 flex-1 min-w-0">
+      <label
+        htmlFor={id}
+        className="text-[0.7rem] font-semibold text-muted uppercase tracking-wide"
+      >
+        {label}
+      </label>
+      <input
+        id={id}
+        className="field-input"
+        type="date"
+        value={value}
+        onChange={(e) => onChange(e.target.value || undefined)}
+      />
+    </div>
+  );
+}
+
+// ── Main Component ──────────────────────────────────────────────────────────
+
+/**
  * FilterBarPremium: Config-driven UI component
  * Giải quyết chuẩn cấu trúc "Thanh Bộ Lọc" đồng bộ toàn app.
- * Lập trình viên chỉ cần truyền file JSON (schema), hệ thống tự đẻ ra CSS/Input/Combobox chuẩn.
+ * Lập trình viên chỉ cần truyền file JSON (schema), hệ thống tự render đúng field type.
+ *
+ * @see useFilterState — Hook đóng gói state management cho component này.
  */
 export function FilterBarPremium({
   schema,
@@ -105,8 +157,12 @@ export function FilterBarPremium({
   onChange,
   onClear,
 }: FilterBarPremiumProps) {
-  // Kiểm tra xem hiện tại user có đang điền bất kỳ filters nào chưa (để kích hoạt nút Clear)
   const hasActiveFilter = schema.some((field) => {
+    if (field.type === 'date_range') {
+      return (
+        (value[field.keyFrom] ?? '') !== '' || (value[field.keyTo] ?? '') !== ''
+      );
+    }
     const val = value[field.key];
     return val !== undefined && val !== '' && val !== null;
   });
@@ -134,10 +190,14 @@ export function FilterBarPremium({
           }
 
           if (field.type === 'combobox') {
+            // A11Y: Combobox dùng <button> trigger — không thể dùng htmlFor.
+            // Dùng aria-labelledby pattern theo WAI-ARIA spec.
+            const labelId = `filter-label-${field.key}`;
             return (
               <div key={field.key} className="filter-field">
-                <label>{field.label}</label>
+                <label id={labelId}>{field.label}</label>
                 <Combobox
+                  aria-labelledby={labelId}
                   options={[
                     {
                       value: '',
@@ -155,23 +215,46 @@ export function FilterBarPremium({
           if (field.type === 'date') {
             return (
               <div key={field.key} className="filter-field">
-                <label>{field.label}</label>
-                <input
-                  className="field-input"
-                  type="date"
+                <FilterDateInput
+                  id={`filter-${field.key}`}
+                  label={field.label}
                   value={(value[field.key] as string) ?? ''}
-                  onChange={(e) =>
-                    onChange(field.key, e.target.value || undefined)
-                  }
+                  onChange={(val) => onChange(field.key, val)}
                 />
               </div>
             );
           }
 
-          return null; // Ignore unknown types
+          if (field.type === 'date_range') {
+            return (
+              <div
+                key={field.key}
+                className="filter-field"
+                style={{ flex: '1 1 280px' }}
+              >
+                <label>{field.label}</label>
+                <div className="flex items-center gap-2">
+                  <FilterDateInput
+                    id={`filter-${field.keyFrom}`}
+                    label={field.labelFrom ?? 'Từ ngày'}
+                    value={(value[field.keyFrom] as string) ?? ''}
+                    onChange={(val) => onChange(field.keyFrom, val)}
+                  />
+                  <span className="text-muted mt-4 flex-shrink-0">→</span>
+                  <FilterDateInput
+                    id={`filter-${field.keyTo}`}
+                    label={field.labelTo ?? 'Đến ngày'}
+                    value={(value[field.keyTo] as string) ?? ''}
+                    onChange={(val) => onChange(field.keyTo, val)}
+                  />
+                </div>
+              </div>
+            );
+          }
+
+          return null;
         })}
 
-        {/* Nút Clear Filters */}
         {hasActiveFilter && onClear && <ClearFilterButton onClick={onClear} />}
       </div>
     </div>

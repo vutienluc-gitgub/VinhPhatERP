@@ -1,3 +1,28 @@
+/* ── LAYOUT CONTRACT ──────────────────────────────────────────────
+   INSET OWNER: --shell-inset
+
+   Đây là nguồn duy nhất quy định khoảng cách giữa nội dung và
+   mép màn hình (screen-edge inset). Chỉ .content-shell và .topbar
+   được phép tiêu thụ biến này.
+
+   CẤM dùng padding-left/right cứng để tạo inset màn hình ở:
+     - .page-container  → padding-x = 0
+     - .route-content   → padding-x = 0
+     - .kpi-section     → padding-x = 0
+     - bất kỳ layer nào khác
+
+   Để thay đổi inset toàn hệ thống → chỉ sửa --shell-inset ở đây.
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  --shell-inset: 1rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --shell-inset: 1.25rem;
+  }
+}
+
 /* ── Global viewport guard ──
    Chặn pan ngang ở tầng gốc. Nếu bất kỳ child nào vô tình tràn ngang,
    viewport vẫn đứng yên thay vì lệch pan → bottom nav (position: fixed)
@@ -25,7 +50,7 @@ body {
   align-items: center;
   gap: 0.75rem;
   height: 56px;
-  padding: 0 1.25rem;
+  padding: 0 var(--shell-inset); /* INSET: tiêu thụ --shell-inset */
   background: var(--surface-strong);
   border-bottom: 1px solid var(--border);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
@@ -115,7 +140,7 @@ html.fluid .content-shell {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding: 1rem 1.25rem 5.5rem;
+  padding: 0 var(--shell-inset) 5.5rem; /* INSET: tiêu thụ --shell-inset */
   min-width: 0;
 }
 
@@ -560,7 +585,7 @@ html.fluid .content-shell {
 
   .topbar {
     height: 60px;
-    padding: 0 1.5rem;
+    /* padding-x được xử lý bởi --shell-inset, không override ở đây */
   }
 
   .placeholder-grid {
