@@ -128,6 +128,11 @@ export function useUserPreferences(userId: string | null | undefined) {
         if (error || !data) return;
 
         const dbPrefs = parseDbPreferences(data.preferences);
+
+        // Nếu DB preferences trống (user chưa set) → giữ nguyên cache local hiện tại
+        // Chỉ ghi đè khi DB thực sự có giá trị
+        if (Object.keys(dbPrefs).length === 0) return;
+
         const merged: UserPreferences = { ...DEFAULT_PREFERENCES, ...dbPrefs };
 
         // DB là nguồn đúng — ghi đè cache local

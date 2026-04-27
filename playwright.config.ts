@@ -21,6 +21,7 @@ export default defineConfig({
         '**/mobile-overflow.spec.ts',
         '**/core-smoke.spec.ts',
         '**/operations-dnd.spec.ts',
+        '**/fluid-layout.spec.ts',
       ],
     },
     {
