@@ -156,7 +156,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
   return (
     <div className="panel-card card-flush">
       {/* Header */}
-      <div className="card-header-area card-header-premium">
+      <div className="card-header-area">
         <div className="flex items-center gap-3">
           <button
             className="btn-icon"
@@ -166,14 +166,11 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
           >
             <Icon name="ArrowLeft" size={20} />
           </button>
-          <div>
-            <p className="eyebrow-premium">KY THUAT</p>
-            <h3 className="title-premium">
-              {isEdit
-                ? 'C\u1eadp nh\u1eadt b\u1ea3n nh\u00e1p'
-                : 'T\u1ea1o b\u1ea3n nh\u00e1p \u0111\u1ecbnh m\u1ee9c (BOM)'}
-            </h3>
-          </div>
+          <span className="font-bold text-lg">
+            {isEdit
+              ? 'C\u1eadp nh\u1eadt b\u1ea3n nh\u00e1p'
+              : 'T\u1ea1o b\u1ea3n nh\u00e1p \u0111\u1ecbnh m\u1ee9c (BOM)'}
+          </span>
         </div>
       </div>
 
@@ -288,7 +285,9 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
         <div className="border-t border-border mt-6 pt-5">
           <div className="flex justify-between items-center mb-3">
             <div>
-              <p className="eyebrow-premium mb-0.5">Thành phần nguyên liệu</p>
+              <span className="font-bold text-lg block mb-0.5">
+                Thành phần nguyên liệu
+              </span>
               <p className="text-xs text-muted">
                 Tổng tỉ lệ:{' '}
                 <strong
@@ -455,9 +454,9 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
           {/* Summary Bar */}
           {fields.length > 0 && watchWidthCm && watchGsm && (
             <div className="mt-4 p-4 rounded-xl bg-surface-subtle border border-border">
-              <p className="eyebrow-premium mb-3">
+              <span className="font-bold text-lg block mb-3">
                 Tổng kết định mức / 1 mét vải
-              </p>
+              </span>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {/* Net */}
                 <div className="flex flex-col gap-0.5 p-3 rounded-lg bg-surface border border-border">

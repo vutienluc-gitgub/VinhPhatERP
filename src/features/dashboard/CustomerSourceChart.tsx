@@ -16,10 +16,7 @@ export function CustomerSourceChart({
     <div className="panel-card card-flush">
       <div className="card-header-area">
         <div className="card-header-row">
-          <div>
-            <p className="eyebrow">Phân tích</p>
-            <h3 className="m-0">Nguồn khách hàng</h3>
-          </div>
+          <h3 className="text-lg font-bold m-0">Nguồn khách hàng</h3>
         </div>
         <p className="td-muted text-[0.85rem] mt-[0.35rem] mb-0">
           Phân bổ theo nguồn tiếp cận

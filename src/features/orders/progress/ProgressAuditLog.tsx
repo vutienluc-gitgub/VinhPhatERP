@@ -45,12 +45,9 @@ export function ProgressAuditLogView({ orderId }: AuditLogProps) {
   return (
     <div className="panel-card card-flush">
       <div className="card-header-area">
-        <div className="page-header">
-          <div>
-            <p className="eyebrow">Lịch sử</p>
-            <h3>{orderId ? 'Nhật ký thay đổi' : 'Cập nhật gần đây'}</h3>
-          </div>
-        </div>
+        <span className="font-bold text-lg">
+          {orderId ? 'Nhật ký thay đổi' : 'Cập nhật gần đây'}
+        </span>
       </div>
 
       <div style={{ padding: '0 1.25rem 1.25rem' }}>

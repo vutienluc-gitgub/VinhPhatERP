@@ -70,11 +70,8 @@ export function RevenueTrendSection({
 
   return (
     <div className="panel-card card-flush">
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">XU HƯỚNG</p>
-          <h3 className="title-premium">Doanh thu & Thu tiền</h3>
-        </div>
+      <div className="card-header-area">
+        <span className="font-bold text-lg">Doanh thu & Thu tiền</span>
       </div>
 
       <KpiGridPremium className="px-5 py-4">

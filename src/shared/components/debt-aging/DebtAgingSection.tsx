@@ -98,11 +98,8 @@ export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
 
   return (
     <div className="panel-card card-flush">
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">PHÂN TÍCH</p>
-          <h3 className="title-premium">Tuổi nợ (Debt Aging)</h3>
-        </div>
+      <div className="card-header-area">
+        <span className="font-bold text-lg">Tuổi nợ (Debt Aging)</span>
       </div>
 
       <div className="p-5">

@@ -116,7 +116,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
       {/* Header Card */}
       <FadeUp delay={0.1}>
         <div className="panel-card card-flush">
-          <div className="card-header-area card-header-premium">
+          <div className="card-header-area">
             <div className="flex items-center gap-3">
               <button
                 className="btn-icon"
@@ -127,13 +127,12 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                 <Icon name="ArrowLeft" size={20} />
               </button>
               <div>
-                <p className="eyebrow-premium">CHI TIẾT LỆNH SẢN XUẤT</p>
-                <h3 className="title-premium flex items-center gap-3">
+                <span className="font-bold text-lg flex items-center gap-3">
                   {wo.work_order_number}
                   <Badge variant={getStatusVariant(wo.status)}>
                     {statusConfig?.label}
                   </Badge>
-                </h3>
+                </span>
                 {wo.order && (
                   <p className="text-xs text-muted mt-0.5">
                     Sản xuất cho ĐH: {wo.order.order_number}
@@ -253,10 +252,12 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
         <FadeUp delay={0.3} className="md:col-span-2 h-full">
           {/* Yarn Requirements */}
           <div className="panel-card card-flush h-full">
-            <div className="card-header-area card-header-premium">
+            <div className="card-header-area">
               <div className="flex items-center gap-2">
                 <Icon name="Package" size={20} className="text-primary" />
-                <h3 className="title-premium">Nhu cầu & Xuất kho sợi</h3>
+                <span className="font-bold text-lg">
+                  Nhu cầu & Xuất kho sợi
+                </span>
               </div>
             </div>
 
@@ -338,7 +339,9 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
       <FadeUp delay={0.4}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="panel-card p-5">
-            <p className="eyebrow-premium mb-3">Mục tiêu sản xuất</p>
+            <span className="font-bold text-lg block mb-3">
+              Mục tiêu sản xuất
+            </span>
             <div className="flex flex-col gap-2">
               <div className="stat-card">
                 <span className="stat-label">Tổng mét mục tiêu</span>
@@ -358,7 +361,9 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
           </div>
 
           <div className="panel-card p-5">
-            <p className="eyebrow-premium mb-3">Kết quả thực tế</p>
+            <span className="font-bold text-lg block mb-3">
+              Kết quả thực tế
+            </span>
             {wo.status === 'completed' ? (
               <div className="flex flex-col gap-2">
                 <div className="stat-card">

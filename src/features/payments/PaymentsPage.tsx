@@ -86,10 +86,7 @@ export function PaymentsPage() {
       <div className="panel-card card-flush">
         <div className="card-header-area">
           <div className="card-header-row">
-            <div>
-              <p className="eyebrow">Tài chính</p>
-              <h3 className="m-0 text-base font-bold">Quản lý Tiền tệ</h3>
-            </div>
+            <h3 className="text-lg font-bold m-0">Quản lý Tiền tệ</h3>
           </div>
         </div>
         <div className="px-5 pb-4 pt-3">

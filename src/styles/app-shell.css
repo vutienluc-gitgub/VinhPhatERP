@@ -14,8 +14,6 @@ body {
 .shell-layout {
   min-height: 100vh;
   display: block;
-  overflow-x: hidden;
-  max-width: 100vw;
 }
 
 /* ── Topbar: Compact sticky header ── */
@@ -669,7 +667,6 @@ html.fluid .content-shell {
     background: var(--surface-strong);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
-    overflow: hidden;
   }
 }
 

@@ -123,20 +123,20 @@ export function QuotationDetail({
   return (
     <div className="panel-card card-flush">
       {/* Header */}
-      <div className="card-header-premium p-5 border-b border-border flex flex-col sm:flex-row gap-4">
+      <div className="card-header-area border-b border-border flex flex-col sm:flex-row gap-4">
         <div className="flex items-center gap-3 flex-1">
           <button className="btn-secondary" type="button" onClick={onBack}>
             <Icon name="ArrowLeft" size={16} /> Quay lại
           </button>
           <div className="flex-1">
-            <h3 className="title-premium flex items-center gap-2">
+            <span className="font-bold text-lg flex items-center gap-2">
               {quotation.quotation_number}
               {quotation.revision > 1 && (
                 <span className="text-xs text-muted font-normal">
                   (v{quotation.revision})
                 </span>
               )}
-            </h3>
+            </span>
             <p className="text-muted mt-0.5 font-medium">
               {quotation.customers?.name ?? '—'}
             </p>

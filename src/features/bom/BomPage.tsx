@@ -217,11 +217,8 @@ export function BomPage() {
   return (
     <div className="panel-card card-flush">
       {/* Header */}
-      <div className="card-header-area card-header-premium">
-        <div>
-          <p className="eyebrow-premium">KỸ THUẬT</p>
-          <h3 className="title-premium">Định Mức Nguyên Liệu (BOM)</h3>
-        </div>
+      <div className="card-header-area">
+        <span className="font-bold text-lg">Định Mức Nguyên Liệu (BOM)</span>
         <AddButton onClick={handleCreate} label="Tạo bản nháp" />
       </div>
 
