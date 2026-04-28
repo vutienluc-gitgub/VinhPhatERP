@@ -35,9 +35,7 @@ export function useOrderKanban() {
       return orders.map((o) => ({
         id: o.id,
         order_number: o.order_number,
-        customer_name:
-          (o as unknown as { customers?: { name: string } }).customers?.name ??
-          '—',
+        customer_name: o.customers?.name ?? '—',
         total_amount: parseFloat(String(o.total_amount ?? '0')),
         delivery_date: o.delivery_date ?? '',
         status: mapDbStatusToKanban(o.status),

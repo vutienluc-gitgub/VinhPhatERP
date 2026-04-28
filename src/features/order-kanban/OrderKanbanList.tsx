@@ -1,6 +1,7 @@
 import { Icon, type IconName } from '@/shared/components';
 
 import { KanbanCard } from './OrderKanbanForm';
+import { KANBAN_LABELS } from './constants';
 import type { OrderKanbanItem, OrderKanbanStatus } from './types';
 
 type KanbanColumnProps = {
@@ -33,7 +34,7 @@ export function KanbanColumn({
       <div className="kanban-column-body">
         {items.length === 0 ? (
           <div className="text-center py-8 text-muted text-xs font-medium">
-            <p>Không có đơn hàng</p>
+            <p>{KANBAN_LABELS.EMPTY_COLUMN}</p>
           </div>
         ) : (
           items.map((item) => (

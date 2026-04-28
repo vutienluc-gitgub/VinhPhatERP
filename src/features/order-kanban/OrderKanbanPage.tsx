@@ -4,6 +4,7 @@ import { Icon, type IconName } from '@/shared/components';
 import { useOrderKanban, useUpdateOrderStatus } from '@/application/orders';
 
 import { KanbanColumn } from './OrderKanbanList';
+import { KANBAN_LABELS, isOrderOverdue } from './constants';
 import type { OrderKanbanStatus } from './types';
 
 const COLUMNS: { status: OrderKanbanStatus; label: string; icon: IconName }[] =
@@ -48,12 +49,7 @@ export function OrderKanbanPage() {
       );
     }
     if (showOverdueOnly) {
-      result = result.filter(
-        (o) =>
-          o.delivery_date &&
-          new Date(o.delivery_date) < new Date() &&
-          o.status !== 'completed',
-      );
+      result = result.filter(isOrderOverdue);
     }
     return result;
   }, [orders, search, showOverdueOnly]);
@@ -72,12 +68,7 @@ export function OrderKanbanPage() {
   }
 
   const totalOrders = filtered.length;
-  const overdueCount = filtered.filter(
-    (o) =>
-      o.delivery_date &&
-      new Date(o.delivery_date) < new Date() &&
-      o.status !== 'completed',
-  ).length;
+  const overdueCount = filtered.filter(isOrderOverdue).length;
 
   return (
     <div className="page-container">
@@ -87,7 +78,7 @@ export function OrderKanbanPage() {
           <div className="flex items-center gap-4 flex-wrap">
             <div className="hidden sm:flex items-center gap-2 text-xs font-bold text-muted mr-2">
               <span className="bg-surface px-2.5 py-1.5 rounded border border-border">
-                {totalOrders} đơn hàng
+                {totalOrders} {KANBAN_LABELS.ORDER_COUNT_SUFFIX}
               </span>
               {overdueCount > 0 && (
                 <button
@@ -99,14 +90,15 @@ export function OrderKanbanPage() {
                   }`}
                   onClick={() => setShowOverdueOnly((v) => !v)}
                 >
-                  <Icon name="TriangleAlert" size={16} /> {overdueCount} quá hạn
+                  <Icon name="TriangleAlert" size={16} /> {overdueCount}{' '}
+                  {KANBAN_LABELS.OVERDUE_SUFFIX}
                 </button>
               )}
             </div>
             <div className="search-input-wrapper w-full sm:w-auto">
               <input
                 className="field-input h-10 w-full sm:w-[260px]"
-                placeholder="Tìm mã đơn, tên khách..."
+                placeholder={KANBAN_LABELS.SEARCH_PLACEHOLDER}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -119,7 +111,8 @@ export function OrderKanbanPage() {
         {error && (
           <div className="p-4">
             <p className="error-inline">
-              Lỗi tải dữ liệu: {(error as Error).message}
+              {KANBAN_LABELS.ERROR_PREFIX}{' '}
+              {error instanceof Error ? error.message : String(error)}
             </p>
           </div>
         )}
