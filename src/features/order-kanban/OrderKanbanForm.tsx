@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Icon, type IconName } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 
+import { KANBAN_LABELS, isOrderOverdue } from './constants';
 import type { OrderKanbanItem, OrderKanbanStatus } from './types';
 
 const NEXT_STATUS: Partial<
@@ -55,10 +56,7 @@ type KanbanCardProps = {
 export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
   const navigate = useNavigate();
 
-  const isOverdue =
-    item.delivery_date &&
-    new Date(item.delivery_date) < new Date() &&
-    item.status !== 'completed';
+  const isOverdue = isOrderOverdue(item);
 
   const next = NEXT_STATUS[item.status];
   const prev = PREV_STATUS[item.status];
@@ -82,19 +80,21 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
       <div className="kanban-card-header">
         <div className="flex items-center gap-1.5">
           <span className="kanban-card-title">{item.order_number}</span>
-          {isInProgress ? (
+          {isMoving ? (
             <Icon
               name="Loader2"
               size={16}
               className="animate-spin text-primary"
             />
+          ) : isInProgress ? (
+            <Icon name="CircleDot" size={16} className="text-primary" />
           ) : (
             <Icon name="Package" size={16} className="text-muted" />
           )}
         </div>
         {isOverdue && (
           <span className="kanban-card-tag flex items-center gap-1">
-            <Icon name="TriangleAlert" size={16} /> Quá hạn
+            <Icon name="TriangleAlert" size={16} /> {KANBAN_LABELS.OVERDUE_TAG}
           </span>
         )}
       </div>

@@ -30,6 +30,31 @@ const FLUID_PREFS = JSON.stringify({
 test.describe('Fluid Dashboard Layout', () => {
   test.use({ viewport: DESKTOP_VIEWPORT });
 
+  test.beforeEach(async ({ page }) => {
+    // Ngăn DB ghi đè preferences trong lúc test (tránh flaky test do state rò rỉ giữa các test)
+    await page.route('**/rest/v1/profiles*', async (route) => {
+      const method = route.request().method();
+      const url = route.request().url();
+
+      if (method === 'GET' && url.includes('select=preferences')) {
+        // Supabase .single() expects an object (or array depending on PostgREST headers, but usually array of 1 or object)
+        // Returning empty preferences means fallback to local cache
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ preferences: {} }),
+        });
+      } else if (method === 'PATCH') {
+        // Chặn không cho test ghi đè lên DB thật gây ảnh hưởng test khác
+        await route.fulfill({
+          status: 204, // Supabase update thường trả về 204 No Content nếu không có select
+        });
+      } else {
+        await route.fallback();
+      }
+    });
+  });
+
   for (const route of FLUID_ROUTES) {
     test(`fluid layout active @ ${route}`, async ({ page }) => {
       // Bước 1: Inject preferences cache TRƯỚC khi page load
