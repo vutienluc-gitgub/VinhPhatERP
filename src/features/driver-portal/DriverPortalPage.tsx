@@ -2,7 +2,9 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { useAuth } from '@/features/auth/AuthProvider';
-import { Icon, ChatDrawer } from '@/shared/components';
+import { Icon } from '@/shared/components';
+// eslint-disable-next-line boundaries/dependencies
+import { ChatDrawer } from '@/features/chat/ChatDrawer';
 import { formatCurrency } from '@/shared/utils/format';
 import {
   useMyDriverEmployee,

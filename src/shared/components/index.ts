@@ -61,6 +61,4 @@ export { LiveIndicator } from './LiveIndicator';
 export { TimelineProgress } from './TimelineProgress';
 export type { TimelineStep } from './TimelineProgress';
 
-// Chat — re-exported from feature as shared widget
-export { ChatDrawer } from '@/features/chat/ChatDrawer';
-export { ChatWidget } from '@/features/chat/ChatWidget';
+// End of exports

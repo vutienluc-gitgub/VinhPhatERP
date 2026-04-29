@@ -15,8 +15,9 @@ import {
   FilterBarPremium,
   type FilterFieldConfig,
   type ActionConfig,
-  ChatDrawer,
 } from '@/shared/components';
+// eslint-disable-next-line boundaries/dependencies
+import { ChatDrawer } from '@/features/chat/ChatDrawer';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { formatCurrency } from '@/shared/utils/format';
 import {

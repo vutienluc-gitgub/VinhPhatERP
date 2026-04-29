@@ -1,7 +1,6 @@
-import { useCallback, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 
 import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
-import { useAuth } from '@/shared/hooks/useAuth';
 
 import { ChatImagePreview } from './ChatImagePreview';
 
@@ -19,17 +18,17 @@ function formatTime(iso: string): string {
 
 interface ChatBubbleProps {
   message: ChatMessage;
+  isMine: boolean;
   isOptimistic?: boolean;
   onRetry?: (message: ChatMessage) => void;
 }
 
-export function ChatBubble({
+export const ChatBubble = memo(function ChatBubble({
   message,
+  isMine,
   isOptimistic,
   onRetry,
 }: ChatBubbleProps) {
-  const { user } = useAuth();
-  const isMine = message.sender_id === user?.id;
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const handleRetry = useCallback(() => {
@@ -131,4 +130,4 @@ export function ChatBubble({
       ) : null}
     </>
   );
-}
+});
