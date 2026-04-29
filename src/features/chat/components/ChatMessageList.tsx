@@ -1,7 +1,8 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import type { ChatMessage, OptimisticChatMessage } from '@/schema/chat.schema';
 import { CHAT_LABELS } from '@/schema/chat.schema';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 import { ChatBubble } from './ChatBubble';
 
@@ -21,6 +22,7 @@ export function ChatMessageList({
   isLoading,
 }: ChatMessageListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
 
   const handleLoadMore = useCallback(() => {
     if (!isFetchingNextPage && hasNextPage) {
@@ -39,6 +41,8 @@ export function ChatMessageList({
     }
   }, [isFetchingNextPage, hasNextPage, onLoadMore]);
 
+  const allMessages = useMemo(() => pages?.flat() ?? [], [pages]);
+
   if (isLoading) {
     return (
       <div className="chat-message-list">
@@ -46,8 +50,6 @@ export function ChatMessageList({
       </div>
     );
   }
-
-  const allMessages = pages?.flat() ?? [];
 
   if (allMessages.length === 0) {
     return (
@@ -63,6 +65,7 @@ export function ChatMessageList({
         <ChatBubble
           key={msg.id}
           message={msg}
+          isMine={msg.sender_id === user?.id}
           isOptimistic={(msg as OptimisticChatMessage)._optimistic}
         />
       ))}
@@ -74,7 +77,7 @@ export function ChatMessageList({
             onClick={handleLoadMore}
             disabled={isFetchingNextPage}
           >
-            {isFetchingNextPage ? CHAT_LABELS.LOADING : 'Tai them tin nhan cu'}
+            {isFetchingNextPage ? CHAT_LABELS.LOADING : 'Tải thêm tin nhắn cũ'}
           </button>
         </div>
       ) : null}

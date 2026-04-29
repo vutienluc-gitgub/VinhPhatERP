@@ -1,7 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
 
 import { usePortalShipments } from '@/application/crm/portal';
-import { ChatWidget } from '@/shared/components';
+// eslint-disable-next-line boundaries/dependencies
+import { ChatWidget } from '@/features/chat/ChatWidget';
 
 const STATUS_LABEL: Record<string, string> = {
   preparing: 'Đang chuẩn bị',

@@ -8,9 +8,8 @@ import {
   type PropsWithChildren,
 } from 'react';
 
-import { Button } from '@/shared/components';
+import { Button } from './Button';
 /* eslint-disable react-refresh/only-export-components */
-
 import { AdaptiveSheet } from './AdaptiveSheet';
 
 type ConfirmOptions = {
