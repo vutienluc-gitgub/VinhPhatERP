@@ -99,7 +99,7 @@ export function OrdersPage() {
       <AdaptiveSheet
         open={!!contractOrder}
         onClose={() => setContractOrder(null)}
-        title="Tao hop dong"
+        title="Tạo hợp đồng"
       >
         {contractOrder && (
           <ContractForm

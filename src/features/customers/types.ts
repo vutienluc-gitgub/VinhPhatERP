@@ -6,7 +6,7 @@ import type {
   TableUpdate,
 } from '@/shared/types/database.models';
 
-export type Customer = TableRow<'customers'>;
+export type Customer = TableRow<'customers'> & { account_balance?: number };
 export type CustomerInsert = TableInsert<'customers'>;
 export type CustomerUpdate = TableUpdate<'customers'>;
 

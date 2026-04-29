@@ -5,6 +5,7 @@ import { ContractForm } from '@/features/contracts/ContractForm';
 
 import { CustomerForm } from './CustomerForm';
 import { CustomerList } from './CustomerList';
+import { DepositForm } from './DepositForm';
 import type { Customer } from './types';
 
 export function CustomersPage() {
@@ -13,6 +14,7 @@ export function CustomersPage() {
   const [contractCustomer, setContractCustomer] = useState<Customer | null>(
     null,
   );
+  const [depositCustomer, setDepositCustomer] = useState<Customer | null>(null);
 
   function openCreate() {
     setEditCustomer(null);
@@ -35,13 +37,14 @@ export function CustomersPage() {
         onEdit={openEdit}
         onNew={openCreate}
         onCreateContract={(c) => setContractCustomer(c)}
+        onDeposit={(c) => setDepositCustomer(c)}
       />
 
       <AdaptiveSheet
         open={showForm}
         onClose={closeForm}
         title={
-          editCustomer ? `Sua: ${editCustomer.name}` : 'Them khach hang moi'
+          editCustomer ? `Sửa: ${editCustomer.name}` : 'Thêm khách hàng mới'
         }
       >
         <CustomerForm customer={editCustomer} onClose={closeForm} />
@@ -50,7 +53,7 @@ export function CustomersPage() {
       <AdaptiveSheet
         open={!!contractCustomer}
         onClose={() => setContractCustomer(null)}
-        title="Tao hop dong"
+        title="Tạo hợp đồng"
       >
         {contractCustomer && (
           <ContractForm
@@ -62,6 +65,14 @@ export function CustomersPage() {
           />
         )}
       </AdaptiveSheet>
+
+      {depositCustomer && (
+        <DepositForm
+          customerId={depositCustomer.id}
+          customerName={depositCustomer.name}
+          onClose={() => setDepositCustomer(null)}
+        />
+      )}
     </div>
   );
 }

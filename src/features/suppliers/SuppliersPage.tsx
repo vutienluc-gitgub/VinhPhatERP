@@ -42,7 +42,7 @@ export function SuppliersPage() {
       <AdaptiveSheet
         open={!!contractSupplier}
         onClose={() => setContractSupplier(null)}
-        title="Tao hop dong"
+        title="Tạo hợp đồng"
       >
         {contractSupplier && (
           <ContractForm
