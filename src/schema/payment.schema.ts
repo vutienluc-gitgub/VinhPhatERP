@@ -1,6 +1,11 @@
 import { z } from 'zod';
 
-export type PaymentMethod = 'cash' | 'bank_transfer' | 'check' | 'other';
+export type PaymentMethod =
+  | 'cash'
+  | 'bank_transfer'
+  | 'check'
+  | 'other'
+  | 'customer_balance';
 export type AccountType = 'cash' | 'bank';
 export type ExpenseCategory =
   | 'supplier_payment'
@@ -18,6 +23,7 @@ export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
   cash: 'Tiền mặt',
   bank_transfer: 'Chuyển khoản',
   check: 'Séc',
+  customer_balance: 'Số dư khách hàng',
   other: 'Khác',
 };
 
@@ -56,11 +62,17 @@ export const EXPENSE_CATEGORY_LABELS: Record<ExpenseCategory, string> = {
 
 export const paymentsSchema = z.object({
   paymentNumber: z.string().trim().optional().default(''),
-  orderId: z.string().uuid('Chọn đơn hàng'),
+  orderId: z.string().uuid('Chọn đơn hàng').optional().or(z.literal('')),
   customerId: z.string().uuid('Chọn khách hàng'),
   paymentDate: z.string().trim().min(1, 'Chọn ngày thu'),
   amount: z.number().positive('Số tiền phải > 0'),
-  paymentMethod: z.enum(['cash', 'bank_transfer', 'check', 'other']),
+  paymentMethod: z.enum([
+    'cash',
+    'bank_transfer',
+    'check',
+    'customer_balance',
+    'other',
+  ]),
   accountId: z.string().uuid().optional().or(z.literal('')),
   referenceNumber: z.string().trim().max(120).optional().or(z.literal('')),
 });

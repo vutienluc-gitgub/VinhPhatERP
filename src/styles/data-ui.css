@@ -115,6 +115,12 @@
   color: #c0392b;
 }
 
+.field-input--readonly {
+  background: var(--surface-disabled);
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
 .field-textarea {
   resize: vertical;
   min-height: 80px;

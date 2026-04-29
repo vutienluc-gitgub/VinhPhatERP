@@ -18,7 +18,7 @@ import type {
 /** Payload insert cho bang payments (domain dinh nghia, api/features tieu thu) */
 export interface PaymentDbPayload {
   payment_number: string;
-  order_id: string;
+  order_id: string | null;
   customer_id: string;
   payment_date: string;
   amount: number;
@@ -56,7 +56,7 @@ export function mapPaymentFormToDb(
 ): PaymentDbPayload {
   return {
     payment_number: values.paymentNumber.trim(),
-    order_id: values.orderId,
+    order_id: values.orderId || null,
     customer_id: values.customerId,
     payment_date: values.paymentDate,
     amount: values.amount,

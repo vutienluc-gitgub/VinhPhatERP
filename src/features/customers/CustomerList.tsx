@@ -19,19 +19,23 @@ import {
 } from '@/shared/components';
 import { useCustomerList, useDeleteCustomer } from '@/application/crm';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
+import { formatCurrency } from '@/shared/utils/format';
 
+import { DEPOSIT_FORM_LABELS } from './customers.constants';
 import type { Customer, CustomersFilter } from './types';
 
 type CustomerListProps = {
   onEdit: (customer: Customer) => void;
   onNew: () => void;
   onCreateContract: (customer: Customer) => void;
+  onDeposit?: (customer: Customer) => void;
 };
 
 export function CustomerList({
   onEdit,
   onNew,
   onCreateContract,
+  onDeposit,
 }: CustomerListProps) {
   const { filters, setFilter, clearFilters } = useUrlFilterState([
     'query',
@@ -207,6 +211,13 @@ export function CustomerList({
             cell: (c) => c.phone ?? '—',
           },
           {
+            header: DEPOSIT_FORM_LABELS.balanceColumnHeader,
+            id: 'account_balance',
+            sortable: true,
+            className: 'text-right font-bold text-success',
+            cell: (c) => formatCurrency(c.account_balance ?? 0),
+          },
+          {
             header: 'Nguồn',
             id: 'source',
             sortable: true,
@@ -242,19 +253,24 @@ export function CustomerList({
               <ActionBar
                 actions={[
                   {
+                    icon: 'Wallet',
+                    onClick: () => onDeposit?.(c),
+                    title: 'Nạp tiền',
+                  },
+                  {
                     icon: 'FileText',
                     onClick: () => onCreateContract(c),
-                    title: 'Tao hop dong',
+                    title: 'Tạo hợp đồng',
                   },
                   {
                     icon: 'Pencil',
                     onClick: () => onEdit(c),
-                    title: 'Sua',
+                    title: 'Sửa',
                   },
                   {
                     icon: 'Trash2',
                     onClick: () => handleDelete(c),
-                    title: 'Xoa',
+                    title: 'Xóa',
                     variant: 'danger',
                     disabled: deleteMutation.isPending,
                   },

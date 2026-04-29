@@ -40,12 +40,12 @@ export const orderStateMachine = new StateMachine<OrderStatus, OrderTransition>(
 );
 
 export const ORDER_TRANSITION_LABELS: Record<OrderTransition, string> = {
-  approve: 'Duyet yeu cau',
-  reject: 'Tu choi',
-  confirm: 'Xac nhan don',
-  start_production: 'Bat dau san xuat',
-  complete: 'Hoan thanh',
-  cancel: 'Huy don',
+  approve: 'Duyệt yêu cầu',
+  reject: 'Từ chối',
+  confirm: 'Xác nhận đơn',
+  start_production: 'Bắt đầu sản xuất',
+  complete: 'Hoàn thành',
+  cancel: 'Hủy đơn',
 };
 
 /** Guard: don hang co the chinh sua khong */

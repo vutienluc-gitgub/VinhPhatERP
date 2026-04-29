@@ -285,7 +285,7 @@ export function OrderDetail({
               leftIcon="FileText"
               onClick={() => onCreateContract(order)}
             >
-              Tao hop dong
+              Tạo hợp đồng
             </Button>
           )}
           {order.status !== 'cancelled' && order.status !== 'completed' && (
@@ -296,7 +296,7 @@ export function OrderDetail({
               isLoading={cancelMutation.isPending}
               className="text-danger"
             >
-              Huy don
+              Hủy đơn
             </Button>
           )}
         </div>
