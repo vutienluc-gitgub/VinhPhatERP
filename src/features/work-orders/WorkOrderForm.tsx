@@ -29,6 +29,7 @@ import {
 
 import type { WorkOrder } from './types';
 import { WorkOrderYarnTable } from './WorkOrderYarnTable';
+import { YarnAvailabilityWarning } from './components/YarnAvailabilityWarning';
 
 const DRAFT_KEY = 'work-order-draft';
 
@@ -487,6 +488,9 @@ export function WorkOrderForm({
                   className="field-textarea"
                 />
               </div>
+
+              {/* Yarn Availability Warning */}
+              <YarnAvailabilityWarning requirements={fields} />
 
               {/* Editable Yarn Table */}
               <WorkOrderYarnTable

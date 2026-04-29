@@ -21,6 +21,7 @@ import {
   useQuotationList,
 } from '@/application/quotations';
 import { QUOTATION_STATUS_LABELS } from '@/schema/quotation.schema';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 
 import type { Quotation, QuotationsFilter, QuotationStatus } from './types';
 
@@ -81,10 +82,17 @@ function validityInfo(
 }
 
 export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
-  const [filters, setFilters] = useState<QuotationsFilter>({});
+  const { filters, setFilter, clearFilters } = useUrlFilterState([
+    'search',
+    'status',
+  ]);
   const [page, setPage] = useState(1);
 
-  const { data: result, isLoading, error } = useQuotationList(filters, page);
+  const {
+    data: result,
+    isLoading,
+    error,
+  } = useQuotationList(filters as QuotationsFilter, page);
   const quotations = result?.data ?? [];
   const deleteMutation = useDeleteQuotation();
   const { data: expiringData } = useExpiringQuotationsCount();
@@ -112,10 +120,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
 
   function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value || undefined,
-    }));
+    setFilter(key, value);
   }
 
   async function handleDelete(q: Quotation) {
@@ -187,7 +192,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
         value={filters}
         onChange={handleFilterChange}
         onClear={() => {
-          setFilters({});
+          clearFilters();
           setPage(1);
         }}
       />

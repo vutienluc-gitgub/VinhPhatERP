@@ -16,6 +16,7 @@ import {
   type FilterFieldConfig,
   type ActionConfig,
 } from '@/shared/components';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { formatCurrency } from '@/shared/utils/format';
 import {
   useConfirmShipment,
@@ -74,13 +75,21 @@ const BASE_TABS: TabItem<ShipmentTab>[] = [
 ];
 
 export function ShipmentList() {
-  const [filters, setFilters] = useState<ShipmentsFilter>({});
+  const { filters, setFilter, clearFilters } = useUrlFilterState([
+    'search',
+    'deliveryStaffId',
+    'status',
+  ]);
   const [page, setPage] = useState(1);
   const [deliveryShipment, setDeliveryShipment] = useState<Shipment | null>(
     null,
   );
 
-  const { data: result, isLoading, error } = useShipmentList(filters, page);
+  const {
+    data: result,
+    isLoading,
+    error,
+  } = useShipmentList(filters as ShipmentsFilter, page);
   const shipments = result?.data ?? [];
   const confirmMutation = useConfirmShipment();
   const deleteMutation = useDeleteShipment();
@@ -116,10 +125,7 @@ export function ShipmentList() {
 
   function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value || undefined,
-    }));
+    setFilter(key, value);
   }
 
   async function handleConfirm(shipment: Shipment) {
@@ -240,10 +246,7 @@ export function ShipmentList() {
               active={filters.status || ''}
               onChange={(val) => {
                 setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  status: val ? (val as ShipmentStatus) : undefined,
-                }));
+                setFilter('status', val ? val : undefined);
               }}
               variant="premium"
             />
@@ -253,7 +256,7 @@ export function ShipmentList() {
             <div className="shrink-0">
               <ClearFilterButton
                 onClick={() => {
-                  setFilters({});
+                  clearFilters();
                   setPage(1);
                 }}
                 label="Xóa lọc"

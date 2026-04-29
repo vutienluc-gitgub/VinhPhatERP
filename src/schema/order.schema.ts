@@ -30,6 +30,18 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   cancelled: 'Đã huỷ',
 };
 
+export const ORDER_STATUS_BADGE_VARIANTS: Record<
+  OrderStatus,
+  'success' | 'warning' | 'danger' | 'info' | 'gray' | 'purple'
+> = {
+  pending_review: 'warning',
+  draft: 'gray',
+  confirmed: 'info',
+  in_progress: 'purple',
+  completed: 'success',
+  cancelled: 'danger',
+};
+
 export const UNIT_OPTIONS = [
   {
     value: 'kg',

@@ -7,7 +7,7 @@ import type {
 } from '@/features/bom/types';
 import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';
-import { safeUpsertOne } from '@/lib/db-guard';
+import { safeUpsert, safeUpsertOne } from '@/lib/db-guard';
 
 /* ── Reference data for BOM forms ── */
 
@@ -209,20 +209,22 @@ export async function createBomDraft(
   const bomId = bomRow.id;
 
   if (bomYarnItems && bomYarnItems.length > 0) {
-    const { error: itemsError } = await supabase.from('bom_yarn_items').insert(
-      bomYarnItems.map((item) => ({
-        tenant_id: tenantId,
-        bom_template_id: bomId,
-        version: 1,
-        yarn_catalog_id: item.yarn_catalog_id,
-        ratio_pct: item.ratio_pct,
-        consumption_kg_per_m: item.consumption_kg_per_m,
-        notes: item.notes,
-        sort_order: item.sort_order || 0,
-      })),
-    );
-
-    if (itemsError) {
+    try {
+      await safeUpsert({
+        table: 'bom_yarn_items',
+        data: bomYarnItems.map((item) => ({
+          tenant_id: tenantId,
+          bom_template_id: bomId,
+          version: 1,
+          yarn_catalog_id: item.yarn_catalog_id,
+          ratio_pct: item.ratio_pct,
+          consumption_kg_per_m: item.consumption_kg_per_m,
+          notes: item.notes,
+          sort_order: item.sort_order || 0,
+        })),
+        conflictKey: 'id',
+      });
+    } catch (itemsError) {
       await supabase.from('bom_templates').delete().eq('id', bomId);
       throw itemsError;
     }

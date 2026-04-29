@@ -13,6 +13,7 @@ import {
   type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import {
   useWeavingInvoiceList,
   useConfirmWeavingInvoice,
@@ -38,14 +39,17 @@ function fmt(n: number) {
 }
 
 export function WeavingInvoiceList({ onNew, onEdit }: Props) {
-  const [filters, setFilters] = useState<WeavingInvoiceFilter>({});
+  const { filters, setFilter, clearFilters } = useUrlFilterState([
+    'search',
+    'status',
+  ]);
   const [page, setPage] = useState(1);
 
   const {
     data: result,
     isLoading,
     error,
-  } = useWeavingInvoiceList(filters, page);
+  } = useWeavingInvoiceList(filters as WeavingInvoiceFilter, page);
   const invoices = result?.data ?? [];
 
   const confirmMutation = useConfirmWeavingInvoice();
@@ -102,10 +106,7 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
 
   function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value || undefined,
-    }));
+    setFilter(key, value);
   }
 
   return (
@@ -158,7 +159,7 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
         value={filters}
         onChange={handleFilterChange}
         onClear={() => {
-          setFilters({});
+          clearFilters();
           setPage(1);
         }}
       />

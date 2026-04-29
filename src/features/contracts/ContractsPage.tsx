@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import {
   Icon,
   DataTablePremium,
@@ -8,6 +6,7 @@ import {
   FilterBarPremium,
   type FilterFieldConfig,
 } from '@/shared/components';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { useContractsList } from '@/application/contracts';
 
 import {
@@ -30,9 +29,19 @@ type ContractsPageProps = {
 };
 
 export function ContractsPage({ onView, onNew }: ContractsPageProps) {
-  const [filters, setFilters] = useState<ContractsFilter>({});
+  const { filters, setFilter, clearFilters } = useUrlFilterState([
+    'search',
+    'status',
+    'type',
+    'dateFrom',
+    'dateTo',
+  ]);
 
-  const { data: contracts = [], isLoading, error } = useContractsList(filters);
+  const {
+    data: contracts = [],
+    isLoading,
+    error,
+  } = useContractsList(filters as ContractsFilter);
 
   const hasFilter = !!(
     filters.search ||
@@ -80,10 +89,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
   ];
 
   function handleFilterChange(key: string, value: string | undefined) {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value || undefined,
-    }));
+    setFilter(key, value);
   }
 
   function formatDate(dateStr: string) {
@@ -170,7 +176,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
           schema={filterSchema}
           value={filters}
           onChange={handleFilterChange}
-          onClear={() => setFilters({})}
+          onClear={clearFilters}
         />
 
         {error && (

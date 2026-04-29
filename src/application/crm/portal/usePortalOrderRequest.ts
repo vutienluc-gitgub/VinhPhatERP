@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { supabase } from '@/services/supabase/client';
-import { safeUpsert } from '@/lib/db-guard';
+import { safeUpsert, safeUpsertOne } from '@/lib/db-guard';
 // eslint-disable-next-line boundaries/dependencies
 import { useAuth } from '@/features/auth/AuthProvider';
 
@@ -80,16 +79,20 @@ export function usePortalOrderRequest() {
         });
       }
 
-      await supabase.from('business_audit_log').insert({
-        tenant_id: profile.tenant_id,
-        entity_type: 'orders',
-        entity_id: orderId,
-        event_type: 'ORDER_REQUEST_CREATED',
-        payload: {
-          action: 'submit_from_portal',
-          customer_name: profile.full_name,
+      await safeUpsertOne({
+        table: 'business_audit_log',
+        data: {
+          tenant_id: profile.tenant_id,
+          entity_type: 'orders',
+          entity_id: orderId,
+          event_type: 'ORDER_REQUEST_CREATED',
+          payload: {
+            action: 'submit_from_portal',
+            customer_name: profile.full_name,
+          },
+          user_id: profile.id,
         },
-        user_id: profile.id,
+        conflictKey: 'id',
       });
 
       void queryClient.invalidateQueries({ queryKey: ['portal-orders'] });

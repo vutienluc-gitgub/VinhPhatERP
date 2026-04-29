@@ -18,6 +18,7 @@ import {
   SUPPLIER_STATUSES,
   SUPPLIER_STATUS_LABELS,
 } from '@/schema/supplier.schema';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 
 import type { Supplier, SupplierFilter } from './types';
 
@@ -32,10 +33,18 @@ export function SuppliersList({
   onNew,
   onCreateContract,
 }: SuppliersListProps) {
-  const [filters, setFilters] = useState<SupplierFilter>({});
+  const { filters, setFilter, clearFilters } = useUrlFilterState([
+    'search',
+    'category',
+    'status',
+  ]);
   const [page, setPage] = useState(1);
 
-  const { data: result, isLoading, error } = useSuppliersList(filters, page);
+  const {
+    data: result,
+    isLoading,
+    error,
+  } = useSuppliersList(filters as SupplierFilter, page);
   const suppliers = result?.data ?? [];
   const deleteMutation = useDeleteSupplier();
   const { confirm } = useConfirm();
@@ -71,10 +80,7 @@ export function SuppliersList({
 
   function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value || undefined,
-    }));
+    setFilter(key, value);
   }
 
   async function handleDelete(supplier: Supplier) {
@@ -136,7 +142,7 @@ export function SuppliersList({
         value={filters}
         onChange={handleFilterChange}
         onClear={() => {
-          setFilters({});
+          clearFilters();
           setPage(1);
         }}
       />

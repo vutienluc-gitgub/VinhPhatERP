@@ -6,6 +6,7 @@ import {
   FilterBarPremium,
   type FilterFieldConfig,
 } from '@/shared/components';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { useDyeingOrderList } from '@/application/production';
 
 import { DyeingOrderList } from './DyeingOrderList';
@@ -14,7 +15,11 @@ import { DyeingOrderDetail } from './DyeingOrderDetail';
 import type { DyeingOrder, DyeingOrderFilter } from './types';
 
 export function DyeingOrdersPage() {
-  const [filter, setFilter] = useState<DyeingOrderFilter>({ search: '' });
+  const {
+    filters: filter,
+    setFilter: setFilterValue,
+    clearFilters,
+  } = useUrlFilterState(['search']);
   const [page] = useState(1);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState<DyeingOrder | null>(null);
@@ -29,7 +34,10 @@ export function DyeingOrdersPage() {
     },
   ];
 
-  const { data, isLoading } = useDyeingOrderList(filter, page);
+  const { data, isLoading } = useDyeingOrderList(
+    filter as DyeingOrderFilter,
+    page,
+  );
 
   const totalCount = data?.total ?? 0;
   const inProgressCount =
@@ -97,13 +105,8 @@ export function DyeingOrdersPage() {
         <FilterBarPremium
           schema={filterSchema}
           value={filter}
-          onChange={(key, value) =>
-            setFilter((prev) => ({
-              ...prev,
-              [key]: value ?? '',
-            }))
-          }
-          onClear={() => setFilter({ search: '' })}
+          onChange={setFilterValue}
+          onClear={clearFilters}
         />
 
         {/* Main Content View */}

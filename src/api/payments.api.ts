@@ -26,7 +26,7 @@ import {
   apiExpenseRecord,
   apiAccountInsert,
 } from '@/schema/api-validation.schema';
-import { safeUpsertOne } from '@/lib/db-guard';
+import { safeUpsert, safeUpsertOne } from '@/lib/db-guard';
 
 /* ─── Payments ─────────────────────────────────── */
 
@@ -260,13 +260,41 @@ export async function updateExpense(
   id: string,
   row: ExpenseDbPayload,
 ): Promise<Expense> {
+  // Separate allocations from expense columns — allocations live in a separate table
+  const { allocations, ...expenseFields } = row;
+
   const { data, error } = await untypedDb
     .from('expenses')
-    .update(row)
+    .update(expenseFields)
     .eq('id', id)
     .select()
     .single();
   if (error) throw error;
+
+  // Replace allocations: delete old → insert new
+  if (allocations !== undefined) {
+    const { error: delError } = await untypedDb
+      .from('expense_allocations')
+      .delete()
+      .eq('expense_id', id);
+    if (delError) throw delError;
+
+    if (allocations.length > 0) {
+      const tenantId = await getTenantId();
+      await safeUpsert({
+        table: 'expense_allocations',
+        data: allocations.map((a) => ({
+          expense_id: id,
+          tenant_id: tenantId,
+          document_type: a.document_type,
+          document_id: a.document_id,
+          allocated_amount: a.allocated_amount,
+        })),
+        conflictKey: 'id',
+      });
+    }
+  }
+
   return data as Expense;
 }
 

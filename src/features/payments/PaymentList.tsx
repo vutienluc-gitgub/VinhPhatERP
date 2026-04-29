@@ -10,15 +10,20 @@ import {
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import { useDeletePayment, usePaymentList } from '@/application/payments';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 
 import { PAYMENT_METHOD_LABELS } from './payments.module';
 import type { PaymentsFilter } from './types';
 
 export function PaymentList() {
-  const [filters, setFilters] = useState<PaymentsFilter>({});
+  const { filters, setFilter, clearFilters } = useUrlFilterState(['search']);
   const [page, setPage] = useState(1);
 
-  const { data: result, isLoading, error } = usePaymentList(filters, page);
+  const {
+    data: result,
+    isLoading,
+    error,
+  } = usePaymentList(filters as PaymentsFilter, page);
   const payments = result?.data ?? [];
   const deleteMutation = useDeletePayment();
   const { confirm } = useConfirm();
@@ -34,10 +39,7 @@ export function PaymentList() {
 
   function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value || undefined,
-    }));
+    setFilter(key, value);
   }
 
   async function handleDelete(id: string) {
@@ -59,7 +61,7 @@ export function PaymentList() {
         value={filters}
         onChange={handleFilterChange}
         onClear={() => {
-          setFilters({});
+          clearFilters();
           setPage(1);
         }}
       />

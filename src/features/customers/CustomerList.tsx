@@ -18,6 +18,7 @@ import {
   type IconName,
 } from '@/shared/components';
 import { useCustomerList, useDeleteCustomer } from '@/application/crm';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 
 import type { Customer, CustomersFilter } from './types';
 
@@ -32,10 +33,16 @@ export function CustomerList({
   onNew,
   onCreateContract,
 }: CustomerListProps) {
-  const [filters, setFilters] = useState<CustomersFilter>({});
+  const { filters, setFilter, clearFilters } = useUrlFilterState([
+    'query',
+    'status',
+  ]);
   const [page, setPage] = useState(1);
 
-  const { data: result, isLoading } = useCustomerList(filters, page);
+  const { data: result, isLoading } = useCustomerList(
+    filters as CustomersFilter,
+    page,
+  );
   const customers = result?.data ?? [];
   const deleteMutation = useDeleteCustomer();
   const { confirm } = useConfirm();
@@ -66,10 +73,7 @@ export function CustomerList({
 
   function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value || undefined,
-    }));
+    setFilter(key, value);
   }
 
   async function handleDelete(customer: Customer) {
@@ -149,7 +153,7 @@ export function CustomerList({
         value={filters}
         onChange={handleFilterChange}
         onClear={() => {
-          setFilters({});
+          clearFilters();
           setPage(1);
         }}
       />

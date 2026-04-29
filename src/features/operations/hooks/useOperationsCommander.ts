@@ -1,6 +1,12 @@
+/**
+ * Operations Commander — Adapter
+ *
+ * Giờ delegate toàn bộ validation sang Workflow Engine.
+ * Giữ nguyên interface (validateTransition) cho OperationsPage.
+ */
 import { useCallback } from 'react';
 
-import { validateOpsTaskTransition } from '@/schema/operations-transition.schema';
+import { validateTransition } from '@/lib/workflow-engine';
 
 type TaskStatus =
   | 'todo'
@@ -9,9 +15,6 @@ type TaskStatus =
   | 'review'
   | 'done'
   | 'cancelled';
-
-type TaskPriority = 'low' | 'normal' | 'high' | 'urgent';
-type TaskType = 'growth' | 'maintenance' | 'admin' | 'urgent';
 
 interface CommanderTask {
   id: string;
@@ -35,13 +38,6 @@ const STATUS_VALUES: TaskStatus[] = [
   'done',
   'cancelled',
 ];
-const PRIORITY_VALUES: TaskPriority[] = ['low', 'normal', 'high', 'urgent'];
-const TASK_TYPE_VALUES: TaskType[] = [
-  'growth',
-  'maintenance',
-  'admin',
-  'urgent',
-];
 
 function normalizeStatus(value: string): TaskStatus {
   const normalized = value.trim().toLowerCase().replace(/\s+/g, '_');
@@ -50,62 +46,28 @@ function normalizeStatus(value: string): TaskStatus {
     : 'todo';
 }
 
-function normalizePriority(value?: string | null): TaskPriority {
-  const normalized = (value ?? '').trim().toLowerCase();
-  return PRIORITY_VALUES.includes(normalized as TaskPriority)
-    ? (normalized as TaskPriority)
-    : 'normal';
-}
-
-function normalizeTaskType(value?: string | null): TaskType {
-  const normalized = (value ?? '').trim().toLowerCase();
-  return TASK_TYPE_VALUES.includes(normalized as TaskType)
-    ? (normalized as TaskType)
-    : 'maintenance';
-}
-
 export function useOperationsCommander() {
-  const validateTransition = useCallback(
+  const validateTransitionFn = useCallback(
     (task: CommanderTask, toStatus: TaskStatus): TransitionValidation => {
       const normalizedStatus = normalizeStatus(task.status);
-      const normalizedPriority = normalizePriority(task.priority);
-      const normalizedTaskType = normalizeTaskType(task.task_type);
 
-      const base = validateOpsTaskTransition({
-        from: normalizedStatus,
-        to: toStatus,
-        priority: normalizedPriority,
-        taskType: normalizedTaskType,
+      // Delegate sang Workflow Engine — single source of truth
+      return validateTransition('ops_task', {
+        entityId: task.id,
+        currentStatus: normalizedStatus,
+        targetStatus: toStatus,
+        metadata: {
+          priority: task.priority ?? 'normal',
+          taskType: task.task_type ?? 'maintenance',
+          assignee_id: task.assignee_id,
+          reviewer_id: task.reviewer_id,
+        },
       });
-
-      if (!base.ok) {
-        return base;
-      }
-
-      if ((toStatus === 'review' || toStatus === 'done') && !task.assignee_id) {
-        return {
-          ok: false,
-          reason: 'Cần gán người phụ trách trước khi chuyển sang Review/Done',
-        };
-      }
-
-      if (
-        toStatus === 'done' &&
-        normalizedPriority === 'urgent' &&
-        !task.reviewer_id
-      ) {
-        return {
-          ok: false,
-          reason: 'Task khẩn cấp cần reviewer xác nhận trước khi Done',
-        };
-      }
-
-      return { ok: true };
     },
     [],
   );
 
   return {
-    validateTransition,
+    validateTransition: validateTransitionFn,
   };
 }

@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
@@ -11,6 +9,7 @@ import {
   FilterBarPremium,
   type FilterFieldConfig,
 } from '@/shared/components';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { formatCurrency } from '@/shared/utils/format';
 import {
   useDeleteShippingRate,
@@ -42,9 +41,11 @@ function getStatusVariant(isActive: boolean): BadgeVariant {
 }
 
 export function ShippingRateList({ onEdit, onNew }: Props) {
-  const [filters, setFilters] = useState<ShippingRateFilter>({});
+  const { filters, setFilter, clearFilters } = useUrlFilterState(['query']);
 
-  const { data, isLoading, error } = useShippingRateList(filters);
+  const { data, isLoading, error } = useShippingRateList(
+    filters as ShippingRateFilter,
+  );
   const rates = data ?? [];
   const deleteMutation = useDeleteShippingRate();
   const { confirm } = useConfirm();
@@ -59,10 +60,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
   ];
 
   function handleFilterChange(key: string, value: string | undefined) {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value || undefined,
-    }));
+    setFilter(key, value);
   }
 
   async function handleDelete(item: ShippingRate) {
@@ -88,9 +86,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
         schema={filterSchema}
         value={filters}
         onChange={handleFilterChange}
-        onClear={() => {
-          setFilters({});
-        }}
+        onClear={clearFilters}
       />
 
       {/* Error */}

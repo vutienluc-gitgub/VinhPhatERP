@@ -8,6 +8,7 @@ import {
   KpiGridPremium,
   type FilterFieldConfig,
 } from '@/shared/components';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import {
@@ -33,7 +34,11 @@ type ActionSheetState =
   | { type: 'revise'; bomId: string; bomCode: string };
 
 export function BomPage() {
-  const [filter, setFilter] = useState<BomFilter>({});
+  const {
+    filters: filter,
+    setFilter: setFilterValue,
+    clearFilters,
+  } = useUrlFilterState(['search', 'status']);
   const [viewState, setViewState] = useState<ViewState>('list');
   const [selectedBomId, setSelectedBomId] = useState<string | null>(null);
   const [actionSheet, setActionSheet] = useState<ActionSheetState>({
@@ -41,7 +46,7 @@ export function BomPage() {
   });
   const [actionReason, setActionReason] = useState('');
 
-  const { data: boms = [], isLoading } = useBomList(filter);
+  const { data: boms = [], isLoading } = useBomList(filter as BomFilter);
   const { data: selectedBom } = useBomDetail(
     viewState === 'detail' ? selectedBomId : null,
   );
@@ -68,10 +73,7 @@ export function BomPage() {
   ];
 
   function handleFilterChange(key: string, value: string | undefined) {
-    setFilter((prev) => ({
-      ...prev,
-      [key]: value || undefined,
-    }));
+    setFilterValue(key, value);
   }
 
   const handleCreate = () => {
@@ -246,7 +248,7 @@ export function BomPage() {
         schema={filterSchema}
         value={filter}
         onChange={handleFilterChange}
-        onClear={() => setFilter({})}
+        onClear={clearFilters}
       />
 
       {/* Table */}
