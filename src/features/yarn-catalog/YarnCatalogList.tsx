@@ -12,6 +12,7 @@ import {
   FilterBarPremium,
   type FilterFieldConfig,
 } from '@/shared/components';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import {
   useDeleteYarnCatalog,
   useYarnCatalogList,
@@ -56,10 +57,18 @@ function YarnColorBadge({ colorName }: { colorName: string | null }) {
 }
 
 export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
-  const [filters, setFilters] = useState<YarnCatalogFilter>({});
+  const { filters, setFilter, clearFilters } = useUrlFilterState([
+    'search',
+    'status',
+    'lot_no',
+    'grade',
+  ]);
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, error } = useYarnCatalogList(filters, page);
+  const { data, isLoading, error } = useYarnCatalogList(
+    filters as YarnCatalogFilter,
+    page,
+  );
   const deleteMutation = useDeleteYarnCatalog();
   const { confirm } = useConfirm();
 
@@ -116,10 +125,7 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
 
   function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value || undefined,
-    }));
+    setFilter(key, value);
   }
 
   return (
@@ -186,7 +192,7 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
         value={filters}
         onChange={handleFilterChange}
         onClear={() => {
-          setFilters({});
+          clearFilters();
           setPage(1);
         }}
       />

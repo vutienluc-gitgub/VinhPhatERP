@@ -15,6 +15,7 @@ import {
   FilterBarPremium,
   type FilterFieldConfig,
 } from '@/shared/components';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 import {
   useDeleteFinishedFabric,
@@ -78,7 +79,11 @@ export function FinishedFabricList({
   onBulkNew,
   onTrace,
 }: FinishedFabricListProps) {
-  const [filters, setFilters] = useState<FinishedFabricFilter>({});
+  const { filters, setFilter, clearFilters } = useUrlFilterState([
+    'fabric_type',
+    'status',
+    'quality_grade',
+  ]);
   const [page, setPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
@@ -86,7 +91,7 @@ export function FinishedFabricList({
     data: result,
     isLoading,
     error,
-  } = useFinishedFabricList(filters, page);
+  } = useFinishedFabricList(filters as FinishedFabricFilter, page);
   const rolls = useMemo(() => result?.data ?? [], [result?.data]);
   const { data: stats } = useFinishedFabricStats();
   const deleteMutation = useDeleteFinishedFabric();
@@ -162,10 +167,7 @@ export function FinishedFabricList({
 
   function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value || undefined,
-    }));
+    setFilter(key, value);
   }
 
   return (
@@ -279,7 +281,7 @@ export function FinishedFabricList({
         value={filters}
         onChange={handleFilterChange}
         onClear={() => {
-          setFilters({});
+          clearFilters();
           setPage(1);
         }}
       />

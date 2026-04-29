@@ -122,7 +122,7 @@ export function SortableTaskCard({
           event.stopPropagation();
           onTapMove(task);
         }}
-        className="md:hidden absolute top-2 right-2 rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-600"
+        className="absolute top-2 right-2 rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-600 opacity-60 hover:opacity-100 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 transition-all"
         aria-label="Chuyển trạng thái nhanh"
       >
         →

@@ -10,6 +10,7 @@ import {
   startWorkOrder,
   completeWorkOrder,
   cancelWorkOrder,
+  issueYarn,
   fetchUnitOptions,
 } from '@/api/work-orders.api';
 import type {
@@ -83,6 +84,18 @@ export function useStartWorkOrder() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['work_orders'] });
       queryClient.invalidateQueries({ queryKey: ['work_order', variables] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+    },
+  });
+}
+
+export function useIssueYarnWorkOrder() {
+  const queryClient = useQueryClient();
+  return useMutation<WorkOrder, PostgrestError, string>({
+    mutationFn: issueYarn,
+    onSuccess: (data: WorkOrder) => {
+      queryClient.invalidateQueries({ queryKey: ['work_orders'] });
+      queryClient.invalidateQueries({ queryKey: ['work_order', data.id] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
     },
   });

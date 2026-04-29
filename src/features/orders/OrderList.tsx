@@ -1,11 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
 import {
   Icon,
   Badge,
-  type BadgeVariant,
   DataTablePremium,
   AddButton,
   ActionBar,
@@ -18,32 +18,19 @@ import type { ActionConfig } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import { useDeleteOrder, useOrderList } from '@/application/orders';
 import { sumBy } from '@/shared/utils/array.util';
-import { ORDER_STATUS_LABELS } from '@/schema/order.schema';
+import {
+  ORDER_STATUS_LABELS,
+  ORDER_STATUS_BADGE_VARIANTS,
+} from '@/schema/order.schema';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 
-import type { Order, OrdersFilter, OrderStatus } from './types';
+import type { Order, OrdersFilter } from './types';
 
 type OrderListProps = {
   onEdit: (order: Order) => void;
   onNew: () => void;
   onView: (order: Order) => void;
 };
-
-function getVariant(status: OrderStatus): BadgeVariant {
-  switch (status) {
-    case 'pending_review':
-      return 'warning';
-    case 'confirmed':
-      return 'info';
-    case 'in_progress':
-      return 'purple';
-    case 'completed':
-      return 'success';
-    case 'cancelled':
-      return 'danger';
-    default:
-      return 'gray';
-  }
-}
 
 function daysUntilDelivery(
   deliveryDate: string | null,
@@ -77,10 +64,18 @@ function daysUntilDelivery(
 }
 
 export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
-  const [filters, setFilters] = useState<OrdersFilter>({});
+  const navigate = useNavigate();
+  const { filters, setFilter, clearFilters } = useUrlFilterState([
+    'search',
+    'status',
+  ]);
   const [page, setPage] = useState(1);
 
-  const { data: result, isLoading, error } = useOrderList(filters, page);
+  const {
+    data: result,
+    isLoading,
+    error,
+  } = useOrderList(filters as OrdersFilter, page);
   const orders = result?.data ?? [];
   const deleteMutation = useDeleteOrder();
   const { confirm, alert: showAlert } = useConfirm();
@@ -109,10 +104,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
 
   function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value || undefined,
-    }));
+    setFilter(key, value);
   }
 
   async function handleDelete(order: Order) {
@@ -135,7 +127,16 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
       {/* Action bar */}
       <div className="card-header-area">
         <LiveIndicator label="Trực tiếp" />
-        <AddButton onClick={onNew} label="Tạo đơn hàng" />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate('/orders/progress')}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors"
+          >
+            <Icon name="BarChart3" size={14} />
+            Tiến độ SX
+          </button>
+          <AddButton onClick={onNew} label="Tạo đơn hàng" />
+        </div>
       </div>
 
       {/* 📊 KPI Dashboard - Premium Visuals */}
@@ -215,7 +216,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           value={filters}
           onChange={handleFilterChange}
           onClear={() => {
-            setFilters({});
+            clearFilters();
             setPage(1);
           }}
         />
@@ -328,7 +329,9 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               id: 'status',
               sortable: true,
               cell: (order) => (
-                <Badge variant={getVariant(order.status)}>
+                <Badge
+                  variant={ORDER_STATUS_BADGE_VARIANTS[order.status] ?? 'gray'}
+                >
                   {ORDER_STATUS_LABELS[order.status]}
                 </Badge>
               ),
@@ -375,7 +378,11 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
                   <span className="font-bold text-primary">
                     {order.order_number}
                   </span>
-                  <Badge variant={getVariant(order.status)}>
+                  <Badge
+                    variant={
+                      ORDER_STATUS_BADGE_VARIANTS[order.status] ?? 'gray'
+                    }
+                  >
                     {ORDER_STATUS_LABELS[order.status]}
                   </Badge>
                 </div>

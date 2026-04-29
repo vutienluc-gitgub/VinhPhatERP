@@ -15,7 +15,7 @@ import { getTenantId } from '@/services/supabase/tenant';
 import { safeUpsertOne } from '@/lib/db-guard';
 
 const TABLE = 'order_progress';
-const auditTable = () => untypedDb.from('progress_audit_log');
+const AUDIT_TABLE = 'progress_audit_log';
 
 export async function fetchOrderProgressByOrder(
   orderId: string,
@@ -73,14 +73,18 @@ export async function updateStageStatus(
   if (error) throw error;
 
   const { data: userData } = await supabase.auth.getUser();
-  await auditTable().insert({
-    progress_id: progressId,
-    order_id: current.order_id,
-    stage: current.stage,
-    old_status: oldStatus,
-    new_status: status,
-    changed_by: userData.user?.id ?? null,
-    notes: notes?.trim() || null,
+  await safeUpsertOne({
+    table: AUDIT_TABLE,
+    data: {
+      progress_id: progressId,
+      order_id: current.order_id,
+      stage: current.stage,
+      old_status: oldStatus,
+      new_status: status,
+      changed_by: userData.user?.id ?? null,
+      notes: notes?.trim() || null,
+    },
+    conflictKey: 'id',
   });
 }
 
@@ -98,7 +102,8 @@ export async function updatePlannedDate(
 export async function fetchProgressAuditLog(
   orderId: string,
 ): Promise<ProgressAuditLog[]> {
-  const { data, error } = await auditTable()
+  const { data, error } = await untypedDb
+    .from(AUDIT_TABLE)
     .select('*')
     .eq('order_id', orderId)
     .order('created_at', { ascending: false });
@@ -109,7 +114,8 @@ export async function fetchProgressAuditLog(
 export async function fetchRecentAuditLog(
   limit = 50,
 ): Promise<ProgressAuditLogWithOrder[]> {
-  const { data, error } = await auditTable()
+  const { data, error } = await untypedDb
+    .from(AUDIT_TABLE)
     .select('*, orders(order_number, customers(name))')
     .order('created_at', { ascending: false })
     .limit(limit);

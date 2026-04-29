@@ -12,6 +12,7 @@ import {
   FilterBarPremium,
   type FilterFieldConfig,
 } from '@/shared/components';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { formatCurrency } from '@/shared/utils/format';
 import { useDeleteExpense, useExpenseList } from '@/application/payments';
 
@@ -42,10 +43,17 @@ function getCategoryVariant(category: ExpenseCategory): BadgeVariant {
 }
 
 export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
-  const [filters, setFilters] = useState<ExpensesFilter>({});
+  const { filters, setFilter, clearFilters } = useUrlFilterState([
+    'search',
+    'category',
+  ]);
   const [page, setPage] = useState(1);
 
-  const { data: result, isLoading, error } = useExpenseList(filters, page);
+  const {
+    data: result,
+    isLoading,
+    error,
+  } = useExpenseList(filters as ExpensesFilter, page);
   const expenses = result?.data ?? [];
   const deleteMutation = useDeleteExpense();
   const { confirm } = useConfirm();
@@ -70,10 +78,7 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
 
   function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value || undefined,
-    }));
+    setFilter(key, value);
   }
 
   async function handleDelete(expense: Expense) {
@@ -101,7 +106,7 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
         value={filters}
         onChange={handleFilterChange}
         onClear={() => {
-          setFilters({});
+          clearFilters();
           setPage(1);
         }}
       />

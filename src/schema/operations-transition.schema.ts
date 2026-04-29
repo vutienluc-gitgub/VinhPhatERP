@@ -1,5 +1,13 @@
+/**
+ * Operations Transition Schema — Adapter
+ *
+ * File này giờ là adapter mỏng: delegate toàn bộ logic sang Workflow Engine.
+ * Giữ nguyên interface cũ (TransitionValidationInput, validateOpsTaskTransition)
+ * để không phải sửa tất cả consumer cùng lúc.
+ */
 import { z } from 'zod';
 
+import { validateTransition } from '@/lib/workflow-engine';
 import type {
   TaskPriority,
   TaskStatus,
@@ -25,12 +33,6 @@ const transitionSchema = z.object({
   taskType: taskTypeSchema,
 });
 
-const BLOCKED_DONE_DIRECT =
-  'Task bị chặn không thể chuyển thẳng sang Hoàn thành';
-const DONE_REOPEN_URGENT_ONLY =
-  'Chỉ task khẩn cấp mới được mở lại từ Hoàn thành';
-const CANCELLED_LOCKED = 'Task đã huỷ không thể kéo thả trạng thái';
-
 export interface TransitionValidationResult {
   ok: boolean;
   reason?: string;
@@ -43,6 +45,10 @@ export interface TransitionValidationInput {
   taskType: TaskType;
 }
 
+/**
+ * Validate transition cho Operations Task.
+ * Delegate sang Workflow Engine (single source of truth).
+ */
 export function validateOpsTaskTransition(
   input: TransitionValidationInput,
 ): TransitionValidationResult {
@@ -54,32 +60,12 @@ export function validateOpsTaskTransition(
     };
   }
 
-  const { from, to, priority } = parsed.data;
+  const { from, to, priority, taskType } = parsed.data;
 
-  if (from === to) {
-    return { ok: true };
-  }
-
-  if (from === 'cancelled') {
-    return {
-      ok: false,
-      reason: CANCELLED_LOCKED,
-    };
-  }
-
-  if (from === 'blocked' && to === 'done') {
-    return {
-      ok: false,
-      reason: BLOCKED_DONE_DIRECT,
-    };
-  }
-
-  if (from === 'done' && to !== 'done' && priority !== 'urgent') {
-    return {
-      ok: false,
-      reason: DONE_REOPEN_URGENT_ONLY,
-    };
-  }
-
-  return { ok: true };
+  return validateTransition('ops_task', {
+    entityId: '',
+    currentStatus: from,
+    targetStatus: to,
+    metadata: { priority, taskType },
+  });
 }

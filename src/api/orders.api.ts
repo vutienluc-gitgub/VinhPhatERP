@@ -12,6 +12,7 @@ import type { PaginatedResult } from '@/shared/types/pagination';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import { orderResponseSchema } from '@/schema/order.schema';
 import { untypedDb } from '@/services/supabase/untyped';
+import { safeUpsertOne } from '@/lib/db-guard';
 import { validateApiInput } from '@/lib/validate-api-input';
 import { apiOrderHeader, apiOrderItem } from '@/schema/api-validation.schema';
 import {
@@ -210,16 +211,20 @@ export async function updateOrderStatus(
       .eq('id', user.id)
       .single();
 
-    await supabase.from('business_audit_log').insert({
-      tenant_id: profile?.tenant_id,
-      entity_type: 'orders',
-      entity_id: id,
-      event_type: 'ORDER_STATUS_CHANGED',
-      payload: {
-        new_status: status,
-        action: 'update_status',
+    await safeUpsertOne({
+      table: 'business_audit_log',
+      data: {
+        tenant_id: profile?.tenant_id,
+        entity_type: 'orders',
+        entity_id: id,
+        event_type: 'ORDER_STATUS_CHANGED',
+        payload: {
+          new_status: status,
+          action: 'update_status',
+        },
+        user_id: user.id,
       },
-      user_id: user.id,
+      conflictKey: 'id',
     });
   }
 }

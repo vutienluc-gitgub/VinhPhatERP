@@ -1,7 +1,7 @@
 import { untypedDb } from '@/services/supabase/untyped';
 import { getTenantId } from '@/services/supabase/tenant';
 import { Task, Employee, Kpi, ActivityItem } from '@/features/operations/types';
-import { safeUpsert } from '@/lib/db-guard';
+import { safeUpsert, safeUpsertOne } from '@/lib/db-guard';
 import { validateApiInput } from '@/lib/validate-api-input';
 import { apiTaskInsert } from '@/schema/api-validation.schema';
 import { OPERATIONS_MESSAGES } from '@/features/operations/constants';
@@ -122,21 +122,21 @@ export async function logBlockedTransitionEvent(
   const { data: authData } = await untypedDb.auth.getUser();
   const userId = authData?.user?.id ?? null;
 
-  const { error } = await untypedDb.from('business_audit_log').insert({
-    tenant_id: tenantId,
-    entity_type: 'operations_task_board',
-    entity_id: event.taskId,
-    event_type: 'OPS_TASK_TRANSITION_BLOCKED',
-    payload: {
-      ...event,
-      module: 'operations-board',
+  await safeUpsertOne({
+    table: 'business_audit_log',
+    data: {
+      tenant_id: tenantId,
+      entity_type: 'operations_task_board',
+      entity_id: event.taskId,
+      event_type: 'OPS_TASK_TRANSITION_BLOCKED',
+      payload: {
+        ...event,
+        module: 'operations-board',
+      },
+      user_id: userId,
     },
-    user_id: userId,
+    conflictKey: 'id',
   });
-
-  if (error) {
-    throw error;
-  }
 }
 
 /**

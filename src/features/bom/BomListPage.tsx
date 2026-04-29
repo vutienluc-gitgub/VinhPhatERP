@@ -9,6 +9,7 @@ import {
   KpiGridPremium,
   type FilterFieldConfig,
 } from '@/shared/components';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import {
@@ -30,13 +31,17 @@ type ActionSheetState =
 
 export function BomListPage() {
   const navigate = useNavigate();
-  const [filter, setFilter] = useState<BomFilter>({});
+  const {
+    filters: filter,
+    setFilter: setFilterValue,
+    clearFilters,
+  } = useUrlFilterState(['search', 'status']);
   const [actionSheet, setActionSheet] = useState<ActionSheetState>({
     type: 'idle',
   });
   const [actionReason, setActionReason] = useState('');
 
-  const { data: boms = [], isLoading } = useBomList(filter);
+  const { data: boms = [], isLoading } = useBomList(filter as BomFilter);
   const approveBom = useApproveBom();
   const deprecateBom = useDeprecateBom();
   const reviseBom = useReviseBom();
@@ -60,10 +65,7 @@ export function BomListPage() {
   ];
 
   function handleFilterChange(key: string, value: string | undefined) {
-    setFilter((prev) => ({
-      ...prev,
-      [key]: value || undefined,
-    }));
+    setFilterValue(key, value);
   }
 
   const closeActionSheet = () => {
@@ -163,7 +165,7 @@ export function BomListPage() {
           schema={filterSchema}
           value={filter}
           onChange={handleFilterChange}
-          onClear={() => setFilter({})}
+          onClear={clearFilters}
         />
 
         {/* Table */}

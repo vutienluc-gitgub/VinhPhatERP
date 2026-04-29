@@ -48,15 +48,18 @@ export async function writeAuditLog(
   newValues: Record<string, unknown> | null,
   performedBy: string | null,
 ): Promise<void> {
-  const { error } = await db.contractAuditLogs().insert({
-    contract_id: contractId,
-    action,
-    old_values: oldValues,
-    new_values: newValues,
-    performed_by: performedBy,
-    performed_at: new Date().toISOString(),
+  await safeUpsertOne({
+    table: 'contract_audit_logs',
+    data: {
+      contract_id: contractId,
+      action,
+      old_values: oldValues,
+      new_values: newValues,
+      performed_by: performedBy,
+      performed_at: new Date().toISOString(),
+    },
+    conflictKey: 'id',
   });
-  if (error) throw error;
 }
 
 // ── Read operations ──────────────────────────────────────────────────────────
