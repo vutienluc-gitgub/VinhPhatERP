@@ -63,13 +63,14 @@ export const apiCustomerInsert = z.object({
 
 // ── Payments ──────────────────────────────────────────────────────────────
 export const apiPaymentRecord = z.object({
-  order_id: uuid,
+  payment_number: optionalStr,
+  order_id: uuid.nullable(),
   customer_id: uuid,
-  payment_number: nonEmpty,
   payment_date: dateStr,
   amount: positiveNum,
-  method: z.string().optional(),
-  notes: nullableStr,
+  payment_method: z.string(),
+  account_id: uuid.nullable().optional(),
+  reference_number: nullableStr,
 });
 
 export const apiExpenseRecord = z.object({
