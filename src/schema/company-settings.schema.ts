@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { SETTINGS_MESSAGES } from '@/features/settings/settings.constants';
+
 /* ── Types ── */
 
 export type CompanySettingRow = {
@@ -36,14 +38,17 @@ export type CompanySettingsMap = Record<CompanySettingKey, string>;
 /* ── Zod Schema (form validation) ── */
 
 export const companySettingsSchema = z.object({
-  company_name: z.string().trim().min(2, 'Tên công ty tối thiểu 2 ký tự'),
-  address: z.string().trim().min(2, 'Nhập địa chỉ'),
+  company_name: z
+    .string()
+    .trim()
+    .min(2, SETTINGS_MESSAGES.ERR_COMPANY_NAME_MIN),
+  address: z.string().trim().min(2, SETTINGS_MESSAGES.ERR_ADDRESS_MIN),
   tax_code: z.string().trim().max(20).optional().or(z.literal('')),
   phone: z.string().trim().max(20).optional().or(z.literal('')),
   email: z
     .string()
     .trim()
-    .email('Email không hợp lệ')
+    .email(SETTINGS_MESSAGES.ERR_EMAIL_INVALID)
     .optional()
     .or(z.literal('')),
   website: z.string().trim().max(200).optional().or(z.literal('')),
@@ -51,7 +56,7 @@ export const companySettingsSchema = z.object({
   bank_name: z.string().trim().max(200).optional().or(z.literal('')),
   logo_url: z.string().trim().max(500).optional().or(z.literal('')),
   default_user_role: z
-    .enum(['admin', 'manager', 'staff', 'viewer', 'sale', 'customer'])
+    .enum(['admin', 'manager', 'staff', 'driver', 'viewer', 'sale', 'customer'])
     .default('staff'),
   layout_mode: z.enum(['boxed', 'fluid']).default('boxed'),
 });

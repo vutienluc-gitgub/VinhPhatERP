@@ -231,192 +231,184 @@ export function RawFabricList({
       )}
 
       {/* Main Content View */}
-      <div className="card-table-section min-h-[400px]">
-        {viewMode === 'table' ? (
-          <DataTablePremium
-            data={rolls}
-            isLoading={isLoading}
-            rowKey={(r) => r.id}
-            onRowClick={(r) => onEdit(r)}
-            emptyStateTitle={
-              hasFilter
-                ? 'Không tìm thấy cuộn vải phù hợp'
-                : 'Chưa có cuộn vải nào'
-            }
-            emptyStateIcon={hasFilter ? 'Search' : 'Layers'}
-            columns={[
-              {
-                header: 'Mã cuộn',
-                id: 'roll_number',
-                sortable: true,
-                cell: (r) => (
-                  <span className="font-bold text-primary">
-                    {r.roll_number}
-                  </span>
-                ),
-              },
-              {
-                header: 'Số lô',
-                id: 'lot_number',
-                sortable: true,
-                cell: (r) => (
-                  <span className="font-medium text-muted">
-                    {r.lot_number || '—'}
-                  </span>
-                ),
-              },
-              {
-                header: 'Loại vải / Màu',
-                id: 'fabric_type',
-                sortable: true,
-                cell: (r) => (
-                  <div className="flex flex-col">
-                    <span className="font-medium">{r.fabric_type}</span>
-                    <span className="text-xs text-muted">{r.color_name}</span>
-                  </div>
-                ),
-              },
-              {
-                header: 'Khối lượng',
-                id: 'weight_kg',
-                sortable: true,
-                className: 'text-right',
-                cell: (r) => (
-                  <span className="font-medium">
-                    {r.weight_kg?.toLocaleString()}
-                    <span className="text-xs ml-1 text-muted">kg</span>
-                  </span>
-                ),
-              },
-              {
-                header: 'Chiều dài',
-                id: 'length_m',
-                sortable: true,
-                className: 'text-right',
-                cell: (r) => (
-                  <span className="font-medium text-success">
-                    {r.length_m?.toLocaleString()}
-                    <span className="text-xs ml-1 text-muted">m</span>
-                  </span>
-                ),
-              },
-              {
-                header: 'Trạng thái',
-                id: 'status',
-                sortable: true,
-                cell: (r) => (
-                  <Badge variant={getStatusVariant(r.status)}>
-                    {ROLL_STATUS_LABELS[r.status]}
-                  </Badge>
-                ),
-              },
-              {
-                header: 'Thao tác',
-                className: 'text-right',
-                onCellClick: () => {},
-                cell: (r) => (
-                  <button className="btn-icon" onClick={() => onEdit(r)}>
-                    <Icon name="Pencil" size={16} />
-                  </button>
-                ),
-              },
-            ]}
-            renderMobileCard={(r) => (
-              <div className="mobile-card">
-                <div className="mobile-card-header">
-                  <span className="mobile-card-title">{r.roll_number}</span>
-                  <Badge variant={getStatusVariant(r.status)}>
-                    {ROLL_STATUS_LABELS[r.status]}
-                  </Badge>
+      {viewMode === 'table' ? (
+        <DataTablePremium
+          data={rolls}
+          isLoading={isLoading}
+          rowKey={(r) => r.id}
+          onRowClick={(r) => onEdit(r)}
+          emptyStateTitle={
+            hasFilter
+              ? 'Không tìm thấy cuộn vải phù hợp'
+              : 'Chưa có cuộn vải nào'
+          }
+          emptyStateIcon={hasFilter ? 'Search' : 'Layers'}
+          columns={[
+            {
+              header: 'Mã cuộn',
+              id: 'roll_number',
+              sortable: true,
+              cell: (r) => (
+                <span className="font-bold text-primary">{r.roll_number}</span>
+              ),
+            },
+            {
+              header: 'Số lô',
+              id: 'lot_number',
+              sortable: true,
+              cell: (r) => (
+                <span className="font-medium text-muted">
+                  {r.lot_number || '—'}
+                </span>
+              ),
+            },
+            {
+              header: 'Loại vải / Màu',
+              id: 'fabric_type',
+              sortable: true,
+              cell: (r) => (
+                <div className="flex flex-col">
+                  <span className="font-medium">{r.fabric_type}</span>
+                  <span className="text-xs text-muted">{r.color_name}</span>
                 </div>
-                <div className="mobile-card-body">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm font-medium">{r.fabric_type}</span>
-                    <span className="text-xs text-muted">
-                      Lô: {r.lot_number || '—'}
+              ),
+            },
+            {
+              header: 'Khối lượng',
+              id: 'weight_kg',
+              sortable: true,
+              className: 'text-right',
+              cell: (r) => (
+                <span className="font-medium">
+                  {r.weight_kg?.toLocaleString()}
+                  <span className="text-xs ml-1 text-muted">kg</span>
+                </span>
+              ),
+            },
+            {
+              header: 'Chiều dài',
+              id: 'length_m',
+              sortable: true,
+              className: 'text-right',
+              cell: (r) => (
+                <span className="font-medium text-success">
+                  {r.length_m?.toLocaleString()}
+                  <span className="text-xs ml-1 text-muted">m</span>
+                </span>
+              ),
+            },
+            {
+              header: 'Trạng thái',
+              id: 'status',
+              sortable: true,
+              cell: (r) => (
+                <Badge variant={getStatusVariant(r.status)}>
+                  {ROLL_STATUS_LABELS[r.status]}
+                </Badge>
+              ),
+            },
+            {
+              header: 'Thao tác',
+              className: 'text-right',
+              onCellClick: () => {},
+              cell: (r) => (
+                <button className="btn-icon" onClick={() => onEdit(r)}>
+                  <Icon name="Pencil" size={16} />
+                </button>
+              ),
+            },
+          ]}
+          renderMobileCard={(r) => (
+            <div className="mobile-card">
+              <div className="mobile-card-header">
+                <span className="mobile-card-title">{r.roll_number}</span>
+                <Badge variant={getStatusVariant(r.status)}>
+                  {ROLL_STATUS_LABELS[r.status]}
+                </Badge>
+              </div>
+              <div className="mobile-card-body">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium">{r.fabric_type}</span>
+                  <span className="text-xs text-muted">
+                    Lô: {r.lot_number || '—'}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-4 mt-2">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase text-muted">
+                      Khối lượng
+                    </span>
+                    <span className="font-bold text-sm">{r.weight_kg} kg</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase text-muted">
+                      Chiều dài
+                    </span>
+                    <span className="font-bold text-sm text-success">
+                      {r.length_m} m
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 mt-2">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] uppercase text-muted">
-                        Khối lượng
-                      </span>
-                      <span className="font-bold text-sm">
-                        {r.weight_kg} kg
-                      </span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] uppercase text-muted">
-                        Chiều dài
-                      </span>
-                      <span className="font-bold text-sm text-success">
-                        {r.length_m} m
-                      </span>
-                    </div>
-                  </div>
                 </div>
               </div>
-            )}
-          />
-        ) : (
-          // overflow-x-hidden to prevent horizontal scroll on mobile (Requirement 6.3)
-          <div className="p-4 flex flex-col gap-6 overflow-x-hidden">
-            {isLoading ? (
-              <div className="flex-center py-20">
-                <div className="spinner" />
+            </div>
+          )}
+        />
+      ) : (
+        // overflow-x-hidden to prevent horizontal scroll on mobile (Requirement 6.3)
+        <div className="card-table-section p-4 flex flex-col gap-6 overflow-x-hidden">
+          {isLoading ? (
+            <div className="flex-center py-20">
+              <div className="spinner" />
+            </div>
+          ) : rolls.length === 0 ? (
+            <div className="empty-state py-20">
+              <div className="empty-icon">
+                <Icon name={hasFilter ? 'Search' : 'Layers'} size={48} />
               </div>
-            ) : rolls.length === 0 ? (
-              <div className="empty-state py-20">
-                <div className="empty-icon">
-                  <Icon name={hasFilter ? 'Search' : 'Layers'} size={48} />
-                </div>
-                <p>
-                  {hasFilter
-                    ? 'Không tìm thấy cuộn vải phù hợp.'
-                    : 'Chưa có cuộn vải nào.'}
-                </p>
-                {/* Requirement 4.5: show clear filter button in empty state when filter is active */}
-                {hasFilter && (
-                  <Button
-                    variant="secondary"
-                    leftIcon="X"
-                    className="btn mt-4"
-                    onClick={handleClearFilter}
-                  >
-                    Xóa bộ lọc
-                  </Button>
-                )}
-              </div>
-            ) : (
-              groupedRolls.map((group, index) => (
-                <LotMatrixCard
-                  key={group.lot}
-                  title={group.lot}
-                  lotNumber={
-                    group.lot !== 'KHÔNG CÓ LÔ' ? group.lot : undefined
-                  }
-                  colorName={group.colorName || undefined}
-                  expectedRollsCount={group.rolls.length}
-                  standardWeightKg={group.medianWeight}
-                  lotIndex={index + 1}
-                  totalLots={groupedRolls.length}
-                  rolls={group.rolls.map((r) => ({
-                    id: r.id,
-                    roll_number: r.roll_number,
-                    weight_kg: r.weight_kg ?? undefined,
-                    status: r.status,
-                  }))}
-                  mode="view"
-                  onRollPress={(roll) => {
-                    const original = rolls.find((r) => r.id === roll.id);
-                    if (original) onEdit(original);
-                  }}
-                />
-              ))
-            )}
-          </div>
-        )}
-      </div>
+              <p>
+                {hasFilter
+                  ? 'Không tìm thấy cuộn vải phù hợp.'
+                  : 'Chưa có cuộn vải nào.'}
+              </p>
+              {/* Requirement 4.5: show clear filter button in empty state when filter is active */}
+              {hasFilter && (
+                <Button
+                  variant="secondary"
+                  leftIcon="X"
+                  className="btn mt-4"
+                  onClick={handleClearFilter}
+                >
+                  Xóa bộ lọc
+                </Button>
+              )}
+            </div>
+          ) : (
+            groupedRolls.map((group, index) => (
+              <LotMatrixCard
+                key={group.lot}
+                title={group.lot}
+                lotNumber={group.lot !== 'KHÔNG CÓ LÔ' ? group.lot : undefined}
+                colorName={group.colorName || undefined}
+                expectedRollsCount={group.rolls.length}
+                standardWeightKg={group.medianWeight}
+                lotIndex={index + 1}
+                totalLots={groupedRolls.length}
+                rolls={group.rolls.map((r) => ({
+                  id: r.id,
+                  roll_number: r.roll_number,
+                  weight_kg: r.weight_kg ?? undefined,
+                  status: r.status,
+                }))}
+                mode="view"
+                onRollPress={(roll) => {
+                  const original = rolls.find((r) => r.id === roll.id);
+                  if (original) onEdit(original);
+                }}
+              />
+            ))
+          )}
+        </div>
+      )}
 
       <div className="p-4">
         <Pagination result={result} onPageChange={setPage} />

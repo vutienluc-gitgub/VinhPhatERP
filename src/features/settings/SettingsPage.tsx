@@ -1,9 +1,9 @@
 import { useAuth } from '@/features/auth/AuthProvider';
 import { Icon } from '@/shared/components/Icon';
-import { Switch } from '@/shared/components/Switch';
 import { usePreferences } from '@/shared/context/preferences-context';
 
 import { CompanySettingsForm } from './CompanySettingsForm';
+import { SETTINGS_LABELS } from './settings.constants';
 
 export function SettingsPage() {
   const { profile } = useAuth();
@@ -18,52 +18,18 @@ export function SettingsPage() {
             <Icon name="Settings" size={24} strokeWidth={1.5} />
           </div>
           <div>
-            <h1 className="page-title m-0">Cài đặt hệ thống</h1>
-            <p className="page-subtitle m-0">
-              Quản lý cấu hình công ty và các tham số vận hành.
-            </p>
+            <h1 className="page-title m-0">{SETTINGS_LABELS.PAGE_TITLE}</h1>
+            <p className="page-subtitle m-0">{SETTINGS_LABELS.PAGE_SUBTITLE}</p>
           </div>
         </div>
       </div>
 
       <div className="route-content flex flex-col gap-6">
-        <div className="panel-card card-flush">
-          <div className="card-header-area">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0">
-                <Icon name="Building2" size={20} strokeWidth={1.5} />
-              </div>
-              <span className="font-bold text-lg">Thông tin công ty</span>
-            </div>
-          </div>
-          <div className="p-6">
-            <CompanySettingsForm />
-          </div>
-        </div>
-
-        {isAdmin && (
-          <div className="panel-card card-flush">
-            <div className="card-header-area">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0">
-                  <Icon name="LayoutTemplate" size={20} strokeWidth={1.5} />
-                </div>
-                <span className="font-bold text-lg">Hiển thị hệ thống</span>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="max-w-lg">
-                <Switch
-                  id="layout-mode-switch"
-                  checked={prefs.fluid_layout}
-                  onChange={setFluidLayout}
-                  label="Chế độ tràn viền (Fluid Dashboard)"
-                  description="Bật công tắc này để giao diện mở rộng 100% diện tích màn hình."
-                />
-              </div>
-            </div>
-          </div>
-        )}
+        <CompanySettingsForm
+          isAdmin={isAdmin}
+          fluidLayout={prefs.fluid_layout}
+          onFluidLayoutChange={setFluidLayout}
+        />
       </div>
     </div>
   );

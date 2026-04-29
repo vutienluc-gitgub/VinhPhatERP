@@ -295,241 +295,234 @@ export function FinishedFabricList({
       )}
 
       {/* Main Content View */}
-      <div className="card-table-section min-h-[400px]">
-        {viewMode === 'grid' ? (
-          <div className="p-4 flex flex-col gap-6">
-            {isLoading ? (
-              <div className="flex-center py-20">
-                <div className="spinner" />
+      {viewMode === 'grid' ? (
+        <div className="card-table-section p-4 flex flex-col gap-6">
+          {isLoading ? (
+            <div className="flex-center py-20">
+              <div className="spinner" />
+            </div>
+          ) : rolls.length === 0 ? (
+            <div className="empty-state py-20">
+              <div className="empty-icon">
+                <Icon name="Package" size={48} />
               </div>
-            ) : rolls.length === 0 ? (
-              <div className="empty-state py-20">
-                <div className="empty-icon">
-                  <Icon name="Package" size={48} />
-                </div>
-                <p>Chưa có cuộn thành phẩm nào.</p>
-              </div>
-            ) : (
-              groupedRolls.map((group) => (
-                <LotMatrixCard
-                  key={group.lot}
-                  title={group.lot}
-                  lotNumber={
-                    group.lot !== 'KHÔNG CÓ LÔ' ? group.lot : undefined
-                  }
-                  colorName={group.colorName || undefined}
-                  expectedRollsCount={group.rolls.length}
-                  rolls={group.rolls.map((r) => ({
-                    id: r.id,
-                    roll_number: r.roll_number,
-                    weight_kg: r.weight_kg ?? undefined,
-                    status: r.status,
-                    raw_roll_number: r.raw_roll_number ?? undefined,
-                  }))}
-                  standardWeightKg={group.standardWeightKg}
-                  mode="view"
-                  onRollPress={(roll) => {
-                    const original = rolls.find((r) => r.id === roll.id);
-                    if (original) onEdit(original);
-                  }}
-                />
-              ))
-            )}
-          </div>
-        ) : (
-          <DataTablePremium
-            data={rolls}
-            isLoading={isLoading}
-            rowKey={(r) => r.id}
-            onRowClick={(r) => {
-              if (canEditRoll(r.status)) onEdit(r);
-            }}
-            emptyStateTitle="Không có dữ liệu"
-            emptyStateIcon="Package"
-            columns={[
-              {
-                header: 'Mã cuộn',
-                id: 'roll_number',
-                sortable: true,
-                cell: (r) => (
-                  <div className="flex flex-col">
-                    <span className="font-bold text-primary">
-                      {r.roll_number}
-                    </span>
-                    {r.color_name && (
-                      <span className="text-xs text-muted">{r.color_name}</span>
-                    )}
-                  </div>
-                ),
-              },
-              {
-                header: 'Loại vải',
-                id: 'fabric_type',
-                sortable: true,
-                cell: (r) => r.fabric_type,
-              },
-              {
-                header: 'CL',
-                id: 'quality_grade',
-                sortable: true,
-                cell: (r) =>
-                  r.quality_grade ? (
-                    <span className={`grade-badge grade-${r.quality_grade}`}>
-                      {r.quality_grade}
-                    </span>
-                  ) : (
-                    <span className="text-muted">—</span>
-                  ),
-              },
-              {
-                header: 'Khổ × Dài',
-                id: 'length_m',
-                sortable: true,
-                className: 'text-muted',
-                cell: (r) => (
-                  <div className="flex flex-col text-xs">
-                    <span>
-                      {r.width_cm !== null ? `${r.width_cm} cm` : '—'}
-                    </span>
-                    <span>
-                      {r.length_m !== null &&
-                        ` × ${formatNum(r.length_m, 'm')}`}
-                    </span>
-                  </div>
-                ),
-              },
-              {
-                header: 'Trọng lượng',
-                id: 'weight_kg',
-                sortable: true,
-                className: 'text-right',
-                cell: (r) => (
-                  <span className="font-medium">
-                    {formatNum(r.weight_kg, 'kg')}
+              <p>Chưa có cuộn thành phẩm nào.</p>
+            </div>
+          ) : (
+            groupedRolls.map((group) => (
+              <LotMatrixCard
+                key={group.lot}
+                title={group.lot}
+                lotNumber={group.lot !== 'KHÔNG CÓ LÔ' ? group.lot : undefined}
+                colorName={group.colorName || undefined}
+                expectedRollsCount={group.rolls.length}
+                rolls={group.rolls.map((r) => ({
+                  id: r.id,
+                  roll_number: r.roll_number,
+                  weight_kg: r.weight_kg ?? undefined,
+                  status: r.status,
+                  raw_roll_number: r.raw_roll_number ?? undefined,
+                }))}
+                standardWeightKg={group.standardWeightKg}
+                mode="view"
+                onRollPress={(roll) => {
+                  const original = rolls.find((r) => r.id === roll.id);
+                  if (original) onEdit(original);
+                }}
+              />
+            ))
+          )}
+        </div>
+      ) : (
+        <DataTablePremium
+          data={rolls}
+          isLoading={isLoading}
+          rowKey={(r) => r.id}
+          onRowClick={(r) => {
+            if (canEditRoll(r.status)) onEdit(r);
+          }}
+          emptyStateTitle="Không có dữ liệu"
+          emptyStateIcon="Package"
+          columns={[
+            {
+              header: 'Mã cuộn',
+              id: 'roll_number',
+              sortable: true,
+              cell: (r) => (
+                <div className="flex flex-col">
+                  <span className="font-bold text-primary">
+                    {r.roll_number}
                   </span>
-                ),
-              },
-              {
-                header: 'Trạng thái',
-                id: 'status',
-                sortable: true,
-                cell: (r) => (
-                  <Badge variant={getStatusVariant(r.status)}>
-                    {ROLL_STATUS_LABELS[r.status]}
-                  </Badge>
-                ),
-              },
-              {
-                header: 'Vị trí',
-                id: 'warehouse_location',
-                sortable: true,
-                cell: (r) => (
-                  <span className="text-xs text-muted">
-                    {r.warehouse_location ?? '—'}
-                  </span>
-                ),
-              },
-              {
-                header: 'Thao tác',
-                className: 'text-right',
-                onCellClick: () => {},
-                cell: (r) => (
-                  <ActionBar
-                    actions={[
-                      {
-                        icon: 'Link',
-                        onClick: () => onTrace(r),
-                        title: 'Truy vết',
-                      },
-                      {
-                        icon: 'Pencil',
-                        onClick: () => onEdit(r),
-                        title: editBlockReason(r.status) ?? 'Sửa',
-                        disabled: !canEditRoll(r.status),
-                      },
-                      {
-                        icon: 'Trash2',
-                        onClick: () => handleDelete(r),
-                        title: deleteBlockReason(r.status) ?? 'Xóa',
-                        variant: 'danger',
-                        disabled:
-                          deleteMutation.isPending || !canDeleteRoll(r.status),
-                      },
-                    ]}
-                  />
-                ),
-              },
-            ]}
-            renderMobileCard={(r) => (
-              <div className="mobile-card">
-                <div className="mobile-card-header">
-                  <span className="mobile-card-title">{r.roll_number}</span>
-                  <Badge variant={getStatusVariant(r.status)}>
-                    {ROLL_STATUS_LABELS[r.status]}
-                  </Badge>
-                </div>
-                <div className="mobile-card-body">
-                  <div className="flex justify-between items-start mb-1">
-                    <span className="text-sm font-bold">{r.fabric_type}</span>
+                  {r.color_name && (
                     <span className="text-xs text-muted">{r.color_name}</span>
+                  )}
+                </div>
+              ),
+            },
+            {
+              header: 'Loại vải',
+              id: 'fabric_type',
+              sortable: true,
+              cell: (r) => r.fabric_type,
+            },
+            {
+              header: 'CL',
+              id: 'quality_grade',
+              sortable: true,
+              cell: (r) =>
+                r.quality_grade ? (
+                  <span className={`grade-badge grade-${r.quality_grade}`}>
+                    {r.quality_grade}
+                  </span>
+                ) : (
+                  <span className="text-muted">—</span>
+                ),
+            },
+            {
+              header: 'Khổ × Dài',
+              id: 'length_m',
+              sortable: true,
+              className: 'text-muted',
+              cell: (r) => (
+                <div className="flex flex-col text-xs">
+                  <span>{r.width_cm !== null ? `${r.width_cm} cm` : '—'}</span>
+                  <span>
+                    {r.length_m !== null && ` × ${formatNum(r.length_m, 'm')}`}
+                  </span>
+                </div>
+              ),
+            },
+            {
+              header: 'Trọng lượng',
+              id: 'weight_kg',
+              sortable: true,
+              className: 'text-right',
+              cell: (r) => (
+                <span className="font-medium">
+                  {formatNum(r.weight_kg, 'kg')}
+                </span>
+              ),
+            },
+            {
+              header: 'Trạng thái',
+              id: 'status',
+              sortable: true,
+              cell: (r) => (
+                <Badge variant={getStatusVariant(r.status)}>
+                  {ROLL_STATUS_LABELS[r.status]}
+                </Badge>
+              ),
+            },
+            {
+              header: 'Vị trí',
+              id: 'warehouse_location',
+              sortable: true,
+              cell: (r) => (
+                <span className="text-xs text-muted">
+                  {r.warehouse_location ?? '—'}
+                </span>
+              ),
+            },
+            {
+              header: 'Thao tác',
+              className: 'text-right',
+              onCellClick: () => {},
+              cell: (r) => (
+                <ActionBar
+                  actions={[
+                    {
+                      icon: 'Link',
+                      onClick: () => onTrace(r),
+                      title: 'Truy vết',
+                    },
+                    {
+                      icon: 'Pencil',
+                      onClick: () => onEdit(r),
+                      title: editBlockReason(r.status) ?? 'Sửa',
+                      disabled: !canEditRoll(r.status),
+                    },
+                    {
+                      icon: 'Trash2',
+                      onClick: () => handleDelete(r),
+                      title: deleteBlockReason(r.status) ?? 'Xóa',
+                      variant: 'danger',
+                      disabled:
+                        deleteMutation.isPending || !canDeleteRoll(r.status),
+                    },
+                  ]}
+                />
+              ),
+            },
+          ]}
+          renderMobileCard={(r) => (
+            <div className="mobile-card">
+              <div className="mobile-card-header">
+                <span className="mobile-card-title">{r.roll_number}</span>
+                <Badge variant={getStatusVariant(r.status)}>
+                  {ROLL_STATUS_LABELS[r.status]}
+                </Badge>
+              </div>
+              <div className="mobile-card-body">
+                <div className="flex justify-between items-start mb-1">
+                  <span className="text-sm font-bold">{r.fabric_type}</span>
+                  <span className="text-xs text-muted">{r.color_name}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase text-muted">
+                      Trọng lượng
+                    </span>
+                    <span className="text-sm font-medium">
+                      {formatNum(r.weight_kg, 'kg')}
+                    </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] uppercase text-muted">
-                        Trọng lượng
-                      </span>
-                      <span className="text-sm font-medium">
-                        {formatNum(r.weight_kg, 'kg')}
-                      </span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] uppercase text-muted">
-                        Chất lượng
-                      </span>
-                      <span className="text-sm font-bold">
-                        {r.quality_grade || '—'}
-                      </span>
-                    </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase text-muted">
+                      Chất lượng
+                    </span>
+                    <span className="text-sm font-bold">
+                      {r.quality_grade || '—'}
+                    </span>
                   </div>
                 </div>
-                <div className="flex gap-2 pt-2 border-t border-border/10">
+              </div>
+              <div className="flex gap-2 pt-2 border-t border-border/10">
+                <button
+                  className="btn-secondary flex-1"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onTrace(r);
+                  }}
+                >
+                  <Icon name="Link" size={16} /> Truy vết
+                </button>
+                {canEditRoll(r.status) && (
                   <button
-                    className="btn-secondary flex-1"
+                    className="btn-secondary flex-1 text-primary"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onTrace(r);
+                      onEdit(r);
                     }}
                   >
-                    <Icon name="Link" size={16} /> Truy vết
+                    <Icon name="Pencil" size={16} /> Sửa
                   </button>
-                  {canEditRoll(r.status) && (
-                    <button
-                      className="btn-secondary flex-1 text-primary"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEdit(r);
-                      }}
-                    >
-                      <Icon name="Pencil" size={16} /> Sửa
-                    </button>
-                  )}
-                  {canDeleteRoll(r.status) && (
-                    <button
-                      className="btn-secondary text-danger px-3"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(r);
-                      }}
-                    >
-                      <Icon name="Trash2" size={16} />
-                    </button>
-                  )}
-                </div>
+                )}
+                {canDeleteRoll(r.status) && (
+                  <button
+                    className="btn-secondary text-danger px-3"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(r);
+                    }}
+                  >
+                    <Icon name="Trash2" size={16} />
+                  </button>
+                )}
               </div>
-            )}
-          />
-        )}
-      </div>
+            </div>
+          )}
+        />
+      )}
 
       <div className="p-4">
         <Pagination result={result} onPageChange={setPage} />
