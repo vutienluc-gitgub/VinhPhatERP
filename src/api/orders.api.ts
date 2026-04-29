@@ -12,6 +12,8 @@ import type { PaginatedResult } from '@/shared/types/pagination';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import { orderResponseSchema } from '@/schema/order.schema';
 import { untypedDb } from '@/services/supabase/untyped';
+import { validateApiInput } from '@/lib/validate-api-input';
+import { apiOrderHeader, apiOrderItem } from '@/schema/api-validation.schema';
 import {
   fetchNextDocNumber,
   monthlyPrefix,
@@ -132,6 +134,11 @@ export async function createOrder(
   header: OrderInsert,
   items: Omit<OrderItemInsert, 'order_id'>[],
 ): Promise<Order> {
+  validateApiInput(apiOrderHeader, header);
+  items.forEach((item, i) =>
+    validateApiInput(apiOrderItem.passthrough(), { ...item, _index: i }),
+  );
+
   const { data, error } = await untypedDb.rpc('rpc_create_order', {
     p_header: header,
     p_items: items,

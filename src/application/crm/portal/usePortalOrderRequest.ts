@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { supabase } from '@/services/supabase/client';
+import { safeUpsert } from '@/lib/db-guard';
 // eslint-disable-next-line boundaries/dependencies
 import { useAuth } from '@/features/auth/AuthProvider';
 
@@ -41,10 +42,12 @@ export function usePortalOrderRequest() {
       const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
       const rand = Math.floor(Math.random() * 9000) + 1000;
       const orderNumber = `PO-${dateStr}-${rand}`;
+      const orderId = crypto.randomUUID();
 
-      const { data: order, error: orderErr } = await supabase
-        .from('orders')
-        .insert({
+      await safeUpsert({
+        table: 'orders',
+        data: {
+          id: orderId,
           tenant_id: profile.tenant_id,
           customer_id: profile.customer_id,
           order_number: orderNumber,
@@ -54,20 +57,17 @@ export function usePortalOrderRequest() {
           status: 'pending_review',
           total_amount: 0,
           paid_amount: 0,
-        })
-        .select('id')
-        .single();
-
-      if (orderErr || !order) {
-        throw new Error(orderErr?.message ?? 'Không thể tạo đơn hàng.');
-      }
+        },
+        conflictKey: 'id',
+      });
 
       // Insert order items
       if (payload.items.length > 0) {
-        const { error: itemsErr } = await supabase.from('order_items').insert(
-          payload.items.map((item, idx) => ({
+        await safeUpsert({
+          table: 'order_items',
+          data: payload.items.map((item, idx) => ({
             tenant_id: profile.tenant_id,
-            order_id: order.id,
+            order_id: orderId,
             fabric_type: item.fabric_type,
             color_name: item.color_name || null,
             quantity: item.quantity,
@@ -76,14 +76,14 @@ export function usePortalOrderRequest() {
             notes: item.notes || null,
             sort_order: idx,
           })),
-        );
-        if (itemsErr) throw new Error(itemsErr.message);
+          conflictKey: 'id',
+        });
       }
 
       await supabase.from('business_audit_log').insert({
         tenant_id: profile.tenant_id,
         entity_type: 'orders',
-        entity_id: order.id,
+        entity_id: orderId,
         event_type: 'ORDER_REQUEST_CREATED',
         payload: {
           action: 'submit_from_portal',

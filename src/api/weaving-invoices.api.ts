@@ -8,6 +8,8 @@ import { untypedDb as db } from '@/services/supabase/untyped';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
+import { validateApiInput } from '@/lib/validate-api-input';
+import { apiWeavingInvoiceHeader } from '@/schema/api-validation.schema';
 
 const TABLE = 'weaving_invoices';
 
@@ -106,6 +108,7 @@ export async function fetchWeavingSuppliers(): Promise<
 export async function createWeavingInvoice(
   values: WeavingInvoiceFormValues,
 ): Promise<WeavingInvoice> {
+  validateApiInput(apiWeavingInvoiceHeader.passthrough(), values);
   const tenantId = await getTenantId();
   const invoiceNumber = values.invoice_number.trim();
 

@@ -1,11 +1,14 @@
 import { useState } from 'react';
 
 import { useProgressBoard, useUpdateStageStatus } from '@/application/orders';
+import {
+  PRODUCTION_STAGES,
+  STAGE_LABELS,
+} from '@/schema/order-progress.schema';
 
 import { OpsLevelPath } from './OpsLevelPath';
 import { ProgressExpBar } from './ProgressExpBar';
 import { calculateOrderProgress } from './utils';
-import { PRODUCTION_STAGES, STAGE_LABELS } from './order-progress.module';
 import type {
   OrderProgressWithOrder,
   ProductionStage,

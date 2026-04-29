@@ -7,8 +7,7 @@ import {
   calculateDirectYarnCost,
   calculateGreigeCostEstimation,
 } from '@/domain/production/ProductionDomain';
-
-import type { CreateWorkOrderInput } from './work-orders.module';
+import type { CreateWorkOrderInput } from '@/schema/work-order.schema';
 
 /* ── Snapshot that parent form captures for persistence ── */
 

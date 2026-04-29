@@ -14,14 +14,14 @@ import {
   useNextYarnCatalogCode,
   useUpdateYarnCatalog,
 } from '@/application/settings';
-
-import type { YarnCatalog } from './types';
 import {
   yarnCatalogDefaultValues,
   yarnCatalogSchema,
   YARN_CATALOG_STATUS_LABELS,
-} from './yarn-catalog.module';
-import type { YarnCatalogFormValues } from './yarn-catalog.module';
+} from '@/schema/yarn-catalog.schema';
+import type { YarnCatalogFormValues } from '@/schema/yarn-catalog.schema';
+
+import type { YarnCatalog } from './types';
 
 type YarnCatalogFormProps = {
   catalog: YarnCatalog | null;

@@ -18,8 +18,8 @@ import type { ActionConfig } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import { useDeleteOrder, useOrderList } from '@/application/orders';
 import { sumBy } from '@/shared/utils/array.util';
+import { ORDER_STATUS_LABELS } from '@/schema/order.schema';
 
-import { ORDER_STATUS_LABELS } from './orders.module';
 import type { Order, OrdersFilter, OrderStatus } from './types';
 
 type OrderListProps = {

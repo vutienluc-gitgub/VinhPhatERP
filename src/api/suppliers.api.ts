@@ -9,6 +9,8 @@ import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import { safeUpsert } from '@/lib/db-guard';
+import { validateApiInput } from '@/lib/validate-api-input';
+import { apiSupplierInsert } from '@/schema/api-validation.schema';
 
 const TABLE = 'suppliers';
 
@@ -86,6 +88,7 @@ export async function fetchNextSupplierCode(): Promise<string> {
 }
 
 export async function createSupplier(row: SupplierInsert): Promise<Supplier> {
+  validateApiInput(apiSupplierInsert.passthrough(), row);
   const tenantId = await getTenantId();
 
   const sanitizedRow = {
@@ -100,24 +103,36 @@ export async function createSupplier(row: SupplierInsert): Promise<Supplier> {
     const promises = [];
     if (sanitizedRow.code) {
       promises.push(
-        supabase.from(TABLE).select('id').eq('tenant_id', tenantId).eq('code', sanitizedRow.code)
+        supabase
+          .from(TABLE)
+          .select('id')
+          .eq('tenant_id', tenantId)
+          .eq('code', sanitizedRow.code),
       );
     }
     if (sanitizedRow.email) {
       promises.push(
-        supabase.from(TABLE).select('id').eq('tenant_id', tenantId).eq('email', sanitizedRow.email)
+        supabase
+          .from(TABLE)
+          .select('id')
+          .eq('tenant_id', tenantId)
+          .eq('email', sanitizedRow.email),
       );
     }
     if (sanitizedRow.phone) {
       promises.push(
-        supabase.from(TABLE).select('id').eq('tenant_id', tenantId).eq('phone', sanitizedRow.phone)
+        supabase
+          .from(TABLE)
+          .select('id')
+          .eq('tenant_id', tenantId)
+          .eq('phone', sanitizedRow.phone),
       );
     }
 
     if (promises.length > 0) {
       const results = await Promise.all(promises);
       const hasDuplicate = results.some(
-        (res) => !res.error && res.data && res.data.length > 0
+        (res) => !res.error && res.data && res.data.length > 0,
       );
 
       if (hasDuplicate) {
@@ -145,7 +160,12 @@ export async function createSupplier(row: SupplierInsert): Promise<Supplier> {
     }
     return inserted as unknown as Supplier;
   } catch (error: unknown) {
-    if (error && typeof error === 'object' && 'code' in error && (error as { code: string }).code === '23505') {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'code' in error &&
+      (error as { code: string }).code === '23505'
+    ) {
       throw new Error(
         'Nhà cung cấp bị trùng lặp dữ liệu (Unique Constraint) trong hệ thống.',
       );

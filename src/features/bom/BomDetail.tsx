@@ -2,8 +2,8 @@ import { Button } from '@/shared/components';
 import { Icon } from '@/shared/components/Icon';
 import { Badge } from '@/shared/components/Badge';
 import { useBomVersions } from '@/application/production';
+import { BOM_STATUS_LABELS } from '@/schema/bom.schema';
 
-import { BOM_STATUS_LABELS } from './bom.module';
 import { BomTemplate, BomStatus } from './types';
 
 interface BomDetailProps {

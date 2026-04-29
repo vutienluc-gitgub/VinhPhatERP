@@ -7,6 +7,8 @@ import { supabase } from '@/services/supabase/client';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import { untypedDb } from '@/services/supabase/untyped';
+import { validateApiInput } from '@/lib/validate-api-input';
+import { apiQuotationHeader } from '@/schema/api-validation.schema';
 
 const HEADER_TABLE = 'quotations';
 
@@ -118,6 +120,7 @@ export async function createQuotation(
   header: QuotationHeaderInsert,
   items: Omit<QuotationItemInsert, 'quotation_id'>[],
 ): Promise<Quotation> {
+  validateApiInput(apiQuotationHeader.passthrough(), header);
   const { data, error } = await untypedDb.rpc('rpc_create_quotation', {
     p_header: header,
     p_items: items,

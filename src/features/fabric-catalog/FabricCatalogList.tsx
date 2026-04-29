@@ -16,8 +16,8 @@ import {
   useDeleteFabricCatalog,
   useFabricCatalogList,
 } from '@/application/settings';
+import { FABRIC_CATALOG_STATUS_LABELS } from '@/schema/fabric-catalog.schema';
 
-import { FABRIC_CATALOG_STATUS_LABELS } from './fabric-catalog.module';
 import type {
   FabricCatalog,
   FabricCatalogFilter,

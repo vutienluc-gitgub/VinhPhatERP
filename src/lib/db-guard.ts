@@ -41,6 +41,19 @@ export async function safeUpsert<T>({
 }
 
 /**
+ * SAFE UPSERT — single row convenience wrapper.
+ * Eliminates repeated `Array.isArray(result) ? result[0] : result` boilerplate.
+ */
+export async function safeUpsertOne<T>(params: {
+  table: string;
+  data: T;
+  conflictKey: string;
+}): Promise<unknown> {
+  const result = await safeUpsert(params);
+  return Array.isArray(result) ? result[0] : result;
+}
+
+/**
  * SAFE INSERT (only when truly needed)
  */
 export async function safeInsert({

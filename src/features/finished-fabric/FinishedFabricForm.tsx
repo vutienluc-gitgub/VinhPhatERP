@@ -15,7 +15,6 @@ import {
   useRawRollOptions,
   useUpdateFinishedFabric,
 } from '@/application/inventory';
-
 import {
   QUALITY_GRADE_LABELS,
   QUALITY_GRADES,
@@ -23,8 +22,9 @@ import {
   ROLL_STATUSES,
   finishedFabricDefaults,
   finishedFabricSchema,
-} from './finished-fabric.module';
-import type { FinishedFabricFormValues } from './finished-fabric.module';
+} from '@/schema/finished-fabric.schema';
+import type { FinishedFabricFormValues } from '@/schema/finished-fabric.schema';
+
 import { editBlockReason, getAllowedStatusTransitions } from './transitions';
 import type { FinishedFabricRoll, RollStatus } from './types';
 

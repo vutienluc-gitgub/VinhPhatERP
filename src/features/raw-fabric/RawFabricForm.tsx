@@ -18,7 +18,6 @@ import {
   useWorkOrderOptions,
   useYarnReceiptOptions,
 } from '@/application/inventory';
-
 import {
   QUALITY_GRADE_LABELS,
   QUALITY_GRADES,
@@ -26,8 +25,9 @@ import {
   ROLL_STATUSES,
   rawFabricDefaults,
   rawFabricSchema,
-} from './raw-fabric.module';
-import type { RawFabricFormValues } from './raw-fabric.module';
+} from '@/schema/raw-fabric.schema';
+import type { RawFabricFormValues } from '@/schema/raw-fabric.schema';
+
 import type { RawFabricRoll } from './types';
 
 type RawFabricFormProps = {

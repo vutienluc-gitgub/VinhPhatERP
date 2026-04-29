@@ -11,7 +11,6 @@ import {
   useUpdateLoom,
 } from '@/application/settings';
 import { useWeavingSuppliers } from '@/application/production';
-
 import {
   loomDefaultValues,
   loomSchema,
@@ -19,8 +18,9 @@ import {
   LOOM_TYPE_LABELS,
   LOOM_TYPES,
   LOOM_STATUSES,
-} from './loom.module';
-import type { LoomFormValues } from './loom.module';
+} from '@/schema/loom.schema';
+import type { LoomFormValues } from '@/schema/loom.schema';
+
 import type { LoomWithSupplier } from './types';
 
 type LoomFormProps = {

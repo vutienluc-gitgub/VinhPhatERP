@@ -3,8 +3,10 @@ import type {
   TableInsert,
   TableUpdate,
 } from '@/shared/types/database.models';
-
-import type { QUALITY_GRADES, ROLL_STATUSES } from './finished-fabric.module';
+import type {
+  QUALITY_GRADES,
+  ROLL_STATUSES,
+} from '@/schema/finished-fabric.schema';
 
 export type QualityGrade = (typeof QUALITY_GRADES)[number];
 export type RollStatus = (typeof ROLL_STATUSES)[number];

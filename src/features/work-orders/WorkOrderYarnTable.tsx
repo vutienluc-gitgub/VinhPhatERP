@@ -13,8 +13,7 @@ import {
   calcTotalBomRatio,
   calcTotalRequiredKg,
 } from '@/shared/utils/yarn-requirement.util';
-
-import type { CreateWorkOrderInput } from './work-orders.module';
+import type { CreateWorkOrderInput } from '@/schema/work-order.schema';
 
 interface WorkOrderYarnTableProps {
   control: Control<CreateWorkOrderInput>;

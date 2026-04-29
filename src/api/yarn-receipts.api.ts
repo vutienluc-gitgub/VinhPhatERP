@@ -5,6 +5,8 @@ import type {
 import { supabase } from '@/services/supabase/client';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
+import { validateApiInput } from '@/lib/validate-api-input';
+import { apiYarnReceiptInput } from '@/schema/api-validation.schema';
 
 const HEADER_TABLE = 'yarn_receipts';
 
@@ -143,6 +145,7 @@ export type YarnReceiptCreateInput = {
 export async function createYarnReceiptFull(
   input: YarnReceiptCreateInput,
 ): Promise<YarnReceipt> {
+  validateApiInput(apiYarnReceiptInput.passthrough(), input);
   const { getTenantId } = await import('@/services/supabase/tenant');
   const tenantId = await getTenantId();
 

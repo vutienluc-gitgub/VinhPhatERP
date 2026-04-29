@@ -16,13 +16,13 @@ import {
 import type { ActionConfig } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import { useWorkOrders, useStartWorkOrder } from '@/application/production';
+import { WORK_ORDER_STATUSES } from '@/schema/work-order.schema';
 
 import type {
   WorkOrderFilter,
   WorkOrderStatus,
   WorkOrderWithRelations,
 } from './types';
-import { WORK_ORDER_STATUSES } from './work-orders.module';
 
 function getStatusVariant(status: WorkOrderStatus): BadgeVariant {
   switch (status) {

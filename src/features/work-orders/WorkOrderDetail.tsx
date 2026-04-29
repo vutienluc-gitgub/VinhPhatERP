@@ -14,9 +14,9 @@ import {
   useStartWorkOrder,
   useCompleteWorkOrder,
 } from '@/application/production';
+import { WORK_ORDER_STATUSES } from '@/schema/work-order.schema';
 
 import type { WorkOrder } from './types';
-import { WORK_ORDER_STATUSES } from './work-orders.module';
 
 interface WorkOrderDetailProps {
   id: string;

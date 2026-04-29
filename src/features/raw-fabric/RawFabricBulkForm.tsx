@@ -21,7 +21,6 @@ import {
 } from '@/application/inventory';
 import { useRawFabricExport } from '@/application/inventory';
 import { sumBy } from '@/shared/utils/array.util';
-
 import {
   QUALITY_GRADE_LABELS,
   QUALITY_GRADES,
@@ -30,8 +29,9 @@ import {
   bulkInputDefaults,
   bulkInputSchema,
   formatBulkRollNumber,
-} from './raw-fabric.module';
-import type { BulkInputFormValues } from './raw-fabric.module';
+} from '@/schema/raw-fabric.schema';
+import type { BulkInputFormValues } from '@/schema/raw-fabric.schema';
+
 import type { RawFabricRoll } from './types';
 
 type Props = {

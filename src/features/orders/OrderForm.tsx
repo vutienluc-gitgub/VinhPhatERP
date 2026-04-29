@@ -23,16 +23,16 @@ import {
 } from '@/application/orders';
 import { useUpdateOrder } from '@/application/orders';
 import { sumBy } from '@/shared/utils/array.util';
-
-import { CreditOverrideDialog } from './CreditOverrideDialog';
 import {
   emptyOrderItem,
   ordersDefaultValues,
   ordersSchema,
   ordersSchemaEdit,
   UNIT_OPTIONS,
-} from './orders.module';
-import type { OrdersFormValues } from './orders.module';
+} from '@/schema/order.schema';
+import type { OrdersFormValues } from '@/schema/order.schema';
+
+import { CreditOverrideDialog } from './CreditOverrideDialog';
 import type { Order } from './types';
 
 const UNIT_LABELS: Record<string, string> = {

@@ -10,13 +10,13 @@ import {
   useNextFabricCatalogCode,
   useUpdateFabricCatalog,
 } from '@/application/settings';
-
 import {
   fabricCatalogDefaultValues,
   fabricCatalogSchema,
   FABRIC_CATALOG_STATUS_LABELS,
-} from './fabric-catalog.module';
-import type { FabricCatalogFormValues } from './fabric-catalog.module';
+} from '@/schema/fabric-catalog.schema';
+import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
+
 import type { FabricCatalog } from './types';
 
 type FabricCatalogFormProps = {

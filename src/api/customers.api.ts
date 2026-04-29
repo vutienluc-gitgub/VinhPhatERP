@@ -9,6 +9,8 @@ import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { customerResponseSchema } from '@/schema/customer.schema';
 import { safeUpsert } from '@/lib/db-guard';
+import { validateApiInput } from '@/lib/validate-api-input';
+import { apiCustomerInsert } from '@/schema/api-validation.schema';
 
 const TABLE = 'customers';
 
@@ -34,6 +36,7 @@ export async function fetchCustomers(
 }
 
 export async function createCustomer(row: CustomerInsert): Promise<Customer> {
+  validateApiInput(apiCustomerInsert.passthrough(), row);
   const tenantId = await getTenantId();
 
   const sanitizedRow = {
@@ -48,24 +51,36 @@ export async function createCustomer(row: CustomerInsert): Promise<Customer> {
     const promises = [];
     if (sanitizedRow.code) {
       promises.push(
-        supabase.from(TABLE).select('id').eq('tenant_id', tenantId).eq('code', sanitizedRow.code)
+        supabase
+          .from(TABLE)
+          .select('id')
+          .eq('tenant_id', tenantId)
+          .eq('code', sanitizedRow.code),
       );
     }
     if (sanitizedRow.email) {
       promises.push(
-        supabase.from(TABLE).select('id').eq('tenant_id', tenantId).eq('email', sanitizedRow.email)
+        supabase
+          .from(TABLE)
+          .select('id')
+          .eq('tenant_id', tenantId)
+          .eq('email', sanitizedRow.email),
       );
     }
     if (sanitizedRow.phone) {
       promises.push(
-        supabase.from(TABLE).select('id').eq('tenant_id', tenantId).eq('phone', sanitizedRow.phone)
+        supabase
+          .from(TABLE)
+          .select('id')
+          .eq('tenant_id', tenantId)
+          .eq('phone', sanitizedRow.phone),
       );
     }
 
     if (promises.length > 0) {
       const results = await Promise.all(promises);
       const hasDuplicate = results.some(
-        (res) => !res.error && res.data && res.data.length > 0
+        (res) => !res.error && res.data && res.data.length > 0,
       );
 
       if (hasDuplicate) {
@@ -93,7 +108,12 @@ export async function createCustomer(row: CustomerInsert): Promise<Customer> {
     }
     return inserted as unknown as Customer;
   } catch (error: unknown) {
-    if (error && typeof error === 'object' && 'code' in error && (error as { code: string }).code === '23505') {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'code' in error &&
+      (error as { code: string }).code === '23505'
+    ) {
       throw new Error(
         'Khách hàng bị trùng lặp dữ liệu (Unique Constraint) trong hệ thống.',
       );

@@ -20,8 +20,8 @@ import {
   useExpiringQuotationsCount,
   useQuotationList,
 } from '@/application/quotations';
+import { QUOTATION_STATUS_LABELS } from '@/schema/quotation.schema';
 
-import { QUOTATION_STATUS_LABELS } from './quotations.module';
 import type { Quotation, QuotationsFilter, QuotationStatus } from './types';
 
 type QuotationListProps = {

@@ -15,9 +15,9 @@ import {
   useApproveOrderRequest,
   useRejectOrderRequest,
 } from '@/application/orders';
+import { ORDER_STATUS_LABELS } from '@/schema/order.schema';
 
 import { OrderAuditLogViewer } from './OrderAuditLogViewer';
-import { ORDER_STATUS_LABELS } from './orders.module';
 import type { Order, OrderStatus } from './types';
 
 type OrderDetailProps = {

@@ -17,8 +17,8 @@ import {
   useDeprecateBom,
   useReviseBom,
 } from '@/application/production';
+import { BOM_STATUSES, BOM_STATUS_LABELS } from '@/schema/bom.schema';
 
-import { BOM_STATUSES, BOM_STATUS_LABELS } from './bom.module';
 import { BomList } from './BomList';
 import type { BomFilter, BomTemplate } from './types';
 

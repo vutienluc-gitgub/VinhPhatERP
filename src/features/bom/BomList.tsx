@@ -6,8 +6,8 @@ import {
   ActionBar,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
+import { BOM_STATUS_LABELS } from '@/schema/bom.schema';
 
-import { BOM_STATUS_LABELS } from './bom.module';
 import { BomTemplate, BomStatus } from './types';
 
 interface BomListProps {

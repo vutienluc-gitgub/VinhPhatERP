@@ -3,6 +3,9 @@ import { untypedDb } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
+import { validateApiInput } from '@/lib/validate-api-input';
+import { apiLoomInsert } from '@/schema/api-validation.schema';
+import { safeUpsertOne } from '@/lib/db-guard';
 
 const TABLE = 'looms';
 
@@ -98,11 +101,19 @@ export async function fetchNextLoomCode(): Promise<string> {
 export async function createLoom(
   row: Omit<LoomInsertRow, 'tenant_id'>,
 ): Promise<LoomWithSupplier> {
+  validateApiInput(apiLoomInsert.passthrough(), row);
   const tenantId = await getTenantId();
+  const id = crypto.randomUUID();
+  await safeUpsertOne({
+    table: 'looms',
+    data: { id, ...row, tenant_id: tenantId },
+    conflictKey: 'id',
+  });
+  // Re-fetch with supplier join
   const { data, error } = await untypedDb
     .from(TABLE)
-    .insert([{ ...row, tenant_id: tenantId }])
     .select('*, supplier:suppliers(id, code, name)')
+    .eq('id', id)
     .single();
   if (error) throw error;
   return data as unknown as LoomWithSupplier;

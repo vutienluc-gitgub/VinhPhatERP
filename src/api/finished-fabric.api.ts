@@ -9,6 +9,7 @@ import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
+import { safeUpsert, safeUpsertOne } from '@/lib/db-guard';
 
 const TABLE = 'finished_fabric_rolls';
 
@@ -67,18 +68,15 @@ export async function createFinishedFabric(
   row: FinishedFabricRollInsert,
 ): Promise<FinishedFabricRoll> {
   const tenantId = await getTenantId();
-  const { data, error } = await supabase
-    .from(TABLE)
-    .insert([
-      {
-        ...row,
-        tenant_id: tenantId,
-      },
-    ])
-    .select()
-    .single();
-  if (error) throw error;
-  return data as FinishedFabricRoll;
+  const inserted = await safeUpsertOne({
+    table: TABLE,
+    data: {
+      ...row,
+      tenant_id: tenantId,
+    },
+    conflictKey: 'id',
+  });
+  return inserted as unknown as FinishedFabricRoll;
 }
 
 export async function updateFinishedFabric(
@@ -175,17 +173,17 @@ export async function createFinishedFabricBulk(
 
   // 3. Insert
   const tenantId = await getTenantId();
-  const { data, error } = await supabase
-    .from(TABLE)
-    .insert(
-      rows.map((r) => ({
-        ...r,
-        tenant_id: tenantId,
-      })),
-    )
-    .select();
-  if (error) throw error;
-  return (data ?? []) as FinishedFabricRoll[];
+  const result = await safeUpsert({
+    table: TABLE,
+    data: rows.map((r) => ({
+      ...r,
+      tenant_id: tenantId,
+    })),
+    conflictKey: 'id',
+  });
+  return (Array.isArray(result)
+    ? result
+    : [result]) as unknown as FinishedFabricRoll[];
 }
 
 export async function fetchFinishedFabricStats(): Promise<InventoryStats> {

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 
 import { usePortalOrderRequest } from '@/application/crm/portal';
 import { Button, Icon, AdaptiveSheet, Combobox } from '@/shared/components';
@@ -10,24 +9,10 @@ import {
   useColorOptions,
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
+import { orderRequestFormSchema } from '@/schema/order-request.schema';
+import type { OrderRequestFormValues } from '@/schema/order-request.schema';
 
-const requestItemSchema = z.object({
-  fabric_type: z.string().trim().min(2, 'Nhập loại vải'),
-  color_name: z.string().trim().optional().or(z.literal('')),
-  quantity: z
-    .number({ invalid_type_error: 'Nhập số lượng' })
-    .min(1, 'Số lượng tối thiểu là 1'),
-  unit: z.string().min(1, 'Chọn đơn vị'),
-  notes: z.string().trim().optional().or(z.literal('')),
-});
-
-const requestFormSchema = z.object({
-  delivery_date: z.string().optional().or(z.literal('')),
-  notes: z.string().trim().optional().or(z.literal('')),
-  items: z.array(requestItemSchema).min(1, 'Cần thêm ít nhất 1 mặt hàng'),
-});
-
-type RequestFormValues = z.infer<typeof requestFormSchema>;
+type RequestFormValues = OrderRequestFormValues;
 
 type OrderRequestModalProps = {
   onClose: () => void;
@@ -52,7 +37,7 @@ export function OrderRequestModal({
     setValue,
     formState: { errors },
   } = useForm<RequestFormValues>({
-    resolver: zodResolver(requestFormSchema),
+    resolver: zodResolver(orderRequestFormSchema),
     defaultValues: {
       delivery_date: '',
       notes: '',

@@ -1,20 +1,14 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 
 import { TEMPLATE_PLACEHOLDERS } from '@/schema';
 import type { ContractTemplate, ContractType } from '@/schema';
 import { Icon, Button } from '@/shared/components';
+import { contractTemplateEditorSchema } from '@/schema/contract-template.schema';
+import type { ContractTemplateEditorValues } from '@/schema/contract-template.schema';
 
-// ── Schema ───────────────────────────────────────────────────────────────────
-
-const editorSchema = z.object({
-  name: z.string().trim().min(1, 'Tên mẫu không được để trống'),
-  content: z.string().min(1, 'Nội dung mẫu không được để trống'),
-});
-
-type EditorValues = z.infer<typeof editorSchema>;
+type EditorValues = ContractTemplateEditorValues;
 
 // ── Props ────────────────────────────────────────────────────────────────────
 
@@ -40,7 +34,7 @@ export function TemplateEditor({
     handleSubmit,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<EditorValues>({
-    resolver: zodResolver(editorSchema),
+    resolver: zodResolver(contractTemplateEditorSchema),
     defaultValues: {
       name: template?.name ?? '',
       content: template?.content ?? '',

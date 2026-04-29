@@ -20,6 +20,13 @@ import {
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import { paymentResponseSchema } from '@/schema/payment.schema';
+import { validateApiInput } from '@/lib/validate-api-input';
+import {
+  apiPaymentRecord,
+  apiExpenseRecord,
+  apiAccountInsert,
+} from '@/schema/api-validation.schema';
+import { safeUpsertOne } from '@/lib/db-guard';
 
 /* ─── Payments ─────────────────────────────────── */
 
@@ -96,6 +103,7 @@ export async function fetchNextPaymentNumber(): Promise<string> {
 export async function createPaymentRecord(
   row: PaymentDbPayload,
 ): Promise<Payment> {
+  validateApiInput(apiPaymentRecord.passthrough(), row);
   const { data, error } = await untypedDb.rpc('rpc_create_payment', {
     p_data: row,
   });
@@ -144,17 +152,17 @@ export async function fetchPaymentAccounts(
 export async function createPaymentAccount(
   row: AccountInsertRow,
 ): Promise<PaymentAccount> {
+  validateApiInput(apiAccountInsert.passthrough(), row);
   const tenantId = await getTenantId();
-  const { data, error } = await untypedDb
-    .from('payment_accounts')
-    .insert({
+  const inserted = await safeUpsertOne({
+    table: 'payment_accounts',
+    data: {
       ...row,
       tenant_id: tenantId,
-    })
-    .select()
-    .single();
-  if (error) throw error;
-  return data as PaymentAccount;
+    },
+    conflictKey: 'id',
+  });
+  return inserted as unknown as PaymentAccount;
 }
 
 export async function updatePaymentAccount(
@@ -240,6 +248,7 @@ export async function fetchNextExpenseNumber(): Promise<string> {
 }
 
 export async function createExpense(row: ExpenseDbPayload): Promise<Expense> {
+  validateApiInput(apiExpenseRecord.passthrough(), row);
   const { data, error } = await untypedDb.rpc('rpc_create_expense', {
     p_data: row,
   });

@@ -2,6 +2,8 @@ import { untypedDb } from '@/services/supabase/untyped';
 import { getTenantId } from '@/services/supabase/tenant';
 import { Task, Employee, Kpi, ActivityItem } from '@/features/operations/types';
 import { safeUpsert } from '@/lib/db-guard';
+import { validateApiInput } from '@/lib/validate-api-input';
+import { apiTaskInsert } from '@/schema/api-validation.schema';
 import { OPERATIONS_MESSAGES } from '@/features/operations/constants';
 
 import { fetchEmployees as fetchCentralEmployees } from './employees.api';
@@ -75,6 +77,7 @@ export async function fetchActivities(): Promise<ActivityItem[]> {
 }
 
 export async function createTask(task: Partial<Task>): Promise<Task> {
+  validateApiInput(apiTaskInsert.passthrough(), task);
   const tenantId = await getTenantId();
   const results = await safeUpsert<Partial<Task>>({
     table: 'tasks',

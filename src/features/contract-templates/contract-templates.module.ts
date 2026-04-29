@@ -4,6 +4,7 @@ import type {
   ContractTemplate,
   UpdateTemplateInput,
 } from '@/schema';
+import { safeUpsertOne } from '@/lib/db-guard';
 
 // ── Service helpers ──────────────────────────────────────────────────────────
 
@@ -49,18 +50,17 @@ export async function createTemplate(data: {
   name: string;
   content: string;
 }): Promise<ContractTemplate> {
-  const { data: created, error } = await db
-    .templates()
-    .insert({
+  const inserted = await safeUpsertOne({
+    table: 'contract_templates',
+    data: {
       ...data,
       is_active: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-    })
-    .select()
-    .single();
-  if (error) throw error;
-  return created as ContractTemplate;
+    },
+    conflictKey: 'id',
+  });
+  return inserted as unknown as ContractTemplate;
 }
 
 /**
