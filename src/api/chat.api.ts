@@ -101,7 +101,7 @@ export async function fetchChatMessages(
   return parsed;
 }
 
-// ── Send Message (direct insert with auth context) ──
+// ── Send Message (via RPC — uses same tenant resolution as RLS) ──
 
 export async function sendChatMessage(params: {
   roomId: string;
@@ -110,35 +110,13 @@ export async function sendChatMessage(params: {
   messageType?: string;
   imageUrl?: string;
 }): Promise<ChatMessage> {
-  // Get current user for sender_id and tenant_id
-  const {
-    data: { user },
-  } = await untypedDb.auth.getUser();
-
-  if (!user) throw new Error('User not authenticated');
-
-  const tenantId =
-    (user.app_metadata?.tenant_id as string) ?? user.user_metadata?.tenant_id;
-
-  if (!tenantId) throw new Error('Missing tenant context');
-
-  const { data, error } = await untypedDb
-    .from('chat_messages')
-    .upsert(
-      {
-        client_id: params.clientId,
-        tenant_id: tenantId,
-        room_id: params.roomId,
-        sender_id: user.id,
-        content: params.content,
-        message_type: params.messageType ?? 'text',
-        image_url: params.imageUrl ?? null,
-        status: 'sent',
-      },
-      { onConflict: 'client_id', ignoreDuplicates: true },
-    )
-    .select()
-    .single();
+  const { data, error } = await untypedDb.rpc('rpc_send_chat_message', {
+    p_client_id: params.clientId,
+    p_room_id: params.roomId,
+    p_content: params.content,
+    p_message_type: params.messageType ?? 'text',
+    p_image_url: params.imageUrl ?? null,
+  });
 
   if (error) {
     console.error(
@@ -151,7 +129,24 @@ export async function sendChatMessage(params: {
     throw error;
   }
 
-  return data as ChatMessage;
+  // RPC returns message ID — fetch full row for cache reconciliation
+  const messageId = data as string;
+  const { data: msg, error: fetchErr } = await untypedDb
+    .from('chat_messages')
+    .select('*')
+    .eq('id', messageId)
+    .single();
+
+  if (fetchErr) {
+    console.error(
+      '[Chat] fetchMessage after send error:',
+      fetchErr.message,
+      fetchErr.hint,
+    );
+    throw fetchErr;
+  }
+
+  return msg as ChatMessage;
 }
 
 // ── Update Read Receipt ──
@@ -160,13 +155,19 @@ export async function updateReadReceipt(
   roomId: string,
   lastMessageId: string,
 ): Promise<void> {
+  // Get current user to filter correctly
+  const {
+    data: { user },
+  } = await untypedDb.auth.getUser();
+
   const { error } = await untypedDb
     .from('chat_room_participants')
     .update({
       last_read_message_id: lastMessageId,
       last_read_at: new Date().toISOString(),
     })
-    .eq('room_id', roomId);
+    .eq('room_id', roomId)
+    .eq('user_id', user?.id ?? '');
 
   if (error) throw error;
 }
