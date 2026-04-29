@@ -3,7 +3,7 @@ import type {
   YarnCatalogFilter,
 } from '@/features/yarn-catalog/types';
 import { supabase } from '@/services/supabase/client';
-import { safeUpsert } from '@/lib/db-guard';
+import { safeUpsertOne } from '@/lib/db-guard';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
@@ -100,15 +100,26 @@ export async function createYarnCatalog(
   row: YarnCatalogRow,
 ): Promise<YarnCatalog> {
   const tenantId = await getTenantId();
-  const [data] = await safeUpsert<YarnCatalogRow & { tenant_id: string }>({
+
+  // Application-level duplicate check on code
+  const { data: existing } = await supabase
+    .from(TABLE)
+    .select('id')
+    .eq('code', row.code)
+    .maybeSingle();
+  if (existing) {
+    throw new Error(`Mã sợi "${row.code}" đã tồn tại. Vui lòng chọn mã khác.`);
+  }
+
+  const inserted = await safeUpsertOne({
     table: TABLE,
     data: {
       ...row,
       tenant_id: tenantId,
     },
-    conflictKey: 'code',
+    conflictKey: 'id',
   });
-  return data as unknown as YarnCatalog;
+  return inserted as unknown as YarnCatalog;
 }
 
 export async function updateYarnCatalog(
