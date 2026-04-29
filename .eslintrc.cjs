@@ -243,7 +243,7 @@ module.exports = {
     {
       // [FIX] Không tắt hoàn toàn boundaries — chỉ cho phép
       // Page và Detail compose nhiều features, nhưng vẫn cấm query DB trực tiếp
-      files: ['**/*Page.tsx', '**/*Detail.tsx'],
+      files: ['**/*Page.tsx', '**/*Detail.tsx', '**/*Layout.tsx'],
       rules: {
         // Chỉ tắt cross-feature rule (vì page cần compose)
         // Các boundaries rule khác vẫn còn hiệu lực

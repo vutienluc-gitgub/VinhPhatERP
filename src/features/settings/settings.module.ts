@@ -52,7 +52,37 @@ export const settingsPlugin: FeaturePlugin = {
     {
       path: 'settings',
       component: () =>
-        import('./SettingsPage').then((m) => ({ default: m.SettingsPage })),
+        import('./SettingsLayout').then((m) => ({ default: m.SettingsLayout })),
+      children: [
+        {
+          path: 'general',
+          component: () =>
+            import('./pages/GeneralSettingsPage').then((m) => ({
+              default: m.GeneralSettingsPage,
+            })),
+        },
+        {
+          path: 'finance',
+          component: () =>
+            import('./pages/FinanceSettingsPage').then((m) => ({
+              default: m.FinanceSettingsPage,
+            })),
+        },
+        {
+          path: 'operations',
+          component: () =>
+            import('./pages/OperationsSettingsPage').then((m) => ({
+              default: m.OperationsSettingsPage,
+            })),
+        },
+        {
+          path: 'system',
+          component: () =>
+            import('./pages/SystemSettingsPage').then((m) => ({
+              default: m.SystemSettingsPage,
+            })),
+        },
+      ],
     },
   ],
 };

@@ -1,4 +1,5 @@
 import { lazy } from 'react';
+import { Navigate } from 'react-router-dom';
 import type { RouteObject } from 'react-router-dom';
 
 import { LazyPage } from '@/app/router/LazyPage';
@@ -35,15 +36,39 @@ function pluginToRoute(plugin: FeaturePlugin): RouteObject[] {
   if (plugin.routes && plugin.routes.length > 0) {
     for (const r of plugin.routes) {
       const LazyComponent = lazy(r.component);
-      routes.push({
+      const routeObj: RouteObject = {
         path: r.path,
         element: (
           <LazyPage>
             <LazyComponent />
           </LazyPage>
         ),
-        // Có thể áp dụng đệ quy cho r.children nếu cần, ở đây hỗ trợ basic nesting
-      });
+      };
+
+      // Support nested children (Outlet-based layouts)
+      if (r.children && r.children.length > 0) {
+        const firstChildPath = r.children[0]?.path ?? '';
+        routeObj.children = [
+          // Auto-redirect index to first child
+          {
+            index: true,
+            element: <Navigate to={firstChildPath} replace />,
+          },
+          ...r.children.map((child) => {
+            const ChildComponent = lazy(child.component);
+            return {
+              path: child.path,
+              element: (
+                <LazyPage>
+                  <ChildComponent />
+                </LazyPage>
+              ),
+            } as RouteObject;
+          }),
+        ];
+      }
+
+      routes.push(routeObj);
     }
   }
   // 2. Chế độ Legacy fallback (route + component)

@@ -1,35 +1,24 @@
-import { useState } from 'react';
+import { Outlet, useLocation, useNavigate, Navigate } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { Icon } from '@/shared/components/Icon';
 import { TabSwitcher, type TabItem } from '@/shared/components/TabSwitcher';
-import { usePreferences } from '@/shared/context/preferences-context';
 import { useCompanySettings } from '@/application/settings';
 
-import { CompanySettingsForm } from './CompanySettingsForm';
-import { FinanceSettingsForm } from './FinanceSettingsForm';
-import { NumberingSettingsForm } from './NumberingSettingsForm';
-import { NotificationSettingsForm } from './NotificationSettingsForm';
-import { ProductionSettingsForm } from './ProductionSettingsForm';
-import { ShipmentSettingsForm } from './ShipmentSettingsForm';
-import { UserManagementSettingsForm } from './UserManagementSettingsForm';
-import { ReportSettingsForm } from './ReportSettingsForm';
-import { IntegrationSettingsForm } from './IntegrationSettingsForm';
-import { UiSettingsForm } from './UiSettingsForm';
 import { SETTINGS_LABELS, SETTINGS_MESSAGES } from './settings.constants';
 
 type SettingsTab = 'general' | 'finance' | 'operations' | 'system';
 
-const SETTINGS_TABS: TabItem<SettingsTab>[] = [
+const ALL_TABS: (TabItem<SettingsTab> & { adminOnly?: boolean })[] = [
   { key: 'general', label: SETTINGS_LABELS.TAB_GENERAL },
-  { key: 'finance', label: SETTINGS_LABELS.TAB_FINANCE },
-  { key: 'operations', label: SETTINGS_LABELS.TAB_OPERATIONS },
-  { key: 'system', label: SETTINGS_LABELS.TAB_SYSTEM },
+  { key: 'finance', label: SETTINGS_LABELS.TAB_FINANCE, adminOnly: true },
+  { key: 'operations', label: SETTINGS_LABELS.TAB_OPERATIONS, adminOnly: true },
+  { key: 'system', label: SETTINGS_LABELS.TAB_SYSTEM, adminOnly: true },
 ];
 
 function SettingsSkeleton() {
   return (
-    <>
+    <div className="flex flex-col gap-6">
       {Array.from({ length: 2 }).map((_, i) => (
         <div key={`skeleton-${i}`} className="panel-card card-flush">
           <div className="card-header-area">
@@ -47,20 +36,41 @@ function SettingsSkeleton() {
           </div>
         </div>
       ))}
-    </>
+    </div>
   );
 }
 
-export function SettingsPage() {
+const TAB_TO_PATH: Record<SettingsTab, string> = {
+  general: '/settings/general',
+  finance: '/settings/finance',
+  operations: '/settings/operations',
+  system: '/settings/system',
+};
+
+const PATH_TO_TAB: Record<string, SettingsTab> = {
+  general: 'general',
+  finance: 'finance',
+  operations: 'operations',
+  system: 'system',
+};
+
+export function SettingsLayout() {
   const { profile } = useAuth();
   const isAdmin = profile?.role === 'admin';
-  const { prefs, setFluidLayout } = usePreferences();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { isLoading, error: loadError } = useCompanySettings();
-  const [activeTab, setActiveTab] = useState<SettingsTab>('general');
 
-  const visibleTabs = isAdmin
-    ? SETTINGS_TABS
-    : SETTINGS_TABS.filter((t) => t.key === 'general');
+  // Extract current tab from URL path
+  const pathSegment = location.pathname.split('/').pop() ?? 'general';
+  const activeTab: SettingsTab = PATH_TO_TAB[pathSegment] ?? 'general';
+
+  const visibleTabs = isAdmin ? ALL_TABS : ALL_TABS.filter((t) => !t.adminOnly);
+
+  // Redirect non-admin trying to access admin-only tabs
+  if (!isAdmin && activeTab !== 'general') {
+    return <Navigate to="/settings/general" replace />;
+  }
 
   return (
     <div className="page-container pb-20">
@@ -81,7 +91,7 @@ export function SettingsPage() {
           <TabSwitcher
             tabs={visibleTabs}
             active={activeTab}
-            onChange={setActiveTab}
+            onChange={(key) => navigate(TAB_TO_PATH[key])}
             variant="premium"
           />
         </div>
@@ -97,41 +107,7 @@ export function SettingsPage() {
           </p>
         )}
 
-        {!isLoading && !loadError && (
-          <>
-            {activeTab === 'general' && (
-              <CompanySettingsForm
-                isAdmin={isAdmin}
-                fluidLayout={prefs.fluid_layout}
-                onFluidLayoutChange={setFluidLayout}
-              />
-            )}
-
-            {activeTab === 'finance' && isAdmin && (
-              <>
-                <FinanceSettingsForm />
-                <NumberingSettingsForm />
-              </>
-            )}
-
-            {activeTab === 'operations' && isAdmin && (
-              <>
-                <ProductionSettingsForm />
-                <ShipmentSettingsForm />
-                <NotificationSettingsForm />
-              </>
-            )}
-
-            {activeTab === 'system' && isAdmin && (
-              <>
-                <UserManagementSettingsForm />
-                <ReportSettingsForm />
-                <IntegrationSettingsForm />
-                <UiSettingsForm />
-              </>
-            )}
-          </>
-        )}
+        {!isLoading && !loadError && <Outlet />}
       </div>
     </div>
   );
