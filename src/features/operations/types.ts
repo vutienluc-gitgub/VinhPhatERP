@@ -24,6 +24,7 @@ export interface Task {
   work_order_id?: string | null;
   estimated_hours?: number | null;
   actual_hours?: number | null;
+  version?: number; // Optimistic Concurrency Control (OCC)
   created_at?: string;
   updated_at?: string;
 }

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { useAuth } from '@/features/auth/AuthProvider';
-import { Icon } from '@/shared/components';
+import { Icon, ChatDrawer } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import {
   useMyDriverEmployee,
@@ -78,9 +78,11 @@ function JourneyStepButton({
 function ShipmentCard({
   shipment,
   employeeId,
+  onOpenChat,
 }: {
   shipment: DriverShipment;
   employeeId: string;
+  onOpenChat: (shipment: DriverShipment) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [notesInput, setNotesInput] = useState('');
@@ -245,6 +247,16 @@ function ShipmentCard({
               </div>
             </div>
           )}
+
+          {/* Chat button */}
+          <button
+            type="button"
+            className="flex items-center justify-center gap-2 w-full py-3 mt-3 rounded-[var(--radius)] border-[1.5px] border-primary text-primary font-semibold text-[0.85rem] bg-transparent cursor-pointer"
+            onClick={() => onOpenChat(shipment)}
+          >
+            <Icon name="MessageCircle" size={18} />
+            Liên hệ điều phối
+          </button>
         </div>
       )}
     </div>
@@ -262,6 +274,7 @@ export function DriverPortalPage() {
     isLoading,
     error,
   } = useDriverShipments(employeeId);
+  const [chatShipment, setChatShipment] = useState<DriverShipment | null>(null);
 
   if (loadingEmployee || (!myEmployee && !employeeId)) {
     if (loadingEmployee) {
@@ -327,7 +340,7 @@ export function DriverPortalPage() {
       {/* Error */}
       {error && (
         <p className="error-inline">
-          Lỗi tải dữ liệu: {(error as Error).message}
+          {error instanceof Error ? error.message : String(error)}
         </p>
       )}
 
@@ -348,8 +361,19 @@ export function DriverPortalPage() {
           key={shipment.id}
           shipment={shipment}
           employeeId={employeeId}
+          onOpenChat={setChatShipment}
         />
       ))}
+
+      {/* Chat Drawer */}
+      <ChatDrawer
+        open={!!chatShipment}
+        onClose={() => setChatShipment(null)}
+        entityType="shipment"
+        entityId={chatShipment?.id ?? ''}
+        title={`Chat ${chatShipment?.shipment_number ?? ''}`}
+        subtitle={chatShipment?.customers?.name ?? undefined}
+      />
     </div>
   );
 }

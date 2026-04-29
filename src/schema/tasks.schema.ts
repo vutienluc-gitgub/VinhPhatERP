@@ -21,6 +21,7 @@ export const taskSchema = z.object({
   work_order_id: z.string().optional().nullable(),
   estimated_hours: z.number().optional().nullable(),
   actual_hours: z.number().optional().nullable(),
+  version: z.number().optional(), // Optimistic Concurrency Control
 });
 
 export type TaskFormValues = z.infer<typeof taskSchema>;
@@ -39,4 +40,5 @@ export const tasksDefaultValues: TaskFormValues = {
   work_order_id: null,
   estimated_hours: 0,
   actual_hours: 0,
+  version: 1,
 };

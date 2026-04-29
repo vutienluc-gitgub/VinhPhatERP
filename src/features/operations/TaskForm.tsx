@@ -72,6 +72,7 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
           work_order_id: task.work_order_id,
           estimated_hours: Number(task.estimated_hours) || 0,
           actual_hours: Number(task.actual_hours) || 0,
+          version: task.version || 1,
         }
       : tasksDefaultValues,
   });
@@ -92,6 +93,7 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
         work_order_id: task.work_order_id,
         estimated_hours: Number(task.estimated_hours) || 0,
         actual_hours: Number(task.actual_hours) || 0,
+        version: task.version || 1,
       });
     } else {
       reset(tasksDefaultValues);
@@ -108,8 +110,10 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
         toast.success(OPERATIONS_MESSAGES.SAVE_SUCCESS);
       }
       onClose();
-    } catch {
-      toast.error(OPERATIONS_MESSAGES.SAVE_ERROR);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : OPERATIONS_MESSAGES.SAVE_ERROR;
+      toast.error(message);
     }
   };
 
@@ -203,9 +207,9 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
       </div>
 
       {/* ERP Links */}
-      <div className="grid grid-cols-2 gap-4 p-3 bg-zinc-50 rounded-lg border border-zinc-100">
+      <div className="grid grid-cols-2 gap-4 p-3 bg-surface rounded-lg border border-border">
         <div className="form-field">
-          <label className="text-sm font-medium text-indigo-700 mb-1 block">
+          <label className="text-sm font-medium text-primary mb-1 block">
             Liên kết Đơn hàng
           </label>
           <Controller
@@ -226,7 +230,7 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
         </div>
 
         <div className="form-field">
-          <label className="text-sm font-medium text-indigo-700 mb-1 block">
+          <label className="text-sm font-medium text-primary mb-1 block">
             Lệnh sản xuất (WO)
           </label>
           <Controller

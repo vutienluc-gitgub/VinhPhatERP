@@ -94,16 +94,23 @@ export async function updateTask(
   id: string,
   values: Partial<Task>,
 ): Promise<Task> {
-  const { data, error } = await untypedDb
-    .from('tasks')
-    .update(values)
-    .eq('id', id)
-    .select()
-    .maybeSingle();
+  const targetVersion = values.version;
+  const updatePayload = { ...values };
+  delete updatePayload.version; // Xoá version khỏi payload vì DB tự trigger tăng
+
+  let query = untypedDb.from('tasks').update(updatePayload).eq('id', id);
+
+  if (targetVersion !== undefined) {
+    query = query.eq('version', targetVersion);
+  }
+
+  const { data, error } = await query.select().maybeSingle();
 
   if (error) throw error;
   if (!data) {
-    throw new Error('Failed to update task');
+    throw new Error(
+      'Dữ liệu đã bị thay đổi bởi người khác (Lost Update). Vui lòng tải lại trang.',
+    );
   }
 
   return data as unknown as Task;

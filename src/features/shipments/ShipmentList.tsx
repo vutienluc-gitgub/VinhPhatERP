@@ -15,6 +15,7 @@ import {
   FilterBarPremium,
   type FilterFieldConfig,
   type ActionConfig,
+  ChatDrawer,
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { formatCurrency } from '@/shared/utils/format';
@@ -84,6 +85,7 @@ export function ShipmentList() {
   const [deliveryShipment, setDeliveryShipment] = useState<Shipment | null>(
     null,
   );
+  const [chatShipment, setChatShipment] = useState<Shipment | null>(null);
 
   const {
     data: result,
@@ -460,6 +462,16 @@ export function ShipmentList() {
                     <Icon name="Check" size={16} /> Nhận hàng
                   </button>
                 )}
+                {s.status !== 'preparing' && (
+                  <button
+                    className="btn-icon"
+                    type="button"
+                    title="Chat"
+                    onClick={() => setChatShipment(s)}
+                  >
+                    <Icon name="MessageCircle" size={16} />
+                  </button>
+                )}
               </div>
             ),
           },
@@ -572,6 +584,16 @@ export function ShipmentList() {
           onClose={() => setDeliveryShipment(null)}
         />
       )}
+
+      {/* Chat Drawer */}
+      <ChatDrawer
+        open={!!chatShipment}
+        onClose={() => setChatShipment(null)}
+        entityType="shipment"
+        entityId={chatShipment?.id ?? ''}
+        title={`Chat — ${chatShipment?.shipment_number ?? ''}`}
+        subtitle={chatShipment?.customers?.name ?? undefined}
+      />
     </div>
   );
 }
