@@ -1,13 +1,18 @@
 import { Outlet } from 'react-router-dom';
 
+import { useChatNotifications } from '@/application/chat';
 import { useAuth } from '@/shared/hooks/useAuth';
 
 /**
  * DriverPortalLayout — Layout don gian cho cong tai xe.
  * Mobile-first, khong co sidebar.
+ * Includes global chat notifications with SOUND ALERTS.
  */
 export function DriverPortalLayout() {
   const { signOut, profile } = useAuth();
+
+  // Global chat notifications — sound + toast for incoming dispatch messages
+  useChatNotifications({ soundEnabled: true });
 
   return (
     <div className="min-h-[100dvh] bg-[var(--bg)] flex flex-col">

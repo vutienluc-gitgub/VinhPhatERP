@@ -34,4 +34,13 @@ export const OPERATIONS_MESSAGES = {
   DELETE_ERROR: 'Có lỗi xảy ra khi xóa task',
   DELETE_CONFIRM: 'Bạn có chắc chắn muốn xóa task này?',
   SYSTEM: 'Hệ thống',
+  TOTAL_TASK: 'Tổng task',
+  COMPLETED: 'Hoàn thành',
+  OVERDUE: 'Quá hạn',
+  EFFICIENCY: 'Hiệu suất',
+  CANNOT_MOVE_TASK: 'Không thể chuyển task:',
+  TEAM_WORKLOAD: 'Tải trọng đội ngũ',
+  LIVE_ACTIVITY: 'Hoạt động tức thời',
+  LIVE: 'Trực tiếp',
+  TASK: 'task',
 };

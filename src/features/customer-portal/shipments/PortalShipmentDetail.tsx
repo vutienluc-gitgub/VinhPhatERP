@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 
 import { usePortalShipments } from '@/application/crm/portal';
+import { ChatWidget } from '@/shared/components';
 
 const STATUS_LABEL: Record<string, string> = {
   preparing: 'Đang chuẩn bị',
@@ -85,6 +86,16 @@ export function PortalShipmentDetail() {
             </table>
           </div>
         </div>
+      )}
+
+      {/* Chat — Floating widget for customer to contact operations */}
+      {shipment.status !== 'preparing' && (
+        <ChatWidget
+          entityType="shipment"
+          entityId={shipment.id}
+          title={`Chat - ${shipment.shipment_number}`}
+          subtitle="Liên hệ Vĩnh Phát"
+        />
       )}
     </div>
   );
