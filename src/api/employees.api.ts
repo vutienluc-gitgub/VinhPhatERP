@@ -2,6 +2,7 @@ import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';
 import { getTenantId } from '@/services/supabase/tenant';
 import type { Employee, EmployeeFormValues } from '@/schema';
+import { safeUpsertOne } from '@/lib/db-guard';
 const TABLE = 'employees';
 
 export async function fetchEmployees(filters?: {
@@ -44,19 +45,15 @@ export async function createEmployee(
   row: EmployeeFormValues & { code: string },
 ): Promise<Employee> {
   const tenantId = await getTenantId();
-
-  const { data, error } = await supabase
-    .from(TABLE)
-    .insert([
-      {
-        ...row,
-        tenant_id: tenantId,
-      },
-    ])
-    .select()
-    .single();
-  if (error) throw error;
-  return data as Employee;
+  const inserted = await safeUpsertOne({
+    table: TABLE,
+    data: {
+      ...row,
+      tenant_id: tenantId,
+    },
+    conflictKey: 'id',
+  });
+  return inserted as unknown as Employee;
 }
 
 export async function updateEmployee(

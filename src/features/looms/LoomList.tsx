@@ -14,8 +14,8 @@ import {
 import { Pagination } from '@/shared/components/Pagination';
 import { useDeleteLoom, useLoomList } from '@/application/settings';
 import type { LoomStatus, LoomType } from '@/schema/loom.schema';
+import { LOOM_STATUS_LABELS, LOOM_TYPE_LABELS } from '@/schema/loom.schema';
 
-import { LOOM_STATUS_LABELS, LOOM_TYPE_LABELS } from './loom.module';
 import type { LoomWithSupplier, LoomFilter } from './types';
 
 type LoomListProps = {

@@ -2,12 +2,12 @@ import { useState } from 'react';
 
 import { Icon } from '@/shared/components/Icon';
 import { useUpdateStageStatus } from '@/application/orders';
-
 import {
   PRODUCTION_STAGES,
   STAGE_LABELS,
   STAGE_STATUS_LABELS,
-} from './order-progress.module';
+} from '@/schema/order-progress.schema';
+
 import type { OrderProgress, StageStatus } from './types';
 
 type ProgressTimelineProps = {

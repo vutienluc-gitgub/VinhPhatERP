@@ -12,13 +12,13 @@ import {
   type FilterFieldConfig,
 } from '@/shared/components';
 import { useDeleteSupplier, useSuppliersList } from '@/application/crm';
-
 import {
   SUPPLIER_CATEGORIES,
   SUPPLIER_CATEGORY_LABELS,
   SUPPLIER_STATUSES,
   SUPPLIER_STATUS_LABELS,
-} from './suppliers.module';
+} from '@/schema/supplier.schema';
+
 import type { Supplier, SupplierFilter } from './types';
 
 type SuppliersListProps = {

@@ -22,13 +22,13 @@ import {
   useFinishedFabricStats,
 } from '@/application/inventory';
 import { useFinishedFabricExport } from '@/application/inventory';
-
 import {
   QUALITY_GRADE_LABELS,
   QUALITY_GRADES,
   ROLL_STATUS_LABELS,
   ROLL_STATUSES,
-} from './finished-fabric.module';
+} from '@/schema/finished-fabric.schema';
+
 import {
   canDeleteRoll,
   canEditRoll,

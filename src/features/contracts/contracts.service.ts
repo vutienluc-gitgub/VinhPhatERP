@@ -1,5 +1,6 @@
 import { untypedDb } from '@/services/supabase/untyped';
 import { supabase } from '@/services/supabase/client';
+import { safeUpsertOne } from '@/lib/db-guard';
 
 import type {
   Contract,
@@ -239,17 +240,16 @@ export async function linkOrderToContract(
     );
   }
 
-  const { data, error } = await db
-    .contractOrderLinks()
-    .insert({
+  const inserted = await safeUpsertOne({
+    table: 'contract_order_links',
+    data: {
       contract_id: contractId,
       order_id: orderId,
       linked_at: new Date().toISOString(),
       linked_by: linkedBy,
-    })
-    .select()
-    .single();
-  if (error) throw error;
+    },
+    conflictKey: 'id',
+  });
 
   await writeAuditLog(
     contractId,
@@ -259,7 +259,7 @@ export async function linkOrderToContract(
     linkedBy,
   );
 
-  return data as ContractOrderLink;
+  return inserted as unknown as ContractOrderLink;
 }
 
 /**

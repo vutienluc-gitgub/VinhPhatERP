@@ -19,7 +19,6 @@ import {
 } from '@/application/inventory';
 import { useFinishedFabricExport } from '@/application/inventory';
 import { sumBy } from '@/shared/utils/array.util';
-
 import {
   QUALITY_GRADE_LABELS,
   QUALITY_GRADES,
@@ -28,8 +27,9 @@ import {
   bulkFinishedInputDefaults,
   bulkFinishedInputSchema,
   formatBulkRollNumber,
-} from './finished-fabric.module';
-import type { BulkFinishedInputFormValues } from './finished-fabric.module';
+} from '@/schema/finished-fabric.schema';
+import type { BulkFinishedInputFormValues } from '@/schema/finished-fabric.schema';
+
 import type { FinishedFabricRoll } from './types';
 
 type Props = {

@@ -19,10 +19,10 @@ import {
 } from '@/application/inventory';
 import { useRawFabricExport } from '@/application/inventory';
 import { StatWidget } from '@/shared/components/StatWidget';
+import { ROLL_STATUS_LABELS } from '@/schema/raw-fabric.schema';
 
 import { ActionMenu } from './ActionMenu';
 import { FilterBar } from './FilterBar';
-import { ROLL_STATUS_LABELS } from './raw-fabric.module';
 import type {
   QualityGrade,
   RawFabricFilter,

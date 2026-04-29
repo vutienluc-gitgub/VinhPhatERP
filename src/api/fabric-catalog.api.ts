@@ -6,6 +6,7 @@ import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
+import { safeUpsertOne } from '@/lib/db-guard';
 
 const TABLE = 'fabric_catalogs';
 
@@ -80,18 +81,15 @@ export async function createFabricCatalog(
   row: FabricCatalogRow,
 ): Promise<FabricCatalog> {
   const tenantId = await getTenantId();
-  const { data, error } = await supabase
-    .from(TABLE)
-    .insert([
-      {
-        ...row,
-        tenant_id: tenantId,
-      },
-    ])
-    .select()
-    .single();
-  if (error) throw error;
-  return data as FabricCatalog;
+  const inserted = await safeUpsertOne({
+    table: TABLE,
+    data: {
+      ...row,
+      tenant_id: tenantId,
+    },
+    conflictKey: 'id',
+  });
+  return inserted as unknown as FabricCatalog;
 }
 
 export async function updateFabricCatalog(

@@ -3,13 +3,13 @@ import { useEffect, useState } from 'react';
 import { Combobox } from '@/shared/components/Combobox';
 import { ClearFilterButton } from '@/shared/components/ClearFilterButton';
 import { Icon } from '@/shared/components/Icon';
-
 import {
   QUALITY_GRADE_LABELS,
   QUALITY_GRADES,
   ROLL_STATUS_LABELS,
   ROLL_STATUSES,
-} from './raw-fabric.module';
+} from '@/schema/raw-fabric.schema';
+
 import {
   DEFAULT_FILTER_STATE,
   FilterState,

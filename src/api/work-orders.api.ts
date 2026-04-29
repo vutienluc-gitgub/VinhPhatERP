@@ -10,6 +10,8 @@ import type {
 import type { CreateWorkOrderInput } from '@/features/work-orders/work-orders.module';
 import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';
+import { validateApiInput } from '@/lib/validate-api-input';
+import { apiWorkOrderInsert } from '@/schema/api-validation.schema';
 
 const TABLE = 'work_orders';
 
@@ -123,6 +125,7 @@ export async function fetchWorkOrderRequirements(
 export async function createWorkOrder(
   input: CreateWorkOrderInput,
 ): Promise<WorkOrder> {
+  validateApiInput(apiWorkOrderInsert.passthrough(), input);
   // 1. Fetch the selected BOM template
   const { data: bom, error: bomError } = await supabase
     .from('bom_templates')

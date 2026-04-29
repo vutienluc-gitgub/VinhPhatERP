@@ -3,8 +3,7 @@ import type {
   TableInsert,
   TableUpdate,
 } from '@/shared/types/database.models';
-
-import type { QUALITY_GRADES, ROLL_STATUSES } from './raw-fabric.module';
+import type { QUALITY_GRADES, ROLL_STATUSES } from '@/schema/raw-fabric.schema';
 
 export type QualityGrade = (typeof QUALITY_GRADES)[number];
 export type RollStatus = (typeof ROLL_STATUSES)[number];

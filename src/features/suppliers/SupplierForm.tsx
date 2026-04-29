@@ -10,7 +10,6 @@ import {
   useNextSupplierCode,
   useUpdateSupplier,
 } from '@/application/crm';
-
 import {
   SUPPLIER_CATEGORIES,
   SUPPLIER_CATEGORY_LABELS,
@@ -18,8 +17,9 @@ import {
   SUPPLIER_STATUS_LABELS,
   supplierDefaults,
   supplierSchema,
-} from './suppliers.module';
-import type { SupplierFormValues } from './suppliers.module';
+} from '@/schema/supplier.schema';
+import type { SupplierFormValues } from '@/schema/supplier.schema';
+
 import type { Supplier } from './types';
 
 type SupplierFormProps = {

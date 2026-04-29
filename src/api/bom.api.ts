@@ -7,6 +7,7 @@ import type {
 } from '@/features/bom/types';
 import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';
+import { safeUpsertOne } from '@/lib/db-guard';
 
 /* ── Reference data for BOM forms ── */
 
@@ -184,10 +185,10 @@ export async function createBomDraft(
     }
   }
 
-  // Native Supabase insert with explicit tenant_id injection
-  const { data: headerResult, error: headerError } = await supabase
-    .from('bom_templates')
-    .insert({
+  // Native Supabase upsert with explicit tenant_id injection
+  const headerResult = await safeUpsertOne({
+    table: 'bom_templates',
+    data: {
       tenant_id: tenantId,
       code: finalCode,
       name: headerData.name,
@@ -199,12 +200,13 @@ export async function createBomDraft(
       status: 'draft',
       active_version: 1,
       created_by: userId,
-    })
-    .select('id')
-    .single();
+    },
+    conflictKey: 'id',
+  });
 
-  if (headerError) throw headerError;
-  const bomId = headerResult.id;
+  const bomRow = headerResult as { id: string } | null;
+  if (!bomRow?.id) throw new Error('Tạo BOM thất bại.');
+  const bomId = bomRow.id;
 
   if (bomYarnItems && bomYarnItems.length > 0) {
     const { error: itemsError } = await supabase.from('bom_yarn_items').insert(

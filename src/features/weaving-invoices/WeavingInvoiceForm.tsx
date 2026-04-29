@@ -19,17 +19,17 @@ import {
   useWeavingSuppliers,
   useWorkOrders,
 } from '@/application/production';
+import {
+  weavingInvoiceFormSchema,
+  weavingInvoiceDefaults,
+} from '@/schema/weaving-invoice.schema';
+import type { WeavingInvoiceFormValues } from '@/schema/weaving-invoice.schema';
 
 import { RollProgressBar } from './components/RollProgressBar';
 import { PasteExcelParser } from './components/PasteExcelParser';
 import { BulkRollStation } from './components/BulkRollStation';
 import { useWeavingInvoiceCalculator } from './hooks/useWeavingInvoiceCalculator';
 import type { WeavingInvoice } from './types';
-import {
-  weavingInvoiceFormSchema,
-  weavingInvoiceDefaults,
-} from './weaving-invoices.module';
-import type { WeavingInvoiceFormValues } from './weaving-invoices.module';
 
 const DRAFT_KEY = 'weaving-invoice-draft';
 

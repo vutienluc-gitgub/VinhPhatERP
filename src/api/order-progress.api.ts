@@ -12,6 +12,7 @@ import type {
 import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';
 import { getTenantId } from '@/services/supabase/tenant';
+import { safeUpsertOne } from '@/lib/db-guard';
 
 const TABLE = 'order_progress';
 const auditTable = () => untypedDb.from('progress_audit_log');
@@ -224,18 +225,15 @@ export async function createOrderProgress(
   row: OrderProgressInsert,
 ): Promise<OrderProgress> {
   const tenantId = await getTenantId();
-  const { data, error } = await supabase
-    .from(TABLE)
-    .insert([
-      {
-        ...row,
-        tenant_id: tenantId,
-      },
-    ])
-    .select()
-    .single();
-  if (error) throw error;
-  return data as OrderProgress;
+  const inserted = await safeUpsertOne({
+    table: TABLE,
+    data: {
+      ...row,
+      tenant_id: tenantId,
+    },
+    conflictKey: 'id',
+  });
+  return inserted as unknown as OrderProgress;
 }
 
 export async function updateOrderProgress(

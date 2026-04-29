@@ -11,6 +11,7 @@ import type {
 } from '@/features/finished-fabric/types';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
+import { safeUpsert, safeUpsertOne } from '@/lib/db-guard';
 
 // ─── Vải mộc ───
 
@@ -40,17 +41,17 @@ export async function createRawFabricRolls(
   rows: RawFabricRollInsert[],
 ): Promise<RawFabricRoll[]> {
   const tenantId = await getTenantId();
-  const { data, error } = await supabase
-    .from(RAW_TABLE)
-    .insert(
-      rows.map((r) => ({
-        ...r,
-        tenant_id: tenantId,
-      })),
-    )
-    .select();
-  if (error) throw error;
-  return (data ?? []) as RawFabricRoll[];
+  const result = await safeUpsert({
+    table: RAW_TABLE,
+    data: rows.map((r) => ({
+      ...r,
+      tenant_id: tenantId,
+    })),
+    conflictKey: 'id',
+  });
+  return (Array.isArray(result)
+    ? result
+    : [result]) as unknown as RawFabricRoll[];
 }
 
 export async function updateRawFabricRoll(
@@ -103,18 +104,15 @@ export async function createFinishedFabricRoll(
   row: FinishedFabricRollInsert,
 ): Promise<FinishedFabricRoll> {
   const tenantId = await getTenantId();
-  const { data, error } = await supabase
-    .from(FINISHED_TABLE)
-    .insert([
-      {
-        ...row,
-        tenant_id: tenantId,
-      },
-    ])
-    .select()
-    .single();
-  if (error) throw error;
-  return data as FinishedFabricRoll;
+  const inserted = await safeUpsertOne({
+    table: FINISHED_TABLE,
+    data: {
+      ...row,
+      tenant_id: tenantId,
+    },
+    conflictKey: 'id',
+  });
+  return inserted as unknown as FinishedFabricRoll;
 }
 
 export async function updateFinishedFabricRoll(

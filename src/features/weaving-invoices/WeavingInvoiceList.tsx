@@ -18,9 +18,9 @@ import {
   useConfirmWeavingInvoice,
   useDeleteWeavingInvoice,
 } from '@/application/production';
+import { WEAVING_STATUS_LABELS } from '@/schema/weaving-invoice.schema';
 
 import type { WeavingInvoice, WeavingInvoiceFilter } from './types';
-import { WEAVING_STATUS_LABELS } from './weaving-invoices.module';
 
 type Props = {
   onNew: () => void;

@@ -4,6 +4,7 @@ import type {
 } from '@/features/shipping-rates/types';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
+import { safeUpsertOne } from '@/lib/db-guard';
 
 const TABLE = 'shipping_rates';
 
@@ -52,18 +53,15 @@ export async function createShippingRate(
   row: ShippingRateRow,
 ): Promise<ShippingRate> {
   const tenantId = await getTenantId();
-  const { data, error } = await supabase
-    .from(TABLE)
-    .insert([
-      {
-        ...row,
-        tenant_id: tenantId,
-      },
-    ])
-    .select()
-    .single();
-  if (error) throw error;
-  return data as ShippingRate;
+  const inserted = await safeUpsertOne({
+    table: TABLE,
+    data: {
+      ...row,
+      tenant_id: tenantId,
+    },
+    conflictKey: 'id',
+  });
+  return inserted as unknown as ShippingRate;
 }
 
 export async function updateShippingRate(

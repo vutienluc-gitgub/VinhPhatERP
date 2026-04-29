@@ -16,7 +16,6 @@ import {
   useCreateQuotation,
   useUpdateQuotation,
 } from '@/application/quotations';
-
 import {
   calculateQuotationTotals,
   DISCOUNT_TYPE_OPTIONS,
@@ -25,8 +24,9 @@ import {
   quotationsSchema,
   UNIT_OPTIONS,
   VAT_RATE_OPTIONS,
-} from './quotations.module';
-import type { QuotationsFormValues } from './quotations.module';
+} from '@/schema/quotation.schema';
+import type { QuotationsFormValues } from '@/schema/quotation.schema';
+
 import type { DiscountType, Quotation } from './types';
 
 const UNIT_LABELS: Record<string, string> = {

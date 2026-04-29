@@ -22,12 +22,12 @@ import {
   useWorkOrderRequirements,
 } from '@/application/production';
 import { useWorkOrderLogic } from '@/application/production';
-
-import type { WorkOrder } from './types';
 import {
   createWorkOrderSchema,
   type CreateWorkOrderInput,
-} from './work-orders.module';
+} from '@/schema/work-order.schema';
+
+import type { WorkOrder } from './types';
 import { WorkOrderYarnTable } from './WorkOrderYarnTable';
 
 const DRAFT_KEY = 'work-order-draft';

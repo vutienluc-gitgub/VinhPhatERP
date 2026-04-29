@@ -8,8 +8,8 @@ import {
   useRejectQuotation,
   useSendQuotation,
 } from '@/application/quotations';
+import { QUOTATION_STATUS_LABELS } from '@/schema/quotation.schema';
 
-import { QUOTATION_STATUS_LABELS } from './quotations.module';
 import type { Quotation, QuotationStatus } from './types';
 
 function getStatusVariant(status: QuotationStatus): BadgeVariant {

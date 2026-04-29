@@ -4,6 +4,7 @@ import type {
 } from '@/features/inventory/types';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
+import { safeUpsertOne } from '@/lib/db-guard';
 
 const TABLE = 'inventory_adjustments';
 
@@ -55,18 +56,15 @@ export async function createInventoryAdjustment(
   row: InventoryAdjustmentInsert,
 ): Promise<InventoryAdjustment> {
   const tenantId = await getTenantId();
-  const { data, error } = await supabase
-    .from(TABLE)
-    .insert([
-      {
-        ...row,
-        tenant_id: tenantId,
-      },
-    ])
-    .select()
-    .single();
-  if (error) throw error;
-  return data as InventoryAdjustment;
+  const inserted = await safeUpsertOne({
+    table: TABLE,
+    data: {
+      ...row,
+      tenant_id: tenantId,
+    },
+    conflictKey: 'id',
+  });
+  return inserted as unknown as InventoryAdjustment;
 }
 
 export async function fetchRawFabricInventory(): Promise<{

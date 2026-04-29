@@ -3,7 +3,8 @@ import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { useForm, type DeepPartial } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
 
-import type { CreateWorkOrderInput } from './work-orders.module';
+import type { CreateWorkOrderInput } from '@/schema/work-order.schema';
+
 import {
   GreigePriceEstimator,
   type CostEstimationSnapshot,

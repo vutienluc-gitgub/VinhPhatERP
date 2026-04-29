@@ -22,14 +22,14 @@ import {
   useYarnCatalogOptions,
 } from '@/application/inventory';
 import { sumBy } from '@/shared/utils/array.util';
-
-import type { YarnReceipt } from './types';
 import {
-  emptyItem,
+  emptyYarnReceiptItem,
   yarnReceiptsDefaultValues,
   yarnReceiptsSchema,
-} from './yarn-receipts.module';
-import type { YarnReceiptsFormValues } from './yarn-receipts.module';
+} from '@/schema/yarn-receipt.schema';
+import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
+
+import type { YarnReceipt } from './types';
 
 const YARN_UNIT_OPTIONS = [
   { value: 'kg', label: 'kg' },
@@ -575,7 +575,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
             <Button
               variant="secondary"
               type="button"
-              onClick={() => append({ ...emptyItem })}
+              onClick={() => append({ ...emptyYarnReceiptItem })}
               className="mt-2 w-full"
             >
               {' '}

@@ -5,6 +5,7 @@ import type {
 import { untypedDb } from '@/services/supabase/untyped';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
+import { safeUpsertOne } from '@/lib/db-guard';
 
 const TABLE = 'cost_estimations';
 
@@ -68,9 +69,9 @@ export async function saveCostEstimation(
     ? (existing as { version: number }).version + 1
     : 1;
 
-  const { data, error } = await untypedDb
-    .from(TABLE)
-    .insert({
+  const inserted = await safeUpsertOne({
+    table: TABLE,
+    data: {
       tenant_id: tenantId,
       reference_type: input.reference_type,
       reference_id: input.reference_id,
@@ -84,10 +85,8 @@ export async function saveCostEstimation(
       est_total_cost: input.est_total_cost,
       suggested_price: input.suggested_price,
       created_by: userId,
-    })
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data as CostEstimation;
+    },
+    conflictKey: 'id',
+  });
+  return inserted as unknown as CostEstimation;
 }

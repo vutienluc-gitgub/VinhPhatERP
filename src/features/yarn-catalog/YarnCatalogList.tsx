@@ -18,13 +18,13 @@ import {
 } from '@/application/settings';
 import { useColorOptions } from '@/shared/hooks/useColorOptions';
 import { getColorHex } from '@/schema/color.schema';
+import { YARN_CATALOG_STATUS_LABELS } from '@/schema/yarn-catalog.schema';
 
 import type {
   YarnCatalog,
   YarnCatalogFilter,
   YarnCatalogStatus,
 } from './types';
-import { YARN_CATALOG_STATUS_LABELS } from './yarn-catalog.module';
 
 type YarnCatalogListProps = {
   onEdit: (catalog: YarnCatalog) => void;

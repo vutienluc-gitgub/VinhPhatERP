@@ -14,8 +14,8 @@ import {
   useUpdateDraftBom,
 } from '@/application/production';
 import { sumBy } from '@/shared/utils/array.util';
+import { bomTemplateSchema, BomTemplateFormData } from '@/schema/bom.schema';
 
-import { bomTemplateSchema, BomTemplateFormData } from './bom.module';
 import { BomTemplate } from './types';
 
 interface BomFormProps {

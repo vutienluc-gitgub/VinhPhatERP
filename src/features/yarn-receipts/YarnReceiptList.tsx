@@ -22,9 +22,9 @@ import {
   useYarnReceiptList,
   useConfirmYarnReceipt,
 } from '@/application/inventory';
+import { DOC_STATUS_LABELS } from '@/schema/yarn-receipt.schema';
 
 import type { DocStatus, YarnReceipt, YarnReceiptsFilter } from './types';
-import { DOC_STATUS_LABELS } from './yarn-receipts.module';
 import { getReceiptUnitPriceDisplay, getReceiptAvgUnitPrice } from './utils';
 
 type YarnReceiptListProps = {
