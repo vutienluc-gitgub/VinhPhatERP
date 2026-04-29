@@ -33,3 +33,20 @@ export async function upsertCompanySettings(
     conflictKey: 'key',
   });
 }
+
+/** Upsert only a subset of settings (for section-specific forms) */
+export async function upsertPartialSettings(
+  entries: Record<string, string>,
+): Promise<void> {
+  const tenantId = await getTenantId();
+  const rows = Object.entries(entries).map(([key, value]) => ({
+    key,
+    value: value ?? '',
+    tenant_id: tenantId,
+  }));
+  await safeUpsert({
+    table: TABLE,
+    data: rows,
+    conflictKey: 'key',
+  });
+}

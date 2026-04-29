@@ -1519,6 +1519,19 @@
   padding: 1rem 1.25rem;
 }
 
+/* Inline success feedback */
+.success-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-emerald-50, #ecfdf5);
+  color: var(--color-emerald-700, #047857);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
 /* ---- Field hint ---- */
 .field-hint {
   font-size: 0.76rem;

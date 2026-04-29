@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   fetchCompanySettings,
   upsertCompanySettings,
+  upsertPartialSettings,
 } from '@/api/settings.api';
 import type {
   CompanySettingsFormValues,
@@ -24,6 +25,17 @@ export function useUpdateCompanySettings() {
   return useMutation({
     mutationFn: (values: CompanySettingsFormValues) =>
       upsertCompanySettings(values),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+  });
+}
+
+export function useUpdatePartialSettings() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (entries: Record<string, string>) =>
+      upsertPartialSettings(entries),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },

@@ -114,9 +114,21 @@ items.map((item) => <Row key={item.id} />);
 
 **Required states:**
 
+- Loading skeleton when data is fetching — no flash of default values
+- Loading guard at correct level (page-level if multiple children share same query)
 - Empty state when data is empty array
-- Loading state when data is fetching
+- Error state with user-readable message
 - Long text overflow: use `truncate` or `line-clamp`
+
+**Extract repeated inline styles:**
+
+```tsx
+// Wrong — 10 components repeat the same className
+<div className="px-4 py-3 rounded-lg bg-[var(--color-emerald-50,#ecfdf5)]">
+
+// Correct — extract to CSS class
+<div className="success-inline">
+```
 
 ---
 
@@ -180,6 +192,9 @@ Quick self-check:
 - [ ] Null/undefined guarded before render
 - [ ] Errors handled — not swallowed silently
 - [ ] No cross-feature relative import
+- [ ] Loading skeleton present for every data-fetching component
+- [ ] No flash of default values before real data loads
+- [ ] Inline styles repeated ≥ 2 times extracted to CSS class
 - [ ] `typecheck` and `lint` pass clean — 0 errors, 0 warnings
 - [ ] `rpc:check` passes — 0 issues
 

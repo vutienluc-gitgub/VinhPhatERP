@@ -32,7 +32,7 @@ export function CompanySettingsForm({
   fluidLayout,
   onFluidLayoutChange,
 }: Props) {
-  const { data: settings, isLoading, error: loadError } = useCompanySettings();
+  const { data: settings } = useCompanySettings();
   const updateMutation = useUpdateCompanySettings();
 
   const {
@@ -56,46 +56,13 @@ export function CompanySettingsForm({
     await updateMutation.mutateAsync(values);
   }
 
-  if (isLoading) {
-    return (
-      <div className="skeleton-list">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="skeleton-block h-[56px]" />
-        ))}
-      </div>
-    );
-  }
-
-  if (loadError) {
-    return (
-      <p className="error-inline">
-        {SETTINGS_MESSAGES.LOAD_ERROR} {(loadError as Error).message}
-      </p>
-    );
-  }
-
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       noValidate
       className="flex flex-col gap-6"
     >
-      {/* Success feedback */}
-      {updateMutation.isSuccess && (
-        <div className="success-inline px-4 py-3 rounded-lg bg-[var(--color-emerald-50,#ecfdf5)] text-[var(--color-emerald-700,#047857)] text-sm flex items-center gap-2">
-          <Icon name="CheckCircle2" size={16} strokeWidth={2} />
-          {SETTINGS_MESSAGES.SAVE_SUCCESS}
-        </div>
-      )}
-
-      {/* Error feedback */}
-      {updateMutation.error && (
-        <p className="error-inline">
-          {SETTINGS_MESSAGES.SAVE_ERROR}{' '}
-          {(updateMutation.error as Error).message}
-        </p>
-      )}
-
+      {/* ── Thông tin công ty ── */}
       <div className="panel-card card-flush">
         <div className="card-header-area">
           <div className="flex items-center gap-3">
@@ -109,7 +76,24 @@ export function CompanySettingsForm({
         </div>
         <div className="p-6">
           <div className="form-grid gap-4">
-            {/* Tên công ty */}
+            {/* Success / Error feedback */}
+            {updateMutation.isSuccess && (
+              <div className="success-inline">
+                <Icon name="CheckCircle2" size={16} strokeWidth={2} />
+                {SETTINGS_MESSAGES.SAVE_SUCCESS}
+              </div>
+            )}
+
+            {updateMutation.error && (
+              <p className="error-inline">
+                {SETTINGS_MESSAGES.SAVE_ERROR}{' '}
+                {updateMutation.error instanceof Error
+                  ? updateMutation.error.message
+                  : String(updateMutation.error)}
+              </p>
+            )}
+
+            {/* Tên công ty + MST */}
             <div className="form-grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
               <div className="form-field">
                 <label htmlFor="cs-company-name">
@@ -251,6 +235,7 @@ export function CompanySettingsForm({
         </div>
       </div>
 
+      {/* ── Hiển thị hệ thống ── */}
       {isAdmin && (
         <div className="panel-card card-flush">
           <div className="card-header-area">
@@ -303,7 +288,7 @@ export function CompanySettingsForm({
       )}
 
       {/* Actions */}
-      <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-8">
+      <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
         <Button
           variant="secondary"
           type="button"

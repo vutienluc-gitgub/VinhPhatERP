@@ -283,16 +283,46 @@ trigger: always_on
 
 ---
 
-# 20. UX / Feedback
+# 20. UX / Feedback (Loading & States)
 
-- Có loading state không?
-- Có error message không?
+- Page/component có fetch data nhưng **thiếu loading skeleton** không?
+- Có flash default values trước khi data load xong không?
+- Loading state có đặt đúng level không? (page-level vs component-level)
+- Có **empty state** khi data trả về mảng rỗng không?
+- Có **error state** hiển thị rõ ràng cho user không?
+- Submit button có disable khi đang pending không?
 
 ✅ Action:
 
-- loading + error UI
+- Skeleton cho mọi page/component fetch data
+- Lift loading state lên đúng level (parent guard → children chỉ render khi data sẵn sàng)
+- Empty state component cho danh sách rỗng
+- Error inline message cho mutation failures
+- Disable submit button khi `isSubmitting`
 
-❌ INVALID nếu UX kém
+❌ INVALID nếu:
+
+- Component render default values rồi "nhảy" sang real data
+- Không có skeleton/loading indicator
+- Không có error feedback cho user
+
+---
+
+# 21. Render Safety
+
+- Có dùng `(error as Error).message` trực tiếp không?
+- Có render value có thể null/undefined mà không guard không?
+- List có dùng index làm key không?
+- Có inline style/class dài lặp lại ở nhiều component không?
+
+✅ Action:
+
+- Dùng `instanceof Error` guard: `error instanceof Error ? error.message : String(error)`
+- Null check trước render: `{value ?? 'N/A'}`
+- Stable key: `key={item.id}` thay vì `key={index}`
+- Extract CSS class cho inline style lặp ≥ 2 lần
+
+❌ INVALID nếu unsafe render
 
 ---
 
