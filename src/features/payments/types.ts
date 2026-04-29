@@ -74,6 +74,10 @@ export type DebtSummaryRow = {
   total_paid: number;
   balance_due: number;
   order_count: number;
+  /** Số ngày quá hạn lâu nhất (computed from v_debt_aging) */
+  oldest_overdue_days: number;
+  /** Hạn mức tín dụng từ bảng customers */
+  credit_limit: number;
 };
 
 export type SupplierDebtRow = {

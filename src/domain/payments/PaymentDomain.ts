@@ -120,21 +120,83 @@ export function calculateTotalDebt(
   return debts.reduce((sum: number, d) => sum + (d?.balance_due || 0), 0);
 }
 
+// ─── Debt Risk Classification ─────────────────────────────────────────────────
+
+/** Mức rủi ro nợ (4 tier) */
+export type DebtRiskTier = 'none' | 'normal' | 'warning' | 'danger';
+
+/** Ngưỡng phân loại nợ quá hạn (ngày) */
+const OVERDUE_WARNING_DAYS = 30;
+
+interface DebtRiskInput {
+  balance_due: number;
+  /** Số ngày quá hạn lâu nhất (từ delivery_date hoặc order_date) */
+  oldest_overdue_days?: number | null;
+  /** Hạn mức tín dụng (credit_limit) của khách hàng */
+  credit_limit?: number | null;
+}
+
 /**
- * Đếm số lượng đối tượng (khách hàng/nhà cung cấp) đang có nợ.
+ * Phân loại mức rủi ro nợ cho 1 đối tượng (khách hàng / nhà cung cấp).
+ *
+ * Tier logic:
+ * - none:    balance_due <= 0 → không có nợ
+ * - normal:  có nợ, chưa quá hạn, chưa vượt hạn mức
+ * - warning: quá hạn < 30 ngày HOẶC nợ >= 80% credit_limit
+ * - danger:  quá hạn >= 30 ngày HOẶC vượt credit_limit
+ */
+export function classifyDebtRisk(input: DebtRiskInput): DebtRiskTier {
+  if (input.balance_due <= 0) return 'none';
+
+  const overdueDays = input.oldest_overdue_days ?? 0;
+  const creditLimit = input.credit_limit ?? 0;
+
+  // Danger: quá hạn lâu hoặc vượt hạn mức tín dụng
+  if (overdueDays >= OVERDUE_WARNING_DAYS) return 'danger';
+  if (creditLimit > 0 && input.balance_due > creditLimit) return 'danger';
+
+  // Warning: quá hạn ngắn hoặc gần chạm hạn mức (>= 80%)
+  if (overdueDays > 0) return 'warning';
+  if (creditLimit > 0 && input.balance_due >= creditLimit * 0.8)
+    return 'warning';
+
+  // Normal: có nợ nhưng trong hạn, trong hạn mức
+  return 'normal';
+}
+
+/**
+ * Backward-compatible: trả true nếu debt tier >= warning.
+ * Dùng cho countOverdueDebts và KPI.
+ */
+export function isDebtRisky(input: DebtRiskInput): boolean {
+  const tier = classifyDebtRisk(input);
+  return tier === 'warning' || tier === 'danger';
+}
+
+/**
+ * Đếm số lượng đối tượng đang có nợ (balance > 0).
+ */
+export function countDebtors(
+  debts: Array<{ balance_due: number } | undefined | null>,
+): number {
+  return debts.filter((d) => d && d.balance_due > 0).length;
+}
+
+/**
+ * Đếm số lượng đối tượng ở mức cảnh báo trở lên.
+ */
+export function countRiskyDebts(
+  debts: Array<DebtRiskInput | undefined | null>,
+): number {
+  return debts.filter((d) => d && isDebtRisky(d)).length;
+}
+
+/**
+ * @deprecated Dùng countDebtors hoặc countRiskyDebts thay thế.
+ * Giữ lại để không break existing callers — sẽ xóa sau migration.
  */
 export function countOverdueDebts(
   debts: Array<{ balance_due: number } | undefined | null>,
 ): number {
-  return debts.filter((d) => d && isDebtRisky(d.balance_due)).length;
-}
-
-// ─── Status & Guards ──────────────────────────────────────────────────────────
-
-/**
- * Kiểm tra xem một đối tác có đang bị nợ xấu (Overdue) hay không.
- * Mức tolerance = 0, nghĩa là balance_due > 0 được coi là nợ rủi ro.
- */
-export function isDebtRisky(balanceDue: number): boolean {
-  return balanceDue > 0;
+  return countDebtors(debts);
 }

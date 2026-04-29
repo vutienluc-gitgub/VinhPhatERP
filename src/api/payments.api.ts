@@ -117,9 +117,59 @@ export async function deletePaymentRecord(id: string): Promise<void> {
 }
 
 export async function fetchDebtSummary(): Promise<DebtSummaryRow[]> {
-  const { data, error } = await supabase.rpc('rpc_get_debt_summary');
-  if (error) throw error;
-  return (data ?? []) as DebtSummaryRow[];
+  // Fetch base debt summary + credit limits + aging data in parallel
+  const [summaryResult, creditResult, agingResult] = await Promise.all([
+    supabase.rpc('rpc_get_debt_summary'),
+    untypedDb.from('customers').select('id, credit_limit'),
+    untypedDb
+      .from('v_debt_aging')
+      .select('customer_id, days_since_order')
+      .gt('balance_due', 0),
+  ]);
+
+  if (summaryResult.error) throw summaryResult.error;
+  if (creditResult.error) throw creditResult.error;
+  // aging is optional — degrade gracefully if view not available
+  const agingData = agingResult.error
+    ? []
+    : ((agingResult.data ?? []) as Array<{
+        customer_id: string;
+        days_since_order: number;
+      }>);
+
+  // Build lookup maps
+  const creditMap = new Map<string, number>();
+  for (const c of (creditResult.data ?? []) as Array<{
+    id: string;
+    credit_limit: number;
+  }>) {
+    creditMap.set(c.id, c.credit_limit ?? 0);
+  }
+
+  const agingMap = new Map<string, number>();
+  for (const a of agingData) {
+    const current = agingMap.get(a.customer_id) ?? 0;
+    if (a.days_since_order > current) {
+      agingMap.set(a.customer_id, a.days_since_order);
+    }
+  }
+
+  // Enrich rows
+  const baseRows = (summaryResult.data ?? []) as Array<{
+    customer_id: string;
+    customer_name: string;
+    customer_code: string;
+    total_ordered: number;
+    total_paid: number;
+    balance_due: number;
+    order_count: number;
+  }>;
+
+  return baseRows.map((row) => ({
+    ...row,
+    oldest_overdue_days: agingMap.get(row.customer_id) ?? 0,
+    credit_limit: creditMap.get(row.customer_id) ?? 0,
+  }));
 }
 
 /* ─── Payment Accounts ──────────────────────────── */
