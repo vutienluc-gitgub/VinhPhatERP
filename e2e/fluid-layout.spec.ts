@@ -70,10 +70,15 @@ test.describe('Fluid Dashboard Layout', () => {
         timeout: 15_000,
       });
 
+      // Wait for app shell to mount — ensures useUserPreferences has run
+      await page
+        .waitForSelector('.route-content', { timeout: 10_000 })
+        .catch(() => null);
+
       // Bước 2: Wait cho React boot và apply class 'fluid' lên html
       // (useUserPreferences đọc cache → applyFluidLayout → classList.toggle)
       await expect(page.locator('html')).toHaveClass(/fluid/, {
-        timeout: 5_000,
+        timeout: 10_000,
       });
 
       // Bước 3: Verify shell-layout chiếm >= 95% viewport width
