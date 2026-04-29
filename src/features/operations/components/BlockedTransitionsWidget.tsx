@@ -1,8 +1,12 @@
 import { useMemo, useRef, useState } from 'react';
 
 import { Badge, Button, LiveIndicator, TabSwitcher } from '@/shared/components';
-
-import { Card, CardContent, CardHeader, CardTitle } from './Card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/Card';
 
 const RESET_HOLD_MS = 900;
 

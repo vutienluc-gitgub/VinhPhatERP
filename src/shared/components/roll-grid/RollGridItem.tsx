@@ -1,15 +1,10 @@
 import React, { forwardRef } from 'react';
-import { clsx, type ClassValue } from 'clsx';
 
 import { Icon } from '@/shared/components/Icon';
 import { calcDeviationPercent } from '@/features/raw-fabric/helpers';
+import { cn } from '@/shared/utils/cn';
 
 import { AnomalyStatus } from './useRollMatrixLogic';
-
-/** Utility for class merging */
-function cn(...inputs: ClassValue[]) {
-  return clsx(inputs);
-}
 
 export type RollGridItemMode = 'input' | 'view' | 'select';
 

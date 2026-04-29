@@ -1,10 +1,5 @@
-import { clsx, type ClassValue } from 'clsx';
-
 import { ActivityItem } from '@/features/operations/types';
-
-function cn(...inputs: ClassValue[]) {
-  return clsx(inputs);
-}
+import { cn } from '@/shared/utils/cn';
 
 export function ActivityFeed({
   items,

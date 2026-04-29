@@ -13,8 +13,6 @@ import {
   logBlockedTransitionEvent,
   type BlockedTransitionTelemetryEvent,
 } from '@/api/operations.api';
-import { fetchOrders } from '@/api/orders.api';
-import { fetchWorkOrders } from '@/api/work-orders.api';
 import { Task } from '@/features/operations/types';
 
 export function useTasks() {
@@ -120,37 +118,19 @@ export function useWorkload() {
   });
 }
 
-export function useOrders() {
-  return useQuery({
-    queryKey: ['orders-minimal'],
-    queryFn: () => fetchOrders(), // You might want to use a minimal fetch if available
-  });
-}
-
-export function useWorkOrders() {
-  return useQuery({
-    queryKey: ['work-orders-minimal'],
-    queryFn: () => fetchWorkOrders(),
-  });
-}
-
 export function useOperationsData() {
   const tasksQuery = useTasks();
   const employeesQuery = useEmployees();
   const kpisQuery = useKpis();
   const activitiesQuery = useActivities();
   const workloadQuery = useWorkload();
-  const ordersQuery = useOrders();
-  const workOrdersQuery = useWorkOrders();
 
   const isLoading =
     tasksQuery.isLoading ||
     employeesQuery.isLoading ||
     kpisQuery.isLoading ||
     activitiesQuery.isLoading ||
-    workloadQuery.isLoading ||
-    ordersQuery.isLoading ||
-    workOrdersQuery.isLoading;
+    workloadQuery.isLoading;
 
   const isError =
     tasksQuery.isError ||
@@ -171,23 +151,12 @@ export function useOperationsData() {
     ? Math.round(((tasks.length - overdueCount) / tasks.length) * 100)
     : 100;
 
-  // Safe data extraction for paginated results
-  const orders = Array.isArray(ordersQuery.data)
-    ? ordersQuery.data
-    : ((ordersQuery.data as unknown as { data: unknown[] })?.data ?? []);
-
-  const workOrders = Array.isArray(workOrdersQuery.data)
-    ? workOrdersQuery.data
-    : ((workOrdersQuery.data as unknown as { data: unknown[] })?.data ?? []);
-
   return {
     tasks,
     employees: employeesQuery.data ?? [],
     kpis: kpisQuery.data ?? [],
     activities: activitiesQuery.data ?? [],
     workload: workloadQuery.data ?? [],
-    orders,
-    workOrders,
     stats: {
       doneCount,
       overdueCount,

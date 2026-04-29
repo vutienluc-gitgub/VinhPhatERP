@@ -368,14 +368,16 @@ export function DriverPortalPage() {
       ))}
 
       {/* Chat Drawer */}
-      <ChatDrawer
-        open={!!chatShipment}
-        onClose={() => setChatShipment(null)}
-        entityType="shipment"
-        entityId={chatShipment?.id ?? ''}
-        title={`Chat ${chatShipment?.shipment_number ?? ''}`}
-        subtitle={chatShipment?.customers?.name ?? undefined}
-      />
+      {chatShipment ? (
+        <ChatDrawer
+          open
+          onClose={() => setChatShipment(null)}
+          entityType="shipment"
+          entityId={chatShipment.id}
+          title={`Chat ${chatShipment.shipment_number}`}
+          subtitle={chatShipment.customers?.name ?? undefined}
+        />
+      ) : null}
     </div>
   );
 }

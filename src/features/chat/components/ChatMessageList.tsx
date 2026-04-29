@@ -77,7 +77,7 @@ export function ChatMessageList({
             onClick={handleLoadMore}
             disabled={isFetchingNextPage}
           >
-            {isFetchingNextPage ? CHAT_LABELS.LOADING : 'Tải thêm tin nhắn cũ'}
+            {isFetchingNextPage ? CHAT_LABELS.LOADING : CHAT_LABELS.LOAD_MORE}
           </button>
         </div>
       ) : null}

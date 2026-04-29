@@ -110,6 +110,46 @@
   font-size: 0.8125rem;
 }
 
+.chat-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+  padding: 24px;
+}
+
+.chat-error-msg {
+  color: var(--danger);
+  font-size: 0.8125rem;
+  text-align: center;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.chat-error-retry-btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    transform 0.1s;
+}
+
+.chat-error-retry-btn:hover {
+  background: var(--primary-strong);
+}
+
+.chat-error-retry-btn:active {
+  transform: scale(0.97);
+}
+
 .chat-load-more {
   text-align: center;
   padding: 8px;

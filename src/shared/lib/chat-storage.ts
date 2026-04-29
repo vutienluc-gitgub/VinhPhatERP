@@ -1,6 +1,7 @@
 import imageCompression from 'browser-image-compression';
 
 import { supabase } from '@/services/supabase/client';
+import { getTenantId } from '@/services/supabase/tenant';
 
 const CHAT_BUCKET = 'chat_attachments';
 const MAX_SIZE_MB = 5;
@@ -61,12 +62,16 @@ async function compressImage(file: File): Promise<File> {
 
 /**
  * Build storage path with tenant isolation.
- * Format: {tenant_id}/{room_id}/{timestamp}_{uuid}.jpg
+ * Format: {tenant_id}/{room_id}/{timestamp}_{uuid}.{ext}
  */
-function buildStoragePath(roomId: string): string {
+function buildStoragePath(
+  tenantId: string,
+  roomId: string,
+  extension: string,
+): string {
   const timestamp = Date.now();
   const uuid = crypto.randomUUID();
-  return `${roomId}/${timestamp}_${uuid}.jpg`;
+  return `${tenantId}/${roomId}/${timestamp}_${uuid}.${extension}`;
 }
 
 /**
@@ -92,8 +97,9 @@ export async function uploadChatImage(
   // 2. Compress + strip EXIF
   const compressed = await compressImage(file);
 
-  // 3. Build path
-  const path = buildStoragePath(roomId);
+  // 3. Get Tenant & Build path
+  const tenantId = await getTenantId();
+  const path = buildStoragePath(tenantId, roomId, 'jpg');
 
   // 4. Upload
   const { error } = await supabase.storage
@@ -107,13 +113,17 @@ export async function uploadChatImage(
     throw new Error(`Upload that bai: ${error.message}`);
   }
 
-  // 5. Get public URL
-  const { data: urlData } = supabase.storage
+  // 5. Get Signed URL (10 years expiration)
+  const { data: urlData, error: signError } = await supabase.storage
     .from(CHAT_BUCKET)
-    .getPublicUrl(path);
+    .createSignedUrl(path, 60 * 60 * 24 * 3650);
+
+  if (signError) {
+    throw new Error(`Khong the tao Signed URL: ${signError.message}`);
+  }
 
   return {
-    publicUrl: urlData.publicUrl,
+    publicUrl: urlData.signedUrl,
     path,
     size: compressed.size,
   };
@@ -134,9 +144,8 @@ export async function uploadChatPdf(
     throw new Error('File PDF khong duoc vuot qua 10MB');
   }
 
-  const timestamp = Date.now();
-  const uuid = crypto.randomUUID();
-  const path = `${roomId}/${timestamp}_${uuid}.pdf`;
+  const tenantId = await getTenantId();
+  const path = buildStoragePath(tenantId, roomId, 'pdf');
 
   const { error } = await supabase.storage
     .from(CHAT_BUCKET)
@@ -149,12 +158,16 @@ export async function uploadChatPdf(
     throw new Error(`Upload that bai: ${error.message}`);
   }
 
-  const { data: urlData } = supabase.storage
+  const { data: urlData, error: signError } = await supabase.storage
     .from(CHAT_BUCKET)
-    .getPublicUrl(path);
+    .createSignedUrl(path, 60 * 60 * 24 * 3650);
+
+  if (signError) {
+    throw new Error(`Khong the tao Signed URL: ${signError.message}`);
+  }
 
   return {
-    publicUrl: urlData.publicUrl,
+    publicUrl: urlData.signedUrl,
     path,
     size: file.size,
   };

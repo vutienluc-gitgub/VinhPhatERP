@@ -121,4 +121,7 @@ export const CHAT_LABELS = {
   OPEN_CHAT: 'Mở chat',
   CLOSE_CHAT: 'Đóng chat',
   NEW_IMAGE: 'Hình ảnh mới',
+  CLOSE: 'Đóng',
+  OFFLINE_PENDING_MSG: 'tin nhắn chờ gửi',
+  LOAD_MORE: 'Tải thêm tin nhắn cũ',
 } as const;

@@ -1,15 +1,9 @@
-import { clsx, type ClassValue } from 'clsx';
-
 import { Icon } from '@/shared/components/Icon';
 import { sumBy } from '@/shared/utils/array.util';
+import { cn } from '@/shared/utils/cn';
 
 import { RollGridItem, type RollGridItemMode } from './RollGridItem';
 import { useRollMatrixLogic, type RollMatrixItem } from './useRollMatrixLogic';
-
-/** Utility for class merging */
-function cn(...inputs: ClassValue[]) {
-  return clsx(inputs);
-}
 
 interface LotMatrixCardProps {
   // Metadata

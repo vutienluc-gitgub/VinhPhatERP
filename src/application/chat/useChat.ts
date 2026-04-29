@@ -243,11 +243,15 @@ export function useUpdateReadReceipt() {
 
 // ── Realtime Subscription (with Reconnection + Multi-tab Broadcast) ──
 
+const MAX_RECONNECT_ATTEMPTS = 5;
+
 export function useChatRealtime(roomId: string | undefined) {
   const queryClient = useQueryClient();
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const retryCountRef = useRef(0);
   const [connectionStatus, setConnectionStatus] =
-    useState<ChatConnectionStatus>('disconnected');
+    useState<ChatConnectionStatus>('connected');
 
   const subscribe = useCallback(() => {
     if (!roomId) return;
@@ -281,17 +285,24 @@ export function useChatRealtime(roomId: string | undefined) {
       )
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
+          retryCountRef.current = 0;
           setConnectionStatus('connected');
           broadcastConnectionStatus(roomId, 'connected');
         } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-          setConnectionStatus('disconnected');
-          broadcastConnectionStatus(roomId, 'disconnected');
+          // Exceeded max retries — stop attempting
+          if (retryCountRef.current >= MAX_RECONNECT_ATTEMPTS) {
+            setConnectionStatus('disconnected');
+            broadcastConnectionStatus(roomId, 'disconnected');
+            return;
+          }
 
-          // Auto-reconnect after disconnect
-          setTimeout(() => {
-            setConnectionStatus('reconnecting');
-            broadcastConnectionStatus(roomId, 'reconnecting');
+          retryCountRef.current += 1;
+          setConnectionStatus('reconnecting');
+          broadcastConnectionStatus(roomId, 'reconnecting');
 
+          // Auto-reconnect with exponential backoff
+          const delay = Math.min(3000 * retryCountRef.current, 15000);
+          retryTimerRef.current = setTimeout(() => {
             // Re-fetch to catch missed messages
             void queryClient.invalidateQueries({
               queryKey: CHAT_KEYS.messages(roomId),
@@ -299,7 +310,7 @@ export function useChatRealtime(roomId: string | undefined) {
 
             // Re-subscribe
             subscribe();
-          }, 3000);
+          }, delay);
         }
       });
 
@@ -307,11 +318,15 @@ export function useChatRealtime(roomId: string | undefined) {
   }, [roomId, queryClient]);
 
   const unsubscribe = useCallback(() => {
+    if (retryTimerRef.current) {
+      clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
     if (channelRef.current) {
       void supabase.removeChannel(channelRef.current);
       channelRef.current = null;
     }
-    setConnectionStatus('disconnected');
+    retryCountRef.current = 0;
   }, []);
 
   // Subscribe on mount, unsubscribe on unmount

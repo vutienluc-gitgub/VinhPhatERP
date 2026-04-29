@@ -15,6 +15,8 @@ import {
   useUpdateTask,
   useDeleteTask,
 } from '@/application/operations/useOperationsData';
+import { useOrderList } from '@/application/orders/useOrders';
+import { useWorkOrders } from '@/application/production/useWorkOrders';
 
 import { Task } from './types';
 import {
@@ -41,13 +43,22 @@ interface WorkOrderMin {
 
 export function TaskForm({ task, onClose }: TaskFormProps) {
   const isEditing = !!task;
-  const { employees, kpis, orders, workOrders } = useOperationsData();
+  const { employees, kpis } = useOperationsData();
+  const ordersQuery = useOrderList();
+  const workOrdersQuery = useWorkOrders();
+
   const createMutation = useCreateTask();
   const updateMutation = useUpdateTask();
   const deleteMutation = useDeleteTask();
 
-  const ordersList = (orders as unknown as OrderMin[]) || [];
-  const workOrdersList = (workOrders as unknown as WorkOrderMin[]) || [];
+  const ordersList = (Array.isArray(ordersQuery.data)
+    ? ordersQuery.data
+    : ((ordersQuery.data as unknown as { data: unknown[] })?.data ??
+      [])) as unknown as OrderMin[];
+  const workOrdersList = (Array.isArray(workOrdersQuery.data)
+    ? workOrdersQuery.data
+    : ((workOrdersQuery.data as unknown as { data: unknown[] })?.data ??
+      [])) as unknown as WorkOrderMin[];
 
   const {
     register,
