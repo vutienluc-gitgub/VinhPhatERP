@@ -2,9 +2,14 @@ import { EmployeeWorkload } from '@/api/operations.api';
 import { OPERATIONS_MESSAGES } from '@/features/operations/constants';
 import { ActivityItem } from '@/features/operations/types';
 import { LiveIndicator } from '@/shared/components';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/Card';
 
 import { ActivityFeed } from './ActivityFeed';
-import { Card, CardContent, CardHeader, CardTitle } from './Card';
 import { ProgressList } from './ProgressList';
 
 interface OperationsDashboardProps {

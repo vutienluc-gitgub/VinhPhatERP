@@ -1,9 +1,6 @@
 import * as React from 'react';
-import { clsx, type ClassValue } from 'clsx';
 
-function cn(...inputs: ClassValue[]) {
-  return clsx(inputs);
-}
+import { cn } from '@/shared/utils/cn';
 
 export const Card = React.forwardRef<
   HTMLDivElement,

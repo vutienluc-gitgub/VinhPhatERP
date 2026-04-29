@@ -1,5 +1,4 @@
 import { untypedDb } from '@/services/supabase/untyped';
-import { safeUpsertOne } from '@/lib/db-guard';
 import {
   chatMessageResponseSchema,
   CHAT_MESSAGES_PAGE_SIZE,
@@ -12,12 +11,30 @@ export async function getOrCreateChatRoom(
   entityType: string,
   entityId: string,
 ): Promise<string> {
+  // Guard: ensure user is authenticated before calling RPC
+  const {
+    data: { session },
+  } = await untypedDb.auth.getSession();
+
+  if (!session) {
+    throw new Error('Authentication session required to access chat rooms');
+  }
+
   const { data, error } = await untypedDb.rpc('rpc_get_or_create_chat_room', {
     p_entity_type: entityType,
     p_entity_id: entityId,
   });
 
-  if (error) throw error;
+  if (error) {
+    console.error(
+      '[Chat] getOrCreateChatRoom error:',
+      error.message,
+      error.hint,
+      error.code,
+      error.details,
+    );
+    throw error;
+  }
   return data as string;
 }
 
@@ -34,7 +51,16 @@ export async function fetchChatRoomByEntity(
     .eq('entity_id', entityId)
     .maybeSingle();
 
-  if (error) throw error;
+  if (error) {
+    console.error(
+      '[Chat] fetchChatRoomByEntity error:',
+      error.message,
+      error.hint,
+      error.code,
+      error.details,
+    );
+    throw error;
+  }
   return data as ChatRoom | null;
 }
 
@@ -57,7 +83,16 @@ export async function fetchChatMessages(
   }
 
   const { data, error } = await query;
-  if (error) throw error;
+  if (error) {
+    console.error(
+      '[Chat] fetchChatMessages error:',
+      error.message,
+      error.hint,
+      error.code,
+      error.details,
+    );
+    throw error;
+  }
 
   const parsed = chatMessageResponseSchema
     .array()
@@ -66,7 +101,7 @@ export async function fetchChatMessages(
   return parsed;
 }
 
-// ── Send Message ──
+// ── Send Message (direct insert with auth context) ──
 
 export async function sendChatMessage(params: {
   roomId: string;
@@ -75,20 +110,48 @@ export async function sendChatMessage(params: {
   messageType?: string;
   imageUrl?: string;
 }): Promise<ChatMessage> {
-  const result = await safeUpsertOne({
-    table: 'chat_messages',
-    data: {
-      client_id: params.clientId,
-      room_id: params.roomId,
-      content: params.content,
-      message_type: params.messageType ?? 'text',
-      image_url: params.imageUrl ?? null,
-      status: 'sent',
-    },
-    conflictKey: 'client_id',
-  });
+  // Get current user for sender_id and tenant_id
+  const {
+    data: { user },
+  } = await untypedDb.auth.getUser();
 
-  return result as ChatMessage;
+  if (!user) throw new Error('User not authenticated');
+
+  const tenantId =
+    (user.app_metadata?.tenant_id as string) ?? user.user_metadata?.tenant_id;
+
+  if (!tenantId) throw new Error('Missing tenant context');
+
+  const { data, error } = await untypedDb
+    .from('chat_messages')
+    .upsert(
+      {
+        client_id: params.clientId,
+        tenant_id: tenantId,
+        room_id: params.roomId,
+        sender_id: user.id,
+        content: params.content,
+        message_type: params.messageType ?? 'text',
+        image_url: params.imageUrl ?? null,
+        status: 'sent',
+      },
+      { onConflict: 'client_id', ignoreDuplicates: true },
+    )
+    .select()
+    .single();
+
+  if (error) {
+    console.error(
+      '[Chat] sendChatMessage error:',
+      error.message,
+      error.hint,
+      error.code,
+      error.details,
+    );
+    throw error;
+  }
+
+  return data as ChatMessage;
 }
 
 // ── Update Read Receipt ──

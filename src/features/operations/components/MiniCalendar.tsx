@@ -1,8 +1,4 @@
-import { clsx, type ClassValue } from 'clsx';
-
-function cn(...inputs: ClassValue[]) {
-  return clsx(inputs);
-}
+import { cn } from '@/shared/utils/cn';
 
 export function MiniCalendar({
   year = 2026,

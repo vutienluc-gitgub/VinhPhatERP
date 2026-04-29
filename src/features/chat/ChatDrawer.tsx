@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 import {
@@ -53,17 +53,23 @@ export function ChatDrawer({
   // Auto-flush offline queue when online
   const { pendingCount } = useChatOfflineSync(open ? roomId : undefined);
 
-  // Ensure room exists when drawer opens
-  const handleOpen = useCallback(() => {
-    if (!createRoomMutation.data && !createRoomMutation.isPending) {
+  // Trigger room creation when drawer opens (useEffect — NOT render body)
+  useEffect(() => {
+    if (
+      open &&
+      !createRoomMutation.data &&
+      !createRoomMutation.isPending &&
+      !createRoomMutation.isError
+    ) {
       createRoomMutation.mutate({ entityType, entityId });
     }
-  }, [createRoomMutation, entityType, entityId]);
+  }, [open, entityType, entityId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Trigger room creation on first open
-  if (open && !roomId && !createRoomMutation.isPending) {
-    handleOpen();
-  }
+  // Retry handler for error state
+  const handleRetryRoom = useCallback(() => {
+    createRoomMutation.reset();
+    createRoomMutation.mutate({ entityType, entityId });
+  }, [createRoomMutation, entityType, entityId]);
 
   const handleSend = useCallback(
     (content: string) => {
@@ -121,7 +127,7 @@ export function ChatDrawer({
             type="button"
             className="chat-close-btn"
             onClick={onClose}
-            aria-label="Dong"
+            aria-label={CHAT_LABELS.CLOSE}
           >
             <svg
               width="16"
@@ -139,22 +145,35 @@ export function ChatDrawer({
           </button>
         </div>
 
-        {/* Error Banner */}
+        {/* Room Creation Error — full error state with retry */}
         {createRoomMutation.isError ? (
-          <div className="chat-connection-banner chat-connection-banner--error">
-            {createRoomMutation.error instanceof Error
-              ? createRoomMutation.error.message
-              : CHAT_LABELS.SEND_ERROR}
+          <div className="chat-message-list">
+            <div className="chat-error-state">
+              <p className="chat-error-msg">
+                {createRoomMutation.error instanceof Error
+                  ? createRoomMutation.error.message
+                  : CHAT_LABELS.SEND_ERROR}
+              </p>
+              <button
+                type="button"
+                className="chat-error-retry-btn"
+                onClick={handleRetryRoom}
+              >
+                {CHAT_LABELS.RETRY}
+              </button>
+            </div>
           </div>
         ) : null}
 
         {/* Connection Status Banner */}
-        {connectionStatus === 'disconnected' && !createRoomMutation.isError ? (
+        {roomId &&
+        connectionStatus === 'disconnected' &&
+        !createRoomMutation.isError ? (
           <div className="chat-connection-banner chat-connection-banner--error">
             {CHAT_LABELS.CONNECTION_LOST}
           </div>
         ) : null}
-        {connectionStatus === 'reconnecting' ? (
+        {roomId && connectionStatus === 'reconnecting' ? (
           <div className="chat-connection-banner chat-connection-banner--warning">
             {CHAT_LABELS.CONNECTION_LOST}
           </div>
@@ -163,25 +182,31 @@ export function ChatDrawer({
         {/* Offline Pending Banner */}
         {pendingCount > 0 ? (
           <div className="chat-connection-banner chat-connection-banner--info">
-            {pendingCount} tin nhan cho gui
+            {pendingCount} {CHAT_LABELS.OFFLINE_PENDING_MSG}
           </div>
         ) : null}
 
-        {/* Messages */}
-        <ChatMessageList
-          pages={data?.pages}
-          hasNextPage={hasNextPage}
-          isFetchingNextPage={isFetchingNextPage}
-          onLoadMore={() => void fetchNextPage()}
-          isLoading={isLoading}
-        />
+        {/* Messages (only when room creation succeeded or is in progress) */}
+        {!createRoomMutation.isError ? (
+          <ChatMessageList
+            pages={data?.pages}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            onLoadMore={() => void fetchNextPage()}
+            isLoading={isLoading}
+          />
+        ) : null}
 
         {/* Input */}
         <ChatInputArea
           onSend={handleSend}
           onSendImage={handleSendImage}
           roomId={roomId}
-          disabled={!roomId || createRoomMutation.isPending}
+          disabled={
+            !roomId ||
+            createRoomMutation.isPending ||
+            createRoomMutation.isError
+          }
         />
       </div>
     </>,
