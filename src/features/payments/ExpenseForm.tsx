@@ -7,7 +7,11 @@ import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { formatCurrency } from '@/shared/utils/format';
-import { useAccountList, useUnpaidDocuments } from '@/application/payments';
+import {
+  useAccountList,
+  useUnpaidDocuments,
+  useNextExpenseNumber,
+} from '@/application/payments';
 import { useEmployees, useSuppliersList } from '@/application/crm';
 import { useCreateExpense, useUpdateExpense } from '@/application/payments';
 import { sumBy } from '@/shared/utils/array.util';
@@ -145,6 +149,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
   const suppliers = suppliersData?.data ?? [];
   const createMutation = useCreateExpense();
   const updateMutation = useUpdateExpense();
+  const { data: nextNumber } = useNextExpenseNumber();
 
   const {
     register,
@@ -159,6 +164,13 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
       ? expenseToFormValues(expense)
       : expenseDefaultValues,
   });
+
+  // Inject auto-generated number into form when available (create mode only)
+  useEffect(() => {
+    if (!isEditing && nextNumber) {
+      setValue('expenseNumber', nextNumber);
+    }
+  }, [isEditing, nextNumber, setValue]);
 
   useEffect(() => {
     reset(isEditing ? expenseToFormValues(expense) : expenseDefaultValues);
@@ -206,24 +218,13 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="form-field">
               <label htmlFor="expenseNumber">Số phiếu chi</label>
-              {isEditing ? (
-                <input
-                  id="expenseNumber"
-                  className="field-input"
-                  type="text"
-                  readOnly
-                  {...register('expenseNumber')}
-                />
-              ) : (
-                <input
-                  id="expenseNumber"
-                  className="field-input bg-[var(--surface-disabled)] text-[var(--text-tertiary)] italic"
-                  type="text"
-                  value="Tự động"
-                  readOnly
-                  disabled
-                />
-              )}
+              <input
+                id="expenseNumber"
+                className="field-input bg-[var(--surface-disabled)] text-[var(--text-tertiary)] italic"
+                type="text"
+                readOnly
+                {...register('expenseNumber')}
+              />
             </div>
             <div className="form-field">
               <label htmlFor="expenseDate">

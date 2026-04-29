@@ -73,7 +73,6 @@ export const apiPaymentRecord = z.object({
 });
 
 export const apiExpenseRecord = z.object({
-  expense_number: nonEmpty,
   expense_date: dateStr,
   amount: positiveNum,
   category: nonEmpty,
