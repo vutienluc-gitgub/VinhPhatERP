@@ -42,14 +42,16 @@ async function collectRuntimeIssues(page: Page, route: string): Promise<void> {
   });
 
   await page.goto(route, { waitUntil: 'domcontentloaded', timeout: 15_000 });
-  await page.waitForTimeout(600);
+
+  // Wait for React to hydrate and render the main shell
+  await page.waitForSelector('main', { timeout: 10_000 }).catch(() => null);
 
   await expect(
     page,
     `Route ${route} redirected to /auth. Check E2E credentials and seeded storageState.`,
   ).not.toHaveURL(/\/auth(?:$|\?)/);
 
-  await expect(page.locator('main')).toBeVisible();
+  await expect(page.locator('main')).toBeVisible({ timeout: 10_000 });
 
   const firstInteractiveControl = page
     .locator(
@@ -59,7 +61,7 @@ async function collectRuntimeIssues(page: Page, route: string): Promise<void> {
   await expect(
     firstInteractiveControl,
     `No interactive control found on ${route}.`,
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 10_000 });
 
   expect(
     pageErrors,
