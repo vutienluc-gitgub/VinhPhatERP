@@ -16,6 +16,8 @@ import {
   useRejectOrderRequest,
 } from '@/application/orders';
 import { ORDER_STATUS_LABELS } from '@/schema/order.schema';
+import { isOrderEditable } from '@/domain/orders/OrderStateMachine';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 import { OrderAuditLogViewer } from './OrderAuditLogViewer';
 import type { Order, OrderStatus } from './types';
@@ -56,6 +58,8 @@ export function OrderDetail({
 }: OrderDetailProps) {
   const { data: order, isLoading, error } = useOrder(orderId);
   const { data: progressStages = [] } = useOrderProgress(orderId);
+  const { profile } = useAuth();
+  const isAdmin = profile?.role === 'admin';
   const confirmMutation = useConfirmOrder();
   const cancelMutation = useCancelOrder();
   const completeMutation = useCompleteOrder();
@@ -225,7 +229,7 @@ export function OrderDetail({
             </>
           )}
 
-          {order.status === 'draft' && (
+          {isOrderEditable(order.status, isAdmin) && (
             <>
               <Button
                 variant="secondary"
@@ -234,14 +238,16 @@ export function OrderDetail({
               >
                 Sửa đơn
               </Button>
-              <Button
-                variant="primary"
-                leftIcon="CheckCircle"
-                onClick={handleConfirm}
-                isLoading={confirmMutation.isPending}
-              >
-                Xác nhận đơn
-              </Button>
+              {order.status === 'draft' && (
+                <Button
+                  variant="primary"
+                  leftIcon="CheckCircle"
+                  onClick={handleConfirm}
+                  isLoading={confirmMutation.isPending}
+                >
+                  Xác nhận đơn
+                </Button>
+              )}
             </>
           )}
           {(order.status === 'confirmed' || order.status === 'in_progress') && (

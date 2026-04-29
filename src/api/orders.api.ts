@@ -49,7 +49,7 @@ export async function fetchOrdersPaginated(
     const { data: cus } = await supabase
       .from('customers')
       .select('id')
-      .ilike('name', `%${term}%`);
+      .or(`name.ilike.%${term}%,code.ilike.%${term}%`);
     const cIds = cus?.map((c) => c.id) || [];
     if (cIds.length > 0) {
       query = query.or(
@@ -89,7 +89,7 @@ export async function fetchOrders(
     const { data: cus } = await supabase
       .from('customers')
       .select('id')
-      .ilike('name', `%${term}%`);
+      .or(`name.ilike.%${term}%,code.ilike.%${term}%`);
     const cIds = cus?.map((c) => c.id) || [];
     if (cIds.length > 0) {
       query = query.or(

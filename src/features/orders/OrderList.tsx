@@ -23,6 +23,8 @@ import {
   ORDER_STATUS_BADGE_VARIANTS,
 } from '@/schema/order.schema';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
+import { useAuth } from '@/shared/hooks/useAuth';
+import { isOrderEditable } from '@/domain/orders/OrderStateMachine';
 
 import type { Order, OrdersFilter } from './types';
 
@@ -70,6 +72,8 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
     'status',
   ]);
   const [page, setPage] = useState(1);
+  const { profile } = useAuth();
+  const isAdmin = profile?.role === 'admin';
 
   const {
     data: result,
@@ -344,7 +348,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
                 <ActionBar
                   actions={
                     [
-                      order.status === 'draft'
+                      isOrderEditable(order.status, isAdmin)
                         ? {
                             icon: 'Edit3',
                             onClick: () => onEdit(order),
@@ -357,6 +361,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
                             variant: 'danger',
                           }
                         : null,
+                      !isOrderEditable(order.status, isAdmin) ||
                       order.status !== 'draft'
                         ? {
                             icon: 'Eye',

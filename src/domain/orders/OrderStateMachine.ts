@@ -49,7 +49,8 @@ export const ORDER_TRANSITION_LABELS: Record<OrderTransition, string> = {
 };
 
 /** Guard: don hang co the chinh sua khong */
-export function isOrderEditable(status: OrderStatus): boolean {
+export function isOrderEditable(status: OrderStatus, isAdmin = false): boolean {
+  if (isAdmin && !isOrderTerminal(status)) return true;
   return status === 'draft' || status === 'pending_review';
 }
 
