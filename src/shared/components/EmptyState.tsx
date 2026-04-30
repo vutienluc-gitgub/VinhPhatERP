@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Icon } from './Icon';
@@ -12,7 +13,7 @@ type EmptyStateProps = {
   icon?: IconName | string;
 };
 
-export function EmptyState({
+export const EmptyState = memo(function EmptyState({
   title = 'Chưa có dữ liệu',
   description,
   actionLabel,
@@ -55,4 +56,6 @@ export function EmptyState({
         ) : null)}
     </div>
   );
-}
+});
+
+EmptyState.displayName = 'EmptyState';

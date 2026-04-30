@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
-import { Pagination } from '@/shared/components/Pagination';
 import {
   Icon,
   Badge,
@@ -489,17 +488,17 @@ export function WorkOrderList({
                 </div>
               );
             }}
-          />
-
-          <Pagination
-            result={{
-              data: orders,
-              total: data?.count ?? 0,
-              page,
-              pageSize: 20,
-              totalPages: Math.ceil((data?.count ?? 0) / 20),
+            pagination={{
+              result: {
+                data: orders,
+                total: data?.count ?? 0,
+                page,
+                pageSize: 20,
+                totalPages: Math.ceil((data?.count ?? 0) / 20),
+              },
+              onPageChange: setPage,
+              itemLabel: 'lệnh sản xuất',
             }}
-            onPageChange={setPage}
           />
         </>
       )}

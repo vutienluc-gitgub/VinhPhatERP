@@ -26,7 +26,7 @@ import {
   apiExpenseRecord,
   apiAccountInsert,
 } from '@/schema/api-validation.schema';
-import { safeUpsert, safeUpsertOne } from '@/lib/db-guard';
+import { safeUpsertOne } from '@/lib/db-guard';
 
 /* ─── Payments ─────────────────────────────────── */
 
@@ -310,42 +310,27 @@ export async function updateExpense(
   id: string,
   row: ExpenseDbPayload,
 ): Promise<Expense> {
-  // Separate allocations from expense columns — allocations live in a separate table
-  const { allocations, ...expenseFields } = row;
+  const { error } = await untypedDb.rpc('rpc_update_expense', {
+    p_expense_id: id,
+    p_data: row,
+  });
 
-  const { data, error } = await untypedDb
-    .from('expenses')
-    .update(expenseFields)
-    .eq('id', id)
-    .select()
-    .single();
-  if (error) throw error;
-
-  // Replace allocations: delete old → insert new
-  if (allocations !== undefined) {
-    const { error: delError } = await untypedDb
-      .from('expense_allocations')
-      .delete()
-      .eq('expense_id', id);
-    if (delError) throw delError;
-
-    if (allocations.length > 0) {
-      const tenantId = await getTenantId();
-      await safeUpsert({
-        table: 'expense_allocations',
-        data: allocations.map((a) => ({
-          expense_id: id,
-          tenant_id: tenantId,
-          document_type: a.document_type,
-          document_id: a.document_id,
-          allocated_amount: a.allocated_amount,
-        })),
-        conflictKey: 'id',
-      });
+  if (error) {
+    if (error.message?.includes('EXPENSE_NOT_FOUND')) {
+      throw new Error('Phiếu chi không tồn tại hoặc bạn không có quyền sửa.');
     }
+    throw error;
   }
 
-  return data as Expense;
+  // Fetch and return the updated expense
+  const { data: updated, error: fetchErr } = await untypedDb
+    .from('expenses')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (fetchErr) throw fetchErr;
+  return updated as Expense;
 }
 
 export async function deleteExpense(id: string): Promise<void> {

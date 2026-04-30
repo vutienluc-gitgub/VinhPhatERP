@@ -7,5 +7,6 @@ export function useYarnCatalogOptions() {
   return useQuery({
     queryKey: ['yarn-catalog', 'options'],
     queryFn: fetchYarnCatalogOptions,
+    staleTime: 5 * 60 * 1000,
   });
 }

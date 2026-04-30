@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { Pagination } from '@/shared/components/Pagination';
 import {
   Icon,
   Badge,
@@ -115,7 +114,8 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
       {error && (
         <div className="p-4">
           <p className="error-inline">
-            Lỗi tải dữ liệu: {(error as Error).message}
+            Lỗi tải dữ liệu:{' '}
+            {error instanceof Error ? error.message : String(error)}
           </p>
         </div>
       )}
@@ -270,15 +270,21 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
             </div>
           </div>
         )}
+        pagination={{
+          result,
+          onPageChange: setPage,
+          itemLabel: 'phiếu chi',
+        }}
       />
 
       {deleteMutation.error && (
         <p className="error-inline-sm">
-          Lỗi: {(deleteMutation.error as Error).message}
+          Lỗi:{' '}
+          {deleteMutation.error instanceof Error
+            ? deleteMutation.error.message
+            : String(deleteMutation.error)}
         </p>
       )}
-
-      <Pagination result={result} onPageChange={setPage} />
     </div>
   );
 }

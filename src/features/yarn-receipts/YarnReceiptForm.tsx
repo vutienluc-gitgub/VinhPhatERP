@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
@@ -131,7 +131,6 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
     register,
     handleSubmit,
     control,
-    reset,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<YarnReceiptsFormValues>({
@@ -141,14 +140,39 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
       : yarnReceiptsDefaultValues,
   });
 
+  const supplierOptions = useMemo(
+    () =>
+      suppliers.map((s) => ({
+        value: s.id,
+        label: s.name,
+        code: s.code,
+      })),
+    [suppliers],
+  );
+
+  const yarnCatalogOptions = useMemo(
+    () =>
+      yarnCatalogs.map((c) => ({
+        value: c.id,
+        label: c.name,
+        code: c.code,
+      })),
+    [yarnCatalogs],
+  );
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'items',
   });
 
-  useEffect(() => {
-    reset(isEditing ? receiptToFormValues(receipt) : yarnReceiptsDefaultValues);
-  }, [receipt, isEditing, reset]);
+  /**
+   * NOTE: Previously there was a useEffect that called reset() when `receipt`
+   * changed. This was removed because:
+   * 1. useForm already initializes with correct defaultValues
+   * 2. If parent re-renders with same receipt (new reference from refetch),
+   *    the effect would wipe user edits → data loss
+   * 3. The parent should use key={receipt?.id} to force re-mount on entity change
+   */
 
   async function onSubmit(values: YarnReceiptsFormValues) {
     try {
@@ -264,11 +288,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                   control={control}
                   render={({ field }) => (
                     <Combobox
-                      options={suppliers.map((s) => ({
-                        value: s.id,
-                        label: s.name,
-                        code: s.code,
-                      }))}
+                      options={supplierOptions}
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="— Chọn nhà cung cấp —"
@@ -348,11 +368,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                         control={control}
                         render={({ field }) => (
                           <Combobox
-                            options={yarnCatalogs.map((c) => ({
-                              value: c.id,
-                              label: c.name,
-                              code: c.code,
-                            }))}
+                            options={yarnCatalogOptions}
                             value={field.value}
                             onChange={(val) => {
                               field.onChange(val);

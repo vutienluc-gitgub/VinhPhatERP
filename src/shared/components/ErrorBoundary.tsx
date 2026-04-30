@@ -1,5 +1,7 @@
 import { Component, type ErrorInfo, type PropsWithChildren } from 'react';
 
+import { logger } from '@/shared/utils/logger';
+
 type ErrorBoundaryState = {
   hasError: boolean;
   error: Error | null;
@@ -25,7 +27,10 @@ export class ErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('[ErrorBoundary]', error, info.componentStack);
+    logger.error('Global React Error', error, {
+      module: 'ErrorBoundary',
+      componentStack: info.componentStack,
+    });
   }
 
   handleReset = () => {

@@ -11,6 +11,7 @@ import type {
   InventoryBreakdownRow,
   AgingRoll,
 } from '@/api/inventory.api';
+import { calculateAgingStats } from '@/domain/inventory';
 
 export type { InventoryStats, InventoryBreakdownRow, AgingRoll };
 
@@ -36,8 +37,12 @@ export function useYarnInventory() {
 }
 
 export function useAgingStock() {
-  return useQuery<AgingRoll[]>({
+  return useQuery({
     queryKey: ['inventory', 'aging-stock'],
     queryFn: fetchAgingStock,
+    select: (data) => ({
+      rolls: data,
+      stats: calculateAgingStats(data),
+    }),
   });
 }

@@ -23,6 +23,17 @@ import type { YarnCatalogFormValues } from '@/schema/yarn-catalog.schema';
 
 import type { YarnCatalog } from './types';
 
+const UNIT_OPTIONS = [
+  { value: 'kg', label: 'kg' },
+  { value: 'cuộn', label: 'cuộn' },
+  { value: 'tấn', label: 'tấn' },
+];
+
+const STATUS_OPTIONS = (['active', 'inactive'] as const).map((s) => ({
+  value: s,
+  label: YARN_CATALOG_STATUS_LABELS[s],
+}));
+
 type YarnCatalogFormProps = {
   catalog: YarnCatalog | null;
   onClose: () => void;
@@ -236,20 +247,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
                 control={control}
                 render={({ field }) => (
                   <Combobox
-                    options={[
-                      {
-                        value: 'kg',
-                        label: 'kg',
-                      },
-                      {
-                        value: 'cuộn',
-                        label: 'cuộn',
-                      },
-                      {
-                        value: 'tấn',
-                        label: 'tấn',
-                      },
-                    ]}
+                    options={UNIT_OPTIONS}
                     value={field.value}
                     onChange={field.onChange}
                     hasError={!!errors.unit}
@@ -268,10 +266,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
                 control={control}
                 render={({ field }) => (
                   <Combobox
-                    options={(['active', 'inactive'] as const).map((s) => ({
-                      value: s,
-                      label: YARN_CATALOG_STATUS_LABELS[s],
-                    }))}
+                    options={STATUS_OPTIONS}
                     value={field.value}
                     onChange={field.onChange}
                     hasError={!!errors.status}

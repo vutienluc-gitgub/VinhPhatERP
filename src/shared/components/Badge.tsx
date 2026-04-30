@@ -1,5 +1,6 @@
 import { clsx } from 'clsx';
-import type { ReactNode } from 'react';
+import { memo } from 'react';
+import type { ReactNode, HTMLAttributes } from 'react';
 
 import { Icon, type IconName } from './Icon';
 
@@ -11,12 +12,13 @@ export type BadgeVariant =
   | 'gray'
   | 'purple';
 
-interface BadgeProps {
-  children: ReactNode;
+interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
+  children?: ReactNode;
   variant?: BadgeVariant;
   className?: string;
   icon?: IconName;
-  /** (Premium) Hiển thị điểm sáng màu trạng thái, mặc định true nếu không có icon */
+  iconSize?: number;
+  /** (Premium) Hiển thị điểm sáng màu trạng thái */
   showDot?: boolean;
 }
 
@@ -24,15 +26,17 @@ interface BadgeProps {
  * A standardized Badge component for status tags and labels.
  * Uses CSS classes from data-ui.css.
  */
-export function Badge({
+export const Badge = memo(function Badge({
   children,
   variant = 'gray',
   className,
   icon,
-  showDot,
+  iconSize = 14,
+  showDot = false,
+  ...rest
 }: BadgeProps) {
-  // Nếu không chỉ định định dạng nào, tự động hiển thị chấm trạng thái đối với các Badge không có icon
-  const renderDot = showDot ?? !icon;
+  // Điểm sáng trạng thái nay được thiết lập minh bạch qua prop showDot
+  const renderDot = showDot;
 
   return (
     <span
@@ -41,13 +45,16 @@ export function Badge({
         `badge-${variant}`,
         className,
       )}
+      {...rest}
     >
       {icon ? (
-        <Icon name={icon} size={14} />
+        <Icon name={icon} size={iconSize} />
       ) : renderDot ? (
-        <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0 shadow-[0_0_6px_currentColor]" />
+        <span className="badge-dot" />
       ) : null}
       {children}
     </span>
   );
-}
+});
+
+Badge.displayName = 'Badge';

@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 
 import type { ContractType } from '@/schema';
+import { CONTRACT_TEMPLATE_MESSAGES } from '@/schema';
 import {
   getTemplates,
   createTemplate,
@@ -55,10 +56,10 @@ export function useContractTemplates() {
       createTemplate(data),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: TEMPLATES_KEY });
-      toast.success('Đã tạo mẫu hợp đồng mới.');
+      toast.success(CONTRACT_TEMPLATE_MESSAGES.CREATE_SUCCESS);
     },
     onError: (err: Error) => {
-      toast.error('Lỗi khi tạo: ' + err.message);
+      toast.error(CONTRACT_TEMPLATE_MESSAGES.CREATE_ERROR + err.message);
     },
   });
 
@@ -72,10 +73,10 @@ export function useContractTemplates() {
     }) => updateTemplate(id, data),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: TEMPLATES_KEY });
-      toast.success('Mẫu hợp đồng đã được cập nhật.');
+      toast.success(CONTRACT_TEMPLATE_MESSAGES.UPDATE_SUCCESS);
     },
     onError: (err: Error) => {
-      toast.error('Lỗi khi lưu: ' + err.message);
+      toast.error(CONTRACT_TEMPLATE_MESSAGES.UPDATE_ERROR + err.message);
     },
   });
 
@@ -83,10 +84,10 @@ export function useContractTemplates() {
     mutationFn: deleteTemplate,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: TEMPLATES_KEY });
-      toast.success('Đã xoá mẫu hợp đồng.');
+      toast.success(CONTRACT_TEMPLATE_MESSAGES.DELETE_SUCCESS);
     },
     onError: (err: Error) => {
-      toast.error('Lỗi khi xoá: ' + err.message);
+      toast.error(CONTRACT_TEMPLATE_MESSAGES.DELETE_ERROR + err.message);
     },
   });
 
@@ -101,7 +102,7 @@ export function useContractTemplates() {
   };
 
   async function seedDefaults() {
-    const loading = toast.loading('Đang khởi tạo mẫu mặc định...');
+    const loading = toast.loading(CONTRACT_TEMPLATE_MESSAGES.SEED_LOADING);
     try {
       await createTemplate({
         type: 'sale',
@@ -138,9 +139,12 @@ export function useContractTemplates() {
         `,
       });
       await queryClient.invalidateQueries({ queryKey: TEMPLATES_KEY });
-      toast.success('Khởi tạo mẫu mặc định thành công!', { id: loading });
+      toast.success(CONTRACT_TEMPLATE_MESSAGES.SEED_SUCCESS, { id: loading });
     } catch (err) {
-      toast.error('Lỗi khởi tạo: ' + (err as Error).message, { id: loading });
+      toast.error(
+        CONTRACT_TEMPLATE_MESSAGES.SEED_ERROR + (err as Error).message,
+        { id: loading },
+      );
     }
   }
 

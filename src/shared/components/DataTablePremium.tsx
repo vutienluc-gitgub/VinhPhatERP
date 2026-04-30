@@ -1,9 +1,12 @@
 import { clsx } from 'clsx';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, memo } from 'react';
 import type { ReactNode } from 'react';
+
+import type { PaginatedResult } from '@/shared/types/pagination';
 
 import { Icon } from './Icon';
 import { EmptyState } from './EmptyState';
+import { Pagination } from './Pagination';
 import { TableSkeleton } from './TableSkeleton';
 
 export interface Column<T> {
@@ -19,6 +22,16 @@ export interface Column<T> {
   sortable?: boolean;
   /** Hàm trích xuất dữ liệu nội bộ (Dành riêng cho Local Sort tự động đối với cột nested) */
   accessor?: (item: T) => string | number | null | undefined;
+}
+
+/** Server-side pagination configuration (backward-compatible, optional) */
+export interface PaginationConfig<T> {
+  /** Paginated result from API containing page, totalPages, total */
+  result: PaginatedResult<T> | undefined;
+  /** Callback when user navigates to a different page */
+  onPageChange: (page: number) => void;
+  /** Custom label for item count, e.g. "cuộn", "đơn hàng". Default: "mục" */
+  itemLabel?: string;
 }
 
 interface DataTablePremiumProps<T> {
@@ -47,13 +60,15 @@ interface DataTablePremiumProps<T> {
   enableClientSort?: boolean;
   /** Sử dụng giao diện thu gọn, tiết kiệm diện tích */
   compact?: boolean;
+  /** Server-side pagination config. When provided, pagination bar is rendered below the table. */
+  pagination?: PaginationConfig<T>;
 }
 
 /**
  * A standardized responsive table component for the ERP Premium UI.
  * Handles Desktop (Table) and Mobile (Card List) views automatically.
  */
-export function DataTablePremium<T>({
+function DataTablePremiumInner<T>({
   data,
   columns,
   renderMobileCard,
@@ -72,6 +87,7 @@ export function DataTablePremium<T>({
   onSort,
   enableClientSort = true,
   compact = false,
+  pagination,
 }: DataTablePremiumProps<T>) {
   // --- NATIVE AUTO-SORT LOGIC ---
   const [internalSortCol, setInternalSortCol] = useState<string | undefined>();
@@ -250,6 +266,19 @@ export function DataTablePremium<T>({
           </div>
         ))}
       </div>
+
+      {/* Built-in Pagination (only when pagination prop is provided) */}
+      {pagination && (
+        <Pagination
+          result={pagination.result}
+          onPageChange={pagination.onPageChange}
+          itemLabel={pagination.itemLabel}
+        />
+      )}
     </div>
   );
 }
+
+export const DataTablePremium = memo(
+  DataTablePremiumInner,
+) as typeof DataTablePremiumInner;

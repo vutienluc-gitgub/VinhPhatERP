@@ -3,6 +3,8 @@ import { useCallback, useState } from 'react';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { useGlobalModal } from '@/shared/hooks/useGlobalModal';
 import { ContractForm } from '@/features/contracts/ContractForm';
+import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
+import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 
 import { OrderDetail } from './OrderDetail';
 import { OrderForm } from './OrderForm';
@@ -19,6 +21,12 @@ export function OrdersPage() {
   const [reserveOrder, setReserveOrder] = useState<Order | null>(null);
   const [contractOrder, setContractOrder] = useState<Order | null>(null);
   const { openModal } = useGlobalModal();
+
+  const { activeGuides } = useContextualGuide(
+    'Orders',
+    view.mode === 'detail' ? view.orderId : undefined,
+    view.mode,
+  );
 
   const openCreate = useCallback(() => {
     setEditOrder(null);
@@ -84,7 +92,11 @@ export function OrdersPage() {
 
       {/* Order Form */}
       {showForm && (
-        <OrderForm order={editOrder ? editOrder : null} onClose={closeForm} />
+        <OrderForm
+          key={editOrder?.id ?? 'new'}
+          order={editOrder ? editOrder : null}
+          onClose={closeForm}
+        />
       )}
 
       {/* Reserve rolls panel */}
@@ -113,6 +125,9 @@ export function OrdersPage() {
           />
         )}
       </AdaptiveSheet>
+
+      {/* Guide System Integration */}
+      <ContextualGuide activeGuides={activeGuides} />
     </div>
   );
 }

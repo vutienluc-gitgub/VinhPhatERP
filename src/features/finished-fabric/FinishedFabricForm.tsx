@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
@@ -33,6 +33,14 @@ type FinishedFabricFormProps = {
   onClose: () => void;
 };
 
+const QUALITY_OPTIONS = [
+  { value: '', label: 'Chưa kiểm định' },
+  ...QUALITY_GRADES.map((g) => ({
+    value: g,
+    label: QUALITY_GRADE_LABELS[g],
+  })),
+];
+
 function rollToFormValues(roll: FinishedFabricRoll): FinishedFabricFormValues {
   return {
     roll_number: roll.roll_number,
@@ -57,14 +65,39 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
   const isEditing = roll !== null;
   const lockReason = isEditing ? editBlockReason(roll.status) : null;
   const isLocked = lockReason !== null;
-  const allowedStatuses: RollStatus[] = isEditing
-    ? getAllowedStatusTransitions(roll.status)
-    : [...ROLL_STATUSES];
   const createMutation = useCreateFinishedFabric();
   const updateMutation = useUpdateFinishedFabric();
   const { data: rawRollOptions = [] } = useRawRollOptions();
   const { data: colorOptions = [] } = useColorOptions();
   const { data: fabricOptions = [] } = useFabricCatalogOptions();
+
+  const fabricComboOptions = useMemo(
+    () =>
+      fabricOptions.map((f) => ({
+        value: f.name,
+        label: f.code ? `${f.name} (${f.code})` : f.name,
+      })),
+    [fabricOptions],
+  );
+
+  const rawRollComboOptions = useMemo(
+    () =>
+      rawRollOptions.map((r) => ({
+        value: r.id,
+        label: `${r.roll_number} — ${r.fabric_type}${r.color_name ? ` (${r.color_name})` : ''}${r.lot_number ? ` [Lô: ${r.lot_number}]` : ''}`,
+      })),
+    [rawRollOptions],
+  );
+
+  const statusOptions = useMemo(() => {
+    const allowedStatuses: RollStatus[] = isEditing
+      ? getAllowedStatusTransitions(roll.status)
+      : [...ROLL_STATUSES];
+    return allowedStatuses.map((s) => ({
+      value: s,
+      label: ROLL_STATUS_LABELS[s],
+    }));
+  }, [isEditing, roll?.status]);
 
   const {
     register,
@@ -162,10 +195,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                   control={control}
                   render={({ field }) => (
                     <Combobox
-                      options={fabricOptions.map((f) => ({
-                        value: f.name,
-                        label: f.code ? `${f.name} (${f.code})` : f.name,
-                      }))}
+                      options={fabricComboOptions}
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="Chọn loại vải..."
@@ -191,10 +221,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                 control={control}
                 render={({ field }) => (
                   <Combobox
-                    options={rawRollOptions.map((r) => ({
-                      value: r.id,
-                      label: `${r.roll_number} — ${r.fabric_type}${r.color_name ? ` (${r.color_name})` : ''}${r.lot_number ? ` [Lô: ${r.lot_number}]` : ''}`,
-                    }))}
+                    options={rawRollComboOptions}
                     value={field.value}
                     onChange={field.onChange}
                     placeholder="— Chọn cuộn mộc —"
@@ -314,16 +341,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                   control={control}
                   render={({ field }) => (
                     <Combobox
-                      options={[
-                        {
-                          value: '',
-                          label: 'Chưa kiểm định',
-                        },
-                        ...QUALITY_GRADES.map((g) => ({
-                          value: g,
-                          label: QUALITY_GRADE_LABELS[g],
-                        })),
-                      ]}
+                      options={QUALITY_OPTIONS}
                       value={field.value}
                       onChange={field.onChange}
                     />
@@ -341,10 +359,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                   control={control}
                   render={({ field }) => (
                     <Combobox
-                      options={allowedStatuses.map((s) => ({
-                        value: s,
-                        label: ROLL_STATUS_LABELS[s],
-                      }))}
+                      options={statusOptions}
                       value={field.value}
                       onChange={field.onChange}
                     />

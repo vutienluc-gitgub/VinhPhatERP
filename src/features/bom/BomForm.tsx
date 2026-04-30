@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
@@ -58,6 +58,26 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
       },
     ],
   };
+
+  const fabricOptions = useMemo(
+    () =>
+      fabricCatalogs.map((fb) => ({
+        value: fb.id,
+        label: `${fb.code} — ${fb.name}`,
+        code: fb.code,
+      })),
+    [fabricCatalogs],
+  );
+
+  const yarnOptions = useMemo(
+    () =>
+      yarnCatalogs.map((y) => ({
+        value: y.id,
+        label: `${y.code} — ${y.name} (${y.composition})`,
+        code: y.code,
+      })),
+    [yarnCatalogs],
+  );
 
   const {
     register,
@@ -218,11 +238,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
               control={control}
               render={({ field }) => (
                 <Combobox
-                  options={fabricCatalogs.map((fb) => ({
-                    value: fb.id,
-                    label: `${fb.code} — ${fb.name}`,
-                    code: fb.code,
-                  }))}
+                  options={fabricOptions}
                   value={field.value}
                   onChange={field.onChange}
                   placeholder="-- Chọn sản phẩm mộc --"
@@ -338,11 +354,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
                       control={control}
                       render={({ field }) => (
                         <Combobox
-                          options={yarnCatalogs.map((y) => ({
-                            value: y.id,
-                            label: `${y.code} — ${y.name} (${y.composition})`,
-                            code: y.code,
-                          }))}
+                          options={yarnOptions}
                           value={field.value}
                           onChange={field.onChange}
                           placeholder="— Chọn sợi —"

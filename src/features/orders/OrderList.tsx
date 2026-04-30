@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { Pagination } from '@/shared/components/Pagination';
 import {
   Icon,
   Badge,
@@ -230,7 +229,8 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
       {error && (
         <div className="p-4">
           <p className="error-inline">
-            Lỗi tải dữ liệu: {(error as Error).message}
+            Lỗi tải dữ liệu:{' '}
+            {error instanceof Error ? error.message : String(error)}
           </p>
         </div>
       )}
@@ -431,9 +431,12 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               </div>
             );
           }}
+          pagination={{
+            result,
+            onPageChange: setPage,
+            itemLabel: 'đơn hàng',
+          }}
         />
-
-        <Pagination result={result} onPageChange={setPage} />
       </FadeUp>
     </div>
   );

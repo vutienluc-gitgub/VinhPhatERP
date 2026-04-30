@@ -11,7 +11,6 @@ import {
   ClearFilterButton,
   ActionBar,
 } from '@/shared/components';
-import { Pagination } from '@/shared/components/Pagination';
 import { useDeleteLoom, useLoomList } from '@/application/settings';
 import type { LoomStatus, LoomType } from '@/schema/loom.schema';
 import { LOOM_STATUS_LABELS, LOOM_TYPE_LABELS } from '@/schema/loom.schema';
@@ -356,11 +355,12 @@ export function LoomList({ onEdit, onNew }: LoomListProps) {
             </div>
           </div>
         )}
+        pagination={{
+          result: data,
+          onPageChange: setPage,
+          itemLabel: 'máy dệt',
+        }}
       />
-
-      <div className="p-4">
-        <Pagination result={data} onPageChange={setPage} />
-      </div>
     </div>
   );
 }

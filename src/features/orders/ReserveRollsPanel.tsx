@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
@@ -8,7 +8,10 @@ import {
   useReserveRoll,
   useUnreserveRoll,
 } from '@/application/orders';
-import { sumBy } from '@/shared/utils/array.util';
+import {
+  calculateReservedLengthM,
+  calculateReservedWeightKg,
+} from '@/domain/orders';
 
 import type { Order, OrderItem } from './types';
 
@@ -40,6 +43,13 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
   const reserveMutation = useReserveRoll();
   const unreserveMutation = useUnreserveRoll();
 
+  /**
+   * Track which specific roll IDs have in-flight mutations.
+   * Prevents double-click / concurrent operations on the same roll
+   * which could cause double-allocation in a multi-user ERP.
+   */
+  const [pendingRollIds, setPendingRollIds] = useState<Set<string>>(new Set());
+
   // Filter out already reserved rolls from available list
   const reservedIds = new Set(reservedRolls.map((r) => r.id));
   const filteredAvailable = availableRolls.filter(
@@ -47,19 +57,45 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
   );
 
   // Calc totals for reserved rolls
-  const reservedLengthM = sumBy(reservedRolls, (r) => r.length_m ?? 0);
-  const reservedWeightKg = sumBy(reservedRolls, (r) => r.weight_kg ?? 0);
+  const reservedLengthM = calculateReservedLengthM(reservedRolls);
+  const reservedWeightKg = calculateReservedWeightKg(reservedRolls);
 
-  function handleReserve(rollId: string) {
-    reserveMutation.mutate({
-      rollId,
-      orderId: order.id,
-    });
-  }
+  const handleReserve = useCallback(
+    (rollId: string) => {
+      if (pendingRollIds.has(rollId)) return;
+      setPendingRollIds((prev) => new Set(prev).add(rollId));
+      reserveMutation.mutate(
+        { rollId, orderId: order.id },
+        {
+          onSettled: () => {
+            setPendingRollIds((prev) => {
+              const next = new Set(prev);
+              next.delete(rollId);
+              return next;
+            });
+          },
+        },
+      );
+    },
+    [pendingRollIds, reserveMutation, order.id],
+  );
 
-  function handleUnreserve(rollId: string) {
-    unreserveMutation.mutate(rollId);
-  }
+  const handleUnreserve = useCallback(
+    (rollId: string) => {
+      if (pendingRollIds.has(rollId)) return;
+      setPendingRollIds((prev) => new Set(prev).add(rollId));
+      unreserveMutation.mutate(rollId, {
+        onSettled: () => {
+          setPendingRollIds((prev) => {
+            const next = new Set(prev);
+            next.delete(rollId);
+            return next;
+          });
+        },
+      });
+    },
+    [pendingRollIds, unreserveMutation],
+  );
 
   return (
     <AdaptiveSheet
@@ -178,10 +214,11 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                           type="button"
                           className="!text-[0.8rem] !px-[0.6rem] !py-[0.3rem]"
                           onClick={() => handleUnreserve(roll.id)}
-                          disabled={unreserveMutation.isPending}
+                          disabled={pendingRollIds.has(roll.id)}
                         >
-                          {' '}
-                          Bỏ giữ
+                          {pendingRollIds.has(roll.id)
+                            ? 'Dang xu ly...'
+                            : 'Bo giu'}
                         </Button>
                       </td>
                     </tr>
@@ -258,9 +295,11 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                           className="primary-button !text-[0.8rem] !px-[0.6rem] !py-[0.3rem]"
                           type="button"
                           onClick={() => handleReserve(roll.id)}
-                          disabled={reserveMutation.isPending}
+                          disabled={pendingRollIds.has(roll.id)}
                         >
-                          Giữ
+                          {pendingRollIds.has(roll.id)
+                            ? 'Dang xu ly...'
+                            : 'Giu'}
                         </button>
                       </td>
                     </tr>
@@ -274,10 +313,10 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
         {(reserveMutation.error || unreserveMutation.error) && (
           <p className="error-inline mt-3">
             Lỗi:{' '}
-            {
-              ((reserveMutation.error ?? unreserveMutation.error) as Error)
-                .message
-            }
+            {(() => {
+              const err = reserveMutation.error ?? unreserveMutation.error;
+              return err instanceof Error ? err.message : String(err);
+            })()}
           </p>
         )}
       </div>

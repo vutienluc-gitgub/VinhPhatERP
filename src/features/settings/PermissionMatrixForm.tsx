@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Icon } from '@/shared/components/Icon';
 import { TabSwitcher, type TabItem } from '@/shared/components/TabSwitcher';
@@ -55,28 +55,38 @@ export function PermissionMatrixForm() {
     useRolePermissions(activeRole);
   const mutation = useUpsertRolePermissions();
 
-  // Local state: permission_key → granted
-  const [localGrants, setLocalGrants] = useState<Record<string, boolean>>({});
-  const [initialGrants, setInitialGrants] = useState<Record<string, boolean>>(
-    {},
-  );
-
-  // Sync server data → local state when role changes
-  useEffect(() => {
-    if (rolePerms && allPermissions) {
-      const map: Record<string, boolean> = {};
-      // Default all to false
-      for (const p of allPermissions) {
-        map[p.key] = false;
-      }
-      // Apply server grants
-      for (const rp of rolePerms) {
-        map[rp.permission_key] = rp.granted;
-      }
-      setLocalGrants(map);
-      setInitialGrants(map);
+  /**
+   * Derive the "initial" (server-side) grants via useMemo instead of
+   * useEffect + setState. This eliminates the transient frame where
+   * localGrants holds OLD role data while rolePerms already has new data,
+   * which caused a brief flash of incorrect "dirty" state during tab switching.
+   */
+  const initialGrants = useMemo(() => {
+    if (!rolePerms || !allPermissions) return {};
+    const map: Record<string, boolean> = {};
+    for (const p of allPermissions) {
+      map[p.key] = false;
     }
+    for (const rp of rolePerms) {
+      map[rp.permission_key] = rp.granted;
+    }
+    return map;
   }, [rolePerms, allPermissions]);
+
+  // Local state: permission_key → granted (user edits)
+  const [localGrants, setLocalGrants] = useState<Record<string, boolean>>({});
+
+  /**
+   * Stable key to track which role's grants we've loaded into local state.
+   * When server data arrives for a new role, we re-initialize local grants.
+   */
+  const [syncedKey, setSyncedKey] = useState('');
+  const currentKey = `${activeRole}-${rolePerms?.length ?? 'x'}`;
+
+  if (currentKey !== syncedKey && Object.keys(initialGrants).length > 0) {
+    setLocalGrants(initialGrants);
+    setSyncedKey(currentKey);
+  }
 
   const isDirty = useMemo(() => {
     return Object.keys(localGrants).some(

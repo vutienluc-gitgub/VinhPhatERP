@@ -1,5 +1,6 @@
 import type { FinishedFabricRoll } from '@/features/finished-fabric/types';
 import { supabase } from '@/services/supabase/client';
+import { untypedDb } from '@/services/supabase/untyped';
 
 const TABLE = 'finished_fabric_rolls';
 
@@ -59,15 +60,22 @@ export async function reserveRoll(
   rollId: string,
   orderId: string,
 ): Promise<void> {
-  const { error } = await supabase
-    .from(TABLE)
-    .update({
-      status: 'reserved',
-      reserved_for_order_id: orderId,
-    })
-    .eq('id', rollId)
-    .eq('status', 'in_stock');
-  if (error) throw error;
+  const { error } = await untypedDb.rpc('rpc_reserve_finished_roll', {
+    p_roll_id: rollId,
+    p_order_id: orderId,
+  });
+
+  if (error) {
+    if (error.message?.includes('ROLL_ALREADY_RESERVED_OR_UNAVAILABLE')) {
+      throw new Error(
+        'Cuộn vải này đã bị người khác đặt trước hoặc không còn trong kho. Vui lòng chọn cuộn khác.',
+      );
+    }
+    if (error.message?.includes('ROLL_NOT_FOUND')) {
+      throw new Error('Không tìm thấy cuộn vải này.');
+    }
+    throw error;
+  }
 }
 
 export async function unreserveRoll(rollId: string): Promise<void> {

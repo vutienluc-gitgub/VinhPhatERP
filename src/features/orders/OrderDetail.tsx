@@ -15,12 +15,16 @@ import {
   useApproveOrderRequest,
   useRejectOrderRequest,
 } from '@/application/orders';
-import { ORDER_STATUS_LABELS } from '@/schema/order.schema';
+import {
+  ORDER_STATUS_LABELS,
+  ORDER_STATUS_BADGE_VARIANTS,
+} from '@/schema/order.schema';
 import { isOrderEditable } from '@/domain/orders/OrderStateMachine';
 import { useAuth } from '@/shared/hooks/useAuth';
+import { Badge } from '@/shared/components/Badge';
 
 import { OrderAuditLogViewer } from './OrderAuditLogViewer';
-import type { Order, OrderStatus } from './types';
+import type { Order } from './types';
 
 type OrderDetailProps = {
   orderId: string;
@@ -31,21 +35,6 @@ type OrderDetailProps = {
   onReserveRolls: (order: Order) => void;
   onCreateContract: (order: Order) => void;
 };
-
-function statusClass(status: OrderStatus): string {
-  switch (status) {
-    case 'confirmed':
-      return 'reserved';
-    case 'in_progress':
-      return 'in_process';
-    case 'completed':
-      return 'in_stock';
-    case 'cancelled':
-      return 'damaged';
-    default:
-      return 'shipped';
-  }
-}
 
 export function OrderDetail({
   orderId,
@@ -146,9 +135,9 @@ export function OrderDetail({
             <h3 className="m-0">{order.order_number}</h3>
             <span className="td-muted">{order.customers?.name ?? '—'}</span>
           </div>
-          <span className={`roll-status ${statusClass(order.status)}`}>
+          <Badge variant={ORDER_STATUS_BADGE_VARIANTS[order.status] ?? 'gray'}>
             {ORDER_STATUS_LABELS[order.status]}
-          </span>
+          </Badge>
         </div>
 
         {/* Info grid */}

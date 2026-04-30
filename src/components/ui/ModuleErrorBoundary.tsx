@@ -1,5 +1,7 @@
 import React, { Component, ReactNode } from 'react';
 
+import { logger } from '@/shared/utils/logger';
+
 interface Props {
   children: ReactNode;
 }
@@ -16,7 +18,10 @@ export class ModuleErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('[ModuleErrorBoundary]', error, errorInfo);
+    logger.error('Module Error', error, {
+      module: 'ModuleErrorBoundary',
+      componentStack: errorInfo.componentStack,
+    });
   }
 
   render() {

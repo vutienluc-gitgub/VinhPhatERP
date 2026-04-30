@@ -11,7 +11,6 @@ import {
   ClearFilterButton,
   ActionBar,
 } from '@/shared/components';
-import { Pagination } from '@/shared/components/Pagination';
 import {
   useDeleteFabricCatalog,
   useFabricCatalogList,
@@ -343,11 +342,12 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
             </div>
           </div>
         )}
+        pagination={{
+          result: data,
+          onPageChange: setPage,
+          itemLabel: 'loại vải',
+        }}
       />
-
-      <div className="p-4">
-        <Pagination result={data} onPageChange={setPage} />
-      </div>
     </div>
   );
 }

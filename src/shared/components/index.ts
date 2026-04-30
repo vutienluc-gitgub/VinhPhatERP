@@ -13,7 +13,10 @@ export { NumberInput } from './NumberInput';
 export { NumericInput } from './NumericInput';
 export { ConfirmProvider, ConfirmContext, useConfirm } from './ConfirmDialog';
 export { DataTablePremium } from './DataTablePremium';
-export type { Column as DataTableColumn } from './DataTablePremium';
+export type {
+  Column as DataTableColumn,
+  PaginationConfig,
+} from './DataTablePremium';
 export { FilterBarPremium } from './FilterBarPremium';
 export type {
   FilterFieldConfig,
@@ -37,11 +40,7 @@ export type { TabItem } from './TabSwitcher';
 export { Switch } from './Switch';
 export { ViewToggle } from './ViewToggle';
 export type { ViewMode } from './ViewToggle';
-export { MiniBarChart } from './MiniBarChart';
-export type { MiniBarChartProps, MiniBarChartItem } from './MiniBarChart';
-export { RevenueBarChart } from './RevenueBarChart';
-export { FabricRevenueChart } from './FabricRevenueChart';
-export { PaymentMethodChart } from './PaymentMethodChart';
+
 export { SearchInput } from './SearchInput';
 export { AddButton } from './AddButton';
 export { CancelButton } from './CancelButton';
@@ -52,6 +51,12 @@ export { ActionBar } from './ActionBar';
 export type { ActionConfig } from './ActionBar';
 export { ActionMenu } from './ActionMenu';
 export * from './ActionMenu';
+
+// NOTE: Chart components (RevenueBarChart, FabricRevenueChart, PaymentMethodChart,
+// MiniBarChart) are intentionally NOT exported from this barrel.
+// They depend on recharts (~400 kB) and would bloat any chunk that imports
+// from '@/shared/components'. Import them directly instead:
+//   import { RevenueBarChart } from '@/shared/components/RevenueBarChart';
 
 export * from './Card';
 export * from './ChartLegend';

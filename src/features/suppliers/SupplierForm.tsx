@@ -22,6 +22,16 @@ import type { SupplierFormValues } from '@/schema/supplier.schema';
 
 import type { Supplier } from './types';
 
+const CATEGORY_OPTIONS = SUPPLIER_CATEGORIES.map((cat) => ({
+  value: cat,
+  label: SUPPLIER_CATEGORY_LABELS[cat],
+}));
+
+const STATUS_OPTIONS = SUPPLIER_STATUSES.map((st) => ({
+  value: st,
+  label: SUPPLIER_STATUS_LABELS[st],
+}));
+
 type SupplierFormProps = {
   supplier: Supplier | null;
   onClose: () => void;
@@ -246,10 +256,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
                 control={control}
                 render={({ field }) => (
                   <Combobox
-                    options={SUPPLIER_CATEGORIES.map((cat) => ({
-                      value: cat,
-                      label: SUPPLIER_CATEGORY_LABELS[cat],
-                    }))}
+                    options={CATEGORY_OPTIONS}
                     value={field.value}
                     onChange={field.onChange}
                     hasError={!!errors.category}
@@ -268,10 +275,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
                 control={control}
                 render={({ field }) => (
                   <Combobox
-                    options={SUPPLIER_STATUSES.map((st) => ({
-                      value: st,
-                      label: SUPPLIER_STATUS_LABELS[st],
-                    }))}
+                    options={STATUS_OPTIONS}
                     value={field.value}
                     onChange={field.onChange}
                   />

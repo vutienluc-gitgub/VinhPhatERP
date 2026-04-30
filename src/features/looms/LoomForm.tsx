@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
@@ -22,6 +22,16 @@ import {
 import type { LoomFormValues } from '@/schema/loom.schema';
 
 import type { LoomWithSupplier } from './types';
+
+const TYPE_OPTIONS = LOOM_TYPES.map((t) => ({
+  value: t,
+  label: LOOM_TYPE_LABELS[t],
+}));
+
+const STATUS_OPTIONS = LOOM_STATUSES.map((s) => ({
+  value: s,
+  label: LOOM_STATUS_LABELS[s],
+}));
 
 type LoomFormProps = {
   loom: LoomWithSupplier | null;
@@ -91,10 +101,14 @@ export function LoomForm({ loom, onClose }: LoomFormProps) {
   const isPending =
     isSubmitting || createMutation.isPending || updateMutation.isPending;
 
-  const supplierOptions = (suppliers ?? []).map((s) => ({
-    value: s.id,
-    label: `${s.code} — ${s.name}`,
-  }));
+  const supplierOptions = useMemo(
+    () =>
+      (suppliers ?? []).map((s) => ({
+        value: s.id,
+        label: `${s.code} — ${s.name}`,
+      })),
+    [suppliers],
+  );
 
   return (
     <AdaptiveSheet
@@ -163,10 +177,7 @@ export function LoomForm({ loom, onClose }: LoomFormProps) {
                 control={control}
                 render={({ field }) => (
                   <Combobox
-                    options={LOOM_TYPES.map((t) => ({
-                      value: t,
-                      label: LOOM_TYPE_LABELS[t],
-                    }))}
+                    options={TYPE_OPTIONS}
                     value={field.value}
                     onChange={field.onChange}
                     hasError={!!errors.loom_type}
@@ -303,10 +314,7 @@ export function LoomForm({ loom, onClose }: LoomFormProps) {
                 control={control}
                 render={({ field }) => (
                   <Combobox
-                    options={LOOM_STATUSES.map((s) => ({
-                      value: s,
-                      label: LOOM_STATUS_LABELS[s],
-                    }))}
+                    options={STATUS_OPTIONS}
                     value={field.value}
                     onChange={field.onChange}
                     hasError={!!errors.status}

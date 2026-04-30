@@ -13,6 +13,8 @@ import {
   useRecentOrders,
   useCustomerSources,
 } from '@/application/analytics';
+import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
+import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 
 import { CustomerSourceChart } from './CustomerSourceChart';
 import { PendingTasksCard } from './PendingTasksCard';
@@ -25,6 +27,7 @@ export function DashboardPage() {
   const { data: recentOrders, isLoading: ordersLoading } = useRecentOrders();
   const { data: customerSources, isLoading: sourcesLoading } =
     useCustomerSources();
+  const { activeGuides } = useContextualGuide('Dashboard');
 
   return (
     <div className="page-container">
@@ -131,6 +134,7 @@ export function DashboardPage() {
           />
         </div>
       </div>
+      <ContextualGuide activeGuides={activeGuides} />
     </div>
   );
 }

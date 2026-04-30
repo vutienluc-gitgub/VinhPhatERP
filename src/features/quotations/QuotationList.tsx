@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { Pagination } from '@/shared/components/Pagination';
 import {
   Icon,
   Badge,
@@ -201,7 +200,8 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
       {error && (
         <div className="p-4">
           <p className="error-inline">
-            Lỗi tải dữ liệu: {(error as Error).message}
+            Lỗi tải dữ liệu:{' '}
+            {error instanceof Error ? error.message : String(error)}
           </p>
         </div>
       )}
@@ -431,9 +431,12 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
             </div>
           );
         }}
+        pagination={{
+          result,
+          onPageChange: setPage,
+          itemLabel: 'báo giá',
+        }}
       />
-
-      <Pagination result={result} onPageChange={setPage} />
     </div>
   );
 }

@@ -19,6 +19,17 @@ import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 
 import type { FabricCatalog } from './types';
 
+const UNIT_OPTIONS = [
+  { value: 'kg', label: 'kg' },
+  { value: 'm', label: 'mét (m)' },
+  { value: 'cuộn', label: 'cuộn' },
+];
+
+const STATUS_OPTIONS = (['active', 'inactive'] as const).map((s) => ({
+  value: s,
+  label: FABRIC_CATALOG_STATUS_LABELS[s],
+}));
+
 type FabricCatalogFormProps = {
   catalog: FabricCatalog | null;
   onClose: () => void;
@@ -168,20 +179,7 @@ export function FabricCatalogForm({
                 control={control}
                 render={({ field }) => (
                   <Combobox
-                    options={[
-                      {
-                        value: 'kg',
-                        label: 'kg',
-                      },
-                      {
-                        value: 'm',
-                        label: 'mét (m)',
-                      },
-                      {
-                        value: 'cuộn',
-                        label: 'cuộn',
-                      },
-                    ]}
+                    options={UNIT_OPTIONS}
                     value={field.value}
                     onChange={field.onChange}
                     hasError={!!errors.unit}
@@ -241,10 +239,7 @@ export function FabricCatalogForm({
                 control={control}
                 render={({ field }) => (
                   <Combobox
-                    options={(['active', 'inactive'] as const).map((s) => ({
-                      value: s,
-                      label: FABRIC_CATALOG_STATUS_LABELS[s],
-                    }))}
+                    options={STATUS_OPTIONS}
                     value={field.value}
                     onChange={field.onChange}
                     hasError={!!errors.status}

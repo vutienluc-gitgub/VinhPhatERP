@@ -368,16 +368,23 @@ export function useChatRealtime(roomId: string | undefined) {
  * Should be used in the ChatDrawer or a global provider.
  */
 export function useChatOfflineSync(roomId: string | undefined) {
+  /**
+   * Ref is the authoritative flushing guard — immune to stale closures
+   * captured by the `online` event listener.
+   * useState is kept only for UI rendering (e.g. showing a spinner).
+   */
+  const isFlushingRef = useRef(false);
   const [isFlushing, setIsFlushing] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
 
   const flushQueue = useCallback(async () => {
-    if (!roomId || isFlushing) return;
+    if (!roomId || isFlushingRef.current) return;
 
     const queued = await getQueuedMessages();
     const roomMessages = queued.filter((m) => m.roomId === roomId);
     if (roomMessages.length === 0) return;
 
+    isFlushingRef.current = true;
     setIsFlushing(true);
     setPendingCount(roomMessages.length);
 
@@ -398,8 +405,9 @@ export function useChatOfflineSync(roomId: string | undefined) {
       }
     }
 
+    isFlushingRef.current = false;
     setIsFlushing(false);
-  }, [roomId, isFlushing]);
+  }, [roomId]);
 
   // Auto-flush when coming online
   useEffect(() => {

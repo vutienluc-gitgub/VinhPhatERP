@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { ReactNode } from 'react';
 
 import { Icon, type IconName } from './Icon';
@@ -30,7 +31,7 @@ interface Props {
  * Premium KPI Card with glassmorphism overlay and modern styling.
  * Enhanced with trend, interactivity, and auto-formatting.
  */
-export function KpiCardPremium({
+export const KpiCardPremium = memo(function KpiCardPremium({
   label,
   value,
   icon,
@@ -145,7 +146,9 @@ export function KpiCardPremium({
       )}
     </div>
   );
-}
+});
+
+KpiCardPremium.displayName = 'KpiCardPremium';
 
 interface GridProps {
   children: ReactNode;

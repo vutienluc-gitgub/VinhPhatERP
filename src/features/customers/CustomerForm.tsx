@@ -22,6 +22,17 @@ import {
 import type { Customer } from './types';
 import { CustomerPortalAccountPanel } from './CustomerPortalAccountPanel';
 
+const SOURCE_OPTIONS = CUSTOMER_SOURCES.map((s) => ({
+  value: s,
+  label: CUSTOMER_SOURCE_LABELS[s],
+  icon: CUSTOMER_SOURCE_ICONS[s],
+}));
+
+const STATUS_OPTIONS = [
+  { value: 'active', label: 'Hoạt động', icon: 'CheckCircle2' as const },
+  { value: 'inactive', label: 'Ngừng hoạt động', icon: 'XCircle' as const },
+];
+
 type CustomerFormProps = {
   customer: Customer | null;
   onClose: () => void;
@@ -241,11 +252,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
               control={control}
               render={({ field }) => (
                 <Combobox
-                  options={CUSTOMER_SOURCES.map((s) => ({
-                    value: s,
-                    label: CUSTOMER_SOURCE_LABELS[s],
-                    icon: CUSTOMER_SOURCE_ICONS[s],
-                  }))}
+                  options={SOURCE_OPTIONS}
                   value={field.value}
                   onChange={field.onChange}
                 />
@@ -260,18 +267,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
               control={control}
               render={({ field }) => (
                 <Combobox
-                  options={[
-                    {
-                      value: 'active',
-                      label: 'Hoạt động',
-                      icon: 'CheckCircle2',
-                    },
-                    {
-                      value: 'inactive',
-                      label: 'Ngừng hoạt động',
-                      icon: 'XCircle',
-                    },
-                  ]}
+                  options={STATUS_OPTIONS}
                   value={field.value}
                   onChange={field.onChange}
                 />

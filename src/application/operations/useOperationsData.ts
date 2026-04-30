@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 import {
   fetchTasks,
@@ -139,17 +140,27 @@ export function useOperationsData() {
     activitiesQuery.isError ||
     workloadQuery.isError;
 
-  const tasks = tasksQuery.data ?? [];
-  const doneCount = tasks.filter((t) => t.status === 'done').length;
-  const openTasksList = tasks.filter(
-    (t) => t.status !== 'done' && t.status !== 'cancelled',
-  );
-  const overdueCount = openTasksList.filter(
-    (t) => t.due_date && new Date(t.due_date) < new Date(),
-  ).length;
-  const onTimeRate = tasks.length
-    ? Math.round(((tasks.length - overdueCount) / tasks.length) * 100)
-    : 100;
+  const tasks = useMemo(() => tasksQuery.data ?? [], [tasksQuery.data]);
+
+  /**
+   * Memoize derived stats — these involve .filter() and Date comparisons
+   * over potentially large arrays. Without memoization, they recomputed
+   * on every render even when unrelated queries refetched.
+   */
+  const stats = useMemo(() => {
+    const doneCount = tasks.filter((t) => t.status === 'done').length;
+    const openTasksList = tasks.filter(
+      (t) => t.status !== 'done' && t.status !== 'cancelled',
+    );
+    const overdueCount = openTasksList.filter(
+      (t) => t.due_date && new Date(t.due_date) < new Date(),
+    ).length;
+    const onTimeRate = tasks.length
+      ? Math.round(((tasks.length - overdueCount) / tasks.length) * 100)
+      : 100;
+
+    return { doneCount, overdueCount, onTimeRate };
+  }, [tasks]);
 
   return {
     tasks,
@@ -157,11 +168,7 @@ export function useOperationsData() {
     kpis: kpisQuery.data ?? [],
     activities: activitiesQuery.data ?? [],
     workload: workloadQuery.data ?? [],
-    stats: {
-      doneCount,
-      overdueCount,
-      onTimeRate,
-    },
+    stats,
     isLoading,
     isError,
   };

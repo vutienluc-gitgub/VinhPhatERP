@@ -3,13 +3,10 @@ import type {
   RevenueByFabricRow,
   PaymentCollectionRow,
 } from '@/api/reports.api';
-import {
-  KpiCardPremium,
-  KpiGridPremium,
-  RevenueBarChart,
-  FabricRevenueChart,
-  PaymentMethodChart,
-} from '@/shared/components';
+import { KpiCardPremium, KpiGridPremium } from '@/shared/components';
+import { RevenueBarChart } from '@/shared/components/RevenueBarChart';
+import { FabricRevenueChart } from '@/shared/components/FabricRevenueChart';
+import { PaymentMethodChart } from '@/shared/components/PaymentMethodChart';
 import { formatCurrency } from '@/shared/utils/format';
 import { sumBy } from '@/shared/utils/array.util';
 

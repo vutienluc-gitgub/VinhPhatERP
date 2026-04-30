@@ -7,7 +7,6 @@ import {
   DataTablePremium,
   ClearFilterButton,
 } from '@/shared/components';
-import { Pagination } from '@/shared/components/Pagination';
 import { Button } from '@/shared/components';
 import { OrderRequestModal } from '@/features/customer-portal/orders/OrderRequestModal';
 
@@ -85,7 +84,8 @@ export function PortalFabricCatalogPage() {
 
         {error && (
           <p className="p-4 text-danger">
-            Lỗi tải danh mục: {(error as Error).message}
+            Lỗi tải danh mục:{' '}
+            {error instanceof Error ? error.message : String(error)}
           </p>
         )}
 
@@ -227,11 +227,12 @@ export function PortalFabricCatalogPage() {
               </div>
             </div>
           )}
+          pagination={{
+            result: data,
+            onPageChange: setPage,
+            itemLabel: 'sản phẩm',
+          }}
         />
-
-        <div className="p-4 md:p-6 border-t border-border">
-          <Pagination result={data} onPageChange={setPage} />
-        </div>
       </div>
 
       <div className="mt-6 p-5 bg-primary/5 rounded-2xl border border-primary/10 flex flex-col md:flex-row items-center gap-4">

@@ -398,8 +398,18 @@ export async function issueYarn(id: string): Promise<WorkOrder> {
     .from(TABLE)
     .update({ status: 'yarn_issued' })
     .eq('id', id)
-    .eq('status', 'draft');
-  if (error) throw error;
+    .eq('status', 'draft')
+    .select()
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') {
+      throw new Error(
+        'Lệnh dệt không ở trạng thái Bản nháp hoặc đã được cấp phát bởi người khác.',
+      );
+    }
+    throw error;
+  }
   return fetchWorkOrderById(id);
 }
 

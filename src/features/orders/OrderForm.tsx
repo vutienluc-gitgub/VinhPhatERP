@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
@@ -22,7 +22,6 @@ import {
   type CreateOrderInput,
 } from '@/application/orders';
 import { useUpdateOrder } from '@/application/orders';
-import { sumBy } from '@/shared/utils/array.util';
 import {
   emptyOrderItem,
   ordersDefaultValues,
@@ -31,6 +30,7 @@ import {
   UNIT_OPTIONS,
 } from '@/schema/order.schema';
 import type { OrdersFormValues } from '@/schema/order.schema';
+import { calculateOrderTotal } from '@/domain/orders';
 
 import { CreditOverrideDialog } from './CreditOverrideDialog';
 import type { Order } from './types';
@@ -39,6 +39,11 @@ const UNIT_LABELS: Record<string, string> = {
   m: 'm',
   kg: 'kg',
 };
+
+const UNIT_COMBO_OPTIONS = UNIT_OPTIONS.map((opt) => ({
+  value: opt.value,
+  label: opt.label,
+}));
 
 type OrderFormProps = {
   order: Order | null;
@@ -74,10 +79,7 @@ function LineTotals({
     control,
     name: 'items',
   });
-  const total = sumBy(
-    items ?? [],
-    (it) => (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0),
-  );
+  const total = calculateOrderTotal(items);
   return (
     <div className="text-right font-semibold text-base py-2 border-t-2 border-border mt-3">
       Tổng cộng: {formatCurrency(total)} đ
@@ -169,6 +171,31 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
   const { data: fabricOptions = [] } = useFabricCatalogOptions();
   const { data: colorOptions = [] } = useColorOptions();
 
+  const customerOptions = useMemo(
+    () =>
+      customers.map((c) => ({
+        value: c.id,
+        label: c.name,
+        code: c.code,
+      })),
+    [customers],
+  );
+
+  const fabricComboOptions = useMemo(
+    () =>
+      fabricOptions.map((f) => ({
+        value: f.name,
+        label: f.name,
+        code: f.code,
+      })),
+    [fabricOptions],
+  );
+
+  const colorComboOptions = useMemo(
+    () => toColorComboboxOptions(colorOptions),
+    [colorOptions],
+  );
+
   const stepper = useStepper({ totalSteps: 2 });
   // Ref để track step trong onSubmit, tránh stale closure
   const stepRef = useRef(stepper.currentStep);
@@ -180,7 +207,6 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
     register,
     handleSubmit,
     control,
-    reset,
     setValue,
     trigger,
     formState: { errors, isSubmitting },
@@ -193,17 +219,6 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
     control,
     name: 'items',
   });
-
-  // Dùng state để track ID, tránh reset liên tục gây re-render loop
-  const [lastOrderId, setLastOrderId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const currentId = isEditing ? order.id : 'new';
-    if (currentId !== lastOrderId) {
-      reset(isEditing ? orderToFormValues(order) : ordersDefaultValues);
-      setLastOrderId(currentId);
-    }
-  }, [order, isEditing, reset, lastOrderId]);
 
   async function handleNextStep(e: React.MouseEvent) {
     e.preventDefault();
@@ -301,7 +316,10 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
         >
           {mutationError && (
             <p className="error-inline mb-4">
-              Lỗi: {(mutationError as Error).message}
+              Lỗi:{' '}
+              {mutationError instanceof Error
+                ? mutationError.message
+                : String(mutationError)}
             </p>
           )}
 
@@ -359,11 +377,6 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                       name="customerId"
                       control={control}
                       render={({ field }) => {
-                        const customerOptions = customers.map((c) => ({
-                          value: c.id,
-                          label: c.name,
-                          code: c.code,
-                        }));
                         return (
                           <Combobox
                             options={customerOptions}
@@ -453,11 +466,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                               control={control}
                               render={({ field }) => (
                                 <Combobox
-                                  options={fabricOptions.map((f) => ({
-                                    value: f.name,
-                                    label: f.name,
-                                    code: f.code,
-                                  }))}
+                                  options={fabricComboOptions}
                                   value={field.value}
                                   onChange={(val) => {
                                     field.onChange(val);
@@ -492,7 +501,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                               control={control}
                               render={({ field }) => (
                                 <Combobox
-                                  options={toColorComboboxOptions(colorOptions)}
+                                  options={colorComboOptions}
                                   value={field.value ?? ''}
                                   onChange={field.onChange}
                                   placeholder="Chọn hoặc nhập màu..."
@@ -524,10 +533,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                               control={control}
                               render={({ field }) => (
                                 <Combobox
-                                  options={UNIT_OPTIONS.map((opt) => ({
-                                    value: opt.value,
-                                    label: opt.label,
-                                  }))}
+                                  options={UNIT_COMBO_OPTIONS}
                                   value={field.value}
                                   onChange={field.onChange}
                                 />

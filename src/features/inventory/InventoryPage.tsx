@@ -11,34 +11,9 @@ import {
   useAgingStock,
 } from '@/application/inventory';
 import type { InventoryBreakdownRow, AgingRoll } from '@/application/inventory';
-
-type AgingSeverity = 'critical' | 'warning' | 'caution';
-
-type AgingConfig = {
-  label: string;
-  variant: 'danger' | 'warning' | 'gray';
-};
-
-const AGING_CONFIG: Record<AgingSeverity, AgingConfig> = {
-  critical: {
-    label: 'Nghiêm trọng',
-    variant: 'danger',
-  },
-  warning: {
-    label: 'Cảnh báo',
-    variant: 'warning',
-  },
-  caution: {
-    label: 'Lưu ý',
-    variant: 'gray',
-  },
-};
-
-function getAgingSeverity(days: number): AgingSeverity {
-  if (days >= 90) return 'critical';
-  if (days >= 60) return 'warning';
-  return 'caution';
-}
+import { AGING_CONFIG, getAgingSeverity } from '@/domain/inventory';
+import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
+import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 
 function fmt(val: number, decimals = 1): string {
   return val.toLocaleString('vi-VN', { maximumFractionDigits: decimals });
@@ -259,6 +234,7 @@ export function InventoryPage() {
   const finishedQuery = useFinishedFabricInventory();
   const yarnQuery = useYarnInventory();
   const agingQuery = useAgingStock();
+  const { activeGuides } = useContextualGuide('Inventory');
 
   const isLoading =
     rawQuery.isLoading || finishedQuery.isLoading || yarnQuery.isLoading;
@@ -268,11 +244,9 @@ export function InventoryPage() {
   const finishedStats = finishedQuery.data?.stats;
   const yarnStats = yarnQuery.data;
 
-  const agingRolls = agingQuery.data ?? [];
-  const criticalCount = agingRolls.filter((r) => r.age_days >= 90).length;
-  const warningCount = agingRolls.filter(
-    (r) => r.age_days >= 60 && r.age_days < 90,
-  ).length;
+  const agingRolls = agingQuery.data?.rolls ?? [];
+  const criticalCount = agingQuery.data?.stats.criticalCount ?? 0;
+  const warningCount = agingQuery.data?.stats.warningCount ?? 0;
 
   return (
     <div className="page-container">
@@ -479,6 +453,7 @@ export function InventoryPage() {
           </div>
         )}
       </div>
+      <ContextualGuide activeGuides={activeGuides} />
     </div>
   );
 }

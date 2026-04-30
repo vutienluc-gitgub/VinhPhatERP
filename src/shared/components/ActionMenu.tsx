@@ -67,8 +67,8 @@ export function ActionMenu({
           className={`absolute ${placementClass} top-full mt-2 w-max min-w-[12rem] bg-surface shadow-2xl border border-border/60 rounded-xl overflow-hidden z-[100] animate-in fade-in zoom-in-95 duration-200`}
         >
           <div className="p-1.5 flex flex-col gap-0.5">
-            {items.map((item, index) => (
-              <React.Fragment key={index}>
+            {items.map((item) => (
+              <React.Fragment key={item.label}>
                 {item.separated && (
                   <div className="h-px bg-border/40 my-1 mx-2" />
                 )}

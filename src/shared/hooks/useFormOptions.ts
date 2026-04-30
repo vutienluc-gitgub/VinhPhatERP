@@ -16,6 +16,7 @@ export function useBomList(filters: BomFilter = {}) {
   return useQuery({
     queryKey: ['bom', 'list', filters],
     queryFn: () => fetchBomList(filters),
+    staleTime: 5 * 60 * 1000,
   });
 }
 
@@ -24,6 +25,7 @@ export function useOrderList(filters: OrdersFilter = {}, page = 1) {
   return useQuery({
     queryKey: ['orders', filters, page],
     queryFn: () => fetchOrdersPaginated(filters, page),
+    staleTime: 5 * 60 * 1000,
   });
 }
 
@@ -32,5 +34,6 @@ export function useSuppliersList(filters: SupplierFilter = {}, page = 1) {
   return useQuery({
     queryKey: ['suppliers', filters, page],
     queryFn: () => fetchSuppliersPaginated(filters, page),
+    staleTime: 5 * 60 * 1000,
   });
 }
