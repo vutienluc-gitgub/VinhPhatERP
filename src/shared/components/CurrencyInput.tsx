@@ -1,11 +1,13 @@
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useRef } from 'react';
+
+import { useControlledDisplay } from '@/shared/hooks/useControlledDisplay';
 
 /**
- * CurrencyInput — Format tiền tệ Việt Nam realtime khi gõ.
+ * CurrencyInput — Format tien te Viet Nam realtime khi go.
  *
- * - Hiển thị: "115.000" (có dấu chấm phân cách hàng nghìn)
- * - Giá trị thực gửi lên form: 115000 (number)
- * - Tương thích react-hook-form Controller pattern
+ * - Hien thi: "115.000" (co dau cham phan cach hang nghin)
+ * - Gia tri thuc gui len form: 115000 (number)
+ * - Tuong thich react-hook-form Controller pattern
  *
  * @example
  * <Controller
@@ -38,9 +40,9 @@ function toDisplay(num: number | null | undefined): string {
 }
 
 /** Parse display string -> number (VD: "115.000" -> 115000) */
-function toNumber(text: string): number {
+function toNumber(text: string): number | null {
   const digits = text.replace(/\D/g, '');
-  return digits ? parseInt(digits, 10) : 0;
+  return digits ? parseInt(digits, 10) : null;
 }
 
 export const CurrencyInput = memo(function CurrencyInput({
@@ -52,37 +54,31 @@ export const CurrencyInput = memo(function CurrencyInput({
   placeholder = '0',
   disabled,
 }: CurrencyInputProps) {
-  const [display, setDisplay] = useState(() => toDisplay(value ?? null));
+  const { display, setDisplay } = useControlledDisplay(
+    value,
+    toDisplay,
+    toNumber,
+  );
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Sync khi value thay đổi từ bên ngoài (edit mode, form reset)
-  useEffect(() => {
-    const currentNum = toNumber(display);
-    const safeValue = value ?? 0;
-    if (safeValue !== currentNum) {
-      setDisplay(toDisplay(value));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const rawText = e.target.value;
       const cursorPos = e.target.selectionStart ?? 0;
 
-      // Đếm số chữ số TRƯỚC con trỏ trong chuỗi gốc
+      // Count digits BEFORE cursor in raw string
       const digitsBeforeCursor = rawText
         .slice(0, cursorPos)
         .replace(/\D/g, '').length;
 
       // Parse -> format
-      const numericValue = toNumber(rawText);
+      const numericValue = toNumber(rawText) ?? 0;
       const formatted = numericValue > 0 ? toDisplay(numericValue) : '';
 
       setDisplay(formatted);
       onChange(numericValue);
 
-      // Phục hồi vị trí con trỏ sau khi React re-render
+      // Restore cursor position after React re-render
       requestAnimationFrame(() => {
         const el = inputRef.current;
         if (!el) return;
@@ -108,7 +104,7 @@ export const CurrencyInput = memo(function CurrencyInput({
         el.setSelectionRange(newPos, newPos);
       });
     },
-    [onChange],
+    [onChange, setDisplay],
   );
 
   return (

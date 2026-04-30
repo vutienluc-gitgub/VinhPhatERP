@@ -28,6 +28,7 @@ import { contractTemplatesPlugin } from '@/features/contract-templates';
 import { contractsPlugin } from '@/features/contracts';
 import { loomPlugin } from '@/features/looms';
 import { chatPlugin } from '@/features/chat';
+import { guidePlugin } from '@/features/guide-system/guide-system.module';
 
 /**
  * Plugin Registry — Đăng ký tất cả features vào hệ thống.
@@ -75,6 +76,7 @@ const plugins: FeaturePlugin[] = [
   employeesPlugin,
   contractTemplatesPlugin,
   chatPlugin,
+  guidePlugin,
 ];
 
 let pluginsInitialized = false;

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
@@ -35,6 +35,19 @@ import type { FinishedFabricRoll } from './types';
 type Props = {
   onClose: () => void;
 };
+
+const QUALITY_OPTIONS = [
+  { value: '', label: 'Chưa kiểm định' },
+  ...QUALITY_GRADES.map((g) => ({
+    value: g,
+    label: QUALITY_GRADE_LABELS[g],
+  })),
+];
+
+const STATUS_OPTIONS = ROLL_STATUSES.map((s) => ({
+  value: s,
+  label: ROLL_STATUS_LABELS[s],
+}));
 
 /* ---- Excel/CSV import helpers ---- */
 
@@ -195,6 +208,15 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
   const { data: rawRollsForLot = [] } = useRawRollsByLot(lotNumber ?? '');
   const { data: colorOptions = [] } = useColorOptions();
   const { data: fabricOptions = [] } = useFabricCatalogOptions();
+
+  const fabricComboOptions = useMemo(
+    () =>
+      fabricOptions.map((f) => ({
+        value: f.name,
+        label: f.code ? `${f.name} (${f.code})` : f.name,
+      })),
+    [fabricOptions],
+  );
 
   // Auto-generate roll numbers khi prefix hoặc start_number thay đổi
   useEffect(() => {
@@ -485,10 +507,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                       control={control}
                       render={({ field }) => (
                         <Combobox
-                          options={fabricOptions.map((f) => ({
-                            value: f.name,
-                            label: f.code ? `${f.name} (${f.code})` : f.name,
-                          }))}
+                          options={fabricComboOptions}
                           value={field.value}
                           onChange={field.onChange}
                           placeholder="Chọn loại vải..."
@@ -560,16 +579,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                       control={control}
                       render={({ field }) => (
                         <Combobox
-                          options={[
-                            {
-                              value: '',
-                              label: 'Chưa kiểm định',
-                            },
-                            ...QUALITY_GRADES.map((g) => ({
-                              value: g,
-                              label: QUALITY_GRADE_LABELS[g],
-                            })),
-                          ]}
+                          options={QUALITY_OPTIONS}
                           value={field.value}
                           onChange={field.onChange}
                         />
@@ -586,10 +596,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                       control={control}
                       render={({ field }) => (
                         <Combobox
-                          options={ROLL_STATUSES.map((s) => ({
-                            value: s,
-                            label: ROLL_STATUS_LABELS[s],
-                          }))}
+                          options={STATUS_OPTIONS}
                           value={field.value}
                           onChange={field.onChange}
                         />

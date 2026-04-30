@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
+import type { Control } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
@@ -34,9 +35,48 @@ import type { BulkInputFormValues } from '@/schema/raw-fabric.schema';
 
 import type { RawFabricRoll } from './types';
 
+const QUALITY_OPTIONS = [
+  { value: '', label: 'Chưa kiểm định' },
+  ...QUALITY_GRADES.map((g) => ({
+    value: g,
+    label: QUALITY_GRADE_LABELS[g],
+  })),
+];
+
+const STATUS_OPTIONS = ROLL_STATUSES.map((s) => ({
+  value: s,
+  label: ROLL_STATUS_LABELS[s],
+}));
+
 type Props = {
   onClose: () => void;
 };
+
+function BulkSubmitButton({
+  control,
+  isPending,
+  isValid,
+}: {
+  control: Control<BulkInputFormValues>;
+  isPending: boolean;
+  isValid: boolean;
+}) {
+  const rolls = useWatch({ control, name: 'rolls' }) || [];
+  const totalRolls = rolls.filter((r: { weight_kg?: number | string }) => {
+    const val = parseFloat(String(r.weight_kg));
+    return Number.isFinite(val) && val > 0;
+  }).length;
+
+  return (
+    <button
+      className="primary-button btn-standard"
+      type="submit"
+      disabled={isPending || !isValid || totalRolls === 0}
+    >
+      {isPending ? 'Đang lưu...' : `Lưu ${totalRolls} cuộn`}
+    </button>
+  );
+}
 
 export function RawFabricBulkForm({ onClose }: Props) {
   const bulkMutation = useCreateRawFabricBulk();
@@ -47,6 +87,48 @@ export function RawFabricBulkForm({ onClose }: Props) {
   const { data: fabricCatalogOptions = [] } = useFabricCatalogOptions();
   const [savedRolls, setSavedRolls] = useState<RawFabricRoll[] | null>(null);
   const { exportExcel, exportPdf } = useRawFabricExport();
+
+  const memoizedFabricCatalogOptions = useMemo(
+    () =>
+      fabricCatalogOptions.map((c) => ({
+        label: c.name,
+        value: c.name,
+        code: c.code,
+      })),
+    [fabricCatalogOptions],
+  );
+
+  const memoizedColorOptions = useMemo(
+    () => toColorComboboxOptions(colorOptions),
+    [colorOptions],
+  );
+
+  const memoizedWorkOrders = useMemo(
+    () =>
+      workOrders.map((wo) => ({
+        value: wo.id,
+        label: `${wo.work_order_number} (${wo.bom_template?.name})`,
+      })),
+    [workOrders],
+  );
+
+  const memoizedWeavingPartners = useMemo(
+    () =>
+      weavingPartners.map((s) => ({
+        value: s.id,
+        label: `${s.name} (${s.code})`,
+      })),
+    [weavingPartners],
+  );
+
+  const memoizedYarnReceipts = useMemo(
+    () =>
+      yarnReceipts.map((r) => ({
+        value: r.id,
+        label: `${r.receipt_number} (${r.receipt_date})`,
+      })),
+    [yarnReceipts],
+  );
 
   const stepper = useStepper({ totalSteps: 2 });
 
@@ -79,10 +161,6 @@ export function RawFabricBulkForm({ onClose }: Props) {
   const expectedRolls = useWatch({
     control,
     name: 'expected_rolls',
-  });
-  const rolls = useWatch({
-    control,
-    name: 'rolls',
   });
 
   // Auto-generate roll numbers khi prefix hoặc start_number thay đổi
@@ -122,11 +200,21 @@ export function RawFabricBulkForm({ onClose }: Props) {
     name: 'lot_number',
   });
 
-  useEffect(() => {
-    if (workOrderId && weavingPartnerId && yarnReceiptId) {
-      const wo = workOrders.find((w) => w.id === workOrderId);
-      const wp = weavingPartners.find((w) => w.id === weavingPartnerId);
-      const yr = yarnReceipts.find((r) => r.id === yarnReceiptId);
+  function handleWoWpYrChange(
+    field: 'work_order_id' | 'weaving_partner_id' | 'yarn_receipt_id',
+    val: string,
+  ) {
+    setValue(field, val, { shouldValidate: true, shouldDirty: true });
+
+    // Read current values, injecting the new one being changed
+    const currentWo = field === 'work_order_id' ? val : workOrderId;
+    const currentWp = field === 'weaving_partner_id' ? val : weavingPartnerId;
+    const currentYr = field === 'yarn_receipt_id' ? val : yarnReceiptId;
+
+    if (currentWo && currentWp && currentYr) {
+      const wo = workOrders.find((w) => w.id === currentWo);
+      const wp = weavingPartners.find((w) => w.id === currentWp);
+      const yr = yarnReceipts.find((r) => r.id === currentYr);
 
       if (wo && wp && yr) {
         let datePart = '';
@@ -147,33 +235,18 @@ export function RawFabricBulkForm({ onClose }: Props) {
             shouldValidate: true,
             shouldDirty: true,
           });
+
+          const autoPrefix = `RM-${autoLot}-`;
+          if (rollPrefix !== autoPrefix) {
+            setValue('roll_prefix', autoPrefix, {
+              shouldValidate: true,
+              shouldDirty: true,
+            });
+          }
         }
       }
     }
-  }, [
-    workOrderId,
-    weavingPartnerId,
-    yarnReceiptId,
-    productionDate,
-    manualLotNumber,
-    workOrders,
-    weavingPartners,
-    yarnReceipts,
-    setValue,
-  ]);
-
-  // Sinh tiền tố cuộn (RM) tự động từ Lot Number
-  useEffect(() => {
-    if (manualLotNumber) {
-      const autoPrefix = `RM-${manualLotNumber}-`;
-      if (rollPrefix !== autoPrefix) {
-        setValue('roll_prefix', autoPrefix, {
-          shouldValidate: true,
-          shouldDirty: true,
-        });
-      }
-    }
-  }, [manualLotNumber, rollPrefix, setValue]);
+  }
 
   const isLotAutoGenerated = !!(
     workOrderId &&
@@ -198,19 +271,12 @@ export function RawFabricBulkForm({ onClose }: Props) {
     });
   }, [append, rollPrefix, startNumber, fields.length]);
 
-  /** Embed rolls array as RollMatrixItem[] for LotMatrixCard */
-  const gridRolls: RollMatrixItem[] = fields.map((field, idx) => ({
+  /** Embed fields array directly as RollMatrixItem[] for LotMatrixCard */
+  const gridRolls: RollMatrixItem[] = fields.map((field) => ({
     id: field.id,
-    roll_number: rolls?.[idx]?.roll_number ?? '',
-    weight_kg: rolls?.[idx]?.weight_kg,
+    roll_number: field.roll_number ?? '',
+    weight_kg: field.weight_kg,
   }));
-
-  // Tổng hợp — chỉ đếm dòng có nhập trọng lượng > 0
-  const filledRolls = (rolls ?? []).filter((r) => {
-    const val = parseFloat(String(r.weight_kg));
-    return Number.isFinite(val) && val > 0;
-  });
-  const totalRolls = filledRolls.length;
 
   async function handleNextStep() {
     if (stepper.currentStep === 0) {
@@ -340,11 +406,7 @@ export function RawFabricBulkForm({ onClose }: Props) {
                       name="fabric_type"
                       render={({ field }) => (
                         <Combobox
-                          options={fabricCatalogOptions.map((c) => ({
-                            label: c.name,
-                            value: c.name,
-                            code: c.code,
-                          }))}
+                          options={memoizedFabricCatalogOptions}
                           value={field.value || ''}
                           onChange={field.onChange}
                           onBlur={field.onBlur}
@@ -381,7 +443,7 @@ export function RawFabricBulkForm({ onClose }: Props) {
                       control={control}
                       render={({ field }) => (
                         <Combobox
-                          options={toColorComboboxOptions(colorOptions)}
+                          options={memoizedColorOptions}
                           value={field.value ?? ''}
                           onChange={field.onChange}
                           placeholder="Chọn hoặc nhập màu..."
@@ -429,16 +491,7 @@ export function RawFabricBulkForm({ onClose }: Props) {
                       control={control}
                       render={({ field }) => (
                         <Combobox
-                          options={[
-                            {
-                              value: '',
-                              label: 'Chưa kiểm định',
-                            },
-                            ...QUALITY_GRADES.map((g) => ({
-                              value: g,
-                              label: QUALITY_GRADE_LABELS[g],
-                            })),
-                          ]}
+                          options={QUALITY_OPTIONS}
                           value={field.value}
                           onChange={field.onChange}
                         />
@@ -455,10 +508,7 @@ export function RawFabricBulkForm({ onClose }: Props) {
                       control={control}
                       render={({ field }) => (
                         <Combobox
-                          options={ROLL_STATUSES.map((s) => ({
-                            value: s,
-                            label: ROLL_STATUS_LABELS[s],
-                          }))}
+                          options={STATUS_OPTIONS}
                           value={field.value}
                           onChange={field.onChange}
                         />
@@ -487,12 +537,11 @@ export function RawFabricBulkForm({ onClose }: Props) {
                       control={control}
                       render={({ field }) => (
                         <Combobox
-                          options={workOrders.map((wo) => ({
-                            value: wo.id,
-                            label: `${wo.work_order_number} (${wo.bom_template?.name})`,
-                          }))}
+                          options={memoizedWorkOrders}
                           value={field.value}
-                          onChange={field.onChange}
+                          onChange={(val) =>
+                            handleWoWpYrChange('work_order_id', val)
+                          }
                           placeholder="— Không liên kết lệnh (Dự trữ) —"
                         />
                       )}
@@ -508,12 +557,11 @@ export function RawFabricBulkForm({ onClose }: Props) {
                       control={control}
                       render={({ field }) => (
                         <Combobox
-                          options={weavingPartners.map((s) => ({
-                            value: s.id,
-                            label: `${s.name} (${s.code})`,
-                          }))}
+                          options={memoizedWeavingPartners}
                           value={field.value}
-                          onChange={field.onChange}
+                          onChange={(val) =>
+                            handleWoWpYrChange('weaving_partner_id', val)
+                          }
                           placeholder="— Chọn nhà dệt —"
                         />
                       )}
@@ -531,12 +579,11 @@ export function RawFabricBulkForm({ onClose }: Props) {
                       control={control}
                       render={({ field }) => (
                         <Combobox
-                          options={yarnReceipts.map((r) => ({
-                            value: r.id,
-                            label: `${r.receipt_number} (${r.receipt_date})`,
-                          }))}
+                          options={memoizedYarnReceipts}
                           value={field.value}
-                          onChange={field.onChange}
+                          onChange={(val) =>
+                            handleWoWpYrChange('yarn_receipt_id', val)
+                          }
                           placeholder="— Chọn phiếu sợi —"
                         />
                       )}
@@ -698,13 +745,11 @@ export function RawFabricBulkForm({ onClose }: Props) {
                     Tiếp tục
                   </button>
                 ) : (
-                  <button
-                    className="primary-button btn-standard"
-                    type="submit"
-                    disabled={isPending || !isValid || totalRolls === 0}
-                  >
-                    {isPending ? 'Đang lưu...' : `Lưu ${totalRolls} cuộn`}
-                  </button>
+                  <BulkSubmitButton
+                    control={control}
+                    isPending={isPending}
+                    isValid={isValid}
+                  />
                 )}
               </div>
             </div>

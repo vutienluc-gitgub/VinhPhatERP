@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { Pagination } from '@/shared/components/Pagination';
 import {
   Icon,
   Badge,
@@ -149,7 +148,9 @@ export function SuppliersList({
 
       {error && (
         <div className="p-4">
-          <p className="error-inline">Lỗi: {(error as Error).message}</p>
+          <p className="error-inline">
+            Lỗi: {error instanceof Error ? error.message : String(error)}
+          </p>
         </div>
       )}
 
@@ -304,9 +305,12 @@ export function SuppliersList({
             </div>
           </div>
         )}
+        pagination={{
+          result,
+          onPageChange: setPage,
+          itemLabel: 'nhà cung cấp',
+        }}
       />
-
-      <Pagination result={result} onPageChange={setPage} />
     </div>
   );
 }

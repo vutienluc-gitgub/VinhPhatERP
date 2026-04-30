@@ -15,6 +15,11 @@ import {
 
 import { CONTRACT_TYPE_LABELS, CONTRACT_TYPES } from './contracts.module';
 
+const TYPE_OPTIONS = CONTRACT_TYPES.map((t) => ({
+  value: t,
+  label: CONTRACT_TYPE_LABELS[t],
+}));
+
 // ── Form schema ──────────────────────────────────────────────────────────────
 
 const contractFormSchema = z
@@ -236,10 +241,7 @@ export function ContractForm({
             control={control}
             render={({ field }) => (
               <Combobox
-                options={CONTRACT_TYPES.map((t) => ({
-                  value: t,
-                  label: CONTRACT_TYPE_LABELS[t],
-                }))}
+                options={TYPE_OPTIONS}
                 value={field.value}
                 onChange={field.onChange}
                 hasError={!!errors.type}

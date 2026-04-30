@@ -289,7 +289,8 @@ export function FinishedFabricList({
       {error && (
         <div className="p-4">
           <p className="error-inline">
-            Lỗi tải dữ liệu: {(error as Error).message}
+            Lỗi tải dữ liệu:{' '}
+            {error instanceof Error ? error.message : String(error)}
           </p>
         </div>
       )}

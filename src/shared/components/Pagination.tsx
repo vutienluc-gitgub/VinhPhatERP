@@ -1,13 +1,35 @@
 import { Button } from '@/shared/components';
-import { formatPaginationText } from '@/features/raw-fabric/helpers';
 import type { PaginatedResult } from '@/shared/types/pagination';
+
+const PAGINATION_LABELS = {
+  pageInfo: (page: number, totalPages: number, total: number) =>
+    `Trang ${page} / ${totalPages} — ${total} mục`,
+} as const;
 
 type PaginationProps<T> = {
   result: PaginatedResult<T> | undefined;
   onPageChange: (page: number) => void;
+  /** Custom label for total count, e.g. "cuộn", "đơn hàng". Default: "mục" */
+  itemLabel?: string;
 };
 
-export function Pagination<T>({ result, onPageChange }: PaginationProps<T>) {
+function formatPaginationText(
+  page: number,
+  totalPages: number,
+  total: number,
+  itemLabel?: string,
+): string {
+  if (itemLabel) {
+    return `Trang ${page} / ${totalPages} — ${total} ${itemLabel}`;
+  }
+  return PAGINATION_LABELS.pageInfo(page, totalPages, total);
+}
+
+export function Pagination<T>({
+  result,
+  onPageChange,
+  itemLabel,
+}: PaginationProps<T>) {
   if (!result || result.totalPages <= 1) return null;
 
   const { page, totalPages, total } = result;
@@ -15,7 +37,7 @@ export function Pagination<T>({ result, onPageChange }: PaginationProps<T>) {
   return (
     <div className="pagination-bar">
       <span className="text-sm">
-        {formatPaginationText(page, totalPages, total)}
+        {formatPaginationText(page, totalPages, total, itemLabel)}
       </span>
       <div className="pagination-buttons">
         <Button

@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
+import { APP_CONFIG, HTTP_HEADERS } from '@/shared/utils/constants';
+
 import type { Database } from './database.types';
 
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
@@ -41,7 +43,13 @@ function createSupabaseClient() {
       storageKey: 'vinhphat_session',
     },
     global: {
-      headers: { 'x-app-version': '2' },
+      headers: {
+        [HTTP_HEADERS.X_APP_VERSION]: APP_CONFIG.API_VERSION_HEADER,
+        // SaaS Standard: Accept-Profile directs PostgREST to the correct database schema
+        [HTTP_HEADERS.ACCEPT_PROFILE]: 'public',
+        // Accept-Version helps API gateways / proxies route to the right endpoint version
+        [HTTP_HEADERS.ACCEPT_VERSION]: 'v1',
+      },
     },
   });
 }

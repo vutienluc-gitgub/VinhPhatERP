@@ -8,6 +8,8 @@ import {
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { useDyeingOrderList } from '@/application/production';
+import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
+import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 
 import { DyeingOrderList } from './DyeingOrderList';
 import { DyeingOrderForm } from './DyeingOrderForm';
@@ -24,6 +26,11 @@ export function DyeingOrdersPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState<DyeingOrder | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const { activeGuides } = useContextualGuide(
+    'DyeingOrders',
+    selectedId || undefined,
+  );
 
   const filterSchema: FilterFieldConfig[] = [
     {
@@ -61,6 +68,8 @@ export function DyeingOrdersPage() {
           onClose={() => setIsFormOpen(false)}
           editingOrder={editingOrder}
         />
+
+        <ContextualGuide activeGuides={activeGuides} />
       </div>
     );
   }
@@ -128,6 +137,8 @@ export function DyeingOrdersPage() {
           editingOrder={editingOrder}
         />
       </div>
+
+      <ContextualGuide activeGuides={activeGuides} />
     </div>
   );
 }

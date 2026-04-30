@@ -7,5 +7,6 @@ export function useFabricCatalogOptions() {
   return useQuery({
     queryKey: ['fabric-catalog', 'options'],
     queryFn: fetchFabricCatalogOptions,
+    staleTime: 5 * 60 * 1000,
   });
 }

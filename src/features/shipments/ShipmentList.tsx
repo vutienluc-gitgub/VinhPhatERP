@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { Pagination } from '@/shared/components/Pagination';
 import {
   Icon,
   Badge,
@@ -561,6 +560,11 @@ export function ShipmentList() {
             </div>
           );
         }}
+        pagination={{
+          result,
+          onPageChange: setPage,
+          itemLabel: 'đợt giao',
+        }}
       />
 
       {(confirmMutation.error ||
@@ -575,8 +579,6 @@ export function ShipmentList() {
           )}
         </p>
       )}
-
-      <Pagination result={result} onPageChange={setPage} />
 
       {/* Delivery confirm modal */}
       {deliveryShipment && (

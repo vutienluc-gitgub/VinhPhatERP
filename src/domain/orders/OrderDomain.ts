@@ -32,8 +32,21 @@ export { isOrderEditable, canConfirmOrder, canCancelOrder, isOrderTerminal };
  * Tinh tong gia tri don hang tu danh sach san pham.
  * Logic nay truoc day bi lap lai 3 lan trong hooks.
  */
-export function calculateOrderTotal(items: OrderItemFormValues[]): number {
-  return items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+export function calculateOrderTotal(
+  items:
+    | Array<{
+        quantity?: number | string | null;
+        unitPrice?: number | string | null;
+      }>
+    | null
+    | undefined,
+): number {
+  if (!items) return 0;
+  return items.reduce(
+    (sum, item) =>
+      sum + (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0),
+    0,
+  );
 }
 
 // ─── Data mapping ─────────────────────────────────────────────────────────────

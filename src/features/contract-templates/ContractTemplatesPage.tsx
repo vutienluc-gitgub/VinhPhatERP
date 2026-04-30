@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { Icon, Button, SearchInput } from '@/shared/components';
-import { CONTRACT_TYPE_LABELS } from '@/schema';
+import { Icon, Button, SearchInput, Combobox } from '@/shared/components';
+import { CONTRACT_TYPE_LABELS, CONTRACT_TEMPLATE_LABELS } from '@/schema';
 import type { ContractType, ContractTemplate } from '@/schema';
 import { useContractTemplates } from '@/application/contracts';
 
@@ -135,56 +135,73 @@ export function ContractTemplatesPage() {
   // ── List view ────────────────────────────────────────────────────────────
 
   return (
-    <div className="page-container">
-      <div className="panel-card card-flush !overflow-visible">
-        {/* Header Area */}
-        <div className="card-header-area">
-          <NewTemplateMenu onSelect={handleCreateNew} />
+    <div className="page-container space-y-6 min-h-screen">
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+        <div className="fade-up">
+          <h1 className="text-2xl md:text-3xl font-extrabold text-text tracking-tight">
+            Quản lý mẫu văn bản
+          </h1>
+          <p className="text-muted text-xs md:text-sm mt-1">
+            Thiết lập mẫu hợp đồng tiêu chuẩn để tự động hoá quy trình ký kết
+          </p>
         </div>
-
-        {/* Toolbar: Search + Filter */}
-        <div className="filter-bar card-filter-section p-4 border-b border-border">
-          <div className="filter-compact-premium">
-            <div className="filter-field">
-              <label htmlFor="template-search">Tìm kiếm</label>
-              <SearchInput
-                id="template-search"
-                placeholder="Tìm kiếm mẫu văn bản..."
-                value={filter.search}
-                onChange={(e) =>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-surface p-2 rounded-2xl shadow-sm border border-border w-full md:w-auto overflow-visible">
+          <div className="w-full sm:w-64">
+            <SearchInput
+              placeholder={CONTRACT_TEMPLATE_LABELS.SEARCH_PLACEHOLDER}
+              value={filter.search}
+              onChange={(e) =>
+                setFilter((prev) => ({
+                  ...prev,
+                  search: e.target.value,
+                }))
+              }
+              className="border-none bg-surface-hover w-full"
+            />
+          </div>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex-1 sm:w-48 min-w-0">
+              <Combobox
+                options={[
+                  {
+                    value: 'all',
+                    label: CONTRACT_TEMPLATE_LABELS.ALL_CATEGORIES,
+                  },
+                  {
+                    value: 'sale',
+                    label: CONTRACT_TEMPLATE_LABELS.SALE_TEMPLATE,
+                  },
+                  {
+                    value: 'purchase',
+                    label: CONTRACT_TEMPLATE_LABELS.PURCHASE_TEMPLATE,
+                  },
+                ]}
+                value={filter.type}
+                onChange={(val) =>
                   setFilter((prev) => ({
                     ...prev,
-                    search: e.target.value,
+                    type: (val || 'all') as 'all' | ContractType,
                   }))
                 }
+                placeholder="Phân loại"
+                className="border-none bg-surface-hover w-full min-w-0"
               />
             </div>
-            <div className="filter-field">
-              <label>Loại danh mục</label>
-              <select
-                className="field-input"
-                value={filter.type}
-                onChange={(e) =>
-                  setFilter((prev) => ({
-                    ...prev,
-                    type: e.target.value as 'all' | ContractType,
-                  }))
-                }
-              >
-                <option value="all">Tất cả danh mục</option>
-                <option value="sale">Mẫu Bán hàng</option>
-                <option value="purchase">Mẫu Mua hàng</option>
-              </select>
-            </div>
+            <NewTemplateMenu onSelect={handleCreateNew} />
           </div>
         </div>
+      </div>
 
+      <div className="panel-card card-flush !overflow-visible">
         {/* Content Section */}
         <div className="p-4 md:p-6">
           {/* Error state */}
           {error && (
             <div className="p-4">
-              <p className="error-inline">Lỗi: {(error as Error).message}</p>
+              <p className="error-inline">
+                {CONTRACT_TEMPLATE_LABELS.ERROR_PREFIX}
+                {error instanceof Error ? error.message : String(error)}
+              </p>
             </div>
           )}
 
@@ -204,10 +221,11 @@ export function ContractTemplatesPage() {
                     <Icon name="Search" size={32} className="text-muted/50" />
                   </div>
                   <p className="text-lg font-bold text-foreground">
-                    Không tìm thấy mẫu phù hợp
+                    {CONTRACT_TEMPLATE_LABELS.NO_RESULTS}
                   </p>
                   <p className="text-muted mt-2 text-sm">
-                    Dữ liệu không khớp với từ khóa &quot;{filter.search}&quot;
+                    {CONTRACT_TEMPLATE_LABELS.NO_RESULTS_DESC} &quot;
+                    {filter.search}&quot;
                   </p>
                 </div>
               )}
@@ -236,7 +254,7 @@ function TemplatesLoadingSkeleton() {
   return (
     <div className="py-12 flex flex-col items-center justify-center text-muted">
       <Icon name="Loader2" size={32} className="animate-spin mb-4" />
-      <span className="text-sm">Đang tải dữ liệu mẫu...</span>
+      <span className="text-sm">{CONTRACT_TEMPLATE_LABELS.LOADING}</span>
     </div>
   );
 }
@@ -250,13 +268,13 @@ function TemplatesEmptyState({ onSeed }: { onSeed: () => void }) {
         <Icon name="FileStack" size={32} className="text-primary/70" />
       </div>
       <h3 className="text-lg font-bold text-foreground mb-2">
-        Hệ thống chưa có mẫu văn bản
+        {CONTRACT_TEMPLATE_LABELS.EMPTY_TITLE}
       </h3>
       <p className="text-muted text-sm mb-6 max-w-md">
-        Khởi tạo các mẫu tiêu chuẩn để bắt đầu quản lý quy trình ký kết tự động.
+        {CONTRACT_TEMPLATE_LABELS.EMPTY_DESC}
       </p>
       <Button variant="primary" size="lg" leftIcon="Zap" onClick={onSeed}>
-        Bắt đầu với mẫu tiêu chuẩn
+        {CONTRACT_TEMPLATE_LABELS.SEED_BUTTON}
       </Button>
     </div>
   );

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useForm, Controller, useWatch } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
@@ -29,6 +29,19 @@ import {
 import type { RawFabricFormValues } from '@/schema/raw-fabric.schema';
 
 import type { RawFabricRoll } from './types';
+
+const QUALITY_OPTIONS = [
+  { value: '', label: 'Chưa kiểm định' },
+  ...QUALITY_GRADES.map((g) => ({
+    value: g,
+    label: QUALITY_GRADE_LABELS[g],
+  })),
+];
+
+const STATUS_OPTIONS = ROLL_STATUSES.map((s) => ({
+  value: s,
+  label: ROLL_STATUS_LABELS[s],
+}));
 
 type RawFabricFormProps = {
   roll: RawFabricRoll | null;
@@ -66,6 +79,33 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
   const { data: yarnReceipts = [] } = useYarnReceiptOptions();
   const { data: workOrders = [] } = useWorkOrderOptions();
   const { data: colorOptions = [] } = useColorOptions();
+
+  const workOrderOptions = useMemo(
+    () =>
+      workOrders.map((wo) => ({
+        value: wo.id,
+        label: `${wo.work_order_number} (${wo.bom_template?.name})`,
+      })),
+    [workOrders],
+  );
+
+  const weavingPartnerOptions = useMemo(
+    () =>
+      weavingPartners.map((s) => ({
+        value: s.id,
+        label: `${s.name} (${s.code})`,
+      })),
+    [weavingPartners],
+  );
+
+  const yarnReceiptOptions = useMemo(
+    () =>
+      yarnReceipts.map((r) => ({
+        value: r.id,
+        label: `${r.receipt_number} (${r.receipt_date})`,
+      })),
+    [yarnReceipts],
+  );
 
   const stepper = useStepper({ totalSteps: 3 });
 
@@ -385,16 +425,7 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
                     control={control}
                     render={({ field }) => (
                       <Combobox
-                        options={[
-                          {
-                            value: '',
-                            label: 'Chưa kiểm định',
-                          },
-                          ...QUALITY_GRADES.map((g) => ({
-                            value: g,
-                            label: QUALITY_GRADE_LABELS[g],
-                          })),
-                        ]}
+                        options={QUALITY_OPTIONS}
                         value={field.value}
                         onChange={field.onChange}
                       />
@@ -409,10 +440,7 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
                     control={control}
                     render={({ field }) => (
                       <Combobox
-                        options={ROLL_STATUSES.map((s) => ({
-                          value: s,
-                          label: ROLL_STATUS_LABELS[s],
-                        }))}
+                        options={STATUS_OPTIONS}
                         value={field.value}
                         onChange={field.onChange}
                       />
@@ -457,10 +485,7 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
                   control={control}
                   render={({ field }) => (
                     <Combobox
-                      options={workOrders.map((wo) => ({
-                        value: wo.id,
-                        label: `${wo.work_order_number} (${wo.bom_template?.name})`,
-                      }))}
+                      options={workOrderOptions}
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="— Không liên kết lệnh (Dự trữ) —"
@@ -479,10 +504,7 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
                   control={control}
                   render={({ field }) => (
                     <Combobox
-                      options={weavingPartners.map((s) => ({
-                        value: s.id,
-                        label: `${s.name} (${s.code})`,
-                      }))}
+                      options={weavingPartnerOptions}
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="— Chọn nhà dệt —"
@@ -522,10 +544,7 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
                   control={control}
                   render={({ field }) => (
                     <Combobox
-                      options={yarnReceipts.map((r) => ({
-                        value: r.id,
-                        label: `${r.receipt_number} (${r.receipt_date})`,
-                      }))}
+                      options={yarnReceiptOptions}
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="— Chọn phiếu sợi —"

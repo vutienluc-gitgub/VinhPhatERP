@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm, Controller, useWatch, Control } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
@@ -24,6 +24,11 @@ import {
 } from './payments.module';
 import type { ExpenseFormValues } from './payments.module';
 import type { Expense } from './types';
+
+const CATEGORY_OPTIONS = EXPENSE_CATEGORIES.map((c) => ({
+  value: c,
+  label: EXPENSE_CATEGORY_LABELS[c],
+}));
 
 type ExpenseFormProps = {
   expense: Expense | null;
@@ -146,10 +151,36 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
   const { data: employees = [] } = useEmployees();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: suppliersData } = useSuppliersList({ limit: 100 } as any);
-  const suppliers = suppliersData?.data ?? [];
   const createMutation = useCreateExpense();
   const updateMutation = useUpdateExpense();
   const { data: nextNumber } = useNextExpenseNumber();
+
+  const accountOptions = useMemo(
+    () =>
+      accounts.map((a) => ({
+        value: a.id,
+        label: `${a.name} (${formatCurrency(a.current_balance)} đ)`,
+      })),
+    [accounts],
+  );
+
+  const employeeOptions = useMemo(
+    () =>
+      employees.map((e) => ({
+        value: e.id,
+        label: `${e.name} (${e.code})`,
+      })),
+    [employees],
+  );
+
+  const supplierOptions = useMemo(
+    () =>
+      (suppliersData?.data ?? []).map((s) => ({
+        value: s.id,
+        label: `${s.name} (${s.code})`,
+      })),
+    [suppliersData?.data],
+  );
 
   const {
     register,
@@ -255,10 +286,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                 control={control}
                 render={({ field }) => (
                   <Combobox
-                    options={EXPENSE_CATEGORIES.map((c) => ({
-                      value: c,
-                      label: EXPENSE_CATEGORY_LABELS[c],
-                    }))}
+                    options={CATEGORY_OPTIONS}
                     value={field.value}
                     onChange={field.onChange}
                   />
@@ -297,10 +325,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                 control={control}
                 render={({ field }) => (
                   <Combobox
-                    options={suppliers.map((s) => ({
-                      value: s.id,
-                      label: `${s.name} (${s.code})`,
-                    }))}
+                    options={supplierOptions}
                     value={field.value}
                     onChange={(v) => {
                       field.onChange(v);
@@ -341,10 +366,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                 control={control}
                 render={({ field }) => (
                   <Combobox
-                    options={accounts.map((a) => ({
-                      value: a.id,
-                      label: `${a.name} (${formatCurrency(a.current_balance)} đ)`,
-                    }))}
+                    options={accountOptions}
                     value={field.value}
                     onChange={field.onChange}
                     placeholder="— Không chọn —"
@@ -372,10 +394,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
               control={control}
               render={({ field }) => (
                 <Combobox
-                  options={employees.map((e) => ({
-                    value: e.id,
-                    label: `${e.name} (${e.code})`,
-                  }))}
+                  options={employeeOptions}
                   value={field.value}
                   onChange={field.onChange}
                   placeholder="— Không chọn —"

@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useState } from 'react';
-import { useFieldArray, useForm, Controller } from 'react-hook-form';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
+import type { UseFormWatch } from 'react-hook-form';
 
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
@@ -24,6 +25,7 @@ import {
   weavingInvoiceDefaults,
 } from '@/schema/weaving-invoice.schema';
 import type { WeavingInvoiceFormValues } from '@/schema/weaving-invoice.schema';
+import { generateWeavingRollPrefix } from '@/domain/production';
 
 import { RollProgressBar } from './components/RollProgressBar';
 import { PasteExcelParser } from './components/PasteExcelParser';
@@ -32,6 +34,25 @@ import { useWeavingInvoiceCalculator } from './hooks/useWeavingInvoiceCalculator
 import type { WeavingInvoice } from './types';
 
 const DRAFT_KEY = 'weaving-invoice-draft';
+
+/**
+ * Isolated sub-component that subscribes to ALL form values for auto-save.
+ * By extracting this, the re-renders caused by watch() are confined here
+ * and do NOT propagate to the main WeavingInvoiceForm tree.
+ */
+function AutoSaveSubscriber({
+  watch,
+}: {
+  watch: UseFormWatch<WeavingInvoiceFormValues>;
+}) {
+  const formValues = watch();
+  const { status: saveStatus, lastSavedAt } = useAutoSave({
+    key: DRAFT_KEY,
+    data: formValues,
+    delay: 800,
+  });
+  return <SaveStatus status={saveStatus} lastSavedAt={lastSavedAt} />;
+}
 
 type Props = {
   invoice?: WeavingInvoice | null;
@@ -88,10 +109,12 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
     mode: 'onTouched',
   });
 
-  // ── AUTO SAVE ──
-  const formValues = watch();
+  // ── TARGETED FIELD SUBSCRIPTIONS (avoid full-form re-render) ──
+  const selectedSupplierId = useWatch({ control, name: 'supplier_id' });
+  const watchedRolls = useWatch({ control, name: 'rolls' });
+  const watchedUnitPrice = useWatch({ control, name: 'unit_price_per_kg' });
+  const watchedInvoiceNumber = useWatch({ control, name: 'invoice_number' });
 
-  const selectedSupplierId = formValues.supplier_id;
   const { data: woData } = useWorkOrders(
     selectedSupplierId
       ? {
@@ -109,16 +132,10 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
       raw: wo,
     }));
 
-  const { status: saveStatus, lastSavedAt } = useAutoSave({
-    key: DRAFT_KEY,
-    data: formValues,
-    delay: 800,
-  });
-
   // ── BUSINESS LOGIC CALCULATIONS ──
   const { scannedCount, totalKg, totalAmount } = useWeavingInvoiceCalculator(
-    formValues.rolls || [],
-    formValues.unit_price_per_kg || 0,
+    watchedRolls || [],
+    watchedUnitPrice || 0,
   );
 
   // ── DRAFT RESTORATION ──
@@ -144,15 +161,19 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
     setSavedDraft(null);
   }
 
-  // Auto-fill invoice number for new invoices
+  /**
+   * Auto-fill invoice number for new invoices.
+   * Uses a ref to track whether auto-fill has happened, preventing
+   * the fragile dependency on formValues.invoice_number which could
+   * cause an infinite re-render loop if nextNumber ever returned "".
+   */
+  const hasAutoFilledInvoiceRef = useRef(false);
   useEffect(() => {
-    if (!isEdit && nextNumber) {
-      // Only set if we haven't restored a draft or if draft is empty
-      if (!formValues.invoice_number) {
-        setValue('invoice_number', nextNumber);
-      }
+    if (!isEdit && nextNumber && !hasAutoFilledInvoiceRef.current) {
+      hasAutoFilledInvoiceRef.current = true;
+      setValue('invoice_number', nextNumber);
     }
-  }, [nextNumber, isEdit, setValue, formValues.invoice_number]);
+  }, [nextNumber, isEdit, setValue]);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -229,8 +250,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
   }
 
   // Auto Prefix derived from invoice number to ensure global uniqueness and logical grouping
-  const invoiceNum = formValues.invoice_number;
-  const autoPrefix = invoiceNum ? `${invoiceNum}-` : 'VP-';
+  const autoPrefix = generateWeavingRollPrefix(watchedInvoiceNumber);
 
   const isPending =
     isSubmitting || createMutation.isPending || updateMutation.isPending;
@@ -258,8 +278,15 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
       }}
       maxWidth={900}
     >
+      {/* Auto-save subscriber — isolated re-renders */}
+      <AutoSaveSubscriber watch={watch} />
+
       {mutationError && (
-        <p className="error-inline mb-4">{(mutationError as Error).message}</p>
+        <p className="error-inline mb-4">
+          {mutationError instanceof Error
+            ? mutationError.message
+            : String(mutationError)}
+        </p>
       )}
 
       {showDraftBanner && savedDraft && (
@@ -460,7 +487,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
                 />
               </div>
               <div className="text-center sm:text-left w-full sm:w-auto">
-                <SaveStatus status={saveStatus} lastSavedAt={lastSavedAt} />
+                <AutoSaveSubscriber watch={watch} />
               </div>
             </div>
             <div className="w-full sm:w-auto">

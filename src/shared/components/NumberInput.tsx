@@ -1,4 +1,6 @@
-import { memo, useEffect, useState, useCallback } from 'react';
+import { memo, useCallback } from 'react';
+
+import { useControlledDisplay } from '@/shared/hooks/useControlledDisplay';
 
 type NumberInputProps = {
   value: number | null | undefined;
@@ -14,6 +16,22 @@ type NumberInputProps = {
   readOnly?: boolean;
 };
 
+/** Format for unfocused display — vi-VN locale with thousands separators */
+function toDisplay(num: number | null | undefined): string {
+  if (num == null) return '';
+  return new Intl.NumberFormat('vi-VN', {
+    maximumFractionDigits: 4,
+    minimumFractionDigits: 0,
+  }).format(num);
+}
+
+/** Parse raw text input to number */
+function toNumber(text: string): number | null {
+  if (!text || text.trim() === '') return null;
+  const parsed = parseFloat(text);
+  return isNaN(parsed) ? null : parsed;
+}
+
 export const NumberInput = memo(function NumberInput({
   value,
   onChange,
@@ -27,22 +45,16 @@ export const NumberInput = memo(function NumberInput({
   step = 'any',
   readOnly,
 }: NumberInputProps) {
-  const [isFocused, setIsFocused] = useState(false);
-
-  // Derive local string for the native number input to hold while editing.
-  // We only sync this from props when NOT focused, so we don't interrupt typing.
-  const [localVal, setLocalVal] = useState<string>('');
-
-  useEffect(() => {
-    if (!isFocused) {
-      setLocalVal(value != null ? String(value) : '');
-    }
-  }, [value, isFocused]);
+  const { display, setDisplay, isFocusedRef } = useControlledDisplay(
+    value,
+    toDisplay,
+    toNumber,
+  );
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const text = e.target.value;
-      setLocalVal(text);
+      setDisplay(text);
 
       if (text.trim() === '') {
         onChange(null);
@@ -54,33 +66,30 @@ export const NumberInput = memo(function NumberInput({
         onChange(parsed);
       }
     },
-    [onChange],
+    [onChange, setDisplay],
   );
 
   const handleBlur = useCallback(() => {
-    setIsFocused(false);
+    isFocusedRef.current = false;
     if (onBlur) onBlur();
-  }, [onBlur]);
+  }, [onBlur, isFocusedRef]);
 
   const handleFocus = useCallback(() => {
-    setIsFocused(true);
-  }, []);
+    isFocusedRef.current = true;
+    // When focusing, switch to raw number for native number input editing
+    setDisplay(value != null ? String(value) : '');
+  }, [isFocusedRef, setDisplay, value]);
 
   // When NOT focused, we display the strictly formatted locale string
   // (with thousands separators and decimal points matching VI locale)
   const displayValue =
-    !isFocused && value != null
-      ? new Intl.NumberFormat('vi-VN', {
-          maximumFractionDigits: 4,
-          minimumFractionDigits: 0,
-        }).format(value)
-      : localVal;
+    !isFocusedRef.current && value != null ? toDisplay(value) : display;
 
   return (
     <input
       id={id}
       className={className}
-      type={isFocused ? 'number' : 'text'}
+      type={isFocusedRef.current ? 'number' : 'text'}
       inputMode="decimal"
       min={min}
       max={max}

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, memo } from 'react';
 
 import { Search, ChevronDown, Check } from '@/shared/icons';
 import { Icon, type IconName } from '@/shared/components/Icon';
@@ -27,7 +27,7 @@ type ComboboxProps = {
   allowInput?: boolean;
 };
 
-export function Combobox({
+export const Combobox = memo(function Combobox({
   options,
   value,
   onChange,
@@ -300,4 +300,4 @@ export function Combobox({
       )}
     </div>
   );
-}
+});

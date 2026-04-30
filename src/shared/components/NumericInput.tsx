@@ -1,11 +1,13 @@
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useRef } from 'react';
+
+import { useControlledDisplay } from '@/shared/hooks/useControlledDisplay';
 
 /**
- * NumericInput — Format số realtime có hỗ trợ thập phân chuẩn Việt Nam.
+ * NumericInput — Format so realtime co ho tro thap phan chuan Viet Nam.
  *
- * - Hiển thị: "1.500,5" (dấu chấm phân cách ngàn, phẩy phân cách thập phân)
- * - Tự động định dạng khi đang gõ.
- * - Cho phép nhập số thập phân chính xác.
+ * - Hien thi: "1.500,5" (dau cham phan cach ngan, phay phan cach thap phan)
+ * - Tu dong dinh dang khi dang go.
+ * - Cho phep nhap so thap phan chinh xac.
  */
 
 type NumericInputProps = {
@@ -19,7 +21,7 @@ type NumericInputProps = {
   readOnly?: boolean;
 };
 
-// Format ra display chuẩn vi-VN
+// Format ra display chuan vi-VN
 function toDisplay(num: number | null | undefined): string {
   if (num == null) return '';
   return new Intl.NumberFormat('vi-VN', {
@@ -46,28 +48,21 @@ export const NumericInput = memo(function NumericInput({
   disabled,
   readOnly,
 }: NumericInputProps) {
-  const [display, setDisplay] = useState(() => toDisplay(value));
+  const { display, setDisplay } = useControlledDisplay(
+    value,
+    toDisplay,
+    toNumber,
+  );
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Sync khi value thay đổi từ bên ngoài
-  useEffect(() => {
-    const currentNum = toNumber(display);
-    if (value !== currentNum && value != null) {
-      setDisplay(toDisplay(value));
-    } else if (value == null && display !== '') {
-      setDisplay('');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       let rawText = e.target.value;
       const cursorPos = e.target.selectionStart ?? 0;
 
-      // Numpad trên một số bàn phím gõ dấu chấm (.), ta ưu tiên biến nó thành dấu phẩy (,)
-      // nếu nó là ký tự thập phân duy nhất hoặc vừa gõ. Nhưng để an toàn với paste,
-      // ta chỉ xử lý nếu có chính xác 1 dấu chấm và không có dấu phẩy nào.
+      // Numpad tren mot so ban phim go dau cham (.), ta uu tien bien no thanh dau phay (,)
+      // neu no la ky tu thap phan duy nhat hoac vua go. Nhung de an toan voi paste,
+      // ta chi xu ly neu co chinh xac 1 dau cham va khong co dau phay nao.
       if (rawText.includes('.') && !rawText.includes(',')) {
         const parts = rawText.split('.');
         if (parts.length === 2) {
@@ -75,25 +70,25 @@ export const NumericInput = memo(function NumericInput({
         }
       }
 
-      // Giữ lại các ký tự số và dấu phẩy
+      // Giu lai cac ky tu so va dau phay
       const cleanText = rawText.replace(/[^\d,]/g, '');
 
-      // Tách phần nguyên và phần thập phân (chỉ lấy dấu phẩy đầu tiên)
+      // Tach phan nguyen va phan thap phan (chi lay dau phay dau tien)
       const parts = cleanText.split(',');
       const intPart = parts[0];
       const decPart = parts.length > 1 ? parts.slice(1).join('') : null;
 
       let formatted = '';
       if (intPart) {
-        // Format phần nguyên
+        // Format phan nguyen
         formatted = new Intl.NumberFormat('vi-VN').format(
           parseInt(intPart, 10) || 0,
         );
       }
 
-      // Nối lại phần thập phân (ngay cả khi rỗng để giữ dấu phẩy khi user vừa gõ)
+      // Noi lai phan thap phan (ngay ca khi rong de giu dau phay khi user vua go)
       if (decPart !== null) {
-        formatted += ',' + decPart.slice(0, 4); // giới hạn 4 số lẻ
+        formatted += ',' + decPart.slice(0, 4); // gioi han 4 so le
       }
 
       if (cleanText === '') {
@@ -103,7 +98,7 @@ export const NumericInput = memo(function NumericInput({
       setDisplay(formatted);
       onChange(toNumber(formatted));
 
-      // Tính toán lại vị trí con trỏ
+      // Tinh toan lai vi tri con tro
       const charsBeforeCursorRaw = rawText.slice(0, cursorPos);
       const digitsBeforeCursor = charsBeforeCursorRaw.replace(
         /[^\d,]/g,
@@ -135,7 +130,7 @@ export const NumericInput = memo(function NumericInput({
         el.setSelectionRange(newPos, newPos);
       });
     },
-    [onChange],
+    [onChange, setDisplay],
   );
 
   return (

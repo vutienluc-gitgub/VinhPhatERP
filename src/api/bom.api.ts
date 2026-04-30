@@ -7,7 +7,6 @@ import type {
 } from '@/features/bom/types';
 import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';
-import { safeUpsert, safeUpsertOne } from '@/lib/db-guard';
 
 /* ── Reference data for BOM forms ── */
 
@@ -185,52 +184,45 @@ export async function createBomDraft(
     }
   }
 
-  // Native Supabase upsert with explicit tenant_id injection
-  const headerResult = await safeUpsertOne({
-    table: 'bom_templates',
-    data: {
-      tenant_id: tenantId,
-      code: finalCode,
-      name: headerData.name,
-      target_fabric_id: headerData.target_fabric_id,
-      target_width_cm: headerData.target_width_cm,
-      target_gsm: headerData.target_gsm,
-      standard_loss_pct: headerData.standard_loss_pct || 0,
-      notes: headerData.notes,
-      status: 'draft',
-      active_version: 1,
-      created_by: userId,
-    },
-    conflictKey: 'id',
-  });
-
-  const bomRow = headerResult as { id: string } | null;
-  if (!bomRow?.id) throw new Error('Tạo BOM thất bại.');
-  const bomId = bomRow.id;
-
-  if (bomYarnItems && bomYarnItems.length > 0) {
-    try {
-      await safeUpsert({
-        table: 'bom_yarn_items',
-        data: bomYarnItems.map((item) => ({
-          tenant_id: tenantId,
-          bom_template_id: bomId,
-          version: 1,
+  const { data: bomId, error: rpcError } = await untypedDb.rpc(
+    'rpc_create_bom',
+    {
+      p_header: {
+        code: finalCode,
+        name: headerData.name,
+        target_fabric_id: headerData.target_fabric_id,
+        target_width_cm: headerData.target_width_cm,
+        target_gsm: headerData.target_gsm,
+        standard_loss_pct: headerData.standard_loss_pct || 0,
+        notes: headerData.notes,
+      },
+      p_items:
+        bomYarnItems?.map((item) => ({
           yarn_catalog_id: item.yarn_catalog_id,
           ratio_pct: item.ratio_pct,
           consumption_kg_per_m: item.consumption_kg_per_m,
           notes: item.notes,
           sort_order: item.sort_order || 0,
-        })),
-        conflictKey: 'id',
-      });
-    } catch (itemsError) {
-      await supabase.from('bom_templates').delete().eq('id', bomId);
-      throw itemsError;
+        })) || [],
+      p_user_id: userId,
+    },
+  );
+
+  if (rpcError) {
+    if (rpcError.message?.includes('BOM_CODE_EXISTS')) {
+      throw new Error(
+        `Mã định mức "${finalCode}" đã tồn tại trên hệ thống. Vui lòng nhập mã khác.`,
+      );
     }
+    if (rpcError.message?.includes('INVALID_RATIO_SUM')) {
+      throw new Error('Tổng tỉ lệ nguyên liệu phải bằng 100%.');
+    }
+    throw rpcError;
   }
 
-  return { id: bomId };
+  if (!bomId) throw new Error('Tạo BOM thất bại không rõ nguyên nhân.');
+
+  return { id: bomId as string };
 }
 
 /* ── Update BOM draft ── */

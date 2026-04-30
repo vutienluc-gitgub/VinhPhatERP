@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
-import { useEffect, useRef, useState } from 'react';
+import type { UseFormWatch } from 'react-hook-form';
+import { useEffect, useRef, useState, useMemo } from 'react';
 
 import { Button } from '@/shared/components';
 import {
@@ -33,6 +34,26 @@ import { YarnAvailabilityWarning } from './components/YarnAvailabilityWarning';
 
 const DRAFT_KEY = 'work-order-draft';
 
+/**
+ * Isolated sub-component that subscribes to ALL form values for auto-save.
+ * By extracting this, the re-renders caused by watch() are confined here
+ * and do NOT propagate to the main WorkOrderForm tree.
+ */
+function AutoSaveSubscriber({
+  watch,
+}: {
+  watch: UseFormWatch<CreateWorkOrderInput>;
+}) {
+  const formValues = watch();
+  const { status: saveStatus, lastSavedAt } = useAutoSave({
+    key: DRAFT_KEY,
+    data: formValues,
+    delay: 800,
+  });
+
+  return <SaveStatus status={saveStatus} lastSavedAt={lastSavedAt} />;
+}
+
 interface WorkOrderFormProps {
   initialData?: WorkOrder;
   onSuccess?: () => void;
@@ -55,7 +76,43 @@ export function WorkOrderForm({
     status: 'active',
   });
   const { data: units = [] } = useUnitOptions();
-  const suppliers = suppliersData?.data || [];
+
+  const orderOptions = useMemo(
+    () =>
+      (orders?.data ?? []).map((o) => ({
+        value: o.id,
+        label: `${o.order_number} — ${(o as { customers?: { name: string } }).customers?.name ?? ''}`,
+      })),
+    [orders?.data],
+  );
+
+  const supplierOptions = useMemo(
+    () =>
+      (suppliersData?.data || []).map((s) => ({
+        value: s.id,
+        label: s.name,
+        code: s.code,
+      })),
+    [suppliersData?.data],
+  );
+
+  const bomOptions = useMemo(
+    () =>
+      boms?.map((b) => ({
+        value: b.id,
+        label: `${b.code} — ${b.name} (V${b.active_version})`,
+      })) || [],
+    [boms],
+  );
+
+  const unitOptions = useMemo(
+    () =>
+      units.map((u) => ({
+        value: u,
+        label: u,
+      })),
+    [units],
+  );
 
   // Fetch existing requirements if editing
   const { data: initialRequirements = [] } = useWorkOrderRequirements(
@@ -124,17 +181,8 @@ export function WorkOrderForm({
     name: 'yarn_requirements',
   });
 
-  // ── AUTO SAVE ──
-  const formValues = watch();
-  const {
-    status: saveStatus,
-    lastSavedAt,
-    hasConflict,
-  } = useAutoSave({
-    key: DRAFT_KEY,
-    data: formValues,
-    delay: 800,
-  });
+  // ── AUTO SAVE (isolated in sub-component to avoid full re-render) ──
+  // Auto-save subscriber is rendered inside the form JSX as <AutoSaveSubscriber />
 
   // ── DRAFT RESTORATION ──
   useEffect(() => {
@@ -218,8 +266,9 @@ export function WorkOrderForm({
       clearDraft(DRAFT_KEY);
       if (onSuccess) onSuccess();
     } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
       console.error('Failed to save work order:', error);
-      alert('Có lỗi xảy ra: ' + (error as Error).message);
+      alert('Co loi xay ra: ' + message);
     }
   };
 
@@ -259,7 +308,6 @@ export function WorkOrderForm({
           <DraftBanner
             onRestore={handleRestoreDraft}
             onDiscard={handleDiscardDraft}
-            hasConflict={hasConflict}
           />
         )}
 
@@ -301,12 +349,7 @@ export function WorkOrderForm({
                   control={control}
                   render={({ field }) => (
                     <Combobox
-                      options={[
-                        ...(orders?.data ?? []).map((o) => ({
-                          value: o.id,
-                          label: `${o.order_number} — ${(o as { customers?: { name: string } }).customers?.name ?? ''}`,
-                        })),
-                      ]}
+                      options={orderOptions}
                       value={field.value ?? ''}
                       onChange={field.onChange}
                       placeholder="— Sản xuất dự trữ (Không ĐH) —"
@@ -331,11 +374,7 @@ export function WorkOrderForm({
                   control={control}
                   render={({ field }) => (
                     <Combobox
-                      options={suppliers.map((s) => ({
-                        value: s.id,
-                        label: s.name,
-                        code: s.code,
-                      }))}
+                      options={supplierOptions}
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="— Chọn nhà dệt —"
@@ -374,12 +413,7 @@ export function WorkOrderForm({
                   control={control}
                   render={({ field }) => (
                     <Combobox
-                      options={
-                        boms?.map((b) => ({
-                          value: b.id,
-                          label: `${b.code} — ${b.name} (V${b.active_version})`,
-                        })) || []
-                      }
+                      options={bomOptions}
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="— Chọn công thức dệt —"
@@ -442,10 +476,7 @@ export function WorkOrderForm({
                         control={control}
                         render={({ field }) => (
                           <Combobox
-                            options={units.map((u) => ({
-                              value: u,
-                              label: u,
-                            }))}
+                            options={unitOptions}
                             value={field.value}
                             onChange={field.onChange}
                           />
@@ -529,9 +560,9 @@ export function WorkOrderForm({
                 </Button>
               )}
             </div>
-            {/* Save Status Indicator */}
+            {/* Save Status Indicator (with isolated auto-save) */}
             <div className="hidden sm:block">
-              <SaveStatus status={saveStatus} lastSavedAt={lastSavedAt} />
+              <AutoSaveSubscriber watch={watch} />
             </div>
           </div>
 
@@ -567,7 +598,7 @@ export function WorkOrderForm({
           </div>
           {/* Mobile Save Status */}
           <div className="sm:hidden flex justify-center mt-[-8px]">
-            <SaveStatus status={saveStatus} lastSavedAt={lastSavedAt} />
+            <AutoSaveSubscriber watch={watch} />
           </div>
         </div>
       </form>

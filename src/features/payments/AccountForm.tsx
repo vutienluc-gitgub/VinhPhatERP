@@ -17,6 +17,16 @@ import {
 import type { AccountFormValues } from './payments.module';
 import type { PaymentAccount } from './types';
 
+const TYPE_OPTIONS = ACCOUNT_TYPES.map((t) => ({
+  value: t,
+  label: ACCOUNT_TYPE_LABELS[t],
+}));
+
+const STATUS_OPTIONS = [
+  { value: 'active', label: 'Hoạt động' },
+  { value: 'inactive', label: 'Ngừng sử dụng' },
+];
+
 type AccountFormProps = {
   account: PaymentAccount | null;
   onClose: () => void;
@@ -119,10 +129,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
                 control={control}
                 render={({ field }) => (
                   <Combobox
-                    options={ACCOUNT_TYPES.map((t) => ({
-                      value: t,
-                      label: ACCOUNT_TYPE_LABELS[t],
-                    }))}
+                    options={TYPE_OPTIONS}
                     value={field.value}
                     onChange={field.onChange}
                   />
@@ -192,16 +199,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
                 control={control}
                 render={({ field }) => (
                   <Combobox
-                    options={[
-                      {
-                        value: 'active',
-                        label: 'Hoạt động',
-                      },
-                      {
-                        value: 'inactive',
-                        label: 'Ngừng sử dụng',
-                      },
-                    ]}
+                    options={STATUS_OPTIONS}
                     value={field.value}
                     onChange={field.onChange}
                   />

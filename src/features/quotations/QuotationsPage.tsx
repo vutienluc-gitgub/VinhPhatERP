@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
+import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 
 import { QuotationDetail } from './QuotationDetail';
 import { QuotationForm } from './QuotationForm';
@@ -13,6 +15,12 @@ export function QuotationsPage() {
   const [view, setView] = useState<View>({ mode: 'list' });
   const [editQuotation, setEditQuotation] = useState<Quotation | null>(null);
   const [showForm, setShowForm] = useState(false);
+
+  const { activeGuides } = useContextualGuide(
+    'Quotations',
+    view.mode === 'detail' ? view.quotationId : undefined,
+    view.mode,
+  );
 
   function openCreate() {
     setEditQuotation(null);
@@ -73,6 +81,8 @@ export function QuotationsPage() {
       >
         <QuotationForm quotation={editQuotation} onClose={closeForm} />
       </AdaptiveSheet>
+
+      <ContextualGuide activeGuides={activeGuides} />
     </div>
   );
 }

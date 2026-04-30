@@ -82,6 +82,15 @@ export function ShipmentForm({
     [shippingRates],
   );
 
+  const shippingRateOptions = useMemo(
+    () =>
+      shippingRates.map((rate) => ({
+        value: rate.id,
+        label: `${rate.name} — ${rate.destination_area}`,
+      })),
+    [shippingRates],
+  );
+
   const {
     register,
     control,
@@ -187,7 +196,10 @@ export function ShipmentForm({
       <form id="shipment-form" onSubmit={handleSubmit(onSubmit)}>
         {createMutation.error && (
           <p className="error-inline mb-4">
-            Lỗi: {(createMutation.error as Error).message}
+            Lỗi:{' '}
+            {createMutation.error instanceof Error
+              ? createMutation.error.message
+              : String(createMutation.error)}
           </p>
         )}
 
@@ -295,10 +307,7 @@ export function ShipmentForm({
                 control={control}
                 render={({ field }) => (
                   <Combobox
-                    options={shippingRates.map((rate) => ({
-                      value: rate.id,
-                      label: `${rate.name} — ${rate.destination_area}`,
-                    }))}
+                    options={shippingRateOptions}
                     value={field.value}
                     onChange={field.onChange}
                     placeholder="— Không áp dụng —"

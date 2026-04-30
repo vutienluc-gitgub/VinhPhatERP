@@ -5,6 +5,7 @@ import {
   UseFormWatch,
   Controller,
 } from 'react-hook-form';
+import { useMemo } from 'react';
 
 import { Icon } from '@/shared/components/Icon';
 import { Combobox } from '@/shared/components/Combobox';
@@ -32,6 +33,16 @@ export function WorkOrderYarnTable({
   });
 
   const { data: yarnOptions = [] } = useYarnCatalogOptions();
+
+  const yarnComboOptions = useMemo(
+    () =>
+      yarnOptions.map((y) => ({
+        value: y.id,
+        label: `${y.name} ${y.color_name ? `(${y.color_name})` : ''}`,
+        code: y.code,
+      })),
+    [yarnOptions],
+  );
 
   return (
     <div className="panel-card card-flush mt-4">
@@ -79,11 +90,7 @@ export function WorkOrderYarnTable({
                       control={control}
                       render={({ field: comboField }) => (
                         <Combobox
-                          options={yarnOptions.map((y) => ({
-                            value: y.id,
-                            label: `${y.name} ${y.color_name ? `(${y.color_name})` : ''}`,
-                            code: y.code,
-                          }))}
+                          options={yarnComboOptions}
                           value={comboField.value}
                           onChange={comboField.onChange}
                           placeholder="Chọn sợi..."

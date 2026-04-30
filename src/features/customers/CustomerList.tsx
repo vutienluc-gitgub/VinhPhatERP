@@ -6,7 +6,6 @@ import {
   CUSTOMER_STATUS_LABELS,
 } from '@/schema/customer.schema';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { Pagination } from '@/shared/components/Pagination';
 import {
   Icon,
   Badge,
@@ -323,9 +322,12 @@ export function CustomerList({
             </div>
           </div>
         )}
+        pagination={{
+          result,
+          onPageChange: setPage,
+          itemLabel: 'khách hàng',
+        }}
       />
-
-      <Pagination result={result} onPageChange={setPage} />
     </div>
   );
 }

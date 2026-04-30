@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 import {
@@ -53,21 +53,29 @@ export function ChatDrawer({
   // Auto-flush offline queue when online
   const { pendingCount } = useChatOfflineSync(open ? roomId : undefined);
 
-  // Trigger room creation when drawer opens (useEffect — NOT render body)
+  /**
+   * Track which entity key has been triggered to prevent duplicate room
+   * creation. The ref is immune to stale closures — unlike reading
+   * `createRoomMutation.isPending` which was previously suppressed via
+   * eslint-disable and could fire twice during fast prop changes.
+   */
+  const triggeredEntityKeyRef = useRef<string | null>(null);
+
   useEffect(() => {
-    if (
-      open &&
-      !createRoomMutation.data &&
-      !createRoomMutation.isPending &&
-      !createRoomMutation.isError
-    ) {
+    const entityKey = `${entityType}:${entityId}`;
+    if (open && triggeredEntityKeyRef.current !== entityKey) {
+      triggeredEntityKeyRef.current = entityKey;
       createRoomMutation.mutate({ entityType, entityId });
+    }
+    if (!open) {
+      triggeredEntityKeyRef.current = null;
     }
   }, [open, entityType, entityId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Retry handler for error state
   const handleRetryRoom = useCallback(() => {
     createRoomMutation.reset();
+    triggeredEntityKeyRef.current = null;
     createRoomMutation.mutate({ entityType, entityId });
   }, [createRoomMutation, entityType, entityId]);
 

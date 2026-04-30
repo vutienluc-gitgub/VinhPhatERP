@@ -13,5 +13,6 @@ export function useEmployees(filters?: EmployeeFilters) {
   return useQuery({
     queryKey: ['employees', filters],
     queryFn: () => fetchEmployees(filters),
+    staleTime: 5 * 60 * 1000,
   });
 }

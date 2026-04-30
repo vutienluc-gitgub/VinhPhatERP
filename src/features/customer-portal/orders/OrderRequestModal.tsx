@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -13,6 +13,12 @@ import { orderRequestFormSchema } from '@/schema/order-request.schema';
 import type { OrderRequestFormValues } from '@/schema/order-request.schema';
 
 type RequestFormValues = OrderRequestFormValues;
+
+const UNIT_OPTIONS = [
+  { value: 'kg', label: 'kg' },
+  { value: 'm', label: 'm' },
+  { value: 'cây', label: 'Cây' },
+];
 
 type OrderRequestModalProps = {
   onClose: () => void;
@@ -29,6 +35,15 @@ export function OrderRequestModal({
   const { data: fabricOptions = [] } = useFabricCatalogOptions();
   const { data: colorOptions = [] } = useColorOptions();
   const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const fabricComboOptions = useMemo(
+    () =>
+      fabricOptions.map((f) => ({
+        value: f.name,
+        label: f.name,
+      })),
+    [fabricOptions],
+  );
 
   const {
     register,
@@ -196,10 +211,7 @@ export function OrderRequestModal({
                         control={control}
                         render={({ field }) => (
                           <Combobox
-                            options={fabricOptions.map((f) => ({
-                              value: f.name,
-                              label: f.name,
-                            }))}
+                            options={fabricComboOptions}
                             value={field.value}
                             onChange={(val) => {
                               field.onChange(val);
@@ -271,20 +283,7 @@ export function OrderRequestModal({
                         control={control}
                         render={({ field }) => (
                           <Combobox
-                            options={[
-                              {
-                                value: 'kg',
-                                label: 'kg',
-                              },
-                              {
-                                value: 'm',
-                                label: 'm',
-                              },
-                              {
-                                value: 'cây',
-                                label: 'Cây',
-                              },
-                            ]}
+                            options={UNIT_OPTIONS}
                             value={field.value}
                             onChange={field.onChange}
                             hasError={!!errors.items?.[index]?.unit}

@@ -26,6 +26,7 @@ export * from './dyeing-order.schema';
 export * from './employee.schema';
 export * from './color.schema';
 export * from './contracts.schema';
+export * from './contract-template.schema';
 export {
   QUOTATION_STATUSES,
   QUOTATION_STATUS_LABELS,

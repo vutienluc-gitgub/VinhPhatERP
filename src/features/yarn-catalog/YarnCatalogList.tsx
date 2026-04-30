@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { Pagination } from '@/shared/components/Pagination';
 import {
   Icon,
   Badge,
@@ -201,7 +200,8 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
       {error && (
         <div className="p-4">
           <p className="error-inline">
-            Lỗi tải dữ liệu: {(error as Error).message}
+            Lỗi tải dữ liệu:{' '}
+            {error instanceof Error ? error.message : String(error)}
           </p>
         </div>
       )}
@@ -392,15 +392,21 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
             </div>
           </div>
         )}
+        pagination={{
+          result: data,
+          onPageChange: setPage,
+          itemLabel: 'loại sợi',
+        }}
       />
 
       {deleteMutation.error && (
         <p className="error-inline-sm p-4">
-          Lỗi: {(deleteMutation.error as Error).message}
+          Lỗi:{' '}
+          {deleteMutation.error instanceof Error
+            ? deleteMutation.error.message
+            : String(deleteMutation.error)}
         </p>
       )}
-
-      <Pagination result={data} onPageChange={setPage} />
     </div>
   );
 }

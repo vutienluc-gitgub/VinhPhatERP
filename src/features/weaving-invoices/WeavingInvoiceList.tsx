@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { Pagination } from '@/shared/components/Pagination';
 import {
   Icon,
   Badge,
@@ -167,13 +166,17 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
       {/* Errors */}
       {error && (
         <div className="p-4">
-          <p className="error-inline">Lỗi: {(error as Error).message}</p>
+          <p className="error-inline">
+            Lỗi: {error instanceof Error ? error.message : String(error)}
+          </p>
         </div>
       )}
       {confirmMutation.error && (
         <div className="p-4">
           <p className="error-inline">
-            {(confirmMutation.error as Error).message}
+            {confirmMutation.error instanceof Error
+              ? confirmMutation.error.message
+              : String(confirmMutation.error)}
           </p>
         </div>
       )}
@@ -405,9 +408,12 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
             </div>
           </div>
         )}
+        pagination={{
+          result,
+          onPageChange: setPage,
+          itemLabel: 'hóa đơn dệt',
+        }}
       />
-
-      <Pagination result={result} onPageChange={setPage} />
     </div>
   );
 }

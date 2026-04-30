@@ -68,8 +68,8 @@ export function PortalShipmentDetail() {
                 </tr>
               </thead>
               <tbody>
-                {shipment.items.map((item, idx) => (
-                  <tr key={idx}>
+                {shipment.items.map((item) => (
+                  <tr key={item.roll_number || JSON.stringify(item)}>
                     <td
                       style={{
                         fontFamily: 'monospace',

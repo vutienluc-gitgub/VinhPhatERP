@@ -19,6 +19,7 @@ import {
   PreferencesContext,
   type PreferencesContextValue,
 } from '@/shared/context/preferences-context';
+import { GuideCommandPalette } from '@/features/guide-system/components/GuideCommandPalette';
 
 import { MobileMoreDrawer } from './MobileMoreDrawer';
 import { NotificationBell } from './NotificationBell';
@@ -392,6 +393,15 @@ export function AppShell() {
 
             {/* Action icons */}
             <div className="topbar-actions" ref={userMenuRef}>
+              <NavLink
+                to="/guide"
+                className="hidden sm:flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-muted hover:bg-surface-subtle hover:text-foreground transition-colors mr-1"
+                title="Sổ tay / Hướng dẫn sử dụng"
+              >
+                <Icon name="BookOpen" size={16} strokeWidth={1.5} />
+                <span className="hidden md:inline">Sổ tay</span>
+              </NavLink>
+
               <button
                 type="button"
                 className="topbar-icon-btn"
@@ -524,6 +534,7 @@ export function AppShell() {
             onClose={() => setShowMore(false)}
           />
         )}
+        <GuideCommandPalette />
       </div>
     </PreferencesContext.Provider>
   );

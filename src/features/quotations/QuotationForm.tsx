@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
@@ -33,6 +33,21 @@ const UNIT_LABELS: Record<string, string> = {
   m: 'm',
   kg: 'kg',
 };
+
+const DISCOUNT_OPTIONS = DISCOUNT_TYPE_OPTIONS.map((opt) => ({
+  value: opt.value,
+  label: opt.label,
+}));
+
+const VAT_OPTIONS = VAT_RATE_OPTIONS.map((opt) => ({
+  value: String(opt.value),
+  label: opt.label,
+}));
+
+const UNIT_COMBO_OPTIONS = UNIT_OPTIONS.map((opt) => ({
+  value: opt.value,
+  label: opt.label,
+}));
 
 type QuotationFormProps = {
   quotation: Quotation | null;
@@ -205,6 +220,26 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
   const { data: fabricOptions = [] } = useFabricCatalogOptions();
   const { data: colorOptions = [] } = useColorOptions();
 
+  const customerOptions = useMemo(
+    () =>
+      customers.map((c) => ({
+        value: c.id,
+        label: c.name,
+        code: c.code,
+      })),
+    [customers],
+  );
+
+  const fabricComboOptions = useMemo(
+    () =>
+      fabricOptions.map((f) => ({
+        value: f.name,
+        label: f.name,
+        code: f.code,
+      })),
+    [fabricOptions],
+  );
+
   const {
     register,
     handleSubmit,
@@ -311,11 +346,6 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
               name="customerId"
               control={control}
               render={({ field }) => {
-                const customerOptions = customers.map((c) => ({
-                  value: c.id,
-                  label: c.name,
-                  code: c.code,
-                }));
                 return (
                   <Combobox
                     options={customerOptions}
@@ -386,11 +416,6 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
                       name={`items.${index}.fabricType` as const}
                       control={control}
                       render={({ field }) => {
-                        const fabricComboOptions = fabricOptions.map((f) => ({
-                          value: f.name,
-                          label: f.name,
-                          code: f.code,
-                        }));
                         return (
                           <Combobox
                             options={fabricComboOptions}
@@ -474,10 +499,7 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
                         control={control}
                         render={({ field }) => (
                           <Combobox
-                            options={UNIT_OPTIONS.map((opt) => ({
-                              value: opt.value,
-                              label: opt.label,
-                            }))}
+                            options={UNIT_COMBO_OPTIONS}
                             value={field.value}
                             onChange={field.onChange}
                           />
@@ -545,10 +567,7 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
               control={control}
               render={({ field }) => (
                 <Combobox
-                  options={DISCOUNT_TYPE_OPTIONS.map((opt) => ({
-                    value: opt.value,
-                    label: opt.label,
-                  }))}
+                  options={DISCOUNT_OPTIONS}
                   value={field.value}
                   onChange={field.onChange}
                 />
@@ -577,10 +596,7 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
             control={control}
             render={({ field }) => (
               <Combobox
-                options={VAT_RATE_OPTIONS.map((opt) => ({
-                  value: String(opt.value),
-                  label: opt.label,
-                }))}
+                options={VAT_OPTIONS}
                 value={String(field.value)}
                 onChange={(val) => field.onChange(Number(val))}
               />

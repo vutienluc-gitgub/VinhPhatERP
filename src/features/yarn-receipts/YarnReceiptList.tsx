@@ -14,7 +14,6 @@ import {
   type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
-import { Pagination } from '@/shared/components/Pagination';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { formatCurrency } from '@/shared/utils/format';
 import {
@@ -377,11 +376,12 @@ export function YarnReceiptList({
             </div>
           </div>
         )}
+        pagination={{
+          result,
+          onPageChange: setPage,
+          itemLabel: 'phiếu nhập',
+        }}
       />
-
-      <div className="p-4">
-        <Pagination result={result} onPageChange={setPage} />
-      </div>
     </div>
   );
 }

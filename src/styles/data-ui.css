@@ -314,6 +314,15 @@
   color: var(--muted);
 }
 
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px currentColor;
+}
+
 /* ---- Premium UI Components (WOW Factor) ---- */
 
 .card-header-premium {
