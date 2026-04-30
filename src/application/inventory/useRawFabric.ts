@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import {
   fetchRawFabricPaginated,
@@ -56,11 +57,15 @@ export function useAvailableRawRolls() {
 }
 
 export function useCreateRawFabric() {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: RawFabricFormValues) =>
-      createRawFabric(mapRawFabricFormToDb(values)),
+    mutationFn: (values: RawFabricFormValues) => {
+      const reqPayload = { id: clientId, ...mapRawFabricFormToDb(values) };
+      return createRawFabric(reqPayload);
+    },
     onSuccess: () => {
+      setClientId(crypto.randomUUID());
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
   });

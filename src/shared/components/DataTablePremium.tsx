@@ -225,7 +225,7 @@ function DataTablePremiumInner<T>({
               >
                 {columns.map((col, idx) => (
                   <td
-                    key={idx}
+                    key={col.id || idx}
                     className={col.className}
                     onClick={(e) => {
                       if (col.onCellClick) {
@@ -244,7 +244,7 @@ function DataTablePremiumInner<T>({
             <tfoot>
               <tr className="bg-surface-subtle font-bold border-t-2 border-border">
                 {columns.map((col, idx) => (
-                  <td key={idx} className={col.className}>
+                  <td key={col.id || idx} className={col.className}>
                     {col.footer}
                   </td>
                 ))}

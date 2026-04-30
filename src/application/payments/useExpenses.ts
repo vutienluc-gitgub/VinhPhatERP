@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import {
   fetchExpensesPaginated,
@@ -45,11 +46,15 @@ export function useNextExpenseNumber() {
 }
 
 export function useCreateExpense() {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: ExpenseFormValues) =>
-      createExpense(mapExpenseFormToDb(values)),
+    mutationFn: (values: ExpenseFormValues) => {
+      const reqPayload = { id: clientId, ...mapExpenseFormToDb(values) };
+      return createExpense(reqPayload);
+    },
     onSuccess: (data) => {
+      setClientId(crypto.randomUUID());
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       DomainEventBus.publish({
         eventName: 'ExpenseCreatedEvent',

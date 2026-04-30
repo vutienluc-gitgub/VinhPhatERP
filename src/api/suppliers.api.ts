@@ -4,7 +4,6 @@ import type {
   SupplierUpdate,
 } from '@/features/suppliers/types';
 import { supabase } from '@/services/supabase/client';
-import { untypedDb } from '@/services/supabase/untyped';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
@@ -27,14 +26,14 @@ export async function fetchSuppliersPaginated(
   const from = (page - 1) * DEFAULT_PAGE_SIZE;
   const to = from + DEFAULT_PAGE_SIZE - 1;
 
-  let query = untypedDb
+  let query = supabase
     .from(TABLE)
     .select('*', { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(from, to);
 
-  if (filters.category) query = query.eq('category', filters.category);
-  if (filters.status) query = query.eq('status', filters.status);
+  if (filters.category) query = query.eq('category', filters.category as never);
+  if (filters.status) query = query.eq('status', filters.status as never);
   if (filters.search) {
     query = query.or(
       `name.ilike.%${filters.search}%,code.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`,
@@ -56,12 +55,12 @@ export async function fetchSuppliersPaginated(
 export async function fetchSuppliers(
   filters: { status?: string; category?: string; search?: string } = {},
 ): Promise<Supplier[]> {
-  let query = untypedDb
+  let query = supabase
     .from(TABLE)
     .select('*')
     .order('name', { ascending: true });
-  if (filters.status) query = query.eq('status', filters.status);
-  if (filters.category) query = query.eq('category', filters.category);
+  if (filters.status) query = query.eq('status', filters.status as never);
+  if (filters.category) query = query.eq('category', filters.category as never);
   if (filters.search?.trim()) {
     const q = filters.search.trim();
     query = query.or(`name.ilike.%${q}%,code.ilike.%${q}%,phone.ilike.%${q}%`);
@@ -176,11 +175,22 @@ export async function createSupplier(row: SupplierInsert): Promise<Supplier> {
 
 export async function updateSupplierRpc(
   id: string,
-  row: Record<string, unknown>,
+  row: SupplierUpdate,
+  expectedUpdatedAt?: string,
 ): Promise<unknown> {
-  const { data, error } = await untypedDb.rpc('rpc_update_supplier', {
+  const { data, error } = await supabase.rpc('rpc_update_supplier', {
     p_id: id,
-    ...row,
+    p_code: row.code,
+    p_name: row.name,
+    p_category: row.category,
+    p_phone: row.phone,
+    p_email: row.email,
+    p_address: row.address,
+    p_tax_code: row.tax_code,
+    p_contact_person: row.contact_person,
+    p_notes: row.notes,
+    p_status: row.status,
+    p_expected_updated_at: expectedUpdatedAt,
   });
   if (error) {
     if (error.message.includes('NOT_AUTHENTICATED'))
@@ -199,6 +209,7 @@ export async function updateSupplierRpc(
 export async function updateSupplier(
   id: string,
   row: SupplierUpdate,
+  expectedUpdatedAt?: string,
 ): Promise<Supplier> {
   const sanitizedRow = {
     ...row,
@@ -207,14 +218,20 @@ export async function updateSupplier(
     tax_code: row.tax_code?.trim() || null,
   };
 
-  const { data, error } = await supabase
-    .from(TABLE)
-    .update(sanitizedRow)
-    .eq('id', id)
-    .select()
-    .single();
+  let query = supabase.from(TABLE).update(sanitizedRow).eq('id', id);
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
 
   if (error) {
+    if (error.code === 'PGRST116' && expectedUpdatedAt) {
+      throw new Error(
+        'Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại trang.',
+      );
+    }
     if (error.code === '23505') {
       throw new Error(
         'Cập nhật thất bại: Mã, Email hoặc SDT đã được sử dụng bởi đối tác khác.',

@@ -65,7 +65,9 @@ export function QuotationDetail({
   if (error)
     return (
       <div className="panel-card p-4">
-        <p className="error-inline">Lỗi: {(error as Error).message}</p>
+        <p className="error-inline">
+          Lỗi: {error instanceof Error ? error.message : String(error)}
+        </p>
       </div>
     );
   if (!quotation)
@@ -344,7 +346,10 @@ export function QuotationDetail({
 
       {anyMutationError && (
         <p className="text-danger text-sm px-5 mb-4">
-          Lỗi: {(anyMutationError as Error).message}
+          Lỗi:{' '}
+          {anyMutationError instanceof Error
+            ? anyMutationError.message
+            : String(anyMutationError)}
         </p>
       )}
 

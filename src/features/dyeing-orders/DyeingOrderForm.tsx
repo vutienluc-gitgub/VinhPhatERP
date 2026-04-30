@@ -94,6 +94,7 @@ export function DyeingOrderForm({
         {
           id: editingOrder.id,
           values,
+          expectedUpdatedAt: editingOrder.updated_at ?? undefined,
         },
         { onSuccess: onClose },
       );

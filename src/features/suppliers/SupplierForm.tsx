@@ -88,6 +88,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
         await updateMutation.mutateAsync({
           id: supplier.id,
           values,
+          expectedUpdatedAt: supplier.updated_at ?? undefined,
         });
       } else {
         await createMutation.mutateAsync(values);
@@ -132,7 +133,10 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
     >
       {mutationError && (
         <p className="field-error mb-4">
-          Lỗi: {(mutationError as Error).message}
+          Lỗi:{' '}
+          {mutationError instanceof Error
+            ? mutationError.message
+            : String(mutationError)}
         </p>
       )}
 

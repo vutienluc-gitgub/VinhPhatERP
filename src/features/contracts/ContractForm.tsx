@@ -138,7 +138,9 @@ export function ContractForm({
       toast.success(`Tạo hợp đồng ${result.contractNumber} thành công`);
       onSuccess(result.contractId);
     } catch (err) {
-      toast.error((err as Error).message ?? 'Có lỗi xảy ra');
+      toast.error(
+        err instanceof Error ? err.message : (String(err) ?? 'Có lỗi xảy ra'),
+      );
     }
   }
 
@@ -153,7 +155,9 @@ export function ContractForm({
     } catch (err) {
       setWarning(null);
       setPendingValues(null);
-      toast.error((err as Error).message ?? 'Có lỗi xảy ra');
+      toast.error(
+        err instanceof Error ? err.message : (String(err) ?? 'Có lỗi xảy ra'),
+      );
     }
   }
 

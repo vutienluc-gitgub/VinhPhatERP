@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import {
   fetchYarnCatalogPaginated,
@@ -56,11 +57,15 @@ export function useNextYarnCatalogCode() {
 }
 
 export function useCreateYarnCatalog() {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: YarnCatalogFormValues) =>
-      createYarnCatalog(toDbRow(values)),
+    mutationFn: (values: YarnCatalogFormValues) => {
+      const reqPayload = { id: clientId, ...toDbRow(values) };
+      return createYarnCatalog(reqPayload);
+    },
     onSuccess: () => {
+      setClientId(crypto.randomUUID());
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
   });

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import {
   fetchFinishedFabricPaginated,
@@ -47,11 +48,15 @@ export function useFinishedFabricList(
 }
 
 export function useCreateFinishedFabric() {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: FinishedFabricFormValues) =>
-      createFinishedFabric(mapFinishedFabricFormToDb(values)),
+    mutationFn: (values: FinishedFabricFormValues) => {
+      const reqPayload = { id: clientId, ...mapFinishedFabricFormToDb(values) };
+      return createFinishedFabric(reqPayload);
+    },
     onSuccess: () => {
+      setClientId(crypto.randomUUID());
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
   });

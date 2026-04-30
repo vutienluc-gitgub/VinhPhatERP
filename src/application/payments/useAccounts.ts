@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import {
   fetchPaymentAccounts,
@@ -28,20 +29,27 @@ export function useAllAccounts() {
 }
 
 export function useCreateAccount() {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: AccountFormValues) =>
-      createPaymentAccount({
-        name: values.name.trim(),
-        type: values.type,
-        bank_name: values.bankName?.trim() || null,
-        account_number: values.accountNumber?.trim() || null,
-        initial_balance: values.initialBalance,
-        current_balance: values.initialBalance,
-        notes: values.notes?.trim() || null,
-        status: values.status,
-      }),
+    mutationFn: (values: AccountFormValues) => {
+      const reqPayload = {
+        id: clientId,
+        ...{
+          name: values.name.trim(),
+          type: values.type,
+          bank_name: values.bankName?.trim() || null,
+          account_number: values.accountNumber?.trim() || null,
+          initial_balance: values.initialBalance,
+          current_balance: values.initialBalance,
+          notes: values.notes?.trim() || null,
+          status: values.status,
+        },
+      };
+      return createPaymentAccount(reqPayload);
+    },
     onSuccess: () => {
+      setClientId(crypto.randomUUID());
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
   });

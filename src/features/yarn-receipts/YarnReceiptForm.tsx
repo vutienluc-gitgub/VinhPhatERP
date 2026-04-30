@@ -180,6 +180,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
         await updateMutation.mutateAsync({
           id: receipt.id,
           values,
+          expectedUpdatedAt: receipt.updated_at ?? undefined,
         });
       } else {
         await createMutation.mutateAsync(values);

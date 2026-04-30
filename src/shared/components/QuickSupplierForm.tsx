@@ -124,7 +124,9 @@ export function QuickSupplierForm({
       {/* Error */}
       {createMutation.error && (
         <p className="text-danger text-xs mb-2">
-          {(createMutation.error as Error).message}
+          {createMutation.error instanceof Error
+            ? createMutation.error.message
+            : String(createMutation.error)}
         </p>
       )}
 

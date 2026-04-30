@@ -125,6 +125,7 @@ export async function createCustomer(row: CustomerInsert): Promise<Customer> {
 export async function updateCustomer(
   id: string,
   row: CustomerUpdate,
+  expectedUpdatedAt?: string,
 ): Promise<Customer> {
   const sanitizedRow = {
     ...row,
@@ -133,14 +134,20 @@ export async function updateCustomer(
     tax_code: row.tax_code?.trim() || null,
   };
 
-  const { data, error } = await supabase
-    .from(TABLE)
-    .update(sanitizedRow)
-    .eq('id', id)
-    .select()
-    .single();
+  let query = supabase.from(TABLE).update(sanitizedRow).eq('id', id);
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
 
   if (error) {
+    if (error.code === 'PGRST116' && expectedUpdatedAt) {
+      throw new Error(
+        'Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại trang.',
+      );
+    }
     if (error.code === '23505') {
       throw new Error(
         'Cập nhật thất bại: Mã, Email hoặc SDT đã được sử dụng bởi khách hàng khác.',

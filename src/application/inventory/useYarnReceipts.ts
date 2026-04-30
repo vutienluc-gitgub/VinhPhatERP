@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import {
   fetchYarnReceiptsPaginated,
@@ -62,29 +63,36 @@ export function useYarnCatalogOptions() {
 }
 
 export function useCreateYarnReceipt() {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: YarnReceiptsFormValues) =>
-      createYarnReceiptFull({
-        receiptNumber: values.receiptNumber,
-        supplierId: values.supplierId,
-        receiptDate: values.receiptDate,
-        notes: values.notes?.trim() || null,
-        items: values.items.map((item) => ({
-          yarnType: item.yarnType,
-          colorName: item.colorName ?? null,
-          quantity: item.quantity,
-          unitPrice: item.unitPrice,
-          lotNumber: item.lotNumber ?? null,
-          grade: item.grade ?? null,
-          unit: item.unit ?? 'kg',
-          tensileStrength: item.tensileStrength ?? null,
-          composition: item.composition ?? null,
-          origin: item.origin ?? null,
-          yarnCatalogId: item.yarnCatalogId ?? null,
-        })),
-      }),
+    mutationFn: (values: YarnReceiptsFormValues) => {
+      const reqPayload = {
+        id: clientId,
+        ...{
+          receiptNumber: values.receiptNumber,
+          supplierId: values.supplierId,
+          receiptDate: values.receiptDate,
+          notes: values.notes?.trim() || null,
+          items: values.items.map((item) => ({
+            yarnType: item.yarnType,
+            colorName: item.colorName ?? null,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            lotNumber: item.lotNumber ?? null,
+            grade: item.grade ?? null,
+            unit: item.unit ?? 'kg',
+            tensileStrength: item.tensileStrength ?? null,
+            composition: item.composition ?? null,
+            origin: item.origin ?? null,
+            yarnCatalogId: item.yarnCatalogId ?? null,
+          })),
+        },
+      };
+      return createYarnReceiptFull(reqPayload);
+    },
     onSuccess: () => {
+      setClientId(crypto.randomUUID());
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
   });
@@ -96,29 +104,35 @@ export function useUpdateYarnReceipt() {
     mutationFn: ({
       id,
       values,
+      expectedUpdatedAt,
     }: {
       id: string;
       values: YarnReceiptsFormValues;
+      expectedUpdatedAt?: string;
     }) =>
-      updateYarnReceiptFull(id, {
-        receiptNumber: values.receiptNumber,
-        supplierId: values.supplierId,
-        receiptDate: values.receiptDate,
-        notes: values.notes?.trim() || null,
-        items: values.items.map((item) => ({
-          yarnType: item.yarnType,
-          colorName: item.colorName ?? null,
-          quantity: item.quantity,
-          unitPrice: item.unitPrice,
-          lotNumber: item.lotNumber ?? null,
-          grade: item.grade ?? null,
-          unit: item.unit ?? 'kg',
-          tensileStrength: item.tensileStrength ?? null,
-          composition: item.composition ?? null,
-          origin: item.origin ?? null,
-          yarnCatalogId: item.yarnCatalogId ?? null,
-        })),
-      }),
+      updateYarnReceiptFull(
+        id,
+        {
+          receiptNumber: values.receiptNumber,
+          supplierId: values.supplierId,
+          receiptDate: values.receiptDate,
+          notes: values.notes?.trim() || null,
+          items: values.items.map((item) => ({
+            yarnType: item.yarnType,
+            colorName: item.colorName ?? null,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            lotNumber: item.lotNumber ?? null,
+            grade: item.grade ?? null,
+            unit: item.unit ?? 'kg',
+            tensileStrength: item.tensileStrength ?? null,
+            composition: item.composition ?? null,
+            origin: item.origin ?? null,
+            yarnCatalogId: item.yarnCatalogId ?? null,
+          })),
+        },
+        expectedUpdatedAt,
+      ),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },

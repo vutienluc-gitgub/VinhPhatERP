@@ -66,9 +66,14 @@ export function useUpdateWorkOrder() {
   return useMutation<
     WorkOrder,
     PostgrestError,
-    { id: string; input: Partial<CreateWorkOrderInput> }
+    {
+      id: string;
+      input: Partial<CreateWorkOrderInput>;
+      expectedUpdatedAt?: string;
+    }
   >({
-    mutationFn: ({ id, input }) => updateWorkOrder(id, input),
+    mutationFn: ({ id, input, expectedUpdatedAt }) =>
+      updateWorkOrder(id, input, expectedUpdatedAt),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['work_orders'] });
       queryClient.invalidateQueries({ queryKey: ['work_order', data.id] });

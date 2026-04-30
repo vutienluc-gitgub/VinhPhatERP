@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import {
   fetchDyeingOrdersPaginated,
@@ -46,10 +47,15 @@ export function useDyeingSuppliers() {
 }
 
 export function useCreateDyeingOrder() {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: DyeingOrderFormValues) => createDyeingOrder(values),
+    mutationFn: (values: DyeingOrderFormValues) => {
+      const reqPayload = { id: clientId, ...values };
+      return createDyeingOrder(reqPayload);
+    },
     onSuccess: () => {
+      setClientId(crypto.randomUUID());
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
   });
@@ -61,10 +67,12 @@ export function useUpdateDyeingOrder() {
     mutationFn: ({
       id,
       values,
+      expectedUpdatedAt,
     }: {
       id: string;
       values: DyeingOrderFormValues;
-    }) => updateDyeingOrder(id, values),
+      expectedUpdatedAt?: string;
+    }) => updateDyeingOrder(id, values, expectedUpdatedAt),
     onSuccess: (_, { id }) => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       void queryClient.invalidateQueries({

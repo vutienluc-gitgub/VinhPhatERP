@@ -91,7 +91,10 @@ export function PaymentForm({
 
         {createMutation.error && (
           <p className="error-inline mb-4">
-            Lỗi: {(createMutation.error as Error).message}
+            Lỗi:{' '}
+            {createMutation.error instanceof Error
+              ? createMutation.error.message
+              : String(createMutation.error)}
           </p>
         )}
 

@@ -190,6 +190,7 @@ export async function createYarnReceiptFull(
 export async function updateYarnReceiptFull(
   id: string,
   input: YarnReceiptCreateInput,
+  expectedUpdatedAt?: string,
 ): Promise<void> {
   const { getTenantId } = await import('@/services/supabase/tenant');
   const tenantId = await getTenantId();
@@ -227,9 +228,17 @@ export async function updateYarnReceiptFull(
     p_id: id,
     p_header: headerUpdate as unknown as never,
     p_items: itemsInsert as unknown as never[],
+    p_expected_updated_at: expectedUpdatedAt,
   });
 
-  if (error) throw error;
+  if (error) {
+    if (error.message?.includes('OCC_MISMATCH')) {
+      throw new Error(
+        'Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại trang.',
+      );
+    }
+    throw error;
+  }
 }
 
 export async function deleteYarnReceiptRecord(id: string): Promise<void> {

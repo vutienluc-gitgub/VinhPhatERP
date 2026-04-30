@@ -160,7 +160,10 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
 
         {mutationError && (
           <p className="error-inline mb-4">
-            Lỗi: {(mutationError as Error).message}
+            Lỗi:{' '}
+            {mutationError instanceof Error
+              ? mutationError.message
+              : String(mutationError)}
           </p>
         )}
 

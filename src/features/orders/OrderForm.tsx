@@ -246,6 +246,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
         await updateMutation.mutateAsync({
           id: order.id,
           values,
+          expectedUpdatedAt: order.updated_at ?? undefined,
         });
         onClose();
       } else {

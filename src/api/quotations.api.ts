@@ -6,7 +6,6 @@ import type {
 import { supabase } from '@/services/supabase/client';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
-import { untypedDb } from '@/services/supabase/untyped';
 import { validateApiInput } from '@/lib/validate-api-input';
 import { apiQuotationHeader } from '@/schema/api-validation.schema';
 
@@ -121,9 +120,9 @@ export async function createQuotation(
   items: Omit<QuotationItemInsert, 'quotation_id'>[],
 ): Promise<Quotation> {
   validateApiInput(apiQuotationHeader.passthrough(), header);
-  const { data, error } = await untypedDb.rpc('rpc_create_quotation', {
-    p_header: header,
-    p_items: items,
+  const { data, error } = await supabase.rpc('rpc_create_quotation', {
+    p_header: header as never,
+    p_items: items as never,
   });
 
   if (error) throw error;
@@ -137,10 +136,10 @@ export async function updateQuotationWithItems(
   header: Omit<QuotationHeaderInsert, 'status'>,
   items: Omit<QuotationItemInsert, 'quotation_id'>[],
 ): Promise<void> {
-  const { error } = await untypedDb.rpc('rpc_update_quotation', {
+  const { error } = await supabase.rpc('rpc_update_quotation', {
     p_quotation_id: id,
-    p_header: header,
-    p_items: items,
+    p_header: header as never,
+    p_items: items as never,
   });
 
   if (error) {
@@ -233,12 +232,9 @@ export async function fetchExpiringQuotationsCount(): Promise<{
 export async function convertQuotationToOrder(
   quotationId: string,
 ): Promise<{ orderId: string; orderNumber: string }> {
-  const { data, error } = await untypedDb.rpc(
-    'rpc_convert_quotation_to_order',
-    {
-      p_quotation_id: quotationId,
-    },
-  );
+  const { data, error } = await supabase.rpc('rpc_convert_quotation_to_order', {
+    p_quotation_id: quotationId,
+  });
 
   if (error) {
     if (error.message?.includes('QUOTATION_NOT_CONFIRMED')) {

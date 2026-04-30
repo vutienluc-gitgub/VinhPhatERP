@@ -593,7 +593,9 @@ export function ContractDetailPage({
   if (error) {
     return (
       <div className="panel-card">
-        <p className="error-inline">Lỗi: {(error as Error).message}</p>
+        <p className="error-inline">
+          Lỗi: {error instanceof Error ? error.message : String(error)}
+        </p>
       </div>
     );
   }
@@ -863,7 +865,10 @@ export function ContractDetailPage({
 
           {statusMutation.error && (
             <p className="error-inline text-sm mt-2">
-              Lỗi: {(statusMutation.error as Error).message}
+              Lỗi:{' '}
+              {statusMutation.error instanceof Error
+                ? statusMutation.error.message
+                : String(statusMutation.error)}
             </p>
           )}
         </div>

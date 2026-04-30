@@ -25,7 +25,9 @@ export function ProgressDashboard() {
   if (error) {
     return (
       <div className="panel-card">
-        <p className="text-[#c0392b] p-4">Lỗi: {(error as Error).message}</p>
+        <p className="text-[#c0392b] p-4">
+          Lỗi: {error instanceof Error ? error.message : String(error)}
+        </p>
       </div>
     );
   }

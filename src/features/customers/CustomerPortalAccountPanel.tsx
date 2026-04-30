@@ -45,7 +45,11 @@ export function CustomerPortalAccountPanel({
           setPassword('');
         },
         onError: (err) => {
-          toast.error((err as Error).message ?? 'Tạo tài khoản thất bại.');
+          toast.error(
+            err instanceof Error
+              ? err.message
+              : (String(err) ?? 'Tạo tài khoản thất bại.'),
+          );
         },
       },
     );
@@ -65,7 +69,7 @@ export function CustomerPortalAccountPanel({
           toast.success('Tài khoản đã bị vô hiệu hóa.');
         },
         onError: (err) => {
-          toast.error((err as Error).message);
+          toast.error(err instanceof Error ? err.message : String(err));
         },
       },
     );
@@ -84,7 +88,7 @@ export function CustomerPortalAccountPanel({
           toast.success('Tài khoản đã được kích hoạt lại.');
         },
         onError: (err) => {
-          toast.error((err as Error).message);
+          toast.error(err instanceof Error ? err.message : String(err));
         },
       },
     );

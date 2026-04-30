@@ -193,7 +193,10 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
         {/* Error */}
         {deliverMutation.error && (
           <p className="error-inline mt-2">
-            Lỗi: {(deliverMutation.error as Error).message}
+            Lỗi:{' '}
+            {deliverMutation.error instanceof Error
+              ? deliverMutation.error.message
+              : String(deliverMutation.error)}
           </p>
         )}
 

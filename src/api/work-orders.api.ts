@@ -240,6 +240,7 @@ export async function createWorkOrder(
 export async function updateWorkOrder(
   id: string,
   input: Partial<CreateWorkOrderInput>,
+  expectedUpdatedAt?: string,
 ): Promise<WorkOrder> {
   const { data: current, error: fetchErr } = await supabase
     .from(TABLE)
@@ -372,9 +373,17 @@ export async function updateWorkOrder(
           ...update,
           yarn_requirements: yarnRequirements,
         } as unknown as never,
+        p_expected_updated_at: expectedUpdatedAt,
       },
     );
-    if (woUpdateErr) throw woUpdateErr;
+    if (woUpdateErr) {
+      if (woUpdateErr.message?.includes('OCC_MISMATCH')) {
+        throw new Error(
+          'Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại trang.',
+        );
+      }
+      throw woUpdateErr;
+    }
   } else {
     // Basic update
     const { error: woUpdateErr } = await untypedDb.rpc(
@@ -382,9 +391,17 @@ export async function updateWorkOrder(
       {
         p_wo_id: id,
         p_wo_data: update as unknown as never,
+        p_expected_updated_at: expectedUpdatedAt,
       },
     );
-    if (woUpdateErr) throw woUpdateErr;
+    if (woUpdateErr) {
+      if (woUpdateErr.message?.includes('OCC_MISMATCH')) {
+        throw new Error(
+          'Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại trang.',
+        );
+      }
+      throw woUpdateErr;
+    }
   }
 
   return fetchWorkOrderById(id);

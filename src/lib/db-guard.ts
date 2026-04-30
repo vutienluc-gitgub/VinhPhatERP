@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { supabase } from '@/services/supabase/client';
+import { untypedDb } from '@/services/supabase/untyped';
 
 /**
  * SAFE UPSERT (STRONG GUARANTEE)
@@ -15,17 +14,17 @@ export async function safeUpsert<T>({
 }) {
   // Ensure ID exists
   const payload = Array.isArray(data)
-    ? data.map((item: any) => ({
-        id: item.id || crypto.randomUUID(),
+    ? data.map((item) => ({
+        id: (item as Record<string, unknown>).id || crypto.randomUUID(),
         ...item,
       }))
     : {
-        id: (data as any).id || crypto.randomUUID(),
+        id: (data as Record<string, unknown>).id || crypto.randomUUID(),
         ...data,
       };
 
-  const { data: result, error } = await supabase
-    .from(table as any)
+  const { data: result, error } = await untypedDb
+    .from(table)
     .upsert(payload, {
       onConflict: conflictKey,
       ignoreDuplicates: false,
@@ -62,11 +61,11 @@ export async function safeInsert({
   uniqueCheck,
 }: {
   table: string;
-  data: any;
-  uniqueCheck: { column: string; value: any };
+  data: Record<string, unknown>;
+  uniqueCheck: { column: string; value: unknown };
 }) {
-  const { data: existing } = await supabase
-    .from(table as any)
+  const { data: existing } = await untypedDb
+    .from(table)
     .select('*')
     .eq(uniqueCheck.column, uniqueCheck.value)
     .maybeSingle();
@@ -75,8 +74,8 @@ export async function safeInsert({
     return existing; // tránh duplicate
   }
 
-  const { error, data: inserted } = await supabase
-    .from(table as any)
+  const { error, data: inserted } = await untypedDb
+    .from(table)
     .insert(data)
     .select()
     .maybeSingle();

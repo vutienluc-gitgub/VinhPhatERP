@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import {
   fetchShipmentDocument,
@@ -74,11 +75,15 @@ export function useAvailableFinishedRolls(orderId?: string) {
 /* ── Create ── */
 
 export function useCreateShipment() {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: ShipmentsFormValues) =>
-      createShipmentFull(mapShipmentFormToPayload(values)),
+    mutationFn: (values: ShipmentsFormValues) => {
+      const reqPayload = { id: clientId, ...mapShipmentFormToPayload(values) };
+      return createShipmentFull(reqPayload);
+    },
     onSuccess: () => {
+      setClientId(crypto.randomUUID());
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: ['orders'] });
       void queryClient.invalidateQueries({

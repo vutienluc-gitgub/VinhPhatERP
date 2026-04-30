@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import {
   fetchSuppliersPaginated,
@@ -41,11 +42,15 @@ export function useSuppliersList(filters: SupplierFilter = {}, page = 1) {
 }
 
 export function useCreateSupplier() {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: SupplierFormValues) =>
-      createSupplier(toInsertRow(values)),
+    mutationFn: (values: SupplierFormValues) => {
+      const reqPayload = { id: clientId, ...toInsertRow(values) };
+      return createSupplier(reqPayload);
+    },
     onSuccess: () => {
+      setClientId(crypto.randomUUID());
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
   });
@@ -54,7 +59,15 @@ export function useCreateSupplier() {
 export function useUpdateSupplier() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, values }: { id: string; values: SupplierFormValues }) =>
+    mutationFn: ({
+      id,
+      values,
+      expectedUpdatedAt,
+    }: {
+      id: string;
+      values: SupplierFormValues;
+      expectedUpdatedAt?: string;
+    }) =>
       updateSupplierRpc(id, {
         p_code: values.code,
         p_name: values.name,
@@ -66,6 +79,7 @@ export function useUpdateSupplier() {
         p_contact_person: values.contact_person?.trim() || undefined,
         p_notes: values.notes?.trim() || undefined,
         p_status: values.status,
+        p_expected_updated_at: expectedUpdatedAt,
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });

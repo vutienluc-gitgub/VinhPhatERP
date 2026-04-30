@@ -162,7 +162,7 @@ export function useTaskBoardInteractions<TTask extends BoardTask>({
 
     setBlockedTransition(null);
 
-    const previousTasks = taskPool;
+    const previousTasks = tasks;
     const nextTasks = updateTaskStatus(
       previousTasks,
       taskId,

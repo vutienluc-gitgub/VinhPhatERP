@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 
-import { hasSupabaseEnv } from '@/services/supabase/client';
-import { untypedDb } from '@/services/supabase/untyped';
+import { hasSupabaseEnv, supabase } from '@/services/supabase/client';
 import { setCachedTenantId } from '@/services/supabase/tenant';
 import { TenantContext, resolveTenant } from '@/shared/context/tenant-context';
 import type {
@@ -9,20 +8,6 @@ import type {
   TenantData,
   TenantInfo,
 } from '@/shared/context/tenant-context';
-
-/** Shape of tenants row returned from DB (columns may not be in database.types.ts yet) */
-interface TenantRow {
-  id: string;
-  slug: string;
-  name: string;
-  plan: string;
-  status: string;
-  max_users: number;
-  trial_ends_at: string | null;
-  logo_url: string | null;
-  primary_color: string | null;
-  is_active: boolean;
-}
 
 interface TenantProviderProps {
   children: ReactNode;
@@ -53,13 +38,13 @@ export function TenantProvider({ children }: TenantProviderProps) {
 
     async function loadTenant() {
       try {
-        const { data: row, error: dbError } = (await untypedDb
+        const { data: row, error: dbError } = await supabase
           .from('tenants')
           .select(
             'id, slug, name, plan, status, max_users, trial_ends_at, logo_url, primary_color, is_active',
           )
           .eq('slug', tenant.slug)
-          .single()) as { data: TenantRow | null; error: unknown };
+          .single();
 
         if (cancelled) return;
 
