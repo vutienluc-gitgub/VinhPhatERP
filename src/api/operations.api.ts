@@ -1,7 +1,9 @@
 import { untypedDb } from '@/services/supabase/untyped';
+import { supabase } from '@/services/supabase/client';
+import type { Json } from '@/services/supabase/database.types';
 import { getTenantId } from '@/services/supabase/tenant';
 import { Task, Employee, Kpi, ActivityItem } from '@/features/operations/types';
-import { safeUpsert, safeUpsertOne } from '@/lib/db-guard';
+import { safeUpsert } from '@/lib/db-guard';
 import { validateApiInput } from '@/lib/validate-api-input';
 import { apiTaskInsert } from '@/schema/api-validation.schema';
 import { OPERATIONS_MESSAGES } from '@/features/operations/constants';
@@ -19,7 +21,7 @@ export interface BlockedTransitionTelemetryEvent {
 }
 
 export async function fetchTasks(): Promise<Task[]> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from('tasks')
     .select('*')
     .order('due_date', { ascending: true });
@@ -38,7 +40,7 @@ export async function fetchEmployees(): Promise<Employee[]> {
 }
 
 export async function fetchKpis(): Promise<Kpi[]> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from('kpis')
     .select('*')
     .order('code', { ascending: true });
@@ -57,7 +59,7 @@ interface RawAuditLog {
 }
 
 export async function fetchActivities(): Promise<ActivityItem[]> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from('business_audit_log')
     .select('id, created_at, event_type, payload, user_id, profiles(full_name)')
     .order('created_at', { ascending: false })
@@ -117,7 +119,7 @@ export async function updateTask(
 }
 
 export async function deleteTask(id: string): Promise<void> {
-  const { error } = await untypedDb.from('tasks').delete().eq('id', id);
+  const { error } = await supabase.from('tasks').delete().eq('id', id);
   if (error) throw error;
 }
 
@@ -126,24 +128,22 @@ export async function logBlockedTransitionEvent(
 ): Promise<void> {
   const tenantId = await getTenantId();
 
-  const { data: authData } = await untypedDb.auth.getUser();
+  const { data: authData } = await supabase.auth.getUser();
   const userId = authData?.user?.id ?? null;
 
-  await safeUpsertOne({
-    table: 'business_audit_log',
-    data: {
-      tenant_id: tenantId,
-      entity_type: 'operations_task_board',
-      entity_id: event.taskId,
-      event_type: 'OPS_TASK_TRANSITION_BLOCKED',
-      payload: {
-        ...event,
-        module: 'operations-board',
-      },
-      user_id: userId,
-    },
-    conflictKey: 'id',
+  const { error } = await supabase.from('business_audit_log').insert({
+    tenant_id: tenantId,
+    entity_type: 'operations_task_board',
+    entity_id: event.taskId,
+    event_type: 'OPS_TASK_TRANSITION_BLOCKED',
+    payload: {
+      ...event,
+      module: 'operations-board',
+    } satisfies Json,
+    user_id: userId,
   });
+
+  if (error) throw error;
 }
 
 /**
@@ -153,7 +153,7 @@ export async function completeTask(
   taskId: string,
   actualHours?: number,
 ): Promise<void> {
-  const { error } = await untypedDb.rpc('rpc_complete_task', {
+  const { error } = await supabase.rpc('rpc_complete_task', {
     p_task_id: taskId,
     p_actual_hours: actualHours ?? 0,
   });
@@ -171,7 +171,7 @@ export interface EmployeeWorkload {
  * Lấy dữ liệu tải trọng công việc từ View v_employee_workload
  */
 export async function fetchWorkload(): Promise<EmployeeWorkload[]> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from('v_employee_workload')
     .select('*')
     .order('open_tasks', { ascending: false });
@@ -179,5 +179,9 @@ export async function fetchWorkload(): Promise<EmployeeWorkload[]> {
   if (error || !data || data.length === 0) {
     return [];
   }
-  return data as EmployeeWorkload[];
+  return data.map((item) => ({
+    id: item.employee_id ?? '',
+    name: item.name ?? '',
+    open_tasks: item.open_tasks ?? 0,
+  }));
 }

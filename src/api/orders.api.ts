@@ -155,14 +155,24 @@ export async function createOrder(
 export async function updateOrder(
   id: string,
   row: OrderUpdate,
+  expectedUpdatedAt?: string,
 ): Promise<Order> {
-  const { data, error } = await supabase
-    .from(HEADER_TABLE)
-    .update(row)
-    .eq('id', id)
-    .select()
-    .single();
-  if (error) throw error;
+  let query = supabase.from(HEADER_TABLE).update(row).eq('id', id);
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+
+  if (error) {
+    if (error.code === 'PGRST116' && expectedUpdatedAt) {
+      throw new Error(
+        'Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại trang.',
+      );
+    }
+    throw error;
+  }
   return data as Order;
 }
 
@@ -172,13 +182,22 @@ export async function updateOrderWithItems(
   id: string,
   header: OrderUpdate,
   items: Omit<OrderItemInsert, 'order_id'>[],
+  expectedUpdatedAt?: string,
 ): Promise<void> {
   const { error } = await untypedDb.rpc('rpc_update_order_with_items', {
     p_order_id: id,
     p_header_data: header,
     p_items_data: items,
+    p_expected_updated_at: expectedUpdatedAt,
   });
-  if (error) throw error;
+  if (error) {
+    if (error.message.includes('OCC_MISMATCH')) {
+      throw new Error(
+        'Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại trang.',
+      );
+    }
+    throw error;
+  }
 }
 
 /* ── Delete order ── */

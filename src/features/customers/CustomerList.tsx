@@ -9,7 +9,7 @@ import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
   Badge,
-  DataTablePremium,
+  DataTableAdvanced,
   AddButton,
   ActionBar,
   FilterBarPremium,
@@ -162,7 +162,7 @@ export function CustomerList({
       />
 
       {/* 📑 Data Section */}
-      <DataTablePremium
+      <DataTableAdvanced
         data={customers}
         isLoading={isLoading}
         rowKey={(c) => c.id}
@@ -184,47 +184,59 @@ export function CustomerList({
           {
             header: 'Mã KH',
             id: 'code',
-            sortable: true,
-            cell: (c) => (
-              <span className="font-bold text-primary">{c.code}</span>
+            accessorKey: 'code',
+            enableSorting: true,
+            cell: (info) => (
+              <span className="font-bold text-primary">
+                {info.row.original.code}
+              </span>
             ),
           },
           {
             header: 'Tên & Địa chỉ',
             id: 'name',
-            sortable: true,
-            cell: (c) => (
-              <div className="flex flex-col">
-                <span className="font-bold">{c.name}</span>
-                <span className="text-xs text-muted truncate max-w-[300px]">
-                  {c.address || '—'}
-                </span>
-              </div>
-            ),
+            accessorKey: 'name',
+            enableSorting: true,
+            cell: (info) => {
+              const c = info.row.original;
+              return (
+                <div className="flex flex-col">
+                  <span className="font-bold">{c.name}</span>
+                  <span className="text-xs text-muted truncate max-w-[300px]">
+                    {c.address || '—'}
+                  </span>
+                </div>
+              );
+            },
           },
           {
             header: 'Liên hệ',
             id: 'phone',
-            sortable: true,
-            className: 'text-sm font-medium',
-            cell: (c) => c.phone ?? '—',
+            accessorKey: 'phone',
+            enableSorting: true,
+            meta: { className: 'text-sm font-medium' },
+            cell: (info) => info.row.original.phone ?? '—',
           },
           {
             header: DEPOSIT_FORM_LABELS.balanceColumnHeader,
             id: 'account_balance',
-            sortable: true,
-            className: 'text-right font-bold text-success',
-            cell: (c) => formatCurrency(c.account_balance ?? 0),
+            accessorKey: 'account_balance',
+            enableSorting: true,
+            meta: { className: 'text-right font-bold text-success' },
+            cell: (info) =>
+              formatCurrency(info.row.original.account_balance ?? 0),
           },
           {
             header: 'Nguồn',
             id: 'source',
-            sortable: true,
-            cell: (c) => {
+            accessorKey: 'source',
+            enableSorting: true,
+            cell: (info) => {
+              const c = info.row.original;
               const sourceKey = c.source || 'other';
               const iconName = CUSTOMER_SOURCE_ICONS[sourceKey];
               return (
-                <div className="flex items-center gap-1.5 badge-subtle px-2 py-0.5 rounded-full border border-border/50 text-xs text-muted-foreground bg-surface-raised/50">
+                <div className="flex items-center gap-1.5 badge-subtle px-2 py-0.5 rounded-full border border-border/50 text-xs text-muted-foreground bg-surface-raised/50 w-max">
                   <Icon name={iconName as IconName} size={14} />
                   <span>{CUSTOMER_SOURCE_LABELS[sourceKey]}</span>
                 </div>
@@ -234,48 +246,55 @@ export function CustomerList({
           {
             header: 'Trạng thái',
             id: 'status',
-            sortable: true,
-            cell: (c) => (
-              <Badge
-                variant={c.status === 'active' ? 'success' : 'gray'}
-                icon={c.status === 'active' ? 'CheckCircle2' : 'XCircle'}
-              >
-                {CUSTOMER_STATUS_LABELS[c.status]}
-              </Badge>
-            ),
+            accessorKey: 'status',
+            enableSorting: true,
+            cell: (info) => {
+              const c = info.row.original;
+              return (
+                <Badge
+                  variant={c.status === 'active' ? 'success' : 'gray'}
+                  icon={c.status === 'active' ? 'CheckCircle2' : 'XCircle'}
+                >
+                  {CUSTOMER_STATUS_LABELS[c.status]}
+                </Badge>
+              );
+            },
           },
           {
             header: 'Thao tác',
-            className: 'text-right',
-            onCellClick: () => {},
-            cell: (c) => (
-              <ActionBar
-                actions={[
-                  {
-                    icon: 'Wallet',
-                    onClick: () => onDeposit?.(c),
-                    title: 'Nạp tiền',
-                  },
-                  {
-                    icon: 'FileText',
-                    onClick: () => onCreateContract(c),
-                    title: 'Tạo hợp đồng',
-                  },
-                  {
-                    icon: 'Pencil',
-                    onClick: () => onEdit(c),
-                    title: 'Sửa',
-                  },
-                  {
-                    icon: 'Trash2',
-                    onClick: () => handleDelete(c),
-                    title: 'Xóa',
-                    variant: 'danger',
-                    disabled: deleteMutation.isPending,
-                  },
-                ]}
-              />
-            ),
+            id: 'actions',
+            meta: { className: 'text-right' },
+            cell: (info) => {
+              const c = info.row.original;
+              return (
+                <ActionBar
+                  actions={[
+                    {
+                      icon: 'Wallet',
+                      onClick: () => onDeposit?.(c),
+                      title: 'Nạp tiền',
+                    },
+                    {
+                      icon: 'FileText',
+                      onClick: () => onCreateContract(c),
+                      title: 'Tạo hợp đồng',
+                    },
+                    {
+                      icon: 'Pencil',
+                      onClick: () => onEdit(c),
+                      title: 'Sửa',
+                    },
+                    {
+                      icon: 'Trash2',
+                      onClick: () => handleDelete(c),
+                      title: 'Xóa',
+                      variant: 'danger',
+                      disabled: deleteMutation.isPending,
+                    },
+                  ]}
+                />
+              );
+            },
           },
         ]}
         renderMobileCard={(customer) => (

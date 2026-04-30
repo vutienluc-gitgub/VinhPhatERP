@@ -1,6 +1,4 @@
-import { untypedDb } from '@/services/supabase/untyped';
 import { supabase } from '@/services/supabase/client';
-import { safeUpsertOne } from '@/lib/db-guard';
 
 import type {
   Contract,
@@ -14,9 +12,9 @@ import type {
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const db = {
-  contracts: () => untypedDb.from('contracts'),
-  contractOrderLinks: () => untypedDb.from('contract_order_links'),
-  contractAuditLogs: () => untypedDb.from('contract_audit_logs'),
+  contracts: () => supabase.from('contracts'),
+  contractOrderLinks: () => supabase.from('contract_order_links'),
+  contractAuditLogs: () => supabase.from('contract_audit_logs'),
 };
 
 /**
@@ -48,18 +46,16 @@ export async function writeAuditLog(
   newValues: Record<string, unknown> | null,
   performedBy: string | null,
 ): Promise<void> {
-  await safeUpsertOne({
-    table: 'contract_audit_logs',
-    data: {
-      contract_id: contractId,
-      action,
-      old_values: oldValues,
-      new_values: newValues,
-      performed_by: performedBy,
-      performed_at: new Date().toISOString(),
-    },
-    conflictKey: 'id',
+  const { error } = await supabase.from('contract_audit_logs').insert({
+    id: crypto.randomUUID(),
+    contract_id: contractId,
+    action,
+    old_values: oldValues as never,
+    new_values: newValues as never,
+    performed_by: performedBy,
+    performed_at: new Date().toISOString(),
   });
+  if (error) throw error;
 }
 
 // ── Read operations ──────────────────────────────────────────────────────────
@@ -243,16 +239,18 @@ export async function linkOrderToContract(
     );
   }
 
-  const inserted = await safeUpsertOne({
-    table: 'contract_order_links',
-    data: {
+  const { data: inserted, error: insertError } = await supabase
+    .from('contract_order_links')
+    .insert({
+      id: crypto.randomUUID(),
       contract_id: contractId,
       order_id: orderId,
       linked_at: new Date().toISOString(),
       linked_by: linkedBy,
-    },
-    conflictKey: 'id',
-  });
+    })
+    .select()
+    .single();
+  if (insertError) throw insertError;
 
   await writeAuditLog(
     contractId,

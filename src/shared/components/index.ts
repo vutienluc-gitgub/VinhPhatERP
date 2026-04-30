@@ -17,6 +17,8 @@ export type {
   Column as DataTableColumn,
   PaginationConfig,
 } from './DataTablePremium';
+export { DataTableAdvanced } from './DataTableAdvanced';
+export type { DataTableAdvancedProps } from './DataTableAdvanced';
 export { FilterBarPremium } from './FilterBarPremium';
 export type {
   FilterFieldConfig,

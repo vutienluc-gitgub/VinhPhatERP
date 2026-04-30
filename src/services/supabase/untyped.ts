@@ -17,8 +17,7 @@ import { supabase } from '@/services/supabase/client';
 
 /**
  * A minimal untyped Supabase client.
- * Uses `SupabaseClient<never>` to bypass generated schema checks
+ * Uses `SupabaseClient` to bypass generated schema checks
  * while keeping all PostgREST builder methods (.select, .eq, .insert, etc.).
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const untypedDb = supabase as unknown as SupabaseClient<any>;
+export const untypedDb = supabase as unknown as SupabaseClient;

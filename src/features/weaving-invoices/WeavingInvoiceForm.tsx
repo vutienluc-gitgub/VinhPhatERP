@@ -237,6 +237,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
         await updateMutation.mutateAsync({
           id: invoice.id,
           values,
+          expectedUpdatedAt: invoice.updated_at ?? undefined,
         });
       } else {
         await createMutation.mutateAsync(values);

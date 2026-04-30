@@ -23,9 +23,9 @@ export function WorkOrdersPage() {
     if (actionParam === 'create') {
       setIsFormOpen(true);
       if (bomIdParam) {
-        // Pre-fill creation data
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setEditingData({ bom_template_id: bomIdParam } as any);
+        setEditingData({
+          bom_template_id: bomIdParam,
+        } as unknown as WorkOrderWithRelations);
       }
     }
   }, [actionParam, bomIdParam]);

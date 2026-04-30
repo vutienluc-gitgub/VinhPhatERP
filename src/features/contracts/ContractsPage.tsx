@@ -181,7 +181,9 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
 
         {error && (
           <div className="p-4">
-            <p className="error-inline">Lỗi: {(error as Error).message}</p>
+            <p className="error-inline">
+              Lỗi: {error instanceof Error ? error.message : String(error)}
+            </p>
           </div>
         )}
 

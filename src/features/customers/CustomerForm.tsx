@@ -89,6 +89,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         await updateMutation.mutateAsync({
           id: customer.id,
           values,
+          expectedUpdatedAt: customer.updated_at,
         });
         toast.success('Cập nhật khách hàng thành công');
       } else {
@@ -109,7 +110,10 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
     <form id="customer-form" onSubmit={handleSubmit(onSubmit)} noValidate>
       {mutationError && (
         <p className="error-inline mb-4">
-          Lỗi: {(mutationError as Error).message}
+          Lỗi:{' '}
+          {mutationError instanceof Error
+            ? mutationError.message
+            : String(mutationError)}
         </p>
       )}
 

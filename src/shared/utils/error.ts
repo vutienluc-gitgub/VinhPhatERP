@@ -1,6 +1,6 @@
 /**
  * Safely extract an error message from an unknown value.
- * Use this instead of `(error as Error).message` to prevent runtime crashes.
+ * Use this instead of `error instanceof Error ? error.message : String(error)` to prevent runtime crashes.
  */
 export function getErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;

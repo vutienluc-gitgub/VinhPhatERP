@@ -255,6 +255,7 @@ export function WorkOrderForm({
             ...values,
             order_id: values.order_id === 'none' ? null : values.order_id,
           },
+          expectedUpdatedAt: initialData.updated_at ?? undefined,
         });
       } else {
         await createMutation.mutateAsync({

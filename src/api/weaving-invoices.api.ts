@@ -206,6 +206,7 @@ export async function createWeavingInvoice(
 export async function updateWeavingInvoice(
   id: string,
   values: WeavingInvoiceFormValues,
+  expectedUpdatedAt?: string,
 ): Promise<void> {
   const tenantId = await getTenantId();
   const invoiceNumber = values.invoice_number.trim();
@@ -270,9 +271,15 @@ export async function updateWeavingInvoice(
     p_id: id,
     p_header: headerUpdate,
     p_rolls: rollsInsert,
+    p_expected_updated_at: expectedUpdatedAt,
   });
 
   if (error) {
+    if (error.message?.includes('OCC_MISMATCH')) {
+      throw new Error(
+        'Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại trang.',
+      );
+    }
     if (
       error.code === '23505' ||
       error.message?.includes('duplicate key value')
@@ -312,15 +319,12 @@ export async function confirmWeavingInvoice(id: string): Promise<void> {
 
 export async function markWeavingInvoicePaid(
   id: string,
-  paidAmount: number,
+  amountToAdd: number,
 ): Promise<void> {
-  const { error } = await db
-    .from(TABLE)
-    .update({
-      paid_amount: paidAmount,
-      status: 'paid',
-    })
-    .eq('id', id);
+  const { error } = await db.rpc('rpc_increment_weaving_invoice_paid', {
+    p_id: id,
+    p_amount_to_add: amountToAdd,
+  });
   if (error) throw error;
 }
 

@@ -149,8 +149,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
   const isEditing = expense !== null;
   const { data: accounts = [] } = useAccountList();
   const { data: employees = [] } = useEmployees();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: suppliersData } = useSuppliersList({ limit: 100 } as any);
+  const { data: suppliersData } = useSuppliersList();
   const createMutation = useCreateExpense();
   const updateMutation = useUpdateExpense();
   const { data: nextNumber } = useNextExpenseNumber();
@@ -239,7 +238,10 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
     >
       {mutationError && (
         <p className="error-inline mb-4">
-          Lỗi: {(mutationError as Error).message}
+          Lỗi:{' '}
+          {mutationError instanceof Error
+            ? mutationError.message
+            : String(mutationError)}
         </p>
       )}
 

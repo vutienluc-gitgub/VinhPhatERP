@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import {
   fetchPaymentsPaginated,
@@ -44,11 +45,15 @@ export function useNextPaymentNumber() {
 }
 
 export function useCreatePayment() {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: PaymentsFormValues) =>
-      createPaymentRecord(mapPaymentFormToDb(values)),
+    mutationFn: (values: PaymentsFormValues) => {
+      const reqPayload = { id: clientId, ...mapPaymentFormToDb(values) };
+      return createPaymentRecord(reqPayload);
+    },
     onSuccess: (data) => {
+      setClientId(crypto.randomUUID());
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       DomainEventBus.publish({
         eventName: 'PaymentCreatedEvent',

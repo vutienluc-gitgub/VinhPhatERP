@@ -128,6 +128,7 @@ export async function createDyeingOrder(
 export async function updateDyeingOrder(
   id: string,
   values: DyeingOrderFormValues,
+  expectedUpdatedAt?: string,
 ): Promise<void> {
   const headerUpdate = {
     dyeing_order_number: values.dyeing_order_number.trim(),
@@ -155,11 +156,17 @@ export async function updateDyeingOrder(
     p_id: id,
     p_header: headerUpdate,
     p_items: itemsInsert,
+    p_expected_updated_at: expectedUpdatedAt,
   });
 
   if (error) {
+    if (error.message?.includes('OCC_MISMATCH')) {
+      throw new Error(
+        'Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại trang.',
+      );
+    }
     if (error.message?.includes('DYEING_ORDER_NOT_DRAFT'))
-      throw new Error('Chi co the cap nhat lenh nhuom o trang thai nhap.');
+      throw new Error('Chỉ có thể cập nhật lệnh nhuộm ở trạng thái nháp.');
     throw error;
   }
 }
@@ -202,12 +209,12 @@ export async function completeDyeingOrder(
 
 export async function markDyeingOrderPaid(
   id: string,
-  paidAmount: number,
+  amountToAdd: number,
 ): Promise<void> {
-  const { error } = await db
-    .from(TABLE)
-    .update({ paid_amount: paidAmount })
-    .eq('id', id);
+  const { error } = await db.rpc('rpc_increment_dyeing_order_paid', {
+    p_id: id,
+    p_amount_to_add: amountToAdd,
+  });
   if (error) throw error;
 }
 

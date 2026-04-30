@@ -289,7 +289,10 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
     <form id="quotation-form" onSubmit={handleSubmit(onSubmit)} noValidate>
       {mutationError && (
         <p className="error-inline mb-4">
-          Lỗi: {(mutationError as Error).message}
+          Lỗi:{' '}
+          {mutationError instanceof Error
+            ? mutationError.message
+            : String(mutationError)}
         </p>
       )}
 

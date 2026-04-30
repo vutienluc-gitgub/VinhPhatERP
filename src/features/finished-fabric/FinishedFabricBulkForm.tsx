@@ -382,7 +382,9 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
         );
       }
     } catch (err) {
-      setImportError(`Lỗi đọc file: ${(err as Error).message}`);
+      setImportError(
+        `Lỗi đọc file: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
 
     // Reset file input
@@ -454,7 +456,10 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
         <>
           {bulkMutation.error && (
             <p className="error-inline mb-4 whitespace-pre-line">
-              Lỗi: {(bulkMutation.error as Error).message}
+              Lỗi:{' '}
+              {bulkMutation.error instanceof Error
+                ? bulkMutation.error.message
+                : String(bulkMutation.error)}
             </p>
           )}
 

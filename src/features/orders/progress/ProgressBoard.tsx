@@ -90,7 +90,9 @@ export function ProgressBoard() {
   if (error) {
     return (
       <div className="panel-card">
-        <p className="text-[#c0392b] p-4">Lỗi: {(error as Error).message}</p>
+        <p className="text-[#c0392b] p-4">
+          Lỗi: {error instanceof Error ? error.message : String(error)}
+        </p>
       </div>
     );
   }
@@ -221,7 +223,10 @@ export function ProgressBoard() {
 
       {updateMutation.error && (
         <p className="text-[#c0392b] text-[0.85rem] px-5 pb-4">
-          Lỗi cập nhật: {(updateMutation.error as Error).message}
+          Lỗi cập nhật:{' '}
+          {updateMutation.error instanceof Error
+            ? updateMutation.error.message
+            : String(updateMutation.error)}
         </p>
       )}
     </div>

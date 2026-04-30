@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
   fetchTasks,
@@ -26,10 +26,15 @@ export function useTasks() {
 // ... (other query hooks)
 
 export function useCreateTask() {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: Partial<Task>) => createTask(values),
+    mutationFn: (values: Partial<Task>) => {
+      const reqPayload = { id: clientId, ...values };
+      return createTask(reqPayload);
+    },
     onSuccess: () => {
+      setClientId(crypto.randomUUID());
       queryClient.invalidateQueries({ queryKey: ['operations-tasks'] });
       queryClient.invalidateQueries({ queryKey: ['operations-workload'] });
       queryClient.invalidateQueries({ queryKey: ['operations-activities'] });

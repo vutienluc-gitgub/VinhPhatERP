@@ -382,7 +382,10 @@ export function RawFabricBulkForm({ onClose }: Props) {
         <>
           {bulkMutation.error && (
             <p className="error-inline mb-4">
-              Lỗi: {(bulkMutation.error as Error).message}
+              Lỗi:{' '}
+              {bulkMutation.error instanceof Error
+                ? bulkMutation.error.message
+                : String(bulkMutation.error)}
             </p>
           )}
 

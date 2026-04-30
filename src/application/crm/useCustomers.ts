@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import {
   fetchCustomers,
@@ -56,11 +57,15 @@ export function useCustomerList(filters: CustomersFilter = {}, page = 1) {
 }
 
 export function useCreateCustomer() {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: CustomersFormValues) =>
-      createCustomer(toDbRow(values)),
+    mutationFn: (values: CustomersFormValues) => {
+      const reqPayload = { id: clientId, ...toDbRow(values) };
+      return createCustomer(reqPayload);
+    },
     onSuccess: () => {
+      setClientId(crypto.randomUUID());
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
   });
@@ -69,8 +74,15 @@ export function useCreateCustomer() {
 export function useUpdateCustomer() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, values }: { id: string; values: CustomersFormValues }) =>
-      updateCustomer(id, toDbRow(values)),
+    mutationFn: ({
+      id,
+      values,
+      expectedUpdatedAt,
+    }: {
+      id: string;
+      values: CustomersFormValues;
+      expectedUpdatedAt?: string;
+    }) => updateCustomer(id, toDbRow(values), expectedUpdatedAt),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
@@ -103,6 +115,7 @@ export function usePortalAccount(customerId: string) {
 }
 
 export function useCreatePortalAccount(customerId: string) {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: {
@@ -110,8 +123,12 @@ export function useCreatePortalAccount(customerId: string) {
       full_name: string;
       email: string;
       password?: string;
-    }) => createCustomerPortalAccount(payload),
+    }) => {
+      const reqPayload = { id: clientId, ...payload };
+      return createCustomerPortalAccount(reqPayload);
+    },
     onSuccess: () => {
+      setClientId(crypto.randomUUID());
       void queryClient.invalidateQueries({
         queryKey: [...QUERY_KEY, customerId, 'portal-account'],
       });

@@ -262,7 +262,10 @@ export function ProgressTimeline({
 
       {updateMutation.error && (
         <p className="text-danger-fg text-[0.85rem] mt-2">
-          Lỗi cập nhật: {(updateMutation.error as Error).message}
+          Lỗi cập nhật:{' '}
+          {updateMutation.error instanceof Error
+            ? updateMutation.error.message
+            : String(updateMutation.error)}
         </p>
       )}
     </div>

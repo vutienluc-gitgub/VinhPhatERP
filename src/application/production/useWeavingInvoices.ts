@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import {
   fetchWeavingInvoicesPaginated,
@@ -63,11 +64,15 @@ export function useWeavingSupplierDebt() {
 }
 
 export function useCreateWeavingInvoice() {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (values: WeavingInvoiceFormValues) =>
-      createWeavingInvoice(values),
+    mutationFn: (values: WeavingInvoiceFormValues) => {
+      const reqPayload = { id: clientId, ...values };
+      return createWeavingInvoice(reqPayload);
+    },
     onSuccess: () => {
+      setClientId(crypto.randomUUID());
       void qc.invalidateQueries({ queryKey: QK });
     },
   });
@@ -79,10 +84,12 @@ export function useUpdateWeavingInvoice() {
     mutationFn: ({
       id,
       values,
+      expectedUpdatedAt,
     }: {
       id: string;
       values: WeavingInvoiceFormValues;
-    }) => updateWeavingInvoice(id, values),
+      expectedUpdatedAt?: string;
+    }) => updateWeavingInvoice(id, values, expectedUpdatedAt),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: QK });
     },
@@ -105,8 +112,8 @@ export function useConfirmWeavingInvoice() {
 export function useMarkWeavingInvoicePaid() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, paidAmount }: { id: string; paidAmount: number }) =>
-      markWeavingInvoicePaid(id, paidAmount),
+    mutationFn: ({ id, amountToAdd }: { id: string; amountToAdd: number }) =>
+      markWeavingInvoicePaid(id, amountToAdd),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: QK });
     },

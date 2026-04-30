@@ -1,10 +1,10 @@
-import { untypedDb } from '@/services/supabase/untyped';
+import { supabase } from '@/services/supabase/client';
 import type { ColorFormValues } from '@/schema/color.schema';
 import { getTenantId } from '@/services/supabase/tenant';
 
 export const colorApi = {
   list: async () => {
-    const { data, error } = await untypedDb
+    const { data, error } = await supabase
       .from('colors')
       .select('*')
       .order('name', { ascending: true });
@@ -23,7 +23,7 @@ export const colorApi = {
       tenant_id: tenantId,
     };
 
-    const { data, error } = await untypedDb
+    const { data, error } = await supabase
       .from('colors')
       .upsert(payload, { onConflict: 'code' })
       .select()
@@ -34,7 +34,7 @@ export const colorApi = {
   },
 
   delete: async (code: string) => {
-    const { error } = await untypedDb.from('colors').delete().eq('code', code);
+    const { error } = await supabase.from('colors').delete().eq('code', code);
 
     if (error) throw error;
   },

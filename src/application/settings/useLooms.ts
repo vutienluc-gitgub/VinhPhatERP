@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import {
   fetchLoomsPaginated,
@@ -52,10 +53,15 @@ export function useNextLoomCode() {
 }
 
 export function useCreateLoom() {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: LoomFormValues) => createLoom(toDbRow(values)),
+    mutationFn: (values: LoomFormValues) => {
+      const reqPayload = { id: clientId, ...toDbRow(values) };
+      return createLoom(reqPayload);
+    },
     onSuccess: () => {
+      setClientId(crypto.randomUUID());
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
   });

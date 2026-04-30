@@ -39,7 +39,7 @@ export function ProgressAuditLogView({ orderId }: AuditLogProps) {
             padding: '1rem',
           }}
         >
-          Lỗi: {(error as Error).message}
+          Lỗi: {error instanceof Error ? error.message : String(error)}
         </p>
       </div>
     );

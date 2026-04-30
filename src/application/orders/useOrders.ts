@@ -77,15 +77,18 @@ export function useUpdateOrder() {
     mutationFn: async ({
       id,
       values,
+      expectedUpdatedAt,
     }: {
       id: string;
       values: OrdersFormValues;
+      expectedUpdatedAt?: string;
     }) => {
       const total = calculateOrderTotal(values.items);
       await updateOrderWithItems(
         id,
         mapOrderFormToDb(values, total),
         mapOrderItemsToDb(values.items),
+        expectedUpdatedAt,
       );
     },
     onSuccess: () => {

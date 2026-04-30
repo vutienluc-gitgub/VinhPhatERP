@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import {
   fetchShippingRates,
@@ -42,11 +43,17 @@ export function useActiveShippingRates() {
 }
 
 export function useCreateShippingRate() {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: ShippingRateFormValues) =>
-      createShippingRate(toDbRow(values)),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+    mutationFn: (values: ShippingRateFormValues) => {
+      const reqPayload = { id: clientId, ...toDbRow(values) };
+      return createShippingRate(reqPayload);
+    },
+    onSuccess: () => {
+      setClientId(crypto.randomUUID());
+      return queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
   });
 }
 

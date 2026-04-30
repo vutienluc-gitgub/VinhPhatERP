@@ -5,6 +5,7 @@ import type {
   RawFabricFilter,
 } from '@/features/raw-fabric/types';
 import { supabase } from '@/services/supabase/client';
+import { untypedDb } from '@/services/supabase/untyped';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
@@ -192,14 +193,17 @@ export async function fetchWorkOrderOptions(): Promise<WorkOrderOption[]> {
 
 export async function fetchRawFabricStats(): Promise<InventoryStats> {
   const tenantId = await getTenantId();
-  const { data, error } = await supabase
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .from('v_raw_fabric_inventory' as any)
+  const { data, error } = await untypedDb
+    .from('v_raw_fabric_inventory')
     .select('roll_count, total_length_m, total_weight_kg')
     .eq('tenant_id', tenantId);
   if (error) throw error;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const rows = (data as any[]) ?? [];
+  const rows =
+    (data as {
+      roll_count?: number;
+      total_length_m?: number;
+      total_weight_kg?: number;
+    }[]) ?? [];
   return {
     totalRolls: rows.reduce((s, r) => s + (r.roll_count ?? 0), 0),
     totalLengthM: rows.reduce((s, r) => s + (r.total_length_m ?? 0), 0),

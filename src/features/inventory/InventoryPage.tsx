@@ -256,7 +256,10 @@ export function InventoryPage() {
           {hasError && (
             <div className="p-4">
               <p className="error-inline">
-                Lỗi tải dữ liệu: {(hasError as Error).message}
+                Lỗi tải dữ liệu:{' '}
+                {hasError instanceof Error
+                  ? hasError.message
+                  : String(hasError)}
               </p>
             </div>
           )}
@@ -427,7 +430,10 @@ export function InventoryPage() {
               {agingQuery.error ? (
                 <div className="p-4">
                   <p className="error-inline">
-                    Lỗi: {(agingQuery.error as Error).message}
+                    Lỗi:{' '}
+                    {agingQuery.error instanceof Error
+                      ? agingQuery.error.message
+                      : String(agingQuery.error)}
                   </p>
                 </div>
               ) : (

@@ -242,7 +242,10 @@ export function ShippingRateForm({ item, onClose }: Props) {
       {/* Error display */}
       {mutationError && (
         <p className="error-inline mt-4">
-          Lỗi: {(mutationError as Error).message}
+          Lỗi:{' '}
+          {mutationError instanceof Error
+            ? mutationError.message
+            : String(mutationError)}
         </p>
       )}
 

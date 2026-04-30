@@ -1,4 +1,4 @@
-import { untypedDb } from '@/services/supabase/untyped';
+import { supabase } from '@/services/supabase/client';
 import type {
   ContractType,
   ContractTemplate,
@@ -9,7 +9,7 @@ import { safeUpsertOne } from '@/lib/db-guard';
 // ── Service helpers ──────────────────────────────────────────────────────────
 
 const db = {
-  templates: () => untypedDb.from('contract_templates'),
+  templates: () => supabase.from('contract_templates'),
 };
 
 // ── Service functions ────────────────────────────────────────────────────────

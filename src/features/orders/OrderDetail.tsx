@@ -55,6 +55,8 @@ export function OrderDetail({
   const approveMutation = useApproveOrderRequest();
   const rejectMutation = useRejectOrderRequest();
   const { confirm } = useConfirm();
+  const actionError =
+    confirmMutation.error || cancelMutation.error || completeMutation.error;
 
   if (isLoading)
     return (
@@ -65,7 +67,9 @@ export function OrderDetail({
   if (error)
     return (
       <div className="panel-card">
-        <p className="error-inline">Lỗi: {(error as Error).message}</p>
+        <p className="error-inline">
+          Lỗi: {error instanceof Error ? error.message : String(error)}
+        </p>
       </div>
     );
   if (!order)
@@ -296,18 +300,12 @@ export function OrderDetail({
           )}
         </div>
 
-        {(confirmMutation.error ||
-          cancelMutation.error ||
-          completeMutation.error) && (
+        {actionError && (
           <p className="error-inline text-sm">
             Lỗi:{' '}
-            {
-              (
-                (confirmMutation.error ||
-                  cancelMutation.error ||
-                  completeMutation.error) as Error
-              ).message
-            }
+            {actionError instanceof Error
+              ? actionError.message
+              : String(actionError)}
           </p>
         )}
       </div>
