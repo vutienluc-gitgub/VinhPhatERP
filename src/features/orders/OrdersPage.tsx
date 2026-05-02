@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { useGlobalModal } from '@/shared/hooks/useGlobalModal';
@@ -15,7 +16,10 @@ import type { Order } from './types';
 type View = { mode: 'list' } | { mode: 'detail'; orderId: string };
 
 export function OrdersPage() {
-  const [view, setView] = useState<View>({ mode: 'list' });
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+
+  const view: View = id ? { mode: 'detail', orderId: id } : { mode: 'list' };
   const [editOrder, setEditOrder] = useState<Order | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [reserveOrder, setReserveOrder] = useState<Order | null>(null);
@@ -50,23 +54,14 @@ export function OrdersPage() {
           onNew={openCreate}
           onEdit={(order) => {
             if (order.status === 'draft') openEdit(order);
-            else
-              setView({
-                mode: 'detail',
-                orderId: order.id,
-              });
+            else navigate(`/orders/${order.id}`);
           }}
-          onView={(order) =>
-            setView({
-              mode: 'detail',
-              orderId: order.id,
-            })
-          }
+          onView={(order) => navigate(`/orders/${order.id}`)}
         />
       ) : (
         <OrderDetail
           orderId={view.orderId}
-          onBack={() => setView({ mode: 'list' })}
+          onBack={() => navigate('/orders')}
           onEdit={(order) => {
             openEdit(order);
           }}
