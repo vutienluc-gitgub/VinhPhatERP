@@ -3,8 +3,8 @@ import { useState } from 'react';
 import type { ReportsFilter } from '@/api/reports.api';
 import { TabSwitcher, Icon } from '@/shared/components';
 import type { TabItem } from '@/shared/components';
-import { DebtAgingSection } from '@/features/reports/DebtAgingSection';
-import { useDebtAging } from '@/features/reports/useDebtAging';
+import { DebtAgingSection } from '@/shared/components/DebtAgingSection';
+import { useDebtAging } from '@/application/reports/useDebtAging';
 import {
   useRevenueSummary,
   useDebtByCustomer,

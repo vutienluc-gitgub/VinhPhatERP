@@ -15,17 +15,13 @@ import {
   accountSchema,
 } from './payments.module';
 import type { AccountFormValues } from './payments.module';
+import { ACCOUNT_STATUS_OPTIONS } from './payments.constants';
 import type { PaymentAccount } from './types';
 
 const TYPE_OPTIONS = ACCOUNT_TYPES.map((t) => ({
   value: t,
   label: ACCOUNT_TYPE_LABELS[t],
 }));
-
-const STATUS_OPTIONS = [
-  { value: 'active', label: 'Hoạt động' },
-  { value: 'inactive', label: 'Ngừng sử dụng' },
-];
 
 type AccountFormProps = {
   account: PaymentAccount | null;
@@ -55,6 +51,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
     control,
     reset,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<AccountFormValues>({
     resolver: zodResolver(accountSchema),
@@ -63,11 +60,20 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
       : accountDefaultValues,
   });
 
+  // Reset form when editing target changes
   useEffect(() => {
     reset(isEditing ? accountToFormValues(account) : accountDefaultValues);
   }, [account, isEditing, reset]);
 
   const accountType = watch('type');
+
+  // Fix #1 — clear bank-only fields when type switches away from 'bank'
+  useEffect(() => {
+    if (accountType !== 'bank') {
+      setValue('bankName', '');
+      setValue('accountNumber', '');
+    }
+  }, [accountType, setValue]);
 
   async function onSubmit(values: AccountFormValues) {
     try {
@@ -80,8 +86,9 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
         await createMutation.mutateAsync(values);
       }
       onClose();
-    } catch {
+    } catch (err) {
       // Lỗi hiện qua mutationError
+      console.error('[AccountForm]', err);
     }
   }
 
@@ -123,6 +130,8 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
                 <span className="field-error">{errors.name.message}</span>
               )}
             </div>
+
+            {/* Fix #2 — add hasError + error message for type Combobox */}
             <div className="form-field">
               <label htmlFor="type">
                 Loại tài khoản <span className="field-required">*</span>
@@ -135,13 +144,17 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
                     options={TYPE_OPTIONS}
                     value={field.value}
                     onChange={field.onChange}
+                    hasError={!!errors.type}
                   />
                 )}
               />
+              {errors.type && (
+                <span className="field-error">{errors.type.message}</span>
+              )}
             </div>
           </div>
 
-          {/* Bank info - only for bank accounts */}
+          {/* Bank info — only visible when type === 'bank' */}
           {accountType === 'bank' && (
             <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
               <div className="form-field">
@@ -172,6 +185,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
             <div className="form-field">
               <label htmlFor="initialBalance">
                 Số dư ban đầu (đ){' '}
+                {/* Field is locked in edit mode, required on create */}
                 {!isEditing && <span className="field-required">*</span>}
               </label>
               <Controller
@@ -195,6 +209,8 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
                 </span>
               )}
             </div>
+
+            {/* Fix #3 — use centralized ACCOUNT_STATUS_OPTIONS */}
             <div className="form-field">
               <label htmlFor="status">Trạng thái</label>
               <Controller
@@ -202,7 +218,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
                 control={control}
                 render={({ field }) => (
                   <Combobox
-                    options={STATUS_OPTIONS}
+                    options={ACCOUNT_STATUS_OPTIONS}
                     value={field.value}
                     onChange={field.onChange}
                   />
@@ -224,26 +240,29 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
           </div>
         </div>
 
-        <div className="modal-footer mt-6 p-0 border-none">
+        {/* Fix #4 — use consistent footer layout matching PaymentForm / ExpenseForm */}
+        <div className="mt-8 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
           <Button
             variant="secondary"
             type="button"
             onClick={onClose}
             disabled={isPending}
+            className="w-full sm:w-auto justify-center"
           >
             Hủy
           </Button>
-          <button
-            className="primary-button btn-standard"
+          <Button
+            variant="primary"
             type="submit"
             disabled={isPending}
+            className="w-full sm:w-auto justify-center"
           >
             {isPending
               ? 'Đang lưu...'
               : isEditing
                 ? 'Cập nhật'
                 : 'Tạo tài khoản'}
-          </button>
+          </Button>
         </div>
       </form>
     </AdaptiveSheet>

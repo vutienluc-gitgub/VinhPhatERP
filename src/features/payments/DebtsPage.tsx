@@ -3,10 +3,8 @@ import { useState } from 'react';
 import { TabSwitcher } from '@/shared/components';
 import type { TabItem } from '@/shared/components';
 import { Icon } from '@/shared/components/Icon';
-// eslint-disable-next-line boundaries/dependencies
-import { DebtAgingSection } from '@/features/reports/DebtAgingSection';
-// eslint-disable-next-line boundaries/dependencies
-import { useDebtAging } from '@/features/reports/useDebtAging';
+import { DebtAgingSection } from '@/shared/components/DebtAgingSection';
+import { useDebtAging } from '@/application/reports/useDebtAging';
 
 import { DebtSummary } from './DebtSummary';
 import { SupplierDebtSummary } from './SupplierDebtSummary';

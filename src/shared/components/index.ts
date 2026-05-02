@@ -56,3 +56,4 @@ export { TimelineProgress } from './TimelineProgress';
 export type { TimelineStep } from './TimelineProgress';
 
 // End of exports
+export { DebtAgingSection } from './DebtAgingSection';
