@@ -115,6 +115,22 @@ export async function deleteFolder(folderId: string): Promise<void> {
   if (error) throw error;
 }
 
+export async function moveFolder(
+  folderId: string,
+  targetParentId: string | null,
+): Promise<void> {
+  // Prevent moving folder into itself (basic protection, deeper cycles require recursive CTE)
+  if (folderId === targetParentId)
+    throw new Error('Cannot move folder into itself');
+
+  const { error } = await untypedDb
+    .from('media_folders')
+    .update({ parent_id: targetParentId })
+    .eq('id', folderId);
+
+  if (error) throw error;
+}
+
 // ─── Asset CRUD ────────────────────────────────────
 
 export async function fetchAssets(

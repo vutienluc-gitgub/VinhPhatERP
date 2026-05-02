@@ -20,6 +20,7 @@ import {
   softDeleteAsset,
   renameAsset,
   moveAsset,
+  moveFolder,
 } from './media.service';
 
 // ─── Folders ───────────────────────────────────────
@@ -78,6 +79,23 @@ export function useDeleteFolder() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [MEDIA_QUERY_KEYS.FOLDERS] });
       qc.invalidateQueries({ queryKey: [MEDIA_QUERY_KEYS.ASSETS] });
+    },
+  });
+}
+
+export function useMoveFolder() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      folderId,
+      parentId,
+    }: {
+      folderId: string;
+      parentId: string | null;
+    }) => moveFolder(folderId, parentId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [MEDIA_QUERY_KEYS.FOLDERS] });
     },
   });
 }

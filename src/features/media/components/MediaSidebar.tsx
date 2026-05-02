@@ -10,7 +10,11 @@ import toast from 'react-hot-toast';
 import { Icon } from '@/shared/components/Icon';
 import { MEDIA_LABELS } from '@/features/media/media.constants';
 import type { MediaFolder, MediaFileType } from '@/features/media/media.types';
-import { useRenameFolder, useDeleteFolder } from '@/features/media/useMedia';
+import {
+  useRenameFolder,
+  useDeleteFolder,
+  useMoveFolder,
+} from '@/features/media/useMedia';
 
 interface MediaSidebarProps {
   folders: MediaFolder[];
@@ -74,6 +78,7 @@ function FolderTreeItem({
   const isActive = activeFolderId === node.folder.id;
   const renameFolder = useRenameFolder();
   const deleteFolder = useDeleteFolder();
+  const moveFolder = useMoveFolder();
 
   const handleRename = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -87,7 +92,9 @@ function FolderTreeItem({
       });
       toast.success(MEDIA_LABELS.RENAME_FOLDER_SUCCESS);
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
+      const errObj = err as Record<string, unknown>;
+      const message =
+        typeof errObj?.message === 'string' ? errObj.message : String(err);
       toast.error(message);
     }
   };
@@ -101,7 +108,25 @@ function FolderTreeItem({
       if (isActive) onSelect(null);
       toast.success(MEDIA_LABELS.FILE_DELETED);
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
+      const errObj = err as Record<string, unknown>;
+      const message =
+        typeof errObj?.message === 'string' ? errObj.message : String(err);
+      toast.error(message);
+    }
+  };
+
+  const handleMoveToRoot = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await moveFolder.mutateAsync({
+        folderId: node.folder.id,
+        parentId: null,
+      });
+      toast.success(MEDIA_LABELS.MOVE_SUCCESS);
+    } catch (err) {
+      const errObj = err as Record<string, unknown>;
+      const message =
+        typeof errObj?.message === 'string' ? errObj.message : String(err);
       toast.error(message);
     }
   };
@@ -118,6 +143,16 @@ function FolderTreeItem({
           <span className="media-folder-name">{node.folder.name}</span>
         </div>
         <div className="media-folder-actions">
+          {node.folder.parent_id && (
+            <button
+              type="button"
+              className="media-folder-action-btn"
+              onClick={handleMoveToRoot}
+              title="Đưa ra Tất cả (Root)"
+            >
+              <Icon name="CornerLeftUp" size={12} />
+            </button>
+          )}
           <button
             type="button"
             className="media-folder-action-btn"
