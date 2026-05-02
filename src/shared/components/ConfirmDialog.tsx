@@ -97,16 +97,14 @@ export function ConfirmProvider({ children }: PropsWithChildren) {
                 {options.cancelLabel ?? 'Huỷ'}
               </Button>
             )}
-            <button
-              className={
-                options.variant === 'danger' ? 'btn-danger' : 'btn-primary'
-              }
+            <Button
+              variant={options.variant === 'danger' ? 'danger' : 'primary'}
               type="button"
               onClick={handleConfirm}
               autoFocus
             >
               {options.isAlert ? 'OK' : (options.confirmLabel ?? 'Xác nhận')}
-            </button>
+            </Button>
           </>
         }
       >

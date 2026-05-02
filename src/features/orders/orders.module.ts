@@ -82,6 +82,11 @@ export const ordersPlugin: FeaturePlugin = {
           default: m.OrderProgressDashboard,
         })),
     },
+    {
+      path: 'orders/:id',
+      component: () =>
+        import('./OrdersPage').then((m) => ({ default: m.OrdersPage })),
+    },
   ],
 };
 
