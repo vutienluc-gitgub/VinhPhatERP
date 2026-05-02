@@ -17,7 +17,12 @@ import {
   getDownloadUrl,
   resolveFileType,
 } from '@/features/media/media.service';
-import { useSoftDeleteAsset } from '@/features/media/useMedia';
+import {
+  useSoftDeleteAsset,
+  useRenameAsset,
+  useMoveAsset,
+  useMediaFolders,
+} from '@/features/media/useMedia';
 
 interface MediaDetailPanelProps {
   asset: MediaAsset | null;
@@ -26,6 +31,9 @@ interface MediaDetailPanelProps {
 
 export function MediaDetailPanel({ asset, onClose }: MediaDetailPanelProps) {
   const deleteAsset = useSoftDeleteAsset();
+  const renameAsset = useRenameAsset();
+  const moveAsset = useMoveAsset();
+  const { data: folders = [] } = useMediaFolders();
 
   const isImage = useMemo(
     () => asset?.mime_type.startsWith('image/') ?? false,
@@ -75,6 +83,34 @@ export function MediaDetailPanel({ asset, onClose }: MediaDetailPanelProps) {
     }
   }, [asset, deleteAsset, onClose]);
 
+  const handleRename = useCallback(async () => {
+    if (!asset) return;
+    const newName = window.prompt(MEDIA_LABELS.RENAME, asset.original_name);
+    if (!newName || newName === asset.original_name) return;
+
+    try {
+      await renameAsset.mutateAsync({ assetId: asset.id, name: newName });
+      toast.success(MEDIA_LABELS.RENAME_SUCCESS);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error(message);
+    }
+  }, [asset, renameAsset]);
+
+  const handleMove = useCallback(
+    async (folderId: string | null) => {
+      if (!asset) return;
+      try {
+        await moveAsset.mutateAsync({ assetId: asset.id, folderId });
+        toast.success(MEDIA_LABELS.MOVE_SUCCESS);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        toast.error(message);
+      }
+    },
+    [asset, moveAsset],
+  );
+
   if (!asset) return null;
 
   return (
@@ -100,7 +136,17 @@ export function MediaDetailPanel({ asset, onClose }: MediaDetailPanelProps) {
 
       {/* Info */}
       <div className="media-detail-info">
-        <div className="media-detail-name">{asset.original_name}</div>
+        <div className="media-detail-name-row">
+          <div className="media-detail-name">{asset.original_name}</div>
+          <button
+            type="button"
+            className="btn-icon-sm"
+            onClick={handleRename}
+            title={MEDIA_LABELS.RENAME}
+          >
+            <Icon name="Pencil" size={14} />
+          </button>
+        </div>
 
         <div className="media-detail-row">
           <span className="media-detail-label">Loại</span>
@@ -119,8 +165,19 @@ export function MediaDetailPanel({ asset, onClose }: MediaDetailPanelProps) {
           </span>
         </div>
         <div className="media-detail-row">
-          <span className="media-detail-label">Bucket</span>
-          <span className="media-detail-value">{asset.bucket}</span>
+          <span className="media-detail-label">Thư mục</span>
+          <select
+            className="media-detail-select"
+            value={asset.folder_id ?? ''}
+            onChange={(e) => handleMove(e.target.value || null)}
+          >
+            <option value="">{MEDIA_LABELS.ROOT_FOLDER}</option>
+            {folders.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.name}
+              </option>
+            ))}
+          </select>
         </div>
         {asset.is_public && (
           <div className="media-detail-row">

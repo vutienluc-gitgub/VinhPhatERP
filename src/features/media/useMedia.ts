@@ -7,7 +7,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { useTenantData } from '@/shared/hooks/useTenant';
+import { useTenant } from '@/shared/hooks/useTenant';
 import { useAuth } from '@/shared/hooks/useAuth';
 
 import { MEDIA_QUERY_KEYS } from './media.constants';
@@ -26,23 +26,28 @@ import {
 // ─── Folders ───────────────────────────────────────
 
 export function useMediaFolders() {
-  const { id: tenantId } = useTenantData();
+  const { data: tenant } = useTenant();
+  const tenantId = tenant?.id;
 
   return useQuery({
     queryKey: [MEDIA_QUERY_KEYS.FOLDERS, tenantId],
-    queryFn: () => fetchFolders(tenantId),
+    queryFn: () => fetchFolders(tenantId!),
+    enabled: !!tenantId,
     staleTime: 30_000,
   });
 }
 
 export function useCreateFolder() {
   const qc = useQueryClient();
-  const { id: tenantId } = useTenantData();
+  const { data: tenant } = useTenant();
+  const tenantId = tenant?.id;
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: (payload: MediaFolderCreate) =>
-      createFolder(tenantId, user?.id ?? '', payload),
+    mutationFn: (payload: MediaFolderCreate) => {
+      if (!tenantId) throw new Error('Tenant not loaded');
+      return createFolder(tenantId, user?.id ?? '', payload);
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [MEDIA_QUERY_KEYS.FOLDERS] });
     },
@@ -76,11 +81,13 @@ export function useDeleteFolder() {
 // ─── Assets ────────────────────────────────────────
 
 export function useMediaAssets(filters: MediaFilters) {
-  const { id: tenantId } = useTenantData();
+  const { data: tenant } = useTenant();
+  const tenantId = tenant?.id;
 
   return useQuery({
     queryKey: [MEDIA_QUERY_KEYS.ASSETS, tenantId, filters],
-    queryFn: () => fetchAssets(tenantId, filters),
+    queryFn: () => fetchAssets(tenantId!, filters),
+    enabled: !!tenantId,
     staleTime: 15_000,
   });
 }

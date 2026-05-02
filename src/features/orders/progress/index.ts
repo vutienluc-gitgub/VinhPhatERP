@@ -1,4 +1,3 @@
-export * from '@/features/orders/progress/OrderProgressPage';
 export * from '@/features/orders/progress/order-progress.module';
 export type {
   ProductionStage,

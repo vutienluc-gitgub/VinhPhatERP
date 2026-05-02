@@ -9,7 +9,7 @@ import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 
-import { useTenantData } from '@/shared/hooks/useTenant';
+import { useTenant } from '@/shared/hooks/useTenant';
 import { useAuth } from '@/shared/hooks/useAuth';
 
 import {
@@ -22,7 +22,8 @@ import type { UploadProgress } from './media.types';
 import { uploadFile } from './media.service';
 
 export function useMediaUpload(folderId: string | null) {
-  const { id: tenantId } = useTenantData();
+  const { data: tenant } = useTenant();
+  const tenantId = tenant?.id;
   const { user } = useAuth();
   const qc = useQueryClient();
 
@@ -40,7 +41,7 @@ export function useMediaUpload(folderId: string | null) {
 
   const handleUpload = useCallback(
     async (files: File[]) => {
-      if (!user) return;
+      if (!user || !tenantId) return;
 
       // Validate batch size
       if (files.length > MEDIA_LIMITS.MAX_BATCH_FILES) {

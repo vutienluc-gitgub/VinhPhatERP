@@ -513,3 +513,124 @@
   gap: 1rem;
   padding: 0.5rem 0;
 }
+
+/* ── Folder Row Actions ──────────────────────────── */
+
+.media-folder-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text);
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: all 120ms ease;
+  width: 100%;
+}
+
+.media-folder-row:hover {
+  background: var(--surface-hover);
+}
+
+.media-folder-row:hover .media-folder-actions {
+  opacity: 1;
+}
+
+.media-folder-row.is-active {
+  background: var(--surface-selected);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.media-folder-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.media-folder-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.media-folder-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.media-folder-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.media-folder-action-btn:hover {
+  background: rgba(16, 35, 61, 0.08);
+  color: var(--text);
+}
+
+.media-folder-action-btn.danger:hover {
+  background: var(--danger-subtle);
+  color: var(--danger);
+}
+
+/* ── Detail Panel Enhancements ───────────────────── */
+
+.media-detail-name-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.media-detail-name {
+  margin-bottom: 0 !important;
+}
+
+.media-detail-select {
+  width: 140px;
+  padding: 0.2rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  font-size: 0.78rem;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.btn-icon-sm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.btn-icon-sm:hover {
+  background: var(--surface-hover);
+  color: var(--primary);
+  border-color: var(--primary);
+}

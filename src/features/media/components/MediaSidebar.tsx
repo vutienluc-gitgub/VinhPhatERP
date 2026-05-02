@@ -5,10 +5,12 @@
  */
 
 import { useMemo } from 'react';
+import toast from 'react-hot-toast';
 
 import { Icon } from '@/shared/components/Icon';
 import { MEDIA_LABELS } from '@/features/media/media.constants';
 import type { MediaFolder, MediaFileType } from '@/features/media/media.types';
+import { useRenameFolder, useDeleteFolder } from '@/features/media/useMedia';
 
 interface MediaSidebarProps {
   folders: MediaFolder[];
@@ -67,29 +69,73 @@ function FolderTreeItem({
   node: FolderNode;
   depth: number;
   activeFolderId: string | null;
-  onSelect: (id: string) => void;
+  onSelect: (id: string | null) => void;
 }) {
   const isActive = activeFolderId === node.folder.id;
+  const renameFolder = useRenameFolder();
+  const deleteFolder = useDeleteFolder();
+
+  const handleRename = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newName = window.prompt(MEDIA_LABELS.RENAME, node.folder.name);
+    if (!newName || newName === node.folder.name) return;
+
+    try {
+      await renameFolder.mutateAsync({
+        folderId: node.folder.id,
+        name: newName,
+      });
+      toast.success(MEDIA_LABELS.RENAME_FOLDER_SUCCESS);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error(message);
+    }
+  };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm(MEDIA_LABELS.DELETE_FOLDER_CONFIRM)) return;
+
+    try {
+      await deleteFolder.mutateAsync(node.folder.id);
+      if (isActive) onSelect(null);
+      toast.success(MEDIA_LABELS.FILE_DELETED);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error(message);
+    }
+  };
 
   return (
     <>
-      <button
-        type="button"
-        className={`media-folder-item${isActive ? ' is-active' : ''}`}
+      <div
+        className={`media-folder-row${isActive ? ' is-active' : ''}`}
         style={{ paddingLeft: `${0.75 + depth * 1.25}rem` }}
         onClick={() => onSelect(node.folder.id)}
       >
-        <Icon name={isActive ? 'FolderOpen' : 'Folder'} size={16} />
-        <span
-          style={{
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {node.folder.name}
-        </span>
-      </button>
+        <div className="media-folder-content">
+          <Icon name={isActive ? 'FolderOpen' : 'Folder'} size={16} />
+          <span className="media-folder-name">{node.folder.name}</span>
+        </div>
+        <div className="media-folder-actions">
+          <button
+            type="button"
+            className="media-folder-action-btn"
+            onClick={handleRename}
+            title={MEDIA_LABELS.RENAME}
+          >
+            <Icon name="Pencil" size={12} />
+          </button>
+          <button
+            type="button"
+            className="media-folder-action-btn danger"
+            onClick={handleDelete}
+            title="Xoá"
+          >
+            <Icon name="Trash2" size={12} />
+          </button>
+        </div>
+      </div>
       {node.children.map((child) => (
         <FolderTreeItem
           key={child.folder.id}
@@ -142,7 +188,7 @@ export function MediaSidebar({
             Loading...
           </div>
         ) : (
-          tree.map((node) => (
+          tree.map((node: FolderNode) => (
             <FolderTreeItem
               key={node.folder.id}
               node={node}
