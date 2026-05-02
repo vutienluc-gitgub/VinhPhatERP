@@ -53,7 +53,7 @@ export async function getTenantId(): Promise<string> {
     const { data: fallback } = await supabase
       .from('tenants')
       .select('id')
-      .eq('slug', 'default')
+      .eq('slug', 'quantri')
       .single();
 
     if (fallback) {

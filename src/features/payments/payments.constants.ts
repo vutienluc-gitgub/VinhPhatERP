@@ -42,3 +42,15 @@ export const DEBT_RISK_TIER_BADGE: Record<
   warning: { label: 'Cảnh báo', variant: 'warning' },
   danger: { label: 'Nợ rủi ro', variant: 'danger' },
 };
+
+/** Human-readable labels for payment account statuses. */
+export const ACCOUNT_STATUS_LABELS: Record<'active' | 'inactive', string> = {
+  active: 'Hoạt động',
+  inactive: 'Ngừng sử dụng',
+};
+
+/** Options array for use in Combobox / select inputs. */
+export const ACCOUNT_STATUS_OPTIONS = [
+  { value: 'active' as const, label: ACCOUNT_STATUS_LABELS.active },
+  { value: 'inactive' as const, label: ACCOUNT_STATUS_LABELS.inactive },
+];

@@ -55,7 +55,7 @@ export function resolveTenant(): TenantInfo {
     const params = new URLSearchParams(window.location.search);
     const devTenant = params.get('tenant');
     return {
-      slug: devTenant || 'default',
+      slug: devTenant || 'quantri',
       hostname,
       isDefault: !devTenant,
     };
@@ -68,7 +68,7 @@ export function resolveTenant(): TenantInfo {
     const slug = parts[0] as string;
     if (slug === 'www' || slug === 'app') {
       return {
-        slug: 'default',
+        slug: 'quantri',
         hostname,
         isDefault: true,
       };
@@ -81,7 +81,7 @@ export function resolveTenant(): TenantInfo {
   }
 
   return {
-    slug: 'default',
+    slug: 'quantri',
     hostname,
     isDefault: true,
   };

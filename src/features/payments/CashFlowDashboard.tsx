@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import type { ColumnDef } from '@tanstack/react-table';
 
 import { formatCurrency } from '@/shared/utils/format';
+import { KpiCard, KpiGrid, DataTableAdvanced } from '@/shared/components';
 import { useAccountList } from '@/application/payments';
 import {
   useCashFlowSummary,
@@ -9,6 +11,7 @@ import {
 import { sumBy } from '@/shared/utils/array.util';
 
 import { EXPENSE_CATEGORY_LABELS } from './payments.module';
+import type { CashFlowRow, ExpenseByCategoryRow } from './types';
 
 function getDefaultDates(): { from: string; to: string } {
   const now = new Date();
@@ -41,6 +44,123 @@ export function CashFlowDashboard() {
 
   const isLoading = loadingCashFlow || loadingExpenses;
 
+  // Filter out zero-activity days before passing to the table
+  const activeCashFlow = useMemo(
+    () => cashFlow.filter((r) => r.total_inflow > 0 || r.total_outflow > 0),
+    [cashFlow],
+  );
+
+  // -- Column definitions: Chi tiết theo ngày
+  const cashFlowColumns = useMemo<ColumnDef<CashFlowRow>[]>(
+    () => [
+      {
+        accessorKey: 'period',
+        header: 'Ngày',
+        meta: { className: 'td-muted' },
+        cell: ({ getValue }) => getValue<string>(),
+      },
+      {
+        accessorKey: 'total_inflow',
+        header: 'Thu vào',
+        meta: { className: 'text-right' },
+        cell: ({ getValue }) => {
+          const v = getValue<number>();
+          return v > 0 ? (
+            <span className="numeric-paid">{formatCurrency(v)} đ</span>
+          ) : (
+            <span className="td-muted">—</span>
+          );
+        },
+      },
+      {
+        accessorKey: 'total_outflow',
+        header: 'Chi ra',
+        meta: { className: 'text-right' },
+        cell: ({ getValue }) => {
+          const v = getValue<number>();
+          return v > 0 ? (
+            <span className="numeric-debt">{formatCurrency(v)} đ</span>
+          ) : (
+            <span className="td-muted">—</span>
+          );
+        },
+      },
+      {
+        accessorKey: 'net_flow',
+        header: 'Chênh lệch',
+        meta: { className: 'text-right' },
+        cell: ({ getValue }) => {
+          const v = getValue<number>();
+          return (
+            <span
+              className={`tabular-nums font-semibold ${v >= 0 ? 'text-[var(--success-strong)]' : 'text-[var(--danger-strong)]'}`}
+            >
+              {v >= 0 ? '+' : ''}
+              {formatCurrency(v)} đ
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: 'inflow_count',
+        header: 'Số phiếu thu',
+        meta: { className: 'text-right' },
+        cell: ({ getValue }) => (
+          <span className="font-medium">{getValue<number>()}</span>
+        ),
+      },
+      {
+        accessorKey: 'outflow_count',
+        header: 'Số phiếu chi',
+        meta: { className: 'text-right' },
+        cell: ({ getValue }) => (
+          <span className="font-medium">{getValue<number>()}</span>
+        ),
+      },
+    ],
+    [],
+  );
+
+  // -- Column definitions: Chi phí theo danh mục
+  const expenseColumns = useMemo<ColumnDef<ExpenseByCategoryRow>[]>(
+    () => [
+      {
+        accessorKey: 'category',
+        header: 'Danh mục',
+        cell: ({ getValue }) =>
+          EXPENSE_CATEGORY_LABELS[getValue<ExpenseByCategoryRow['category']>()],
+      },
+      {
+        accessorKey: 'expense_count',
+        header: 'Số phiếu',
+        meta: { className: 'text-right' },
+        cell: ({ getValue }) => (
+          <span className="numeric-cell">{getValue<number>()}</span>
+        ),
+      },
+      {
+        accessorKey: 'total_amount',
+        header: 'Tổng tiền',
+        meta: { className: 'text-right' },
+        cell: ({ getValue }) => (
+          <span className="numeric-debt">
+            {formatCurrency(getValue<number>())} đ
+          </span>
+        ),
+      },
+      {
+        id: 'share',
+        header: 'Tỉ trọng',
+        meta: { className: 'text-right' },
+        cell: ({ row }) =>
+          totalOutflow > 0
+            ? `${((row.original.total_amount / totalOutflow) * 100).toFixed(1)}%`
+            : '—',
+      },
+    ],
+    [totalOutflow],
+  );
+
   return (
     <div className="panel-card card-flush">
       <div className="card-header-area">
@@ -71,141 +191,122 @@ export function CashFlowDashboard() {
         </div>
       </div>
 
-      {isLoading ? (
-        <p className="table-empty">Đang tải...</p>
-      ) : (
-        <>
-          {/* Summary Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 p-4">
-            <div className="p-3 rounded-xl bg-surface border border-border shadow-sm">
-              <div className="td-muted text-[0.7rem] font-bold uppercase tracking-wider mb-1">
-                Tổng thu
-              </div>
-              <div className="text-[1rem] sm:text-[1.15rem] font-black text-emerald-600 tabular-nums">
-                {formatCurrency(totalInflow)}
-                <span className="text-[10px] ml-1">đ</span>
-              </div>
-            </div>
-            <div className="p-3 rounded-xl bg-surface border border-border shadow-sm">
-              <div className="td-muted text-[0.7rem] font-bold uppercase tracking-wider mb-1">
-                Tổng chi
-              </div>
-              <div className="text-[1rem] sm:text-[1.15rem] font-black text-rose-600 tabular-nums">
-                {formatCurrency(totalOutflow)}
-                <span className="text-[10px] ml-1">đ</span>
-              </div>
-            </div>
-            <div className="p-3 rounded-xl bg-surface border border-border shadow-sm">
-              <div className="td-muted text-[0.7rem] font-bold uppercase tracking-wider mb-1">
-                Chênh lệch
-              </div>
-              <div
-                className={`text-[1rem] sm:text-[1.15rem] font-black tabular-nums ${netFlow >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}
-              >
-                {netFlow >= 0 ? '+' : ''}
-                {formatCurrency(netFlow)}
-                <span className="text-[10px] ml-1">đ</span>
-              </div>
-            </div>
-            <div className="p-3 rounded-xl bg-surface border border-border shadow-sm">
-              <div className="td-muted text-[0.7rem] font-bold uppercase tracking-wider mb-1">
-                Số dư tài khoản
-              </div>
-              <div
-                className={`text-[1rem] sm:text-[1.15rem] font-black tabular-nums ${totalAccountBalance >= 0 ? 'text-blue-600' : 'text-rose-600'}`}
-              >
-                {formatCurrency(totalAccountBalance)}
-                <span className="text-[10px] ml-1">đ</span>
-              </div>
-            </div>
-          </div>
+      {/* Content wrapper */}
+      <>
+        {/* KPI Summary */}
+        <div className="p-4">
+          <KpiGrid>
+            <KpiCard
+              label="Tổng thu"
+              value={totalInflow}
+              formatMode="currency"
+              icon="TrendingUp"
+              variant="success"
+              isLoading={isLoading}
+            />
+            <KpiCard
+              label="Tổng chi"
+              value={totalOutflow}
+              formatMode="currency"
+              icon="TrendingDown"
+              variant="danger"
+              isLoading={isLoading}
+            />
+            <KpiCard
+              label="Chênh lệch"
+              value={Math.abs(netFlow)}
+              formatMode="currency"
+              icon="Activity"
+              variant={netFlow >= 0 ? 'success' : 'danger'}
+              trendValue={netFlow >= 0 ? 'Dương' : 'Âm'}
+              trendDirection={netFlow >= 0 ? 'up' : 'down'}
+              isLoading={isLoading}
+            />
+            <KpiCard
+              label="Số dư tài khoản"
+              value={totalAccountBalance}
+              formatMode="currency"
+              icon="Wallet"
+              variant={totalAccountBalance >= 0 ? 'primary' : 'danger'}
+              isLoading={isLoading}
+            />
+          </KpiGrid>
+        </div>
 
-          {/* Expense breakdown by category */}
-          {expenseBreakdown.length > 0 && (
-            <div className="px-4 pb-4">
-              <h4 className="text-[0.92rem] mb-2">Chi phí theo danh mục</h4>
-              <div className="data-table-wrap">
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>Danh mục</th>
-                      <th className="text-right">Số phiếu</th>
-                      <th className="text-right">Tổng tiền</th>
-                      <th className="text-right">Tỉ trọng</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {expenseBreakdown.map((row) => (
-                      <tr key={row.category}>
-                        <td>{EXPENSE_CATEGORY_LABELS[row.category]}</td>
-                        <td className="numeric-cell">{row.expense_count}</td>
-                        <td className="numeric-debt">
-                          {formatCurrency(row.total_amount)} đ
-                        </td>
-                        <td className="numeric-cell">
-                          {totalOutflow > 0
-                            ? `${((row.total_amount / totalOutflow) * 100).toFixed(1)}%`
-                            : '—'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+        {/* Chi phí theo danh mục */}
+        <div className="px-4 pb-4">
+          <h4 className="text-[0.92rem] font-semibold mb-3">
+            Chi phí theo danh mục
+          </h4>
+          <DataTableAdvanced
+            data={expenseBreakdown}
+            columns={expenseColumns}
+            isLoading={isLoading}
+            skeletonRows={5}
+            rowKey={(r) => r.category}
+            exportFileName={`chi-phi-danh-muc_${fromDate}_${toDate}`}
+            emptyStateTitle="Không có chi phí"
+            emptyStateDescription="Chưa có phiếu chi nào trong khoảng thời gian này."
+            emptyStateIcon="ReceiptText"
+            renderMobileCard={(row) => (
+              <div className="flex items-center justify-between py-1">
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm">
+                    {EXPENSE_CATEGORY_LABELS[row.category]}
+                  </span>
+                  <span className="text-xs text-muted">
+                    {row.expense_count} phiếu
+                  </span>
+                </div>
+                <span className="numeric-debt text-sm font-bold">
+                  {formatCurrency(row.total_amount)} đ
+                </span>
               </div>
-            </div>
-          )}
+            )}
+          />
+        </div>
 
-          {/* Daily cash flow table */}
-          {cashFlow.length > 0 && (
-            <div className="px-4 pb-4">
-              <h4 className="text-[0.92rem] mb-2">Chi tiết theo ngày</h4>
-              <div className="data-table-wrap max-h-[400px] overflow-y-auto">
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>Ngày</th>
-                      <th className="text-right">Thu vào</th>
-                      <th className="text-right">Chi ra</th>
-                      <th className="text-right">Chênh lệch</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {cashFlow
-                      .filter((r) => r.total_inflow > 0 || r.total_outflow > 0)
-                      .map((row) => (
-                        <tr key={row.period}>
-                          <td className="td-muted">{row.period}</td>
-                          <td className="numeric-paid">
-                            {row.total_inflow > 0
-                              ? `${formatCurrency(row.total_inflow)} đ`
-                              : '—'}
-                          </td>
-                          <td className="numeric-debt">
-                            {row.total_outflow > 0
-                              ? `${formatCurrency(row.total_outflow)} đ`
-                              : '—'}
-                          </td>
-                          <td
-                            className={`text-right tabular-nums ${row.net_flow >= 0 ? 'text-[#27ae60]' : 'text-[#c0392b]'}`}
-                          >
-                            {row.net_flow >= 0 ? '+' : ''}
-                            {formatCurrency(row.net_flow)} đ
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
+        {/* Chi tiết theo ngày */}
+        <div className="px-4 pb-6">
+          <h4 className="text-[0.92rem] font-semibold mb-3">
+            Chi tiết theo ngày
+          </h4>
+          <DataTableAdvanced
+            data={activeCashFlow}
+            columns={cashFlowColumns}
+            isLoading={isLoading}
+            skeletonRows={8}
+            rowKey={(r) => r.period}
+            exportFileName={`dong-tien_${fromDate}_${toDate}`}
+            emptyStateTitle="Không có giao dịch"
+            emptyStateDescription="Chưa có giao dịch nào trong khoảng thời gian này."
+            emptyStateIcon="LineChart"
+            renderMobileCard={(row) => (
+              <div className="flex items-center justify-between py-1">
+                <span className="td-muted text-sm">{row.period}</span>
+                <div className="flex flex-col items-end gap-0.5">
+                  {row.total_inflow > 0 && (
+                    <span className="numeric-paid text-xs">
+                      +{formatCurrency(row.total_inflow)} đ
+                    </span>
+                  )}
+                  {row.total_outflow > 0 && (
+                    <span className="numeric-debt text-xs">
+                      -{formatCurrency(row.total_outflow)} đ
+                    </span>
+                  )}
+                  <span
+                    className={`text-xs font-bold tabular-nums ${row.net_flow >= 0 ? 'text-[var(--success-strong)]' : 'text-[var(--danger-strong)]'}`}
+                  >
+                    {row.net_flow >= 0 ? '+' : ''}
+                    {formatCurrency(row.net_flow)} đ
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
-
-          {cashFlow.length === 0 && expenseBreakdown.length === 0 && (
-            <p className="table-empty">
-              Chưa có giao dịch nào trong khoảng thời gian này.
-            </p>
-          )}
-        </>
-      )}
+            )}
+          />
+        </div>
+      </>
     </div>
   );
 }

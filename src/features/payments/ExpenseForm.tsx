@@ -217,8 +217,9 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
         await createMutation.mutateAsync(values);
       }
       onClose();
-    } catch {
+    } catch (err) {
       // Lỗi hiện qua mutationError
+      console.error('[ExpenseForm]', err);
     }
   }
 
