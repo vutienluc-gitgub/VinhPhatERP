@@ -74,6 +74,12 @@ export const MEDIA_LABELS = {
   FOLDER_CREATED: 'Tạo thư mục thành công',
   FILE_DELETED: 'Xoá file thành công',
   COPY_URL_SUCCESS: 'Đã sao chép URL',
+  RENAME: 'Đổi tên',
+  MOVE: 'Di chuyển',
+  SELECT_FOLDER: 'Chọn thư mục',
+  MOVE_SUCCESS: 'Đã di chuyển file',
+  RENAME_SUCCESS: 'Đã đổi tên',
+  RENAME_FOLDER_SUCCESS: 'Đã đổi tên thư mục',
 } as const;
 
 // ─── Messages ──────────────────────────────────────
