@@ -6,6 +6,7 @@
  */
 
 import { memo, useMemo } from 'react';
+import { useDraggable } from '@dnd-kit/core';
 import dayjs from 'dayjs';
 
 import { Icon } from '@/shared/components/Icon';
@@ -65,10 +66,18 @@ export const MediaItem = memo(function MediaItem({
   );
   const previewUrl = asset.public_url ?? undefined;
 
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: asset.id,
+    data: { type: 'Asset', asset },
+  });
+
   if (mode === 'list') {
     return (
       <div
-        className={`media-list-item${isSelected ? ' is-selected' : ''}`}
+        ref={setNodeRef}
+        {...attributes}
+        {...listeners}
+        className={`media-list-item${isSelected ? ' is-selected' : ''}${isDragging ? ' opacity-50' : ''}`}
         onClick={() => onSelect(asset)}
         role="button"
         tabIndex={0}
@@ -102,7 +111,10 @@ export const MediaItem = memo(function MediaItem({
   // Grid mode
   return (
     <div
-      className={`media-item-card${isSelected ? ' is-selected' : ''}`}
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      className={`media-item-card${isSelected ? ' is-selected' : ''}${isDragging ? ' opacity-50' : ''}`}
       onClick={() => onSelect(asset)}
       role="button"
       tabIndex={0}
