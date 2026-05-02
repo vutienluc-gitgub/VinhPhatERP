@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 
 import { Icon } from './Icon';
 import type { IconName } from './Icon';
+import { Button } from './Button';
 
 type EmptyStateProps = {
   title?: string;
   description?: string;
   actionLabel?: string;
+  actionIcon?: IconName;
   actionHref?: string;
   actionClick?: () => void;
   icon?: IconName | string;
@@ -17,6 +19,7 @@ export const EmptyState = memo(function EmptyState({
   title = 'Chưa có dữ liệu',
   description,
   actionLabel,
+  actionIcon,
   actionHref,
   actionClick,
   icon = '📂',
@@ -30,29 +33,22 @@ export const EmptyState = memo(function EmptyState({
       <div className="text-5xl mb-3 opacity-90 flex justify-center">
         {isLucideIcon ? <Icon name={icon as IconName} size={48} /> : icon}
       </div>
-      <h3 className="m-0 mb-2 font-bold">{title}</h3>
+      <h3 className="m-0 mb-2 font-bold text-text">{title}</h3>
       {description && (
-        <p className="td-muted text-[0.92rem] mb-6 max-w-[400px] mx-auto">
+        <p className="text-muted text-[0.92rem] mb-6 max-w-[400px] mx-auto">
           {description}
         </p>
       )}
 
       {actionLabel &&
         (actionHref ? (
-          <Link
-            to={actionHref}
-            className="primary-button inline-block leading-[1.2]"
-          >
-            {actionLabel}
-          </Link>
+          <Button variant="primary" asChild leftIcon={actionIcon}>
+            <Link to={actionHref}>{actionLabel}</Link>
+          </Button>
         ) : actionClick ? (
-          <button
-            type="button"
-            className="primary-button"
-            onClick={actionClick}
-          >
+          <Button variant="primary" onClick={actionClick} leftIcon={actionIcon}>
             {actionLabel}
-          </button>
+          </Button>
         ) : null)}
     </div>
   );

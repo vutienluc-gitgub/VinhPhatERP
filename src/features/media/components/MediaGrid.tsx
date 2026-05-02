@@ -47,6 +47,7 @@ export function MediaGrid({
           description={MEDIA_LABELS.NO_FILES_DESCRIPTION}
           icon="Image"
           actionLabel={MEDIA_LABELS.UPLOAD}
+          actionIcon="Upload"
           actionClick={onUploadClick}
         />
       </div>

@@ -6,6 +6,7 @@
 
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
+import { useDroppable } from '@dnd-kit/core';
 
 import { Icon } from '@/shared/components/Icon';
 import { MEDIA_LABELS } from '@/features/media/media.constants';
@@ -131,10 +132,16 @@ function FolderTreeItem({
     }
   };
 
+  const { isOver, setNodeRef } = useDroppable({
+    id: `folder_${node.folder.id}`,
+    data: { type: 'Folder', folder: node.folder },
+  });
+
   return (
     <>
       <div
-        className={`media-folder-row${isActive ? ' is-active' : ''}`}
+        ref={setNodeRef}
+        className={`media-folder-row${isActive ? ' is-active' : ''}${isOver ? ' bg-primary/20 ring-1 ring-primary' : ''}`}
         style={{ paddingLeft: `${0.75 + depth * 1.25}rem` }}
         onClick={() => onSelect(node.folder.id)}
       >
@@ -194,6 +201,11 @@ export function MediaSidebar({
 }: MediaSidebarProps) {
   const tree = useMemo(() => buildTree(folders), [folders]);
 
+  const { isOver: isRootOver, setNodeRef: setRootNodeRef } = useDroppable({
+    id: 'folder_root',
+    data: { type: 'Folder', folder: null },
+  });
+
   return (
     <aside className="media-sidebar" id="media-sidebar">
       {/* Folder tree */}
@@ -204,8 +216,9 @@ export function MediaSidebar({
         </div>
 
         <button
+          ref={setRootNodeRef}
           type="button"
-          className={`media-folder-item${activeFolderId === null ? ' is-active' : ''}`}
+          className={`media-folder-item${activeFolderId === null ? ' is-active' : ''}${isRootOver ? ' bg-primary/20 ring-1 ring-primary' : ''}`}
           onClick={() => onFolderSelect(null)}
         >
           <Icon name="Home" size={16} />
