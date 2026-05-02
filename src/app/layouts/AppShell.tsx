@@ -197,9 +197,12 @@ export function AppShell() {
   const initials = useMemo(() => {
     if (!profile?.full_name) return '?';
     const parts = profile.full_name.trim().split(/\s+/);
-    if (parts.length === 0) return '?';
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    const first = parts[0];
+    if (!first) return '?';
+    if (parts.length === 1) return first.slice(0, 2).toUpperCase();
+    const last = parts[parts.length - 1];
+    if (!last || !last[0]) return first[0]?.toUpperCase() || '?';
+    return (first[0] + last[0]).toUpperCase();
   }, [profile?.full_name]);
 
   // ── Context value cho các component con ──────────────────────────────────────
@@ -368,7 +371,7 @@ export function AppShell() {
                   {currentItem.group && GROUP_LABELS[currentItem.group] && (
                     <>
                       <span className="topbar-breadcrumb-current">
-                        {GROUP_LABELS[currentItem.group].label}
+                        {GROUP_LABELS[currentItem.group]!.label}
                       </span>
                       <Icon
                         name="ChevronRight"
