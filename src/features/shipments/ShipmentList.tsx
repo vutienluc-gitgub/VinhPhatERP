@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
-  Badge,
-  type BadgeVariant,
   DataTable,
   ClearFilterButton,
   ActionBar,
@@ -33,21 +31,40 @@ import { DeliveryConfirmForm } from './DeliveryConfirmForm';
 import { exportShipmentToPdf } from './shipment-document';
 import type { Shipment, ShipmentsFilter, ShipmentStatus } from './types';
 
-function getVariant(status: ShipmentStatus): BadgeVariant {
-  switch (status) {
-    case 'shipped':
-      return 'info';
-    case 'delivered':
-      return 'success';
-    case 'partially_returned':
-      return 'purple';
-    case 'returned':
-      return 'danger';
-    case 'preparing':
-      return 'warning';
-    default:
-      return 'gray';
-  }
+function SaaSBadge({ status }: { status: ShipmentStatus }) {
+  const label = SHIPMENT_STATUS_LABELS[status];
+
+  const styles: Record<string, string> = {
+    shipped: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 ring-blue-500/20',
+    delivered:
+      'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 ring-emerald-500/20',
+    partially_returned:
+      'bg-purple-500/10 text-purple-700 dark:text-purple-400 ring-purple-500/20',
+    returned: 'bg-red-500/10 text-red-700 dark:text-red-400 ring-red-500/20',
+    preparing:
+      'bg-amber-500/10 text-amber-700 dark:text-amber-400 ring-amber-500/20',
+  };
+  const dotColors: Record<string, string> = {
+    shipped: 'bg-blue-500',
+    delivered: 'bg-emerald-500',
+    partially_returned: 'bg-purple-500',
+    returned: 'bg-red-500',
+    preparing: 'bg-amber-500',
+  };
+
+  const currentStyle =
+    styles[status] ||
+    'bg-slate-500/10 text-slate-700 dark:text-slate-400 ring-slate-500/20';
+  const currentDot = dotColors[status] || 'bg-slate-500';
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ring-1 ring-inset ${currentStyle}`}
+    >
+      <span className={`w-1.5 h-1.5 rounded-full ${currentDot}`} />
+      {label}
+    </span>
+  );
 }
 
 function calcShipmentCost(s: Shipment): number {
@@ -294,32 +311,29 @@ export function ShipmentList() {
         emptyStateIcon={hasFilter ? 'Search' : 'Truck'}
         columns={[
           {
-            header: 'Mã & Trạng thái',
+            header: 'Phiếu giao',
             id: 'shipment_number',
             sortable: true,
             cell: (s) => (
-              <div className="flex flex-col gap-1 items-start">
-                <Badge variant={getVariant(s.status)}>
-                  {SHIPMENT_STATUS_LABELS[s.status]}
-                </Badge>
-                <div className="flex items-center gap-1.5 mt-1.5">
-                  <span className="text-muted-foreground text-[0.75rem] font-medium">
-                    #{s.shipment_number}
+              <div className="flex flex-col gap-1.5 items-start">
+                <span className="text-foreground text-[0.9rem] font-bold tracking-tight">
+                  {s.shipment_number}
+                </span>
+                <SaaSBadge status={s.status} />
+                {s.orders?.order_number && (
+                  <span className="text-muted-foreground text-[0.75rem] mt-0.5 line-clamp-1">
+                    Khách:{' '}
+                    <span className="font-medium text-foreground">
+                      {s.customers?.name ?? '—'}
+                    </span>{' '}
+                    • ĐH: {s.orders.order_number}
                   </span>
-                  {s.orders?.order_number && (
-                    <>
-                      <span className="w-1 h-1 rounded-full bg-border" />
-                      <span className="text-muted-foreground text-[0.75rem]">
-                        {s.orders.order_number}
-                      </span>
-                    </>
-                  )}
-                </div>
+                )}
               </div>
             ),
           },
           {
-            header: 'Thời gian & Cước',
+            header: <div className="text-right w-full">Thời gian & Cước</div>,
             id: 'shipment_date',
             sortable: true,
             cell: (s) => {
@@ -331,11 +345,11 @@ export function ShipmentList() {
                   : s.shipment_date;
 
               return (
-                <div className="flex flex-col gap-1 items-start">
-                  <span className="font-semibold text-foreground text-[0.85rem]">
+                <div className="flex flex-col gap-1.5 items-end text-right w-full">
+                  <span className="font-medium text-foreground text-[0.85rem]">
                     {displayDate}
                   </span>
-                  <span className="text-muted-foreground text-[0.75rem] mt-1">
+                  <span className="text-muted-foreground text-[0.75rem]">
                     Cước:{' '}
                     <span className="font-medium text-foreground">
                       {totalCost ? `${formatCurrency(totalCost)}đ` : '—'}
@@ -484,10 +498,10 @@ export function ShipmentList() {
           return (
             <div className="mobile-card">
               <div className="mobile-card-header">
-                <span className="mobile-card-title">{s.shipment_number}</span>
-                <Badge variant={getVariant(s.status)}>
-                  {SHIPMENT_STATUS_LABELS[s.status]}
-                </Badge>
+                <span className="mobile-card-title text-lg font-bold">
+                  {s.shipment_number}
+                </span>
+                <SaaSBadge status={s.status} />
               </div>
               <div className="mobile-card-body">
                 <div className="mobile-card-row">

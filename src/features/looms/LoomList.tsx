@@ -4,12 +4,10 @@ import { Combobox } from '@/shared/components/Combobox';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
-  Badge,
-  type BadgeVariant,
   DataTable,
   AddButton,
   ClearFilterButton,
-  ActionBar,
+  ActionMenu,
 } from '@/shared/components';
 import { useDeleteLoom, useLoomList } from '@/application/settings';
 import type { LoomStatus, LoomType } from '@/schema/loom.schema';
@@ -22,17 +20,34 @@ type LoomListProps = {
   onNew: () => void;
 };
 
-function getStatusVariant(status: LoomStatus): BadgeVariant {
-  switch (status) {
-    case 'active':
-      return 'success';
-    case 'maintenance':
-      return 'warning';
-    case 'inactive':
-      return 'gray';
-    default:
-      return 'gray';
-  }
+function SaaSBadge({ status }: { status: LoomStatus }) {
+  const label = LOOM_STATUS_LABELS[status];
+
+  const styles: Record<string, string> = {
+    active:
+      'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 ring-emerald-500/20',
+    maintenance:
+      'bg-amber-500/10 text-amber-700 dark:text-amber-400 ring-amber-500/20',
+    inactive:
+      'bg-slate-500/10 text-slate-700 dark:text-slate-400 ring-slate-500/20',
+  };
+  const dotColors: Record<string, string> = {
+    active: 'bg-emerald-500',
+    maintenance: 'bg-amber-500',
+    inactive: 'bg-slate-500',
+  };
+
+  const currentStyle = styles[status] || styles.inactive;
+  const currentDot = dotColors[status] || dotColors.inactive;
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ring-1 ring-inset ${currentStyle}`}
+    >
+      <span className={`w-1.5 h-1.5 rounded-full ${currentDot}`} />
+      {label}
+    </span>
+  );
 }
 
 export function LoomList({ onEdit, onNew }: LoomListProps) {
@@ -214,22 +229,20 @@ export function LoomList({ onEdit, onNew }: LoomListProps) {
         onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={[
           {
-            header: 'Mã máy',
+            header: 'Máy dệt',
             id: 'code',
             sortable: true,
             cell: (l) => (
-              <span className="font-bold text-primary">{l.code}</span>
-            ),
-          },
-          {
-            header: 'Tên máy dệt',
-            id: 'name',
-            sortable: true,
-            cell: (l) => (
-              <div className="flex flex-col">
-                <span className="font-medium">{l.name}</span>
-                <span className="text-xs text-muted">
-                  {LOOM_TYPE_LABELS[l.loom_type]}
+              <div className="flex flex-col gap-1.5 items-start">
+                <div className="flex items-center gap-2">
+                  <span className="text-foreground text-[0.9rem] font-bold tracking-tight">
+                    {l.code}
+                  </span>
+                  <SaaSBadge status={l.status} />
+                </div>
+                <span className="text-muted-foreground text-[0.75rem] mt-0.5 line-clamp-1">
+                  <span className="font-medium text-foreground">{l.name}</span>{' '}
+                  • {LOOM_TYPE_LABELS[l.loom_type]}
                 </span>
               </div>
             ),
@@ -240,70 +253,66 @@ export function LoomList({ onEdit, onNew }: LoomListProps) {
             sortable: true,
             accessor: (l) => l.supplier?.name,
             cell: (l) => (
-              <span className="font-medium">{l.supplier?.name ?? '—'}</span>
+              <span className="font-medium text-[0.85rem]">
+                {l.supplier?.name ?? '—'}
+              </span>
             ),
           },
           {
-            header: 'Công suất',
+            header: <div className="text-right w-full">Thông số</div>,
             id: 'daily_capacity_m',
             sortable: true,
-            className: 'text-right',
             cell: (l) => (
-              <div className="flex flex-col text-right">
-                <span className="font-bold">
+              <div className="flex flex-col items-end text-right w-full gap-1.5">
+                <span className="font-medium text-foreground text-[0.85rem]">
                   {l.daily_capacity_m
                     ? `${l.daily_capacity_m.toLocaleString()} m/ngày`
                     : '—'}
                 </span>
                 {l.max_width_cm && (
-                  <span className="text-xs text-muted">
-                    Khổ: {l.max_width_cm} cm
+                  <span className="text-muted-foreground text-[0.75rem]">
+                    Khổ:{' '}
+                    <span className="font-medium text-foreground">
+                      {l.max_width_cm} cm
+                    </span>
                   </span>
                 )}
               </div>
             ),
           },
           {
-            header: 'Trạng thái',
-            id: 'status',
-            sortable: true,
-            cell: (l) => (
-              <Badge variant={getStatusVariant(l.status)}>
-                {LOOM_STATUS_LABELS[l.status]}
-              </Badge>
-            ),
-          },
-          {
-            header: 'Thao tác',
-            className: 'text-right',
+            header: '',
+            className: 'td-actions w-12',
             onCellClick: () => {},
             cell: (l) => (
-              <ActionBar
-                actions={[
-                  {
-                    icon: 'Pencil',
-                    onClick: () => onEdit(l),
-                    title: 'Chỉnh sửa',
-                  },
-                  {
-                    icon: 'Trash2',
-                    onClick: () => handleDelete(l),
-                    title: 'Xóa',
-                    variant: 'danger',
-                    disabled: deleteMutation.isPending,
-                  },
-                ]}
-              />
+              <div className="flex justify-end pr-2">
+                <ActionMenu
+                  items={[
+                    {
+                      label: 'Chỉnh sửa',
+                      icon: 'Pencil',
+                      onClick: () => onEdit(l),
+                    },
+                    {
+                      label: 'Xóa máy dệt',
+                      icon: 'Trash2',
+                      onClick: () => handleDelete(l),
+                      danger: true,
+                      disabled: deleteMutation.isPending,
+                    },
+                  ]}
+                />
+              </div>
             ),
           },
         ]}
         renderMobileCard={(l) => (
           <div className="mobile-card">
             <div className="mobile-card-header">
-              <span className="mobile-card-title">{l.code}</span>
-              <Badge variant={getStatusVariant(l.status)}>
-                {LOOM_STATUS_LABELS[l.status]}
-              </Badge>
+              <span className="mobile-card-title text-lg font-bold">
+                {l.code}
+              </span>
+              <SaaSBadge status={l.status} />
             </div>
             <div className="mobile-card-body space-y-2">
               <p className="font-bold text-sm">{l.name}</p>
