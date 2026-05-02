@@ -11,11 +11,13 @@ import {
   Badge,
   DataTableAdvanced,
   AddButton,
-  ActionBar,
+  ActionMenu,
   FilterBar,
   type FilterFieldConfig,
   type IconName,
   type BadgeVariant,
+  KpiCard,
+  KpiGrid,
 } from '@/shared/components';
 import { useCustomerList, useDeleteCustomer } from '@/application/crm';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
@@ -110,57 +112,31 @@ export function CustomerList({
       </div>
 
       {/* 📊 KPI Dashboard area */}
-      <div className="kpi-section kpi-grid">
-        <div className="kpi-card-premium kpi-primary">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Tổng khách hàng</p>
-              <p className="kpi-value">{result?.total ?? 0}</p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="Users" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Cơ sở dữ liệu khách hàng
-          </div>
-        </div>
+      <KpiGrid>
+        <KpiCard
+          label="Tổng khách hàng"
+          value={result?.total ?? 0}
+          icon="Users"
+          variant="primary"
+          footer="Cơ sở dữ liệu khách hàng"
+        />
 
-        <div className="kpi-card-premium kpi-success">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Đang hoạt động</p>
-              <p className="kpi-value">
-                {customers.filter((c) => c.status === 'active').length}
-              </p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="Activity" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Khách hàng có giao dịch
-          </div>
-        </div>
+        <KpiCard
+          label="Đang hoạt động"
+          value={customers.filter((c) => c.status === 'active').length}
+          icon="Activity"
+          variant="success"
+          footer="Khách hàng có giao dịch"
+        />
 
-        <div className="kpi-card-premium kpi-warning">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Khách hàng mới</p>
-              <p className="kpi-value">+{customers.length}</p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="Star" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Da them trong ky
-          </div>
-        </div>
-      </div>
+        <KpiCard
+          label="Khách hàng mới"
+          value={`+${customers.length}`}
+          icon="Star"
+          variant="warning"
+          footer="Đã thêm trong kỳ"
+        />
+      </KpiGrid>
 
       {/* Filter Area (Config-Driven) */}
       <FilterBar
@@ -279,28 +255,31 @@ export function CustomerList({
             cell: (info) => {
               const c = info.row.original;
               return (
-                <ActionBar
-                  actions={[
+                <ActionMenu
+                  items={[
                     {
                       icon: 'Wallet',
-                      onClick: () => onDeposit?.(c),
-                      title: 'Nạp tiền',
+                      onClick: () => {
+                        if (onDeposit) onDeposit(c);
+                      },
+                      label: 'Nạp tiền',
                     },
                     {
                       icon: 'FileText',
                       onClick: () => onCreateContract(c),
-                      title: 'Tạo hợp đồng',
+                      label: 'Tạo hợp đồng',
                     },
                     {
                       icon: 'Pencil',
                       onClick: () => onEdit(c),
-                      title: 'Sửa',
+                      label: 'Chỉnh sửa',
                     },
                     {
                       icon: 'Trash2',
                       onClick: () => handleDelete(c),
-                      title: 'Xóa',
-                      variant: 'danger',
+                      label: 'Xóa khách hàng',
+                      danger: true,
+                      separated: true,
                       disabled: deleteMutation.isPending,
                     },
                   ]}
