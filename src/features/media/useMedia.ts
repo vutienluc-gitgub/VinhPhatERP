@@ -8,7 +8,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { useTenant } from '@/shared/hooks/useTenant';
-import { useAuth } from '@/shared/hooks/useAuth';
 
 import { MEDIA_QUERY_KEYS } from './media.constants';
 import type { MediaFilters, MediaFolderCreate } from './media.types';
@@ -39,14 +38,19 @@ export function useMediaFolders() {
 
 export function useCreateFolder() {
   const qc = useQueryClient();
-  const { data: tenant } = useTenant();
-  const tenantId = tenant?.id;
-  const { user } = useAuth();
 
   return useMutation({
-    mutationFn: (payload: MediaFolderCreate) => {
+    mutationFn: ({
+      tenantId,
+      userId,
+      payload,
+    }: {
+      tenantId: string;
+      userId: string;
+      payload: MediaFolderCreate;
+    }) => {
       if (!tenantId) throw new Error('Tenant not loaded');
-      return createFolder(tenantId, user?.id ?? '', payload);
+      return createFolder(tenantId, userId, payload);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [MEDIA_QUERY_KEYS.FOLDERS] });

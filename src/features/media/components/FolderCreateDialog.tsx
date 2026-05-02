@@ -17,6 +17,9 @@ interface FolderCreateDialogProps {
   parentId: string | null;
 }
 
+import { useTenant } from '@/shared/hooks/useTenant';
+import { useAuth } from '@/shared/hooks/useAuth';
+
 export function FolderCreateDialog({
   open,
   onClose,
@@ -24,6 +27,8 @@ export function FolderCreateDialog({
 }: FolderCreateDialogProps) {
   const [name, setName] = useState('');
   const createFolder = useCreateFolder();
+  const { data: tenant } = useTenant();
+  const { user } = useAuth();
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -36,8 +41,12 @@ export function FolderCreateDialog({
 
       try {
         await createFolder.mutateAsync({
-          name: trimmed,
-          parent_id: parentId,
+          tenantId: tenant?.id || '',
+          userId: user?.id || '',
+          payload: {
+            name: trimmed,
+            parent_id: parentId,
+          },
         });
         toast.success(MEDIA_LABELS.FOLDER_CREATED);
         setName('');
