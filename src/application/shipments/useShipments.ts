@@ -99,7 +99,13 @@ export function useCreateShipment() {
 export function useConfirmShipment() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: confirmShipmentFull,
+    mutationFn: ({
+      shipmentId,
+      expectedUpdatedAt,
+    }: {
+      shipmentId: string;
+      expectedUpdatedAt?: string;
+    }) => confirmShipmentFull(shipmentId, expectedUpdatedAt),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: ['orders'] });
@@ -138,10 +144,12 @@ export function useMarkDelivered() {
       shipmentId,
       values,
       employeeId,
+      expectedUpdatedAt,
     }: {
       shipmentId: string;
       values: DeliveryConfirmFormValues;
       employeeId?: string;
+      expectedUpdatedAt?: string;
     }) =>
       markShipmentDelivered(
         shipmentId,
@@ -149,6 +157,7 @@ export function useMarkDelivered() {
           ...values,
           employeeId,
         }),
+        expectedUpdatedAt,
       ),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
@@ -167,11 +176,14 @@ export function useAssignDeliveryStaff() {
       shipmentId,
       staffId,
       vehicleInfo,
+      expectedUpdatedAt,
     }: {
       shipmentId: string;
       staffId: string;
       vehicleInfo?: string;
-    }) => assignDeliveryStaff(shipmentId, staffId, vehicleInfo),
+      expectedUpdatedAt?: string;
+    }) =>
+      assignDeliveryStaff(shipmentId, staffId, vehicleInfo, expectedUpdatedAt),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },

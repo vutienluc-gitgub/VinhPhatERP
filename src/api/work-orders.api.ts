@@ -365,17 +365,14 @@ export async function updateWorkOrder(
           : null;
 
     // Save WO update — DB function reads yarn_requirements from p_wo_data
-    const { error: woUpdateErr } = await untypedDb.rpc(
-      'rpc_update_work_order',
-      {
-        p_wo_id: id,
-        p_wo_data: {
-          ...update,
-          yarn_requirements: yarnRequirements,
-        } as unknown as never,
-        p_expected_updated_at: expectedUpdatedAt,
-      },
-    );
+    const { error: woUpdateErr } = await supabase.rpc('rpc_update_work_order', {
+      p_wo_id: id,
+      p_wo_data: {
+        ...update,
+        yarn_requirements: yarnRequirements,
+      } as never,
+      p_expected_updated_at: expectedUpdatedAt,
+    });
     if (woUpdateErr) {
       if (woUpdateErr.message?.includes('OCC_MISMATCH')) {
         throw new Error(
@@ -386,14 +383,11 @@ export async function updateWorkOrder(
     }
   } else {
     // Basic update
-    const { error: woUpdateErr } = await untypedDb.rpc(
-      'rpc_update_work_order',
-      {
-        p_wo_id: id,
-        p_wo_data: update as unknown as never,
-        p_expected_updated_at: expectedUpdatedAt,
-      },
-    );
+    const { error: woUpdateErr } = await supabase.rpc('rpc_update_work_order', {
+      p_wo_id: id,
+      p_wo_data: update as never,
+      p_expected_updated_at: expectedUpdatedAt,
+    });
     if (woUpdateErr) {
       if (woUpdateErr.message?.includes('OCC_MISMATCH')) {
         throw new Error(
@@ -471,7 +465,7 @@ export async function cancelWorkOrder(id: string): Promise<WorkOrder> {
 }
 
 export async function fetchUnitOptions(): Promise<string[]> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from('v_available_units')
     .select('unit')
     .order('unit', { ascending: true });
@@ -480,5 +474,5 @@ export async function fetchUnitOptions(): Promise<string[]> {
     console.error('Error fetching units:', error);
     return ['m', 'kg', 'yard'];
   }
-  return (data || []).map((u: { unit: string }) => u.unit);
+  return (data || []).map((u) => u.unit).filter((u): u is string => u !== null);
 }

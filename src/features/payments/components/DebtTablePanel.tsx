@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { Badge, Icon, DataTablePremium } from '@/shared/components';
+import { Badge, Icon, DataTable } from '@/shared/components';
 import type { DataTableColumn } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import {
@@ -117,7 +117,7 @@ export function DebtTablePanel<T extends DebtRowBase>({
       )}
 
       {/* Table & Cards */}
-      <DataTablePremium
+      <DataTable
         data={data}
         isLoading={isLoading}
         rowKey={rowKey}

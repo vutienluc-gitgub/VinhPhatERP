@@ -1,7 +1,7 @@
 import {
   Icon,
   Badge,
-  DataTablePremium,
+  DataTable,
   type DataTableColumn,
 } from '@/shared/components';
 import {
@@ -213,7 +213,7 @@ function InventoryBreakdownPanel({
       <div className="card-header-area">
         <span className="font-bold text-lg">{title}</span>
       </div>
-      <DataTablePremium
+      <DataTable
         data={rows}
         columns={BREAKDOWN_COLUMNS}
         isLoading={isLoading}
@@ -437,7 +437,7 @@ export function InventoryPage() {
                   </p>
                 </div>
               ) : (
-                <DataTablePremium
+                <DataTable
                   data={agingRolls}
                   columns={AGING_COLUMNS}
                   isLoading={agingQuery.isLoading}

@@ -18,7 +18,11 @@ export function YarnReceiptsPage() {
 
   const totalWeight = sumBy(
     receipts,
-    (r) => sumBy(r.yarn_receipt_items, (it) => Number(it.quantity) || 0) || 0,
+    (r) =>
+      sumBy(
+        r.yarn_receipt_items ?? [],
+        (it: Record<string, unknown>) => Number(it.quantity) || 0,
+      ) || 0,
   );
 
   const pendingCount = receipts.filter((r) => r.status === 'draft').length;

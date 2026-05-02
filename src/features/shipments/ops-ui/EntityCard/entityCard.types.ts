@@ -1,4 +1,4 @@
-import type { OpsGrade } from '@/shared/components/ops-ui/utils/gradeColor';
+import type { OpsGrade } from '@/features/shipments/ops-ui/utils/gradeColor';
 
 export interface EntityCardProps {
   id: string;

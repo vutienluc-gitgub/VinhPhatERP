@@ -25,6 +25,7 @@ import {
 import { useWorkOrderLogic } from '@/application/production';
 import {
   createWorkOrderSchema,
+  generateWorkOrderNumber,
   type CreateWorkOrderInput,
 } from '@/schema/work-order.schema';
 
@@ -159,7 +160,7 @@ export function WorkOrderForm({
           yarn_requirements: [],
         }
       : {
-          work_order_number: `WO-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}-${Math.floor(Math.random() * 1000)}`,
+          work_order_number: generateWorkOrderNumber(),
           order_id: null,
           supplier_id: '',
           weaving_unit_price: 0,

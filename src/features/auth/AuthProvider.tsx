@@ -11,7 +11,8 @@ import {
 } from 'react';
 
 import { supabase } from '@/services/supabase/client';
-import type { Profile } from '@/services/supabase/database.types';
+import type { TableRow } from '@/shared/types/database.models';
+type Profile = TableRow<'profiles'>;
 import { getTenantId, resetTenantCache } from '@/services/supabase/tenant';
 
 // ---------------------------------------------------------------------------

@@ -196,7 +196,8 @@ export async function fetchExpiringQuotationsCount(): Promise<{
   expired: number;
 }> {
   const today = new Date().toISOString().slice(0, 10);
-  const threeDaysLater = new Date(Date.now() + 3 * 86400000)
+  const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+  const threeDaysLater = new Date(Date.now() + THREE_DAYS_MS)
     .toISOString()
     .slice(0, 10);
 

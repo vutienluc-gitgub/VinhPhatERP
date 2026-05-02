@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
 import {
-  DataTablePremium,
+  DataTable,
   Icon,
   Badge,
   type BadgeVariant,
@@ -137,7 +137,7 @@ export function DyeingOrderList({
   ];
 
   return (
-    <DataTablePremium
+    <DataTable
       data={data}
       columns={columns}
       isLoading={isLoading}

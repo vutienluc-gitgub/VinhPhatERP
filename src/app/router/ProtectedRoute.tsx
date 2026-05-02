@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
-import type { UserRole } from '@/services/supabase/database.types';
+import type { UserRole } from '@/shared/types/database.models';
 
 interface ProtectedRouteProps {
   /** Danh sách role được phép. Bỏ qua = tất cả role đều vào được. */

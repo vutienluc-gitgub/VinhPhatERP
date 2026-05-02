@@ -5,10 +5,10 @@ import {
   Icon,
   Badge,
   type BadgeVariant,
-  DataTablePremium,
+  DataTable,
   AddButton,
   ActionBar,
-  FilterBarPremium,
+  FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
@@ -153,7 +153,7 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
       </div>
 
       {/* Filters (Config-Driven) */}
-      <FilterBarPremium
+      <FilterBar
         schema={filterSchema}
         value={filters}
         onChange={handleFilterChange}
@@ -182,7 +182,7 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
       )}
 
       {/* Table & Cards */}
-      <DataTablePremium
+      <DataTable
         data={invoices}
         isLoading={isLoading}
         rowKey={(inv) => inv.id}

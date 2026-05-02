@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import { useCallback, useRef, useState, useMemo } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
@@ -26,8 +26,8 @@ import {
   ROLL_STATUSES,
   bulkFinishedInputDefaults,
   bulkFinishedInputSchema,
-  formatBulkRollNumber,
 } from '@/schema/finished-fabric.schema';
+import { useBulkRollPrefix } from '@/shared/hooks/useBulkRollPrefix';
 import type { BulkFinishedInputFormValues } from '@/schema/finished-fabric.schema';
 
 import type { FinishedFabricRoll } from './types';
@@ -187,14 +187,6 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
     name: 'rolls',
   });
 
-  const rollPrefix = useWatch({
-    control,
-    name: 'roll_prefix',
-  });
-  const startNumber = useWatch({
-    control,
-    name: 'start_number',
-  });
   const rolls = useWatch({
     control,
     name: 'rolls',
@@ -218,36 +210,24 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
     [fabricOptions],
   );
 
-  // Auto-generate roll numbers khi prefix hoặc start_number thay đổi
-  useEffect(() => {
-    const prefix = rollPrefix?.trim() || bulkFinishedInputDefaults.roll_prefix;
-    const start =
-      typeof startNumber === 'number'
-        ? startNumber
-        : bulkFinishedInputDefaults.start_number;
-    fields.forEach((_, idx) => {
-      setValue(
-        `rolls.${idx}.roll_number`,
-        formatBulkRollNumber(prefix, start + idx),
-      );
-    });
-  }, [rollPrefix, startNumber, fields.length, setValue, fields]);
+  const { resolvedStart: _resolvedStart, getRollNumber } = useBulkRollPrefix({
+    control,
+    fields,
+    setValue,
+    defaultPrefix: bulkFinishedInputDefaults.roll_prefix,
+    defaultStartNumber: bulkFinishedInputDefaults.start_number,
+  });
 
   const addRow = useCallback(() => {
-    const prefix = rollPrefix?.trim() || bulkFinishedInputDefaults.roll_prefix;
-    const start =
-      typeof startNumber === 'number'
-        ? startNumber
-        : bulkFinishedInputDefaults.start_number;
     append({
-      roll_number: formatBulkRollNumber(prefix, start + fields.length),
+      roll_number: getRollNumber(fields.length),
       raw_roll_id: '' as unknown as string,
       weight_kg: undefined as unknown as number,
       length_m: undefined,
       quality_grade: undefined,
       notes: '',
     });
-  }, [append, rollPrefix, startNumber, fields.length]);
+  }, [append, getRollNumber, fields.length]);
 
   // Tổng hợp — chỉ đếm dòng có nhập trọng lượng > 0
   const filledRolls = (rolls ?? []).filter((r) => {
@@ -281,16 +261,10 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
 
       // Nếu có cuộn mộc trong lô, tự động điền vào grid
       if (rawRollsForLot.length > 0 && fields.length <= 1) {
-        const prefix =
-          rollPrefix?.trim() || bulkFinishedInputDefaults.roll_prefix;
-        const start =
-          typeof startNumber === 'number'
-            ? startNumber
-            : bulkFinishedInputDefaults.start_number;
         // Xóa dòng hiện tại rồi tạo lại theo số cuộn mộc
         for (let i = fields.length - 1; i >= 0; i--) remove(i);
         const newRows = rawRollsForLot.map((rawRoll, i) => ({
-          roll_number: formatBulkRollNumber(prefix, start + i),
+          roll_number: getRollNumber(i),
           raw_roll_id: rawRoll.id as unknown as string,
           weight_kg: undefined as unknown as number,
           length_m: undefined,
@@ -338,14 +312,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
       const rawMap = new Map(rawRollsForLot.map((r) => [r.roll_number, r.id]));
 
       const newRows = parsed.map((row, i) => {
-        const prefix =
-          rollPrefix?.trim() || bulkFinishedInputDefaults.roll_prefix;
-        const start =
-          typeof startNumber === 'number'
-            ? startNumber
-            : bulkFinishedInputDefaults.start_number;
-        const rollNum =
-          row.roll_number || formatBulkRollNumber(prefix, start + i);
+        const rollNum = row.roll_number || getRollNumber(i);
 
         let rawId = '' as string;
         if (row.raw_roll_number) {

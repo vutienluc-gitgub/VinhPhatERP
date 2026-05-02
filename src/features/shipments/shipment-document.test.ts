@@ -21,6 +21,7 @@ const shipmentFixture: ShipmentDocument = {
   created_by: null,
   created_at: '2026-04-02T08:00:00.000Z',
   updated_at: '2026-04-02T08:30:00.000Z',
+  last_chat_at: null,
   delivery_staff_id: null,
   shipping_rate_id: null,
   shipping_cost: 0,

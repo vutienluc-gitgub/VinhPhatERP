@@ -6,7 +6,7 @@ import {
   Icon,
   Badge,
   type BadgeVariant,
-  DataTablePremium,
+  DataTable,
   AddButton,
   ClearFilterButton,
   ActionBar,
@@ -201,7 +201,7 @@ export function LoomList({ onEdit, onNew }: LoomListProps) {
       </div>
 
       {/* Table */}
-      <DataTablePremium
+      <DataTable
         data={looms}
         isLoading={isLoading}
         rowKey={(l) => l.id}

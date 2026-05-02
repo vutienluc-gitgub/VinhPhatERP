@@ -11,7 +11,6 @@ import type {
 import type { Payment } from '@/features/payments/types';
 import type { PaymentDbPayload, ExpenseDbPayload } from '@/domain/payments';
 import { supabase } from '@/services/supabase/client';
-import { untypedDb } from '@/services/supabase/untyped';
 import { getTenantId } from '@/services/supabase/tenant';
 import {
   fetchNextDocNumber,
@@ -26,7 +25,6 @@ import {
   apiExpenseRecord,
   apiAccountInsert,
 } from '@/schema/api-validation.schema';
-import { safeUpsertOne } from '@/lib/db-guard';
 
 /* ─── Payments ─────────────────────────────────── */
 
@@ -104,8 +102,8 @@ export async function createPaymentRecord(
   row: PaymentDbPayload,
 ): Promise<Payment> {
   validateApiInput(apiPaymentRecord.passthrough(), row);
-  const { data, error } = await untypedDb.rpc('rpc_create_payment', {
-    p_data: row,
+  const { data, error } = await supabase.rpc('rpc_create_payment', {
+    p_data: row as never,
   });
   if (error) throw error;
   return data as unknown as Payment;
@@ -120,8 +118,8 @@ export async function fetchDebtSummary(): Promise<DebtSummaryRow[]> {
   // Fetch base debt summary + credit limits + aging data in parallel
   const [summaryResult, creditResult, agingResult] = await Promise.all([
     supabase.rpc('rpc_get_debt_summary'),
-    untypedDb.from('customers').select('id, credit_limit'),
-    untypedDb
+    supabase.from('customers').select('id, credit_limit'),
+    supabase
       .from('v_debt_aging')
       .select('customer_id, days_since_order')
       .gt('balance_due', 0),
@@ -188,8 +186,7 @@ export type AccountInsertRow = {
 export async function fetchPaymentAccounts(
   showInactive = false,
 ): Promise<PaymentAccount[]> {
-  // untypedDb because payment_accounts might not be in the generated types yet
-  let query = untypedDb
+  let query = supabase
     .from('payment_accounts')
     .select('*')
     .order('name', { ascending: true });
@@ -204,14 +201,12 @@ export async function createPaymentAccount(
 ): Promise<PaymentAccount> {
   validateApiInput(apiAccountInsert.passthrough(), row);
   const tenantId = await getTenantId();
-  const inserted = await safeUpsertOne({
-    table: 'payment_accounts',
-    data: {
-      ...row,
-      tenant_id: tenantId,
-    },
-    conflictKey: 'id',
-  });
+  const { data: inserted, error } = await supabase
+    .from('payment_accounts')
+    .insert({ ...row, id: crypto.randomUUID(), tenant_id: tenantId } as never)
+    .select()
+    .single();
+  if (error) throw error;
   return inserted as unknown as PaymentAccount;
 }
 
@@ -219,18 +214,18 @@ export async function updatePaymentAccount(
   id: string,
   row: Omit<AccountInsertRow, 'current_balance'>,
 ): Promise<PaymentAccount> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from('payment_accounts')
-    .update(row)
+    .update(row as never)
     .eq('id', id)
     .select()
     .single();
   if (error) throw error;
-  return data as PaymentAccount;
+  return data as unknown as PaymentAccount;
 }
 
 export async function deletePaymentAccount(id: string): Promise<void> {
-  const { error } = await untypedDb
+  const { error } = await supabase
     .from('payment_accounts')
     .delete()
     .eq('id', id);
@@ -248,8 +243,7 @@ export async function fetchExpensesPaginated(
   const from = (page - 1) * DEFAULT_PAGE_SIZE;
   const to = from + DEFAULT_PAGE_SIZE - 1;
 
-  // untypedDb because expenses table structure might change rapidly
-  let query = untypedDb
+  let query = supabase
     .from('expenses')
     .select('*, suppliers(name, code), payment_accounts(name)', {
       count: 'exact',
@@ -257,7 +251,7 @@ export async function fetchExpensesPaginated(
     .order('expense_date', { ascending: false })
     .range(from, to);
 
-  if (filters.category) query = query.eq('category', filters.category);
+  if (filters.category) query = query.eq('category', filters.category as never);
   if (filters.supplierId) query = query.eq('supplier_id', filters.supplierId);
   if (filters.search?.trim()) {
     const term = filters.search.trim();
@@ -299,8 +293,8 @@ export async function fetchNextExpenseNumber(): Promise<string> {
 
 export async function createExpense(row: ExpenseDbPayload): Promise<Expense> {
   validateApiInput(apiExpenseRecord.passthrough(), row);
-  const { data, error } = await untypedDb.rpc('rpc_create_expense', {
-    p_data: row,
+  const { data, error } = await supabase.rpc('rpc_create_expense', {
+    p_data: row as never,
   });
   if (error) throw error;
   return data as unknown as Expense;
@@ -310,9 +304,9 @@ export async function updateExpense(
   id: string,
   row: ExpenseDbPayload,
 ): Promise<Expense> {
-  const { error } = await untypedDb.rpc('rpc_update_expense', {
+  const { error } = await supabase.rpc('rpc_update_expense', {
     p_expense_id: id,
-    p_data: row,
+    p_data: row as never,
   });
 
   if (error) {
@@ -323,7 +317,7 @@ export async function updateExpense(
   }
 
   // Fetch and return the updated expense
-  const { data: updated, error: fetchErr } = await untypedDb
+  const { data: updated, error: fetchErr } = await supabase
     .from('expenses')
     .select('*')
     .eq('id', id)
@@ -371,7 +365,7 @@ export async function fetchSupplierDebt(): Promise<SupplierDebtRow[]> {
 }
 
 export async function fetchUnpaidDocuments(supplierId: string) {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from('v_unpaid_documents')
     .select('*')
     .eq('supplier_id', supplierId)

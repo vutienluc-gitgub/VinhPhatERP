@@ -54,6 +54,9 @@ import {
   FileText,
   FileX,
   Filter,
+  Folder,
+  FolderOpen,
+  FolderPlus,
   GitMerge,
   Grip,
   GripVertical,
@@ -63,6 +66,7 @@ import {
   Hexagon,
   History,
   Home,
+  Image,
   Info,
   Kanban,
   Layers,
@@ -138,6 +142,11 @@ import {
   X,
   XCircle,
   Zap,
+  File,
+  Sheet,
+  Upload,
+  Video,
+  Download,
 } from 'lucide-react';
 import type { LucideProps } from 'lucide-react';
 import { memo } from 'react';
@@ -212,6 +221,9 @@ const ICON_MAP: Record<string, React.FC<LucideProps>> = {
   FileText,
   FileX,
   Filter,
+  Folder,
+  FolderOpen,
+  FolderPlus,
   GitMerge,
   Grip,
   GripVertical,
@@ -221,6 +233,7 @@ const ICON_MAP: Record<string, React.FC<LucideProps>> = {
   Hexagon,
   History,
   Home,
+  Image,
   Info,
   Kanban,
   Layers,
@@ -296,6 +309,11 @@ const ICON_MAP: Record<string, React.FC<LucideProps>> = {
   X,
   XCircle,
   Zap,
+  File,
+  Sheet,
+  Upload,
+  Video,
+  Download,
 };
 
 export type IconName = keyof typeof ICON_MAP;

@@ -4,13 +4,13 @@ import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Badge,
   type BadgeVariant,
-  DataTablePremium,
+  DataTable,
   AddButton,
   Button,
   ActionBar,
-  FilterBarPremium,
-  KpiCardPremium,
-  KpiGridPremium,
+  FilterBar,
+  KpiCard,
+  KpiGrid,
   type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
@@ -134,8 +134,8 @@ export function YarnReceiptList({
       </div>
 
       {/* KPI Dashboard */}
-      <KpiGridPremium className="kpi-section">
-        <KpiCardPremium
+      <KpiGrid className="kpi-section">
+        <KpiCard
           variant="primary"
           label="Tổng lượng sợi nhập"
           value={`${totalWeight.toLocaleString('vi-VN')} kg`}
@@ -143,7 +143,7 @@ export function YarnReceiptList({
           footer="Cập nhật trong tháng này"
         />
 
-        <KpiCardPremium
+        <KpiCard
           variant="warning"
           label="Phiếu chờ xác nhận"
           value={pendingCount}
@@ -151,17 +151,17 @@ export function YarnReceiptList({
           footer="Yêu cầu kiểm tra & xác nhận"
         />
 
-        <KpiCardPremium
+        <KpiCard
           variant="success"
           label="Nhà cung cấp"
           value={supplierCount}
           icon="Users"
           footer="Đối tác cung ứng hiện có"
         />
-      </KpiGridPremium>
+      </KpiGrid>
 
       {/* Filters (Config-Driven Pattern) */}
-      <FilterBarPremium
+      <FilterBar
         schema={filterSchema}
         value={filters}
         onChange={handleFilterChange}
@@ -179,7 +179,7 @@ export function YarnReceiptList({
       )}
 
       {/* Table & Cards */}
-      <DataTablePremium
+      <DataTable
         data={receipts}
         isLoading={isLoading}
         rowKey={(r) => r.id}
@@ -251,7 +251,7 @@ export function YarnReceiptList({
             sortable: true,
             cell: (r) => (
               <Badge variant={getStatusVariant(r.status)}>
-                {DOC_STATUS_LABELS[r.status]}
+                {DOC_STATUS_LABELS[r.status as keyof typeof DOC_STATUS_LABELS]}
               </Badge>
             ),
           },
@@ -305,7 +305,7 @@ export function YarnReceiptList({
             <div className="mobile-card-header">
               <span className="mobile-card-title">{r.receipt_number}</span>
               <Badge variant={getStatusVariant(r.status)}>
-                {DOC_STATUS_LABELS[r.status]}
+                {DOC_STATUS_LABELS[r.status as keyof typeof DOC_STATUS_LABELS]}
               </Badge>
             </div>
             <div className="mobile-card-body space-y-2">

@@ -1,8 +1,8 @@
 import type { RevenueRow } from '@/api/reports.api';
 import {
-  KpiCardPremium,
-  KpiGridPremium,
-  DataTablePremium,
+  KpiCard,
+  KpiGrid,
+  DataTable,
   type DataTableColumn,
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
@@ -60,38 +60,38 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
         <span className="font-bold text-lg">Phân tích dòng tiền</span>
       </div>
 
-      <KpiGridPremium className="px-5 py-4">
-        <KpiCardPremium
+      <KpiGrid className="px-5 py-4">
+        <KpiCard
           label="Tổng doanh thu"
           value={`${formatCurrency(totalRevenue)} đ`}
           icon="TrendingUp"
           variant="primary"
           isLoading={isLoading}
         />
-        <KpiCardPremium
+        <KpiCard
           label="Đã thu"
           value={`${formatCurrency(totalPaid)} đ`}
           icon="CheckCircle"
           variant="success"
           isLoading={isLoading}
         />
-        <KpiCardPremium
+        <KpiCard
           label="Còn nợ"
           value={`${formatCurrency(totalBalance)} đ`}
           icon="Wallet"
           variant={totalBalance > 0 ? 'warning' : 'success'}
           isLoading={isLoading}
         />
-        <KpiCardPremium
+        <KpiCard
           label="Số đơn hàng"
           value={data.length}
           icon="Package"
           variant="secondary"
           isLoading={isLoading}
         />
-      </KpiGridPremium>
+      </KpiGrid>
 
-      <DataTablePremium
+      <DataTable
         data={data}
         columns={columns}
         isLoading={isLoading}

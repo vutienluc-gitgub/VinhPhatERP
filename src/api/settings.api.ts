@@ -7,14 +7,14 @@ import {
   rowsToSettingsMap,
   settingsMapToUpsertRows,
 } from '@/schema/company-settings.schema';
-import { untypedDb as supa } from '@/services/supabase/untyped';
+import { supabase } from '@/services/supabase/client';
 import { safeUpsert } from '@/lib/db-guard';
 import { getTenantId } from '@/services/supabase/tenant';
 
 const TABLE = 'company_settings';
 
 export async function fetchCompanySettings(): Promise<CompanySettingsMap> {
-  const { data, error } = await supa.from(TABLE).select('*').order('key');
+  const { data, error } = await supabase.from(TABLE).select('*').order('key');
   if (error) throw error;
   return rowsToSettingsMap((data ?? []) as unknown as CompanySettingRow[]);
 }

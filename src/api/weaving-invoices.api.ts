@@ -4,7 +4,6 @@ import type {
 } from '@/features/weaving-invoices/types';
 import type { WeavingInvoiceFormValues } from '@/schema/weaving-invoice.schema';
 import { supabase } from '@/services/supabase/client';
-import { untypedDb as db } from '@/services/supabase/untyped';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
@@ -22,13 +21,13 @@ export async function fetchWeavingInvoicesPaginated(
   const from = (page - 1) * DEFAULT_PAGE_SIZE;
   const to = from + DEFAULT_PAGE_SIZE - 1;
 
-  let query = db
+  let query = supabase
     .from(TABLE)
     .select('*, suppliers(name, code)', { count: 'exact' })
     .order('invoice_date', { ascending: false })
     .range(from, to);
 
-  if (filters.status) query = query.eq('status', filters.status);
+  if (filters.status) query = query.eq('status', filters.status as never);
   if (filters.supplierId) query = query.eq('supplier_id', filters.supplierId);
   if (filters.search?.trim())
     query = query.ilike('invoice_number', `%${filters.search.trim()}%`);
@@ -50,7 +49,7 @@ export async function fetchWeavingInvoicesPaginated(
 export async function fetchWeavingInvoiceById(
   id: string,
 ): Promise<WeavingInvoice> {
-  const { data, error } = await db
+  const { data, error } = await supabase
     .from(TABLE)
     .select('*, suppliers(name, code), weaving_invoice_rolls(*)')
     .eq('id', id)
@@ -182,9 +181,9 @@ export async function createWeavingInvoice(
     sort_order: idx,
   }));
 
-  const { data, error } = await db.rpc('rpc_create_weaving_invoice', {
-    p_header: headerInsert,
-    p_rolls: rollsInsert,
+  const { data, error } = await supabase.rpc('rpc_create_weaving_invoice', {
+    p_header: headerInsert as never,
+    p_rolls: rollsInsert as never,
   });
 
   if (error) {
@@ -267,10 +266,10 @@ export async function updateWeavingInvoice(
     sort_order: idx,
   }));
 
-  const { error } = await db.rpc('rpc_update_weaving_invoice', {
+  const { error } = await supabase.rpc('rpc_update_weaving_invoice', {
     p_id: id,
-    p_header: headerUpdate,
-    p_rolls: rollsInsert,
+    p_header: headerUpdate as never,
+    p_rolls: rollsInsert as never,
     p_expected_updated_at: expectedUpdatedAt,
   });
 
@@ -295,7 +294,7 @@ export async function updateWeavingInvoice(
 /* ── Confirm invoice → trigger insert to raw_fabric_rolls ── */
 
 export async function confirmWeavingInvoice(id: string): Promise<void> {
-  const { error } = await db.rpc('rpc_confirm_weaving_invoice', {
+  const { error } = await supabase.rpc('rpc_confirm_weaving_invoice', {
     p_invoice_id: id,
   });
   if (error) {
@@ -321,7 +320,7 @@ export async function markWeavingInvoicePaid(
   id: string,
   amountToAdd: number,
 ): Promise<void> {
-  const { error } = await db.rpc('rpc_increment_weaving_invoice_paid', {
+  const { error } = await supabase.rpc('rpc_increment_weaving_invoice_paid', {
     p_id: id,
     p_amount_to_add: amountToAdd,
   });
@@ -331,7 +330,7 @@ export async function markWeavingInvoicePaid(
 /* ── Delete (draft only) ── */
 
 export async function deleteWeavingInvoice(id: string): Promise<void> {
-  const { error } = await db.from(TABLE).delete().eq('id', id);
+  const { error } = await supabase.from(TABLE).delete().eq('id', id);
   if (error) throw error;
 }
 
@@ -351,7 +350,7 @@ export type WeavingSupplierDebtRow = {
 export async function fetchWeavingSupplierDebt(): Promise<
   WeavingSupplierDebtRow[]
 > {
-  const { data, error } = await db.from('v_supplier_debt').select('*');
+  const { data, error } = await supabase.from('v_supplier_debt').select('*');
   if (error) throw error;
-  return (data ?? []) as WeavingSupplierDebtRow[];
+  return (data ?? []) as unknown as WeavingSupplierDebtRow[];
 }

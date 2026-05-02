@@ -1,6 +1,5 @@
 import type { DyeingOrderFormValues } from '@/schema/dyeing-order.schema';
 import { supabase } from '@/services/supabase/client';
-import { untypedDb as db } from '@/services/supabase/untyped';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import type {
@@ -19,13 +18,13 @@ export async function fetchDyeingOrdersPaginated(
   const from = (page - 1) * DEFAULT_PAGE_SIZE;
   const to = from + DEFAULT_PAGE_SIZE - 1;
 
-  let query = db
+  let query = supabase
     .from(TABLE)
     .select('*, suppliers(name, code)', { count: 'exact' })
     .order('order_date', { ascending: false })
     .range(from, to);
 
-  if (filters.status) query = query.eq('status', filters.status);
+  if (filters.status) query = query.eq('status', filters.status as never);
   if (filters.supplierId) query = query.eq('supplier_id', filters.supplierId);
   if (filters.search?.trim())
     query = query.ilike('dyeing_order_number', `%${filters.search.trim()}%`);
@@ -45,7 +44,7 @@ export async function fetchDyeingOrdersPaginated(
 /* ── Single with items ── */
 
 export async function fetchDyeingOrderById(id: string): Promise<DyeingOrder> {
-  const { data, error } = await db
+  const { data, error } = await supabase
     .from(TABLE)
     .select(
       '*, suppliers(name, code), dyeing_order_items(*, raw_fabric_roll:raw_fabric_rolls(roll_number, fabric_type))',
@@ -114,9 +113,9 @@ export async function createDyeingOrder(
     }),
   );
 
-  const { data, error } = await db.rpc('rpc_create_dyeing_order', {
-    p_header: headerInsert,
-    p_items: itemsInsert,
+  const { data, error } = await supabase.rpc('rpc_create_dyeing_order', {
+    p_header: headerInsert as never,
+    p_items: itemsInsert as never,
   });
 
   if (error) throw error;
@@ -152,10 +151,10 @@ export async function updateDyeingOrder(
     }),
   );
 
-  const { error } = await db.rpc('rpc_update_dyeing_order', {
+  const { error } = await supabase.rpc('rpc_update_dyeing_order', {
     p_id: id,
-    p_header: headerUpdate,
-    p_items: itemsInsert,
+    p_header: headerUpdate as never,
+    p_items: itemsInsert as never,
     p_expected_updated_at: expectedUpdatedAt,
   });
 
@@ -174,11 +173,11 @@ export async function updateDyeingOrder(
 /* ── Send to dyeing (draft → sent) ── */
 
 export async function sendDyeingOrder(id: string): Promise<void> {
-  const { error } = await db
+  const { error } = await supabase
     .from(TABLE)
-    .update({ status: 'sent' })
+    .update({ status: 'sent' as never })
     .eq('id', id)
-    .eq('status', 'draft');
+    .eq('status', 'draft' as never);
   if (error) throw error;
 }
 
@@ -188,7 +187,7 @@ export async function completeDyeingOrder(
   id: string,
   actualReturnDate: string,
 ): Promise<void> {
-  const { error } = await db.rpc('rpc_complete_dyeing_order', {
+  const { error } = await supabase.rpc('rpc_complete_dyeing_order', {
     p_dyeing_order_id: id,
     p_actual_return_date: actualReturnDate,
   });
@@ -211,7 +210,7 @@ export async function markDyeingOrderPaid(
   id: string,
   amountToAdd: number,
 ): Promise<void> {
-  const { error } = await db.rpc('rpc_increment_dyeing_order_paid', {
+  const { error } = await supabase.rpc('rpc_increment_dyeing_order_paid', {
     p_id: id,
     p_amount_to_add: amountToAdd,
   });
@@ -221,6 +220,6 @@ export async function markDyeingOrderPaid(
 /* ── Delete (draft only) ── */
 
 export async function deleteDyeingOrder(id: string): Promise<void> {
-  const { error } = await db.from(TABLE).delete().eq('id', id);
+  const { error } = await supabase.from(TABLE).delete().eq('id', id);
   if (error) throw error;
 }

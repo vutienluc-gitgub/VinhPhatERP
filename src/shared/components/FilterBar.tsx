@@ -41,7 +41,7 @@ export type FilterFieldConfig =
   | DateFilterField
   | DateRangeFilterField;
 
-interface FilterBarPremiumProps {
+interface FilterBarProps {
   /** Mảng cấu hình các trường lọc */
   schema: FilterFieldConfig[];
   /** Giá trị của các trường lọc (state) */
@@ -145,18 +145,18 @@ function FilterDateInput({
 // ── Main Component ──────────────────────────────────────────────────────────
 
 /**
- * FilterBarPremium: Config-driven UI component
+ * FilterBar: Config-driven UI component
  * Giải quyết chuẩn cấu trúc "Thanh Bộ Lọc" đồng bộ toàn app.
  * Lập trình viên chỉ cần truyền file JSON (schema), hệ thống tự render đúng field type.
  *
  * @see useFilterState — Hook đóng gói state management cho component này.
  */
-export function FilterBarPremium({
+export function FilterBar({
   schema,
   value,
   onChange,
   onClear,
-}: FilterBarPremiumProps) {
+}: FilterBarProps) {
   const hasActiveFilter = schema.some((field) => {
     if (field.type === 'date_range') {
       return (

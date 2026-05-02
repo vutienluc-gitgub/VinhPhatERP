@@ -9,32 +9,24 @@ export { Badge } from './Badge';
 export type { BadgeVariant } from './Badge';
 export { Combobox } from './Combobox';
 export { CurrencyInput } from './CurrencyInput';
-export { NumberInput } from './NumberInput';
-export { NumericInput } from './NumericInput';
+export { BasicNumberInput } from './BasicNumberInput';
+export { FormattedInput } from './FormattedInput';
 export { ConfirmProvider, ConfirmContext, useConfirm } from './ConfirmDialog';
-export { DataTablePremium } from './DataTablePremium';
-export type {
-  Column as DataTableColumn,
-  PaginationConfig,
-} from './DataTablePremium';
+export { DataTable } from './DataTable';
+export type { Column as DataTableColumn, PaginationConfig } from './DataTable';
 export { DataTableAdvanced } from './DataTableAdvanced';
 export type { DataTableAdvancedProps } from './DataTableAdvanced';
-export { FilterBarPremium } from './FilterBarPremium';
-export type {
-  FilterFieldConfig,
-  DateRangeFilterField,
-} from './FilterBarPremium';
+export { FilterBar } from './FilterBar';
+export type { FilterFieldConfig, DateRangeFilterField } from './FilterBar';
 export { default as DraftBanner } from './DraftBanner';
 export { EmptyState } from './EmptyState';
 export { ErrorBoundary } from './ErrorBoundary';
 export { FeatureScaffoldPage } from './FeatureScaffoldPage';
 export { KpiCard, KpiGrid } from './KpiCard';
-export { KpiCardPremium, KpiGridPremium } from './KpiCardPremium';
-export type { KpiVariant } from './KpiCardPremium';
+export type { KpiVariant } from './KpiCard';
 export { PagePlaceholder } from './PagePlaceholder';
 export { Pagination } from './Pagination';
 export { Portal } from './Portal';
-export { QuickSupplierForm } from './QuickSupplierForm';
 export { default as SaveStatus } from './SaveStatus';
 export { TableSkeleton } from './TableSkeleton';
 export { TabSwitcher } from './TabSwitcher';
@@ -53,12 +45,6 @@ export { ActionBar } from './ActionBar';
 export type { ActionConfig } from './ActionBar';
 export { ActionMenu } from './ActionMenu';
 export * from './ActionMenu';
-
-// NOTE: Chart components (RevenueBarChart, FabricRevenueChart, PaymentMethodChart,
-// MiniBarChart) are intentionally NOT exported from this barrel.
-// They depend on recharts (~400 kB) and would bloat any chunk that imports
-// from '@/shared/components'. Import them directly instead:
-//   import { RevenueBarChart } from '@/shared/components/RevenueBarChart';
 
 export * from './Card';
 export * from './ChartLegend';

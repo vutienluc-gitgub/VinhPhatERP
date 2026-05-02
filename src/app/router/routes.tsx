@@ -5,7 +5,7 @@ import type { RouteObject } from 'react-router-dom';
 import { LazyPage } from '@/app/router/LazyPage';
 import { FeatureRegistry } from '@/shared/lib/FeatureRegistry';
 import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
-import type { UserRole } from '@/services/supabase/database.types';
+import type { UserRole } from '@/shared/types/database.models';
 
 /* ── Dashboard (always the index route, not a plugin) ── */
 const DashboardPage = lazy(() =>

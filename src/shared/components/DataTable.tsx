@@ -34,7 +34,7 @@ export interface PaginationConfig<T> {
   itemLabel?: string;
 }
 
-interface DataTablePremiumProps<T> {
+interface DataTableProps<T> {
   data: T[];
   columns: Column<T>[];
   renderMobileCard: (item: T) => ReactNode;
@@ -68,7 +68,7 @@ interface DataTablePremiumProps<T> {
  * A standardized responsive table component for the ERP Premium UI.
  * Handles Desktop (Table) and Mobile (Card List) views automatically.
  */
-function DataTablePremiumInner<T>({
+function DataTableInner<T>({
   data,
   columns,
   renderMobileCard,
@@ -88,7 +88,7 @@ function DataTablePremiumInner<T>({
   enableClientSort = true,
   compact = false,
   pagination,
-}: DataTablePremiumProps<T>) {
+}: DataTableProps<T>) {
   // --- NATIVE AUTO-SORT LOGIC ---
   const [internalSortCol, setInternalSortCol] = useState<string | undefined>();
   const [internalSortDir, setInternalSortDir] = useState<'asc' | 'desc'>('asc');
@@ -279,6 +279,4 @@ function DataTablePremiumInner<T>({
   );
 }
 
-export const DataTablePremium = memo(
-  DataTablePremiumInner,
-) as typeof DataTablePremiumInner;
+export const DataTable = memo(DataTableInner) as typeof DataTableInner;

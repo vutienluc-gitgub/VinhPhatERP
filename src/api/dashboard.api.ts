@@ -1,4 +1,5 @@
 import { supabase } from '@/services/supabase/client';
+import { CUSTOMER_SOURCE_LABELS } from '@/schema/customer.schema';
 import { formatCurrency } from '@/shared/utils/format';
 
 export type DashboardStats = {
@@ -36,28 +37,23 @@ export type CustomerSourceItem = {
 };
 
 const SOURCE_COLORS: Record<string, string> = {
-  referral: '#0b6bcb',
-  facebook: '#1877f2',
-  website: '#0c8f68',
-  hotline: '#d97706',
-  other: '#6b7280',
-  agent: '#9333ea',
+  referral: '#16a34a',
+  exhibition: '#d97706',
   zalo: '#0068ff',
+  facebook: '#1877f2',
+  online: '#0891b2',
+  direct: '#6b7280',
+  cold_call: '#f59e0b',
+  other: '#94a3b8',
 };
 
-const SOURCE_LABELS: Record<string, string> = {
-  referral: 'Giới thiệu',
-  facebook: 'Facebook',
-  website: 'Website',
-  hotline: 'Hotline',
-  other: 'Khác',
-  agent: 'Đại lý',
-  zalo: 'Zalo',
-};
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const SEVEN_DAYS_MS = 7 * ONE_DAY_MS;
+const THREE_DAYS_MS = 3 * ONE_DAY_MS;
 
 export async function fetchDashboardStats(): Promise<DashboardStats> {
   const today = new Date().toISOString().slice(0, 10);
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  const sevenDaysAgo = new Date(Date.now() - SEVEN_DAYS_MS)
     .toISOString()
     .slice(0, 10);
 
@@ -113,7 +109,7 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
   );
 
   const qList = quotations.data ?? [];
-  const in3Days = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
+  const in3Days = new Date(Date.now() + THREE_DAYS_MS)
     .toISOString()
     .slice(0, 10);
   const expiringList = qList.filter(
@@ -231,7 +227,9 @@ export async function fetchCustomerSources(): Promise<CustomerSourceItem[]> {
   return Object.entries(counts)
     .sort(([, a], [, b]) => b - a)
     .map(([source, count]) => ({
-      source: SOURCE_LABELS[source] ?? source,
+      source:
+        CUSTOMER_SOURCE_LABELS[source as keyof typeof CUSTOMER_SOURCE_LABELS] ??
+        source,
       count,
       color: SOURCE_COLORS[source] ?? '#6b7280',
     }));

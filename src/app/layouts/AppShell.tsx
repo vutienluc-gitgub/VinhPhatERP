@@ -12,7 +12,7 @@ import { useAuth } from '@/features/auth/AuthProvider';
 import { useDashboardStats } from '@/application/analytics';
 import { getNavigationItems } from '@/app/router/routes';
 import type { NavigationItem } from '@/app/router/routes';
-import type { UserRole } from '@/services/supabase/database.types';
+import type { UserRole } from '@/shared/types/database.models';
 import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
 import { Icon } from '@/shared/components/Icon';
 import {
@@ -194,14 +194,13 @@ export function AppShell() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showUserMenu]);
 
-  const initials = profile?.full_name
-    ? profile.full_name
-        .split(' ')
-        .map((w: string) => w[0])
-        .join('')
-        .slice(0, 2)
-        .toUpperCase()
-    : '?';
+  const initials = useMemo(() => {
+    if (!profile?.full_name) return '?';
+    const parts = profile.full_name.trim().split(/\s+/);
+    if (parts.length === 0) return '?';
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }, [profile?.full_name]);
 
   // ── Context value cho các component con ──────────────────────────────────────
   const preferencesContextValue = useMemo<PreferencesContextValue>(
@@ -366,19 +365,18 @@ export function AppShell() {
                     size={12}
                     className="topbar-breadcrumb-sep"
                   />
-                  {currentItem.shortLabel &&
-                    currentItem.shortLabel !== currentItem.label && (
-                      <>
-                        <span className="topbar-breadcrumb-current">
-                          {currentItem.shortLabel}
-                        </span>
-                        <Icon
-                          name="ChevronRight"
-                          size={12}
-                          className="topbar-breadcrumb-sep"
-                        />
-                      </>
-                    )}
+                  {currentItem.group && GROUP_LABELS[currentItem.group] && (
+                    <>
+                      <span className="topbar-breadcrumb-current">
+                        {GROUP_LABELS[currentItem.group].label}
+                      </span>
+                      <Icon
+                        name="ChevronRight"
+                        size={12}
+                        className="topbar-breadcrumb-sep"
+                      />
+                    </>
+                  )}
                   <span className="topbar-breadcrumb-current">
                     {currentItem.label}
                   </span>

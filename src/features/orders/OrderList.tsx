@@ -5,10 +5,10 @@ import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
   Badge,
-  DataTablePremium,
+  DataTable,
   AddButton,
   ActionBar,
-  FilterBarPremium,
+  FilterBar,
   type FilterFieldConfig,
   FadeUp,
   LiveIndicator,
@@ -214,7 +214,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
 
       {/* Filter Bar (Config-Driven) */}
       <FadeUp delay={0.1}>
-        <FilterBarPremium
+        <FilterBar
           schema={filterSchema}
           value={filters}
           onChange={handleFilterChange}
@@ -237,7 +237,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
 
       {/* 📑 Data Table / List */}
       <FadeUp delay={0.2}>
-        <DataTablePremium
+        <DataTable
           data={orders}
           isLoading={isLoading}
           rowKey={(o) => o.id}

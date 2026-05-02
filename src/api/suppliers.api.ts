@@ -180,16 +180,16 @@ export async function updateSupplierRpc(
 ): Promise<unknown> {
   const { data, error } = await supabase.rpc('rpc_update_supplier', {
     p_id: id,
-    p_code: row.code,
-    p_name: row.name,
-    p_category: row.category,
-    p_phone: row.phone,
-    p_email: row.email,
-    p_address: row.address,
-    p_tax_code: row.tax_code,
-    p_contact_person: row.contact_person,
-    p_notes: row.notes,
-    p_status: row.status,
+    p_code: row.code!,
+    p_name: row.name!,
+    p_category: row.category!,
+    p_phone: row.phone ?? undefined,
+    p_email: row.email ?? undefined,
+    p_address: row.address ?? undefined,
+    p_tax_code: row.tax_code ?? undefined,
+    p_contact_person: row.contact_person ?? undefined,
+    p_notes: row.notes ?? undefined,
+    p_status: row.status ?? undefined,
     p_expected_updated_at: expectedUpdatedAt,
   });
   if (error) {

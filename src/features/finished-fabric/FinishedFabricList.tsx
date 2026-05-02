@@ -6,13 +6,13 @@ import {
   Icon,
   Badge,
   type BadgeVariant,
-  DataTablePremium,
+  DataTable,
   ViewToggle,
   type ViewMode,
   AddButton,
   Button,
   ActionBar,
-  FilterBarPremium,
+  FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
@@ -276,7 +276,7 @@ export function FinishedFabricList({
       )}
 
       {/* Filters (Config-Driven) */}
-      <FilterBarPremium
+      <FilterBar
         schema={filterSchema}
         value={filters}
         onChange={handleFilterChange}
@@ -335,7 +335,7 @@ export function FinishedFabricList({
           )}
         </div>
       ) : (
-        <DataTablePremium
+        <DataTable
           data={rolls}
           isLoading={isLoading}
           rowKey={(r) => r.id}

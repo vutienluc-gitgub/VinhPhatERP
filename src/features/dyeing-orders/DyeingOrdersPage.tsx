@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
 import {
-  KpiCardPremium,
+  KpiCard,
   AddButton,
-  FilterBarPremium,
+  FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
@@ -90,19 +90,19 @@ export function DyeingOrdersPage() {
 
         {/* KPI Dashboard */}
         <div className="kpi-section kpi-grid">
-          <KpiCardPremium
+          <KpiCard
             label="Tổng lệnh"
             value={totalCount}
             icon="Layers"
             variant="primary"
           />
-          <KpiCardPremium
+          <KpiCard
             label="Đang nhuộm"
             value={inProgressCount}
             icon="Loader2"
             variant="warning"
           />
-          <KpiCardPremium
+          <KpiCard
             label="Bản nháp"
             value={draftCount}
             icon="Pencil"
@@ -111,7 +111,7 @@ export function DyeingOrdersPage() {
         </div>
 
         {/* Filters (Config-Driven) */}
-        <FilterBarPremium
+        <FilterBar
           schema={filterSchema}
           value={filter}
           onChange={setFilterValue}

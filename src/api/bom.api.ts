@@ -6,7 +6,6 @@ import type {
   FabricCatalog,
 } from '@/features/bom/types';
 import { supabase } from '@/services/supabase/client';
-import { untypedDb } from '@/services/supabase/untyped';
 
 /* ── Reference data for BOM forms ── */
 
@@ -154,7 +153,7 @@ export async function createBomDraft(
     let exists = true;
     // Check until we find a unique code
     while (exists) {
-      const { data: existing } = await untypedDb
+      const { data: existing } = await supabase
         .from('bom_templates')
         .select('id')
         .eq('tenant_id', tenantId)
@@ -170,7 +169,7 @@ export async function createBomDraft(
     }
   } else {
     // Verify if manually entered code already exists
-    const { data: existing } = await untypedDb
+    const { data: existing } = await supabase
       .from('bom_templates')
       .select('id')
       .eq('tenant_id', tenantId)
@@ -184,7 +183,7 @@ export async function createBomDraft(
     }
   }
 
-  const { data: bomId, error: rpcError } = await untypedDb.rpc(
+  const { data: bomId, error: rpcError } = await supabase.rpc(
     'rpc_create_bom',
     {
       p_header: {
@@ -195,15 +194,14 @@ export async function createBomDraft(
         target_gsm: headerData.target_gsm,
         standard_loss_pct: headerData.standard_loss_pct || 0,
         notes: headerData.notes,
-      },
-      p_items:
-        bomYarnItems?.map((item) => ({
-          yarn_catalog_id: item.yarn_catalog_id,
-          ratio_pct: item.ratio_pct,
-          consumption_kg_per_m: item.consumption_kg_per_m,
-          notes: item.notes,
-          sort_order: item.sort_order || 0,
-        })) || [],
+      } as never,
+      p_items: (bomYarnItems?.map((item) => ({
+        yarn_catalog_id: item.yarn_catalog_id,
+        ratio_pct: item.ratio_pct,
+        consumption_kg_per_m: item.consumption_kg_per_m,
+        notes: item.notes,
+        sort_order: item.sort_order || 0,
+      })) || []) as never,
       p_user_id: userId,
     },
   );
@@ -261,7 +259,7 @@ export async function updateBomDraft(
   }
 
   // Use the atomic RPC to prevent race conditions and ensure old items are deleted properly
-  const { error: rpcError } = await untypedDb.rpc('rpc_update_bom', {
+  const { error: rpcError } = await supabase.rpc('rpc_update_bom', {
     p_bom_id: id,
     p_header: {
       code: existingBom.code,
@@ -271,15 +269,14 @@ export async function updateBomDraft(
       target_gsm: headerData.target_gsm,
       standard_loss_pct: headerData.standard_loss_pct || 0,
       notes: headerData.notes,
-    },
-    p_items:
-      bomYarnItems?.map((item) => ({
-        yarn_catalog_id: item.yarn_catalog_id,
-        ratio_pct: item.ratio_pct,
-        consumption_kg_per_m: item.consumption_kg_per_m,
-        notes: item.notes,
-        sort_order: item.sort_order || 0,
-      })) || [],
+    } as never,
+    p_items: (bomYarnItems?.map((item) => ({
+      yarn_catalog_id: item.yarn_catalog_id,
+      ratio_pct: item.ratio_pct,
+      consumption_kg_per_m: item.consumption_kg_per_m,
+      notes: item.notes,
+      sort_order: item.sort_order || 0,
+    })) || []) as never,
   });
 
   if (rpcError) throw rpcError;
@@ -293,10 +290,10 @@ export async function approveBom(id: string, reason?: string): Promise<string> {
   const auth = await supabase.auth.getUser();
   const userId = auth.data.user?.id;
 
-  const { error } = await untypedDb.rpc('rpc_approve_bom', {
+  const { error } = await supabase.rpc('rpc_approve_bom', {
     p_bom_id: id,
-    p_reason: reason || null,
-    p_user_id: userId,
+    p_reason: reason || '',
+    p_user_id: userId ?? '',
   });
 
   if (error) {
@@ -327,10 +324,10 @@ export async function deprecateBom(
   const auth = await supabase.auth.getUser();
   const userId = auth.data.user?.id;
 
-  const { error } = await untypedDb.rpc('rpc_deprecate_bom', {
+  const { error } = await supabase.rpc('rpc_deprecate_bom', {
     p_bom_id: id,
     p_reason: reason,
-    p_user_id: userId,
+    p_user_id: userId ?? '',
   });
 
   if (error) {
@@ -350,7 +347,7 @@ export async function deprecateBom(
 export async function reviseBom(id: string, reason: string): Promise<string> {
   if (!reason) throw new Error('Bày tỏ lý do vì sao lập phiên bản mới.');
 
-  const { error } = await untypedDb.rpc('rpc_revise_bom', {
+  const { error } = await supabase.rpc('rpc_revise_bom', {
     p_bom_id: id,
     p_reason: reason,
   });

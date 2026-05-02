@@ -6,7 +6,7 @@ import {
   Icon,
   Badge,
   type BadgeVariant,
-  DataTablePremium,
+  DataTable,
   ViewToggle,
   type ViewMode,
 } from '@/shared/components';
@@ -233,7 +233,7 @@ export function RawFabricList({
 
       {/* Main Content View */}
       {viewMode === 'table' ? (
-        <DataTablePremium
+        <DataTable
           data={rolls}
           isLoading={isLoading}
           rowKey={(r) => r.id}

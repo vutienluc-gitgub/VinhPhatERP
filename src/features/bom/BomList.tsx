@@ -2,7 +2,7 @@ import {
   Icon,
   Badge,
   type BadgeVariant,
-  DataTablePremium,
+  DataTable,
   ActionBar,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
@@ -43,7 +43,7 @@ export function BomList({
   onCreate,
 }: BomListProps) {
   return (
-    <DataTablePremium
+    <DataTable
       data={boms}
       isLoading={isLoading}
       rowKey={(bom) => bom.id}

@@ -7,8 +7,9 @@ import { Button, CancelButton } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { CurrencyInput } from '@/shared/components/CurrencyInput';
-import { NumericInput } from '@/shared/components/NumericInput';
-import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm';
+import { FormattedInput } from '@/shared/components/FormattedInput';
+// eslint-disable-next-line boundaries/dependencies
+import { QuickSupplierForm } from '@/features/suppliers/QuickSupplierForm';
 import {
   useColorOptions,
   toColorComboboxOptions,
@@ -80,19 +81,21 @@ function receiptToFormValues(receipt: YarnReceipt): YarnReceiptsFormValues {
     supplierId: receipt.supplier_id,
     receiptDate: receipt.receipt_date,
     notes: receipt.notes ?? '',
-    items: (receipt.yarn_receipt_items ?? []).map((it) => ({
-      yarnCatalogId: it.yarn_catalog_id ?? '',
-      yarnType: it.yarn_type,
-      colorName: it.color_name ?? '',
-      quantity: Number(it.quantity),
-      unitPrice: Number(it.unit_price),
-      lotNumber: it.lot_number ?? '',
-      grade: it.grade ?? '',
-      unit: it.unit ?? 'kg',
-      tensileStrength: it.tensile_strength ?? '',
-      composition: it.composition ?? '',
-      origin: it.origin ?? '',
-    })),
+    items: (receipt.yarn_receipt_items ?? []).map(
+      (it: Record<string, unknown>) => ({
+        yarnCatalogId: (it.yarn_catalog_id as string | undefined) ?? '',
+        yarnType: it.yarn_type as string,
+        colorName: (it.color_name as string | undefined) ?? '',
+        quantity: Number(it.quantity),
+        unitPrice: Number(it.unit_price),
+        lotNumber: (it.lot_number as string | undefined) ?? '',
+        grade: (it.grade as string | undefined) ?? '',
+        unit: (it.unit as string | undefined) ?? 'kg',
+        tensileStrength: (it.tensile_strength as string | undefined) ?? '',
+        composition: (it.composition as string | undefined) ?? '',
+        origin: (it.origin as string | undefined) ?? '',
+      }),
+    ),
   };
 }
 
@@ -458,7 +461,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                         name={`items.${index}.quantity` as const}
                         control={control}
                         render={({ field }) => (
-                          <NumericInput
+                          <FormattedInput
                             id={`items.${index}.quantity`}
                             className={`field-input${errors.items?.[index]?.quantity ? ' is-error' : ''}`}
                             value={field.value}

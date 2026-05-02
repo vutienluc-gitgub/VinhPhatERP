@@ -7,7 +7,7 @@
  * - Release khi WO bị hủy
  * - Consume khi WO hoàn thành
  */
-import { untypedDb } from '@/services/supabase/untyped';
+import { supabase } from '@/services/supabase/client';
 
 export interface YarnAvailability {
   id: string;
@@ -34,7 +34,7 @@ export interface ReserveYarnResult {
  * Lấy danh sách tồn kho khả dụng cho tất cả loại sợi.
  */
 export async function fetchYarnAvailability(): Promise<YarnAvailability[]> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from('v_yarn_availability')
     .select('*')
     .order('code', { ascending: true });
@@ -49,7 +49,7 @@ export async function fetchYarnAvailability(): Promise<YarnAvailability[]> {
 export async function fetchYarnAvailabilityById(
   yarnCatalogId: string,
 ): Promise<YarnAvailability | null> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from('v_yarn_availability')
     .select('*')
     .eq('id', yarnCatalogId)
@@ -67,9 +67,9 @@ export async function reserveYarn(
   workOrderId: string,
   items: ReserveYarnItem[],
 ): Promise<ReserveYarnResult> {
-  const { data, error } = await untypedDb.rpc('rpc_reserve_yarn', {
+  const { data, error } = await supabase.rpc('rpc_reserve_yarn', {
     p_work_order_id: workOrderId,
-    p_items: items,
+    p_items: items as never,
   });
 
   if (error) throw error;
@@ -84,7 +84,7 @@ export async function reserveYarn(
 export async function releaseYarnReservation(
   workOrderId: string,
 ): Promise<void> {
-  const { error } = await untypedDb.rpc('rpc_release_yarn_reservation', {
+  const { error } = await supabase.rpc('rpc_release_yarn_reservation', {
     p_work_order_id: workOrderId,
   });
   if (error) throw error;
@@ -96,7 +96,7 @@ export async function releaseYarnReservation(
 export async function consumeYarnReservation(
   workOrderId: string,
 ): Promise<void> {
-  const { error } = await untypedDb.rpc('rpc_consume_yarn_reservation', {
+  const { error } = await supabase.rpc('rpc_consume_yarn_reservation', {
     p_work_order_id: workOrderId,
   });
   if (error) throw error;

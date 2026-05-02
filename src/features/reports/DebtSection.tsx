@@ -1,8 +1,8 @@
 import type { DebtByCustomerRow } from '@/api/reports.api';
 import {
-  KpiCardPremium,
-  KpiGridPremium,
-  DataTablePremium,
+  KpiCard,
+  KpiGrid,
+  DataTable,
   type DataTableColumn,
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
@@ -61,24 +61,24 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
         <span className="font-bold text-lg">Dư nợ khách hàng</span>
       </div>
 
-      <KpiGridPremium className="px-5 py-4">
-        <KpiCardPremium
+      <KpiGrid className="px-5 py-4">
+        <KpiCard
           label="Tổng công nợ"
           value={`${formatCurrency(totalDebt)} đ`}
           icon="Wallet"
           variant={totalDebt > 0 ? 'danger' : 'success'}
           isLoading={isLoading}
         />
-        <KpiCardPremium
+        <KpiCard
           label="Khách còn nợ"
           value={customerCount}
           icon="Users"
           variant="warning"
           isLoading={isLoading}
         />
-      </KpiGridPremium>
+      </KpiGrid>
 
-      <DataTablePremium
+      <DataTable
         data={data}
         columns={columns}
         isLoading={isLoading}

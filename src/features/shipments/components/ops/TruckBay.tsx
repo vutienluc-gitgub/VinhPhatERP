@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Icon } from '@/shared/components/Icon';
-import { ResourceBay } from '@/shared/components/ops-ui';
+import { ResourceBay } from '@/features/shipments/ops-ui';
 import type { TruckSlot } from '@/features/shipments/ops-engine/useFleetCommander';
 import { sumBy } from '@/shared/utils/array.util';
 

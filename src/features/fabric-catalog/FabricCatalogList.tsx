@@ -6,7 +6,7 @@ import {
   Icon,
   Badge,
   type BadgeVariant,
-  DataTablePremium,
+  DataTable,
   AddButton,
   ClearFilterButton,
   ActionBar,
@@ -189,7 +189,7 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
       </div>
 
       {/* 📑 Data Section */}
-      <DataTablePremium
+      <DataTable
         data={catalogs}
         isLoading={isLoading}
         rowKey={(c) => c.id}

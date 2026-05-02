@@ -4,7 +4,7 @@
  * Đọc dữ liệu từ v_order_fulfillment view để tổng hợp
  * tỉ lệ hoàn thành đơn hàng.
  */
-import { untypedDb } from '@/services/supabase/untyped';
+import { supabase } from '@/services/supabase/client';
 
 export interface OrderFulfillment {
   order_id: string;
@@ -38,7 +38,7 @@ export async function fetchOrderFulfillment(): Promise<{
   data: OrderFulfillment[];
   summary: FulfillmentSummary;
 }> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from('v_order_fulfillment')
     .select('*')
     .order('order_date', { ascending: false });

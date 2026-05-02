@@ -5,7 +5,8 @@ import { useForm, Controller, useWatch } from 'react-hook-form';
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
-import { QuickSupplierForm } from '@/shared/components/QuickSupplierForm';
+// eslint-disable-next-line boundaries/dependencies
+import { QuickSupplierForm } from '@/features/suppliers/QuickSupplierForm';
 import {
   useColorOptions,
   toColorComboboxOptions,

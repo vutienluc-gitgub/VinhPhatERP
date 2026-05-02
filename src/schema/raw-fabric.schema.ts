@@ -1,42 +1,25 @@
 import { z } from 'zod';
 
-export const QUALITY_GRADES = ['A', 'B', 'C'] as const;
-export const ROLL_STATUSES = [
-  'in_stock',
-  'reserved',
-  'in_process',
-  'shipped',
-  'damaged',
-  'written_off',
-] as const;
-
-export const QUALITY_GRADE_LABELS: Record<
-  (typeof QUALITY_GRADES)[number],
-  string
-> = {
-  A: 'Loại A',
-  B: 'Loại B',
-  C: 'Loại C',
-};
-
-export const ROLL_STATUS_LABELS: Record<
-  (typeof ROLL_STATUSES)[number],
-  string
-> = {
-  in_stock: 'Trong kho',
-  reserved: 'Đã đặt trước',
-  in_process: 'Đang xử lý',
-  shipped: 'Đã xuất kho',
-  damaged: 'Hư hỏng',
-  written_off: 'Xóa sổ',
-};
-
-const BULK_ROLL_NUMBER_PAD = 3;
-
 import {
   generateBarcode as _generateBarcode,
   findDuplicateRollNumbers as _findDuplicateRollNumbers,
 } from '@/domain/inventory/InventoryDomain';
+
+import {
+  QUALITY_GRADES,
+  ROLL_STATUSES,
+  formatBulkRollNumber,
+} from './roll.schema';
+
+export {
+  QUALITY_GRADES,
+  QUALITY_GRADE_LABELS,
+  ROLL_STATUSES,
+  ROLL_STATUS_LABELS,
+  formatBulkRollNumber,
+  countFilledRolls,
+} from './roll.schema';
+export type { QualityGrade, RollStatus } from './roll.schema';
 
 export const generateBarcode = _generateBarcode;
 export const findDuplicateRollNumbers = _findDuplicateRollNumbers;
@@ -100,10 +83,6 @@ export const bulkRollRowSchema = z.object({
 });
 
 export type BulkRollRow = z.infer<typeof bulkRollRowSchema>;
-
-export function formatBulkRollNumber(prefix: string, sequence: number): string {
-  return `${prefix.trim()}${String(sequence).padStart(BULK_ROLL_NUMBER_PAD, '0')}`;
-}
 
 export const bulkInputSchema = z
   .object({

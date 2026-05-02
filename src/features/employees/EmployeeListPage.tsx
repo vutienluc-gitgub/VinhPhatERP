@@ -4,10 +4,10 @@ import type { Employee } from '@/schema';
 import {
   Icon,
   Badge,
-  DataTablePremium,
+  DataTable,
   AddButton,
   ActionBar,
-  FilterBarPremium,
+  FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
@@ -203,7 +203,7 @@ export function EmployeeListPage() {
         </div>
 
         {/* Filter Area (Config-Driven) */}
-        <FilterBarPremium
+        <FilterBar
           schema={filterSchema}
           value={filterValues}
           onChange={handleFilterChange}
@@ -216,7 +216,7 @@ export function EmployeeListPage() {
         />
 
         {/* 📑 Data Table / Cards */}
-        <DataTablePremium
+        <DataTable
           data={employees ?? []}
           isLoading={isLoading}
           rowKey={(e) => e.id}

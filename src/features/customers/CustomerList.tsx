@@ -12,16 +12,28 @@ import {
   DataTableAdvanced,
   AddButton,
   ActionBar,
-  FilterBarPremium,
+  FilterBar,
   type FilterFieldConfig,
   type IconName,
+  type BadgeVariant,
 } from '@/shared/components';
 import { useCustomerList, useDeleteCustomer } from '@/application/crm';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
-import { formatCurrency } from '@/shared/utils/format';
+import { formatCurrencyFull } from '@/shared/utils/format';
 
 import { DEPOSIT_FORM_LABELS } from './customers.constants';
 import type { Customer, CustomersFilter } from './types';
+
+const SOURCE_BADGE_VARIANT: Record<string, BadgeVariant> = {
+  referral: 'success',
+  exhibition: 'warning',
+  zalo: 'info',
+  facebook: 'info',
+  online: 'info',
+  direct: 'gray',
+  cold_call: 'warning',
+  other: 'gray',
+};
 
 type CustomerListProps = {
   onEdit: (customer: Customer) => void;
@@ -55,7 +67,7 @@ export function CustomerList({
       key: 'query',
       type: 'search',
       label: 'Tìm kiếm khách hàng',
-      placeholder: 'Tên, mã, số điện thoại...',
+      placeholder: 'Tìm theo tên, mã KH, sđt...',
     },
     {
       key: 'status',
@@ -151,7 +163,7 @@ export function CustomerList({
       </div>
 
       {/* Filter Area (Config-Driven) */}
-      <FilterBarPremium
+      <FilterBar
         schema={filterSchema}
         value={filters}
         onChange={handleFilterChange}
@@ -224,7 +236,7 @@ export function CustomerList({
             enableSorting: true,
             meta: { className: 'text-right font-bold text-success' },
             cell: (info) =>
-              formatCurrency(info.row.original.account_balance ?? 0),
+              formatCurrencyFull(info.row.original.account_balance),
           },
           {
             header: 'Nguồn',
@@ -232,14 +244,14 @@ export function CustomerList({
             accessorKey: 'source',
             enableSorting: true,
             cell: (info) => {
-              const c = info.row.original;
-              const sourceKey = c.source || 'other';
-              const iconName = CUSTOMER_SOURCE_ICONS[sourceKey];
+              const sourceKey = info.row.original.source || 'other';
               return (
-                <div className="flex items-center gap-1.5 badge-subtle px-2 py-0.5 rounded-full border border-border/50 text-xs text-muted-foreground bg-surface-raised/50 w-max">
-                  <Icon name={iconName as IconName} size={14} />
-                  <span>{CUSTOMER_SOURCE_LABELS[sourceKey]}</span>
-                </div>
+                <Badge
+                  variant={SOURCE_BADGE_VARIANT[sourceKey] ?? 'gray'}
+                  icon={CUSTOMER_SOURCE_ICONS[sourceKey] as IconName}
+                >
+                  {CUSTOMER_SOURCE_LABELS[sourceKey]}
+                </Badge>
               );
             },
           },
@@ -323,19 +335,19 @@ export function CustomerList({
                 </div>
               )}
               <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/10">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-muted bg-surface-subtle px-2 py-1 rounded-lg border border-border/10">
-                  <Icon
-                    name={
-                      CUSTOMER_SOURCE_ICONS[
-                        customer.source || 'other'
-                      ] as IconName
-                    }
-                    size={12}
-                  />
-                  <span>
-                    {CUSTOMER_SOURCE_LABELS[customer.source || 'other']}
-                  </span>
-                </div>
+                <Badge
+                  variant={
+                    SOURCE_BADGE_VARIANT[customer.source || 'other'] ?? 'gray'
+                  }
+                  icon={
+                    CUSTOMER_SOURCE_ICONS[
+                      customer.source || 'other'
+                    ] as IconName
+                  }
+                  iconSize={12}
+                >
+                  {CUSTOMER_SOURCE_LABELS[customer.source || 'other']}
+                </Badge>
                 <Icon name="ChevronRight" size={16} className="text-muted" />
               </div>
             </div>

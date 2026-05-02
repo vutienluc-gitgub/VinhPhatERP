@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import toast from 'react-hot-toast';
 
-import type { OpsGrade } from '@/shared/components/ops-ui';
+import type { OpsGrade } from '@/features/shipments/ops-ui';
 import {
   useDeliveryStaffList,
   useCreateShipment,

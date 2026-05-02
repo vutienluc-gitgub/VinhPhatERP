@@ -5,10 +5,10 @@ import {
   Icon,
   Badge,
   type BadgeVariant,
-  DataTablePremium,
+  DataTable,
   AddButton,
   ActionBar,
-  FilterBarPremium,
+  FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
@@ -186,7 +186,7 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
       </div>
 
       {/* Filters (Config-Driven) */}
-      <FilterBarPremium
+      <FilterBar
         schema={filterSchema}
         value={filters}
         onChange={handleFilterChange}
@@ -207,7 +207,7 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
       )}
 
       {/* Table & Cards */}
-      <DataTablePremium
+      <DataTable
         data={catalogs}
         isLoading={isLoading}
         rowKey={(c) => c.id}

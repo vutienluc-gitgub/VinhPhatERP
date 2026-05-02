@@ -1,4 +1,4 @@
-import { KpiGridPremium, KpiCardPremium } from '@/shared/components';
+import { KpiGrid, KpiCard } from '@/shared/components';
 import { OPERATIONS_MESSAGES } from '@/features/operations/constants';
 
 interface OperationsKpiGridProps {
@@ -15,14 +15,14 @@ export function OperationsKpiGrid({
   onTimeRate,
 }: OperationsKpiGridProps) {
   return (
-    <KpiGridPremium className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-      <KpiCardPremium
+    <KpiGrid className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+      <KpiCard
         label={OPERATIONS_MESSAGES.TOTAL_TASK}
         value={totalTasks}
         icon="ListTodo"
         variant="secondary"
       />
-      <KpiCardPremium
+      <KpiCard
         label={OPERATIONS_MESSAGES.COMPLETED}
         value={doneCount}
         icon="CircleCheck"
@@ -30,18 +30,18 @@ export function OperationsKpiGrid({
         trendValue="+5"
         trendDirection="up"
       />
-      <KpiCardPremium
+      <KpiCard
         label={OPERATIONS_MESSAGES.OVERDUE}
         value={overdueCount}
         icon="TriangleAlert"
         variant={overdueCount > 0 ? 'danger' : 'success'}
       />
-      <KpiCardPremium
+      <KpiCard
         label={OPERATIONS_MESSAGES.EFFICIENCY}
         value={`${onTimeRate}%`}
         icon="Target"
         variant="primary"
       />
-    </KpiGridPremium>
+    </KpiGrid>
   );
 }
