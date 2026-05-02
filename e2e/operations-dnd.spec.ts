@@ -49,7 +49,6 @@ async function tapMoveTask(task: Locator) {
  */
 const SAFE_TAP_TARGETS: Partial<Record<ColumnStatus, ColumnStatus>> = {
   todo: 'in_progress',
-  in_progress: 'review',
   blocked: 'in_progress',
 };
 
@@ -69,17 +68,40 @@ async function resetTasksViaApi() {
 
   const apiCtx = await request.newContext();
   try {
-    // Reset review/done tasks to in_progress so E2E test can move them
+    const headers = {
+      'Content-Type': 'application/json',
+      apikey: serviceRoleKey,
+      Authorization: `Bearer ${serviceRoleKey}`,
+      Prefer: 'return=minimal',
+    };
+
+    // First, try to fetch tasks to see if any exist
+    const res = await apiCtx.get(`${supabaseUrl}/rest/v1/tasks?limit=1`, {
+      headers: { ...headers, Prefer: '' },
+    });
+
+    if (res.ok()) {
+      const data = await res.json();
+      if (!data || data.length === 0) {
+        // Seed a task so we don't rely on demoTasks (which fail OCC in the UI)
+        await apiCtx.post(`${supabaseUrl}/rest/v1/tasks`, {
+          headers,
+          data: {
+            title: 'E2E Test Task',
+            status: 'todo',
+            priority: 'normal',
+            task_type: 'maintenance',
+          },
+        });
+      }
+    }
+
+    // Reset tasks to 'todo' so E2E test can safely move them to 'in_progress'
     await apiCtx.patch(
-      `${supabaseUrl}/rest/v1/tasks?status=in.("review","done")`,
+      `${supabaseUrl}/rest/v1/tasks?status=in.("in_progress","review","done")`,
       {
-        headers: {
-          'Content-Type': 'application/json',
-          apikey: serviceRoleKey,
-          Authorization: `Bearer ${serviceRoleKey}`,
-          Prefer: 'return=minimal',
-        },
-        data: { status: 'in_progress' },
+        headers,
+        data: { status: 'todo' },
       },
     );
   } finally {

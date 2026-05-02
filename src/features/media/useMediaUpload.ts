@@ -77,7 +77,13 @@ export function useMediaUpload(folderId: string | null) {
           updateUpload(file.name, { status: 'done', progress: 100 });
           successCount++;
         } catch (err) {
-          const message = err instanceof Error ? err.message : String(err);
+          const errObj = err as Record<string, unknown>;
+          const message =
+            typeof errObj?.message === 'string'
+              ? errObj.message
+              : err instanceof Error
+                ? err.message
+                : String(err);
           updateUpload(file.name, { status: 'error', error: message });
         }
       }

@@ -51,7 +51,14 @@ export function FolderCreateDialog({
         setName('');
         onClose();
       } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
+        const errObj = err as Record<string, unknown>;
+        const message =
+          typeof errObj?.message === 'string'
+            ? errObj.message
+            : err instanceof Error
+              ? err.message
+              : String(err);
+
         if (message.includes('duplicate') || message.includes('unique')) {
           toast.error(MEDIA_MESSAGES.FOLDER_EXISTS);
         } else {
