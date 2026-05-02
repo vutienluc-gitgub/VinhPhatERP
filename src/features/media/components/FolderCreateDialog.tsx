@@ -7,18 +7,17 @@
 import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
-import { MEDIA_LABELS, MEDIA_MESSAGES } from '@/features/media/media.constants';
 import { useCreateFolder } from '@/features/media/useMedia';
+import { MEDIA_LABELS, MEDIA_MESSAGES } from '@/features/media/media.constants';
+import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { useAuth } from '@/shared/hooks/useAuth';
+import { useTenant } from '@/shared/hooks/useTenant';
 
 interface FolderCreateDialogProps {
   open: boolean;
   onClose: () => void;
   parentId: string | null;
 }
-
-import { useTenant } from '@/shared/hooks/useTenant';
-import { useAuth } from '@/shared/hooks/useAuth';
 
 export function FolderCreateDialog({
   open,
@@ -60,7 +59,7 @@ export function FolderCreateDialog({
         }
       }
     },
-    [name, parentId, createFolder, onClose],
+    [name, parentId, createFolder, onClose, tenant?.id, user?.id],
   );
 
   const handleClose = useCallback(() => {
