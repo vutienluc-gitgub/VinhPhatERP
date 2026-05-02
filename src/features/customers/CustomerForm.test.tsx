@@ -2,11 +2,14 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import toast from 'react-hot-toast';
 
-import { useCreateCustomer, useNextCustomerCode, useUpdateCustomer } from '@/application/crm';
+import {
+  useCreateCustomer,
+  useNextCustomerCode,
+  useUpdateCustomer,
+} from '@/application/crm';
 
 import { CustomerForm } from './CustomerForm';
 import type { Customer } from './types';
-
 
 // Mock dependencies
 vi.mock('@/application/crm', () => ({
@@ -46,7 +49,9 @@ describe('CustomerForm', () => {
       error: null,
     });
 
-    (useNextCustomerCode as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
+    (
+      useNextCustomerCode as unknown as ReturnType<typeof vi.fn>
+    ).mockReturnValue({
       data: 'KH-001',
     });
   });
@@ -71,7 +76,7 @@ describe('CustomerForm', () => {
     render(<CustomerForm customer={null} onClose={mockOnClose} />);
 
     expect(screen.getByLabelText(/Tên khách hàng/i)).toBeInTheDocument();
-    
+
     await waitFor(() => {
       expect(screen.getByLabelText(/Mã khách hàng/i)).toHaveValue('KH-001');
     });
@@ -84,7 +89,9 @@ describe('CustomerForm', () => {
     render(<CustomerForm customer={mockCustomer} onClose={mockOnClose} />);
 
     expect(screen.getByLabelText(/Mã khách hàng/i)).toHaveValue('KH-002');
-    expect(screen.getByLabelText(/Tên khách hàng/i)).toHaveValue('Công ty TNHH Test');
+    expect(screen.getByLabelText(/Tên khách hàng/i)).toHaveValue(
+      'Công ty TNHH Test',
+    );
     expect(screen.getByLabelText(/Số điện thoại/i)).toHaveValue('0901234567');
     expect(screen.getByLabelText(/Email/i)).toHaveValue('test@test.com');
     expect(screen.getByLabelText(/Địa chỉ/i)).toHaveValue('123 Test St');
@@ -100,18 +107,22 @@ describe('CustomerForm', () => {
     render(<CustomerForm customer={null} onClose={mockOnClose} />);
 
     // Fill in required fields
-    fireEvent.change(screen.getByLabelText(/Tên khách hàng/i), { target: { value: 'Khách hàng mới' } });
-    
+    fireEvent.change(screen.getByLabelText(/Tên khách hàng/i), {
+      target: { value: 'Khách hàng mới' },
+    });
+
     // Submit
     fireEvent.click(screen.getByRole('button', { name: /Tạo mới/i }));
 
     await waitFor(() => {
-      expect(mockCreateMutateAsync).toHaveBeenCalledWith(expect.objectContaining({
-        name: 'Khách hàng mới',
-        code: 'KH-001',
-        source: 'other',
-        status: 'active',
-      }));
+      expect(mockCreateMutateAsync).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Khách hàng mới',
+          code: 'KH-001',
+          source: 'other',
+          status: 'active',
+        }),
+      );
     });
 
     expect(toast.success).toHaveBeenCalledWith('Tạo khách hàng mới thành công');
@@ -122,22 +133,28 @@ describe('CustomerForm', () => {
     render(<CustomerForm customer={mockCustomer} onClose={mockOnClose} />);
 
     // Edit a field
-    fireEvent.change(screen.getByLabelText(/Tên khách hàng/i), { target: { value: 'Tên đã cập nhật' } });
-    
+    fireEvent.change(screen.getByLabelText(/Tên khách hàng/i), {
+      target: { value: 'Tên đã cập nhật' },
+    });
+
     // Submit
     fireEvent.click(screen.getByRole('button', { name: /Cập nhật/i }));
 
     await waitFor(() => {
-      expect(mockUpdateMutateAsync).toHaveBeenCalledWith({
-        id: 'cust-1',
-        values: expect.objectContaining({
-          name: 'Tên đã cập nhật',
-          code: 'KH-002',
+      expect(mockUpdateMutateAsync).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'cust-1',
+          values: expect.objectContaining({
+            name: 'Tên đã cập nhật',
+            code: 'KH-002',
+          }),
         }),
-      });
+      );
     });
 
-    expect(toast.success).toHaveBeenCalledWith('Cập nhật khách hàng thành công');
+    expect(toast.success).toHaveBeenCalledWith(
+      'Cập nhật khách hàng thành công',
+    );
     expect(mockOnClose).toHaveBeenCalled();
   });
 
@@ -158,7 +175,9 @@ describe('CustomerForm', () => {
     (useCreateCustomer as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
       mutateAsync: mockCreateMutateAsync,
       isPending: false,
-      error: new Error('Khách hàng đã tồn tại (trùng Mã, Email hoặc SDT). Vui lòng kiểm tra lại.'),
+      error: new Error(
+        'Khách hàng đã tồn tại (trùng Mã, Email hoặc SDT). Vui lòng kiểm tra lại.',
+      ),
     });
 
     render(<CustomerForm customer={null} onClose={mockOnClose} />);

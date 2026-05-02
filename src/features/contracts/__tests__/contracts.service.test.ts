@@ -67,8 +67,8 @@ let contractsChain: ReturnType<typeof createChainBuilder>;
 let linksChain: ReturnType<typeof createChainBuilder>;
 let auditChain: ReturnType<typeof createChainBuilder>;
 
-vi.mock('@/services/supabase/untyped', () => ({
-  untypedDb: {
+vi.mock('@/services/supabase/client', () => ({
+  supabase: {
     from: vi.fn((table: string) => {
       if (table === 'contracts') return contractsChain;
       if (table === 'contract_order_links') return linksChain;

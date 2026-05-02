@@ -8,7 +8,7 @@ import {
   useRecentOrders,
   useCustomerSources,
 } from '@/application/analytics';
-import { formatCurrency } from '@/shared/utils/format';
+import { formatCompactCurrency } from '@/shared/utils/format';
 
 import { DashboardPage } from './DashboardPage';
 
@@ -18,6 +18,12 @@ vi.mock('@/application/analytics', () => ({
   usePendingTasks: vi.fn(),
   useRecentOrders: vi.fn(),
   useCustomerSources: vi.fn(),
+}));
+
+vi.mock('@/shared/hooks/useAuth', () => ({
+  useAuth: vi.fn(() => ({
+    user: { id: 'test-user', user_metadata: { full_name: 'Test User' } },
+  })),
 }));
 
 describe('DashboardPage', () => {
@@ -90,12 +96,12 @@ describe('DashboardPage', () => {
 
     expect(screen.getAllByText('Tổng công nợ').length).toBeGreaterThan(0);
     expect(
-      screen.getAllByText(`${formatCurrency(50000000)} đ`).length,
+      screen.getAllByText(formatCompactCurrency(50000000)).length,
     ).toBeGreaterThan(0);
 
     expect(screen.getAllByText('Thu 7 ngày qua').length).toBeGreaterThan(0);
     expect(
-      screen.getAllByText(`${formatCurrency(10000000)} đ`).length,
+      screen.getAllByText(formatCompactCurrency(10000000)).length,
     ).toBeGreaterThan(0);
 
     expect(screen.getAllByText('Tỷ lệ chốt').length).toBeGreaterThan(0);
@@ -120,8 +126,8 @@ describe('DashboardPage', () => {
     );
 
     // Other elements might still be rendered normally, or we check if skeletons are present
-    expect(container.querySelectorAll('.kpi-grid.animate-pulse').length).toBe(
-      8,
-    ); // 8 KPI cards
+    expect(
+      container.querySelectorAll('.kpi-card-premium.animate-pulse').length,
+    ).toBe(8); // 8 KPI cards
   });
 });
