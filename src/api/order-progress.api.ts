@@ -10,7 +10,6 @@ import type {
   OrderProgressWithOrder,
 } from '@/features/orders/progress/types';
 import { supabase } from '@/services/supabase/client';
-import { untypedDb } from '@/services/supabase/untyped';
 import { getTenantId } from '@/services/supabase/tenant';
 import { safeUpsertOne } from '@/lib/db-guard';
 
@@ -30,7 +29,7 @@ export async function fetchOrderProgressByOrder(
 }
 
 export async function fetchProgressBoard(): Promise<OrderProgressWithOrder[]> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from(TABLE)
     .select(
       `
@@ -102,7 +101,7 @@ export async function updatePlannedDate(
 export async function fetchProgressAuditLog(
   orderId: string,
 ): Promise<ProgressAuditLog[]> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from(AUDIT_TABLE)
     .select('*')
     .eq('order_id', orderId)
@@ -114,7 +113,7 @@ export async function fetchProgressAuditLog(
 export async function fetchRecentAuditLog(
   limit = 50,
 ): Promise<ProgressAuditLogWithOrder[]> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from(AUDIT_TABLE)
     .select('*, orders(order_number, customers(name))')
     .order('created_at', { ascending: false })
@@ -124,7 +123,7 @@ export async function fetchRecentAuditLog(
 }
 
 export async function fetchProgressDashboard() {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from(TABLE)
     .select(
       `

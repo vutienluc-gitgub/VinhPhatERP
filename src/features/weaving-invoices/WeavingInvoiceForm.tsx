@@ -244,9 +244,8 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
       }
       clearDraft(DRAFT_KEY);
       onClose();
-    } catch (e) {
-      // Lỗi đã được bắt bởi react-query error state và sẽ hiển thị ở mutationError
-      console.error('Submit failed', e);
+    } catch {
+      // mutationError (line ~258) renders the error message in UI automatically
     }
   }
 

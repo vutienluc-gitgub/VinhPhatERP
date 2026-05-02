@@ -68,19 +68,22 @@ export function useUpdateSupplier() {
       values: SupplierFormValues;
       expectedUpdatedAt?: string;
     }) =>
-      updateSupplierRpc(id, {
-        p_code: values.code,
-        p_name: values.name,
-        p_category: values.category,
-        p_phone: values.phone?.trim() || undefined,
-        p_email: values.email?.trim() || undefined,
-        p_address: values.address?.trim() || undefined,
-        p_tax_code: values.tax_code?.trim() || undefined,
-        p_contact_person: values.contact_person?.trim() || undefined,
-        p_notes: values.notes?.trim() || undefined,
-        p_status: values.status,
-        p_expected_updated_at: expectedUpdatedAt,
-      }),
+      updateSupplierRpc(
+        id,
+        {
+          code: values.code,
+          name: values.name,
+          category: values.category,
+          phone: values.phone?.trim() || undefined,
+          email: values.email?.trim() || undefined,
+          address: values.address?.trim() || undefined,
+          tax_code: values.tax_code?.trim() || undefined,
+          contact_person: values.contact_person?.trim() || undefined,
+          notes: values.notes?.trim() || undefined,
+          status: values.status,
+        },
+        expectedUpdatedAt,
+      ),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },

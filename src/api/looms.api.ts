@@ -1,5 +1,5 @@
 import type { LoomWithSupplier, LoomFilter } from '@/features/looms/types';
-import { untypedDb } from '@/services/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
@@ -32,7 +32,7 @@ export async function fetchLoomsPaginated(
   const from = (page - 1) * DEFAULT_PAGE_SIZE;
   const to = from + DEFAULT_PAGE_SIZE - 1;
 
-  let query = untypedDb
+  let query = supabase
     .from(TABLE)
     .select('*, supplier:suppliers(id, code, name)', { count: 'exact' })
     .order('code', { ascending: true })
@@ -63,7 +63,7 @@ export async function fetchLoomsPaginated(
 export async function fetchLoomOptions(): Promise<
   { id: string; code: string; name: string; supplier_id: string }[]
 > {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from(TABLE)
     .select('id, code, name, supplier_id')
     .eq('status', 'active')
@@ -80,7 +80,7 @@ export async function fetchLoomOptions(): Promise<
 /* ── Next code ── */
 
 export async function fetchNextLoomCode(): Promise<string> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from(TABLE)
     .select('code')
     .ilike('code', 'LOOM-%')
@@ -110,7 +110,7 @@ export async function createLoom(
     conflictKey: 'id',
   });
   // Re-fetch with supplier join
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from(TABLE)
     .select('*, supplier:suppliers(id, code, name)')
     .eq('id', id)
@@ -125,7 +125,7 @@ export async function updateLoom(
   id: string,
   row: Omit<LoomInsertRow, 'tenant_id'>,
 ): Promise<LoomWithSupplier> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from(TABLE)
     .update(row)
     .eq('id', id)
@@ -138,6 +138,6 @@ export async function updateLoom(
 /* ── Delete ── */
 
 export async function deleteLoom(id: string): Promise<void> {
-  const { error } = await untypedDb.from(TABLE).delete().eq('id', id);
+  const { error } = await supabase.from(TABLE).delete().eq('id', id);
   if (error) throw error;
 }

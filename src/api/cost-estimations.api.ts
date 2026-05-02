@@ -2,7 +2,6 @@ import type {
   CostEstimation,
   CreateCostEstimationInput,
 } from '@/schema/cost-estimation.schema';
-import { untypedDb } from '@/services/supabase/untyped';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { safeUpsertOne } from '@/lib/db-guard';
@@ -15,10 +14,10 @@ export async function fetchCostEstimation(
   referenceType: string,
   referenceId: string,
 ): Promise<CostEstimation | null> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from(TABLE)
     .select('*')
-    .eq('reference_type', referenceType)
+    .eq('reference_type', referenceType as never)
     .eq('reference_id', referenceId)
     .order('version', { ascending: false })
     .limit(1)
@@ -34,10 +33,10 @@ export async function fetchCostEstimationHistory(
   referenceType: string,
   referenceId: string,
 ): Promise<CostEstimation[]> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from(TABLE)
     .select('*')
-    .eq('reference_type', referenceType)
+    .eq('reference_type', referenceType as never)
     .eq('reference_id', referenceId)
     .order('version', { ascending: false });
 
@@ -55,7 +54,7 @@ export async function saveCostEstimation(
   const userId = auth.data.user?.id ?? null;
 
   // Determine next version number
-  const { data: existing } = await untypedDb
+  const { data: existing } = await supabase
     .from(TABLE)
     .select('version')
     .eq('tenant_id', tenantId)

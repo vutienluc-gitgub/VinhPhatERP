@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useState, useMemo } from 'react';
+import { useCallback, useState, useMemo } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 import type { Control } from 'react-hook-form';
 
@@ -29,8 +29,8 @@ import {
   ROLL_STATUSES,
   bulkInputDefaults,
   bulkInputSchema,
-  formatBulkRollNumber,
 } from '@/schema/raw-fabric.schema';
+import { useBulkRollPrefix } from '@/shared/hooks/useBulkRollPrefix';
 import type { BulkInputFormValues } from '@/schema/raw-fabric.schema';
 
 import type { RawFabricRoll } from './types';
@@ -150,33 +150,18 @@ export function RawFabricBulkForm({ onClose }: Props) {
     name: 'rolls',
   });
 
-  const rollPrefix = useWatch({
-    control,
-    name: 'roll_prefix',
-  });
-  const startNumber = useWatch({
-    control,
-    name: 'start_number',
-  });
   const expectedRolls = useWatch({
     control,
     name: 'expected_rolls',
   });
 
-  // Auto-generate roll numbers khi prefix hoặc start_number thay đổi
-  useEffect(() => {
-    const prefix = rollPrefix?.trim() || bulkInputDefaults.roll_prefix;
-    const start =
-      typeof startNumber === 'number'
-        ? startNumber
-        : bulkInputDefaults.start_number;
-    fields.forEach((_, idx) => {
-      setValue(
-        `rolls.${idx}.roll_number`,
-        formatBulkRollNumber(prefix, start + idx),
-      );
-    });
-  }, [rollPrefix, startNumber, fields.length, setValue, fields]);
+  const { resolvedPrefix, getRollNumber } = useBulkRollPrefix({
+    control,
+    fields,
+    setValue,
+    defaultPrefix: bulkInputDefaults.roll_prefix,
+    defaultStartNumber: bulkInputDefaults.start_number,
+  });
 
   // Sinh tự động Lot number từ Lệnh SX, Nhà dệt, Phiếu sợi
   const workOrderId = useWatch({
@@ -237,7 +222,7 @@ export function RawFabricBulkForm({ onClose }: Props) {
           });
 
           const autoPrefix = `RM-${autoLot}-`;
-          if (rollPrefix !== autoPrefix) {
+          if (resolvedPrefix !== autoPrefix) {
             setValue('roll_prefix', autoPrefix, {
               shouldValidate: true,
               shouldDirty: true,
@@ -257,19 +242,14 @@ export function RawFabricBulkForm({ onClose }: Props) {
 
   /** Thêm 1 cuộn mới vào cuối grid */
   const addRow = useCallback(() => {
-    const prefix = rollPrefix?.trim() || bulkInputDefaults.roll_prefix;
-    const start =
-      typeof startNumber === 'number'
-        ? startNumber
-        : bulkInputDefaults.start_number;
     append({
-      roll_number: formatBulkRollNumber(prefix, start + fields.length),
+      roll_number: getRollNumber(fields.length),
       weight_kg: undefined as unknown as number,
       length_m: undefined,
       quality_grade: undefined,
       notes: '',
     });
-  }, [append, rollPrefix, startNumber, fields.length]);
+  }, [append, getRollNumber, fields.length]);
 
   /** Embed fields array directly as RollMatrixItem[] for LotMatrixCard */
   const gridRolls: RollMatrixItem[] = fields.map((field) => ({
@@ -290,15 +270,10 @@ export function RawFabricBulkForm({ onClose }: Props) {
 
       // Auto-populate grid dựa trên expected_rolls
       const target = typeof expectedRolls === 'number' ? expectedRolls : 1;
-      const prefix = rollPrefix?.trim() || bulkInputDefaults.roll_prefix;
-      const start =
-        typeof startNumber === 'number'
-          ? startNumber
-          : bulkInputDefaults.start_number;
       const missing = target - fields.length;
       if (missing > 0) {
         const newRows = Array.from({ length: missing }, (_, i) => ({
-          roll_number: formatBulkRollNumber(prefix, start + fields.length + i),
+          roll_number: getRollNumber(fields.length + i),
           weight_kg: undefined as unknown as number,
           length_m: undefined,
           quality_grade: undefined,
@@ -681,7 +656,7 @@ export function RawFabricBulkForm({ onClose }: Props) {
                 <legend>Nhập số tịnh từng cuộn</legend>
 
                 <LotMatrixCard
-                  title={`Lô ${rollPrefix ?? 'RM-'} — ${fields.length} cuộn`}
+                  title={`Lô ${resolvedPrefix} — ${fields.length} cuộn`}
                   rolls={gridRolls}
                   expectedRollsCount={fields.length}
                   mode="input"

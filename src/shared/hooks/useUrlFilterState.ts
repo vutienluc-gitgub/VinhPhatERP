@@ -7,7 +7,7 @@ import { useSearchParams } from 'react-router-dom';
  * Drop-in replacement cho useFilterState khi cần persist filter lên URL.
  * User có thể bookmark, share link, hoặc dùng F5 mà không mất filter.
  *
- * Interface trả về tương thích 100% với FilterBarPremium props,
+ * Interface trả về tương thích 100% với FilterBar props,
  * giống hệt useFilterState — chỉ thay đổi nơi lưu trữ (URL thay vì memory).
  *
  * Dùng `replace: true` để tránh đẩy mỗi thay đổi filter vào browser history,
@@ -22,7 +22,7 @@ import { useSearchParams } from 'react-router-dom';
  *   'search', 'status', 'from_date', 'to_date',
  * ]);
  *
- * <FilterBarPremium
+ * <FilterBar
  *   schema={filterSchema}
  *   value={filters}
  *   onChange={setFilter}
@@ -43,7 +43,7 @@ export function useUrlFilterState(keys: readonly string[]) {
   }, [searchParams, keys]);
 
   /**
-   * Cập nhật 1 trường filter. Tương thích với FilterBarPremium onChange.
+   * Cập nhật 1 trường filter. Tương thích với FilterBar onChange.
    * Giá trị rỗng ('') sẽ được xoá khỏi URL thay vì lưu ?key=.
    * Dùng `replace: true` để không spam browser history.
    */

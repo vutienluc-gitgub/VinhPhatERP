@@ -4,7 +4,7 @@ import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
   Badge,
-  DataTablePremium,
+  DataTable,
   AddButton,
   ActionBar,
 } from '@/shared/components';
@@ -112,7 +112,7 @@ export function AccountList({ onEdit, onNew }: AccountListProps) {
       )}
 
       {/* Table & Cards */}
-      <DataTablePremium
+      <DataTable
         data={filtered}
         isLoading={isLoading}
         rowKey={(acc) => acc.id}

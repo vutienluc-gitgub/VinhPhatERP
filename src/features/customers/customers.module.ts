@@ -35,7 +35,7 @@ export const customersPlugin: FeaturePlugin = {
   key: 'customers',
   route: 'customers', // keep fallback to avoid errors if any other part expects it
   label: 'Khách hàng',
-  shortLabel: 'Khách',
+  shortLabel: 'Kinh doanh',
   description: 'Danh mục khách hàng và quản lý công nợ khách hàng.',
   icon: 'UserCheck',
   requiredRoles: ['admin', 'manager', 'staff'],

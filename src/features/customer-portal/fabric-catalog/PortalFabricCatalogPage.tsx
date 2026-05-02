@@ -1,12 +1,7 @@
 import { useState } from 'react';
 
 import { useFabricCatalogList } from '@/application/settings';
-import {
-  Icon,
-  Badge,
-  DataTablePremium,
-  ClearFilterButton,
-} from '@/shared/components';
+import { Icon, Badge, DataTable, ClearFilterButton } from '@/shared/components';
 import { Button } from '@/shared/components';
 import { OrderRequestModal } from '@/features/customer-portal/orders/OrderRequestModal';
 
@@ -89,7 +84,7 @@ export function PortalFabricCatalogPage() {
           </p>
         )}
 
-        <DataTablePremium
+        <DataTable
           data={catalogs}
           isLoading={isLoading}
           rowKey={(c) => c.id}

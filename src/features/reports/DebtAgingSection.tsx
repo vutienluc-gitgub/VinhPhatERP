@@ -1,8 +1,8 @@
 import type { DebtAgingRow } from '@/api/reports.api';
 import {
-  KpiCardPremium,
-  KpiGridPremium,
-  DataTablePremium,
+  KpiCard,
+  KpiGrid,
+  DataTable,
   type DataTableColumn,
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
@@ -126,9 +126,9 @@ export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
           </div>
         </div>
 
-        <KpiGridPremium>
+        <KpiGrid>
           {buckets.map((b) => (
-            <KpiCardPremium
+            <KpiCard
               key={b.bucket}
               label={b.label}
               value={`${formatCurrency(b.total)} đ`}
@@ -138,7 +138,7 @@ export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
               isLoading={isLoading}
             />
           ))}
-        </KpiGridPremium>
+        </KpiGrid>
       </div>
 
       {criticalRows.length > 0 && (
@@ -146,7 +146,7 @@ export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
           <div className="px-5 py-2 bg-danger/5 border-y border-danger/10 text-danger text-xs font-bold uppercase tracking-widest">
             ⚠ Nợ trên 90 ngày — cần hành động gấp ({criticalRows.length} đơn)
           </div>
-          <DataTablePremium
+          <DataTable
             data={criticalRows}
             columns={columns}
             isLoading={isLoading}

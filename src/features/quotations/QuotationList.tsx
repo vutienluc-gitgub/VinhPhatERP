@@ -5,11 +5,11 @@ import {
   Icon,
   Badge,
   type BadgeVariant,
-  DataTablePremium,
+  DataTable,
   AddButton,
   Button,
   ActionBar,
-  FilterBarPremium,
+  FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
@@ -186,7 +186,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
         )}
 
       {/* Filter Bar (Config-Driven) */}
-      <FilterBarPremium
+      <FilterBar
         schema={filterSchema}
         value={filters}
         onChange={handleFilterChange}
@@ -207,7 +207,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
       )}
 
       {/* Table & Cards */}
-      <DataTablePremium
+      <DataTable
         data={quotations}
         isLoading={isLoading}
         rowKey={(q) => q.id}

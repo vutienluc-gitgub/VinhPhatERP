@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 
 import { Icon } from '@/shared/components/Icon';
 import { Button } from '@/shared/components';
-import { TacticalBoard } from '@/shared/components/ops-ui';
+import { TacticalBoard } from '@/features/shipments/ops-ui';
 import { useAvailableFinishedRolls } from '@/application/shipments';
 import { useFleetCommander } from '@/features/shipments/ops-engine/useFleetCommander';
 import { ShipmentRollBlock } from '@/features/shipments/components/ops/ShipmentRollBlock';

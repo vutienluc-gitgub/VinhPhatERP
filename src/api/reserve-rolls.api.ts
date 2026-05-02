@@ -1,6 +1,5 @@
 import type { FinishedFabricRoll } from '@/features/finished-fabric/types';
 import { supabase } from '@/services/supabase/client';
-import { untypedDb } from '@/services/supabase/untyped';
 
 const TABLE = 'finished_fabric_rolls';
 
@@ -60,7 +59,7 @@ export async function reserveRoll(
   rollId: string,
   orderId: string,
 ): Promise<void> {
-  const { error } = await untypedDb.rpc('rpc_reserve_finished_roll', {
+  const { error } = await supabase.rpc('rpc_reserve_finished_roll', {
     p_roll_id: rollId,
     p_order_id: orderId,
   });

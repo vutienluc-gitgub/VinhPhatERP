@@ -20,7 +20,7 @@ import { EmptyState } from './EmptyState';
 import { TableSkeleton } from './TableSkeleton';
 import { Button } from './Button';
 import { Pagination } from './Pagination';
-import type { PaginationConfig } from './DataTablePremium';
+import type { PaginationConfig } from './DataTable';
 
 export interface DataTableAdvancedProps<TData, TValue> {
   data: TData[];

@@ -1,4 +1,4 @@
-import { untypedDb } from '@/services/supabase/untyped';
+import { supabase } from '@/services/supabase/client';
 import {
   chatMessageResponseSchema,
   CHAT_MESSAGES_PAGE_SIZE,
@@ -14,13 +14,13 @@ export async function getOrCreateChatRoom(
   // Guard: ensure user is authenticated before calling RPC
   const {
     data: { session },
-  } = await untypedDb.auth.getSession();
+  } = await supabase.auth.getSession();
 
   if (!session) {
     throw new Error('Authentication session required to access chat rooms');
   }
 
-  const { data, error } = await untypedDb.rpc('rpc_get_or_create_chat_room', {
+  const { data, error } = await supabase.rpc('rpc_get_or_create_chat_room', {
     p_entity_type: entityType,
     p_entity_id: entityId,
   });
@@ -44,7 +44,7 @@ export async function fetchChatRoomByEntity(
   entityType: string,
   entityId: string,
 ): Promise<ChatRoom | null> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from('chat_rooms')
     .select('*')
     .eq('entity_type', entityType)
@@ -70,7 +70,7 @@ export async function fetchChatMessages(
   roomId: string,
   cursor?: string,
 ): Promise<ChatMessage[]> {
-  let query = untypedDb
+  let query = supabase
     .from('chat_messages')
     .select('*')
     .eq('room_id', roomId)
@@ -110,12 +110,12 @@ export async function sendChatMessage(params: {
   messageType?: string;
   imageUrl?: string;
 }): Promise<ChatMessage> {
-  const { data, error } = await untypedDb.rpc('rpc_send_chat_message', {
+  const { data, error } = await supabase.rpc('rpc_send_chat_message', {
     p_client_id: params.clientId,
     p_room_id: params.roomId,
     p_content: params.content,
     p_message_type: params.messageType ?? 'text',
-    p_image_url: params.imageUrl ?? null,
+    p_image_url: params.imageUrl ?? undefined,
   });
 
   if (error) {
@@ -131,7 +131,7 @@ export async function sendChatMessage(params: {
 
   // RPC returns message ID — fetch full row for cache reconciliation
   const messageId = data as string;
-  const { data: msg, error: fetchErr } = await untypedDb
+  const { data: msg, error: fetchErr } = await supabase
     .from('chat_messages')
     .select('*')
     .eq('id', messageId)
@@ -158,9 +158,9 @@ export async function updateReadReceipt(
   // Get current user to filter correctly
   const {
     data: { user },
-  } = await untypedDb.auth.getUser();
+  } = await supabase.auth.getUser();
 
-  const { error } = await untypedDb
+  const { error } = await supabase
     .from('chat_room_participants')
     .update({
       last_read_message_id: lastMessageId,
@@ -175,7 +175,7 @@ export async function updateReadReceipt(
 // ── Soft Delete Message ──
 
 export async function softDeleteMessage(messageId: string): Promise<void> {
-  const { error } = await untypedDb
+  const { error } = await supabase
     .from('chat_messages')
     .update({ deleted_at: new Date().toISOString() })
     .eq('id', messageId);
@@ -187,7 +187,7 @@ export async function softDeleteMessage(messageId: string): Promise<void> {
 
 export async function fetchUnreadCount(roomId: string): Promise<number> {
   // Get the user's last_read_at for this room
-  const { data: participant, error: pErr } = await untypedDb
+  const { data: participant, error: pErr } = await supabase
     .from('chat_room_participants')
     .select('last_read_at')
     .eq('room_id', roomId)
@@ -199,7 +199,7 @@ export async function fetchUnreadCount(roomId: string): Promise<number> {
     ?.last_read_at;
 
   // Count messages newer than last_read_at
-  let query = untypedDb
+  let query = supabase
     .from('chat_messages')
     .select('id', { count: 'exact', head: true })
     .eq('room_id', roomId)

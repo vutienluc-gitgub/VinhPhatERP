@@ -11,8 +11,8 @@ function extractValidPrices(receipt: YarnReceipt): number[] {
   }
 
   return receipt.yarn_receipt_items
-    .map((item) => Number(item.unit_price))
-    .filter((p) => !isNaN(p) && p > 0);
+    .map((item: Record<string, unknown>) => Number(item.unit_price))
+    .filter((p: number) => !isNaN(p) && p > 0);
 }
 
 /**

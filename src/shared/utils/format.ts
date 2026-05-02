@@ -9,6 +9,25 @@ export function formatCurrency(value: number): string {
 }
 
 /**
+ * Format a number as compact Vietnamese currency for KPI cards.
+ * Abbreviates large values to avoid text overflow.
+ *
+ * @example formatCompactCurrency(135_740_000) // "135.7 Tr"
+ * @example formatCompactCurrency(2_500_000_000) // "2.5 Tỷ"
+ * @example formatCompactCurrency(500_000) // "500.000 đ"
+ */
+export function formatCompactCurrency(value: number): string {
+  const abs = Math.abs(value);
+  if (abs >= 1_000_000_000) {
+    return `${(value / 1_000_000_000).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} Tỷ`;
+  }
+  if (abs >= 1_000_000) {
+    return `${(value / 1_000_000).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} Tr`;
+  }
+  return `${new Intl.NumberFormat('vi-VN').format(value)} đ`;
+}
+
+/**
  * Format an optional number as Vietnamese currency with the ₫ symbol.
  * Returns '—' for null/undefined values.
  *

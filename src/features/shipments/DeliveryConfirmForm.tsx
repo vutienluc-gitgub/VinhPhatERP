@@ -44,6 +44,7 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
       shipmentId: shipment.id,
       values,
       employeeId: shipment.delivery_staff_id ?? undefined,
+      expectedUpdatedAt: shipment.updated_at ?? undefined,
     });
     onClose();
   }

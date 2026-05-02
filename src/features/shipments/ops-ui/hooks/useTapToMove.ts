@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { TacticalBoardContext } from '@/shared/components/ops-ui/TacticalBoard/tacticalBoard.context';
+import { TacticalBoardContext } from '@/features/shipments/ops-ui/TacticalBoard/tacticalBoard.context';
 
 export function useTapToMove(entityId?: string, bayId?: string) {
   const context = useContext(TacticalBoardContext);

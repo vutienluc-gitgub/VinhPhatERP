@@ -4,9 +4,9 @@ import toast from 'react-hot-toast';
 
 import {
   AddButton,
-  FilterBarPremium,
-  KpiCardPremium,
-  KpiGridPremium,
+  FilterBar,
+  KpiCard,
+  KpiGrid,
   type FilterFieldConfig,
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
@@ -143,25 +143,25 @@ export function BomListPage() {
         </div>
 
         {/* KPI */}
-        <KpiGridPremium className="kpi-section">
-          <KpiCardPremium
+        <KpiGrid className="kpi-section">
+          <KpiCard
             variant="primary"
             label="Tổng số định mức"
             value={boms.length}
             icon="Layers"
             footer="Tất cả thẻ định mức"
           />
-          <KpiCardPremium
+          <KpiCard
             variant="success"
             label="Đang áp dụng"
             value={boms.filter((b) => b.status === 'approved').length}
             icon="CheckCircle"
             footer="BOM đã duyệt"
           />
-        </KpiGridPremium>
+        </KpiGrid>
 
         {/* Filters */}
-        <FilterBarPremium
+        <FilterBar
           schema={filterSchema}
           value={filter}
           onChange={handleFilterChange}

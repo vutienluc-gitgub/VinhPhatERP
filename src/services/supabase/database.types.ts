@@ -39,6 +39,62 @@ export type Database = {
   };
   public: {
     Tables: {
+      background_jobs: {
+        Row: {
+          attempts: number | null;
+          created_at: string;
+          id: number;
+          last_error: string | null;
+          locked_at: string | null;
+          max_attempts: number | null;
+          payload: Json;
+          queue_name: string;
+          status: string;
+          target_entity_id: string | null;
+          target_entity_table: string | null;
+          tenant_id: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          attempts?: number | null;
+          created_at?: string;
+          id?: number;
+          last_error?: string | null;
+          locked_at?: string | null;
+          max_attempts?: number | null;
+          payload: Json;
+          queue_name: string;
+          status?: string;
+          target_entity_id?: string | null;
+          target_entity_table?: string | null;
+          tenant_id?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          attempts?: number | null;
+          created_at?: string;
+          id?: number;
+          last_error?: string | null;
+          locked_at?: string | null;
+          max_attempts?: number | null;
+          payload?: Json;
+          queue_name?: string;
+          status?: string;
+          target_entity_id?: string | null;
+          target_entity_table?: string | null;
+          tenant_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'background_jobs_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       bom_templates: {
         Row: {
           active_version: number;
@@ -236,6 +292,13 @@ export type Database = {
             foreignKeyName: 'bom_yarn_items_yarn_catalog_id_fkey';
             columns: ['yarn_catalog_id'];
             isOneToOne: false;
+            referencedRelation: 'v_yarn_availability';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'bom_yarn_items_yarn_catalog_id_fkey';
+            columns: ['yarn_catalog_id'];
+            isOneToOne: false;
             referencedRelation: 'yarn_catalogs';
             referencedColumns: ['id'];
           },
@@ -285,6 +348,143 @@ export type Database = {
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      chat_messages: {
+        Row: {
+          client_id: string;
+          content: string;
+          created_at: string;
+          deleted_at: string | null;
+          id: string;
+          image_url: string | null;
+          message_type: string;
+          room_id: string;
+          sender_id: string | null;
+          status: string;
+          tenant_id: string;
+        };
+        Insert: {
+          client_id: string;
+          content: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          id?: string;
+          image_url?: string | null;
+          message_type?: string;
+          room_id: string;
+          sender_id?: string | null;
+          status?: string;
+          tenant_id: string;
+        };
+        Update: {
+          client_id?: string;
+          content?: string;
+          created_at?: string;
+          deleted_at?: string | null;
+          id?: string;
+          image_url?: string | null;
+          message_type?: string;
+          room_id?: string;
+          sender_id?: string | null;
+          status?: string;
+          tenant_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'chat_messages_room_id_fkey';
+            columns: ['room_id'];
+            isOneToOne: false;
+            referencedRelation: 'chat_rooms';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'chat_messages_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      chat_room_participants: {
+        Row: {
+          joined_at: string;
+          last_read_at: string;
+          last_read_message_id: string | null;
+          role: string;
+          room_id: string;
+          user_id: string;
+        };
+        Insert: {
+          joined_at?: string;
+          last_read_at?: string;
+          last_read_message_id?: string | null;
+          role: string;
+          room_id: string;
+          user_id: string;
+        };
+        Update: {
+          joined_at?: string;
+          last_read_at?: string;
+          last_read_message_id?: string | null;
+          role?: string;
+          room_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'chat_room_participants_room_id_fkey';
+            columns: ['room_id'];
+            isOneToOne: false;
+            referencedRelation: 'chat_rooms';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'fk_last_read_message';
+            columns: ['last_read_message_id'];
+            isOneToOne: false;
+            referencedRelation: 'chat_messages';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      chat_rooms: {
+        Row: {
+          created_at: string;
+          entity_id: string;
+          entity_type: string;
+          id: string;
+          status: string;
+          tenant_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          entity_id: string;
+          entity_type: string;
+          id?: string;
+          status?: string;
+          tenant_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          entity_id?: string;
+          entity_type?: string;
+          id?: string;
+          status?: string;
+          tenant_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'chat_rooms_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
             referencedColumns: ['id'];
           },
         ];
@@ -466,6 +666,13 @@ export type Database = {
             columns: ['order_id'];
             isOneToOne: false;
             referencedRelation: 'v_on_time_delivery';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'contract_order_links_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_order_fulfillment';
             referencedColumns: ['order_id'];
           },
           {
@@ -700,6 +907,13 @@ export type Database = {
             foreignKeyName: 'contracts_source_order_id_fkey';
             columns: ['source_order_id'];
             isOneToOne: false;
+            referencedRelation: 'v_order_fulfillment';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'contracts_source_order_id_fkey';
+            columns: ['source_order_id'];
+            isOneToOne: false;
             referencedRelation: 'v_order_summary';
             referencedColumns: ['id'];
           },
@@ -828,6 +1042,7 @@ export type Database = {
       };
       customers: {
         Row: {
+          account_balance: number;
           address: string | null;
           code: string;
           contact_person: string | null;
@@ -849,6 +1064,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
+          account_balance?: number;
           address?: string | null;
           code: string;
           contact_person?: string | null;
@@ -870,6 +1086,7 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
+          account_balance?: number;
           address?: string | null;
           code?: string;
           contact_person?: string | null;
@@ -1465,6 +1682,13 @@ export type Database = {
             foreignKeyName: 'finished_fabric_rolls_reserved_for_order_id_fkey';
             columns: ['reserved_for_order_id'];
             isOneToOne: false;
+            referencedRelation: 'v_order_fulfillment';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'finished_fabric_rolls_reserved_for_order_id_fkey';
+            columns: ['reserved_for_order_id'];
+            isOneToOne: false;
             referencedRelation: 'v_order_summary';
             referencedColumns: ['id'];
           },
@@ -1578,6 +1802,79 @@ export type Database = {
           },
         ];
       };
+      looms: {
+        Row: {
+          code: string;
+          created_at: string;
+          daily_capacity_m: number | null;
+          id: string;
+          loom_type: string;
+          max_speed_rpm: number | null;
+          max_width_cm: number | null;
+          name: string;
+          notes: string | null;
+          status: string;
+          supplier_id: string;
+          tenant_id: string;
+          updated_at: string;
+          year_manufactured: number | null;
+        };
+        Insert: {
+          code: string;
+          created_at?: string;
+          daily_capacity_m?: number | null;
+          id?: string;
+          loom_type?: string;
+          max_speed_rpm?: number | null;
+          max_width_cm?: number | null;
+          name: string;
+          notes?: string | null;
+          status?: string;
+          supplier_id: string;
+          tenant_id: string;
+          updated_at?: string;
+          year_manufactured?: number | null;
+        };
+        Update: {
+          code?: string;
+          created_at?: string;
+          daily_capacity_m?: number | null;
+          id?: string;
+          loom_type?: string;
+          max_speed_rpm?: number | null;
+          max_width_cm?: number | null;
+          name?: string;
+          notes?: string | null;
+          status?: string;
+          supplier_id?: string;
+          tenant_id?: string;
+          updated_at?: string;
+          year_manufactured?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'looms_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'suppliers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'looms_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_debt';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'looms_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       order_items: {
         Row: {
           amount: number | null;
@@ -1644,6 +1941,13 @@ export type Database = {
             columns: ['order_id'];
             isOneToOne: false;
             referencedRelation: 'v_on_time_delivery';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'order_items_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_order_fulfillment';
             referencedColumns: ['order_id'];
           },
           {
@@ -1726,6 +2030,13 @@ export type Database = {
             columns: ['order_id'];
             isOneToOne: false;
             referencedRelation: 'v_on_time_delivery';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'order_lot_allocations_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_order_fulfillment';
             referencedColumns: ['order_id'];
           },
           {
@@ -1828,6 +2139,13 @@ export type Database = {
             columns: ['order_id'];
             isOneToOne: false;
             referencedRelation: 'v_on_time_delivery';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'order_progress_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_order_fulfillment';
             referencedColumns: ['order_id'];
           },
           {
@@ -1995,7 +2313,7 @@ export type Database = {
           customer_id: string;
           id: string;
           notes: string | null;
-          order_id: string;
+          order_id: string | null;
           payment_date: string;
           payment_method: Database['public']['Enums']['payment_method'];
           payment_number: string;
@@ -2011,7 +2329,7 @@ export type Database = {
           customer_id: string;
           id?: string;
           notes?: string | null;
-          order_id: string;
+          order_id?: string | null;
           payment_date?: string;
           payment_method?: Database['public']['Enums']['payment_method'];
           payment_number: string;
@@ -2027,7 +2345,7 @@ export type Database = {
           customer_id?: string;
           id?: string;
           notes?: string | null;
-          order_id?: string;
+          order_id?: string | null;
           payment_date?: string;
           payment_method?: Database['public']['Enums']['payment_method'];
           payment_number?: string;
@@ -2075,6 +2393,13 @@ export type Database = {
             foreignKeyName: 'payments_order_id_fkey';
             columns: ['order_id'];
             isOneToOne: false;
+            referencedRelation: 'v_order_fulfillment';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'payments_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
             referencedRelation: 'v_order_summary';
             referencedColumns: ['id'];
           },
@@ -2093,6 +2418,39 @@ export type Database = {
             referencedColumns: ['id'];
           },
         ];
+      };
+      permissions: {
+        Row: {
+          action: string;
+          created_at: string | null;
+          description: string | null;
+          id: string;
+          key: string;
+          label: string;
+          module: string;
+          sort_order: number | null;
+        };
+        Insert: {
+          action: string;
+          created_at?: string | null;
+          description?: string | null;
+          id?: string;
+          key: string;
+          label: string;
+          module: string;
+          sort_order?: number | null;
+        };
+        Update: {
+          action?: string;
+          created_at?: string | null;
+          description?: string | null;
+          id?: string;
+          key?: string;
+          label?: string;
+          module?: string;
+          sort_order?: number | null;
+        };
+        Relationships: [];
       };
       profiles: {
         Row: {
@@ -2232,6 +2590,13 @@ export type Database = {
             columns: ['order_id'];
             isOneToOne: false;
             referencedRelation: 'v_on_time_delivery';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'progress_audit_log_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_order_fulfillment';
             referencedColumns: ['order_id'];
           },
           {
@@ -2438,6 +2803,13 @@ export type Database = {
             foreignKeyName: 'quotations_converted_order_id_fkey';
             columns: ['converted_order_id'];
             isOneToOne: false;
+            referencedRelation: 'v_order_fulfillment';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'quotations_converted_order_id_fkey';
+            columns: ['converted_order_id'];
+            isOneToOne: false;
             referencedRelation: 'v_order_summary';
             referencedColumns: ['id'];
           },
@@ -2489,6 +2861,7 @@ export type Database = {
           gsm: number | null;
           id: string;
           length_m: number | null;
+          loom_id: string | null;
           lot_number: string | null;
           notes: string | null;
           price_tier: Json | null;
@@ -2515,6 +2888,7 @@ export type Database = {
           gsm?: number | null;
           id?: string;
           length_m?: number | null;
+          loom_id?: string | null;
           lot_number?: string | null;
           notes?: string | null;
           price_tier?: Json | null;
@@ -2541,6 +2915,7 @@ export type Database = {
           gsm?: number | null;
           id?: string;
           length_m?: number | null;
+          loom_id?: string | null;
           lot_number?: string | null;
           notes?: string | null;
           price_tier?: Json | null;
@@ -2558,6 +2933,13 @@ export type Database = {
           yarn_receipt_id?: string | null;
         };
         Relationships: [
+          {
+            foreignKeyName: 'raw_fabric_rolls_loom_id_fkey';
+            columns: ['loom_id'];
+            isOneToOne: false;
+            referencedRelation: 'looms';
+            referencedColumns: ['id'];
+          },
           {
             foreignKeyName: 'raw_fabric_rolls_tenant_id_fkey';
             columns: ['tenant_id'];
@@ -2592,6 +2974,44 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'yarn_receipts';
             referencedColumns: ['id'];
+          },
+        ];
+      };
+      role_permissions: {
+        Row: {
+          granted: boolean;
+          id: string;
+          permission_key: string;
+          role: string;
+          tenant_id: string;
+          updated_at: string | null;
+          updated_by: string | null;
+        };
+        Insert: {
+          granted?: boolean;
+          id?: string;
+          permission_key: string;
+          role: string;
+          tenant_id: string;
+          updated_at?: string | null;
+          updated_by?: string | null;
+        };
+        Update: {
+          granted?: boolean;
+          id?: string;
+          permission_key?: string;
+          role?: string;
+          tenant_id?: string;
+          updated_at?: string | null;
+          updated_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'role_permissions_permission_key_fkey';
+            columns: ['permission_key'];
+            isOneToOne: false;
+            referencedRelation: 'permissions';
+            referencedColumns: ['key'];
           },
         ];
       };
@@ -2762,6 +3182,7 @@ export type Database = {
           employee_id: string | null;
           id: string;
           journey_status: string | null;
+          last_chat_at: string | null;
           loading_fee: number;
           notes: string | null;
           order_id: string | null;
@@ -2793,6 +3214,7 @@ export type Database = {
           employee_id?: string | null;
           id?: string;
           journey_status?: string | null;
+          last_chat_at?: string | null;
           loading_fee?: number;
           notes?: string | null;
           order_id?: string | null;
@@ -2824,6 +3246,7 @@ export type Database = {
           employee_id?: string | null;
           id?: string;
           journey_status?: string | null;
+          last_chat_at?: string | null;
           loading_fee?: number;
           notes?: string | null;
           order_id?: string | null;
@@ -2898,6 +3321,13 @@ export type Database = {
             columns: ['order_id'];
             isOneToOne: false;
             referencedRelation: 'v_on_time_delivery';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'shipments_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_order_fulfillment';
             referencedColumns: ['order_id'];
           },
           {
@@ -3246,6 +3676,7 @@ export type Database = {
           tenant_id: string | null;
           title: string;
           updated_at: string | null;
+          version: number;
           work_order_id: string | null;
         };
         Insert: {
@@ -3265,6 +3696,7 @@ export type Database = {
           tenant_id?: string | null;
           title: string;
           updated_at?: string | null;
+          version?: number;
           work_order_id?: string | null;
         };
         Update: {
@@ -3284,6 +3716,7 @@ export type Database = {
           tenant_id?: string | null;
           title?: string;
           updated_at?: string | null;
+          version?: number;
           work_order_id?: string | null;
         };
         Relationships: [
@@ -3327,6 +3760,13 @@ export type Database = {
             columns: ['order_id'];
             isOneToOne: false;
             referencedRelation: 'v_on_time_delivery';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'tasks_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_order_fulfillment';
             referencedColumns: ['order_id'];
           },
           {
@@ -3769,6 +4209,13 @@ export type Database = {
             foreignKeyName: 'work_order_y_requirements_yarn_catalog_id_fkey';
             columns: ['yarn_catalog_id'];
             isOneToOne: false;
+            referencedRelation: 'v_yarn_availability';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'work_order_y_requirements_yarn_catalog_id_fkey';
+            columns: ['yarn_catalog_id'];
+            isOneToOne: false;
             referencedRelation: 'yarn_catalogs';
             referencedColumns: ['id'];
           },
@@ -3784,6 +4231,7 @@ export type Database = {
           created_by: string | null;
           end_date: string | null;
           id: string;
+          loom_id: string | null;
           notes: string | null;
           order_id: string | null;
           standard_loss_pct: number;
@@ -3808,6 +4256,7 @@ export type Database = {
           created_by?: string | null;
           end_date?: string | null;
           id?: string;
+          loom_id?: string | null;
           notes?: string | null;
           order_id?: string | null;
           standard_loss_pct?: number;
@@ -3832,6 +4281,7 @@ export type Database = {
           created_by?: string | null;
           end_date?: string | null;
           id?: string;
+          loom_id?: string | null;
           notes?: string | null;
           order_id?: string | null;
           standard_loss_pct?: number;
@@ -3863,6 +4313,13 @@ export type Database = {
             referencedColumns: ['id'];
           },
           {
+            foreignKeyName: 'work_orders_loom_id_fkey';
+            columns: ['loom_id'];
+            isOneToOne: false;
+            referencedRelation: 'looms';
+            referencedColumns: ['id'];
+          },
+          {
             foreignKeyName: 'work_orders_order_id_fkey';
             columns: ['order_id'];
             isOneToOne: false;
@@ -3881,6 +4338,13 @@ export type Database = {
             columns: ['order_id'];
             isOneToOne: false;
             referencedRelation: 'v_on_time_delivery';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'work_orders_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_order_fulfillment';
             referencedColumns: ['order_id'];
           },
           {
@@ -4069,6 +4533,13 @@ export type Database = {
             foreignKeyName: 'yarn_receipt_items_yarn_catalog_id_fkey';
             columns: ['yarn_catalog_id'];
             isOneToOne: false;
+            referencedRelation: 'v_yarn_availability';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_receipt_items_yarn_catalog_id_fkey';
+            columns: ['yarn_catalog_id'];
+            isOneToOne: false;
             referencedRelation: 'yarn_catalogs';
             referencedColumns: ['id'];
           },
@@ -4140,6 +4611,68 @@ export type Database = {
             columns: ['tenant_id'];
             isOneToOne: false;
             referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      yarn_reservations: {
+        Row: {
+          created_at: string;
+          id: string;
+          reserved_kg: number;
+          status: string;
+          tenant_id: string | null;
+          updated_at: string;
+          work_order_id: string;
+          yarn_catalog_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          reserved_kg?: number;
+          status?: string;
+          tenant_id?: string | null;
+          updated_at?: string;
+          work_order_id: string;
+          yarn_catalog_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          reserved_kg?: number;
+          status?: string;
+          tenant_id?: string | null;
+          updated_at?: string;
+          work_order_id?: string;
+          yarn_catalog_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'yarn_reservations_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_reservations_work_order_id_fkey';
+            columns: ['work_order_id'];
+            isOneToOne: false;
+            referencedRelation: 'work_orders';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_reservations_yarn_catalog_id_fkey';
+            columns: ['yarn_catalog_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_yarn_availability';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_reservations_yarn_catalog_id_fkey';
+            columns: ['yarn_catalog_id'];
+            isOneToOne: false;
+            referencedRelation: 'yarn_catalogs';
             referencedColumns: ['id'];
           },
         ];
@@ -4262,6 +4795,27 @@ export type Database = {
         };
         Relationships: [];
       };
+      v_order_fulfillment: {
+        Row: {
+          completed_stages: number | null;
+          customer_name: string | null;
+          delivery_date: string | null;
+          fulfillment_pct: number | null;
+          is_overdue: boolean | null;
+          order_date: string | null;
+          order_id: string | null;
+          order_number: string | null;
+          order_status: Database['public']['Enums']['order_status'] | null;
+          total_amount: number | null;
+          total_ordered_qty: number | null;
+          total_produced_m: number | null;
+          total_stages: number | null;
+          total_target_m: number | null;
+          wo_completed: number | null;
+          wo_count: number | null;
+        };
+        Relationships: [];
+      };
       v_order_summary: {
         Row: {
           balance_due: number | null;
@@ -4338,6 +4892,13 @@ export type Database = {
             foreignKeyName: 'order_progress_order_id_fkey';
             columns: ['order_id'];
             isOneToOne: false;
+            referencedRelation: 'v_order_fulfillment';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'order_progress_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
             referencedRelation: 'v_order_summary';
             referencedColumns: ['id'];
           },
@@ -4404,6 +4965,19 @@ export type Database = {
         };
         Relationships: [];
       };
+      v_yarn_availability: {
+        Row: {
+          available_qty: number | null;
+          code: string | null;
+          color_name: string | null;
+          id: string | null;
+          name: string | null;
+          reserved_qty: number | null;
+          total_stock_qty: number | null;
+          unit: string | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       accept_invitation: {
@@ -4418,15 +4992,10 @@ export type Database = {
         Args: { p_reqs_data: Json; p_wo_data: Json; p_wo_id: string };
         Returns: undefined;
       };
-      atomic_update_yarn_receipt:
-        | {
-            Args: { p_header: Json; p_id: string; p_items: Json };
-            Returns: undefined;
-          }
-        | {
-            Args: { p_header: Json; p_id: string; p_items: Json };
-            Returns: undefined;
-          };
+      atomic_update_yarn_receipt: {
+        Args: { p_header: Json; p_id: string; p_items: Json };
+        Returns: undefined;
+      };
       create_shipment_from_finished_fabric:
         | {
             Args: {
@@ -4488,8 +5057,21 @@ export type Database = {
         Args: { p_order_id: string; p_reason: string };
         Returns: undefined;
       };
+      rpc_acquire_entity_lock: {
+        Args: { p_entity_id: string; p_entity_table: string };
+        Returns: undefined;
+      };
       rpc_approve_bom: {
         Args: { p_bom_id: string; p_reason: string; p_user_id: string };
+        Returns: undefined;
+      };
+      rpc_assign_delivery_staff: {
+        Args: {
+          p_expected_updated_at?: string;
+          p_shipment_id: string;
+          p_staff_id: string;
+          p_vehicle_info?: string;
+        };
         Returns: undefined;
       };
       rpc_cancel_order: { Args: { p_order_id: string }; Returns: undefined };
@@ -4508,11 +5090,15 @@ export type Database = {
       };
       rpc_confirm_order: { Args: { p_order_id: string }; Returns: undefined };
       rpc_confirm_shipment: {
-        Args: { p_shipment_id: string };
+        Args: { p_expected_updated_at?: string; p_shipment_id: string };
         Returns: undefined;
       };
       rpc_confirm_weaving_invoice: {
         Args: { p_invoice_id: string };
+        Returns: undefined;
+      };
+      rpc_consume_yarn_reservation: {
+        Args: { p_work_order_id: string };
         Returns: undefined;
       };
       rpc_convert_quotation_to_order: {
@@ -4520,8 +5106,8 @@ export type Database = {
         Returns: Json;
       };
       rpc_create_bom: {
-        Args: { p_header: Json; p_items: Json; p_user_id: string };
-        Returns: Json;
+        Args: { p_header: Json; p_items: Json; p_user_id?: string };
+        Returns: string;
       };
       rpc_create_dyeing_order: {
         Args: { p_header: Json; p_items: Json };
@@ -4570,12 +5156,10 @@ export type Database = {
         Args: { p_header: Json; p_rolls: Json };
         Returns: Json;
       };
-      rpc_create_work_order:
-        | { Args: { p_wo_data: Json }; Returns: string }
-        | {
-            Args: { p_progress_data: Json; p_reqs_data: Json; p_wo_data: Json };
-            Returns: Json;
-          };
+      rpc_create_work_order: {
+        Args: { p_progress_data: Json; p_reqs_data: Json; p_wo_data: Json };
+        Returns: Json;
+      };
       rpc_create_yarn_receipt: {
         Args: { p_header: Json; p_items: Json };
         Returns: Json;
@@ -4587,6 +5171,30 @@ export type Database = {
       rpc_deprecate_bom: {
         Args: { p_bom_id: string; p_reason: string; p_user_id: string };
         Returns: undefined;
+      };
+      rpc_dequeue_job: {
+        Args: { p_queue_name: string };
+        Returns: {
+          attempts: number | null;
+          created_at: string;
+          id: number;
+          last_error: string | null;
+          locked_at: string | null;
+          max_attempts: number | null;
+          payload: Json;
+          queue_name: string;
+          status: string;
+          target_entity_id: string | null;
+          target_entity_table: string | null;
+          tenant_id: string | null;
+          updated_at: string;
+        }[];
+        SetofOptions: {
+          from: '*';
+          to: 'background_jobs';
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
       };
       rpc_get_cash_flow_summary: {
         Args: { p_from?: string; p_to?: string };
@@ -4619,8 +5227,35 @@ export type Database = {
           total_amount: number;
         }[];
       };
+      rpc_get_or_create_chat_room: {
+        Args: { p_entity_id: string; p_entity_type: string };
+        Returns: string;
+      };
+      rpc_get_user_permissions: {
+        Args: { p_role: string; p_tenant_id: string };
+        Returns: {
+          granted: boolean;
+          permission_key: string;
+        }[];
+      };
+      rpc_increment_dyeing_order_paid: {
+        Args: { p_amount_to_add: number; p_id: string };
+        Returns: undefined;
+      };
+      rpc_increment_weaving_invoice_paid: {
+        Args: { p_amount_to_add: number; p_id: string };
+        Returns: undefined;
+      };
       rpc_link_profile_to_employee: {
         Args: { p_employee_id: string; p_profile_id?: string };
+        Returns: undefined;
+      };
+      rpc_mark_shipment_delivered: {
+        Args: {
+          p_data: Json;
+          p_expected_updated_at?: string;
+          p_shipment_id: string;
+        };
         Returns: undefined;
       };
       rpc_next_weaving_invoice_number: { Args: never; Returns: string };
@@ -4640,9 +5275,35 @@ export type Database = {
         Args: { p_quotation_id: string; p_reason: string };
         Returns: Json;
       };
+      rpc_release_yarn_reservation: {
+        Args: { p_work_order_id: string };
+        Returns: undefined;
+      };
+      rpc_reserve_finished_roll: {
+        Args: { p_order_id: string; p_roll_id: string };
+        Returns: undefined;
+      };
+      rpc_reserve_yarn: {
+        Args: { p_items: Json; p_work_order_id: string };
+        Returns: Json;
+      };
+      rpc_resolve_job: {
+        Args: { p_error?: string; p_job_id: number; p_status: string };
+        Returns: undefined;
+      };
       rpc_revise_bom: {
         Args: { p_bom_id: string; p_reason: string };
         Returns: undefined;
+      };
+      rpc_send_chat_message: {
+        Args: {
+          p_client_id: string;
+          p_content: string;
+          p_image_url?: string;
+          p_message_type?: string;
+          p_room_id: string;
+        };
+        Returns: string;
       };
       rpc_start_work_order: {
         Args: { p_today: string; p_wo_id: string };
@@ -4657,11 +5318,25 @@ export type Database = {
         Returns: undefined;
       };
       rpc_update_dyeing_order: {
-        Args: { p_header: Json; p_id: string; p_items: Json };
+        Args: {
+          p_expected_updated_at?: string;
+          p_header: Json;
+          p_id: string;
+          p_items: Json;
+        };
         Returns: undefined;
       };
+      rpc_update_expense: {
+        Args: { p_data: Json; p_expense_id: string };
+        Returns: Json;
+      };
       rpc_update_order_with_items: {
-        Args: { p_header_data: Json; p_items_data: Json; p_order_id: string };
+        Args: {
+          p_expected_updated_at?: string;
+          p_header_data: Json;
+          p_items_data: Json;
+          p_order_id: string;
+        };
         Returns: undefined;
       };
       rpc_update_quotation: {
@@ -4670,6 +5345,7 @@ export type Database = {
       };
       rpc_update_shipment_journey: {
         Args: {
+          p_expected_updated_at?: string;
           p_journey_status: string;
           p_notes?: string;
           p_shipment_id: string;
@@ -4684,6 +5360,7 @@ export type Database = {
           p_code: string;
           p_contact_person?: string;
           p_email?: string;
+          p_expected_updated_at?: string;
           p_id: string;
           p_name: string;
           p_notes?: string;
@@ -4694,15 +5371,33 @@ export type Database = {
         Returns: string;
       };
       rpc_update_weaving_invoice: {
-        Args: { p_header: Json; p_id: string; p_rolls: Json };
+        Args: {
+          p_expected_updated_at?: string;
+          p_header: Json;
+          p_id: string;
+          p_rolls: Json;
+        };
         Returns: undefined;
       };
       rpc_update_work_order: {
-        Args: { p_wo_data: Json; p_wo_id: string };
+        Args: {
+          p_expected_updated_at?: string;
+          p_wo_data: Json;
+          p_wo_id: string;
+        };
         Returns: undefined;
       };
       rpc_update_yarn_receipt: {
-        Args: { p_header: Json; p_id: string; p_items: Json };
+        Args: {
+          p_expected_updated_at?: string;
+          p_header: Json;
+          p_id: string;
+          p_items: Json;
+        };
+        Returns: undefined;
+      };
+      rpc_upsert_role_permissions: {
+        Args: { p_permissions: Json; p_role: string; p_tenant_id: string };
         Returns: undefined;
       };
       show_limit: { Args: never; Returns: number };
@@ -4757,7 +5452,12 @@ export type Database = {
         | 'completed'
         | 'cancelled';
       payment_document_type: 'weaving_invoice' | 'yarn_receipt';
-      payment_method: 'cash' | 'bank_transfer' | 'check' | 'other';
+      payment_method:
+        | 'cash'
+        | 'bank_transfer'
+        | 'check'
+        | 'other'
+        | 'customer_balance';
       production_stage:
         | 'warping'
         | 'weaving'
@@ -4992,7 +5692,13 @@ export const Constants = {
         'cancelled',
       ],
       payment_document_type: ['weaving_invoice', 'yarn_receipt'],
-      payment_method: ['cash', 'bank_transfer', 'check', 'other'],
+      payment_method: [
+        'cash',
+        'bank_transfer',
+        'check',
+        'other',
+        'customer_balance',
+      ],
       production_stage: [
         'warping',
         'weaving',
@@ -5052,7 +5758,3 @@ export const Constants = {
     },
   },
 } as const;
-
-// Custom type aliases for backward compatibility
-export type UserRole = Database['public']['Enums']['user_role'];
-export type Profile = Database['public']['Tables']['profiles']['Row'];

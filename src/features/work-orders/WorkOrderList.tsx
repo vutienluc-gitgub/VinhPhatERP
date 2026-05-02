@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
@@ -6,11 +7,11 @@ import {
   Icon,
   Badge,
   type BadgeVariant,
-  DataTablePremium,
+  DataTable,
   AddButton,
   Button,
   ActionBar,
-  FilterBarPremium,
+  FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
@@ -81,7 +82,7 @@ export function WorkOrderList({
     (filter.status && filter.status !== 'all')
   );
 
-  // Adapter: FilterBarPremium dung '' cho 'all'
+  // Adapter: FilterBar dung '' cho 'all'
   const filterBarValue = {
     search: filter.search || '',
     status: filter.status === 'all' ? '' : (filter.status ?? ''),
@@ -163,7 +164,9 @@ export function WorkOrderList({
         });
       }
     } catch (e) {
-      console.error(e);
+      toast.error(
+        e instanceof Error ? e.message : 'Có lỗi xảy ra khi chuyển trạng thái',
+      );
     }
   };
 
@@ -176,7 +179,9 @@ export function WorkOrderList({
       });
       setCompleteWoId(null);
     } catch (e) {
-      console.error(e);
+      toast.error(
+        e instanceof Error ? e.message : 'Có lỗi xảy ra khi hoàn thành lệnh',
+      );
     }
   };
 
@@ -239,7 +244,7 @@ export function WorkOrderList({
       </div>
 
       {/* Filters (Config-Driven) */}
-      <FilterBarPremium
+      <FilterBar
         schema={filterSchema}
         value={filterBarValue}
         onChange={handleFilterChange}
@@ -264,7 +269,7 @@ export function WorkOrderList({
       ) : (
         <>
           {/* Table & Cards */}
-          <DataTablePremium
+          <DataTable
             data={orders}
             isLoading={isLoading}
             rowKey={(wo) => wo.id}

@@ -1,12 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 
-import {
-  KpiCardPremium,
-  KpiGridPremium,
-  Button,
-  LiveIndicator,
-} from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { KpiCard, KpiGrid, Button, LiveIndicator } from '@/shared/components';
+import { formatCompactCurrency } from '@/shared/utils/format';
 import {
   useDashboardStats,
   usePendingTasks,
@@ -50,15 +45,15 @@ export function DashboardPage() {
         {/* ── Cột chính (Main Content) - Chiếm 8/12 màn hình lớn ── */}
         <div className="col-span-12 lg:col-span-8 flex flex-col gap-6">
           {/* ── Top Level KPIs ── */}
-          <KpiGridPremium>
-            <KpiCardPremium
+          <KpiGrid>
+            <KpiCard
               label="Đang xử lý"
               value={stats?.activeOrders ?? 0}
               icon="Package"
               variant="primary"
               isLoading={statsLoading}
             />
-            <KpiCardPremium
+            <KpiCard
               label="Trễ hạn"
               value={stats?.overdueOrders ?? 0}
               icon="TriangleAlert"
@@ -66,39 +61,39 @@ export function DashboardPage() {
               isLoading={statsLoading}
               footer={stats?.overdueOrders ? 'Cần xử lý ngay' : 'Đúng tiến độ'}
             />
-            <KpiCardPremium
+            <KpiCard
               label="Tổng công nợ"
-              value={stats ? `${formatCurrency(stats.totalDebt)} đ` : '—'}
+              value={stats ? formatCompactCurrency(stats.totalDebt) : '—'}
               icon="Wallet"
               variant={stats && stats.totalDebt > 0 ? 'danger' : 'success'}
               isLoading={statsLoading}
             />
-            <KpiCardPremium
+            <KpiCard
               label="Thu 7 ngày qua"
-              value={stats ? `${formatCurrency(stats.recentPayments)} đ` : '—'}
+              value={stats ? formatCompactCurrency(stats.recentPayments) : '—'}
               icon="CircleCheck"
               variant="success"
               isLoading={statsLoading}
             />
-          </KpiGridPremium>
+          </KpiGrid>
 
           {/* ── Operational KPIs ── */}
-          <KpiGridPremium>
-            <KpiCardPremium
+          <KpiGrid>
+            <KpiCard
               label="Đơn nháp"
               value={stats?.draftOrders ?? 0}
               icon="FileText"
               variant="secondary"
               isLoading={statsLoading}
             />
-            <KpiCardPremium
+            <KpiCard
               label="Chờ giao"
               value={stats?.pendingShipments ?? 0}
               icon="Truck"
               variant="warning"
               isLoading={statsLoading}
             />
-            <KpiCardPremium
+            <KpiCard
               label="Tỷ lệ chốt"
               value={
                 stats?.conversionRate != null ? `${stats.conversionRate}%` : '—'
@@ -107,14 +102,14 @@ export function DashboardPage() {
               variant="primary"
               isLoading={statsLoading}
             />
-            <KpiCardPremium
+            <KpiCard
               label="BG sắp hết hạn"
               value={stats?.expiringQuotations ?? 0}
               icon="Clock"
               variant={stats?.expiringQuotations ? 'danger' : 'secondary'}
               isLoading={statsLoading}
             />
-          </KpiGridPremium>
+          </KpiGrid>
 
           {/* ── Analytics ── */}
           <div className="h-full">

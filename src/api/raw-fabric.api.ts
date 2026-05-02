@@ -5,7 +5,6 @@ import type {
   RawFabricFilter,
 } from '@/features/raw-fabric/types';
 import { supabase } from '@/services/supabase/client';
-import { untypedDb } from '@/services/supabase/untyped';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
@@ -193,10 +192,10 @@ export async function fetchWorkOrderOptions(): Promise<WorkOrderOption[]> {
 
 export async function fetchRawFabricStats(): Promise<InventoryStats> {
   const tenantId = await getTenantId();
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from('v_raw_fabric_inventory')
     .select('roll_count, total_length_m, total_weight_kg')
-    .eq('tenant_id', tenantId);
+    .eq('tenant_id' as never, tenantId);
   if (error) throw error;
   const rows =
     (data as {

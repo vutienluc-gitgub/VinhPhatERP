@@ -80,7 +80,7 @@ describe('DashboardPage', () => {
       </MemoryRouter>,
     );
 
-    // KpiCardPremium does not render label as a separate element that can be easily queried if there are duplicates,
+    // KpiCard does not render label as a separate element that can be easily queried if there are duplicates,
     // but we can query by text since label is just a string.
     expect(screen.getAllByText('Đang xử lý').length).toBeGreaterThan(0);
     expect(screen.getAllByText('10').length).toBeGreaterThan(0);
@@ -114,14 +114,14 @@ describe('DashboardPage', () => {
       </MemoryRouter>,
     );
 
-    // KpiCardPremium renders .animate-pulse instead of text when loading
+    // KpiCard renders .animate-pulse instead of text when loading
     expect(container.querySelectorAll('.animate-pulse').length).toBeGreaterThan(
       0,
     );
 
     // Other elements might still be rendered normally, or we check if skeletons are present
-    expect(
-      container.querySelectorAll('.kpi-card-premium.animate-pulse').length,
-    ).toBe(8); // 8 KPI cards
+    expect(container.querySelectorAll('.kpi-grid.animate-pulse').length).toBe(
+      8,
+    ); // 8 KPI cards
   });
 });

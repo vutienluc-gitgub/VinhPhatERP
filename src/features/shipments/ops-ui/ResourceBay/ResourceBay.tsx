@@ -1,9 +1,9 @@
 import { useDroppable } from '@dnd-kit/core';
 import { clsx } from 'clsx';
 
-import { useTapToMove } from '@/shared/components/ops-ui/hooks/useTapToMove';
-import { getEntityGradeStyles } from '@/shared/components/ops-ui/utils/gradeColor';
-import { ResourceBayProps } from '@/shared/components/ops-ui/ResourceBay/resourceBay.types';
+import { useTapToMove } from '@/features/shipments/ops-ui/hooks/useTapToMove';
+import { getEntityGradeStyles } from '@/features/shipments/ops-ui/utils/gradeColor';
+import { ResourceBayProps } from '@/features/shipments/ops-ui/ResourceBay/resourceBay.types';
 
 export function ResourceBay({
   id,

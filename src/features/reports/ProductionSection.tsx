@@ -3,9 +3,9 @@ import type {
   OnTimeDeliveryRow,
 } from '@/api/reports.api';
 import {
-  KpiCardPremium,
-  KpiGridPremium,
-  DataTablePremium,
+  KpiCard,
+  KpiGrid,
+  DataTable,
   type DataTableColumn,
 } from '@/shared/components';
 import { sumBy, maxBy } from '@/shared/utils/array.util';
@@ -146,8 +146,8 @@ export function ProductionSection({
         <span className="font-bold text-lg">Sản xuất & Giao hàng</span>
       </div>
 
-      <KpiGridPremium className="px-5 py-4">
-        <KpiCardPremium
+      <KpiGrid className="px-5 py-4">
+        <KpiCard
           label="Giao đúng hạn"
           value={`${onTimePct}%`}
           icon="CheckCircle"
@@ -156,7 +156,7 @@ export function ProductionSection({
           }
           isLoading={isLoading}
         />
-        <KpiCardPremium
+        <KpiCard
           label="TB trễ (ngày)"
           value={formatNum(avgOverallDeviation)}
           icon="Clock"
@@ -164,7 +164,7 @@ export function ProductionSection({
           isLoading={isLoading}
         />
         {worstStage && (
-          <KpiCardPremium
+          <KpiCard
             label="Mắc xích yếu"
             value={STAGE_LABELS[worstStage.stage] ?? worstStage.stage}
             icon="Search"
@@ -173,16 +173,16 @@ export function ProductionSection({
             isLoading={isLoading}
           />
         )}
-        <KpiCardPremium
+        <KpiCard
           label="Đơn theo dõi"
           value={totalDeliveries}
           icon="List"
           variant="secondary"
           isLoading={isLoading}
         />
-      </KpiGridPremium>
+      </KpiGrid>
 
-      <DataTablePremium
+      <DataTable
         data={stages}
         columns={columns}
         isLoading={isLoading}

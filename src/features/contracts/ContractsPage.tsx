@@ -1,9 +1,9 @@
 import {
   Icon,
-  DataTablePremium,
+  DataTable,
   AddButton,
   ActionBar,
-  FilterBarPremium,
+  FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
@@ -172,7 +172,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
         </div>
 
         {/* Filter (Config-Driven) */}
-        <FilterBarPremium
+        <FilterBar
           schema={filterSchema}
           value={filters}
           onChange={handleFilterChange}
@@ -188,7 +188,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
         )}
 
         {/* Table */}
-        <DataTablePremium
+        <DataTable
           data={contracts}
           isLoading={isLoading}
           rowKey={(c) => c.id}

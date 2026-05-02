@@ -1,4 +1,3 @@
-import { untypedDb } from '@/services/supabase/untyped';
 import { supabase } from '@/services/supabase/client';
 import type {
   DriverShipment,
@@ -12,8 +11,8 @@ type EmployeeSummary = { id: string; name: string; code: string; role: string };
 export async function fetchMyDriverEmployee(
   profileId: string,
 ): Promise<EmployeeSummary | null> {
-  // 1. Lay employee_id tu profiles (untypedDb vi column moi chua duoc gen types)
-  const { data: profile, error: profileError } = await untypedDb
+  // 1. Lay employee_id tu profiles
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('employee_id')
     .eq('id', profileId)
@@ -61,7 +60,7 @@ export async function fetchDriverShipments(
 export async function fetchJourneyLogs(
   shipmentId: string,
 ): Promise<JourneyLog[]> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from('shipment_journey_logs')
     .select('*')
     .eq('shipment_id', shipmentId)
@@ -78,11 +77,11 @@ export async function updateJourneyStatus(
   notes: string | null,
   updatedBy: string | null,
 ): Promise<void> {
-  const { error } = await untypedDb.rpc('rpc_update_shipment_journey', {
+  const { error } = await supabase.rpc('rpc_update_shipment_journey', {
     p_shipment_id: shipmentId,
     p_journey_status: journeyStatus,
-    p_notes: notes,
-    p_updated_by: updatedBy,
+    p_notes: notes ?? undefined,
+    p_updated_by: updatedBy ?? undefined,
   });
   if (error) {
     if (error.message?.includes('SHIPMENT_NOT_IN_TRANSIT'))

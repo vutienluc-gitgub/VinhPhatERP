@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 
 import { Button } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
-import { NumberInput } from '@/shared/components/NumberInput';
+import { BasicNumberInput } from '@/shared/components/BasicNumberInput';
 import { Icon } from '@/shared/components/Icon';
 import {
   useFabricCatalogs,
@@ -377,7 +377,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
                       name={`bom_yarn_items.${index}.ratio_pct` as const}
                       control={control}
                       render={({ field }) => (
-                        <NumberInput
+                        <BasicNumberInput
                           className={`field-input${errors.bom_yarn_items?.[index]?.ratio_pct ? ' is-error' : ''}`}
                           value={field.value}
                           onChange={field.onChange}
@@ -408,7 +408,7 @@ export function BomForm({ initialData, onSuccess, onCancel }: BomFormProps) {
                       }
                       control={control}
                       render={({ field }) => (
-                        <NumberInput
+                        <BasicNumberInput
                           className={`field-input${watchWidthCm && watchGsm ? ' bg-surface-raised cursor-default' : ''}${errors.bom_yarn_items?.[index]?.consumption_kg_per_m ? ' is-error' : ''}`}
                           value={field.value}
                           onChange={field.onChange}

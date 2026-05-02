@@ -5,10 +5,10 @@ import {
   Icon,
   Badge,
   type BadgeVariant,
-  DataTablePremium,
+  DataTable,
   AddButton,
   ActionBar,
-  FilterBarPremium,
+  FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
@@ -100,7 +100,7 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
       </div>
 
       {/* Filters (Config-Driven) */}
-      <FilterBarPremium
+      <FilterBar
         schema={filterSchema}
         value={filters}
         onChange={handleFilterChange}
@@ -121,7 +121,7 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
       )}
 
       {/* Table & Cards */}
-      <DataTablePremium
+      <DataTable
         data={expenses}
         isLoading={isLoading}
         rowKey={(exp) => exp.id}

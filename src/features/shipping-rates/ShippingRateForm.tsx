@@ -57,8 +57,8 @@ export function ShippingRateForm({ item, onClose }: Props) {
         await create.mutateAsync(values);
       }
       onClose();
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // mutationError (line ~65) renders the error message in UI automatically
     }
   }
 

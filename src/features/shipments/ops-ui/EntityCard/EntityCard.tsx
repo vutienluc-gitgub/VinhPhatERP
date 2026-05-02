@@ -2,8 +2,8 @@ import { useDraggable } from '@dnd-kit/core';
 import { clsx } from 'clsx';
 
 import { Icon } from '@/shared/components/Icon';
-import { getEntityGradeStyles } from '@/shared/components/ops-ui/utils/gradeColor';
-import { useTapToMove } from '@/shared/components/ops-ui/hooks/useTapToMove';
+import { getEntityGradeStyles } from '@/features/shipments/ops-ui/utils/gradeColor';
+import { useTapToMove } from '@/features/shipments/ops-ui/hooks/useTapToMove';
 
 import { EntityCardProps } from './entityCard.types';
 

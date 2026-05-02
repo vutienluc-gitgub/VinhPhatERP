@@ -2,7 +2,7 @@ import { memo, useCallback } from 'react';
 
 import { useControlledDisplay } from '@/shared/hooks/useControlledDisplay';
 
-type NumberInputProps = {
+type BasicNumberInputProps = {
   value: number | null | undefined;
   onChange: (value: number | null) => void;
   onBlur?: () => void;
@@ -32,7 +32,7 @@ function toNumber(text: string): number | null {
   return isNaN(parsed) ? null : parsed;
 }
 
-export const NumberInput = memo(function NumberInput({
+export const BasicNumberInput = memo(function BasicNumberInput({
   value,
   onChange,
   onBlur,
@@ -44,7 +44,7 @@ export const NumberInput = memo(function NumberInput({
   max,
   step = 'any',
   readOnly,
-}: NumberInputProps) {
+}: BasicNumberInputProps) {
   const { display, setDisplay, isFocusedRef } = useControlledDisplay(
     value,
     toDisplay,

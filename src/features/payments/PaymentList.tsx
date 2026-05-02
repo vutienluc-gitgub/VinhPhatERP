@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
-  DataTablePremium,
-  FilterBarPremium,
+  DataTable,
+  FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
@@ -55,7 +55,7 @@ export function PaymentList() {
   return (
     <div className="panel-card card-flush">
       {/* Filters (Config-Driven) */}
-      <FilterBarPremium
+      <FilterBar
         schema={filterSchema}
         value={filters}
         onChange={handleFilterChange}
@@ -76,7 +76,7 @@ export function PaymentList() {
       )}
 
       {/* Table & Cards */}
-      <DataTablePremium
+      <DataTable
         data={payments}
         isLoading={isLoading}
         rowKey={(p) => p.id}

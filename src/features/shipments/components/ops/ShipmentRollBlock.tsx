@@ -1,5 +1,5 @@
-import { EntityCard } from '@/shared/components/ops-ui';
-import type { OpsGrade } from '@/shared/components/ops-ui';
+import { EntityCard } from '@/features/shipments/ops-ui';
+import type { OpsGrade } from '@/features/shipments/ops-ui';
 import type { AvailableRoll } from '@/features/shipments/ShipmentRollPicker';
 
 interface ShipmentRollBlockProps {

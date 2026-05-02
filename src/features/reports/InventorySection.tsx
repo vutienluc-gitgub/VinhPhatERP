@@ -1,8 +1,8 @@
 import type { InventorySummary } from '@/api/reports.api';
 import {
-  KpiCardPremium,
-  KpiGridPremium,
-  DataTablePremium,
+  KpiCard,
+  KpiGrid,
+  DataTable,
   type DataTableColumn,
 } from '@/shared/components';
 import { sumBy } from '@/shared/utils/array.util';
@@ -24,36 +24,36 @@ export function InventorySection({ data, isLoading }: InventorySectionProps) {
         <span className="font-bold text-lg">Cơ cấu kho hiện tại</span>
       </div>
 
-      <KpiGridPremium className="px-5 py-4">
-        <KpiCardPremium
+      <KpiGrid className="px-5 py-4">
+        <KpiCard
           label="Cuộn mộc"
           value={rawRolls}
           icon="Layers"
           variant="primary"
           isLoading={isLoading}
         />
-        <KpiCardPremium
+        <KpiCard
           label="Mét mộc"
           value={formatNumber(rawLength)}
           icon="Hash"
           variant="primary"
           isLoading={isLoading}
         />
-        <KpiCardPremium
+        <KpiCard
           label="Cuộn TP"
           value={finishedRolls}
           icon="Check"
           variant="success"
           isLoading={isLoading}
         />
-        <KpiCardPremium
+        <KpiCard
           label="Mét TP"
           value={formatNumber(finishedLength)}
           icon="Hash"
           variant="success"
           isLoading={isLoading}
         />
-      </KpiGridPremium>
+      </KpiGrid>
 
       <div className="space-y-4">
         <InventoryTable
@@ -151,7 +151,7 @@ function InventoryTable({
         </p>
         <p className="text-xs font-bold">{title}</p>
       </div>
-      <DataTablePremium
+      <DataTable
         data={rows}
         columns={columns}
         isLoading={isLoading}

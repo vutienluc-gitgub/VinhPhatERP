@@ -33,6 +33,23 @@ export const WORK_ORDER_STATUSES: Record<
   },
 };
 
+/**
+ * Tạo mã Lệnh Sản Xuất an toàn, không dùng Math.random() (chỉ 1000 giá trị/tháng).
+ * Dùng crypto.randomUUID() → 65.536 giá trị hex 4 ký tự/tháng, thực tế không trùng.
+ * Output: "WO-202506-A3F1"
+ */
+export function generateWorkOrderNumber(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const suffix = crypto
+    .randomUUID()
+    .replace(/-/g, '')
+    .slice(0, 4)
+    .toUpperCase();
+  return `WO-${year}${month}-${suffix}`;
+}
+
 export const createWorkOrderSchema = z.object({
   work_order_number: z.string().min(1, 'Mã lệnh sản xuất là bắt buộc'),
   order_id: z.string().nullable().optional(),

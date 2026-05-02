@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useMemo } from 'react';
-import { useForm, Controller, useWatch, Control } from 'react-hook-form';
+import { useForm, Controller, useWatch } from 'react-hook-form';
+import type { Control, UseFormSetValue } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
@@ -43,8 +44,7 @@ function UnpaidDocumentsSection({
 }: {
   supplierId: string;
   control: Control<ExpenseFormValues>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setValue: any;
+  setValue: UseFormSetValue<ExpenseFormValues>;
 }) {
   const { data: unpaidDocs, isLoading } = useUnpaidDocuments(supplierId);
   const allocations =

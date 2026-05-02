@@ -11,6 +11,8 @@ type RecentOrdersCardProps = {
 
 const STATUS_LABELS: Record<string, string> = {
   draft: 'Nháp',
+  pending_review: 'Chờ duyệt',
+  sent: 'Đã gửi',
   confirmed: 'Chợ SX',
   in_progress: 'Đang SX',
   completed: 'Xong',
@@ -19,6 +21,8 @@ const STATUS_LABELS: Record<string, string> = {
 
 const STATUS_CSS: Record<string, string> = {
   draft: 'draft',
+  pending_review: 'reserved',
+  sent: 'reserved',
   confirmed: 'reserved',
   in_progress: 'in_process',
   completed: 'completed',

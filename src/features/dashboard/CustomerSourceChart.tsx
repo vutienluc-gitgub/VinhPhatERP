@@ -1,4 +1,4 @@
-import { MiniBarChart } from '@/shared/components/MiniBarChart';
+import { MiniBarChart } from '@/features/dashboard/MiniBarChart';
 import type { CustomerSourceItem } from '@/application/analytics';
 
 type CustomerSourceChartProps = {

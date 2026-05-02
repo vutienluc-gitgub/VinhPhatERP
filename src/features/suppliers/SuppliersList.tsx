@@ -4,10 +4,10 @@ import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
   Badge,
-  DataTablePremium,
+  DataTable,
   AddButton,
   ActionBar,
-  FilterBarPremium,
+  FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
 import { useDeleteSupplier, useSuppliersList } from '@/application/crm';
@@ -136,7 +136,7 @@ export function SuppliersList({
       </div>
 
       {/* Filter (Config-Driven) */}
-      <FilterBarPremium
+      <FilterBar
         schema={filterSchema}
         value={filters}
         onChange={handleFilterChange}
@@ -155,7 +155,7 @@ export function SuppliersList({
       )}
 
       {/* Table & Cards */}
-      <DataTablePremium
+      <DataTable
         data={suppliers}
         isLoading={isLoading}
         rowKey={(s) => s.id}

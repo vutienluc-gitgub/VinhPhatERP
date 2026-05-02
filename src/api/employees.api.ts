@@ -127,9 +127,9 @@ export async function linkProfileToEmployee(
   profileId: string | null,
 ): Promise<void> {
   // Goi RPC de bypass RLS (Admin co the cap nhat profile cua user khac)
-  const { error } = await untypedDb.rpc('rpc_link_profile_to_employee', {
+  const { error } = await supabase.rpc('rpc_link_profile_to_employee', {
     p_employee_id: employeeId,
-    p_profile_id: profileId,
+    p_profile_id: profileId ?? undefined,
   });
 
   if (error) throw error;

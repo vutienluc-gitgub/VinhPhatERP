@@ -3,10 +3,10 @@ import {
   Icon,
   Badge,
   type BadgeVariant,
-  DataTablePremium,
+  DataTable,
   AddButton,
   ActionBar,
-  FilterBarPremium,
+  FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
@@ -82,7 +82,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
       </div>
 
       {/* Filters */}
-      <FilterBarPremium
+      <FilterBar
         schema={filterSchema}
         value={filters}
         onChange={handleFilterChange}
@@ -100,7 +100,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
       )}
 
       {/* Table & Cards */}
-      <DataTablePremium
+      <DataTable
         data={rates}
         isLoading={isLoading}
         rowKey={(item) => item.id}

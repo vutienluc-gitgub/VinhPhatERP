@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { untypedDb } from '@/services/supabase/client';
+import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import type {
   Permission,
@@ -19,7 +19,7 @@ const USER_PERMISSIONS_KEY = (role: string) =>
 // ── Fetch all permission definitions ──
 
 async function fetchPermissions(): Promise<Permission[]> {
-  const { data, error } = await untypedDb
+  const { data, error } = await supabase
     .from('permissions')
     .select('*')
     .order('sort_order', { ascending: true });
@@ -40,7 +40,7 @@ export function usePermissions() {
 
 async function fetchRolePermissions(role: string): Promise<RolePermission[]> {
   const tenantId = await getTenantId();
-  const { data, error } = await untypedDb.rpc('rpc_get_user_permissions', {
+  const { data, error } = await supabase.rpc('rpc_get_user_permissions', {
     p_role: role,
     p_tenant_id: tenantId,
   });
@@ -75,10 +75,10 @@ async function upsertRolePermissions(
   permissions: RolePermissionUpdate[],
 ): Promise<void> {
   const tenantId = await getTenantId();
-  const { error } = await untypedDb.rpc('rpc_upsert_role_permissions', {
+  const { error } = await supabase.rpc('rpc_upsert_role_permissions', {
     p_role: role,
     p_tenant_id: tenantId,
-    p_permissions: permissions,
+    p_permissions: permissions as never,
   });
 
   if (error) throw new Error(error.message);

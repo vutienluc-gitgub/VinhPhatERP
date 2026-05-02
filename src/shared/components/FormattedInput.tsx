@@ -3,14 +3,14 @@ import { memo, useCallback, useRef } from 'react';
 import { useControlledDisplay } from '@/shared/hooks/useControlledDisplay';
 
 /**
- * NumericInput — Format so realtime co ho tro thap phan chuan Viet Nam.
+ * FormattedInput — Format so realtime co ho tro thap phan chuan Viet Nam.
  *
  * - Hien thi: "1.500,5" (dau cham phan cach ngan, phay phan cach thap phan)
  * - Tu dong dinh dang khi dang go.
  * - Cho phep nhap so thap phan chinh xac.
  */
 
-type NumericInputProps = {
+type FormattedInputProps = {
   value: number | null | undefined;
   onChange: (value: number | null) => void;
   onBlur?: () => void;
@@ -38,7 +38,7 @@ function toNumber(text: string): number | null {
   return isNaN(parsed) ? null : parsed;
 }
 
-export const NumericInput = memo(function NumericInput({
+export const FormattedInput = memo(function FormattedInput({
   value,
   onChange,
   onBlur,
@@ -47,7 +47,7 @@ export const NumericInput = memo(function NumericInput({
   placeholder = '0',
   disabled,
   readOnly,
-}: NumericInputProps) {
+}: FormattedInputProps) {
   const { display, setDisplay } = useControlledDisplay(
     value,
     toDisplay,

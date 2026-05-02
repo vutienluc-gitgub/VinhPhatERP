@@ -3,10 +3,10 @@ import type {
   RevenueByFabricRow,
   PaymentCollectionRow,
 } from '@/api/reports.api';
-import { KpiCardPremium, KpiGridPremium } from '@/shared/components';
-import { RevenueBarChart } from '@/shared/components/RevenueBarChart';
-import { FabricRevenueChart } from '@/shared/components/FabricRevenueChart';
-import { PaymentMethodChart } from '@/shared/components/PaymentMethodChart';
+import { KpiCard, KpiGrid } from '@/shared/components';
+import { RevenueBarChart } from '@/features/reports/RevenueBarChart';
+import { FabricRevenueChart } from '@/features/reports/FabricRevenueChart';
+import { PaymentMethodChart } from '@/features/reports/PaymentMethodChart';
 import { formatCurrency } from '@/shared/utils/format';
 import { sumBy } from '@/shared/utils/array.util';
 
@@ -71,15 +71,15 @@ export function RevenueTrendSection({
         <span className="font-bold text-lg">Doanh thu & Thu tiền</span>
       </div>
 
-      <KpiGridPremium className="px-5 py-4">
-        <KpiCardPremium
+      <KpiGrid className="px-5 py-4">
+        <KpiCard
           label="Tổng doanh thu"
           value={`${formatCurrency(totalRevenue)} đ`}
           icon="TrendingUp"
           variant="primary"
           isLoading={isLoading}
         />
-        <KpiCardPremium
+        <KpiCard
           label="Đã thu"
           value={`${formatCurrency(totalCollected)} đ`}
           icon="CheckCircle"
@@ -88,7 +88,7 @@ export function RevenueTrendSection({
           isLoading={isLoading}
         />
         {growth && (
-          <KpiCardPremium
+          <KpiCard
             label="Tăng trưởng"
             value={growth.label}
             icon={growth.pct >= 0 ? 'ArrowUpCircle' : 'ArrowDownCircle'}
@@ -96,14 +96,14 @@ export function RevenueTrendSection({
             isLoading={isLoading}
           />
         )}
-        <KpiCardPremium
+        <KpiCard
           label="Phải thu"
           value={`${formatCurrency(totalRevenue - totalCollected)} đ`}
           icon="Clock"
           variant="warning"
           isLoading={isLoading}
         />
-      </KpiGridPremium>
+      </KpiGrid>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-5">
         <div className="card-sub-section">

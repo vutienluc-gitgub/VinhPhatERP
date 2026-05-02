@@ -2,14 +2,12 @@ import type {
   Shipment,
   ShipmentDocument,
   ShipmentsFilter,
-  ShipmentStatus,
   DeliveryStaffSummary,
 } from '@/features/shipments/types';
 import { supabase } from '@/services/supabase/client';
 import type { Database } from '@/services/supabase/database.types';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
-import { untypedDb } from '@/services/supabase/untyped';
 import { shipmentResponseSchema } from '@/schema/shipment.schema';
 
 const HEADER_TABLE = 'shipments';
@@ -263,9 +261,9 @@ export async function createShipmentFull(
     };
   });
 
-  const { data, error } = await untypedDb.rpc('rpc_create_shipment', {
-    p_header: headerInsert,
-    p_items: itemsInsert,
+  const { data, error } = await supabase.rpc('rpc_create_shipment', {
+    p_header: headerInsert as never,
+    p_items: itemsInsert as never,
     p_reserve_roll_ids: selectedRollIds,
   });
 
@@ -283,12 +281,19 @@ export async function createShipmentFull(
 
 export async function confirmShipmentFull(
   shipmentId: string,
+  expectedUpdatedAt?: string,
 ): Promise<ShipmentDocument> {
-  const { error } = await untypedDb.rpc('rpc_confirm_shipment', {
+  const { error } = await supabase.rpc('rpc_confirm_shipment', {
     p_shipment_id: shipmentId,
+    p_expected_updated_at: expectedUpdatedAt,
   });
 
   if (error) {
+    if (error.message?.includes('OCC_MISMATCH')) {
+      throw new Error(
+        'Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại trang.',
+      );
+    }
     if (error.message?.includes('SHIPMENT_NOT_PREPARING'))
       throw new Error('Phieu xuat khong o trang thai chuan bi.');
     throw error;
@@ -312,20 +317,29 @@ export type DeliveryConfirmInput = {
 export async function markShipmentDelivered(
   shipmentId: string,
   values: DeliveryConfirmInput,
+  expectedUpdatedAt?: string,
 ): Promise<void> {
-  const { error } = await supabase
-    .from(HEADER_TABLE)
-    .update({
-      status: 'delivered' as ShipmentStatus,
-      delivered_at: new Date().toISOString(),
-      receiver_name: values.receiverName.trim(),
-      receiver_phone: values.receiverPhone?.trim() || null,
-      delivery_proof: values.deliveryProof.trim(),
+  const { error } = await supabase.rpc('rpc_mark_shipment_delivered', {
+    p_shipment_id: shipmentId,
+    p_data: {
+      receiverName: values.receiverName.trim(),
+      receiverPhone: values.receiverPhone?.trim() || null,
+      deliveryProof: values.deliveryProof.trim(),
       notes: values.notes?.trim() || null,
-    })
-    .eq('id', shipmentId)
-    .eq('status', 'shipped');
-  if (error) throw error;
+    } as never,
+    p_expected_updated_at: expectedUpdatedAt,
+  });
+  if (error) {
+    if (error.message?.includes('OCC_MISMATCH')) {
+      throw new Error(
+        'Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại trang.',
+      );
+    }
+    if (error.message?.includes('SHIPMENT_NOT_SHIPPED')) {
+      throw new Error('Cannot deliver a shipment that is not shipped');
+    }
+    throw error;
+  }
 
   // Auto-create expense record for driver commission if provided
   const commission = values.driverCommission ?? 0;
@@ -338,7 +352,7 @@ export async function markShipmentDelivered(
       prefix: monthlyPrefix('PC'),
     });
 
-    const { error: expError } = await untypedDb.rpc('rpc_create_expense', {
+    const { error: expError } = await supabase.rpc('rpc_create_expense', {
       p_data: {
         expense_number: expenseNumber,
         category: 'logistics',
@@ -350,7 +364,7 @@ export async function markShipmentDelivered(
         description: `Thu lào giao hàng — phiếu xuất #${shipmentId.slice(0, 8)}`,
         reference_number: shipmentId,
         notes: null,
-      },
+      } as never,
     });
     if (expError) throw expError;
   }
@@ -362,15 +376,22 @@ export async function assignDeliveryStaff(
   shipmentId: string,
   staffId: string,
   vehicleInfo?: string,
+  expectedUpdatedAt?: string,
 ): Promise<void> {
-  const { error } = await supabase
-    .from(HEADER_TABLE)
-    .update({
-      delivery_staff_id: staffId,
-      vehicle_info: vehicleInfo?.trim() || null,
-    })
-    .eq('id', shipmentId);
-  if (error) throw error;
+  const { error } = await supabase.rpc('rpc_assign_delivery_staff', {
+    p_shipment_id: shipmentId,
+    p_staff_id: staffId,
+    p_vehicle_info: vehicleInfo?.trim() ?? undefined,
+    p_expected_updated_at: expectedUpdatedAt,
+  });
+  if (error) {
+    if (error.message?.includes('OCC_MISMATCH')) {
+      throw new Error(
+        'Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại trang.',
+      );
+    }
+    throw error;
+  }
 }
 
 /* ── List delivery staff ── */
@@ -389,7 +410,7 @@ export async function fetchDeliveryStaff(): Promise<DeliveryStaffSummary[]> {
 /* ── Delete shipment (preparing only) ── */
 
 export async function deleteShipmentFull(shipmentId: string): Promise<void> {
-  const { error } = await untypedDb.rpc('rpc_delete_shipment', {
+  const { error } = await supabase.rpc('rpc_delete_shipment', {
     p_shipment_id: shipmentId,
   });
 
@@ -406,7 +427,7 @@ export async function createShipmentFromFinishedFabric(input: {
   shipmentDate: string;
   rollIds: string[];
 }): Promise<string> {
-  const { data, error } = await untypedDb.rpc(
+  const { data, error } = await supabase.rpc(
     'create_shipment_from_finished_fabric',
     {
       p_customer_id: input.customerId,

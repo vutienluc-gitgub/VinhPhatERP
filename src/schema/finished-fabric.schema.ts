@@ -1,48 +1,30 @@
 import { z } from 'zod';
 
-export const QUALITY_GRADES = ['A', 'B', 'C'] as const;
-export const ROLL_STATUSES = [
-  'in_stock',
-  'reserved',
-  'in_process',
-  'shipped',
-  'damaged',
-  'written_off',
-] as const;
+import { findDuplicateRollNumbers as _findDuplicateRollNumbers } from '@/domain/inventory/InventoryDomain';
 
-export const QUALITY_GRADE_LABELS: Record<
-  (typeof QUALITY_GRADES)[number],
-  string
-> = {
-  A: 'Loại A',
-  B: 'Loại B',
-  C: 'Loại C',
-};
+import {
+  QUALITY_GRADES,
+  ROLL_STATUSES,
+  formatBulkRollNumber,
+} from './roll.schema';
 
-export const ROLL_STATUS_LABELS: Record<
-  (typeof ROLL_STATUSES)[number],
-  string
-> = {
-  in_stock: 'Trong kho',
-  reserved: 'Đã đặt trước',
-  in_process: 'Đang xử lý',
-  shipped: 'Đã xuất kho',
-  damaged: 'Hư hỏng',
-  written_off: 'Xóa sổ',
-};
+export {
+  QUALITY_GRADES,
+  QUALITY_GRADE_LABELS,
+  ROLL_STATUSES,
+  ROLL_STATUS_LABELS,
+  formatBulkRollNumber,
+  countFilledRolls,
+} from './roll.schema';
+export type { QualityGrade, RollStatus } from './roll.schema';
+
+export const findDuplicateRollNumbers = _findDuplicateRollNumbers;
 
 const optionalPositiveNum = z.preprocess(
   (val) =>
     val === '' || val === null || val === undefined ? undefined : Number(val),
   z.number().positive('Giá trị phải lớn hơn 0').optional(),
 );
-
-export function formatBulkRollNumber(prefix: string, sequence: number): string {
-  return `${prefix.trim()}${String(sequence).padStart(3, '0')}`;
-}
-
-import { findDuplicateRollNumbers as _findDuplicateRollNumbers } from '@/domain/inventory/InventoryDomain';
-export const findDuplicateRollNumbers = _findDuplicateRollNumbers;
 
 export const finishedFabricSchema = z.object({
   roll_number: z.string().trim().min(2, 'Mã cuộn phải có ít nhất 2 ký tự'),

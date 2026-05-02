@@ -6,12 +6,12 @@ import {
   Icon,
   Badge,
   type BadgeVariant,
-  DataTablePremium,
+  DataTable,
   ClearFilterButton,
   ActionBar,
   TabSwitcher,
   type TabItem,
-  FilterBarPremium,
+  FilterBar,
   type FilterFieldConfig,
   type ActionConfig,
 } from '@/shared/components';
@@ -137,7 +137,10 @@ export function ShipmentList() {
     if (!ok) return;
 
     try {
-      const confirmedShipment = await confirmMutation.mutateAsync(shipment.id);
+      const confirmedShipment = await confirmMutation.mutateAsync({
+        shipmentId: shipment.id,
+        expectedUpdatedAt: shipment.updated_at ?? undefined,
+      });
       try {
         exportShipmentToPdf(confirmedShipment);
       } catch (pdfError) {
@@ -233,7 +236,7 @@ export function ShipmentList() {
       </div>
 
       {/* Filter Section (Config-Driven) */}
-      <FilterBarPremium
+      <FilterBar
         schema={filterSchema}
         value={filters}
         onChange={handleFilterChange}
@@ -276,7 +279,7 @@ export function ShipmentList() {
       )}
 
       {/* Table & Cards */}
-      <DataTablePremium
+      <DataTable
         data={shipments}
         isLoading={isLoading}
         rowKey={(s) => s.id}
