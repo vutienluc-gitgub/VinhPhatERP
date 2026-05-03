@@ -1,9 +1,5 @@
-import type {
-  TableRow,
-  TableInsert,
-  TableUpdate,
-} from '@/shared/types/database.models';
-
-export type InventoryAdjustment = TableRow<'inventory_adjustments'>;
-export type InventoryAdjustmentInsert = TableInsert<'inventory_adjustments'>;
-export type InventoryAdjustmentUpdate = TableUpdate<'inventory_adjustments'>;
+/**
+ * Re-export from domain layer.
+ * @deprecated Import from '@/domain/inventory/inventory.types' instead.
+ */
+export * from '@/domain/inventory/inventory.types';

@@ -4,7 +4,7 @@ import type {
   BomVersion,
   BomFilter,
   FabricCatalog,
-} from '@/features/bom/types';
+} from '@/domain/production/bom.types';
 import { supabase } from '@/services/supabase/client';
 
 /* ── Reference data for BOM forms ── */

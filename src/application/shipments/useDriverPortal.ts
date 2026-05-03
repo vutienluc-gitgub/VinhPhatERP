@@ -6,7 +6,7 @@ import {
   updateJourneyStatus,
   fetchMyDriverEmployee,
 } from '@/api/driver-portal.api';
-import type { JourneyStatus } from '@/features/driver-portal/types';
+import type { JourneyStatus } from '@/domain/logistics/driver-portal.types';
 
 const QUERY_KEY = ['driver-shipments'] as const;
 

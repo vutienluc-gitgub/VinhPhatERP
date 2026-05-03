@@ -19,7 +19,7 @@ import type {
 import type {
   YarnReceipt,
   YarnReceiptsFilter,
-} from '@/features/yarn-receipts/types';
+} from '@/domain/inventory/yarn-receipts.types';
 import type { YarnReceiptsFormValues } from '@/features/yarn-receipts/yarn-receipts.module';
 
 export type { YarnSupplierOption, YarnCatalogOption };

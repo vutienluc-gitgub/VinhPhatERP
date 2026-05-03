@@ -12,12 +12,12 @@ import {
 import type {
   OrderProgress,
   OrderProgressWithOrder,
-} from '@/features/orders/progress/types';
+} from '@/domain/orders/progress.types';
 import type {
   ProgressAuditLog,
   ProgressAuditLogWithOrder,
   StageStatus,
-} from '@/features/orders/progress/types';
+} from '@/domain/orders/progress.types';
 
 export type {
   OrderProgress,

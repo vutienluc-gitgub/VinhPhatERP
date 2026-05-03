@@ -1,7 +1,7 @@
 import type {
   FabricCatalog,
   FabricCatalogFilter,
-} from '@/features/fabric-catalog/types';
+} from '@/domain/settings/fabric-catalog.types';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';

@@ -13,7 +13,7 @@ import type { FabricCatalogFormValues } from '@/features/fabric-catalog/fabric-c
 import type {
   FabricCatalog,
   FabricCatalogFilter,
-} from '@/features/fabric-catalog/types';
+} from '@/domain/settings/fabric-catalog.types';
 
 const QUERY_KEY = ['fabric-catalog'] as const;
 

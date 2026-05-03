@@ -3,6 +3,7 @@ import {
   KpiCard,
   KpiGrid,
   DataTable,
+  Badge,
   type DataTableColumn,
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
@@ -87,9 +88,7 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
           <div className="mobile-card">
             <div className="flex justify-between items-start">
               <span className="font-bold">{r.customer_name}</span>
-              <span className="badge badge-error">
-                {formatCurrency(r.balance_due)}đ
-              </span>
+              <Badge variant="danger">{formatCurrency(r.balance_due)}đ</Badge>
             </div>
             <div className="text-sm text-muted mb-2">
               {r.customer_code || '—'}

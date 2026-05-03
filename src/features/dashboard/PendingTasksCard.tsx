@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { Icon } from '@/shared/components';
+import { Icon, Badge } from '@/shared/components';
 import type { PendingTask } from '@/application/analytics';
 
 type PendingTasksCardProps = {
@@ -17,9 +17,9 @@ export function PendingTasksCard({ tasks }: PendingTasksCardProps) {
           <h3 className="text-lg font-bold m-0 flex items-center">
             Nhiệm vụ cần xử lý
             {totalTasks > 0 && (
-              <span className="badge badge-info ml-2 text-[0.65rem]">
+              <Badge variant="info" className="ml-2 text-[0.65rem]">
                 {totalTasks}
-              </span>
+              </Badge>
             )}
           </h3>
         </div>

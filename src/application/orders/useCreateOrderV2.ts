@@ -143,7 +143,7 @@ async function callCreateOrderFunction(
     }
     throw {
       code: 'INTERNAL_ERROR',
-      message: (error as Error).message,
+      message: error instanceof Error ? error.message : String(error),
     } as CreateOrderError;
   }
 }

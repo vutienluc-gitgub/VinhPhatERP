@@ -1,7 +1,7 @@
 import type {
   ShippingRate,
   ShippingRateFilter,
-} from '@/features/shipping-rates/types';
+} from '@/domain/logistics/shipping-rates.types';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { safeUpsertOne } from '@/lib/db-guard';

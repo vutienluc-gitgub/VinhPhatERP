@@ -37,6 +37,16 @@ export function useMarkAsRead(roomId: string | undefined) {
 // Listens to ALL chat_messages inserts for the current user's rooms.
 // Shows toast + plays sound when a new message arrives and the chat is NOT open.
 
+export const globalOpenRooms = new Set<string>();
+
+export function registerOpenRoom(roomId: string) {
+  globalOpenRooms.add(roomId);
+}
+
+export function unregisterOpenRoom(roomId: string) {
+  globalOpenRooms.delete(roomId);
+}
+
 interface UseChatNotificationsOptions {
   /** Set of room IDs currently open in a drawer — skip notifications for these */
   openRoomIds?: Set<string>;
@@ -69,7 +79,8 @@ export function useChatNotifications(
           if (msg.message_type === 'system') return;
 
           // Skip if this room's drawer is currently open
-          if (openRoomIds?.has(msg.room_id)) return;
+          if (openRoomIds?.has(msg.room_id) || globalOpenRooms.has(msg.room_id))
+            return;
 
           // Skip own messages (sender_id matches current user)
           const userId = supabase.auth.getUser().then((r) => r.data.user?.id);

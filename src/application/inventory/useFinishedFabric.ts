@@ -24,7 +24,7 @@ import type {
 import type {
   FinishedFabricFilter,
   RawRollOption,
-} from '@/features/finished-fabric/types';
+} from '@/domain/inventory/finished-fabric.types';
 
 // InventoryStats exported via useInventory.ts to avoid ambiguity
 

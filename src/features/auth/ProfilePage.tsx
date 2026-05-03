@@ -1,3 +1,5 @@
+import { Badge } from '@/shared/components';
+
 import { useAuth } from './AuthProvider';
 
 const roleLabel: Record<string, string> = {
@@ -48,9 +50,9 @@ export function ProfilePage() {
             <span className="profile-label">Trạng thái</span>
             <span className="profile-value">
               {profile?.is_active === false ? (
-                <span className="badge badge--danger">Bị khoá</span>
+                <Badge variant="danger">Bị khoá</Badge>
               ) : (
-                <span className="badge badge--success">Hoạt động</span>
+                <Badge variant="success">Hoạt động</Badge>
               )}
             </span>
           </div>

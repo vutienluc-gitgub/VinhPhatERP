@@ -23,6 +23,7 @@
     "ai:audit": "node scripts/ai-audit.js",
     "typecheck:server": "cd server && npm run typecheck",
     "server:install": "cd server && npm install",
+    "audit:full": "npm run rpc:check && npm run lint && npm run typecheck",
     "db:push": "npx supabase db push",
     "db:new": "npx supabase migration new",
     "db:status": "npx supabase migration list",
@@ -115,5 +116,8 @@
     "*.{json,md,css}": [
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "uuid": "^11.1.0"
   }
 }

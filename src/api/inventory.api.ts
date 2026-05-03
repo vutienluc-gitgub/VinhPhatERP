@@ -1,10 +1,11 @@
 import type {
   InventoryAdjustment,
   InventoryAdjustmentInsert,
-} from '@/features/inventory/types';
+} from '@/domain/inventory/inventory.types';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { safeUpsertOne } from '@/lib/db-guard';
+import type { YarnAvailability } from '@/api/yarn-reservation.api';
 
 const TABLE = 'inventory_adjustments';
 
@@ -109,20 +110,14 @@ export async function fetchFinishedFabricInventory(): Promise<{
   };
 }
 
-export async function fetchYarnInventory(): Promise<{
-  totalReceipts: number;
-  totalAmount: number;
-}> {
+export async function fetchYarnInventoryList(): Promise<YarnAvailability[]> {
   const { data, error } = await supabase
-    .from('yarn_receipts')
-    .select('id, total_amount, status')
-    .eq('status', 'confirmed');
+    .from('v_yarn_availability')
+    .select('*')
+    .order('code', { ascending: true });
+
   if (error) throw error;
-  const rows = data ?? [];
-  return {
-    totalReceipts: rows.length,
-    totalAmount: rows.reduce((s, r) => s + (Number(r.total_amount) || 0), 0),
-  };
+  return (data ?? []) as YarnAvailability[];
 }
 
 export async function fetchAgingStock(): Promise<AgingRoll[]> {

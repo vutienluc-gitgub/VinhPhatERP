@@ -13,7 +13,7 @@ import {
   deleteDyeingOrder,
 } from '@/api/dyeing-orders.api';
 import type { DyeingOrderFormValues } from '@/schema/dyeing-order.schema';
-import type { DyeingOrderFilter } from '@/features/dyeing-orders/types';
+import type { DyeingOrderFilter } from '@/domain/production/dyeing-orders.types';
 
 const QUERY_KEY = ['dyeing-orders'] as const;
 

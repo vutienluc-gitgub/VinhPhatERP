@@ -5,7 +5,7 @@ import type { Database } from '@/services/supabase/database.types';
 import type {
   OrderKanbanItem,
   OrderKanbanStatus,
-} from '@/features/order-kanban/types';
+} from '@/domain/orders/kanban.types';
 
 type DbOrderStatus = Database['public']['Enums']['order_status'];
 

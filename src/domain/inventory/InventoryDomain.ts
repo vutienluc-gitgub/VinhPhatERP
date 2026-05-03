@@ -18,6 +18,7 @@
 
 import type { ROLL_STATUSES as RAW_STATUSES } from '@/schema/raw-fabric.schema';
 import type { ROLL_STATUSES as FINISHED_STATUSES } from '@/schema/finished-fabric.schema';
+import type { YarnAvailability } from '@/api/yarn-reservation.api';
 
 export type RawRollStatus = (typeof RAW_STATUSES)[number];
 export type FinishedRollStatus = (typeof FINISHED_STATUSES)[number];
@@ -253,4 +254,19 @@ export function countRollsByStatus(
     acc[r.status] = (acc[r.status] ?? 0) + 1;
     return acc;
   }, {});
+}
+
+/**
+ * Tính toán KPI Sợi (Total Stock, Reserved, Available)
+ */
+export function calculateYarnKPIs(items: YarnAvailability[]) {
+  return items.reduce(
+    (acc, item) => {
+      acc.totalStockKg += Number(item.total_stock_qty || 0);
+      acc.totalReservedKg += Number(item.reserved_qty || 0);
+      acc.totalAvailableKg += Number(item.available_qty || 0);
+      return acc;
+    },
+    { totalStockKg: 0, totalReservedKg: 0, totalAvailableKg: 0 },
+  );
 }

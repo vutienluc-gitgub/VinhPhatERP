@@ -3,7 +3,7 @@ import type {
   DriverShipment,
   JourneyLog,
   JourneyStatus,
-} from '@/features/driver-portal/types';
+} from '@/domain/logistics/driver-portal.types';
 
 type EmployeeSummary = { id: string; name: string; code: string; role: string };
 

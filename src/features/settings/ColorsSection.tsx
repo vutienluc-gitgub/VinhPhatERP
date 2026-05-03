@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
-import { Button } from '@/shared/components';
+import { Button, Badge } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Icon } from '@/shared/components/Icon';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
@@ -43,7 +43,10 @@ export function ColorsSection() {
       await deleteMutation.mutateAsync(code);
       toast.success('Đã xóa màu thành công');
     } catch (error) {
-      toast.error('Lỗi khi xóa: ' + (error as Error).message);
+      toast.error(
+        'Lỗi khi xóa: ' +
+          (error instanceof Error ? error.message : String(error)),
+      );
     }
   };
 
@@ -191,9 +194,12 @@ export function ColorsSection() {
                       {item.name}
                     </span>
                     {item.trend_year && (
-                      <span className="badge badge-info hidden md:inline-flex text-[0.68rem]">
+                      <Badge
+                        variant="info"
+                        className="hidden md:inline-flex text-[0.68rem]"
+                      >
                         {item.trend_year}
-                      </span>
+                      </Badge>
                     )}
                   </div>
 

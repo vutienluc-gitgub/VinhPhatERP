@@ -15,7 +15,7 @@ import type {
   Customer,
   CustomerInsert,
   CustomersFilter,
-} from '@/features/customers/types';
+} from '@/domain/crm/customers.types';
 import type { CustomersFormValues } from '@/schema/customer.schema';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';

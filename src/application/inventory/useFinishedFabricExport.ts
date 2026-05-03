@@ -7,7 +7,7 @@ import {
   QUALITY_GRADE_LABELS,
   ROLL_STATUS_LABELS,
 } from '@/features/finished-fabric/finished-fabric.module';
-import type { FinishedFabricRoll } from '@/features/finished-fabric/types';
+import type { FinishedFabricRoll } from '@/domain/inventory/finished-fabric.types';
 
 const EXPORT_COLUMNS: ExportColumn[] = [
   {

@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchActiveShippingRates } from '@/api/shipping-rates.api';
 
 // Re-export type for consumers — avoids cross-feature imports
-export type { ShippingRate } from '@/features/shipping-rates/types';
+export type { ShippingRate } from '@/domain/logistics/shipping-rates.types';
 
 /** Shared hook — dùng cho các form cần chọn bảng giá cước (cross-feature) */
 export function useActiveShippingRates() {

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { fetchPaymentAccounts } from '@/api/payments.api';
-import type { PaymentAccount } from '@/features/payments/types';
+import type { PaymentAccount } from '@/domain/payments/types';
 
 /** Shared hook — danh sach tai khoan thanh toan (cross-feature) */
 export function useActivePaymentAccounts(type?: 'bank' | 'cash') {

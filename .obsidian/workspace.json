@@ -11,14 +11,10 @@
             "id": "dfcacc4f8d061a96",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "AGENT.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "AGENT"
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Xem biểu đồ"
             }
           }
         ]
@@ -78,8 +74,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "579bcd3a4e1bf079",
@@ -186,6 +181,9 @@
   },
   "active": "dfcacc4f8d061a96",
   "lastOpenFiles": [
+    "agent/task-classifier.md",
+    "agent/ai-tool.md",
+    "AGENT.md",
     "test-results",
     "e2e/auth.spec.ts",
     "playwright-report/index.html",
@@ -196,7 +194,6 @@
     "node_modules/playwright/types/test.d.ts",
     "node_modules/playwright/types",
     "playwright.config.ts",
-    "node_modules/playwright-core/lib/server/firefox/protocol.d.js",
     "node_modules/playwright-core/lib/server/chromium/appIcon.png",
     "node_modules/playwright-core/lib/vite/traceViewer/playwright-logo.svg",
     "node_modules/playwright-core/lib/vite/recorder/playwright-logo.svg",

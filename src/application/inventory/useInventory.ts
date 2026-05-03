@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   fetchRawFabricInventory,
   fetchFinishedFabricInventory,
-  fetchYarnInventory,
+  fetchYarnInventoryList,
   fetchAgingStock,
 } from '@/api/inventory.api';
 import type {
@@ -11,7 +11,7 @@ import type {
   InventoryBreakdownRow,
   AgingRoll,
 } from '@/api/inventory.api';
-import { calculateAgingStats } from '@/domain/inventory';
+import { calculateAgingStats, calculateYarnKPIs } from '@/domain/inventory';
 
 export type { InventoryStats, InventoryBreakdownRow, AgingRoll };
 
@@ -32,7 +32,11 @@ export function useFinishedFabricInventory() {
 export function useYarnInventory() {
   return useQuery({
     queryKey: ['inventory', 'yarn'],
-    queryFn: fetchYarnInventory,
+    queryFn: fetchYarnInventoryList,
+    select: (data) => ({
+      breakdownList: data,
+      stats: calculateYarnKPIs(data),
+    }),
   });
 }
 

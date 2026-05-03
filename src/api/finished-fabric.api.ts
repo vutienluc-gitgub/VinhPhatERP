@@ -4,7 +4,7 @@ import type {
   FinishedFabricRollUpdate,
   FinishedFabricFilter,
   RawRollOption,
-} from '@/features/finished-fabric/types';
+} from '@/domain/inventory/finished-fabric.types';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';

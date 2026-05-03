@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { supabase } from '@/services/supabase/client';
-import type { PortalQuotation } from '@/features/customer-portal/types';
+import type { PortalQuotation } from '@/domain/portal/types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- RPCs chưa được sync vào database.types.ts
 const rpc = supabase.rpc.bind(supabase) as (

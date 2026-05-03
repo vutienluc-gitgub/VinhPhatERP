@@ -13,7 +13,7 @@ import type {
   Supplier,
   SupplierFilter,
   SupplierInsert,
-} from '@/features/suppliers/types';
+} from '@/domain/crm/suppliers.types';
 
 export type { Supplier, SupplierFilter };
 

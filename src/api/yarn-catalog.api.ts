@@ -1,7 +1,7 @@
 import type {
   YarnCatalog,
   YarnCatalogFilter,
-} from '@/features/yarn-catalog/types';
+} from '@/domain/settings/yarn-catalog.types';
 import { supabase } from '@/services/supabase/client';
 import { safeUpsertOne } from '@/lib/db-guard';
 import { getTenantId } from '@/services/supabase/tenant';

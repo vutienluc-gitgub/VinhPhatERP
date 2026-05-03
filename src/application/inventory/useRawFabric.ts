@@ -26,7 +26,7 @@ import {
 } from '@/domain/inventory/InventoryDomain';
 import type { BulkInputFormValues } from '@/features/raw-fabric/raw-fabric.module';
 import type { RawFabricFormValues } from '@/features/raw-fabric/raw-fabric.module';
-import type { RawFabricFilter } from '@/features/raw-fabric/types';
+import type { RawFabricFilter } from '@/domain/inventory/raw-fabric.types';
 
 export type { SupplierOption, YarnReceiptOption, WorkOrderOption };
 

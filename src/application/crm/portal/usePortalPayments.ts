@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { supabase } from '@/services/supabase/client';
-import type { PortalPayment } from '@/features/customer-portal/types';
+import type { PortalPayment } from '@/domain/portal/types';
 
 export function usePortalPayments() {
   const [payments, setPayments] = useState<PortalPayment[]>([]);

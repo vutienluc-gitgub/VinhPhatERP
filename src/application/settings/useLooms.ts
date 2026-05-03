@@ -10,7 +10,10 @@ import {
   deleteLoom,
 } from '@/api/looms.api';
 import type { LoomFormValues } from '@/schema/loom.schema';
-import type { LoomWithSupplier, LoomFilter } from '@/features/looms/types';
+import type {
+  LoomWithSupplier,
+  LoomFilter,
+} from '@/domain/settings/looms.types';
 
 export type { LoomWithSupplier, LoomFilter };
 

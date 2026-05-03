@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
+import { useChatNotifications } from '@/application/chat';
 
 import {
   NotificationProvider,
@@ -17,6 +18,9 @@ import './portal.css';
 function PortalLayoutInner() {
   const { profile, signOut } = useAuth();
   const { addNotification, setConnectionWarning } = useNotifications();
+
+  // Enable global chat notifications (with sound)
+  useChatNotifications({ soundEnabled: true });
 
   // Start/stop RealtimeService based on customer_id
   useEffect(() => {

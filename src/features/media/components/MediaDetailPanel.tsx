@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import toast from 'react-hot-toast';
 
 import { Icon } from '@/shared/components/Icon';
+import { Badge } from '@/shared/components';
 import type { MediaAsset } from '@/features/media/media.types';
 import { MEDIA_LABELS } from '@/features/media/media.constants';
 import {
@@ -182,12 +183,9 @@ export function MediaDetailPanel({ asset, onClose }: MediaDetailPanelProps) {
         {asset.is_public && (
           <div className="media-detail-row">
             <span className="media-detail-label">Public</span>
-            <span
-              className="badge badge-success"
-              style={{ fontSize: '0.7rem' }}
-            >
+            <Badge variant="success" className="text-[0.7rem]">
               Public
-            </span>
+            </Badge>
           </div>
         )}
       </div>

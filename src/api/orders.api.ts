@@ -5,7 +5,7 @@ import type {
   OrderUpdate,
   OrderItemInsert,
   OrdersFilter,
-} from '@/features/orders/types';
+} from '@/domain/orders/types';
 import { supabase } from '@/services/supabase/client';
 import type { Database } from '@/services/supabase/database.types';
 import type { PaginatedResult } from '@/shared/types/pagination';

@@ -16,7 +16,7 @@ import type {
   Expense,
   ExpensesFilter,
   UnpaidDocument,
-} from '@/features/payments/types';
+} from '@/domain/payments/types';
 
 export type { Expense, ExpensesFilter };
 

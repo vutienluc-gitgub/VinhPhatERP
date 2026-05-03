@@ -2,7 +2,7 @@ import { untypedDb } from '@/services/supabase/untyped';
 import { supabase } from '@/services/supabase/client';
 import type { Json } from '@/services/supabase/database.types';
 import { getTenantId } from '@/services/supabase/tenant';
-import { Task, Employee, Kpi, ActivityItem } from '@/features/operations/types';
+import { Task, Employee, Kpi, ActivityItem } from '@/domain/operations/types';
 import { safeUpsert } from '@/lib/db-guard';
 import { validateApiInput } from '@/lib/validate-api-input';
 import { apiTaskInsert } from '@/schema/api-validation.schema';

@@ -41,3 +41,14 @@ export function formatCurrencyFull(value: number | null | undefined): string {
     currency: 'VND',
   }).format(value);
 }
+
+/**
+ * Format a numeric quantity with locale-aware separators.
+ * Used for weights (kg), lengths (m), and general counts.
+ *
+ * @example formatQuantity(12500.5)    // "12.500,5"
+ * @example formatQuantity(100, 0)     // "100"
+ */
+export function formatQuantity(value: number, decimals = 1): string {
+  return value.toLocaleString('vi-VN', { maximumFractionDigits: decimals });
+}

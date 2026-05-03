@@ -2,7 +2,7 @@ import type {
   Quotation,
   QuotationsFilter,
   QuotationStatus,
-} from '@/features/quotations/types';
+} from '@/domain/crm/quotations.types';
 import { supabase } from '@/services/supabase/client';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
