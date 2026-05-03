@@ -1,6 +1,5 @@
-import { EmployeeWorkload } from '@/api/operations.api';
+import type { ActivityItem, EmployeeWorkload } from '@/domain/operations/types';
 import { OPERATIONS_MESSAGES } from '@/features/operations/constants';
-import { ActivityItem } from '@/features/operations/types';
 import { LiveIndicator } from '@/shared/components';
 import {
   Card,
@@ -41,10 +40,10 @@ export function OperationsDashboard({
               right: `${r.open_tasks} ${OPERATIONS_MESSAGES.TASK}`,
               color:
                 r.open_tasks > 5
-                  ? '#ef4444'
+                  ? 'var(--danger)'
                   : r.open_tasks > 3
-                    ? '#f59e0b'
-                    : '#6366f1',
+                    ? 'var(--warning)'
+                    : 'var(--primary)',
             }))}
           />
         </CardContent>

@@ -4,52 +4,21 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 
+import type {
+  Task,
+  TaskStatus,
+  Employee,
+  Kpi,
+} from '@/domain/operations/types';
+
 import { SortableTaskCard } from './SortableTaskCard';
-
-type TaskStatus =
-  | 'todo'
-  | 'in_progress'
-  | 'blocked'
-  | 'review'
-  | 'done'
-  | 'cancelled';
-
-interface Task {
-  id: string;
-  title: string;
-  status: TaskStatus;
-  priority: 'low' | 'normal' | 'high' | 'urgent';
-  task_type: 'growth' | 'maintenance' | 'admin' | 'urgent';
-  assignee_id?: string | null;
-  reviewer_id?: string | null;
-  linked_kpi_id?: string | null;
-  due_date?: string | null;
-  description?: string | null;
-  order_id?: string | null;
-  work_order_id?: string | null;
-  estimated_hours?: number | null;
-  actual_hours?: number | null;
-  tenant_id?: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-interface Employee {
-  id: string;
-  name: string;
-}
-
-interface Kpi {
-  id: string;
-  code: string;
-}
 
 interface KanbanColumnProps {
   id: TaskStatus;
   title: string;
   tasks: Task[];
-  employees: Employee[];
-  kpis: Kpi[];
+  employees: Pick<Employee, 'id' | 'name'>[];
+  kpis: Pick<Kpi, 'id' | 'code'>[];
   tone: string;
   onTaskClick: (task: Task) => void;
   onTapMove: (task: Task) => void;
@@ -125,7 +94,7 @@ export function KanbanColumn({
           ))}
         </SortableContext>
         {tasks.length === 0 && (
-          <div className="h-24 flex items-center justify-center text-[11px] text-zinc-400 text-center border-2 border-dashed border-zinc-200/50 rounded-xl bg-white/30 italic">
+          <div className="h-24 flex items-center justify-center text-[11px] text-muted text-center border-2 border-dashed border-border/50 rounded-xl bg-surface/30 italic">
             {emptyLabel}
           </div>
         )}

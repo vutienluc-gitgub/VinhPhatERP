@@ -1,14 +1,8 @@
 import { useCallback } from 'react';
 
 import { useLogBlockedTransitionEvent } from '@/application/operations/useOperationsData';
-
-type TaskStatus =
-  | 'todo'
-  | 'in_progress'
-  | 'blocked'
-  | 'review'
-  | 'done'
-  | 'cancelled';
+import type { TaskStatus } from '@/domain/operations/types';
+import { logger } from '@/shared/utils/logger';
 
 interface BlockedTransitionInput {
   taskId: string;
@@ -39,7 +33,7 @@ export function useBlockedTransitionTelemetry() {
           detail: telemetryPayload,
         }),
       );
-      console.info('[OpsTelemetry] blocked-transition', telemetryPayload);
+      logger.info('ops:blocked-transition', telemetryPayload);
     },
     [logBlockedTransitionMutation],
   );

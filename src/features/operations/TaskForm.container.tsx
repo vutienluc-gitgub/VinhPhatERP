@@ -9,8 +9,8 @@ import {
 import { useOrderList } from '@/application/orders/useOrders';
 import { useWorkOrders } from '@/application/production/useWorkOrders';
 import type { TaskFormValues } from '@/schema/tasks.schema';
+import type { Task } from '@/domain/operations/types';
 
-import { Task } from './types';
 import { OPERATIONS_MESSAGES } from './constants';
 import { TaskFormView } from './TaskForm.view';
 
@@ -30,6 +30,27 @@ interface WorkOrderMin {
   target_name: string;
 }
 
+/**
+ * Safely extract an array from a query result that may be:
+ * - a plain array (T[])
+ * - a paginated object ({ data: T[], ... })
+ * Avoids `as unknown as` double cast.
+ */
+function extractList<T>(queryData: unknown): T[] {
+  if (Array.isArray(queryData)) {
+    return queryData as T[];
+  }
+  if (
+    queryData !== null &&
+    typeof queryData === 'object' &&
+    'data' in queryData &&
+    Array.isArray((queryData as { data: unknown }).data)
+  ) {
+    return (queryData as { data: T[] }).data;
+  }
+  return [];
+}
+
 export function TaskFormContainer({ task, onClose }: TaskFormContainerProps) {
   const isEditing = !!task;
 
@@ -41,15 +62,8 @@ export function TaskFormContainer({ task, onClose }: TaskFormContainerProps) {
   const updateMutation = useUpdateTask();
   const deleteMutation = useDeleteTask();
 
-  const ordersList = (Array.isArray(ordersQuery.data)
-    ? ordersQuery.data
-    : ((ordersQuery.data as unknown as { data: unknown[] })?.data ??
-      [])) as unknown as OrderMin[];
-
-  const workOrdersList = (Array.isArray(workOrdersQuery.data)
-    ? workOrdersQuery.data
-    : ((workOrdersQuery.data as unknown as { data: unknown[] })?.data ??
-      [])) as unknown as WorkOrderMin[];
+  const ordersList = extractList<OrderMin>(ordersQuery.data);
+  const workOrdersList = extractList<WorkOrderMin>(workOrdersQuery.data);
 
   const isPending =
     createMutation.isPending ||
@@ -82,8 +96,11 @@ export function TaskFormContainer({ task, onClose }: TaskFormContainerProps) {
       await deleteMutation.mutateAsync(task.id);
       toast.success(OPERATIONS_MESSAGES.DELETE_SUCCESS);
       onClose();
-    } catch {
-      toast.error(OPERATIONS_MESSAGES.DELETE_ERROR);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : OPERATIONS_MESSAGES.DELETE_ERROR;
+      toast.error(message);
+      console.error('[TaskForm] Delete failed:', err);
     }
   };
 

@@ -1,4 +1,4 @@
-import { ActivityItem } from '@/features/operations/types';
+import type { ActivityItem } from '@/domain/operations/types';
 import { cn } from '@/shared/utils/cn';
 
 export function ActivityFeed({

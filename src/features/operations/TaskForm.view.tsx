@@ -7,9 +7,10 @@ import {
   type TaskFormValues,
   tasksDefaultValues,
 } from '@/schema/tasks.schema';
+import type { Task } from '@/domain/operations/types';
 
-import { Task } from './types';
 import { useTaskFormOptions } from './hooks/useTaskFormOptions';
+import { OPERATIONS_MESSAGES } from './constants';
 
 export type TaskFormViewProps = {
   task: Task | null;
@@ -80,24 +81,24 @@ export function TaskFormView({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="form-field">
         <label className="text-sm font-medium text-zinc-700 mb-1 block">
-          Tiêu đề task *
+          {OPERATIONS_MESSAGES.TASK_TITLE_LABEL}
         </label>
         <input
           {...register('title')}
           className={`field-input ${errors.title ? 'is-error' : ''}`}
-          placeholder="Nhập tiêu đề công việc..."
+          placeholder={OPERATIONS_MESSAGES.TASK_TITLE_PLACEHOLDER}
         />
         {errors.title && <p className="field-error">{errors.title.message}</p>}
       </div>
 
       <div className="form-field">
         <label className="text-sm font-medium text-zinc-700 mb-1 block">
-          Mô tả
+          {OPERATIONS_MESSAGES.TASK_DESC_LABEL}
         </label>
         <textarea
           {...register('description')}
           className="field-textarea h-24"
-          placeholder="Chi tiết công việc..."
+          placeholder={OPERATIONS_MESSAGES.TASK_DESC_PLACEHOLDER}
         />
       </div>
 

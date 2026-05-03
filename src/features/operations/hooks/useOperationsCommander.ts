@@ -7,14 +7,7 @@
 import { useCallback } from 'react';
 
 import { validateTransition } from '@/lib/workflow-engine';
-
-type TaskStatus =
-  | 'todo'
-  | 'in_progress'
-  | 'blocked'
-  | 'review'
-  | 'done'
-  | 'cancelled';
+import type { TaskStatus } from '@/domain/operations/types';
 
 interface CommanderTask {
   id: string;

@@ -5,7 +5,7 @@
  * (download, copy URL, rename, delete).
  */
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import toast from 'react-hot-toast';
 
@@ -24,6 +24,11 @@ import {
   useMoveAsset,
   useMediaFolders,
 } from '@/features/media/useMedia';
+import {
+  extractReceiptInfo,
+  type ExtractedReceipt,
+} from '@/features/media/media.ai.service';
+import { formatCurrency } from '@/shared/utils/format';
 
 interface MediaDetailPanelProps {
   asset: MediaAsset | null;
@@ -35,6 +40,11 @@ export function MediaDetailPanel({ asset, onClose }: MediaDetailPanelProps) {
   const renameAsset = useRenameAsset();
   const moveAsset = useMoveAsset();
   const { data: folders = [] } = useMediaFolders();
+
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [extractedData, setExtractedData] = useState<ExtractedReceipt | null>(
+    null,
+  );
 
   const isImage = useMemo(
     () => asset?.mime_type.startsWith('image/') ?? false,
@@ -111,6 +121,26 @@ export function MediaDetailPanel({ asset, onClose }: MediaDetailPanelProps) {
     },
     [asset, moveAsset],
   );
+
+  const handleAnalyze = useCallback(async () => {
+    if (!asset) return;
+    setIsAnalyzing(true);
+    setExtractedData(null);
+    try {
+      const data = await extractReceiptInfo(asset);
+      setExtractedData(data);
+      if (data.is_likely_receipt) {
+        toast.success(MEDIA_LABELS.EXTRACTION_SUCCESS);
+      } else {
+        toast.error(MEDIA_LABELS.EXTRACTION_ERROR);
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error(message);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }, [asset]);
 
   if (!asset) return null;
 
@@ -190,8 +220,89 @@ export function MediaDetailPanel({ asset, onClose }: MediaDetailPanelProps) {
         )}
       </div>
 
+      {/* AI Extraction Results */}
+      {extractedData?.is_likely_receipt && (
+        <div className="media-detail-ai-results">
+          <div className="media-detail-ai-header">
+            <Icon name="Sparkles" size={16} />
+            <span>Thông tin giao dịch trích xuất</span>
+          </div>
+          <div className="media-detail-ai-body">
+            <div className="ai-row">
+              <span className="ai-label">Ngân hàng:</span>
+              <span className="ai-value">{extractedData.bank_name}</span>
+            </div>
+            <div className="ai-row">
+              <span className="ai-label">Số tiền:</span>
+              <span className="ai-value font-bold text-[var(--primary-strong)]">
+                {formatCurrency(extractedData.amount ?? 0)}{' '}
+                {extractedData.currency}
+              </span>
+            </div>
+            <div className="ai-row">
+              <span className="ai-label">Ngày:</span>
+              <span className="ai-value">
+                {extractedData.transaction_date
+                  ? dayjs(extractedData.transaction_date).format(
+                      'DD/MM/YYYY HH:mm',
+                    )
+                  : 'N/A'}
+              </span>
+            </div>
+            <div className="ai-row">
+              <span className="ai-label">Mã GD:</span>
+              <span className="ai-value text-[0.75rem] font-mono">
+                {extractedData.reference_number}
+              </span>
+            </div>
+            <div className="ai-row">
+              <span className="ai-label">Nội dung:</span>
+              <span className="ai-value italic">"{extractedData.content}"</span>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="btn-primary w-full mt-2 py-1.5 text-xs"
+            onClick={() =>
+              toast.success('Chức năng Tạo phiếu chi đang phát triển')
+            }
+            style={{
+              justifyContent: 'center',
+              borderRadius: '6px',
+              fontSize: '0.7rem',
+              padding: '0.4rem',
+            }}
+          >
+            Tạo phiếu chi từ thông tin này
+          </button>
+        </div>
+      )}
+
       {/* Actions */}
       <div className="media-detail-actions">
+        {isImage && (
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={handleAnalyze}
+            disabled={isAnalyzing}
+            style={{
+              justifyContent: 'center',
+              background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+              border: 'none',
+              color: 'white',
+            }}
+          >
+            <Icon
+              name={isAnalyzing ? 'Loader2' : 'Sparkles'}
+              size={16}
+              className={isAnalyzing ? 'animate-spin' : ''}
+            />
+            {isAnalyzing
+              ? MEDIA_LABELS.ANALYZING
+              : MEDIA_LABELS.ANALYZE_RECEIPT}
+          </button>
+        )}
         <button
           type="button"
           className="btn-secondary"

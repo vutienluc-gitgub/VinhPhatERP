@@ -80,6 +80,10 @@ export const MEDIA_LABELS = {
   MOVE_SUCCESS: 'Đã di chuyển file',
   RENAME_SUCCESS: 'Đã đổi tên',
   RENAME_FOLDER_SUCCESS: 'Đã đổi tên thư mục',
+  ANALYZE_RECEIPT: 'Trích xuất giao dịch',
+  ANALYZING: 'Đang phân tích...',
+  EXTRACTION_SUCCESS: 'Đã trích xuất thông tin thành công!',
+  EXTRACTION_ERROR: 'Không thể trích xuất thông tin từ file này.',
 } as const;
 
 // ─── Messages ──────────────────────────────────────
