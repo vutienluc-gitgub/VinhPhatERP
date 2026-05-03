@@ -1,20 +1,5 @@
-export type FabricCatalogStatus = 'active' | 'inactive';
-
-export type FabricCatalog = {
-  id: string;
-  code: string;
-  name: string;
-  composition: string | null;
-  target_width_cm: number | null;
-  target_gsm: number | null;
-  unit: string;
-  notes: string | null;
-  status: FabricCatalogStatus;
-  created_at: string;
-  updated_at: string;
-};
-
-export type FabricCatalogFilter = {
-  search?: string;
-  status?: FabricCatalogStatus;
-};
+/**
+ * Re-export from domain layer.
+ * @deprecated Import from '@/domain/settings/fabric-catalog.types' instead.
+ */
+export * from '@/domain/settings/fabric-catalog.types';

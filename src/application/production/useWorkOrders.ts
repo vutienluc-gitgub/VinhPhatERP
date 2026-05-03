@@ -17,7 +17,7 @@ import type {
   WorkOrder,
   WorkOrderWithRelations,
   WorkOrderFilter,
-} from '@/features/work-orders/types';
+} from '@/domain/production/work-orders.types';
 import type {
   CreateWorkOrderInput,
   CompleteWorkOrderInput,

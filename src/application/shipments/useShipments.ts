@@ -29,7 +29,7 @@ import type {
   ShipmentDocument,
   ShipmentsFilter,
   DeliveryStaffSummary,
-} from '@/features/shipments/types';
+} from '@/domain/shipments/types';
 
 export type { ShipmentDocument };
 

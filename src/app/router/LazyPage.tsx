@@ -5,7 +5,7 @@ class ChunkErrorBoundary extends Component<
   { children: ReactNode },
   { hasError: boolean }
 > {
-  state = { hasError: false };
+  override state = { hasError: false };
 
   static getDerivedStateFromError(error: unknown) {
     const errorString = error instanceof Error ? error.message : String(error);
@@ -21,13 +21,13 @@ class ChunkErrorBoundary extends Component<
     return { hasError: isChunkError };
   }
 
-  componentDidCatch() {
+  override componentDidCatch() {
     if (this.state.hasError) {
       window.location.reload();
     }
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       return <div className="table-empty">Đang tải lại...</div>;
     }

@@ -1,4 +1,4 @@
-import type { FinishedFabricRoll } from '@/features/finished-fabric/types';
+import type { FinishedFabricRoll } from '@/domain/inventory/finished-fabric.types';
 import { supabase } from '@/services/supabase/client';
 
 const TABLE = 'finished_fabric_rolls';

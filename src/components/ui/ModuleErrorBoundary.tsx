@@ -11,20 +11,20 @@ interface State {
 }
 
 export class ModuleErrorBoundary extends Component<Props, State> {
-  state: State = { hasError: false };
+  override state: State = { hasError: false };
 
   static getDerivedStateFromError() {
     return { hasError: true };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     logger.error('Module Error', error, {
       module: 'ModuleErrorBoundary',
       componentStack: errorInfo.componentStack,
     });
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       return (
         <div className="p-4 border border-red-200 bg-red-50 text-red-800 rounded-md">

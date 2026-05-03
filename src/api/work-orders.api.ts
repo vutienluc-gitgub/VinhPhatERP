@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
 
-import type { BomYarnItem } from '@/features/bom/types';
+import type { BomYarnItem } from '@/domain/production/bom.types';
 import type {
   WorkOrder,
   WorkOrderWithRelations,
   WorkOrderFilter,
   WorkOrderYarnRequirementWithRelations,
-} from '@/features/work-orders/types';
+} from '@/domain/production/work-orders.types';
 import type { CreateWorkOrderInput } from '@/features/work-orders/work-orders.module';
 import { supabase } from '@/services/supabase/client';
 import { untypedDb } from '@/services/supabase/untyped';

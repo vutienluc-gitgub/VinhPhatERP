@@ -1,7 +1,11 @@
+import { useState } from 'react';
+import type { ColumnDef } from '@tanstack/react-table';
+
 import {
   Icon,
   Badge,
   DataTable,
+  TabSwitcher,
   type DataTableColumn,
 } from '@/shared/components';
 import {
@@ -11,17 +15,17 @@ import {
   useAgingStock,
 } from '@/application/inventory';
 import type { InventoryBreakdownRow, AgingRoll } from '@/application/inventory';
+import type { YarnAvailability } from '@/api/yarn-reservation.api';
 import { AGING_CONFIG, getAgingSeverity } from '@/domain/inventory';
+import { formatQuantity } from '@/shared/utils/format';
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 
-function fmt(val: number, decimals = 1): string {
-  return val.toLocaleString('vi-VN', { maximumFractionDigits: decimals });
-}
-
-function fmtCurrency(val: number): string {
-  return new Intl.NumberFormat('vi-VN').format(val);
-}
+import { InventoryDataGrid } from './components/InventoryDataGrid';
+import {
+  YARN_INVENTORY_COLUMNS,
+  YarnInventoryMobileCard,
+} from './components/YarnInventoryColumns';
 
 const AGING_COLUMNS: DataTableColumn<AgingRoll>[] = [
   {
@@ -33,7 +37,7 @@ const AGING_COLUMNS: DataTableColumn<AgingRoll>[] = [
   {
     header: 'Loại',
     cell: (r) => (
-      <span className="badge-outline">{r.source === 'raw' ? 'Mộc' : 'TP'}</span>
+      <Badge variant="gray">{r.source === 'raw' ? 'Mộc' : 'TP'}</Badge>
     ),
   },
   {
@@ -67,22 +71,30 @@ const AGING_COLUMNS: DataTableColumn<AgingRoll>[] = [
   },
 ];
 
-const BREAKDOWN_COLUMNS: DataTableColumn<InventoryBreakdownRow>[] = [
+const BREAKDOWN_COLUMNS: ColumnDef<InventoryBreakdownRow, unknown>[] = [
   {
     header: 'Loại vải',
-    cell: (r) => <span className="font-bold">{r.fabric_type ?? '—'}</span>,
+    id: 'fabric_type',
+    accessorKey: 'fabric_type',
+    cell: ({ row }) => (
+      <span className="font-bold">{row.original.fabric_type ?? '—'}</span>
+    ),
   },
   {
     header: 'Màu',
-    cell: (r) => r.color_name ?? '—',
-    className: 'hide-mobile td-muted',
+    id: 'color_name',
+    accessorKey: 'color_name',
+    cell: ({ row }) => row.original.color_name ?? '—',
+    meta: { className: 'hide-mobile td-muted' },
   },
   {
     header: 'Chất lượng',
-    cell: (r) =>
-      r.quality_grade ? (
-        <span className={`grade-badge grade-${r.quality_grade}`}>
-          {r.quality_grade}
+    id: 'quality_grade',
+    accessorKey: 'quality_grade',
+    cell: ({ row }) =>
+      row.original.quality_grade ? (
+        <span className={`grade-badge grade-${row.original.quality_grade}`}>
+          {row.original.quality_grade}
         </span>
       ) : (
         <span className="text-muted">—</span>
@@ -90,18 +102,24 @@ const BREAKDOWN_COLUMNS: DataTableColumn<InventoryBreakdownRow>[] = [
   },
   {
     header: 'Cuộn',
-    cell: (r) => r.roll_count ?? 0,
-    className: 'text-right',
+    id: 'roll_count',
+    accessorKey: 'roll_count',
+    cell: ({ row }) => row.original.roll_count ?? 0,
+    meta: { className: 'text-right' },
   },
   {
     header: 'Dài (m)',
-    cell: (r) => fmt(r.total_length_m ?? 0),
-    className: 'text-right hide-mobile font-medium',
+    id: 'total_length_m',
+    accessorKey: 'total_length_m',
+    cell: ({ row }) => formatQuantity(row.original.total_length_m ?? 0),
+    meta: { className: 'text-right hide-mobile font-medium' },
   },
   {
     header: 'Nặng (kg)',
-    cell: (r) => fmt(r.total_weight_kg ?? 0),
-    className: 'text-right',
+    id: 'total_weight_kg',
+    accessorKey: 'total_weight_kg',
+    cell: ({ row }) => formatQuantity(row.original.total_weight_kg ?? 0),
+    meta: { className: 'text-right' },
   },
 ];
 
@@ -180,7 +198,7 @@ function BreakdownMobileCard({ row }: { row: InventoryBreakdownRow }) {
               Tổng dài
             </p>
             <p className="text-sm font-black text-primary">
-              {fmt(row.total_length_m ?? 0)}
+              {formatQuantity(row.total_length_m ?? 0)}
               <span className="text-[10px] ml-0.5">m</span>
             </p>
           </div>
@@ -189,7 +207,7 @@ function BreakdownMobileCard({ row }: { row: InventoryBreakdownRow }) {
               Trọng lượng
             </p>
             <p className="text-sm font-black text-slate-700">
-              {fmt(row.total_weight_kg ?? 0)}
+              {formatQuantity(row.total_weight_kg ?? 0)}
               <span className="text-[10px] ml-0.5">kg</span>
             </p>
           </div>
@@ -199,32 +217,140 @@ function BreakdownMobileCard({ row }: { row: InventoryBreakdownRow }) {
   );
 }
 
-function InventoryBreakdownPanel({
-  title,
-  rows,
-  isLoading,
+type InventoryTab = 'yarn' | 'raw' | 'finished' | 'aging';
+
+const INVENTORY_TABS: { key: InventoryTab; label: string }[] = [
+  { key: 'yarn', label: 'Sợi (Yarn)' },
+  { key: 'raw', label: 'Vải mộc' },
+  { key: 'finished', label: 'Thành phẩm' },
+  { key: 'aging', label: 'Tồn lâu (Aging)' },
+];
+
+function InventoryBreakdownTabs({
+  yarnData,
+  yarnLoading,
+  rawData,
+  rawLoading,
+  finishedData,
+  finishedLoading,
+  agingRolls,
+  agingLoading,
+  agingError,
+  criticalCount,
+  warningCount,
 }: {
-  title: string;
-  rows: InventoryBreakdownRow[];
-  isLoading: boolean;
+  yarnData: YarnAvailability[];
+  yarnLoading: boolean;
+  rawData: InventoryBreakdownRow[];
+  rawLoading: boolean;
+  finishedData: InventoryBreakdownRow[];
+  finishedLoading: boolean;
+  agingRolls: AgingRoll[];
+  agingLoading: boolean;
+  agingError: Error | null;
+  criticalCount: number;
+  warningCount: number;
 }) {
+  const [activeTab, setActiveTab] = useState<InventoryTab>('yarn');
+
+  const tabs = INVENTORY_TABS.map((t) => {
+    let badge = 0;
+    if (t.key === 'yarn') badge = yarnData.length;
+    else if (t.key === 'raw') badge = rawData.length;
+    else if (t.key === 'finished') badge = finishedData.length;
+    else if (t.key === 'aging') badge = agingRolls.length;
+    return { ...t, badge };
+  });
+
   return (
     <div className="panel-card card-flush">
-      <div className="card-header-area">
-        <span className="font-bold text-lg">{title}</span>
+      <div className="card-header-area flex-col sm:flex-row items-start sm:items-center gap-4">
+        <TabSwitcher
+          tabs={tabs}
+          active={activeTab}
+          onChange={setActiveTab}
+          variant="premium"
+        />
+
+        {activeTab === 'aging' && agingRolls.length > 0 && (
+          <div className="flex gap-2 flex-wrap">
+            {criticalCount > 0 && (
+              <Badge variant="danger" className="text-[10px]">
+                {criticalCount} cuộn &gt; 90 ngày
+              </Badge>
+            )}
+            {warningCount > 0 && (
+              <Badge variant="warning" className="text-[10px]">
+                {warningCount} cuộn 60–90 ngày
+              </Badge>
+            )}
+          </div>
+        )}
       </div>
-      <DataTable
-        data={rows}
-        columns={BREAKDOWN_COLUMNS}
-        isLoading={isLoading}
-        rowKey={(r) =>
-          `${r.fabric_type ?? 'none'}-${r.color_name ?? 'none'}-${r.quality_grade ?? 'none'}`
-        }
-        emptyStateTitle="Không có dữ liệu tồn kho"
-        emptyStateDescription="Chưa có dữ liệu cho phần này."
-        emptyStateIcon="Layers"
-        renderMobileCard={(r) => <BreakdownMobileCard row={r} />}
-      />
+
+      {activeTab === 'yarn' && (
+        <InventoryDataGrid
+          title=""
+          data={yarnData}
+          columns={YARN_INVENTORY_COLUMNS}
+          isLoading={yarnLoading}
+          rowKey={(r) => r.id}
+          emptyStateTitle="Không có dữ liệu sợi"
+          renderMobileCard={(r) => <YarnInventoryMobileCard row={r} />}
+        />
+      )}
+
+      {activeTab === 'raw' && (
+        <InventoryDataGrid
+          title=""
+          data={rawData}
+          columns={BREAKDOWN_COLUMNS}
+          isLoading={rawLoading}
+          rowKey={(r) =>
+            `${r.fabric_type ?? 'none'}-${r.color_name ?? 'none'}-${r.quality_grade ?? 'none'}`
+          }
+          renderMobileCard={(r) => <BreakdownMobileCard row={r} />}
+        />
+      )}
+
+      {activeTab === 'finished' && (
+        <InventoryDataGrid
+          title=""
+          data={finishedData}
+          columns={BREAKDOWN_COLUMNS}
+          isLoading={finishedLoading}
+          rowKey={(r) =>
+            `${r.fabric_type ?? 'none'}-${r.color_name ?? 'none'}-${r.quality_grade ?? 'none'}`
+          }
+          renderMobileCard={(r) => <BreakdownMobileCard row={r} />}
+        />
+      )}
+
+      {activeTab === 'aging' && (
+        <>
+          {agingError ? (
+            <div className="p-4">
+              <p className="error-inline">
+                Lỗi:{' '}
+                {agingError instanceof Error
+                  ? agingError.message
+                  : String(agingError)}
+              </p>
+            </div>
+          ) : (
+            <DataTable
+              data={agingRolls}
+              columns={AGING_COLUMNS}
+              isLoading={agingLoading}
+              rowKey={(r) => r.id}
+              emptyStateTitle="Không có cuộn nào tồn kho quá 30 ngày"
+              emptyStateDescription="Tất cả cuộn đang ở trạng thái lưu thông tốt."
+              emptyStateIcon="CheckCircle"
+              renderMobileCard={(r) => <AgingMobileCard roll={r} />}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 }
@@ -242,7 +368,7 @@ export function InventoryPage() {
 
   const rawStats = rawQuery.data?.stats;
   const finishedStats = finishedQuery.data?.stats;
-  const yarnStats = yarnQuery.data;
+  const yarnStats = yarnQuery.data?.stats;
 
   const agingRolls = agingQuery.data?.rolls ?? [];
   const criticalCount = agingQuery.data?.stats.criticalCount ?? 0;
@@ -266,40 +392,38 @@ export function InventoryPage() {
 
           <div className="kpi-section kpi-grid">
             {/* Yarn KPIs */}
-            <div className="kpi-card-premium kpi-primary">
+            <div className="kpi-card-premium kpi-success col-span-full md:col-span-2">
               <div className="kpi-overlay" />
-              <div className="kpi-content">
-                <div className="kpi-info">
-                  <p className="kpi-label">Sợi — Phiếu nhập</p>
-                  <p className="kpi-value">{yarnStats?.totalReceipts ?? 0}</p>
-                </div>
-                <div className="kpi-icon-box">
-                  <Icon name="ScrollText" size={32} />
-                </div>
-              </div>
-              <div className="kpi-footer text-xs opacity-80 italic">
-                Phiếu nhập kho sợi
-              </div>
-            </div>
-
-            <div className="kpi-card-premium kpi-secondary">
-              <div className="kpi-overlay" />
-              <div className="kpi-content">
-                <div className="kpi-info">
-                  <p className="kpi-label">Sợi — Giá trị</p>
-                  <p className="kpi-value">
-                    {fmtCurrency(yarnStats?.totalAmount ?? 0)}
-                    <span className="text-base font-semibold ml-1 opacity-80">
-                      đ
+              <div className="kpi-content flex-col w-full h-full justify-between items-start">
+                <div className="kpi-info w-full">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Icon name="Box" size={20} className="opacity-80" />
+                    <p className="kpi-label m-0">Sợi — Khả dụng</p>
+                  </div>
+                  <div className="flex items-baseline gap-1 mt-1">
+                    <p className="kpi-value text-4xl tracking-tight">
+                      {formatQuantity(yarnStats?.totalAvailableKg ?? 0)}
+                    </p>
+                    <span className="text-sm font-bold opacity-80 uppercase">
+                      kg
                     </span>
-                  </p>
+                  </div>
                 </div>
-                <div className="kpi-icon-box">
-                  <Icon name="Wallet" size={32} />
+
+                <div className="w-full mt-4 pt-3 border-t border-white/20 text-sm space-y-1.5 font-medium">
+                  <div className="flex justify-between items-center opacity-90">
+                    <span>Tổng kho (Total):</span>
+                    <span className="font-bold">
+                      {formatQuantity(yarnStats?.totalStockKg ?? 0)} kg
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-red-100">
+                    <span>Đã giữ (Reserved):</span>
+                    <span>
+                      - {formatQuantity(yarnStats?.totalReservedKg ?? 0)} kg
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="kpi-footer text-xs opacity-80 italic">
-                Tổng giá trị nhập sợi
               </div>
             </div>
 
@@ -329,7 +453,7 @@ export function InventoryPage() {
                   <p className="kpi-label">Vải mộc — Tổng dài</p>
                   <div className="flex items-baseline gap-1">
                     <p className="kpi-value">
-                      {fmt(rawStats?.totalLengthM ?? 0)}
+                      {formatQuantity(rawStats?.totalLengthM ?? 0)}
                     </p>
                     <span className="text-base font-bold opacity-80 uppercase">
                       m
@@ -371,7 +495,7 @@ export function InventoryPage() {
                   <p className="kpi-label">Thành phẩm — Tổng dài</p>
                   <div className="flex items-baseline gap-1">
                     <p className="kpi-value">
-                      {fmt(finishedStats?.totalLengthM ?? 0)}
+                      {formatQuantity(finishedStats?.totalLengthM ?? 0)}
                     </p>
                     <span className="text-base font-bold opacity-80 uppercase">
                       m
@@ -390,66 +514,19 @@ export function InventoryPage() {
         </div>
 
         {!isLoading && !hasError && (
-          <>
-            {/* Raw Fabric Breakdown */}
-            <InventoryBreakdownPanel
-              title="Chi tiết tồn kho vải mộc"
-              rows={rawQuery.data?.breakdown ?? []}
-              isLoading={rawQuery.isLoading}
-            />
-
-            {/* Finished Fabric Breakdown */}
-            <InventoryBreakdownPanel
-              title="Chi tiết tồn kho thành phẩm"
-              rows={finishedQuery.data?.breakdown ?? []}
-              isLoading={finishedQuery.isLoading}
-            />
-
-            {/* Aging Stock Panel */}
-            <div className="panel-card card-flush">
-              <div className="card-header-area flex-col sm:flex-row items-start sm:items-center gap-4">
-                <span className="font-bold text-lg">
-                  Cuộn tồn kho lâu (Aging Stock)
-                </span>
-                {agingRolls.length > 0 && (
-                  <div className="flex gap-2 flex-wrap w-full sm:w-auto">
-                    {criticalCount > 0 && (
-                      <span className="badge-outline text-danger border-danger/30 text-[10px] py-0.5 px-2 bg-danger/5">
-                        {criticalCount} cuộn &gt; 90 ngày
-                      </span>
-                    )}
-                    {warningCount > 0 && (
-                      <span className="badge-outline text-warning border-warning/30 text-[10px] py-0.5 px-2 bg-warning/5">
-                        {warningCount} cuộn 60–90 ngày
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {agingQuery.error ? (
-                <div className="p-4">
-                  <p className="error-inline">
-                    Lỗi:{' '}
-                    {agingQuery.error instanceof Error
-                      ? agingQuery.error.message
-                      : String(agingQuery.error)}
-                  </p>
-                </div>
-              ) : (
-                <DataTable
-                  data={agingRolls}
-                  columns={AGING_COLUMNS}
-                  isLoading={agingQuery.isLoading}
-                  rowKey={(r) => r.id}
-                  emptyStateTitle="Không có cuộn nào tồn kho quá 30 ngày"
-                  emptyStateDescription="Tất cả cuộn đang ở trạng thái lưu thông tốt."
-                  emptyStateIcon="CheckCircle"
-                  renderMobileCard={(r) => <AgingMobileCard roll={r} />}
-                />
-              )}
-            </div>
-          </>
+          <InventoryBreakdownTabs
+            yarnData={yarnQuery.data?.breakdownList ?? []}
+            yarnLoading={yarnQuery.isLoading}
+            rawData={rawQuery.data?.breakdown ?? []}
+            rawLoading={rawQuery.isLoading}
+            finishedData={finishedQuery.data?.breakdown ?? []}
+            finishedLoading={finishedQuery.isLoading}
+            agingRolls={agingRolls}
+            agingLoading={agingQuery.isLoading}
+            agingError={agingQuery.error}
+            criticalCount={criticalCount}
+            warningCount={warningCount}
+          />
         )}
 
         {isLoading && (

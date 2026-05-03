@@ -4,7 +4,7 @@ import type {
   CustomerUpdate,
   CustomersFilter,
   PortalAccount,
-} from '@/features/customers/types';
+} from '@/domain/crm/customers.types';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { customerResponseSchema } from '@/schema/customer.schema';

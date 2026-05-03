@@ -1,7 +1,7 @@
 import type {
   WeavingInvoice,
   WeavingInvoiceFilter,
-} from '@/features/weaving-invoices/types';
+} from '@/domain/production/weaving-invoices.types';
 import type { WeavingInvoiceFormValues } from '@/schema/weaving-invoice.schema';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';

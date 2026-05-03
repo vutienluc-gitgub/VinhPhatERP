@@ -2,13 +2,13 @@ import type {
   ProgressAuditLog,
   ProgressAuditLogWithOrder,
   StageStatus,
-} from '@/features/orders/progress/types';
+} from '@/domain/orders/progress.types';
 import type {
   OrderProgress,
   OrderProgressInsert,
   OrderProgressUpdate,
   OrderProgressWithOrder,
-} from '@/features/orders/progress/types';
+} from '@/domain/orders/progress.types';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { safeUpsertOne } from '@/lib/db-guard';

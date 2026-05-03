@@ -51,6 +51,22 @@ function createChainBuilder(
     })),
     error,
   }));
+  chain['upsert'] = vi.fn(() => ({
+    ...chain,
+    select: vi.fn(() => {
+      const selectResult = {
+        ...chain,
+        single: vi.fn(() => Promise.resolve({ data: resolvedData, error })),
+        then: (resolve: any) =>
+          resolve({
+            data: Array.isArray(resolvedData) ? resolvedData : [resolvedData],
+            error,
+          }),
+      };
+      return selectResult;
+    }),
+    error,
+  }));
   // delete()
   chain['delete'] = vi.fn(() => ({
     ...chain,
@@ -67,15 +83,16 @@ let contractsChain: ReturnType<typeof createChainBuilder>;
 let linksChain: ReturnType<typeof createChainBuilder>;
 let auditChain: ReturnType<typeof createChainBuilder>;
 
+const mockDbFactory = (table: string) => {
+  if (table === 'contracts') return contractsChain;
+  if (table === 'contract_order_links') return linksChain;
+  if (table === 'contract_audit_logs') return auditChain;
+  return createChainBuilder();
+};
+
 vi.mock('@/services/supabase/client', () => ({
-  supabase: {
-    from: vi.fn((table: string) => {
-      if (table === 'contracts') return contractsChain;
-      if (table === 'contract_order_links') return linksChain;
-      if (table === 'contract_audit_logs') return auditChain;
-      return createChainBuilder();
-    }),
-  },
+  supabase: { from: vi.fn(mockDbFactory) },
+  untypedDb: { from: vi.fn(mockDbFactory), rpc: vi.fn() },
 }));
 
 // Import module under test AFTER mock is set up
@@ -279,21 +296,14 @@ describe('Link/Unlink blocked when signed — Property Tests', () => {
       }),
     } as ReturnType<typeof createChainBuilder>;
 
-    // linkOrderToContract insert
-    linksChain['insert'] = vi.fn(() => ({
-      select: vi.fn(() => ({
-        single: vi.fn(() =>
-          Promise.resolve({
-            data: {
-              id: 'link1',
-              contract_id: 'c1',
-              order_id: 'o1',
-            },
-            error: null,
-          }),
-        ),
-      })),
-    }));
+    // linkOrderToContract upsert
+    linksChain = {
+      ...createChainBuilder({
+        id: 'link1',
+        contract_id: 'c1',
+        order_id: 'o1',
+      }),
+    } as ReturnType<typeof createChainBuilder>;
     auditChain['insert'] = vi.fn(() => Promise.resolve({ error: null }));
 
     const result = await service.linkOrderToContract('c1', 'o1');

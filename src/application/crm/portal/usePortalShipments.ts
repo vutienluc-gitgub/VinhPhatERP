@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { supabase } from '@/services/supabase/client';
-import type { PortalShipment } from '@/features/customer-portal/types';
+import type { PortalShipment } from '@/domain/portal/types';
 
 export function usePortalShipments(shipmentId?: string) {
   const [shipments, setShipments] = useState<PortalShipment[]>([]);

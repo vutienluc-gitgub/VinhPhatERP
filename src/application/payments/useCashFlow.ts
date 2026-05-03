@@ -9,7 +9,7 @@ import type {
   CashFlowRow,
   ExpenseByCategoryRow,
   SupplierDebtRow,
-} from '@/features/payments/types';
+} from '@/domain/payments/types';
 
 export type { CashFlowRow, ExpenseByCategoryRow, SupplierDebtRow };
 

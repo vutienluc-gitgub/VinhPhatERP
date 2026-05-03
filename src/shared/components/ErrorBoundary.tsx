@@ -26,7 +26,7 @@ export class ErrorBoundary extends Component<
     };
   }
 
-  componentDidCatch(error: Error, info: ErrorInfo) {
+  override componentDidCatch(error: Error, info: ErrorInfo) {
     logger.error('Global React Error', error, {
       module: 'ErrorBoundary',
       componentStack: info.componentStack,
@@ -40,7 +40,7 @@ export class ErrorBoundary extends Component<
     });
   };
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] p-8 text-center gap-4">

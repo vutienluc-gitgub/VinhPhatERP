@@ -1,0 +1,81 @@
+# Tasks — Missing API Layer Fix
+
+## Task List
+
+- [ ] 1. Tạo `src/api/contracts.api.ts`
+  - [ ] 1.1 Tạo file với imports: `supabase` từ `@/services/supabase/client`, `safeUpsertOne` và `safeInsert` từ `@/lib/db-guard`, các types từ `@/features/contracts/contracts.module`
+  - [ ] 1.2 Định nghĩa `const db` helpers: `contracts()`, `contractOrderLinks()`, `contractAuditLogs()`
+  - [ ] 1.3 Implement `fetchContracts(filters)` — di chuyển query logic từ `getContracts` trong service (bao gồm tất cả filter conditions)
+  - [ ] 1.4 Implement `fetchContractById(id)` — di chuyển từ `getContractById` trong service
+  - [ ] 1.5 Implement `patchContract(id, data)` — chỉ chứa DB update call, không có business logic
+  - [ ] 1.6 Implement `patchContractStatus(id, patch)` — chỉ chứa DB update call cho status patch
+  - [ ] 1.7 Implement `insertAuditLog(data)` — dùng `safeInsert` với `uniqueCheck: { column: 'id', value: data.id }`
+  - [ ] 1.8 Implement `insertContractOrderLink(data)` — dùng `safeUpsertOne` với `conflictKey: 'id'` (giữ nguyên pattern hiện tại)
+  - [ ] 1.9 Implement `deleteContractOrderLink(contractId, orderId)` — di chuyển delete query từ `unlinkOrderFromContract`
+  - [ ] 1.10 Implement `fetchContractsByOrderId(orderId)` — di chuyển 2-step query từ `getContractsByOrderId`
+  - [ ] 1.11 Implement `fetchOrdersByContractId(contractId)` — di chuyển join query từ `getOrdersByContractId`
+  - [ ] 1.12 Implement `fetchAuditLogs(contractId)` — di chuyển query từ `getAuditLogs`
+  - [ ] 1.13 Implement `fetchAvailableOrdersForContract(excludeIds)` — di chuyển query từ `getAvailableOrdersForContract`
+  - [ ] 1.14 Implement `fetchOrderOptions()` — di chuyển query từ `getOrderOptions`
+  - [ ] 1.15 Implement `fetchCustomerOptions()` — di chuyển query từ `getCustomerOptions`
+  - [ ] 1.16 Implement `fetchSupplierOptions()` — di chuyển query từ `getSupplierOptions`
+  - [ ] 1.17 Implement `invokeExportContractPdf(contractId)` — di chuyển `supabase.auth.getSession()` + `supabase.functions.invoke('export-contract-pdf', ...)` từ `exportContractPdf`
+  - [ ] 1.18 Implement `invokeGenerateContract(payload)` — di chuyển `supabase.auth.getSession()` + `supabase.functions.invoke('generate-contract', ...)` từ `generateContract`
+  - [ ] 1.19 Xác nhận TypeScript compile không có lỗi cho file mới
+
+- [ ] 2. Refactor `src/features/contracts/contracts.service.ts`
+  - [ ] 2.1 Xóa `import { supabase } from '@/services/supabase/client'`
+  - [ ] 2.2 Xóa `import { safeUpsertOne } from '@/lib/db-guard'` (đã chuyển sang API layer)
+  - [ ] 2.3 Thêm import các hàm cần thiết từ `@/api/contracts.api`
+  - [ ] 2.4 Xóa `const db = { contracts, contractOrderLinks, contractAuditLogs }` helper block
+  - [ ] 2.5 Refactor `writeAuditLog()` — thay `supabase.from('contract_audit_logs').insert(...)` bằng `insertAuditLog({ id: crypto.randomUUID(), ... })`
+  - [ ] 2.6 Refactor `getContracts()` — delegate toàn bộ sang `fetchContracts(filters)`
+  - [ ] 2.7 Refactor `getContractById()` — delegate sang `fetchContractById(id)`
+  - [ ] 2.8 Refactor `updateContract()` — thay DB calls bằng `fetchContractById` + `patchContract`, giữ nguyên signed-status guard và audit log call
+  - [ ] 2.9 Refactor `updateContractStatus()` — thay DB calls bằng `fetchContractById` + `patchContractStatus`, giữ nguyên state machine validation và audit log call
+  - [ ] 2.10 Refactor `linkOrderToContract()` — thay `safeUpsertOne` call bằng `insertContractOrderLink`, giữ nguyên signed-status guard và audit log call
+  - [ ] 2.11 Refactor `unlinkOrderFromContract()` — thay DB delete bằng `deleteContractOrderLink`, giữ nguyên signed-status guard và audit log call
+  - [ ] 2.12 Refactor `getContractsByOrderId()` — delegate sang `fetchContractsByOrderId(orderId)`
+  - [ ] 2.13 Refactor `getOrdersByContractId()` — delegate sang `fetchOrdersByContractId(contractId)`
+  - [ ] 2.14 Refactor `getAuditLogs()` — delegate sang `fetchAuditLogs(contractId)`
+  - [ ] 2.15 Refactor `exportContractPdf()` — delegate sang `invokeExportContractPdf(contractId)`
+  - [ ] 2.16 Refactor `generateContract()` — delegate sang `invokeGenerateContract(payload)`
+  - [ ] 2.17 Refactor `getAvailableOrdersForContract()` — delegate sang `fetchAvailableOrdersForContract(excludeIds)`
+  - [ ] 2.18 Refactor `getOrderOptions()` — delegate sang `fetchOrderOptions()`
+  - [ ] 2.19 Refactor `getCustomerOptions()` — delegate sang `fetchCustomerOptions()`
+  - [ ] 2.20 Refactor `getSupplierOptions()` — delegate sang `fetchSupplierOptions()`
+  - [ ] 2.21 Xác nhận `validateStatusTransition()` và `VALID_TRANSITIONS` không thay đổi
+  - [ ] 2.22 Xác nhận TypeScript compile không có lỗi
+
+- [ ] 3. Tạo `src/api/contract-templates.api.ts`
+  - [ ] 3.1 Tạo file với imports: `supabase` từ `@/services/supabase/client`, `safeUpsertOne` từ `@/lib/db-guard`, types từ `@/schema`
+  - [ ] 3.2 Định nghĩa `const db = { templates: () => supabase.from('contract_templates') }`
+  - [ ] 3.3 Implement `fetchTemplates()` — di chuyển query từ `getTemplates` (order by type, created_at desc)
+  - [ ] 3.4 Implement `fetchTemplateById(id)` — di chuyển query từ `getTemplateById`
+  - [ ] 3.5 Implement `insertTemplate(data)` — di chuyển `safeUpsertOne` call từ `createTemplate`
+  - [ ] 3.6 Implement `patchTemplate(id, data)` — di chuyển DB update từ `updateTemplate`
+  - [ ] 3.7 Implement `fetchActiveTemplateByType(type)` — di chuyển query từ `getActiveTemplateByType`
+  - [ ] 3.8 Implement `removeTemplate(id)` — di chuyển delete query từ `deleteTemplate`
+  - [ ] 3.9 Xác nhận TypeScript compile không có lỗi cho file mới
+
+- [ ] 4. Refactor `src/features/contract-templates/contract-templates.module.ts`
+  - [ ] 4.1 Xóa `import { supabase } from '@/services/supabase/client'`
+  - [ ] 4.2 Xóa `import { safeUpsertOne } from '@/lib/db-guard'`
+  - [ ] 4.3 Thêm import các hàm cần thiết từ `@/api/contract-templates.api`
+  - [ ] 4.4 Xóa `const db = { templates: ... }` helper block
+  - [ ] 4.5 Refactor `getTemplates()` — delegate sang `fetchTemplates()`
+  - [ ] 4.6 Refactor `getTemplateById()` — delegate sang `fetchTemplateById(id)`
+  - [ ] 4.7 Refactor `createTemplate()` — delegate sang `insertTemplate(data)`
+  - [ ] 4.8 Refactor `updateTemplate()` — delegate sang `patchTemplate(id, data)`
+  - [ ] 4.9 Refactor `getActiveTemplateByType()` — delegate sang `fetchActiveTemplateByType(type)`
+  - [ ] 4.10 Refactor `deleteTemplate()` — delegate sang `removeTemplate(id)`
+  - [ ] 4.11 Xác nhận TypeScript compile không có lỗi
+
+- [ ] 5. Verification
+  - [ ] 5.1 Chạy `tsc --noEmit` để xác nhận không có TypeScript errors trên toàn bộ project
+  - [ ] 5.2 Kiểm tra `contracts.service.ts` không còn import `supabase` và không còn `supabase.from(`, `supabase.auth.`, `supabase.functions.` calls
+  - [ ] 5.3 Kiểm tra `contract-templates.module.ts` không còn import `supabase` và không còn `supabase.from(` calls
+  - [ ] 5.4 Kiểm tra `src/api/contracts.api.ts` tồn tại và export đủ tất cả hàm được dùng bởi service
+  - [ ] 5.5 Kiểm tra `src/api/contract-templates.api.ts` tồn tại và export đủ tất cả hàm được dùng bởi module
+  - [ ] 5.6 Xác nhận tất cả callers hiện tại của `contracts.service.ts` vẫn compile bình thường (không cần sửa)
+  - [ ] 5.7 Xác nhận tất cả callers hiện tại của `contract-templates.module.ts` vẫn compile bình thường (không cần sửa)

@@ -15,4 +15,6 @@ export {
   useUnreadCount,
   useMarkAsRead,
   useChatNotifications,
+  registerOpenRoom,
+  unregisterOpenRoom,
 } from './useChatNotifications';

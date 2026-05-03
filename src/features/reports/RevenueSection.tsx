@@ -3,6 +3,7 @@ import {
   KpiCard,
   KpiGrid,
   DataTable,
+  Badge,
   type DataTableColumn,
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
@@ -100,7 +101,7 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
           <div className="mobile-card">
             <div className="flex justify-between items-start">
               <span className="font-bold">{r.order_number}</span>
-              <span className="badge badge-info">{r.order_date}</span>
+              <Badge variant="info">{r.order_date}</Badge>
             </div>
             <div className="text-sm text-muted mb-2">{r.customer_name}</div>
             <div className="grid grid-cols-2 gap-2 text-xs border-t pt-2">

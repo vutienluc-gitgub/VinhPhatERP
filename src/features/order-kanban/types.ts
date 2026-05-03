@@ -1,15 +1,5 @@
-export type OrderKanbanStatus =
-  | 'draft'
-  | 'confirmed'
-  | 'delivering'
-  | 'completed';
-
-export interface OrderKanbanItem {
-  id: string;
-  order_number: string;
-  customer_name: string;
-  total_amount: number;
-  delivery_date: string;
-  status: OrderKanbanStatus;
-  warning?: string;
-}
+/**
+ * Re-export from domain layer.
+ * @deprecated Import from '@/domain/orders/kanban.types' instead.
+ */
+export * from '@/domain/orders/kanban.types';

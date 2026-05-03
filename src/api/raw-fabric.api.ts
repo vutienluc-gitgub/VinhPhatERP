@@ -3,7 +3,7 @@ import type {
   RawFabricRollInsert,
   RawFabricRollUpdate,
   RawFabricFilter,
-} from '@/features/raw-fabric/types';
+} from '@/domain/inventory/raw-fabric.types';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';

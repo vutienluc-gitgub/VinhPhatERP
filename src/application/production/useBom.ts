@@ -18,7 +18,7 @@ import type {
   BomVersion,
   BomFilter,
   FabricCatalog,
-} from '@/features/bom/types';
+} from '@/domain/production/bom.types';
 
 export const bomKeys = {
   all: ['bom'] as const,

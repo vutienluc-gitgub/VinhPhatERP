@@ -7,8 +7,8 @@ import type {
   ExpenseByCategoryRow,
   SupplierDebtRow,
   DebtSummaryRow,
-} from '@/features/payments/types';
-import type { Payment } from '@/features/payments/types';
+} from '@/domain/payments/types';
+import type { Payment } from '@/domain/payments/types';
 import type { PaymentDbPayload, ExpenseDbPayload } from '@/domain/payments';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
@@ -20,6 +20,7 @@ import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import { paymentResponseSchema } from '@/schema/payment.schema';
 import { validateApiInput } from '@/lib/validate-api-input';
+import { safeUpsertOne } from '@/lib/db-guard';
 import {
   apiPaymentRecord,
   apiExpenseRecord,
@@ -201,13 +202,12 @@ export async function createPaymentAccount(
 ): Promise<PaymentAccount> {
   validateApiInput(apiAccountInsert.passthrough(), row);
   const tenantId = await getTenantId();
-  const { data: inserted, error } = await supabase
-    .from('payment_accounts')
-    .insert({ ...row, id: crypto.randomUUID(), tenant_id: tenantId } as never)
-    .select()
-    .single();
-  if (error) throw error;
-  return inserted as unknown as PaymentAccount;
+  const inserted = await safeUpsertOne({
+    table: 'payment_accounts',
+    data: { ...row, id: crypto.randomUUID(), tenant_id: tenantId },
+    conflictKey: 'id',
+  });
+  return inserted as PaymentAccount;
 }
 
 export async function updatePaymentAccount(

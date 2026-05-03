@@ -2,10 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { supabase } from '@/services/supabase/client';
 import { computeDebtSummary } from '@/features/customer-portal/utils';
-import type {
-  PortalOrder,
-  PortalDebtSummary,
-} from '@/features/customer-portal/types';
+import type { PortalOrder, PortalDebtSummary } from '@/domain/portal/types';
 
 export function usePortalDebt() {
   const [summary, setSummary] = useState<PortalDebtSummary>({

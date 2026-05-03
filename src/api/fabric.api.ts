@@ -3,12 +3,12 @@ import type {
   RawFabricRollInsert,
   RawFabricRollUpdate,
   RawFabricFilter,
-} from '@/features/raw-fabric/types';
+} from '@/domain/inventory/raw-fabric.types';
 import type {
   FinishedFabricRoll,
   FinishedFabricRollInsert,
   FinishedFabricRollUpdate,
-} from '@/features/finished-fabric/types';
+} from '@/domain/inventory/finished-fabric.types';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { safeUpsert, safeUpsertOne } from '@/lib/db-guard';

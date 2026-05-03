@@ -19,7 +19,7 @@ import {
   mapOrderItemsToDb,
 } from '@/domain/orders/OrderDomain';
 import type { OrdersFormValues } from '@/features/orders/orders.module';
-import type { OrdersFilter } from '@/features/orders/types';
+import type { OrdersFilter } from '@/domain/orders/types';
 
 const QUERY_KEY = ['orders'] as const;
 

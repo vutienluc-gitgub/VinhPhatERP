@@ -5,7 +5,7 @@ import type { PaginatedResult } from '@/shared/types/pagination';
 import type {
   DyeingOrder,
   DyeingOrderFilter,
-} from '@/features/dyeing-orders/types';
+} from '@/domain/production/dyeing-orders.types';
 
 const TABLE = 'dyeing_orders';
 

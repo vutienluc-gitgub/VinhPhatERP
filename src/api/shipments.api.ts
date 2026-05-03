@@ -3,7 +3,7 @@ import type {
   ShipmentDocument,
   ShipmentsFilter,
   DeliveryStaffSummary,
-} from '@/features/shipments/types';
+} from '@/domain/shipments/types';
 import { supabase } from '@/services/supabase/client';
 import type { Database } from '@/services/supabase/database.types';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';

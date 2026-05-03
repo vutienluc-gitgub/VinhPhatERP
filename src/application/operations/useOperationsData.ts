@@ -14,7 +14,7 @@ import {
   logBlockedTransitionEvent,
   type BlockedTransitionTelemetryEvent,
 } from '@/api/operations.api';
-import { Task } from '@/features/operations/types';
+import { Task } from '@/domain/operations/types';
 
 export function useTasks() {
   return useQuery({

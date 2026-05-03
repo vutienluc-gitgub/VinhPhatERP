@@ -16,7 +16,7 @@ import type {
   DebtSummaryRow,
   Payment,
   PaymentsFilter,
-} from '@/features/payments/types';
+} from '@/domain/payments/types';
 
 export type { Payment, PaymentsFilter, DebtSummaryRow };
 

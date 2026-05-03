@@ -19,7 +19,7 @@ import type {
   DiscountType,
   Quotation,
   QuotationsFilter,
-} from '@/features/quotations/types';
+} from '@/domain/crm/quotations.types';
 
 const QUERY_KEY = ['quotations'] as const;
 

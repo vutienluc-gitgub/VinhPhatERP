@@ -3,6 +3,7 @@ import {
   KpiCard,
   KpiGrid,
   DataTable,
+  Badge,
   type DataTableColumn,
 } from '@/shared/components';
 import { sumBy } from '@/shared/utils/array.util';
@@ -162,7 +163,7 @@ function InventoryTable({
           <div className="mobile-card">
             <div className="flex justify-between items-start">
               <span className="font-bold">{r.fabric_type}</span>
-              <span className="badge">{r.quality_grade ?? '—'}</span>
+              <Badge variant="gray">{r.quality_grade ?? '—'}</Badge>
             </div>
             <div className="text-xs text-muted mb-2">{r.color_name ?? '—'}</div>
             <div className="grid grid-cols-2 gap-4 border-t pt-2">

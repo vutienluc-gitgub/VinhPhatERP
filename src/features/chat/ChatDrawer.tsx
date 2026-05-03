@@ -7,6 +7,8 @@ import {
   useChatOfflineSync,
   useGetOrCreateRoom,
   useSendMessage,
+  registerOpenRoom,
+  unregisterOpenRoom,
 } from '@/application/chat';
 import { CHAT_LABELS } from '@/schema/chat.schema';
 
@@ -71,6 +73,15 @@ export function ChatDrawer({
       triggeredEntityKeyRef.current = null;
     }
   }, [open, entityType, entityId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Register room globally so notifications are muted for this active room
+  useEffect(() => {
+    if (!open || !roomId) return;
+    registerOpenRoom(roomId);
+    return () => {
+      unregisterOpenRoom(roomId);
+    };
+  }, [open, roomId]);
 
   // Retry handler for error state
   const handleRetryRoom = useCallback(() => {

@@ -10,6 +10,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { useDashboardStats } from '@/application/analytics';
+import { useChatNotifications } from '@/application/chat';
 import { getNavigationItems } from '@/app/router/routes';
 import type { NavigationItem } from '@/app/router/routes';
 import type { UserRole } from '@/shared/types/database.models';
@@ -83,6 +84,10 @@ const BOTTOM_TAB_PATHS = ['/', '/orders', '/dyeing-orders'] as const;
 export function AppShell() {
   const { pathname } = useLocation();
   const { profile, signOut } = useAuth();
+
+  // Enable global chat notifications (with sound)
+  useChatNotifications({ soundEnabled: true });
+
   const [showMore, setShowMore] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);

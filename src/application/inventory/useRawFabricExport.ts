@@ -7,7 +7,7 @@ import {
   QUALITY_GRADE_LABELS,
   ROLL_STATUS_LABELS,
 } from '@/features/raw-fabric/raw-fabric.module';
-import type { RawFabricRoll } from '@/features/raw-fabric/types';
+import type { RawFabricRoll } from '@/domain/inventory/raw-fabric.types';
 
 const EXPORT_COLUMNS: ExportColumn[] = [
   {

@@ -7,7 +7,7 @@ import type {
   PortalOrder,
   PortalProgressStage,
   StageStatus,
-} from '@/features/customer-portal/types';
+} from '@/domain/portal/types';
 
 const PAGE_SIZE = 20;
 

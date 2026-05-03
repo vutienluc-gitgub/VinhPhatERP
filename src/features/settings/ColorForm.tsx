@@ -55,7 +55,10 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
       toast.success(isEditing ? 'Cập nhật thành công' : 'Thêm mới thành công');
       onClose();
     } catch (error) {
-      toast.error('Có lỗi xảy ra: ' + (error as Error).message);
+      toast.error(
+        'Có lỗi xảy ra: ' +
+          (error instanceof Error ? error.message : String(error)),
+      );
     }
   };
 
