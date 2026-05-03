@@ -26,6 +26,10 @@ export const yarnReceiptItemSchema = z.object({
   tensileStrength: z.string().trim().max(50).optional().or(z.literal('')),
   composition: z.string().trim().max(200).optional().or(z.literal('')),
   origin: z.string().trim().max(100).optional().or(z.literal('')),
+  notes: z.string().trim().max(500).optional().or(z.literal('')),
+  dtex: z.string().trim().max(50).optional().or(z.literal('')),
+  twist: z.string().trim().max(50).optional().or(z.literal('')),
+  machineNo: z.string().trim().max(50).optional().or(z.literal('')),
 });
 
 export type YarnReceiptItemFormValues = z.infer<typeof yarnReceiptItemSchema>;
@@ -52,6 +56,10 @@ export const emptyYarnReceiptItem: YarnReceiptItemFormValues = {
   tensileStrength: '',
   composition: '',
   origin: '',
+  notes: '',
+  dtex: '',
+  twist: '',
+  machineNo: '',
 };
 
 export const yarnReceiptsDefaultValues: YarnReceiptsFormValues = {

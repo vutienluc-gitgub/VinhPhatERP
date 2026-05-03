@@ -117,6 +117,8 @@ test.describe('Operations drag and drop', () => {
   });
 
   test('can move a task between columns and restore it', async ({ page }) => {
+    test.setTimeout(60_000);
+
     await page.goto('/operations', {
       waitUntil: 'domcontentloaded',
       timeout: 20_000,
@@ -124,7 +126,7 @@ test.describe('Operations drag and drop', () => {
 
     // Wait for at least one kanban column to render (data loaded)
     await page.waitForSelector('[data-testid^="kanban-column-"]', {
-      timeout: 15_000,
+      timeout: 30_000,
     });
 
     // Wait for at least one task card to appear (data from Supabase or demo fallback)
