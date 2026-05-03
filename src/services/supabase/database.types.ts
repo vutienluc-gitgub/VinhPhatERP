@@ -4459,9 +4459,11 @@ export type Database = {
           color_code: string | null;
           color_name: string | null;
           composition: string | null;
+          dtex: string | null;
           grade: string | null;
           id: string;
           lot_number: string | null;
+          machine_no: string | null;
           notes: string | null;
           origin: string | null;
           quantity: number;
@@ -4469,6 +4471,7 @@ export type Database = {
           sort_order: number;
           tenant_id: string | null;
           tensile_strength: string | null;
+          twist: string | null;
           unit: string;
           unit_price: number;
           yarn_catalog_id: string | null;
@@ -4479,9 +4482,11 @@ export type Database = {
           color_code?: string | null;
           color_name?: string | null;
           composition?: string | null;
+          dtex?: string | null;
           grade?: string | null;
           id?: string;
           lot_number?: string | null;
+          machine_no?: string | null;
           notes?: string | null;
           origin?: string | null;
           quantity: number;
@@ -4489,6 +4494,7 @@ export type Database = {
           sort_order?: number;
           tenant_id?: string | null;
           tensile_strength?: string | null;
+          twist?: string | null;
           unit?: string;
           unit_price?: number;
           yarn_catalog_id?: string | null;
@@ -4499,9 +4505,11 @@ export type Database = {
           color_code?: string | null;
           color_name?: string | null;
           composition?: string | null;
+          dtex?: string | null;
           grade?: string | null;
           id?: string;
           lot_number?: string | null;
+          machine_no?: string | null;
           notes?: string | null;
           origin?: string | null;
           quantity?: number;
@@ -4509,6 +4517,7 @@ export type Database = {
           sort_order?: number;
           tenant_id?: string | null;
           tensile_strength?: string | null;
+          twist?: string | null;
           unit?: string;
           unit_price?: number;
           yarn_catalog_id?: string | null;

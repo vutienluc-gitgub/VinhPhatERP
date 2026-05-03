@@ -22,6 +22,7 @@ import {
   useUpdateYarnReceipt,
   useYarnCatalogOptions,
 } from '@/application/inventory';
+import { fetchYarnSpecsFromVendorApi } from '@/api/vendor-integration.api';
 import { sumBy } from '@/shared/utils/array.util';
 import {
   emptyYarnReceiptItem,
@@ -94,6 +95,10 @@ function receiptToFormValues(receipt: YarnReceipt): YarnReceiptsFormValues {
         tensileStrength: (it.tensile_strength as string | undefined) ?? '',
         composition: (it.composition as string | undefined) ?? '',
         origin: (it.origin as string | undefined) ?? '',
+        notes: (it.notes as string | undefined) ?? '',
+        dtex: (it.dtex as string | undefined) ?? '',
+        twist: (it.twist as string | undefined) ?? '',
+        machineNo: (it.machine_no as string | undefined) ?? '',
       }),
     ),
   };
@@ -129,6 +134,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
   const { data: suppliers = [] } = useActiveSuppliers();
   const { data: yarnCatalogs = [] } = useYarnCatalogOptions();
   const { data: colorOptions = [] } = useColorOptions();
+  const [isScanning, setIsScanning] = useState(false);
 
   const {
     register,
@@ -588,19 +594,106 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
                       />
                     </div>
                   </div>
+
+                  <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+                    <div className="form-field">
+                      <label htmlFor={`items.${index}.dtex`}>DTEX/F</label>
+                      <input
+                        id={`items.${index}.dtex`}
+                        className="field-input"
+                        type="text"
+                        placeholder="VD: 333dtex/96f"
+                        {...register(`items.${index}.dtex`)}
+                      />
+                    </div>
+
+                    <div className="form-field">
+                      <label htmlFor={`items.${index}.twist`}>
+                        Twist (Xoắn)
+                      </label>
+                      <input
+                        id={`items.${index}.twist`}
+                        className="field-input"
+                        type="text"
+                        placeholder="VD: Z, S"
+                        {...register(`items.${index}.twist`)}
+                      />
+                    </div>
+
+                    <div className="form-field">
+                      <label htmlFor={`items.${index}.machineNo`}>
+                        Machine No
+                      </label>
+                      <input
+                        id={`items.${index}.machineNo`}
+                        className="field-input"
+                        type="text"
+                        placeholder="VD: B755"
+                        {...register(`items.${index}.machineNo`)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-grid">
+                    <div className="form-field">
+                      <label htmlFor={`items.${index}.notes`}>
+                        Ghi chú (Tự động điền khi quét Barcode)
+                      </label>
+                      <input
+                        id={`items.${index}.notes`}
+                        className="field-input"
+                        type="text"
+                        placeholder="VD: Q'TY: 6 cuộn | Twist: Z | Machine: B755"
+                        {...register(`items.${index}.notes`)}
+                      />
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
 
-            <Button
-              variant="secondary"
-              type="button"
-              onClick={() => append({ ...emptyYarnReceiptItem })}
-              className="mt-2 w-full"
-            >
-              {' '}
-              + Thêm dòng sợi
-            </Button>
+            <div className="flex gap-2 mt-2">
+              <Button
+                variant="secondary"
+                type="button"
+                onClick={() => append({ ...emptyYarnReceiptItem })}
+                className="flex-1"
+              >
+                + Thêm dòng sợi
+              </Button>
+              <Button
+                variant="outline"
+                type="button"
+                disabled={isScanning}
+                onClick={async () => {
+                  const code = window.prompt(
+                    'Nhập mã Barcode (thử: 240504001074):',
+                    '240504001074',
+                  );
+                  if (!code) return;
+
+                  setIsScanning(true);
+                  try {
+                    const parsedData = await fetchYarnSpecsFromVendorApi(code);
+                    append({
+                      ...emptyYarnReceiptItem,
+                      ...parsedData,
+                    });
+                    toast.success('Bóc tách Barcode thành công!');
+                  } catch (err) {
+                    const msg =
+                      err instanceof Error ? err.message : 'Lỗi quét mã';
+                    toast.error(msg);
+                  } finally {
+                    setIsScanning(false);
+                  }
+                }}
+                className="flex-1 border-dashed border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary-light)]"
+              >
+                <span className="mr-2">📷</span>{' '}
+                {isScanning ? 'Đang tra cứu API...' : 'Quét Barcode'}
+              </Button>
+            </div>
 
             <LineTotals control={control} />
           </FormSection>
