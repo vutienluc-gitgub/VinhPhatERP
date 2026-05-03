@@ -3,49 +3,12 @@ import { CSS } from '@dnd-kit/utilities';
 import { useEffect, useRef } from 'react';
 
 import { Badge } from '@/shared/components';
-
-type TaskStatus =
-  | 'todo'
-  | 'in_progress'
-  | 'blocked'
-  | 'review'
-  | 'done'
-  | 'cancelled';
-
-interface Task {
-  id: string;
-  title: string;
-  status: TaskStatus;
-  priority: 'low' | 'normal' | 'high' | 'urgent';
-  task_type: 'growth' | 'maintenance' | 'admin' | 'urgent';
-  assignee_id?: string | null;
-  reviewer_id?: string | null;
-  linked_kpi_id?: string | null;
-  due_date?: string | null;
-  description?: string | null;
-  order_id?: string | null;
-  work_order_id?: string | null;
-  estimated_hours?: number | null;
-  actual_hours?: number | null;
-  tenant_id?: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-interface Employee {
-  id: string;
-  name: string;
-}
-
-interface Kpi {
-  id: string;
-  code: string;
-}
+import type { Task, Employee, Kpi } from '@/domain/operations/types';
 
 interface SortableTaskCardProps {
   task: Task;
-  employees: Employee[];
-  kpis: Kpi[];
+  employees: Pick<Employee, 'id' | 'name'>[];
+  kpis: Pick<Kpi, 'id' | 'code'>[];
   onClick: () => void;
   onTapMove: (task: Task) => void;
   blockedReason?: string;

@@ -56,3 +56,9 @@ export interface ActivityItem {
   time: string;
   avatarColor: string;
 }
+
+export interface EmployeeWorkload {
+  id: string;
+  name: string;
+  open_tasks: number;
+}

@@ -1,7 +1,7 @@
 import type { BadgeVariant } from '@/shared/components';
+import type { TaskStatus } from '@/domain/operations/types';
 
 import { TASK_STATUS_LABELS } from './constants';
-import type { TaskStatus } from './types';
 
 export interface ColumnConfig {
   key: TaskStatus;

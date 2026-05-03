@@ -2,7 +2,13 @@ import { untypedDb } from '@/services/supabase/untyped';
 import { supabase } from '@/services/supabase/client';
 import type { Json } from '@/services/supabase/database.types';
 import { getTenantId } from '@/services/supabase/tenant';
-import { Task, Employee, Kpi, ActivityItem } from '@/domain/operations/types';
+import {
+  Task,
+  Employee,
+  Kpi,
+  ActivityItem,
+  EmployeeWorkload,
+} from '@/domain/operations/types';
 import { safeUpsert } from '@/lib/db-guard';
 import { validateApiInput } from '@/lib/validate-api-input';
 import { apiTaskInsert } from '@/schema/api-validation.schema';
@@ -18,6 +24,56 @@ export interface BlockedTransitionTelemetryEvent {
   reason: string;
   source: 'preview' | 'commit';
   timestamp: string;
+}
+
+export interface RawAuditLog {
+  id: string;
+  created_at: string;
+  event_type: string;
+  profiles: { full_name: string } | null;
+}
+
+export interface KanbanDashboardData {
+  tasks: Task[];
+  employees: Employee[];
+  kpis: Kpi[];
+  workload: EmployeeWorkload[];
+  activities: ActivityItem[];
+}
+
+export async function fetchKanbanDashboard(): Promise<KanbanDashboardData> {
+  const { data, error } = await untypedDb.rpc('rpc_get_kanban_dashboard');
+
+  if (error || !data) {
+    console.warn('Kanban RPC failed, falling back to empty', error);
+    return {
+      tasks: demoTasks as unknown as Task[],
+      employees: [],
+      kpis: demoKpis as unknown as Kpi[],
+      workload: [],
+      activities: demoActivities,
+    };
+  }
+
+  const typedData = data as unknown as Record<string, unknown[]>;
+
+  // Transform raw RPC activities to the UI shape
+  const rawActivities = (typedData.activities as RawAuditLog[]) || [];
+  const activities = rawActivities.map((item) => ({
+    id: item.id,
+    actor: item.profiles?.full_name || OPERATIONS_MESSAGES.SYSTEM,
+    action: item.event_type,
+    time: new Date(item.created_at).toLocaleString('vi-VN'),
+    avatarColor: 'bg-zinc-500',
+  }));
+
+  return {
+    tasks: (typedData.tasks as Task[]) || [],
+    employees: (typedData.employees as Employee[]) || [],
+    kpis: (typedData.kpis as Kpi[]) || [],
+    workload: (typedData.workload as EmployeeWorkload[]) || [],
+    activities,
+  };
 }
 
 export async function fetchTasks(): Promise<Task[]> {
@@ -49,13 +105,6 @@ export async function fetchKpis(): Promise<Kpi[]> {
     return demoKpis as unknown as Kpi[];
   }
   return data as unknown as Kpi[];
-}
-
-interface RawAuditLog {
-  id: string;
-  created_at: string;
-  event_type: string;
-  profiles: { full_name: string } | null;
 }
 
 export async function fetchActivities(): Promise<ActivityItem[]> {
@@ -111,7 +160,7 @@ export async function updateTask(
   if (error) throw error;
   if (!data) {
     throw new Error(
-      'Dữ liệu đã bị thay đổi bởi người khác (Lost Update). Vui lòng tải lại trang.',
+      'CONFLICT_ERROR: Task vừa bị người khác sửa, vui lòng tải lại trang',
     );
   }
 
@@ -159,12 +208,6 @@ export async function completeTask(
   });
 
   if (error) throw error;
-}
-
-export interface EmployeeWorkload {
-  id: string;
-  name: string;
-  open_tasks: number;
 }
 
 /**

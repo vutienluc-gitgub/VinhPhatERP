@@ -5,42 +5,46 @@ interface OperationsKpiGridProps {
   totalTasks: number;
   doneCount: number;
   overdueCount: number;
-  onTimeRate: number;
+  completionRate: number;
 }
 
 export function OperationsKpiGrid({
   totalTasks,
   doneCount,
   overdueCount,
-  onTimeRate,
+  completionRate,
 }: OperationsKpiGridProps) {
   return (
     <KpiGrid className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
       <KpiCard
         label={OPERATIONS_MESSAGES.TOTAL_TASK}
         value={totalTasks}
-        icon="ListTodo"
+        icon="ClipboardList"
         variant="secondary"
       />
       <KpiCard
         label={OPERATIONS_MESSAGES.COMPLETED}
         value={doneCount}
-        icon="CircleCheck"
+        icon="CheckCircle2"
         variant="success"
-        trendValue="+5"
-        trendDirection="up"
       />
       <KpiCard
         label={OPERATIONS_MESSAGES.OVERDUE}
         value={overdueCount}
-        icon="TriangleAlert"
+        icon="Clock"
         variant={overdueCount > 0 ? 'danger' : 'success'}
       />
       <KpiCard
-        label={OPERATIONS_MESSAGES.EFFICIENCY}
-        value={`${onTimeRate}%`}
-        icon="Target"
-        variant="primary"
+        label={OPERATIONS_MESSAGES.COMPLETION_RATE}
+        value={`${completionRate}%`}
+        icon="TrendingUp"
+        variant={
+          completionRate >= 80
+            ? 'success'
+            : completionRate >= 50
+              ? 'primary'
+              : 'warning'
+        }
       />
     </KpiGrid>
   );

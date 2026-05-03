@@ -57,7 +57,9 @@ function createChainBuilder(
       const selectResult = {
         ...chain,
         single: vi.fn(() => Promise.resolve({ data: resolvedData, error })),
-        then: (resolve: any) =>
+        then: (
+          resolve: (arg: { data: unknown; error: Error | null }) => void,
+        ) =>
           resolve({
             data: Array.isArray(resolvedData) ? resolvedData : [resolvedData],
             error,

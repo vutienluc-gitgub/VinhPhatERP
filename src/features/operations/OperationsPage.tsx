@@ -8,7 +8,8 @@ import {
   DragOverlay,
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import {
   useOperationsData,
@@ -21,6 +22,8 @@ import {
   SearchInput,
   Combobox,
 } from '@/shared/components';
+import { Icon } from '@/shared/components/Icon';
+import type { Task, TaskStatus } from '@/domain/operations/types';
 
 import { BlockedTransitionsWidget } from './components/BlockedTransitionsWidget';
 import { OperationsDashboard } from './components/OperationsDashboard';
@@ -32,12 +35,22 @@ import { useBlockedTransitionTelemetry } from './hooks/useBlockedTransitionTelem
 import { useOperationsCommander } from './hooks/useOperationsCommander';
 import { useTaskBoardInteractions } from './hooks/useTaskBoardInteractions';
 import { KANBAN_COLUMNS, getTapMoveTargetStatus } from './kanbanColumns';
-import { Task, TaskStatus } from './types';
 import { OPERATIONS_MESSAGES } from './constants';
 
+/** Pre-compute column status keys to avoid re-creating array on each render */
+const COLUMN_STATUSES = KANBAN_COLUMNS.map((column) => column.key);
+
 export function OperationsPage() {
-  const { tasks, employees, kpis, activities, workload, stats, isLoading } =
-    useOperationsData();
+  const {
+    tasks,
+    employees,
+    kpis,
+    activities,
+    workload,
+    stats,
+    isLoading,
+    isError,
+  } = useOperationsData();
   const updateTaskMutation = useUpdateTask();
   const { validateTransition } = useOperationsCommander();
   const logBlockedTransition = useBlockedTransitionTelemetry();
@@ -48,6 +61,7 @@ export function OperationsPage() {
   const [assigneeFilter, setAssigneeFilter] = useState<string | undefined>(
     undefined,
   );
+  const [isDashboardOpen, setIsDashboardOpen] = useState(false);
 
   const {
     recentEvents: recentBlockedEvents,
@@ -55,6 +69,17 @@ export function OperationsPage() {
     sessionCount: blockedTransitionsSessionCount,
     reset: handleResetBlockedTransitionsCounter,
   } = useBlockedTransitionSession();
+
+  /** Memoize Combobox options to prevent re-render on every cycle */
+  const assigneeOptions = useMemo(
+    () => [
+      { value: '', label: OPERATIONS_MESSAGES.ALL_PERSONNEL },
+      ...employees.map((e) => ({ value: e.id, label: e.name })),
+    ],
+    [employees],
+  );
+
+  const queryClient = useQueryClient();
 
   const {
     filteredTasks,
@@ -70,7 +95,7 @@ export function OperationsPage() {
     tasks,
     search,
     assigneeFilter,
-    columnStatuses: KANBAN_COLUMNS.map((column) => column.key),
+    columnStatuses: COLUMN_STATUSES,
     persistTaskStatus: async (taskId, nextStatus) => {
       const currentTask = tasks.find((t) => t.id === taskId);
       await updateTaskMutation.mutateAsync({
@@ -83,6 +108,11 @@ export function OperationsPage() {
     },
     validateTransition,
     onBlockedTransition: logBlockedTransition,
+    onPersistError: (error) => {
+      if (error instanceof Error && error.message.includes('CONFLICT_ERROR')) {
+        queryClient.invalidateQueries({ queryKey: ['operations-dashboard'] });
+      }
+    },
   });
 
   const sensors = useSensors(
@@ -94,8 +124,46 @@ export function OperationsPage() {
 
   if (isLoading && tasks.length === 0) {
     return (
-      <div className="p-12 text-center text-zinc-500 font-medium">
-        {OPERATIONS_MESSAGES.INIT_SPACE}
+      <div className="page-container space-y-6 min-h-screen">
+        <div className="h-8 w-64 bg-surface-hover animate-pulse rounded-lg" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div
+              key={i}
+              className="h-24 bg-surface-hover animate-pulse rounded-2xl"
+            />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className="h-[500px] bg-surface-hover animate-pulse rounded-2xl"
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="page-container min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <Icon
+            name="TriangleAlert"
+            className="mx-auto h-12 w-12 text-danger"
+          />
+          <h2 className="text-lg font-semibold text-text">
+            Không thể tải dữ liệu
+          </h2>
+          <p className="text-muted text-sm">
+            Đã xảy ra lỗi khi lấy dữ liệu Kanban. Vui lòng tải lại trang.
+          </p>
+          <Button onClick={() => window.location.reload()} variant="primary">
+            Tải lại trang
+          </Button>
+        </div>
       </div>
     );
   }
@@ -123,10 +191,7 @@ export function OperationsPage() {
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <div className="flex-1 sm:w-48 min-w-0">
               <Combobox
-                options={[
-                  { value: '', label: OPERATIONS_MESSAGES.ALL_PERSONNEL },
-                  ...employees.map((e) => ({ value: e.id, label: e.name })),
-                ]}
+                options={assigneeOptions}
                 value={assigneeFilter ?? ''}
                 onChange={(val) => setAssigneeFilter(val || undefined)}
                 placeholder={OPERATIONS_MESSAGES.FILTER_ASSIGNEE}
@@ -145,7 +210,7 @@ export function OperationsPage() {
               <span className="hidden sm:inline">
                 {OPERATIONS_MESSAGES.CREATE_TASK}
               </span>
-              <span className="sm:hidden">Thêm</span>
+              <span className="sm:hidden">{OPERATIONS_MESSAGES.ADD_SHORT}</span>
             </Button>
           </div>
         </div>
@@ -155,7 +220,7 @@ export function OperationsPage() {
         totalTasks={tasks.length}
         doneCount={stats.doneCount}
         overdueCount={stats.overdueCount}
-        onTimeRate={stats.onTimeRate}
+        completionRate={stats.completionRate}
       />
 
       <BlockedTransitionsWidget
@@ -230,7 +295,25 @@ export function OperationsPage() {
         </DragOverlay>
       </DndContext>
 
-      <OperationsDashboard workload={workload} activities={activities} />
+      {/* Collapsible Dashboard — Workload & Activity Feed */}
+      <div className="border-t border-border pt-4">
+        <button
+          type="button"
+          className="flex items-center gap-2 text-sm font-medium text-muted hover:text-text transition-colors mb-4"
+          onClick={() => setIsDashboardOpen((prev) => !prev)}
+        >
+          <Icon
+            name={isDashboardOpen ? 'ChevronDown' : 'ChevronRight'}
+            size={16}
+          />
+          {isDashboardOpen
+            ? OPERATIONS_MESSAGES.HIDE_DASHBOARD
+            : OPERATIONS_MESSAGES.SHOW_DASHBOARD}
+        </button>
+        {isDashboardOpen && (
+          <OperationsDashboard workload={workload} activities={activities} />
+        )}
+      </div>
 
       <AdaptiveSheet
         open={isFormOpen}

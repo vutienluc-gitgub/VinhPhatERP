@@ -1,13 +1,9 @@
 import { DragEndEvent, DragOverEvent, DragStartEvent } from '@dnd-kit/core';
 import { useEffect, useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 
-type TaskStatus =
-  | 'todo'
-  | 'in_progress'
-  | 'blocked'
-  | 'review'
-  | 'done'
-  | 'cancelled';
+import type { TaskStatus } from '@/domain/operations/types';
+import { logger } from '@/shared/utils/logger';
 
 interface BoardTask {
   id: string;
@@ -43,6 +39,7 @@ interface UseTaskBoardInteractionsArgs<TTask extends BoardTask> {
   persistTaskStatus: (taskId: string, nextStatus: TaskStatus) => Promise<void>;
   validateTransition?: (task: TTask, to: TaskStatus) => TransitionValidation;
   onBlockedTransition?: (payload: BlockedTransitionTelemetry<TTask>) => void;
+  onPersistError?: (error: unknown) => void;
 }
 
 function resolveTargetStatus(
@@ -74,6 +71,7 @@ export function useTaskBoardInteractions<TTask extends BoardTask>({
   persistTaskStatus,
   validateTransition,
   onBlockedTransition,
+  onPersistError,
 }: UseTaskBoardInteractionsArgs<TTask>) {
   const [localTasks, setLocalTasks] = useState<TTask[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -156,7 +154,11 @@ export function useTaskBoardInteractions<TTask extends BoardTask>({
     if (validation && !validation.ok) {
       const reason = validation.reason ?? 'Không thể chuyển trạng thái';
       registerBlockedTransition(currentTask, nextStatus, reason, 'commit');
-      console.info(`[Operations] Transition blocked: ${reason}`);
+      logger.info(`[Operations] Transition blocked: ${reason}`, {
+        module: 'Operations',
+        taskId,
+        reason,
+      });
       return;
     }
 
@@ -176,7 +178,24 @@ export function useTaskBoardInteractions<TTask extends BoardTask>({
       await persistTaskStatus(taskId, nextStatus);
     } catch (error) {
       setLocalTasks(previousTasks);
-      console.error('Failed to persist task status', error);
+      const isConflict =
+        error instanceof Error && error.message.includes('CONFLICT_ERROR');
+
+      const message =
+        error instanceof Error
+          ? isConflict
+            ? 'Task vừa bị người khác sửa, vui lòng tải lại trang'
+            : error.message
+          : 'Không thể lưu trạng thái task.';
+
+      toast.error(message);
+      logger.error(
+        '[Operations] Failed to persist task status',
+        error instanceof Error ? error : new Error(String(error)),
+        { module: 'Operations', taskId },
+      );
+
+      onPersistError?.(error);
     } finally {
       setIsPersistingDrag(false);
     }

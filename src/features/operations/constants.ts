@@ -1,4 +1,4 @@
-import { TaskStatus, TaskPriority } from './types';
+import type { TaskStatus, TaskPriority } from '@/domain/operations/types';
 
 export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
   todo: 'To do',
@@ -24,6 +24,7 @@ export const OPERATIONS_MESSAGES = {
   SEARCH_PLACEHOLDER: 'Tìm kiếm công việc...',
   FILTER_ASSIGNEE: 'Lọc nhân viên',
   CREATE_TASK: 'Tạo Task',
+  ADD_SHORT: 'Thêm',
   ALL_PERSONNEL: 'Tất cả nhân sự',
   TASK_DETAILS: 'Chi tiết công việc',
   INIT_TASK: 'Khởi tạo nhiệm vụ',
@@ -37,10 +38,28 @@ export const OPERATIONS_MESSAGES = {
   TOTAL_TASK: 'Tổng task',
   COMPLETED: 'Hoàn thành',
   OVERDUE: 'Quá hạn',
-  EFFICIENCY: 'Hiệu suất',
+  COMPLETION_RATE: 'Tiến độ',
   CANNOT_MOVE_TASK: 'Không thể chuyển task:',
   TEAM_WORKLOAD: 'Tải trọng đội ngũ',
   LIVE_ACTIVITY: 'Hoạt động tức thời',
   LIVE: 'Trực tiếp',
   TASK: 'task',
+  SHOW_DASHBOARD: 'Hiển thị bảng điều khiển',
+  HIDE_DASHBOARD: 'Ẩn bảng điều khiển',
+  EMPTY_BOARD: 'Chưa có task nào. Nhấn "Tạo Task" để bắt đầu.',
+  BLOCKED_TRANSITIONS: 'Chuyển đổi bị chặn',
+  LIVE_TAB: 'Trực tiếp',
+  SUMMARY_TAB: 'Tổng hợp',
+  SESSION: 'Phiên',
+  RESET: 'Đặt lại',
+  HOLD_TO_RESET: 'Giữ...',
+  NO_BLOCKED_EVENTS_LIVE: 'Chưa có chuyển đổi bị chặn trong phiên hiện tại.',
+  NO_BLOCKED_EVENTS_SUMMARY: 'Chưa có dữ liệu tổng hợp trong phiên hiện tại.',
+  PREVIEW: 'Xem trước',
+  COMMIT: 'Xác nhận',
+  TIMES: 'lần',
+  TASK_TITLE_LABEL: 'Tiêu đề task *',
+  TASK_TITLE_PLACEHOLDER: 'Nhập tiêu đề công việc...',
+  TASK_DESC_LABEL: 'Mô tả',
+  TASK_DESC_PLACEHOLDER: 'Chi tiết công việc...',
 };

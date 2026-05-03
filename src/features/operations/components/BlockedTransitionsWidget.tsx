@@ -7,6 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components/Card';
+import type { BlockedTransitionEventDetail } from '@/features/operations/hooks/useBlockedTransitionSession';
+import { OPERATIONS_MESSAGES } from '@/features/operations/constants';
 
 const RESET_HOLD_MS = 900;
 
@@ -15,29 +17,31 @@ type BlockedWidgetTab = 'live' | 'summary';
 const BLOCKED_WIDGET_TABS: Array<{ key: BlockedWidgetTab; label: string }> = [
   {
     key: 'live',
-    label: 'Trực tiếp',
+    label: OPERATIONS_MESSAGES.LIVE_TAB,
   },
   {
     key: 'summary',
-    label: 'Tổng hợp',
+    label: OPERATIONS_MESSAGES.SUMMARY_TAB,
   },
 ];
-
-export interface BlockedTransitionEventDetail {
-  taskId: string;
-  fromStatus: string;
-  targetStatus: string;
-  reason: string;
-  source: 'preview' | 'commit';
-  timestamp: string;
-  module?: string;
-}
 
 interface Props {
   recentEvents: BlockedTransitionEventDetail[];
   sessionEvents: BlockedTransitionEventDetail[];
   sessionCount: number;
   onReset: () => void;
+}
+
+function getTopBlockedReasons(events: BlockedTransitionEventDetail[]) {
+  const counts: Record<string, number> = {};
+  for (const event of events) {
+    const key = event.reason;
+    counts[key] = (counts[key] || 0) + 1;
+  }
+  return Object.entries(counts)
+    .map(([reason, count]) => ({ reason, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 3);
 }
 
 export function BlockedTransitionsWidget({
@@ -48,64 +52,43 @@ export function BlockedTransitionsWidget({
 }: Props) {
   const [activeTab, setActiveTab] = useState<BlockedWidgetTab>('live');
   const [isResetArmed, setIsResetArmed] = useState(false);
-  const resetHoldTimeoutRef = useRef<number | null>(null);
+  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const topBlockedReasons = useMemo(() => {
-    const reasonCountMap = new Map<string, number>();
-    for (const event of sessionEvents) {
-      reasonCountMap.set(
-        event.reason,
-        (reasonCountMap.get(event.reason) ?? 0) + 1,
-      );
-    }
-
-    return Array.from(reasonCountMap.entries())
-      .map(([reason, count]) => ({ reason, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 3);
+    return getTopBlockedReasons(sessionEvents);
   }, [sessionEvents]);
 
   const blockedBySource = useMemo(() => {
-    const stats: Record<'preview' | 'commit', number> = {
-      preview: 0,
-      commit: 0,
+    return {
+      preview: sessionEvents.filter((e) => e.source === 'preview').length,
+      commit: sessionEvents.filter((e) => e.source === 'commit').length,
     };
-
-    for (const event of sessionEvents) {
-      stats[event.source] += 1;
-    }
-
-    return stats;
   }, [sessionEvents]);
 
-  const handleResetPressStart = () => {
-    if (
-      typeof window === 'undefined' ||
-      !window.matchMedia('(pointer: coarse)').matches
-    ) {
-      return;
-    }
+  if (sessionCount === 0 && recentEvents.length === 0) {
+    return null;
+  }
 
+  const handleResetPressStart = () => {
     setIsResetArmed(true);
-    resetHoldTimeoutRef.current = window.setTimeout(() => {
+    holdTimerRef.current = setTimeout(() => {
       onReset();
       setIsResetArmed(false);
-      resetHoldTimeoutRef.current = null;
     }, RESET_HOLD_MS);
   };
 
   const handleResetPressEnd = () => {
-    if (resetHoldTimeoutRef.current !== null) {
-      window.clearTimeout(resetHoldTimeoutRef.current);
-      resetHoldTimeoutRef.current = null;
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
     }
     setIsResetArmed(false);
   };
 
-  const handleResetClick = () => {
+  const handleResetClick = (e: React.MouseEvent) => {
     if (
-      typeof window !== 'undefined' &&
-      window.matchMedia('(pointer: coarse)').matches
+      !window.matchMedia('(hover: none) and (pointer: coarse)').matches &&
+      !e.shiftKey
     ) {
       return;
     }
@@ -118,7 +101,7 @@ export function BlockedTransitionsWidget({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-2">
             <CardTitle className="text-xs sm:text-sm text-zinc-800">
-              Chuyển đổi bị chặn
+              {OPERATIONS_MESSAGES.BLOCKED_TRANSITIONS}
             </CardTitle>
             <LiveIndicator />
           </div>
@@ -130,8 +113,12 @@ export function BlockedTransitionsWidget({
               active={activeTab}
               onChange={setActiveTab}
             />
-            <Badge variant="danger" className="text-xs uppercase tracking-wide">
-              Phiên: {sessionCount}
+            <Badge
+              variant="danger"
+              className="text-xs uppercase tracking-wide cursor-help"
+              title="Số phiên có lỗi kéo thả chưa được xử lý (tải lại trang sẽ reset về 0)"
+            >
+              {OPERATIONS_MESSAGES.SESSION}: {sessionCount}
             </Badge>
             <Button
               variant="ghost"
@@ -143,7 +130,9 @@ export function BlockedTransitionsWidget({
               onPointerCancel={handleResetPressEnd}
               onClick={handleResetClick}
             >
-              {isResetArmed ? 'Giữ...' : 'Đặt lại'}
+              {isResetArmed
+                ? OPERATIONS_MESSAGES.HOLD_TO_RESET
+                : OPERATIONS_MESSAGES.RESET}
             </Button>
           </div>
         </div>
@@ -152,7 +141,7 @@ export function BlockedTransitionsWidget({
         {activeTab === 'live' ? (
           recentEvents.length === 0 ? (
             <p className="text-xs text-zinc-500">
-              Chưa có chuyển đổi bị chặn trong phiên hiện tại.
+              {OPERATIONS_MESSAGES.NO_BLOCKED_EVENTS_LIVE}
             </p>
           ) : (
             <div className="space-y-1.5 sm:space-y-2">
@@ -177,7 +166,7 @@ export function BlockedTransitionsWidget({
             <div className="grid grid-cols-2 gap-2">
               <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-2">
                 <p className="text-[10px] uppercase tracking-wide text-zinc-500">
-                  Xem trước
+                  {OPERATIONS_MESSAGES.PREVIEW}
                 </p>
                 <p className="text-sm font-semibold text-zinc-800">
                   {blockedBySource.preview}
@@ -185,7 +174,7 @@ export function BlockedTransitionsWidget({
               </div>
               <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-2">
                 <p className="text-[10px] uppercase tracking-wide text-zinc-500">
-                  Xác nhận
+                  {OPERATIONS_MESSAGES.COMMIT}
                 </p>
                 <p className="text-sm font-semibold text-zinc-800">
                   {blockedBySource.commit}
@@ -195,7 +184,7 @@ export function BlockedTransitionsWidget({
 
             {topBlockedReasons.length === 0 ? (
               <p className="text-xs text-zinc-500">
-                Chưa có dữ liệu tổng hợp trong phiên hiện tại.
+                {OPERATIONS_MESSAGES.NO_BLOCKED_EVENTS_SUMMARY}
               </p>
             ) : (
               <div className="space-y-1.5">
@@ -207,8 +196,8 @@ export function BlockedTransitionsWidget({
                     <p className="text-xs font-medium text-zinc-800 line-clamp-2">
                       {item.reason}
                     </p>
-                    <p className="mt-0.5 text-[11px] text-zinc-500">
-                      {item.count} lần
+                    <p className="mt-1 text-[11px] text-zinc-500">
+                      Bị chặn {item.count} {OPERATIONS_MESSAGES.TIMES}
                     </p>
                   </div>
                 ))}

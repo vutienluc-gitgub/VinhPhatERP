@@ -7,6 +7,7 @@ import {
   fetchKpis,
   fetchActivities,
   fetchWorkload,
+  fetchKanbanDashboard,
   createTask,
   updateTask,
   deleteTask,
@@ -15,6 +16,13 @@ import {
   type BlockedTransitionTelemetryEvent,
 } from '@/api/operations.api';
 import { Task } from '@/domain/operations/types';
+
+export function useKanbanDashboard() {
+  return useQuery({
+    queryKey: ['operations-dashboard'],
+    queryFn: fetchKanbanDashboard,
+  });
+}
 
 export function useTasks() {
   return useQuery({
@@ -35,6 +43,7 @@ export function useCreateTask() {
     },
     onSuccess: () => {
       setClientId(crypto.randomUUID());
+      queryClient.invalidateQueries({ queryKey: ['operations-dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['operations-tasks'] });
       queryClient.invalidateQueries({ queryKey: ['operations-workload'] });
       queryClient.invalidateQueries({ queryKey: ['operations-activities'] });
@@ -48,6 +57,9 @@ export function useUpdateTask() {
     mutationFn: ({ id, values }: { id: string; values: Partial<Task> }) =>
       updateTask(id, values),
     onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['operations-dashboard'],
+      });
       await queryClient.invalidateQueries({ queryKey: ['operations-tasks'] });
       await queryClient.invalidateQueries({
         queryKey: ['operations-workload'],
@@ -63,10 +75,17 @@ export function useDeleteTask() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => deleteTask(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['operations-tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['operations-workload'] });
-      queryClient.invalidateQueries({ queryKey: ['operations-activities'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['operations-dashboard'],
+      });
+      await queryClient.invalidateQueries({ queryKey: ['operations-tasks'] });
+      await queryClient.invalidateQueries({
+        queryKey: ['operations-workload'],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['operations-activities'],
+      });
     },
   });
 }
@@ -81,10 +100,17 @@ export function useCompleteTask() {
       taskId: string;
       actualHours?: number;
     }) => completeTask(taskId, actualHours),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['operations-tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['operations-workload'] });
-      queryClient.invalidateQueries({ queryKey: ['operations-activities'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['operations-dashboard'],
+      });
+      await queryClient.invalidateQueries({ queryKey: ['operations-tasks'] });
+      await queryClient.invalidateQueries({
+        queryKey: ['operations-workload'],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['operations-activities'],
+      });
     },
   });
 }
@@ -125,27 +151,15 @@ export function useWorkload() {
 }
 
 export function useOperationsData() {
-  const tasksQuery = useTasks();
-  const employeesQuery = useEmployees();
-  const kpisQuery = useKpis();
-  const activitiesQuery = useActivities();
-  const workloadQuery = useWorkload();
+  const dashboardQuery = useKanbanDashboard();
 
-  const isLoading =
-    tasksQuery.isLoading ||
-    employeesQuery.isLoading ||
-    kpisQuery.isLoading ||
-    activitiesQuery.isLoading ||
-    workloadQuery.isLoading;
+  const isLoading = dashboardQuery.isLoading;
+  const isError = dashboardQuery.isError;
 
-  const isError =
-    tasksQuery.isError ||
-    employeesQuery.isError ||
-    kpisQuery.isError ||
-    activitiesQuery.isError ||
-    workloadQuery.isError;
-
-  const tasks = useMemo(() => tasksQuery.data ?? [], [tasksQuery.data]);
+  const tasks = useMemo(
+    () => dashboardQuery.data?.tasks ?? [],
+    [dashboardQuery.data?.tasks],
+  );
 
   /**
    * Memoize derived stats — these involve .filter() and Date comparisons
@@ -153,26 +167,28 @@ export function useOperationsData() {
    * on every render even when unrelated queries refetched.
    */
   const stats = useMemo(() => {
-    const doneCount = tasks.filter((t) => t.status === 'done').length;
-    const openTasksList = tasks.filter(
-      (t) => t.status !== 'done' && t.status !== 'cancelled',
-    );
+    const activeTasks = tasks.filter((t) => t.status !== 'cancelled');
+    const totalActive = activeTasks.length;
+    const doneCount = activeTasks.filter((t) => t.status === 'done').length;
+    const openTasksList = activeTasks.filter((t) => t.status !== 'done');
     const overdueCount = openTasksList.filter(
       (t) => t.due_date && new Date(t.due_date) < new Date(),
     ).length;
-    const onTimeRate = tasks.length
-      ? Math.round(((tasks.length - overdueCount) / tasks.length) * 100)
-      : 100;
 
-    return { doneCount, overdueCount, onTimeRate };
+    // Completion rate: done / total active tasks (excluding cancelled)
+    // 0 tasks = 0%, not 100% — avoids misleading "100% done" on empty board
+    const completionRate =
+      totalActive > 0 ? Math.round((doneCount / totalActive) * 100) : 0;
+
+    return { doneCount, overdueCount, completionRate };
   }, [tasks]);
 
   return {
     tasks,
-    employees: employeesQuery.data ?? [],
-    kpis: kpisQuery.data ?? [],
-    activities: activitiesQuery.data ?? [],
-    workload: workloadQuery.data ?? [],
+    employees: dashboardQuery.data?.employees ?? [],
+    kpis: dashboardQuery.data?.kpis ?? [],
+    activities: dashboardQuery.data?.activities ?? [],
+    workload: dashboardQuery.data?.workload ?? [],
     stats,
     isLoading,
     isError,
