@@ -1,15 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import type { UseFormWatch } from 'react-hook-form';
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 
-import { Button } from '@/shared/components';
 import {
   useBomList,
   useOrderList,
   useSuppliersList,
 } from '@/shared/hooks/useFormOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { StepperFooter } from '@/shared/components/StepperFooter';
 import { Combobox } from '@/shared/components/Combobox';
 import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import DraftBanner from '@/shared/components/DraftBanner';
@@ -120,8 +120,6 @@ export function WorkOrderForm({
     initialData?.id || '',
   );
 
-  const stepper = useStepper({ totalSteps: 2 });
-
   // Draft restoration state
   const [showDraftBanner, setShowDraftBanner] = useState(false);
   const [savedDraft, setSavedDraft] = useState<CreateWorkOrderInput | null>(
@@ -136,7 +134,7 @@ export function WorkOrderForm({
     watch,
     setValue,
     reset,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isSubmitting, isDirty },
   } = useForm<CreateWorkOrderInput>({
     resolver: zodResolver(createWorkOrderSchema),
     defaultValues: initialData
@@ -177,13 +175,33 @@ export function WorkOrderForm({
     mode: 'onTouched',
   });
 
+  const handleCancel = useCallback(() => {
+    if (isDirty) {
+      if (
+        !window.confirm(
+          'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
+        )
+      ) {
+        return false;
+      }
+    }
+    onCancel?.();
+    return true;
+  }, [isDirty, onCancel]);
+
+  const stepper = useStepper({
+    totalSteps: 2,
+    stepValidation: {
+      0: () =>
+        trigger(['work_order_number', 'order_id', 'supplier_id', 'start_date']),
+    },
+    onCancel: handleCancel,
+  });
+
   const { fields, replace } = useFieldArray({
     control,
     name: 'yarn_requirements',
   });
-
-  // ── AUTO SAVE (isolated in sub-component to avoid full re-render) ──
-  // Auto-save subscriber is rendered inside the form JSX as <AutoSaveSubscriber />
 
   // ── DRAFT RESTORATION ──
   useEffect(() => {
@@ -274,22 +292,13 @@ export function WorkOrderForm({
     }
   };
 
-  async function handleNextStep() {
-    if (stepper.currentStep === 0) {
-      const stepValid = await trigger([
-        'work_order_number',
-        'order_id',
-        'supplier_id',
-        'start_date',
-      ]);
-      if (stepValid) stepper.next();
-    }
-  }
+  const isPending =
+    isSubmitting || createMutation.isPending || updateMutation.isPending;
 
   return (
     <AdaptiveSheet
       open={true}
-      onClose={onCancel || (() => {})}
+      onClose={handleCancel}
       title={
         isEditing ? 'Chỉnh sửa Lệnh Sản Xuất' : 'Kiến tạo Lệnh Sản Xuất Mới'
       }
@@ -302,6 +311,7 @@ export function WorkOrderForm({
       <form
         id="work-order-form"
         onSubmit={handleSubmit(onSubmit)}
+        onKeyDown={stepper.handleKeyDown}
         className="flex flex-col h-full min-h-0"
         noValidate
       >
@@ -333,7 +343,7 @@ export function WorkOrderForm({
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
-                      handleNextStep();
+                      stepper.next();
                     }
                   }}
                 />
@@ -535,74 +545,16 @@ export function WorkOrderForm({
           </div>
         </div>
 
-        {/* Sticky Footer */}
-        <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-4">
-          <div className="flex flex-col-reverse sm:flex-row items-center gap-3 w-full sm:w-auto">
-            <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-3">
-              {!stepper.isFirst && (
-                <Button
-                  variant="secondary"
-                  type="button"
-                  onClick={stepper.prev}
-                  disabled={createMutation.isPending}
-                  className="w-full sm:w-auto justify-center"
-                >
-                  Quay lại
-                </Button>
-              )}
-              {stepper.isFirst && (
-                <Button
-                  variant="secondary"
-                  type="button"
-                  onClick={onCancel}
-                  disabled={createMutation.isPending}
-                  className="w-full sm:w-auto justify-center"
-                >
-                  Hủy bỏ
-                </Button>
-              )}
-            </div>
-            {/* Save Status Indicator (with isolated auto-save) */}
-            <div className="hidden sm:block">
-              <AutoSaveSubscriber watch={watch} />
-            </div>
-          </div>
-
-          <div className="w-full sm:w-auto">
-            {!stepper.isLast ? (
-              <Button
-                variant="primary"
-                type="button"
-                onClick={handleNextStep}
-                disabled={createMutation.isPending}
-                className="w-full sm:w-auto justify-center"
-              >
-                Tiếp tục
-              </Button>
-            ) : (
-              <Button
-                variant="primary"
-                type="submit"
-                disabled={
-                  createMutation.isPending ||
-                  updateMutation.isPending ||
-                  !isValid
-                }
-                className="w-full sm:w-auto justify-center"
-              >
-                {createMutation.isPending || updateMutation.isPending
-                  ? 'Đang lưu...'
-                  : isEditing
-                    ? 'Cập nhật lệnh SX'
-                    : 'Xác nhận lệnh SX'}
-              </Button>
-            )}
-          </div>
-          {/* Mobile Save Status */}
-          <div className="sm:hidden flex justify-center mt-[-8px]">
-            <AutoSaveSubscriber watch={watch} />
-          </div>
-        </div>
+        <StepperFooter
+          stepper={stepper}
+          onCancel={handleCancel}
+          isPending={isPending}
+          submitLabel={
+            isEditing ? 'Cập nhật Lệnh Sản Xuất' : 'Xác nhận Lệnh Sản Xuất'
+          }
+        >
+          <AutoSaveSubscriber watch={watch} />
+        </StepperFooter>
       </form>
     </AdaptiveSheet>
   );

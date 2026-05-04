@@ -1,11 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
+import type { UseFormWatch } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { StepperFooter } from '@/shared/components/StepperFooter';
 import { Combobox } from '@/shared/components/Combobox';
 import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers';
@@ -14,6 +16,9 @@ import {
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
 import { useStepper } from '@/shared/hooks/useStepper';
+import { useAutoSave, loadDraft, clearDraft } from '@/shared/hooks/useAutoSave';
+import DraftBanner from '@/shared/components/DraftBanner';
+import SaveStatus from '@/shared/components/SaveStatus';
 import { formatCurrency } from '@/shared/utils/format';
 import {
   useCreateOrderV2,
@@ -34,6 +39,27 @@ import { calculateOrderTotal } from '@/domain/orders';
 
 import { CreditOverrideDialog } from './CreditOverrideDialog';
 import type { Order } from './types';
+
+const DRAFT_KEY = 'order-draft';
+
+/**
+ * Isolated sub-component that subscribes to ALL form values for auto-save.
+ * By extracting this, the re-renders caused by watch() are confined here
+ * and do NOT propagate to the main OrderForm tree.
+ */
+function AutoSaveSubscriber({
+  watch,
+}: {
+  watch: UseFormWatch<OrdersFormValues>;
+}) {
+  const formValues = watch();
+  const { status: saveStatus, lastSavedAt } = useAutoSave({
+    key: DRAFT_KEY,
+    data: formValues,
+    delay: 800,
+  });
+  return <SaveStatus status={saveStatus} lastSavedAt={lastSavedAt} />;
+}
 
 const UNIT_LABELS: Record<string, string> = {
   m: 'm',
@@ -165,6 +191,10 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
   const [overrideWarning, setOverrideWarning] =
     useState<CreateOrderError | null>(null);
 
+  // Draft restoration state
+  const [showDraftBanner, setShowDraftBanner] = useState(false);
+  const [savedDraft, setSavedDraft] = useState<OrdersFormValues | null>(null);
+
   const createMutationV2 = useCreateOrderV2();
   const updateMutation = useUpdateOrder();
   const { data: customers = [] } = useActiveCustomers();
@@ -196,12 +226,17 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
     [colorOptions],
   );
 
-  const stepper = useStepper({ totalSteps: 2 });
-  // Ref để track step trong onSubmit, tránh stale closure
-  const stepRef = useRef(stepper.currentStep);
+  // ── DRAFT RESTORATION ──
+  const draftCheckedRef = useRef(false);
   useEffect(() => {
-    stepRef.current = stepper.currentStep;
-  }, [stepper.currentStep]);
+    if (isEditing || draftCheckedRef.current) return;
+    draftCheckedRef.current = true;
+    const draft = loadDraft<OrdersFormValues>(DRAFT_KEY);
+    if (draft && draft.customerId) {
+      setSavedDraft(draft);
+      setShowDraftBanner(true);
+    }
+  }, [isEditing]);
 
   const {
     register,
@@ -209,32 +244,79 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
     control,
     setValue,
     trigger,
-    formState: { errors, isSubmitting },
+    reset,
+    watch,
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<OrdersFormValues>({
     resolver: zodResolver(isEditing ? ordersSchemaEdit : ordersSchema),
     defaultValues: isEditing ? orderToFormValues(order) : ordersDefaultValues,
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const stepper = useStepper({
+    totalSteps: 2,
+    stepValidation: {
+      0: () =>
+        trigger([
+          'orderNumber',
+          'orderDate',
+          'customerId',
+          'deliveryDate',
+          'notes',
+        ]),
+    },
+    onCancel: () => {
+      if (isDirty) {
+        if (
+          !window.confirm(
+            'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
+          )
+        ) {
+          return false;
+        }
+      }
+      onClose();
+      return true;
+    },
+  });
+
+  const handleCancel = useCallback(() => {
+    if (isDirty) {
+      if (
+        !window.confirm(
+          'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
+        )
+      ) {
+        return false;
+      }
+    }
+    onClose();
+    return true;
+  }, [isDirty, onClose]);
+
+  const stepRef = useRef(0);
+  useEffect(() => {
+    stepRef.current = stepper.currentStep;
+  }, [stepper.currentStep]);
+
+  const { fields, append, remove, replace } = useFieldArray({
     control,
     name: 'items',
   });
 
-  async function handleNextStep(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (stepper.currentStep === 0) {
-      const isValid = await trigger([
-        'orderNumber',
-        'orderDate',
-        'customerId',
-        'deliveryDate',
-        'notes',
-      ]);
-      if (isValid) {
-        stepper.next();
-      }
+  function handleRestoreDraft() {
+    if (!savedDraft) return;
+    reset(savedDraft);
+    if (savedDraft.items?.length) {
+      replace(savedDraft.items);
     }
+    setShowDraftBanner(false);
+    setSavedDraft(null);
+  }
+
+  function handleDiscardDraft() {
+    clearDraft(DRAFT_KEY);
+    setShowDraftBanner(false);
+    setSavedDraft(null);
   }
 
   async function onSubmit(values: OrdersFormValues) {
@@ -248,11 +330,11 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
           values,
           expectedUpdatedAt: order.updated_at ?? undefined,
         });
-        onClose();
       } else {
         await createMutationV2.mutateAsync(values);
-        onClose();
       }
+      clearDraft(DRAFT_KEY);
+      onClose();
     } catch (err) {
       if (!isEditing && err && typeof err === 'object' && 'code' in err) {
         const e = err as CreateOrderError;
@@ -291,7 +373,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
     <>
       <AdaptiveSheet
         open={true}
-        onClose={onClose}
+        onClose={handleCancel}
         title={
           isEditing ? `Sửa đơn: ${order.order_number}` : 'Tạo đơn hàng mới'
         }
@@ -304,17 +386,16 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
         <form
           id="order-form"
           onSubmit={handleSubmit(onSubmit)}
-          onKeyDown={(e) => {
-            if (
-              e.key === 'Enter' &&
-              (e.target as HTMLElement).tagName !== 'TEXTAREA' &&
-              !stepper.isLast
-            ) {
-              e.preventDefault();
-            }
-          }}
+          onKeyDown={stepper.handleKeyDown}
           noValidate
         >
+          {showDraftBanner && (
+            <DraftBanner
+              onRestore={handleRestoreDraft}
+              onDiscard={handleDiscardDraft}
+            />
+          )}
+
           {mutationError && (
             <p className="error-inline mb-4">
               Lỗi:{' '}
@@ -570,60 +651,14 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
               </div>
             </div>
           </div>
-
-          <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-between gap-3">
-            <div className="w-full sm:w-auto">
-              {!stepper.isFirst && (
-                <Button
-                  variant="secondary"
-                  type="button"
-                  onClick={stepper.prev}
-                  disabled={isPending}
-                  className="w-full sm:w-auto justify-center"
-                >
-                  Quay lại
-                </Button>
-              )}
-              {stepper.isFirst && (
-                <Button
-                  variant="secondary"
-                  type="button"
-                  onClick={onClose}
-                  disabled={isPending}
-                  className="w-full sm:w-auto justify-center"
-                >
-                  Hủy
-                </Button>
-              )}
-            </div>
-
-            <div className="w-full sm:w-auto">
-              {!stepper.isLast ? (
-                <Button
-                  variant="primary"
-                  type="button"
-                  onClick={handleNextStep}
-                  disabled={isPending}
-                  className="w-full sm:w-auto justify-center"
-                >
-                  Tiếp tục
-                </Button>
-              ) : (
-                <Button
-                  variant="primary"
-                  type="submit"
-                  disabled={isPending}
-                  className="w-full sm:w-auto justify-center"
-                >
-                  {isPending
-                    ? 'Đang lưu...'
-                    : isEditing
-                      ? 'Lưu thay đổi'
-                      : 'Tạo đơn mới'}
-                </Button>
-              )}
-            </div>
-          </div>
+          <StepperFooter
+            stepper={stepper}
+            onCancel={handleCancel}
+            isPending={isPending}
+            submitLabel={isEditing ? 'Lưu thay đổi' : 'Tạo đơn mới'}
+          >
+            <AutoSaveSubscriber watch={watch} />
+          </StepperFooter>
         </form>
       </AdaptiveSheet>
 

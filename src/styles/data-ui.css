@@ -725,6 +725,24 @@
   }
 }
 
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
 @media (min-width: 640px) {
   .modal-overlay {
     align-items: center;
@@ -752,6 +770,20 @@
   .modal-sheet {
     border-radius: var(--radius-xl);
     animation: fadeIn 0.2s ease-out;
+  }
+}
+
+.modal-overlay--closing {
+  animation: fadeOut 0.2s ease-in forwards;
+}
+
+.modal-sheet--closing {
+  animation: slideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (min-width: 640px) {
+  .modal-sheet--closing {
+    animation: fadeOut 0.2s ease-in forwards;
   }
 }
 

@@ -5,9 +5,10 @@ import type { UseFormWatch } from 'react-hook-form';
 
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { StepperFooter } from '@/shared/components/StepperFooter';
 import { Combobox } from '@/shared/components/Combobox';
 import { CurrencyInput } from '@/shared/components/CurrencyInput';
-import { CancelButton, Button } from '@/shared/components';
+import { Button } from '@/shared/components';
 import { useStepper } from '@/shared/hooks/useStepper';
 import { formatCurrency } from '@/shared/utils/format';
 import { useAutoSave, loadDraft, clearDraft } from '@/shared/hooks/useAutoSave';
@@ -61,7 +62,6 @@ type Props = {
 
 export function WeavingInvoiceForm({ invoice, onClose }: Props) {
   const isEdit = !!invoice;
-  const stepper = useStepper({ totalSteps: 2 });
 
   const { data: nextNumber = '' } = useNextWeavingInvoiceNumber();
   const { data: suppliers = [] } = useWeavingSuppliers();
@@ -83,7 +83,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
     setValue,
     reset,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<WeavingInvoiceFormValues>({
     resolver: zodResolver(weavingInvoiceFormSchema),
     defaultValues: isEdit
@@ -108,6 +108,47 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
       : weavingInvoiceDefaults,
     mode: 'onTouched',
   });
+
+  const stepper = useStepper({
+    totalSteps: 2,
+    stepValidation: {
+      0: () =>
+        trigger([
+          'invoice_number',
+          'supplier_id',
+          'invoice_date',
+          'fabric_type',
+          'unit_price_per_kg',
+        ]),
+    },
+    onCancel: () => {
+      if (isDirty) {
+        if (
+          !window.confirm(
+            'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
+          )
+        ) {
+          return false;
+        }
+      }
+      onClose();
+      return true;
+    },
+  });
+
+  const handleCancel = useCallback(() => {
+    if (isDirty) {
+      if (
+        !window.confirm(
+          'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
+        )
+      ) {
+        return false;
+      }
+    }
+    onClose();
+    return true;
+  }, [isDirty, onClose]);
 
   // ── TARGETED FIELD SUBSCRIPTIONS (avoid full-form re-render) ──
   const selectedSupplierId = useWatch({ control, name: 'supplier_id' });
@@ -219,17 +260,6 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
     [fields, append, remove],
   );
 
-  async function handleNext() {
-    const valid = await trigger([
-      'invoice_number',
-      'supplier_id',
-      'invoice_date',
-      'fabric_type',
-      'unit_price_per_kg',
-    ]);
-    if (valid) stepper.next();
-  }
-
   async function onSubmit(values: WeavingInvoiceFormValues) {
     if (!stepper.isLast) return;
     try {
@@ -245,7 +275,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
       clearDraft(DRAFT_KEY);
       onClose();
     } catch {
-      // mutationError (line ~258) renders the error message in UI automatically
+      // mutationError renders the error message in UI automatically
     }
   }
 
@@ -270,7 +300,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
   return (
     <AdaptiveSheet
       open
-      onClose={onClose}
+      onClose={handleCancel}
       title={isEdit ? 'Sửa phiếu gia công' : 'Tạo phiếu gia công'}
       stepInfo={{
         current: stepper.currentStep,
@@ -296,7 +326,13 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
         />
       )}
 
-      <form id="weaving-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form
+        id="weaving-form"
+        onSubmit={handleSubmit(onSubmit)}
+        onKeyDown={stepper.handleKeyDown}
+        noValidate
+        className="flex flex-col flex-1"
+      >
         {/* ── BƯỚC 1: THÔNG TIN PHIẾU ── */}
         <div className={stepper.currentStep === 0 ? 'block' : 'hidden'}>
           <fieldset className="bulk-section">
@@ -476,31 +512,6 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
               </div>
             </div>
           </fieldset>
-
-          <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-4">
-            <div className="flex flex-col-reverse sm:flex-row items-center gap-3 w-full sm:w-auto">
-              <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-3">
-                <CancelButton
-                  onClick={onClose}
-                  label="Hủy"
-                  className="w-full sm:w-auto justify-center"
-                />
-              </div>
-              <div className="text-center sm:text-left w-full sm:w-auto">
-                <AutoSaveSubscriber watch={watch} />
-              </div>
-            </div>
-            <div className="w-full sm:w-auto">
-              <Button
-                variant="primary"
-                type="button"
-                className="w-full sm:w-auto justify-center"
-                onClick={handleNext}
-              >
-                Tiếp theo → Nhập cuộn vải
-              </Button>
-            </div>
-          </div>
         </div>
 
         {/* ── BƯỚC 2: NHẬP CUỘN VẢI (OPS UI) ── */}
@@ -571,32 +582,16 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
                 </div>
               )}
           </div>
-
-          {/* Footer */}
-          <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
-            <Button
-              variant="secondary"
-              type="button"
-              onClick={stepper.prev}
-              className="w-full sm:w-auto justify-center"
-            >
-              Quay lại
-            </Button>
-            <Button
-              variant="primary"
-              type="submit"
-              form="weaving-form"
-              className="w-full sm:w-auto justify-center"
-              disabled={isPending}
-            >
-              {isPending
-                ? 'Đang lưu...'
-                : isEdit
-                  ? 'Lưu thay đổi'
-                  : 'Lưu phiếu nháp'}
-            </Button>
-          </div>
         </div>
+
+        <StepperFooter
+          stepper={stepper}
+          onCancel={handleCancel}
+          isPending={isPending}
+          submitLabel={isEdit ? 'Lưu thay đổi' : 'Lưu phiếu nháp'}
+        >
+          <AutoSaveSubscriber watch={watch} />
+        </StepperFooter>
       </form>
     </AdaptiveSheet>
   );
