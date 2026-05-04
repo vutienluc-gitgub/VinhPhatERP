@@ -5,28 +5,19 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { fetchNextSupplierCode, createSupplier } from '@/api/suppliers.api';
 import {
-  SUPPLIER_CATEGORIES,
-  SUPPLIER_CATEGORY_LABELS,
   quickSupplierSchema,
   type QuickSupplierValues,
 } from '@/schema/supplier.schema';
+import { useSupplierCategories } from '@/application/crm';
 import { Button } from '@/shared/components/Button';
 import { Combobox } from '@/shared/components/Combobox';
-import type { ComboboxOption } from '@/shared/components/Combobox';
 import { Icon } from '@/shared/components/Icon';
-
-/* ── Static derived data ── */
-
-const CATEGORY_OPTIONS: ComboboxOption[] = SUPPLIER_CATEGORIES.map((c) => ({
-  value: c,
-  label: SUPPLIER_CATEGORY_LABELS[c],
-}));
 
 /* ── Types ── */
 
 type QuickSupplierFormProps = {
-  /** Pre-select category, e.g. 'yarn' for yarn receipt, 'weaving' for raw fabric */
-  defaultCategory?: (typeof SUPPLIER_CATEGORIES)[number];
+  /** Pre-select category, e.g. 'YARN' for yarn receipt, 'GREIGE' for raw fabric */
+  defaultCategory?: string;
   onCreated: (supplier: { id: string; code: string; name: string }) => void;
   onCancel: () => void;
 };
@@ -72,6 +63,12 @@ export function QuickSupplierForm({
 }: QuickSupplierFormProps) {
   const { data: nextCode } = useNextSupplierCode();
   const createMutation = useQuickCreateSupplier();
+  const { data: categories = [] } = useSupplierCategories();
+
+  const CATEGORY_OPTIONS = categories.map((c) => ({
+    value: c.code,
+    label: c.name,
+  }));
 
   const {
     register,

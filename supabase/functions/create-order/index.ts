@@ -56,6 +56,7 @@ interface OrderItemInput {
 
 interface CreateOrderRequest {
   orderNumber: string;
+  orderType?: 'production' | 'trading';
   customerId: string;
   orderDate: string; // ISO date 'YYYY-MM-DD'
   deliveryDate?: string;
@@ -191,6 +192,7 @@ serve(async (req: Request) => {
     const body: CreateOrderRequest = await req.json();
     const {
       orderNumber,
+      orderType = 'production',
       customerId,
       orderDate,
       deliveryDate,
@@ -417,6 +419,7 @@ serve(async (req: Request) => {
       'fn_create_order_atomic',
       {
         p_order_number: orderNumber.trim(),
+        p_order_type: orderType,
         p_customer_id: customerId,
         p_order_date: orderDate,
         p_delivery_date: deliveryDate?.trim() ?? null,

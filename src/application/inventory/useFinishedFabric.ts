@@ -116,7 +116,7 @@ export function useCreateFinishedFabricBulk() {
 
       const rows = values.rolls.map((row) => ({
         roll_number: row.roll_number.trim(),
-        raw_roll_id: row.raw_roll_id,
+        raw_roll_id: row.raw_roll_id?.trim() || null,
         fabric_type: values.fabric_type,
         color_name: values.color_name?.trim() || null,
         color_code: values.color_code?.trim() || null,
@@ -129,6 +129,14 @@ export function useCreateFinishedFabricBulk() {
         production_date: values.production_date?.trim() || null,
         notes: row.notes?.trim() || null,
         reserved_for_order_id: null,
+        supplier_id:
+          values.source_type === 'purchased'
+            ? values.supplier_id || null
+            : null,
+        purchase_price:
+          values.source_type === 'purchased'
+            ? values.purchase_price || null
+            : null,
       }));
 
       return createFinishedFabricBulk(rows, values.lot_number);

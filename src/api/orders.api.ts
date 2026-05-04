@@ -195,7 +195,7 @@ export async function updateOrderWithItems(
         'Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại trang.',
       );
     }
-    throw error;
+    throw new Error(error.message || String(error));
   }
 }
 

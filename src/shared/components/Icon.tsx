@@ -1,341 +1,73 @@
-import {
-  Activity,
-  AlertCircle,
-  AlertTriangle,
-  ArrowDown,
-  ArrowLeft,
-  ArrowRight,
-  ArrowRightLeft,
-  ArrowUp,
-  ArrowUpCircle,
-  BadgeDollarSign,
-  Ban,
-  Banknote,
-  BarChart3,
-  Bell,
-  Box,
-  Briefcase,
-  Building2,
-  Calendar,
-  BookOpen,
-  Check,
-  CheckCheck,
-  CheckCircle,
-  CheckCircle2,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsUpDown,
-  Circle,
-  CircleCheck,
-  CircleDollarSign,
-  CircleDot,
-  ClipboardList,
-  Clock,
-  Cog,
-  Columns3,
-  Component,
-  Copy,
-  CreditCard,
-  Database,
-  DollarSign,
-  Droplet,
-  Edit2,
-  Edit3,
-  ExternalLink,
-  Eye,
-  Factory,
-  FileDown,
-  FileEdit,
-  FilePenLine,
-  FilePlus,
-  FileSpreadsheet,
-  FileStack,
-  FileText,
-  FileX,
-  Filter,
-  Folder,
-  FolderOpen,
-  FolderPlus,
-  GitMerge,
-  Grip,
-  GripVertical,
-  Handshake,
-  Hash,
-  HelpCircle,
-  Hexagon,
-  History,
-  Home,
-  Image,
-  Info,
-  Kanban,
-  Layers,
-  LayoutDashboard,
-  LayoutGrid,
-  LayoutList,
-  LayoutTemplate,
-  Lightbulb,
-  LineChart,
-  Link,
-  List,
-  ListChecks,
-  Loader2,
-  Lock,
-  LogOut,
-  MapPin,
-  Megaphone,
-  Menu,
-  MessageCircle,
-  Minus,
-  Moon,
-  MoreHorizontal,
-  MoreVertical,
-  Navigation,
-  Package,
-  PackageCheck,
-  PackageOpen,
-  PackagePlus,
-  Palette,
-  PartyPopper,
-  Pencil,
-  Phone,
-  Play,
-  PlayCircle,
-  Plug,
-  Plus,
-  Printer,
-  Receipt,
-  RefreshCw,
-  Ruler,
-  ScanBarcode,
-  Scissors,
-  ScrollText,
-  Search,
-  Send,
-  Settings,
-  Shield,
-  ShieldAlert,
-  ShieldCheck,
-  ShoppingBag,
-  ShoppingCart,
-  Sparkles,
-  Star,
-  Sun,
-  SwatchBook,
-  Tag,
-  Target,
-  Trash2,
-  TrendingDown,
-  TrendingUp,
-  TriangleAlert,
-  Truck,
-  Unlink,
-  User,
-  UserCheck,
-  UserCog,
-  Users,
-  UserPlus,
-  UserX,
-  Wallet,
-  Wand2,
-  Warehouse,
-  Weight,
-  Wrench,
-  X,
-  XCircle,
-  Zap,
-  File,
-  Sheet,
-  Upload,
-  Video,
-  Download,
-} from 'lucide-react';
+import { memo, lazy, Suspense } from 'react';
 import type { LucideProps } from 'lucide-react';
-import { memo } from 'react';
+import type * as LucideIcons from 'lucide-react';
+import dynamicIconImports from 'lucide-react/dynamicIconImports';
 
-/**
- * Icon component wrapper for Lucide icons.
- * Enforces the project's icon system rules:
- *   - Default size: 20px
- *   - Default strokeWidth: 1.5
- *   - Never import lucide-react directly in feature code — use this instead.
- *
- * Usage: <Icon name="Home" />
- *        <Icon name="Package" size={16} />         ← small
- *        <Icon name="Settings" size={24} />         ← large
- *
- * To add a new icon: import it from lucide-react and add it to ICON_MAP below.
- */
+export type IconName =
+  | keyof typeof dynamicIconImports
+  | keyof typeof LucideIcons
+  | (string & {});
 
-const ICON_MAP: Record<string, React.FC<LucideProps>> = {
-  Activity,
-  AlertCircle,
-  AlertTriangle,
-  ArrowDown,
-  ArrowLeft,
-  ArrowRight,
-  ArrowRightLeft,
-  ArrowUp,
-  ArrowUpCircle,
-  BadgeDollarSign,
-  Ban,
-  Banknote,
-  BarChart3,
-  Bell,
-  Box,
-  Briefcase,
-  Building2,
-  Calendar,
-  BookOpen,
-  Check,
-  CheckCheck,
-  CheckCircle,
-  CheckCircle2,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsUpDown,
-  Circle,
-  CircleCheck,
-  CircleDollarSign,
-  CircleDot,
-  ClipboardList,
-  Clock,
-  Cog,
-  Columns3,
-  Component,
-  Copy,
-  CreditCard,
-  Database,
-  DollarSign,
-  Droplet,
-  Edit2,
-  Edit3,
-  ExternalLink,
-  Eye,
-  Factory,
-  FileDown,
-  FileEdit,
-  FilePenLine,
-  FilePlus,
-  FileSpreadsheet,
-  FileStack,
-  FileText,
-  FileX,
-  Filter,
-  Folder,
-  FolderOpen,
-  FolderPlus,
-  GitMerge,
-  Grip,
-  GripVertical,
-  Handshake,
-  Hash,
-  HelpCircle,
-  Hexagon,
-  History,
-  Home,
-  Image,
-  Info,
-  Kanban,
-  Layers,
-  LayoutDashboard,
-  LayoutGrid,
-  LayoutList,
-  LayoutTemplate,
-  Lightbulb,
-  LineChart,
-  Link,
-  List,
-  ListChecks,
-  Loader2,
-  Lock,
-  LogOut,
-  MapPin,
-  Megaphone,
-  Menu,
-  MessageCircle,
-  Minus,
-  Moon,
-  MoreHorizontal,
-  MoreVertical,
-  Navigation,
-  Package,
-  PackageCheck,
-  PackageOpen,
-  PackagePlus,
-  Palette,
-  PartyPopper,
-  Pencil,
-  Phone,
-  Play,
-  PlayCircle,
-  Plug,
-  Plus,
-  Printer,
-  Receipt,
-  RefreshCw,
-  Ruler,
-  ScanBarcode,
-  Scissors,
-  ScrollText,
-  Search,
-  Send,
-  Settings,
-  Shield,
-  ShieldAlert,
-  ShieldCheck,
-  ShoppingBag,
-  ShoppingCart,
-  Sparkles,
-  Star,
-  Sun,
-  SwatchBook,
-  Tag,
-  Target,
-  Trash2,
-  TrendingDown,
-  TrendingUp,
-  TriangleAlert,
-  Truck,
-  Unlink,
-  User,
-  UserCheck,
-  UserCog,
-  Users,
-  UserPlus,
-  UserX,
-  Wallet,
-  Wand2,
-  Warehouse,
-  Weight,
-  Wrench,
-  X,
-  XCircle,
-  Zap,
-  File,
-  Sheet,
-  Upload,
-  Video,
-  Download,
+interface IconProps extends Omit<LucideProps, 'ref'> {
+  name: IconName;
+}
+
+const toKebabCase = (str: string) => {
+  return str
+    .replace(/([A-Z])([A-Z])(?=[a-z])/g, '$1-$2')
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .toLowerCase();
 };
 
-export type IconName = keyof typeof ICON_MAP;
+/** Cache lazy components so React.lazy() is NOT called inside render */
+const lazyIconCache = new Map<
+  string,
+  React.LazyExoticComponent<React.ComponentType<LucideProps>>
+>();
 
-interface IconProps extends LucideProps {
-  name: IconName | string;
+function resolveImportFn(name: string) {
+  return (
+    dynamicIconImports[name as keyof typeof dynamicIconImports] ||
+    dynamicIconImports[toKebabCase(name) as keyof typeof dynamicIconImports]
+  );
+}
+
+function getLazyIcon(name: string) {
+  const cached = lazyIconCache.get(name);
+  if (cached) return cached;
+
+  const importFn = resolveImportFn(name);
+  if (!importFn) return null;
+
+  const LazyComponent = lazy(importFn);
+  lazyIconCache.set(name, LazyComponent);
+  return LazyComponent;
 }
 
 export const Icon = memo(
   ({ name, size = 20, strokeWidth = 1.5, ...props }: IconProps) => {
-    const LucideIcon = ICON_MAP[name];
+    const LucideIcon = getLazyIcon(name);
 
     if (!LucideIcon) {
-      console.warn(`Icon "${name}" not found in ICON_MAP. Add it to Icon.tsx.`);
+      if (import.meta.env.DEV) {
+        console.warn(
+          `Icon "${name}" not found in lucide-react/dynamicIconImports.`,
+        );
+      }
       return null;
     }
 
-    return <LucideIcon size={size} strokeWidth={strokeWidth} {...props} />;
+    return (
+      <Suspense
+        fallback={
+          <span
+            style={{ width: size, height: size, display: 'inline-block' }}
+          />
+        }
+      >
+        <LucideIcon size={size} strokeWidth={strokeWidth} {...props} />
+      </Suspense>
+    );
   },
 );
 

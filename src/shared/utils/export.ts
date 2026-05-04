@@ -25,10 +25,11 @@ export async function exportToExcel<T extends Record<string, unknown>>(
     title?: string;
   },
 ): Promise<void> {
-  const [{ default: ExcelJS }, { saveAs }] = await Promise.all([
+  const [{ default: ExcelJS }, fileSaver] = await Promise.all([
     import('exceljs'),
     import('file-saver'),
   ]);
+  const saveAs = fileSaver.saveAs || fileSaver.default;
   const wb = new ExcelJS.Workbook();
   const ws = wb.addWorksheet(options.sheetName ?? 'Sheet1');
 

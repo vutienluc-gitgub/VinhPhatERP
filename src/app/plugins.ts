@@ -7,6 +7,7 @@ import { orderProgressPlugin } from '@/features/orders/progress';
 import { orderKanbanPlugin } from '@/features/order-kanban';
 import { shipmentsPlugin } from '@/features/shipments';
 import { yarnReceiptsPlugin } from '@/features/yarn-receipts';
+import { purchaseOrdersPlugin } from '@/features/purchase-orders';
 import { bomPlugin } from '@/features/bom';
 import { workOrdersPlugin } from '@/features/work-orders';
 import { rawFabricPlugin } from '@/features/raw-fabric';
@@ -51,6 +52,7 @@ const plugins: FeaturePlugin[] = [
   shipmentsPlugin,
 
   // ── PRODUCTION ──
+  purchaseOrdersPlugin,
   yarnReceiptsPlugin,
   bomPlugin,
   workOrdersPlugin,

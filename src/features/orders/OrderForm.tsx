@@ -33,6 +33,7 @@ import {
   ordersSchema,
   ordersSchemaEdit,
   UNIT_OPTIONS,
+  ORDER_TYPE_OPTIONS,
 } from '@/schema/order.schema';
 import type { OrdersFormValues } from '@/schema/order.schema';
 import { calculateOrderTotal } from '@/domain/orders';
@@ -79,6 +80,7 @@ type OrderFormProps = {
 function orderToFormValues(order: Order): OrdersFormValues {
   return {
     orderNumber: order.order_number,
+    orderType: (order.order_type as 'production' | 'trading') ?? 'production',
     customerId: order.customer_id,
     orderDate: order.order_date,
     deliveryDate: order.delivery_date ?? '',
@@ -432,6 +434,31 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                     )}
                   </div>
 
+                  <div className="form-field">
+                    <label htmlFor="orderType">
+                      Loại đơn hàng <span className="field-required">*</span>
+                    </label>
+                    <Controller
+                      name="orderType"
+                      control={control}
+                      render={({ field }) => (
+                        <Combobox
+                          options={
+                            ORDER_TYPE_OPTIONS as unknown as {
+                              label: string;
+                              value: string;
+                            }[]
+                          }
+                          value={field.value}
+                          onChange={field.onChange}
+                          disabled={isEditing && order?.status !== 'draft'}
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="orderDate">
                       Ngày đặt hàng <span className="field-required">*</span>

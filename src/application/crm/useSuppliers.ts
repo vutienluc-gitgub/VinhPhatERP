@@ -5,8 +5,13 @@ import {
   fetchSuppliersPaginated,
   fetchNextSupplierCode,
   createSupplier,
+  fetchSuppliers,
   updateSupplierRpc,
   deleteSupplier,
+  fetchSupplierPrice,
+  fetchAllSupplierPrices,
+  upsertSupplierPrice,
+  fetchSupplierCategories,
 } from '@/api/suppliers.api';
 import type { SupplierFormValues } from '@/features/suppliers/suppliers.module';
 import type {
@@ -104,5 +109,69 @@ export function useDeleteSupplier() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
+  });
+}
+
+export function useSupplierPrice(supplierId: string, materialId: string) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'price', supplierId, materialId],
+    queryFn: () => fetchSupplierPrice(supplierId, materialId),
+    enabled: !!supplierId && !!materialId,
+    staleTime: 5 * 60 * 1000, // Cache for 5 mins
+  });
+}
+
+export function useAllSupplierPrices(supplierId: string) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'prices', supplierId],
+    queryFn: () => fetchAllSupplierPrices(supplierId),
+    enabled: !!supplierId,
+  });
+}
+
+export function useUpsertSupplierPrice() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      supplierId,
+      priceData,
+    }: {
+      supplierId: string;
+      priceData: {
+        material_id: string;
+        unit_price: number;
+        uom: string;
+        moq: number;
+        lead_time_days: number;
+      };
+    }) => upsertSupplierPrice(supplierId, priceData),
+    onSuccess: (_, variables) => {
+      void queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEY, 'prices', variables.supplierId],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [
+          ...QUERY_KEY,
+          'price',
+          variables.supplierId,
+          variables.priceData.material_id,
+        ],
+      });
+    },
+  });
+}
+
+export function useActiveSuppliers() {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'active'],
+    queryFn: () => fetchSuppliers({ status: 'active' }),
+  });
+}
+
+export function useSupplierCategories() {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'categories'],
+    queryFn: fetchSupplierCategories,
+    staleTime: 24 * 60 * 60 * 1000, // 24 hours cache
   });
 }

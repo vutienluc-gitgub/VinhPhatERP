@@ -32,8 +32,8 @@ export async function safeUpsert<T>({
     .select();
 
   if (error) {
-    console.error('❌ DB UPSERT ERROR:', error);
-    throw error;
+    console.error('[DB_UPSERT_ERROR]', error);
+    throw new Error(error.message || 'Database upsert failed');
   }
 
   return result;
@@ -81,7 +81,7 @@ export async function safeInsert({
     .maybeSingle();
 
   if (error) {
-    throw error;
+    throw new Error(error.message || 'Database insert failed');
   }
 
   return inserted;

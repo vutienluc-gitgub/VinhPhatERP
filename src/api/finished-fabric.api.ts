@@ -73,7 +73,7 @@ export async function createFinishedFabric(
     data: {
       ...row,
       tenant_id: tenantId,
-    },
+    } as Record<string, unknown>,
     conflictKey: 'id',
   });
   return inserted as unknown as FinishedFabricRoll;
@@ -85,7 +85,7 @@ export async function updateFinishedFabric(
 ): Promise<FinishedFabricRoll> {
   const { data, error } = await supabase
     .from(TABLE)
-    .update(row)
+    .update(row as Record<string, unknown>)
     .eq('id', id)
     .select()
     .single();
@@ -133,7 +133,7 @@ export async function createFinishedFabricBulk(
     .from(TABLE)
     .select('roll_number')
     .in('roll_number', rollNumbers);
-  if (existErr) throw existErr;
+  if (existErr) throw new Error(existErr.message);
   if ((existing ?? []).length > 0) {
     const taken = existing.map((r) => r.roll_number).sort();
     throw new Error(`Mã cuộn đã tồn tại: ${taken.join(', ')}`);
@@ -151,7 +151,7 @@ export async function createFinishedFabricBulk(
       .from('raw_fabric_rolls')
       .select('id, roll_number, lot_number')
       .in('id', validRawRollIds);
-    if (rawErr) throw rawErr;
+    if (rawErr) throw new Error(rawErr.message);
 
     const rawMap = new Map((rawRolls ?? []).map((r) => [r.id, r]));
     const mismatches: string[] = [];
@@ -178,12 +178,42 @@ export async function createFinishedFabricBulk(
     data: rows.map((r) => ({
       ...r,
       tenant_id: tenantId,
-    })),
+    })) as unknown as unknown[],
     conflictKey: 'id',
   });
   return (Array.isArray(result)
     ? result
     : [result]) as unknown as FinishedFabricRoll[];
+}
+
+export async function fetchFinishedFabricAll(
+  filters: FinishedFabricFilter = {},
+): Promise<FinishedFabricRoll[]> {
+  let query = supabase
+    .from(TABLE)
+    .select('*, raw_fabric_rolls!raw_roll_id(roll_number)')
+    .order('created_at', { ascending: false });
+
+  if (filters.status) query = query.eq('status', filters.status);
+  if (filters.quality_grade)
+    query = query.eq('quality_grade', filters.quality_grade);
+  if (filters.fabric_type)
+    query = query.ilike('fabric_type', `%${filters.fabric_type}%`);
+
+  const { data, error } = await query;
+  if (error) throw error;
+
+  type RawJoinRow = Record<string, unknown> & {
+    raw_fabric_rolls?: { roll_number: string } | null;
+  };
+  return (data ?? []).map((row) => {
+    const r = row as RawJoinRow;
+    const { raw_fabric_rolls: rawJoin, ...rest } = r;
+    return {
+      ...rest,
+      raw_roll_number: rawJoin?.roll_number ?? null,
+    } as FinishedFabricRoll;
+  });
 }
 
 export async function fetchFinishedFabricStats(): Promise<InventoryStats> {

@@ -4,6 +4,7 @@ import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
 import type { UseFormWatch } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
+import { Icon } from '@/shared/components/Icon';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { StepperFooter } from '@/shared/components/StepperFooter';
 import { Combobox } from '@/shared/components/Combobox';
@@ -11,6 +12,7 @@ import {
   useColorOptions,
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
+import { useSuppliersList } from '@/shared/hooks';
 import { useStepper } from '@/shared/hooks/useStepper';
 import { useAutoSave, loadDraft, clearDraft } from '@/shared/hooks/useAutoSave';
 import DraftBanner from '@/shared/components/DraftBanner';
@@ -32,8 +34,14 @@ import {
   bulkFinishedInputDefaults,
   bulkFinishedInputSchema,
 } from '@/schema/finished-fabric.schema';
+import type { BulkFinishedRollRowInput } from '@/schema/finished-fabric.schema';
 import { useBulkRollPrefix } from '@/shared/hooks/useBulkRollPrefix';
 import type { BulkFinishedInputFormValues } from '@/schema/finished-fabric.schema';
+import {
+  parseCsvText,
+  parseExcelFile,
+} from '@/domain/inventory/finished-fabric-import.util';
+import type { ParsedRow } from '@/domain/inventory/finished-fabric-import.util';
 
 import type { FinishedFabricRoll } from './types';
 
@@ -74,115 +82,6 @@ const STATUS_OPTIONS = ROLL_STATUSES.map((s) => ({
   label: ROLL_STATUS_LABELS[s],
 }));
 
-/* ---- Excel/CSV import helpers ---- */
-
-const HEADER_ALIASES: Record<string, string> = {
-  'mã cuộn': 'roll_number',
-  'ma cuon': 'roll_number',
-  roll_number: 'roll_number',
-  'cuộn mộc': 'raw_roll_number',
-  'cuon moc': 'raw_roll_number',
-  raw_roll_number: 'raw_roll_number',
-  raw_roll: 'raw_roll_number',
-  cân: 'weight_kg',
-  can: 'weight_kg',
-  'trọng lượng': 'weight_kg',
-  'trong luong': 'weight_kg',
-  weight_kg: 'weight_kg',
-  weight: 'weight_kg',
-  dài: 'length_m',
-  dai: 'length_m',
-  length_m: 'length_m',
-  length: 'length_m',
-  cl: 'quality_grade',
-  'chất lượng': 'quality_grade',
-  'chat luong': 'quality_grade',
-  quality_grade: 'quality_grade',
-  'ghi chú': 'notes',
-  'ghi chu': 'notes',
-  notes: 'notes',
-};
-
-function normalizeHeader(raw: string): string {
-  const key = raw.trim().toLowerCase();
-  return HEADER_ALIASES[key] ?? key;
-}
-
-type ParsedRow = {
-  roll_number?: string;
-  raw_roll_number?: string;
-  weight_kg?: number;
-  length_m?: number;
-  quality_grade?: string;
-  notes?: string;
-};
-
-async function parseExcelFile(file: File): Promise<ParsedRow[]> {
-  const { default: ExcelJS } = await import('exceljs');
-  const wb = new ExcelJS.Workbook();
-  const buffer = await file.arrayBuffer();
-  await wb.xlsx.load(buffer);
-  const ws = wb.worksheets[0];
-  if (!ws || ws.rowCount < 2) return [];
-
-  const headerRow = ws.getRow(1);
-  const headers: string[] = [];
-  headerRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-    headers[colNumber] = normalizeHeader(String(cell.value ?? ''));
-  });
-
-  const rows: ParsedRow[] = [];
-  for (let i = 2; i <= ws.rowCount; i++) {
-    const row = ws.getRow(i);
-    const obj: Record<string, unknown> = {};
-    row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-      const h = headers[colNumber];
-      if (h) obj[h] = cell.value;
-    });
-    if (!obj.roll_number && !obj.weight_kg) continue;
-    rows.push({
-      roll_number:
-        obj.roll_number != null ? String(obj.roll_number).trim() : undefined,
-      raw_roll_number:
-        obj.raw_roll_number != null
-          ? String(obj.raw_roll_number).trim()
-          : undefined,
-      weight_kg: obj.weight_kg != null ? Number(obj.weight_kg) : undefined,
-      length_m: obj.length_m != null ? Number(obj.length_m) : undefined,
-      quality_grade:
-        obj.quality_grade != null
-          ? String(obj.quality_grade).trim().toUpperCase()
-          : undefined,
-      notes: obj.notes != null ? String(obj.notes).trim() : undefined,
-    });
-  }
-  return rows;
-}
-
-function parseCsvText(text: string): ParsedRow[] {
-  const lines = text.split(/\r?\n/).filter((l) => l.trim());
-  if (lines.length < 2) return [];
-  const headers = lines[0]!.split(',').map(normalizeHeader);
-  const rows: ParsedRow[] = [];
-  for (let i = 1; i < lines.length; i++) {
-    const cells = lines[i]!.split(',');
-    const obj: Record<string, string> = {};
-    cells.forEach((c, idx) => {
-      if (headers[idx]) obj[headers[idx]] = c.trim();
-    });
-    if (!obj.roll_number && !obj.weight_kg) continue;
-    rows.push({
-      roll_number: obj.roll_number || undefined,
-      raw_roll_number: obj.raw_roll_number || undefined,
-      weight_kg: obj.weight_kg ? Number(obj.weight_kg) : undefined,
-      length_m: obj.length_m ? Number(obj.length_m) : undefined,
-      quality_grade: obj.quality_grade?.toUpperCase() || undefined,
-      notes: obj.notes || undefined,
-    });
-  }
-  return rows;
-}
-
 export function FinishedFabricBulkForm({ onClose }: Props) {
   const bulkMutation = useCreateFinishedFabricBulk();
   const [savedRolls, setSavedRolls] = useState<FinishedFabricRoll[] | null>(
@@ -192,7 +91,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
   const [showDraftBanner, setShowDraftBanner] = useState(false);
   const [savedDraft, setSavedDraft] =
     useState<BulkFinishedInputFormValues | null>(null);
-  const { exportExcel, exportPdf } = useFinishedFabricExport();
+  const { exportRollsExcel, exportRollsPdf } = useFinishedFabricExport();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -231,15 +130,17 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
         // Nếu có cuộn mộc trong lô, tự động điền vào grid
         if (rawRollsForLot.length > 0 && fields.length <= 1) {
           for (let i = fields.length - 1; i >= 0; i--) remove(i);
-          const newRows = rawRollsForLot.map((rawRoll, i) => ({
-            roll_number: getRollNumber(i),
-            raw_roll_id: rawRoll.id as unknown as string,
-            weight_kg: undefined as unknown as number,
-            length_m: undefined,
-            quality_grade: undefined,
-            notes: '',
-          }));
-          append(newRows);
+          const newRows: BulkFinishedRollRowInput[] = rawRollsForLot.map(
+            (rawRoll, i) => ({
+              roll_number: getRollNumber(i),
+              raw_roll_id: rawRoll.id,
+              weight_kg: undefined,
+              length_m: undefined,
+              quality_grade: undefined,
+              notes: '',
+            }),
+          );
+          append(newRows as Parameters<typeof append>[0]);
         }
         return true;
       },
@@ -312,6 +213,21 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
   const { data: colorOptions = [] } = useColorOptions();
   const { data: fabricOptions = [] } = useFabricCatalogOptions();
 
+  const { data: suppliersData } = useSuppliersList({}, 1);
+  const supplierComboOptions = useMemo(
+    () =>
+      (suppliersData?.data || []).map((s) => ({
+        value: s.id,
+        label: `${s.name} (${s.code})`,
+      })),
+    [suppliersData?.data],
+  );
+
+  const sourceType = useWatch({
+    control,
+    name: 'source_type',
+  });
+
   const fabricComboOptions = useMemo(
     () =>
       fabricOptions.map((f) => ({
@@ -330,34 +246,41 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
   });
 
   const addRow = useCallback(() => {
-    append({
+    const row: BulkFinishedRollRowInput = {
       roll_number: getRollNumber(fields.length),
-      raw_roll_id: '' as unknown as string,
-      weight_kg: undefined as unknown as number,
+      raw_roll_id: '',
+      weight_kg: undefined,
       length_m: undefined,
       quality_grade: undefined,
       notes: '',
-    });
+    };
+    append(row as Parameters<typeof append>[0]);
   }, [append, getRollNumber, fields.length]);
 
   // Tổng hợp — chỉ đếm dòng có nhập trọng lượng > 0
-  const filledRolls = (rolls ?? []).filter((r) => {
-    const val = parseFloat(String(r.weight_kg));
-    return Number.isFinite(val) && val > 0;
-  });
+  const filledRolls = useMemo(() => {
+    return (rolls ?? []).filter((r) => {
+      if (!r) return false;
+      const val = parseFloat(String(r.weight_kg));
+      return Number.isFinite(val) && val > 0;
+    });
+  }, [rolls]);
+
   const totalRolls = filledRolls.length;
 
   /** Map RHF fields → RollMatrixItem[], gắn sublabel = mã cuộn mộc tương ứng */
-  const gridRolls: RollMatrixItem[] = fields.map((field, idx) => {
-    const rawRollId = rolls?.[idx]?.raw_roll_id;
-    const matchedRaw = rawRollsForLot.find((r) => r.id === rawRollId);
-    return {
-      id: field.id,
-      roll_number: rolls?.[idx]?.roll_number ?? '',
-      weight_kg: rolls?.[idx]?.weight_kg,
-      raw_roll_number: matchedRaw?.roll_number,
-    };
-  });
+  const gridRolls: RollMatrixItem[] = useMemo(() => {
+    return fields.map((field, idx) => {
+      const rawRollId = rolls?.[idx]?.raw_roll_id;
+      const matchedRaw = rawRollsForLot.find((r) => r.id === rawRollId);
+      return {
+        id: field.id,
+        roll_number: rolls?.[idx]?.roll_number ?? '',
+        weight_kg: rolls?.[idx]?.weight_kg,
+        raw_roll_number: matchedRaw?.roll_number,
+      };
+    });
+  }, [fields, rolls, rawRollsForLot]);
 
   async function onSubmit(values: BulkFinishedInputFormValues) {
     if (!stepper.isLast) return;
@@ -403,14 +326,14 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
 
         return {
           roll_number: rollNum,
-          raw_roll_id: rawId as unknown as string,
-          weight_kg: (row.weight_kg ?? undefined) as unknown as number,
+          raw_roll_id: rawId,
+          weight_kg: row.weight_kg ?? undefined,
           length_m: row.length_m,
           quality_grade: (['A', 'B', 'C'].includes(row.quality_grade ?? '')
             ? row.quality_grade
             : undefined) as 'A' | 'B' | 'C' | undefined,
           notes: row.notes ?? '',
-        };
+        } as BulkFinishedRollRowInput;
       });
 
       // Replace all rows
@@ -418,7 +341,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
       for (let i = fields.length - 1; i >= 0; i--) {
         remove(i);
       }
-      append(newRows);
+      append(newRows as Parameters<typeof append>[0]);
 
       const unresolved = parsed.filter(
         (r) => r.raw_roll_number && !rawMap.get(r.raw_roll_number),
@@ -479,18 +402,18 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
             <Button
               variant="secondary"
               type="button"
-              onClick={() => exportExcel(savedRolls, 'bien_ban_nhap_kho_tp')}
+              onClick={() =>
+                exportRollsExcel(savedRolls, 'bien_ban_nhap_kho_tp')
+              }
             >
-              {' '}
-              📊 Xuất Excel
+              <Icon name="FileSpreadsheet" size={16} /> Xuất Excel
             </Button>
             <Button
               variant="secondary"
               type="button"
-              onClick={() => exportPdf(savedRolls, 'bien_ban_nhap_kho_tp')}
+              onClick={() => exportRollsPdf(savedRolls, 'bien_ban_nhap_kho_tp')}
             >
-              {' '}
-              🖨 Xuất PDF
+              <Icon name="Printer" size={16} /> Xuất PDF
             </Button>
             <button
               className="primary-button btn-standard"
@@ -530,6 +453,105 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
               <fieldset className="bulk-section">
                 <legend>Thông tin lô & chung</legend>
 
+                {/* Nguồn gốc */}
+                <div className="form-field mb-4 pb-4 border-b border-border">
+                  <label>Nguồn gốc nhập kho</label>
+                  <div className="flex gap-4 mt-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="source_type"
+                        value="produced"
+                        checked={sourceType === 'produced' || !sourceType}
+                        onChange={() => {
+                          setValue('source_type', 'produced');
+                          reset({
+                            ...control._formValues,
+                            source_type: 'produced',
+                            supplier_id: null,
+                            purchase_price: undefined,
+                          } as BulkFinishedInputFormValues);
+                        }}
+                      />
+                      Tự sản xuất (từ cuộn mộc)
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="source_type"
+                        value="purchased"
+                        checked={sourceType === 'purchased'}
+                        onChange={() => {
+                          setValue('source_type', 'purchased');
+                          reset({
+                            ...control._formValues,
+                            source_type: 'purchased',
+                          } as BulkFinishedInputFormValues);
+                          // Clear raw_roll_id for all rows
+                          const currentRolls = control._formValues.rolls || [];
+                          const updatedRolls = currentRolls.map(
+                            (r: BulkFinishedRollRowInput) => ({
+                              ...r,
+                              raw_roll_id: '',
+                            }),
+                          );
+                          setValue(
+                            'rolls',
+                            updatedRolls as unknown as BulkFinishedInputFormValues['rolls'],
+                          );
+                        }}
+                      />
+                      Mua trực tiếp (thương mại)
+                    </label>
+                  </div>
+                </div>
+
+                {sourceType === 'purchased' && (
+                  <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] mb-4 pb-4 border-b border-border bg-[#f8fafc] p-4 rounded-md">
+                    <div className="form-field">
+                      <label htmlFor="bulk_supplier_id">
+                        Nhà cung cấp <span className="field-required">*</span>
+                      </label>
+                      <Controller
+                        name="supplier_id"
+                        control={control}
+                        render={({ field }) => (
+                          <Combobox
+                            options={supplierComboOptions}
+                            value={field.value ?? ''}
+                            onChange={field.onChange}
+                            placeholder="— Chọn nhà cung cấp —"
+                            hasError={!!errors.supplier_id}
+                          />
+                        )}
+                      />
+                      {errors.supplier_id && (
+                        <span className="field-error">
+                          {errors.supplier_id.message}
+                        </span>
+                      )}
+                    </div>
+                    <div className="form-field">
+                      <label htmlFor="bulk_purchase_price">
+                        Giá nhập lô (VNĐ)
+                      </label>
+                      <input
+                        id="bulk_purchase_price"
+                        className={`field-input${errors.purchase_price ? ' is-error' : ''}`}
+                        type="number"
+                        min="0"
+                        placeholder="VD: 50000"
+                        {...register('purchase_price')}
+                      />
+                      {errors.purchase_price && (
+                        <span className="field-error">
+                          {errors.purchase_price.message}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="bulk_lot_number">
@@ -548,7 +570,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                         {errors.lot_number.message}
                       </span>
                     )}
-                    <span className="field-hint text-[0.8rem] text-[#666] mt-1 block">
+                    <span className="field-hint mt-1 block">
                       Bắt buộc. Hệ thống sẽ đối chiếu với lô cuộn mộc nguồn.
                       {rawRollsForLot.length > 0 && (
                         <strong>
@@ -746,26 +768,24 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                   />
                   <span className="bulk-hint">
                     Header: Mã cuộn, Cuộn mộc, Cân, Dài, CL, Ghi chú.
-                    {lotNumber && rawRollsForLot.length === 0 && (
-                      <strong className="text-[#c0392b]">
-                        {' '}
-                        Chưa tìm thấy cuộn mộc nào trong lô "{lotNumber}" — hãy
-                        kiểm tra lại số lô.
-                      </strong>
-                    )}
+                    {sourceType === 'produced' &&
+                      lotNumber &&
+                      rawRollsForLot.length === 0 && (
+                        <strong className="error-hint">
+                          {' '}
+                          Chưa tìm thấy cuộn mộc nào trong lô "{lotNumber}" —
+                          hãy kiểm tra lại số lô.
+                        </strong>
+                      )}
                   </span>
                 </div>
-                {importError && (
-                  <p className="text-[#c07020] text-[0.85rem] mt-2">
-                    {importError}
-                  </p>
-                )}
+                {importError && <p className="warning-inline">{importError}</p>}
               </fieldset>
 
               <fieldset className="bulk-section">
                 <legend>Nhập số tịnh từng cuộn thành phẩm</legend>
 
-                {rawRollsForLot.length > 0 && (
+                {sourceType === 'produced' && rawRollsForLot.length > 0 && (
                   <p className="text-[0.82rem] text-muted-foreground mb-3">
                     Đã ghép <strong>{rawRollsForLot.length} cuộn mộc</strong> từ
                     lô. Nhãn nhỏ trong ô = Mã cuộn mộc nguồn.
@@ -779,9 +799,10 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                   expectedRollsCount={fields.length}
                   mode="input"
                   onRollChange={(index, weight) => {
+                    // RHF expects `number` per Zod inference, but preprocess accepts undefined at runtime
                     setValue(
                       `rolls.${index}.weight_kg`,
-                      (weight ?? undefined) as unknown as number,
+                      (weight ?? undefined) as number,
                       { shouldValidate: false },
                     );
                   }}

@@ -45,7 +45,9 @@ export interface RawFabricRollDbPayload {
 
 export interface FinishedFabricRollDbPayload {
   roll_number: string;
-  raw_roll_id: string;
+  raw_roll_id: string | null;
+  supplier_id: string | null;
+  purchase_price: number | null;
   fabric_type: string;
   color_name: string | null;
   color_code: string | null;
@@ -192,7 +194,9 @@ export function mapRawFabricBulkToDb(
  */
 export function mapFinishedFabricFormToDb(values: {
   roll_number: string;
-  raw_roll_id: string;
+  raw_roll_id?: string;
+  supplier_id?: string | null;
+  purchase_price?: number;
   fabric_type: string;
   color_name?: string;
   color_code?: string;
@@ -208,7 +212,9 @@ export function mapFinishedFabricFormToDb(values: {
 }): FinishedFabricRollDbPayload {
   return {
     roll_number: values.roll_number,
-    raw_roll_id: values.raw_roll_id,
+    raw_roll_id: values.raw_roll_id || null,
+    supplier_id: values.supplier_id || null,
+    purchase_price: values.purchase_price ?? null,
     fabric_type: values.fabric_type,
     color_name: values.color_name?.trim() || null,
     color_code: values.color_code?.trim() || null,
