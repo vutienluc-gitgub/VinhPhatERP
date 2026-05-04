@@ -79,7 +79,12 @@ type GroupedNav = {
 };
 
 /** Paths của các tab cố định ở bottom nav (mobile). */
-const BOTTOM_TAB_PATHS = ['/', '/orders', '/dyeing-orders'] as const;
+const BOTTOM_TAB_PATHS = [
+  '/',
+  '/orders',
+  '/raw-fabric',
+  '/finished-fabric',
+] as const;
 
 export function AppShell() {
   const { pathname } = useLocation();
@@ -89,6 +94,7 @@ export function AppShell() {
   useChatNotifications({ soundEnabled: true });
 
   const [showMore, setShowMore] = useState(false);
+  const closeMoreDrawer = useCallback(() => setShowMore(false), []);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const currentItem = getCurrentItem(pathname);
@@ -535,10 +541,7 @@ export function AppShell() {
         </nav>
 
         {showMore && (
-          <MobileMoreDrawer
-            items={drawerItems}
-            onClose={() => setShowMore(false)}
-          />
+          <MobileMoreDrawer items={drawerItems} onClose={closeMoreDrawer} />
         )}
         <GuideCommandPalette />
       </div>

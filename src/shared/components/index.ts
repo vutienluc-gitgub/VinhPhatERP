@@ -3,6 +3,7 @@
 
 export { Icon } from './Icon';
 export type { IconName } from './Icon';
+export { FAB } from './FAB';
 
 export { AdaptiveSheet } from './AdaptiveSheet';
 export { Badge } from './Badge';
