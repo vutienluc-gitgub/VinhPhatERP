@@ -5,7 +5,6 @@ import {
   Button,
   Icon,
   Badge,
-  type BadgeVariant,
   DataTable,
   ViewToggle,
   type ViewMode,
@@ -19,6 +18,7 @@ import {
 } from '@/application/inventory';
 import { useRawFabricExport } from '@/application/inventory';
 import { StatWidget } from '@/shared/components/StatWidget';
+import { getRollStatusVariant } from '@/shared/utils/status-variant';
 import { ROLL_STATUS_LABELS } from '@/schema/raw-fabric.schema';
 
 import { ActionMenu } from './ActionMenu';
@@ -36,25 +36,6 @@ type RawFabricListProps = {
   onNew: () => void;
   onBulkNew: () => void;
 };
-
-function getStatusVariant(status: RollStatus): BadgeVariant {
-  switch (status) {
-    case 'in_stock':
-      return 'success';
-    case 'reserved':
-      return 'info';
-    case 'in_process':
-      return 'purple';
-    case 'shipped':
-      return 'gray';
-    case 'damaged':
-      return 'danger';
-    case 'written_off':
-      return 'gray';
-    default:
-      return 'gray';
-  }
-}
 
 /** Derive RawFabricFilter from unified FilterState */
 function toApiFilter(fs: FilterState): RawFabricFilter {
@@ -75,6 +56,7 @@ export function RawFabricList({
     useState<FilterState>(DEFAULT_FILTER_STATE);
   const [page, setPage] = useState(1);
   const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
   const filters = useMemo(() => toApiFilter(filterState), [filterState]);
@@ -87,11 +69,14 @@ export function RawFabricList({
 
   async function handleExportExcel() {
     setIsExporting(true);
+    setExportError(null);
     try {
       const resp = await fetchAllExport();
       if (resp.data) {
         await exportExcel(resp.data);
       }
+    } catch (err) {
+      setExportError(err instanceof Error ? err.message : String(err));
     } finally {
       setIsExporting(false);
     }
@@ -230,6 +215,11 @@ export function RawFabricList({
           </p>
         </div>
       )}
+      {exportError && (
+        <div className="p-4 pt-0">
+          <p className="error-inline">Lỗi xuất Excel: {exportError}</p>
+        </div>
+      )}
 
       {/* Main Content View */}
       {viewMode === 'table' ? (
@@ -303,7 +293,7 @@ export function RawFabricList({
               id: 'status',
               sortable: true,
               cell: (r) => (
-                <Badge variant={getStatusVariant(r.status)}>
+                <Badge variant={getRollStatusVariant(r.status)}>
                   {ROLL_STATUS_LABELS[r.status]}
                 </Badge>
               ),
@@ -323,7 +313,7 @@ export function RawFabricList({
             <div className="mobile-card">
               <div className="mobile-card-header">
                 <span className="mobile-card-title">{r.roll_number}</span>
-                <Badge variant={getStatusVariant(r.status)}>
+                <Badge variant={getRollStatusVariant(r.status)}>
                   {ROLL_STATUS_LABELS[r.status]}
                 </Badge>
               </div>

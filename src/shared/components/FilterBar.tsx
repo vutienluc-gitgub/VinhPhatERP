@@ -45,8 +45,7 @@ interface FilterBarProps {
   /** Mảng cấu hình các trường lọc */
   schema: FilterFieldConfig[];
   /** Giá trị của các trường lọc (state) */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  value: Record<string, any>;
+  value: Record<string, string | undefined>;
   /** Hàm callback khi có trường bộ lọc thay đổi */
   onChange: (key: string, val: string | undefined) => void;
   /** Hàm callback khi bấm "Xóa bộ lọc". Nếu có biến onClear, nút xoá mới hiện. */
@@ -227,11 +226,7 @@ export function FilterBar({
 
           if (field.type === 'date_range') {
             return (
-              <div
-                key={field.key}
-                className="filter-field"
-                style={{ flex: '1 1 280px' }}
-              >
+              <div key={field.key} className="filter-field flex-[1_1_280px]">
                 <label>{field.label}</label>
                 <div className="flex items-center gap-2">
                   <FilterDateInput
