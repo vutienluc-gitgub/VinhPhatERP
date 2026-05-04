@@ -17,6 +17,7 @@ import {
   createOrder,
   getAccessToken,
   invokeCreateOrderFunction,
+  fetchNextOrderNumber,
 } from '@/api/orders.api';
 import {
   calculateOrderTotal,
@@ -96,6 +97,7 @@ async function callCreateOrderFunction(
 ): Promise<CreateOrderResult> {
   const payload = {
     orderNumber: input.orderNumber.trim(),
+    orderType: input.orderType,
     customerId: input.customerId,
     orderDate: input.orderDate,
     deliveryDate: input.deliveryDate?.trim() || undefined,
@@ -189,6 +191,12 @@ export function useCreateOrderV2() {
 
   return useMutation({
     mutationFn: async (input: CreateOrderInput): Promise<CreateOrderResult> => {
+      // Auto-generate order number if not provided (form shows "Tự động")
+      if (!input.orderNumber.trim()) {
+        const nextNumber = await fetchNextOrderNumber();
+        input = { ...input, orderNumber: nextNumber };
+      }
+
       const token = await getAccessToken();
 
       try {

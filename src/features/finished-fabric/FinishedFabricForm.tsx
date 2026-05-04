@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
@@ -15,6 +15,7 @@ import {
   useRawRollOptions,
   useUpdateFinishedFabric,
 } from '@/application/inventory';
+import { useSuppliersList } from '@/shared/hooks';
 import {
   QUALITY_GRADE_LABELS,
   QUALITY_GRADES,
@@ -44,7 +45,12 @@ const QUALITY_OPTIONS = [
 function rollToFormValues(roll: FinishedFabricRoll): FinishedFabricFormValues {
   return {
     roll_number: roll.roll_number,
-    raw_roll_id: roll.raw_roll_id,
+    raw_roll_id: roll.raw_roll_id ?? '',
+    supplier_id: roll.supplier_id ?? null,
+    purchase_price: roll.purchase_price
+      ? Number(roll.purchase_price)
+      : undefined,
+    lot_number: roll.lot_number ?? '',
     fabric_type: roll.fabric_type,
     color_name: roll.color_name ?? '',
     color_code: roll.color_code ?? '',
@@ -70,6 +76,9 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
   const { data: rawRollOptions = [] } = useRawRollOptions();
   const { data: colorOptions = [] } = useColorOptions();
   const { data: fabricOptions = [] } = useFabricCatalogOptions();
+  const [sourceType, setSourceType] = useState<'produced' | 'purchased'>(
+    roll?.supplier_id ? 'purchased' : 'produced',
+  );
 
   const fabricComboOptions = useMemo(
     () =>
@@ -78,6 +87,16 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
         label: f.code ? `${f.name} (${f.code})` : f.name,
       })),
     [fabricOptions],
+  );
+
+  const { data: suppliersData } = useSuppliersList({}, 1);
+  const supplierComboOptions = useMemo(
+    () =>
+      (suppliersData?.data || []).map((s) => ({
+        value: s.id,
+        label: `${s.name} (${s.code})`,
+      })),
+    [suppliersData?.data],
   );
 
   const rawRollComboOptions = useMemo(
@@ -214,34 +233,104 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
               </div>
             </div>
 
-            {/* Cuộn mộc nguồn — bắt buộc */}
-            <div className="form-field">
-              <label htmlFor="raw_roll_id">
-                Cuộn vải mộc nguồn <span className="field-required">*</span>
-              </label>
-              <Controller
-                name="raw_roll_id"
-                control={control}
-                render={({ field }) => (
-                  <Combobox
-                    options={rawRollComboOptions}
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="— Chọn cuộn mộc —"
-                    hasError={!!errors.raw_roll_id}
+            {/* Nguồn gốc */}
+            <div className="form-field mb-4 pb-4 border-b border-border">
+              <label>Nguồn gốc nhập kho</label>
+              <div className="flex gap-4 mt-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="sourceType"
+                    value="produced"
+                    checked={sourceType === 'produced'}
+                    onChange={() => {
+                      setSourceType('produced');
+                      reset({
+                        ...control._formValues,
+                        supplier_id: null,
+                        purchase_price: undefined,
+                      } as FinishedFabricFormValues);
+                    }}
+                    disabled={isLocked}
                   />
-                )}
-              />
-              {errors.raw_roll_id && (
-                <span className="field-error">
-                  {errors.raw_roll_id.message}
-                </span>
-              )}
-              <span className="field-hint">
-                Bắt buộc liên kết cuộn mộc để truy vết nguồn gốc và đối chiếu
-                lô.
-              </span>
+                  Tự sản xuất (từ cuộn mộc)
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="sourceType"
+                    value="purchased"
+                    checked={sourceType === 'purchased'}
+                    onChange={() => {
+                      setSourceType('purchased');
+                      reset({
+                        ...control._formValues,
+                        raw_roll_id: '',
+                      } as FinishedFabricFormValues);
+                    }}
+                    disabled={isLocked}
+                  />
+                  Mua trực tiếp (thương mại)
+                </label>
+              </div>
             </div>
+
+            {sourceType === 'produced' ? (
+              <div className="form-field">
+                <label htmlFor="raw_roll_id">
+                  Cuộn vải mộc nguồn <span className="field-required">*</span>
+                </label>
+                <Controller
+                  name="raw_roll_id"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={rawRollComboOptions}
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      placeholder="— Chọn cuộn mộc —"
+                      hasError={!!errors.raw_roll_id}
+                    />
+                  )}
+                />
+                {errors.raw_roll_id && (
+                  <span className="field-error">
+                    {errors.raw_roll_id.message}
+                  </span>
+                )}
+                <span className="field-hint">
+                  Bắt buộc liên kết cuộn mộc để truy vết nguồn gốc và đối chiếu
+                  lô.
+                </span>
+              </div>
+            ) : (
+              <div className="form-field">
+                <label htmlFor="supplier_id">
+                  Nhà cung cấp <span className="field-required">*</span>
+                </label>
+                <Controller
+                  name="supplier_id"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={supplierComboOptions}
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      placeholder="— Chọn nhà cung cấp —"
+                      hasError={!!errors.supplier_id}
+                    />
+                  )}
+                />
+                {errors.supplier_id && (
+                  <span className="field-error">
+                    {errors.supplier_id.message}
+                  </span>
+                )}
+                <span className="field-hint">
+                  Đơn giá mua được quản lý bởi phòng Kế toán/Mua hàng.
+                </span>
+              </div>
+            )}
 
             {/* Hàng 2: Màu */}
             <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">

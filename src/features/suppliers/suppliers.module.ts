@@ -7,8 +7,6 @@ import type {
   SupplierUpdate,
 } from '@/features/suppliers/types';
 import {
-  SUPPLIER_CATEGORIES,
-  SUPPLIER_CATEGORY_LABELS,
   SUPPLIER_STATUSES,
   SUPPLIER_STATUS_LABELS,
   supplierDefaults,
@@ -16,8 +14,6 @@ import {
 } from '@/schema/supplier.schema';
 
 export {
-  SUPPLIER_CATEGORIES,
-  SUPPLIER_CATEGORY_LABELS,
   SUPPLIER_STATUSES,
   SUPPLIER_STATUS_LABELS,
   supplierDefaults,

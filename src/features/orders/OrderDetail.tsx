@@ -18,6 +18,7 @@ import {
 import {
   ORDER_STATUS_LABELS,
   ORDER_STATUS_BADGE_VARIANTS,
+  ORDER_TYPE_LABELS,
 } from '@/schema/order.schema';
 import { isOrderEditable } from '@/domain/orders/OrderStateMachine';
 import { useAuth } from '@/shared/hooks/useAuth';
@@ -89,7 +90,9 @@ export function OrderDetail({
   async function handleConfirm() {
     const ok = await confirm({
       message:
-        'Xác nhận đơn hàng? Hệ thống sẽ tạo 7 công đoạn tiến độ tự động.',
+        order?.order_type === 'trading'
+          ? 'Xác nhận đơn hàng thương mại? Khách hàng có thể nhận hàng ngay sau khi xác nhận.'
+          : 'Xác nhận đơn hàng? Hệ thống sẽ tạo 7 công đoạn tiến độ tự động.',
     });
     if (!ok) return;
     confirmMutation.mutate(orderId);
@@ -136,7 +139,14 @@ export function OrderDetail({
             Quay lại
           </Button>
           <div className="flex-1">
-            <h3 className="m-0">{order.order_number}</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="m-0">{order.order_number}</h3>
+              <Badge variant="gray">
+                {ORDER_TYPE_LABELS[
+                  order.order_type as keyof typeof ORDER_TYPE_LABELS
+                ] ?? 'Sản xuất'}
+              </Badge>
+            </div>
             <span className="td-muted">{order.customers?.name ?? '—'}</span>
           </div>
           <Badge variant={ORDER_STATUS_BADGE_VARIANTS[order.status] ?? 'gray'}>
@@ -268,7 +278,9 @@ export function OrderDetail({
               </Button>
             </>
           )}
-          {order.status === 'in_progress' && (
+          {(order.status === 'in_progress' ||
+            (order.status === 'confirmed' &&
+              order.order_type === 'trading')) && (
             <Button
               variant="secondary"
               leftIcon="Check"

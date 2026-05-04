@@ -1329,6 +1329,20 @@ export type Database = {
             referencedColumns: ['supplier_id'];
           },
           {
+            foreignKeyName: 'dyeing_orders_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_full';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'dyeing_orders_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_performance';
+            referencedColumns: ['supplier_id'];
+          },
+          {
             foreignKeyName: 'dyeing_orders_work_order_id_fkey';
             columns: ['work_order_id'];
             isOneToOne: false;
@@ -1515,6 +1529,20 @@ export type Database = {
             referencedColumns: ['supplier_id'];
           },
           {
+            foreignKeyName: 'expenses_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_full';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'expenses_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_performance';
+            referencedColumns: ['supplier_id'];
+          },
+          {
             foreignKeyName: 'expenses_tenant_id_fkey';
             columns: ['tenant_id'];
             isOneToOne: false;
@@ -1590,11 +1618,13 @@ export type Database = {
           notes: string | null;
           price_tier: Json | null;
           production_date: string | null;
+          purchase_price: number | null;
           quality_grade: string | null;
-          raw_roll_id: string;
+          raw_roll_id: string | null;
           reserved_for_order_id: string | null;
           roll_number: string;
           status: Database['public']['Enums']['roll_status'];
+          supplier_id: string | null;
           tenant_id: string | null;
           updated_at: string;
           warehouse_location: string | null;
@@ -1614,11 +1644,13 @@ export type Database = {
           notes?: string | null;
           price_tier?: Json | null;
           production_date?: string | null;
+          purchase_price?: number | null;
           quality_grade?: string | null;
-          raw_roll_id: string;
+          raw_roll_id?: string | null;
           reserved_for_order_id?: string | null;
           roll_number: string;
           status?: Database['public']['Enums']['roll_status'];
+          supplier_id?: string | null;
           tenant_id?: string | null;
           updated_at?: string;
           warehouse_location?: string | null;
@@ -1638,11 +1670,13 @@ export type Database = {
           notes?: string | null;
           price_tier?: Json | null;
           production_date?: string | null;
+          purchase_price?: number | null;
           quality_grade?: string | null;
-          raw_roll_id?: string;
+          raw_roll_id?: string | null;
           reserved_for_order_id?: string | null;
           roll_number?: string;
           status?: Database['public']['Enums']['roll_status'];
+          supplier_id?: string | null;
           tenant_id?: string | null;
           updated_at?: string;
           warehouse_location?: string | null;
@@ -1700,10 +1734,138 @@ export type Database = {
             referencedColumns: ['order_id'];
           },
           {
+            foreignKeyName: 'finished_fabric_rolls_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'suppliers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'finished_fabric_rolls_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_debt';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'finished_fabric_rolls_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_full';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'finished_fabric_rolls_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_performance';
+            referencedColumns: ['supplier_id'];
+          },
+          {
             foreignKeyName: 'finished_fabric_rolls_tenant_id_fkey';
             columns: ['tenant_id'];
             isOneToOne: false;
             referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      goods_receipt_items: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          po_item_id: string;
+          receipt_id: string | null;
+          received_qty: number;
+          tenant_id: string;
+          unit_price: number;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string;
+          po_item_id: string;
+          receipt_id?: string | null;
+          received_qty: number;
+          tenant_id?: string;
+          unit_price: number;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          po_item_id?: string;
+          receipt_id?: string | null;
+          received_qty?: number;
+          tenant_id?: string;
+          unit_price?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'goods_receipt_items_po_item_id_fkey';
+            columns: ['po_item_id'];
+            isOneToOne: false;
+            referencedRelation: 'purchase_order_items';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'goods_receipt_items_po_item_id_fkey';
+            columns: ['po_item_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_po_item_status';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'goods_receipt_items_receipt_id_fkey';
+            columns: ['receipt_id'];
+            isOneToOne: false;
+            referencedRelation: 'goods_receipts';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      goods_receipts: {
+        Row: {
+          client_request_id: string;
+          created_at: string | null;
+          created_by: string | null;
+          id: string;
+          po_id: string;
+          receipt_code: string;
+          received_date: string;
+          tenant_id: string;
+        };
+        Insert: {
+          client_request_id: string;
+          created_at?: string | null;
+          created_by?: string | null;
+          id?: string;
+          po_id: string;
+          receipt_code: string;
+          received_date: string;
+          tenant_id?: string;
+        };
+        Update: {
+          client_request_id?: string;
+          created_at?: string | null;
+          created_by?: string | null;
+          id?: string;
+          po_id?: string;
+          receipt_code?: string;
+          received_date?: string;
+          tenant_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'goods_receipts_po_id_fkey';
+            columns: ['po_id'];
+            isOneToOne: false;
+            referencedRelation: 'purchase_orders';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'goods_receipts_po_id_fkey';
+            columns: ['po_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_po_detail_full';
             referencedColumns: ['id'];
           },
         ];
@@ -1867,10 +2029,124 @@ export type Database = {
             referencedColumns: ['supplier_id'];
           },
           {
+            foreignKeyName: 'looms_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_full';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'looms_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_performance';
+            referencedColumns: ['supplier_id'];
+          },
+          {
             foreignKeyName: 'looms_tenant_id_fkey';
             columns: ['tenant_id'];
             isOneToOne: false;
             referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      media_assets: {
+        Row: {
+          bucket: string;
+          created_at: string | null;
+          created_by: string | null;
+          deleted_at: string | null;
+          file_name: string;
+          folder_id: string | null;
+          id: string;
+          is_public: boolean | null;
+          mime_type: string;
+          original_name: string;
+          public_url: string | null;
+          size_bytes: number;
+          storage_path: string;
+          tenant_id: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          bucket?: string;
+          created_at?: string | null;
+          created_by?: string | null;
+          deleted_at?: string | null;
+          file_name: string;
+          folder_id?: string | null;
+          id?: string;
+          is_public?: boolean | null;
+          mime_type: string;
+          original_name: string;
+          public_url?: string | null;
+          size_bytes: number;
+          storage_path: string;
+          tenant_id: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          bucket?: string;
+          created_at?: string | null;
+          created_by?: string | null;
+          deleted_at?: string | null;
+          file_name?: string;
+          folder_id?: string | null;
+          id?: string;
+          is_public?: boolean | null;
+          mime_type?: string;
+          original_name?: string;
+          public_url?: string | null;
+          size_bytes?: number;
+          storage_path?: string;
+          tenant_id?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'media_assets_folder_id_fkey';
+            columns: ['folder_id'];
+            isOneToOne: false;
+            referencedRelation: 'media_folders';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      media_folders: {
+        Row: {
+          created_at: string | null;
+          created_by: string | null;
+          id: string;
+          name: string;
+          parent_id: string | null;
+          tenant_id: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          created_by?: string | null;
+          id?: string;
+          name: string;
+          parent_id?: string | null;
+          tenant_id: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          created_by?: string | null;
+          id?: string;
+          name?: string;
+          parent_id?: string | null;
+          tenant_id?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'media_folders_parent_id_fkey';
+            columns: ['parent_id'];
+            isOneToOne: false;
+            referencedRelation: 'media_folders';
             referencedColumns: ['id'];
           },
         ];
@@ -2188,6 +2464,7 @@ export type Database = {
           notes: string | null;
           order_date: string;
           order_number: string;
+          order_type: string | null;
           paid_amount: number;
           source_quotation_id: string | null;
           status: Database['public']['Enums']['order_status'];
@@ -2204,6 +2481,7 @@ export type Database = {
           notes?: string | null;
           order_date?: string;
           order_number: string;
+          order_type?: string | null;
           paid_amount?: number;
           source_quotation_id?: string | null;
           status?: Database['public']['Enums']['order_status'];
@@ -2220,6 +2498,7 @@ export type Database = {
           notes?: string | null;
           order_date?: string;
           order_number?: string;
+          order_type?: string | null;
           paid_amount?: number;
           source_quotation_id?: string | null;
           status?: Database['public']['Enums']['order_status'];
@@ -2452,6 +2731,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      po_audit_logs: {
+        Row: {
+          action: string;
+          actor_id: string | null;
+          entity_id: string;
+          entity_type: string;
+          id: string;
+          snapshot: Json | null;
+          tenant_id: string;
+          timestamp: string | null;
+        };
+        Insert: {
+          action: string;
+          actor_id?: string | null;
+          entity_id: string;
+          entity_type: string;
+          id?: string;
+          snapshot?: Json | null;
+          tenant_id?: string;
+          timestamp?: string | null;
+        };
+        Update: {
+          action?: string;
+          actor_id?: string | null;
+          entity_id?: string;
+          entity_type?: string;
+          id?: string;
+          snapshot?: Json | null;
+          tenant_id?: string;
+          timestamp?: string | null;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           avatar_url: string | null;
@@ -2626,6 +2938,143 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'tenants';
             referencedColumns: ['id'];
+          },
+        ];
+      };
+      purchase_order_items: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          material_id: string;
+          ordered_qty: number;
+          po_id: string | null;
+          received_qty: number | null;
+          tenant_id: string;
+          unit_price: number;
+          uom: Database['public']['Enums']['uom_type'];
+          updated_at: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string;
+          material_id: string;
+          ordered_qty: number;
+          po_id?: string | null;
+          received_qty?: number | null;
+          tenant_id?: string;
+          unit_price: number;
+          uom: Database['public']['Enums']['uom_type'];
+          updated_at?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          material_id?: string;
+          ordered_qty?: number;
+          po_id?: string | null;
+          received_qty?: number | null;
+          tenant_id?: string;
+          unit_price?: number;
+          uom?: Database['public']['Enums']['uom_type'];
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'purchase_order_items_po_id_fkey';
+            columns: ['po_id'];
+            isOneToOne: false;
+            referencedRelation: 'purchase_orders';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'purchase_order_items_po_id_fkey';
+            columns: ['po_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_po_detail_full';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      purchase_orders: {
+        Row: {
+          approved_at: string | null;
+          approved_by: string | null;
+          created_at: string | null;
+          created_by: string | null;
+          expected_date: string | null;
+          id: string;
+          order_date: string;
+          po_code: string;
+          rejection_reason: string | null;
+          status: Database['public']['Enums']['purchase_order_status'] | null;
+          supplier_id: string;
+          supplier_name_snapshot: string;
+          tenant_id: string;
+          total_amount: number | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          approved_at?: string | null;
+          approved_by?: string | null;
+          created_at?: string | null;
+          created_by?: string | null;
+          expected_date?: string | null;
+          id?: string;
+          order_date: string;
+          po_code: string;
+          rejection_reason?: string | null;
+          status?: Database['public']['Enums']['purchase_order_status'] | null;
+          supplier_id: string;
+          supplier_name_snapshot: string;
+          tenant_id?: string;
+          total_amount?: number | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          approved_at?: string | null;
+          approved_by?: string | null;
+          created_at?: string | null;
+          created_by?: string | null;
+          expected_date?: string | null;
+          id?: string;
+          order_date?: string;
+          po_code?: string;
+          rejection_reason?: string | null;
+          status?: Database['public']['Enums']['purchase_order_status'] | null;
+          supplier_id?: string;
+          supplier_name_snapshot?: string;
+          tenant_id?: string;
+          total_amount?: number | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'purchase_orders_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'suppliers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'purchase_orders_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_debt';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'purchase_orders_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_full';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'purchase_orders_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_performance';
+            referencedColumns: ['supplier_id'];
           },
         ];
       };
@@ -2959,6 +3408,20 @@ export type Database = {
             columns: ['weaving_partner_id'];
             isOneToOne: false;
             referencedRelation: 'v_supplier_debt';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'raw_fabric_rolls_weaving_partner_id_fkey';
+            columns: ['weaving_partner_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_full';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'raw_fabric_rolls_weaving_partner_id_fkey';
+            columns: ['weaving_partner_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_performance';
             referencedColumns: ['supplier_id'];
           },
           {
@@ -3479,6 +3942,27 @@ export type Database = {
           },
         ];
       };
+      supplier_categories: {
+        Row: {
+          code: string;
+          created_at: string | null;
+          is_active: boolean | null;
+          name: string;
+        };
+        Insert: {
+          code: string;
+          created_at?: string | null;
+          is_active?: boolean | null;
+          name: string;
+        };
+        Update: {
+          code?: string;
+          created_at?: string | null;
+          is_active?: boolean | null;
+          name?: string;
+        };
+        Relationships: [];
+      };
       supplier_debt: {
         Row: {
           balance: number;
@@ -3517,6 +4001,20 @@ export type Database = {
             columns: ['supplier_id'];
             isOneToOne: false;
             referencedRelation: 'v_supplier_debt';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'supplier_debt_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_full';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'supplier_debt_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_performance';
             referencedColumns: ['supplier_id'];
           },
           {
@@ -3591,6 +4089,20 @@ export type Database = {
             referencedColumns: ['supplier_id'];
           },
           {
+            foreignKeyName: 'supplier_debt_transactions_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_full';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'supplier_debt_transactions_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_performance';
+            referencedColumns: ['supplier_id'];
+          },
+          {
             foreignKeyName: 'supplier_debt_transactions_tenant_id_fkey';
             columns: ['tenant_id'];
             isOneToOne: false;
@@ -3599,18 +4111,98 @@ export type Database = {
           },
         ];
       };
+      supplier_material_prices: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          is_active: boolean | null;
+          lead_time_days: number | null;
+          material_id: string;
+          moq: number | null;
+          supplier_id: string;
+          tenant_id: string;
+          unit_price: number;
+          uom: string;
+          updated_at: string | null;
+          valid_from: string | null;
+          valid_to: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string;
+          is_active?: boolean | null;
+          lead_time_days?: number | null;
+          material_id: string;
+          moq?: number | null;
+          supplier_id: string;
+          tenant_id?: string;
+          unit_price?: number;
+          uom?: string;
+          updated_at?: string | null;
+          valid_from?: string | null;
+          valid_to?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          is_active?: boolean | null;
+          lead_time_days?: number | null;
+          material_id?: string;
+          moq?: number | null;
+          supplier_id?: string;
+          tenant_id?: string;
+          unit_price?: number;
+          uom?: string;
+          updated_at?: string | null;
+          valid_from?: string | null;
+          valid_to?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'supplier_material_prices_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'suppliers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'supplier_material_prices_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_debt';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'supplier_material_prices_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_full';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'supplier_material_prices_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_performance';
+            referencedColumns: ['supplier_id'];
+          },
+        ];
+      };
       suppliers: {
         Row: {
           address: string | null;
-          category: Database['public']['Enums']['supplier_category'];
+          category: string;
           code: string;
           contact_person: string | null;
           created_at: string;
+          credit_limit: number | null;
           email: string | null;
           id: string;
           name: string;
           notes: string | null;
+          payment_terms: string | null;
           phone: string | null;
+          rating: number | null;
           status: Database['public']['Enums']['active_status'];
           tax_code: string | null;
           tenant_id: string | null;
@@ -3618,15 +4210,18 @@ export type Database = {
         };
         Insert: {
           address?: string | null;
-          category?: Database['public']['Enums']['supplier_category'];
+          category?: string;
           code: string;
           contact_person?: string | null;
           created_at?: string;
+          credit_limit?: number | null;
           email?: string | null;
           id?: string;
           name: string;
           notes?: string | null;
+          payment_terms?: string | null;
           phone?: string | null;
+          rating?: number | null;
           status?: Database['public']['Enums']['active_status'];
           tax_code?: string | null;
           tenant_id?: string | null;
@@ -3634,15 +4229,18 @@ export type Database = {
         };
         Update: {
           address?: string | null;
-          category?: Database['public']['Enums']['supplier_category'];
+          category?: string;
           code?: string;
           contact_person?: string | null;
           created_at?: string;
+          credit_limit?: number | null;
           email?: string | null;
           id?: string;
           name?: string;
           notes?: string | null;
+          payment_terms?: string | null;
           phone?: string | null;
+          rating?: number | null;
           status?: Database['public']['Enums']['active_status'];
           tax_code?: string | null;
           tenant_id?: string | null;
@@ -3654,6 +4252,50 @@ export type Database = {
             columns: ['tenant_id'];
             isOneToOne: false;
             referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      task_activity_logs: {
+        Row: {
+          action_type: string;
+          changed_by: string | null;
+          created_at: string;
+          id: string;
+          new_status: string | null;
+          old_status: string | null;
+          room_id: string;
+          task_id: string;
+          tenant_id: string;
+        };
+        Insert: {
+          action_type: string;
+          changed_by?: string | null;
+          created_at?: string;
+          id?: string;
+          new_status?: string | null;
+          old_status?: string | null;
+          room_id: string;
+          task_id: string;
+          tenant_id?: string;
+        };
+        Update: {
+          action_type?: string;
+          changed_by?: string | null;
+          created_at?: string;
+          id?: string;
+          new_status?: string | null;
+          old_status?: string | null;
+          room_id?: string;
+          task_id?: string;
+          tenant_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'task_activity_logs_task_id_fkey';
+            columns: ['task_id'];
+            isOneToOne: false;
+            referencedRelation: 'tasks';
             referencedColumns: ['id'];
           },
         ];
@@ -4138,6 +4780,20 @@ export type Database = {
             referencedColumns: ['supplier_id'];
           },
           {
+            foreignKeyName: 'weaving_invoices_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_full';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'weaving_invoices_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_performance';
+            referencedColumns: ['supplier_id'];
+          },
+          {
             foreignKeyName: 'weaving_invoices_tenant_id_fkey';
             columns: ['tenant_id'];
             isOneToOne: false;
@@ -4373,6 +5029,20 @@ export type Database = {
             columns: ['supplier_id'];
             isOneToOne: false;
             referencedRelation: 'v_supplier_debt';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'work_orders_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_full';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'work_orders_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_performance';
             referencedColumns: ['supplier_id'];
           },
           {
@@ -4613,6 +5283,20 @@ export type Database = {
             columns: ['supplier_id'];
             isOneToOne: false;
             referencedRelation: 'v_supplier_debt';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'yarn_receipts_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_full';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_receipts_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_performance';
             referencedColumns: ['supplier_id'];
           },
           {
@@ -4863,6 +5547,139 @@ export type Database = {
         };
         Relationships: [];
       };
+      v_po_detail_full: {
+        Row: {
+          approved_at: string | null;
+          approved_by: string | null;
+          created_at: string | null;
+          created_by: string | null;
+          expected_date: string | null;
+          id: string | null;
+          order_date: string | null;
+          po_code: string | null;
+          progress_percentage: number | null;
+          rejection_reason: string | null;
+          status: Database['public']['Enums']['purchase_order_status'] | null;
+          supplier_id: string | null;
+          supplier_name_snapshot: string | null;
+          tenant_id: string | null;
+          total_amount: number | null;
+          total_ordered_qty: number | null;
+          total_received_qty: number | null;
+          updated_at: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'purchase_orders_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'suppliers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'purchase_orders_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_debt';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'purchase_orders_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_full';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'purchase_orders_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_performance';
+            referencedColumns: ['supplier_id'];
+          },
+        ];
+      };
+      v_po_item_status: {
+        Row: {
+          created_at: string | null;
+          id: string | null;
+          material_id: string | null;
+          ordered_qty: number | null;
+          po_id: string | null;
+          received_qty: number | null;
+          remaining_qty: number | null;
+          tenant_id: string | null;
+          unit_price: number | null;
+          uom: Database['public']['Enums']['uom_type'] | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string | null;
+          material_id?: string | null;
+          ordered_qty?: number | null;
+          po_id?: string | null;
+          received_qty?: number | null;
+          remaining_qty?: never;
+          tenant_id?: string | null;
+          unit_price?: number | null;
+          uom?: Database['public']['Enums']['uom_type'] | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string | null;
+          material_id?: string | null;
+          ordered_qty?: number | null;
+          po_id?: string | null;
+          received_qty?: number | null;
+          remaining_qty?: never;
+          tenant_id?: string | null;
+          unit_price?: number | null;
+          uom?: Database['public']['Enums']['uom_type'] | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'purchase_order_items_po_id_fkey';
+            columns: ['po_id'];
+            isOneToOne: false;
+            referencedRelation: 'purchase_orders';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'purchase_order_items_po_id_fkey';
+            columns: ['po_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_po_detail_full';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      v_po_status: {
+        Row: {
+          po_id: string | null;
+          progress_percentage: number | null;
+          total_ordered_qty: number | null;
+          total_received_qty: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'purchase_order_items_po_id_fkey';
+            columns: ['po_id'];
+            isOneToOne: false;
+            referencedRelation: 'purchase_orders';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'purchase_order_items_po_id_fkey';
+            columns: ['po_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_po_detail_full';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       v_production_efficiency: {
         Row: {
           actual_date: string | null;
@@ -4949,9 +5766,7 @@ export type Database = {
           balance_due: number | null;
           document_count: number | null;
           pending_work_value: number | null;
-          supplier_category:
-            | Database['public']['Enums']['supplier_category']
-            | null;
+          supplier_category: string | null;
           supplier_code: string | null;
           supplier_id: string | null;
           supplier_name: string | null;
@@ -4959,6 +5774,60 @@ export type Database = {
           total_purchased: number | null;
         };
         Relationships: [];
+      };
+      v_supplier_full: {
+        Row: {
+          address: string | null;
+          avg_lead_time_days: number | null;
+          category: string | null;
+          category_name: string | null;
+          code: string | null;
+          contact_person: string | null;
+          created_at: string | null;
+          credit_limit: number | null;
+          email: string | null;
+          id: string | null;
+          name: string | null;
+          notes: string | null;
+          on_time_rate: number | null;
+          payment_terms: string | null;
+          phone: string | null;
+          rating: number | null;
+          status: Database['public']['Enums']['active_status'] | null;
+          tax_code: string | null;
+          tenant_id: string | null;
+          total_pos: number | null;
+          total_spend: number | null;
+          updated_at: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'suppliers_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      v_supplier_performance: {
+        Row: {
+          avg_lead_time_days: number | null;
+          on_time_rate: number | null;
+          supplier_id: string | null;
+          tenant_id: string | null;
+          total_pos: number | null;
+          total_spend: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'suppliers_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       v_unpaid_documents: {
         Row: {
@@ -5034,23 +5903,42 @@ export type Database = {
         Args: never;
         Returns: Database['public']['Enums']['user_role'];
       };
-      fn_create_order_atomic: {
-        Args: {
-          p_allocations: Json;
-          p_created_by: string;
-          p_customer_id: string;
-          p_delivery_date: string;
-          p_items: Json;
-          p_manager_override: boolean;
-          p_notes: string;
-          p_order_date: string;
-          p_order_number: string;
-          p_override_user_id: string;
-          p_source_quotation_id: string;
-          p_total_amount: number;
-        };
-        Returns: Json;
-      };
+      fn_create_order_atomic:
+        | {
+            Args: {
+              p_allocations: Json;
+              p_created_by: string;
+              p_customer_id: string;
+              p_delivery_date: string;
+              p_items: Json;
+              p_manager_override: boolean;
+              p_notes: string;
+              p_order_date: string;
+              p_order_number: string;
+              p_override_user_id: string;
+              p_source_quotation_id: string;
+              p_total_amount: number;
+            };
+            Returns: Json;
+          }
+        | {
+            Args: {
+              p_allocations: Json;
+              p_created_by: string;
+              p_customer_id: string;
+              p_delivery_date: string;
+              p_items: Json;
+              p_manager_override: boolean;
+              p_notes: string;
+              p_order_date: string;
+              p_order_number: string;
+              p_order_type: string;
+              p_override_user_id: string;
+              p_source_quotation_id: string;
+              p_total_amount: number;
+            };
+            Returns: Json;
+          };
       generate_next_doc_number: {
         Args: {
           p_column: string;
@@ -5062,6 +5950,8 @@ export type Database = {
       };
       get_tenant_user_count: { Args: { p_tenant_id: string }; Returns: number };
       next_dyeing_order_number: { Args: never; Returns: string };
+      next_po_code: { Args: never; Returns: string };
+      next_receipt_code: { Args: never; Returns: string };
       release_order_allocations: {
         Args: { p_order_id: string; p_reason: string };
         Returns: undefined;
@@ -5123,6 +6013,16 @@ export type Database = {
         Returns: Json;
       };
       rpc_create_expense: { Args: { p_data: Json }; Returns: Json };
+      rpc_create_goods_receipt: {
+        Args: {
+          p_client_request_id: string;
+          p_created_by: string;
+          p_items: Json;
+          p_po_id: string;
+          p_received_date: string;
+        };
+        Returns: string;
+      };
       rpc_create_order: {
         Args: { p_header: Json; p_items: Json };
         Returns: Json;
@@ -5236,9 +6136,19 @@ export type Database = {
           total_amount: number;
         }[];
       };
+      rpc_get_kanban_dashboard: { Args: never; Returns: Json };
       rpc_get_or_create_chat_room: {
         Args: { p_entity_id: string; p_entity_type: string };
         Returns: string;
+      };
+      rpc_get_supplier_price: {
+        Args: { p_material_id: string; p_supplier_id: string };
+        Returns: {
+          lead_time_days: number;
+          moq: number;
+          unit_price: number;
+          uom: string;
+        }[];
       };
       rpc_get_user_permissions: {
         Args: { p_role: string; p_tenant_id: string };
@@ -5365,7 +6275,7 @@ export type Database = {
       rpc_update_supplier: {
         Args: {
           p_address?: string;
-          p_category: Database['public']['Enums']['supplier_category'];
+          p_category: string;
           p_code: string;
           p_contact_person?: string;
           p_email?: string;
@@ -5475,6 +6385,13 @@ export type Database = {
         | 'finishing'
         | 'final_check'
         | 'packing';
+      purchase_order_status:
+        | 'draft'
+        | 'approved'
+        | 'rejected'
+        | 'partial_received'
+        | 'completed'
+        | 'cancelled';
       quotation_status:
         | 'draft'
         | 'sent'
@@ -5502,6 +6419,7 @@ export type Database = {
         | 'payment'
         | 'adjustment'
         | 'return_credit';
+      uom_type: 'kg' | 'cây' | 'mét' | 'cuộn';
       user_role:
         | 'admin'
         | 'manager'
@@ -5717,6 +6635,14 @@ export const Constants = {
         'final_check',
         'packing',
       ],
+      purchase_order_status: [
+        'draft',
+        'approved',
+        'rejected',
+        'partial_received',
+        'completed',
+        'cancelled',
+      ],
       quotation_status: [
         'draft',
         'sent',
@@ -5748,6 +6674,7 @@ export const Constants = {
         'adjustment',
         'return_credit',
       ],
+      uom_type: ['kg', 'cây', 'mét', 'cuộn'],
       user_role: [
         'admin',
         'manager',

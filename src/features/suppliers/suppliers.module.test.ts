@@ -5,8 +5,6 @@ vi.mock('@/core/registry/moduleRegistry', () => ({
 }));
 
 import {
-  SUPPLIER_CATEGORIES,
-  SUPPLIER_CATEGORY_LABELS,
   SUPPLIER_STATUS_LABELS,
   supplierDefaults,
   supplierSchema,
@@ -54,7 +52,7 @@ describe('suppliers.module', () => {
     const result = supplierSchema.safeParse({
       code: '',
       name: '',
-      category: 'other',
+      category: '',
       status: 'active',
     });
 
@@ -90,26 +88,22 @@ describe('suppliers.module', () => {
     ).toBe(false);
   });
 
-  it('validates category must be in allowed list', () => {
+  it('validates category is not empty', () => {
     const result = supplierSchema.safeParse({
       ...supplierDefaults,
       code: 'T4',
       name: 'Test',
-      category: 'invalid_cat',
+      category: '',
     });
     expect(result.success).toBe(false);
   });
 
   it('keeps stable defaults and labels', () => {
     expect(supplierDefaults.status).toBe('active');
-    expect(supplierDefaults.category).toBe('other');
+    expect(supplierDefaults.category).toBe('');
     expect(SUPPLIER_STATUS_LABELS).toEqual({
       active: 'Hoạt động',
       inactive: 'Ngưng hợp tác',
     });
-    expect(SUPPLIER_CATEGORIES).toContain('yarn');
-    expect(SUPPLIER_CATEGORIES).toContain('dye');
-    expect(SUPPLIER_CATEGORIES).toContain('weaving');
-    expect(SUPPLIER_CATEGORY_LABELS.yarn).toBe('Sợi');
   });
 });

@@ -1,24 +1,6 @@
 import { z } from 'zod';
 
-export const SUPPLIER_CATEGORIES = [
-  'yarn',
-  'dye',
-  'weaving',
-  'accessories',
-  'other',
-] as const;
 export const SUPPLIER_STATUSES = ['active', 'inactive'] as const;
-
-export const SUPPLIER_CATEGORY_LABELS: Record<
-  (typeof SUPPLIER_CATEGORIES)[number],
-  string
-> = {
-  yarn: 'Sợi',
-  dye: 'Thuốc nhuộm',
-  weaving: 'Nhà dệt',
-  accessories: 'Phụ liệu',
-  other: 'Khác',
-};
 
 export const SUPPLIER_STATUS_LABELS: Record<
   (typeof SUPPLIER_STATUSES)[number],
@@ -37,9 +19,7 @@ export const supplierSchema = z.object({
     .string()
     .min(1, 'Tên NCC là bắt buộc')
     .max(200, 'Tên NCC tối đa 200 ký tự'),
-  category: z.enum(SUPPLIER_CATEGORIES, {
-    required_error: 'Chọn danh mục NCC',
-  }),
+  category: z.string().min(1, 'Chọn danh mục NCC'),
   phone: z
     .string()
     .regex(/^(\+?[0-9\s\-().]{8,20})?$/, 'Số điện thoại không hợp lệ')
@@ -63,7 +43,7 @@ export type SupplierFormValues = z.infer<typeof supplierSchema>;
 export const supplierDefaults: SupplierFormValues = {
   code: '',
   name: '',
-  category: 'other',
+  category: '',
   phone: '',
   email: '',
   address: '',
@@ -78,7 +58,7 @@ export const supplierDefaults: SupplierFormValues = {
 export const quickSupplierSchema = z.object({
   code: z.string().min(1, 'Ma NCC la bat buoc'),
   name: z.string().min(1, 'Ten NCC la bat buoc'),
-  category: z.enum(SUPPLIER_CATEGORIES),
+  category: z.string().min(1, 'Danh mục là bắt buộc'),
   phone: z.string().optional(),
 });
 

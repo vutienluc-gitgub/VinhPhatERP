@@ -1692,6 +1692,19 @@
   padding: 0 1.25rem 1rem;
 }
 
+/* Inline warning (amber) — import/validation partial errors */
+.warning-inline {
+  color: #c57600;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+/* Error hint — strong inline error text (red) */
+.error-hint {
+  color: #c0392b;
+  font-weight: 700;
+}
+
 /* Modal sheet max-width variants */
 .modal-sheet-sm {
   max-width: 480px;

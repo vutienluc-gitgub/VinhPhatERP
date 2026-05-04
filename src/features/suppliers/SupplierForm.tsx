@@ -1,18 +1,18 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import { TabSwitcher } from '@/shared/components/TabSwitcher';
 import {
   useCreateSupplier,
   useNextSupplierCode,
   useUpdateSupplier,
+  useSupplierCategories,
 } from '@/application/crm';
 import {
-  SUPPLIER_CATEGORIES,
-  SUPPLIER_CATEGORY_LABELS,
   SUPPLIER_STATUSES,
   SUPPLIER_STATUS_LABELS,
   supplierDefaults,
@@ -20,12 +20,8 @@ import {
 } from '@/schema/supplier.schema';
 import type { SupplierFormValues } from '@/schema/supplier.schema';
 
+import { SupplierPriceList } from './SupplierPriceList';
 import type { Supplier } from './types';
-
-const CATEGORY_OPTIONS = SUPPLIER_CATEGORIES.map((cat) => ({
-  value: cat,
-  label: SUPPLIER_CATEGORY_LABELS[cat],
-}));
 
 const STATUS_OPTIONS = SUPPLIER_STATUSES.map((st) => ({
   value: st,
@@ -54,9 +50,16 @@ function supplierToFormValues(supplier: Supplier): SupplierFormValues {
 
 export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
   const isEditing = supplier !== null;
+  const [activeTab, setActiveTab] = useState<'info' | 'prices'>('info');
   const createMutation = useCreateSupplier();
   const updateMutation = useUpdateSupplier();
   const { data: nextCode } = useNextSupplierCode();
+  const { data: categories = [] } = useSupplierCategories();
+
+  const CATEGORY_OPTIONS = categories.map((c) => ({
+    value: c.code,
+    label: c.name,
+  }));
 
   const {
     register,
@@ -140,167 +143,187 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
         </p>
       )}
 
-      <form id="supplier-form" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <div className="form-grid">
-          {/* Mã NCC + Tên NCC */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="form-field">
-              <label htmlFor="code">
-                Mã NCC <span className="field-required">*</span>
-              </label>
-              <input
-                id="code"
-                type="text"
-                className={`field-input${errors.code ? ' is-error' : ''}`}
-                placeholder="VD: NCC-001"
-                readOnly={!isEditing}
-                {...register('code')}
-              />
-              {errors.code && (
-                <span className="field-error">{errors.code.message}</span>
-              )}
+      {isEditing && (
+        <TabSwitcher
+          tabs={[
+            { key: 'info', label: 'Thông tin chung' },
+            { key: 'prices', label: 'Báo giá (Price List)' },
+          ]}
+          active={activeTab}
+          onChange={setActiveTab}
+          className="mb-6"
+        />
+      )}
+
+      <div style={{ display: activeTab === 'info' ? 'block' : 'none' }}>
+        <form id="supplier-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+          <div className="form-grid">
+            {/* Mã NCC + Tên NCC */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="form-field">
+                <label htmlFor="code">
+                  Mã NCC <span className="field-required">*</span>
+                </label>
+                <input
+                  id="code"
+                  type="text"
+                  className={`field-input${errors.code ? ' is-error' : ''}`}
+                  placeholder="VD: NCC-001"
+                  readOnly={!isEditing}
+                  {...register('code')}
+                />
+                {errors.code && (
+                  <span className="field-error">{errors.code.message}</span>
+                )}
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="name">
+                  Tên nhà cung cấp <span className="field-required">*</span>
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  className={`field-input${errors.name ? ' is-error' : ''}`}
+                  placeholder="VD: Công ty TNHH ABC"
+                  {...register('name')}
+                />
+                {errors.name && (
+                  <span className="field-error">{errors.name.message}</span>
+                )}
+              </div>
             </div>
 
-            <div className="form-field">
-              <label htmlFor="name">
-                Tên nhà cung cấp <span className="field-required">*</span>
-              </label>
-              <input
-                id="name"
-                type="text"
-                className={`field-input${errors.name ? ' is-error' : ''}`}
-                placeholder="VD: Công ty TNHH ABC"
-                {...register('name')}
-              />
-              {errors.name && (
-                <span className="field-error">{errors.name.message}</span>
-              )}
-            </div>
-          </div>
+            {/* Điện thoại + Email */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="form-field">
+                <label htmlFor="phone">Số điện thoại</label>
+                <input
+                  id="phone"
+                  type="tel"
+                  className={`field-input${errors.phone ? ' is-error' : ''}`}
+                  placeholder="VD: 0901 234 567"
+                  {...register('phone')}
+                />
+                {errors.phone && (
+                  <span className="field-error">{errors.phone.message}</span>
+                )}
+              </div>
 
-          {/* Điện thoại + Email */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="form-field">
-              <label htmlFor="phone">Số điện thoại</label>
-              <input
-                id="phone"
-                type="tel"
-                className={`field-input${errors.phone ? ' is-error' : ''}`}
-                placeholder="VD: 0901 234 567"
-                {...register('phone')}
-              />
-              {errors.phone && (
-                <span className="field-error">{errors.phone.message}</span>
-              )}
+              <div className="form-field">
+                <label htmlFor="email">Email</label>
+                <input
+                  id="email"
+                  type="email"
+                  className={`field-input${errors.email ? ' is-error' : ''}`}
+                  placeholder="VD: supplier@example.com"
+                  {...register('email')}
+                />
+                {errors.email && (
+                  <span className="field-error">{errors.email.message}</span>
+                )}
+              </div>
             </div>
 
+            {/* Địa chỉ */}
             <div className="form-field">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="address">Địa chỉ</label>
               <input
-                id="email"
-                type="email"
-                className={`field-input${errors.email ? ' is-error' : ''}`}
-                placeholder="VD: supplier@example.com"
-                {...register('email')}
-              />
-              {errors.email && (
-                <span className="field-error">{errors.email.message}</span>
-              )}
-            </div>
-          </div>
-
-          {/* Địa chỉ */}
-          <div className="form-field">
-            <label htmlFor="address">Địa chỉ</label>
-            <input
-              id="address"
-              type="text"
-              className="field-input"
-              placeholder="VD: 123 Đường Lê Lợi, Q.1, TP.HCM"
-              {...register('address')}
-            />
-          </div>
-
-          {/* Mã số thuế + Người liên hệ */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="form-field">
-              <label htmlFor="tax_code">Mã số thuế</label>
-              <input
-                id="tax_code"
-                type="text"
-                className={`field-input${errors.tax_code ? ' is-error' : ''}`}
-                placeholder="VD: 0312345678"
-                {...register('tax_code')}
-              />
-              {errors.tax_code && (
-                <span className="field-error">{errors.tax_code.message}</span>
-              )}
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="contact_person">Người liên hệ</label>
-              <input
-                id="contact_person"
+                id="address"
                 type="text"
                 className="field-input"
-                placeholder="VD: Nguyễn Văn A"
-                {...register('contact_person')}
+                placeholder="VD: 123 Đường Lê Lợi, Q.1, TP.HCM"
+                {...register('address')}
               />
             </div>
-          </div>
 
-          {/* Danh mục + Trạng thái */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="form-field">
-              <label htmlFor="category">
-                Danh mục <span className="field-required">*</span>
-              </label>
-              <Controller
-                name="category"
-                control={control}
-                render={({ field }) => (
-                  <Combobox
-                    options={CATEGORY_OPTIONS}
-                    value={field.value}
-                    onChange={field.onChange}
-                    hasError={!!errors.category}
-                  />
+            {/* Mã số thuế + Người liên hệ */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="form-field">
+                <label htmlFor="tax_code">Mã số thuế</label>
+                <input
+                  id="tax_code"
+                  type="text"
+                  className={`field-input${errors.tax_code ? ' is-error' : ''}`}
+                  placeholder="VD: 0312345678"
+                  {...register('tax_code')}
+                />
+                {errors.tax_code && (
+                  <span className="field-error">{errors.tax_code.message}</span>
                 )}
-              />
-              {errors.category && (
-                <span className="field-error">{errors.category.message}</span>
-              )}
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="contact_person">Người liên hệ</label>
+                <input
+                  id="contact_person"
+                  type="text"
+                  className="field-input"
+                  placeholder="VD: Nguyễn Văn A"
+                  {...register('contact_person')}
+                />
+              </div>
             </div>
 
-            <div className="form-field">
-              <label htmlFor="status">Trạng thái</label>
-              <Controller
-                name="status"
-                control={control}
-                render={({ field }) => (
-                  <Combobox
-                    options={STATUS_OPTIONS}
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
+            {/* Danh mục + Trạng thái */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="form-field">
+                <label htmlFor="category">
+                  Danh mục <span className="field-required">*</span>
+                </label>
+                <Controller
+                  name="category"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={CATEGORY_OPTIONS}
+                      value={field.value}
+                      onChange={field.onChange}
+                      hasError={!!errors.category}
+                    />
+                  )}
+                />
+                {errors.category && (
+                  <span className="field-error">{errors.category.message}</span>
                 )}
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="status">Trạng thái</label>
+                <Controller
+                  name="status"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={STATUS_OPTIONS}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Ghi chú */}
+            <div className="form-field">
+              <label htmlFor="notes">Ghi chú</label>
+              <textarea
+                id="notes"
+                className="field-input"
+                rows={3}
+                placeholder="Ghi chú nội bộ về nhà cung cấp..."
+                {...register('notes')}
               />
             </div>
           </div>
+        </form>
+      </div>
 
-          {/* Ghi chú */}
-          <div className="form-field">
-            <label htmlFor="notes">Ghi chú</label>
-            <textarea
-              id="notes"
-              className="field-input"
-              rows={3}
-              placeholder="Ghi chú nội bộ về nhà cung cấp..."
-              {...register('notes')}
-            />
-          </div>
+      {isEditing && activeTab === 'prices' && supplier && (
+        <div className="pt-2">
+          <SupplierPriceList supplierId={supplier.id} />
         </div>
-      </form>
+      )}
     </AdaptiveSheet>
   );
 }

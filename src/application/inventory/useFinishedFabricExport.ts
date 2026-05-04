@@ -1,6 +1,6 @@
-import dayjs from 'dayjs';
 import { useCallback } from 'react';
 
+import { fetchFinishedFabricAll } from '@/api/finished-fabric.api';
 import { exportToExcel, exportToPdf } from '@/shared/utils/export';
 import type { ExportColumn } from '@/shared/utils/export';
 import {
@@ -8,6 +8,7 @@ import {
   ROLL_STATUS_LABELS,
 } from '@/features/finished-fabric/finished-fabric.module';
 import type { FinishedFabricRoll } from '@/domain/inventory/finished-fabric.types';
+import type { FinishedFabricFilter } from '@/domain/inventory/finished-fabric.types';
 
 const EXPORT_COLUMNS: ExportColumn[] = [
   {
@@ -95,12 +96,35 @@ function toExportRows(rolls: FinishedFabricRoll[]): RollExportRow[] {
 }
 
 function makeFileName(prefix: string): string {
-  return `${prefix}_${dayjs().format('YYYYMMDD_HHmm')}`;
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const date = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+  const time = `${pad(now.getHours())}${pad(now.getMinutes())}`;
+  return `${prefix}_${date}_${time}`;
 }
 
 export function useFinishedFabricExport() {
+  /** Export toàn bộ data theo filter hiện tại (dùng ở list page) */
   const exportExcel = useCallback(
-    async (rolls: FinishedFabricRoll[], filePrefix = 'vai_thanh_pham') => {
+    async (
+      filters: FinishedFabricFilter = {},
+      filePrefix = 'vai_thanh_pham',
+    ) => {
+      const rolls = await fetchFinishedFabricAll(filters);
+      await exportToExcel(toExportRows(rolls), EXPORT_COLUMNS, {
+        fileName: makeFileName(filePrefix),
+        sheetName: 'Cuộn vải thành phẩm',
+      });
+    },
+    [],
+  );
+
+  /** Export từ array có sẵn (dùng sau khi bulk save thành công) */
+  const exportRollsExcel = useCallback(
+    async (
+      rolls: FinishedFabricRoll[],
+      filePrefix = 'bien_ban_nhap_kho_tp',
+    ) => {
       await exportToExcel(toExportRows(rolls), EXPORT_COLUMNS, {
         fileName: makeFileName(filePrefix),
         sheetName: 'Cuộn vải thành phẩm',
@@ -110,7 +134,11 @@ export function useFinishedFabricExport() {
   );
 
   const exportPdf = useCallback(
-    (rolls: FinishedFabricRoll[], filePrefix = 'vai_thanh_pham') => {
+    async (
+      filters: FinishedFabricFilter = {},
+      filePrefix = 'vai_thanh_pham',
+    ) => {
+      const rolls = await fetchFinishedFabricAll(filters);
       exportToPdf(toExportRows(rolls), EXPORT_COLUMNS, {
         fileName: makeFileName(filePrefix),
         title: 'Danh sách cuộn vải thành phẩm',
@@ -122,8 +150,24 @@ export function useFinishedFabricExport() {
     [],
   );
 
+  /** Export PDF từ array có sẵn (dùng sau khi bulk save thành công) */
+  const exportRollsPdf = useCallback(
+    (rolls: FinishedFabricRoll[], filePrefix = 'bien_ban_nhap_kho_tp') => {
+      exportToPdf(toExportRows(rolls), EXPORT_COLUMNS, {
+        fileName: makeFileName(filePrefix),
+        title: 'Biên bản nhập kho thành phẩm',
+        subtitle: `Tổng: ${rolls.length} cuộn · ${rolls
+          .reduce((sum, r) => sum + (r.weight_kg ?? 0), 0)
+          .toLocaleString('vi-VN', { maximumFractionDigits: 2 })} kg`,
+      });
+    },
+    [],
+  );
+
   return {
     exportExcel,
+    exportRollsExcel,
     exportPdf,
+    exportRollsPdf,
   };
 }

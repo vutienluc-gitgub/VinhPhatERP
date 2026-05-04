@@ -53,6 +53,7 @@ export function calculateOrderTotal(
 
 export interface OrderDbPayload {
   order_number: string;
+  order_type: string;
   customer_id: string;
   order_date: string;
   delivery_date: string | null;
@@ -78,6 +79,7 @@ export interface OrderItemDbPayload {
 export function mapOrderFormToDb(
   values: {
     orderNumber: string;
+    orderType?: string;
     customerId: string;
     orderDate: string;
     deliveryDate?: string;
@@ -88,6 +90,7 @@ export function mapOrderFormToDb(
 ): OrderDbPayload {
   return {
     order_number: values.orderNumber.trim(),
+    order_type: values.orderType ?? 'production',
     customer_id: values.customerId,
     order_date: values.orderDate,
     delivery_date: values.deliveryDate?.trim() || null,

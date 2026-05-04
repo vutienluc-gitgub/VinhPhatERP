@@ -15,6 +15,7 @@ import {
   FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
+import { TableSkeleton } from '@/shared/components/TableSkeleton';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 import {
@@ -73,6 +74,36 @@ function formatNum(val: number | null, unit: string): string {
   return `${val.toLocaleString('vi-VN')} ${unit}`;
 }
 
+function calculateMedian(values: number[]): number | undefined {
+  if (values.length === 0) return undefined;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 !== 0
+    ? sorted[mid]
+    : (sorted[mid - 1]! + sorted[mid]!) / 2;
+}
+
+function groupRollsByLot(rolls: FinishedFabricRoll[]) {
+  const map = new Map<string, FinishedFabricRoll[]>();
+  rolls.forEach((roll) => {
+    const key = roll.lot_number || 'KHÔNG CÓ LÔ';
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(roll);
+  });
+  return Array.from(map.entries()).map(([lot, items]) => {
+    const weights = items
+      .map((r) => r.weight_kg)
+      .filter((w): w is number => w != null && w > 0);
+    return {
+      lot,
+      rolls: items,
+      fabricType: items[0]?.fabric_type,
+      colorName: items[0]?.color_name,
+      standardWeightKg: calculateMedian(weights),
+    };
+  });
+}
+
 export function FinishedFabricList({
   onEdit,
   onNew,
@@ -97,6 +128,7 @@ export function FinishedFabricList({
   const deleteMutation = useDeleteFinishedFabric();
   const { confirm } = useConfirm();
   const { exportExcel } = useFinishedFabricExport();
+  const [isExporting, setIsExporting] = useState(false);
 
   async function handleDelete(roll: FinishedFabricRoll) {
     if (!canDeleteRoll(roll.status)) return;
@@ -108,35 +140,7 @@ export function FinishedFabricList({
     deleteMutation.mutate(roll.id);
   }
 
-  const median = (values: number[]) => {
-    if (values.length === 0) return undefined;
-    const sorted = [...values].sort((a, b) => a - b);
-    const mid = Math.floor(sorted.length / 2);
-    return sorted.length % 2 !== 0
-      ? sorted[mid]
-      : (sorted[mid - 1]! + sorted[mid]!) / 2;
-  };
-
-  const groupedRolls = useMemo(() => {
-    const map = new Map<string, FinishedFabricRoll[]>();
-    rolls.forEach((roll) => {
-      const key = roll.lot_number || 'KHÔNG CÓ LÔ';
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(roll);
-    });
-    return Array.from(map.entries()).map(([lot, items]) => {
-      const weights = items
-        .map((r) => r.weight_kg)
-        .filter((w): w is number => w != null && w > 0);
-      return {
-        lot,
-        rolls: items,
-        fabricType: items[0]?.fabric_type,
-        colorName: items[0]?.color_name,
-        standardWeightKg: median(weights),
-      };
-    });
-  }, [rolls]);
+  const groupedRolls = useMemo(() => groupRollsByLot(rolls), [rolls]);
 
   const filterSchema: FilterFieldConfig[] = [
     {
@@ -189,15 +193,23 @@ export function FinishedFabricList({
               Nhập mẻ
             </Button>
             <div className="w-px h-6 bg-border mx-1" />
-            <button
-              className="btn-icon btn-standard"
+            <Button
+              variant="secondary"
+              leftIcon="FileSpreadsheet"
+              className="btn-standard"
               type="button"
-              onClick={() => exportExcel(rolls)}
-              disabled={rolls.length === 0}
-              title="Xuất Excel"
+              onClick={async () => {
+                setIsExporting(true);
+                try {
+                  await exportExcel(filters as FinishedFabricFilter);
+                } finally {
+                  setIsExporting(false);
+                }
+              }}
+              disabled={isExporting}
             >
-              <Icon name="FileSpreadsheet" size={20} />
-            </button>
+              {isExporting ? 'Đang xuất...' : 'Xuất Excel'}
+            </Button>
           </div>
         </div>
       </div>
@@ -299,9 +311,7 @@ export function FinishedFabricList({
       {viewMode === 'grid' ? (
         <div className="card-table-section p-4 flex flex-col gap-6">
           {isLoading ? (
-            <div className="flex-center py-20">
-              <div className="spinner" />
-            </div>
+            <TableSkeleton columns={5} rows={5} />
           ) : rolls.length === 0 ? (
             <div className="empty-state py-20">
               <div className="empty-icon">
@@ -474,7 +484,9 @@ export function FinishedFabricList({
                       Trọng lượng
                     </span>
                     <span className="text-sm font-medium">
-                      {formatNum(r.weight_kg, 'kg')}
+                      {r.weight_kg != null
+                        ? `${r.weight_kg.toLocaleString('vi-VN', { maximumFractionDigits: 3 })} kg`
+                        : '—'}
                     </span>
                   </div>
                   <div className="flex flex-col">

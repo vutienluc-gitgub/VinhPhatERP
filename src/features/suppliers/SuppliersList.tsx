@@ -11,10 +11,12 @@ import {
   FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
-import { useDeleteSupplier, useSuppliersList } from '@/application/crm';
 import {
-  SUPPLIER_CATEGORIES,
-  SUPPLIER_CATEGORY_LABELS,
+  useDeleteSupplier,
+  useSuppliersList,
+  useSupplierCategories,
+} from '@/application/crm';
+import {
   SUPPLIER_STATUSES,
   SUPPLIER_STATUS_LABELS,
 } from '@/schema/supplier.schema';
@@ -46,6 +48,7 @@ export function SuppliersList({
     error,
   } = useSuppliersList(filters as SupplierFilter, page);
   const suppliers = result?.data ?? [];
+  const { data: categories = [] } = useSupplierCategories();
   const deleteMutation = useDeleteSupplier();
   const { confirm } = useConfirm();
 
@@ -62,9 +65,9 @@ export function SuppliersList({
       key: 'category',
       type: 'combobox',
       label: 'Danh mục',
-      options: SUPPLIER_CATEGORIES.map((cat) => ({
-        value: cat,
-        label: SUPPLIER_CATEGORY_LABELS[cat],
+      options: categories.map((cat) => ({
+        value: cat.code,
+        label: cat.name,
       })),
     },
     {
@@ -122,11 +125,11 @@ export function SuppliersList({
         },
       },
       {
-        accessorKey: 'category',
+        accessorKey: 'category_name',
         header: 'Danh mục',
         cell: ({ row }) => (
           <span className="badge-outline">
-            {SUPPLIER_CATEGORY_LABELS[row.original.category]}
+            {row.original.category_name ?? row.original.category}
           </span>
         ),
       },
@@ -144,6 +147,38 @@ export function SuppliersList({
               )}
               {!s.phone && !s.contact_person && '—'}
             </div>
+          );
+        },
+      },
+      {
+        accessorKey: 'performance',
+        header: 'Hiệu suất (OTD / Đánh giá)',
+        cell: ({ row }) => {
+          const s = row.original;
+          return (
+            <div className="flex flex-col text-sm">
+              <span className="font-medium text-emerald-600">
+                OTD: {s.on_time_rate ?? 0}%
+              </span>
+              <span className="text-xs text-muted">
+                Đánh giá: {s.rating ?? 0}/5.0
+              </span>
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: 'credit_limit',
+        header: 'Hạn mức',
+        cell: ({ row }) => {
+          const limit = row.original.credit_limit;
+          if (!limit || limit === 0)
+            return <span className="text-muted">—</span>;
+          // We can format it roughly
+          return (
+            <span className="font-semibold text-primary">
+              {new Intl.NumberFormat('vi-VN').format(limit)}đ
+            </span>
           );
         },
       },
@@ -318,7 +353,7 @@ export function SuppliersList({
 
               <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/10">
                 <span className="text-[10px] uppercase font-bold text-muted bg-surface-subtle px-1.5 py-0.5 rounded">
-                  {SUPPLIER_CATEGORY_LABELS[s.category]}
+                  {s.category_name ?? s.category}
                 </span>
                 <Icon name="ChevronRight" size={16} className="text-muted" />
               </div>

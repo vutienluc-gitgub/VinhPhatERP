@@ -109,7 +109,7 @@ export async function createFinishedFabricRoll(
     data: {
       ...row,
       tenant_id: tenantId,
-    },
+    } as Record<string, unknown>,
     conflictKey: 'id',
   });
   return inserted as unknown as FinishedFabricRoll;
@@ -121,7 +121,7 @@ export async function updateFinishedFabricRoll(
 ): Promise<FinishedFabricRoll> {
   const { data, error } = await supabase
     .from(FINISHED_TABLE)
-    .update(row)
+    .update(row as Record<string, unknown>)
     .eq('id', id)
     .select()
     .single();

@@ -59,6 +59,7 @@ export function useStepper({
   currentStepRef.current = currentStep;
   const onCancelRef = useRef(onCancel);
   onCancelRef.current = onCancel;
+  const cleanupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const next = useCallback(async () => {
     if (stepValidation && stepValidation[currentStep]) {
@@ -109,11 +110,20 @@ export function useStepper({
   useEffect(() => {
     if (!hasOnCancel) return;
 
+    // Cancel any pending cleanup from a previous (StrictMode) unmount
+    if (cleanupTimerRef.current) {
+      clearTimeout(cleanupTimerRef.current);
+      cleanupTimerRef.current = null;
+    }
+
     // Push state giả để chặn browser back
     window.history.pushState({ stepperOpen: true }, '');
     let popped = false;
+    let active = true;
 
     const handlePopState = () => {
+      // Guard: ignore events from stale (cleaned-up) effect instances
+      if (!active) return;
       popped = true;
       if (currentStepRef.current > 0) {
         // Lùi 1 bước và push lại state để giữ modal
@@ -132,10 +142,18 @@ export function useStepper({
 
     window.addEventListener('popstate', handlePopState);
     return () => {
+      active = false;
       window.removeEventListener('popstate', handlePopState);
       // Dọn dẹp history nếu form bị unmount không thông qua popstate (VD: bấm nút X)
+      // Defer to allow StrictMode remount to cancel this cleanup
       if (!popped && window.history.state?.stepperOpen) {
-        window.history.back();
+        const tid = setTimeout(() => {
+          if (window.history.state?.stepperOpen) {
+            window.history.back();
+          }
+        }, 50);
+        // Store cleanup ID so remount can cancel
+        cleanupTimerRef.current = tid;
       }
     };
   }, [hasOnCancel, prev]);

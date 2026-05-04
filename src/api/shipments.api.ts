@@ -268,11 +268,12 @@ export async function createShipmentFull(
   });
 
   if (error) {
-    if (error.message?.includes('ROLL_NOT_AVAILABLE'))
+    if (error.message?.includes('ROLL_NOT_AVAILABLE')) {
       throw new Error(
-        'Mot hoac nhieu cuon thanh pham khong con san sang de xuat.',
+        'Một hoặc nhiều cuộn thành phẩm không còn sẵn sàng để xuất.',
       );
-    throw error;
+    }
+    throw new Error(error.message || String(error));
   }
   return data as unknown as Shipment;
 }
@@ -294,9 +295,10 @@ export async function confirmShipmentFull(
         'Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại trang.',
       );
     }
-    if (error.message?.includes('SHIPMENT_NOT_PREPARING'))
-      throw new Error('Phieu xuat khong o trang thai chuan bi.');
-    throw error;
+    if (error.message?.includes('SHIPMENT_NOT_PREPARING')) {
+      throw new Error('Phiếu xuất không ở trạng thái chuẩn bị.');
+    }
+    throw new Error(error.message || String(error));
   }
 
   return fetchShipmentDocument(shipmentId);
@@ -338,7 +340,7 @@ export async function markShipmentDelivered(
     if (error.message?.includes('SHIPMENT_NOT_SHIPPED')) {
       throw new Error('Cannot deliver a shipment that is not shipped');
     }
-    throw error;
+    throw new Error(error.message || String(error));
   }
 
   // Auto-create expense record for driver commission if provided
@@ -390,7 +392,7 @@ export async function assignDeliveryStaff(
         'Dữ liệu đã bị thay đổi bởi người khác. Vui lòng tải lại trang.',
       );
     }
-    throw error;
+    throw new Error(error.message || String(error));
   }
 }
 
@@ -415,9 +417,10 @@ export async function deleteShipmentFull(shipmentId: string): Promise<void> {
   });
 
   if (error) {
-    if (error.message?.includes('SHIPMENT_NOT_PREPARING'))
-      throw new Error('Chi co the xoa phieu xuat o trang thai chuan bi.');
-    throw error;
+    if (error.message?.includes('SHIPMENT_NOT_PREPARING')) {
+      throw new Error('Chỉ có thể xóa phiếu xuất ở trạng thái chuẩn bị.');
+    }
+    throw new Error(error.message || String(error));
   }
 }
 /* ── Create shipment from finished fabric rolls (calls atomic RPC) ── */
@@ -440,7 +443,7 @@ export async function createShipmentFromFinishedFabric(input: {
     if (error.message?.includes('NO_ROLLS_SELECTED')) {
       throw new Error('Vui lòng chọn ít nhất một cuộn vải để xuất kho.');
     }
-    throw error;
+    throw new Error(error.message || String(error));
   }
 
   // RPC returns SETOF TABLE, so data is an array of records

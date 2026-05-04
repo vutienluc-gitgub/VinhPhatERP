@@ -3,7 +3,7 @@ import type {
   SupplierInsert,
   SupplierUpdate,
 } from '@/domain/crm/suppliers.types';
-import { supabase } from '@/services/supabase/client';
+import { supabase, untypedDb } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
@@ -12,6 +12,13 @@ import { validateApiInput } from '@/lib/validate-api-input';
 import { apiSupplierInsert } from '@/schema/api-validation.schema';
 
 const TABLE = 'suppliers';
+
+export type SupplierPrice = {
+  unit_price: number;
+  uom: string;
+  moq: number;
+  lead_time_days: number;
+};
 
 export type SupplierFilter = {
   status?: string;
@@ -26,8 +33,8 @@ export async function fetchSuppliersPaginated(
   const from = (page - 1) * DEFAULT_PAGE_SIZE;
   const to = from + DEFAULT_PAGE_SIZE - 1;
 
-  let query = supabase
-    .from(TABLE)
+  let query = untypedDb
+    .from('v_supplier_full')
     .select('*', { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(from, to);
@@ -55,8 +62,8 @@ export async function fetchSuppliersPaginated(
 export async function fetchSuppliers(
   filters: { status?: string; category?: string; search?: string } = {},
 ): Promise<Supplier[]> {
-  let query = supabase
-    .from(TABLE)
+  let query = untypedDb
+    .from('v_supplier_full')
     .select('*')
     .order('name', { ascending: true });
   if (filters.status) query = query.eq('status', filters.status as never);
@@ -178,11 +185,13 @@ export async function updateSupplierRpc(
   row: SupplierUpdate,
   expectedUpdatedAt?: string,
 ): Promise<unknown> {
-  const { data, error } = await supabase.rpc('rpc_update_supplier', {
+  // Use untypedDb because generated types still declare p_category as enum supplier_category
+  // After `supabase gen types`, migrate back to typed `supabase` client
+  const { data, error } = await untypedDb.rpc('rpc_update_supplier', {
     p_id: id,
     p_code: row.code!,
     p_name: row.name!,
-    p_category: row.category!,
+    p_category: row.category,
     p_phone: row.phone ?? undefined,
     p_email: row.email ?? undefined,
     p_address: row.address ?? undefined,
@@ -201,7 +210,11 @@ export async function updateSupplierRpc(
       );
     if (error.message.includes('NOT_FOUND'))
       throw new Error('Bản ghi không tồn tại hoặc đã bị xóa.');
-    throw error;
+    if (error.message.includes('INVALID_CATEGORY'))
+      throw new Error('Danh mục nhà cung cấp không hợp lệ. Vui lòng chọn lại.');
+    throw new Error(
+      error.message || 'Lỗi không xác định khi cập nhật nhà cung cấp.',
+    );
   }
   return data;
 }
@@ -218,7 +231,11 @@ export async function updateSupplier(
     tax_code: row.tax_code?.trim() || null,
   };
 
-  let query = supabase.from(TABLE).update(sanitizedRow).eq('id', id);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let query = supabase
+    .from(TABLE)
+    .update(sanitizedRow as any)
+    .eq('id', id);
 
   if (expectedUpdatedAt) {
     query = query.eq('updated_at', expectedUpdatedAt);
@@ -245,4 +262,72 @@ export async function updateSupplier(
 export async function deleteSupplier(id: string): Promise<void> {
   const { error } = await supabase.from(TABLE).delete().eq('id', id);
   if (error) throw error;
+}
+
+export async function fetchSupplierPrice(
+  supplierId: string,
+  materialId: string,
+): Promise<SupplierPrice | null> {
+  if (!supplierId || !materialId) return null;
+  const { data, error } = await untypedDb.rpc('rpc_get_supplier_price', {
+    p_supplier_id: supplierId,
+    p_material_id: materialId,
+  });
+  if (error) throw error;
+  if (!data || !Array.isArray(data) || data.length === 0) return null;
+  return data[0] as SupplierPrice;
+}
+
+export async function fetchAllSupplierPrices(
+  supplierId: string,
+): Promise<(SupplierPrice & { material_id: string })[]> {
+  const { data, error } = await untypedDb
+    .from('supplier_material_prices')
+    .select('*')
+    .eq('supplier_id', supplierId)
+    .eq('is_active', true)
+    .order('material_id', { ascending: true });
+
+  if (error) throw error;
+  return data as (SupplierPrice & { material_id: string })[];
+}
+
+export async function upsertSupplierPrice(
+  supplierId: string,
+  priceData: {
+    material_id: string;
+    unit_price: number;
+    uom: string;
+    moq: number;
+    lead_time_days: number;
+  },
+): Promise<void> {
+  const { error } = await untypedDb.from('supplier_material_prices').upsert(
+    {
+      supplier_id: supplierId,
+      material_id: priceData.material_id,
+      unit_price: priceData.unit_price,
+      uom: priceData.uom,
+      moq: priceData.moq,
+      lead_time_days: priceData.lead_time_days,
+      valid_from: new Date().toISOString().split('T')[0],
+    },
+    { onConflict: 'supplier_id,material_id,valid_from' },
+  );
+
+  if (error) throw error;
+}
+
+export async function fetchSupplierCategories(): Promise<
+  { code: string; name: string }[]
+> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
+    .from('supplier_categories')
+    .select('code, name')
+    .eq('is_active', true)
+    .order('name');
+  if (error) throw error;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data as any) || [];
 }

@@ -21,9 +21,27 @@ export type FinishedFabricRoll = TableRow<'finished_fabric_rolls'> & {
   price_tier?: Record<string, unknown> | null;
   /** Populated via join from raw_fabric_rolls — source roll number for traceability */
   raw_roll_number?: string | null;
+  /** Virtual fields from UI/backend (or new migrations) */
+  supplier_id?: string | null;
+  purchase_price?: number | null;
+  suppliers?: { name: string; code: string } | null;
 };
-export type FinishedFabricRollInsert = TableInsert<'finished_fabric_rolls'>;
-export type FinishedFabricRollUpdate = TableUpdate<'finished_fabric_rolls'>;
+export type FinishedFabricRollInsert = Omit<
+  TableInsert<'finished_fabric_rolls'>,
+  'raw_roll_id'
+> & {
+  raw_roll_id?: string | null;
+  supplier_id?: string | null;
+  purchase_price?: number | null;
+};
+export type FinishedFabricRollUpdate = Omit<
+  TableUpdate<'finished_fabric_rolls'>,
+  'raw_roll_id'
+> & {
+  raw_roll_id?: string | null;
+  supplier_id?: string | null;
+  purchase_price?: number | null;
+};
 
 export type FinishedFabricFilter = {
   status?: RollStatus;

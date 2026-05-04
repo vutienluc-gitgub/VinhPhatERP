@@ -28,7 +28,18 @@ const optionalPositiveNum = z.preprocess(
 
 export const finishedFabricSchema = z.object({
   roll_number: z.string().trim().min(2, 'Mã cuộn phải có ít nhất 2 ký tự'),
-  raw_roll_id: z.string().uuid('Phải chọn cuộn vải mộc nguồn'),
+  raw_roll_id: z
+    .string()
+    .uuid('Phải chọn cuộn vải mộc nguồn')
+    .optional()
+    .or(z.literal('')),
+  supplier_id: z
+    .string()
+    .uuid('ID Nhà cung cấp không hợp lệ')
+    .nullable()
+    .optional(),
+  purchase_price: optionalPositiveNum,
+  lot_number: z.string().trim().optional().or(z.literal('')),
   fabric_type: z.string().trim().min(2, 'Loại vải không được để trống'),
   color_name: z.string().trim().optional().or(z.literal('')),
   color_code: z.string().trim().max(20).optional().or(z.literal('')),
@@ -47,7 +58,10 @@ export type FinishedFabricFormValues = z.infer<typeof finishedFabricSchema>;
 
 export const finishedFabricDefaults: FinishedFabricFormValues = {
   roll_number: '',
-  raw_roll_id: '' as unknown as string,
+  raw_roll_id: '',
+  supplier_id: null,
+  purchase_price: undefined,
+  lot_number: '',
   fabric_type: '',
   color_name: '',
   color_code: '',
@@ -64,7 +78,7 @@ export const finishedFabricDefaults: FinishedFabricFormValues = {
 
 export const bulkFinishedRollRowSchema = z.object({
   roll_number: z.string().trim().min(2, 'Mã cuộn phải có ít nhất 2 ký tự'),
-  raw_roll_id: z.string().uuid('Phải chọn cuộn mộc nguồn'),
+  raw_roll_id: z.string().uuid('ID không hợp lệ').or(z.literal('')),
   weight_kg: z.preprocess(
     (val) =>
       val === '' || val === null || val === undefined ? undefined : Number(val),
@@ -95,6 +109,13 @@ export const bulkFinishedInputSchema = z
       z.number().int().min(1, 'Số bắt đầu phải ≥ 1'),
     ),
     rolls: z.array(bulkFinishedRollRowSchema).min(1, 'Phải có ít nhất 1 cuộn'),
+    source_type: z.enum(['produced', 'purchased']).default('produced'),
+    supplier_id: z
+      .string()
+      .uuid('ID Nhà cung cấp không hợp lệ')
+      .nullable()
+      .optional(),
+    purchase_price: optionalPositiveNum,
   })
   .superRefine((values, ctx) => {
     const duplicates = findDuplicateRollNumbers(values.rolls);
@@ -109,11 +130,42 @@ export const bulkFinishedInputSchema = z
         }
       });
     }
+
+    if (values.source_type === 'purchased') {
+      if (!values.supplier_id) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['supplier_id'],
+          message: 'Bắt buộc chọn Nhà cung cấp khi Nhập thương mại',
+        });
+      }
+    }
   });
 
 export type BulkFinishedInputFormValues = z.infer<
   typeof bulkFinishedInputSchema
 >;
+
+/**
+ * Input type for form initial/intermediate state.
+ * weight_kg may be undefined before user input — Zod validates at submit.
+ */
+export type BulkFinishedRollRowInput = Omit<
+  BulkFinishedRollRow,
+  'weight_kg'
+> & {
+  weight_kg: number | undefined;
+};
+
+/** Initial empty row — Zod validates the complete values at submit time. */
+const EMPTY_ROLL: BulkFinishedRollRowInput = {
+  roll_number: formatBulkRollNumber('FN-', 1),
+  raw_roll_id: '',
+  weight_kg: undefined,
+  length_m: undefined,
+  quality_grade: undefined,
+  notes: '',
+};
 
 export const bulkFinishedInputDefaults: BulkFinishedInputFormValues = {
   lot_number: '',
@@ -127,14 +179,8 @@ export const bulkFinishedInputDefaults: BulkFinishedInputFormValues = {
   production_date: '',
   roll_prefix: 'FN-',
   start_number: 1,
-  rolls: [
-    {
-      roll_number: formatBulkRollNumber('FN-', 1),
-      raw_roll_id: '' as unknown as string,
-      weight_kg: undefined as unknown as number,
-      length_m: undefined,
-      quality_grade: undefined,
-      notes: '',
-    },
-  ],
-};
+  source_type: 'produced',
+  supplier_id: null,
+  purchase_price: undefined,
+  rolls: [EMPTY_ROLL],
+} as BulkFinishedInputFormValues;

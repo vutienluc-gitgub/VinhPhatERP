@@ -24,6 +24,7 @@ const dateStr = z.string().regex(/^\d{4}-\d{2}-\d{2}/, 'Ngày không hợp lệ'
 // ── Orders ────────────────────────────────────────────────────────────────
 export const apiOrderHeader = z.object({
   order_number: nonEmpty.optional(),
+  order_type: z.enum(['production', 'trading']).default('production'),
   customer_id: uuid,
   order_date: dateStr,
   delivery_date: z.string().nullable().optional(),

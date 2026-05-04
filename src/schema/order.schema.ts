@@ -10,6 +10,18 @@ export type OrderStatus =
   | 'completed'
   | 'cancelled';
 
+export type OrderType = 'production' | 'trading';
+
+export const ORDER_TYPE_OPTIONS = [
+  { value: 'production', label: 'Sản xuất' },
+  { value: 'trading', label: 'Thương mại' },
+] as const;
+
+export const ORDER_TYPE_LABELS: Record<OrderType, string> = {
+  production: 'Sản xuất',
+  trading: 'Thương mại',
+};
+
 /* ── Configs & Labels ── */
 
 export const ORDER_STATUSES = [
@@ -86,6 +98,7 @@ export const ordersBaseSchema = z.object({
     })
     .optional()
     .default(''),
+  orderType: z.enum(['production', 'trading']).default('production'),
   customerId: z.string().uuid('Chọn khách hàng'),
   orderDate: z.string().trim().min(1, 'Chọn ngày đặt hàng'),
   deliveryDate: z.string().trim().optional().or(z.literal('')),
@@ -136,6 +149,7 @@ export const emptyOrderItem: OrderItemFormValues = {
 
 export const ordersDefaultValues: OrdersFormValues = {
   orderNumber: '',
+  orderType: 'production',
   customerId: '',
   orderDate: new Date().toISOString().slice(0, 10),
   deliveryDate: '',
