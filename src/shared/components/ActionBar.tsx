@@ -1,4 +1,4 @@
-import { Icon } from './Icon';
+import { ActionMenu } from './ActionMenu';
 import type { IconName } from './Icon';
 
 export interface ActionConfig {
@@ -14,20 +14,19 @@ interface ActionBarProps {
 }
 
 export function ActionBar({ actions }: ActionBarProps) {
+  if (!actions || actions.length === 0) return null;
+
+  const items = actions.map((action) => ({
+    label: action.title || 'Thao tác',
+    icon: action.icon,
+    onClick: action.onClick,
+    danger: action.variant === 'danger',
+    disabled: action.disabled,
+  }));
+
   return (
-    <div className="flex justify-end gap-1">
-      {actions.map((action, idx) => (
-        <button
-          key={idx}
-          type="button"
-          className={`btn-icon${action.variant === 'danger' ? ' danger' : ''}`}
-          title={action.title}
-          disabled={action.disabled}
-          onClick={action.onClick}
-        >
-          <Icon name={action.icon} size={16} />
-        </button>
-      ))}
+    <div className="flex justify-end">
+      <ActionMenu items={items} />
     </div>
   );
 }

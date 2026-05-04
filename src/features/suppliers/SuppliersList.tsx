@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import type { ColumnDef } from '@tanstack/react-table';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
   Badge,
-  DataTable,
+  DataTableAdvanced,
   AddButton,
-  ActionBar,
+  ActionMenu,
   FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
@@ -82,14 +83,119 @@ export function SuppliersList({
     setFilter(key, value);
   }
 
-  async function handleDelete(supplier: Supplier) {
-    const ok = await confirm({
-      message: `Xóa NCC "${supplier.name}"? Hành động này không thể hoàn tác.`,
-      variant: 'danger',
-    });
-    if (!ok) return;
-    deleteMutation.mutate(supplier.id);
-  }
+  const handleDelete = useCallback(
+    async (supplier: Supplier) => {
+      const ok = await confirm({
+        message: `Xóa NCC "${supplier.name}"? Hành động này không thể hoàn tác.`,
+        variant: 'danger',
+      });
+      if (!ok) return;
+      deleteMutation.mutate(supplier.id);
+    },
+    [confirm, deleteMutation],
+  );
+
+  const columns = useMemo<ColumnDef<Supplier>[]>(
+    () => [
+      {
+        accessorKey: 'code',
+        header: 'Mã NCC',
+        cell: ({ row }) => (
+          <span className="font-bold text-primary">{row.original.code}</span>
+        ),
+      },
+      {
+        accessorKey: 'name',
+        header: 'Tên nhà cung cấp',
+        cell: ({ row }) => {
+          const s = row.original;
+          return (
+            <div className="flex flex-col">
+              <span className="font-bold">{s.name}</span>
+              {s.address && (
+                <span className="text-xs text-muted truncate max-w-[250px]">
+                  {s.address}
+                </span>
+              )}
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: 'category',
+        header: 'Danh mục',
+        cell: ({ row }) => (
+          <span className="badge-outline">
+            {SUPPLIER_CATEGORY_LABELS[row.original.category]}
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'phone',
+        header: 'Liên hệ',
+        meta: { className: 'td-muted' },
+        cell: ({ row }) => {
+          const s = row.original;
+          return (
+            <div className="flex flex-col text-sm">
+              {s.phone && <span>{s.phone}</span>}
+              {s.contact_person && (
+                <span className="text-xs">NLH: {s.contact_person}</span>
+              )}
+              {!s.phone && !s.contact_person && '—'}
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: 'status',
+        header: 'Trạng thái',
+        cell: ({ row }) => {
+          const s = row.original;
+          return (
+            <Badge variant={s.status === 'active' ? 'success' : 'gray'}>
+              {SUPPLIER_STATUS_LABELS[s.status]}
+            </Badge>
+          );
+        },
+      },
+      {
+        id: 'actions',
+        header: () => <div className="text-right">Thao tác</div>,
+        meta: { className: 'text-right' },
+        cell: ({ row }) => {
+          const s = row.original;
+          return (
+            <div className="flex justify-end">
+              <ActionMenu
+                items={[
+                  {
+                    icon: 'FileText',
+                    onClick: () => onCreateContract(s),
+                    label: 'Tạo hợp đồng',
+                  },
+                  {
+                    icon: 'Pencil',
+                    onClick: () => onEdit(s),
+                    label: 'Sửa',
+                  },
+                  {
+                    icon: 'Trash2',
+                    onClick: () => handleDelete(s),
+                    label: 'Xóa',
+                    danger: true,
+                    disabled: deleteMutation.isPending,
+                    separated: true,
+                  },
+                ]}
+              />
+            </div>
+          );
+        },
+      },
+    ],
+    [onCreateContract, onEdit, handleDelete, deleteMutation.isPending],
+  );
 
   return (
     <div className="panel-card card-flush">
@@ -155,7 +261,7 @@ export function SuppliersList({
       )}
 
       {/* Table & Cards */}
-      <DataTable
+      <DataTableAdvanced
         data={suppliers}
         isLoading={isLoading}
         rowKey={(s) => s.id}
@@ -171,94 +277,8 @@ export function SuppliersList({
         emptyStateIcon={hasFilter ? 'Search' : 'Truck'}
         emptyStateActionLabel={!hasFilter ? '+ Thêm NCC mới' : undefined}
         onEmptyStateAction={!hasFilter ? onNew : undefined}
-        columns={[
-          {
-            header: 'Mã NCC',
-            id: 'code',
-            sortable: true,
-            cell: (s) => (
-              <span className="font-bold text-primary">{s.code}</span>
-            ),
-          },
-          {
-            header: 'Tên nhà cung cấp',
-            id: 'name',
-            sortable: true,
-            cell: (s) => (
-              <div className="flex flex-col">
-                <span className="font-bold">{s.name}</span>
-                {s.address && (
-                  <span className="text-xs text-muted truncate max-w-[250px]">
-                    {s.address}
-                  </span>
-                )}
-              </div>
-            ),
-          },
-          {
-            header: 'Danh mục',
-            id: 'category',
-            sortable: true,
-            cell: (s) => (
-              <span className="badge-outline">
-                {SUPPLIER_CATEGORY_LABELS[s.category]}
-              </span>
-            ),
-          },
-          {
-            header: 'Liên hệ',
-            id: 'phone',
-            sortable: true,
-            className: 'td-muted',
-            cell: (s) => (
-              <div className="flex flex-col text-sm">
-                {s.phone && <span>{s.phone}</span>}
-                {s.contact_person && (
-                  <span className="text-xs">NLH: {s.contact_person}</span>
-                )}
-                {!s.phone && !s.contact_person && '—'}
-              </div>
-            ),
-          },
-          {
-            header: 'Trạng thái',
-            id: 'status',
-            sortable: true,
-            cell: (s) => (
-              <Badge variant={s.status === 'active' ? 'success' : 'gray'}>
-                {SUPPLIER_STATUS_LABELS[s.status]}
-              </Badge>
-            ),
-          },
-          {
-            header: 'Thao tác',
-            className: 'text-right',
-            onCellClick: () => {},
-            cell: (s) => (
-              <ActionBar
-                actions={[
-                  {
-                    icon: 'FileText',
-                    onClick: () => onCreateContract(s),
-                    title: 'Tạo hợp đồng',
-                  },
-                  {
-                    icon: 'Pencil',
-                    onClick: () => onEdit(s),
-                    title: 'Sửa',
-                  },
-                  {
-                    icon: 'Trash2',
-                    onClick: () => handleDelete(s),
-                    title: 'Xóa',
-                    variant: 'danger',
-                    disabled: deleteMutation.isPending,
-                  },
-                ]}
-              />
-            ),
-          },
-        ]}
+        columns={columns}
+        exportFileName="danh_sach_ncc"
         renderMobileCard={(s) => (
           <div className="mobile-card">
             <div className="mobile-card-header">
