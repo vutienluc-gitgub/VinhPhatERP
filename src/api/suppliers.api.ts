@@ -231,10 +231,9 @@ export async function updateSupplier(
     tax_code: row.tax_code?.trim() || null,
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let query = supabase
     .from(TABLE)
-    .update(sanitizedRow as any)
+    .update(sanitizedRow as SupplierUpdate)
     .eq('id', id);
 
   if (expectedUpdatedAt) {
