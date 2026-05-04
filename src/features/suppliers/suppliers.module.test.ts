@@ -10,6 +10,9 @@ import {
   supplierSchema,
 } from '@/features/suppliers/suppliers.module';
 
+/** supplierDefaults có category='' (không pass min(1)), cần override cho test */
+const testDefaults = { ...supplierDefaults, category: 'yarn' };
+
 describe('suppliers.module', () => {
   it('accepts valid supplier data', () => {
     const result = supplierSchema.parse({
@@ -62,7 +65,7 @@ describe('suppliers.module', () => {
   it('validates tax_code format (10 or 13 digits)', () => {
     expect(
       supplierSchema.safeParse({
-        ...supplierDefaults,
+        ...testDefaults,
         code: 'T1',
         name: 'Test',
         tax_code: '0312345678',
@@ -71,7 +74,7 @@ describe('suppliers.module', () => {
 
     expect(
       supplierSchema.safeParse({
-        ...supplierDefaults,
+        ...testDefaults,
         code: 'T2',
         name: 'Test',
         tax_code: '0312345678901',
@@ -80,7 +83,7 @@ describe('suppliers.module', () => {
 
     expect(
       supplierSchema.safeParse({
-        ...supplierDefaults,
+        ...testDefaults,
         code: 'T3',
         name: 'Test',
         tax_code: '12345',
