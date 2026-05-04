@@ -1,15 +1,20 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useRef, useState, useMemo } from 'react';
+import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
+import type { UseFormWatch } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { StepperFooter } from '@/shared/components/StepperFooter';
 import { Combobox } from '@/shared/components/Combobox';
 import {
   useColorOptions,
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
 import { useStepper } from '@/shared/hooks/useStepper';
+import { useAutoSave, loadDraft, clearDraft } from '@/shared/hooks/useAutoSave';
+import DraftBanner from '@/shared/components/DraftBanner';
+import SaveStatus from '@/shared/components/SaveStatus';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 import type { RollMatrixItem } from '@/shared/components/roll-grid';
@@ -35,6 +40,26 @@ import type { FinishedFabricRoll } from './types';
 type Props = {
   onClose: () => void;
 };
+
+const DRAFT_KEY = 'finished-fabric-bulk-draft';
+
+/**
+ * Isolated sub-component for auto-save.
+ * Re-renders caused by watch() are confined here.
+ */
+function AutoSaveSubscriber({
+  watch,
+}: {
+  watch: UseFormWatch<BulkFinishedInputFormValues>;
+}) {
+  const formValues = watch();
+  const { status: saveStatus, lastSavedAt } = useAutoSave({
+    key: DRAFT_KEY,
+    data: formValues,
+    delay: 800,
+  });
+  return <SaveStatus status={saveStatus} lastSavedAt={lastSavedAt} />;
+}
 
 const QUALITY_OPTIONS = [
   { value: '', label: 'Chưa kiểm định' },
@@ -164,10 +189,11 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
     null,
   );
   const [importError, setImportError] = useState<string | null>(null);
+  const [showDraftBanner, setShowDraftBanner] = useState(false);
+  const [savedDraft, setSavedDraft] =
+    useState<BulkFinishedInputFormValues | null>(null);
   const { exportExcel, exportPdf } = useFinishedFabricExport();
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const stepper = useStepper({ totalSteps: 2 });
 
   const {
     register,
@@ -175,7 +201,9 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
     control,
     setValue,
     trigger,
-    formState: { errors, isValid, isSubmitting },
+    reset,
+    watch,
+    formState: { errors, isValid, isSubmitting, isDirty },
   } = useForm<BulkFinishedInputFormValues>({
     resolver: zodResolver(bulkFinishedInputSchema),
     defaultValues: bulkFinishedInputDefaults,
@@ -186,6 +214,89 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
     control,
     name: 'rolls',
   });
+
+  const stepper = useStepper({
+    totalSteps: 2,
+    stepValidation: {
+      0: async () => {
+        const stepValid = await trigger([
+          'lot_number',
+          'fabric_type',
+          'width_cm',
+          'roll_prefix',
+          'start_number',
+        ]);
+        if (!stepValid) return false;
+
+        // Nếu có cuộn mộc trong lô, tự động điền vào grid
+        if (rawRollsForLot.length > 0 && fields.length <= 1) {
+          for (let i = fields.length - 1; i >= 0; i--) remove(i);
+          const newRows = rawRollsForLot.map((rawRoll, i) => ({
+            roll_number: getRollNumber(i),
+            raw_roll_id: rawRoll.id as unknown as string,
+            weight_kg: undefined as unknown as number,
+            length_m: undefined,
+            quality_grade: undefined,
+            notes: '',
+          }));
+          append(newRows);
+        }
+        return true;
+      },
+    },
+    onCancel: () => {
+      if (isDirty) {
+        if (
+          !window.confirm(
+            'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
+          )
+        ) {
+          return false;
+        }
+      }
+      onClose();
+      return true;
+    },
+  });
+
+  const handleCancel = useCallback(() => {
+    if (isDirty) {
+      if (
+        !window.confirm(
+          'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
+        )
+      ) {
+        return false;
+      }
+    }
+    onClose();
+    return true;
+  }, [isDirty, onClose]);
+
+  // ── DRAFT RESTORATION ──
+  const draftCheckedRef = useRef(false);
+  useEffect(() => {
+    if (draftCheckedRef.current) return;
+    draftCheckedRef.current = true;
+    const draft = loadDraft<BulkFinishedInputFormValues>(DRAFT_KEY);
+    if (draft && draft.lot_number) {
+      setSavedDraft(draft);
+      setShowDraftBanner(true);
+    }
+  }, []);
+
+  function handleRestoreDraft() {
+    if (!savedDraft) return;
+    reset(savedDraft);
+    setShowDraftBanner(false);
+    setSavedDraft(null);
+  }
+
+  function handleDiscardDraft() {
+    clearDraft(DRAFT_KEY);
+    setShowDraftBanner(false);
+    setSavedDraft(null);
+  }
 
   const rolls = useWatch({
     control,
@@ -248,40 +359,11 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
     };
   });
 
-  async function handleNextStep() {
-    if (stepper.currentStep === 0) {
-      const stepValid = await trigger([
-        'lot_number',
-        'fabric_type',
-        'width_cm',
-        'roll_prefix',
-        'start_number',
-      ]);
-      if (!stepValid) return;
-
-      // Nếu có cuộn mộc trong lô, tự động điền vào grid
-      if (rawRollsForLot.length > 0 && fields.length <= 1) {
-        // Xóa dòng hiện tại rồi tạo lại theo số cuộn mộc
-        for (let i = fields.length - 1; i >= 0; i--) remove(i);
-        const newRows = rawRollsForLot.map((rawRoll, i) => ({
-          roll_number: getRollNumber(i),
-          raw_roll_id: rawRoll.id as unknown as string,
-          weight_kg: undefined as unknown as number,
-          length_m: undefined,
-          quality_grade: undefined,
-          notes: '',
-        }));
-        append(newRows);
-      }
-
-      stepper.next();
-    }
-  }
-
   async function onSubmit(values: BulkFinishedInputFormValues) {
     if (!stepper.isLast) return;
     try {
       const saved = await bulkMutation.mutateAsync(values);
+      clearDraft(DRAFT_KEY);
       setSavedRolls(saved);
     } catch {
       // lỗi hiển thị qua bulkMutation.error bên dưới
@@ -363,7 +445,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
   return (
     <AdaptiveSheet
       open={true}
-      onClose={onClose}
+      onClose={handleCancel}
       title="Nhập nhanh cuộn vải thành phẩm"
       stepInfo={
         savedRolls
@@ -421,6 +503,13 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
         </div>
       ) : (
         <>
+          {showDraftBanner && (
+            <DraftBanner
+              onRestore={handleRestoreDraft}
+              onDiscard={handleDiscardDraft}
+            />
+          )}
+
           {bulkMutation.error && (
             <p className="error-inline mb-4 whitespace-pre-line">
               Lỗi:{' '}
@@ -433,6 +522,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
           <form
             id="finished-fabric-bulk-form"
             onSubmit={handleSubmit(onSubmit)}
+            onKeyDown={stepper.handleKeyDown}
             noValidate
           >
             {/* ── BƯỚC 1: CẤU HÌNH NHẬP & NHẢY MÃ ── */}
@@ -714,53 +804,15 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                 </div>
               </fieldset>
             </div>
-
-            {/* ===== ACTIONS ===== */}
-            <div className="modal-footer mt-6 p-0 border-none justify-between">
-              <div>
-                {!stepper.isFirst && (
-                  <Button
-                    variant="secondary"
-                    type="button"
-                    onClick={stepper.prev}
-                    disabled={isPending}
-                  >
-                    Quay lại
-                  </Button>
-                )}
-                {stepper.isFirst && (
-                  <Button
-                    variant="secondary"
-                    type="button"
-                    onClick={onClose}
-                    disabled={isPending}
-                  >
-                    Hủy
-                  </Button>
-                )}
-              </div>
-
-              <div>
-                {!stepper.isLast ? (
-                  <button
-                    className="primary-button btn-standard"
-                    type="button"
-                    onClick={handleNextStep}
-                    disabled={isPending}
-                  >
-                    Tiếp tục
-                  </button>
-                ) : (
-                  <button
-                    className="primary-button btn-standard"
-                    type="submit"
-                    disabled={isPending || !isValid || totalRolls === 0}
-                  >
-                    {isPending ? 'Đang lưu...' : `Lưu ${totalRolls} cuộn`}
-                  </button>
-                )}
-              </div>
-            </div>
+            <StepperFooter
+              stepper={stepper}
+              onCancel={handleCancel}
+              isPending={isPending}
+              submitDisabled={!isValid || totalRolls === 0}
+              submitLabel={`Lưu ${totalRolls} cuộn`}
+            >
+              <AutoSaveSubscriber watch={watch} />
+            </StepperFooter>
           </form>
         </>
       )}

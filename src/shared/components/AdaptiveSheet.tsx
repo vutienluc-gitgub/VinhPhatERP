@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import { createPortal } from 'react-dom';
 
 type AdaptiveSheetProps = {
@@ -28,6 +34,9 @@ type AdaptiveSheetProps = {
  *
  * Tận dụng CSS media queries trong `.modal-overlay` / `.modal-sheet`
  * để tự động chuyển đổi layout mà KHÔNG cần JS detect.
+ *
+ * Exit animation: Khi `open` chuyển từ true → false, component sẽ
+ * phát animation đóng (fade-out + slide-down) trước khi unmount.
  */
 export function AdaptiveSheet({
   open,
@@ -40,10 +49,35 @@ export function AdaptiveSheet({
   maxWidth,
 }: AdaptiveSheetProps) {
   const sheetRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  // Track whether DOM should be mounted (includes exit animation phase)
+  const [visible, setVisible] = useState(open);
+  // Track closing state for CSS animation class
+  const [closing, setClosing] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      // Opening: mount immediately
+      setVisible(true);
+      setClosing(false);
+    } else if (visible && !closing) {
+      // Closing: trigger exit animation
+      setClosing(true);
+    }
+  }, [open, visible, closing]);
+
+  // Handle animation end to unmount after exit animation completes
+  const handleAnimationEnd = useCallback(() => {
+    if (closing) {
+      setClosing(false);
+      setVisible(false);
+    }
+  }, [closing]);
 
   // Trap focus bên trong sheet
   useEffect(() => {
-    if (!open) return;
+    if (!visible || closing) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -80,11 +114,11 @@ export function AdaptiveSheet({
       document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
     };
-  }, [open, onClose]);
+  }, [visible, closing, onClose]);
 
   // Auto-focus vào sheet khi mở
   useEffect(() => {
-    if (open && sheetRef.current) {
+    if (visible && !closing && sheetRef.current) {
       const firstInput = sheetRef.current.querySelector<HTMLElement>(
         'input:not([type="hidden"]), select, textarea',
       );
@@ -93,7 +127,7 @@ export function AdaptiveSheet({
         requestAnimationFrame(() => firstInput.focus());
       }
     }
-  }, [open]);
+  }, [visible, closing]);
 
   const isMouseDownOnOverlay = useRef(false);
 
@@ -111,20 +145,30 @@ export function AdaptiveSheet({
     [onClose],
   );
 
-  if (!open) return null;
+  if (!visible) return null;
 
   const mount = document.getElementById('modal-root');
   if (!mount) return null;
 
+  const overlayClass = closing
+    ? 'modal-overlay modal-overlay--closing'
+    : 'modal-overlay';
+
+  const sheetClass = closing
+    ? 'modal-sheet modal-sheet--closing'
+    : 'modal-sheet';
+
   return createPortal(
     <div
-      className="modal-overlay"
+      ref={overlayRef}
+      className={overlayClass}
       onClick={handleOverlayClick}
       onPointerDown={handlePointerDown}
+      onAnimationEnd={handleAnimationEnd}
     >
       <div
         ref={sheetRef}
-        className="modal-sheet"
+        className={sheetClass}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}

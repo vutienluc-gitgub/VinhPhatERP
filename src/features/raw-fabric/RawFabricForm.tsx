@@ -1,9 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useForm, Controller, useWatch } from 'react-hook-form';
+import type { UseFormWatch } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { StepperFooter } from '@/shared/components/StepperFooter';
 import { Combobox } from '@/shared/components/Combobox';
 // eslint-disable-next-line boundaries/dependencies
 import { QuickSupplierForm } from '@/features/suppliers/QuickSupplierForm';
@@ -12,6 +14,9 @@ import {
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
 import { useStepper } from '@/shared/hooks/useStepper';
+import { useAutoSave, loadDraft, clearDraft } from '@/shared/hooks/useAutoSave';
+import DraftBanner from '@/shared/components/DraftBanner';
+import SaveStatus from '@/shared/components/SaveStatus';
 import {
   useCreateRawFabric,
   useUpdateRawFabric,
@@ -30,6 +35,26 @@ import {
 import type { RawFabricFormValues } from '@/schema/raw-fabric.schema';
 
 import type { RawFabricRoll } from './types';
+
+const DRAFT_KEY = 'raw-fabric-draft';
+
+/**
+ * Isolated sub-component for auto-save.
+ * Re-renders caused by watch() are confined here.
+ */
+function AutoSaveSubscriber({
+  watch,
+}: {
+  watch: UseFormWatch<RawFabricFormValues>;
+}) {
+  const formValues = watch();
+  const { status: saveStatus, lastSavedAt } = useAutoSave({
+    key: DRAFT_KEY,
+    data: formValues,
+    delay: 800,
+  });
+  return <SaveStatus status={saveStatus} lastSavedAt={lastSavedAt} />;
+}
 
 const QUALITY_OPTIONS = [
   { value: '', label: 'Chưa kiểm định' },
@@ -74,6 +99,10 @@ function rollToFormValues(roll: RawFabricRoll): RawFabricFormValues {
 export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
   const isEditing = roll !== null;
   const [showQuickSupplier, setShowQuickSupplier] = useState(false);
+  const [showDraftBanner, setShowDraftBanner] = useState(false);
+  const [savedDraft, setSavedDraft] = useState<RawFabricFormValues | null>(
+    null,
+  );
   const createMutation = useCreateRawFabric();
   const updateMutation = useUpdateRawFabric();
   const { data: weavingPartners = [] } = useWeavingPartners();
@@ -108,8 +137,6 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
     [yarnReceipts],
   );
 
-  const stepper = useStepper({ totalSteps: 3 });
-
   const {
     register,
     handleSubmit,
@@ -117,15 +144,81 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
     reset,
     setValue,
     trigger,
-    formState: { errors, isSubmitting },
+    watch,
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<RawFabricFormValues>({
     resolver: zodResolver(rawFabricSchema),
     defaultValues: isEditing ? rollToFormValues(roll) : rawFabricDefaults,
   });
 
+  const stepper = useStepper({
+    totalSteps: 3,
+    stepValidation: {
+      0: () =>
+        trigger([
+          'roll_number',
+          'fabric_type',
+          'width_cm',
+          'length_m',
+          'weight_kg',
+        ]),
+      1: () => trigger(['status', 'quality_grade']),
+    },
+    onCancel: () => {
+      if (isDirty) {
+        if (
+          !window.confirm(
+            'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
+          )
+        ) {
+          return false;
+        }
+      }
+      onClose();
+      return true;
+    },
+  });
+
+  const handleCancel = useCallback(() => {
+    if (isDirty) {
+      if (
+        !window.confirm(
+          'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
+        )
+      ) {
+        return false;
+      }
+    }
+    onClose();
+    return true;
+  }, [isDirty, onClose]);
+
   useEffect(() => {
     reset(isEditing ? rollToFormValues(roll) : rawFabricDefaults);
   }, [roll, isEditing, reset]);
+
+  // ── DRAFT RESTORATION ──
+  useEffect(() => {
+    if (isEditing) return;
+    const draft = loadDraft<RawFabricFormValues>(DRAFT_KEY);
+    if (draft && draft.roll_number) {
+      setSavedDraft(draft);
+      setShowDraftBanner(true);
+    }
+  }, [isEditing]);
+
+  function handleRestoreDraft() {
+    if (!savedDraft) return;
+    reset(savedDraft);
+    setShowDraftBanner(false);
+    setSavedDraft(null);
+  }
+
+  function handleDiscardDraft() {
+    clearDraft(DRAFT_KEY);
+    setShowDraftBanner(false);
+    setSavedDraft(null);
+  }
 
   const workOrderId = useWatch({
     control,
@@ -194,24 +287,7 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
     yarnReceiptId
   );
 
-  async function handleNextStep() {
-    let isValid = false;
-    if (stepper.currentStep === 0) {
-      isValid = await trigger([
-        'roll_number',
-        'fabric_type',
-        'width_cm',
-        'length_m',
-        'weight_kg',
-      ]);
-    } else if (stepper.currentStep === 1) {
-      isValid = await trigger(['status', 'quality_grade']);
-    }
-
-    if (isValid) {
-      stepper.next();
-    }
-  }
+  // Stepper handles validation next
 
   async function onSubmit(values: RawFabricFormValues) {
     if (!stepper.isLast) {
@@ -228,6 +304,7 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
       } else {
         await createMutation.mutateAsync(values);
       }
+      clearDraft(DRAFT_KEY);
       onClose();
     } catch (_err) {
       // Lỗi được hiển thị qua mutation.error bên dưới
@@ -241,7 +318,7 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
   return (
     <AdaptiveSheet
       open={true}
-      onClose={onClose}
+      onClose={handleCancel}
       title={
         isEditing ? `Sửa cuộn: ${roll.roll_number}` : 'Nhập cuộn vải mộc mới'
       }
@@ -259,7 +336,19 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
         </p>
       )}
 
-      <form id="raw-fabric-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+      {showDraftBanner && (
+        <DraftBanner
+          onRestore={handleRestoreDraft}
+          onDiscard={handleDiscardDraft}
+        />
+      )}
+
+      <form
+        id="raw-fabric-form"
+        onSubmit={handleSubmit(onSubmit)}
+        onKeyDown={stepper.handleKeyDown}
+        noValidate
+      >
         <div className="form-grid">
           {/* ── BƯỚC 1: THÔNG TIN CƠ BẢN ── */}
           <div className={stepper.currentStep === 0 ? 'block' : 'hidden'}>
@@ -563,56 +652,14 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
           </div>
         </div>
 
-        {/* ── FOOTER ACTIONS ── */}
-        <div className="modal-footer mt-6 p-0 border-none justify-between">
-          <div>
-            {!stepper.isFirst && (
-              <Button
-                variant="secondary"
-                type="button"
-                onClick={stepper.prev}
-                disabled={isPending}
-              >
-                Quay lại
-              </Button>
-            )}
-            {stepper.isFirst && (
-              <Button
-                variant="secondary"
-                type="button"
-                onClick={onClose}
-                disabled={isPending}
-              >
-                Hủy
-              </Button>
-            )}
-          </div>
-
-          <div>
-            {!stepper.isLast ? (
-              <button
-                className="primary-button btn-standard"
-                type="button"
-                onClick={handleNextStep}
-                disabled={isPending}
-              >
-                Tiếp tục
-              </button>
-            ) : (
-              <button
-                className="primary-button btn-standard"
-                type="submit"
-                disabled={isPending}
-              >
-                {isPending
-                  ? 'Đang lưu...'
-                  : isEditing
-                    ? 'Lưu thay đổi'
-                    : 'Nhập kho'}
-              </button>
-            )}
-          </div>
-        </div>
+        <StepperFooter
+          stepper={stepper}
+          onCancel={handleCancel}
+          isPending={isPending}
+          submitLabel={isEditing ? 'Lưu thay đổi' : 'Nhập kho'}
+        >
+          <AutoSaveSubscriber watch={watch} />
+        </StepperFooter>
       </form>
     </AdaptiveSheet>
   );
