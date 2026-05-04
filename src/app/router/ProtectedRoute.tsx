@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
+import { AuthLoadingScreen } from '@/shared/components/AuthLoadingScreen';
 import type { UserRole } from '@/shared/types/database.models';
 
 interface ProtectedRouteProps {
@@ -12,11 +13,7 @@ export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps = {}) {
   const { session, loading, profile, isBlocked } = useAuth();
 
   if (loading) {
-    return (
-      <div className="auth-loading">
-        <p>Đang xác thực…</p>
-      </div>
-    );
+    return <AuthLoadingScreen />;
   }
 
   if (!session) {

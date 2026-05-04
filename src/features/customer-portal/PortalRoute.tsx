@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
+import { AuthLoadingScreen } from '@/shared/components/AuthLoadingScreen';
 
 /**
  * Route guard for /portal/* — only allows role 'customer'.
@@ -10,11 +11,7 @@ export function PortalRoute() {
   const { session, profile, loading, isBlocked } = useAuth();
 
   if (loading) {
-    return (
-      <div className="auth-loading">
-        <p>Đang xác thực…</p>
-      </div>
-    );
+    return <AuthLoadingScreen />;
   }
 
   if (!session) {

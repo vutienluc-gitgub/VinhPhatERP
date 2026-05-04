@@ -331,3 +331,60 @@
 .google-auth-btn:active {
   transform: translateY(0);
 }
+
+/* ── Auth Loading Screen ────────────────────────────────── */
+
+.auth-loading-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #1a1c1e, #0c0d0e);
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+}
+
+.auth-loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.auth-spinner {
+  margin-bottom: 2rem;
+  color: #6366f1;
+  filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.4));
+}
+
+.spin-icon {
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.auth-loading-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+  background: linear-gradient(135deg, #fff 0%, #a5a6a9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.5px;
+}
+
+.auth-loading-subtitle {
+  font-size: 0.9375rem;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 300px;
+  text-align: center;
+  line-height: 1.5;
+  margin: 0;
+}
