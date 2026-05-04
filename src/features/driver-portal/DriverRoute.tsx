@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 
+import { AuthLoadingScreen } from '@/shared/components/AuthLoadingScreen';
 import { useAuth } from '@/shared/hooks/useAuth';
 
 /**
@@ -10,11 +11,7 @@ export function DriverRoute() {
   const { session, loading, profile } = useAuth();
 
   if (loading) {
-    return (
-      <div className="auth-loading">
-        <p>Đang xác thực...</p>
-      </div>
-    );
+    return <AuthLoadingScreen />;
   }
 
   if (!session) {
