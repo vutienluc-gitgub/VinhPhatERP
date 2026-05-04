@@ -4,20 +4,17 @@ import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Pagination } from '@/shared/components/Pagination';
 import {
   Icon,
-  Badge,
-  type BadgeVariant,
   DataTable,
   ViewToggle,
   type ViewMode,
   AddButton,
   Button,
-  ActionBar,
   FilterBar,
   type FilterFieldConfig,
+  KpiCard,
 } from '@/shared/components';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
-import { formatQuantity } from '@/shared/utils/format';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 import {
   useDeleteFinishedFabric,
@@ -32,17 +29,12 @@ import {
   ROLL_STATUSES,
 } from '@/schema/finished-fabric.schema';
 
+import { canDeleteRoll, canEditRoll } from './transitions';
 import {
-  canDeleteRoll,
-  canEditRoll,
-  deleteBlockReason,
-  editBlockReason,
-} from './transitions';
-import type {
-  FinishedFabricFilter,
-  FinishedFabricRoll,
-  RollStatus,
-} from './types';
+  getFinishedFabricColumns,
+  renderFinishedFabricMobileCard,
+} from './FinishedFabricColumns';
+import type { FinishedFabricFilter, FinishedFabricRoll } from './types';
 import { groupRollsByLot } from './finished-fabric.utils';
 
 type FinishedFabricListProps = {
@@ -51,25 +43,6 @@ type FinishedFabricListProps = {
   onBulkNew: () => void;
   onTrace: (roll: FinishedFabricRoll) => void;
 };
-
-function getStatusVariant(status: RollStatus): BadgeVariant {
-  switch (status) {
-    case 'in_stock':
-      return 'success';
-    case 'reserved':
-      return 'info';
-    case 'in_process':
-      return 'purple';
-    case 'shipped':
-      return 'gray';
-    case 'damaged':
-      return 'danger';
-    case 'written_off':
-      return 'gray';
-    default:
-      return 'gray';
-  }
-}
 
 export function FinishedFabricList({
   onEdit,
@@ -91,11 +64,12 @@ export function FinishedFabricList({
     error,
   } = useFinishedFabricList(filters as FinishedFabricFilter, page);
   const rolls = useMemo(() => result?.data ?? [], [result?.data]);
-  const { data: stats } = useFinishedFabricStats();
+  const { data: stats, isLoading: isStatsLoading } = useFinishedFabricStats();
   const deleteMutation = useDeleteFinishedFabric();
   const { confirm } = useConfirm();
   const { exportExcel } = useFinishedFabricExport();
   const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   async function handleDelete(roll: FinishedFabricRoll) {
     if (!canDeleteRoll(roll.status)) return;
@@ -167,8 +141,13 @@ export function FinishedFabricList({
               type="button"
               onClick={async () => {
                 setIsExporting(true);
+                setExportError(null);
                 try {
                   await exportExcel(filters as FinishedFabricFilter);
+                } catch (err) {
+                  setExportError(
+                    err instanceof Error ? err.message : String(err),
+                  );
                 } finally {
                   setIsExporting(false);
                 }
@@ -182,75 +161,41 @@ export function FinishedFabricList({
       </div>
 
       {/* KPI Dashboard */}
-      {stats && (
+      {(stats || isStatsLoading) && (
         <div className="kpi-section kpi-grid">
-          <div className="kpi-card-premium kpi-primary">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">Tổng thành phẩm</p>
-                <p className="kpi-value">
-                  {stats.totalRolls.toLocaleString('vi-VN')}
-                </p>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="Package" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              Cuộn đã hoàn tất công đoạn nhuộm
-            </div>
-          </div>
-
-          <div className="kpi-card-premium kpi-success">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">Tổng chiều dài</p>
-                <div className="flex items-baseline gap-1">
-                  <p className="kpi-value">
-                    {stats.totalLengthM.toLocaleString('vi-VN', {
-                      maximumFractionDigits: 1,
-                    })}
-                  </p>
-                  <span className="text-lg font-bold opacity-80 uppercase">
-                    m
-                  </span>
-                </div>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="Ruler" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              Đã kiểm tra chất lượng (QC)
-            </div>
-          </div>
-
-          <div className="kpi-card-premium kpi-warning">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">Tổng khối lượng</p>
-                <div className="flex items-baseline gap-1">
-                  <p className="kpi-value">
-                    {stats.totalWeightKg.toLocaleString('vi-VN', {
-                      maximumFractionDigits: 1,
-                    })}
-                  </p>
-                  <span className="text-lg font-bold opacity-80 uppercase">
-                    kg
-                  </span>
-                </div>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="Weight" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              Trọng lượng tịnh xuất kho
-            </div>
-          </div>
+          <KpiCard
+            label="Tổng thành phẩm"
+            value={stats?.totalRolls ?? 0}
+            icon="Package"
+            variant="primary"
+            formatMode="number"
+            footer="Cuộn đã hoàn tất công đoạn nhuộm"
+            isLoading={isStatsLoading}
+          />
+          <KpiCard
+            label="Tổng chiều dài"
+            value={
+              stats
+                ? `${stats.totalLengthM.toLocaleString('vi-VN', { maximumFractionDigits: 1 })} m`
+                : ''
+            }
+            icon="Ruler"
+            variant="success"
+            footer="Đã kiểm tra chất lượng (QC)"
+            isLoading={isStatsLoading}
+          />
+          <KpiCard
+            label="Tổng khối lượng"
+            value={
+              stats
+                ? `${stats.totalWeightKg.toLocaleString('vi-VN', { maximumFractionDigits: 1 })} kg`
+                : ''
+            }
+            icon="Weight"
+            variant="warning"
+            footer="Trọng lượng tịnh xuất kho"
+            isLoading={isStatsLoading}
+          />
         </div>
       )}
 
@@ -271,6 +216,11 @@ export function FinishedFabricList({
             Lỗi tải dữ liệu:{' '}
             {error instanceof Error ? error.message : String(error)}
           </p>
+        </div>
+      )}
+      {exportError && (
+        <div className="p-4 pt-0">
+          <p className="error-inline">Lỗi xuất Excel: {exportError}</p>
         </div>
       )}
 
@@ -321,189 +271,19 @@ export function FinishedFabricList({
           }}
           emptyStateTitle="Không có dữ liệu"
           emptyStateIcon="Package"
-          columns={[
-            {
-              header: 'Mã cuộn',
-              id: 'roll_number',
-              sortable: true,
-              cell: (r) => (
-                <div className="flex flex-col">
-                  <span className="font-bold text-primary">
-                    {r.roll_number}
-                  </span>
-                  {r.color_name && (
-                    <span className="text-xs text-muted">{r.color_name}</span>
-                  )}
-                </div>
-              ),
-            },
-            {
-              header: 'Loại vải',
-              id: 'fabric_type',
-              sortable: true,
-              cell: (r) => r.fabric_type,
-            },
-            {
-              header: 'CL',
-              id: 'quality_grade',
-              sortable: true,
-              cell: (r) =>
-                r.quality_grade ? (
-                  <span className={`grade-badge grade-${r.quality_grade}`}>
-                    {r.quality_grade}
-                  </span>
-                ) : (
-                  <span className="text-muted">—</span>
-                ),
-            },
-            {
-              header: 'Khổ × Dài',
-              id: 'length_m',
-              sortable: true,
-              className: 'text-muted',
-              cell: (r) => (
-                <div className="flex flex-col text-xs">
-                  <span>{r.width_cm !== null ? `${r.width_cm} cm` : '—'}</span>
-                  <span>
-                    {r.length_m !== null &&
-                      ` × ${formatQuantity(r.length_m)} m`}
-                  </span>
-                </div>
-              ),
-            },
-            {
-              header: 'Trọng lượng',
-              id: 'weight_kg',
-              sortable: true,
-              className: 'text-right',
-              cell: (r) => (
-                <span className="font-medium">
-                  {r.weight_kg != null
-                    ? `${formatQuantity(r.weight_kg)} kg`
-                    : '—'}
-                </span>
-              ),
-            },
-            {
-              header: 'Trạng thái',
-              id: 'status',
-              sortable: true,
-              cell: (r) => (
-                <Badge variant={getStatusVariant(r.status)}>
-                  {ROLL_STATUS_LABELS[r.status]}
-                </Badge>
-              ),
-            },
-            {
-              header: 'Vị trí',
-              id: 'warehouse_location',
-              sortable: true,
-              cell: (r) => (
-                <span className="text-xs text-muted">
-                  {r.warehouse_location ?? '—'}
-                </span>
-              ),
-            },
-            {
-              header: 'Thao tác',
-              className: 'text-right',
-              onCellClick: () => {},
-              cell: (r) => (
-                <ActionBar
-                  actions={[
-                    {
-                      icon: 'Link',
-                      onClick: () => onTrace(r),
-                      title: 'Truy vết',
-                    },
-                    {
-                      icon: 'Pencil',
-                      onClick: () => onEdit(r),
-                      title: editBlockReason(r.status) ?? 'Sửa',
-                      disabled: !canEditRoll(r.status),
-                    },
-                    {
-                      icon: 'Trash2',
-                      onClick: () => handleDelete(r),
-                      title: deleteBlockReason(r.status) ?? 'Xóa',
-                      variant: 'danger',
-                      disabled:
-                        deleteMutation.isPending || !canDeleteRoll(r.status),
-                    },
-                  ]}
-                />
-              ),
-            },
-          ]}
-          renderMobileCard={(r) => (
-            <div className="mobile-card">
-              <div className="mobile-card-header">
-                <span className="mobile-card-title">{r.roll_number}</span>
-                <Badge variant={getStatusVariant(r.status)}>
-                  {ROLL_STATUS_LABELS[r.status]}
-                </Badge>
-              </div>
-              <div className="mobile-card-body">
-                <div className="flex justify-between items-start mb-1">
-                  <span className="text-sm font-bold">{r.fabric_type}</span>
-                  <span className="text-xs text-muted">{r.color_name}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase text-muted">
-                      Trọng lượng
-                    </span>
-                    <span className="text-sm font-medium">
-                      {r.weight_kg != null
-                        ? `${r.weight_kg.toLocaleString('vi-VN', { maximumFractionDigits: 3 })} kg`
-                        : '—'}
-                    </span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase text-muted">
-                      Chất lượng
-                    </span>
-                    <span className="text-sm font-bold">
-                      {r.quality_grade || '—'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-2 pt-2 border-t border-border/10">
-                <button
-                  className="btn-secondary flex-1"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onTrace(r);
-                  }}
-                >
-                  <Icon name="Link" size={16} /> Truy vết
-                </button>
-                {canEditRoll(r.status) && (
-                  <button
-                    className="btn-secondary flex-1 text-primary"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEdit(r);
-                    }}
-                  >
-                    <Icon name="Pencil" size={16} /> Sửa
-                  </button>
-                )}
-                {canDeleteRoll(r.status) && (
-                  <button
-                    className="btn-secondary text-danger px-3"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(r);
-                    }}
-                  >
-                    <Icon name="Trash2" size={16} />
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
+          columns={getFinishedFabricColumns({
+            onTrace,
+            onEdit,
+            handleDelete,
+            isDeleting: deleteMutation.isPending,
+          })}
+          renderMobileCard={(r) =>
+            renderFinishedFabricMobileCard(r, {
+              onTrace,
+              onEdit,
+              handleDelete,
+            })
+          }
         />
       )}
 
