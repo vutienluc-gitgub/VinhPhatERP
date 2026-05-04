@@ -42,7 +42,7 @@ export const shippingRatesPlugin: FeaturePlugin = {
     'Cấu hình đơn giá vận chuyển cho các khu vực và đối tác khác nhau.',
   icon: 'BadgeDollarSign',
   requiredRoles: ['admin', 'manager'],
-  group: 'system',
+  group: 'finance',
   order: 110,
   routes: [
     {

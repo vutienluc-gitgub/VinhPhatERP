@@ -50,8 +50,14 @@ export interface FeaturePlugin {
   /** Thứ tự hiển thị trên menu (nhỏ = ưu tiên cao) */
   order?: number;
 
-  /** Nhóm menu: sales, production, master-data, system */
-  group?: 'sales' | 'production' | 'master-data' | 'system';
+  /** Nhóm menu: sales, production, warehouse, finance, master-data, system */
+  group?:
+    | 'sales'
+    | 'production'
+    | 'warehouse'
+    | 'finance'
+    | 'master-data'
+    | 'system';
 
   /** Print routes */
   printRoutes?: Array<{

@@ -1465,6 +1465,7 @@
 .card-flush {
   padding: 0;
   overflow: hidden;
+  min-width: 0; /* allow shrinking inside flex/grid parents on mobile */
 }
 
 /* Inner padding for card header area */
@@ -1476,6 +1477,7 @@
 .card-filter-section {
   margin: 1rem 1.25rem;
   border-radius: var(--radius-sm);
+  overflow: hidden; /* prevent filter inputs from causing horizontal scroll */
 }
 
 /* Table wrapper inside a card (Premium) */
@@ -2654,4 +2656,19 @@
   font-size: 0.85rem;
   font-weight: 500;
   color: var(--muted);
+}
+
+/* Mobile: scale down large stat values to prevent horizontal overflow */
+@media (max-width: 639px) {
+  .stat-widget {
+    padding: 1rem 1.1rem;
+    gap: 1rem;
+  }
+  .stat-widget-value {
+    font-size: 2.2rem;
+  }
+  .stat-widget-value-row {
+    min-height: 64px;
+    padding-bottom: 0.25rem;
+  }
 }

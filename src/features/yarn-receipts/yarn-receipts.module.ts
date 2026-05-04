@@ -50,7 +50,7 @@ export const yarnReceiptsPlugin: FeaturePlugin = {
   description: 'Quản lý phiếu nhập kho sợi từ nhà cung cấp về kho nguyên liệu.',
   icon: 'PackageOpen',
   requiredRoles: ['admin', 'manager', 'staff'],
-  group: 'production',
+  group: 'warehouse',
   order: 10,
   routes: [
     {

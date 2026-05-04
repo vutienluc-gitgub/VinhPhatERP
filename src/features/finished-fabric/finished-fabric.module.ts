@@ -68,7 +68,7 @@ export const finishedFabricPlugin: FeaturePlugin = {
   description: 'Theo dõi tồn kho vải đã nhuộm, nhập kho và xuất kho giao hàng.',
   icon: 'Sparkles',
   requiredRoles: ['admin', 'manager', 'staff'],
-  group: 'production',
+  group: 'warehouse',
   order: 30,
   routes: [
     {

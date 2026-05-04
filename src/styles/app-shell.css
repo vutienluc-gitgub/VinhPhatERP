@@ -34,10 +34,15 @@ body {
   width: 100%;
   overflow-x: hidden;
   max-width: 100vw;
+  /* Prevent pull-to-refresh & overscroll bounce on mobile browsers */
+  overscroll-behavior: none;
 }
 
 .shell-layout {
+  /* dvh = dynamic viewport height: adjusts when mobile URL bar collapses/expands.
+     Fallback to 100vh for browsers that don't support dvh. */
   min-height: 100vh;
+  min-height: 100dvh;
   display: block;
 }
 
@@ -524,6 +529,14 @@ html.fluid .content-shell {
   z-index: 100;
   /* Prevent any child from spilling and causing visual cutoff */
   overflow: hidden;
+  /* ── Mobile browser bounce fix ──
+     Force GPU compositing layer so the element stays pinned
+     during URL bar collapse/expand animations on iOS Safari & Chrome */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
+  /* Prevent tap-highlight and callout glitches */
+  -webkit-tap-highlight-color: transparent;
 }
 
 .mobile-nav-link span {

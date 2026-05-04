@@ -44,7 +44,7 @@ export const inventoryPlugin: FeaturePlugin = {
   description: 'Theo dõi tồn kho sợi, mộc, thành phẩm và vật tư.',
   icon: 'Warehouse',
   requiredRoles: ['admin', 'manager', 'staff'],
-  group: 'master-data',
+  group: 'warehouse',
   order: 20,
   routes: [
     {

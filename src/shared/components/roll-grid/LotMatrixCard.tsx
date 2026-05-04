@@ -92,7 +92,7 @@ export function LotMatrixCard({
         className,
       )}
     >
-      <div className="flex items-center justify-between px-4 py-3 gap-3 border-b border-border bg-[var(--surface-subtle)]">
+      <div className="flex items-center justify-between px-4 py-3 gap-3 border-b border-border bg-[var(--surface-subtle)] flex-wrap min-w-0">
         {/* Left: title + index badge — flex-1 min-w-0 để title co giãn tự nhiên */}
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <Icon

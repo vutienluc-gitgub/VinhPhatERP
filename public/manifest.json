@@ -1,0 +1,19 @@
+{
+  "name": "Vinh Phat ERP",
+  "short_name": "VP ERP",
+  "description": "Hệ thống quản lý ERP cho Công ty Vĩnh Phát",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#1a2744",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

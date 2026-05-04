@@ -70,7 +70,7 @@ export const rawFabricPlugin: FeaturePlugin = {
   description: 'Quản lý vải mộc từ lệnh dệt về kho và xuất đi nhuộm.',
   icon: 'Layers',
   requiredRoles: ['admin', 'manager', 'staff'],
-  group: 'production',
+  group: 'warehouse',
   order: 25,
   routes: [
     {

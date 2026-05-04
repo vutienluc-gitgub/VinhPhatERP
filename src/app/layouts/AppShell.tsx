@@ -20,6 +20,11 @@ import {
   PreferencesContext,
   type PreferencesContextValue,
 } from '@/shared/context/preferences-context';
+import {
+  GROUP_LABELS,
+  GROUP_ORDER,
+  getDefaultCollapsedByRole,
+} from '@/shared/constants/navigation';
 import { GuideCommandPalette } from '@/features/guide-system/components/GuideCommandPalette';
 
 import { MobileMoreDrawer } from './MobileMoreDrawer';
@@ -48,28 +53,6 @@ const roleLabel: Record<UserRole, string> = {
   sale: 'Sale',
   customer: 'Khách hàng',
 };
-
-/** Group display metadata */
-const GROUP_LABELS: Record<string, { label: string; icon: string }> = {
-  sales: {
-    label: 'Kinh doanh',
-    icon: 'Briefcase',
-  },
-  production: {
-    label: 'Sản xuất',
-    icon: 'Factory',
-  },
-  'master-data': {
-    label: 'Danh mục',
-    icon: 'Database',
-  },
-  system: {
-    label: 'Hệ thống',
-    icon: 'Shield',
-  },
-};
-
-const GROUP_ORDER = ['sales', 'production', 'master-data', 'system'];
 
 type GroupedNav = {
   group: string;
@@ -111,7 +94,14 @@ export function AppShell() {
   } = useUserPreferences(profile?.id);
 
   const isSidebarCollapsed = prefs.sidebar_collapsed;
-  const collapsed = prefs.sidebar_groups_collapsed;
+  const savedCollapsed = prefs.sidebar_groups_collapsed;
+
+  // Nếu user chưa có preference thu gọn nào → dùng default theo role
+  const collapsed = useMemo(() => {
+    const hasUserPreference = Object.keys(savedCollapsed).length > 0;
+    if (hasUserPreference) return savedCollapsed;
+    return getDefaultCollapsedByRole(profile?.role);
+  }, [savedCollapsed, profile?.role]);
 
   // ── Khi bật fluid → tự động thu gọn sidebar ──────────────────────────────────
   useEffect(() => {
@@ -488,18 +478,7 @@ export function AppShell() {
         </div>
 
         {/* ── Mobile Bottom Nav (3 tabs + Menu) ── */}
-        <nav
-          className="mobile-nav fixed left-0 right-0 w-full z-50 bg-surface-strong border-t border-border pb-[env(safe-area-inset-bottom)]"
-          aria-label="Bottom navigation"
-          style={{
-            position: 'fixed',
-            left: 0,
-            right: 0,
-            bottom: 0,
-            width: '100%',
-            margin: 0,
-          }}
-        >
+        <nav className="mobile-nav" aria-label="Bottom navigation">
           {bottomTabs.map((item) => {
             const iconName =
               item.icon ?? (item.path === '/' ? 'Home' : 'Component');
