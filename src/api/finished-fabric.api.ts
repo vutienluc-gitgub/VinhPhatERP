@@ -13,6 +13,21 @@ import { safeUpsert, safeUpsertOne } from '@/lib/db-guard';
 
 const TABLE = 'finished_fabric_rolls';
 
+type RawJoinRow = Record<string, unknown> & {
+  raw_fabric_rolls?: { roll_number: string } | null;
+};
+
+function mapRawRollJoin(data: unknown[] | null): FinishedFabricRoll[] {
+  return (data ?? []).map((row) => {
+    const r = row as RawJoinRow;
+    const { raw_fabric_rolls: rawJoin, ...rest } = r;
+    return {
+      ...rest,
+      raw_roll_number: rawJoin?.roll_number ?? null,
+    } as FinishedFabricRoll;
+  });
+}
+
 export type InventoryStats = {
   totalRolls: number;
   totalLengthM: number;
@@ -43,17 +58,7 @@ export async function fetchFinishedFabricPaginated(
   const total = count ?? 0;
 
   // Flatten joined raw_fabric_rolls → raw_roll_number
-  type RawJoinRow = Record<string, unknown> & {
-    raw_fabric_rolls?: { roll_number: string } | null;
-  };
-  const mapped = (data ?? []).map((row) => {
-    const r = row as RawJoinRow;
-    const { raw_fabric_rolls: rawJoin, ...rest } = r;
-    return {
-      ...rest,
-      raw_roll_number: rawJoin?.roll_number ?? null,
-    } as FinishedFabricRoll;
-  });
+  const mapped = mapRawRollJoin(data);
 
   return {
     data: mapped,
@@ -203,17 +208,7 @@ export async function fetchFinishedFabricAll(
   const { data, error } = await query;
   if (error) throw error;
 
-  type RawJoinRow = Record<string, unknown> & {
-    raw_fabric_rolls?: { roll_number: string } | null;
-  };
-  return (data ?? []).map((row) => {
-    const r = row as RawJoinRow;
-    const { raw_fabric_rolls: rawJoin, ...rest } = r;
-    return {
-      ...rest,
-      raw_roll_number: rawJoin?.roll_number ?? null,
-    } as FinishedFabricRoll;
-  });
+  return mapRawRollJoin(data);
 }
 
 export async function fetchFinishedFabricStats(): Promise<InventoryStats> {

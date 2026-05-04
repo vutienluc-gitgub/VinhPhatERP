@@ -1,8 +1,31 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect, memo } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import type { NavigationItem } from '@/app/router/routes';
 import { Icon } from '@/shared/components/Icon';
+
+const removeAccents = (str: string) => {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+};
+
+const DrawerNavItem = memo(
+  ({ item, onClose }: { item: NavigationItem; onClose: () => void }) => (
+    <NavLink
+      to={item.path}
+      className={({ isActive }) =>
+        `drawer-list-item${isActive ? ' is-active' : ''}`
+      }
+      onClick={onClose}
+    >
+      <span className="drawer-list-icon">
+        <Icon name={item.icon ?? 'Component'} size={18} strokeWidth={1.5} />
+      </span>
+      <span className="drawer-list-label">{item.label}</span>
+    </NavLink>
+  ),
+);
+
+DrawerNavItem.displayName = 'DrawerNavItem';
 
 type Props = {
   items: NavigationItem[];
@@ -11,9 +34,9 @@ type Props = {
 
 const GROUP_LABELS: Record<string, string> = {
   sales: 'Kinh doanh',
-  production: 'San xuat',
-  'master-data': 'Danh muc',
-  system: 'He thong',
+  production: 'Sản xuất',
+  'master-data': 'Danh mục',
+  system: 'Hệ thống',
 };
 
 const GROUP_ORDER = ['sales', 'production', 'master-data', 'system'];
@@ -27,17 +50,37 @@ type GroupedItems = {
 export function MobileMoreDrawer({ items, onClose }: Props) {
   const [search, setSearch] = useState('');
 
+  // Scroll lock & Escape to close
+  useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalStyle;
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
+
   const filtered = useMemo(() => {
     if (!search.trim()) return items;
-    const q = search.toLowerCase().trim();
+    const q = removeAccents(search.toLowerCase().trim());
     return items.filter(
       (item) =>
-        item.label.toLowerCase().includes(q) ||
-        item.shortLabel.toLowerCase().includes(q),
+        removeAccents(item.label.toLowerCase()).includes(q) ||
+        removeAccents(item.shortLabel.toLowerCase()).includes(q),
     );
   }, [items, search]);
 
   const grouped = useMemo(() => {
+    if (filtered.length === 0) return { ungrouped: [], groups: [] };
+
     const ungrouped = filtered.filter((item) => !item.group);
     const groups: GroupedItems[] = GROUP_ORDER.map((groupKey) => {
       const groupItems = filtered.filter((item) => item.group === groupKey);
@@ -64,7 +107,7 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
         className="drawer-sheet drawer-sheet--full"
         role="dialog"
         aria-modal="true"
-        aria-label="Tat ca module"
+        aria-label="Tất cả module"
       >
         <div className="drawer-handle" />
 
@@ -97,57 +140,25 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
             <p className="drawer-empty">Không tìm thấy module nào</p>
           )}
 
-          {/* Ungrouped items */}
-          {grouped.ungrouped.length > 0 && (
-            <div className="drawer-section">
-              <p className="drawer-title">Khac</p>
-              {grouped.ungrouped.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `drawer-list-item${isActive ? ' is-active' : ''}`
-                  }
-                  onClick={onClose}
-                >
-                  <span className="drawer-list-icon">
-                    <Icon
-                      name={item.icon ?? 'Component'}
-                      size={18}
-                      strokeWidth={1.5}
-                    />
-                  </span>
-                  <span className="drawer-list-label">{item.label}</span>
-                </NavLink>
-              ))}
-            </div>
-          )}
-
-          {/* Grouped items */}
+          {/* Grouped items (Hiển thị nhóm trước) */}
           {grouped.groups.map((g) => (
             <div key={g.group} className="drawer-section">
               <p className="drawer-title">{g.label}</p>
               {g.items.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `drawer-list-item${isActive ? ' is-active' : ''}`
-                  }
-                  onClick={onClose}
-                >
-                  <span className="drawer-list-icon">
-                    <Icon
-                      name={item.icon ?? 'Component'}
-                      size={18}
-                      strokeWidth={1.5}
-                    />
-                  </span>
-                  <span className="drawer-list-label">{item.label}</span>
-                </NavLink>
+                <DrawerNavItem key={item.path} item={item} onClose={onClose} />
               ))}
             </div>
           ))}
+
+          {/* Ungrouped items (Hiển thị các mục Khác ở cuối) */}
+          {grouped.ungrouped.length > 0 && (
+            <div className="drawer-section">
+              <p className="drawer-title">Khác</p>
+              {grouped.ungrouped.map((item) => (
+                <DrawerNavItem key={item.path} item={item} onClose={onClose} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </>

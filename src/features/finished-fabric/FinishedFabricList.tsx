@@ -17,6 +17,7 @@ import {
 } from '@/shared/components';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
+import { formatQuantity } from '@/shared/utils/format';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 import {
   useDeleteFinishedFabric,
@@ -42,6 +43,7 @@ import type {
   FinishedFabricRoll,
   RollStatus,
 } from './types';
+import { groupRollsByLot } from './finished-fabric.utils';
 
 type FinishedFabricListProps = {
   onEdit: (roll: FinishedFabricRoll) => void;
@@ -67,41 +69,6 @@ function getStatusVariant(status: RollStatus): BadgeVariant {
     default:
       return 'gray';
   }
-}
-
-function formatNum(val: number | null, unit: string): string {
-  if (val === null || val === undefined) return '—';
-  return `${val.toLocaleString('vi-VN')} ${unit}`;
-}
-
-function calculateMedian(values: number[]): number | undefined {
-  if (values.length === 0) return undefined;
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 !== 0
-    ? sorted[mid]
-    : (sorted[mid - 1]! + sorted[mid]!) / 2;
-}
-
-function groupRollsByLot(rolls: FinishedFabricRoll[]) {
-  const map = new Map<string, FinishedFabricRoll[]>();
-  rolls.forEach((roll) => {
-    const key = roll.lot_number || 'KHÔNG CÓ LÔ';
-    if (!map.has(key)) map.set(key, []);
-    map.get(key)!.push(roll);
-  });
-  return Array.from(map.entries()).map(([lot, items]) => {
-    const weights = items
-      .map((r) => r.weight_kg)
-      .filter((w): w is number => w != null && w > 0);
-    return {
-      lot,
-      rolls: items,
-      fabricType: items[0]?.fabric_type,
-      colorName: items[0]?.color_name,
-      standardWeightKg: calculateMedian(weights),
-    };
-  });
 }
 
 export function FinishedFabricList({
@@ -398,7 +365,8 @@ export function FinishedFabricList({
                 <div className="flex flex-col text-xs">
                   <span>{r.width_cm !== null ? `${r.width_cm} cm` : '—'}</span>
                   <span>
-                    {r.length_m !== null && ` × ${formatNum(r.length_m, 'm')}`}
+                    {r.length_m !== null &&
+                      ` × ${formatQuantity(r.length_m)} m`}
                   </span>
                 </div>
               ),
@@ -410,7 +378,9 @@ export function FinishedFabricList({
               className: 'text-right',
               cell: (r) => (
                 <span className="font-medium">
-                  {formatNum(r.weight_kg, 'kg')}
+                  {r.weight_kg != null
+                    ? `${formatQuantity(r.weight_kg)} kg`
+                    : '—'}
                 </span>
               ),
             },
