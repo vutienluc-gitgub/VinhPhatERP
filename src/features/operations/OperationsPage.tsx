@@ -244,18 +244,30 @@ export function OperationsPage() {
         )}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 overflow-x-auto pb-8 scrollbar-hide overscroll-x-contain">
           {KANBAN_COLUMNS.map((col) => {
+            const isDoneColumn = col.key === 'done';
             const colTasks = filteredTasks.filter((t) => t.status === col.key);
+
+            // Done column: sort by updated_at DESC (chronological log)
+            const sortedTasks = isDoneColumn
+              ? [...colTasks].sort((a, b) => {
+                  const dateA = a.updated_at ?? a.created_at ?? '';
+                  const dateB = b.updated_at ?? b.created_at ?? '';
+                  return dateB.localeCompare(dateA);
+                })
+              : colTasks;
+
             return (
               <KanbanColumn
                 key={col.key}
                 id={col.key}
                 title={col.label}
-                tasks={colTasks}
+                tasks={sortedTasks}
                 employees={employees}
                 kpis={kpis}
                 tone={col.tone}
-                count={colTasks.length}
+                count={sortedTasks.length}
                 emptyLabel={OPERATIONS_MESSAGES.DRAG_HERE}
+                disableReorder={isDoneColumn}
                 blockedReason={
                   blockedTransition?.targetStatus === col.key
                     ? blockedTransition.reason

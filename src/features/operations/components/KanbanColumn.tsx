@@ -12,6 +12,7 @@ import type {
 } from '@/domain/operations/types';
 
 import { SortableTaskCard } from './SortableTaskCard';
+import { TaskCard } from './TaskCard';
 
 interface KanbanColumnProps {
   id: TaskStatus;
@@ -27,6 +28,13 @@ interface KanbanColumnProps {
   recoilTaskId?: string | null;
   count: number;
   emptyLabel: string;
+  /**
+   * When true, cards in this column are NOT sortable via drag.
+   * The column still accepts drops from other columns (droppable),
+   * but intra-column reordering is disabled.
+   * Use for "Done" column where chronological order is enforced.
+   */
+  disableReorder?: boolean;
 }
 
 export function KanbanColumn({
@@ -43,8 +51,46 @@ export function KanbanColumn({
   recoilTaskId,
   count,
   emptyLabel,
+  disableReorder = false,
 }: KanbanColumnProps) {
   const { setNodeRef } = useDroppable({ id });
+
+  const renderCards = () => {
+    if (disableReorder) {
+      return tasks.map((t) => (
+        <TaskCard
+          key={t.id}
+          task={t}
+          employees={employees}
+          kpis={kpis}
+          onClick={() => onTaskClick(t)}
+          blockedReason={blockedTaskId === t.id ? blockedReason : undefined}
+          className="cursor-pointer"
+        />
+      ));
+    }
+
+    return (
+      <SortableContext
+        id={id}
+        items={tasks.map((t) => t.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        {tasks.map((t) => (
+          <SortableTaskCard
+            key={t.id}
+            task={t}
+            employees={employees}
+            kpis={kpis}
+            onClick={() => onTaskClick(t)}
+            onTapMove={onTapMove}
+            blockedReason={blockedTaskId === t.id ? blockedReason : undefined}
+            shouldRecoil={recoilTaskId === t.id}
+          />
+        ))}
+      </SortableContext>
+    );
+  };
 
   return (
     <div
@@ -75,24 +121,7 @@ export function KanbanColumn({
             {blockedReason}
           </div>
         )}
-        <SortableContext
-          id={id}
-          items={tasks.map((t) => t.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          {tasks.map((t) => (
-            <SortableTaskCard
-              key={t.id}
-              task={t}
-              employees={employees}
-              kpis={kpis}
-              onClick={() => onTaskClick(t)}
-              onTapMove={onTapMove}
-              blockedReason={blockedTaskId === t.id ? blockedReason : undefined}
-              shouldRecoil={recoilTaskId === t.id}
-            />
-          ))}
-        </SortableContext>
+        {renderCards()}
         {tasks.length === 0 && (
           <div className="h-24 flex items-center justify-center text-[11px] text-muted text-center border-2 border-dashed border-border/50 rounded-xl bg-surface/30 italic">
             {emptyLabel}
