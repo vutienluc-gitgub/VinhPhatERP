@@ -12,7 +12,7 @@ export const shipmentsPlugin: FeaturePlugin = {
     'Quản lý quy trình đóng gói và giao nhận hàng hóa tới khách hàng.',
   icon: 'Truck',
   requiredRoles: ['admin', 'manager', 'staff'],
-  group: 'sales',
+  group: 'warehouse',
   order: 70,
   routes: [
     {

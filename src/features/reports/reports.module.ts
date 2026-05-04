@@ -40,7 +40,7 @@ export const reportsPlugin: FeaturePlugin = {
     'Tổng hợp số liệu sản xuất, kinh doanh và tài chính toàn công ty.',
   icon: 'BarChart3',
   requiredRoles: ['admin', 'manager'],
-  group: 'system',
+  group: 'finance',
   order: 100,
   routes: [
     {

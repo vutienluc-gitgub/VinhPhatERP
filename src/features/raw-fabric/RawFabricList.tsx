@@ -167,7 +167,7 @@ export function RawFabricList({
 
       {/* KPI Dashboard */}
       {stats && (
-        <div className="kpi-section kpi-grid grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
+        <div className="kpi-section kpi-grid">
           <StatWidget
             title="Tổng số cuộn"
             icon="Box"

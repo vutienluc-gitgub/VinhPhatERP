@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 
 import type { NavigationItem } from '@/app/router/routes';
 import { Icon } from '@/shared/components/Icon';
+import { GROUP_LABEL_MAP, GROUP_ORDER } from '@/shared/constants/navigation';
 
 const removeAccents = (str: string) => {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -31,15 +32,6 @@ type Props = {
   items: NavigationItem[];
   onClose: () => void;
 };
-
-const GROUP_LABELS: Record<string, string> = {
-  sales: 'Kinh doanh',
-  production: 'Sản xuất',
-  'master-data': 'Danh mục',
-  system: 'Hệ thống',
-};
-
-const GROUP_ORDER = ['sales', 'production', 'master-data', 'system'];
 
 type GroupedItems = {
   group: string;
@@ -84,7 +76,7 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
     const ungrouped = filtered.filter((item) => !item.group);
     const groups: GroupedItems[] = GROUP_ORDER.map((groupKey) => {
       const groupItems = filtered.filter((item) => item.group === groupKey);
-      const label = GROUP_LABELS[groupKey] ?? groupKey;
+      const label = GROUP_LABEL_MAP[groupKey] ?? groupKey;
       return {
         group: groupKey,
         label,

@@ -36,14 +36,14 @@ export function RawFabricPage() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-surface-subtle">
+    <div className="flex flex-col h-full bg-surface-subtle min-w-0 overflow-x-hidden">
       {/* --- TOP SEGMENT TABS --- */}
-      <div className="sticky top-0 z-30 px-4 py-2 bg-surface-strong border-b border-border shadow-sm">
+      <div className="sticky top-0 z-30 px-4 py-2 bg-surface-strong border-b border-border shadow-sm min-w-0">
         <TabSwitcher tabs={TABS} active={activeTab} onChange={setActiveTab} />
       </div>
 
       {/* --- CONTENT AREA (Cần pb-24 để không bị lấp bởi FAB) --- */}
-      <div className="flex-1 overflow-y-auto pb-24 p-2 sm:p-4">
+      <div className="flex-1 overflow-y-auto pb-24 p-2 sm:p-4 min-w-0">
         {activeTab === 'inventory' && (
           <RawFabricList
             onEdit={openEdit}
