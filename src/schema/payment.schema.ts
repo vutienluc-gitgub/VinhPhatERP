@@ -128,7 +128,11 @@ export const expenseSchema = z.object({
   allocations: z
     .array(
       z.object({
-        document_type: z.enum(['weaving_invoice', 'yarn_receipt']),
+        document_type: z.enum([
+          'weaving_invoice',
+          'yarn_receipt',
+          'fabric_purchase',
+        ]),
         document_id: z.string().uuid(),
         allocated_amount: z.number().positive(),
       }),

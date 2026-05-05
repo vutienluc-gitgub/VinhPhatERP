@@ -16,6 +16,7 @@ import {
 import { useEmployees, useSuppliersList } from '@/application/crm';
 import { useCreateExpense, useUpdateExpense } from '@/application/payments';
 import { sumBy } from '@/shared/utils/array.util';
+import type { UnpaidDocument } from '@/domain/payments/types';
 
 import {
   EXPENSE_CATEGORIES,
@@ -25,6 +26,21 @@ import {
 } from './payments.module';
 import type { ExpenseFormValues } from './payments.module';
 import type { Expense } from './types';
+
+/** Type cho 1 allocation item trong form */
+type AllocationItem = ExpenseFormValues['allocations'][number];
+
+/** Type cho 1 grouped doc item trong UnpaidDocumentsSection */
+type GroupedDoc = {
+  isGroup: boolean;
+  id: string;
+  title: string;
+  subtitle: string;
+  date: string;
+  remaining: number;
+  paid_amount: number;
+  items: UnpaidDocument[];
+};
 
 const CATEGORY_OPTIONS = EXPENSE_CATEGORIES.map((c) => ({
   value: c,
@@ -53,6 +69,58 @@ function UnpaidDocumentsSection({
       name: 'allocations',
     }) || [];
 
+  const groupedDocs = useMemo(() => {
+    if (!unpaidDocs) return [];
+
+    const result: GroupedDoc[] = [];
+    const fabricByDate: Record<string, UnpaidDocument[]> = {};
+
+    unpaidDocs.forEach((doc) => {
+      if (doc.document_type === 'fabric_purchase') {
+        const dateKey = doc.document_date;
+        if (!fabricByDate[dateKey]) fabricByDate[dateKey] = [];
+        fabricByDate[dateKey].push(doc);
+      } else {
+        result.push({
+          isGroup: false,
+          id: doc.document_id,
+          title: doc.document_number,
+          subtitle:
+            doc.document_type === 'weaving_invoice'
+              ? 'Phiếu dệt'
+              : 'Phiếu nhập sợi',
+          date: doc.document_date,
+          remaining: doc.remaining_amount,
+          paid_amount: doc.paid_amount,
+          items: [doc],
+        });
+      }
+    });
+
+    Object.entries(fabricByDate).forEach(([dateStr, docs]) => {
+      const totalRemaining = sumBy(docs, (d) => d.remaining_amount);
+      const totalPaid = sumBy(docs, (d) => d.paid_amount);
+
+      result.push({
+        isGroup: true,
+        id: `fabric_group_${dateStr}`,
+        title: `Mua vải thành phẩm (${docs.length} cuộn)`,
+        subtitle: 'Phiếu mua vải',
+        date: dateStr,
+        remaining: totalRemaining,
+        paid_amount: totalPaid,
+        items: docs,
+      });
+    });
+
+    // Sort by date descending
+    result.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+
+    return result;
+  }, [unpaidDocs]);
+
   if (!supplierId || isLoading || !unpaidDocs?.length) return null;
 
   return (
@@ -60,63 +128,76 @@ function UnpaidDocumentsSection({
       <label className="text-sm font-semibold mb-2 block">
         Đối trừ công nợ (Tự động tính vào số tiền chi)
       </label>
-      <div className="bg-[var(--surface-sunken)] p-3 rounded-md border border-[var(--border-subtle)] space-y-2">
-        {unpaidDocs.map((doc) => {
-          const allocIdx = allocations.findIndex(
-            (a: { document_id: string }) => a.document_id === doc.document_id,
+      <div className="bg-[var(--surface-sunken)] p-3 rounded-md border border-[var(--border-subtle)] space-y-2 max-h-64 overflow-y-auto">
+        {groupedDocs.map((group) => {
+          // Check if all items in this group are selected
+          const isSelected = group.items.every((doc) =>
+            allocations.some(
+              (a: AllocationItem) => a.document_id === doc.document_id,
+            ),
           );
-          const isSelected = allocIdx >= 0;
-          const remaining = doc.remaining_amount;
 
           return (
             <div
-              key={doc.document_id}
+              key={group.id}
               className="flex items-center gap-3 p-2 bg-[var(--surface-default)] rounded border border-[var(--border-subtle)]"
             >
               <input
                 type="checkbox"
                 className="w-4 h-4 rounded appearance-none checked:bg-primary border border-gray-300 checked:border-primary shrink-0 relative
-                  after:content-['✓'] after:absolute after:text-[10px] after:text-white after:left-[3px] after:top-[1px] after:opacity-0 checked:after:opacity-100"
+                  after:content-['✓'] after:absolute after:text-[10px] after:text-white after:left-[3px] after:top-[1px] after:opacity-0 checked:after:opacity-100 cursor-pointer"
                 checked={isSelected}
                 onChange={(e) => {
                   const chk = e.target.checked;
-                  const currentAlloc = [...allocations];
+                  let currentAlloc = [...allocations];
                   if (chk) {
-                    currentAlloc.push({
-                      document_type: doc.document_type,
-                      document_id: doc.document_id,
-                      allocated_amount: remaining,
+                    group.items.forEach((doc) => {
+                      if (
+                        !currentAlloc.some(
+                          (a: AllocationItem) =>
+                            a.document_id === doc.document_id,
+                        )
+                      ) {
+                        currentAlloc.push({
+                          document_type: doc.document_type,
+                          document_id: doc.document_id,
+                          allocated_amount: doc.remaining_amount,
+                        });
+                      }
                     });
                   } else {
-                    currentAlloc.splice(allocIdx, 1);
+                    currentAlloc = currentAlloc.filter(
+                      (a: AllocationItem) =>
+                        !group.items.some(
+                          (d) => d.document_id === a.document_id,
+                        ),
+                    );
                   }
 
                   setValue('allocations', currentAlloc);
                   // Tự động tính tổng tiền vào ô So Tien
                   const sumAmount = sumBy(
                     currentAlloc,
-                    (a) => a.allocated_amount,
+                    (a: AllocationItem) => a.allocated_amount,
                   );
                   setValue('amount', sumAmount);
                 }}
               />
               <div className="flex-1 text-sm">
-                <div className="font-medium">{doc.document_number}</div>
+                <div className="font-medium">{group.title}</div>
                 <div className="text-xs text-[var(--text-tertiary)]">
-                  {doc.document_type === 'weaving_invoice'
-                    ? 'Phiếu dệt'
-                    : 'Phiếu nhập sợi'}
+                  {group.subtitle}
                   {' - '} Ngày:{' '}
-                  {new Date(doc.document_date).toLocaleDateString('vi-VN')}
+                  {new Date(group.date).toLocaleDateString('vi-VN')}
                 </div>
               </div>
               <div className="text-right text-sm">
                 <div className="font-semibold text-[var(--danger-strong)]">
-                  {formatCurrency(remaining)} đ
+                  {formatCurrency(group.remaining)} đ
                 </div>
-                {doc.paid_amount > 0 && (
+                {group.paid_amount > 0 && (
                   <div className="text-xs text-[var(--text-tertiary)]">
-                    Đã thanh toán: {formatCurrency(doc.paid_amount)} đ
+                    Đã thanh toán: {formatCurrency(group.paid_amount)} đ
                   </div>
                 )}
               </div>

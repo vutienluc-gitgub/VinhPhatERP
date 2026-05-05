@@ -15,6 +15,7 @@ import {
   useDeleteSupplier,
   useSuppliersList,
   useSupplierCategories,
+  useSupplierStats,
 } from '@/application/crm';
 import {
   SUPPLIER_STATUSES,
@@ -35,11 +36,10 @@ export function SuppliersList({
   onNew,
   onCreateContract,
 }: SuppliersListProps) {
-  const { filters, setFilter, clearFilters } = useUrlFilterState([
-    'search',
-    'category',
-    'status',
-  ]);
+  const { filters, setFilter, clearFilters } = useUrlFilterState(
+    ['search', 'category', 'status'] as const,
+    { status: 'active' }, // Default: chỉ hiện NCC đang giao dịch
+  );
   const [page, setPage] = useState(1);
 
   const {
@@ -49,10 +49,24 @@ export function SuppliersList({
   } = useSuppliersList(filters as SupplierFilter, page);
   const suppliers = result?.data ?? [];
   const { data: categories = [] } = useSupplierCategories();
+  const { data: stats } = useSupplierStats();
   const deleteMutation = useDeleteSupplier();
   const { confirm } = useConfirm();
 
+  // Handler để xóa status filter và hiện tất cả NCC
+  const handleViewAll = () => {
+    setFilter('status', ''); // Set thành empty string để hiện tất cả
+    setPage(1);
+  };
+
   const hasFilter = !!(filters.search || filters.category || filters.status);
+
+  // Kiểm tra xem có phải đang dùng default filter không (status='active' từ default, không phải từ URL)
+  const isDefaultActiveFilter =
+    filters.status === 'active' &&
+    !new URLSearchParams(window.location.search).has('status');
+
+  const showViewAllChip = isDefaultActiveFilter;
 
   const filterSchema: FilterFieldConfig[] = [
     {
@@ -246,7 +260,7 @@ export function SuppliersList({
           <div className="kpi-content">
             <div className="kpi-info">
               <p className="kpi-label">Tổng nhà cung cấp</p>
-              <p className="kpi-value">{result?.total ?? 0}</p>
+              <p className="kpi-value">{stats?.total ?? result?.total ?? 0}</p>
             </div>
             <div className="kpi-icon-box">
               <Icon name="Truck" size={32} />
@@ -262,9 +276,7 @@ export function SuppliersList({
           <div className="kpi-content">
             <div className="kpi-info">
               <p className="kpi-label">Đang giao dịch</p>
-              <p className="kpi-value">
-                {suppliers.filter((s) => s.status === 'active').length}
-              </p>
+              <p className="kpi-value">{stats?.active ?? 0}</p>
             </div>
             <div className="kpi-icon-box">
               <Icon name="CheckCircle" size={32} />
@@ -276,16 +288,33 @@ export function SuppliersList({
         </div>
       </div>
 
-      {/* Filter (Config-Driven) */}
-      <FilterBar
-        schema={filterSchema}
-        value={filters}
-        onChange={handleFilterChange}
-        onClear={() => {
-          clearFilters();
-          setPage(1);
-        }}
-      />
+      {/* Filter (Config-Driven) + View All Chip */}
+      <div className="flex flex-wrap items-start gap-3 px-4 py-3 border-b border-border/50 overflow-visible">
+        <FilterBar
+          variant="inline"
+          schema={filterSchema}
+          value={filters}
+          onChange={handleFilterChange}
+          onClear={() => {
+            clearFilters();
+            setPage(1);
+          }}
+        />
+        {showViewAllChip && (
+          <button
+            onClick={handleViewAll}
+            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-colors h-9"
+            title="Hiển thị tất cả nhà cung cấp"
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-medium">Đang giao dịch</span>
+            <span className="mx-1 text-emerald-300">|</span>
+            <span className="text-emerald-600 hover:text-emerald-800 underline underline-offset-2">
+              Xem tất cả
+            </span>
+          </button>
+        )}
+      </div>
 
       {error && (
         <div className="p-4">
@@ -302,16 +331,30 @@ export function SuppliersList({
         rowKey={(s) => s.id}
         onRowClick={onEdit}
         emptyStateTitle={
-          hasFilter ? 'Không tìm thấy nhà cung cấp' : 'Chưa có nhà cung cấp'
+          isDefaultActiveFilter
+            ? 'Không có nhà cung cấp đang giao dịch'
+            : hasFilter
+              ? 'Không tìm thấy nhà cung cấp'
+              : 'Chưa có nhà cung cấp'
         }
         emptyStateDescription={
-          hasFilter
-            ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
-            : 'Nhấn nút thêm nhà cung cấp mới để lưu trữ thông tin liên hệ.'
+          isDefaultActiveFilter
+            ? 'Tất cả nhà cung cấp hiện đang ở trạng thái không hoạt động. Bạn có thể xem tất cả hoặc thêm mới.'
+            : hasFilter
+              ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
+              : 'Nhấn nút thêm nhà cung cấp mới để lưu trữ thông tin liên hệ.'
         }
-        emptyStateIcon={hasFilter ? 'Search' : 'Truck'}
-        emptyStateActionLabel={!hasFilter ? '+ Thêm NCC mới' : undefined}
-        onEmptyStateAction={!hasFilter ? onNew : undefined}
+        emptyStateIcon={isDefaultActiveFilter || hasFilter ? 'Search' : 'Truck'}
+        emptyStateActionLabel={
+          isDefaultActiveFilter
+            ? 'Xem tất cả'
+            : !hasFilter
+              ? '+ Thêm NCC mới'
+              : undefined
+        }
+        onEmptyStateAction={
+          isDefaultActiveFilter ? handleViewAll : !hasFilter ? onNew : undefined
+        }
         columns={columns}
         exportFileName="danh_sach_ncc"
         renderMobileCard={(s) => (

@@ -12,6 +12,7 @@ import {
   fetchAllSupplierPrices,
   upsertSupplierPrice,
   fetchSupplierCategories,
+  fetchSupplierStats,
 } from '@/api/suppliers.api';
 import type { SupplierFormValues } from '@/features/suppliers/suppliers.module';
 import type {
@@ -173,5 +174,13 @@ export function useSupplierCategories() {
     queryKey: [...QUERY_KEY, 'categories'],
     queryFn: fetchSupplierCategories,
     staleTime: 24 * 60 * 60 * 1000, // 24 hours cache
+  });
+}
+
+export function useSupplierStats() {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'stats'],
+    queryFn: fetchSupplierStats,
+    staleTime: 5 * 60 * 1000, // Cache 5 phút
   });
 }

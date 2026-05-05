@@ -479,11 +479,13 @@
   gap: 0.85rem;
   align-items: flex-end;
   padding: 0.25rem 0;
+  overflow: visible; /* Allow dropdown to overflow */
 }
 
 .filter-compact-premium .filter-field {
   flex: 1 1 180px;
   max-width: 320px;
+  overflow: visible; /* Allow dropdown to overflow */
 }
 
 .filter-compact-premium label {

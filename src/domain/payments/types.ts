@@ -31,6 +31,8 @@ export type PaymentsFilter = {
   search?: string;
   orderId?: string;
   customerId?: string;
+  fromDate?: string;
+  toDate?: string;
 };
 
 /* ── Payment Account (Tài khoản thanh toán) ── */
@@ -46,14 +48,19 @@ export type Expense = TableRow<'expenses'> & {
 export type ExpenseInsert = TableInsert<'expenses'>;
 export type ExpenseUpdate = TableUpdate<'expenses'>;
 
+export type PaymentDocumentType =
+  | 'weaving_invoice'
+  | 'yarn_receipt'
+  | 'fabric_purchase';
+
 export type DocumentAllocation = {
-  document_type: 'weaving_invoice' | 'yarn_receipt';
+  document_type: PaymentDocumentType;
   document_id: string;
   allocated_amount: number;
 };
 
 export type UnpaidDocument = {
-  document_type: 'weaving_invoice' | 'yarn_receipt';
+  document_type: PaymentDocumentType;
   document_id: string;
   document_number: string;
   supplier_id: string;
@@ -67,6 +74,8 @@ export type ExpensesFilter = {
   search?: string;
   category?: ExpenseCategory;
   supplierId?: string;
+  fromDate?: string;
+  toDate?: string;
 };
 
 /* ── Debt Summaries ── */
