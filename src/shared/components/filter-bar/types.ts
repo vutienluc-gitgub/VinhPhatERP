@@ -50,6 +50,8 @@ export interface FilterBarProps {
   onClear?: () => void;
   /** Layout variant - 'card' (default) có border và padding, 'inline' không có container styling */
   variant?: 'card' | 'inline';
+  /** Tùy chọn prefix cho ID để tránh trùng lặp DOM khi render nhiều FilterBar */
+  idPrefix?: string;
 }
 
 /** Props cho field renderer */
@@ -57,6 +59,7 @@ export type FieldRendererProps = {
   field: FilterFieldConfig;
   value: Record<string, string | undefined>;
   onChange: (key: string, val: string | undefined) => void;
+  idPrefix: string;
 };
 
 /** Registry type cho field renderers */
@@ -64,3 +67,17 @@ export type FieldRenderersRegistry = Record<
   FilterFieldType,
   React.FC<FieldRendererProps>
 >;
+
+// --- Type Guards ---
+export const isSearchFilterField = (
+  field: FilterFieldConfig,
+): field is SearchFilterField => field.type === 'search';
+export const isComboboxFilterField = (
+  field: FilterFieldConfig,
+): field is ComboboxFilterField => field.type === 'combobox';
+export const isDateFilterField = (
+  field: FilterFieldConfig,
+): field is DateFilterField => field.type === 'date';
+export const isDateRangeFilterField = (
+  field: FilterFieldConfig,
+): field is DateRangeFilterField => field.type === 'date_range';

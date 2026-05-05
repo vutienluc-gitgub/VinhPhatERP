@@ -38,6 +38,23 @@ export const TaskCard = forwardRef(function TaskCard(
   const assignee = employees.find((e) => e.id === task.assignee_id);
   const kpi = kpis.find((k) => k.id === task.linked_kpi_id);
 
+  const getCardClasses = () => {
+    switch (task.status) {
+      case 'todo':
+        return 'border-zinc-200 hover:border-zinc-400 bg-white';
+      case 'in_progress':
+        return 'border-indigo-200 hover:border-indigo-400 bg-indigo-50/40';
+      case 'review':
+        return 'border-violet-200 hover:border-violet-400 bg-violet-50/40';
+      case 'blocked':
+        return 'border-red-200 hover:border-red-400 bg-red-50/40';
+      case 'done':
+        return 'border-emerald-200 hover:border-emerald-400 bg-emerald-50/40';
+      default:
+        return 'border-zinc-200 hover:border-indigo-300 bg-white';
+    }
+  };
+
   return (
     <div
       ref={ref}
@@ -49,7 +66,7 @@ export const TaskCard = forwardRef(function TaskCard(
         e.stopPropagation();
         onClick();
       }}
-      className={`rounded-lg bg-white border border-zinc-200 p-3 text-xs shadow-sm hover:border-indigo-300 transition-all group relative ${className}`}
+      className={`rounded-lg border p-3 text-xs shadow-sm transition-all group relative ${getCardClasses()} ${className}`}
     >
       {onTapMove && (
         <button

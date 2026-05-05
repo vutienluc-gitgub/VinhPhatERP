@@ -4,7 +4,7 @@
  * Lập trình viên chỉ cần truyền file JSON (schema), hệ thống tự render đúng field type.
  */
 
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { ClearFilterButton } from '@/shared/components/ClearFilterButton';
 
@@ -52,9 +52,15 @@ export function FilterBar({
   onChange,
   onClear,
   variant = 'card',
+  idPrefix: externalIdPrefix,
 }: FilterBarProps) {
   const hasActiveFilter = useHasActiveFilter(schema, value);
   const containerClasses = useContainerClasses(variant);
+
+  // A11Y: Generate a unique prefix if not provided to prevent DOM ID clashes
+  // when multiple FilterBars are rendered on the same page.
+  const autoIdPrefix = React.useId();
+  const idPrefix = externalIdPrefix || `filter-${autoIdPrefix}-`;
 
   return (
     <div className={containerClasses}>
@@ -68,6 +74,7 @@ export function FilterBar({
               field={field}
               value={value}
               onChange={onChange}
+              idPrefix={idPrefix}
             />
           );
         })}
