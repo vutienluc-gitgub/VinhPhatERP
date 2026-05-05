@@ -330,3 +330,21 @@ export async function fetchSupplierCategories(): Promise<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (data as any) || [];
 }
+
+export async function fetchSupplierStats(): Promise<{
+  total: number;
+  active: number;
+}> {
+  const { count: total, error: err1 } = await supabase
+    .from('suppliers')
+    .select('*', { count: 'exact', head: true });
+
+  const { count: active, error: err2 } = await supabase
+    .from('suppliers')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'active');
+
+  if (err1 || err2) throw err1 || err2;
+
+  return { total: total ?? 0, active: active ?? 0 };
+}

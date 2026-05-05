@@ -15,7 +15,11 @@ import { PAYMENT_METHOD_LABELS } from './payments.module';
 import type { PaymentsFilter } from './types';
 
 export function PaymentList() {
-  const { filters, setFilter, clearFilters } = useUrlFilterState(['search']);
+  const { filters, setFilter, clearFilters } = useUrlFilterState([
+    'search',
+    'fromDate',
+    'toDate',
+  ]);
   const [page, setPage] = useState(1);
 
   const {
@@ -34,6 +38,13 @@ export function PaymentList() {
       label: 'Tìm kiếm',
       placeholder: 'Số phiếu thu, khách hàng...',
     },
+    {
+      key: 'payment_date', // Used merely for identification, date_range fields use keyFrom/keyTo
+      type: 'date_range',
+      label: 'Thời gian thu',
+      keyFrom: 'fromDate',
+      keyTo: 'toDate',
+    },
   ];
 
   function handleFilterChange(key: string, value: string | undefined) {
@@ -50,7 +61,7 @@ export function PaymentList() {
     deleteMutation.mutate(id);
   }
 
-  const hasFilter = !!filters.search;
+  const hasFilter = !!(filters.search || filters.fromDate || filters.toDate);
 
   return (
     <div className="panel-card card-flush">

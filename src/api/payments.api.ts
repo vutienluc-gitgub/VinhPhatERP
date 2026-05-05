@@ -65,6 +65,13 @@ export async function fetchPaymentsPaginated(
     }
   }
 
+  if (filters.fromDate) {
+    query = query.gte('payment_date', filters.fromDate);
+  }
+  if (filters.toDate) {
+    query = query.lte('payment_date', filters.toDate);
+  }
+
   const { data, error, count } = await query;
   if (error) throw error;
   const total = count ?? 0;
@@ -269,6 +276,13 @@ export async function fetchExpensesPaginated(
         `expense_number.ilike.%${term}%,description.ilike.%${term}%`,
       );
     }
+  }
+
+  if (filters.fromDate) {
+    query = query.gte('expense_date', filters.fromDate);
+  }
+  if (filters.toDate) {
+    query = query.lte('expense_date', filters.toDate);
   }
 
   const { data, error, count } = await query;

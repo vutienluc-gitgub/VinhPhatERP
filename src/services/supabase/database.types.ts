@@ -6370,7 +6370,10 @@ export type Database = {
         | 'in_progress'
         | 'completed'
         | 'cancelled';
-      payment_document_type: 'weaving_invoice' | 'yarn_receipt';
+      payment_document_type:
+        | 'weaving_invoice'
+        | 'yarn_receipt'
+        | 'fabric_purchase';
       payment_method:
         | 'cash'
         | 'bank_transfer'
@@ -6618,7 +6621,11 @@ export const Constants = {
         'completed',
         'cancelled',
       ],
-      payment_document_type: ['weaving_invoice', 'yarn_receipt'],
+      payment_document_type: [
+        'weaving_invoice',
+        'yarn_receipt',
+        'fabric_purchase',
+      ],
       payment_method: [
         'cash',
         'bank_transfer',

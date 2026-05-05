@@ -45,6 +45,8 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
   const { filters, setFilter, clearFilters } = useUrlFilterState([
     'search',
     'category',
+    'fromDate',
+    'toDate',
   ]);
   const [page, setPage] = useState(1);
 
@@ -73,6 +75,13 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
         label: EXPENSE_CATEGORY_LABELS[c],
       })),
     },
+    {
+      key: 'expense_date', // Used merely for identification, date_range fields use keyFrom/keyTo
+      type: 'date_range',
+      label: 'Thời gian chi',
+      keyFrom: 'fromDate',
+      keyTo: 'toDate',
+    },
   ];
 
   function handleFilterChange(key: string, value: string | undefined) {
@@ -89,7 +98,12 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
     deleteMutation.mutate(expense.id);
   }
 
-  const hasFilter = !!(filters.search || filters.category);
+  const hasFilter = !!(
+    filters.search ||
+    filters.category ||
+    filters.fromDate ||
+    filters.toDate
+  );
 
   return (
     <div className="panel-card card-flush">

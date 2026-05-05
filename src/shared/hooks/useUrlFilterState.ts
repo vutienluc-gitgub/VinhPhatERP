@@ -16,11 +16,15 @@ import { useSearchParams } from 'react-router-dom';
  * @param keys Danh sách key hợp lệ — chỉ những key này được đọc/ghi từ URL.
  *             Bắt buộc khai báo để tránh đọc nhầm params không liên quan
  *             (ví dụ: `action`, `bom_id` từ deep-link khác).
+ * @param defaults Giá trị mặc định cho các key khi không có trên URL.
+ *                 Chỉ áp dụng khi `searchParams.get(key) === null` (không có param).
+ *                 Không áp dụng khi `searchParams.get(key) === ''` (param rỗng).
  *
  * @example
- * const { filters, setFilter, clearFilters } = useUrlFilterState([
- *   'search', 'status', 'from_date', 'to_date',
- * ]);
+ * const { filters, setFilter, clearFilters } = useUrlFilterState(
+ *   ['search', 'status', 'from_date', 'to_date'] as const,
+ *   { status: 'active' }
+ * );
  *
  * <FilterBar
  *   schema={filterSchema}
@@ -29,18 +33,28 @@ import { useSearchParams } from 'react-router-dom';
  *   onClear={clearFilters}
  * />
  */
-export function useUrlFilterState(keys: readonly string[]) {
+export function useUrlFilterState<K extends string>(
+  keys: readonly K[],
+  defaults?: Partial<Record<K, string>>,
+) {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  /** Đọc filter từ URL — chỉ lấy các key đã khai báo. */
+  /** Đọc filter từ URL — chỉ lấy các key đã khai báo, áp dụng default nếu có. */
   const filters = useMemo(() => {
     const result: Record<string, string | undefined> = {};
     for (const key of keys) {
-      const value = searchParams.get(key);
-      result[key] = value ?? undefined;
+      const rawValue = searchParams.get(key);
+      // Key có trên URL → dùng giá trị URL (kể cả rỗng)
+      if (rawValue !== null) {
+        result[key] = rawValue || undefined;
+      }
+      // Key không có trên URL → dùng default nếu có
+      else if (defaults && key in defaults) {
+        result[key] = defaults[key as K];
+      }
     }
     return result;
-  }, [searchParams, keys]);
+  }, [searchParams, keys, defaults]);
 
   /**
    * Cập nhật 1 trường filter. Tương thích với FilterBar onChange.

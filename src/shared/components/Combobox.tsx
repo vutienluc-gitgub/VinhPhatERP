@@ -1,7 +1,20 @@
 import { useState, useRef, useEffect, useMemo, memo } from 'react';
+import { createPortal } from 'react-dom';
 
 import { Search, ChevronDown, Check } from '@/shared/icons';
 import { Icon, type IconName } from '@/shared/components/Icon';
+
+/** Tính toán vị trí dropdown dựa trên trigger element */
+function getDropdownStyle(triggerEl: HTMLElement): React.CSSProperties {
+  const rect = triggerEl.getBoundingClientRect();
+  return {
+    position: 'fixed',
+    top: rect.bottom + 4,
+    left: rect.left,
+    width: rect.width,
+    zIndex: 9999,
+  };
+}
 
 export type ComboboxOption = {
   value: string;
@@ -40,8 +53,16 @@ export const Combobox = memo(function Combobox({
 }: ComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Tính toán vị trí dropdown khi mở (position: fixed không bị ảnh hưởng bởi overflow:hidden)
+  useEffect(() => {
+    if (isOpen && containerRef.current) {
+      setDropdownStyle(getDropdownStyle(containerRef.current));
+    }
+  }, [isOpen]);
 
   // Đóng khi click ngoài
   useEffect(() => {
@@ -51,7 +72,6 @@ export const Combobox = memo(function Combobox({
         !containerRef.current.contains(event.target as Node)
       ) {
         if (allowInput && search) {
-          // Khi allowInput: lưu text đang nhập nếu rời khỏi
           onChange(search);
         }
         setIsOpen(false);
@@ -146,50 +166,58 @@ export const Combobox = memo(function Combobox({
           />
         </div>
 
-        {isOpen && filteredOptions.length > 0 && (
-          <div className="absolute z-50 w-full mt-1 border border-[var(--border)] rounded-lg shadow-lg max-h-[240px] overflow-y-auto bg-surface">
-            {filteredOptions.map((opt) => {
-              const isSelected = value === opt.value;
-              return (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onMouseDown={(e) => {
-                    e.preventDefault(); // Prevent blur before click
-                    onChange(opt.value);
-                    setSearch(opt.label);
-                    setIsOpen(false);
-                  }}
-                  className={`combobox-option${isSelected ? ' is-selected' : ''}`}
-                >
-                  <div className="flex flex-row items-center gap-2">
-                    {opt.icon && (
-                      <Icon
-                        name={opt.icon as IconName}
-                        size={16}
-                        className="text-muted"
+        {isOpen &&
+          filteredOptions.length > 0 &&
+          createPortal(
+            <div
+              style={dropdownStyle}
+              className="border border-[var(--border)] rounded-lg shadow-xl max-h-[240px] overflow-y-auto bg-surface"
+            >
+              {filteredOptions.map((opt) => {
+                const isSelected = value === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onMouseDown={(e) => {
+                      e.preventDefault(); // Prevent blur before click
+                    }}
+                    onClick={() => {
+                      onChange(opt.value);
+                      setSearch(opt.label);
+                      setIsOpen(false);
+                    }}
+                    className={`combobox-option${isSelected ? ' is-selected' : ''}`}
+                  >
+                    <div className="flex flex-row items-center gap-2">
+                      {opt.icon && (
+                        <Icon
+                          name={opt.icon as IconName}
+                          size={16}
+                          className="text-muted"
+                        />
+                      )}
+                      <div className="flex flex-col">
+                        <span>{opt.label}</span>
+                        {opt.code && (
+                          <span className="text-xs text-muted mt-0.5">
+                            Ma: {opt.code}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {isSelected && (
+                      <Check
+                        className="w-4 h-4 shrink-0"
+                        color="var(--primary)"
                       />
                     )}
-                    <div className="flex flex-col">
-                      <span>{opt.label}</span>
-                      {opt.code && (
-                        <span className="text-xs text-muted mt-0.5">
-                          Ma: {opt.code}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  {isSelected && (
-                    <Check
-                      className="w-4 h-4 shrink-0"
-                      color="var(--primary)"
-                    />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        )}
+                  </button>
+                );
+              })}
+            </div>,
+            document.body,
+          )}
       </div>
     );
   }
@@ -229,75 +257,83 @@ export const Combobox = memo(function Combobox({
         <ChevronDown className="w-4 h-4 text-[var(--text-secondary)] absolute right-3 top-1/2 -translate-y-1/2" />
       </button>
 
-      {isOpen && (
-        <div className="absolute z-50 w-full mt-1 border border-[var(--border)] rounded-lg shadow-lg max-h-[240px] overflow-y-auto bg-surface">
-          <div className="sticky top-0 p-2 border-b border-[var(--border-light)] flex flex-row items-center gap-2 z-10 bg-surface">
-            <Search className="w-4 h-4 text-[var(--text-secondary)]" />
-            <input
-              type="text"
-              className="w-full text-sm outline-none bg-transparent text-[var(--text-primary)] border-none min-h-[32px]"
-              placeholder="Tìm kiếm..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onClick={(e) => e.stopPropagation()}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                }
-              }}
-            />
-          </div>
-          <div className="p-1">
-            {filteredOptions.length === 0 ? (
-              <div className="p-2 text-sm text-center text-[var(--text-secondary)]">
-                Không tìm thấy kết quả
-              </div>
-            ) : (
-              filteredOptions.map((opt) => {
-                const isSelected = value === opt.value;
-                return (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => {
-                      onChange(opt.value);
-                      setIsOpen(false);
-                      setSearch('');
-                      onBlur?.();
-                    }}
-                    className={`combobox-option${isSelected ? ' is-selected' : ''}`}
-                  >
-                    <div className="flex flex-row items-center gap-2">
-                      {opt.icon && (
-                        <Icon
-                          name={opt.icon as IconName}
-                          size={16}
-                          className="text-muted"
+      {isOpen &&
+        createPortal(
+          <div
+            style={dropdownStyle}
+            className="border border-[var(--border)] rounded-lg shadow-xl max-h-[240px] overflow-y-auto bg-surface"
+          >
+            <div className="sticky top-0 p-2 border-b border-[var(--border-light)] flex flex-row items-center gap-2 z-10 bg-surface">
+              <Search className="w-4 h-4 text-[var(--text-secondary)]" />
+              <input
+                type="text"
+                className="w-full text-sm outline-none bg-transparent text-[var(--text-primary)] border-none min-h-[32px]"
+                placeholder="Tìm kiếm..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                  }
+                }}
+              />
+            </div>
+            <div className="p-1">
+              {filteredOptions.length === 0 ? (
+                <div className="p-2 text-sm text-center text-[var(--text-secondary)]">
+                  Không tìm thấy kết quả
+                </div>
+              ) : (
+                filteredOptions.map((opt) => {
+                  const isSelected = value === opt.value;
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault(); // Prevent blur before click
+                      }}
+                      onClick={() => {
+                        onChange(opt.value);
+                        setIsOpen(false);
+                        setSearch('');
+                        onBlur?.();
+                      }}
+                      className={`combobox-option${isSelected ? ' is-selected' : ''}`}
+                    >
+                      <div className="flex flex-row items-center gap-2">
+                        {opt.icon && (
+                          <Icon
+                            name={opt.icon as IconName}
+                            size={16}
+                            className="text-muted"
+                          />
+                        )}
+                        <div className="flex flex-col">
+                          <span>{opt.label}</span>
+                          {(opt.code || opt.phone) && (
+                            <span className="text-xs text-muted mt-0.5">
+                              {opt.code && `Ma: ${opt.code} `}
+                              {opt.phone && `SDT: ${opt.phone}`}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      {isSelected && (
+                        <Check
+                          className="w-4 h-4 shrink-0"
+                          color="var(--primary)"
                         />
                       )}
-                      <div className="flex flex-col">
-                        <span>{opt.label}</span>
-                        {(opt.code || opt.phone) && (
-                          <span className="text-xs text-muted mt-0.5">
-                            {opt.code && `Ma: ${opt.code} `}
-                            {opt.phone && `SDT: ${opt.phone}`}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {isSelected && (
-                      <Check
-                        className="w-4 h-4 shrink-0"
-                        color="var(--primary)"
-                      />
-                    )}
-                  </button>
-                );
-              })
-            )}
-          </div>
-        </div>
-      )}
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 });

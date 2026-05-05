@@ -40,7 +40,7 @@ export interface ExpenseDbPayload {
   reference_number: string | null;
   notes: string | null;
   allocations?: Array<{
-    document_type: 'weaving_invoice' | 'yarn_receipt';
+    document_type: 'weaving_invoice' | 'yarn_receipt' | 'fabric_purchase';
     document_id: string;
     allocated_amount: number;
   }>;
