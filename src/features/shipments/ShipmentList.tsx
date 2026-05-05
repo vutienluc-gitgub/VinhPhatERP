@@ -159,7 +159,7 @@ export function ShipmentList() {
         expectedUpdatedAt: shipment.updated_at ?? undefined,
       });
       try {
-        exportShipmentToPdf(confirmedShipment);
+        await exportShipmentToPdf(confirmedShipment);
       } catch (pdfError) {
         await showAlert(
           `Phiếu ${confirmedShipment.shipment_number} đã được xác nhận nhưng không thể mở trình in PDF. ${getErrorMessage(pdfError)}`,

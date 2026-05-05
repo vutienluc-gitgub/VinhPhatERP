@@ -42,6 +42,7 @@ type CustomerListProps = {
   onNew: () => void;
   onCreateContract: (customer: Customer) => void;
   onDeposit?: (customer: Customer) => void;
+  onChat?: (customer: Customer) => void;
 };
 
 export function CustomerList({
@@ -49,6 +50,7 @@ export function CustomerList({
   onNew,
   onCreateContract,
   onDeposit,
+  onChat,
 }: CustomerListProps) {
   const { filters, setFilter, clearFilters } = useUrlFilterState([
     'query',
@@ -257,6 +259,11 @@ export function CustomerList({
               return (
                 <ActionMenu
                   items={[
+                    {
+                      icon: 'MessageSquare',
+                      onClick: () => onChat?.(c),
+                      label: 'Nhắn tin',
+                    },
                     {
                       icon: 'Wallet',
                       onClick: () => {

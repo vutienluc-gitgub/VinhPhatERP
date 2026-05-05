@@ -35,11 +35,23 @@ export const ChatBubble = memo(function ChatBubble({
     if (onRetry) onRetry(message);
   }, [onRetry, message]);
 
-  // System message
+  // System message (journey updates)
   if (message.message_type === 'system') {
     return (
       <div className="chat-system-msg">
         <span className="chat-system-msg-text">{message.content}</span>
+      </div>
+    );
+  }
+
+  // ePOD important events (signature confirmation, delivery complete)
+  if (message.message_type === 'system_epod') {
+    return (
+      <div className="chat-system-epod">
+        <div className="chat-system-epod-content">{message.content}</div>
+        <div className="chat-system-epod-time">
+          {formatTime(message.created_at)}
+        </div>
       </div>
     );
   }

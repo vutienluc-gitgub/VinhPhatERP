@@ -4,11 +4,16 @@ import {
   fetchDriverShipments,
   fetchJourneyLogs,
   updateJourneyStatus,
+  uploadDeliveryPhoto,
+  uploadSignatureBlob,
+  saveDeliverySignature,
   fetchMyDriverEmployee,
 } from '@/api/driver-portal.api';
 import type { JourneyStatus } from '@/domain/logistics/driver-portal.types';
 
 const QUERY_KEY = ['driver-shipments'] as const;
+
+export { uploadDeliveryPhoto, uploadSignatureBlob, saveDeliverySignature };
 
 /** Lay employee record lien ket voi profile cua tai xe */
 export function useMyDriverEmployee(profileId: string | undefined) {
@@ -43,17 +48,20 @@ export function useUpdateJourneyStatus() {
       journeyStatus,
       notes,
       updatedBy,
+      photoUrl,
     }: {
       shipmentId: string;
       journeyStatus: JourneyStatus;
       notes?: string;
       updatedBy?: string;
+      photoUrl?: string;
     }) =>
       updateJourneyStatus(
         shipmentId,
         journeyStatus,
         notes ?? null,
         updatedBy ?? null,
+        photoUrl ?? null,
       ),
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });

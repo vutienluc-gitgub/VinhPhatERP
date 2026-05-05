@@ -2,6 +2,8 @@ import { useState } from 'react';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { ContractForm } from '@/features/contracts/ContractForm';
+// eslint-disable-next-line boundaries/dependencies
+import { ChatDrawer } from '@/features/chat/ChatDrawer';
 
 import { CustomerForm } from './CustomerForm';
 import { CustomerList } from './CustomerList';
@@ -15,6 +17,7 @@ export function CustomersPage() {
     null,
   );
   const [depositCustomer, setDepositCustomer] = useState<Customer | null>(null);
+  const [chatCustomer, setChatCustomer] = useState<Customer | null>(null);
 
   function openCreate() {
     setEditCustomer(null);
@@ -38,6 +41,7 @@ export function CustomersPage() {
         onNew={openCreate}
         onCreateContract={(c) => setContractCustomer(c)}
         onDeposit={(c) => setDepositCustomer(c)}
+        onChat={(c) => setChatCustomer(c)}
       />
 
       <AdaptiveSheet
@@ -73,6 +77,15 @@ export function CustomersPage() {
           onClose={() => setDepositCustomer(null)}
         />
       )}
+
+      <ChatDrawer
+        open={!!chatCustomer}
+        onClose={() => setChatCustomer(null)}
+        entityType="customer"
+        entityId={chatCustomer?.id ?? ''}
+        title={chatCustomer?.name ?? ''}
+        subtitle="Trò chuyện trực tiếp"
+      />
     </div>
   );
 }

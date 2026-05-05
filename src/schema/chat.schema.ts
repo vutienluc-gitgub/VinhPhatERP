@@ -11,7 +11,7 @@ export const CHAT_ROOM_STATUS_LABELS: Record<ChatRoomStatus, string> = {
 
 // ── Message Type ──
 
-export type ChatMessageType = 'text' | 'image' | 'system';
+export type ChatMessageType = 'text' | 'image' | 'system' | 'system_epod';
 
 // ── Message Status ──
 

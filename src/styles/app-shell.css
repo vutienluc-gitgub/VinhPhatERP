@@ -44,6 +44,8 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   display: block;
+  /* Đảm bảo không lộ khoảng trắng khi overscroll bounce trên iOS */
+  background: var(--surface-strong);
 }
 
 /* ── Topbar: Compact sticky header ── */
@@ -147,6 +149,8 @@ html.fluid .content-shell {
   gap: 1.5rem;
   padding: 0 var(--shell-inset) 5.5rem; /* INSET: tiêu thụ --shell-inset */
   min-width: 0;
+  /* Chặn overscroll bounce làm nội dung "trôi nổi" trên mobile */
+  overscroll-behavior-y: contain;
 }
 
 .brand-block {

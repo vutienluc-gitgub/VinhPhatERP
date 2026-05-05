@@ -6,6 +6,12 @@ import { BlockedPage } from '@/features/auth/BlockedPage';
 import { UnauthorizedPage } from '@/features/auth/UnauthorizedPage';
 import { authRoute } from '@/app/router/routes';
 
+const ShipmentVerifyPage = lazy(() =>
+  import('@/features/shipments/ShipmentVerifyPage').then((m) => ({
+    default: m.ShipmentVerifyPage,
+  })),
+);
+
 const TenantRegisterPage = lazy(() =>
   import('@/features/auth/TenantRegisterPage').then((m) => ({
     default: m.TenantRegisterPage,
@@ -25,5 +31,9 @@ export const publicRoutes: RouteObject[] = [
   {
     path: '/blocked',
     element: <BlockedPage />,
+  },
+  {
+    path: '/verify/:shipmentNumber',
+    element: withSuspense(<ShipmentVerifyPage />),
   },
 ];

@@ -56,6 +56,7 @@ export const Combobox = memo(function Combobox({
   const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Tính toán vị trí dropdown khi mở (position: fixed không bị ảnh hưởng bởi overflow:hidden)
   useEffect(() => {
@@ -64,13 +65,13 @@ export const Combobox = memo(function Combobox({
     }
   }, [isOpen]);
 
-  // Đóng khi click ngoài
+  // Đóng khi click ngoài (cần check cả dropdown portal vì nằm ngoài containerRef)
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
+      const target = event.target as Node;
+      const insideContainer = containerRef.current?.contains(target) ?? false;
+      const insideDropdown = dropdownRef.current?.contains(target) ?? false;
+      if (!insideContainer && !insideDropdown) {
         if (allowInput && search) {
           onChange(search);
         }
@@ -170,6 +171,7 @@ export const Combobox = memo(function Combobox({
           filteredOptions.length > 0 &&
           createPortal(
             <div
+              ref={dropdownRef}
               style={dropdownStyle}
               className="border border-[var(--border)] rounded-lg shadow-xl max-h-[240px] overflow-y-auto bg-surface"
             >
@@ -260,6 +262,7 @@ export const Combobox = memo(function Combobox({
       {isOpen &&
         createPortal(
           <div
+            ref={dropdownRef}
             style={dropdownStyle}
             className="border border-[var(--border)] rounded-lg shadow-xl max-h-[240px] overflow-y-auto bg-surface"
           >

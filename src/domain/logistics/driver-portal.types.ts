@@ -30,6 +30,7 @@ export type JourneyLog = {
   shipment_id: string;
   journey_status: JourneyStatus;
   notes: string | null;
+  photo_url: string | null;
   updated_by: string | null;
   created_at: string;
 };

@@ -5,6 +5,8 @@ import type {
   JourneyStatus,
 } from '@/domain/logistics/driver-portal.types';
 
+const DELIVERY_PROOF_BUCKET = 'public-media';
+
 type EmployeeSummary = { id: string; name: string; code: string; role: string };
 
 /** Tim employee lien ket voi profile (profiles.employee_id -> employees.id) */
@@ -70,18 +72,47 @@ export async function fetchJourneyLogs(
   return (data ?? []) as JourneyLog[];
 }
 
+/**
+ * Upload anh xac nhan giao hang len Supabase Storage.
+ * Tra ve public URL de luu vao journey log.
+ */
+export async function uploadDeliveryPhoto(
+  file: File,
+  shipmentId: string,
+): Promise<string> {
+  const ext = file.name.split('.').pop() ?? 'jpg';
+  const fileName = `delivery-proofs/${shipmentId}/${crypto.randomUUID()}.${ext}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from(DELIVERY_PROOF_BUCKET)
+    .upload(fileName, file, {
+      cacheControl: '31536000',
+      upsert: false,
+    });
+
+  if (uploadError) throw uploadError;
+
+  const { data } = supabase.storage
+    .from(DELIVERY_PROOF_BUCKET)
+    .getPublicUrl(fileName);
+
+  return data.publicUrl;
+}
+
 /** Cap nhat moc hanh trinh atomic */
 export async function updateJourneyStatus(
   shipmentId: string,
   journeyStatus: JourneyStatus,
   notes: string | null,
   updatedBy: string | null,
+  photoUrl?: string | null,
 ): Promise<void> {
   const { error } = await supabase.rpc('rpc_update_shipment_journey', {
     p_shipment_id: shipmentId,
     p_journey_status: journeyStatus,
     p_notes: notes ?? undefined,
     p_updated_by: updatedBy ?? undefined,
+    p_photo_url: photoUrl ?? undefined,
   });
   if (error) {
     if (error.message?.includes('SHIPMENT_NOT_IN_TRANSIT'))
@@ -92,4 +123,47 @@ export async function updateJourneyStatus(
       throw new Error('Khong tim thay phieu xuat.');
     throw error;
   }
+}
+
+/**
+ * Upload chu ky khach hang (base64 data URL) len Supabase Storage.
+ * Tra ve public URL.
+ */
+export async function uploadSignatureBlob(
+  dataUrl: string,
+  shipmentId: string,
+): Promise<string> {
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+  const fileName = `signatures/${shipmentId}/${crypto.randomUUID()}.png`;
+
+  const { error: uploadError } = await supabase.storage
+    .from(DELIVERY_PROOF_BUCKET)
+    .upload(fileName, blob, {
+      cacheControl: '31536000',
+      upsert: false,
+      contentType: 'image/png',
+    });
+
+  if (uploadError) throw uploadError;
+
+  const { data } = supabase.storage
+    .from(DELIVERY_PROOF_BUCKET)
+    .getPublicUrl(fileName);
+
+  return data.publicUrl;
+}
+
+/** Luu chu ky va thoi gian ky vao bang shipments */
+export async function saveDeliverySignature(
+  shipmentId: string,
+  signatureUrl: string,
+): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase.rpc as any)('rpc_save_delivery_signature', {
+    p_shipment_id: shipmentId,
+    p_customer_signature_url: signatureUrl,
+    p_signed_at: new Date().toISOString(),
+  });
+  if (error) throw error;
 }
