@@ -79,27 +79,51 @@ export function TimelineProgress({ steps, className }: TimelineProgressProps) {
             </div>
 
             {/* Step Content */}
-            <div className="flex-1 pb-6 pt-1">
+            <div
+              className={clsx(
+                'flex-1 mb-6 p-4 rounded-xl border transition-all duration-300',
+                step.status === 'completed' &&
+                  'bg-success/10 border-success/20',
+                step.status === 'current' &&
+                  'bg-primary/10 border-primary/30 shadow-sm',
+                step.status === 'error' && 'bg-danger/10 border-danger/20',
+                step.status === 'pending' &&
+                  'bg-transparent border-transparent pt-1 px-0',
+              )}
+            >
               <div className="flex justify-between items-start gap-2">
                 <div>
                   <h4
                     className={clsx(
                       'text-sm font-bold m-0',
-                      step.status === 'pending'
-                        ? 'text-muted'
-                        : 'text-foreground',
+                      step.status === 'completed' && 'text-success-700',
+                      step.status === 'current' && 'text-primary-700',
+                      step.status === 'error' && 'text-danger-700',
+                      step.status === 'pending' && 'text-muted',
                     )}
                   >
                     {step.title}
                   </h4>
                   {step.subtitle && (
-                    <div className="text-xs text-muted mt-1 leading-relaxed">
+                    <div
+                      className={clsx(
+                        'text-xs mt-1 leading-relaxed',
+                        step.status === 'pending'
+                          ? 'text-muted'
+                          : 'text-text/80',
+                      )}
+                    >
                       {step.subtitle}
                     </div>
                   )}
                 </div>
                 {step.date && (
-                  <div className="text-[10px] font-semibold text-muted uppercase tracking-wider tabular-nums whitespace-nowrap pt-0.5">
+                  <div
+                    className={clsx(
+                      'text-[10px] font-semibold uppercase tracking-wider tabular-nums whitespace-nowrap pt-0.5',
+                      step.status === 'pending' ? 'text-muted' : 'text-text/60',
+                    )}
+                  >
                     {step.date}
                   </div>
                 )}

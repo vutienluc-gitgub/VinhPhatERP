@@ -15,7 +15,6 @@ import { apiTaskInsert } from '@/schema/api-validation.schema';
 import { OPERATIONS_MESSAGES } from '@/features/operations/constants';
 
 import { fetchEmployees as fetchCentralEmployees } from './employees.api';
-import { demoTasks, demoKpis, demoActivities } from './operations.demo';
 
 export interface BlockedTransitionTelemetryEvent {
   taskId: string;
@@ -45,13 +44,15 @@ export async function fetchKanbanDashboard(): Promise<KanbanDashboardData> {
   const { data, error } = await untypedDb.rpc('rpc_get_kanban_dashboard');
 
   if (error || !data) {
-    console.warn('Kanban RPC failed, falling back to empty', error);
+    if (error) {
+      console.error('Kanban RPC failed', error);
+    }
     return {
-      tasks: demoTasks as unknown as Task[],
+      tasks: [],
       employees: [],
-      kpis: demoKpis as unknown as Kpi[],
+      kpis: [],
       workload: [],
-      activities: demoActivities,
+      activities: [],
     };
   }
 
@@ -82,11 +83,11 @@ export async function fetchTasks(): Promise<Task[]> {
     .select('*')
     .order('due_date', { ascending: true });
 
-  if (error || !data || data.length === 0) {
-    console.warn('Using demo tasks due to missing data or error:', error);
-    return demoTasks as unknown as Task[];
+  if (error) {
+    console.error('Failed to fetch tasks:', error);
+    throw error;
   }
-  return data as unknown as Task[];
+  return (data || []) as unknown as Task[];
 }
 
 export async function fetchEmployees(): Promise<Employee[]> {
@@ -101,10 +102,11 @@ export async function fetchKpis(): Promise<Kpi[]> {
     .select('*')
     .order('code', { ascending: true });
 
-  if (error || !data || data.length === 0) {
-    return demoKpis as unknown as Kpi[];
+  if (error) {
+    console.error('Failed to fetch KPIs:', error);
+    throw error;
   }
-  return data as unknown as Kpi[];
+  return (data || []) as unknown as Kpi[];
 }
 
 export async function fetchActivities(): Promise<ActivityItem[]> {
@@ -114,9 +116,11 @@ export async function fetchActivities(): Promise<ActivityItem[]> {
     .order('created_at', { ascending: false })
     .limit(10);
 
-  if (error || !data || data.length === 0) {
-    return demoActivities;
+  if (error) {
+    console.error('Failed to fetch activities:', error);
+    throw error;
   }
+  if (!data || data.length === 0) return [];
 
   return (data as unknown as RawAuditLog[]).map((item) => ({
     id: item.id,
