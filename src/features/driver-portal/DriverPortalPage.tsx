@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import toast from 'react-hot-toast';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { Icon } from '@/shared/components';
+import { SignaturePad } from '@/shared/components/SignaturePad';
 // eslint-disable-next-line boundaries/dependencies
 import { ChatDrawer } from '@/features/chat/ChatDrawer';
 import { formatCurrency } from '@/shared/utils/format';
@@ -11,6 +12,9 @@ import {
   useDriverShipments,
   useJourneyLogs,
   useUpdateJourneyStatus,
+  uploadDeliveryPhoto,
+  uploadSignatureBlob,
+  saveDeliverySignature,
 } from '@/application/shipments';
 
 import { JOURNEY_STATUS_LABELS, JOURNEY_STATUS_ORDER } from './types';
@@ -88,6 +92,12 @@ function ShipmentCard({
 }) {
   const [expanded, setExpanded] = useState(false);
   const [notesInput, setNotesInput] = useState('');
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showSignaturePad, setShowSignaturePad] = useState(false);
+  const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const { data: logs = [] } = useJourneyLogs(
     expanded ? shipment.id : undefined,
   );
@@ -99,18 +109,52 @@ function ShipmentCard({
 
   const nextStatus = JOURNEY_STATUS_ORDER[currentJourneyIdx + 1];
 
+  function handlePhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  }
+
+  async function handleSignatureConfirm(dataUrl: string) {
+    setSignatureDataUrl(dataUrl);
+    setShowSignaturePad(false);
+  }
+
   async function handleAdvance(targetStatus: JourneyStatus) {
     try {
+      setIsUploading(true);
+      let photoUrl: string | undefined;
+
+      if (targetStatus === 'delivered_confirmed') {
+        if (signatureDataUrl) {
+          const sigUrl = await uploadSignatureBlob(
+            signatureDataUrl,
+            shipment.id,
+          );
+          await saveDeliverySignature(shipment.id, sigUrl);
+          photoUrl = sigUrl;
+        } else if (photoFile) {
+          photoUrl = await uploadDeliveryPhoto(photoFile, shipment.id);
+        }
+      }
+
       await mutation.mutateAsync({
         shipmentId: shipment.id,
         journeyStatus: targetStatus,
         notes: notesInput.trim() || undefined,
         updatedBy: employeeId,
+        photoUrl,
       });
       setNotesInput('');
+      setPhotoFile(null);
+      setPhotoPreview(null);
+      setSignatureDataUrl(null);
       toast.success(`Đã cập nhật: ${JOURNEY_STATUS_LABELS[targetStatus]}`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Có lỗi xảy ra');
+    } finally {
+      setIsUploading(false);
     }
   }
 
@@ -195,7 +239,9 @@ function ShipmentCard({
                   isActive={isNext}
                   isDone={isDone}
                   disabled={
-                    mutation.isPending || shipment.status === 'delivered'
+                    mutation.isPending ||
+                    isUploading ||
+                    shipment.status === 'delivered'
                   }
                   onClick={() => {
                     if (isNext) void handleAdvance(step);
@@ -206,16 +252,107 @@ function ShipmentCard({
           </div>
 
           {nextStatus && shipment.status !== 'delivered' && (
-            <div className="mb-3">
-              <label className="text-[0.8rem] text-[var(--text-secondary)] block mb-1">
-                Ghi chú (tùy chọn)
-              </label>
-              <input
-                className="field-input"
-                value={notesInput}
-                onChange={(e) => setNotesInput(e.target.value)}
-                placeholder="Ví dụ: Đã đến địa chỉ, chờ khách ra nhận..."
-              />
+            <div className="mb-3 flex flex-col gap-2">
+              <div>
+                <label className="text-[0.8rem] text-[var(--text-secondary)] block mb-1">
+                  Ghi chú (tùy chọn)
+                </label>
+                <input
+                  className="field-input"
+                  value={notesInput}
+                  onChange={(e) => setNotesInput(e.target.value)}
+                  placeholder="Ví dụ: Đã đến địa chỉ, chờ khách ra nhận..."
+                />
+              </div>
+
+              {nextStatus === 'delivered_confirmed' && (
+                <div className="flex flex-col gap-2">
+                  <label className="text-[0.8rem] font-semibold text-[var(--text-secondary)] block">
+                    Bằng chứng giao hàng
+                    <span className="text-[var(--text-tertiary)] font-normal ml-1">
+                      (tùy chọn)
+                    </span>
+                  </label>
+
+                  {/* Signature */}
+                  {signatureDataUrl ? (
+                    <div className="relative rounded-[var(--radius)] border border-border bg-white overflow-hidden">
+                      <img
+                        src={signatureDataUrl}
+                        alt="Chữ ký"
+                        className="w-full max-h-24 object-contain"
+                      />
+                      <div className="absolute top-1 left-2 text-[9px] text-[var(--text-tertiary)] font-semibold uppercase">
+                        ✒ Chữ ký
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSignatureDataUrl(null)}
+                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white"
+                      >
+                        <Icon name="X" size={12} />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowSignaturePad(true)}
+                      className="flex items-center gap-2 w-full py-2.5 px-4 rounded-[var(--radius)] border-[1.5px] border-dashed border-border text-[var(--text-secondary)] text-[0.85rem] hover:border-primary hover:text-primary transition-colors"
+                    >
+                      <Icon name="PenLine" size={16} />
+                      Lấy chữ ký khách hàng
+                    </button>
+                  )}
+
+                  {/* Photo proof */}
+                  <input
+                    ref={photoInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    className="hidden"
+                    onChange={handlePhotoSelect}
+                  />
+                  {photoPreview ? (
+                    <div className="relative w-full rounded-[var(--radius)] overflow-hidden border border-border">
+                      <img
+                        src={photoPreview}
+                        alt="Ảnh"
+                        className="w-full max-h-32 object-cover"
+                      />
+                      <div className="absolute top-1 left-2 text-[9px] text-[var(--text-tertiary)] font-semibold uppercase">
+                        📸 Ảnh hiện trường
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPhotoFile(null);
+                          setPhotoPreview(null);
+                        }}
+                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white"
+                      >
+                        <Icon name="X" size={12} />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => photoInputRef.current?.click()}
+                      className="flex items-center gap-2 w-full py-2.5 px-4 rounded-[var(--radius)] border-[1.5px] border-dashed border-border text-[var(--text-secondary)] text-[0.85rem] hover:border-primary hover:text-primary transition-colors"
+                    >
+                      <Icon name="Camera" size={16} />
+                      Chụp ảnh hiện trường
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {showSignaturePad && (
+                <SignaturePad
+                  onConfirm={handleSignatureConfirm}
+                  onCancel={() => setShowSignaturePad(false)}
+                />
+              )}
             </div>
           )}
 
@@ -232,7 +369,7 @@ function ShipmentCard({
                     className="flex gap-2 text-[0.78rem] text-[var(--text-secondary)]"
                   >
                     <Icon name="Clock" size={13} className="shrink-0 mt-0.5" />
-                    <div>
+                    <div className="flex-1 min-w-0">
                       <span className="font-semibold">
                         {JOURNEY_STATUS_LABELS[log.journey_status]}
                       </span>
@@ -243,6 +380,20 @@ function ShipmentCard({
                           minute: '2-digit',
                         })}
                       </span>
+                      {log.photo_url && (
+                        <a
+                          href={log.photo_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block mt-1"
+                        >
+                          <img
+                            src={log.photo_url}
+                            alt="Ảnh xác nhận giao hàng"
+                            className="rounded-[var(--radius)] max-h-28 object-cover border border-border"
+                          />
+                        </a>
+                      )}
                     </div>
                   </div>
                 ))}

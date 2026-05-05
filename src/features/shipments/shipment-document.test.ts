@@ -104,14 +104,17 @@ describe('shipment-document', () => {
     });
   });
 
-  it('builds escaped printable html with shipment summary', () => {
-    const { html } = buildShipmentPrintHtml(shipmentFixture);
+  it('builds escaped printable html with shipment summary', async () => {
+    const { html } = await buildShipmentPrintHtml(shipmentFixture);
 
     expect(html).toContain('Phiếu xuất kho');
     expect(html).toContain('XK2604-0001');
     expect(html).toContain('DH2604-0012');
     expect(html).toContain('Cong ty Det &lt;B&gt;');
-    expect(html).toContain('Tổng số lượng:</strong> 162,5 m');
+    expect(html).toContain('Tổng số lượng:');
+    expect(html).toContain('162,5 m');
+    expect(html).toContain('erp.vinhphat.com/verify');
+    expect(html).toContain('data:image/png;base64');
   });
 
   it('creates a stable shipment pdf file name', () => {

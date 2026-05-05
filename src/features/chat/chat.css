@@ -244,6 +244,35 @@
   display: inline-block;
 }
 
+/* ── ePOD System Event (signature / delivery confirmation) ── */
+
+.chat-system-epod {
+  margin: 6px 12px;
+  padding: 8px 12px;
+  background: #f0f8ec;
+  border: 1px solid #c3e6b0;
+  border-left: 3px solid #4caf50;
+  border-radius: 6px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.chat-system-epod-content {
+  font-size: 0.75rem;
+  color: #2e6b2e;
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+.chat-system-epod-time {
+  font-size: 0.625rem;
+  color: #7aad70;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 /* ── Chat Image ── */
 
 .chat-bubble-image {
