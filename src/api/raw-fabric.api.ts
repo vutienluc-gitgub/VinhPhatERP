@@ -161,7 +161,7 @@ export async function fetchWeavingPartners(): Promise<SupplierOption[]> {
   const { data, error } = await supabase
     .from('suppliers')
     .select('id, code, name')
-    .eq('category', 'weaving')
+    .eq('category', 'GREIGE') // Changed from 'weaving' to 'GREIGE'
     .eq('status', 'active')
     .order('name');
   if (error) throw error;

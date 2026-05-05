@@ -95,7 +95,7 @@ export async function fetchWeavingSuppliers(): Promise<
   const { data, error } = await supabase
     .from('suppliers')
     .select('id, code, name')
-    .eq('category', 'weaving')
+    .eq('category', 'GREIGE') // Changed from 'weaving' to 'GREIGE' based on new categories
     .eq('status', 'active')
     .order('name');
   if (error) throw error;

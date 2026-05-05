@@ -269,14 +269,13 @@ export function LoomList({ onEdit, onNew }: LoomListProps) {
                     ? `${l.daily_capacity_m.toLocaleString()} m/ngày`
                     : '—'}
                 </span>
-                {l.max_width_cm && (
-                  <span className="text-muted-foreground text-[0.75rem]">
-                    Khổ:{' '}
-                    <span className="font-medium text-foreground">
-                      {l.max_width_cm} cm
-                    </span>
-                  </span>
-                )}
+                <span className="text-muted-foreground text-[0.75rem]">
+                  {l.max_width_cm ? `Khổ: ${l.max_width_cm} cm` : ''}
+                  {l.max_width_cm && (l.diameter_inch || l.gauge) ? ' | ' : ''}
+                  {l.diameter_inch ? `${l.diameter_inch}"` : ''}
+                  {l.diameter_inch && l.gauge ? 'x' : ''}
+                  {l.gauge ? `${l.gauge}G` : ''}
+                </span>
               </div>
             ),
           },
@@ -336,7 +335,14 @@ export function LoomList({ onEdit, onNew }: LoomListProps) {
               <div className="flex justify-between items-center text-xs text-muted pt-2 border-t border-border/10">
                 <span>
                   {l.max_width_cm ? `Khổ: ${l.max_width_cm} cm` : ''}
-                  {l.max_width_cm && l.year_manufactured ? ' | ' : ''}
+                  {l.max_width_cm && (l.diameter_inch || l.gauge) ? ' | ' : ''}
+                  {l.diameter_inch ? `${l.diameter_inch}"` : ''}
+                  {l.diameter_inch && l.gauge ? 'x' : ''}
+                  {l.gauge ? `${l.gauge}G` : ''}
+                  {(l.max_width_cm || l.diameter_inch || l.gauge) &&
+                  l.year_manufactured
+                    ? ' | '
+                    : ''}
                   {l.year_manufactured ? `Năm SX: ${l.year_manufactured}` : ''}
                 </span>
                 <div className="flex gap-2">

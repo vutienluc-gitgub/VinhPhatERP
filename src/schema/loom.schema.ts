@@ -41,16 +41,24 @@ export const loomSchema = z.object({
     .max(200, 'Tên máy tối đa 200 ký tự'),
   loom_type: z.enum(LOOM_TYPES),
   supplier_id: z.string().uuid('Chọn nhà dệt'),
-  max_width_cm: z.number().min(0, 'Khổ dệt >= 0').optional().nullable(),
-  max_speed_rpm: z.number().min(0, 'Tốc độ >= 0').optional().nullable(),
-  daily_capacity_m: z.number().min(0, 'Công suất >= 0').optional().nullable(),
+  // Thong so van hanh
+  max_width_cm: z.number().min(0, 'Kho det >= 0').optional().nullable(),
+  max_speed_rpm: z.number().min(0, 'Toc do >= 0').optional().nullable(),
+  daily_capacity_m: z.number().min(0, 'Cong suat >= 0').optional().nullable(),
   year_manufactured: z
     .number()
     .int()
-    .min(1950, 'Năm >= 1950')
-    .max(2100, 'Năm <= 2100')
+    .min(1950, 'Nam >= 1950')
+    .max(2100, 'Nam <= 2100')
     .optional()
     .nullable(),
+  // Thong so ky thuat (tu catalog nha san xuat)
+  diameter_inch: z.number().min(0).optional().nullable(),
+  gauge: z.number().int().min(0).optional().nullable(),
+  feeders: z.number().int().min(0).optional().nullable(),
+  motor_power_kw: z.number().min(0).optional().nullable(),
+  voltage: z.string().trim().max(50).optional().nullable().or(z.literal('')),
+  weight_kg: z.number().min(0).optional().nullable(),
   status: z.enum(LOOM_STATUSES),
   notes: z.string().trim().max(500).optional().or(z.literal('')),
 });
@@ -66,6 +74,12 @@ export const loomDefaultValues: LoomFormValues = {
   max_speed_rpm: null,
   daily_capacity_m: null,
   year_manufactured: null,
+  diameter_inch: null,
+  gauge: null,
+  feeders: null,
+  motor_power_kw: null,
+  voltage: '',
+  weight_kg: null,
   status: 'active',
   notes: '',
 };

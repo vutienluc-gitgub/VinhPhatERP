@@ -10,10 +10,18 @@ export type Loom = {
   name: string;
   loom_type: LoomType;
   supplier_id: string;
+  // Thong so van hanh
   max_width_cm: number | null;
   max_speed_rpm: number | null;
   daily_capacity_m: number | null;
   year_manufactured: number | null;
+  // Thong so ky thuat
+  diameter_inch: number | null;
+  gauge: number | null;
+  feeders: number | null;
+  motor_power_kw: number | null;
+  voltage: string | null;
+  weight_kg: number | null;
   status: LoomStatus;
   notes: string | null;
   created_at: string;

@@ -29,6 +29,12 @@ function toDbRow(values: LoomFormValues) {
     max_speed_rpm: values.max_speed_rpm ?? null,
     daily_capacity_m: values.daily_capacity_m ?? null,
     year_manufactured: values.year_manufactured ?? null,
+    diameter_inch: values.diameter_inch ?? null,
+    gauge: values.gauge ?? null,
+    feeders: values.feeders ?? null,
+    motor_power_kw: values.motor_power_kw ?? null,
+    voltage: values.voltage?.trim() || null,
+    weight_kg: values.weight_kg ?? null,
     status: values.status,
     notes: values.notes?.trim() || null,
   };
