@@ -27,6 +27,22 @@ export class ErrorBoundary extends Component<
   }
 
   override componentDidCatch(error: Error, info: ErrorInfo) {
+    const isChunkLoadError =
+      error.name === 'ChunkLoadError' ||
+      error.message.includes('Failed to fetch dynamically imported module') ||
+      error.message.includes('Importing a module script failed') ||
+      error.message.includes('is not a valid JavaScript MIME type');
+
+    if (isChunkLoadError) {
+      const lastReload = sessionStorage.getItem('erp_chunk_error_reload');
+      const now = Date.now();
+      if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
+        sessionStorage.setItem('erp_chunk_error_reload', now.toString());
+        window.location.reload();
+        return;
+      }
+    }
+
     logger.error('Global React Error', error, {
       module: 'ErrorBoundary',
       componentStack: info.componentStack,
@@ -50,20 +66,20 @@ export class ErrorBoundary extends Component<
             quay về trang chủ.
           </p>
           {this.state.error && (
-            <pre className="text-[0.8rem] bg-[var(--surface-strong,#f4f4f4)] py-3 px-4 rounded-md max-w-full overflow-auto text-[#c0392b]">
+            <pre className="text-[0.8rem] bg-[var(--surface-strong,#f4f4f4)] py-3 px-4 rounded-md max-w-full overflow-auto text-[var(--color-danger,#ef4444)]">
               {this.state.error.message}
             </pre>
           )}
-          <div className="flex gap-3">
+          <div className="flex gap-3 mt-2">
             <button
-              className="secondary-button"
+              className="btn btn-outline"
               type="button"
               onClick={this.handleReset}
             >
               Thử lại
             </button>
             <button
-              className="primary-button"
+              className="btn btn-primary"
               type="button"
               onClick={() => {
                 window.location.href = '/';
