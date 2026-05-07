@@ -1,0 +1,284 @@
+/* ── Barcode Scanner Styles ── */
+
+.scanner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+/* ── Viewfinder ── */
+.scanner-viewfinder {
+  position: relative;
+  width: 100%;
+  max-width: 350px;
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(16, 35, 61, 0.12);
+  border: 2px solid var(--border);
+  background: #0a0a0a;
+}
+
+.scanner-viewfinder video {
+  border-radius: var(--radius-md);
+}
+
+/* Animated scan line overlay */
+.scanner-viewfinder::after {
+  content: '';
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--primary) 20%,
+    var(--primary) 80%,
+    transparent
+  );
+  box-shadow:
+    0 0 12px var(--primary),
+    0 0 4px var(--primary);
+  animation: scanline 2.4s ease-in-out infinite;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+@keyframes scanline {
+  0%,
+  100% {
+    top: 15%;
+  }
+  50% {
+    top: 85%;
+  }
+}
+
+/* Corner frame overlay */
+.scanner-corners {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.scanner-corner {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-color: var(--primary);
+  border-style: solid;
+  border-width: 0;
+}
+
+.scanner-corner--tl {
+  top: 8%;
+  left: 8%;
+  border-top-width: 3px;
+  border-left-width: 3px;
+  border-radius: 4px 0 0 0;
+}
+
+.scanner-corner--tr {
+  top: 8%;
+  right: 8%;
+  border-top-width: 3px;
+  border-right-width: 3px;
+  border-radius: 0 4px 0 0;
+}
+
+.scanner-corner--bl {
+  bottom: 8%;
+  left: 8%;
+  border-bottom-width: 3px;
+  border-left-width: 3px;
+  border-radius: 0 0 0 4px;
+}
+
+.scanner-corner--br {
+  bottom: 8%;
+  right: 8%;
+  border-bottom-width: 3px;
+  border-right-width: 3px;
+  border-radius: 0 0 4px 0;
+}
+
+/* ── Toolbar ── */
+.scanner-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 350px;
+}
+
+.scanner-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  transition: all 150ms ease;
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: 38px;
+}
+
+.scanner-toolbar-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(11, 107, 203, 0.06);
+}
+
+.scanner-toolbar-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.scanner-toolbar-btn.is-active {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(11, 107, 203, 0.08);
+}
+
+/* ── Scan feedback ── */
+.scanner-feedback {
+  width: 100%;
+  max-width: 350px;
+  text-align: center;
+}
+
+.scanner-last-scan {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-md);
+  background: rgba(10, 128, 92, 0.08);
+  border: 1px solid rgba(10, 128, 92, 0.2);
+  color: var(--success);
+  font-size: 0.82rem;
+  font-weight: 600;
+  animation: scan-flash 0.4s ease-out;
+}
+
+@keyframes scan-flash {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.scanner-scan-count {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ── Mode toggle ── */
+.scanner-mode-toggle {
+  display: flex;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  width: 100%;
+  max-width: 350px;
+}
+
+.scanner-mode-btn {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.scanner-mode-btn.is-active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.scanner-mode-btn:not(.is-active):hover {
+  background: var(--surface-hover);
+}
+
+/* ── Error area ── */
+.scanner-error {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--danger);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+/* ── File fallback ── */
+.scanner-file-fallback {
+  width: 100%;
+  max-width: 350px;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.scanner-file-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1.5px dashed var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.scanner-file-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(11, 107, 203, 0.04);
+}
+
+.scanner-file-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Helper text ── */
+.scanner-hint {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+  max-width: 300px;
+}
