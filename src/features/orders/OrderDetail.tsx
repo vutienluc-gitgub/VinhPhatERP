@@ -14,12 +14,16 @@ import {
   useOrder,
   useApproveOrderRequest,
   useRejectOrderRequest,
+  useConfirmTradingOrder,
+  useCancelTradingOrder,
 } from '@/application/orders';
 import {
   ORDER_STATUS_LABELS,
   ORDER_STATUS_BADGE_VARIANTS,
   ORDER_TYPE_LABELS,
+  PRODUCT_CATEGORY_LABELS,
 } from '@/schema/order.schema';
+import type { ProductCategory } from '@/schema/order.schema';
 import { isOrderEditable } from '@/domain/orders/OrderStateMachine';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { Badge } from '@/shared/components/Badge';
@@ -51,13 +55,19 @@ export function OrderDetail({
   const { profile } = useAuth();
   const isAdmin = profile?.role === 'admin';
   const confirmMutation = useConfirmOrder();
+  const tradingConfirmMutation = useConfirmTradingOrder();
   const cancelMutation = useCancelOrder();
+  const tradingCancelMutation = useCancelTradingOrder();
   const completeMutation = useCompleteOrder();
   const approveMutation = useApproveOrderRequest();
   const rejectMutation = useRejectOrderRequest();
   const { confirm } = useConfirm();
   const actionError =
-    confirmMutation.error || cancelMutation.error || completeMutation.error;
+    confirmMutation.error ||
+    tradingConfirmMutation.error ||
+    cancelMutation.error ||
+    tradingCancelMutation.error ||
+    completeMutation.error;
 
   if (isLoading)
     return (
@@ -88,23 +98,36 @@ export function OrderDetail({
   );
 
   async function handleConfirm() {
+    const isTrading = order?.order_type === 'trading';
     const ok = await confirm({
-      message:
-        order?.order_type === 'trading'
-          ? 'Xác nhận đơn hàng thương mại? Khách hàng có thể nhận hàng ngay sau khi xác nhận.'
-          : 'Xác nhận đơn hàng? Hệ thống sẽ tạo 7 công đoạn tiến độ tự động.',
+      message: isTrading
+        ? 'Xác nhận đơn hàng thương mại? Hệ thống sẽ tự động trừ kho cho các dòng hàng.'
+        : 'Xác nhận đơn hàng? Hệ thống sẽ tạo 7 công đoạn tiến độ tự động.',
     });
     if (!ok) return;
-    confirmMutation.mutate(orderId);
+
+    if (isTrading) {
+      tradingConfirmMutation.mutate(orderId);
+    } else {
+      confirmMutation.mutate(orderId);
+    }
   }
 
   async function handleCancel() {
+    const isTrading = order?.order_type === 'trading';
     const ok = await confirm({
-      message: 'Hủy đơn hàng này?',
+      message: isTrading
+        ? 'Hủy đơn thương mại? Hệ thống sẽ hoàn trả tồn kho đã trừ.'
+        : 'Hủy đơn hàng này?',
       variant: 'danger',
     });
     if (!ok) return;
-    cancelMutation.mutate(orderId);
+
+    if (isTrading) {
+      tradingCancelMutation.mutate(orderId);
+    } else {
+      cancelMutation.mutate(orderId);
+    }
   }
 
   async function handleComplete() {
@@ -246,9 +269,14 @@ export function OrderDetail({
                   variant="primary"
                   leftIcon="CheckCircle"
                   onClick={handleConfirm}
-                  isLoading={confirmMutation.isPending}
+                  isLoading={
+                    confirmMutation.isPending ||
+                    tradingConfirmMutation.isPending
+                  }
                 >
-                  Xác nhận đơn
+                  {order.order_type === 'trading'
+                    ? 'Xác nhận & Trừ kho'
+                    : 'Xác nhận đơn'}
                 </Button>
               )}
             </>
@@ -333,6 +361,7 @@ export function OrderDetail({
               <thead>
                 <tr>
                   <th>#</th>
+                  {order.order_type === 'trading' && <th>Nguồn</th>}
                   <th>Loại vải</th>
                   <th>Màu</th>
                   <th className="text-right">Số lượng</th>
@@ -343,27 +372,45 @@ export function OrderDetail({
               <tbody>
                 {items
                   .sort((a, b) => a.sort_order - b.sort_order)
-                  .map((item, idx) => (
-                    <tr key={item.id}>
-                      <td className="td-muted">{idx + 1}</td>
-                      <td>
-                        <strong>{item.fabric_type}</strong>
-                      </td>
-                      <td className="td-muted">{item.color_name ?? '—'}</td>
-                      <td className="numeric-cell">
-                        {new Intl.NumberFormat('vi-VN').format(item.quantity)}{' '}
-                        {item.unit}
-                      </td>
-                      <td className="numeric-cell">
-                        {formatCurrency(item.unit_price)}đ
-                      </td>
-                      <td className="numeric-cell font-bold">
-                        {formatCurrency(item.amount ?? 0)}đ
-                      </td>
-                    </tr>
-                  ))}
+                  .map((item, idx) => {
+                    const category = (item as Record<string, unknown>)
+                      .product_category as ProductCategory | undefined;
+                    return (
+                      <tr key={item.id}>
+                        <td className="td-muted">{idx + 1}</td>
+                        {order.order_type === 'trading' && (
+                          <td>
+                            <Badge variant="info">
+                              {category
+                                ? PRODUCT_CATEGORY_LABELS[category]
+                                : 'Vải'}
+                            </Badge>
+                          </td>
+                        )}
+                        <td>
+                          <strong>{item.fabric_type}</strong>
+                        </td>
+                        <td className="td-muted">
+                          {item.color_name ?? '\u2014'}
+                        </td>
+                        <td className="numeric-cell">
+                          {new Intl.NumberFormat('vi-VN').format(item.quantity)}{' '}
+                          {item.unit}
+                        </td>
+                        <td className="numeric-cell">
+                          {formatCurrency(item.unit_price)}đ
+                        </td>
+                        <td className="numeric-cell font-bold">
+                          {formatCurrency(item.amount ?? 0)}đ
+                        </td>
+                      </tr>
+                    );
+                  })}
                 <tr>
-                  <td colSpan={5} className="text-right font-bold">
+                  <td
+                    colSpan={order.order_type === 'trading' ? 6 : 5}
+                    className="text-right font-bold"
+                  >
                     Tổng cộng
                   </td>
                   <td className="numeric-cell font-bold">

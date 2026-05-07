@@ -100,7 +100,7 @@ export async function fetchYarnSuppliers(): Promise<YarnSupplierOption[]> {
   const { data, error } = await supabase
     .from('suppliers')
     .select('id, code, name')
-    .eq('category', 'yarn')
+    .eq('category', 'YARN')
     .eq('status', 'active')
     .order('name');
   if (error) throw error;

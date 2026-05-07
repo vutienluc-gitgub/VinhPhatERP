@@ -29,6 +29,7 @@ import {
 import { useUpdateOrder } from '@/application/orders';
 import {
   emptyOrderItem,
+  emptyTradingItem,
   ordersDefaultValues,
   ordersSchema,
   ordersSchemaEdit,
@@ -39,6 +40,7 @@ import type { OrdersFormValues } from '@/schema/order.schema';
 import { calculateOrderTotal } from '@/domain/orders';
 
 import { CreditOverrideDialog } from './CreditOverrideDialog';
+import { TradingItemRow } from './components/TradingItemRow';
 import type { Order } from './types';
 
 const DRAFT_KEY = 'order-draft';
@@ -86,6 +88,16 @@ function orderToFormValues(order: Order): OrdersFormValues {
     deliveryDate: order.delivery_date ?? '',
     notes: order.notes ?? '',
     items: (order.order_items ?? []).map((it) => ({
+      productCategory:
+        ((it as Record<string, unknown>).product_category as
+          | 'fabric'
+          | 'yarn'
+          | 'raw_fabric'
+          | 'finished_fabric') ?? 'fabric',
+      sourceStockId:
+        ((it as Record<string, unknown>).source_stock_id as string) ?? '',
+      sourceLotNumber:
+        ((it as Record<string, unknown>).source_lot_number as string) ?? '',
       fabricType: it.fabric_type,
       colorName: it.color_name ?? '',
       colorCode: it.color_code ?? '',
@@ -450,7 +462,18 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                             }[]
                           }
                           value={field.value}
-                          onChange={field.onChange}
+                          onChange={(val) => {
+                            const prev = field.value;
+                            field.onChange(val);
+                            // Reset items when switching order type
+                            if (val !== prev) {
+                              const newEmpty =
+                                val === 'trading'
+                                  ? { ...emptyTradingItem }
+                                  : { ...emptyOrderItem };
+                              setValue('items', [newEmpty]);
+                            }
+                          }}
                           disabled={isEditing && order?.status !== 'draft'}
                         />
                       )}
@@ -546,129 +569,161 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                 )}
 
                 <div className="flex flex-col gap-4 mt-2">
-                  {fields.map((field, index) => (
-                    <div key={field.id} className="form-item-box">
-                      <div className="flex justify-between items-center mb-3 pb-2 border-b border-border">
-                        <span className="text-sm font-semibold text-muted">
-                          Dòng Hàng #{index + 1}
-                        </span>
-                        {fields.length > 1 && (
-                          <button
-                            className="btn-icon danger"
-                            type="button"
-                            title="Xóa dòng"
-                            onClick={() => remove(index)}
-                          >
-                            Xóa ✕
-                          </button>
-                        )}
-                      </div>
+                  {fields.map((field, index) => {
+                    const currentOrderType = control._formValues?.orderType;
+                    const currentCategory =
+                      control._formValues?.items?.[index]?.productCategory;
+                    const isTrading = currentOrderType === 'trading';
 
-                      <div className="form-grid">
-                        <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                          <div className="form-field">
-                            <label htmlFor={`items.${index}.fabricType`}>
-                              Loại vải <span className="field-required">*</span>
-                            </label>
-                            <Controller
-                              name={`items.${index}.fabricType` as const}
-                              control={control}
-                              render={({ field }) => (
-                                <Combobox
-                                  options={fabricComboOptions}
-                                  value={field.value}
-                                  onChange={(val) => {
-                                    field.onChange(val);
-                                    const selected = fabricOptions.find(
-                                      (f) => f.name === val,
-                                    );
-                                    if (selected?.unit) {
-                                      setValue(
-                                        `items.${index}.unit`,
-                                        selected.unit as 'm' | 'kg',
+                    if (isTrading) {
+                      return (
+                        <TradingItemRow
+                          key={field.id}
+                          index={index}
+                          control={control}
+                          setValue={setValue}
+                          errors={errors as Record<string, unknown>}
+                          register={register}
+                          productCategory={currentCategory ?? 'yarn'}
+                          onRemove={() => remove(index)}
+                          canRemove={fields.length > 1}
+                        />
+                      );
+                    }
+
+                    return (
+                      <div key={field.id} className="form-item-box">
+                        <div className="flex justify-between items-center mb-3 pb-2 border-b border-border">
+                          <span className="text-sm font-semibold text-muted">
+                            Dòng Hàng #{index + 1}
+                          </span>
+                          {fields.length > 1 && (
+                            <button
+                              className="btn-icon danger"
+                              type="button"
+                              title="Xóa dòng"
+                              onClick={() => remove(index)}
+                            >
+                              Xóa ✕
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="form-grid">
+                          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+                            <div className="form-field">
+                              <label htmlFor={`items.${index}.fabricType`}>
+                                Loại vải{' '}
+                                <span className="field-required">*</span>
+                              </label>
+                              <Controller
+                                name={`items.${index}.fabricType` as const}
+                                control={control}
+                                render={({ field }) => (
+                                  <Combobox
+                                    options={fabricComboOptions}
+                                    value={field.value}
+                                    onChange={(val) => {
+                                      field.onChange(val);
+                                      const selected = fabricOptions.find(
+                                        (f) => f.name === val,
                                       );
+                                      if (selected?.unit) {
+                                        setValue(
+                                          `items.${index}.unit`,
+                                          selected.unit as 'm' | 'kg',
+                                        );
+                                      }
+                                    }}
+                                    placeholder="Chọn hoặc nhập loại vải"
+                                    hasError={
+                                      !!errors.items?.[index]?.fabricType
                                     }
-                                  }}
-                                  placeholder="Chọn hoặc nhập loại vải"
-                                  hasError={!!errors.items?.[index]?.fabricType}
-                                />
+                                  />
+                                )}
+                              />
+                              {errors.items?.[index]?.fabricType && (
+                                <span className="field-error">
+                                  {errors.items[index].fabricType.message}
+                                </span>
                               )}
-                            />
-                            {errors.items?.[index]?.fabricType && (
-                              <span className="field-error">
-                                {errors.items[index].fabricType.message}
-                              </span>
-                            )}
+                            </div>
+
+                            <div className="form-field">
+                              <label htmlFor={`items.${index}.colorName`}>
+                                Màu
+                              </label>
+                              <Controller
+                                name={`items.${index}.colorName` as const}
+                                control={control}
+                                render={({ field }) => (
+                                  <Combobox
+                                    options={colorComboOptions}
+                                    value={field.value ?? ''}
+                                    onChange={field.onChange}
+                                    placeholder="Chọn hoặc nhập màu..."
+                                  />
+                                )}
+                              />
+                            </div>
                           </div>
 
-                          <div className="form-field">
-                            <label htmlFor={`items.${index}.colorName`}>
-                              Màu
-                            </label>
-                            <Controller
-                              name={`items.${index}.colorName` as const}
+                          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))]">
+                            <div className="form-field">
+                              <label htmlFor={`items.${index}.colorCode`}>
+                                Mã màu
+                              </label>
+                              <input
+                                id={`items.${index}.colorCode`}
+                                className="field-input"
+                                type="text"
+                                placeholder="VD: TC-01"
+                                {...register(`items.${index}.colorCode`)}
+                              />
+                            </div>
+                            <div className="form-field">
+                              <label htmlFor={`items.${index}.unit`}>
+                                Đơn vị
+                              </label>
+                              <Controller
+                                name={`items.${index}.unit` as const}
+                                control={control}
+                                render={({ field }) => (
+                                  <Combobox
+                                    options={UNIT_COMBO_OPTIONS}
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                  />
+                                )}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))]">
+                            <ItemQuantityFields
                               control={control}
-                              render={({ field }) => (
-                                <Combobox
-                                  options={colorComboOptions}
-                                  value={field.value ?? ''}
-                                  onChange={field.onChange}
-                                  placeholder="Chọn hoặc nhập màu..."
-                                />
-                              )}
+                              index={index}
+                              register={register}
+                              errors={errors}
                             />
                           </div>
-                        </div>
-
-                        <div className="form-grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))]">
-                          <div className="form-field">
-                            <label htmlFor={`items.${index}.colorCode`}>
-                              Mã màu
-                            </label>
-                            <input
-                              id={`items.${index}.colorCode`}
-                              className="field-input"
-                              type="text"
-                              placeholder="VD: TC-01"
-                              {...register(`items.${index}.colorCode`)}
-                            />
-                          </div>
-                          <div className="form-field">
-                            <label htmlFor={`items.${index}.unit`}>
-                              Đơn vị
-                            </label>
-                            <Controller
-                              name={`items.${index}.unit` as const}
-                              control={control}
-                              render={({ field }) => (
-                                <Combobox
-                                  options={UNIT_COMBO_OPTIONS}
-                                  value={field.value}
-                                  onChange={field.onChange}
-                                />
-                              )}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="form-grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))]">
-                          <ItemQuantityFields
-                            control={control}
-                            index={index}
-                            register={register}
-                            errors={errors}
-                          />
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 <Button
                   variant="secondary"
                   className="w-full mt-4"
                   type="button"
-                  onClick={() => append({ ...emptyOrderItem })}
+                  onClick={() => {
+                    const isTrading =
+                      control._formValues?.orderType === 'trading';
+                    append({
+                      ...(isTrading ? emptyTradingItem : emptyOrderItem),
+                    });
+                  }}
                 >
                   {' '}
                   + Thêm dòng hàng mới

@@ -1,13 +1,20 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState, useMemo } from 'react';
-import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import {
+  useFieldArray,
+  useForm,
+  useWatch,
+  Controller,
+  FormProvider,
+} from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-import { Button, CancelButton } from '@/shared/components';
+import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
-import { CurrencyInput } from '@/shared/components/CurrencyInput';
-import { FormattedInput } from '@/shared/components/FormattedInput';
+import { StepperFooter } from '@/shared/components/StepperFooter';
+import { BarcodeScanner } from '@/shared/components/BarcodeScanner';
+import { useStepper } from '@/shared/hooks/useStepper';
 // eslint-disable-next-line boundaries/dependencies
 import { QuickSupplierForm } from '@/features/suppliers/QuickSupplierForm';
 import {
@@ -32,44 +39,33 @@ import {
 import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
 
 import type { YarnReceipt } from './types';
+import { YarnReceiptItemRow } from './components/YarnReceiptItemRow';
 
-const YARN_UNIT_OPTIONS = [
-  { value: 'kg', label: 'kg' },
-  { value: 'cuộn', label: 'cuộn' },
-  { value: 'tấn', label: 'tấn' },
-];
+/* ── Constants ── */
 
-/* ── Collapsible form section ── */
-function FormSection({
-  title,
-  defaultOpen = true,
-  children,
-}: {
-  title: string;
-  defaultOpen?: boolean;
-  children: React.ReactNode;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div className="form-section">
-      <div
-        className="form-section-header"
-        onClick={() => setOpen((v) => !v)}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') setOpen((v) => !v);
-        }}
-      >
-        <span className="form-section-title">{title}</span>
-        <span className="form-section-toggle" data-open={open}>
-          ▼
-        </span>
-      </div>
-      {open && <div className="form-section-body">{children}</div>}
-    </div>
-  );
-}
+const FORM_LABELS = {
+  receiptNumber: 'Số phiếu',
+  receiptNumberAuto: 'Tự động',
+  receiptDate: 'Ngày nhập',
+  supplier: 'Nhà cung cấp',
+  createSupplier: '+ Tạo NCC mới',
+  addItemRow: '+ Thêm dòng sợi',
+  scanBarcode: 'Quét Barcode',
+  scanningBarcode: 'Đang tra cứu API...',
+  notesPlaceholder: 'Ghi chú về phiếu nhập...',
+  update: 'Cập nhật',
+  create: 'Tạo phiếu',
+} as const;
+
+const FORM_MESSAGES = {
+  genericError: 'Có lỗi xảy ra',
+  scanError: 'Lỗi quét mã',
+  scanSuccess: 'Bóc tách Barcode thành công!',
+  errorPrefix: 'Lỗi:',
+} as const;
+
+/** Sample barcode for dev/demo — will be used as prompt default value */
+const DEV_SAMPLE_BARCODE = '2510-F000016';
 
 type YarnReceiptFormProps = {
   receipt: YarnReceipt | null;
@@ -120,7 +116,7 @@ function LineTotals({
     (it) => (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0),
   );
   return (
-    <div className="text-right font-semibold text-base py-2.5 border-t-2 border-[var(--border)]">
+    <div className="text-right font-semibold text-base py-2.5 border-t-2 border-[var(--border)] mt-4">
       Tổng cộng: {formatCurrency(total)} đ
     </div>
   );
@@ -135,19 +131,63 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
   const { data: yarnCatalogs = [] } = useYarnCatalogOptions();
   const { data: colorOptions = [] } = useColorOptions();
   const [isScanning, setIsScanning] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+
+  const methods = useForm<YarnReceiptsFormValues>({
+    resolver: zodResolver(yarnReceiptsSchema),
+    defaultValues: isEditing
+      ? receiptToFormValues(receipt)
+      : yarnReceiptsDefaultValues,
+  });
 
   const {
     register,
     handleSubmit,
     control,
     setValue,
-    formState: { errors, isSubmitting },
-  } = useForm<YarnReceiptsFormValues>({
-    resolver: zodResolver(yarnReceiptsSchema),
-    defaultValues: isEditing
-      ? receiptToFormValues(receipt)
-      : yarnReceiptsDefaultValues,
+    trigger,
+    getValues,
+    formState: { errors, isSubmitting, isDirty },
+  } = methods;
+
+  const stepper = useStepper({
+    totalSteps: 2,
+    stepValidation: {
+      0: () => trigger(['receiptNumber', 'receiptDate', 'supplierId', 'notes']),
+    },
+    onCancel: () => {
+      if (isDirty) {
+        if (
+          !window.confirm(
+            'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
+          )
+        ) {
+          return false;
+        }
+      }
+      onClose();
+      return true;
+    },
   });
+
+  const handleCancel = useCallback(() => {
+    if (isDirty) {
+      if (
+        !window.confirm(
+          'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
+        )
+      ) {
+        return false;
+      }
+    }
+    onClose();
+    return true;
+  }, [isDirty, onClose]);
+
+  const stepRef = useRef(0);
+  useEffect(() => {
+    stepRef.current = stepper.currentStep;
+  }, [stepper.currentStep]);
 
   const supplierOptions = useMemo(
     () =>
@@ -159,31 +199,31 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
     [suppliers],
   );
 
-  const yarnCatalogOptions = useMemo(
+  const yarnCatalogComboboxOptions = useMemo(
     () =>
       yarnCatalogs.map((c) => ({
-        value: c.id,
+        value: c.name,
         label: c.name,
         code: c.code,
       })),
     [yarnCatalogs],
   );
 
-  const { fields, append, remove } = useFieldArray({
+  /** Pre-compute once — avoids recalculation inside each YarnReceiptItemRow render */
+  const colorComboboxOptions = useMemo(
+    () => toColorComboboxOptions(colorOptions),
+    [colorOptions],
+  );
+
+  const { fields, append, remove, update } = useFieldArray({
     control,
     name: 'items',
   });
 
-  /**
-   * NOTE: Previously there was a useEffect that called reset() when `receipt`
-   * changed. This was removed because:
-   * 1. useForm already initializes with correct defaultValues
-   * 2. If parent re-renders with same receipt (new reference from refetch),
-   *    the effect would wipe user edits → data loss
-   * 3. The parent should use key={receipt?.id} to force re-mount on entity change
-   */
-
   async function onSubmit(values: YarnReceiptsFormValues) {
+    // Guard bằng ref để tránh stale closure khi stepper vừa next()
+    if (stepRef.current !== stepper.totalSteps - 1) return;
+
     try {
       if (isEditing) {
         await updateMutation.mutateAsync({
@@ -197,10 +237,51 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
       onClose();
     } catch (err) {
       const msg =
-        err instanceof Error ? err.message : 'C\u00f3 l\u1ed7i x\u1ea3y ra';
+        err instanceof Error ? err.message : FORM_MESSAGES.genericError;
       toast.error(msg);
     }
   }
+
+  const handleManualBarcode = () => {
+    const code = window.prompt(
+      `Nhập mã Barcode (thử: ${DEV_SAMPLE_BARCODE}):`,
+      DEV_SAMPLE_BARCODE,
+    );
+    if (!code) return;
+    processBarcode(code);
+  };
+
+  const processBarcode = async (code: string) => {
+    setShowScanner(false);
+    setIsScanning(true);
+    try {
+      const parsedData = await fetchYarnSpecsFromVendorApi(code);
+      const items = getValues('items');
+      const lastIndex = items.length - 1;
+      const lastItem = items[lastIndex];
+
+      const isLastItemEmpty =
+        lastItem && !lastItem.yarnType && lastItem.quantity === 0;
+
+      if (isLastItemEmpty) {
+        update(lastIndex, {
+          ...emptyYarnReceiptItem,
+          ...parsedData,
+        });
+      } else {
+        append({
+          ...emptyYarnReceiptItem,
+          ...parsedData,
+        });
+      }
+      toast.success(FORM_MESSAGES.scanSuccess);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : FORM_MESSAGES.scanError;
+      toast.error(msg);
+    } finally {
+      setIsScanning(false);
+    }
+  };
 
   const mutationError = isEditing ? updateMutation.error : createMutation.error;
   const isPending =
@@ -209,527 +290,226 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
   return (
     <AdaptiveSheet
       open={true}
-      onClose={onClose}
+      onClose={handleCancel}
       title={
         isEditing
           ? `Sửa phiếu: ${receipt.receipt_number}`
           : 'Tạo phiếu nhập sợi'
       }
+      stepInfo={{
+        current: stepper.currentStep,
+        total: stepper.totalSteps,
+      }}
+      maxWidth={720}
     >
       {mutationError && (
         <p className="error-inline mb-4">
-          Lỗi:{' '}
+          {FORM_MESSAGES.errorPrefix}{' '}
           {mutationError instanceof Error
             ? mutationError.message
             : String(mutationError)}
         </p>
       )}
 
-      <form
-        id="yarn-receipt-form"
-        onSubmit={handleSubmit(onSubmit, (validationErrors) => {
-          const errorMessage = extractFormErrorMessage(validationErrors);
-          toast.error(errorMessage);
-          // Scroll to first error field
-          const firstKey = Object.keys(validationErrors)[0];
-          if (firstKey) {
-            const el =
-              document.getElementById(firstKey) ??
-              document.querySelector(`[name="${firstKey}"]`);
-            el?.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center',
-            });
-          }
-        })}
-        noValidate
-      >
-        <div className="form-grid">
-          {/* ── Section 1: Thông tin phiếu ── */}
-          <FormSection title="Thông tin phiếu" defaultOpen={true}>
-            <div className="form-grid">
-              <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                <div className="form-field">
-                  <label htmlFor="receiptNumber">Số phiếu</label>
-                  {isEditing ? (
-                    <input
-                      id="receiptNumber"
-                      className="field-input"
-                      type="text"
-                      readOnly
-                      {...register('receiptNumber')}
-                    />
-                  ) : (
-                    <input
-                      id="receiptNumber"
-                      className="field-input text-muted italic"
-                      type="text"
-                      value="Tự động"
-                      readOnly
-                      disabled
-                    />
-                  )}
-                </div>
-
-                <div className="form-field">
-                  <label htmlFor="receiptDate">
-                    Ngày nhập <span className="field-required">*</span>
-                  </label>
-                  <input
-                    id="receiptDate"
-                    className={`field-input${errors.receiptDate ? ' is-error' : ''}`}
-                    type="date"
-                    {...register('receiptDate')}
-                  />
-                  {errors.receiptDate && (
-                    <span className="field-error">
-                      {errors.receiptDate.message}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="supplierId">
-                  Nhà cung cấp <span className="field-required">*</span>
-                </label>
-                <Controller
-                  name="supplierId"
-                  control={control}
-                  render={({ field }) => (
-                    <Combobox
-                      options={supplierOptions}
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder="— Chọn nhà cung cấp —"
-                      hasError={!!errors.supplierId}
-                    />
-                  )}
-                />
-                {errors.supplierId && (
-                  <span className="field-error">
-                    {errors.supplierId.message}
-                  </span>
-                )}
-                {!showQuickSupplier && (
-                  <Button
-                    variant="secondary"
-                    type="button"
-                    onClick={() => setShowQuickSupplier(true)}
-                    className="text-[0.8rem] py-1.5 px-3 self-start mt-2"
-                  >
-                    {' '}
-                    + Tạo NCC mới
-                  </Button>
-                )}
-                {showQuickSupplier && (
-                  <div className="mt-2">
-                    <QuickSupplierForm
-                      defaultCategory="yarn"
-                      onCreated={(created) => {
-                        setValue('supplierId', created.id);
-                        setShowQuickSupplier(false);
-                      }}
-                      onCancel={() => setShowQuickSupplier(false)}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          </FormSection>
-
-          {/* ── Section 2: Danh sách sợi ── */}
-          <FormSection title="Danh sách sợi" defaultOpen={true}>
-            {errors.items?.root && (
-              <span className="field-error mb-2 block">
-                {errors.items.root.message}
-              </span>
-            )}
-
-            <div className="flex flex-col gap-3">
-              {fields.map((field, index) => (
-                <div
-                  key={field.id}
-                  className="border border-[var(--border)] rounded-[var(--radius-sm)] p-3 relative bg-[var(--surface)]"
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-[0.85rem] font-semibold text-muted">
-                      Dòng {index + 1}
-                    </span>
-                    {fields.length > 1 && (
-                      <button
-                        className="btn-icon danger text-[0.85rem]"
-                        type="button"
-                        title="Xóa dòng"
-                        onClick={() => remove(index)}
-                      >
-                        ✕
-                      </button>
+      <FormProvider {...methods}>
+        <form
+          id="yarn-receipt-form"
+          onSubmit={handleSubmit(onSubmit, (validationErrors) => {
+            const errorMessage = extractFormErrorMessage(validationErrors);
+            toast.error(errorMessage);
+            // Scroll to first error field
+            const firstKey = Object.keys(validationErrors)[0];
+            if (firstKey) {
+              const el =
+                document.getElementById(firstKey) ??
+                document.querySelector(`[name="${firstKey}"]`);
+              el?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+              });
+            }
+          })}
+          onKeyDown={stepper.handleKeyDown}
+          noValidate
+        >
+          <div className="form-grid">
+            {/* ── BƯỚC 1: THÔNG TIN CHUNG ── */}
+            <div className={stepper.currentStep === 0 ? 'block' : 'hidden'}>
+              <div className="form-grid">
+                <div className="form-grid form-grid-auto">
+                  <div className="form-field">
+                    <label htmlFor="receiptNumber">
+                      {FORM_LABELS.receiptNumber}
+                    </label>
+                    {isEditing ? (
+                      <input
+                        id="receiptNumber"
+                        className="field-input bg-[var(--surface)]"
+                        type="text"
+                        readOnly
+                        {...register('receiptNumber')}
+                      />
+                    ) : (
+                      <input
+                        id="receiptNumber"
+                        className="field-input text-muted italic bg-[var(--surface-disabled)]"
+                        type="text"
+                        value={FORM_LABELS.receiptNumberAuto}
+                        readOnly
+                        disabled
+                      />
                     )}
                   </div>
 
-                  <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                    <div className="form-field col-span-full">
-                      <label htmlFor={`items.${index}.yarnCatalogId`}>
-                        Chọn từ danh mục sợi
-                      </label>
-                      <Controller
-                        name={`items.${index}.yarnCatalogId` as const}
-                        control={control}
-                        render={({ field }) => (
-                          <Combobox
-                            options={yarnCatalogOptions}
-                            value={field.value}
-                            onChange={(val) => {
-                              field.onChange(val);
-                              const cat = yarnCatalogs.find(
-                                (c) => c.id === val,
-                              );
-                              if (cat) {
-                                setValue(`items.${index}.yarnType`, cat.name);
-                                setValue(
-                                  `items.${index}.colorName`,
-                                  cat.color_name ?? '',
-                                );
-                                setValue(
-                                  `items.${index}.composition`,
-                                  cat.composition ?? '',
-                                );
-                                setValue(
-                                  `items.${index}.tensileStrength`,
-                                  cat.tensile_strength ?? '',
-                                );
-                                setValue(
-                                  `items.${index}.origin`,
-                                  cat.origin ?? '',
-                                );
-                                setValue(
-                                  `items.${index}.grade`,
-                                  cat.grade ?? '',
-                                );
-                                setValue(
-                                  `items.${index}.unit`,
-                                  cat.unit ?? 'kg',
-                                );
-                              }
-                            }}
-                            placeholder="— Chọn từ danh mục (tuỳ chọn) —"
-                          />
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                    <div className="form-field">
-                      <label htmlFor={`items.${index}.yarnType`}>
-                        Loại sợi <span className="field-required">*</span>
-                      </label>
-                      <input
-                        id={`items.${index}.yarnType`}
-                        className={`field-input${errors.items?.[index]?.yarnType ? ' is-error' : ''}`}
-                        type="text"
-                        placeholder="VD: Cotton 40/1"
-                        {...register(`items.${index}.yarnType`)}
-                      />
-                      {errors.items?.[index]?.yarnType && (
-                        <span className="field-error">
-                          {errors.items[index].yarnType.message}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="form-field">
-                      <label htmlFor={`items.${index}.colorName`}>
-                        Màu sợi
-                      </label>
-                      <Controller
-                        name={`items.${index}.colorName` as const}
-                        control={control}
-                        render={({ field }) => (
-                          <Combobox
-                            options={toColorComboboxOptions(colorOptions)}
-                            value={field.value ?? ''}
-                            onChange={field.onChange}
-                            placeholder="Chọn hoặc nhập màu..."
-                          />
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                    <div className="form-field">
-                      <label htmlFor={`items.${index}.quantity`}>
-                        Số lượng <span className="field-required">*</span>
-                      </label>
-                      <Controller
-                        name={`items.${index}.quantity` as const}
-                        control={control}
-                        render={({ field }) => (
-                          <FormattedInput
-                            id={`items.${index}.quantity`}
-                            className={`field-input${errors.items?.[index]?.quantity ? ' is-error' : ''}`}
-                            value={field.value}
-                            onChange={(val) => field.onChange(val ?? 0)}
-                            onBlur={field.onBlur}
-                            placeholder="0"
-                          />
-                        )}
-                      />
-                      {errors.items?.[index]?.quantity && (
-                        <span className="field-error">
-                          {errors.items[index].quantity.message}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="form-field">
-                      <label htmlFor={`items.${index}.unitPrice`}>
-                        Đơn giá <span className="field-required">*</span>
-                      </label>
-                      <Controller
-                        name={`items.${index}.unitPrice` as const}
-                        control={control}
-                        render={({ field }) => (
-                          <CurrencyInput
-                            id={`items.${index}.unitPrice`}
-                            className={`field-input${errors.items?.[index]?.unitPrice ? ' is-error' : ''}`}
-                            value={field.value}
-                            onChange={field.onChange}
-                            onBlur={field.onBlur}
-                            placeholder="0"
-                          />
-                        )}
-                      />
-                      {errors.items?.[index]?.unitPrice && (
-                        <span className="field-error">
-                          {errors.items[index].unitPrice.message}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                    <div className="form-field">
-                      <label htmlFor={`items.${index}.lotNumber`}>
-                        Số lô (Lot)
-                      </label>
-                      <input
-                        id={`items.${index}.lotNumber`}
-                        className="field-input"
-                        type="text"
-                        placeholder="VD: LOT-2026-03-A"
-                        {...register(`items.${index}.lotNumber`)}
-                      />
-                    </div>
-
-                    <div className="form-field">
-                      <label htmlFor={`items.${index}.grade`}>
-                        Phân loại (Grade)
-                      </label>
-                      <input
-                        id={`items.${index}.grade`}
-                        className="field-input"
-                        type="text"
-                        placeholder="VD: A, B..."
-                        {...register(`items.${index}.grade`)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                    <div className="form-field">
-                      <label htmlFor={`items.${index}.unit`}>Đơn vị</label>
-                      <Controller
-                        name={`items.${index}.unit` as const}
-                        control={control}
-                        render={({ field }) => (
-                          <Combobox
-                            options={YARN_UNIT_OPTIONS}
-                            value={field.value}
-                            onChange={field.onChange}
-                            placeholder="Chọn..."
-                          />
-                        )}
-                      />
-                    </div>
-
-                    <div className="form-field">
-                      <label htmlFor={`items.${index}.tensileStrength`}>
-                        Cường lực
-                      </label>
-                      <input
-                        id={`items.${index}.tensileStrength`}
-                        className="field-input"
-                        type="text"
-                        placeholder="VD: 18 cN/tex"
-                        {...register(`items.${index}.tensileStrength`)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                    <div className="form-field">
-                      <label htmlFor={`items.${index}.composition`}>
-                        Thành phần
-                      </label>
-                      <input
-                        id={`items.${index}.composition`}
-                        className="field-input"
-                        type="text"
-                        placeholder="VD: 100% Cotton"
-                        {...register(`items.${index}.composition`)}
-                      />
-                    </div>
-
-                    <div className="form-field">
-                      <label htmlFor={`items.${index}.origin`}>Xuất xứ</label>
-                      <input
-                        id={`items.${index}.origin`}
-                        className="field-input"
-                        type="text"
-                        placeholder="VD: Việt Nam"
-                        {...register(`items.${index}.origin`)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                    <div className="form-field">
-                      <label htmlFor={`items.${index}.dtex`}>DTEX/F</label>
-                      <input
-                        id={`items.${index}.dtex`}
-                        className="field-input"
-                        type="text"
-                        placeholder="VD: 333dtex/96f"
-                        {...register(`items.${index}.dtex`)}
-                      />
-                    </div>
-
-                    <div className="form-field">
-                      <label htmlFor={`items.${index}.twist`}>
-                        Twist (Xoắn)
-                      </label>
-                      <input
-                        id={`items.${index}.twist`}
-                        className="field-input"
-                        type="text"
-                        placeholder="VD: Z, S"
-                        {...register(`items.${index}.twist`)}
-                      />
-                    </div>
-
-                    <div className="form-field">
-                      <label htmlFor={`items.${index}.machineNo`}>
-                        Machine No
-                      </label>
-                      <input
-                        id={`items.${index}.machineNo`}
-                        className="field-input"
-                        type="text"
-                        placeholder="VD: B755"
-                        {...register(`items.${index}.machineNo`)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-grid">
-                    <div className="form-field">
-                      <label htmlFor={`items.${index}.notes`}>
-                        Ghi chú (Tự động điền khi quét Barcode)
-                      </label>
-                      <input
-                        id={`items.${index}.notes`}
-                        className="field-input"
-                        type="text"
-                        placeholder="VD: Q'TY: 6 cuộn | Twist: Z | Machine: B755"
-                        {...register(`items.${index}.notes`)}
-                      />
-                    </div>
+                  <div className="form-field">
+                    <label htmlFor="receiptDate">
+                      {FORM_LABELS.receiptDate}{' '}
+                      <span className="field-required">*</span>
+                    </label>
+                    <input
+                      id="receiptDate"
+                      className={`field-input${errors.receiptDate ? ' is-error' : ''}`}
+                      type="date"
+                      {...register('receiptDate')}
+                    />
+                    {errors.receiptDate && (
+                      <span className="field-error">
+                        {errors.receiptDate.message}
+                      </span>
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
 
-            <div className="flex gap-2 mt-2">
-              <Button
-                variant="secondary"
-                type="button"
-                onClick={() => append({ ...emptyYarnReceiptItem })}
-                className="flex-1"
-              >
-                + Thêm dòng sợi
-              </Button>
-              <Button
-                variant="outline"
-                type="button"
-                disabled={isScanning}
-                onClick={async () => {
-                  const code = window.prompt(
-                    'Nhập mã Barcode (thử: 240504001074):',
-                    '240504001074',
-                  );
-                  if (!code) return;
+                <div className="form-field">
+                  <label htmlFor="supplierId">
+                    {FORM_LABELS.supplier}{' '}
+                    <span className="field-required">*</span>
+                  </label>
+                  <Controller
+                    name="supplierId"
+                    control={control}
+                    render={({ field }) => (
+                      <Combobox
+                        options={supplierOptions}
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="— Chọn nhà cung cấp —"
+                        hasError={!!errors.supplierId}
+                      />
+                    )}
+                  />
+                  {errors.supplierId && (
+                    <span className="field-error">
+                      {errors.supplierId.message}
+                    </span>
+                  )}
+                  {!showQuickSupplier && (
+                    <Button
+                      variant="secondary"
+                      type="button"
+                      onClick={() => setShowQuickSupplier(true)}
+                      className="text-[0.8rem] py-1.5 px-3 self-start mt-2"
+                    >
+                      {FORM_LABELS.createSupplier}
+                    </Button>
+                  )}
+                  {showQuickSupplier && (
+                    <div className="mt-2">
+                      <QuickSupplierForm
+                        defaultCategory="YARN"
+                        onCreated={(created) => {
+                          setValue('supplierId', created.id);
+                          setShowQuickSupplier(false);
+                        }}
+                        onCancel={() => setShowQuickSupplier(false)}
+                      />
+                    </div>
+                  )}
+                </div>
 
-                  setIsScanning(true);
-                  try {
-                    const parsedData = await fetchYarnSpecsFromVendorApi(code);
-                    append({
-                      ...emptyYarnReceiptItem,
-                      ...parsedData,
-                    });
-                    toast.success('Bóc tách Barcode thành công!');
-                  } catch (err) {
-                    const msg =
-                      err instanceof Error ? err.message : 'Lỗi quét mã';
-                    toast.error(msg);
-                  } finally {
-                    setIsScanning(false);
-                  }
-                }}
-                className="flex-1 border-dashed border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary-light)]"
-              >
-                <span className="mr-2">📷</span>{' '}
-                {isScanning ? 'Đang tra cứu API...' : 'Quét Barcode'}
-              </Button>
-            </div>
-
-            <LineTotals control={control} />
-          </FormSection>
-
-          {/* ── Section 3: Ghi chú ── */}
-          <FormSection title="Ghi chú" defaultOpen={false}>
-            <div className="form-grid">
-              <div className="form-field">
-                <textarea
-                  id="notes"
-                  className="field-textarea"
-                  rows={3}
-                  placeholder="Ghi chú về phiếu nhập..."
-                  {...register('notes')}
-                />
+                <div className="form-field">
+                  <label htmlFor="notes">Ghi chú</label>
+                  <textarea
+                    id="notes"
+                    className="field-textarea"
+                    rows={3}
+                    placeholder={FORM_LABELS.notesPlaceholder}
+                    {...register('notes')}
+                  />
+                </div>
               </div>
             </div>
-          </FormSection>
-        </div>
 
-        <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
-          <CancelButton
-            onClick={onClose}
-            disabled={isPending}
-            className="w-full sm:w-auto justify-center"
+            {/* ── BƯỚC 2: CHI TIẾT HÀNG HÓA ── */}
+            <div className={stepper.currentStep === 1 ? 'block' : 'hidden'}>
+              {errors.items?.root && (
+                <span className="field-error mb-2 block">
+                  {errors.items.root.message}
+                </span>
+              )}
+
+              <div className="flex flex-col gap-3">
+                {fields.map((field, index) => (
+                  <YarnReceiptItemRow
+                    key={field.id}
+                    index={index}
+                    canRemove={fields.length > 1}
+                    onRemove={() => remove(index)}
+                    yarnCatalogOptions={yarnCatalogComboboxOptions}
+                    colorComboboxOptions={colorComboboxOptions}
+                    yarnCatalogs={yarnCatalogs}
+                  />
+                ))}
+              </div>
+
+              <div className="flex gap-2 mt-4">
+                <Button
+                  variant="secondary"
+                  type="button"
+                  onClick={() => append({ ...emptyYarnReceiptItem })}
+                  className="flex-1"
+                >
+                  {FORM_LABELS.addItemRow}
+                </Button>
+                <Button
+                  variant="outline"
+                  type="button"
+                  disabled={isScanning}
+                  onClick={handleManualBarcode}
+                  className="flex-1 border-dashed"
+                >
+                  {isScanning ? FORM_LABELS.scanningBarcode : 'Nhập tay'}
+                </Button>
+                <Button
+                  variant="outline"
+                  type="button"
+                  disabled={isScanning}
+                  onClick={() => setShowScanner(true)}
+                  className="flex-1 border-dashed border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary-light)]"
+                  leftIcon="Camera"
+                >
+                  Quét bằng Camera
+                </Button>
+              </div>
+
+              <LineTotals control={control} />
+            </div>
+          </div>
+
+          <StepperFooter
+            stepper={stepper}
+            onCancel={handleCancel}
+            isPending={isPending}
+            submitLabel={isEditing ? FORM_LABELS.update : FORM_LABELS.create}
           />
-          <Button
-            variant="primary"
-            type="submit"
-            disabled={isPending}
-            className="w-full sm:w-auto justify-center"
-          >
-            {isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo phiếu'}
-          </Button>
-        </div>
-      </form>
+        </form>
+      </FormProvider>
+
+      <BarcodeScanner
+        open={showScanner}
+        onClose={() => setShowScanner(false)}
+        onScan={processBarcode}
+      />
     </AdaptiveSheet>
   );
 }
