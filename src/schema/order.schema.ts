@@ -22,6 +22,34 @@ export const ORDER_TYPE_LABELS: Record<OrderType, string> = {
   trading: 'Thương mại',
 };
 
+/* ── Product Category (Trading) ── */
+
+export type ProductCategory =
+  | 'fabric'
+  | 'yarn'
+  | 'raw_fabric'
+  | 'finished_fabric';
+
+export const PRODUCT_CATEGORIES = [
+  'fabric',
+  'yarn',
+  'raw_fabric',
+  'finished_fabric',
+] as const;
+
+export const PRODUCT_CATEGORY_OPTIONS = [
+  { value: 'yarn', label: 'Sợi' },
+  { value: 'raw_fabric', label: 'Vải mộc' },
+  { value: 'finished_fabric', label: 'Vải thành phẩm' },
+] as const;
+
+export const PRODUCT_CATEGORY_LABELS: Record<ProductCategory, string> = {
+  fabric: 'Vải (chung)',
+  yarn: 'Sợi',
+  raw_fabric: 'Vải mộc',
+  finished_fabric: 'Vải thành phẩm',
+};
+
 /* ── Configs & Labels ── */
 
 export const ORDER_STATUSES = [
@@ -71,6 +99,11 @@ export type UnitType = (typeof UNIT_OPTIONS)[number]['value'];
 
 // 1. Định nghĩa ITEM schema cơ bản
 export const orderItemBaseSchema = z.object({
+  productCategory: z
+    .enum(['fabric', 'yarn', 'raw_fabric', 'finished_fabric'])
+    .default('fabric'),
+  sourceStockId: z.string().uuid().optional().or(z.literal('')),
+  sourceLotNumber: z.string().trim().max(100).optional().or(z.literal('')),
   fabricType: z.string().trim().min(2, 'Loại vải tối thiểu 2 ký tự'),
   colorName: z.string().trim().max(120).optional().or(z.literal('')),
   colorCode: z.string().trim().max(20).optional().or(z.literal('')),
@@ -139,8 +172,23 @@ export type OrdersFormValues = z.infer<typeof ordersSchema>;
 export type OrderItemFormValues = z.infer<typeof orderItemBaseSchema>;
 
 export const emptyOrderItem: OrderItemFormValues = {
+  productCategory: 'fabric',
+  sourceStockId: '',
+  sourceLotNumber: '',
   fabricType: '',
   colorName: 'Mộc (Raw)',
+  colorCode: '',
+  unit: 'kg',
+  quantity: 0,
+  unitPrice: 0,
+};
+
+export const emptyTradingItem: OrderItemFormValues = {
+  productCategory: 'yarn',
+  sourceStockId: '',
+  sourceLotNumber: '',
+  fabricType: '',
+  colorName: '',
   colorCode: '',
   unit: 'kg',
   quantity: 0,

@@ -34,5 +34,37 @@ export async function fetchYarnSpecsFromVendorApi(
     };
   }
 
+  if (barcode === '2510-F000016') {
+    return {
+      yarnType: 'CREORA Spandex H350 Clear',
+      colorName: 'Clear',
+      quantity: 34.2, // Net Wt
+      unit: 'kg',
+      unitPrice: 0,
+      lotNumber: '4088V',
+      grade: 'AA',
+      dtex: '40 (44DTex)',
+      twist: '',
+      machineNo: '',
+      notes: `Gross Wt: 40.27Kg | Nom Wt: 570g | Units: 60`,
+    };
+  }
+
+  if (barcode === '2604-F000005' || barcode === 'DSPZH35CZ7088V014') {
+    return {
+      yarnType: 'CREORA Spandex H350 Clear',
+      colorName: 'Clear',
+      quantity: 34.2, // Net Wt
+      unit: 'kg',
+      unitPrice: 0,
+      lotNumber: '7088V',
+      grade: 'AA',
+      dtex: '70 (77DTex)',
+      twist: '',
+      machineNo: '6384',
+      notes: `Gross Wt: 40.06Kg | Nom Wt: 570g | Units: 60`,
+    };
+  }
+
   throw new Error('Barcode không tồn tại hoặc lỗi kết nối API NCC!');
 }

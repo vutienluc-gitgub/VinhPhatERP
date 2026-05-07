@@ -27,4 +27,5 @@ export type OrdersFilter = {
   search?: string;
   status?: OrderStatus;
   customerId?: string;
+  orderType?: 'production' | 'trading';
 };

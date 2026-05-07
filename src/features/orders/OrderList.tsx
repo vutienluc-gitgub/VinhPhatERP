@@ -20,6 +20,7 @@ import { sumBy } from '@/shared/utils/array.util';
 import {
   ORDER_STATUS_LABELS,
   ORDER_STATUS_BADGE_VARIANTS,
+  ORDER_TYPE_OPTIONS,
 } from '@/schema/order.schema';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { useAuth } from '@/shared/hooks/useAuth';
@@ -69,6 +70,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
   const { filters, setFilter, clearFilters } = useUrlFilterState([
     'search',
     'status',
+    'orderType',
   ]);
   const [page, setPage] = useState(1);
   const { profile } = useAuth();
@@ -103,6 +105,15 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
         label,
       })),
     },
+    {
+      key: 'orderType',
+      type: 'combobox',
+      label: 'Loại đơn',
+      options: ORDER_TYPE_OPTIONS.map((opt) => ({
+        value: opt.value,
+        label: opt.label,
+      })),
+    },
   ];
 
   function handleFilterChange(key: string, value: string | undefined) {
@@ -123,7 +134,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
     deleteMutation.mutate(order.id);
   }
 
-  const hasFilter = !!(filters.search || filters.status);
+  const hasFilter = !!(filters.search || filters.status || filters.orderType);
 
   return (
     <div className="panel-card card-flush">

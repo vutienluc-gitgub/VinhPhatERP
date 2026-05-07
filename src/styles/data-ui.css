@@ -1766,12 +1766,19 @@
   font-size: 0.88rem;
 }
 
+/* Responsive auto-fit form grid (min 200px columns) */
+.form-grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
 /* Item line with border (for form line items) */
 .form-item-box {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 0.75rem;
   position: relative;
+  background: var(--surface);
 }
 
 .bulk-table td {

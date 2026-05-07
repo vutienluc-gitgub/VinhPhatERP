@@ -43,6 +43,7 @@ export async function fetchOrdersPaginated(
 
   if (filters.status) query = query.eq('status', filters.status);
   if (filters.customerId) query = query.eq('customer_id', filters.customerId);
+  if (filters.orderType) query = query.eq('order_type', filters.orderType);
   if (filters.search?.trim()) {
     const term = filters.search.trim();
     const { data: cus } = await supabase
@@ -83,6 +84,7 @@ export async function fetchOrders(
 
   if (filters.status) query = query.eq('status', filters.status);
   if (filters.customerId) query = query.eq('customer_id', filters.customerId);
+  if (filters.orderType) query = query.eq('order_type', filters.orderType);
   if (filters.search?.trim()) {
     const term = filters.search.trim();
     const { data: cus } = await supabase
@@ -289,6 +291,26 @@ export async function completeOrder(orderId: string): Promise<void> {
     .from(HEADER_TABLE)
     .update({ status: 'completed' as OrderStatus })
     .eq('id', orderId);
+  if (error) throw error;
+}
+
+/* ── Confirm trading order (with stock deduction) ── */
+
+export async function confirmTradingOrder(orderId: string): Promise<void> {
+  const { untypedDb } = await import('@/services/supabase/client');
+  const { error } = await untypedDb.rpc('rpc_confirm_trading_order', {
+    p_order_id: orderId,
+  });
+  if (error) throw error;
+}
+
+/* ── Cancel trading order (reverse stock deductions) ── */
+
+export async function cancelTradingOrder(orderId: string): Promise<void> {
+  const { untypedDb } = await import('@/services/supabase/client');
+  const { error } = await untypedDb.rpc('rpc_cancel_trading_order', {
+    p_order_id: orderId,
+  });
   if (error) throw error;
 }
 

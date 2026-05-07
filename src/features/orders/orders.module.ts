@@ -9,9 +9,11 @@ import {
   ordersSchemaEdit,
   ordersDefaultValues,
   emptyOrderItem,
+  emptyTradingItem,
   UNIT_OPTIONS,
+  PRODUCT_CATEGORY_OPTIONS,
 } from '@/schema/order.schema';
-import type { OrderStatus } from '@/schema/order.schema';
+import type { OrderStatus, ProductCategory } from '@/schema/order.schema';
 
 export {
   ORDER_STATUS_LABELS,
@@ -21,9 +23,11 @@ export {
   ordersSchemaEdit,
   ordersDefaultValues,
   emptyOrderItem,
+  emptyTradingItem,
   UNIT_OPTIONS,
+  PRODUCT_CATEGORY_OPTIONS,
 };
-export type { OrderStatus };
+export type { OrderStatus, ProductCategory };
 export type {
   OrdersFormValues,
   OrderItemFormValues,

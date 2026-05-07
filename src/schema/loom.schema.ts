@@ -5,6 +5,11 @@ export const LOOM_TYPES = [
   'air_jet',
   'water_jet',
   'shuttle',
+  'single_jersey',
+  'double_jersey',
+  'warp_knitting',
+  'flat_knitting',
+  'accessories',
   'other',
 ] as const;
 
@@ -15,6 +20,11 @@ export const LOOM_TYPE_LABELS: Record<LoomType, string> = {
   air_jet: 'Air Jet (Phun khí)',
   water_jet: 'Water Jet (Phun nước)',
   shuttle: 'Shuttle (Con thoi)',
+  single_jersey: 'Single Jersey (Dệt kim 1 mặt)',
+  double_jersey: 'Double Jersey (Dệt kim 2 mặt)',
+  warp_knitting: 'Warp Knitting (Dệt kim dọc)',
+  flat_knitting: 'Flat Knitting (Dệt kim bằng)',
+  accessories: 'Accessories (Thiết bị phụ trợ)',
   other: 'Khác',
 };
 

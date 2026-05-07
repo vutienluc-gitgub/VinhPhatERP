@@ -63,6 +63,9 @@ export interface OrderDbPayload {
 }
 
 export interface OrderItemDbPayload {
+  product_category: string;
+  source_stock_id: string | null;
+  source_lot_number: string | null;
   fabric_type: string;
   color_name: string | null;
   color_code: string | null;
@@ -108,6 +111,9 @@ export function mapOrderItemsToDb(
   items: OrderItemFormValues[],
 ): OrderItemDbPayload[] {
   return items.map((item, idx) => ({
+    product_category: item.productCategory ?? 'fabric',
+    source_stock_id: item.sourceStockId?.trim() || null,
+    source_lot_number: item.sourceLotNumber?.trim() || null,
     fabric_type: item.fabricType.trim(),
     color_name: item.colorName?.trim() || null,
     color_code: item.colorCode?.trim() || null,
