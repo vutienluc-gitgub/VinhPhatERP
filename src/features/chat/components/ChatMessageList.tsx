@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 
 import type { ChatMessage, OptimisticChatMessage } from '@/schema/chat.schema';
 import { CHAT_LABELS } from '@/schema/chat.schema';
@@ -14,7 +14,7 @@ interface ChatMessageListProps {
   isLoading: boolean;
 }
 
-export function ChatMessageList({
+export const ChatMessageList = React.memo(function ChatMessageList({
   pages,
   hasNextPage,
   isFetchingNextPage,
@@ -83,4 +83,4 @@ export function ChatMessageList({
       ) : null}
     </div>
   );
-}
+});

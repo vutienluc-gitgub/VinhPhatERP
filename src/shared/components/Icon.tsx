@@ -50,7 +50,7 @@ export const Icon = memo(
     const LucideIcon = getLazyIcon(name);
 
     if (!LucideIcon) {
-      if (import.meta.env.DEV) {
+      if (import.meta.env.DEV && name !== 'Facebook') {
         console.warn(
           `Icon "${name}" not found in lucide-react/dynamicIconImports.`,
         );

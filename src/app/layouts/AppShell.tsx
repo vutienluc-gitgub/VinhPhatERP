@@ -10,7 +10,11 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { useDashboardStats } from '@/application/analytics';
-import { useChatNotifications } from '@/application/chat';
+import {
+  useChatNotifications,
+  useTotalCustomerUnread,
+} from '@/application/chat';
+import { ChatInboxDrawer } from '@/features/chat/ChatInboxDrawer';
 import { getNavigationItems } from '@/app/router/routes';
 import type { NavigationItem } from '@/app/router/routes';
 import type { UserRole } from '@/shared/types/database.models';
@@ -79,6 +83,8 @@ export function AppShell() {
   const [showMore, setShowMore] = useState(false);
   const closeMoreDrawer = useCallback(() => setShowMore(false), []);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showChatInbox, setShowChatInbox] = useState(false);
+  const totalUnread = useTotalCustomerUnread();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const currentItem = getCurrentItem(pathname);
   const { data: stats } = useDashboardStats();
@@ -418,7 +424,40 @@ export function AppShell() {
                 />
               </button>
 
-              {profile?.role !== 'customer' && <NotificationBell />}
+              {profile?.role !== 'customer' && (
+                <>
+                  <button
+                    type="button"
+                    className="topbar-icon-btn topbar-chat-inbox-btn"
+                    onClick={() => setShowChatInbox(true)}
+                    title="Hộp thư khách hàng"
+                    aria-label="Hộp thư khách hàng"
+                    style={{ position: 'relative' }}
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    {totalUnread > 0 && (
+                      <span className="topbar-chat-badge">
+                        {totalUnread > 9 ? '9+' : totalUnread}
+                      </span>
+                    )}
+                  </button>
+                  <NotificationBell />
+                </>
+              )}
+
+              <ChatInboxDrawer
+                open={showChatInbox}
+                onClose={() => setShowChatInbox(false)}
+              />
 
               {profile && (
                 <button

@@ -17,4 +17,7 @@ export {
   useChatNotifications,
   registerOpenRoom,
   unregisterOpenRoom,
+  usePortalChatUnread,
 } from './useChatNotifications';
+
+export { useTotalCustomerUnread } from './useTotalCustomerUnread';

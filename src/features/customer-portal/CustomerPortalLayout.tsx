@@ -1,8 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
-import { useChatNotifications } from '@/application/chat';
+import { useChatNotifications, usePortalChatUnread } from '@/application/chat';
+// eslint-disable-next-line boundaries/dependencies
+import { ChatDrawer } from '@/features/chat/ChatDrawer';
 
 import {
   NotificationProvider,
@@ -18,6 +20,11 @@ import './portal.css';
 function PortalLayoutInner() {
   const { profile, signOut } = useAuth();
   const { addNotification, setConnectionWarning } = useNotifications();
+  const [chatOpen, setChatOpen] = useState(false);
+
+  const unreadChatCount = usePortalChatUnread(
+    profile?.customer_id ?? undefined,
+  );
 
   // Enable global chat notifications (with sound)
   useChatNotifications({ soundEnabled: true });
@@ -111,6 +118,42 @@ function PortalLayoutInner() {
       <main className="portal-content">
         <Outlet />
       </main>
+
+      {/* Floating chat button */}
+      {profile?.customer_id && (
+        <button
+          type="button"
+          onClick={() => setChatOpen(true)}
+          className="portal-chat-fab"
+          aria-label="Nhắn tin với nhân viên"
+          title="Nhắn tin"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          {unreadChatCount > 0 && (
+            <span className="portal-chat-fab-badge">
+              {unreadChatCount > 9 ? '9+' : unreadChatCount}
+            </span>
+          )}
+        </button>
+      )}
+
+      <ChatDrawer
+        open={chatOpen}
+        onClose={() => setChatOpen(false)}
+        entityType="customer"
+        entityId={profile?.customer_id ?? ''}
+        title="Hỗ trợ khách hàng"
+        subtitle="Chat trực tiếp với nhân viên"
+      />
     </div>
   );
 }

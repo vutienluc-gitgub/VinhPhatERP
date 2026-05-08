@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { fetchUnreadCount } from '@/api/chat.api';
+import { fetchUnreadCount, fetchChatRoomByEntity } from '@/api/chat.api';
 import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
 import { playNotificationSound } from '@/shared/lib/chat-sound';
 import { supabase } from '@/services/supabase/client';
@@ -19,6 +19,21 @@ export function useUnreadCount(roomId: string | undefined) {
     refetchInterval: 30_000, // Poll every 30s as fallback
     staleTime: 10_000,
   });
+}
+
+// ── Portal Unread Hook (by entity ID) ──
+
+export function usePortalChatUnread(customerId: string | undefined): number {
+  const { data: room } = useQuery({
+    queryKey: ['chat-room', 'customer', customerId],
+    enabled: !!customerId,
+    queryFn: () => fetchChatRoomByEntity('customer', customerId!),
+    staleTime: 60_000,
+  });
+
+  const { data: unread = 0 } = useUnreadCount(room?.id);
+
+  return unread;
 }
 
 // ── Mark Room as Read ──
