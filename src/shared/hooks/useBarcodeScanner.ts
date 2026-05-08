@@ -76,15 +76,24 @@ function classifyCameraError(err: unknown): string {
   return `${SCANNER_MESSAGES.cameraGenericError} (${detail})`;
 }
 
-/** Stop + clear a scanner instance safely */
-function cleanupScanner(scanner: Html5Qrcode | null): void {
+/**
+ * Stop a scanner instance safely, awaiting the async stop before clearing.
+ * Returns only after the scanner is fully stopped and cleared.
+ */
+async function cleanupScannerAsync(scanner: Html5Qrcode | null): Promise<void> {
   if (!scanner) return;
-  if (scanner.isScanning) {
-    scanner.stop().catch(() => {
-      /* already stopped */
-    });
+  try {
+    if (scanner.isScanning) {
+      await scanner.stop();
+    }
+  } catch {
+    /* already stopped or mid-transition — safe to ignore */
   }
-  scanner.clear();
+  try {
+    scanner.clear();
+  } catch {
+    /* DOM element already removed — safe to ignore */
+  }
 }
 
 /** No-op callback for html5-qrcode error frames */
@@ -121,11 +130,29 @@ export function useBarcodeScanner({
   const readerId = useRef(
     `reader-${Math.random().toString(36).substring(2, 9)}`,
   ).current;
-  const isStartingRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pauseRef = useRef(false);
   const scanModeRef = useRef(scanMode);
   const isMountedRef = useRef(true);
+
+  /**
+   * Serialisation lock — prevents overlapping start/stop transitions
+   * which cause "Cannot transition to a new state, already under transition".
+   */
+  const transitionLockRef = useRef<Promise<void>>(Promise.resolve());
+
+  /**
+   * Enqueue a callback that will run only after any in-flight transition
+   * has finished. Returns the promise so callers can await the result.
+   */
+  const enqueueTransition = useCallback(
+    (fn: () => Promise<void>): Promise<void> => {
+      const next = transitionLockRef.current.then(fn, fn);
+      transitionLockRef.current = next;
+      return next;
+    },
+    [],
+  );
 
   useEffect(() => {
     scanModeRef.current = scanMode;
@@ -144,6 +171,8 @@ export function useBarcodeScanner({
       }
 
       if (scanModeRef.current === 'single') {
+        // Fire-and-forget stop — guarded by transition lock is not needed
+        // because we are inside a scan callback, not starting a new scan.
         if (scannerRef.current?.isScanning) {
           scannerRef.current.stop().catch(() => {
             /* already stopped */
@@ -226,112 +255,127 @@ export function useBarcodeScanner({
     const scanner = scannerRef.current;
     if (!scanner) return;
 
-    try {
-      setCameraReady(false);
-      if (scanner.isScanning) {
-        await scanner.stop();
+    await enqueueTransition(async () => {
+      try {
+        setCameraReady(false);
+        if (scanner.isScanning) {
+          await scanner.stop();
+        }
+
+        await scanner.start(
+          nextCamera.id,
+          DEFAULT_SCAN_CONFIG,
+          handleDecoded,
+          NOOP_CALLBACK,
+        );
+
+        if (isMountedRef.current) {
+          setActiveCameraIndex(nextIndex);
+          setCameraReady(true);
+          setTorchOn(false);
+          detectTorch(scanner);
+        }
+      } catch (err) {
+        if (isMountedRef.current) {
+          setError(classifyCameraError(err));
+        }
       }
-
-      await scanner.start(
-        nextCamera.id,
-        DEFAULT_SCAN_CONFIG,
-        handleDecoded,
-        NOOP_CALLBACK,
-      );
-
-      setActiveCameraIndex(nextIndex);
-      setCameraReady(true);
-      setTorchOn(false);
-      detectTorch(scanner);
-    } catch (err) {
-      setError(classifyCameraError(err));
-    }
-  }, [cameras, activeCameraIndex, handleDecoded, detectTorch]);
+    });
+  }, [
+    cameras,
+    activeCameraIndex,
+    handleDecoded,
+    detectTorch,
+    enqueueTransition,
+  ]);
 
   /* ── Start camera (called from user tap — preserves user gesture for iOS) ── */
   const startCamera = useCallback(async () => {
-    if (isStartingRef.current || scannerRef.current?.isScanning) return;
-    isStartingRef.current = true;
+    if (scannerRef.current?.isScanning) return;
 
-    setError(null);
-    setCameraState('starting');
+    await enqueueTransition(async () => {
+      // Double-check after acquiring the lock
+      if (scannerRef.current?.isScanning) return;
 
-    try {
-      // Step 1: Request permission via getUserMedia in direct user gesture context.
-      // On iOS Safari, this triggers the permission prompt.
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-      });
-      // Stop raw stream — html5-qrcode will open its own.
-      stream.getTracks().forEach((track) => track.stop());
+      setError(null);
+      setCameraState('starting');
 
-      // Step 2: Enumerate cameras (permission already granted)
-      const detectedCameras = await Html5Qrcode.getCameras();
-      if (isMountedRef.current) {
-        setCameras(detectedCameras);
-      }
-
-      // Step 3: Wait a tick for the reader DOM element to be visible
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      const html5QrCode = new Html5Qrcode(readerId);
-      scannerRef.current = html5QrCode;
-
-      // Try environment camera, fallback to first enumerated
-      let cameraStarted = false;
       try {
-        await html5QrCode.start(
-          { facingMode: { ideal: 'environment' } },
-          DEFAULT_SCAN_CONFIG,
-          (decodedText) => {
-            if (isMountedRef.current) handleDecoded(decodedText);
-          },
-          NOOP_CALLBACK,
-        );
-        cameraStarted = true;
-      } catch {
-        // Fallback: use first enumerated camera by device ID
+        // Step 1: Request permission via getUserMedia in direct user gesture context.
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' },
+        });
+        // Stop raw stream — html5-qrcode will open its own.
+        stream.getTracks().forEach((track) => track.stop());
+
+        // Step 2: Enumerate cameras (permission already granted)
+        const detectedCameras = await Html5Qrcode.getCameras();
+        if (isMountedRef.current) {
+          setCameras(detectedCameras);
+        }
+
+        // Step 3: Wait a tick for the reader DOM element to be visible
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        if (!isMountedRef.current) return;
+
+        const html5QrCode = new Html5Qrcode(readerId);
+        scannerRef.current = html5QrCode;
+
+        // Try environment camera, fallback to first enumerated
+        let cameraStarted = false;
         try {
-          if (html5QrCode.isScanning) await html5QrCode.stop();
+          await html5QrCode.start(
+            { facingMode: { ideal: 'environment' } },
+            DEFAULT_SCAN_CONFIG,
+            (decodedText) => {
+              if (isMountedRef.current) handleDecoded(decodedText);
+            },
+            NOOP_CALLBACK,
+          );
+          cameraStarted = true;
         } catch {
-          /* already stopped */
-        }
-
-        const firstCamera = detectedCameras[0];
-        if (!firstCamera) {
-          throw new DOMException('No cameras found', 'NotFoundError');
-        }
-
-        await html5QrCode.start(
-          firstCamera.id,
-          DEFAULT_SCAN_CONFIG,
-          (decodedText) => {
-            if (isMountedRef.current) handleDecoded(decodedText);
-          },
-          NOOP_CALLBACK,
-        );
-        cameraStarted = true;
-      }
-
-      if (isMountedRef.current && cameraStarted) {
-        setCameraReady(true);
-        setCameraState('active');
-        // Delay torch detection to let video stream stabilize
-        setTimeout(() => {
-          if (isMountedRef.current && scannerRef.current) {
-            detectTorch(scannerRef.current);
+          // Fallback: use first enumerated camera by device ID
+          try {
+            if (html5QrCode.isScanning) await html5QrCode.stop();
+          } catch {
+            /* already stopped */
           }
-        }, 500);
+
+          const firstCamera = detectedCameras[0];
+          if (!firstCamera) {
+            throw new DOMException('No cameras found', 'NotFoundError');
+          }
+
+          await html5QrCode.start(
+            firstCamera.id,
+            DEFAULT_SCAN_CONFIG,
+            (decodedText) => {
+              if (isMountedRef.current) handleDecoded(decodedText);
+            },
+            NOOP_CALLBACK,
+          );
+          cameraStarted = true;
+        }
+
+        if (isMountedRef.current && cameraStarted) {
+          setCameraReady(true);
+          setCameraState('active');
+          // Delay torch detection to let video stream stabilize
+          setTimeout(() => {
+            if (isMountedRef.current && scannerRef.current) {
+              detectTorch(scannerRef.current);
+            }
+          }, 500);
+        }
+      } catch (err) {
+        if (isMountedRef.current) {
+          setError(classifyCameraError(err));
+          setCameraState('idle');
+        }
       }
-    } catch (err) {
-      if (isMountedRef.current) {
-        setError(classifyCameraError(err));
-        setCameraState('idle');
-      }
-    } finally {
-      isStartingRef.current = false;
-    }
-  }, [readerId, handleDecoded, detectTorch]);
+    });
+  }, [readerId, handleDecoded, detectTorch, enqueueTransition]);
 
   /* ── Reset all state ── */
   const resetState = useCallback(() => {
@@ -354,17 +398,24 @@ export function useBarcodeScanner({
 
     if (!open) {
       isMountedRef.current = false;
-      cleanupScanner(scannerRef.current);
+      // Enqueue cleanup so it waits for any in-flight transition to finish
+      const scannerInstance = scannerRef.current;
       scannerRef.current = null;
+      enqueueTransition(async () => {
+        await cleanupScannerAsync(scannerInstance);
+      });
       resetState();
     }
 
     return () => {
       isMountedRef.current = false;
-      cleanupScanner(scannerRef.current);
+      const scannerInstance = scannerRef.current;
       scannerRef.current = null;
+      enqueueTransition(async () => {
+        await cleanupScannerAsync(scannerInstance);
+      });
     };
-  }, [open, resetState]);
+  }, [open, resetState, enqueueTransition]);
 
   return {
     // State
