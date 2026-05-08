@@ -16,7 +16,11 @@ export const SHIPMENT_STATUS_LABELS: Record<ShipmentStatus, string> = {
 };
 
 const shipmentItemSchema = z.object({
-  finishedRollId: z.string().uuid('Chọn cuộn thành phẩm'),
+  finishedRollId: z
+    .string()
+    .uuid('Chọn cuộn thành phẩm')
+    .optional()
+    .or(z.literal('')),
   fabricType: z.string().trim().min(2, 'Nhập loại vải'),
   quantity: z.number().positive('Số lượng > 0'),
 });
