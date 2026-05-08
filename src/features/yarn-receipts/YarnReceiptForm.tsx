@@ -4,19 +4,15 @@ import {
   useFieldArray,
   useForm,
   useWatch,
-  Controller,
   FormProvider,
 } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
-import { Combobox } from '@/shared/components/Combobox';
 import { StepperFooter } from '@/shared/components/StepperFooter';
 import { BarcodeScanner } from '@/shared/components/BarcodeScanner';
 import { useStepper } from '@/shared/hooks/useStepper';
-// eslint-disable-next-line boundaries/dependencies
-import { QuickSupplierForm } from '@/features/suppliers/QuickSupplierForm';
 import {
   useColorOptions,
   toColorComboboxOptions,
@@ -40,6 +36,8 @@ import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
 
 import type { YarnReceipt } from './types';
 import { YarnReceiptItemRow } from './components/YarnReceiptItemRow';
+import { StepGeneralInfo } from './components/StepGeneralInfo';
+import { StepLogisticsInfo } from './components/StepLogisticsInfo';
 
 /* ── Constants ── */
 
@@ -77,6 +75,10 @@ function receiptToFormValues(receipt: YarnReceipt): YarnReceiptsFormValues {
     receiptNumber: receipt.receipt_number,
     supplierId: receipt.supplier_id,
     receiptDate: receipt.receipt_date,
+    vehicleInfo: receipt.vehicle_info ?? '',
+    additionalFees: Array.isArray(receipt.additional_fees)
+      ? (receipt.additional_fees as { name: string; amount: number }[])
+      : [],
     notes: receipt.notes ?? '',
     items: (receipt.yarn_receipt_items ?? []).map(
       (it: Record<string, unknown>) => ({
@@ -124,7 +126,6 @@ function LineTotals({
 
 export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
   const isEditing = receipt !== null;
-  const [showQuickSupplier, setShowQuickSupplier] = useState(false);
   const createMutation = useCreateYarnReceipt();
   const updateMutation = useUpdateYarnReceipt();
   const { data: suppliers = [] } = useActiveSuppliers();
@@ -141,19 +142,19 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
   });
 
   const {
-    register,
     handleSubmit,
     control,
-    setValue,
     trigger,
     getValues,
     formState: { errors, isSubmitting, isDirty },
   } = methods;
 
   const stepper = useStepper({
-    totalSteps: 2,
+    totalSteps: 3,
     stepValidation: {
       0: () => trigger(['receiptNumber', 'receiptDate', 'supplierId', 'notes']),
+      1: () => trigger(['items']),
+      2: () => trigger(['vehicleInfo', 'additionalFees']),
     },
     onCancel: () => {
       if (isDirty) {
@@ -334,111 +335,12 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
         >
           <div className="form-grid">
             {/* ── BƯỚC 1: THÔNG TIN CHUNG ── */}
-            <div className={stepper.currentStep === 0 ? 'block' : 'hidden'}>
-              <div className="form-grid">
-                <div className="form-grid form-grid-auto">
-                  <div className="form-field">
-                    <label htmlFor="receiptNumber">
-                      {FORM_LABELS.receiptNumber}
-                    </label>
-                    {isEditing ? (
-                      <input
-                        id="receiptNumber"
-                        className="field-input bg-[var(--surface)]"
-                        type="text"
-                        readOnly
-                        {...register('receiptNumber')}
-                      />
-                    ) : (
-                      <input
-                        id="receiptNumber"
-                        className="field-input text-muted italic bg-[var(--surface-disabled)]"
-                        type="text"
-                        value={FORM_LABELS.receiptNumberAuto}
-                        readOnly
-                        disabled
-                      />
-                    )}
-                  </div>
-
-                  <div className="form-field">
-                    <label htmlFor="receiptDate">
-                      {FORM_LABELS.receiptDate}{' '}
-                      <span className="field-required">*</span>
-                    </label>
-                    <input
-                      id="receiptDate"
-                      className={`field-input${errors.receiptDate ? ' is-error' : ''}`}
-                      type="date"
-                      {...register('receiptDate')}
-                    />
-                    {errors.receiptDate && (
-                      <span className="field-error">
-                        {errors.receiptDate.message}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="form-field">
-                  <label htmlFor="supplierId">
-                    {FORM_LABELS.supplier}{' '}
-                    <span className="field-required">*</span>
-                  </label>
-                  <Controller
-                    name="supplierId"
-                    control={control}
-                    render={({ field }) => (
-                      <Combobox
-                        options={supplierOptions}
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder="— Chọn nhà cung cấp —"
-                        hasError={!!errors.supplierId}
-                      />
-                    )}
-                  />
-                  {errors.supplierId && (
-                    <span className="field-error">
-                      {errors.supplierId.message}
-                    </span>
-                  )}
-                  {!showQuickSupplier && (
-                    <Button
-                      variant="secondary"
-                      type="button"
-                      onClick={() => setShowQuickSupplier(true)}
-                      className="text-[0.8rem] py-1.5 px-3 self-start mt-2"
-                    >
-                      {FORM_LABELS.createSupplier}
-                    </Button>
-                  )}
-                  {showQuickSupplier && (
-                    <div className="mt-2">
-                      <QuickSupplierForm
-                        defaultCategory="YARN"
-                        onCreated={(created) => {
-                          setValue('supplierId', created.id);
-                          setShowQuickSupplier(false);
-                        }}
-                        onCancel={() => setShowQuickSupplier(false)}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div className="form-field">
-                  <label htmlFor="notes">Ghi chú</label>
-                  <textarea
-                    id="notes"
-                    className="field-textarea"
-                    rows={3}
-                    placeholder={FORM_LABELS.notesPlaceholder}
-                    {...register('notes')}
-                  />
-                </div>
-              </div>
-            </div>
+            <StepGeneralInfo
+              hidden={stepper.currentStep !== 0}
+              isEditing={isEditing}
+              supplierOptions={supplierOptions}
+              formLabels={FORM_LABELS}
+            />
 
             {/* ── BƯỚC 2: CHI TIẾT HÀNG HÓA ── */}
             <div className={stepper.currentStep === 1 ? 'block' : 'hidden'}>
@@ -495,6 +397,9 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
               <LineTotals control={control} />
             </div>
           </div>
+
+          {/* ── BƯỚC 3: CHI PHÍ & VẬN CHUYỂN ── */}
+          <StepLogisticsInfo hidden={stepper.currentStep !== 2} />
 
           <StepperFooter
             stepper={stepper}

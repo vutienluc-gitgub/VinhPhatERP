@@ -127,6 +127,8 @@ export type YarnReceiptCreateInput = {
   supplierId: string;
   receiptDate: string;
   notes: string | null;
+  vehicleInfo?: string | null;
+  additionalFees?: { name: string; amount: number }[];
   items: {
     yarnType: string;
     colorName: string | null;
@@ -161,6 +163,8 @@ export async function createYarnReceiptFull(
     status: 'draft',
     total_amount: total,
     tenant_id: tenantId,
+    vehicle_info: input.vehicleInfo || null,
+    additional_fees: input.additionalFees || [],
   };
 
   const itemsInsert = input.items.map((item, idx) => ({
@@ -207,6 +211,8 @@ export async function updateYarnReceiptFull(
     notes: input.notes || null,
     total_amount: total,
     tenant_id: tenantId,
+    vehicle_info: input.vehicleInfo || null,
+    additional_fees: input.additionalFees || [],
   };
 
   const itemsInsert = input.items.map((item, idx) => ({
@@ -273,7 +279,7 @@ export async function fetchLatestYarnPrices(
   const { data, error } = await supabase
     .from('yarn_receipt_items')
     .select(
-      'yarn_catalog_id, unit_price, yarn_receipts!inner(receipt_date, created_at, status)',
+      'yarn_catalog_id, landed_price, yarn_receipts!inner(receipt_date, created_at, status)',
     )
     .in('yarn_catalog_id', catalogIds)
     .eq('yarn_receipts.status', 'confirmed')
@@ -292,7 +298,7 @@ export async function fetchLatestYarnPrices(
   const priceMap: Record<string, number> = {};
   for (const item of data || []) {
     if (item.yarn_catalog_id && !priceMap[item.yarn_catalog_id]) {
-      priceMap[item.yarn_catalog_id] = item.unit_price;
+      priceMap[item.yarn_catalog_id] = item.landed_price;
     }
   }
   return priceMap;

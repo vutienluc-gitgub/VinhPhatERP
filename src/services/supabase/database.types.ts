@@ -5146,6 +5146,8 @@ export type Database = {
           unit_price: number;
           yarn_catalog_id: string | null;
           yarn_type: string;
+          allocated_cost: number;
+          landed_price: number;
         };
         Insert: {
           amount?: number | null;
@@ -5169,6 +5171,8 @@ export type Database = {
           unit_price?: number;
           yarn_catalog_id?: string | null;
           yarn_type: string;
+          allocated_cost?: number;
+          landed_price?: number;
         };
         Update: {
           amount?: number | null;
@@ -5192,6 +5196,8 @@ export type Database = {
           unit_price?: number;
           yarn_catalog_id?: string | null;
           yarn_type?: string;
+          allocated_cost?: number;
+          landed_price?: number;
         };
         Relationships: [
           {
@@ -5234,11 +5240,13 @@ export type Database = {
           payment_status: string | null;
           receipt_date: string;
           receipt_number: string;
+          additional_fees: Json | null;
           status: Database['public']['Enums']['doc_status'];
           supplier_id: string;
           tenant_id: string | null;
           total_amount: number;
           updated_at: string;
+          vehicle_info: string | null;
         };
         Insert: {
           created_at?: string;
@@ -5249,11 +5257,13 @@ export type Database = {
           payment_status?: string | null;
           receipt_date?: string;
           receipt_number: string;
+          additional_fees?: Json | null;
           status?: Database['public']['Enums']['doc_status'];
           supplier_id: string;
           tenant_id?: string | null;
           total_amount?: number;
           updated_at?: string;
+          vehicle_info?: string | null;
         };
         Update: {
           created_at?: string;
@@ -5264,11 +5274,13 @@ export type Database = {
           payment_status?: string | null;
           receipt_date?: string;
           receipt_number?: string;
+          additional_fees?: Json | null;
           status?: Database['public']['Enums']['doc_status'];
           supplier_id?: string;
           tenant_id?: string | null;
           total_amount?: number;
           updated_at?: string;
+          vehicle_info?: string | null;
         };
         Relationships: [
           {
