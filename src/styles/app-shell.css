@@ -1155,3 +1155,200 @@ html.fluid .content-shell {
   background: rgba(220, 53, 69, 0.1);
   color: #c0392b;
 }
+
+/* ── Zircon Theme (Dark Green & Cut-out Active State) ── */
+.sidebar-zircon {
+  background-color: #0f4a2b !important;
+  border-right: none !important;
+  border-radius: var(--radius-lg);
+}
+
+.sidebar-zircon .brand-block {
+  background-color: transparent !important;
+}
+
+.sidebar-zircon .title-premium-gradient {
+  background: none;
+  -webkit-text-fill-color: #fff;
+  color: #fff;
+}
+
+.sidebar-zircon .eyebrow-premium {
+  color: #a3d9b1;
+}
+
+.sidebar-zircon .nav-link,
+.sidebar-zircon .nav-group-toggle {
+  color: #a3d9b1;
+}
+
+.sidebar-zircon .nav-link:hover,
+.sidebar-zircon .nav-group-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.sidebar-zircon .nav-icon {
+  color: #a3d9b1;
+}
+
+.sidebar-zircon .nav-link:hover .nav-icon {
+  color: #fff;
+}
+
+/* Định nghĩa màu cutout gần giống nền web nhất */
+:root {
+  --sidebar-cutout-bg: #f4f8fb;
+}
+[data-theme='dark'] {
+  --sidebar-cutout-bg: #08111d;
+}
+
+/* Hiệu ứng Cut-out cho Active */
+.sidebar-zircon .nav-link.is-active {
+  background: var(--sidebar-cutout-bg); /* Trùng màu nền gốc của body */
+  color: #0f4a2b; /* Text active màu xanh lá */
+  border-radius: 20px 0 0 20px;
+  position: relative;
+  margin-right: 0;
+  padding-right: 1.25rem;
+  /* Kéo dãn box ra sát lề phải của sidebar */
+  width: calc(100% + 1.25rem);
+  transform: translateX(0);
+  border: none;
+  z-index: 10;
+}
+
+.sidebar-zircon .nav-link.is-active::before,
+.sidebar-zircon .nav-link.is-active::after {
+  content: '';
+  position: absolute;
+  right: -1px; /* Overlap content-shell border slightly */
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.sidebar-zircon .nav-link.is-active::before {
+  top: -20px;
+  background: radial-gradient(
+    circle at 0 0,
+    transparent 20px,
+    var(--sidebar-cutout-bg) 20.5px
+  );
+}
+
+.sidebar-zircon .nav-link.is-active::after {
+  bottom: -20px;
+  background: radial-gradient(
+    circle at 0 100%,
+    transparent 20px,
+    var(--sidebar-cutout-bg) 20.5px
+  );
+}
+
+.sidebar-zircon .nav-link.is-active .nav-icon {
+  color: #0f4a2b;
+}
+
+.sidebar-zircon .nav-group-items {
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  margin-left: 1.2rem;
+  padding-left: 0.5rem;
+}
+
+/* Nút Collapse vàng nổi bật */
+.sidebar-zircon .sidebar-collapse-btn {
+  background: #ffc107 !important;
+  color: #000 !important;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-zircon .sidebar-collapse-btn:hover {
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Promo Banner */
+.zircon-promo {
+  margin: 1rem;
+  padding: 1.25rem 1rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f0f7f4 100%);
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.zircon-promo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a4cc1b 0%, #6e8e0d 100%);
+  color: white;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 4px 12px rgba(164, 204, 27, 0.4);
+}
+
+.zircon-promo-title {
+  color: #0f4a2b;
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.zircon-promo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #7c9c14 0%, #4f6805 100%);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 150ms;
+  width: 100%;
+}
+
+.zircon-promo-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive Collapsed */
+.shell-layout.is-collapsed .sidebar-zircon .zircon-promo {
+  margin: 1rem 0.5rem;
+  padding: 0.5rem;
+  background: transparent;
+  box-shadow: none;
+}
+.shell-layout.is-collapsed .sidebar-zircon .zircon-promo-title,
+.shell-layout.is-collapsed .sidebar-zircon .zircon-promo-btn {
+  display: none;
+}
+.shell-layout.is-collapsed .sidebar-zircon .zircon-promo-icon {
+  margin-bottom: 0;
+  width: 36px;
+  height: 36px;
+}
+.shell-layout.is-collapsed .sidebar-zircon .nav-link.is-active {
+  width: auto;
+  border-radius: 12px;
+  margin-right: 0;
+  padding: 0.6rem;
+}
+.shell-layout.is-collapsed .sidebar-zircon .nav-link.is-active::before,
+.shell-layout.is-collapsed .sidebar-zircon .nav-link.is-active::after {
+  display: none;
+}

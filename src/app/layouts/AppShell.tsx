@@ -33,6 +33,7 @@ import { GuideCommandPalette } from '@/features/guide-system/components/GuideCom
 
 import { MobileMoreDrawer } from './MobileMoreDrawer';
 import { NotificationBell } from './NotificationBell';
+import { SidebarPromo } from './SidebarPromo';
 
 function getCurrentItem(pathname: string) {
   return getNavigationItems().find((item) =>
@@ -275,7 +276,7 @@ export function AppShell() {
         <div className="bg-glow bg-glow-1" />
         <div className="bg-glow bg-glow-2" />
 
-        <aside className="sidebar-nav">
+        <aside className="sidebar-nav sidebar-zircon">
           <div className="brand-block" style={{ position: 'relative' }}>
             {!isSidebarCollapsed ? (
               <div className="flex items-center gap-3">
@@ -359,6 +360,8 @@ export function AppShell() {
               );
             })}
           </nav>
+
+          <SidebarPromo />
         </aside>
 
         <div className="content-shell">
