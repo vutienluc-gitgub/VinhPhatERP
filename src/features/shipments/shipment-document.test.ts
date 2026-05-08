@@ -113,7 +113,7 @@ describe('shipment-document', () => {
     expect(html).toContain('Cong ty Det &lt;B&gt;');
     expect(html).toContain('Tổng số lượng:');
     expect(html).toContain('162,5 m');
-    expect(html).toContain('erp.vinhphat.com/verify');
+    expect(html).toContain('quantri.detmayvinhphat.com/verify');
     expect(html).toContain('data:image/png;base64');
   });
 

@@ -111,7 +111,7 @@ export function toShipmentDocumentRows(
     });
 }
 
-const VERIFY_BASE_URL = 'https://erp.vinhphat.com/verify';
+const VERIFY_BASE_URL = 'https://quantri.detmayvinhphat.com/verify';
 
 type PrintOptions = {
   createdByName?: string;

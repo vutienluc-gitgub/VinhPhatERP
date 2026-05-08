@@ -14,6 +14,8 @@ import {
   useCreateShipment,
   useDeliveryStaffList,
 } from '@/application/shipments';
+import { useOrder } from '@/application/orders';
+import { Badge } from '@/shared/components/Badge';
 import {
   shipmentsDefaultValues,
   shipmentsSchema,
@@ -63,6 +65,9 @@ export function ShipmentForm({
   orderNumber,
   onClose,
 }: ShipmentFormProps) {
+  const { data: order } = useOrder(orderId);
+  const isTrading = order?.order_type === 'trading';
+
   const { data: availableRolls = [] } = useAvailableFinishedRolls(orderId);
   const { data: shippingRates = [] } = useActiveShippingRates();
   const { data: deliveryStaff = [] } = useDeliveryStaffList();
@@ -121,8 +126,38 @@ export function ShipmentForm({
     };
   }, [availableRolls, selectedRollIds]);
 
+  const tradingItemsSummary = useMemo(() => {
+    if (!isTrading || !order) return null;
+    const items = order.order_items ?? [];
+    return {
+      count: items.length,
+      totalWeight: sumBy(items, (r) =>
+        r.unit === 'kg' ? (r.quantity ?? 0) : 0,
+      ),
+      totalLength: sumBy(items, (r) =>
+        r.unit === 'm' ? (r.quantity ?? 0) : 0,
+      ),
+      items: items,
+    };
+  }, [isTrading, order]);
+
   // Sync selected rolls → form items
   useEffect(() => {
+    if (isTrading && tradingItemsSummary) {
+      const items = tradingItemsSummary.items.map((item) => ({
+        finishedRollId: '', // Allow empty for trading orders
+        fabricType: item.fabric_type,
+        quantity: item.quantity ?? 0,
+      }));
+      setValue(
+        'items',
+        items.length > 0
+          ? items
+          : [{ finishedRollId: '', fabricType: '', quantity: 0 }],
+      );
+      return;
+    }
+
     const items = selectedRollsSummary.rolls.map((roll) => ({
       finishedRollId: roll.id,
       fabricType: roll.fabric_type,
@@ -141,19 +176,24 @@ export function ShipmentForm({
     } else {
       setValue('items', items);
     }
-  }, [selectedRollsSummary.rolls, setValue]);
+  }, [selectedRollsSummary.rolls, setValue, isTrading, tradingItemsSummary]);
 
   // Auto-compute shipping cost when rate or items change
   useEffect(() => {
     if (!watchedRateId) return;
     const rate = shippingRateById.get(watchedRateId);
-    const totalMeters = selectedRollsSummary.totalLength;
+    const totalMeters =
+      isTrading && tradingItemsSummary
+        ? tradingItemsSummary.totalLength
+        : selectedRollsSummary.totalLength;
     const { shippingCost, loadingFee } = computeShippingCost(rate, totalMeters);
     setValue('shippingCost', shippingCost);
     setValue('loadingFee', loadingFee);
   }, [
     watchedRateId,
     selectedRollsSummary.totalLength,
+    isTrading,
+    tradingItemsSummary,
     setValue,
     shippingRateById,
   ]);
@@ -171,7 +211,7 @@ export function ShipmentForm({
   }, []);
 
   async function onSubmit(values: ShipmentsFormValues) {
-    if (selectedRollIds.size === 0) {
+    if (!isTrading && selectedRollIds.size === 0) {
       toast.error('Vui lòng chọn ít nhất một cuộn vải để xuất.');
       return;
     }
@@ -343,17 +383,45 @@ export function ShipmentForm({
           {/* ─── Roll Picker Grid ─── */}
           <div className="form-field">
             <label className="m-0 mb-2 block">
-              Chọn cuộn xuất kho <span className="field-required">*</span>
+              {isTrading ? 'Dòng hàng xuất kho' : 'Chọn cuộn xuất kho'}{' '}
+              <span className="field-required">*</span>
             </label>
 
-            <ShipmentRollPicker
-              availableRolls={availableRolls}
-              selectedRollIds={selectedRollIds}
-              onToggleRoll={handleToggleRoll}
-            />
+            {isTrading ? (
+              <div className="rounded-xl border border-slate-200 p-4 space-y-3">
+                <div className="flex items-center justify-between text-sm text-slate-500 mb-2">
+                  <span>Hàng hóa từ đơn thương mại</span>
+                  <Badge variant="info">Đã trừ kho tự động</Badge>
+                </div>
+                {tradingItemsSummary?.items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex justify-between items-center py-2 border-b border-slate-100 last:border-0"
+                  >
+                    <div>
+                      <div className="font-semibold text-sm">
+                        {item.fabric_type}
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        {item.color_name || 'Mộc (Raw)'}
+                      </div>
+                    </div>
+                    <div className="font-medium text-sm text-right">
+                      {item.quantity} {item.unit}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <ShipmentRollPicker
+                availableRolls={availableRolls}
+                selectedRollIds={selectedRollIds}
+                onToggleRoll={handleToggleRoll}
+              />
+            )}
 
             {/* Selection summary */}
-            {selectedRollsSummary.count > 0 && (
+            {!isTrading && selectedRollsSummary.count > 0 && (
               <div className="mt-3 px-4 py-3 rounded-[var(--radius)] bg-[#ecfdf5] border border-[#a7f3d0] flex justify-between items-center flex-wrap gap-2">
                 <span className="text-[0.85rem] font-semibold text-[#065f46]">
                   ✓ {selectedRollsSummary.count} cuộn đã chọn
@@ -365,6 +433,25 @@ export function ShipmentForm({
                 </span>
               </div>
             )}
+
+            {isTrading &&
+              tradingItemsSummary &&
+              tradingItemsSummary.count > 0 && (
+                <div className="mt-3 px-4 py-3 rounded-[var(--radius)] bg-[#ecfdf5] border border-[#a7f3d0] flex justify-between items-center flex-wrap gap-2">
+                  <span className="text-[0.85rem] font-semibold text-[#065f46]">
+                    Tổng cộng: {tradingItemsSummary.count} dòng hàng
+                  </span>
+                  <span className="text-[0.85rem] text-[#047857]">
+                    {tradingItemsSummary.totalWeight > 0 &&
+                      `${tradingItemsSummary.totalWeight.toFixed(1)} kg`}
+                    {tradingItemsSummary.totalWeight > 0 &&
+                      tradingItemsSummary.totalLength > 0 &&
+                      ' • '}
+                    {tradingItemsSummary.totalLength > 0 &&
+                      `${tradingItemsSummary.totalLength.toFixed(1)} m`}
+                  </span>
+                </div>
+              )}
 
             {errors.items?.root && (
               <p className="field-error">{errors.items.root.message}</p>
@@ -386,12 +473,14 @@ export function ShipmentForm({
             disabled={
               isSubmitting ||
               createMutation.isPending ||
-              selectedRollIds.size === 0
+              (!isTrading && selectedRollIds.size === 0) ||
+              (isTrading &&
+                (!tradingItemsSummary || tradingItemsSummary.count === 0))
             }
           >
             {createMutation.isPending
               ? 'Đang lưu...'
-              : `Tạo phiếu xuất (${selectedRollIds.size} cuộn)`}
+              : `Tạo phiếu xuất (${isTrading ? (tradingItemsSummary?.count || 0) + ' dòng' : selectedRollIds.size + ' cuộn'})`}
           </Button>
         </div>
       </form>
