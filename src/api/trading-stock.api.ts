@@ -83,6 +83,7 @@ export async function fetchTradingYarnLots(
       quantity,
       unit,
       unit_price,
+      landed_price,
       yarn_receipts!inner(receipt_number, receipt_date, status)
     `,
     )
@@ -115,7 +116,7 @@ export async function fetchTradingYarnLots(
       receipt_date: receipt.receipt_date,
       quantity: item.quantity,
       unit: item.unit,
-      unit_price: item.unit_price,
+      unit_price: item.landed_price > 0 ? item.landed_price : item.unit_price,
     };
   });
 }

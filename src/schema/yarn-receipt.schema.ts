@@ -38,6 +38,16 @@ export const yarnReceiptsSchema = z.object({
   receiptNumber: z.string().trim().optional().default(''),
   supplierId: z.string().uuid('Chọn nhà cung cấp'),
   receiptDate: z.string().trim().min(1, 'Chọn ngày nhập'),
+  vehicleInfo: z.string().trim().max(100).optional().or(z.literal('')),
+  additionalFees: z
+    .array(
+      z.object({
+        name: z.string().trim().min(1, 'Tên phí không được để trống'),
+        amount: z.number().min(0, 'Số tiền >= 0'),
+      }),
+    )
+    .optional()
+    .default([]),
   notes: z.string().trim().max(500).optional().or(z.literal('')),
   items: z.array(yarnReceiptItemSchema).min(1, 'Phải có ít nhất 1 dòng hàng'),
 });
@@ -66,6 +76,8 @@ export const yarnReceiptsDefaultValues: YarnReceiptsFormValues = {
   receiptNumber: '',
   supplierId: '',
   receiptDate: new Date().toISOString().slice(0, 10),
+  vehicleInfo: '',
+  additionalFees: [],
   notes: '',
   items: [{ ...emptyYarnReceiptItem }],
 };

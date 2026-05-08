@@ -22,9 +22,10 @@ import { Button } from './Button';
 import { Pagination } from './Pagination';
 import type { PaginationConfig } from './DataTable';
 
-export interface DataTableAdvancedProps<TData, TValue> {
+export interface DataTableAdvancedProps<TData> {
   data: TData[];
-  columns: ColumnDef<TData, TValue>[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  columns: ColumnDef<TData, any>[];
   renderMobileCard?: (item: TData) => ReactNode;
   isLoading?: boolean;
   skeletonRows?: number;
@@ -40,7 +41,7 @@ export interface DataTableAdvancedProps<TData, TValue> {
   pagination?: PaginationConfig<TData>;
 }
 
-function DataTableAdvancedInner<TData, TValue>({
+function DataTableAdvancedInner<TData>({
   data,
   columns,
   renderMobileCard,
@@ -56,7 +57,7 @@ function DataTableAdvancedInner<TData, TValue>({
   onRowClick,
   exportFileName = 'export_data',
   pagination,
-}: DataTableAdvancedProps<TData, TValue>) {
+}: DataTableAdvancedProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
