@@ -641,3 +641,53 @@
     padding: 0.625rem 0.875rem;
   }
 }
+
+/* ── Floating Chat Button ── */
+.portal-chat-fab {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #0f6fff;
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(15, 111, 255, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  z-index: 60;
+}
+
+.portal-chat-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(15, 111, 255, 0.5);
+}
+
+.portal-chat-fab:active {
+  transform: scale(0.95);
+}
+
+.portal-chat-fab-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #e03e3e;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px #fff;
+  transform: translate(15%, -15%);
+}

@@ -172,6 +172,74 @@ export async function updateReadReceipt(
   if (error) throw error;
 }
 
+// ── Fetch Customer Chat Rooms (for admin inbox) ──
+
+export type CustomerChatRoomSummary = {
+  roomId: string;
+  customerId: string;
+  customerName: string;
+  customerCode: string;
+  lastMessage: string | null;
+  lastMessageAt: string | null;
+  updatedAt: string;
+};
+
+export async function fetchCustomerChatRooms(): Promise<
+  CustomerChatRoomSummary[]
+> {
+  const { data: rooms, error: rErr } = await supabase
+    .from('chat_rooms')
+    .select('id, entity_id, updated_at')
+    .eq('entity_type', 'customer')
+    .order('updated_at', { ascending: false });
+
+  if (rErr) throw rErr;
+  if (!rooms || rooms.length === 0) return [];
+
+  const entityIds = rooms.map((r) => r.entity_id as string);
+
+  const { data: customers, error: cErr } = await supabase
+    .from('customers')
+    .select('id, name, code')
+    .in('id', entityIds);
+
+  if (cErr) throw cErr;
+
+  const customerMap = new Map(
+    (customers ?? []).map((c) => [
+      c.id as string,
+      c as { id: string; name: string; code: string },
+    ]),
+  );
+
+  const summaries = await Promise.all(
+    rooms.map(async (room) => {
+      const customer = customerMap.get(room.entity_id as string);
+      const { data: msgs } = await supabase
+        .from('chat_messages')
+        .select('content, created_at, message_type')
+        .eq('room_id', room.id as string)
+        .is('deleted_at', null)
+        .not('message_type', 'in', '("system","system_epod")')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      const last = msgs?.[0] ?? null;
+      return {
+        roomId: room.id as string,
+        customerId: room.entity_id as string,
+        customerName: customer?.name ?? 'Khách hàng',
+        customerCode: customer?.code ?? '',
+        lastMessage: last?.content ?? null,
+        lastMessageAt: last?.created_at ?? null,
+        updatedAt: room.updated_at as string,
+      } satisfies CustomerChatRoomSummary;
+    }),
+  );
+
+  return summaries;
+}
+
 // ── Soft Delete Message ──
 
 export async function softDeleteMessage(messageId: string): Promise<void> {

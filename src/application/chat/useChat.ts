@@ -243,8 +243,6 @@ export function useUpdateReadReceipt() {
 
 // ── Realtime Subscription (with Reconnection + Multi-tab Broadcast) ──
 
-const MAX_RECONNECT_ATTEMPTS = 5;
-
 export function useChatRealtime(roomId: string | undefined) {
   const queryClient = useQueryClient();
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
@@ -259,10 +257,13 @@ export function useChatRealtime(roomId: string | undefined) {
     // Cleanup previous channel if exists
     if (channelRef.current) {
       void supabase.removeChannel(channelRef.current);
+      channelRef.current = null;
     }
 
-    const channel = supabase
-      .channel(`room:${roomId}`)
+    const channel = supabase.channel(`room:${roomId}`);
+    channelRef.current = channel;
+
+    channel
       .on(
         'postgres_changes',
         {
@@ -284,37 +285,27 @@ export function useChatRealtime(roomId: string | undefined) {
         },
       )
       .subscribe((status) => {
+        // Prevent zombie callbacks from removed channels
+        if (channelRef.current !== channel) return;
+
         if (status === 'SUBSCRIBED') {
+          // If we recovered from a disconnect, fetch any missed messages
+          if (retryCountRef.current > 0) {
+            void queryClient.invalidateQueries({
+              queryKey: CHAT_KEYS.messages(roomId),
+            });
+          }
           retryCountRef.current = 0;
           setConnectionStatus('connected');
           broadcastConnectionStatus(roomId, 'connected');
         } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-          // Exceeded max retries — stop attempting
-          if (retryCountRef.current >= MAX_RECONNECT_ATTEMPTS) {
-            setConnectionStatus('disconnected');
-            broadcastConnectionStatus(roomId, 'disconnected');
-            return;
-          }
-
           retryCountRef.current += 1;
           setConnectionStatus('reconnecting');
           broadcastConnectionStatus(roomId, 'reconnecting');
-
-          // Auto-reconnect with exponential backoff
-          const delay = Math.min(3000 * retryCountRef.current, 15000);
-          retryTimerRef.current = setTimeout(() => {
-            // Re-fetch to catch missed messages
-            void queryClient.invalidateQueries({
-              queryKey: CHAT_KEYS.messages(roomId),
-            });
-
-            // Re-subscribe
-            subscribe();
-          }, delay);
+          // Supabase Realtime client will automatically attempt to reconnect.
+          // We do not need a manual setTimeout here, which prevents duplicate channel bugs.
         }
       });
-
-    channelRef.current = channel;
   }, [roomId, queryClient]);
 
   const unsubscribe = useCallback(() => {

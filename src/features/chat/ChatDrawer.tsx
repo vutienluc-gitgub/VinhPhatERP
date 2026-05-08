@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 import {
@@ -7,9 +7,11 @@ import {
   useChatOfflineSync,
   useGetOrCreateRoom,
   useSendMessage,
+} from '@/application/chat';
+import {
   registerOpenRoom,
   unregisterOpenRoom,
-} from '@/application/chat';
+} from '@/application/chat/useChatNotifications';
 import { CHAT_LABELS } from '@/schema/chat.schema';
 
 import { ChatInputArea } from './components/ChatInputArea';
@@ -24,20 +26,22 @@ interface ChatDrawerProps {
   entityId: string;
   title?: string;
   subtitle?: string;
+  roomId?: string;
 }
 
-export function ChatDrawer({
+export const ChatDrawer = React.memo(function ChatDrawer({
   open,
   onClose,
   entityType,
   entityId,
+  roomId: propRoomId,
   title,
   subtitle,
 }: ChatDrawerProps) {
   const createRoomMutation = useGetOrCreateRoom();
 
-  // Get or create room on open
-  const roomId = createRoomMutation.data;
+  // Get or create room on open, unless roomId is provided via props
+  const roomId = propRoomId ?? createRoomMutation.data;
 
   const {
     data,
@@ -64,6 +68,9 @@ export function ChatDrawer({
   const triggeredEntityKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
+    // Skip mutation if we already have the roomId via props
+    if (propRoomId) return;
+
     const entityKey = `${entityType}:${entityId}`;
     if (open && triggeredEntityKeyRef.current !== entityKey) {
       triggeredEntityKeyRef.current = entityKey;
@@ -72,7 +79,7 @@ export function ChatDrawer({
     if (!open) {
       triggeredEntityKeyRef.current = null;
     }
-  }, [open, entityType, entityId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [open, entityType, entityId, propRoomId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Register room globally so notifications are muted for this active room
   useEffect(() => {
@@ -102,13 +109,13 @@ export function ChatDrawer({
   );
 
   const handleSendImage = useCallback(
-    (imageUrl: string) => {
+    (url: string) => {
       if (!roomId) return;
       sendMutation.mutate({
         clientId: crypto.randomUUID(),
         content: '',
         messageType: 'image',
-        imageUrl,
+        imageUrl: url,
       });
     },
     [roomId, sendMutation],
@@ -138,9 +145,7 @@ export function ChatDrawer({
         <div className="chat-header">
           <div>
             <h3 className="chat-header-title">{title ?? CHAT_LABELS.TITLE}</h3>
-            {subtitle ? (
-              <p className="chat-header-subtitle">{subtitle}</p>
-            ) : null}
+            {subtitle && <p className="chat-header-subtitle">{subtitle}</p>}
           </div>
           <button
             type="button"
@@ -149,14 +154,12 @@ export function ChatDrawer({
             aria-label={CHAT_LABELS.CLOSE}
           >
             <svg
-              width="16"
-              height="16"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
             >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
@@ -164,34 +167,7 @@ export function ChatDrawer({
           </button>
         </div>
 
-        {/* Room Creation Error — full error state with retry */}
-        {createRoomMutation.isError ? (
-          <div className="chat-message-list">
-            <div className="chat-error-state">
-              <p className="chat-error-msg">
-                {createRoomMutation.error instanceof Error
-                  ? createRoomMutation.error.message
-                  : CHAT_LABELS.SEND_ERROR}
-              </p>
-              <button
-                type="button"
-                className="chat-error-retry-btn"
-                onClick={handleRetryRoom}
-              >
-                {CHAT_LABELS.RETRY}
-              </button>
-            </div>
-          </div>
-        ) : null}
-
         {/* Connection Status Banner */}
-        {roomId &&
-        connectionStatus === 'disconnected' &&
-        !createRoomMutation.isError ? (
-          <div className="chat-connection-banner chat-connection-banner--error">
-            {CHAT_LABELS.CONNECTION_LOST}
-          </div>
-        ) : null}
         {roomId && connectionStatus === 'reconnecting' ? (
           <div className="chat-connection-banner chat-connection-banner--warning">
             {CHAT_LABELS.CONNECTION_LOST}
@@ -202,6 +178,25 @@ export function ChatDrawer({
         {pendingCount > 0 ? (
           <div className="chat-connection-banner chat-connection-banner--info">
             {pendingCount} {CHAT_LABELS.OFFLINE_PENDING_MSG}
+          </div>
+        ) : null}
+
+        {/* Room Creation Error — full error state with retry */}
+        {createRoomMutation.isError ? (
+          <div className="chat-message-list">
+            <div className="chat-error-state">
+              <p className="chat-error-msg">
+                {(createRoomMutation.error as { message?: string } | null)
+                  ?.message ?? CHAT_LABELS.SEND_ERROR}
+              </p>
+              <button
+                type="button"
+                className="chat-error-retry-btn"
+                onClick={handleRetryRoom}
+              >
+                {CHAT_LABELS.RETRY}
+              </button>
+            </div>
           </div>
         ) : null}
 
@@ -231,4 +226,4 @@ export function ChatDrawer({
     </>,
     mount,
   );
-}
+});

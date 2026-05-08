@@ -10,17 +10,29 @@ import { publicRoutes } from '@/app/router/publicRoutes';
 export function AppRouter() {
   const router = useMemo(
     () =>
-      createBrowserRouter([
+      createBrowserRouter(
+        [
+          {
+            errorElement: <GlobalErrorElement />,
+            children: [
+              ...publicRoutes,
+              ...driverRoutes,
+              ...portalRoutes,
+              createErpShellRoute(),
+            ],
+          },
+        ],
         {
-          errorElement: <GlobalErrorElement />,
-          children: [
-            ...publicRoutes,
-            ...driverRoutes,
-            ...portalRoutes,
-            createErpShellRoute(),
-          ],
+          future: {
+            v7_startTransition: true,
+            v7_fetcherPersist: true,
+            v7_normalizeFormMethod: true,
+            v7_partialHydration: true,
+            v7_skipActionErrorRevalidation: true,
+            v7_relativeSplatPath: true,
+          } as unknown as Partial<import('react-router-dom').FutureConfig>,
         },
-      ]),
+      ),
     [],
   );
 
