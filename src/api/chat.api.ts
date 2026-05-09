@@ -1,4 +1,5 @@
 import { supabase } from '@/services/supabase/client';
+import type { Json } from '@/services/supabase/database.types';
 import {
   chatMessageResponseSchema,
   CHAT_MESSAGES_PAGE_SIZE,
@@ -122,9 +123,8 @@ export async function sendChatMessage(params: {
     p_content: params.content || '',
     p_message_type: params.messageType ?? 'text',
     p_image_url: params.imageUrl ?? undefined,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     p_mentions: params.mentions
-      ? (params.mentions as unknown as any)
+      ? (params.mentions as unknown as Json)
       : undefined,
   });
 
