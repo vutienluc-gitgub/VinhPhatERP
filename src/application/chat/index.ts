@@ -5,9 +5,13 @@ export {
   useSendMessage,
   useDeleteMessage,
   useUpdateReadReceipt,
+  usePinnedMessages,
+  useTogglePin,
   useChatRealtime,
   useChatOfflineSync,
 } from './useChat';
+export { useMentionsSearch, type MentionOption } from './useMentionsSearch';
+export { useUnifiedTimeline } from './useUnifiedTimeline';
 
 export type { ChatConnectionStatus } from './useChat';
 
@@ -20,4 +24,4 @@ export {
   usePortalChatUnread,
 } from './useChatNotifications';
 
-export { useTotalCustomerUnread } from './useTotalCustomerUnread';
+export { useTotalUnread } from './useTotalUnread';

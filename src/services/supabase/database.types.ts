@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: '14.4';
   };
-  graphql_public: {
-    Tables: {
-      [_ in never]: never;
-    };
-    Views: {
-      [_ in never]: never;
-    };
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json;
-          operationName?: string;
-          query?: string;
-          variables?: Json;
-        };
-        Returns: Json;
-      };
-    };
-    Enums: {
-      [_ in never]: never;
-    };
-    CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
   public: {
     Tables: {
       background_jobs: {
@@ -360,7 +335,11 @@ export type Database = {
           deleted_at: string | null;
           id: string;
           image_url: string | null;
+          is_pinned: boolean | null;
+          mentions: Json | null;
           message_type: string;
+          pinned_at: string | null;
+          pinned_by: string | null;
           room_id: string;
           sender_id: string | null;
           status: string;
@@ -373,7 +352,11 @@ export type Database = {
           deleted_at?: string | null;
           id?: string;
           image_url?: string | null;
+          is_pinned?: boolean | null;
+          mentions?: Json | null;
           message_type?: string;
+          pinned_at?: string | null;
+          pinned_by?: string | null;
           room_id: string;
           sender_id?: string | null;
           status?: string;
@@ -386,7 +369,11 @@ export type Database = {
           deleted_at?: string | null;
           id?: string;
           image_url?: string | null;
+          is_pinned?: boolean | null;
+          mentions?: Json | null;
           message_type?: string;
+          pinned_at?: string | null;
+          pinned_by?: string | null;
           room_id?: string;
           sender_id?: string | null;
           status?: string;
@@ -1616,6 +1603,8 @@ export type Database = {
           length_m: number | null;
           lot_number: string | null;
           notes: string | null;
+          paid_amount: number;
+          payment_status: string | null;
           price_tier: Json | null;
           production_date: string | null;
           purchase_price: number | null;
@@ -1642,6 +1631,8 @@ export type Database = {
           length_m?: number | null;
           lot_number?: string | null;
           notes?: string | null;
+          paid_amount?: number;
+          payment_status?: string | null;
           price_tier?: Json | null;
           production_date?: string | null;
           purchase_price?: number | null;
@@ -1668,6 +1659,8 @@ export type Database = {
           length_m?: number | null;
           lot_number?: string | null;
           notes?: string | null;
+          paid_amount?: number;
+          payment_status?: string | null;
           price_tier?: Json | null;
           production_date?: string | null;
           purchase_price?: number | null;
@@ -1969,48 +1962,66 @@ export type Database = {
           code: string;
           created_at: string;
           daily_capacity_m: number | null;
+          diameter_inch: number | null;
+          feeders: number | null;
+          gauge: number | null;
           id: string;
           loom_type: string;
           max_speed_rpm: number | null;
           max_width_cm: number | null;
+          motor_power_kw: number | null;
           name: string;
           notes: string | null;
           status: string;
           supplier_id: string;
           tenant_id: string;
           updated_at: string;
+          voltage: string | null;
+          weight_kg: number | null;
           year_manufactured: number | null;
         };
         Insert: {
           code: string;
           created_at?: string;
           daily_capacity_m?: number | null;
+          diameter_inch?: number | null;
+          feeders?: number | null;
+          gauge?: number | null;
           id?: string;
           loom_type?: string;
           max_speed_rpm?: number | null;
           max_width_cm?: number | null;
+          motor_power_kw?: number | null;
           name: string;
           notes?: string | null;
           status?: string;
           supplier_id: string;
           tenant_id: string;
           updated_at?: string;
+          voltage?: string | null;
+          weight_kg?: number | null;
           year_manufactured?: number | null;
         };
         Update: {
           code?: string;
           created_at?: string;
           daily_capacity_m?: number | null;
+          diameter_inch?: number | null;
+          feeders?: number | null;
+          gauge?: number | null;
           id?: string;
           loom_type?: string;
           max_speed_rpm?: number | null;
           max_width_cm?: number | null;
+          motor_power_kw?: number | null;
           name?: string;
           notes?: string | null;
           status?: string;
           supplier_id?: string;
           tenant_id?: string;
           updated_at?: string;
+          voltage?: string | null;
+          weight_kg?: number | null;
           year_manufactured?: number | null;
         };
         Relationships: [
@@ -2160,8 +2171,11 @@ export type Database = {
           id: string;
           notes: string | null;
           order_id: string;
+          product_category: string;
           quantity: number;
           sort_order: number;
+          source_lot_number: string | null;
+          source_stock_id: string | null;
           tenant_id: string | null;
           unit: string;
           unit_price: number;
@@ -2175,8 +2189,11 @@ export type Database = {
           id?: string;
           notes?: string | null;
           order_id: string;
+          product_category?: string;
           quantity: number;
           sort_order?: number;
+          source_lot_number?: string | null;
+          source_stock_id?: string | null;
           tenant_id?: string | null;
           unit?: string;
           unit_price?: number;
@@ -2190,8 +2207,11 @@ export type Database = {
           id?: string;
           notes?: string | null;
           order_id?: string;
+          product_category?: string;
           quantity?: number;
           sort_order?: number;
+          source_lot_number?: string | null;
+          source_stock_id?: string | null;
           tenant_id?: string | null;
           unit?: string;
           unit_price?: number;
@@ -3589,6 +3609,7 @@ export type Database = {
           id: string;
           journey_status: string;
           notes: string | null;
+          photo_url: string | null;
           shipment_id: string;
           updated_by: string | null;
         };
@@ -3597,6 +3618,7 @@ export type Database = {
           id?: string;
           journey_status: string;
           notes?: string | null;
+          photo_url?: string | null;
           shipment_id: string;
           updated_by?: string | null;
         };
@@ -3605,6 +3627,7 @@ export type Database = {
           id?: string;
           journey_status?: string;
           notes?: string | null;
+          photo_url?: string | null;
           shipment_id?: string;
           updated_by?: string | null;
         };
@@ -3638,6 +3661,7 @@ export type Database = {
           created_at: string;
           created_by: string | null;
           customer_id: string;
+          customer_signature_url: string | null;
           delivered_at: string | null;
           delivery_address: string | null;
           delivery_proof: string | null;
@@ -3650,6 +3674,7 @@ export type Database = {
           notes: string | null;
           order_id: string | null;
           prepared_at: string | null;
+          proof_photos: string[] | null;
           receiver_name: string | null;
           receiver_phone: string | null;
           shipment_date: string;
@@ -3657,6 +3682,7 @@ export type Database = {
           shipped_at: string | null;
           shipping_cost: number;
           shipping_rate_id: string | null;
+          signed_at: string | null;
           status: Database['public']['Enums']['shipment_status'];
           tenant_id: string | null;
           total_meters: number | null;
@@ -3670,6 +3696,7 @@ export type Database = {
           created_at?: string;
           created_by?: string | null;
           customer_id: string;
+          customer_signature_url?: string | null;
           delivered_at?: string | null;
           delivery_address?: string | null;
           delivery_proof?: string | null;
@@ -3682,6 +3709,7 @@ export type Database = {
           notes?: string | null;
           order_id?: string | null;
           prepared_at?: string | null;
+          proof_photos?: string[] | null;
           receiver_name?: string | null;
           receiver_phone?: string | null;
           shipment_date?: string;
@@ -3689,6 +3717,7 @@ export type Database = {
           shipped_at?: string | null;
           shipping_cost?: number;
           shipping_rate_id?: string | null;
+          signed_at?: string | null;
           status?: Database['public']['Enums']['shipment_status'];
           tenant_id?: string | null;
           total_meters?: number | null;
@@ -3702,6 +3731,7 @@ export type Database = {
           created_at?: string;
           created_by?: string | null;
           customer_id?: string;
+          customer_signature_url?: string | null;
           delivered_at?: string | null;
           delivery_address?: string | null;
           delivery_proof?: string | null;
@@ -3714,6 +3744,7 @@ export type Database = {
           notes?: string | null;
           order_id?: string | null;
           prepared_at?: string | null;
+          proof_photos?: string[] | null;
           receiver_name?: string | null;
           receiver_phone?: string | null;
           shipment_date?: string;
@@ -3721,6 +3752,7 @@ export type Database = {
           shipped_at?: string | null;
           shipping_cost?: number;
           shipping_rate_id?: string | null;
+          signed_at?: string | null;
           status?: Database['public']['Enums']['shipment_status'];
           tenant_id?: string | null;
           total_meters?: number | null;
@@ -4629,6 +4661,134 @@ export type Database = {
         };
         Relationships: [];
       };
+      trading_stock_deductions: {
+        Row: {
+          created_at: string;
+          deducted_at: string;
+          deducted_qty: number;
+          id: string;
+          lot_number: string | null;
+          order_id: string;
+          order_item_id: string | null;
+          product_category: string;
+          reversed_at: string | null;
+          roll_id: string | null;
+          roll_type: string | null;
+          status: string;
+          tenant_id: string | null;
+          unit: string;
+          updated_at: string;
+          yarn_catalog_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          deducted_at?: string;
+          deducted_qty?: number;
+          id?: string;
+          lot_number?: string | null;
+          order_id: string;
+          order_item_id?: string | null;
+          product_category: string;
+          reversed_at?: string | null;
+          roll_id?: string | null;
+          roll_type?: string | null;
+          status?: string;
+          tenant_id?: string | null;
+          unit?: string;
+          updated_at?: string;
+          yarn_catalog_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          deducted_at?: string;
+          deducted_qty?: number;
+          id?: string;
+          lot_number?: string | null;
+          order_id?: string;
+          order_item_id?: string | null;
+          product_category?: string;
+          reversed_at?: string | null;
+          roll_id?: string | null;
+          roll_type?: string | null;
+          status?: string;
+          tenant_id?: string | null;
+          unit?: string;
+          updated_at?: string;
+          yarn_catalog_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'trading_stock_deductions_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'orders';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'trading_stock_deductions_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_debt_aging';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'trading_stock_deductions_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_on_time_delivery';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'trading_stock_deductions_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_order_fulfillment';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'trading_stock_deductions_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_order_summary';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'trading_stock_deductions_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_overdue_orders';
+            referencedColumns: ['order_id'];
+          },
+          {
+            foreignKeyName: 'trading_stock_deductions_order_item_id_fkey';
+            columns: ['order_item_id'];
+            isOneToOne: false;
+            referencedRelation: 'order_items';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'trading_stock_deductions_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'trading_stock_deductions_yarn_catalog_id_fkey';
+            columns: ['yarn_catalog_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_yarn_availability';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'trading_stock_deductions_yarn_catalog_id_fkey';
+            columns: ['yarn_catalog_id'];
+            isOneToOne: false;
+            referencedRelation: 'yarn_catalogs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       weaving_invoice_rolls: {
         Row: {
           created_at: string;
@@ -5125,6 +5285,7 @@ export type Database = {
       };
       yarn_receipt_items: {
         Row: {
+          allocated_cost: number;
           amount: number | null;
           color_code: string | null;
           color_name: string | null;
@@ -5132,6 +5293,7 @@ export type Database = {
           dtex: string | null;
           grade: string | null;
           id: string;
+          landed_price: number;
           lot_number: string | null;
           machine_no: string | null;
           notes: string | null;
@@ -5146,10 +5308,9 @@ export type Database = {
           unit_price: number;
           yarn_catalog_id: string | null;
           yarn_type: string;
-          allocated_cost: number;
-          landed_price: number;
         };
         Insert: {
+          allocated_cost?: number;
           amount?: number | null;
           color_code?: string | null;
           color_name?: string | null;
@@ -5157,6 +5318,7 @@ export type Database = {
           dtex?: string | null;
           grade?: string | null;
           id?: string;
+          landed_price?: number;
           lot_number?: string | null;
           machine_no?: string | null;
           notes?: string | null;
@@ -5171,10 +5333,9 @@ export type Database = {
           unit_price?: number;
           yarn_catalog_id?: string | null;
           yarn_type: string;
-          allocated_cost?: number;
-          landed_price?: number;
         };
         Update: {
+          allocated_cost?: number;
           amount?: number | null;
           color_code?: string | null;
           color_name?: string | null;
@@ -5182,6 +5343,7 @@ export type Database = {
           dtex?: string | null;
           grade?: string | null;
           id?: string;
+          landed_price?: number;
           lot_number?: string | null;
           machine_no?: string | null;
           notes?: string | null;
@@ -5196,8 +5358,6 @@ export type Database = {
           unit_price?: number;
           yarn_catalog_id?: string | null;
           yarn_type?: string;
-          allocated_cost?: number;
-          landed_price?: number;
         };
         Relationships: [
           {
@@ -5232,6 +5392,7 @@ export type Database = {
       };
       yarn_receipts: {
         Row: {
+          additional_fees: Json | null;
           created_at: string;
           created_by: string | null;
           id: string;
@@ -5240,7 +5401,6 @@ export type Database = {
           payment_status: string | null;
           receipt_date: string;
           receipt_number: string;
-          additional_fees: Json | null;
           status: Database['public']['Enums']['doc_status'];
           supplier_id: string;
           tenant_id: string | null;
@@ -5249,6 +5409,7 @@ export type Database = {
           vehicle_info: string | null;
         };
         Insert: {
+          additional_fees?: Json | null;
           created_at?: string;
           created_by?: string | null;
           id?: string;
@@ -5257,7 +5418,6 @@ export type Database = {
           payment_status?: string | null;
           receipt_date?: string;
           receipt_number: string;
-          additional_fees?: Json | null;
           status?: Database['public']['Enums']['doc_status'];
           supplier_id: string;
           tenant_id?: string | null;
@@ -5266,6 +5426,7 @@ export type Database = {
           vehicle_info?: string | null;
         };
         Update: {
+          additional_fees?: Json | null;
           created_at?: string;
           created_by?: string | null;
           id?: string;
@@ -5274,7 +5435,6 @@ export type Database = {
           payment_status?: string | null;
           receipt_date?: string;
           receipt_number?: string;
-          additional_fees?: Json | null;
           status?: Database['public']['Enums']['doc_status'];
           supplier_id?: string;
           tenant_id?: string | null;
@@ -5461,10 +5621,19 @@ export type Database = {
           fabric_type: string | null;
           quality_grade: string | null;
           roll_count: number | null;
+          tenant_id: string | null;
           total_length_m: number | null;
           total_weight_kg: number | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'finished_fabric_rolls_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       v_inventory_demand: {
         Row: {
@@ -5923,6 +6092,23 @@ export type Database = {
               p_customer_id: string;
               p_delivery_date: string;
               p_items: Json;
+              p_notes: string;
+              p_order_date: string;
+              p_order_number: string;
+              p_order_type: string;
+              p_source_quotation_id: string;
+              p_status: Database['public']['Enums']['order_status'];
+              p_total_amount: number;
+            };
+            Returns: string;
+          }
+        | {
+            Args: {
+              p_allocations: Json;
+              p_created_by: string;
+              p_customer_id: string;
+              p_delivery_date: string;
+              p_items: Json;
               p_manager_override: boolean;
               p_notes: string;
               p_order_date: string;
@@ -5986,6 +6172,10 @@ export type Database = {
         Returns: undefined;
       };
       rpc_cancel_order: { Args: { p_order_id: string }; Returns: undefined };
+      rpc_cancel_trading_order: {
+        Args: { p_order_id: string };
+        Returns: undefined;
+      };
       rpc_check_slug_available: { Args: { p_slug: string }; Returns: boolean };
       rpc_complete_dyeing_order: {
         Args: { p_actual_return_date?: string; p_dyeing_order_id: string };
@@ -6002,6 +6192,10 @@ export type Database = {
       rpc_confirm_order: { Args: { p_order_id: string }; Returns: undefined };
       rpc_confirm_shipment: {
         Args: { p_expected_updated_at?: string; p_shipment_id: string };
+        Returns: undefined;
+      };
+      rpc_confirm_trading_order: {
+        Args: { p_order_id: string };
         Returns: undefined;
       };
       rpc_confirm_weaving_invoice: {
@@ -6149,9 +6343,77 @@ export type Database = {
         }[];
       };
       rpc_get_kanban_dashboard: { Args: never; Returns: Json };
+      rpc_get_my_chat_rooms: {
+        Args: never;
+        Returns: {
+          entity_id: string;
+          entity_type: string;
+          last_message: string;
+          last_message_at: string;
+          last_message_type: string;
+          room_id: string;
+          room_status: string;
+          unread_count: number;
+          updated_at: string;
+        }[];
+      };
+      rpc_get_my_mentions: {
+        Args: never;
+        Returns: {
+          content: string;
+          created_at: string;
+          entity_id: string;
+          entity_type: string;
+          message_id: string;
+          room_id: string;
+          sender_id: string;
+        }[];
+      };
       rpc_get_or_create_chat_room: {
         Args: { p_entity_id: string; p_entity_type: string };
         Returns: string;
+      };
+      rpc_get_pinned_messages: {
+        Args: { p_room_id: string };
+        Returns: {
+          client_id: string;
+          content: string;
+          created_at: string;
+          deleted_at: string | null;
+          id: string;
+          image_url: string | null;
+          is_pinned: boolean | null;
+          mentions: Json | null;
+          message_type: string;
+          pinned_at: string | null;
+          pinned_by: string | null;
+          room_id: string;
+          sender_id: string | null;
+          status: string;
+          tenant_id: string;
+        }[];
+        SetofOptions: {
+          from: '*';
+          to: 'chat_messages';
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
+      rpc_get_public_shipment: {
+        Args: { p_number: string };
+        Returns: {
+          customer_name: string;
+          customer_signature_url: string;
+          delivery_address: string;
+          item_count: number;
+          items: Json;
+          journey_logs: Json;
+          journey_status: string;
+          shipment_date: string;
+          shipment_number: string;
+          signed_at: string;
+          status: string;
+        }[];
       };
       rpc_get_supplier_price: {
         Args: { p_material_id: string; p_supplier_id: string };
@@ -6160,6 +6422,25 @@ export type Database = {
           moq: number;
           unit_price: number;
           uom: string;
+        }[];
+      };
+      rpc_get_total_unread: { Args: never; Returns: number };
+      rpc_get_unified_timeline: {
+        Args: { p_limit?: number; p_offset?: number };
+        Returns: {
+          content: string;
+          created_at: string;
+          entity_id: string;
+          entity_type: string;
+          id: string;
+          image_url: string;
+          is_pinned: boolean;
+          mentions: Json;
+          message_type: string;
+          room_id: string;
+          sender_id: string;
+          sender_name: string;
+          sender_role: string;
         }[];
       };
       rpc_get_user_permissions: {
@@ -6226,11 +6507,20 @@ export type Database = {
         Args: { p_bom_id: string; p_reason: string };
         Returns: undefined;
       };
+      rpc_save_delivery_signature: {
+        Args: {
+          p_customer_signature_url: string;
+          p_shipment_id: string;
+          p_signed_at?: string;
+        };
+        Returns: undefined;
+      };
       rpc_send_chat_message: {
         Args: {
           p_client_id: string;
           p_content: string;
           p_image_url?: string;
+          p_mentions?: Json;
           p_message_type?: string;
           p_room_id: string;
         };
@@ -6243,6 +6533,10 @@ export type Database = {
       rpc_sync_shipment_debt: {
         Args: { p_shipment_id: string };
         Returns: undefined;
+      };
+      rpc_toggle_pin_message: {
+        Args: { p_message_id: string };
+        Returns: boolean;
       };
       rpc_update_bom: {
         Args: { p_bom_id: string; p_header: Json; p_items: Json };
@@ -6279,6 +6573,7 @@ export type Database = {
           p_expected_updated_at?: string;
           p_journey_status: string;
           p_notes?: string;
+          p_photo_url?: string;
           p_shipment_id: string;
           p_updated_by?: string;
         };
@@ -6577,9 +6872,6 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       account_type: ['cash', 'bank'],

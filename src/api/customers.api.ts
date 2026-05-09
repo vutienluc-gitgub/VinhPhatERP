@@ -211,19 +211,44 @@ export async function createCustomerPortalAccount(payload: {
   email: string;
   password?: string;
 }): Promise<void> {
-  const { data: sessionData, error: sessionError } =
-    await supabase.auth.getSession();
-  if (sessionError || !sessionData?.session) {
-    throw new Error('Phiên đăng nhập không hợp lệ hoặc đã hết hạn.');
+  // Refresh session to ensure we have a valid token
+  const { data: refreshData, error: refreshError } =
+    await supabase.auth.refreshSession();
+
+  const session = refreshData?.session;
+  if (refreshError || !session) {
+    // Fallback to getSession
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.getSession();
+    if (sessionError || !sessionData?.session) {
+      throw new Error(
+        'Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.',
+      );
+    }
+    // Use fallback session
+    return callEdgeFunction(sessionData.session.access_token, payload);
   }
 
+  return callEdgeFunction(session.access_token, payload);
+}
+
+async function callEdgeFunction(
+  accessToken: string,
+  payload: {
+    customer_id: string;
+    full_name: string;
+    email: string;
+    password?: string;
+  },
+): Promise<void> {
   const res = await fetch(
     `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-customer-account`,
     {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${sessionData.session.access_token}`,
+        Authorization: `Bearer ${accessToken}`,
+        apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
       },
       body: JSON.stringify(payload),
     },
@@ -233,11 +258,15 @@ export async function createCustomerPortalAccount(payload: {
   try {
     json = await res.json();
   } catch {
-    throw new Error('Đã có lỗi xảy ra. Hãy kiểm tra lại kết nối mạng.');
+    throw new Error(
+      `Đã có lỗi xảy ra (HTTP ${res.status}). Hãy kiểm tra lại kết nối mạng.`,
+    );
   }
 
   if (!res.ok || !json.ok) {
-    throw new Error(json.error?.message ?? 'Tạo tài khoản thất bại.');
+    throw new Error(
+      json.error?.message ?? `Tạo tài khoản thất bại (HTTP ${res.status}).`,
+    );
   }
 }
 

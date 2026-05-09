@@ -115,7 +115,6 @@ export function usePortalAccount(customerId: string) {
 }
 
 export function useCreatePortalAccount(customerId: string) {
-  const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: {
@@ -124,11 +123,9 @@ export function useCreatePortalAccount(customerId: string) {
       email: string;
       password?: string;
     }) => {
-      const reqPayload = { id: clientId, ...payload };
-      return createCustomerPortalAccount(reqPayload);
+      return createCustomerPortalAccount(payload);
     },
     onSuccess: () => {
-      setClientId(crypto.randomUUID());
       void queryClient.invalidateQueries({
         queryKey: [...QUERY_KEY, customerId, 'portal-account'],
       });

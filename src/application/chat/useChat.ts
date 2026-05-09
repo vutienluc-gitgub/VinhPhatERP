@@ -9,13 +9,16 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   fetchChatMessages,
   fetchChatRoomByEntity,
+  fetchPinnedMessages,
   getOrCreateChatRoom,
   sendChatMessage,
   softDeleteMessage,
+  togglePinMessage,
   updateReadReceipt,
 } from '@/api/chat.api';
 import type {
   ChatMessage,
+  ChatMention,
   ChatRoom,
   OptimisticChatMessage,
 } from '@/schema/chat.schema';
@@ -38,6 +41,7 @@ const CHAT_KEYS = {
   room: (entityType: string, entityId: string) =>
     ['chat-rooms', entityType, entityId] as const,
   messages: (roomId: string) => ['chat-messages', roomId] as const,
+  pinnedMessages: (roomId: string) => ['chat-pinned-messages', roomId] as const,
 };
 
 // ── Connection Status Type ──
@@ -121,9 +125,10 @@ export function useSendMessage(roomId: string | undefined) {
   return useMutation({
     mutationFn: async (params: {
       clientId: string;
-      content: string;
-      messageType?: string;
+      content?: string;
+      messageType?: 'text' | 'image' | 'system';
       imageUrl?: string;
+      mentions?: ChatMention[];
     }) => {
       if (!roomId) throw new Error('Room ID is required');
 
@@ -132,7 +137,7 @@ export function useSendMessage(roomId: string | undefined) {
         await enqueueMessage({
           clientId: params.clientId,
           roomId,
-          content: params.content,
+          content: params.content || '',
           messageType: params.messageType ?? 'text',
           imageUrl: params.imageUrl,
           queuedAt: Date.now(),
@@ -173,11 +178,15 @@ export function useSendMessage(roomId: string | undefined) {
           | 'text'
           | 'image'
           | 'system',
-        content: params.content,
+        content: params.content || '',
         image_url: params.imageUrl ?? null,
         status: 'pending',
         created_at: new Date().toISOString(),
         deleted_at: null,
+        is_pinned: false,
+        pinned_at: null,
+        pinned_by: null,
+        mentions: params.mentions,
         _optimistic: true,
       };
 
@@ -241,6 +250,34 @@ export function useUpdateReadReceipt() {
   });
 }
 
+// ── Pin Messages ──
+
+export function usePinnedMessages(roomId: string | undefined) {
+  return useQuery({
+    queryKey: CHAT_KEYS.pinnedMessages(roomId ?? ''),
+    enabled: !!roomId,
+    queryFn: () => fetchPinnedMessages(roomId!),
+  });
+}
+
+export function useTogglePin(roomId: string | undefined) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (messageId: string) => togglePinMessage(messageId),
+    onSuccess: () => {
+      if (roomId) {
+        void queryClient.invalidateQueries({
+          queryKey: CHAT_KEYS.messages(roomId),
+        });
+        void queryClient.invalidateQueries({
+          queryKey: CHAT_KEYS.pinnedMessages(roomId),
+        });
+      }
+    },
+  });
+}
+
 // ── Realtime Subscription (with Reconnection + Multi-tab Broadcast) ──
 
 export function useChatRealtime(roomId: string | undefined) {
@@ -282,6 +319,24 @@ export function useChatRealtime(roomId: string | undefined) {
 
           // Relay to other tabs via BroadcastChannel
           broadcastNewMessage(roomId, newMsg);
+        },
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'chat_messages',
+          filter: `room_id=eq.${roomId}`,
+        },
+        () => {
+          // Invalidate messages on update (like pinned changes or soft deletes)
+          void queryClient.invalidateQueries({
+            queryKey: CHAT_KEYS.messages(roomId),
+          });
+          void queryClient.invalidateQueries({
+            queryKey: CHAT_KEYS.pinnedMessages(roomId),
+          });
         },
       )
       .subscribe((status) => {
