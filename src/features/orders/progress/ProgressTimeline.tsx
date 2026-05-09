@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { Icon } from '@/shared/components/Icon';
 import { useUpdateStageStatus } from '@/application/orders';
+import { BRAND } from '@/shared/constants/brand';
 import {
   PRODUCTION_STAGES,
   STAGE_LABELS,
@@ -17,8 +18,8 @@ type ProgressTimelineProps = {
 
 const STATUS_COLORS: Record<StageStatus, string> = {
   pending: '#94a3b8',
-  in_progress: '#0b6bcb',
-  done: '#0c8f68',
+  in_progress: BRAND.primary,
+  done: BRAND.success,
   skipped: '#9ca3af',
 };
 
@@ -151,7 +152,7 @@ export function ProgressTimeline({
               <div
                 className={`flex-1 ${isLast ? 'pb-0' : 'pb-5'} ${
                   row.status === 'in_progress'
-                    ? `bg-slate-50 rounded-[var(--radius)] p-3 shadow-[0_2px_4px_rgba(11,107,203,0.05)] ${
+                    ? `bg-slate-50 rounded-[var(--radius)] p-3 shadow-[0_2px_4px_rgba(var(--brand-rgb),0.05)] ${
                         isLast ? 'mb-0' : 'mb-3'
                       }`
                     : ''

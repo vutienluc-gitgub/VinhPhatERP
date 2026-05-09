@@ -90,7 +90,7 @@ export function ProgressBoard() {
   if (error) {
     return (
       <div className="panel-card">
-        <p className="text-[#c0392b] p-4">
+        <p className="error-inline">
           Lỗi: {error instanceof Error ? error.message : String(error)}
         </p>
       </div>
@@ -196,7 +196,7 @@ export function ProgressBoard() {
                       {group.deliveryDate && (
                         <span
                           className={
-                            overdue ? 'text-[#c0392b]' : 'text-muted-foreground'
+                            overdue ? 'text-danger' : 'text-muted-foreground'
                           }
                         >
                           📅 {group.deliveryDate}
@@ -222,7 +222,7 @@ export function ProgressBoard() {
       </div>
 
       {updateMutation.error && (
-        <p className="text-[#c0392b] text-[0.85rem] px-5 pb-4">
+        <p className="error-inline text-[0.85rem]">
           Lỗi cập nhật:{' '}
           {updateMutation.error instanceof Error
             ? updateMutation.error.message
