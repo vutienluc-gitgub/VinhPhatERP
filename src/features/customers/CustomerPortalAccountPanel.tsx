@@ -28,8 +28,8 @@ export function CustomerPortalAccountPanel({
 
   const loading = createMutation.isPending || updateStatusMutation.isPending;
 
-  function handleCreate(e: React.FormEvent) {
-    e.preventDefault();
+  function handleCreate() {
+    if (!email || password.length < 8) return;
     createMutation.mutate(
       {
         customer_id: customerId,
@@ -134,7 +134,7 @@ export function CustomerPortalAccountPanel({
               + Tạo tài khoản
             </button>
           ) : (
-            <form onSubmit={handleCreate} className="space-y-3">
+            <div className="space-y-3">
               <div className="filter-field">
                 <label className="filter-label">Email</label>
                 <input
@@ -162,8 +162,9 @@ export function CustomerPortalAccountPanel({
                 <Button
                   variant="primary"
                   className="btn-sm text-[12px]"
-                  type="submit"
-                  disabled={loading}
+                  type="button"
+                  disabled={loading || !email || password.length < 8}
+                  onClick={handleCreate}
                 >
                   {loading ? 'Đang tạo…' : 'Tạo tài khoản'}
                 </Button>
@@ -175,7 +176,7 @@ export function CustomerPortalAccountPanel({
                   Hủy
                 </button>
               </div>
-            </form>
+            </div>
           )}
         </>
       ) : (

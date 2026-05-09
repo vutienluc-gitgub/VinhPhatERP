@@ -36,8 +36,15 @@ export const chatPlugin: FeaturePlugin = {
   description: 'Hệ thống Chat nội bộ đa thực thể.',
   icon: 'MessageCircle', // Thay thế bằng icon phù hợp
   requiredRoles: ['admin', 'driver', 'customer', 'staff', 'manager'],
-  group: 'system',
-  routes: [], // Chat là một global widget, không cần route riêng biệt
+  routes: [
+    {
+      path: '/feed',
+      component: () =>
+        import('./UnifiedFeedPage').then((m) => ({
+          default: m.UnifiedFeedPage,
+        })),
+    },
+  ],
 };
 
 export default createModule(chatFeature);

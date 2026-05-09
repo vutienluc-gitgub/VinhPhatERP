@@ -17,11 +17,27 @@ export type ChatMessageType = 'text' | 'image' | 'system' | 'system_epod';
 
 export type ChatMessageStatus = 'pending' | 'sent' | 'error';
 
+export type ChatMention = {
+  type: 'user' | 'role' | 'document';
+  id?: string; // Used for user or role
+  entity_type?: string; // Used for document
+  entity_id?: string; // Used for document
+  label: string;
+};
+
 // ── Participant Role ──
 
 export type ChatParticipantRole = 'admin' | 'driver' | 'customer';
 
 // ── Zod Schemas ──
+
+const chatMentionSchema = z.object({
+  type: z.enum(['user', 'role', 'document']),
+  id: z.string().optional(),
+  entity_type: z.string().optional(),
+  entity_id: z.string().optional(),
+  label: z.string(),
+});
 
 export const chatMessageInputSchema = z.object({
   content: z.string().trim().min(1, 'Noi dung khong duoc de trong').max(2000),
@@ -55,6 +71,17 @@ export interface ChatMessage {
   status: ChatMessageStatus;
   created_at: string;
   deleted_at: string | null;
+  is_pinned: boolean;
+  pinned_at: string | null;
+  pinned_by: string | null;
+  mentions?: ChatMention[];
+}
+
+export interface UnifiedTimelineItem extends ChatMessage {
+  entity_type: string;
+  entity_id: string;
+  sender_name: string | null;
+  sender_role: string | null;
 }
 
 export interface ChatParticipant {
@@ -86,6 +113,10 @@ export const chatMessageResponseSchema = z
     status: z.string(),
     created_at: z.string(),
     deleted_at: z.string().nullable(),
+    is_pinned: z.boolean().default(false),
+    pinned_at: z.string().nullable(),
+    pinned_by: z.string().nullable(),
+    mentions: z.array(chatMentionSchema).optional().nullable(),
   })
   .passthrough();
 
@@ -124,4 +155,20 @@ export const CHAT_LABELS = {
   CLOSE: 'Đóng',
   OFFLINE_PENDING_MSG: 'tin nhắn chờ gửi',
   LOAD_MORE: 'Tải thêm tin nhắn cũ',
+  PIN_MESSAGE: 'Ghim tin nhắn',
+  UNPIN_MESSAGE: 'Bỏ ghim',
+  PINNED_MESSAGES: 'Tin nhắn đã ghim',
+  DEPARTMENT: 'Bộ phận',
+  UNKNOWN_USER: 'Chưa rõ tên',
+  MENTION_DOC_ICON: '📄',
+  MENTION_USER_ICON: '👤',
 } as const;
+
+export const AVAILABLE_ROLES = [
+  'admin',
+  'manager',
+  'driver',
+  'customer',
+  'staff',
+  'kho',
+] as const;

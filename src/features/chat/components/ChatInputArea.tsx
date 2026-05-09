@@ -7,11 +7,12 @@ import {
   type KeyboardEvent,
 } from 'react';
 
-import { CHAT_LABELS } from '@/schema/chat.schema';
+import { CHAT_LABELS, type ChatMention } from '@/schema/chat.schema';
 import { uploadChatImage } from '@/shared/lib/chat-storage';
+import { useMentionsSearch, type MentionOption } from '@/application/chat';
 
 interface ChatInputAreaProps {
-  onSend: (content: string) => void;
+  onSend: (content: string, mentions?: ChatMention[]) => void;
   onSendImage?: (imageUrl: string) => void;
   roomId?: string;
   disabled?: boolean;
@@ -24,23 +25,39 @@ export function ChatInputArea({
   disabled,
 }: ChatInputAreaProps) {
   const [text, setText] = useState('');
+  const [mentions, setMentions] = useState<ChatMention[]>([]);
+  const [activeMention, setActiveMention] = useState<{
+    type: 'user' | 'document';
+    query: string;
+    startIndex: number;
+  } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const { data: mentionOptions = [] } = useMentionsSearch(
+    activeMention?.type ?? null,
+    activeMention?.query ?? '',
+  );
+
   const handleSend = useCallback(() => {
     const trimmed = text.trim();
     if (!trimmed || disabled || isUploading) return;
 
-    onSend(trimmed);
+    // Filter mentions that actually exist in the text
+    const validMentions = mentions.filter((m) => trimmed.includes(m.label));
+
+    onSend(trimmed, validMentions.length > 0 ? validMentions : undefined);
     setText('');
+    setMentions([]);
+    setActiveMention(null);
 
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
     }
-  }, [text, disabled, isUploading, onSend]);
+  }, [text, mentions, disabled, isUploading, onSend]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -60,6 +77,49 @@ export function ChatInputArea({
     }
   }, []);
 
+  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    setText(val);
+
+    // Simple mention detection
+    const cursor = e.target.selectionStart;
+    const textBeforeCursor = val.slice(0, cursor);
+    const match = textBeforeCursor.match(/(?:^|\s)([@#])(\S*)$/);
+
+    if (match) {
+      const type = match[1] === '@' ? 'user' : 'document';
+      const query = match[2] ?? '';
+      setActiveMention({
+        type,
+        query,
+        startIndex: match.index! + match[0].indexOf(match[1] as string),
+      });
+    } else {
+      setActiveMention(null);
+    }
+  };
+
+  const handleSelectMention = (option: MentionOption) => {
+    if (!activeMention) return;
+
+    const prefix = option.type === 'document' ? '#' : '@';
+    const mentionText = `${prefix}${option.label}`;
+
+    const before = text.slice(0, activeMention.startIndex);
+    const after = text.slice(
+      activeMention.startIndex + activeMention.query.length + 1,
+    );
+
+    setText(`${before}${mentionText} ${after}`);
+    setMentions((prev) => [...prev, { ...option, label: mentionText }]);
+    setActiveMention(null);
+
+    // Focus back
+    setTimeout(() => {
+      textareaRef.current?.focus();
+    }, 0);
+  };
+
   const clearPreview = useCallback(() => {
     setPreviewUrl(null);
     setUploadError(null);
@@ -78,7 +138,8 @@ export function ChatInputArea({
 
       setIsUploading(true);
       try {
-        const result = await uploadChatImage(file, roomId);
+        if (!roomId) return;
+        const result = await uploadChatImage(file, roomId as string);
         onSendImage(result.publicUrl);
         clearPreview();
       } catch (err) {
@@ -162,6 +223,26 @@ export function ChatInputArea({
         </div>
       )}
 
+      {/* Mentions Popover */}
+      {activeMention && mentionOptions.length > 0 && (
+        <div className="chat-mentions-popover">
+          {mentionOptions.map((opt) => (
+            <button
+              key={`${opt.type}-${opt.id}`}
+              className="chat-mention-option"
+              onClick={() => handleSelectMention(opt)}
+            >
+              <span className="chat-mention-type">
+                {opt.type === 'document'
+                  ? CHAT_LABELS.MENTION_DOC_ICON
+                  : CHAT_LABELS.MENTION_USER_ICON}
+              </span>
+              <span className="chat-mention-label">{opt.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Upload Error */}
       {uploadError && <div className="chat-upload-error">{uploadError}</div>}
 
@@ -207,7 +288,7 @@ export function ChatInputArea({
           className="chat-input-field"
           placeholder={CHAT_LABELS.TYPE_MESSAGE}
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={handleChange}
           onKeyDown={handleKeyDown}
           onInput={handleInput}
           onPaste={handlePaste}

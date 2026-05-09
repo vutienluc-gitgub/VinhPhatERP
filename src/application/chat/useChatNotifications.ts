@@ -127,6 +127,10 @@ export function useChatNotifications(
             void queryClient.invalidateQueries({
               queryKey: UNREAD_KEY(msg.room_id),
             });
+            // Invalidate total global unread count
+            void queryClient.invalidateQueries({
+              queryKey: ['chat-total-unread'],
+            });
           });
         },
       )

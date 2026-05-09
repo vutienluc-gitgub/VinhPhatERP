@@ -10,10 +10,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { useDashboardStats } from '@/application/analytics';
-import {
-  useChatNotifications,
-  useTotalCustomerUnread,
-} from '@/application/chat';
+import { useChatNotifications, useTotalUnread } from '@/application/chat';
 import { ChatInboxDrawer } from '@/features/chat/ChatInboxDrawer';
 import { getNavigationItems } from '@/app/router/routes';
 import type { NavigationItem } from '@/app/router/routes';
@@ -85,7 +82,7 @@ export function AppShell() {
   const closeMoreDrawer = useCallback(() => setShowMore(false), []);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showChatInbox, setShowChatInbox] = useState(false);
-  const totalUnread = useTotalCustomerUnread();
+  const totalUnread = useTotalUnread();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const currentItem = getCurrentItem(pathname);
   const { data: stats } = useDashboardStats();
@@ -433,8 +430,8 @@ export function AppShell() {
                     type="button"
                     className="topbar-icon-btn topbar-chat-inbox-btn"
                     onClick={() => setShowChatInbox(true)}
-                    title="Hộp thư khách hàng"
-                    aria-label="Hộp thư khách hàng"
+                    title="Hộp thư"
+                    aria-label="Hộp thư"
                     style={{ position: 'relative' }}
                   >
                     <svg

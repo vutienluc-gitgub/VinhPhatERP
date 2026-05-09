@@ -12,10 +12,11 @@ import {
   registerOpenRoom,
   unregisterOpenRoom,
 } from '@/application/chat/useChatNotifications';
-import { CHAT_LABELS } from '@/schema/chat.schema';
+import { CHAT_LABELS, type ChatMention } from '@/schema/chat.schema';
 
 import { ChatInputArea } from './components/ChatInputArea';
 import { ChatMessageList } from './components/ChatMessageList';
+import { PinnedMessagesBar } from './components/PinnedMessagesBar';
 
 import './chat.css';
 
@@ -98,11 +99,12 @@ export const ChatDrawer = React.memo(function ChatDrawer({
   }, [createRoomMutation, entityType, entityId]);
 
   const handleSend = useCallback(
-    (content: string) => {
+    (content: string, mentions?: ChatMention[]) => {
       if (!roomId) return;
       sendMutation.mutate({
         clientId: crypto.randomUUID(),
         content,
+        mentions,
       });
     },
     [roomId, sendMutation],
@@ -166,6 +168,9 @@ export const ChatDrawer = React.memo(function ChatDrawer({
             </svg>
           </button>
         </div>
+
+        {/* Pinned Messages */}
+        {roomId ? <PinnedMessagesBar roomId={roomId} /> : null}
 
         {/* Connection Status Banner */}
         {roomId && connectionStatus === 'reconnecting' ? (

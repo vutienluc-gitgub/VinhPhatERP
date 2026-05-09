@@ -1,19 +1,59 @@
 import { memo, useCallback, useState } from 'react';
 
-import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
+import {
+  CHAT_LABELS,
+  type ChatMessage,
+  type ChatMention,
+} from '@/schema/chat.schema';
+import { useAuth } from '@/shared/hooks/useAuth';
+import { useTogglePin } from '@/application/chat';
 
 import { ChatImagePreview } from './ChatImagePreview';
 
 function formatTime(iso: string): string {
   try {
-    const d = new Date(iso);
-    return d.toLocaleTimeString('vi-VN', {
+    return new Intl.DateTimeFormat('vi-VN', {
       hour: '2-digit',
       minute: '2-digit',
-    });
+    }).format(new Date(iso));
   } catch {
     return '';
   }
+}
+
+function renderContent(content: string, mentions?: ChatMention[]) {
+  if (!mentions || mentions.length === 0) return <div>{content}</div>;
+
+  // Escape regex special chars in labels just in case
+  const escapeRegExp = (str: string) =>
+    str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const mentionLabels = mentions
+    .map((m) => escapeRegExp(m.label))
+    .sort((a, b) => b.length - a.length);
+
+  if (mentionLabels.length === 0) return <div>{content}</div>;
+
+  const regex = new RegExp(`(${mentionLabels.join('|')})`, 'g');
+  const parts = content.split(regex);
+
+  return (
+    <div>
+      {parts.map((part, i) => {
+        const mention = mentions.find((m) => m.label === part);
+        if (mention) {
+          return (
+            <span
+              key={i}
+              className={`chat-mention-inline chat-mention-inline--${mention.type}`}
+            >
+              {part}
+            </span>
+          );
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </div>
+  );
 }
 
 interface ChatBubbleProps {
@@ -29,11 +69,27 @@ export const ChatBubble = memo(function ChatBubble({
   isOptimistic,
   onRetry,
 }: ChatBubbleProps) {
+  const { profile } = useAuth();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [showContextMenu, setShowContextMenu] = useState(false);
+  const togglePinMutation = useTogglePin(message.room_id);
+
+  const canPin = profile?.role === 'admin' || profile?.role === 'manager';
 
   const handleRetry = useCallback(() => {
     if (onRetry) onRetry(message);
   }, [onRetry, message]);
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    if (!canPin || isOptimistic) return;
+    e.preventDefault();
+    setShowContextMenu(!showContextMenu);
+  };
+
+  const handleTogglePin = () => {
+    setShowContextMenu(false);
+    togglePinMutation.mutate(message.id);
+  };
 
   // System message (journey updates)
   if (message.message_type === 'system') {
@@ -67,10 +123,52 @@ export const ChatBubble = memo(function ChatBubble({
     <>
       <div
         className={`chat-bubble-row ${isMine ? 'chat-bubble-row--mine' : 'chat-bubble-row--theirs'}`}
+        onContextMenu={handleContextMenu}
+        style={{ position: 'relative' }}
       >
         <div
           className={`chat-bubble ${isMine ? 'chat-bubble--mine' : 'chat-bubble--theirs'} ${statusClass}`}
         >
+          {/* Pin indicator */}
+          {message.is_pinned ? (
+            <div
+              className="chat-bubble-pin-indicator"
+              title={CHAT_LABELS.PINNED_MESSAGES}
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="12" y1="17" x2="12" y2="22"></line>
+                <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.6V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.6a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
+              </svg>
+            </div>
+          ) : null}
+
+          {/* Context Menu */}
+          {showContextMenu && (
+            <div
+              className="chat-context-menu"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="chat-context-menu-item"
+                onClick={handleTogglePin}
+                disabled={togglePinMutation.isPending}
+              >
+                {message.is_pinned
+                  ? CHAT_LABELS.UNPIN_MESSAGE
+                  : CHAT_LABELS.PIN_MESSAGE}
+              </button>
+            </div>
+          )}
+
           {/* Image */}
           {message.message_type === 'image' && message.image_url ? (
             <img
@@ -83,7 +181,9 @@ export const ChatBubble = memo(function ChatBubble({
           ) : null}
 
           {/* Text content */}
-          {message.content ? <div>{message.content}</div> : null}
+          {message.content
+            ? renderContent(message.content, message.mentions)
+            : null}
 
           {/* Footer: time + status */}
           <div className="chat-bubble-footer">

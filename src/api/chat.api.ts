@@ -3,7 +3,12 @@ import {
   chatMessageResponseSchema,
   CHAT_MESSAGES_PAGE_SIZE,
 } from '@/schema/chat.schema';
-import type { ChatMessage, ChatRoom } from '@/schema/chat.schema';
+import type {
+  ChatMessage,
+  ChatRoom,
+  ChatMention,
+  UnifiedTimelineItem,
+} from '@/schema/chat.schema';
 
 // ── Get or Create Room (Atomic) ──
 
@@ -106,16 +111,21 @@ export async function fetchChatMessages(
 export async function sendChatMessage(params: {
   roomId: string;
   clientId: string;
-  content: string;
+  content?: string;
   messageType?: string;
   imageUrl?: string;
+  mentions?: ChatMention[];
 }): Promise<ChatMessage> {
   const { data, error } = await supabase.rpc('rpc_send_chat_message', {
     p_client_id: params.clientId,
     p_room_id: params.roomId,
-    p_content: params.content,
+    p_content: params.content || '',
     p_message_type: params.messageType ?? 'text',
     p_image_url: params.imageUrl ?? undefined,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    p_mentions: params.mentions
+      ? (params.mentions as unknown as any)
+      : undefined,
   });
 
   if (error) {
@@ -172,72 +182,129 @@ export async function updateReadReceipt(
   if (error) throw error;
 }
 
-// ── Fetch Customer Chat Rooms (for admin inbox) ──
-
-export type CustomerChatRoomSummary = {
+export type MyChatRoomSummary = {
   roomId: string;
-  customerId: string;
-  customerName: string;
-  customerCode: string;
+  entityType: string;
+  entityId: string;
+  roomStatus: string;
+  updatedAt: string;
+  unreadCount: number;
   lastMessage: string | null;
   lastMessageAt: string | null;
-  updatedAt: string;
+  lastMessageType: string | null;
+  // Computed fields on client
+  entityName?: string;
+  entityCode?: string;
 };
 
-export async function fetchCustomerChatRooms(): Promise<
-  CustomerChatRoomSummary[]
-> {
-  const { data: rooms, error: rErr } = await supabase
-    .from('chat_rooms')
-    .select('id, entity_id, updated_at')
-    .eq('entity_type', 'customer')
-    .order('updated_at', { ascending: false });
+export async function fetchMyChatRooms(): Promise<MyChatRoomSummary[]> {
+  const { data, error } = await supabase.rpc('rpc_get_my_chat_rooms');
 
-  if (rErr) throw rErr;
-  if (!rooms || rooms.length === 0) return [];
+  if (error) throw error;
+  if (!data || data.length === 0) return [];
 
-  const entityIds = rooms.map((r) => r.entity_id as string);
+  // Data contains basic info, we need to fetch entity details
+  // Collect IDs by type
+  const entityMap = new Map<string, Set<string>>();
+  for (const row of data) {
+    if (!entityMap.has(row.entity_type)) {
+      entityMap.set(row.entity_type, new Set());
+    }
+    entityMap.get(row.entity_type)!.add(row.entity_id);
+  }
 
-  const { data: customers, error: cErr } = await supabase
-    .from('customers')
-    .select('id, name, code')
-    .in('id', entityIds);
+  // Fetch details for each type
+  const detailsMap = new Map<string, { name: string; code: string }>();
 
-  if (cErr) throw cErr;
-
-  const customerMap = new Map(
-    (customers ?? []).map((c) => [
-      c.id as string,
-      c as { id: string; name: string; code: string },
-    ]),
-  );
-
-  const summaries = await Promise.all(
-    rooms.map(async (room) => {
-      const customer = customerMap.get(room.entity_id as string);
-      const { data: msgs } = await supabase
-        .from('chat_messages')
-        .select('content, created_at, message_type')
-        .eq('room_id', room.id as string)
-        .is('deleted_at', null)
-        .not('message_type', 'in', '("system","system_epod")')
-        .order('created_at', { ascending: false })
-        .limit(1);
-
-      const last = msgs?.[0] ?? null;
-      return {
-        roomId: room.id as string,
-        customerId: room.entity_id as string,
-        customerName: customer?.name ?? 'Khách hàng',
-        customerCode: customer?.code ?? '',
-        lastMessage: last?.content ?? null,
-        lastMessageAt: last?.created_at ?? null,
-        updatedAt: room.updated_at as string,
-      } satisfies CustomerChatRoomSummary;
+  await Promise.all(
+    Array.from(entityMap.entries()).map(async ([type, ids]) => {
+      const idArray = Array.from(ids);
+      if (type === 'customer') {
+        const { data: customers } = await supabase
+          .from('customers')
+          .select('id, name, code')
+          .in('id', idArray);
+        customers?.forEach((c) => {
+          detailsMap.set(c.id, { name: c.name, code: c.code });
+        });
+      } else if (type === 'shipment') {
+        const { data: shipments } = await supabase
+          .from('shipments')
+          .select('id, shipment_number')
+          .in('id', idArray);
+        shipments?.forEach((s) => {
+          detailsMap.set(s.id, {
+            name: `Lô hàng ${s.shipment_number}`,
+            code: s.shipment_number,
+          });
+        });
+      } else if (type === 'order') {
+        const { data: orders } = await supabase
+          .from('orders')
+          .select('id, order_number')
+          .in('id', idArray);
+        orders?.forEach((o) => {
+          detailsMap.set(o.id, {
+            name: `Đơn hàng ${o.order_number}`,
+            code: o.order_number,
+          });
+        });
+      } else if (type === 'work_order') {
+        const { data: wos } = await supabase
+          .from('work_orders')
+          .select('id, work_order_number')
+          .in('id', idArray);
+        wos?.forEach((w) => {
+          detailsMap.set(w.id, {
+            name: `Lệnh sản xuất ${w.work_order_number}`,
+            code: w.work_order_number,
+          });
+        });
+      }
     }),
   );
 
-  return summaries;
+  return data.map((row) => {
+    const details = detailsMap.get(row.entity_id);
+    return {
+      roomId: row.room_id,
+      entityType: row.entity_type,
+      entityId: row.entity_id,
+      roomStatus: row.room_status,
+      updatedAt: row.updated_at,
+      unreadCount: Number(row.unread_count),
+      lastMessage: row.last_message,
+      lastMessageAt: row.last_message_at,
+      lastMessageType: row.last_message_type,
+      entityName:
+        details?.name || `${row.entity_type} ${row.entity_id.slice(0, 8)}`,
+      entityCode: details?.code || '',
+    };
+  });
+}
+
+// ── Pin Messages ──
+
+export async function togglePinMessage(messageId: string): Promise<boolean> {
+  const { data, error } = await supabase.rpc('rpc_toggle_pin_message', {
+    p_message_id: messageId,
+  });
+  if (error) throw error;
+  return data as boolean;
+}
+
+export async function fetchPinnedMessages(
+  roomId: string,
+): Promise<ChatMessage[]> {
+  const { data, error } = await supabase.rpc('rpc_get_pinned_messages', {
+    p_room_id: roomId,
+  });
+  if (error) throw error;
+
+  const parsed = chatMessageResponseSchema
+    .array()
+    .parse(data ?? []) as unknown as ChatMessage[];
+  return parsed;
 }
 
 // ── Soft Delete Message ──
@@ -282,4 +349,25 @@ export async function fetchUnreadCount(roomId: string): Promise<number> {
   if (cErr) throw cErr;
 
   return count ?? 0;
+}
+
+// ── Unified Timeline ──
+
+export async function fetchUnifiedTimeline(params: {
+  pageParam?: number;
+  limit?: number;
+}): Promise<UnifiedTimelineItem[]> {
+  const limit = params.limit ?? 20;
+  const offset = params.pageParam ?? 0;
+
+  const { data, error } = await supabase.rpc('rpc_get_unified_timeline', {
+    p_limit: limit,
+    p_offset: offset,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data as unknown as UnifiedTimelineItem[]) || [];
 }
