@@ -168,7 +168,7 @@ html.fluid .content-shell {
   background: var(--surface-strong);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  box-shadow: 0 4px 12px rgba(11, 107, 203, 0.08);
+  box-shadow: 0 4px 12px rgba(var(--brand-rgb), 0.08);
   flex-shrink: 0;
 }
 
@@ -236,12 +236,12 @@ html.fluid .content-shell {
 }
 
 .nav-link:hover {
-  background: rgba(11, 107, 203, 0.04);
+  background: rgba(var(--brand-rgb), 0.04);
   color: var(--text);
 }
 
 .nav-link.is-active {
-  background: rgba(11, 107, 203, 0.08);
+  background: rgba(var(--brand-rgb), 0.08);
   color: var(--primary-strong);
 }
 
@@ -365,7 +365,7 @@ html.fluid .content-shell {
 
 .nav-badge.danger {
   background: #fde8e8;
-  color: #c0392b;
+  color: var(--danger);
 }
 
 .nav-badge.warning {
@@ -845,7 +845,7 @@ html.fluid .content-shell {
 }
 
 .drawer-list-item.is-active {
-  background: rgba(11, 107, 203, 0.08);
+  background: rgba(var(--brand-rgb), 0.08);
   color: var(--primary-strong);
 }
 
@@ -862,7 +862,7 @@ html.fluid .content-shell {
 }
 
 .drawer-list-item.is-active .drawer-list-icon {
-  background: rgba(11, 107, 203, 0.12);
+  background: rgba(var(--brand-rgb), 0.12);
   color: var(--primary-strong);
 }
 
@@ -953,8 +953,8 @@ html.fluid .content-shell {
 }
 
 .user-trigger:hover {
-  border-color: rgba(11, 107, 203, 0.25);
-  box-shadow: 0 2px 8px rgba(16, 35, 61, 0.06);
+  border-color: rgba(var(--brand-rgb), 0.25);
+  box-shadow: 0 2px 8px rgba(var(--base-rgb), 0.06);
 }
 
 .user-trigger svg {
@@ -990,7 +990,7 @@ html.fluid .content-shell {
   background: var(--surface-strong);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  box-shadow: 0 12px 32px rgba(16, 35, 61, 0.12);
+  box-shadow: 0 12px 32px rgba(var(--base-rgb), 0.12);
   padding: 0.5rem 0;
   z-index: 100;
   animation: dropdownFadeIn 0.12s ease-out;
@@ -1048,7 +1048,7 @@ html.fluid .content-shell {
 }
 
 .user-dropdown-item:hover {
-  background: rgba(16, 35, 61, 0.04);
+  background: rgba(var(--base-rgb), 0.04);
 }
 
 .user-dropdown-item svg {
@@ -1067,7 +1067,7 @@ html.fluid .content-shell {
 }
 
 .secondary-button:hover {
-  border-color: rgba(11, 107, 203, 0.3);
+  border-color: rgba(var(--brand-rgb), 0.3);
   background: rgba(255, 255, 255, 0.98);
 }
 
@@ -1153,7 +1153,7 @@ html.fluid .content-shell {
 
 .badge--danger {
   background: rgba(220, 53, 69, 0.1);
-  color: #c0392b;
+  color: var(--danger);
 }
 
 /* Ẩn Promo banner trên mobile mặc định */
@@ -1161,10 +1161,22 @@ html.fluid .content-shell {
   display: none;
 }
 
-/* ── Zircon Theme (Dark Green & Cut-out Active State) ── */
+/* ── Brand Sidebar Theme (Cut-out Active State) ── */
 @media (min-width: 1100px) {
+  /* Sidebar palette — derived from brand tokens */
+  :root {
+    --sidebar-bg: rgb(var(--brand-strong-rgb));
+    --sidebar-text: rgba(255, 255, 255, 0.7);
+    --sidebar-text-hover: #ffffff;
+    --sidebar-active-text: rgb(var(--brand-strong-rgb));
+    --sidebar-cutout-bg: #f4f8fb;
+  }
+  [data-theme='dark'] {
+    --sidebar-cutout-bg: #08111d;
+  }
+
   .sidebar-zircon {
-    background-color: #0f4a2b !important;
+    background-color: var(--sidebar-bg) !important;
     border-right: none !important;
     border-radius: var(--radius-lg);
   }
@@ -1180,45 +1192,36 @@ html.fluid .content-shell {
   }
 
   .sidebar-zircon .eyebrow-premium {
-    color: #a3d9b1;
+    color: var(--sidebar-text);
   }
 
   .sidebar-zircon .nav-link,
   .sidebar-zircon .nav-group-toggle {
-    color: #a3d9b1;
+    color: var(--sidebar-text);
   }
 
   .sidebar-zircon .nav-link:hover,
   .sidebar-zircon .nav-group-toggle:hover {
     background: rgba(255, 255, 255, 0.1);
-    color: #fff;
+    color: var(--sidebar-text-hover);
   }
 
   .sidebar-zircon .nav-icon {
-    color: #a3d9b1;
+    color: var(--sidebar-text);
   }
 
   .sidebar-zircon .nav-link:hover .nav-icon {
-    color: #fff;
-  }
-
-  /* Định nghĩa màu cutout gần giống nền web nhất */
-  :root {
-    --sidebar-cutout-bg: #f4f8fb;
-  }
-  [data-theme='dark'] {
-    --sidebar-cutout-bg: #08111d;
+    color: var(--sidebar-text-hover);
   }
 
   /* Hiệu ứng Cut-out cho Active */
   .sidebar-zircon .nav-link.is-active {
-    background: var(--sidebar-cutout-bg); /* Trùng màu nền gốc của body */
-    color: #0f4a2b; /* Text active màu xanh lá */
+    background: var(--sidebar-cutout-bg);
+    color: var(--sidebar-active-text);
     border-radius: 20px 0 0 20px;
     position: relative;
     margin-right: 0;
     padding-right: 1.25rem;
-    /* Kéo dãn box ra sát lề phải của sidebar */
     width: calc(100% + 1.25rem);
     transform: translateX(0);
     border: none;
@@ -1229,7 +1232,7 @@ html.fluid .content-shell {
   .sidebar-zircon .nav-link.is-active::after {
     content: '';
     position: absolute;
-    right: -1px; /* Overlap content-shell border slightly */
+    right: -1px;
     width: 20px;
     height: 20px;
     pointer-events: none;
@@ -1255,7 +1258,7 @@ html.fluid .content-shell {
   }
 
   .sidebar-zircon .nav-link.is-active .nav-icon {
-    color: #0f4a2b;
+    color: var(--sidebar-active-text);
   }
 
   .sidebar-zircon .nav-group-items {
@@ -1264,10 +1267,10 @@ html.fluid .content-shell {
     padding-left: 0.5rem;
   }
 
-  /* Nút Collapse vàng nổi bật */
+  /* Nút Collapse — accent color */
   .sidebar-zircon .sidebar-collapse-btn {
-    background: #ffc107 !important;
-    color: #000 !important;
+    background: rgb(var(--accent-rgb)) !important;
+    color: #fff !important;
     border: 2px solid #fff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
@@ -1280,7 +1283,7 @@ html.fluid .content-shell {
   .zircon-promo {
     margin: 1rem;
     padding: 1.25rem 1rem;
-    background: linear-gradient(180deg, #ffffff 0%, #f0f7f4 100%);
+    background: linear-gradient(180deg, #ffffff 0%, #f0f4fb 100%);
     border-radius: 16px;
     text-align: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -1296,14 +1299,18 @@ html.fluid .content-shell {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #a4cc1b 0%, #6e8e0d 100%);
+    background: linear-gradient(
+      135deg,
+      rgb(var(--brand-rgb)),
+      rgb(var(--brand-strong-rgb))
+    );
     color: white;
     margin-bottom: 0.75rem;
-    box-shadow: 0 4px 12px rgba(164, 204, 27, 0.4);
+    box-shadow: 0 4px 12px rgba(var(--brand-rgb), 0.4);
   }
 
   .zircon-promo-title {
-    color: #0f4a2b;
+    color: rgb(var(--brand-strong-rgb));
     font-weight: 700;
     font-size: 0.85rem;
     margin-bottom: 0.75rem;
@@ -1315,7 +1322,11 @@ html.fluid .content-shell {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: linear-gradient(135deg, #7c9c14 0%, #4f6805 100%);
+    background: linear-gradient(
+      135deg,
+      rgb(var(--brand-rgb)),
+      rgb(var(--brand-strong-rgb))
+    );
     color: white;
     border: none;
     border-radius: 999px;

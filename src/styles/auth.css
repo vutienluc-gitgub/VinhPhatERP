@@ -42,7 +42,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  color: #6366f1;
+  color: var(--auth-accent);
   margin-bottom: 0.75rem;
   display: block;
 }
@@ -93,8 +93,8 @@
 
 .input-wrapper input:focus {
   background: rgba(255, 255, 255, 0.08);
-  border-color: #6366f1;
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+  border-color: var(--auth-accent);
+  box-shadow: 0 0 0 4px rgba(var(--auth-accent-rgb), 0.2);
 }
 
 .input-wrapper input::placeholder {
@@ -121,7 +121,11 @@
 .auth-submit-btn {
   margin-top: 1rem;
   padding: 0.875rem;
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  background: linear-gradient(
+    135deg,
+    var(--auth-accent) 0%,
+    var(--auth-accent-strong) 100%
+  );
   border: none;
   border-radius: 12px;
   color: #fff;
@@ -129,12 +133,12 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 4px 15px rgba(var(--auth-accent-rgb), 0.3);
 }
 
 .auth-submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+  box-shadow: 0 6px 20px rgba(var(--auth-accent-rgb), 0.4);
 }
 
 .auth-submit-btn:active:not(:disabled) {
@@ -156,7 +160,7 @@
 .auth-switch button {
   background: none;
   border: none;
-  color: #6366f1;
+  color: var(--auth-accent);
   font-weight: 600;
   cursor: pointer;
   margin-left: 0.5rem;
@@ -166,7 +170,7 @@
 }
 
 .auth-switch button:hover {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(var(--auth-accent-rgb), 0.1);
 }
 
 .auth-loading,
@@ -248,7 +252,7 @@
 }
 
 .register-success-msg strong {
-  color: #6366f1;
+  color: var(--auth-accent);
 }
 
 .register-go-btn {
@@ -259,7 +263,7 @@
 }
 
 .auth-switch a {
-  color: #6366f1;
+  color: var(--auth-accent);
   font-weight: 600;
   margin-left: 0.5rem;
   text-decoration: none;
@@ -353,8 +357,8 @@
 
 .auth-spinner {
   margin-bottom: 2rem;
-  color: #6366f1;
-  filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.4));
+  color: var(--auth-accent);
+  filter: drop-shadow(0 0 10px rgba(var(--auth-accent-rgb), 0.4));
 }
 
 .spin-icon {

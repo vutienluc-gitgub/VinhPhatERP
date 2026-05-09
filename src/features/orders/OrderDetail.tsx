@@ -224,7 +224,7 @@ export function OrderDetail({
             </div>
             <div className="h-2 bg-border rounded">
               <div
-                className={`h-full rounded transition-all duration-300 ${balanceDue <= 0 ? 'bg-[#0c8f68]' : 'bg-[#0b6bcb]'}`}
+                className={`h-full rounded transition-all duration-300 ${balanceDue <= 0 ? 'bg-success' : 'bg-primary'}`}
                 style={{ width: `${paymentPct}%` }}
               />
             </div>

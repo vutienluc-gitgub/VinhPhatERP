@@ -4,6 +4,8 @@
  * Libs được lazy-import để giảm bundle size ban đầu (~400KB).
  */
 
+import { EXPORT_COLORS } from '@/shared/constants/brand';
+
 export type ExportColumn = {
   /** Header hiển thị trong file */
   label: string;
@@ -113,10 +115,10 @@ export function exportToPdf<T extends Record<string, unknown>>(
   .sub { font-size: 9pt; color: #333; margin: 0 0 2px; }
   .meta { font-size: 7.5pt; color: #888; margin: 0 0 10px; }
   table { width: 100%; border-collapse: collapse; }
-  thead tr { background: #0b6bcb; color: #fff; }
-  th { font-size: 7.5pt; font-weight: 700; padding: 4px 5px; text-align: left; border: 1px solid #0b6bcb; }
-  td { font-size: 8pt; padding: 3.5px 5px; border: 1px solid #d0dae8; }
-  tbody tr:nth-child(even) { background: #f5f8fc; }
+  thead tr { background: ${EXPORT_COLORS.headerBg}; color: ${EXPORT_COLORS.headerText}; }
+  th { font-size: 7.5pt; font-weight: 700; padding: 4px 5px; text-align: left; border: 1px solid ${EXPORT_COLORS.headerBorder}; }
+  td { font-size: 8pt; padding: 3.5px 5px; border: 1px solid ${EXPORT_COLORS.cellBorder}; }
+  tbody tr:nth-child(even) { background: ${EXPORT_COLORS.stripeBg}; }
   .footer { margin-top: 8px; font-size: 7pt; color: #aaa; text-align: right; }
 </style>
 </head>

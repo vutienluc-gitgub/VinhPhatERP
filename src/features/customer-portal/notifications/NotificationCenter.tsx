@@ -77,7 +77,7 @@ export function NotificationCenter({ onClose }: Props) {
             <li
               key={item.id}
               onClick={() => handleItemClick(item)}
-              className={`px-4 py-3 border-b border-[#10233d]/5 ${item.orderId || item.shipmentId || item.quotationId ? 'cursor-pointer' : 'cursor-default'} ${item.isRead ? 'bg-transparent' : 'bg-[#0b6bcb]/5'} transition-colors duration-150 flex gap-[0.625rem] items-start`}
+              className={`px-4 py-3 border-b border-border/50 ${item.orderId || item.shipmentId || item.quotationId ? 'cursor-pointer' : 'cursor-default'} ${item.isRead ? 'bg-transparent' : 'bg-primary/5'} transition-colors duration-150 flex gap-[0.625rem] items-start`}
             >
               <span className="text-base shrink-0 mt-[1px]">
                 {TYPE_ICON[item.type]}

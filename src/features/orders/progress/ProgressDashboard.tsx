@@ -25,7 +25,7 @@ export function ProgressDashboard() {
   if (error) {
     return (
       <div className="panel-card">
-        <p className="text-[#c0392b] p-4">
+        <p className="error-inline">
           Lỗi: {error instanceof Error ? error.message : String(error)}
         </p>
       </div>
@@ -134,10 +134,10 @@ function DashboardSection({
   updateMutation: ReturnType<typeof useUpdateStageStatus>;
 }) {
   const borderColorMap = {
-    danger: 'border-[#e74c3c44]',
-    success: 'border-[#0c8f6844]',
-    primary: 'border-[#0b6bcb44]',
-    muted: 'border-[#9ca3af33]',
+    danger: 'border-danger/25',
+    success: 'border-success/25',
+    primary: 'border-primary/25',
+    muted: 'border-muted/20',
   };
 
   return (
@@ -177,7 +177,7 @@ function DashboardSection({
                     <span
                       className={
                         daysOverdue > 0
-                          ? 'text-[#c0392b]'
+                          ? 'text-danger'
                           : 'text-muted-foreground'
                       }
                     >

@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 
 import { Turnstile } from '@/shared/components/Turnstile';
 
+import { AUTH_CALLBACK } from './auth-callback.constants';
 import {
   forgotPasswordSchema,
   type ForgotPasswordFormValues,
@@ -57,7 +58,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
           Chúng tôi đã gửi hướng dẫn đặt lại mật khẩu đến email của bạn.
         </p>
         <button type="button" className="auth-submit-btn mt-6" onClick={onBack}>
-          Quay lại đăng nhập
+          {AUTH_CALLBACK.BACK_TO_LOGIN}
         </button>
       </div>
     );

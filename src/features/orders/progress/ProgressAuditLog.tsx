@@ -33,12 +33,7 @@ export function ProgressAuditLogView({ orderId }: AuditLogProps) {
   if (error) {
     return (
       <div className="panel-card">
-        <p
-          style={{
-            color: '#c0392b',
-            padding: '1rem',
-          }}
-        >
+        <p className="error-inline">
           Lỗi: {error instanceof Error ? error.message : String(error)}
         </p>
       </div>
