@@ -14,6 +14,7 @@ import {
   useCreateShippingRate,
   useUpdateShippingRate,
 } from '@/application/shipments';
+import { getErrorMessage } from '@/shared/utils/error';
 
 type Props = {
   item: ShippingRate | null;
@@ -242,10 +243,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
       {/* Error display */}
       {mutationError && (
         <p className="error-inline mt-4">
-          Lỗi:{' '}
-          {mutationError instanceof Error
-            ? mutationError.message
-            : String(mutationError)}
+          Lỗi: {getErrorMessage(mutationError)}
         </p>
       )}
 

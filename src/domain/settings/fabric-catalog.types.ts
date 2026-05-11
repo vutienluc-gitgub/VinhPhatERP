@@ -14,6 +14,7 @@ export type FabricCatalog = {
   unit: string;
   notes: string | null;
   status: FabricCatalogStatus;
+  image_url: string | null;
   created_at: string;
   updated_at: string;
 };

@@ -6,6 +6,7 @@ export type RollMatrixItem = {
   weight_kg?: number;
   status?: string;
   raw_roll_number?: string;
+  image_url?: string | null;
 };
 
 type UseRollMatrixLogicProps = {

@@ -28,6 +28,8 @@ interface RollGridItemProps extends Omit<
   onPress?: () => void; // Mobile friendly tap handler
   /** Standard weight in kg — used to compute deviation tooltip for light/heavy anomalies */
   standardWeightKg?: number;
+  /** Product thumbnail URL (shown as background in view/select mode) */
+  imageUrl?: string | null;
 }
 
 /** Simple Tailwind-based tooltip wrapper */
@@ -71,6 +73,7 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
       onPress,
       className,
       standardWeightKg,
+      imageUrl,
       ...props
     },
     ref,
@@ -290,6 +293,15 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
             : {}),
         }}
       >
+        {/* Thumbnail background (view/select mode only) */}
+        {imageUrl && mode !== 'input' && (
+          <img
+            src={imageUrl}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover rounded-[inherit] opacity-20"
+            loading="lazy"
+          />
+        )}
         {renderLabel()}
 
         {/* subLabel (raw roll number) is merged into label tooltip for space efficiency */}

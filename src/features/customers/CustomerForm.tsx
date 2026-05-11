@@ -18,6 +18,7 @@ import {
   useNextCustomerCode,
   useUpdateCustomer,
 } from '@/application/crm';
+import { getErrorMessage } from '@/shared/utils/error';
 
 import type { Customer } from './types';
 import { CustomerPortalAccountPanel } from './CustomerPortalAccountPanel';
@@ -110,10 +111,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
     <form id="customer-form" onSubmit={handleSubmit(onSubmit)} noValidate>
       {mutationError && (
         <p className="error-inline mb-4">
-          Lỗi:{' '}
-          {mutationError instanceof Error
-            ? mutationError.message
-            : String(mutationError)}
+          Lỗi: {getErrorMessage(mutationError)}
         </p>
       )}
 

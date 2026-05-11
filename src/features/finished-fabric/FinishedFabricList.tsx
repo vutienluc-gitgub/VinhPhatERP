@@ -250,6 +250,7 @@ export function FinishedFabricList({
                   weight_kg: r.weight_kg ?? undefined,
                   status: r.status,
                   raw_roll_number: r.raw_roll_number ?? undefined,
+                  image_url: r.image_url ?? undefined,
                 }))}
                 standardWeightKg={group.standardWeightKg}
                 mode="view"

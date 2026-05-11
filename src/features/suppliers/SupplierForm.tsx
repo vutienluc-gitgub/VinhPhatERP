@@ -19,6 +19,7 @@ import {
   supplierSchema,
 } from '@/schema/supplier.schema';
 import type { SupplierFormValues } from '@/schema/supplier.schema';
+import { getErrorMessage } from '@/shared/utils/error';
 
 import { SupplierPriceList } from './SupplierPriceList';
 import type { Supplier } from './types';
@@ -136,10 +137,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
     >
       {mutationError && (
         <p className="field-error mb-4">
-          Lỗi:{' '}
-          {mutationError instanceof Error
-            ? mutationError.message
-            : String(mutationError)}
+          Lỗi: {getErrorMessage(mutationError)}
         </p>
       )}
 

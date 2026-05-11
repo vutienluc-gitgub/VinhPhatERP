@@ -17,6 +17,7 @@ import { useEmployees, useSuppliersList } from '@/application/crm';
 import { useCreateExpense, useUpdateExpense } from '@/application/payments';
 import { sumBy } from '@/shared/utils/array.util';
 import type { UnpaidDocument } from '@/domain/payments/types';
+import { getErrorMessage } from '@/shared/utils/error';
 
 import {
   EXPENSE_CATEGORIES,
@@ -320,10 +321,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
     >
       {mutationError && (
         <p className="error-inline mb-4">
-          Lỗi:{' '}
-          {mutationError instanceof Error
-            ? mutationError.message
-            : String(mutationError)}
+          Lỗi: {getErrorMessage(mutationError)}
         </p>
       )}
 

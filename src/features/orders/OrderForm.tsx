@@ -38,6 +38,7 @@ import {
 } from '@/schema/order.schema';
 import type { OrdersFormValues } from '@/schema/order.schema';
 import { calculateOrderTotal } from '@/domain/orders';
+import { getErrorMessage } from '@/shared/utils/error';
 
 import { CreditOverrideDialog } from './CreditOverrideDialog';
 import { TradingItemRow } from './components/TradingItemRow';
@@ -412,10 +413,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
 
           {mutationError && (
             <p className="error-inline mb-4">
-              Lỗi:{' '}
-              {mutationError instanceof Error
-                ? mutationError.message
-                : String(mutationError)}
+              Lỗi: {getErrorMessage(mutationError)}
             </p>
           )}
 

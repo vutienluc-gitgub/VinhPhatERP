@@ -26,6 +26,7 @@ import {
   VAT_RATE_OPTIONS,
 } from '@/schema/quotation.schema';
 import type { QuotationsFormValues } from '@/schema/quotation.schema';
+import { getErrorMessage } from '@/shared/utils/error';
 
 import type { DiscountType, Quotation } from './types';
 
@@ -289,10 +290,7 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
     <form id="quotation-form" onSubmit={handleSubmit(onSubmit)} noValidate>
       {mutationError && (
         <p className="error-inline mb-4">
-          Lỗi:{' '}
-          {mutationError instanceof Error
-            ? mutationError.message
-            : String(mutationError)}
+          Lỗi: {getErrorMessage(mutationError)}
         </p>
       )}
 

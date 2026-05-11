@@ -26,6 +26,7 @@ export const fabricCatalogSchema = z.object({
   target_gsm: z.number().min(0).optional().nullable(),
   notes: z.string().trim().max(500).optional().or(z.literal('')),
   status: z.enum(FABRIC_CATALOG_STATUSES),
+  image_url: z.string().url().nullable().optional(),
 });
 
 export type FabricCatalogFormValues = z.infer<typeof fabricCatalogSchema>;
@@ -39,4 +40,5 @@ export const fabricCatalogDefaultValues: FabricCatalogFormValues = {
   unit: 'kg',
   notes: '',
   status: 'active',
+  image_url: null,
 };

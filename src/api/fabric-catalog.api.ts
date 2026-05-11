@@ -37,7 +37,7 @@ export async function fetchFabricCatalogPaginated(
   if (error) throw error;
   const total = count ?? 0;
   return {
-    data: (data ?? []) as FabricCatalog[],
+    data: (data ?? []) as unknown as FabricCatalog[],
     total,
     page,
     pageSize: DEFAULT_PAGE_SIZE,
@@ -98,12 +98,12 @@ export async function updateFabricCatalog(
 ): Promise<FabricCatalog> {
   const { data, error } = await supabase
     .from(TABLE)
-    .update(row)
+    .update(row as Record<string, unknown>)
     .eq('id', id)
     .select()
     .single();
   if (error) throw error;
-  return data as FabricCatalog;
+  return data as unknown as FabricCatalog;
 }
 
 export async function deleteFabricCatalog(id: string): Promise<void> {

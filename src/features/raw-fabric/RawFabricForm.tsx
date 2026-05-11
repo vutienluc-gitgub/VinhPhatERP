@@ -33,6 +33,7 @@ import {
   rawFabricSchema,
 } from '@/schema/raw-fabric.schema';
 import type { RawFabricFormValues } from '@/schema/raw-fabric.schema';
+import { getErrorMessage } from '@/shared/utils/error';
 
 import type { RawFabricRoll } from './types';
 
@@ -329,10 +330,7 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
     >
       {mutationError && (
         <p className="error-inline mb-4">
-          Lỗi:{' '}
-          {mutationError instanceof Error
-            ? mutationError.message
-            : String(mutationError)}
+          Lỗi: {getErrorMessage(mutationError)}
         </p>
       )}
 

@@ -7,6 +7,7 @@ import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { useCreateAccount, useUpdateAccount } from '@/application/payments';
+import { getErrorMessage } from '@/shared/utils/error';
 
 import {
   ACCOUNT_TYPES,
@@ -104,10 +105,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
     >
       {mutationError && (
         <p className="error-inline mb-4">
-          Lỗi:{' '}
-          {mutationError instanceof Error
-            ? mutationError.message
-            : String(mutationError)}
+          Lỗi: {getErrorMessage(mutationError)}
         </p>
       )}
 

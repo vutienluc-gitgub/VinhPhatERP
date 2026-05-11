@@ -25,6 +25,8 @@ export type FinishedFabricRoll = TableRow<'finished_fabric_rolls'> & {
   supplier_id?: string | null;
   purchase_price?: number | null;
   suppliers?: { name: string; code: string } | null;
+  /** Public URL of compressed product image (WebP) */
+  image_url?: string | null;
 };
 export type FinishedFabricRollInsert = Omit<
   TableInsert<'finished_fabric_rolls'>,

@@ -27,6 +27,7 @@ import {
 } from '@/schema/weaving-invoice.schema';
 import type { WeavingInvoiceFormValues } from '@/schema/weaving-invoice.schema';
 import { generateWeavingRollPrefix } from '@/domain/production';
+import { getErrorMessage } from '@/shared/utils/error';
 
 import { RollProgressBar } from './components/RollProgressBar';
 import { PasteExcelParser } from './components/PasteExcelParser';
@@ -312,11 +313,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
       <AutoSaveSubscriber watch={watch} />
 
       {mutationError && (
-        <p className="error-inline mb-4">
-          {mutationError instanceof Error
-            ? mutationError.message
-            : String(mutationError)}
-        </p>
+        <p className="error-inline mb-4">{getErrorMessage(mutationError)}</p>
       )}
 
       {showDraftBanner && savedDraft && (
