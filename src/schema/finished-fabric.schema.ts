@@ -52,6 +52,7 @@ export const finishedFabricSchema = z.object({
   production_date: z.string().optional().or(z.literal('')),
   reserved_for_order_id: z.string().uuid().nullable().optional(),
   notes: z.string().trim().optional().or(z.literal('')),
+  image_url: z.string().url().nullable().optional(),
 });
 
 export type FinishedFabricFormValues = z.infer<typeof finishedFabricSchema>;
@@ -74,6 +75,7 @@ export const finishedFabricDefaults: FinishedFabricFormValues = {
   production_date: '',
   reserved_for_order_id: null,
   notes: '',
+  image_url: null,
 };
 
 export const bulkFinishedRollRowSchema = z.object({

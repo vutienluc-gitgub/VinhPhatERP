@@ -200,6 +200,24 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
         emptyStateIcon={hasFilter ? 'Search' : 'Layers'}
         columns={[
           {
+            header: '',
+            id: 'thumbnail',
+            className: 'w-12',
+            cell: (c) =>
+              c.image_url ? (
+                <img
+                  src={c.image_url}
+                  alt={c.name}
+                  className="w-10 h-10 rounded object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded bg-surface-subtle flex items-center justify-center">
+                  <Icon name="Image" size={16} className="text-muted" />
+                </div>
+              ),
+          },
+          {
             header: 'Mã',
             id: 'code',
             sortable: true,
@@ -286,6 +304,18 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
         ]}
         renderMobileCard={(c) => (
           <div className="mobile-card">
+            {c.image_url && (
+              <img
+                src={c.image_url}
+                alt={c.name}
+                className="w-full h-32 object-cover rounded-t-lg"
+                style={{
+                  margin: '-1.25rem -1.25rem 0.75rem',
+                  width: 'calc(100% + 2.5rem)',
+                }}
+                loading="lazy"
+              />
+            )}
             <div className="mobile-card-header">
               <span className="mobile-card-title">{c.code}</span>
               <Badge variant={getStatusVariant(c.status)}>

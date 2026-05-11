@@ -33,6 +33,7 @@ import {
   yarnReceiptsSchema,
 } from '@/schema/yarn-receipt.schema';
 import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
+import { getErrorMessage } from '@/shared/utils/error';
 
 import type { YarnReceipt } from './types';
 import { YarnReceiptItemRow } from './components/YarnReceiptItemRow';
@@ -305,10 +306,7 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
     >
       {mutationError && (
         <p className="error-inline mb-4">
-          {FORM_MESSAGES.errorPrefix}{' '}
-          {mutationError instanceof Error
-            ? mutationError.message
-            : String(mutationError)}
+          {FORM_MESSAGES.errorPrefix} {getErrorMessage(mutationError)}
         </p>
       )}
 

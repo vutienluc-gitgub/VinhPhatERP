@@ -29,6 +29,7 @@ function toDbRow(
     unit: values.unit.trim(),
     notes: values.notes?.trim() || null,
     status: values.status,
+    image_url: values.image_url ?? null,
   };
 }
 

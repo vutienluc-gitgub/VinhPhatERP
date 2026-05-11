@@ -20,6 +20,7 @@ import {
   LOOM_STATUSES,
 } from '@/schema/loom.schema';
 import type { LoomFormValues } from '@/schema/loom.schema';
+import { getErrorMessage } from '@/shared/utils/error';
 
 import type { LoomWithSupplier } from './types';
 
@@ -127,15 +128,7 @@ export function LoomForm({ loom, onClose }: LoomFormProps) {
       title={isEditing ? `Sửa: ${loom.name}` : 'Thêm máy dệt'}
     >
       {mutationError && (
-        <p className="error-inline mb-4">
-          {mutationError instanceof Error
-            ? mutationError.message
-            : typeof mutationError === 'object' &&
-                mutationError !== null &&
-                'message' in mutationError
-              ? String((mutationError as Record<string, unknown>).message)
-              : String(mutationError)}
-        </p>
+        <p className="error-inline mb-4">{getErrorMessage(mutationError)}</p>
       )}
 
       {isTechnicalLocked && (

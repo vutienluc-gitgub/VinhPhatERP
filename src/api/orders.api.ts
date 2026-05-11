@@ -353,7 +353,7 @@ export async function fetchOrderAuditLogs(orderId: string) {
       profiles!business_audit_log_user_id_fkey(full_name, role)
     `,
     )
-    .eq('entity_type', 'orders')
+    .in('entity_type', ['orders', 'order'])
     .eq('entity_id', orderId)
     .order('created_at', { ascending: false });
 

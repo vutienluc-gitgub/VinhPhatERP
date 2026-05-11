@@ -5,6 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import { ImagePicker } from '@/shared/components/ImagePicker';
 import {
   useColorOptions,
   toColorComboboxOptions,
@@ -15,6 +16,10 @@ import {
   useRawRollOptions,
   useUpdateFinishedFabric,
 } from '@/application/inventory';
+import {
+  useUploadFabricImage,
+  useDeleteFabricImage,
+} from '@/application/inventory/useFabricImage';
 import { useSuppliersList } from '@/shared/hooks';
 import {
   QUALITY_GRADE_LABELS,
@@ -25,6 +30,7 @@ import {
   finishedFabricSchema,
 } from '@/schema/finished-fabric.schema';
 import type { FinishedFabricFormValues } from '@/schema/finished-fabric.schema';
+import { getErrorMessage } from '@/shared/utils/error';
 
 import { editBlockReason, getAllowedStatusTransitions } from './transitions';
 import type { FinishedFabricRoll, RollStatus } from './types';
@@ -64,6 +70,7 @@ function rollToFormValues(roll: FinishedFabricRoll): FinishedFabricFormValues {
     warehouse_location: roll.warehouse_location ?? '',
     production_date: roll.production_date ?? '',
     notes: roll.notes ?? '',
+    image_url: roll.image_url ?? null,
   };
 }
 
@@ -73,6 +80,8 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
   const isLocked = lockReason !== null;
   const createMutation = useCreateFinishedFabric();
   const updateMutation = useUpdateFinishedFabric();
+  const uploadImageMutation = useUploadFabricImage();
+  const deleteImageMutation = useDeleteFabricImage();
   const { data: rawRollOptions = [] } = useRawRollOptions();
   const { data: colorOptions = [] } = useColorOptions();
   const { data: fabricOptions = [] } = useFabricCatalogOptions();
@@ -123,11 +132,15 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
     handleSubmit,
     control,
     reset,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FinishedFabricFormValues>({
     resolver: zodResolver(finishedFabricSchema),
     defaultValues: isEditing ? rollToFormValues(roll) : finishedFabricDefaults,
   });
+
+  const currentImageUrl = watch('image_url');
 
   useEffect(() => {
     reset(isEditing ? rollToFormValues(roll) : finishedFabricDefaults);
@@ -179,15 +192,41 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
 
         {mutationError && (
           <p className="error-inline mb-4">
-            Lỗi:{' '}
-            {mutationError instanceof Error
-              ? mutationError.message
-              : String(mutationError)}
+            Lỗi: {getErrorMessage(mutationError)}
           </p>
         )}
 
         <fieldset disabled={isLocked} className="border-none p-0 m-0">
           <div className="form-grid">
+            {/* Ảnh sản phẩm */}
+            <div className="form-field">
+              <label>Ảnh sản phẩm</label>
+              <ImagePicker
+                value={currentImageUrl}
+                onUpload={(file) =>
+                  uploadImageMutation.mutate(file, {
+                    onSuccess: (url) => setValue('image_url', url),
+                  })
+                }
+                onRemove={() => {
+                  const currentUrl = currentImageUrl;
+                  setValue('image_url', null);
+                  if (currentUrl) {
+                    deleteImageMutation.mutate(currentUrl);
+                  }
+                }}
+                isUploading={uploadImageMutation.isPending}
+                error={
+                  uploadImageMutation.error instanceof Error
+                    ? uploadImageMutation.error.message
+                    : uploadImageMutation.error
+                      ? String(uploadImageMutation.error)
+                      : null
+                }
+                disabled={isLocked}
+              />
+            </div>
+
             {/* Hàng 1: Mã cuộn + Loại vải */}
             <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
               <div className="form-field">

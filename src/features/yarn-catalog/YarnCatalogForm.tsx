@@ -20,6 +20,7 @@ import {
   YARN_CATALOG_STATUS_LABELS,
 } from '@/schema/yarn-catalog.schema';
 import type { YarnCatalogFormValues } from '@/schema/yarn-catalog.schema';
+import { getErrorMessage } from '@/shared/utils/error';
 
 import type { YarnCatalog } from './types';
 
@@ -114,10 +115,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
     >
       {mutationError && (
         <p className="error-inline mb-4">
-          Lỗi:{' '}
-          {mutationError instanceof Error
-            ? mutationError.message
-            : String(mutationError)}
+          Lỗi: {getErrorMessage(mutationError)}
         </p>
       )}
 

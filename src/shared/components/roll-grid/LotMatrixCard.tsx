@@ -201,6 +201,7 @@ export function LotMatrixCard({
                 isGhost={isGhost}
                 isSelected={rollIsSelected}
                 standardWeightKg={standardWeightKg}
+                imageUrl={roll.image_url}
                 statusIcon={
                   roll.status === 'reserved' && !rollIsSelected
                     ? 'locked'

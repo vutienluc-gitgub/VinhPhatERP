@@ -5,17 +5,23 @@ import { useForm, Controller } from 'react-hook-form';
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import { ImagePicker } from '@/shared/components/ImagePicker';
 import {
   useCreateFabricCatalog,
   useNextFabricCatalogCode,
   useUpdateFabricCatalog,
 } from '@/application/settings';
 import {
+  useUploadFabricImage,
+  useDeleteFabricImage,
+} from '@/application/inventory/useFabricImage';
+import {
   fabricCatalogDefaultValues,
   fabricCatalogSchema,
   FABRIC_CATALOG_STATUS_LABELS,
 } from '@/schema/fabric-catalog.schema';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
+import { getErrorMessage } from '@/shared/utils/error';
 
 import type { FabricCatalog } from './types';
 
@@ -45,6 +51,7 @@ function catalogToFormValues(catalog: FabricCatalog): FabricCatalogFormValues {
     unit: catalog.unit,
     notes: catalog.notes ?? '',
     status: catalog.status,
+    image_url: catalog.image_url ?? null,
   };
 }
 
@@ -55,6 +62,8 @@ export function FabricCatalogForm({
   const isEditing = catalog !== null;
   const createMutation = useCreateFabricCatalog();
   const updateMutation = useUpdateFabricCatalog();
+  const uploadImageMutation = useUploadFabricImage();
+  const deleteImageMutation = useDeleteFabricImage();
   const { data: nextCode } = useNextFabricCatalogCode();
 
   const {
@@ -63,6 +72,7 @@ export function FabricCatalogForm({
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FabricCatalogFormValues>({
     resolver: zodResolver(fabricCatalogSchema),
@@ -76,6 +86,8 @@ export function FabricCatalogForm({
       isEditing ? catalogToFormValues(catalog) : fabricCatalogDefaultValues,
     );
   }, [catalog, isEditing, reset]);
+
+  const currentImageUrl = watch('image_url');
 
   useEffect(() => {
     if (!isEditing && nextCode) {
@@ -111,10 +123,7 @@ export function FabricCatalogForm({
     >
       {mutationError && (
         <p className="error-inline mb-4">
-          Lỗi:{' '}
-          {mutationError instanceof Error
-            ? mutationError.message
-            : String(mutationError)}
+          Lỗi: {getErrorMessage(mutationError)}
         </p>
       )}
 
@@ -124,6 +133,34 @@ export function FabricCatalogForm({
         noValidate
       >
         <div className="form-grid">
+          {/* Ảnh sản phẩm */}
+          <div className="form-field">
+            <label>Ảnh mẫu vải</label>
+            <ImagePicker
+              value={currentImageUrl}
+              onUpload={(file) =>
+                uploadImageMutation.mutate(file, {
+                  onSuccess: (url) => setValue('image_url', url),
+                })
+              }
+              onRemove={() => {
+                const currentUrl = currentImageUrl;
+                setValue('image_url', null);
+                if (currentUrl) {
+                  deleteImageMutation.mutate(currentUrl);
+                }
+              }}
+              isUploading={uploadImageMutation.isPending}
+              error={
+                uploadImageMutation.error instanceof Error
+                  ? uploadImageMutation.error.message
+                  : uploadImageMutation.error
+                    ? String(uploadImageMutation.error)
+                    : null
+              }
+            />
+          </div>
+
           {/* Mã + Tên */}
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
