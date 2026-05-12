@@ -15,6 +15,9 @@ interface QueuedMessage {
   content: string;
   messageType: string;
   imageUrl?: string;
+  fileUrl?: string;
+  fileName?: string;
+  fileType?: string;
   queuedAt: number;
 }
 

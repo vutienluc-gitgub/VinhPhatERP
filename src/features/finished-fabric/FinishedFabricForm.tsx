@@ -20,7 +20,7 @@ import {
   useUploadFabricImage,
   useDeleteFabricImage,
 } from '@/application/inventory/useFabricImage';
-import { useSuppliersList } from '@/shared/hooks';
+import { useAllSuppliers } from '@/shared/hooks';
 import {
   QUALITY_GRADE_LABELS,
   QUALITY_GRADES,
@@ -98,14 +98,14 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
     [fabricOptions],
   );
 
-  const { data: suppliersData } = useSuppliersList({}, 1);
+  const { data: suppliersData } = useAllSuppliers({ status: 'active' });
   const supplierComboOptions = useMemo(
     () =>
-      (suppliersData?.data || []).map((s) => ({
+      (suppliersData || []).map((s) => ({
         value: s.id,
         label: `${s.name} (${s.code})`,
       })),
-    [suppliersData?.data],
+    [suppliersData],
   );
 
   const rawRollComboOptions = useMemo(

@@ -11,6 +11,8 @@ export {
   useChatOfflineSync,
   useAddReaction,
   useRemoveReaction,
+  useSearchMessages,
+  useTypingIndicator,
 } from './useChat';
 export { useMentionsSearch, type MentionOption } from './useMentionsSearch';
 export { useUnifiedTimeline } from './useUnifiedTimeline';

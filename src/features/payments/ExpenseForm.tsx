@@ -13,7 +13,7 @@ import {
   useUnpaidDocuments,
   useNextExpenseNumber,
 } from '@/application/payments';
-import { useEmployees, useSuppliersList } from '@/application/crm';
+import { useEmployees, useActiveSuppliers } from '@/application/crm';
 import { useCreateExpense, useUpdateExpense } from '@/application/payments';
 import { sumBy } from '@/shared/utils/array.util';
 import type { UnpaidDocument } from '@/domain/payments/types';
@@ -51,6 +51,7 @@ const CATEGORY_OPTIONS = EXPENSE_CATEGORIES.map((c) => ({
 type ExpenseFormProps = {
   expense: Expense | null;
   onClose: () => void;
+  initialSupplierId?: string;
 };
 
 // -- Allocation Details Component
@@ -227,11 +228,15 @@ function expenseToFormValues(expense: Expense): ExpenseFormValues {
   };
 }
 
-export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
+export function ExpenseForm({
+  expense,
+  onClose,
+  initialSupplierId,
+}: ExpenseFormProps) {
   const isEditing = expense !== null;
   const { data: accounts = [] } = useAccountList();
   const { data: employees = [] } = useEmployees();
-  const { data: suppliersData } = useSuppliersList();
+  const { data: activeSuppliers } = useActiveSuppliers();
   const createMutation = useCreateExpense();
   const updateMutation = useUpdateExpense();
   const { data: nextNumber } = useNextExpenseNumber();
@@ -256,11 +261,11 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
 
   const supplierOptions = useMemo(
     () =>
-      (suppliersData?.data ?? []).map((s) => ({
+      (activeSuppliers ?? []).map((s) => ({
         value: s.id,
         label: `${s.name} (${s.code})`,
       })),
-    [suppliersData?.data],
+    [activeSuppliers],
   );
 
   const {
@@ -274,7 +279,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
     resolver: zodResolver(expenseSchema),
     defaultValues: isEditing
       ? expenseToFormValues(expense)
-      : expenseDefaultValues,
+      : { ...expenseDefaultValues, supplierId: initialSupplierId ?? '' },
   });
 
   // Inject auto-generated number into form when available (create mode only)
@@ -285,8 +290,12 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
   }, [isEditing, nextNumber, setValue]);
 
   useEffect(() => {
-    reset(isEditing ? expenseToFormValues(expense) : expenseDefaultValues);
-  }, [expense, isEditing, reset]);
+    reset(
+      isEditing
+        ? expenseToFormValues(expense)
+        : { ...expenseDefaultValues, supplierId: initialSupplierId ?? '' },
+    );
+  }, [expense, isEditing, reset, initialSupplierId]);
 
   async function onSubmit(values: ExpenseFormValues) {
     try {

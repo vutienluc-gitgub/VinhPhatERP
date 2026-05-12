@@ -12,7 +12,7 @@ import {
   useColorOptions,
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
-import { useSuppliersList } from '@/shared/hooks';
+import { useAllSuppliers } from '@/shared/hooks';
 import { useStepper } from '@/shared/hooks/useStepper';
 import { useAutoSave, loadDraft, clearDraft } from '@/shared/hooks/useAutoSave';
 import DraftBanner from '@/shared/components/DraftBanner';
@@ -213,14 +213,14 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
   const { data: colorOptions = [] } = useColorOptions();
   const { data: fabricOptions = [] } = useFabricCatalogOptions();
 
-  const { data: suppliersData } = useSuppliersList({}, 1);
+  const { data: suppliersData } = useAllSuppliers({ status: 'active' });
   const supplierComboOptions = useMemo(
     () =>
-      (suppliersData?.data || []).map((s) => ({
+      (suppliersData || []).map((s) => ({
         value: s.id,
         label: `${s.name} (${s.code})`,
       })),
-    [suppliersData?.data],
+    [suppliersData],
   );
 
   const sourceType = useWatch({

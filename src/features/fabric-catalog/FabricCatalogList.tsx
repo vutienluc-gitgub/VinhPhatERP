@@ -202,17 +202,17 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
           {
             header: '',
             id: 'thumbnail',
-            className: 'w-12',
+            className: 'w-20',
             cell: (c) =>
               c.image_url ? (
                 <img
                   src={c.image_url}
                   alt={c.name}
-                  className="w-10 h-10 rounded object-cover"
+                  className="w-10 h-10 rounded object-cover shrink-0"
                   loading="lazy"
                 />
               ) : (
-                <div className="w-10 h-10 rounded bg-surface-subtle flex items-center justify-center">
+                <div className="w-10 h-10 rounded bg-surface-subtle flex items-center justify-center shrink-0">
                   <Icon name="Image" size={16} className="text-muted" />
                 </div>
               ),

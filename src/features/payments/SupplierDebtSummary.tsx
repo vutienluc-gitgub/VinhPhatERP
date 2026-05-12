@@ -1,5 +1,6 @@
 import { formatCurrency } from '@/shared/utils/format';
 import { useSupplierDebt } from '@/application/payments';
+import { Button } from '@/shared/components';
 
 import { DEBT_LABELS } from './payments.constants';
 import {
@@ -11,7 +12,11 @@ import type { SupplierDebtRow } from './types';
 
 const L = DEBT_LABELS.supplier;
 
-export function SupplierDebtSummary() {
+export function SupplierDebtSummary({
+  onPay,
+}: {
+  onPay?: (supplierId: string) => void;
+}) {
   const { data: debts = [], isLoading, error } = useSupplierDebt();
 
   return (
@@ -84,6 +89,26 @@ export function SupplierDebtSummary() {
             </span>
           ),
         },
+        {
+          header: '',
+          id: 'actions',
+          sortable: false,
+          className: 'text-right',
+          cell: (d) => (
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="primary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPay?.(d.supplier_id);
+                }}
+                disabled={d.balance_due <= 0}
+              >
+                Thanh toán
+              </Button>
+            </div>
+          ),
+        },
       ]}
       renderMobileCard={(d) => (
         <DebtMobileCard
@@ -98,6 +123,7 @@ export function SupplierDebtSummary() {
           paidLabel={L.paidLabel}
           countLabel="Số phiếu"
           progressLabel={L.progressLabel}
+          onPay={() => onPay?.(d.supplier_id)}
         />
       )}
     />

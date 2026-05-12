@@ -75,6 +75,7 @@ export function PaymentsPage() {
   // Expense form state
   const [editExpense, setEditExpense] = useState<Expense | null>(null);
   const [showExpenseForm, setShowExpenseForm] = useState(false);
+  const [preselectedSupplierId, setPreselectedSupplierId] = useState<string>();
 
   // Account form state
   const [editAccount, setEditAccount] = useState<PaymentAccount | null>(null);
@@ -113,15 +114,18 @@ export function PaymentsPage() {
             }}
             onNew={() => {
               setEditExpense(null);
+              setPreselectedSupplierId(undefined);
               setShowExpenseForm(true);
             }}
           />
           {showExpenseForm && (
             <ExpenseForm
               expense={editExpense}
+              initialSupplierId={preselectedSupplierId}
               onClose={() => {
                 setShowExpenseForm(false);
                 setEditExpense(null);
+                setPreselectedSupplierId(undefined);
               }}
             />
           )}
@@ -130,7 +134,16 @@ export function PaymentsPage() {
 
       {tab === 'customer-debt' && <DebtSummary />}
 
-      {tab === 'supplier-debt' && <SupplierDebtSummary />}
+      {tab === 'supplier-debt' && (
+        <SupplierDebtSummary
+          onPay={(supplierId) => {
+            setTab('expenses');
+            setPreselectedSupplierId(supplierId);
+            setEditExpense(null);
+            setShowExpenseForm(true);
+          }}
+        />
+      )}
 
       {tab === 'accounts' && (
         <>
