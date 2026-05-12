@@ -1,12 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import {
-  useFieldArray,
-  useForm,
-  useWatch,
-  FormProvider,
-} from 'react-hook-form';
+import { useFieldArray, useForm, FormProvider } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import type { Control } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
@@ -26,7 +22,6 @@ import {
   useYarnCatalogOptions,
 } from '@/application/inventory';
 import { fetchYarnSpecsFromVendorApi } from '@/api/vendor-integration.api';
-import { sumBy } from '@/shared/utils/array.util';
 import {
   emptyYarnReceiptItem,
   yarnReceiptsDefaultValues,
@@ -39,6 +34,7 @@ import type { YarnReceipt } from './types';
 import { YarnReceiptItemRow } from './components/YarnReceiptItemRow';
 import { StepGeneralInfo } from './components/StepGeneralInfo';
 import { StepLogisticsInfo } from './components/StepLogisticsInfo';
+import { useYarnReceiptTotal } from './hooks/useYarnReceiptTotal';
 
 /* ── Constants ── */
 
@@ -61,6 +57,7 @@ const FORM_MESSAGES = {
   scanError: 'Lỗi quét mã',
   scanSuccess: 'Bóc tách Barcode thành công!',
   errorPrefix: 'Lỗi:',
+  unsavedConfirm: 'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
 } as const;
 
 /** Sample barcode for dev/demo — will be used as prompt default value */
@@ -81,43 +78,29 @@ function receiptToFormValues(receipt: YarnReceipt): YarnReceiptsFormValues {
       ? (receipt.additional_fees as { name: string; amount: number }[])
       : [],
     notes: receipt.notes ?? '',
-    items: (receipt.yarn_receipt_items ?? []).map(
-      (it: Record<string, unknown>) => ({
-        yarnCatalogId: (it.yarn_catalog_id as string | undefined) ?? '',
-        yarnType: it.yarn_type as string,
-        colorName: (it.color_name as string | undefined) ?? '',
-        quantity: Number(it.quantity),
-        unitPrice: Number(it.unit_price),
-        lotNumber: (it.lot_number as string | undefined) ?? '',
-        grade: (it.grade as string | undefined) ?? '',
-        unit: (it.unit as string | undefined) ?? 'kg',
-        tensileStrength: (it.tensile_strength as string | undefined) ?? '',
-        composition: (it.composition as string | undefined) ?? '',
-        origin: (it.origin as string | undefined) ?? '',
-        notes: (it.notes as string | undefined) ?? '',
-        dtex: (it.dtex as string | undefined) ?? '',
-        twist: (it.twist as string | undefined) ?? '',
-        machineNo: (it.machine_no as string | undefined) ?? '',
-      }),
-    ),
+    items: (receipt.yarn_receipt_items ?? []).map((it) => ({
+      yarnCatalogId: it.yarn_catalog_id ?? '',
+      yarnType: it.yarn_type ?? '',
+      colorName: it.color_name ?? '',
+      quantity: Number(it.quantity) || 0,
+      unitPrice: Number(it.unit_price) || 0,
+      lotNumber: it.lot_number ?? '',
+      grade: it.grade ?? '',
+      unit: it.unit ?? 'kg',
+      tensileStrength: it.tensile_strength ?? '',
+      composition: it.composition ?? '',
+      origin: it.origin ?? '',
+      notes: it.notes ?? '',
+      dtex: it.dtex ?? '',
+      twist: it.twist ?? '',
+      machineNo: it.machine_no ?? '',
+    })),
   };
 }
 
 /* ── Realtime totals sub-component ── */
-
-function LineTotals({
-  control,
-}: {
-  control: ReturnType<typeof useForm<YarnReceiptsFormValues>>['control'];
-}) {
-  const items = useWatch({
-    control,
-    name: 'items',
-  });
-  const total = sumBy(
-    items ?? [],
-    (it) => (Number(it.quantity) || 0) * (Number(it.unitPrice) || 0),
-  );
+function LineTotals({ control }: { control: Control<YarnReceiptsFormValues> }) {
+  const total = useYarnReceiptTotal(control);
   return (
     <div className="text-right font-semibold text-base py-2.5 border-t-2 border-[var(--border)] mt-4">
       Tổng cộng: {formatCurrency(total)} đ
@@ -150,6 +133,16 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
     formState: { errors, isSubmitting, isDirty },
   } = methods;
 
+  const handleCancel = useCallback(() => {
+    if (isDirty) {
+      if (!window.confirm(FORM_MESSAGES.unsavedConfirm)) {
+        return false;
+      }
+    }
+    onClose();
+    return true;
+  }, [isDirty, onClose]);
+
   const stepper = useStepper({
     totalSteps: 3,
     stepValidation: {
@@ -157,34 +150,8 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
       1: () => trigger(['items']),
       2: () => trigger(['vehicleInfo', 'additionalFees']),
     },
-    onCancel: () => {
-      if (isDirty) {
-        if (
-          !window.confirm(
-            'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
-          )
-        ) {
-          return false;
-        }
-      }
-      onClose();
-      return true;
-    },
+    onCancel: handleCancel,
   });
-
-  const handleCancel = useCallback(() => {
-    if (isDirty) {
-      if (
-        !window.confirm(
-          'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
-        )
-      ) {
-        return false;
-      }
-    }
-    onClose();
-    return true;
-  }, [isDirty, onClose]);
 
   const stepRef = useRef(0);
   useEffect(() => {

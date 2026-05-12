@@ -56,13 +56,14 @@ export async function fetchYarnCatalogOptions(): Promise<
     | 'tensile_strength'
     | 'origin'
     | 'category'
+    | 'yarn_type'
     | 'unit'
   >[]
 > {
   const { data, error } = await supabase
     .from(TABLE)
     .select(
-      'id, code, name, composition, color_name, tensile_strength, origin, lot_no, grade, category, unit',
+      'id, code, name, composition, color_name, tensile_strength, origin, lot_no, grade, category, yarn_type, unit',
     )
     .eq('status', 'active')
     .order('name');
@@ -77,6 +78,7 @@ export async function fetchYarnCatalogOptions(): Promise<
     | 'tensile_strength'
     | 'origin'
     | 'category'
+    | 'yarn_type'
     | 'unit'
   >[];
 }
