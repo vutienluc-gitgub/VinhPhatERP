@@ -9,6 +9,8 @@ export {
   useTogglePin,
   useChatRealtime,
   useChatOfflineSync,
+  useAddReaction,
+  useRemoveReaction,
 } from './useChat';
 export { useMentionsSearch, type MentionOption } from './useMentionsSearch';
 export { useUnifiedTimeline } from './useUnifiedTimeline';

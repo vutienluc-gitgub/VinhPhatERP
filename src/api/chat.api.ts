@@ -1,4 +1,4 @@
-import { supabase } from '@/services/supabase/client';
+import { supabase, untypedDb } from '@/services/supabase/client';
 import type { Json } from '@/services/supabase/database.types';
 import {
   chatMessageResponseSchema,
@@ -260,6 +260,50 @@ export async function fetchMyChatRooms(): Promise<MyChatRoomSummary[]> {
             code: w.work_order_number,
           });
         });
+      } else if (type === 'yarn_receipt') {
+        const { data: receipts } = await supabase
+          .from('yarn_receipts')
+          .select('id, receipt_number')
+          .in('id', idArray);
+        receipts?.forEach((r) => {
+          detailsMap.set(r.id, {
+            name: `Phiếu nhập sợi ${r.receipt_number}`,
+            code: r.receipt_number,
+          });
+        });
+      } else if (type === 'raw_fabric') {
+        const { data: rolls } = await supabase
+          .from('raw_fabric_rolls')
+          .select('id, roll_number')
+          .in('id', idArray);
+        rolls?.forEach((r) => {
+          detailsMap.set(r.id, {
+            name: `Vải thô ${r.roll_number}`,
+            code: r.roll_number,
+          });
+        });
+      } else if (type === 'finished_fabric') {
+        const { data: fabrics } = await supabase
+          .from('finished_fabric_rolls')
+          .select('id, roll_number')
+          .in('id', idArray);
+        fabrics?.forEach((f) => {
+          detailsMap.set(f.id, {
+            name: `Vải thành phẩm ${f.roll_number}`,
+            code: f.roll_number,
+          });
+        });
+      } else if (type === 'purchase_order') {
+        const { data: pos } = await supabase
+          .from('purchase_orders')
+          .select('id, po_code')
+          .in('id', idArray);
+        pos?.forEach((p) => {
+          detailsMap.set(p.id, {
+            name: `PO ${p.po_code}`,
+            code: p.po_code,
+          });
+        });
       }
     }),
   );
@@ -370,4 +414,70 @@ export async function fetchUnifiedTimeline(params: {
   }
 
   return (data as unknown as UnifiedTimelineItem[]) || [];
+}
+
+// ── Message Reactions ──
+
+export async function addReaction(
+  messageId: string,
+  emoji: string,
+): Promise<void> {
+  const { error } = await untypedDb
+    .from('chat_message_reactions')
+    .insert({ message_id: messageId, emoji });
+
+  if (error) throw new Error(error.message);
+}
+
+export async function removeReaction(
+  messageId: string,
+  emoji: string,
+): Promise<void> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error('Authentication required');
+
+  const { error } = await untypedDb
+    .from('chat_message_reactions')
+    .delete()
+    .eq('message_id', messageId)
+    .eq('user_id', user.id)
+    .eq('emoji', emoji);
+
+  if (error) throw new Error(error.message);
+}
+
+type ReactionRow = { emoji: string; user_id: string };
+
+export async function fetchReactions(
+  messageId: string,
+): Promise<{ emoji: string; count: number; user_ids: string[] }[]> {
+  const { data, error } = await untypedDb
+    .from('chat_message_reactions')
+    .select('emoji, user_id')
+    .eq('message_id', messageId);
+
+  if (error) throw new Error(error.message);
+
+  // Group by emoji
+  const grouped = new Map<
+    string,
+    { emoji: string; count: number; user_ids: string[] }
+  >();
+  for (const row of (data as ReactionRow[] | null) ?? []) {
+    const existing = grouped.get(row.emoji);
+    if (existing) {
+      existing.count++;
+      existing.user_ids.push(row.user_id);
+    } else {
+      grouped.set(row.emoji, {
+        emoji: row.emoji,
+        count: 1,
+        user_ids: [row.user_id],
+      });
+    }
+  }
+
+  return Array.from(grouped.values());
 }

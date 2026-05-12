@@ -21,6 +21,22 @@ function formatTime(iso: string): string {
   }
 }
 
+function formatFullDateTime(iso: string): string {
+  try {
+    return new Intl.DateTimeFormat('vi-VN', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    }).format(new Date(iso));
+  } catch {
+    return '';
+  }
+}
+
 function renderContent(content: string, mentions?: ChatMention[]) {
   if (!mentions || mentions.length === 0) return <div>{content}</div>;
 
@@ -91,6 +107,13 @@ export const ChatBubble = memo(function ChatBubble({
     togglePinMutation.mutate(message.id);
   };
 
+  const handleCopyText = useCallback(() => {
+    setShowContextMenu(false);
+    if (message.content) {
+      void navigator.clipboard.writeText(message.content);
+    }
+  }, [message.content]);
+
   // System message (journey updates)
   if (message.message_type === 'system') {
     return (
@@ -157,6 +180,14 @@ export const ChatBubble = memo(function ChatBubble({
               className="chat-context-menu"
               onClick={(e) => e.stopPropagation()}
             >
+              {message.content && (
+                <button
+                  className="chat-context-menu-item"
+                  onClick={handleCopyText}
+                >
+                  {CHAT_LABELS.COPY_TEXT}
+                </button>
+              )}
               <button
                 className="chat-context-menu-item"
                 onClick={handleTogglePin}
@@ -202,7 +233,10 @@ export const ChatBubble = memo(function ChatBubble({
                 </svg>
               </span>
             ) : null}
-            <span className="chat-bubble-time">
+            <span
+              className="chat-bubble-time"
+              title={formatFullDateTime(message.created_at)}
+            >
               {formatTime(message.created_at)}
             </span>
           </div>

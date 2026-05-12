@@ -110,6 +110,65 @@
   font-size: 0.8125rem;
 }
 
+.chat-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.chat-empty-icon {
+  color: var(--muted);
+  opacity: 0.5;
+}
+
+.chat-empty-text {
+  color: var(--text);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.chat-empty-hint {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+/* ── Date Dividers ── */
+
+.chat-date-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0 12px;
+  position: relative;
+}
+
+.chat-date-divider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border);
+}
+
+.chat-date-label {
+  background: var(--surface-strong);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  position: relative;
+  z-index: 1;
+}
+
 .chat-error-state {
   display: flex;
   flex-direction: column;
@@ -1130,4 +1189,78 @@
   background: rgba(255, 255, 255, 0.2);
   color: #fff;
   text-decoration: underline;
+}
+
+/* ── Emoji Picker ── */
+
+.chat-emoji-toggle-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+  flex-shrink: 0;
+}
+
+.chat-emoji-toggle-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.chat-emoji-toggle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.chat-emoji-picker {
+  position: absolute;
+  bottom: 100%;
+  left: 8px;
+  margin-bottom: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 8px;
+  z-index: 100;
+  min-width: 240px;
+}
+
+.chat-emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+}
+
+.chat-emoji-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    transform 0.1s;
+}
+
+.chat-emoji-btn:hover {
+  background: var(--surface-hover);
+  transform: scale(1.1);
+}
+
+.chat-emoji-btn:active {
+  transform: scale(0.95);
 }

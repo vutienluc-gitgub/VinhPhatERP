@@ -15,6 +15,8 @@ import {
   softDeleteMessage,
   togglePinMessage,
   updateReadReceipt,
+  addReaction,
+  removeReaction,
 } from '@/api/chat.api';
 import type {
   ChatMessage,
@@ -272,6 +274,40 @@ export function useTogglePin(roomId: string | undefined) {
         });
         void queryClient.invalidateQueries({
           queryKey: CHAT_KEYS.pinnedMessages(roomId),
+        });
+      }
+    },
+  });
+}
+
+// ── Message Reactions ──
+
+export function useAddReaction(roomId: string | undefined) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ messageId, emoji }: { messageId: string; emoji: string }) =>
+      addReaction(messageId, emoji),
+    onSuccess: () => {
+      if (roomId) {
+        void queryClient.invalidateQueries({
+          queryKey: CHAT_KEYS.messages(roomId),
+        });
+      }
+    },
+  });
+}
+
+export function useRemoveReaction(roomId: string | undefined) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ messageId, emoji }: { messageId: string; emoji: string }) =>
+      removeReaction(messageId, emoji),
+    onSuccess: () => {
+      if (roomId) {
+        void queryClient.invalidateQueries({
+          queryKey: CHAT_KEYS.messages(roomId),
         });
       }
     },

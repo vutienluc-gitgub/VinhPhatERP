@@ -107,6 +107,8 @@ export async function updateFabricCatalog(
 }
 
 export async function deleteFabricCatalog(id: string): Promise<void> {
+  // TODO: After running `supabase db push` for migration 20260512000001,
+  // switch to: untypedDb.rpc('rpc_delete_fabric_catalog', { p_fabric_id: id })
   const { error } = await supabase.from(TABLE).delete().eq('id', id);
-  if (error) throw error;
+  if (error) throw new Error(error.message);
 }

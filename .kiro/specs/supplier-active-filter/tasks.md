@@ -19,27 +19,27 @@ Tính năng bổ sung bộ lọc mặc định "Đang giao dịch" cho trang Nh�
   - [x] 2.2 Tạo `useSupplierStats()` hook trong `src/application/crm/useSuppliers.ts`
   - [x] 2.3 Export hook từ `src/application/crm/index.ts`
 
-- [~] 3. Cập nhật `SuppliersList` với default filter
+- [ ] 3. Cập nhật `SuppliersList` với default filter
   - [ ] 3.1 Thay đổi `useUrlFilterState` call với default `{ status: 'active' }`
   - [ ] 3.2 Verify FilterBar hiển thị đúng "Hoạt động" khi default active
 
-- [~] 4. Thêm ViewAllChip component
+- [ ] 4. Thêm ViewAllChip component
   - [ ] 4.1 Tạo `ViewAllChip` component inline trong `SuppliersList.tsx`
   - [ ] 4.2 Hiển thị chip khi `filters.status === 'active'`
   - [ ] 4.3 Implement `onClear` handler để xóa status filter
   - [ ] 4.4 Styling: secondary chip/badge, consistent với design system
 
-- [~] 5. Sửa KPI Dashboard
+- [ ] 5. Sửa KPI Dashboard
   - [ ] 5.1 Sử dụng `useSupplierStats()` thay vì client-side counting
   - [ ] 5.2 KPI "Tổng nhà cung cấp" hiển thị `stats.total`
   - [ ] 5.3 KPI "Đang giao dịch" hiển thị `stats.active`
 
-- [~] 6. Cập nhật empty state logic
+- [ ] 6. Cập nhật empty state logic
   - [ ] 6.1 Detect khi empty là do default filter (không có NCC active)
   - [ ] 6.2 Hiển thị message "Không có nhà cung cấp đang giao dịch"
   - [ ] 6.3 Vẫn hiển thị ViewAllChip trong empty state này
 
-- [~] 7. Testing và Verification
+- [ ] 7. Testing và Verification
   - [ ] 7.1 Test manual: vào trang Suppliers → chỉ hiện NCC active
   - [ ] 7.2 Test manual: click ViewAllChip → hiện tất cả NCC
   - [ ] 7.3 Test manual: reload page → filter state preserved trên URL
