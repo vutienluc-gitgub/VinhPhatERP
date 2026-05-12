@@ -308,12 +308,13 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
               <img
                 src={c.image_url}
                 alt={c.name}
-                className="w-full h-32 object-cover rounded-t-lg"
+                className="w-full h-32 object-cover rounded-t-lg max-w-none pointer-events-none select-none"
                 style={{
                   margin: '-1.25rem -1.25rem 0.75rem',
                   width: 'calc(100% + 2.5rem)',
                 }}
                 loading="lazy"
+                draggable={false}
               />
             )}
             <div className="mobile-card-header">

@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useEffect,
   useRef,
   useState,
   type ChangeEvent,
@@ -34,12 +35,53 @@ export function ChatInputArea({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
 
   const { data: mentionOptions = [] } = useMentionsSearch(
     activeMention?.type ?? null,
     activeMention?.query ?? '',
+  );
+
+  // Close emoji picker when clicking outside
+  useEffect(() => {
+    if (!showEmojiPicker) return undefined;
+
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target as Node)
+      ) {
+        setShowEmojiPicker(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showEmojiPicker]);
+
+  const insertEmoji = useCallback(
+    (emoji: string) => {
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const newText = text.slice(0, start) + emoji + text.slice(end);
+
+      setText(newText);
+      setShowEmojiPicker(false);
+
+      // Restore cursor position after emoji
+      requestAnimationFrame(() => {
+        textarea.focus();
+        const newCursorPos = start + emoji.length;
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+      });
+    },
+    [text],
   );
 
   const handleSend = useCallback(() => {
@@ -53,6 +95,7 @@ export function ChatInputArea({
     setText('');
     setMentions([]);
     setActiveMention(null);
+    setShowEmojiPicker(false);
 
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -246,6 +289,49 @@ export function ChatInputArea({
       {/* Upload Error */}
       {uploadError && <div className="chat-upload-error">{uploadError}</div>}
 
+      {/* Emoji Picker */}
+      {showEmojiPicker && (
+        <div ref={emojiPickerRef} className="chat-emoji-picker">
+          <div className="chat-emoji-grid">
+            {[
+              '😀',
+              '😂',
+              '🥰',
+              '😍',
+              '🤔',
+              '👍',
+              '👎',
+              '🙏',
+              '🔥',
+              '❤️',
+              '🎉',
+              '✅',
+              '⚠️',
+              '❌',
+              '📎',
+              '📅',
+              '🕐',
+              '👋',
+              '🤝',
+              '🚀',
+              '💡',
+              '🔴',
+              '🟢',
+              '🔵',
+            ].map((emoji) => (
+              <button
+                key={emoji}
+                type="button"
+                className="chat-emoji-btn"
+                onClick={() => insertEmoji(emoji)}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Input Row */}
       <div className="chat-input-area">
         {/* Attach Button */}
@@ -282,6 +368,31 @@ export function ChatInputArea({
             />
           </>
         )}
+
+        {/* Emoji Button */}
+        <button
+          type="button"
+          className="chat-emoji-toggle-btn"
+          onClick={() => setShowEmojiPicker((v) => !v)}
+          disabled={isInputDisabled}
+          aria-label="Chọn emoji"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+            <line x1="9" y1="9" x2="9.01" y2="9" />
+            <line x1="15" y1="9" x2="15.01" y2="9" />
+          </svg>
+        </button>
 
         <textarea
           ref={textareaRef}

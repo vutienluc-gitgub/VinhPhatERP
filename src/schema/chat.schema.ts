@@ -59,6 +59,15 @@ export interface ChatRoom {
   updated_at: string;
 }
 
+export interface ChatReaction {
+  id: string;
+  message_id: string;
+  user_id: string;
+  user_name: string;
+  emoji: string;
+  created_at: string;
+}
+
 export interface ChatMessage {
   id: string;
   client_id: string;
@@ -75,6 +84,7 @@ export interface ChatMessage {
   pinned_at: string | null;
   pinned_by: string | null;
   mentions?: ChatMention[];
+  reactions?: ChatReaction[];
 }
 
 export interface UnifiedTimelineItem extends ChatMessage {
@@ -97,6 +107,16 @@ export interface ChatParticipant {
 
 export interface OptimisticChatMessage extends ChatMessage {
   _optimistic?: boolean;
+}
+
+/**
+ * Type guard to check if a message is an optimistic (pending) message.
+ * Optimistic messages are created client-side before server confirmation.
+ */
+export function isOptimisticMessage(
+  message: ChatMessage,
+): message is OptimisticChatMessage {
+  return (message as OptimisticChatMessage)._optimistic === true;
 }
 
 // ── API Response Schema ──
@@ -158,6 +178,7 @@ export const CHAT_LABELS = {
   PIN_MESSAGE: 'Ghim tin nhắn',
   UNPIN_MESSAGE: 'Bỏ ghim',
   PINNED_MESSAGES: 'Tin nhắn đã ghim',
+  COPY_TEXT: 'Sao chép nội dung',
   DEPARTMENT: 'Bộ phận',
   UNKNOWN_USER: 'Chưa rõ tên',
   MENTION_DOC_ICON: '📄',

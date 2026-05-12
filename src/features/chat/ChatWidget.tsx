@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useChatRoom, useUnreadCount, useMarkAsRead } from '@/application/chat';
-import { ChatDrawer } from '@/features/chat/ChatDrawer';
 import { CHAT_LABELS } from '@/schema/chat.schema';
+
+import { ChatDrawer } from './ChatDrawer';
 
 interface ChatWidgetProps {
   entityType: string;
@@ -38,14 +39,6 @@ export function ChatWidget({
       markAsRead();
     }
   }, [open, roomId, markAsRead]);
-
-  // Expose open room ID for global notification filtering
-  const openRoomIds = useMemo(
-    () => (open && roomId ? new Set([roomId]) : new Set<string>()),
-    [open, roomId],
-  );
-  // Note: openRoomIds can be passed to useChatNotifications in a parent layout
-  void openRoomIds;
 
   return (
     <>
