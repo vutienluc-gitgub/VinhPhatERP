@@ -60,6 +60,20 @@ export function useYarnCatalogColumns(
           );
         },
       }),
+      columnHelper.accessor('category', {
+        header: 'Nhóm sợi',
+        cell: (info) => {
+          const c = info.row.original;
+          return (
+            <span
+              className="text-sm block truncate max-w-[120px]"
+              title={c.category ?? ''}
+            >
+              {c.category ?? '—'}
+            </span>
+          );
+        },
+      }),
       columnHelper.accessor('lot_no', {
         header: 'Mã lô',
         cell: (info) => {
