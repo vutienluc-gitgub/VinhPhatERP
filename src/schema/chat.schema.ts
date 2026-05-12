@@ -11,7 +11,12 @@ export const CHAT_ROOM_STATUS_LABELS: Record<ChatRoomStatus, string> = {
 
 // ── Message Type ──
 
-export type ChatMessageType = 'text' | 'image' | 'system' | 'system_epod';
+export type ChatMessageType =
+  | 'text'
+  | 'image'
+  | 'system'
+  | 'system_epod'
+  | 'file';
 
 // ── Message Status ──
 
@@ -41,8 +46,11 @@ const chatMentionSchema = z.object({
 
 export const chatMessageInputSchema = z.object({
   content: z.string().trim().min(1, 'Noi dung khong duoc de trong').max(2000),
-  messageType: z.enum(['text', 'image', 'system']).default('text'),
+  messageType: z.enum(['text', 'image', 'system', 'file']).default('text'),
   imageUrl: z.string().url().optional(),
+  fileUrl: z.string().url().optional(),
+  fileName: z.string().optional(),
+  fileType: z.string().optional(),
 });
 
 export type ChatMessageInput = z.infer<typeof chatMessageInputSchema>;
@@ -77,6 +85,9 @@ export interface ChatMessage {
   message_type: ChatMessageType;
   content: string;
   image_url: string | null;
+  file_url: string | null;
+  file_name: string | null;
+  file_type: string | null;
   status: ChatMessageStatus;
   created_at: string;
   deleted_at: string | null;
@@ -85,6 +96,8 @@ export interface ChatMessage {
   pinned_by: string | null;
   mentions?: ChatMention[];
   reactions?: ChatReaction[];
+  read_at: string | null;
+  read_by: string | null;
 }
 
 export interface UnifiedTimelineItem extends ChatMessage {

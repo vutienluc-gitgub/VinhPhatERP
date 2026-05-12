@@ -9,6 +9,26 @@ const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
 
+const ALLOWED_FILE_TYPES = [
+  'application/pdf',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+] as const;
+
+const FILE_TYPE_LABELS: Record<string, string> = {
+  'application/pdf': 'PDF',
+  'application/vnd.ms-excel': 'Excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Excel',
+  'application/msword': 'Word',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+    'Word',
+};
+
+const FILE_MAX_SIZE_MB = 10;
+const FILE_MAX_SIZE_BYTES = FILE_MAX_SIZE_MB * 1024 * 1024;
+
 const COMPRESSION_OPTIONS = {
   maxSizeMB: 1,
   maxWidthOrHeight: 1920,
@@ -21,6 +41,8 @@ export interface ChatUploadResult {
   publicUrl: string;
   path: string;
   size: number;
+  fileName: string;
+  fileType: string;
 }
 
 /**
@@ -126,6 +148,8 @@ export async function uploadChatImage(
     publicUrl: urlData.signedUrl,
     path,
     size: compressed.size,
+    fileName: file.name,
+    fileType: 'image/jpeg',
   };
 }
 
@@ -170,5 +194,67 @@ export async function uploadChatPdf(
     publicUrl: urlData.signedUrl,
     path,
     size: file.size,
+    fileName: file.name,
+    fileType: file.type,
   };
+}
+
+/**
+ * Upload a generic file (PDF, Excel, Word) to Supabase Storage.
+ */
+export async function uploadChatFile(
+  file: File,
+  roomId: string,
+): Promise<ChatUploadResult> {
+  if (
+    !ALLOWED_FILE_TYPES.includes(
+      file.type as (typeof ALLOWED_FILE_TYPES)[number],
+    )
+  ) {
+    throw new Error(
+      `Dinh dang khong hop le. Chi chap nhan: ${ALLOWED_FILE_TYPES.join(', ')}`,
+    );
+  }
+
+  if (file.size > FILE_MAX_SIZE_BYTES) {
+    throw new Error(`File khong duoc vuot qua ${FILE_MAX_SIZE_MB}MB`);
+  }
+
+  const extension = file.name.split('.').pop() ?? 'bin';
+  const tenantId = await getTenantId();
+  const path = buildStoragePath(tenantId, roomId, extension);
+
+  const { error } = await supabase.storage
+    .from(CHAT_BUCKET)
+    .upload(path, file, {
+      contentType: file.type,
+      upsert: false,
+    });
+
+  if (error) {
+    throw new Error(`Upload that bai: ${error.message}`);
+  }
+
+  const { data: urlData, error: signError } = await supabase.storage
+    .from(CHAT_BUCKET)
+    .createSignedUrl(path, 60 * 60 * 24 * 3650);
+
+  if (signError) {
+    throw new Error(`Khong the tao Signed URL: ${signError.message}`);
+  }
+
+  return {
+    publicUrl: urlData.signedUrl,
+    path,
+    size: file.size,
+    fileName: file.name,
+    fileType: file.type,
+  };
+}
+
+/**
+ * Get file type label for display.
+ */
+export function getFileTypeLabel(fileType: string): string {
+  return FILE_TYPE_LABELS[fileType] || 'File';
 }

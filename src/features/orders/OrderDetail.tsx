@@ -27,6 +27,7 @@ import type { ProductCategory } from '@/schema/order.schema';
 import { isOrderEditable } from '@/domain/orders/OrderStateMachine';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { Badge } from '@/shared/components/Badge';
+import { ChatWidget } from '@/features/chat';
 
 import { OrderAuditLogViewer } from './OrderAuditLogViewer';
 import type { Order } from './types';
@@ -438,6 +439,14 @@ export function OrderDetail({
 
       {/* Lịch sử hoạt động (Audit Logs) */}
       <OrderAuditLogViewer orderId={orderId} />
+
+      {/* Chat Widget */}
+      <ChatWidget
+        entityType="order"
+        entityId={orderId}
+        title={order.order_number}
+        subtitle={`Đơn hàng ${ORDER_TYPE_LABELS[order.order_type as keyof typeof ORDER_TYPE_LABELS]}`}
+      />
     </div>
   );
 }

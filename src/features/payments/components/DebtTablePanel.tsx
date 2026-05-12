@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { Badge, Icon, DataTable } from '@/shared/components';
+import { Badge, Icon, DataTable, Button } from '@/shared/components';
 import type { DataTableColumn } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import {
@@ -149,6 +149,7 @@ export function DebtMobileCard({
   paidLabel,
   countLabel,
   progressLabel,
+  onPay,
 }: {
   name: string;
   code: string | null | undefined;
@@ -161,6 +162,7 @@ export function DebtMobileCard({
   paidLabel: string;
   countLabel: string;
   progressLabel: string;
+  onPay?: () => void;
 }) {
   const paidPercent = calculatePaymentPercentage(totalAmount, totalPaid);
 
@@ -207,6 +209,21 @@ export function DebtMobileCard({
             />
           </div>
         </div>
+        {onPay && (
+          <div className="pt-2 border-t border-border mt-2">
+            <Button
+              variant="primary"
+              className="w-full justify-center"
+              onClick={(e) => {
+                e.stopPropagation();
+                onPay();
+              }}
+              disabled={balanceDue <= 0}
+            >
+              Thanh toán
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

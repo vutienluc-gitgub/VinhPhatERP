@@ -17,6 +17,7 @@ import {
   updateReadReceipt,
   addReaction,
   removeReaction,
+  searchMessages,
 } from '@/api/chat.api';
 import type {
   ChatMessage,
@@ -29,11 +30,17 @@ import {
   broadcastConnectionStatus,
   onBroadcastMessage,
 } from '@/shared/lib/chat-broadcast';
+import { useAuth } from '@/shared/hooks/useAuth';
 import {
   enqueueMessage,
   getQueuedMessages,
   dequeueMessage,
 } from '@/shared/lib/chat-offline-queue';
+import {
+  broadcastTypingStart,
+  broadcastTypingStop,
+  onTypingEvent,
+} from '@/shared/lib/chat-typing';
 import { supabase } from '@/services/supabase/client';
 
 // ── Query Keys ──
@@ -128,8 +135,11 @@ export function useSendMessage(roomId: string | undefined) {
     mutationFn: async (params: {
       clientId: string;
       content?: string;
-      messageType?: 'text' | 'image' | 'system';
+      messageType?: 'text' | 'image' | 'system' | 'file';
       imageUrl?: string;
+      fileUrl?: string;
+      fileName?: string;
+      fileType?: string;
       mentions?: ChatMention[];
     }) => {
       if (!roomId) throw new Error('Room ID is required');
@@ -142,6 +152,9 @@ export function useSendMessage(roomId: string | undefined) {
           content: params.content || '',
           messageType: params.messageType ?? 'text',
           imageUrl: params.imageUrl,
+          fileUrl: params.fileUrl,
+          fileName: params.fileName,
+          fileType: params.fileType,
           queuedAt: Date.now(),
         });
         // Return a synthetic response so optimistic UI stays
@@ -154,9 +167,14 @@ export function useSendMessage(roomId: string | undefined) {
           message_type: params.messageType ?? 'text',
           content: params.content,
           image_url: params.imageUrl ?? null,
+          file_url: params.fileUrl ?? null,
+          file_name: params.fileName ?? null,
+          file_type: params.fileType ?? null,
           status: 'pending' as const,
           created_at: new Date().toISOString(),
           deleted_at: null,
+          read_at: null,
+          read_by: null,
         };
       }
 
@@ -179,9 +197,13 @@ export function useSendMessage(roomId: string | undefined) {
         message_type: (params.messageType ?? 'text') as
           | 'text'
           | 'image'
-          | 'system',
+          | 'system'
+          | 'file',
         content: params.content || '',
         image_url: params.imageUrl ?? null,
+        file_url: params.fileUrl ?? null,
+        file_name: params.fileName ?? null,
+        file_type: params.fileType ?? null,
         status: 'pending',
         created_at: new Date().toISOString(),
         deleted_at: null,
@@ -189,6 +211,8 @@ export function useSendMessage(roomId: string | undefined) {
         pinned_at: null,
         pinned_by: null,
         mentions: params.mentions,
+        read_at: null,
+        read_by: null,
         _optimistic: true,
       };
 
@@ -312,6 +336,108 @@ export function useRemoveReaction(roomId: string | undefined) {
       }
     },
   });
+}
+
+// ── Search Messages ──
+
+export function useSearchMessages(roomId: string | undefined, query: string) {
+  return useQuery({
+    queryKey: ['chat-search', roomId, query],
+    queryFn: () => searchMessages({ roomId: roomId!, query }),
+    enabled: !!roomId && query.trim().length > 0,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+// ── Typing Indicator ──
+
+const TYPING_EXPIRY_MS = 3000; // 3 seconds
+
+export function useTypingIndicator(roomId: string | undefined) {
+  const [typingUsers, setTypingUsers] = useState<
+    Array<{ userId: string; userName: string; timestamp: number }>
+  >([]);
+  const { profile, user } = useAuth();
+
+  // Track typing timestamps for expiry
+  const typingTimestampsRef = useRef<Map<string, number>>(new Map());
+
+  useEffect(() => {
+    if (!roomId) return;
+
+    const unsubscribe = onTypingEvent((message) => {
+      if (message.roomId !== roomId) return;
+      if (message.userId === user?.id) return; // Ignore own typing events
+
+      if (message.type === 'typing_start') {
+        typingTimestampsRef.current.set(message.userId, message.timestamp);
+        setTypingUsers((prev) => {
+          const exists = prev.find((u) => u.userId === message.userId);
+          if (exists) return prev;
+          return [
+            ...prev,
+            {
+              userId: message.userId,
+              userName: message.userName,
+              timestamp: message.timestamp,
+            },
+          ];
+        });
+      } else if (message.type === 'typing_stop') {
+        typingTimestampsRef.current.delete(message.userId);
+        setTypingUsers((prev) =>
+          prev.filter((u) => u.userId !== message.userId),
+        );
+      }
+    });
+
+    return unsubscribe;
+  }, [roomId, user?.id]);
+
+  // Cleanup expired typing states
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const expiredUserIds: string[] = [];
+
+      for (const [userId, timestamp] of typingTimestampsRef.current.entries()) {
+        if (now - timestamp > TYPING_EXPIRY_MS) {
+          expiredUserIds.push(userId);
+        }
+      }
+
+      if (expiredUserIds.length > 0) {
+        for (const userId of expiredUserIds) {
+          typingTimestampsRef.current.delete(userId);
+        }
+        setTypingUsers((prev) =>
+          prev.filter((u) => !expiredUserIds.includes(u.userId)),
+        );
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const startTyping = useCallback(() => {
+    if (!roomId || !profile) return;
+    broadcastTypingStart({
+      roomId,
+      userId: profile.id,
+      userName: profile.full_name || 'Unknown',
+    });
+  }, [roomId, profile]);
+
+  const stopTyping = useCallback(() => {
+    if (!roomId || !profile) return;
+    broadcastTypingStop({
+      roomId,
+      userId: profile.id,
+      userName: profile.full_name || 'Unknown',
+    });
+  }, [roomId, profile]);
+
+  return { typingUsers, startTyping, stopTyping };
 }
 
 // ── Realtime Subscription (with Reconnection + Multi-tab Broadcast) ──

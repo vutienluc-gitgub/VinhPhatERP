@@ -7,9 +7,14 @@ export const YARN_CATALOG_MESSAGES = {
   NOT_FOUND_DESC: 'Thử điều chỉnh bộ lọc.',
   BTN_ADD: '+ Thêm loại sợi',
   LOAD_ERROR: 'Lỗi tải dữ liệu',
+  DELETE_ERROR: 'Lỗi xóa',
   DELETE_CONFIRM: 'Xóa loại sợi "{name}"? Hành động này không thể hoàn tác.',
   EXPORT_FILENAME: 'Danh_Muc_Soi',
   PAGINATION_LABEL: 'loại sợi',
+  ARIA_LIST_CONTAINER: 'Danh sách danh mục sợi',
+  ARIA_ADD_NEW: 'Thêm loại sợi mới',
+  ARIA_FILTER_BAR: 'Bộ lọc danh sách',
+  ARIA_DATA_TABLE: 'Bảng dữ liệu mã sợi',
 } as const;
 
 export const YARN_CATALOG_FILTER_SCHEMA: FilterFieldConfig[] = [

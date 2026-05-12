@@ -9,21 +9,27 @@ import {
 } from 'react';
 
 import { CHAT_LABELS, type ChatMention } from '@/schema/chat.schema';
-import { uploadChatImage } from '@/shared/lib/chat-storage';
+import { uploadChatImage, uploadChatFile } from '@/shared/lib/chat-storage';
 import { useMentionsSearch, type MentionOption } from '@/application/chat';
 
 interface ChatInputAreaProps {
   onSend: (content: string, mentions?: ChatMention[]) => void;
   onSendImage?: (imageUrl: string) => void;
+  onSendFile?: (fileUrl: string, fileName: string, fileType: string) => void;
   roomId?: string;
   disabled?: boolean;
+  onTypingStart?: () => void;
+  onTypingStop?: () => void;
 }
 
 export function ChatInputArea({
   onSend,
   onSendImage,
+  onSendFile,
   roomId,
   disabled,
+  onTypingStart,
+  onTypingStop,
 }: ChatInputAreaProps) {
   const [text, setText] = useState('');
   const [mentions, setMentions] = useState<ChatMention[]>([]);
@@ -35,8 +41,14 @@ export function ChatInputArea({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewFile, setPreviewFile] = useState<{
+    url: string;
+    name: string;
+    type: string;
+  } | null>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
 
@@ -96,11 +108,35 @@ export function ChatInputArea({
     setMentions([]);
     setActiveMention(null);
     setShowEmojiPicker(false);
+    onTypingStop?.();
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
 
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
     }
-  }, [text, mentions, disabled, isUploading, onSend]);
+  }, [text, mentions, disabled, isUploading, onSend, onTypingStop]);
+
+  const clearPreview = useCallback(() => {
+    setPreviewUrl(null);
+    setPreviewFile(null);
+    setUploadError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, []);
+
+  // Stop typing on blur
+  const handleBlur = useCallback(() => {
+    onTypingStop?.();
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
+  }, [onTypingStop]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -123,6 +159,19 @@ export function ChatInputArea({
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
     setText(val);
+
+    // Typing indicator with debounce
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    if (val.length > 0) {
+      typingTimeoutRef.current = setTimeout(() => {
+        onTypingStart?.();
+      }, 300); // 300ms debounce
+    } else {
+      onTypingStop?.();
+    }
 
     // Simple mention detection
     const cursor = e.target.selectionStart;
@@ -163,27 +212,32 @@ export function ChatInputArea({
     }, 0);
   };
 
-  const clearPreview = useCallback(() => {
-    setPreviewUrl(null);
-    setUploadError(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  }, []);
-
   const processFile = useCallback(
     async (file: File) => {
-      if (!roomId || !onSendImage) return;
+      if (!roomId) return;
 
       setUploadError(null);
       const objectUrl = URL.createObjectURL(file);
-      setPreviewUrl(objectUrl);
 
       setIsUploading(true);
       try {
         if (!roomId) return;
-        const result = await uploadChatImage(file, roomId as string);
-        onSendImage(result.publicUrl);
+
+        // Check if it's an image
+        if (file.type.startsWith('image/')) {
+          setPreviewUrl(objectUrl);
+          const result = await uploadChatImage(file, roomId as string);
+          if (onSendImage) {
+            onSendImage(result.publicUrl);
+          }
+        } else {
+          // It's a file (PDF, Excel, Word)
+          setPreviewFile({ url: objectUrl, name: file.name, type: file.type });
+          const result = await uploadChatFile(file, roomId as string);
+          if (onSendFile) {
+            onSendFile(result.publicUrl, result.fileName, result.fileType);
+          }
+        }
         clearPreview();
       } catch (err) {
         const message =
@@ -194,7 +248,7 @@ export function ChatInputArea({
         URL.revokeObjectURL(objectUrl);
       }
     },
-    [roomId, onSendImage, clearPreview],
+    [roomId, onSendImage, onSendFile, clearPreview],
   );
 
   const handlePaste = useCallback(
@@ -241,6 +295,57 @@ export function ChatInputArea({
               {CHAT_LABELS.LOADING}
             </span>
           )}
+          {!isUploading && (
+            <button
+              type="button"
+              className="chat-preview-close"
+              onClick={clearPreview}
+              aria-label={CHAT_LABELS.CANCEL}
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* File Preview */}
+      {previewFile && (
+        <div className="chat-file-preview">
+          <div className="chat-file-preview-icon">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+          </div>
+          <div className="chat-file-preview-info">
+            <span className="chat-file-preview-name">{previewFile.name}</span>
+            {isUploading && (
+              <span className="chat-preview-uploading">
+                {CHAT_LABELS.LOADING}
+              </span>
+            )}
+          </div>
           {!isUploading && (
             <button
               type="button"
@@ -360,7 +465,7 @@ export function ChatInputArea({
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/jpeg,image/png,image/webp,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
               onChange={(e) => void handleFileSelect(e)}
               className="chat-file-input-hidden"
               aria-hidden="true"
@@ -403,6 +508,7 @@ export function ChatInputArea({
           onKeyDown={handleKeyDown}
           onInput={handleInput}
           onPaste={handlePaste}
+          onBlur={handleBlur}
           disabled={isInputDisabled}
           rows={1}
           aria-label={CHAT_LABELS.TYPE_MESSAGE}

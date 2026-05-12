@@ -6,7 +6,7 @@ import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import {
   useBomList,
   useOrderList,
-  useSuppliersList,
+  useAllSuppliers,
 } from '@/shared/hooks/useFormOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { StepperFooter } from '@/shared/components/StepperFooter';
@@ -72,7 +72,7 @@ export function WorkOrderForm({
 
   const { data: boms } = useBomList({ status: 'approved' });
   const { data: orders } = useOrderList({ status: 'confirmed' }, 1);
-  const { data: suppliersData } = useSuppliersList({
+  const { data: suppliersData } = useAllSuppliers({
     category: 'weaving',
     status: 'active',
   });
@@ -89,12 +89,12 @@ export function WorkOrderForm({
 
   const supplierOptions = useMemo(
     () =>
-      (suppliersData?.data || []).map((s) => ({
+      (suppliersData || []).map((s) => ({
         value: s.id,
         label: s.name,
         code: s.code,
       })),
-    [suppliersData?.data],
+    [suppliersData],
   );
 
   const bomOptions = useMemo(

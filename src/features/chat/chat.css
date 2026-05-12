@@ -1264,3 +1264,410 @@
 .chat-emoji-btn:active {
   transform: scale(0.95);
 }
+
+/* ── File Preview ── */
+
+.chat-file-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--surface-subtle);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.chat-file-preview-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.chat-file-preview-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-file-preview-name {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Message Reactions ── */
+
+.chat-reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.chat-reaction-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.chat-reaction-btn:hover {
+  background: var(--surface-hover);
+}
+
+.chat-reaction-btn--active {
+  background: rgba(var(--primary-rgb), 0.1);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.chat-reaction-emoji {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.chat-reaction-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 16px;
+}
+
+.chat-reaction-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.chat-reaction-add-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--muted);
+  color: var(--text);
+}
+
+.chat-reaction-emoji-picker {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 8px;
+  z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 200px;
+}
+
+.chat-reaction-emoji-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    transform 0.1s;
+}
+
+.chat-reaction-emoji-btn:hover {
+  background: var(--surface-hover);
+  transform: scale(1.1);
+}
+
+.chat-reaction-emoji-btn:active {
+  transform: scale(0.95);
+}
+
+/* ── File Attachment in ChatBubble ── */
+
+.chat-bubble-file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--surface-subtle);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--text);
+  transition: background 0.15s;
+}
+
+.chat-bubble-file:hover {
+  background: var(--surface-hover);
+}
+
+.chat-bubble--mine .chat-bubble-file {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.chat-bubble--mine .chat-bubble-file:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.chat-bubble-file-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.chat-bubble-file-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-bubble-file-name {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-bubble-file-type {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* ── Read Receipts ── */
+
+.chat-bubble-read-receipt {
+  display: inline-flex;
+  align-items: center;
+  color: var(--success);
+  margin-right: 4px;
+}
+
+/* ── Search UI ── */
+
+.chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-search-toggle-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.chat-search-toggle-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.chat-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--surface-subtle);
+  border-bottom: 1px solid var(--border);
+}
+
+.chat-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 0.875rem;
+  color: var(--text);
+  outline: none;
+}
+
+.chat-search-input::placeholder {
+  color: var(--muted);
+}
+
+.chat-search-clear-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.chat-search-clear-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.chat-search-results {
+  max-height: 300px;
+  overflow-y: auto;
+  border-bottom: 1px solid var(--border);
+}
+
+.chat-search-results-header {
+  padding: 8px 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--surface-subtle);
+}
+
+.chat-search-result-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.chat-search-result-item:hover {
+  background: var(--surface-hover);
+}
+
+.chat-search-result-item:last-child {
+  border-bottom: none;
+}
+
+.chat-search-result-time {
+  font-size: 0.6875rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.chat-search-result-content {
+  font-size: 0.875rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-search-empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* ── Typing Indicator ── */
+
+.chat-typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--surface-subtle);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.chat-typing-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.chat-typing-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: typing-bounce 1.4s infinite ease-in-out both;
+}
+
+.chat-typing-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.chat-typing-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes typing-bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+.chat-typing-text {
+  font-style: italic;
+}
+
+/* ── Message Highlight (Search Result Click) ── */
+
+.chat-message-highlight {
+  animation: message-highlight 2s ease-out;
+}
+
+@keyframes message-highlight {
+  0% {
+    background-color: rgba(var(--primary-rgb), 0.3);
+  }
+  100% {
+    background-color: transparent;
+  }
+}

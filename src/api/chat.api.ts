@@ -481,3 +481,23 @@ export async function fetchReactions(
 
   return Array.from(grouped.values());
 }
+
+// ── Search Messages ──
+
+export async function searchMessages(params: {
+  roomId: string;
+  query: string;
+}): Promise<ChatMessage[]> {
+  if (!params.query.trim()) return [];
+
+  const { data, error } = await supabase
+    .from('chat_messages')
+    .select('*')
+    .eq('room_id', params.roomId)
+    .ilike('content', `%${params.query}%`)
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  if (error) throw error;
+  return (data as ChatMessage[]) ?? [];
+}

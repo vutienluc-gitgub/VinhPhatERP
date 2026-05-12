@@ -34,18 +34,21 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
   const tableColumns = useYarnCatalogColumns(onEdit, handleDelete, isDeleting);
 
   return (
-    <div className="panel-card card-flush" aria-label="Danh sách danh mục sợi">
+    <div
+      className="panel-card card-flush"
+      aria-label={YARN_CATALOG_MESSAGES.ARIA_LIST_CONTAINER}
+    >
       {/* Action bar */}
       <div className="card-header-area">
         <AddButton
           onClick={onNew}
           label={YARN_CATALOG_MESSAGES.BTN_ADD}
-          aria-label="Thêm loại sợi mới"
+          aria-label={YARN_CATALOG_MESSAGES.ARIA_ADD_NEW}
         />
       </div>
 
       {/* Filters (Config-Driven) */}
-      <div aria-label="Bộ lọc danh sách">
+      <div aria-label={YARN_CATALOG_MESSAGES.ARIA_FILTER_BAR}>
         <FilterBar
           schema={YARN_CATALOG_FILTER_SCHEMA}
           value={filters}
@@ -67,7 +70,7 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
         {deleteError && (
           <div className="p-4">
             <p className="error-inline-sm" role="alert">
-              Lỗi xóa:{' '}
+              {YARN_CATALOG_MESSAGES.DELETE_ERROR}:{' '}
               {deleteError instanceof Error
                 ? deleteError.message
                 : String(deleteError)}
@@ -77,7 +80,7 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
       </div>
 
       {/* Table & Cards */}
-      <div aria-label="Bảng dữ liệu mã sợi">
+      <div aria-label={YARN_CATALOG_MESSAGES.ARIA_DATA_TABLE}>
         <DataTableAdvanced
           data={catalogs}
           isLoading={isLoading}
