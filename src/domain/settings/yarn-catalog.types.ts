@@ -15,6 +15,7 @@ export type YarnCatalog = {
   lot_no: string | null;
   grade: string | null;
   category: string | null;
+  yarn_type: string | null;
   unit: string;
   notes: string | null;
   status: YarnCatalogStatus;
@@ -28,4 +29,5 @@ export type YarnCatalogFilter = {
   lot_no?: string;
   grade?: string;
   category?: string;
+  yarn_type?: string;
 };

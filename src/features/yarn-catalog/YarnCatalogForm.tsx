@@ -35,6 +35,25 @@ const STATUS_OPTIONS = (['active', 'inactive'] as const).map((s) => ({
   label: YARN_CATALOG_STATUS_LABELS[s],
 }));
 
+const YARN_CATEGORY_OPTIONS = [
+  { value: 'Polyester', label: 'Polyester' },
+  { value: 'Nylon', label: 'Nylon' },
+  { value: 'Cotton', label: 'Cotton' },
+  { value: 'Rayon', label: 'Rayon' },
+  { value: 'Functional', label: 'Functional' },
+  { value: 'Fancy', label: 'Fancy' },
+];
+
+const YARN_TYPE_OPTIONS = [
+  { value: 'DTY', label: 'DTY' },
+  { value: 'FDY', label: 'FDY' },
+  { value: 'POY', label: 'POY' },
+  { value: 'SCY', label: 'SCY' },
+  { value: 'RCY', label: 'RCY' },
+  { value: 'ACY', label: 'ACY' },
+  { value: 'Spandex', label: 'Spandex' },
+];
+
 type YarnCatalogFormProps = {
   catalog: YarnCatalog | null;
   onClose: () => void;
@@ -51,6 +70,7 @@ function catalogToFormValues(catalog: YarnCatalog): YarnCatalogFormValues {
     lot_no: catalog.lot_no ?? '',
     grade: catalog.grade ?? '',
     category: catalog.category ?? '',
+    yarn_type: catalog.yarn_type ?? '',
     unit: catalog.unit,
     notes: catalog.notes ?? '',
     status: catalog.status,
@@ -241,13 +261,36 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
           {/* Nhóm sợi + Đơn vị */}
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
-              <label htmlFor="category">Nhóm sợi (Category)</label>
-              <input
-                id="category"
-                className="field-input"
-                type="text"
-                placeholder="VD: Core Yarns, Specialty Yarns..."
-                {...register('category')}
+              <label htmlFor="category">Category (Level 1)</label>
+              <Controller
+                name="category"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={YARN_CATEGORY_OPTIONS}
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    allowInput={true}
+                    placeholder="VD: Polyester, Nylon..."
+                  />
+                )}
+              />
+            </div>
+
+            <div className="form-field">
+              <label htmlFor="yarn_type">Loại sợi / Type (Level 2)</label>
+              <Controller
+                name="yarn_type"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={YARN_TYPE_OPTIONS}
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    allowInput={true}
+                    placeholder="VD: DTY, FDY, SCY..."
+                  />
+                )}
               />
             </div>
 

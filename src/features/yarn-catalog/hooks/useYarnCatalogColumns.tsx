@@ -61,15 +61,29 @@ export function useYarnCatalogColumns(
         },
       }),
       columnHelper.accessor('category', {
-        header: 'Nhóm sợi',
+        header: 'Nhóm sợi (Lv1)',
         cell: (info) => {
           const c = info.row.original;
           return (
             <span
-              className="text-sm block truncate max-w-[120px]"
+              className="text-sm block truncate max-w-[100px]"
               title={c.category ?? ''}
             >
               {c.category ?? '—'}
+            </span>
+          );
+        },
+      }),
+      columnHelper.accessor('yarn_type', {
+        header: 'Loại sợi (Lv2)',
+        cell: (info) => {
+          const c = info.row.original;
+          return (
+            <span
+              className="text-sm font-medium text-primary block truncate max-w-[100px]"
+              title={c.yarn_type ?? ''}
+            >
+              {c.yarn_type ?? '—'}
             </span>
           );
         },

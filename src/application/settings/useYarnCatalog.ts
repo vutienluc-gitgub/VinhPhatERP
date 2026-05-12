@@ -30,6 +30,7 @@ function toDbRow(
     lot_no: values.lot_no?.trim() || null,
     grade: values.grade?.trim() || null,
     category: values.category?.trim() || null,
+    yarn_type: values.yarn_type?.trim() || null,
     unit: values.unit.trim(),
     notes: values.notes?.trim() || null,
     status: values.status,
