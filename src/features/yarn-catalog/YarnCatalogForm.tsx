@@ -50,6 +50,7 @@ function catalogToFormValues(catalog: YarnCatalog): YarnCatalogFormValues {
     origin: catalog.origin ?? '',
     lot_no: catalog.lot_no ?? '',
     grade: catalog.grade ?? '',
+    category: catalog.category ?? '',
     unit: catalog.unit,
     notes: catalog.notes ?? '',
     status: catalog.status,
@@ -237,8 +238,19 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
             </div>
           </div>
 
-          {/* Đơn vị + Trạng thái */}
+          {/* Nhóm sợi + Đơn vị */}
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+            <div className="form-field">
+              <label htmlFor="category">Nhóm sợi (Category)</label>
+              <input
+                id="category"
+                className="field-input"
+                type="text"
+                placeholder="VD: Core Yarns, Specialty Yarns..."
+                {...register('category')}
+              />
+            </div>
+
             <div className="form-field">
               <label htmlFor="unit">
                 Đơn vị <span className="field-required">*</span>

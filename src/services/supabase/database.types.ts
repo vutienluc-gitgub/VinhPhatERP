@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: '14.4';
   };
+  graphql_public: {
+    Tables: {
+      [_ in never]: never;
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json;
+          operationName?: string;
+          query?: string;
+          variables?: Json;
+        };
+        Returns: Json;
+      };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
   public: {
     Tables: {
       background_jobs: {
@@ -1544,6 +1569,7 @@ export type Database = {
           composition: string | null;
           created_at: string;
           id: string;
+          image_url: string | null;
           name: string;
           notes: string | null;
           status: Database['public']['Enums']['active_status'];
@@ -1558,6 +1584,7 @@ export type Database = {
           composition?: string | null;
           created_at?: string;
           id?: string;
+          image_url?: string | null;
           name: string;
           notes?: string | null;
           status?: Database['public']['Enums']['active_status'];
@@ -1572,6 +1599,7 @@ export type Database = {
           composition?: string | null;
           created_at?: string;
           id?: string;
+          image_url?: string | null;
           name?: string;
           notes?: string | null;
           status?: Database['public']['Enums']['active_status'];
@@ -1591,6 +1619,130 @@ export type Database = {
           },
         ];
       };
+      fabric_variants: {
+        Row: {
+          actual_gsm: number | null;
+          actual_width_cm: number | null;
+          barcode: string | null;
+          base_uom: Database['public']['Enums']['fabric_uom'];
+          color_hex: string | null;
+          color_name: string;
+          conversion_rate: number | null;
+          created_at: string;
+          fabric_catalog_id: string;
+          id: string;
+          image_url: string | null;
+          lot_number: string | null;
+          moq: number | null;
+          notes: string | null;
+          purchase_price: number | null;
+          selling_price: number | null;
+          shrinkage_rate_warp: number | null;
+          shrinkage_rate_weft: number | null;
+          sku: string | null;
+          status: Database['public']['Enums']['fabric_variant_status'];
+          supplier_id: string | null;
+          tenant_id: string | null;
+          updated_at: string;
+          variant_code: string;
+        };
+        Insert: {
+          actual_gsm?: number | null;
+          actual_width_cm?: number | null;
+          barcode?: string | null;
+          base_uom?: Database['public']['Enums']['fabric_uom'];
+          color_hex?: string | null;
+          color_name: string;
+          conversion_rate?: number | null;
+          created_at?: string;
+          fabric_catalog_id: string;
+          id?: string;
+          image_url?: string | null;
+          lot_number?: string | null;
+          moq?: number | null;
+          notes?: string | null;
+          purchase_price?: number | null;
+          selling_price?: number | null;
+          shrinkage_rate_warp?: number | null;
+          shrinkage_rate_weft?: number | null;
+          sku?: string | null;
+          status?: Database['public']['Enums']['fabric_variant_status'];
+          supplier_id?: string | null;
+          tenant_id?: string | null;
+          updated_at?: string;
+          variant_code: string;
+        };
+        Update: {
+          actual_gsm?: number | null;
+          actual_width_cm?: number | null;
+          barcode?: string | null;
+          base_uom?: Database['public']['Enums']['fabric_uom'];
+          color_hex?: string | null;
+          color_name?: string;
+          conversion_rate?: number | null;
+          created_at?: string;
+          fabric_catalog_id?: string;
+          id?: string;
+          image_url?: string | null;
+          lot_number?: string | null;
+          moq?: number | null;
+          notes?: string | null;
+          purchase_price?: number | null;
+          selling_price?: number | null;
+          shrinkage_rate_warp?: number | null;
+          shrinkage_rate_weft?: number | null;
+          sku?: string | null;
+          status?: Database['public']['Enums']['fabric_variant_status'];
+          supplier_id?: string | null;
+          tenant_id?: string | null;
+          updated_at?: string;
+          variant_code?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'fabric_variants_fabric_catalog_id_fkey';
+            columns: ['fabric_catalog_id'];
+            isOneToOne: false;
+            referencedRelation: 'fabric_catalogs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'fabric_variants_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'suppliers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'fabric_variants_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_debt';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'fabric_variants_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_full';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'fabric_variants_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_performance';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'fabric_variants_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       finished_fabric_rolls: {
         Row: {
           color_code: string | null;
@@ -1600,6 +1752,7 @@ export type Database = {
           fabric_type: string;
           gsm: number | null;
           id: string;
+          image_url: string | null;
           length_m: number | null;
           lot_number: string | null;
           notes: string | null;
@@ -1628,6 +1781,7 @@ export type Database = {
           fabric_type: string;
           gsm?: number | null;
           id?: string;
+          image_url?: string | null;
           length_m?: number | null;
           lot_number?: string | null;
           notes?: string | null;
@@ -1656,6 +1810,7 @@ export type Database = {
           fabric_type?: string;
           gsm?: number | null;
           id?: string;
+          image_url?: string | null;
           length_m?: number | null;
           lot_number?: string | null;
           notes?: string | null;
@@ -5223,6 +5378,7 @@ export type Database = {
       };
       yarn_catalogs: {
         Row: {
+          category: string | null;
           code: string;
           color_name: string | null;
           composition: string | null;
@@ -5240,6 +5396,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
+          category?: string | null;
           code: string;
           color_name?: string | null;
           composition?: string | null;
@@ -5257,6 +5414,7 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
+          category?: string | null;
           code?: string;
           color_name?: string | null;
           composition?: string | null;
@@ -6279,6 +6437,10 @@ export type Database = {
         Args: { p_header: Json; p_items: Json };
         Returns: Json;
       };
+      rpc_delete_fabric_catalog: {
+        Args: { p_fabric_id: string };
+        Returns: undefined;
+      };
       rpc_delete_shipment: {
         Args: { p_shipment_id: string };
         Returns: undefined;
@@ -6669,6 +6831,8 @@ export type Database = {
         | 'logistics'
         | 'equipment'
         | 'other';
+      fabric_uom: 'meter' | 'yard' | 'kg';
+      fabric_variant_status: 'active' | 'draft' | 'discontinued';
       inventory_item_type: 'yarn' | 'raw_fabric' | 'finished_fabric';
       order_status:
         | 'pending_review'
@@ -6729,7 +6893,7 @@ export type Database = {
         | 'payment'
         | 'adjustment'
         | 'return_credit';
-      uom_type: 'kg' | 'cây' | 'mét' | 'cuộn';
+      uom_type: 'kg' | 'c├óy' | 'm├⌐t' | 'cuß╗Ön';
       user_role:
         | 'admin'
         | 'manager'
@@ -6872,6 +7036,9 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       account_type: ['cash', 'bank'],
@@ -6916,6 +7083,8 @@ export const Constants = {
         'equipment',
         'other',
       ],
+      fabric_uom: ['meter', 'yard', 'kg'],
+      fabric_variant_status: ['active', 'draft', 'discontinued'],
       inventory_item_type: ['yarn', 'raw_fabric', 'finished_fabric'],
       order_status: [
         'pending_review',
@@ -6985,7 +7154,7 @@ export const Constants = {
         'adjustment',
         'return_credit',
       ],
-      uom_type: ['kg', 'cây', 'mét', 'cuộn'],
+      uom_type: ['kg', 'c├óy', 'm├⌐t', 'cuß╗Ön'],
       user_role: [
         'admin',
         'manager',
