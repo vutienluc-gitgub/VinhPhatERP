@@ -286,6 +286,103 @@ export function YarnReceiptItemRow({
         </div>
       </div>
 
+      {/* ── Thông tin từ tem nhãn nhà sản xuất ── */}
+      <div className="form-grid form-grid-auto">
+        <div className="form-field">
+          <label htmlFor={`items.${index}.netWeight`}>N.W (KL tịnh)</label>
+          <Controller
+            name={`items.${index}.netWeight` as const}
+            control={control}
+            render={({ field }) => (
+              <FormattedInput
+                id={`items.${index}.netWeight`}
+                className={`field-input${itemErrors?.netWeight ? ' is-error' : ''}`}
+                value={field.value}
+                onChange={(val) => field.onChange(val ?? null)}
+                onBlur={field.onBlur}
+                placeholder="VD: 27.0"
+              />
+            )}
+          />
+          {itemErrors?.netWeight && (
+            <span className="field-error">{itemErrors.netWeight.message}</span>
+          )}
+        </div>
+
+        <div className="form-field">
+          <label htmlFor={`items.${index}.grossWeight`}>G.W (KL gộp)</label>
+          <Controller
+            name={`items.${index}.grossWeight` as const}
+            control={control}
+            render={({ field }) => (
+              <FormattedInput
+                id={`items.${index}.grossWeight`}
+                className={`field-input${itemErrors?.grossWeight ? ' is-error' : ''}`}
+                value={field.value}
+                onChange={(val) => field.onChange(val ?? null)}
+                onBlur={field.onBlur}
+                placeholder="VD: 31.0"
+              />
+            )}
+          />
+          {itemErrors?.grossWeight && (
+            <span className="field-error">
+              {itemErrors.grossWeight.message}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="form-grid form-grid-auto">
+        <div className="form-field">
+          <label htmlFor={`items.${index}.serialNumber`}>Serial Number</label>
+          <input
+            id={`items.${index}.serialNumber`}
+            className="field-input"
+            type="text"
+            placeholder="VD: 4610037442 DYA5-DA"
+            {...register(`items.${index}.serialNumber` as const)}
+          />
+        </div>
+
+        <div className="form-field">
+          <label htmlFor={`items.${index}.productionWeek`}>
+            Tuần SX (Week)
+          </label>
+          <input
+            id={`items.${index}.productionWeek`}
+            className="field-input"
+            type="number"
+            min={1}
+            max={53}
+            placeholder="VD: 8"
+            {...register(`items.${index}.productionWeek` as const, {
+              setValueAs: (v: string) => {
+                if (v === '' || v === null || v === undefined) return null;
+                const n = Number(v);
+                return Number.isNaN(n) ? null : n;
+              },
+            })}
+          />
+          {itemErrors?.productionWeek && (
+            <span className="field-error">
+              {itemErrors.productionWeek.message}
+            </span>
+          )}
+        </div>
+
+        <div className="form-field">
+          <label htmlFor={`items.${index}.dist`}>Dist</label>
+          <input
+            id={`items.${index}.dist`}
+            className="field-input"
+            type="text"
+            placeholder="VD: A, B..."
+            {...register(`items.${index}.dist` as const)}
+          />
+        </div>
+      </div>
+
       <div className="form-grid">
         <div className="form-field">
           <label htmlFor={`items.${index}.notes`}>

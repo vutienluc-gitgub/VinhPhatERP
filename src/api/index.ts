@@ -17,6 +17,6 @@ export * from './fabric-catalog.api';
 export * from './yarn-catalog.api';
 // raw-fabric.api and finished-fabric.api excluded from barrel (InventoryStats name conflict)
 export * from './settings.api';
-export * from './dashboard.api';
+// dashboard.api excluded from barrel (fetchMonthlyRevenue name conflict with reports.api)
 export * from './employees.api';
 export * from './cost-estimations.api';

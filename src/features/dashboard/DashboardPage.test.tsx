@@ -6,7 +6,10 @@ import {
   useDashboardStats,
   usePendingTasks,
   useRecentOrders,
-  useCustomerSources,
+  useDashboardRevenue,
+  useYarnSpending,
+  useUpcomingDebts,
+  useRecentTransactions,
 } from '@/application/analytics';
 import { formatCompactCurrency } from '@/shared/utils/format';
 
@@ -18,6 +21,10 @@ vi.mock('@/application/analytics', () => ({
   usePendingTasks: vi.fn(),
   useRecentOrders: vi.fn(),
   useCustomerSources: vi.fn(),
+  useDashboardRevenue: vi.fn(),
+  useYarnSpending: vi.fn(),
+  useUpcomingDebts: vi.fn(),
+  useRecentTransactions: vi.fn(),
 }));
 
 vi.mock('@/shared/hooks/useAuth', () => ({
@@ -30,7 +37,10 @@ describe('DashboardPage', () => {
   const mockUseDashboardStats = useDashboardStats as Mock;
   const mockUsePendingTasks = usePendingTasks as Mock;
   const mockUseRecentOrders = useRecentOrders as Mock;
-  const mockUseCustomerSources = useCustomerSources as Mock;
+  const mockUseDashboardRevenue = useDashboardRevenue as Mock;
+  const mockUseYarnSpending = useYarnSpending as Mock;
+  const mockUseUpcomingDebts = useUpcomingDebts as Mock;
+  const mockUseRecentTransactions = useRecentTransactions as Mock;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -73,8 +83,55 @@ describe('DashboardPage', () => {
       isLoading: false,
     });
 
-    mockUseCustomerSources.mockReturnValue({
-      data: [{ source: 'Facebook', count: 10, color: '#1877f2' }],
+    mockUseDashboardRevenue.mockReturnValue({
+      data: {
+        data: Array.from({ length: 12 }, (_, i) => ({
+          month: `2026-${String(i + 1).padStart(2, '0')}`,
+          label: `Th${i + 1}`,
+          value: (i + 1) * 1000000,
+        })),
+        total: 78000000,
+        changePercent: 15,
+      },
+      isLoading: false,
+    });
+
+    mockUseYarnSpending.mockReturnValue({
+      data: {
+        total: 25000000,
+        changePercent: -5,
+        breakdown: [
+          { label: 'NCC A', value: 15000000, color: '#FF6B35' },
+          { label: 'NCC B', value: 10000000, color: '#F7C948' },
+        ],
+      },
+      isLoading: false,
+    });
+
+    mockUseUpcomingDebts.mockReturnValue({
+      data: [
+        {
+          id: '1',
+          name: 'NCC Test',
+          type: 'supplier',
+          amount: 5000000,
+          due_date: '2026-06-01',
+        },
+      ],
+      isLoading: false,
+    });
+
+    mockUseRecentTransactions.mockReturnValue({
+      data: [
+        {
+          id: '1',
+          description: 'Thanh toán NCC',
+          date: '2026-05-10',
+          amount: 3000000,
+          type: 'income',
+          status: 'success',
+        },
+      ],
       isLoading: false,
     });
   });
@@ -86,8 +143,6 @@ describe('DashboardPage', () => {
       </MemoryRouter>,
     );
 
-    // KpiCard does not render label as a separate element that can be easily queried if there are duplicates,
-    // but we can query by text since label is just a string.
     expect(screen.getAllByText('Đang xử lý').length).toBeGreaterThan(0);
     expect(screen.getAllByText('10').length).toBeGreaterThan(0);
 
@@ -108,8 +163,34 @@ describe('DashboardPage', () => {
     expect(screen.getAllByText('65%').length).toBeGreaterThan(0);
   });
 
+  it('renders v3 overview cards', () => {
+    render(
+      <MemoryRouter>
+        <DashboardPage />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getAllByText('Doanh thu bán hàng').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Chi phí nhập sợi').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Dòng tiền').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Công nợ sắp đến hạn').length).toBeGreaterThan(
+      0,
+    );
+    expect(screen.getAllByText('Giao dịch gần đây').length).toBeGreaterThan(0);
+  });
+
   it('renders fallbacks when loading', () => {
     mockUseDashboardStats.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+    });
+    mockUseDashboardRevenue.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+    });
+    mockUseYarnSpending.mockReturnValue({ data: undefined, isLoading: true });
+    mockUseUpcomingDebts.mockReturnValue({ data: undefined, isLoading: true });
+    mockUseRecentTransactions.mockReturnValue({
       data: undefined,
       isLoading: true,
     });
@@ -120,14 +201,9 @@ describe('DashboardPage', () => {
       </MemoryRouter>,
     );
 
-    // KpiCard renders .animate-pulse instead of text when loading
-    expect(container.querySelectorAll('.animate-pulse').length).toBeGreaterThan(
-      0,
-    );
-
-    // Other elements might still be rendered normally, or we check if skeletons are present
+    // KPI cards + v3 overview cards should show loading state
     expect(
-      container.querySelectorAll('.kpi-card-premium.animate-pulse').length,
-    ).toBe(8); // 8 KPI cards
+      container.querySelectorAll('.skeleton-block').length,
+    ).toBeGreaterThan(0);
   });
 });

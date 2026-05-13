@@ -40,6 +40,7 @@ const YARN_CATEGORY_OPTIONS = [
   { value: 'Nylon', label: 'Nylon' },
   { value: 'Cotton', label: 'Cotton' },
   { value: 'Rayon', label: 'Rayon' },
+  { value: 'Blend (Poly Cotton...)', label: 'Blend (Poly Cotton...)' },
   { value: 'Functional', label: 'Functional' },
   { value: 'Fancy', label: 'Fancy' },
 ];
@@ -52,6 +53,9 @@ const YARN_TYPE_OPTIONS = [
   { value: 'RCY', label: 'RCY' },
   { value: 'ACY', label: 'ACY' },
   { value: 'Spandex', label: 'Spandex' },
+  { value: 'OE', label: 'OE (Open-End)' },
+  { value: 'CM', label: 'CM (Combed)' },
+  { value: 'CD', label: 'CD (Carded)' },
 ];
 
 type YarnCatalogFormProps = {

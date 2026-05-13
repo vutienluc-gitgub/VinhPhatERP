@@ -6,12 +6,19 @@ import {
   useDashboardStats,
   usePendingTasks,
   useRecentOrders,
-  useCustomerSources,
+  useDashboardRevenue,
+  useYarnSpending,
+  useUpcomingDebts,
+  useRecentTransactions,
 } from '@/application/analytics';
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 
-import { CustomerSourceChart } from './CustomerSourceChart';
+import { RevenueOverviewCard } from './RevenueOverviewCard';
+import { SpendingOverviewCard } from './SpendingOverviewCard';
+import { CashFlowCard } from './CashFlowCard';
+import { UpcomingDebtsCard } from './UpcomingDebtsCard';
+import { RecentTransactionsCard } from './RecentTransactionsCard';
 import { PendingTasksCard } from './PendingTasksCard';
 import { RecentOrdersCard } from './RecentOrdersCard';
 
@@ -20,9 +27,15 @@ export function DashboardPage() {
   const { data: stats, isLoading: statsLoading } = useDashboardStats();
   const pendingTasks = usePendingTasks(stats);
   const { data: recentOrders, isLoading: ordersLoading } = useRecentOrders();
-  const { data: customerSources, isLoading: sourcesLoading } =
-    useCustomerSources();
   const { activeGuides } = useContextualGuide('Dashboard');
+
+  // v3 hooks
+  const { data: revenueResult, isLoading: revenueLoading } =
+    useDashboardRevenue();
+  const { data: spendingResult, isLoading: spendingLoading } =
+    useYarnSpending();
+  const { data: upcomingDebts, isLoading: debtsLoading } = useUpcomingDebts();
+  const { data: transactions, isLoading: txLoading } = useRecentTransactions();
 
   return (
     <div className="page-container">
@@ -41,10 +54,46 @@ export function DashboardPage() {
         </Button>
       </div>
 
+      {/* ── Row 1: Revenue + Spending (2 cols) ── */}
+      <div className="dash-grid dash-grid-row">
+        <RevenueOverviewCard
+          data={revenueResult?.data ?? []}
+          total={revenueResult?.total ?? 0}
+          changePercent={revenueResult?.changePercent ?? null}
+          isLoading={revenueLoading}
+        />
+        <SpendingOverviewCard
+          total={spendingResult?.total ?? 0}
+          changePercent={spendingResult?.changePercent ?? null}
+          breakdown={spendingResult?.breakdown ?? []}
+          isLoading={spendingLoading}
+        />
+      </div>
+
+      {/* ── Row 2: CashFlow + Upcoming Debts (2:1 ratio) ── */}
+      <div className="dash-grid dash-grid-2-1 dash-grid-row">
+        <CashFlowCard
+          revenueData={revenueResult?.data ?? []}
+          revenueTotal={revenueResult?.total ?? 0}
+          isLoading={revenueLoading}
+        />
+        <UpcomingDebtsCard
+          debts={upcomingDebts ?? []}
+          isLoading={debtsLoading}
+        />
+      </div>
+
+      {/* ── Row 3: Recent Transactions (full-width) ── */}
+      <div className="dash-grid-row">
+        <RecentTransactionsCard
+          transactions={transactions ?? []}
+          isLoading={txLoading}
+        />
+      </div>
+
+      {/* ── Row 4: KPI Grid + Quick Actions (preserved from v2) ── */}
       <div className="grid grid-cols-12 gap-6">
-        {/* ── Cột chính (Main Content) - Chiếm 8/12 màn hình lớn ── */}
         <div className="col-span-12 lg:col-span-8 flex flex-col gap-6">
-          {/* ── Top Level KPIs ── */}
           <KpiGrid>
             <KpiCard
               label="Đang xử lý"
@@ -77,7 +126,6 @@ export function DashboardPage() {
             />
           </KpiGrid>
 
-          {/* ── Operational KPIs ── */}
           <KpiGrid>
             <KpiCard
               label="Đơn nháp"
@@ -110,17 +158,8 @@ export function DashboardPage() {
               isLoading={statsLoading}
             />
           </KpiGrid>
-
-          {/* ── Analytics ── */}
-          <div className="h-full">
-            <CustomerSourceChart
-              sources={customerSources ?? []}
-              isLoading={sourcesLoading}
-            />
-          </div>
         </div>
 
-        {/* ── Cột phụ (Widgets) - Chiếm 4/12 màn hình lớn ── */}
         <div className="col-span-12 lg:col-span-4 flex flex-col gap-6">
           <PendingTasksCard tasks={pendingTasks} />
           <RecentOrdersCard
