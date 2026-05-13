@@ -1,0 +1,617 @@
+/* ============================================================
+   Dashboard v3 — Executive Overview
+   Premium glassmorphism + modern financial dashboard
+   ============================================================ */
+
+/* ── Grid Layout ── */
+.dash-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .dash-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dash-grid {
+    gap: 1.5rem;
+  }
+}
+
+.dash-grid-full {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 768px) {
+  .dash-grid-2-1 {
+    grid-template-columns: 1.4fr 1fr;
+  }
+}
+
+.dash-grid-row {
+  margin-bottom: 1.25rem;
+}
+
+/* ── Shared Card Base ── */
+.dash-overview-card,
+.dash-cashflow-card,
+.dash-debts-card,
+.dash-transactions-card {
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(var(--base-rgb), 0.04);
+  transition:
+    box-shadow 200ms ease,
+    border-color 200ms ease;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dash-overview-card:hover,
+.dash-cashflow-card:hover,
+.dash-debts-card:hover,
+.dash-transactions-card:hover {
+  box-shadow: 0 8px 32px rgba(var(--base-rgb), 0.08);
+  border-color: rgba(var(--brand-rgb), 0.15);
+}
+
+/* ── Card Header ── */
+.dash-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.dash-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.dash-card-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.dash-info-icon {
+  color: var(--muted);
+  cursor: help;
+  opacity: 0.5;
+}
+
+.dash-period-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  white-space: nowrap;
+}
+
+/* ── Big Value Display ── */
+.dash-card-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.dash-card-big-value {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* ── Change Badge ── */
+.dash-change-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.dash-change-badge.is-up {
+  color: var(--success);
+  background: rgba(var(--success-rgb), 0.1);
+}
+
+.dash-change-badge.is-down {
+  color: var(--danger);
+  background: rgba(var(--danger-rgb), 0.1);
+}
+
+/* ── Tooltip Preview (inline callout) ── */
+.dash-tooltip-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.65rem;
+  margin-bottom: 0.75rem;
+  width: fit-content;
+}
+
+.dash-tooltip-label {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.dash-tooltip-value {
+  color: var(--text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── SVG Chart ── */
+.dash-chart-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 80px;
+}
+
+.dash-chart-area--tall {
+  min-height: 160px;
+}
+
+.dash-chart-svg {
+  width: 100%;
+  height: 80px;
+}
+
+.dash-chart-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.25rem;
+}
+
+.dash-chart-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: center;
+  flex: 1;
+}
+
+/* ── Spending Breakdown ── */
+.dash-breakdown-area {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dash-breakdown-legends {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+}
+
+.dash-breakdown-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.dash-breakdown-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dash-breakdown-label {
+  font-weight: 600;
+}
+
+.dash-breakdown-amount {
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.dash-breakdown-bar {
+  display: flex;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  gap: 2px;
+}
+
+.dash-breakdown-segment {
+  border-radius: 999px;
+  transition: width 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  min-width: 6px;
+}
+
+/* ── Cash Flow Bar Chart ── */
+.dash-cashflow-card .dash-card-big-value {
+  margin-bottom: 0.5rem;
+}
+
+.dash-cashflow-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.dash-cashflow-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.dash-cashflow-chart {
+  display: flex;
+  gap: 0.5rem;
+  height: 100%;
+  min-height: 140px;
+}
+
+.dash-cashflow-y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+  width: 48px;
+}
+
+.dash-cashflow-y-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.dash-cashflow-bars {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  border-bottom: 1px dashed var(--border);
+  position: relative;
+}
+
+.dash-cashflow-bar-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.dash-cashflow-bar {
+  width: 100%;
+  max-width: 28px;
+  border-radius: 4px 4px 0 0;
+  transition: height 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dash-cashflow-bar.is-active {
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.25);
+}
+
+.dash-cashflow-x-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* ── Upcoming Debts ── */
+.dash-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface-subtle);
+  color: var(--muted);
+  text-decoration: none;
+  transition: all 150ms ease;
+}
+
+.dash-add-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(var(--brand-rgb), 0.06);
+}
+
+.dash-debts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.dash-debt-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.dash-debt-item:last-of-type {
+  border-bottom: none;
+}
+
+.dash-debt-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.dash-debt-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.dash-debt-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-debt-date {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.dash-debt-amount-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+  flex-shrink: 0;
+}
+
+.dash-debt-amount {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.dash-debt-status {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.dash-view-all-link {
+  display: block;
+  text-align: center;
+  padding: 0.75rem 0 0.25rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+  transition: opacity 120ms ease;
+}
+
+.dash-view-all-link:hover {
+  opacity: 0.7;
+}
+
+/* ── Recent Transactions ── */
+.dash-filter-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.dash-tx-table {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+}
+
+.dash-tx-header {
+  display: none;
+}
+
+.dash-tx-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.82rem;
+}
+
+.dash-tx-row:last-child {
+  border-bottom: none;
+}
+
+.dash-tx-col-activity {
+  min-width: 0;
+}
+
+.dash-tx-desc {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.dash-tx-col-date {
+  color: var(--muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.dash-tx-col-amount {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.dash-tx-col-status {
+  text-align: right;
+}
+
+.dash-tx-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.dash-tx-status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.dash-tx-status.is-success {
+  color: var(--success);
+  background: rgba(var(--success-rgb), 0.08);
+}
+
+.dash-tx-status.is-success::before {
+  background: var(--success);
+}
+
+.dash-tx-status.is-pending {
+  color: var(--warning);
+  background: rgba(217, 119, 6, 0.08);
+}
+
+.dash-tx-status.is-pending::before {
+  background: var(--warning);
+}
+
+.dash-tx-status.is-failed {
+  color: var(--danger);
+  background: rgba(var(--danger-rgb), 0.08);
+}
+
+.dash-tx-status.is-failed::before {
+  background: var(--danger);
+}
+
+@media (min-width: 768px) {
+  .dash-tx-header {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr auto;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+}
+
+/* ── Mobile Responsive ── */
+@media (max-width: 639px) {
+  .dash-overview-card,
+  .dash-cashflow-card,
+  .dash-debts-card,
+  .dash-transactions-card {
+    padding: 1.15rem;
+    border-radius: var(--radius-md);
+  }
+
+  .dash-card-big-value {
+    font-size: 1.5rem;
+  }
+
+  .dash-tx-row {
+    grid-template-columns: 1fr auto;
+    gap: 0.25rem;
+  }
+
+  .dash-tx-col-date,
+  .dash-tx-header {
+    display: none;
+  }
+
+  .dash-cashflow-y-axis {
+    display: none;
+  }
+}
+
+/* ── Fade-up Stagger for Dashboard Grid ── */
+.dash-grid > * {
+  animation: fadeUp 0.45s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.dash-grid > *:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.dash-grid > *:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.dash-grid > *:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.dash-grid > *:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.dash-grid > *:nth-child(5) {
+  animation-delay: 0.25s;
+}
+.dash-grid > *:nth-child(6) {
+  animation-delay: 0.3s;
+}

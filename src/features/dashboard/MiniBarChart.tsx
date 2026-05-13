@@ -54,7 +54,7 @@ export function MiniBarChart({
           maxValue > 0 ? Math.min((d.value / maxValue) * 100, 100) : 0;
 
         return (
-          <div key={i} className="flex items-center gap-2.5">
+          <div key={d.label} className="flex items-center gap-2.5">
             {/* Rank — từ codebase */}
             {showRank && (
               <span className="text-[11px] font-bold text-[var(--muted)] w-4 text-right shrink-0">

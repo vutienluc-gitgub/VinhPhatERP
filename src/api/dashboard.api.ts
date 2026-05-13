@@ -2,6 +2,39 @@ import { supabase } from '@/services/supabase/client';
 import { CUSTOMER_SOURCE_LABELS } from '@/schema/customer.schema';
 import { formatCurrency } from '@/shared/utils/format';
 
+/* ============================================================
+   Dashboard v3 — Executive Overview Types
+   ============================================================ */
+
+export type MonthlyDataPoint = {
+  month: string;
+  label: string;
+  value: number;
+};
+
+export type SpendingBreakdown = {
+  label: string;
+  value: number;
+  color: string;
+};
+
+export type UpcomingDebt = {
+  id: string;
+  name: string;
+  type: 'supplier' | 'customer';
+  amount: number;
+  due_date: string;
+};
+
+export type RecentTransaction = {
+  id: string;
+  description: string;
+  date: string;
+  amount: number;
+  type: 'income' | 'expense';
+  status: 'success' | 'pending' | 'failed';
+};
+
 export type DashboardStats = {
   draftOrders: number;
   activeOrders: number;
@@ -233,4 +266,206 @@ export async function fetchCustomerSources(): Promise<CustomerSourceItem[]> {
       count,
       color: SOURCE_COLORS[source] ?? '#6b7280',
     }));
+}
+
+/* ============================================================
+   Dashboard v3 — New Data Fetchers
+   ============================================================ */
+
+const MONTH_LABELS = [
+  'Th1',
+  'Th2',
+  'Th3',
+  'Th4',
+  'Th5',
+  'Th6',
+  'Th7',
+  'Th8',
+  'Th9',
+  'Th10',
+  'Th11',
+  'Th12',
+];
+
+/**
+ * Fetch monthly revenue from confirmed/completed orders for the current year.
+ * Maps to "Doanh thu bán hàng" chart.
+ */
+export async function fetchMonthlyRevenue(): Promise<{
+  data: MonthlyDataPoint[];
+  total: number;
+  changePercent: number | null;
+}> {
+  const now = new Date();
+  const year = now.getFullYear();
+  const startOfYear = `${year}-01-01`;
+  const endOfYear = `${year}-12-31`;
+  const currentMonth = now.getMonth();
+
+  const { data } = await supabase
+    .from('orders')
+    .select('total_amount, created_at')
+    .in('status', ['confirmed', 'in_progress', 'completed'])
+    .gte('created_at', startOfYear)
+    .lte('created_at', endOfYear);
+
+  const monthlyTotals = new Array<number>(12).fill(0);
+  for (const row of data ?? []) {
+    const month = new Date(row.created_at).getMonth();
+    const current = monthlyTotals[month];
+    if (current !== undefined) {
+      monthlyTotals[month] = current + row.total_amount;
+    }
+  }
+
+  const points: MonthlyDataPoint[] = monthlyTotals.map((val, i) => ({
+    month: `${year}-${String(i + 1).padStart(2, '0')}`,
+    label: MONTH_LABELS[i] ?? '',
+    value: val,
+  }));
+
+  const totalCurrent = monthlyTotals[currentMonth] ?? 0;
+  const totalPrev =
+    currentMonth > 0 ? (monthlyTotals[currentMonth - 1] ?? 0) : 0;
+  const changePercent =
+    totalPrev > 0
+      ? Math.round(((totalCurrent - totalPrev) / totalPrev) * 100 * 10) / 10
+      : null;
+
+  const yearTotal = monthlyTotals.reduce((s, v) => s + v, 0);
+
+  return { data: points, total: yearTotal, changePercent };
+}
+
+/**
+ * Fetch yarn purchase spending breakdown for the current month.
+ * Maps to "Chi phí nhập sợi" card.
+ */
+export async function fetchYarnSpending(): Promise<{
+  total: number;
+  changePercent: number | null;
+  breakdown: SpendingBreakdown[];
+}> {
+  const now = new Date();
+  const startOfMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+  const prevMonth = now.getMonth() === 0 ? 12 : now.getMonth();
+  const prevYear =
+    now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+  const startOfPrevMonth = `${prevYear}-${String(prevMonth).padStart(2, '0')}-01`;
+
+  const [currentData, prevData] = await Promise.all([
+    supabase
+      .from('yarn_receipts')
+      .select('total_amount, supplier_id, suppliers(name)')
+      .gte('receipt_date', startOfMonth),
+    supabase
+      .from('yarn_receipts')
+      .select('total_amount')
+      .gte('receipt_date', startOfPrevMonth)
+      .lt('receipt_date', startOfMonth),
+  ]);
+
+  const total = (currentData.data ?? []).reduce(
+    (sum, r) => sum + (r.total_amount ?? 0),
+    0,
+  );
+  const prevTotal = (prevData.data ?? []).reduce(
+    (sum, r) => sum + (r.total_amount ?? 0),
+    0,
+  );
+  const changePercent =
+    prevTotal > 0
+      ? Math.round(((total - prevTotal) / prevTotal) * 100 * 10) / 10
+      : null;
+
+  const bySupplier: Record<string, number> = {};
+  for (const row of currentData.data ?? []) {
+    const supplier = row.suppliers as { name: string } | null;
+    const name = supplier?.name ?? 'Khác';
+    bySupplier[name] = (bySupplier[name] ?? 0) + (row.total_amount ?? 0);
+  }
+
+  const { BREAKDOWN_COLORS } =
+    await import('@/features/dashboard/dashboard.constants');
+  const breakdown: SpendingBreakdown[] = Object.entries(bySupplier)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 5)
+    .map(([label, value], i) => ({
+      label,
+      value,
+      color: BREAKDOWN_COLORS[i % BREAKDOWN_COLORS.length] ?? '#94A3B8',
+    }));
+
+  return { total, changePercent, breakdown };
+}
+
+/**
+ * Fetch upcoming supplier/customer debts sorted by due date.
+ * Maps to "Công nợ sắp đến hạn" card.
+ */
+export async function fetchUpcomingDebts(): Promise<UpcomingDebt[]> {
+  const { data: supplierDebts } = await supabase
+    .from('yarn_receipts')
+    .select('id, total_amount, paid_amount, receipt_date, suppliers(name)')
+    .gt('total_amount', 0)
+    .order('receipt_date', { ascending: true })
+    .limit(20);
+
+  const debts: UpcomingDebt[] = [];
+
+  for (const row of supplierDebts ?? []) {
+    const remaining = (row.total_amount ?? 0) - (row.paid_amount ?? 0);
+    if (remaining <= 0) continue;
+    const supplier = row.suppliers as { name: string } | null;
+    debts.push({
+      id: row.id,
+      name: supplier?.name ?? 'NCC',
+      type: 'supplier',
+      amount: remaining,
+      due_date: row.receipt_date,
+    });
+  }
+
+  const { data: customerDebts } = await supabase
+    .from('orders')
+    .select('id, total_amount, paid_amount, delivery_date, customers(name)')
+    .in('status', ['confirmed', 'in_progress', 'completed'])
+    .order('delivery_date', { ascending: true })
+    .limit(20);
+
+  for (const row of customerDebts ?? []) {
+    const remaining = (row.total_amount ?? 0) - (row.paid_amount ?? 0);
+    if (remaining <= 0) continue;
+    const customer = row.customers as { name: string } | null;
+    debts.push({
+      id: row.id,
+      name: customer?.name ?? 'KH',
+      type: 'customer',
+      amount: remaining,
+      due_date: row.delivery_date ?? '',
+    });
+  }
+
+  return debts.sort((a, b) => a.due_date.localeCompare(b.due_date)).slice(0, 6);
+}
+
+/**
+ * Fetch recent transactions combining payments.
+ * Maps to "Giao dịch gần đây" card.
+ */
+export async function fetchRecentTransactions(): Promise<RecentTransaction[]> {
+  const { data: payments } = await supabase
+    .from('payments')
+    .select('id, amount, payment_date, notes')
+    .order('payment_date', { ascending: false })
+    .limit(5);
+
+  return (payments ?? []).map((p) => ({
+    id: p.id,
+    description: p.notes ?? 'Thanh toán',
+    date: p.payment_date,
+    amount: p.amount,
+    type: 'income' as const,
+    status: 'success' as RecentTransaction['status'],
+  }));
 }

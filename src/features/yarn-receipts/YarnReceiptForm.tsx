@@ -94,6 +94,12 @@ function receiptToFormValues(receipt: YarnReceipt): YarnReceiptsFormValues {
       dtex: it.dtex ?? '',
       twist: it.twist ?? '',
       machineNo: it.machine_no ?? '',
+      netWeight: it.net_weight != null ? Number(it.net_weight) : null,
+      grossWeight: it.gross_weight != null ? Number(it.gross_weight) : null,
+      serialNumber: it.serial_number ?? '',
+      productionWeek:
+        it.production_week != null ? Number(it.production_week) : null,
+      dist: it.dist ?? '',
     })),
   };
 }

@@ -30,6 +30,28 @@ export const yarnReceiptItemSchema = z.object({
   dtex: z.string().trim().max(50).optional().or(z.literal('')),
   twist: z.string().trim().max(50).optional().or(z.literal('')),
   machineNo: z.string().trim().max(50).optional().or(z.literal('')),
+  netWeight: z
+    .number()
+    .min(0, 'KL tịnh >= 0')
+    .nullable()
+    .optional()
+    .default(null),
+  grossWeight: z
+    .number()
+    .min(0, 'KL gộp >= 0')
+    .nullable()
+    .optional()
+    .default(null),
+  serialNumber: z.string().trim().max(100).optional().or(z.literal('')),
+  productionWeek: z
+    .number()
+    .int()
+    .min(1, 'Tuần >= 1')
+    .max(53, 'Tuần <= 53')
+    .nullable()
+    .optional()
+    .default(null),
+  dist: z.string().trim().max(100).optional().or(z.literal('')),
 });
 
 export type YarnReceiptItemFormValues = z.infer<typeof yarnReceiptItemSchema>;
@@ -70,6 +92,11 @@ export const emptyYarnReceiptItem: YarnReceiptItemFormValues = {
   dtex: '',
   twist: '',
   machineNo: '',
+  netWeight: null,
+  grossWeight: null,
+  serialNumber: '',
+  productionWeek: null,
+  dist: '',
 };
 
 export const yarnReceiptsDefaultValues: YarnReceiptsFormValues = {

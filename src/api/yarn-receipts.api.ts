@@ -141,6 +141,11 @@ export type YarnReceiptCreateInput = {
     composition: string | null;
     origin: string | null;
     yarnCatalogId: string | null;
+    netWeight: number | null;
+    grossWeight: number | null;
+    serialNumber: string | null;
+    productionWeek: number | null;
+    dist: string | null;
   }[];
 };
 
@@ -180,6 +185,11 @@ export async function createYarnReceiptFull(
     origin: item.origin?.trim() || null,
     yarn_catalog_id: item.yarnCatalogId?.trim() || null,
     sort_order: idx,
+    net_weight: item.netWeight ?? null,
+    gross_weight: item.grossWeight ?? null,
+    serial_number: item.serialNumber?.trim() || null,
+    production_week: item.productionWeek ?? null,
+    dist: item.dist?.trim() || null,
   }));
 
   const { data, error } = await supabase.rpc('rpc_create_yarn_receipt', {
@@ -228,6 +238,11 @@ export async function updateYarnReceiptFull(
     origin: item.origin?.trim() || null,
     yarn_catalog_id: item.yarnCatalogId?.trim() || null,
     sort_order: idx,
+    net_weight: item.netWeight ?? null,
+    gross_weight: item.grossWeight ?? null,
+    serial_number: item.serialNumber?.trim() || null,
+    production_week: item.productionWeek ?? null,
+    dist: item.dist?.trim() || null,
   }));
 
   const { error } = await supabase.rpc('rpc_update_yarn_receipt', {

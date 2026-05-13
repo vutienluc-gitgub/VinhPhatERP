@@ -4,6 +4,7 @@ import { useQueryInvalidationBridge } from '@/integration/useQueryInvalidationBr
 import { useRealtimeInvalidationBridge } from '@/integration/useRealtimeInvalidationBridge';
 import '@/styles/app-shell.css';
 import '@/styles/data-ui.css';
+import '@/styles/dashboard-v3.css';
 
 function AppContent() {
   // Bridge lắng nghe System Events và cập nhật linh hoạt cache React Query.

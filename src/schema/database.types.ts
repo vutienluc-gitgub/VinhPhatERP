@@ -5469,6 +5469,11 @@ export type Database = {
           unit_price: number;
           yarn_catalog_id: string | null;
           yarn_type: string;
+          net_weight: number | null;
+          gross_weight: number | null;
+          serial_number: string | null;
+          production_week: number | null;
+          dist: string | null;
         };
         Insert: {
           allocated_cost?: number;
@@ -5494,6 +5499,11 @@ export type Database = {
           unit_price?: number;
           yarn_catalog_id?: string | null;
           yarn_type: string;
+          net_weight?: number | null;
+          gross_weight?: number | null;
+          serial_number?: string | null;
+          production_week?: number | null;
+          dist?: string | null;
         };
         Update: {
           allocated_cost?: number;
@@ -5519,6 +5529,11 @@ export type Database = {
           unit_price?: number;
           yarn_catalog_id?: string | null;
           yarn_type?: string;
+          net_weight?: number | null;
+          gross_weight?: number | null;
+          serial_number?: string | null;
+          production_week?: number | null;
+          dist?: string | null;
         };
         Relationships: [
           {
