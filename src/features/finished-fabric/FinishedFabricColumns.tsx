@@ -1,11 +1,7 @@
 import type { ReactNode } from 'react';
+import type { ColumnDef } from '@tanstack/react-table';
 
-import {
-  Badge,
-  Icon,
-  ActionBar,
-  type DataTableColumn,
-} from '@/shared/components';
+import { Badge, Icon, ActionBar } from '@/shared/components';
 import { formatQuantity } from '@/shared/utils/format';
 import { getRollStatusVariant } from '@/shared/utils/status-variant';
 import { ROLL_STATUS_LABELS } from '@/schema/finished-fabric.schema';
@@ -27,14 +23,16 @@ interface ColumnActions {
 
 export function getFinishedFabricColumns(
   actions: ColumnActions,
-): DataTableColumn<FinishedFabricRoll>[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): ColumnDef<FinishedFabricRoll, any>[] {
   return [
     {
-      header: '',
       id: 'thumbnail',
-      className: 'w-12',
-      cell: (r) =>
-        r.image_url ? (
+      header: '',
+      meta: { className: 'w-12' },
+      cell: ({ row }) => {
+        const r = row.original;
+        return r.image_url ? (
           <img
             src={r.image_url}
             alt={r.roll_number}
@@ -45,113 +43,124 @@ export function getFinishedFabricColumns(
           <div className="w-10 h-10 rounded bg-surface-subtle flex items-center justify-center">
             <Icon name="Image" size={16} className="text-muted" />
           </div>
-        ),
+        );
+      },
     },
     {
+      accessorKey: 'roll_number',
       header: 'Mã cuộn',
-      id: 'roll_number',
-      sortable: true,
-      cell: (r) => (
-        <div className="flex flex-col">
-          <span className="font-bold text-primary">{r.roll_number}</span>
-          {r.color_name && (
-            <span className="text-xs text-muted">{r.color_name}</span>
-          )}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const r = row.original;
+        return (
+          <div className="flex flex-col">
+            <span className="font-bold text-primary">{r.roll_number}</span>
+            {r.color_name && (
+              <span className="text-xs text-muted">{r.color_name}</span>
+            )}
+          </div>
+        );
+      },
     },
     {
+      accessorKey: 'fabric_type',
       header: 'Loại vải',
-      id: 'fabric_type',
-      sortable: true,
-      cell: (r) => r.fabric_type,
+      cell: ({ row }) => row.original.fabric_type,
     },
     {
+      accessorKey: 'quality_grade',
       header: 'CL',
-      id: 'quality_grade',
-      sortable: true,
-      cell: (r) =>
-        r.quality_grade ? (
+      cell: ({ row }) => {
+        const r = row.original;
+        return r.quality_grade ? (
           <span className={`grade-badge grade-${r.quality_grade}`}>
             {r.quality_grade}
           </span>
         ) : (
           <span className="text-muted">—</span>
-        ),
+        );
+      },
     },
     {
+      accessorKey: 'length_m',
       header: 'Khổ × Dài',
-      id: 'length_m',
-      sortable: true,
-      className: 'text-muted',
-      cell: (r) => (
-        <div className="flex flex-col text-xs">
-          <span>{r.width_cm !== null ? `${r.width_cm} cm` : '—'}</span>
-          <span>
-            {r.length_m !== null && ` × ${formatQuantity(r.length_m)} m`}
-          </span>
-        </div>
-      ),
+      meta: { className: 'text-muted' },
+      cell: ({ row }) => {
+        const r = row.original;
+        return (
+          <div className="flex flex-col text-xs">
+            <span>{r.width_cm !== null ? `${r.width_cm} cm` : '—'}</span>
+            <span>
+              {r.length_m !== null && ` × ${formatQuantity(r.length_m)} m`}
+            </span>
+          </div>
+        );
+      },
     },
     {
+      accessorKey: 'weight_kg',
       header: 'Trọng lượng',
-      id: 'weight_kg',
-      sortable: true,
-      className: 'text-right',
-      cell: (r) => (
-        <span className="font-medium">
-          {r.weight_kg != null ? `${formatQuantity(r.weight_kg)} kg` : '—'}
-        </span>
-      ),
+      meta: { className: 'text-right' },
+      cell: ({ row }) => {
+        const r = row.original;
+        return (
+          <span className="font-medium">
+            {r.weight_kg != null ? `${formatQuantity(r.weight_kg)} kg` : '—'}
+          </span>
+        );
+      },
     },
     {
+      accessorKey: 'status',
       header: 'Trạng thái',
-      id: 'status',
-      sortable: true,
-      cell: (r) => (
-        <Badge variant={getRollStatusVariant(r.status)}>
-          {ROLL_STATUS_LABELS[r.status]}
-        </Badge>
-      ),
+      cell: ({ row }) => {
+        const r = row.original;
+        return (
+          <Badge variant={getRollStatusVariant(r.status)}>
+            {ROLL_STATUS_LABELS[r.status]}
+          </Badge>
+        );
+      },
     },
     {
+      accessorKey: 'warehouse_location',
       header: 'Vị trí',
-      id: 'warehouse_location',
-      sortable: true,
-      cell: (r) => (
+      cell: ({ row }) => (
         <span className="text-xs text-muted">
-          {r.warehouse_location ?? '—'}
+          {row.original.warehouse_location ?? '—'}
         </span>
       ),
     },
     {
-      header: 'Thao tác',
-      className: 'text-right',
-      onCellClick: () => {},
-      cell: (r) => (
-        <ActionBar
-          actions={[
-            {
-              icon: 'Link',
-              onClick: () => actions.onTrace(r),
-              title: 'Truy vết',
-            },
-            {
-              icon: 'Pencil',
-              onClick: () => actions.onEdit(r),
-              title: editBlockReason(r.status) ?? 'Sửa',
-              disabled: !canEditRoll(r.status),
-            },
-            {
-              icon: 'Trash2',
-              onClick: () => actions.handleDelete(r),
-              title: deleteBlockReason(r.status) ?? 'Xóa',
-              variant: 'danger',
-              disabled: actions.isDeleting || !canDeleteRoll(r.status),
-            },
-          ]}
-        />
-      ),
+      id: 'actions',
+      header: () => <div className="text-right">Thao tác</div>,
+      meta: { className: 'text-right' },
+      cell: ({ row }) => {
+        const r = row.original;
+        return (
+          <ActionBar
+            actions={[
+              {
+                icon: 'Link',
+                onClick: () => actions.onTrace(r),
+                title: 'Truy vết',
+              },
+              {
+                icon: 'Pencil',
+                onClick: () => actions.onEdit(r),
+                title: editBlockReason(r.status) ?? 'Sửa',
+                disabled: !canEditRoll(r.status),
+              },
+              {
+                icon: 'Trash2',
+                onClick: () => actions.handleDelete(r),
+                title: deleteBlockReason(r.status) ?? 'Xóa',
+                variant: 'danger',
+                disabled: actions.isDeleting || !canDeleteRoll(r.status),
+              },
+            ]}
+          />
+        );
+      },
     },
   ];
 }

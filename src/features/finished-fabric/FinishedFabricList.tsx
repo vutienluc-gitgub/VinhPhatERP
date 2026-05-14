@@ -1,10 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { Pagination } from '@/shared/components/Pagination';
 import {
   Icon,
-  DataTable,
+  DataTableAdvanced,
   ViewToggle,
   type ViewMode,
   AddButton,
@@ -44,17 +43,43 @@ type FinishedFabricListProps = {
   onTrace: (roll: FinishedFabricRoll) => void;
 };
 
+const FILTER_KEYS = ['fabric_type', 'status', 'quality_grade'] as const;
+
+const FILTER_SCHEMA: FilterFieldConfig[] = [
+  {
+    key: 'fabric_type',
+    type: 'search',
+    label: 'Loại vải',
+    placeholder: 'Tìm loại vải...',
+  },
+  {
+    key: 'status',
+    type: 'combobox',
+    label: 'Trạng thái',
+    options: ROLL_STATUSES.map((s) => ({
+      value: s,
+      label: ROLL_STATUS_LABELS[s],
+    })),
+  },
+  {
+    key: 'quality_grade',
+    type: 'combobox',
+    label: 'Chất lượng',
+    options: QUALITY_GRADES.map((g) => ({
+      value: g,
+      label: QUALITY_GRADE_LABELS[g],
+    })),
+  },
+];
+
 export function FinishedFabricList({
   onEdit,
   onNew,
   onBulkNew,
   onTrace,
 }: FinishedFabricListProps) {
-  const { filters, setFilter, clearFilters } = useUrlFilterState([
-    'fabric_type',
-    'status',
-    'quality_grade',
-  ]);
+  const { filters, setFilter, clearFilters, hasActiveFilter } =
+    useUrlFilterState(FILTER_KEYS);
   const [page, setPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
@@ -71,44 +96,43 @@ export function FinishedFabricList({
   const [isExporting, setIsExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
 
-  async function handleDelete(roll: FinishedFabricRoll) {
-    if (!canDeleteRoll(roll.status)) return;
-    const ok = await confirm({
-      message: `Xóa cuộn "${roll.roll_number}"? Hành động này không thể hoàn tác.`,
-      variant: 'danger',
-    });
-    if (!ok) return;
-    deleteMutation.mutate(roll.id);
-  }
+  const handleDelete = useCallback(
+    async (roll: FinishedFabricRoll) => {
+      if (!canDeleteRoll(roll.status)) return;
+      const ok = await confirm({
+        message: `Xóa cuộn "${roll.roll_number}"? Hành động này không thể hoàn tác.`,
+        variant: 'danger',
+      });
+      if (!ok) return;
+      deleteMutation.mutate(roll.id);
+    },
+    [confirm, deleteMutation],
+  );
+
+  const handleExportExcel = useCallback(async () => {
+    setIsExporting(true);
+    setExportError(null);
+    try {
+      await exportExcel(filters as FinishedFabricFilter);
+    } catch (err) {
+      setExportError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setIsExporting(false);
+    }
+  }, [exportExcel, filters]);
 
   const groupedRolls = useMemo(() => groupRollsByLot(rolls), [rolls]);
 
-  const filterSchema: FilterFieldConfig[] = [
-    {
-      key: 'fabric_type',
-      type: 'search',
-      label: 'Loại vải',
-      placeholder: 'Tìm loại vải...',
-    },
-    {
-      key: 'status',
-      type: 'combobox',
-      label: 'Trạng thái',
-      options: ROLL_STATUSES.map((s) => ({
-        value: s,
-        label: ROLL_STATUS_LABELS[s],
-      })),
-    },
-    {
-      key: 'quality_grade',
-      type: 'combobox',
-      label: 'Chất lượng',
-      options: QUALITY_GRADES.map((g) => ({
-        value: g,
-        label: QUALITY_GRADE_LABELS[g],
-      })),
-    },
-  ];
+  const columns = useMemo(
+    () =>
+      getFinishedFabricColumns({
+        onTrace,
+        onEdit,
+        handleDelete,
+        isDeleting: deleteMutation.isPending,
+      }),
+    [onTrace, onEdit, handleDelete, deleteMutation.isPending],
+  );
 
   function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
@@ -139,19 +163,7 @@ export function FinishedFabricList({
               leftIcon="FileSpreadsheet"
               className="btn-standard"
               type="button"
-              onClick={async () => {
-                setIsExporting(true);
-                setExportError(null);
-                try {
-                  await exportExcel(filters as FinishedFabricFilter);
-                } catch (err) {
-                  setExportError(
-                    err instanceof Error ? err.message : String(err),
-                  );
-                } finally {
-                  setIsExporting(false);
-                }
-              }}
+              onClick={handleExportExcel}
               disabled={isExporting}
             >
               {isExporting ? 'Đang xuất...' : 'Xuất Excel'}
@@ -201,7 +213,7 @@ export function FinishedFabricList({
 
       {/* Filters (Config-Driven) */}
       <FilterBar
-        schema={filterSchema}
+        schema={FILTER_SCHEMA}
         value={filters}
         onChange={handleFilterChange}
         onClear={() => {
@@ -263,21 +275,23 @@ export function FinishedFabricList({
           )}
         </div>
       ) : (
-        <DataTable
+        <DataTableAdvanced
           data={rolls}
           isLoading={isLoading}
           rowKey={(r) => r.id}
           onRowClick={(r) => {
             if (canEditRoll(r.status)) onEdit(r);
           }}
-          emptyStateTitle="Không có dữ liệu"
+          emptyStateTitle={
+            hasActiveFilter
+              ? 'Không tìm thấy cuộn thành phẩm'
+              : 'Chưa có cuộn thành phẩm nào'
+          }
           emptyStateIcon="Package"
-          columns={getFinishedFabricColumns({
-            onTrace,
-            onEdit,
-            handleDelete,
-            isDeleting: deleteMutation.isPending,
-          })}
+          emptyStateActionLabel={!hasActiveFilter ? '+ Nhập mới' : undefined}
+          onEmptyStateAction={!hasActiveFilter ? onNew : undefined}
+          columns={columns}
+          exportFileName="danh_sach_thanh_pham"
           renderMobileCard={(r) =>
             renderFinishedFabricMobileCard(r, {
               onTrace,
@@ -285,12 +299,13 @@ export function FinishedFabricList({
               handleDelete,
             })
           }
+          pagination={{
+            result,
+            onPageChange: setPage,
+            itemLabel: 'cuộn',
+          }}
         />
       )}
-
-      <div className="p-4">
-        <Pagination result={result} onPageChange={setPage} />
-      </div>
     </div>
   );
 }
