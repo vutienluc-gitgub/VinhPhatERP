@@ -48,51 +48,31 @@ export async function createPurchaseOrder(
   values: PurchaseOrderFormValues,
   userId: string,
 ) {
-  const { data: poCode, error: codeError } =
-    await untypedDb.rpc('next_po_code');
-  if (codeError) throw codeError;
-
-  const { data: po, error: poError } = await untypedDb
-    .from('purchase_orders')
-    .insert({
-      po_code: poCode,
-      supplier_id: values.supplier_id,
-      supplier_name_snapshot: values.supplier_name_snapshot,
-      order_date: values.order_date,
-      expected_date: values.expected_date || null,
-      created_by: userId,
-      status: 'draft',
-      total_amount: values.items.reduce(
+  const { data: poId, error: rpcError } = await untypedDb.rpc(
+    'rpc_create_purchase_order',
+    {
+      p_supplier_id: values.supplier_id,
+      p_supplier_name_snapshot: values.supplier_name_snapshot,
+      p_order_date: values.order_date,
+      p_expected_date: values.expected_date || null,
+      p_total_amount: values.items.reduce(
         (sum, item) => sum + item.ordered_qty * item.unit_price,
         0,
       ),
-    })
+      p_items: values.items,
+      p_created_by: userId,
+    },
+  );
+
+  if (rpcError) throw rpcError;
+
+  const { data: po, error: poError } = await untypedDb
+    .from('purchase_orders')
     .select()
+    .eq('id', poId)
     .single();
 
   if (poError) throw poError;
-
-  const itemsToInsert = values.items.map((item) => ({
-    po_id: po.id,
-    material_id: item.material_id,
-    uom: item.uom,
-    ordered_qty: item.ordered_qty,
-    unit_price: item.unit_price,
-  }));
-
-  const { error: itemsError } = await untypedDb
-    .from('purchase_order_items')
-    .insert(itemsToInsert);
-
-  if (itemsError) throw itemsError;
-
-  await untypedDb.from('po_audit_logs').insert({
-    entity_type: 'purchase_order',
-    entity_id: po.id,
-    action: 'created',
-    actor_id: userId,
-    snapshot: po,
-  });
 
   return po;
 }

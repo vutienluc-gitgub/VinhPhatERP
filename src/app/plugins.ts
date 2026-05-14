@@ -19,6 +19,7 @@ import { fabricCatalogPlugin } from '@/features/fabric-catalog';
 import { inventoryPlugin } from '@/features/inventory';
 import { colorCatalogPlugin } from '@/features/color-catalog';
 import { paymentsPlugin, debtsPlugin } from '@/features/payments';
+import { recurringTransactionsPlugin } from '@/features/recurring-transactions';
 import { reportsPlugin } from '@/features/reports';
 import { shippingRatesPlugin } from '@/features/shipping-rates';
 import { settingsPlugin } from '@/features/settings';
@@ -73,6 +74,7 @@ const plugins: FeaturePlugin[] = [
   operationsPlugin,
   paymentsPlugin,
   debtsPlugin,
+  recurringTransactionsPlugin,
   reportsPlugin,
   shippingRatesPlugin,
   settingsPlugin,
