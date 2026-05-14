@@ -21,6 +21,8 @@ import { UpcomingDebtsCard } from './UpcomingDebtsCard';
 import { RecentTransactionsCard } from './RecentTransactionsCard';
 import { PendingTasksCard } from './PendingTasksCard';
 import { RecentOrdersCard } from './RecentOrdersCard';
+import { NotificationBanner } from './NotificationBanner';
+import { QuickAccessBar } from './QuickAccessBar';
 
 export function DashboardPage() {
   const navigate = useNavigate();
@@ -52,6 +54,14 @@ export function DashboardPage() {
           <span className="hidden sm:inline">Tạo đơn mới</span>
           <span className="sm:hidden">Thêm</span>
         </Button>
+      </div>
+
+      {/* ── Notification Banner — pending work items ── */}
+      <NotificationBanner stats={stats} isLoading={statsLoading} />
+
+      {/* ── Quick Access Toolbar — common operations ── */}
+      <div className="dash-grid-row">
+        <QuickAccessBar />
       </div>
 
       {/* ── Row 1: Revenue + Spending (2 cols) ── */}

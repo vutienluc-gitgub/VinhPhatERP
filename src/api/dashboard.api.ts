@@ -1,6 +1,7 @@
 import { supabase } from '@/services/supabase/client';
 import { CUSTOMER_SOURCE_LABELS } from '@/schema/customer.schema';
 import { formatCurrency } from '@/shared/utils/format';
+import { PENDING_TASKS_LABELS } from '@/features/dashboard/dashboard.constants';
 
 /* ============================================================
    Dashboard v3 — Executive Overview Types
@@ -179,7 +180,7 @@ export function buildPendingTasks(stats: DashboardStats): PendingTask[] {
   if (stats.overdueOrders > 0) {
     tasks.push({
       icon: 'TriangleAlert',
-      text: 'Đơn hàng trễ hạn',
+      text: PENDING_TASKS_LABELS.OVERDUE,
       count: stats.overdueOrders,
       href: '/orders',
       isAlert: true,
@@ -188,7 +189,7 @@ export function buildPendingTasks(stats: DashboardStats): PendingTask[] {
   if (stats.expiringQuotations > 0) {
     tasks.push({
       icon: 'ClipboardList',
-      text: 'Báo giá sắp hết hạn',
+      text: PENDING_TASKS_LABELS.EXPIRING_QUOTATIONS,
       count: stats.expiringQuotations,
       href: '/quotations',
       isAlert: true,
@@ -197,7 +198,7 @@ export function buildPendingTasks(stats: DashboardStats): PendingTask[] {
   if (stats.pendingShipments > 0) {
     tasks.push({
       icon: 'PackageCheck',
-      text: 'Phiếu xuất chờ xử lý',
+      text: PENDING_TASKS_LABELS.PENDING_SHIPMENTS,
       count: stats.pendingShipments,
       href: '/shipments',
       isAlert: false,
@@ -206,7 +207,7 @@ export function buildPendingTasks(stats: DashboardStats): PendingTask[] {
   if (stats.draftOrders > 0) {
     tasks.push({
       icon: 'FilePenLine',
-      text: 'Đơn nháp chưa xác nhận',
+      text: PENDING_TASKS_LABELS.DRAFT_ORDERS,
       count: stats.draftOrders,
       href: '/orders',
       isAlert: false,
@@ -215,7 +216,7 @@ export function buildPendingTasks(stats: DashboardStats): PendingTask[] {
   if (stats.totalDebt > 0) {
     tasks.push({
       icon: 'Wallet',
-      text: `Công nợ còn ${formatCurrency(stats.totalDebt)} đ`,
+      text: `${PENDING_TASKS_LABELS.DEBT_PREFIX} ${formatCurrency(stats.totalDebt)} ${PENDING_TASKS_LABELS.DEBT_SUFFIX}`,
       count: 0,
       href: '/payments',
       isAlert: stats.totalDebt > 50_000_000,

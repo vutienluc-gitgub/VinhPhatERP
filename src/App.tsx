@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { AppProviders } from '@/app/providers/AppProviders';
 import { AppRouter } from '@/app/router/AppRouter';
 import { useQueryInvalidationBridge } from '@/integration/useQueryInvalidationBridge';
@@ -13,6 +15,11 @@ function AppContent() {
 
   // Lắng nghe Realtime Events từ Supabase để tự động render lại toàn bộ Tab
   useRealtimeInvalidationBridge();
+
+  // Clear the chunk reload flag once the app successfully mounts
+  useEffect(() => {
+    sessionStorage.removeItem('erp-chunk-reload');
+  }, []);
 
   return <AppRouter />;
 }

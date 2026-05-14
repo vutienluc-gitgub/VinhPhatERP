@@ -16,6 +16,10 @@ class ChunkErrorBoundary extends Component<
         errorString.includes('text/html') ||
         errorString.includes('valid JavaScript') ||
         errorString.includes('valid JavaScript MIME type') ||
+        errorString.includes('Importing a module script failed') ||
+        errorString.includes('importing a module script failed') ||
+        errorString.includes('Load failed') ||
+        errorString.includes('load failed') ||
         error.name === 'ChunkLoadError');
 
     return { hasError: isChunkError };
@@ -23,7 +27,13 @@ class ChunkErrorBoundary extends Component<
 
   override componentDidCatch() {
     if (this.state.hasError) {
-      window.location.reload();
+      const reloadKey = 'erp-chunk-reload';
+      if (!sessionStorage.getItem(reloadKey)) {
+        sessionStorage.setItem(reloadKey, '1');
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('v', Date.now().toString());
+        window.location.href = currentUrl.toString();
+      }
     }
   }
 

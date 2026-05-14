@@ -33,7 +33,9 @@ window.addEventListener('vite:preloadError', () => {
   const reloadKey = 'erp-chunk-reload';
   if (!sessionStorage.getItem(reloadKey)) {
     sessionStorage.setItem(reloadKey, '1');
-    window.location.reload();
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('v', Date.now().toString());
+    window.location.href = currentUrl.toString();
   }
 });
 
