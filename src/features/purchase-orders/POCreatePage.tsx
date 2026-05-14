@@ -18,11 +18,13 @@ import {
 } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import { sumBy } from '@/shared/utils/array.util';
+import { getErrorMessage } from '@/shared/utils/error';
 
 export function POCreatePage() {
   const navigate = useNavigate();
   const createMutation = useCreatePurchaseOrder();
-  const { data: suppliers = [] } = useActiveSuppliers();
+  const { data: suppliers = [], isLoading: isLoadingSuppliers } =
+    useActiveSuppliers();
 
   const supplierOptions = suppliers.map((s) => ({
     value: s.id,
@@ -67,9 +69,7 @@ export function POCreatePage() {
       toast.success('Tạo Purchase Order thành công');
       navigate('/purchase-orders');
     } catch (error) {
-      const msg =
-        error instanceof Error ? error.message : 'Có lỗi xảy ra khi tạo PO';
-      toast.error(msg);
+      toast.error('Có lỗi xảy ra khi tạo PO: ' + getErrorMessage(error));
     }
   }
 
@@ -99,6 +99,17 @@ export function POCreatePage() {
       // ignore
     }
   };
+
+  if (isLoadingSuppliers) {
+    return (
+      <div className="page-container p-4 max-w-5xl mx-auto">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+          <div className="h-64 bg-gray-200 rounded-xl"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container p-4 max-w-5xl mx-auto">
