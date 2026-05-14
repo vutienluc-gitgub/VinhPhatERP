@@ -1,27 +1,34 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import type { ColumnDef } from '@tanstack/react-table';
 
-import { Combobox } from '@/shared/components/Combobox';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
   Badge,
   type BadgeVariant,
-  DataTable,
+  DataTableAdvanced,
   AddButton,
-  ClearFilterButton,
   ActionBar,
+  FilterBar,
+  type FilterFieldConfig,
+  KpiCard,
 } from '@/shared/components';
 import {
   useDeleteFabricCatalog,
   useFabricCatalogList,
 } from '@/application/settings';
-import { FABRIC_CATALOG_STATUS_LABELS } from '@/schema/fabric-catalog.schema';
+import {
+  FABRIC_CATALOG_STATUS_LABELS,
+  FABRIC_CATALOG_STATUSES,
+} from '@/schema/fabric-catalog.schema';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 
 import type {
   FabricCatalog,
   FabricCatalogFilter,
   FabricCatalogStatus,
 } from './types';
+import { FabricCatalogMobileCard } from './components/FabricCatalogMobileCard';
 
 type FabricCatalogListProps = {
   onEdit: (catalog: FabricCatalog) => void;
@@ -32,42 +39,181 @@ function getStatusVariant(status: FabricCatalogStatus): BadgeVariant {
   return status === 'active' ? 'success' : 'gray';
 }
 
+const FILTER_KEYS = ['search', 'status'] as const;
+
+const FILTER_SCHEMA: FilterFieldConfig[] = [
+  {
+    key: 'search',
+    type: 'search',
+    label: 'Tìm kiếm',
+    placeholder: 'Tên, mã, thành phần...',
+  },
+  {
+    key: 'status',
+    type: 'combobox',
+    label: 'Trạng thái',
+    options: FABRIC_CATALOG_STATUSES.map((st) => ({
+      value: st,
+      label: FABRIC_CATALOG_STATUS_LABELS[st],
+    })),
+  },
+];
+
 export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
-  const [searchInput, setSearchInput] = useState('');
-  const [filters, setFilters] = useState<FabricCatalogFilter>({});
+  const { filters, setFilter, clearFilters, hasActiveFilter } =
+    useUrlFilterState(FILTER_KEYS);
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useFabricCatalogList(filters, page);
+  const apiFilters: FabricCatalogFilter = useMemo(
+    () => ({
+      search: filters.search,
+      status: filters.status as FabricCatalogStatus | undefined,
+    }),
+    [filters.search, filters.status],
+  );
+
+  const { data, isLoading } = useFabricCatalogList(apiFilters, page);
   const deleteMutation = useDeleteFabricCatalog();
   const { confirm } = useConfirm();
 
-  const catalogs = data?.data ?? [];
+  const catalogs = useMemo(() => data?.data ?? [], [data?.data]);
+  const activeCount = useMemo(
+    () => catalogs.filter((c) => c.status === 'active').length,
+    [catalogs],
+  );
 
-  // 📊 Stats for KPI Dashboard (based on current data/all)
-  const stats = {
-    total: data?.total ?? 0,
-    active: catalogs.filter((c) => c.status === 'active').length, // Simple logic for current page
-  };
+  const handleDelete = useCallback(
+    async (catalog: FabricCatalog) => {
+      const ok = await confirm({
+        message: `Xóa loại vải "${catalog.name}"? Hành động này không thể hoàn tác.`,
+        variant: 'danger',
+      });
+      if (!ok) return;
+      deleteMutation.mutate(catalog.id);
+    },
+    [confirm, deleteMutation],
+  );
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
+  function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      search: searchInput.trim() || undefined,
-    }));
+    setFilter(key, value);
   }
 
-  async function handleDelete(catalog: FabricCatalog) {
-    const ok = await confirm({
-      message: `Xóa loại vải "${catalog.name}"? Hành động này không thể hoàn tác.`,
-      variant: 'danger',
-    });
-    if (!ok) return;
-    deleteMutation.mutate(catalog.id);
-  }
-
-  const hasFilter = !!(filters.search || filters.status);
+  const columns = useMemo<ColumnDef<FabricCatalog>[]>(
+    () => [
+      {
+        id: 'thumbnail',
+        header: '',
+        meta: { className: 'w-20' },
+        cell: ({ row }) => {
+          const c = row.original;
+          return c.image_url ? (
+            <img
+              src={c.image_url}
+              alt={c.name}
+              className="w-10 h-10 rounded object-cover shrink-0"
+              loading="lazy"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded bg-surface-subtle flex items-center justify-center shrink-0">
+              <Icon name="Image" size={16} className="text-muted" />
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: 'code',
+        header: 'Mã',
+        cell: ({ row }) => (
+          <span className="font-bold text-primary">{row.original.code}</span>
+        ),
+      },
+      {
+        accessorKey: 'name',
+        header: 'Tên loại vải',
+        cell: ({ row }) => (
+          <span className="font-medium">{row.original.name}</span>
+        ),
+      },
+      {
+        accessorKey: 'composition',
+        header: 'Thành phần',
+        cell: ({ row }) => (
+          <span className="text-muted text-sm italic">
+            {row.original.composition ?? '—'}
+          </span>
+        ),
+      },
+      {
+        id: 'specs',
+        header: 'Quy cách (chuẩn)',
+        enableSorting: false,
+        cell: ({ row }) => {
+          const c = row.original;
+          return (
+            <div className="flex flex-col gap-0.5 text-sm">
+              <span className="text-muted">
+                Khổ:{' '}
+                <span className="font-medium text-text">
+                  {c.target_width_cm ? `${c.target_width_cm} cm` : '—'}
+                </span>
+              </span>
+              <span className="text-muted">
+                K/L:{' '}
+                <span className="font-medium text-text">
+                  {c.target_gsm ? `${c.target_gsm} gsm` : '—'}
+                </span>
+              </span>
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: 'unit',
+        header: 'Đơn vị',
+        cell: ({ row }) => <span className="text-sm">{row.original.unit}</span>,
+      },
+      {
+        accessorKey: 'status',
+        header: 'Trạng thái',
+        cell: ({ row }) => {
+          const c = row.original;
+          return (
+            <Badge variant={getStatusVariant(c.status)}>
+              {FABRIC_CATALOG_STATUS_LABELS[c.status]}
+            </Badge>
+          );
+        },
+      },
+      {
+        id: 'actions',
+        header: () => <div className="text-right">Thao tác</div>,
+        meta: { className: 'text-right' },
+        cell: ({ row }) => {
+          const c = row.original;
+          return (
+            <ActionBar
+              actions={[
+                {
+                  icon: 'Pencil',
+                  onClick: () => onEdit(c),
+                  title: 'Chỉnh sửa',
+                },
+                {
+                  icon: 'Trash2',
+                  onClick: () => handleDelete(c),
+                  title: 'Xóa',
+                  variant: 'danger',
+                  disabled: deleteMutation.isPending,
+                },
+              ]}
+            />
+          );
+        },
+      },
+    ],
+    [onEdit, handleDelete, deleteMutation.isPending],
+  );
 
   return (
     <div className="panel-card card-flush">
@@ -76,302 +222,70 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
         <AddButton onClick={onNew} label="Thêm loại vải" />
       </div>
 
-      {/* 📊 KPI Dashboard area */}
+      {/* KPI Dashboard */}
       <div className="kpi-section kpi-grid">
-        <div className="kpi-card-premium kpi-primary">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Tổng loại vải</p>
-              <p className="kpi-value">{stats.total}</p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="Layers" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Toàn bộ danh mục hệ thống
-          </div>
-        </div>
-
-        <div className="kpi-card-premium kpi-success">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Đang hoạt động</p>
-              <p className="kpi-value">
-                {catalogs.filter((c) => c.status === 'active').length}
-              </p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="Activity" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Trên trang hiện tại
-          </div>
-        </div>
-
-        <div className="kpi-card-premium kpi-secondary">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Thành phần chính</p>
-              <p className="kpi-value">Cotton/Pol</p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="Zap" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Được ưa chuộng nhất
-          </div>
-        </div>
+        <KpiCard
+          label="Tổng loại vải"
+          value={data?.total ?? 0}
+          icon="Layers"
+          variant="primary"
+          formatMode="number"
+          footer="Toàn bộ danh mục hệ thống"
+        />
+        <KpiCard
+          label="Đang hoạt động"
+          value={activeCount}
+          icon="Activity"
+          variant="success"
+          formatMode="number"
+          footer="Trên trang hiện tại"
+        />
+        <KpiCard
+          label="Thành phần chính"
+          value="Cotton/Pol"
+          icon="Zap"
+          variant="secondary"
+          footer="Được ưa chuộng nhất"
+        />
       </div>
 
-      {/* 🔍 Filter Area */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-compact-premium">
-          <div className="filter-field">
-            <label htmlFor="filter-fabric-search">Tìm kiếm</label>
-            <form className="search-input-wrapper" onSubmit={handleSearch}>
-              <input
-                id="filter-fabric-search"
-                className="field-input"
-                type="text"
-                placeholder="Tên, mã, thành phần..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-              />
-              <button type="submit" className="hidden" />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </form>
-          </div>
-
-          <div className="filter-field">
-            <label>Trạng thái</label>
-            <Combobox
-              options={[
-                {
-                  value: '',
-                  label: 'Tất cả trạng thái',
-                },
-                {
-                  value: 'active',
-                  label: 'Đang hoạt động',
-                },
-                {
-                  value: 'inactive',
-                  label: 'Ngưng sử dụng',
-                },
-              ]}
-              value={filters.status ?? ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  status: (val as FabricCatalogStatus) || undefined,
-                }));
-              }}
-            />
-          </div>
-
-          {hasFilter && (
-            <ClearFilterButton
-              onClick={() => {
-                setFilters({});
-                setSearchInput('');
-                setPage(1);
-              }}
-            />
-          )}
-        </div>
+      {/* Filters (Config-Driven) */}
+      <div className="flex flex-wrap items-start gap-3 px-4 py-3 border-b border-border/50 overflow-visible">
+        <FilterBar
+          variant="inline"
+          schema={FILTER_SCHEMA}
+          value={filters}
+          onChange={handleFilterChange}
+          onClear={() => {
+            clearFilters();
+            setPage(1);
+          }}
+        />
       </div>
 
-      {/* 📑 Data Section */}
-      <DataTable
+      {/* Table (DataTableAdvanced) */}
+      <DataTableAdvanced
         data={catalogs}
         isLoading={isLoading}
         rowKey={(c) => c.id}
-        onRowClick={(c) => onEdit(c)}
+        onRowClick={onEdit}
         emptyStateTitle={
-          hasFilter ? 'Không tìm thấy loại vải phù hợp' : 'Chưa có loại vải nào'
+          hasActiveFilter
+            ? 'Không tìm thấy loại vải phù hợp'
+            : 'Chưa có loại vải nào'
         }
-        emptyStateIcon={hasFilter ? 'Search' : 'Layers'}
-        columns={[
-          {
-            header: '',
-            id: 'thumbnail',
-            className: 'w-20',
-            cell: (c) =>
-              c.image_url ? (
-                <img
-                  src={c.image_url}
-                  alt={c.name}
-                  className="w-10 h-10 rounded object-cover shrink-0"
-                  loading="lazy"
-                />
-              ) : (
-                <div className="w-10 h-10 rounded bg-surface-subtle flex items-center justify-center shrink-0">
-                  <Icon name="Image" size={16} className="text-muted" />
-                </div>
-              ),
-          },
-          {
-            header: 'Mã',
-            id: 'code',
-            sortable: true,
-            cell: (c) => (
-              <span className="font-bold text-primary">{c.code}</span>
-            ),
-          },
-          {
-            header: 'Tên loại vải',
-            id: 'name',
-            sortable: true,
-            cell: (c) => <span className="font-medium">{c.name}</span>,
-          },
-          {
-            header: 'Thành phần',
-            id: 'composition',
-            sortable: true,
-            cell: (c) => (
-              <span className="text-muted text-sm italic">
-                {c.composition ?? '—'}
-              </span>
-            ),
-          },
-          {
-            header: 'Quy cách (chuẩn)',
-            id: 'specs',
-            sortable: false,
-            cell: (c) => (
-              <div className="flex flex-col gap-0.5 text-sm">
-                <span className="text-muted">
-                  Khổ:{' '}
-                  <span className="font-medium text-text">
-                    {c.target_width_cm ? `${c.target_width_cm} cm` : '—'}
-                  </span>
-                </span>
-                <span className="text-muted">
-                  K/L:{' '}
-                  <span className="font-medium text-text">
-                    {c.target_gsm ? `${c.target_gsm} gsm` : '—'}
-                  </span>
-                </span>
-              </div>
-            ),
-          },
-          {
-            header: 'Đơn vị',
-            id: 'unit',
-            sortable: true,
-            cell: (c) => <span className="text-sm">{c.unit}</span>,
-          },
-          {
-            header: 'Trạng thái',
-            id: 'status',
-            sortable: true,
-            cell: (c) => (
-              <Badge variant={getStatusVariant(c.status)}>
-                {FABRIC_CATALOG_STATUS_LABELS[c.status]}
-              </Badge>
-            ),
-          },
-          {
-            header: 'Thao tác',
-            className: 'text-right',
-            onCellClick: () => {},
-            cell: (c) => (
-              <ActionBar
-                actions={[
-                  {
-                    icon: 'Pencil',
-                    onClick: () => onEdit(c),
-                    title: 'Chỉnh sửa',
-                  },
-                  {
-                    icon: 'Trash2',
-                    onClick: () => handleDelete(c),
-                    title: 'Xóa',
-                    variant: 'danger',
-                    disabled: deleteMutation.isPending,
-                  },
-                ]}
-              />
-            ),
-          },
-        ]}
+        emptyStateIcon={hasActiveFilter ? 'Search' : 'Layers'}
+        emptyStateActionLabel={!hasActiveFilter ? '+ Thêm loại vải' : undefined}
+        onEmptyStateAction={!hasActiveFilter ? onNew : undefined}
+        columns={columns}
+        exportFileName="danh_muc_loai_vai"
         renderMobileCard={(c) => (
-          <div className="mobile-card">
-            {c.image_url && (
-              <img
-                src={c.image_url}
-                alt={c.name}
-                className="w-full h-32 object-cover rounded-t-lg max-w-none pointer-events-none select-none"
-                style={{
-                  margin: '-1.25rem -1.25rem 0.75rem',
-                  width: 'calc(100% + 2.5rem)',
-                }}
-                loading="lazy"
-                draggable={false}
-              />
-            )}
-            <div className="mobile-card-header">
-              <span className="mobile-card-title">{c.code}</span>
-              <Badge variant={getStatusVariant(c.status)}>
-                {FABRIC_CATALOG_STATUS_LABELS[c.status]}
-              </Badge>
-            </div>
-            <div className="mobile-card-body space-y-2">
-              <p className="font-bold text-sm">{c.name}</p>
-              <p className="text-xs text-muted italic">
-                {c.composition || '—'}
-              </p>
-              {(c.target_width_cm || c.target_gsm) && (
-                <div className="text-xs text-muted bg-surface p-2 rounded border border-border">
-                  {c.target_width_cm && (
-                    <div>
-                      Khổ:{' '}
-                      <span className="font-medium">
-                        {c.target_width_cm} cm
-                      </span>
-                    </div>
-                  )}
-                  {c.target_gsm && (
-                    <div>
-                      K/L:{' '}
-                      <span className="font-medium">{c.target_gsm} gsm</span>
-                    </div>
-                  )}
-                </div>
-              )}
-              <div className="flex justify-between items-center text-xs text-muted pt-2 border-t border-border/10">
-                <span>Đơn vị: {c.unit}</span>
-                <div className="flex gap-2">
-                  <button
-                    className="btn-icon p-1"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEdit(c);
-                    }}
-                  >
-                    <Icon name="Pencil" size={16} />
-                  </button>
-                  <button
-                    className="btn-icon p-1 text-danger"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(c);
-                    }}
-                    disabled={deleteMutation.isPending}
-                  >
-                    <Icon name="Trash2" size={16} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <FabricCatalogMobileCard
+            catalog={c}
+            onEdit={onEdit}
+            onDelete={handleDelete}
+            isDeleting={deleteMutation.isPending}
+          />
         )}
         pagination={{
           result: data,

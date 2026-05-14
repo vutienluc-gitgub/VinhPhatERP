@@ -24,6 +24,19 @@ Sentry.init({
 import App from './App.tsx';
 import '@/styles/global.css';
 
+/**
+ * Handle stale deployment chunk errors.
+ * When a lazy-loaded page fails because old chunk hashes no longer exist
+ * on the server, force one reload to fetch fresh index.html.
+ */
+window.addEventListener('vite:preloadError', () => {
+  const reloadKey = 'erp-chunk-reload';
+  if (!sessionStorage.getItem(reloadKey)) {
+    sessionStorage.setItem(reloadKey, '1');
+    window.location.reload();
+  }
+});
+
 initPlugins();
 initIntegration();
 

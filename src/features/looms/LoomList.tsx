@@ -1,85 +1,195 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import type { ColumnDef } from '@tanstack/react-table';
 
-import { Combobox } from '@/shared/components/Combobox';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
-  Icon,
-  DataTable,
+  DataTableAdvanced,
   AddButton,
-  ClearFilterButton,
   ActionMenu,
+  FilterBar,
+  type FilterFieldConfig,
+  KpiCard,
 } from '@/shared/components';
 import { useDeleteLoom, useLoomList } from '@/application/settings';
 import type { LoomStatus, LoomType } from '@/schema/loom.schema';
-import { LOOM_STATUS_LABELS, LOOM_TYPE_LABELS } from '@/schema/loom.schema';
+import {
+  LOOM_STATUS_LABELS,
+  LOOM_STATUSES,
+  LOOM_TYPE_LABELS,
+  LOOM_TYPES,
+} from '@/schema/loom.schema';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 
 import type { LoomWithSupplier, LoomFilter } from './types';
+import { SaaSBadge, LoomMobileCard } from './components/LoomMobileCard';
 
 type LoomListProps = {
   onEdit: (loom: LoomWithSupplier) => void;
   onNew: () => void;
 };
 
-function SaaSBadge({ status }: { status: LoomStatus }) {
-  const label = LOOM_STATUS_LABELS[status];
+const FILTER_KEYS = ['search', 'status', 'loom_type'] as const;
 
-  const styles: Record<string, string> = {
-    active:
-      'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 ring-emerald-500/20',
-    maintenance:
-      'bg-amber-500/10 text-amber-700 dark:text-amber-400 ring-amber-500/20',
-    inactive:
-      'bg-slate-500/10 text-slate-700 dark:text-slate-400 ring-slate-500/20',
-  };
-  const dotColors: Record<string, string> = {
-    active: 'bg-emerald-500',
-    maintenance: 'bg-amber-500',
-    inactive: 'bg-slate-500',
-  };
-
-  const currentStyle = styles[status] || styles.inactive;
-  const currentDot = dotColors[status] || dotColors.inactive;
-
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ring-1 ring-inset ${currentStyle}`}
-    >
-      <span className={`w-1.5 h-1.5 rounded-full ${currentDot}`} />
-      {label}
-    </span>
-  );
-}
+const FILTER_SCHEMA: FilterFieldConfig[] = [
+  {
+    key: 'search',
+    type: 'search',
+    label: 'Tìm kiếm',
+    placeholder: 'Mã, tên máy dệt...',
+  },
+  {
+    key: 'status',
+    type: 'combobox',
+    label: 'Trạng thái',
+    options: LOOM_STATUSES.map((st) => ({
+      value: st,
+      label: LOOM_STATUS_LABELS[st],
+    })),
+  },
+  {
+    key: 'loom_type',
+    type: 'combobox',
+    label: 'Loại máy',
+    options: LOOM_TYPES.map((t) => ({
+      value: t,
+      label: LOOM_TYPE_LABELS[t],
+    })),
+  },
+];
 
 export function LoomList({ onEdit, onNew }: LoomListProps) {
-  const [searchInput, setSearchInput] = useState('');
-  const [filters, setFilters] = useState<LoomFilter>({});
+  const { filters, setFilter, clearFilters, hasActiveFilter } =
+    useUrlFilterState(FILTER_KEYS);
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useLoomList(filters, page);
+  const apiFilters: LoomFilter = useMemo(
+    () => ({
+      search: filters.search,
+      status: filters.status as LoomStatus | undefined,
+      loom_type: filters.loom_type as LoomType | undefined,
+    }),
+    [filters.search, filters.status, filters.loom_type],
+  );
+
+  const { data, isLoading } = useLoomList(apiFilters, page);
   const deleteMutation = useDeleteLoom();
   const { confirm } = useConfirm();
 
-  const looms = data?.data ?? [];
+  const looms = useMemo(() => data?.data ?? [], [data?.data]);
+  const activeCount = useMemo(
+    () => looms.filter((l) => l.status === 'active').length,
+    [looms],
+  );
+  const maintenanceCount = useMemo(
+    () => looms.filter((l) => l.status === 'maintenance').length,
+    [looms],
+  );
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
+  function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      search: searchInput.trim() || undefined,
-    }));
+    setFilter(key, value);
   }
 
-  async function handleDelete(loom: LoomWithSupplier) {
-    const ok = await confirm({
-      message: `Xóa máy dệt "${loom.name}"? Hành động này không thể hoàn tác.`,
-      variant: 'danger',
-    });
-    if (!ok) return;
-    deleteMutation.mutate(loom.id);
-  }
+  const handleDelete = useCallback(
+    async (loom: LoomWithSupplier) => {
+      const ok = await confirm({
+        message: `Xóa máy dệt "${loom.name}"? Hành động này không thể hoàn tác.`,
+        variant: 'danger',
+      });
+      if (!ok) return;
+      deleteMutation.mutate(loom.id);
+    },
+    [confirm, deleteMutation],
+  );
 
-  const hasFilter = !!(filters.search || filters.status || filters.loom_type);
+  const columns = useMemo<ColumnDef<LoomWithSupplier>[]>(
+    () => [
+      {
+        accessorKey: 'code',
+        header: 'Máy dệt',
+        cell: ({ row }) => {
+          const l = row.original;
+          return (
+            <div className="flex flex-col gap-1.5 items-start">
+              <div className="flex items-center gap-2">
+                <span className="text-foreground text-[0.9rem] font-bold tracking-tight">
+                  {l.code}
+                </span>
+                <SaaSBadge status={l.status} />
+              </div>
+              <span className="text-muted-foreground text-[0.75rem] mt-0.5 line-clamp-1">
+                <span className="font-medium text-foreground">{l.name}</span> •{' '}
+                {LOOM_TYPE_LABELS[l.loom_type]}
+              </span>
+            </div>
+          );
+        },
+      },
+      {
+        accessorFn: (l) => l.supplier?.name,
+        id: 'supplier',
+        header: 'Nhà dệt',
+        cell: ({ row }) => (
+          <span className="font-medium text-[0.85rem]">
+            {row.original.supplier?.name ?? '—'}
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'daily_capacity_m',
+        header: () => <div className="text-right w-full">Thông số</div>,
+        meta: { className: 'text-right' },
+        cell: ({ row }) => {
+          const l = row.original;
+          return (
+            <div className="flex flex-col items-end text-right w-full gap-1.5">
+              <span className="font-medium text-foreground text-[0.85rem]">
+                {l.daily_capacity_m
+                  ? `${l.daily_capacity_m.toLocaleString()} m/ngày`
+                  : '—'}
+              </span>
+              <span className="text-muted-foreground text-[0.75rem]">
+                {l.max_width_cm ? `Khổ: ${l.max_width_cm} cm` : ''}
+                {l.max_width_cm && (l.diameter_inch || l.gauge) ? ' | ' : ''}
+                {l.diameter_inch ? `${l.diameter_inch}"` : ''}
+                {l.diameter_inch && l.gauge ? 'x' : ''}
+                {l.gauge ? `${l.gauge}G` : ''}
+              </span>
+            </div>
+          );
+        },
+      },
+      {
+        id: 'actions',
+        header: '',
+        meta: { className: 'td-actions w-12' },
+        cell: ({ row }) => {
+          const l = row.original;
+          return (
+            <div className="flex justify-end pr-2">
+              <ActionMenu
+                items={[
+                  {
+                    label: 'Chỉnh sửa',
+                    icon: 'Pencil',
+                    onClick: () => onEdit(l),
+                  },
+                  {
+                    label: 'Xóa máy dệt',
+                    icon: 'Trash2',
+                    onClick: () => handleDelete(l),
+                    danger: true,
+                    disabled: deleteMutation.isPending,
+                  },
+                ]}
+              />
+            </div>
+          );
+        },
+      },
+    ],
+    [onEdit, handleDelete, deleteMutation.isPending],
+  );
 
   return (
     <div className="panel-card card-flush">
@@ -90,285 +200,69 @@ export function LoomList({ onEdit, onNew }: LoomListProps) {
 
       {/* KPI Dashboard */}
       <div className="kpi-section kpi-grid">
-        <div className="kpi-card-premium kpi-primary">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Tổng số máy</p>
-              <p className="kpi-value">{data?.total ?? 0}</p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="Cog" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Toàn bộ danh mục
-          </div>
-        </div>
-
-        <div className="kpi-card-premium kpi-success">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Đang hoạt động</p>
-              <p className="kpi-value">
-                {looms.filter((l) => l.status === 'active').length}
-              </p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="Activity" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Trên trang hiện tại
-          </div>
-        </div>
-
-        <div className="kpi-card-premium kpi-warning">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Đang bảo trì</p>
-              <p className="kpi-value">
-                {looms.filter((l) => l.status === 'maintenance').length}
-              </p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="Wrench" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Cần theo dõi
-          </div>
-        </div>
+        <KpiCard
+          label="Tổng số máy"
+          value={data?.total ?? 0}
+          icon="Cog"
+          variant="primary"
+          formatMode="number"
+          footer="Toàn bộ danh mục"
+        />
+        <KpiCard
+          label="Đang hoạt động"
+          value={activeCount}
+          icon="Activity"
+          variant="success"
+          formatMode="number"
+          footer="Trên trang hiện tại"
+        />
+        <KpiCard
+          label="Đang bảo trì"
+          value={maintenanceCount}
+          icon="Wrench"
+          variant="warning"
+          formatMode="number"
+          footer="Cần theo dõi"
+        />
       </div>
 
-      {/* Filters */}
-      <div className="filter-bar card-filter-section p-4 border-b border-border">
-        <div className="filter-compact-premium">
-          <div className="filter-field">
-            <label htmlFor="filter-loom-search">Tìm kiếm</label>
-            <form className="search-input-wrapper" onSubmit={handleSearch}>
-              <input
-                id="filter-loom-search"
-                className="field-input"
-                type="text"
-                placeholder="Mã, tên máy dệt..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-              />
-              <button type="submit" className="hidden" />
-              <Icon name="Search" size={16} className="search-input-icon" />
-            </form>
-          </div>
-
-          <div className="filter-field">
-            <label>Trạng thái</label>
-            <Combobox
-              options={[
-                { value: '', label: 'Tất cả trạng thái' },
-                { value: 'active', label: 'Hoạt động' },
-                { value: 'maintenance', label: 'Bảo trì' },
-                { value: 'inactive', label: 'Ngừng dùng' },
-              ]}
-              value={filters.status ?? ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  status: (val as LoomStatus) || undefined,
-                }));
-              }}
-            />
-          </div>
-
-          <div className="filter-field">
-            <label>Loại máy</label>
-            <Combobox
-              options={[
-                { value: '', label: 'Tất cả loại máy' },
-                ...Object.entries(LOOM_TYPE_LABELS).map(([value, label]) => ({
-                  value,
-                  label,
-                })),
-              ]}
-              value={filters.loom_type ?? ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilters((prev) => ({
-                  ...prev,
-                  loom_type: (val as LoomType) || undefined,
-                }));
-              }}
-            />
-          </div>
-
-          {hasFilter && (
-            <ClearFilterButton
-              onClick={() => {
-                setFilters({});
-                setSearchInput('');
-                setPage(1);
-              }}
-            />
-          )}
-        </div>
+      {/* Filters (Config-Driven) */}
+      <div className="flex flex-wrap items-start gap-3 px-4 py-3 border-b border-border/50 overflow-visible">
+        <FilterBar
+          variant="inline"
+          schema={FILTER_SCHEMA}
+          value={filters}
+          onChange={handleFilterChange}
+          onClear={() => {
+            clearFilters();
+            setPage(1);
+          }}
+        />
       </div>
 
-      {/* Table */}
-      <DataTable
+      {/* Table (DataTableAdvanced) */}
+      <DataTableAdvanced
         data={looms}
         isLoading={isLoading}
         rowKey={(l) => l.id}
-        onRowClick={(l) => onEdit(l)}
+        onRowClick={onEdit}
         emptyStateTitle={
-          hasFilter ? 'Không tìm thấy máy dệt phù hợp' : 'Chưa có máy dệt nào'
+          hasActiveFilter
+            ? 'Không tìm thấy máy dệt phù hợp'
+            : 'Chưa có máy dệt nào'
         }
-        emptyStateIcon={hasFilter ? 'Search' : 'Cog'}
-        emptyStateActionLabel={!hasFilter ? '+ Thêm máy dệt' : undefined}
-        onEmptyStateAction={!hasFilter ? onNew : undefined}
-        columns={[
-          {
-            header: 'Máy dệt',
-            id: 'code',
-            sortable: true,
-            cell: (l) => (
-              <div className="flex flex-col gap-1.5 items-start">
-                <div className="flex items-center gap-2">
-                  <span className="text-foreground text-[0.9rem] font-bold tracking-tight">
-                    {l.code}
-                  </span>
-                  <SaaSBadge status={l.status} />
-                </div>
-                <span className="text-muted-foreground text-[0.75rem] mt-0.5 line-clamp-1">
-                  <span className="font-medium text-foreground">{l.name}</span>{' '}
-                  • {LOOM_TYPE_LABELS[l.loom_type]}
-                </span>
-              </div>
-            ),
-          },
-          {
-            header: 'Nhà dệt',
-            id: 'supplier',
-            sortable: true,
-            accessor: (l) => l.supplier?.name,
-            cell: (l) => (
-              <span className="font-medium text-[0.85rem]">
-                {l.supplier?.name ?? '—'}
-              </span>
-            ),
-          },
-          {
-            header: <div className="text-right w-full">Thông số</div>,
-            id: 'daily_capacity_m',
-            sortable: true,
-            cell: (l) => (
-              <div className="flex flex-col items-end text-right w-full gap-1.5">
-                <span className="font-medium text-foreground text-[0.85rem]">
-                  {l.daily_capacity_m
-                    ? `${l.daily_capacity_m.toLocaleString()} m/ngày`
-                    : '—'}
-                </span>
-                <span className="text-muted-foreground text-[0.75rem]">
-                  {l.max_width_cm ? `Khổ: ${l.max_width_cm} cm` : ''}
-                  {l.max_width_cm && (l.diameter_inch || l.gauge) ? ' | ' : ''}
-                  {l.diameter_inch ? `${l.diameter_inch}"` : ''}
-                  {l.diameter_inch && l.gauge ? 'x' : ''}
-                  {l.gauge ? `${l.gauge}G` : ''}
-                </span>
-              </div>
-            ),
-          },
-          {
-            header: '',
-            className: 'td-actions w-12',
-            onCellClick: () => {},
-            cell: (l) => (
-              <div className="flex justify-end pr-2">
-                <ActionMenu
-                  items={[
-                    {
-                      label: 'Chỉnh sửa',
-                      icon: 'Pencil',
-                      onClick: () => onEdit(l),
-                    },
-                    {
-                      label: 'Xóa máy dệt',
-                      icon: 'Trash2',
-                      onClick: () => handleDelete(l),
-                      danger: true,
-                      disabled: deleteMutation.isPending,
-                    },
-                  ]}
-                />
-              </div>
-            ),
-          },
-        ]}
+        emptyStateIcon={hasActiveFilter ? 'Search' : 'Cog'}
+        emptyStateActionLabel={!hasActiveFilter ? '+ Thêm máy dệt' : undefined}
+        onEmptyStateAction={!hasActiveFilter ? onNew : undefined}
+        columns={columns}
+        exportFileName="danh_sach_may_det"
         renderMobileCard={(l) => (
-          <div className="mobile-card">
-            <div className="mobile-card-header">
-              <span className="mobile-card-title text-lg font-bold">
-                {l.code}
-              </span>
-              <SaaSBadge status={l.status} />
-            </div>
-            <div className="mobile-card-body space-y-2">
-              <p className="font-bold text-sm">{l.name}</p>
-              <p className="text-xs text-muted italic">
-                {LOOM_TYPE_LABELS[l.loom_type]}
-              </p>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <div className="flex flex-col">
-                  <span className="text-xs text-muted">Nhà dệt</span>
-                  <span className="font-medium">{l.supplier?.name ?? '—'}</span>
-                </div>
-                <div className="flex flex-col text-right">
-                  <span className="text-xs text-muted">Công suất</span>
-                  <span className="font-bold text-primary">
-                    {l.daily_capacity_m
-                      ? `${l.daily_capacity_m.toLocaleString()} m/ngày`
-                      : '—'}
-                  </span>
-                </div>
-              </div>
-              <div className="flex justify-between items-center text-xs text-muted pt-2 border-t border-border/10">
-                <span>
-                  {l.max_width_cm ? `Khổ: ${l.max_width_cm} cm` : ''}
-                  {l.max_width_cm && (l.diameter_inch || l.gauge) ? ' | ' : ''}
-                  {l.diameter_inch ? `${l.diameter_inch}"` : ''}
-                  {l.diameter_inch && l.gauge ? 'x' : ''}
-                  {l.gauge ? `${l.gauge}G` : ''}
-                  {(l.max_width_cm || l.diameter_inch || l.gauge) &&
-                  l.year_manufactured
-                    ? ' | '
-                    : ''}
-                  {l.year_manufactured ? `Năm SX: ${l.year_manufactured}` : ''}
-                </span>
-                <div className="flex gap-2">
-                  <button
-                    className="btn-icon p-1"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEdit(l);
-                    }}
-                  >
-                    <Icon name="Pencil" size={16} />
-                  </button>
-                  <button
-                    className="btn-icon p-1 text-danger"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(l);
-                    }}
-                    disabled={deleteMutation.isPending}
-                  >
-                    <Icon name="Trash2" size={16} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <LoomMobileCard
+            loom={l}
+            onEdit={onEdit}
+            onDelete={handleDelete}
+            isDeleting={deleteMutation.isPending}
+          />
         )}
         pagination={{
           result: data,
