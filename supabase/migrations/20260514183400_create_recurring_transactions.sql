@@ -40,13 +40,13 @@ CREATE POLICY "recurring_transactions_tenant_isolation"
   FOR ALL
   USING (
     tenant_id IN (
-      SELECT tenant_id FROM public.user_profiles
+      SELECT tenant_id FROM public.profiles
       WHERE id = auth.uid()
     )
   )
   WITH CHECK (
     tenant_id IN (
-      SELECT tenant_id FROM public.user_profiles
+      SELECT tenant_id FROM public.profiles
       WHERE id = auth.uid()
     )
   );

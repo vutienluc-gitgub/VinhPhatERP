@@ -105,47 +105,18 @@ export async function createSupplier(row: SupplierInsert): Promise<Supplier> {
   };
 
   // 1. Kiểm tra tồn tại trước khi insert (Database Safety)
-  if (sanitizedRow.code || sanitizedRow.email || sanitizedRow.phone) {
-    const promises = [];
-    if (sanitizedRow.code) {
-      promises.push(
-        supabase
-          .from(TABLE)
-          .select('id')
-          .eq('tenant_id', tenantId)
-          .eq('code', sanitizedRow.code),
-      );
-    }
-    if (sanitizedRow.email) {
-      promises.push(
-        supabase
-          .from(TABLE)
-          .select('id')
-          .eq('tenant_id', tenantId)
-          .eq('email', sanitizedRow.email),
-      );
-    }
-    if (sanitizedRow.phone) {
-      promises.push(
-        supabase
-          .from(TABLE)
-          .select('id')
-          .eq('tenant_id', tenantId)
-          .eq('phone', sanitizedRow.phone),
-      );
-    }
+  if (sanitizedRow.code) {
+    const { data, error } = await supabase
+      .from(TABLE)
+      .select('id')
+      .eq('tenant_id', tenantId)
+      .eq('code', sanitizedRow.code)
+      .limit(1);
 
-    if (promises.length > 0) {
-      const results = await Promise.all(promises);
-      const hasDuplicate = results.some(
-        (res) => !res.error && res.data && res.data.length > 0,
+    if (!error && data && data.length > 0) {
+      throw new Error(
+        'Mã nhà cung cấp đã tồn tại trong hệ thống. Vui lòng kiểm tra lại.',
       );
-
-      if (hasDuplicate) {
-        throw new Error(
-          'Nhà cung cấp đã tồn tại (trùng Mã, Email hoặc SDT). Vui lòng kiểm tra lại.',
-        );
-      }
     }
   }
 
@@ -250,7 +221,7 @@ export async function updateSupplier(
     }
     if (error.code === '23505') {
       throw new Error(
-        'Cập nhật thất bại: Mã, Email hoặc SDT đã được sử dụng bởi đối tác khác.',
+        'Cập nhật thất bại: Mã nhà cung cấp đã tồn tại trong hệ thống.',
       );
     }
     throw error;

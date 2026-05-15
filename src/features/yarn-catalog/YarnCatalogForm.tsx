@@ -1,10 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
-import { Combobox } from '@/shared/components/Combobox';
+import { ComboboxField } from '@/shared/components/ComboboxField';
 import {
   useColorOptions,
   toColorComboboxOptions,
@@ -20,6 +20,14 @@ import {
   YARN_CATALOG_STATUS_LABELS,
 } from '@/schema/yarn-catalog.schema';
 import type { YarnCatalogFormValues } from '@/schema/yarn-catalog.schema';
+import {
+  YARN_CATEGORY_OPTIONS,
+  YARN_TYPE_OPTIONS,
+  YARN_DENIER_OPTIONS,
+  YARN_FILAMENT_OPTIONS,
+  YARN_FINISH_OPTIONS,
+  YARN_COLOR_STATUS_OPTIONS,
+} from '@/shared/constants/yarn-classification';
 import { getErrorMessage } from '@/shared/utils/error';
 
 import type { YarnCatalog } from './types';
@@ -34,29 +42,6 @@ const STATUS_OPTIONS = (['active', 'inactive'] as const).map((s) => ({
   value: s,
   label: YARN_CATALOG_STATUS_LABELS[s],
 }));
-
-const YARN_CATEGORY_OPTIONS = [
-  { value: 'Polyester', label: 'Polyester' },
-  { value: 'Nylon', label: 'Nylon' },
-  { value: 'Cotton', label: 'Cotton' },
-  { value: 'Rayon', label: 'Rayon' },
-  { value: 'Blend (Poly Cotton...)', label: 'Blend (Poly Cotton...)' },
-  { value: 'Functional', label: 'Functional' },
-  { value: 'Fancy', label: 'Fancy' },
-];
-
-const YARN_TYPE_OPTIONS = [
-  { value: 'DTY', label: 'DTY' },
-  { value: 'FDY', label: 'FDY' },
-  { value: 'POY', label: 'POY' },
-  { value: 'SCY', label: 'SCY' },
-  { value: 'RCY', label: 'RCY' },
-  { value: 'ACY', label: 'ACY' },
-  { value: 'Spandex', label: 'Spandex' },
-  { value: 'OE', label: 'OE (Open-End)' },
-  { value: 'CM', label: 'CM (Combed)' },
-  { value: 'CD', label: 'CD (Carded)' },
-];
 
 type YarnCatalogFormProps = {
   catalog: YarnCatalog | null;
@@ -75,6 +60,10 @@ function catalogToFormValues(catalog: YarnCatalog): YarnCatalogFormValues {
     grade: catalog.grade ?? '',
     category: catalog.category ?? '',
     yarn_type: catalog.yarn_type ?? '',
+    denier: catalog.denier ?? '',
+    filament_count: catalog.filament_count ?? '',
+    finish: catalog.finish ?? '',
+    color_status: catalog.color_status ?? '',
     unit: catalog.unit,
     notes: catalog.notes ?? '',
     status: catalog.status,
@@ -115,10 +104,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
   async function onSubmit(values: YarnCatalogFormValues) {
     try {
       if (isEditing) {
-        await updateMutation.mutateAsync({
-          id: catalog.id,
-          values,
-        });
+        await updateMutation.mutateAsync({ id: catalog.id, values });
       } else {
         await createMutation.mutateAsync(values);
       }
@@ -146,207 +132,214 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
 
       <form id="yarn-catalog-form" onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="form-grid">
-          {/* Mã + Tên */}
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-            <div className="form-field">
-              <label htmlFor="code">
-                Mã sợi <span className="field-required">*</span>
-              </label>
-              <input
-                id="code"
-                className={`field-input${errors.code ? ' is-error' : ''}`}
-                type="text"
-                placeholder="VD: YS-001"
-                readOnly={!isEditing}
-                {...register('code')}
-              />
-              {errors.code && (
-                <span className="field-error">{errors.code.message}</span>
-              )}
-            </div>
+          {/* ═══ Section 1: Thông tin chung ═══ */}
+          <fieldset className="form-section">
+            <legend className="form-section-title">Thông tin chung</legend>
 
-            <div className="form-field">
-              <label htmlFor="name">
-                Tên loại sợi <span className="field-required">*</span>
-              </label>
-              <input
-                id="name"
-                className={`field-input${errors.name ? ' is-error' : ''}`}
-                type="text"
-                placeholder="VD: Cotton 40/1"
-                {...register('name')}
-              />
-              {errors.name && (
-                <span className="field-error">{errors.name.message}</span>
-              )}
-            </div>
-          </div>
-
-          {/* Thành phần + Màu mặc định */}
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-            <div className="form-field">
-              <label htmlFor="composition">Thành phần</label>
-              <input
-                id="composition"
-                className="field-input"
-                type="text"
-                placeholder="VD: 100% Cotton"
-                {...register('composition')}
-              />
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="color_name">Màu mặc định</label>
-              <Controller
-                name="color_name"
-                control={control}
-                render={({ field }) => (
-                  <Combobox
-                    options={toColorComboboxOptions(colorOptions)}
-                    value={field.value ?? ''}
-                    onChange={field.onChange}
-                    placeholder="Chọn hoặc nhập màu..."
-                  />
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+              <div className="form-field">
+                <label htmlFor="code">
+                  Mã sợi <span className="field-required">*</span>
+                </label>
+                <input
+                  id="code"
+                  className={`field-input${errors.code ? ' is-error' : ''}`}
+                  type="text"
+                  placeholder="VD: YS-001"
+                  readOnly={!isEditing}
+                  {...register('code')}
+                />
+                {errors.code && (
+                  <span className="field-error">{errors.code.message}</span>
                 )}
-              />
-            </div>
-          </div>
+              </div>
 
-          {/* Cường lực + Xuất xứ */}
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-            <div className="form-field">
-              <label htmlFor="tensile_strength">Cường lực</label>
-              <input
-                id="tensile_strength"
-                className="field-input"
-                type="text"
-                placeholder="VD: 18 cN/tex"
-                {...register('tensile_strength')}
-              />
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="origin">Xuất xứ</label>
-              <input
-                id="origin"
-                className="field-input"
-                type="text"
-                placeholder="VD: Việt Nam"
-                {...register('origin')}
-              />
-            </div>
-          </div>
-
-          {/* Mã lô + Phân loại */}
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-            <div className="form-field">
-              <label htmlFor="lot_no">Mã lô (Lot No)</label>
-              <input
-                id="lot_no"
-                className="field-input"
-                type="text"
-                placeholder="VD: PT40092"
-                {...register('lot_no')}
-              />
+              <div className="form-field">
+                <label htmlFor="name">
+                  Tên loại sợi <span className="field-required">*</span>
+                </label>
+                <input
+                  id="name"
+                  className={`field-input${errors.name ? ' is-error' : ''}`}
+                  type="text"
+                  placeholder="VD: DTY 150D/48F SD"
+                  {...register('name')}
+                />
+                {errors.name && (
+                  <span className="field-error">{errors.name.message}</span>
+                )}
+              </div>
             </div>
 
-            <div className="form-field">
-              <label htmlFor="grade">Phân loại (Grade)</label>
-              <input
-                id="grade"
-                className="field-input"
-                type="text"
-                placeholder="VD: A, B, C..."
-                {...register('grade')}
-              />
-            </div>
-          </div>
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+              <div className="form-field">
+                <label htmlFor="composition">Thành phần</label>
+                <input
+                  id="composition"
+                  className="field-input"
+                  type="text"
+                  placeholder="VD: 100% Polyester"
+                  {...register('composition')}
+                />
+              </div>
 
-          {/* Nhóm sợi + Đơn vị */}
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-            <div className="form-field">
-              <label htmlFor="category">Category (Level 1)</label>
-              <Controller
+              <div className="form-field">
+                <label htmlFor="origin">Xuất xứ</label>
+                <input
+                  id="origin"
+                  className="field-input"
+                  type="text"
+                  placeholder="VD: Trung Quốc, Đài Loan..."
+                  {...register('origin')}
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          {/* ═══ Section 2: Phân loại kỹ thuật ═══ */}
+          <fieldset className="form-section">
+            <legend className="form-section-title">Thông tin kỹ thuật</legend>
+
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
+              <ComboboxField
                 name="category"
                 control={control}
-                render={({ field }) => (
-                  <Combobox
-                    options={YARN_CATEGORY_OPTIONS}
-                    value={field.value ?? ''}
-                    onChange={field.onChange}
-                    allowInput={true}
-                    placeholder="VD: Polyester, Nylon..."
-                  />
-                )}
+                options={YARN_CATEGORY_OPTIONS}
+                label="Chất liệu (Level 1)"
+                allowInput
+                placeholder="VD: Polyester, Nylon..."
               />
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="yarn_type">Loại sợi / Type (Level 2)</label>
-              <Controller
+              <ComboboxField
                 name="yarn_type"
                 control={control}
-                render={({ field }) => (
-                  <Combobox
-                    options={YARN_TYPE_OPTIONS}
-                    value={field.value ?? ''}
-                    onChange={field.onChange}
-                    allowInput={true}
-                    placeholder="VD: DTY, FDY, SCY..."
-                  />
-                )}
+                options={YARN_TYPE_OPTIONS}
+                label="Loại sợi (Level 2)"
+                allowInput
+                placeholder="VD: DTY, FDY, SCY..."
               />
             </div>
 
-            <div className="form-field">
-              <label htmlFor="unit">
-                Đơn vị <span className="field-required">*</span>
-              </label>
-              <Controller
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))]">
+              <ComboboxField
+                name="denier"
+                control={control}
+                options={YARN_DENIER_OPTIONS}
+                label="Denier"
+                allowInput
+                placeholder="VD: 150D"
+              />
+              <ComboboxField
+                name="filament_count"
+                control={control}
+                options={YARN_FILAMENT_OPTIONS}
+                label="Filament"
+                allowInput
+                placeholder="VD: 48F"
+              />
+              <div className="form-field">
+                <label htmlFor="tensile_strength">Cường lực</label>
+                <input
+                  id="tensile_strength"
+                  className="field-input"
+                  type="text"
+                  placeholder="VD: 18 cN/tex"
+                  {...register('tensile_strength')}
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          {/* ═══ Section 3: Hiệu ứng & Trạng thái màu ═══ */}
+          <fieldset className="form-section">
+            <legend className="form-section-title">Hiệu ứng & Màu sắc</legend>
+
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
+              <ComboboxField
+                name="finish"
+                control={control}
+                options={YARN_FINISH_OPTIONS}
+                label="Finish (Bề mặt)"
+                allowInput
+                placeholder="VD: Semi Dull"
+              />
+              <ComboboxField
+                name="color_status"
+                control={control}
+                options={YARN_COLOR_STATUS_OPTIONS}
+                label="Trạng thái màu"
+                allowInput
+                placeholder="VD: Raw White"
+              />
+              <ComboboxField
+                name="color_name"
+                control={control}
+                options={toColorComboboxOptions(colorOptions)}
+                label="Màu mặc định"
+                placeholder="Chọn hoặc nhập màu..."
+              />
+            </div>
+          </fieldset>
+
+          {/* ═══ Section 4: Thông tin bổ sung ═══ */}
+          <fieldset className="form-section">
+            <legend className="form-section-title">Thông tin bổ sung</legend>
+
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))]">
+              <div className="form-field">
+                <label htmlFor="lot_no">Mã lô (Lot No)</label>
+                <input
+                  id="lot_no"
+                  className="field-input"
+                  type="text"
+                  placeholder="VD: PT40092"
+                  {...register('lot_no')}
+                />
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="grade">Phân loại (Grade)</label>
+                <input
+                  id="grade"
+                  className="field-input"
+                  type="text"
+                  placeholder="VD: A, B, C..."
+                  {...register('grade')}
+                />
+              </div>
+
+              <ComboboxField
                 name="unit"
                 control={control}
-                render={({ field }) => (
-                  <Combobox
-                    options={UNIT_OPTIONS}
-                    value={field.value}
-                    onChange={field.onChange}
-                    hasError={!!errors.unit}
-                    placeholder="Chọn..."
-                  />
-                )}
+                options={UNIT_OPTIONS}
+                label="Đơn vị *"
+                hasError={!!errors.unit}
+                placeholder="Chọn..."
               />
-              {errors.unit && (
-                <span className="field-error">{errors.unit.message}</span>
-              )}
-            </div>
 
-            <div className="form-field">
-              <Controller
+              <ComboboxField
                 name="status"
                 control={control}
-                render={({ field }) => (
-                  <Combobox
-                    options={STATUS_OPTIONS}
-                    value={field.value}
-                    onChange={field.onChange}
-                    hasError={!!errors.status}
-                  />
-                )}
+                options={STATUS_OPTIONS}
+                label="Trạng thái"
+                hasError={!!errors.status}
               />
             </div>
-          </div>
 
-          {/* Ghi chú */}
-          <div className="form-field">
-            <label htmlFor="notes">Ghi chú</label>
-            <textarea
-              id="notes"
-              className="field-textarea"
-              rows={2}
-              placeholder="Ghi chú về loại sợi..."
-              {...register('notes')}
-            />
-          </div>
+            {errors.unit && (
+              <span className="field-error">{errors.unit.message}</span>
+            )}
+
+            <div className="form-field">
+              <label htmlFor="notes">Ghi chú</label>
+              <textarea
+                id="notes"
+                className="field-textarea"
+                rows={2}
+                placeholder="Ghi chú về loại sợi..."
+                {...register('notes')}
+              />
+            </div>
+          </fieldset>
         </div>
 
         <div className="modal-footer mt-6 p-0 border-none">

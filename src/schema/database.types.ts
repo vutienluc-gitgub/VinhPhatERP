@@ -5395,6 +5395,10 @@ export type Database = {
           unit: string;
           updated_at: string;
           yarn_type: string | null;
+          denier: string | null;
+          filament_count: string | null;
+          finish: string | null;
+          color_status: string | null;
         };
         Insert: {
           category?: string | null;
@@ -5414,6 +5418,10 @@ export type Database = {
           unit?: string;
           updated_at?: string;
           yarn_type?: string | null;
+          denier?: string | null;
+          filament_count?: string | null;
+          finish?: string | null;
+          color_status?: string | null;
         };
         Update: {
           category?: string | null;
@@ -5433,6 +5441,10 @@ export type Database = {
           unit?: string;
           updated_at?: string;
           yarn_type?: string | null;
+          denier?: string | null;
+          filament_count?: string | null;
+          finish?: string | null;
+          color_status?: string | null;
         };
         Relationships: [
           {

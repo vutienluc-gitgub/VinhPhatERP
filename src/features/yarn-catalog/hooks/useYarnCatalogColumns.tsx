@@ -2,6 +2,10 @@ import { useMemo } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 
 import { Badge, ActionBar } from '@/shared/components';
+import {
+  getYarnTypeLabel,
+  getYarnCategoryLabel,
+} from '@/shared/constants/yarn-classification';
 import type { YarnCatalog } from '@/features/yarn-catalog/types';
 import { YarnColorBadge } from '@/features/yarn-catalog/components/YarnColorBadge';
 import { YarnStatusBadge } from '@/features/yarn-catalog/components/YarnStatusBadge';
@@ -64,12 +68,13 @@ export function useYarnCatalogColumns(
         header: 'Nhóm sợi (Lv1)',
         cell: (info) => {
           const c = info.row.original;
+          const label = getYarnCategoryLabel(c.category);
           return (
             <span
-              className="text-sm block truncate max-w-[100px]"
-              title={c.category ?? ''}
+              className="text-sm block truncate max-w-[140px]"
+              title={label}
             >
-              {c.category ?? '—'}
+              {label || '—'}
             </span>
           );
         },
@@ -78,12 +83,13 @@ export function useYarnCatalogColumns(
         header: 'Loại sợi (Lv2)',
         cell: (info) => {
           const c = info.row.original;
+          const label = getYarnTypeLabel(c.yarn_type);
           return (
             <span
-              className="text-sm font-medium text-primary block truncate max-w-[100px]"
-              title={c.yarn_type ?? ''}
+              className="text-sm font-medium text-primary block truncate max-w-[180px]"
+              title={label}
             >
-              {c.yarn_type ?? '—'}
+              {label || '—'}
             </span>
           );
         },

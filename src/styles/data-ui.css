@@ -1639,6 +1639,17 @@
   gap: 0.85rem;
 }
 
+/* Fieldset variant (native legend, no JS) */
+fieldset.form-section {
+  padding: 0.85rem;
+  margin: 0;
+}
+
+fieldset.form-section > legend.form-section-title {
+  padding: 0 0.35rem;
+  margin-left: -0.15rem;
+}
+
 /* ---- Quick-stats cards ---- */
 .stats-bar {
   display: flex;
