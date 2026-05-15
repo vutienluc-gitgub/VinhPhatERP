@@ -16,6 +16,10 @@ export type YarnCatalog = {
   grade: string | null;
   category: string | null;
   yarn_type: string | null;
+  denier: string | null;
+  filament_count: string | null;
+  finish: string | null;
+  color_status: string | null;
   unit: string;
   notes: string | null;
   status: YarnCatalogStatus;
