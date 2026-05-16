@@ -2,8 +2,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import { Icon, Button } from '@/shared/components';
+import { Icon } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { StepperFooter } from '@/shared/components/StepperFooter';
+import { useStepper } from '@/shared/hooks/useStepper';
 import { Combobox } from '@/shared/components/Combobox';
 import {
   useCreateLoom,
@@ -76,6 +78,7 @@ export function LoomForm({ loom, onClose }: LoomFormProps) {
     setValue,
     getValues,
     watch,
+    trigger,
     formState: { errors, isSubmitting },
   } = useForm<LoomFormValues>({
     resolver: zodResolver(loomSchema),
@@ -121,14 +124,42 @@ export function LoomForm({ loom, onClose }: LoomFormProps) {
   const currentStatus = watch('status');
   const isTechnicalLocked = isEditing && currentStatus === 'active';
 
+  const stepper = useStepper({
+    totalSteps: 4,
+    stepValidation: {
+      0: () => trigger(['code', 'name', 'status']),
+      1: () => trigger(['supplier_id', 'daily_capacity_m']),
+      2: () => trigger(['loom_type', 'max_width_cm', 'max_speed_rpm']),
+    },
+    onCancel: onClose,
+  });
+
+  async function handleFinalSubmit(values: LoomFormValues) {
+    if (!stepper.isLast) return;
+    await onSubmit(values);
+  }
+
   return (
     <AdaptiveSheet
       open={true}
       onClose={onClose}
       title={isEditing ? `Sửa: ${loom.name}` : 'Thêm máy dệt'}
+      maxWidth={720}
+      stepInfo={{ current: stepper.currentStep, total: stepper.totalSteps }}
+      footer={
+        <StepperFooter
+          stepper={stepper}
+          onCancel={onClose}
+          isPending={isPending}
+          submitLabel={isEditing ? 'Cập nhật' : 'Thêm máy dệt'}
+          formId="loom-form"
+        />
+      }
     >
       {mutationError && (
-        <p className="error-inline mb-4">{getErrorMessage(mutationError)}</p>
+        <p className="error-inline mb-4">
+          Lỗi: {getErrorMessage(mutationError)}
+        </p>
       )}
 
       {isTechnicalLocked && (
@@ -148,390 +179,381 @@ export function LoomForm({ loom, onClose }: LoomFormProps) {
 
       <form
         id="loom-form"
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(handleFinalSubmit)}
+        onKeyDown={stepper.handleKeyDown}
         noValidate
         className="space-y-8 pb-4"
       >
         {/* === SECTION 1: THÔNG TIN CHUNG === */}
-        <section>
-          <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
-            <Icon name="Info" size={16} className="text-indigo-500" />
-            Thông tin chung
-          </h3>
-          <div className="form-grid">
-            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-              <div className="form-field">
-                <label htmlFor="loom-code">
-                  Mã máy <span className="field-required">*</span>
-                </label>
-                <input
-                  id="loom-code"
-                  className={`field-input${errors.code ? ' is-error' : ''}`}
-                  type="text"
-                  placeholder="VD: LOOM-001"
-                  readOnly={!isEditing}
-                  {...register('code')}
-                />
-                {errors.code && (
-                  <span className="field-error">{errors.code.message}</span>
-                )}
+        {stepper.currentStep === 0 && (
+          <section>
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+              <Icon name="Info" size={16} className="text-indigo-500" />
+              Thông tin chung
+            </h3>
+            <div className="form-grid">
+              <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+                <div className="form-field">
+                  <label htmlFor="loom-code">
+                    Mã máy <span className="field-required">*</span>
+                  </label>
+                  <input
+                    id="loom-code"
+                    className={`field-input${errors.code ? ' is-error' : ''}`}
+                    type="text"
+                    placeholder="VD: LOOM-001"
+                    readOnly={!isEditing}
+                    {...register('code')}
+                  />
+                  {errors.code && (
+                    <span className="field-error">{errors.code.message}</span>
+                  )}
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="loom-name">
+                    Tên máy dệt <span className="field-required">*</span>
+                  </label>
+                  <input
+                    id="loom-name"
+                    className={`field-input${errors.name ? ' is-error' : ''}`}
+                    type="text"
+                    placeholder="VD: Toyota JAT 810"
+                    {...register('name')}
+                  />
+                  {errors.name && (
+                    <span className="field-error">{errors.name.message}</span>
+                  )}
+                </div>
               </div>
 
-              <div className="form-field">
-                <label htmlFor="loom-name">
-                  Tên máy dệt <span className="field-required">*</span>
-                </label>
-                <input
-                  id="loom-name"
-                  className={`field-input${errors.name ? ' is-error' : ''}`}
-                  type="text"
-                  placeholder="VD: Toyota JAT 810"
-                  {...register('name')}
-                />
-                {errors.name && (
-                  <span className="field-error">{errors.name.message}</span>
-                )}
+              <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] mt-4">
+                <div className="form-field">
+                  <label>
+                    Nhà dệt <span className="field-required">*</span>
+                  </label>
+                  <Controller
+                    name="supplier_id"
+                    control={control}
+                    render={({ field }) => (
+                      <Combobox
+                        options={supplierOptions}
+                        value={field.value}
+                        onChange={field.onChange}
+                        hasError={!!errors.supplier_id}
+                        disabled={isTechnicalLocked}
+                        placeholder={
+                          loadingSuppliers ? 'Đang tải...' : 'Chọn nhà dệt...'
+                        }
+                      />
+                    )}
+                  />
+                  {errors.supplier_id && (
+                    <span className="field-error">
+                      {errors.supplier_id.message}
+                    </span>
+                  )}
+                </div>
+
+                <div className="form-field">
+                  <label>Trạng thái</label>
+                  <Controller
+                    name="status"
+                    control={control}
+                    render={({ field }) => (
+                      <Combobox
+                        options={STATUS_OPTIONS}
+                        value={field.value}
+                        onChange={field.onChange}
+                        hasError={!!errors.status}
+                      />
+                    )}
+                  />
+                </div>
               </div>
             </div>
+          </section>
+        )}
 
-            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] mt-4">
+        {/* === SECTION 2: NĂNG LỰC SẢN XUẤT === */}
+        {stepper.currentStep === 1 && (
+          <section>
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+              <Icon name="Activity" size={16} className="text-emerald-500" />
+              Năng lực sản xuất
+            </h3>
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
               <div className="form-field">
                 <label>
-                  Nhà dệt <span className="field-required">*</span>
+                  Loại máy <span className="field-required">*</span>
                 </label>
                 <Controller
-                  name="supplier_id"
+                  name="loom_type"
                   control={control}
                   render={({ field }) => (
                     <Combobox
-                      options={supplierOptions}
+                      options={TYPE_OPTIONS}
                       value={field.value}
                       onChange={field.onChange}
-                      hasError={!!errors.supplier_id}
+                      hasError={!!errors.loom_type}
+                      placeholder="Chọn loại máy..."
                       disabled={isTechnicalLocked}
-                      placeholder={
-                        loadingSuppliers ? 'Đang tải...' : 'Chọn nhà dệt...'
-                      }
                     />
                   )}
                 />
-                {errors.supplier_id && (
+                {errors.loom_type && (
                   <span className="field-error">
-                    {errors.supplier_id.message}
+                    {errors.loom_type.message}
                   </span>
                 )}
               </div>
 
-              <div className="form-field">
-                <label>Trạng thái</label>
-                <Controller
-                  name="status"
-                  control={control}
-                  render={({ field }) => (
-                    <Combobox
-                      options={STATUS_OPTIONS}
-                      value={field.value}
-                      onChange={field.onChange}
-                      hasError={!!errors.status}
-                    />
+              <div className="form-grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] mt-4">
+                <div className="form-field">
+                  <label htmlFor="loom-width">Khổ dệt tối đa (cm)</label>
+                  <input
+                    id="loom-width"
+                    className={`field-input${errors.max_width_cm ? ' is-error' : ''}`}
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    placeholder="VD: 360"
+                    disabled={isTechnicalLocked}
+                    {...register('max_width_cm', {
+                      setValueAs: (v) =>
+                        v === '' || Number.isNaN(Number(v)) ? null : Number(v),
+                    })}
+                  />
+                  {errors.max_width_cm && (
+                    <span className="field-error">
+                      {errors.max_width_cm.message}
+                    </span>
                   )}
-                />
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="loom-speed">Tốc độ (vòng/phút)</label>
+                  <input
+                    id="loom-speed"
+                    className={`field-input${errors.max_speed_rpm ? ' is-error' : ''}`}
+                    type="number"
+                    step="1"
+                    min="0"
+                    placeholder="VD: 600"
+                    disabled={isTechnicalLocked}
+                    {...register('max_speed_rpm', {
+                      setValueAs: (v) =>
+                        v === '' || Number.isNaN(Number(v)) ? null : Number(v),
+                    })}
+                  />
+                  {errors.max_speed_rpm && (
+                    <span className="field-error">
+                      {errors.max_speed_rpm.message}
+                    </span>
+                  )}
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="loom-capacity">Công suất (m/ngày)</label>
+                  <input
+                    id="loom-capacity"
+                    className={`field-input${errors.daily_capacity_m ? ' is-error' : ''}`}
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    placeholder="VD: 200"
+                    disabled={isTechnicalLocked}
+                    {...register('daily_capacity_m', {
+                      setValueAs: (v) =>
+                        v === '' || Number.isNaN(Number(v)) ? null : Number(v),
+                    })}
+                  />
+                  {errors.daily_capacity_m && (
+                    <span className="field-error">
+                      {errors.daily_capacity_m.message}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
-        {/* === SECTION 2: NĂNG LỰC SẢN XUẤT === */}
-        <section>
-          <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
-            <Icon name="Activity" size={16} className="text-emerald-500" />
-            Năng lực sản xuất
-          </h3>
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-            <div className="form-field">
-              <label>
-                Loại máy <span className="field-required">*</span>
-              </label>
-              <Controller
-                name="loom_type"
-                control={control}
-                render={({ field }) => (
-                  <Combobox
-                    options={TYPE_OPTIONS}
-                    value={field.value}
-                    onChange={field.onChange}
-                    hasError={!!errors.loom_type}
-                    placeholder="Chọn loại máy..."
-                    disabled={isTechnicalLocked}
-                  />
-                )}
-              />
-              {errors.loom_type && (
-                <span className="field-error">{errors.loom_type.message}</span>
-              )}
-            </div>
-
-            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] mt-4">
+        {/* === SECTION 3: THÔNG SỐ KỸ THUẬT === */}
+        {stepper.currentStep === 2 && (
+          <section>
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+              <Icon name="Settings" size={16} className="text-blue-500" />
+              Thông số kỹ thuật chi tiết
+            </h3>
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
               <div className="form-field">
-                <label htmlFor="loom-width">Khổ dệt tối đa (cm)</label>
+                <label htmlFor="loom-diameter">Đường kính (inch)</label>
                 <input
-                  id="loom-width"
-                  className={`field-input${errors.max_width_cm ? ' is-error' : ''}`}
+                  id="loom-diameter"
+                  className={`field-input${errors.diameter_inch ? ' is-error' : ''}`}
                   type="number"
                   step="0.1"
                   min="0"
-                  placeholder="VD: 360"
+                  placeholder="VD: 30"
                   disabled={isTechnicalLocked}
-                  {...register('max_width_cm', {
+                  {...register('diameter_inch', {
                     setValueAs: (v) =>
                       v === '' || Number.isNaN(Number(v)) ? null : Number(v),
                   })}
                 />
-                {errors.max_width_cm && (
+                {errors.diameter_inch && (
                   <span className="field-error">
-                    {errors.max_width_cm.message}
+                    {errors.diameter_inch.message}
                   </span>
                 )}
               </div>
 
               <div className="form-field">
-                <label htmlFor="loom-speed">Tốc độ (vòng/phút)</label>
+                <label htmlFor="loom-gauge">Gauge (mật độ kim)</label>
                 <input
-                  id="loom-speed"
-                  className={`field-input${errors.max_speed_rpm ? ' is-error' : ''}`}
+                  id="loom-gauge"
+                  className={`field-input${errors.gauge ? ' is-error' : ''}`}
                   type="number"
                   step="1"
                   min="0"
-                  placeholder="VD: 600"
+                  placeholder="VD: 72"
                   disabled={isTechnicalLocked}
-                  {...register('max_speed_rpm', {
+                  {...register('gauge', {
                     setValueAs: (v) =>
                       v === '' || Number.isNaN(Number(v)) ? null : Number(v),
                   })}
                 />
-                {errors.max_speed_rpm && (
+                {errors.gauge && (
+                  <span className="field-error">{errors.gauge.message}</span>
+                )}
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="loom-feeders">Feeders (đầu sợi)</label>
+                <input
+                  id="loom-feeders"
+                  className={`field-input${errors.feeders ? ' is-error' : ''}`}
+                  type="number"
+                  step="1"
+                  min="0"
+                  placeholder="VD: 72"
+                  disabled={isTechnicalLocked}
+                  {...register('feeders', {
+                    setValueAs: (v) =>
+                      v === '' || Number.isNaN(Number(v)) ? null : Number(v),
+                  })}
+                />
+                {errors.feeders && (
+                  <span className="field-error">{errors.feeders.message}</span>
+                )}
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="loom-motor">Công suất motor (kW)</label>
+                <input
+                  id="loom-motor"
+                  className={`field-input${errors.motor_power_kw ? ' is-error' : ''}`}
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  placeholder="VD: 5.5"
+                  disabled={isTechnicalLocked}
+                  {...register('motor_power_kw', {
+                    setValueAs: (v) =>
+                      v === '' || Number.isNaN(Number(v)) ? null : Number(v),
+                  })}
+                />
+                {errors.motor_power_kw && (
                   <span className="field-error">
-                    {errors.max_speed_rpm.message}
+                    {errors.motor_power_kw.message}
                   </span>
                 )}
               </div>
 
               <div className="form-field">
-                <label htmlFor="loom-capacity">Công suất (m/ngày)</label>
+                <label htmlFor="loom-voltage">Điện áp</label>
                 <input
-                  id="loom-capacity"
-                  className={`field-input${errors.daily_capacity_m ? ' is-error' : ''}`}
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  placeholder="VD: 200"
+                  id="loom-voltage"
+                  className={`field-input${errors.voltage ? ' is-error' : ''}`}
+                  type="text"
+                  placeholder="VD: 380V/3P/50Hz"
                   disabled={isTechnicalLocked}
-                  {...register('daily_capacity_m', {
+                  {...register('voltage')}
+                />
+                {errors.voltage && (
+                  <span className="field-error">{errors.voltage.message}</span>
+                )}
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="loom-weight">Trọng lượng (kg)</label>
+                <input
+                  id="loom-weight"
+                  className={`field-input${errors.weight_kg ? ' is-error' : ''}`}
+                  type="number"
+                  step="1"
+                  min="0"
+                  placeholder="VD: 4200"
+                  disabled={isTechnicalLocked}
+                  {...register('weight_kg', {
                     setValueAs: (v) =>
                       v === '' || Number.isNaN(Number(v)) ? null : Number(v),
                   })}
                 />
-                {errors.daily_capacity_m && (
+                {errors.weight_kg && (
                   <span className="field-error">
-                    {errors.daily_capacity_m.message}
+                    {errors.weight_kg.message}
                   </span>
                 )}
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* === SECTION 3: THÔNG SỐ KỸ THUẬT === */}
-        <section>
-          <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
-            <Icon name="Settings" size={16} className="text-blue-500" />
-            Thông số kỹ thuật chi tiết
-          </h3>
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
-            <div className="form-field">
-              <label htmlFor="loom-diameter">Đường kính (inch)</label>
-              <input
-                id="loom-diameter"
-                className={`field-input${errors.diameter_inch ? ' is-error' : ''}`}
-                type="number"
-                step="0.1"
-                min="0"
-                placeholder="VD: 30"
-                disabled={isTechnicalLocked}
-                {...register('diameter_inch', {
-                  setValueAs: (v) =>
-                    v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-                })}
-              />
-              {errors.diameter_inch && (
-                <span className="field-error">
-                  {errors.diameter_inch.message}
-                </span>
-              )}
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="loom-gauge">Gauge (mật độ kim)</label>
-              <input
-                id="loom-gauge"
-                className={`field-input${errors.gauge ? ' is-error' : ''}`}
-                type="number"
-                step="1"
-                min="0"
-                placeholder="VD: 72"
-                disabled={isTechnicalLocked}
-                {...register('gauge', {
-                  setValueAs: (v) =>
-                    v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-                })}
-              />
-              {errors.gauge && (
-                <span className="field-error">{errors.gauge.message}</span>
-              )}
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="loom-feeders">Feeders (đầu sợi)</label>
-              <input
-                id="loom-feeders"
-                className={`field-input${errors.feeders ? ' is-error' : ''}`}
-                type="number"
-                step="1"
-                min="0"
-                placeholder="VD: 72"
-                disabled={isTechnicalLocked}
-                {...register('feeders', {
-                  setValueAs: (v) =>
-                    v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-                })}
-              />
-              {errors.feeders && (
-                <span className="field-error">{errors.feeders.message}</span>
-              )}
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="loom-motor">Công suất motor (kW)</label>
-              <input
-                id="loom-motor"
-                className={`field-input${errors.motor_power_kw ? ' is-error' : ''}`}
-                type="number"
-                step="0.1"
-                min="0"
-                placeholder="VD: 5.5"
-                disabled={isTechnicalLocked}
-                {...register('motor_power_kw', {
-                  setValueAs: (v) =>
-                    v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-                })}
-              />
-              {errors.motor_power_kw && (
-                <span className="field-error">
-                  {errors.motor_power_kw.message}
-                </span>
-              )}
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="loom-voltage">Điện áp</label>
-              <input
-                id="loom-voltage"
-                className={`field-input${errors.voltage ? ' is-error' : ''}`}
-                type="text"
-                placeholder="VD: 380V/3P/50Hz"
-                disabled={isTechnicalLocked}
-                {...register('voltage')}
-              />
-              {errors.voltage && (
-                <span className="field-error">{errors.voltage.message}</span>
-              )}
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="loom-weight">Trọng lượng (kg)</label>
-              <input
-                id="loom-weight"
-                className={`field-input${errors.weight_kg ? ' is-error' : ''}`}
-                type="number"
-                step="1"
-                min="0"
-                placeholder="VD: 4200"
-                disabled={isTechnicalLocked}
-                {...register('weight_kg', {
-                  setValueAs: (v) =>
-                    v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-                })}
-              />
-              {errors.weight_kg && (
-                <span className="field-error">{errors.weight_kg.message}</span>
-              )}
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* === SECTION 4: THÔNG TIN KHÁC === */}
-        <section>
-          <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
-            <Icon name="FileText" size={16} className="text-gray-500" />
-            Thông tin khác
-          </h3>
-          <div className="form-grid">
-            <div className="form-field">
-              <label htmlFor="loom-year">Năm sản xuất</label>
-              <input
-                id="loom-year"
-                className={`field-input${errors.year_manufactured ? ' is-error' : ''}`}
-                type="number"
-                step="1"
-                min="1950"
-                max="2100"
-                placeholder="VD: 2020"
-                disabled={isTechnicalLocked}
-                {...register('year_manufactured', {
-                  setValueAs: (v) =>
-                    v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-                })}
-              />
-              {errors.year_manufactured && (
-                <span className="field-error">
-                  {errors.year_manufactured.message}
-                </span>
-              )}
+        {stepper.currentStep === 3 && (
+          <section>
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+              <Icon name="FileText" size={16} className="text-gray-500" />
+              Thông tin khác
+            </h3>
+            <div className="form-grid">
+              <div className="form-field">
+                <label htmlFor="loom-year">Năm sản xuất</label>
+                <input
+                  id="loom-year"
+                  className={`field-input${errors.year_manufactured ? ' is-error' : ''}`}
+                  type="number"
+                  step="1"
+                  min="1950"
+                  max="2100"
+                  placeholder="VD: 2020"
+                  disabled={isTechnicalLocked}
+                  {...register('year_manufactured', {
+                    setValueAs: (v) =>
+                      v === '' || Number.isNaN(Number(v)) ? null : Number(v),
+                  })}
+                />
+                {errors.year_manufactured && (
+                  <span className="field-error">
+                    {errors.year_manufactured.message}
+                  </span>
+                )}
+              </div>
+              <div className="form-field">
+                <label htmlFor="loom-notes">Ghi chú</label>
+                <textarea
+                  id="loom-notes"
+                  className="field-textarea"
+                  rows={2}
+                  placeholder="Ghi chú về máy dệt..."
+                  {...register('notes')}
+                />
+              </div>
             </div>
-            <div className="form-field">
-              <label htmlFor="loom-notes">Ghi chú</label>
-              <textarea
-                id="loom-notes"
-                className="field-textarea"
-                rows={2}
-                placeholder="Ghi chú về máy dệt..."
-                {...register('notes')}
-              />
-            </div>
-          </div>
-        </section>
-
-        <div className="modal-footer mt-6 p-0 border-none">
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={onClose}
-            disabled={isPending}
-          >
-            Hủy
-          </Button>
-          <button
-            className="primary-button btn-standard"
-            type="submit"
-            disabled={isPending}
-          >
-            {isPending
-              ? 'Đang lưu...'
-              : isEditing
-                ? 'Cập nhật'
-                : 'Thêm máy dệt'}
-          </button>
-        </div>
+          </section>
+        )}
       </form>
     </AdaptiveSheet>
   );

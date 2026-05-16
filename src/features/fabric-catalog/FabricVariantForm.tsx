@@ -131,6 +131,30 @@ export function FabricVariantForm({
           ? `Sửa biến thể: ${variant.variant_code}`
           : `Thêm biến thể — ${parentCode}`
       }
+      footer={
+        <>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={onClose}
+            disabled={isPending}
+          >
+            Hủy
+          </Button>
+          <button
+            className="primary-button btn-standard"
+            type="submit"
+            form="fabric-variant-form"
+            disabled={isPending}
+          >
+            {isPending
+              ? 'Đang lưu...'
+              : isEditing
+                ? 'Cập nhật'
+                : 'Thêm biến thể'}
+          </button>
+        </>
+      }
     >
       {mutationError && (
         <p className="error-inline mb-4">
@@ -417,28 +441,6 @@ export function FabricVariantForm({
               {...register('notes')}
             />
           </div>
-        </div>
-
-        <div className="modal-footer mt-6 p-0 border-none">
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={onClose}
-            disabled={isPending}
-          >
-            Hủy
-          </Button>
-          <button
-            className="primary-button btn-standard"
-            type="submit"
-            disabled={isPending}
-          >
-            {isPending
-              ? 'Đang lưu...'
-              : isEditing
-                ? 'Cập nhật'
-                : 'Thêm biến thể'}
-          </button>
         </div>
       </form>
     </AdaptiveSheet>

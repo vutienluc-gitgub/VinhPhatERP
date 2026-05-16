@@ -120,6 +120,30 @@ export function FabricCatalogForm({
       open={true}
       onClose={onClose}
       title={isEditing ? `Sửa: ${catalog.name}` : 'Thêm loại vải'}
+      footer={
+        <>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={onClose}
+            disabled={isPending}
+          >
+            Hủy
+          </Button>
+          <button
+            className="primary-button btn-standard"
+            type="submit"
+            form="fabric-catalog-form"
+            disabled={isPending}
+          >
+            {isPending
+              ? 'Đang lưu...'
+              : isEditing
+                ? 'Cập nhật'
+                : 'Thêm loại vải'}
+          </button>
+        </>
+      }
     >
       {mutationError && (
         <p className="error-inline mb-4">
@@ -300,28 +324,6 @@ export function FabricCatalogForm({
               {...register('notes')}
             />
           </div>
-        </div>
-
-        <div className="modal-footer mt-6 p-0 border-none">
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={onClose}
-            disabled={isPending}
-          >
-            Hủy
-          </Button>
-          <button
-            className="primary-button btn-standard"
-            type="submit"
-            disabled={isPending}
-          >
-            {isPending
-              ? 'Đang lưu...'
-              : isEditing
-                ? 'Cập nhật'
-                : 'Thêm loại vải'}
-          </button>
         </div>
       </form>
     </AdaptiveSheet>

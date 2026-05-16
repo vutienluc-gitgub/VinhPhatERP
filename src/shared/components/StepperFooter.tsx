@@ -16,6 +16,7 @@ export type StepperFooterProps = {
   submitLabel?: string;
   submitDisabled?: boolean;
   children?: ReactNode; // For AutoSaveSubscriber or other extra elements
+  formId?: string;
 };
 
 export function StepperFooter({
@@ -25,6 +26,7 @@ export function StepperFooter({
   submitLabel = 'Lưu',
   submitDisabled,
   children,
+  formId,
 }: StepperFooterProps) {
   return (
     <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-3">
@@ -71,6 +73,7 @@ export function StepperFooter({
           <Button
             variant="primary"
             type="submit"
+            form={formId}
             disabled={isPending || submitDisabled}
             className="w-full sm:w-auto justify-center"
           >

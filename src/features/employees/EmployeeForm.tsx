@@ -172,8 +172,31 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
       open={open}
       onClose={onClose}
       title={isEditing ? 'Cập nhật nhân viên' : 'Thêm nhân viên mới'}
+      footer={
+        <>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={onClose}
+            disabled={isPending}
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="primary"
+            type="submit"
+            form="employee-form"
+            disabled={isPending}
+          >
+            {isPending ? 'Đang lưu...' : 'Lưu nhân viên'}
+          </Button>
+        </>
+      }
     >
-      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)}>
+      <form
+        id="employee-form"
+        onSubmit={form.handleSubmit(onSubmit, onInvalid)}
+      >
         {isEditing && (
           <div className="mb-4">
             <span className="td-muted">
@@ -307,20 +330,6 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
             />
           </div>
         )}
-
-        <div className="modal-footer mt-6 p-0 border-none">
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={onClose}
-            disabled={isPending}
-          >
-            Hủy
-          </Button>
-          <Button variant="primary" type="submit" disabled={isPending}>
-            {isPending ? 'Đang lưu...' : 'Lưu nhân viên'}
-          </Button>
-        </div>
       </form>
     </AdaptiveSheet>
   );

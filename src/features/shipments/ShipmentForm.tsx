@@ -232,6 +232,34 @@ export function ShipmentForm({
       open={true}
       onClose={onClose}
       title={`Tạo phiếu xuất — ${orderNumber}`}
+      footer={
+        <>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={onClose}
+            disabled={isSubmitting || createMutation.isPending}
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="primary"
+            type="submit"
+            form="shipment-form"
+            disabled={
+              isSubmitting ||
+              createMutation.isPending ||
+              (!isTrading && selectedRollIds.size === 0) ||
+              (isTrading &&
+                (!tradingItemsSummary || tradingItemsSummary.count === 0))
+            }
+          >
+            {createMutation.isPending
+              ? 'Đang lưu...'
+              : `Tạo phiếu xuất (${isTrading ? (tradingItemsSummary?.count || 0) + ' dòng' : selectedRollIds.size + ' cuộn'})`}
+          </Button>
+        </>
+      }
     >
       <form id="shipment-form" onSubmit={handleSubmit(onSubmit)}>
         {createMutation.error && (
@@ -457,31 +485,6 @@ export function ShipmentForm({
               <p className="field-error">{errors.items.root.message}</p>
             )}
           </div>
-        </div>
-        <div className="modal-footer mt-6 p-0 border-none">
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={onClose}
-            disabled={isSubmitting || createMutation.isPending}
-          >
-            Hủy
-          </Button>
-          <Button
-            variant="primary"
-            type="submit"
-            disabled={
-              isSubmitting ||
-              createMutation.isPending ||
-              (!isTrading && selectedRollIds.size === 0) ||
-              (isTrading &&
-                (!tradingItemsSummary || tradingItemsSummary.count === 0))
-            }
-          >
-            {createMutation.isPending
-              ? 'Đang lưu...'
-              : `Tạo phiếu xuất (${isTrading ? (tradingItemsSummary?.count || 0) + ' dòng' : selectedRollIds.size + ' cuộn'})`}
-          </Button>
         </div>
       </form>
     </AdaptiveSheet>

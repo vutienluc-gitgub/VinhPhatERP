@@ -2,13 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import {
-  AdaptiveSheet,
-  Icon,
-  Combobox,
-  CancelButton,
-  Button,
-} from '@/shared/components';
+import { AdaptiveSheet, Icon, Combobox, Button } from '@/shared/components';
+import { StepperFooter } from '@/shared/components/StepperFooter';
+import { useStepper } from '@/shared/hooks/useStepper';
 import {
   dyeingOrderSchema,
   dyeingOrderDefaults,
@@ -49,6 +45,7 @@ export function DyeingOrderForm({
     setValue,
     watch,
     reset,
+    trigger,
     formState: { errors },
   } = useForm<DyeingOrderFormValues>({
     resolver: zodResolver(dyeingOrderSchema),
@@ -103,6 +100,26 @@ export function DyeingOrderForm({
     }
   };
 
+  const stepper = useStepper({
+    totalSteps: 3,
+    stepValidation: {
+      0: () =>
+        trigger([
+          'supplier_id',
+          'order_date',
+          'expected_return_date',
+          'unit_price_per_kg',
+        ]),
+      1: () => trigger(['items']),
+    },
+    onCancel: onClose,
+  });
+
+  const handleFinalSubmit = (values: DyeingOrderFormValues) => {
+    if (!stepper.isLast) return;
+    onSubmit(values);
+  };
+
   const supplierOptions = suppliers.map((s) => ({
     value: s.id,
     label: `${s.name} (${s.code})`,
@@ -144,31 +161,27 @@ export function DyeingOrderForm({
       open={isOpen}
       onClose={onClose}
       title={isEdit ? 'Sửa lệnh nhuộm' : 'Tạo lệnh nhuộm mới'}
+      stepInfo={{ current: stepper.currentStep, total: stepper.totalSteps }}
       footer={
-        <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-end gap-3 w-full">
-          <CancelButton
-            onClick={onClose}
-            label="Hủy"
-            className="w-full sm:w-auto justify-center"
-          />
-          <Button
-            variant="primary"
-            onClick={handleSubmit(onSubmit)}
-            disabled={createMutation.isPending || updateMutation.isPending}
-            className="w-full sm:w-auto justify-center"
-          >
-            {createMutation.isPending || updateMutation.isPending
-              ? 'Đang lưu...'
-              : isEdit
-                ? 'Cập nhật'
-                : 'Tạo lệnh nhuộm'}
-          </Button>
-        </div>
+        <StepperFooter
+          stepper={stepper}
+          onCancel={onClose}
+          isPending={createMutation.isPending || updateMutation.isPending}
+          submitLabel={isEdit ? 'Cập nhật' : 'Tạo lệnh nhuộm'}
+          formId="dyeing-order-form"
+        />
       }
     >
-      <form className="flex flex-col gap-6">
+      <form
+        id="dyeing-order-form"
+        className="flex flex-col gap-6"
+        onSubmit={handleSubmit(handleFinalSubmit)}
+        onKeyDown={stepper.handleKeyDown}
+      >
         {/* Basic Info */}
-        <section className="bg-surface p-4 rounded-xl border border-border">
+        <section
+          className={`bg-surface p-4 rounded-xl border border-border ${stepper.currentStep === 0 ? 'block' : 'hidden'}`}
+        >
           <h4 className="flex items-center gap-2 mb-4 text-sm font-bold uppercase tracking-wider text-muted">
             <Icon name="Info" size={16} /> Thông tin chung
           </h4>
@@ -246,7 +259,9 @@ export function DyeingOrderForm({
         </section>
 
         {/* Items Section */}
-        <section className="bg-surface p-4 rounded-xl border border-border">
+        <section
+          className={`bg-surface p-4 rounded-xl border border-border ${stepper.currentStep === 1 ? 'block' : 'hidden'}`}
+        >
           <div className="flex justify-between items-center mb-4">
             <h4 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted">
               <Icon name="Layers" size={16} /> Danh sách cây vải (
@@ -411,7 +426,9 @@ export function DyeingOrderForm({
         </section>
 
         {/* Global Notes */}
-        <section className="bg-surface p-4 rounded-xl border border-border">
+        <section
+          className={`bg-surface p-4 rounded-xl border border-border ${stepper.currentStep === 2 ? 'block' : 'hidden'}`}
+        >
           <label className="text-xs font-bold text-muted uppercase block mb-2">
             Ghi chú chung
           </label>
