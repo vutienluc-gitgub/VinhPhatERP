@@ -84,13 +84,25 @@ export function useYarnCatalogColumns(
         cell: (info) => {
           const c = info.row.original;
           const label = getYarnTypeLabel(c.yarn_type);
+          const specs = c.denier
+            ? `${c.denier}${c.filament_count ? `/${c.filament_count}` : ''}`
+            : c.count_ne
+              ? `${c.count_ne}${c.spinning_method ? ` · ${c.spinning_method}` : ''}`
+              : null;
           return (
-            <span
-              className="text-sm font-medium text-primary block truncate max-w-[180px]"
-              title={label}
-            >
-              {label || '—'}
-            </span>
+            <div className="flex flex-col max-w-[180px]">
+              <span
+                className="text-sm font-medium text-primary truncate"
+                title={label}
+              >
+                {label || '—'}
+              </span>
+              {specs && (
+                <span className="text-xs text-muted truncate" title={specs}>
+                  {specs}
+                </span>
+              )}
+            </div>
           );
         },
       }),

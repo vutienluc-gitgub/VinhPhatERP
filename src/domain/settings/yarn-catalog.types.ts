@@ -20,6 +20,12 @@ export type YarnCatalog = {
   filament_count: string | null;
   finish: string | null;
   color_status: string | null;
+  count_ne: string | null;
+  spinning_method: string | null;
+  twist_type: string | null;
+  certifications: string[];
+  is_fancy: boolean;
+  fancy_details: string | null;
   unit: string;
   notes: string | null;
   status: YarnCatalogStatus;
@@ -34,4 +40,5 @@ export type YarnCatalogFilter = {
   grade?: string;
   category?: string;
   yarn_type?: string;
+  spinning_method?: string;
 };
