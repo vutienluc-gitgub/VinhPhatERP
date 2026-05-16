@@ -46,10 +46,13 @@ export const YARN_TYPES = [
   { code: 'OE', label: 'OE — Open-End Yarn' },
   { code: 'CM', label: 'CM — Combed Yarn' },
   { code: 'CD', label: 'CD — Carded Yarn' },
+  { code: 'CSP', label: 'CSP — Core Spun Yarn' },
 
   // Special
   { code: 'MET', label: 'MET — Metallic Yarn' },
   { code: 'SPC', label: 'SPC — Special Yarn' },
+  { code: 'SLUB', label: 'SLUB — Slub / Fancy Yarn' },
+  { code: 'GSD', label: 'GSD — Gassed Yarn' },
 ] as const;
 
 export const YARN_TYPE_OPTIONS = YARN_TYPES.map((t) => ({
@@ -140,4 +143,77 @@ export const YARN_FILAMENT_PRESETS = [
 export const YARN_FILAMENT_OPTIONS = YARN_FILAMENT_PRESETS.map((f) => ({
   value: f,
   label: f,
+}));
+
+// ─── English Count (Ne) Presets — for Cotton / Spun Yarns ──────────────────
+
+export const YARN_NE_COUNT_PRESETS = [
+  'Ne 6',
+  'Ne 8',
+  'Ne 10',
+  'Ne 12',
+  'Ne 16',
+  'Ne 20',
+  'Ne 24',
+  'Ne 30',
+  'Ne 40',
+  'Ne 50',
+  'Ne 60',
+  'Ne 80',
+  'Ne 100',
+] as const;
+
+export const YARN_NE_COUNT_OPTIONS = YARN_NE_COUNT_PRESETS.map((n) => ({
+  value: n,
+  label: n,
+}));
+
+// ─── Spinning Method (Phương pháp kéo sợi) ─────────────────────────────────
+
+export const YARN_SPINNING_METHODS = [
+  { code: 'ring_spun', label: 'Ring Spun' },
+  { code: 'compact', label: 'Compact Ring Spun' },
+  { code: 'open_end', label: 'Open End (Rotor)' },
+  { code: 'vortex', label: 'Vortex (Air Jet)' },
+  { code: 'siro', label: 'Siro (Eli Twist)' },
+  { code: 'core_spun', label: 'Core Spun' },
+] as const;
+
+export const YARN_SPINNING_METHOD_OPTIONS = YARN_SPINNING_METHODS.map((s) => ({
+  value: s.code,
+  label: s.label,
+}));
+
+// ─── Twist Type (Hướng xoắn / Kiểu xoắn) ──────────────────────────────────
+
+export const YARN_TWIST_TYPES = [
+  { code: 'S', label: 'S-Twist' },
+  { code: 'Z', label: 'Z-Twist' },
+  { code: 'zero', label: 'Zero Twist' },
+  { code: 'eli', label: 'Eli Twist (Siro)' },
+] as const;
+
+export const YARN_TWIST_TYPE_OPTIONS = YARN_TWIST_TYPES.map((t) => ({
+  value: t.code,
+  label: t.label,
+}));
+
+// ─── Certifications (Chứng chỉ quốc tế) ────────────────────────────────────
+
+export const YARN_CERTIFICATIONS = [
+  { code: 'BCI', label: 'BCI — Better Cotton Initiative' },
+  { code: 'GOTS', label: 'GOTS — Global Organic Textile Standard' },
+  { code: 'OCS', label: 'OCS — Organic Content Standard' },
+  { code: 'GRS', label: 'GRS — Global Recycled Standard' },
+  { code: 'OEKO_TEX', label: 'OEKO-TEX Standard 100' },
+  { code: 'Supima', label: 'Supima (USA Pima Cotton)' },
+  { code: 'Giza', label: 'Giza (Egyptian Cotton)' },
+  { code: 'CMIA', label: 'CMIA — Cotton Made in Africa' },
+  { code: 'FairTrade', label: 'Fair Trade Certified' },
+  { code: 'RegenAgri', label: 'RegenAgri — Regenerative Agriculture' },
+] as const;
+
+export const YARN_CERTIFICATION_OPTIONS = YARN_CERTIFICATIONS.map((c) => ({
+  value: c.code,
+  label: c.label,
 }));

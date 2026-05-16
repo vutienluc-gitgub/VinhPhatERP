@@ -37,7 +37,7 @@ export async function fetchYarnCatalogPaginated(
   if (error) throw error;
   const total = count ?? 0;
   return {
-    data: (data ?? []) as YarnCatalog[],
+    data: (data ?? []) as unknown as YarnCatalog[],
     total,
     page,
     pageSize: DEFAULT_PAGE_SIZE,
@@ -137,7 +137,7 @@ export async function updateYarnCatalog(
     .select()
     .single();
   if (error) throw error;
-  return data as YarnCatalog;
+  return data as unknown as YarnCatalog;
 }
 
 export async function deleteYarnCatalog(id: string): Promise<void> {

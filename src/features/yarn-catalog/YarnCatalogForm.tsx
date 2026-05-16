@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
+import type { Control, UseFormSetValue } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
@@ -27,6 +28,10 @@ import {
   YARN_FILAMENT_OPTIONS,
   YARN_FINISH_OPTIONS,
   YARN_COLOR_STATUS_OPTIONS,
+  YARN_NE_COUNT_OPTIONS,
+  YARN_SPINNING_METHOD_OPTIONS,
+  YARN_TWIST_TYPE_OPTIONS,
+  YARN_CERTIFICATION_OPTIONS,
 } from '@/shared/constants/yarn-classification';
 import { getErrorMessage } from '@/shared/utils/error';
 
@@ -42,6 +47,9 @@ const STATUS_OPTIONS = (['active', 'inactive'] as const).map((s) => ({
   value: s,
   label: YARN_CATALOG_STATUS_LABELS[s],
 }));
+
+/** Categories that use Ne (English Count) instead of Denier */
+const SPUN_YARN_CATEGORIES = new Set(['Cotton', 'Rayon', 'Blend']);
 
 type YarnCatalogFormProps = {
   catalog: YarnCatalog | null;
@@ -64,6 +72,12 @@ function catalogToFormValues(catalog: YarnCatalog): YarnCatalogFormValues {
     filament_count: catalog.filament_count ?? '',
     finish: catalog.finish ?? '',
     color_status: catalog.color_status ?? '',
+    count_ne: catalog.count_ne ?? '',
+    spinning_method: catalog.spinning_method ?? '',
+    twist_type: catalog.twist_type ?? '',
+    certifications: catalog.certifications ?? [],
+    is_fancy: catalog.is_fancy ?? false,
+    fancy_details: catalog.fancy_details ?? '',
     unit: catalog.unit,
     notes: catalog.notes ?? '',
     status: catalog.status,
@@ -90,6 +104,10 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
       ? catalogToFormValues(catalog)
       : yarnCatalogDefaultValues,
   });
+
+  const watchedCategory = useWatch({ control, name: 'category' });
+  const watchedIsFancy = useWatch({ control, name: 'is_fancy' });
+  const isSpunYarn = SPUN_YARN_CATEGORIES.has(watchedCategory ?? '');
 
   useEffect(() => {
     reset(isEditing ? catalogToFormValues(catalog) : yarnCatalogDefaultValues);
@@ -198,7 +216,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
 
           {/* ═══ Section 2: Phân loại kỹ thuật ═══ */}
           <fieldset className="form-section">
-            <legend className="form-section-title">Thông tin kỹ thuật</legend>
+            <legend className="form-section-title">Phân loại kỹ thuật</legend>
 
             <div className="form-grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
               <ComboboxField
@@ -207,7 +225,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
                 options={YARN_CATEGORY_OPTIONS}
                 label="Chất liệu (Level 1)"
                 allowInput
-                placeholder="VD: Polyester, Nylon..."
+                placeholder="VD: Polyester, Cotton..."
               />
               <ComboboxField
                 name="yarn_type"
@@ -215,27 +233,51 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
                 options={YARN_TYPE_OPTIONS}
                 label="Loại sợi (Level 2)"
                 allowInput
-                placeholder="VD: DTY, FDY, SCY..."
+                placeholder="VD: DTY, FDY, CM..."
               />
             </div>
 
+            {/* Dynamic: Filament metrics (Polyester/Nylon) vs Spun metrics (Cotton/Rayon) */}
             <div className="form-grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))]">
-              <ComboboxField
-                name="denier"
-                control={control}
-                options={YARN_DENIER_OPTIONS}
-                label="Denier"
-                allowInput
-                placeholder="VD: 150D"
-              />
-              <ComboboxField
-                name="filament_count"
-                control={control}
-                options={YARN_FILAMENT_OPTIONS}
-                label="Filament"
-                allowInput
-                placeholder="VD: 48F"
-              />
+              {isSpunYarn ? (
+                <>
+                  <ComboboxField
+                    name="count_ne"
+                    control={control}
+                    options={YARN_NE_COUNT_OPTIONS}
+                    label="Chi số (Ne)"
+                    allowInput
+                    placeholder="VD: Ne 30"
+                  />
+                  <ComboboxField
+                    name="spinning_method"
+                    control={control}
+                    options={YARN_SPINNING_METHOD_OPTIONS}
+                    label="Phương pháp kéo sợi"
+                    allowInput
+                    placeholder="VD: Ring Spun"
+                  />
+                </>
+              ) : (
+                <>
+                  <ComboboxField
+                    name="denier"
+                    control={control}
+                    options={YARN_DENIER_OPTIONS}
+                    label="Denier"
+                    allowInput
+                    placeholder="VD: 150D"
+                  />
+                  <ComboboxField
+                    name="filament_count"
+                    control={control}
+                    options={YARN_FILAMENT_OPTIONS}
+                    label="Filament"
+                    allowInput
+                    placeholder="VD: 48F"
+                  />
+                </>
+              )}
               <div className="form-field">
                 <label htmlFor="tensile_strength">Cường lực</label>
                 <input
@@ -247,6 +289,41 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
                 />
               </div>
             </div>
+
+            {/* Twist type — available for all categories */}
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
+              <ComboboxField
+                name="twist_type"
+                control={control}
+                options={YARN_TWIST_TYPE_OPTIONS}
+                label="Hướng xoắn / Kiểu xoắn"
+                allowInput
+                placeholder="VD: S-Twist"
+              />
+              <div className="form-field flex items-end gap-2 pb-1">
+                <label className="inline-flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="field-checkbox"
+                    {...register('is_fancy')}
+                  />
+                  <span>Sợi Fancy (Slub, Injection...)</span>
+                </label>
+              </div>
+            </div>
+
+            {watchedIsFancy && (
+              <div className="form-field">
+                <label htmlFor="fancy_details">Chi tiết Fancy</label>
+                <input
+                  id="fancy_details"
+                  className="field-input"
+                  type="text"
+                  placeholder="VD: Random slub 3-7cm, thick/thin variation"
+                  {...register('fancy_details')}
+                />
+              </div>
+            )}
           </fieldset>
 
           {/* ═══ Section 3: Hiệu ứng & Trạng thái màu ═══ */}
@@ -280,7 +357,16 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
             </div>
           </fieldset>
 
-          {/* ═══ Section 4: Thông tin bổ sung ═══ */}
+          {/* ═══ Section 4: Chứng chỉ ═══ */}
+          <fieldset className="form-section">
+            <legend className="form-section-title">Chứng chỉ quốc tế</legend>
+            <CertificationsCheckboxGroup
+              control={control}
+              setValue={setValue}
+            />
+          </fieldset>
+
+          {/* ═══ Section 5: Thông tin bổ sung ═══ */}
           <fieldset className="form-section">
             <legend className="form-section-title">Thông tin bổ sung</legend>
 
@@ -365,5 +451,44 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
         </div>
       </form>
     </AdaptiveSheet>
+  );
+}
+
+type CertificationsCheckboxGroupProps = {
+  control: Control<YarnCatalogFormValues>;
+  setValue: UseFormSetValue<YarnCatalogFormValues>;
+};
+
+function CertificationsCheckboxGroup({
+  control,
+  setValue,
+}: CertificationsCheckboxGroupProps) {
+  const currentCerts = useWatch({ control, name: 'certifications' }) ?? [];
+
+  return (
+    <div className="flex flex-wrap gap-3">
+      {YARN_CERTIFICATION_OPTIONS.map((cert) => {
+        const isChecked = currentCerts.includes(cert.value);
+        return (
+          <label
+            key={cert.value}
+            className="inline-flex items-center gap-1.5 cursor-pointer text-sm"
+          >
+            <input
+              type="checkbox"
+              className="field-checkbox"
+              checked={isChecked}
+              onChange={(e) => {
+                const next = e.target.checked
+                  ? [...currentCerts, cert.value]
+                  : currentCerts.filter((c: string) => c !== cert.value);
+                setValue('certifications', next, { shouldDirty: true });
+              }}
+            />
+            <span>{cert.label}</span>
+          </label>
+        );
+      })}
+    </div>
   );
 }
