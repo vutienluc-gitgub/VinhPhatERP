@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 
@@ -69,18 +68,9 @@ export function QuotationsPage() {
         />
       )}
 
-      <AdaptiveSheet
-        open={showForm}
-        onClose={closeForm}
-        title={
-          editQuotation
-            ? `Sửa báo giá: ${editQuotation.quotation_number}`
-            : 'Tạo báo giá mới'
-        }
-        maxWidth={780}
-      >
+      {showForm && (
         <QuotationForm quotation={editQuotation} onClose={closeForm} />
-      </AdaptiveSheet>
+      )}
 
       <ContextualGuide activeGuides={activeGuides} />
     </div>

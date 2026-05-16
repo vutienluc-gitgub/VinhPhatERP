@@ -64,12 +64,10 @@ export function PaymentForm({
         open={true}
         onClose={onClose}
         title={`Thu tiền — ${orderNumber}`}
+        footer={<CancelButton onClick={onClose} label="Đóng" />}
       >
         <div className="p-4 bg-[var(--surface-success)] text-[var(--success-strong)] rounded text-[0.9rem] border border-[var(--success)] text-center">
           ✅ Đơn hàng đã được thanh toán đầy đủ.
-        </div>
-        <div className="modal-footer mt-6 p-0 border-none">
-          <CancelButton onClick={onClose} label="Đóng" />
         </div>
       </AdaptiveSheet>
     );
@@ -80,6 +78,28 @@ export function PaymentForm({
       open={true}
       onClose={onClose}
       title={`Thu tiền — ${orderNumber}`}
+      footer={
+        <>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={onClose}
+            disabled={isSubmitting || createMutation.isPending}
+            className="w-full sm:w-auto justify-center"
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="primary"
+            type="submit"
+            form="payment-form"
+            disabled={isSubmitting || createMutation.isPending}
+            className="w-full sm:w-auto justify-center"
+          >
+            {createMutation.isPending ? 'Đang lưu...' : 'Xác nhận thu'}
+          </Button>
+        </>
+      }
     >
       <form id="payment-form" onSubmit={handleSubmit(onSubmit)}>
         {/* Balance due info */}
@@ -184,27 +204,6 @@ export function PaymentForm({
               placeholder="Số séc, mã giao dịch..."
             />
           </div>
-        </div>
-
-        {/* Actions */}
-        <div className="mt-8 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={onClose}
-            disabled={isSubmitting || createMutation.isPending}
-            className="w-full sm:w-auto justify-center"
-          >
-            Hủy
-          </Button>
-          <Button
-            variant="primary"
-            type="submit"
-            disabled={isSubmitting || createMutation.isPending}
-            className="w-full sm:w-auto justify-center"
-          >
-            {createMutation.isPending ? 'Đang lưu...' : 'Xác nhận thu'}
-          </Button>
         </div>
       </form>
     </AdaptiveSheet>

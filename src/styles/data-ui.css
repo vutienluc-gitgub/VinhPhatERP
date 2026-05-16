@@ -691,20 +691,27 @@
   animation: fadeIn 0.2s ease-out;
 }
 
-/* Thêm thanh Handle Bar cho cảm giác kéo (Native Look) */
-.modal-sheet::before {
+/* Swipe handle area for touch gesture (mobile only) */
+.modal-sheet-handle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0 4px;
+  flex-shrink: 0;
+  cursor: grab;
+  touch-action: none;
+}
+
+.modal-sheet-handle::after {
   content: '';
-  display: block;
   width: 36px;
   height: 4px;
   background: var(--border);
   border-radius: 2px;
-  margin: 10px auto 4px;
-  flex-shrink: 0;
 }
 
 @media (min-width: 640px) {
-  .modal-sheet::before {
+  .modal-sheet-handle {
     display: none;
   }
 }

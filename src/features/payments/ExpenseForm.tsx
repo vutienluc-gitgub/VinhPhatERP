@@ -327,6 +327,32 @@ export function ExpenseForm({
           ? `Sửa phiếu chi: ${expense.expense_number}`
           : 'Tạo phiếu chi mới'
       }
+      footer={
+        <>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={onClose}
+            disabled={isPending}
+            className="w-full sm:w-auto justify-center"
+          >
+            Hủy
+          </Button>
+          <Button
+            variant="primary"
+            type="submit"
+            form="expense-form"
+            disabled={isPending}
+            className="w-full sm:w-auto justify-center"
+          >
+            {isPending
+              ? 'Đang lưu...'
+              : isEditing
+                ? 'Cập nhật'
+                : 'Tạo phiếu chi'}
+          </Button>
+        </>
+      }
     >
       {mutationError && (
         <p className="error-inline mb-4">
@@ -518,30 +544,6 @@ export function ExpenseForm({
               {...register('notes')}
             />
           </div>
-        </div>
-
-        <div className="mt-8 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={onClose}
-            disabled={isPending}
-            className="w-full sm:w-auto justify-center"
-          >
-            Hủy
-          </Button>
-          <Button
-            variant="primary"
-            type="submit"
-            disabled={isPending}
-            className="w-full sm:w-auto justify-center"
-          >
-            {isPending
-              ? 'Đang lưu...'
-              : isEditing
-                ? 'Cập nhật'
-                : 'Tạo phiếu chi'}
-          </Button>
         </div>
       </form>
     </AdaptiveSheet>

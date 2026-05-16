@@ -45,6 +45,15 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
       onClose={onClose}
       title="🔗 Truy vết nguồn gốc"
       maxWidth={560}
+      footer={
+        <button
+          className="primary-button btn-standard ml-auto"
+          type="button"
+          onClick={onClose}
+        >
+          Đóng
+        </button>
+      }
     >
       {/* ── Chain timeline ── */}
       <div className="trace-chain">
@@ -166,16 +175,6 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
               </div>
             </div>
           ))}
-      </div>
-
-      <div className="modal-footer mt-6 p-0 border-none">
-        <button
-          className="primary-button btn-standard ml-auto"
-          type="button"
-          onClick={onClose}
-        >
-          Đóng
-        </button>
       </div>
     </AdaptiveSheet>
   );

@@ -1,6 +1,7 @@
 import {
   useCallback,
   useEffect,
+  useId,
   useRef,
   useState,
   type ReactNode,
@@ -26,11 +27,16 @@ type AdaptiveSheetProps = {
   maxWidth?: number | string;
 };
 
+/** Minimum swipe distance (px) to trigger dismiss */
+const SWIPE_DISMISS_THRESHOLD = 100;
+/** Duration (ms) for swipe dismiss/snap-back animation */
+const SWIPE_ANIMATION_MS = 200;
+
 /**
  * AdaptiveSheet — 1 Component, 2 Cách hiển thị.
  *
- * - Mobile (< 640px): Bottom Sheet trượt từ đáy, có Handle-bar.
- * - Desktop (≥ 640px): Modal trung tâm với Overlay mờ.
+ * - Mobile (<640px): Bottom Sheet trượt từ đáy, có Handle-bar + swipe-to-dismiss.
+ * - Desktop (≥640px): Modal trung tâm với Overlay mờ.
  *
  * Tận dụng CSS media queries trong `.modal-overlay` / `.modal-sheet`
  * để tự động chuyển đổi layout mà KHÔNG cần JS detect.
@@ -45,9 +51,11 @@ export function AdaptiveSheet({
   children,
   footer,
   stepInfo,
-  titleId = 'adaptive-sheet-title',
+  titleId: titleIdProp,
   maxWidth,
 }: AdaptiveSheetProps) {
+  const generatedId = useId();
+  const titleId = titleIdProp ?? `sheet-title-${generatedId}`;
   const sheetRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
 
@@ -55,6 +63,11 @@ export function AdaptiveSheet({
   const [visible, setVisible] = useState(open);
   // Track closing state for CSS animation class
   const [closing, setClosing] = useState(false);
+
+  // ── Swipe-to-dismiss state ──
+  const touchStartY = useRef(0);
+  const currentTranslateY = useRef(0);
+  const isDragging = useRef(false);
 
   useEffect(() => {
     if (open) {
@@ -145,6 +158,63 @@ export function AdaptiveSheet({
     [onClose],
   );
 
+  // ── Swipe-to-dismiss handlers (mobile only) ──
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    if (!touch) return;
+    // Only enable swipe on narrow viewports (mobile bottom sheet)
+    if (window.innerWidth >= 640) return;
+    touchStartY.current = touch.clientY;
+    currentTranslateY.current = 0;
+    isDragging.current = true;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isDragging.current) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+    const deltaY = touch.clientY - touchStartY.current;
+    // Only allow dragging downward (positive deltaY)
+    if (deltaY > 0 && sheetRef.current) {
+      currentTranslateY.current = deltaY;
+      sheetRef.current.style.transform = `translateY(${deltaY}px)`;
+      sheetRef.current.style.transition = 'none';
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+
+    if (sheetRef.current) {
+      if (currentTranslateY.current >= SWIPE_DISMISS_THRESHOLD) {
+        // Dismiss: animate off-screen then close
+        sheetRef.current.style.transition = 'transform 0.2s ease-out';
+        sheetRef.current.style.transform = 'translateY(100%)';
+        // Wait for transition then trigger close
+        setTimeout(() => {
+          if (sheetRef.current) {
+            sheetRef.current.style.transform = '';
+            sheetRef.current.style.transition = '';
+          }
+          onClose();
+        }, SWIPE_ANIMATION_MS);
+      } else {
+        // Snap back
+        sheetRef.current.style.transition =
+          'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)';
+        sheetRef.current.style.transform = 'translateY(0)';
+        setTimeout(() => {
+          if (sheetRef.current) {
+            sheetRef.current.style.transform = '';
+            sheetRef.current.style.transition = '';
+          }
+        }, SWIPE_ANIMATION_MS);
+      }
+    }
+    currentTranslateY.current = 0;
+  }, [onClose]);
+
   if (!visible) return null;
 
   const mount = document.getElementById('modal-root');
@@ -174,6 +244,14 @@ export function AdaptiveSheet({
         aria-labelledby={titleId}
         style={maxWidth ? { maxWidth } : undefined}
       >
+        {/* Swipe handle area (mobile only — hidden via CSS on desktop) */}
+        <div
+          className="modal-sheet-handle"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        />
+
         {/* Header */}
         <div className="modal-header">
           <div>

@@ -22,6 +22,7 @@ export type { FilterFieldConfig, DateRangeFilterField } from './filter-bar';
 export { default as DraftBanner } from './DraftBanner';
 export { EmptyState } from './EmptyState';
 export { ErrorBoundary } from './ErrorBoundary';
+export { ErrorInline } from './ErrorInline';
 export { FeatureScaffoldPage } from './FeatureScaffoldPage';
 export { KpiCard, KpiGrid } from './KpiCard';
 export type { KpiVariant } from './KpiCard';
