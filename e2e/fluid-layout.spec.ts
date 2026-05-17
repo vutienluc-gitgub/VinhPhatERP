@@ -183,6 +183,9 @@ test.describe('Fluid Dashboard Layout', () => {
 
       // Bước 2: F5 — phải giữ nguyên (cache sống qua reload)
       await page.reload({ waitUntil: 'domcontentloaded' });
+      await page
+        .waitForSelector('.route-content', { timeout: 10_000 })
+        .catch(() => null);
 
       await expect(page.locator('html')).toHaveClass(/fluid/, {
         timeout: 5_000,
