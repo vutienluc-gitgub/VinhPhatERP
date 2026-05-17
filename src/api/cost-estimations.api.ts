@@ -83,6 +83,7 @@ export async function saveCostEstimation(
       est_additional_costs: input.est_additional_costs,
       est_total_cost: input.est_total_cost,
       suggested_price: input.suggested_price,
+      simulation_state: input.simulation_state ?? null,
       created_by: userId,
     },
     conflictKey: 'id',

@@ -76,6 +76,55 @@ export interface WorkOrderYarnRequirementWithRelations extends WorkOrderYarnRequ
   };
 }
 
+/** A single yarn issue record: which receipt-item lot was issued to which WO. */
+export interface WorkOrderYarnIssue {
+  id: string;
+  work_order_id: string;
+  yarn_receipt_item_id: string;
+  issued_kg: number;
+  notes: string | null;
+  tenant_id: string | null;
+  created_by: string | null;
+  created_at: string;
+}
+
+/** Yarn issue row with joined receipt-item + receipt header info. */
+export interface WorkOrderYarnIssueWithRelations extends WorkOrderYarnIssue {
+  receipt_number: string;
+  receipt_date: string;
+  lot_number: string | null;
+  yarn_type: string;
+  supplier_name: string;
+}
+
+/** A row from v_yarn_receipt_item_availability — available lot for issuing. */
+export interface AvailableYarnLot {
+  yarn_receipt_item_id: string;
+  yarn_catalog_id: string | null;
+  receipt_id: string;
+  receipt_number: string;
+  receipt_date: string;
+  supplier_id: string;
+  supplier_name: string;
+  yarn_type: string;
+  lot_number: string | null;
+  color_name: string | null;
+  grade: string | null;
+  unit: string;
+  received_qty: number;
+  issued_qty: number;
+  available_qty: number;
+  landed_price: number;
+  tenant_id: string | null;
+}
+
+/** Input item for rpc_issue_yarn_lots */
+export interface IssueYarnLotItem {
+  yarn_receipt_item_id: string;
+  issued_kg: number;
+  notes?: string;
+}
+
 export type WorkOrderFilter = {
   status?: WorkOrderStatus | 'all';
   search?: string;

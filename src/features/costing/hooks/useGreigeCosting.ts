@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
+import { fetchCostEstimationHistory } from '@/api/cost-estimations.api';
 import { GreigeCostingService } from '@/features/costing/services/greige-costing.service';
 import type {
   CostingSimulationState,
@@ -63,4 +64,18 @@ export function useGreigeCosting() {
     isBomError,
     reset,
   };
+}
+
+export function useCostEstimationHistory(
+  referenceType: string,
+  referenceId: string | null,
+) {
+  return useQuery({
+    queryKey: ['cost_estimation_history', referenceType, referenceId],
+    queryFn: () => {
+      if (!referenceId) return [];
+      return fetchCostEstimationHistory(referenceType, referenceId);
+    },
+    enabled: !!referenceId,
+  });
 }

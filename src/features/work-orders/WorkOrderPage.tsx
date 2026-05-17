@@ -25,10 +25,13 @@ export function WorkOrdersPage() {
       if (bomIdParam) {
         setEditingData({
           bom_template_id: bomIdParam,
+          target_quantity: Number(searchParams.get('qty')) || 0,
+          weaving_unit_price: Number(searchParams.get('weaving_price')) || 0,
+          standard_loss_pct: Number(searchParams.get('loss')) || 0,
         } as unknown as WorkOrderWithRelations);
       }
     }
-  }, [actionParam, bomIdParam]);
+  }, [actionParam, bomIdParam, searchParams]);
 
   const handleView = (id: string) => {
     setSelectedId(id);

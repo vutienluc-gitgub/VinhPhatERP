@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
 import { Icon } from '@/shared/components/Icon';
 import { fetchBomList } from '@/api/bom.api';
 import { saveCostEstimation } from '@/api/cost-estimations.api';
+import type { CostingSimulationState } from '@/features/costing/types/greige-costing.type';
 import { useGreigeCosting } from '@/features/costing/hooks/useGreigeCosting';
 import { YarnCostEditor } from '@/features/costing/components/YarnCostEditor';
 import { CostBreakdownTable } from '@/features/costing/components/CostBreakdownTable';
+import { CostEstimationHistoryTable } from '@/features/costing/components/CostEstimationHistoryTable';
 
 interface GreigeCalculatorModalProps {
   open: boolean;
@@ -28,8 +31,13 @@ export function GreigeCalculatorModal({
     reset,
   } = useGreigeCosting();
 
+  const navigate = useNavigate();
+
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [activeTab, setActiveTab] = useState<'simulation' | 'history'>(
+    'simulation',
+  );
 
   // Fetch approved BOMs to select
   const { data: bomList, isLoading: isBomListLoading } = useQuery({
@@ -74,6 +82,7 @@ export function GreigeCalculatorModal({
         est_additional_costs: [],
         est_total_cost: result.totalCost,
         suggested_price: result.finalPrice,
+        simulation_state: state,
       };
 
       await saveCostEstimation(payload);
@@ -85,6 +94,26 @@ export function GreigeCalculatorModal({
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleRestore = (restoredState: CostingSimulationState) => {
+    // Override current simulation state
+    updateState(restoredState);
+    setActiveTab('simulation');
+  };
+
+  const handleCreateWorkOrder = () => {
+    if (!state || !state.bom_template_id) return;
+    const params = new URLSearchParams({
+      action: 'create',
+      bom_id: state.bom_template_id,
+      qty: state.target_quantity_m.toString(),
+      weaving_price: state.weaving_unit_price.toString(),
+      loss: state.standard_loss_pct.toString(),
+    });
+
+    onClose();
+    navigate(`/work-orders?${params.toString()}`);
   };
 
   return (
@@ -146,8 +175,33 @@ export function GreigeCalculatorModal({
             )}
           </div>
 
-          {/* Section 2: Simulator Variables */}
           {state && (
+            <div className="flex border-b border-border mb-4">
+              <button
+                className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
+                  activeTab === 'simulation'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted hover:text-foreground'
+                }`}
+                onClick={() => setActiveTab('simulation')}
+              >
+                Giả lập giá (Simulator)
+              </button>
+              <button
+                className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
+                  activeTab === 'history'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted hover:text-foreground'
+                }`}
+                onClick={() => setActiveTab('history')}
+              >
+                Lịch sử (Snapshots)
+              </button>
+            </div>
+          )}
+
+          {/* Section 2: Simulator Variables */}
+          {state && activeTab === 'simulation' && (
             <div className="mb-6 space-y-4 animate-in fade-in slide-in-from-bottom-2">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="form-field">
@@ -235,19 +289,29 @@ export function GreigeCalculatorModal({
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={handleSaveSnapshot}
-                    disabled={isSaving}
-                    className="btn btn-secondary w-full py-2.5 flex items-center justify-center gap-2"
-                  >
-                    <Icon
-                      name={isSaving ? 'Loader2' : 'Cloud'}
-                      size={16}
-                      className={isSaving ? 'animate-spin' : ''}
-                    />
-                    {isSaving ? 'Đang lưu...' : 'Lưu Snapshot lên Cloud'}
-                  </button>
+                  <div className="flex flex-col gap-2">
+                    <button
+                      type="button"
+                      onClick={handleSaveSnapshot}
+                      disabled={isSaving}
+                      className="btn btn-secondary w-full py-2.5 flex items-center justify-center gap-2"
+                    >
+                      <Icon
+                        name={isSaving ? 'Loader2' : 'Cloud'}
+                        size={16}
+                        className={isSaving ? 'animate-spin' : ''}
+                      />
+                      {isSaving ? 'Đang lưu...' : 'Lưu Snapshot lên Cloud'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCreateWorkOrder}
+                      className="btn btn-primary w-full py-2.5 flex items-center justify-center gap-2"
+                    >
+                      <Icon name="Factory" size={16} />
+                      Tạo Lệnh Sản Xuất
+                    </button>
+                  </div>
 
                   {saveSuccess && (
                     <p className="text-xs text-success text-center">
@@ -256,6 +320,17 @@ export function GreigeCalculatorModal({
                   )}
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Section 4: History */}
+          {state && activeTab === 'history' && selectedBomId && (
+            <div className="animate-in fade-in slide-in-from-bottom-2">
+              <CostEstimationHistoryTable
+                referenceType="bom"
+                referenceId={selectedBomId}
+                onRestore={handleRestore}
+              />
             </div>
           )}
         </div>

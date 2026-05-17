@@ -34,3 +34,12 @@ export function calcTotalAllocatedKg(rows: { allocated_kg: number }[]): number {
   }
   return total;
 }
+
+/** Sum of all issued kg (from yarn issue records) */
+export function calcTotalIssuedKg(rows: { issued_kg: number }[]): number {
+  let total = 0;
+  for (const row of rows) {
+    total += Number(row.issued_kg) || 0;
+  }
+  return total;
+}
