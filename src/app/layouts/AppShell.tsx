@@ -27,6 +27,7 @@ import {
   getDefaultCollapsedByRole,
 } from '@/shared/constants/navigation';
 import { GuideCommandPalette } from '@/features/guide-system/components/GuideCommandPalette';
+import { GreigeCalculatorModal } from '@/features/costing/components/GreigeCalculatorModal';
 
 import { MobileMoreDrawer } from './MobileMoreDrawer';
 import { NotificationBell } from './NotificationBell';
@@ -82,6 +83,7 @@ export function AppShell() {
   const closeMoreDrawer = useCallback(() => setShowMore(false), []);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showChatInbox, setShowChatInbox] = useState(false);
+  const [showCostingModal, setShowCostingModal] = useState(false);
   const totalUnread = useTotalUnread();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const currentItem = getCurrentItem(pathname);
@@ -412,6 +414,16 @@ export function AppShell() {
 
               <button
                 type="button"
+                className="hidden sm:flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-primary hover:bg-primary/10 transition-colors mr-1"
+                onClick={() => setShowCostingModal(true)}
+                title="Máy tính giá mộc (Costing Studio)"
+              >
+                <Icon name="Calculator" size={16} strokeWidth={1.5} />
+                <span className="hidden md:inline">Tính giá</span>
+              </button>
+
+              <button
+                type="button"
                 className="topbar-icon-btn"
                 onClick={toggleTheme}
                 title={prefs.theme === 'dark' ? 'Chế độ Sáng' : 'Chế độ Tối'}
@@ -562,6 +574,13 @@ export function AppShell() {
           <MobileMoreDrawer items={drawerItems} onClose={closeMoreDrawer} />
         )}
         <GuideCommandPalette />
+
+        {showCostingModal && (
+          <GreigeCalculatorModal
+            open={showCostingModal}
+            onClose={() => setShowCostingModal(false)}
+          />
+        )}
       </div>
     </PreferencesContext.Provider>
   );
