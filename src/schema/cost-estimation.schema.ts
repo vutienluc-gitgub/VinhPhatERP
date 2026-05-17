@@ -32,6 +32,7 @@ export const createCostEstimationSchema = z.object({
   est_additional_costs: z.array(additionalCostSchema).default([]),
   est_total_cost: z.number().nonnegative('Tong chi phi phai >= 0'),
   suggested_price: z.number().nonnegative('Gia ban phai >= 0'),
+  simulation_state: z.record(z.any()).optional().nullable(),
 });
 
 export type CreateCostEstimationInput = z.infer<
@@ -54,6 +55,7 @@ export interface CostEstimation {
   est_additional_costs: { key: string; label: string; amount: number }[];
   est_total_cost: number;
   suggested_price: number;
+  simulation_state: Record<string, unknown> | null;
   created_at: string;
   created_by: string | null;
 }

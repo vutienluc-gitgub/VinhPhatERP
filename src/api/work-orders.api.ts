@@ -6,6 +6,9 @@ import type {
   WorkOrderWithRelations,
   WorkOrderFilter,
   WorkOrderYarnRequirementWithRelations,
+  AvailableYarnLot,
+  IssueYarnLotItem,
+  WorkOrderYarnIssueWithRelations,
 } from '@/domain/production/work-orders.types';
 import type { CreateWorkOrderInput } from '@/features/work-orders/work-orders.module';
 import { supabase } from '@/services/supabase/client';
@@ -475,4 +478,102 @@ export async function fetchUnitOptions(): Promise<string[]> {
     return ['m', 'kg', 'yard'];
   }
   return (data || []).map((u) => u.unit).filter((u): u is string => u !== null);
+}
+
+/* ── Available yarn lots per catalog ID (for issue modal) ── */
+
+export async function fetchAvailableYarnLots(
+  catalogIds: string[],
+): Promise<AvailableYarnLot[]> {
+  if (!catalogIds.length) return [];
+
+  const { data, error } = await untypedDb
+    .from('v_yarn_receipt_item_availability')
+    .select('*')
+    .in('yarn_catalog_id', catalogIds)
+    .order('receipt_date', { ascending: true });
+
+  if (error) throw error;
+  return (data ?? []) as AvailableYarnLot[];
+}
+
+/* ── Issue yarn lots to work order (atomic) ── */
+
+export async function issueYarnLots(
+  workOrderId: string,
+  lots: IssueYarnLotItem[],
+): Promise<void> {
+  if (!lots.length) throw new Error('Danh sach lot xuat kho khong duoc trong.');
+
+  const { error } = await untypedDb.rpc('rpc_issue_yarn_lots', {
+    p_work_order_id: workOrderId,
+    p_lots: lots,
+  });
+
+  if (error) throw error;
+}
+
+/* ── Fetch issued yarn lots for a work order ── */
+
+export async function fetchYarnIssuesForWorkOrder(
+  workOrderId: string,
+): Promise<WorkOrderYarnIssueWithRelations[]> {
+  const { data, error } = await untypedDb
+    .from('work_order_yarn_issues')
+    .select(
+      `
+      *,
+      yarn_receipt_items!inner(
+        yarn_type,
+        lot_number,
+        receipt_id,
+        yarn_receipts!inner(
+          receipt_number,
+          receipt_date,
+          suppliers!inner(name)
+        )
+      )
+    `,
+    )
+    .eq('work_order_id', workOrderId)
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+
+  interface YarnIssueJoinRow {
+    id: string;
+    work_order_id: string;
+    yarn_receipt_item_id: string;
+    issued_kg: number;
+    notes: string | null;
+    tenant_id: string | null;
+    created_by: string | null;
+    created_at: string;
+    yarn_receipt_items: {
+      yarn_type: string;
+      lot_number: string | null;
+      receipt_id: string;
+      yarn_receipts: {
+        receipt_number: string;
+        receipt_date: string;
+        suppliers: { name: string };
+      };
+    };
+  }
+
+  return ((data ?? []) as unknown as YarnIssueJoinRow[]).map((row) => ({
+    id: row.id,
+    work_order_id: row.work_order_id,
+    yarn_receipt_item_id: row.yarn_receipt_item_id,
+    issued_kg: row.issued_kg,
+    notes: row.notes,
+    tenant_id: row.tenant_id,
+    created_by: row.created_by,
+    created_at: row.created_at,
+    receipt_number: row.yarn_receipt_items.yarn_receipts.receipt_number,
+    receipt_date: row.yarn_receipt_items.yarn_receipts.receipt_date,
+    lot_number: row.yarn_receipt_items.lot_number,
+    yarn_type: row.yarn_receipt_items.yarn_type,
+    supplier_name: row.yarn_receipt_items.yarn_receipts.suppliers.name,
+  }));
 }

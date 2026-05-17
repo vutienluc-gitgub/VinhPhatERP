@@ -1,22 +1,27 @@
+import { useState } from 'react';
+
 import { Icon } from '@/shared/components/Icon';
 import { Badge } from '@/shared/components/Badge';
 import { TimelineProgress, type TimelineStep } from '@/shared/components';
 import { FadeUp } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { formatCurrency, formatQuantity } from '@/shared/utils/format';
 import {
   calcTotalBomRatio,
   calcTotalRequiredKg,
   calcTotalAllocatedKg,
+  calcTotalIssuedKg,
 } from '@/shared/utils/yarn-requirement.util';
 import {
   useWorkOrderDetail,
   useWorkOrderRequirements,
   useStartWorkOrder,
   useCompleteWorkOrder,
+  useYarnIssuesForWorkOrder,
 } from '@/application/production';
 import { WORK_ORDER_STATUSES } from '@/schema/work-order.schema';
 
 import type { WorkOrder } from './types';
+import { YarnIssueModal } from './components/YarnIssueModal';
 
 interface WorkOrderDetailProps {
   id: string;
@@ -43,6 +48,8 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
     useWorkOrderRequirements(id);
   const startMutation = useStartWorkOrder();
   const completeMutation = useCompleteWorkOrder();
+  const { data: yarnIssues } = useYarnIssuesForWorkOrder(id);
+  const [showIssueModal, setShowIssueModal] = useState(false);
 
   if (isLoading)
     return (
@@ -149,10 +156,20 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                   onClick={() => onEdit(wo)}
                 >
                   <Icon name="Edit2" size={16} />
-                  Sửa lệnh
+                  Sua lenh
                 </button>
               )}
               {wo.status === 'draft' && (
+                <button
+                  className="btn-primary flex items-center gap-2"
+                  type="button"
+                  onClick={() => setShowIssueModal(true)}
+                >
+                  <Icon name="PackageOpen" size={16} />
+                  Xuat kho soi
+                </button>
+              )}
+              {wo.status === 'yarn_issued' && (
                 <button
                   className="btn-primary flex items-center gap-2"
                   type="button"
@@ -160,7 +177,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                   disabled={startMutation.isPending}
                 >
                   <Icon name="Play" size={16} />
-                  Bắt đầu dệt
+                  Bat dau det
                 </button>
               )}
               {wo.status === 'in_progress' && (
@@ -394,6 +411,76 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
           </div>
         </div>
       </FadeUp>
+      {/* Yarn Issue History */}
+      {yarnIssues && yarnIssues.length > 0 && (
+        <FadeUp delay={0.5}>
+          <div className="panel-card card-flush">
+            <div className="card-header-area">
+              <div className="flex items-center gap-2">
+                <Icon name="ClipboardList" size={20} className="text-success" />
+                <span className="font-bold text-lg">Lich su xuat kho soi</span>
+                <Badge variant="success">{yarnIssues.length} lo</Badge>
+              </div>
+            </div>
+            <div className="card-table-section">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Phieu nhap</th>
+                    <th className="hide-mobile">NCC soi</th>
+                    <th>Loai soi</th>
+                    <th className="hide-mobile">Lo (Lot)</th>
+                    <th className="text-right">So luong (kg)</th>
+                    <th className="hide-mobile">Ngay xuat</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {yarnIssues.map((issue) => (
+                    <tr key={issue.id}>
+                      <td>
+                        <span className="font-bold text-primary">
+                          {issue.receipt_number}
+                        </span>
+                      </td>
+                      <td className="hide-mobile td-muted">
+                        {issue.supplier_name}
+                      </td>
+                      <td className="font-medium">{issue.yarn_type}</td>
+                      <td className="hide-mobile td-muted">
+                        {issue.lot_number ?? '—'}
+                      </td>
+                      <td className="text-right font-bold text-success tabular-nums">
+                        {formatQuantity(issue.issued_kg)}
+                      </td>
+                      <td className="hide-mobile td-muted">
+                        {new Date(issue.created_at).toLocaleDateString('vi-VN')}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr className="font-bold bg-surface-subtle">
+                    <td colSpan={4} className="text-right">
+                      TONG CONG:
+                    </td>
+                    <td className="text-right text-success tabular-nums">
+                      {formatQuantity(calcTotalIssuedKg(yarnIssues))} kg
+                    </td>
+                    <td className="hide-mobile" />
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </FadeUp>
+      )}
+
+      {/* Yarn Issue Modal */}
+      {showIssueModal && (
+        <YarnIssueModal
+          workOrderId={wo.id}
+          onClose={() => setShowIssueModal(false)}
+          onSuccess={() => setShowIssueModal(false)}
+        />
+      )}
     </div>
   );
 }

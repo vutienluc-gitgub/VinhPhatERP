@@ -73,7 +73,7 @@ export function WorkOrderForm({
   const { data: boms } = useBomList({ status: 'approved' });
   const { data: orders } = useOrderList({ status: 'confirmed' }, 1);
   const { data: suppliersData } = useAllSuppliers({
-    category: 'weaving',
+    category: 'GREIGE',
     status: 'active',
   });
   const { data: units = [] } = useUnitOptions();
@@ -139,14 +139,15 @@ export function WorkOrderForm({
     resolver: zodResolver(createWorkOrderSchema),
     defaultValues: initialData
       ? {
-          work_order_number: initialData.work_order_number,
-          order_id: initialData.order_id,
-          supplier_id: initialData.supplier_id,
-          weaving_unit_price: initialData.weaving_unit_price,
-          bom_template_id: initialData.bom_template_id,
-          target_quantity: initialData.target_quantity,
-          target_unit: initialData.target_unit,
-          target_weight_kg: initialData.target_weight_kg,
+          work_order_number:
+            initialData.work_order_number || generateWorkOrderNumber(),
+          order_id: initialData.order_id || null,
+          supplier_id: initialData.supplier_id || '',
+          weaving_unit_price: initialData.weaving_unit_price || 0,
+          bom_template_id: initialData.bom_template_id || '',
+          target_quantity: initialData.target_quantity || 0,
+          target_unit: initialData.target_unit || 'm',
+          target_weight_kg: initialData.target_weight_kg || 0,
           standard_loss_pct: initialData.standard_loss_pct || 0,
           start_date: initialData.start_date
             ? new Date(initialData.start_date).toISOString().split('T')[0]
