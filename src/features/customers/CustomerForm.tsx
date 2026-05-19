@@ -17,7 +17,9 @@ import {
   useCreateCustomer,
   useNextCustomerCode,
   useUpdateCustomer,
+  useEmployees,
 } from '@/application/crm';
+import { useAuth } from '@/shared/hooks/useAuth';
 import { getErrorMessage } from '@/shared/utils/error';
 
 import type { Customer } from './types';
@@ -51,6 +53,7 @@ function customerToFormValues(customer: Customer): CustomersFormValues {
     source: customer.source ?? 'other',
     notes: customer.notes ?? '',
     status: customer.status,
+    salesperson_id: customer.salesperson_id ?? '',
   };
 }
 
@@ -59,6 +62,13 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
   const createMutation = useCreateCustomer();
   const updateMutation = useUpdateCustomer();
   const { data: nextCode } = useNextCustomerCode();
+  const { profile } = useAuth();
+  const { data: salesEmployees } = useEmployees({
+    role: 'sales',
+    status: 'active',
+  });
+
+  const canAssign = profile?.role === 'admin' || profile?.role === 'manager';
 
   const {
     register,
@@ -82,7 +92,10 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
     if (!isEditing && nextCode) {
       setValue('code', nextCode);
     }
-  }, [isEditing, nextCode, setValue]);
+    if (!isEditing && !canAssign && profile?.employee_id) {
+      setValue('salesperson_id', profile.employee_id);
+    }
+  }, [isEditing, nextCode, setValue, canAssign, profile?.employee_id]);
 
   async function onSubmit(values: CustomersFormValues) {
     try {
@@ -276,6 +289,30 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
               )}
             />
           </div>
+        </div>
+
+        {/* Nhân viên phụ trách */}
+        <div className="form-field">
+          <label htmlFor="salesperson_id">Nhân viên phụ trách</label>
+          <Controller
+            name="salesperson_id"
+            control={control}
+            render={({ field }) => (
+              <Combobox
+                options={[
+                  { value: '', label: '(Chưa phân công)' },
+                  ...(salesEmployees?.map((emp) => ({
+                    value: emp.id,
+                    label: `${emp.name} (${emp.code})`,
+                    icon: 'User' as const,
+                  })) ?? []),
+                ]}
+                value={field.value ?? ''}
+                onChange={field.onChange}
+                disabled={!canAssign}
+              />
+            )}
+          />
         </div>
 
         {/* Ghi chú */}

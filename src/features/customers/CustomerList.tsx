@@ -19,7 +19,11 @@ import {
   KpiCard,
   KpiGrid,
 } from '@/shared/components';
-import { useCustomerList, useDeleteCustomer } from '@/application/crm';
+import {
+  useCustomerList,
+  useDeleteCustomer,
+  useEmployees,
+} from '@/application/crm';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { formatCurrencyFull } from '@/shared/utils/format';
 
@@ -55,8 +59,14 @@ export function CustomerList({
   const { filters, setFilter, clearFilters } = useUrlFilterState([
     'query',
     'status',
+    'salesperson_id',
   ]);
   const [page, setPage] = useState(1);
+
+  const { data: salesEmployees } = useEmployees({
+    role: 'sales',
+    status: 'active',
+  });
 
   const { data: result, isLoading } = useCustomerList(
     filters as CustomersFilter,
@@ -86,6 +96,18 @@ export function CustomerList({
           value: 'inactive',
           label: 'Ngung hoat dong',
         },
+      ],
+    },
+    {
+      key: 'salesperson_id',
+      type: 'combobox',
+      label: 'Phụ trách',
+      options: [
+        { value: '', label: 'Tất cả' },
+        ...(salesEmployees?.map((emp) => ({
+          value: emp.id,
+          label: emp.name,
+        })) ?? []),
       ],
     },
   ];
@@ -251,6 +273,23 @@ export function CustomerList({
             },
           },
           {
+            header: 'Phụ trách',
+            id: 'salesperson',
+            accessorKey: 'salesperson_id',
+            enableSorting: false,
+            cell: (info) => {
+              const salesperson = info.row.original.salesperson;
+              return salesperson ? (
+                <div className="flex items-center gap-1.5 text-sm">
+                  <Icon name="User" size={14} className="text-muted" />
+                  <span>{salesperson.name}</span>
+                </div>
+              ) : (
+                <span className="text-muted text-sm">—</span>
+              );
+            },
+          },
+          {
             header: 'Thao tác',
             id: 'actions',
             meta: { className: 'text-right' },
@@ -317,6 +356,15 @@ export function CustomerList({
                   <span className="label">Địa chỉ:</span>
                   <span className="value truncate ml-4 italic">
                     {customer.address}
+                  </span>
+                </div>
+              )}
+              {customer.salesperson && (
+                <div className="mobile-card-row">
+                  <span className="label">Phụ trách:</span>
+                  <span className="value flex items-center gap-1">
+                    <Icon name="User" size={12} className="text-muted" />
+                    {customer.salesperson.name}
                   </span>
                 </div>
               )}
