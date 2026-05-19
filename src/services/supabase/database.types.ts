@@ -1074,6 +1074,7 @@ export type Database = {
           tax_code: string | null;
           tenant_id: string | null;
           updated_at: string;
+          salesperson_id: string | null;
         };
         Insert: {
           account_balance?: number;
@@ -1096,6 +1097,7 @@ export type Database = {
           tax_code?: string | null;
           tenant_id?: string | null;
           updated_at?: string;
+          salesperson_id?: string | null;
         };
         Update: {
           account_balance?: number;
@@ -1118,6 +1120,7 @@ export type Database = {
           tax_code?: string | null;
           tenant_id?: string | null;
           updated_at?: string;
+          salesperson_id?: string | null;
         };
         Relationships: [
           {

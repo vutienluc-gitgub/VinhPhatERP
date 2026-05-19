@@ -1074,6 +1074,7 @@ export type Database = {
           tax_code: string | null;
           tenant_id: string | null;
           updated_at: string;
+          salesperson_id: string | null;
         };
         Insert: {
           account_balance?: number;
@@ -1096,6 +1097,7 @@ export type Database = {
           tax_code?: string | null;
           tenant_id?: string | null;
           updated_at?: string;
+          salesperson_id?: string | null;
         };
         Update: {
           account_balance?: number;
@@ -1118,6 +1120,7 @@ export type Database = {
           tax_code?: string | null;
           tenant_id?: string | null;
           updated_at?: string;
+          salesperson_id?: string | null;
         };
         Relationships: [
           {
@@ -1125,6 +1128,13 @@ export type Database = {
             columns: ['tenant_id'];
             isOneToOne: false;
             referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'customers_salesperson_id_fkey';
+            columns: ['salesperson_id'];
+            isOneToOne: false;
+            referencedRelation: 'employees';
             referencedColumns: ['id'];
           },
         ];

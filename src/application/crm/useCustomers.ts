@@ -34,6 +34,7 @@ function toDbRow(values: CustomersFormValues): CustomerInsert {
     source: values.source ?? 'other',
     notes: values.notes?.trim() || null,
     status: values.status,
+    salesperson_id: values.salesperson_id || null,
   };
 }
 

@@ -65,6 +65,7 @@ export const customersSchema = z.object({
   source: z.enum(CUSTOMER_SOURCES).default('other'),
   notes: z.string().trim().optional().or(z.literal('')),
   status: z.enum(['active', 'inactive']),
+  salesperson_id: z.string().uuid().optional().nullable().or(z.literal('')),
 });
 
 export type CustomersFormValues = z.infer<typeof customersSchema>;
@@ -80,6 +81,7 @@ export const customersDefaultValues: CustomersFormValues = {
   source: 'other',
   notes: '',
   status: 'active',
+  salesperson_id: '',
 };
 
 export const CUSTOMER_STATUS_LABELS: Record<'active' | 'inactive', string> = {
@@ -90,6 +92,7 @@ export const CUSTOMER_STATUS_LABELS: Record<'active' | 'inactive', string> = {
 export type CustomersFilters = {
   query: string;
   status: 'all' | 'active' | 'inactive';
+  salesperson_id?: string;
 };
 
 export type Customer = {
@@ -115,11 +118,18 @@ export type Customer = {
   status: 'active' | 'inactive';
   created_at: string;
   updated_at: string;
+  salesperson_id?: string | null;
+  salesperson?: {
+    id: string;
+    code: string;
+    name: string;
+  } | null;
 };
 
 export type CustomersFilter = {
   query?: string;
   status?: 'active' | 'inactive';
+  salesperson_id?: string;
 };
 
 // FORM FIELDS (Tĩnh)

@@ -19,7 +19,7 @@ export async function fetchCustomers(
 ): Promise<Customer[]> {
   let query = supabase
     .from(TABLE)
-    .select('*')
+    .select('*, salesperson:employees!salesperson_id(id, code, name)')
     .order('name', { ascending: true });
 
   if (filters.status) {
@@ -28,6 +28,9 @@ export async function fetchCustomers(
   if (filters.query?.trim()) {
     const q = filters.query.trim();
     query = query.or(`name.ilike.%${q}%,code.ilike.%${q}%,phone.ilike.%${q}%`);
+  }
+  if (filters.salesperson_id) {
+    query = query.eq('salesperson_id', filters.salesperson_id);
   }
 
   const { data, error } = await query;
