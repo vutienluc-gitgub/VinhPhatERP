@@ -69,6 +69,28 @@ export async function getContracts(
     .select('*')
     .order('created_at', { ascending: false });
 
+  const { data: userData } = await supabase.auth.getUser();
+  if (userData?.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, employee_id')
+      .eq('id', userData.user.id)
+      .single();
+    if (profile?.role === 'sale' && profile.employee_id) {
+      const { data: customerIdsData } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('salesperson_id', profile.employee_id);
+      const customerIds = customerIdsData?.map((c) => c.id) || [];
+      query = query.in(
+        'party_a_id',
+        customerIds.length > 0
+          ? customerIds
+          : ['00000000-0000-0000-0000-000000000000'],
+      );
+    }
+  }
+
   if (filters.status) {
     query = query.eq('status', filters.status);
   }
@@ -96,11 +118,31 @@ export async function getContracts(
 }
 
 export async function getContractById(id: string): Promise<Contract> {
-  const { data, error } = await db
-    .contracts()
-    .select('*')
-    .eq('id', id)
-    .single();
+  let query = db.contracts().select('*').eq('id', id);
+
+  const { data: userData } = await supabase.auth.getUser();
+  if (userData?.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, employee_id')
+      .eq('id', userData.user.id)
+      .single();
+    if (profile?.role === 'sale' && profile.employee_id) {
+      const { data: customerIdsData } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('salesperson_id', profile.employee_id);
+      const customerIds = customerIdsData?.map((c) => c.id) || [];
+      query = query.in(
+        'party_a_id',
+        customerIds.length > 0
+          ? customerIds
+          : ['00000000-0000-0000-0000-000000000000'],
+      );
+    }
+  }
+
+  const { data, error } = await query.single();
   if (error) throw error;
   return data as Contract;
 }
@@ -395,15 +437,44 @@ export async function exportContractPdf(contractId: string): Promise<void> {
 
 // ── Link Picker ──────────────────────────────────────────────────────────────
 
+async function getSalespersonCustomerIds(): Promise<string[] | null> {
+  const { data: userData } = await supabase.auth.getUser();
+  if (userData?.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, employee_id')
+      .eq('id', userData.user.id)
+      .single();
+    if (profile?.role === 'sale' && profile.employee_id) {
+      const { data: customerIdsData } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('salesperson_id', profile.employee_id);
+      const customerIds = customerIdsData?.map((c) => c.id) || [];
+      return customerIds.length > 0
+        ? customerIds
+        : ['00000000-0000-0000-0000-000000000000'];
+    }
+  }
+  return null;
+}
+
 export async function getAvailableOrdersForContract(
   excludeIds: string[],
 ): Promise<{ value: string; label: string; code: string }[]> {
-  const { data, error } = await supabase
+  let query = supabase
     .from('orders')
     .select('id, order_number, customers(name)')
     .not('status', 'eq', 'cancelled')
     .order('order_date', { ascending: false })
     .limit(200);
+
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds) {
+    query = query.in('customer_id', customerIds);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return (data ?? [])
     .filter((o) => !excludeIds.includes(o.id))
@@ -415,12 +486,19 @@ export async function getAvailableOrdersForContract(
 }
 
 export async function getOrderOptions() {
-  const { data, error } = await supabase
+  let query = supabase
     .from('orders')
     .select('id, order_number, customers(name)')
     .not('status', 'eq', 'cancelled')
     .order('order_date', { ascending: false })
     .limit(200);
+
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds) {
+    query = query.in('customer_id', customerIds);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return (data ?? []).map((o) => ({
     value: o.id,
@@ -430,11 +508,25 @@ export async function getOrderOptions() {
 }
 
 export async function getCustomerOptions() {
-  const { data, error } = await supabase
+  let query = supabase
     .from('customers')
     .select('id, code, name')
     .eq('status', 'active')
     .order('name');
+
+  const { data: userData } = await supabase.auth.getUser();
+  if (userData?.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, employee_id')
+      .eq('id', userData.user.id)
+      .single();
+    if (profile?.role === 'sale' && profile.employee_id) {
+      query = query.eq('salesperson_id', profile.employee_id);
+    }
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return (data ?? []).map((c) => ({
     value: c.id,

@@ -141,18 +141,14 @@ export function FabricVariantForm({
           >
             Hủy
           </Button>
-          <button
-            className="primary-button btn-standard"
+          <Button
+            variant="primary"
             type="submit"
             form="fabric-variant-form"
-            disabled={isPending}
+            isLoading={isPending}
           >
-            {isPending
-              ? 'Đang lưu...'
-              : isEditing
-                ? 'Cập nhật'
-                : 'Thêm biến thể'}
-          </button>
+            {isEditing ? 'Cập nhật' : 'Thêm biến thể'}
+          </Button>
         </>
       }
     >

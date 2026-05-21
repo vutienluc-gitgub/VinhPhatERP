@@ -10,6 +10,7 @@
 
 import { useRef } from 'react';
 
+import { Button } from '@/shared/components/Button';
 import { Icon } from '@/shared/components/Icon';
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -110,36 +111,33 @@ export function ImagePicker({
 
       {/* Action buttons */}
       <div className="image-picker-actions">
-        <button
-          type="button"
-          className="image-picker-btn"
+        <Button
+          variant="outline"
           onClick={() => cameraInputRef.current?.click()}
           disabled={isDisabled}
           title={LABELS.CAPTURE}
+          leftIcon="Camera"
         >
-          <Icon name="Camera" size={14} />
           {LABELS.CAPTURE}
-        </button>
-        <button
-          type="button"
-          className="image-picker-btn"
+        </Button>
+        <Button
+          variant="outline"
           onClick={() => fileInputRef.current?.click()}
           disabled={isDisabled}
           title={LABELS.SELECT}
+          leftIcon="Upload"
         >
-          <Icon name="Upload" size={14} />
           {LABELS.SELECT}
-        </button>
+        </Button>
         {value && (
-          <button
-            type="button"
-            className="image-picker-btn image-picker-btn--danger"
+          <Button
+            variant="danger"
+            size="icon"
             onClick={onRemove}
             disabled={isDisabled}
             title={LABELS.REMOVE}
-          >
-            <Icon name="Trash2" size={14} />
-          </button>
+            leftIcon="Trash2"
+          />
         )}
       </div>
 

@@ -1,4 +1,4 @@
-import { Icon } from './Icon';
+import { Button } from './Button';
 import type { IconName } from './Icon';
 
 interface AddButtonProps {
@@ -15,14 +15,14 @@ export function AddButton({
   disabled = false,
 }: AddButtonProps) {
   return (
-    <button
-      type="button"
-      className="btn-primary min-h-[42px] px-5 flex items-center gap-1.5"
+    <Button
+      variant="primary"
       disabled={disabled}
       onClick={onClick}
+      leftIcon={icon}
+      className="px-5"
     >
-      <Icon name={icon} size={18} />
       {label}
-    </button>
+    </Button>
   );
 }

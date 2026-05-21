@@ -46,6 +46,12 @@ export async function fetchCustomers(
   if (salespersonId) {
     query = query.eq('salesperson_id', salespersonId);
   }
+  if (filters.created_from) {
+    query = query.gte('created_at', filters.created_from);
+  }
+  if (filters.created_to) {
+    query = query.lte('created_at', filters.created_to);
+  }
 
   const { data, error } = await query;
   if (error) throw error;
@@ -153,6 +159,18 @@ export async function updateCustomer(
 
   let query = supabase.from(TABLE).update(sanitizedRow).eq('id', id);
 
+  const { data: userData } = await supabase.auth.getUser();
+  if (userData?.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, employee_id')
+      .eq('id', userData.user.id)
+      .single();
+    if (profile?.role === 'sale' && profile.employee_id) {
+      query = query.eq('salesperson_id', profile.employee_id);
+    }
+  }
+
   if (expectedUpdatedAt) {
     query = query.eq('updated_at', expectedUpdatedAt);
   }
@@ -175,8 +193,46 @@ export async function updateCustomer(
   return data as Customer;
 }
 
+export async function bulkUpdateCustomers(
+  ids: string[],
+  row: CustomerUpdate,
+): Promise<void> {
+  if (!ids.length) return;
+
+  let query = supabase.from(TABLE).update(row).in('id', ids);
+
+  const { data: userData } = await supabase.auth.getUser();
+  if (userData?.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, employee_id')
+      .eq('id', userData.user.id)
+      .single();
+    if (profile?.role === 'sale' && profile.employee_id) {
+      query = query.eq('salesperson_id', profile.employee_id);
+    }
+  }
+
+  const { error } = await query;
+  if (error) throw error;
+}
+
 export async function deleteCustomer(id: string): Promise<void> {
-  const { error } = await supabase.from(TABLE).delete().eq('id', id);
+  let query = supabase.from(TABLE).delete().eq('id', id);
+
+  const { data: userData } = await supabase.auth.getUser();
+  if (userData?.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, employee_id')
+      .eq('id', userData.user.id)
+      .single();
+    if (profile?.role === 'sale' && profile.employee_id) {
+      query = query.eq('salesperson_id', profile.employee_id);
+    }
+  }
+
+  const { error } = await query;
   if (error) throw error;
 }
 

@@ -6,6 +6,7 @@ import {
   createCustomer,
   updateCustomer,
   deleteCustomer,
+  bulkUpdateCustomers,
   fetchNextCustomerCode,
   fetchCustomerPortalAccount,
   createCustomerPortalAccount,
@@ -15,10 +16,12 @@ import type {
   Customer,
   CustomerInsert,
   CustomersFilter,
+  CustomerUpdate,
 } from '@/domain/crm/customers.types';
 import type { CustomersFormValues } from '@/schema/customer.schema';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
+import { sanitizePhoneSearchQuery } from '@/shared/utils/format';
 
 const QUERY_KEY = ['customers'] as const;
 
@@ -39,11 +42,16 @@ function toDbRow(values: CustomersFormValues): CustomerInsert {
 }
 
 export function useCustomerList(filters: CustomersFilter = {}, page = 1) {
+  const sanitizedFilters = {
+    ...filters,
+    query: filters.query ? sanitizePhoneSearchQuery(filters.query) : undefined,
+  };
+
   return useQuery({
-    queryKey: [...QUERY_KEY, filters, page],
+    queryKey: [...QUERY_KEY, sanitizedFilters, page],
     queryFn: async (): Promise<PaginatedResult<Customer>> => {
       const from = (page - 1) * DEFAULT_PAGE_SIZE;
-      const data = await fetchCustomers(filters);
+      const data = await fetchCustomers(sanitizedFilters);
       const total = data.length;
       const pageData = data.slice(from, from + DEFAULT_PAGE_SIZE);
       return {
@@ -84,6 +92,22 @@ export function useUpdateCustomer() {
       values: CustomersFormValues;
       expectedUpdatedAt?: string;
     }) => updateCustomer(id, toDbRow(values), expectedUpdatedAt),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+  });
+}
+
+export function useBulkUpdateCustomers() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      ids,
+      values,
+    }: {
+      ids: string[];
+      values: Partial<CustomerUpdate>;
+    }) => bulkUpdateCustomers(ids, values),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },

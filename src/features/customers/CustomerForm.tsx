@@ -10,8 +10,12 @@ import {
   CUSTOMER_SOURCE_LABELS,
   CUSTOMER_SOURCE_ICONS,
 } from '@/schema';
-import { customersSchema } from '@/schema/customer.schema';
-import type { CustomersFormValues } from '@/schema/customer.schema';
+import {
+  customersSchema,
+  CRM_STATUS_LABELS,
+  CRM_STATUS_ICONS,
+} from '@/schema/customer.schema';
+import type { CustomersFormValues, LeadStatus } from '@/schema/customer.schema';
 import { Combobox } from '@/shared/components/Combobox';
 import {
   useCreateCustomer,
@@ -36,6 +40,21 @@ const STATUS_OPTIONS = [
   { value: 'inactive', label: 'Ngừng hoạt động', icon: 'XCircle' as const },
 ];
 
+const LEAD_STATUS_OPTIONS = [
+  { value: 'lead', label: CRM_STATUS_LABELS.lead, icon: CRM_STATUS_ICONS.lead },
+  {
+    value: 'opportunity',
+    label: CRM_STATUS_LABELS.opportunity,
+    icon: CRM_STATUS_ICONS.opportunity,
+  },
+  {
+    value: 'customer',
+    label: CRM_STATUS_LABELS.customer,
+    icon: CRM_STATUS_ICONS.customer,
+  },
+  { value: 'lost', label: CRM_STATUS_LABELS.lost, icon: CRM_STATUS_ICONS.lost },
+];
+
 type CustomerFormProps = {
   customer: Customer | null;
   onClose: () => void;
@@ -54,6 +73,7 @@ function customerToFormValues(customer: Customer): CustomersFormValues {
     notes: customer.notes ?? '',
     status: customer.status,
     salesperson_id: customer.salesperson_id ?? '',
+    lead_status: (customer.lead_status as LeadStatus) || 'lead',
   };
 }
 
@@ -291,28 +311,45 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
           </div>
         </div>
 
-        {/* Nhân viên phụ trách */}
-        <div className="form-field">
-          <label htmlFor="salesperson_id">Nhân viên phụ trách</label>
-          <Controller
-            name="salesperson_id"
-            control={control}
-            render={({ field }) => (
-              <Combobox
-                options={[
-                  { value: '', label: '(Chưa phân công)' },
-                  ...(salesEmployees?.map((emp) => ({
-                    value: emp.id,
-                    label: `${emp.name} (${emp.code})`,
-                    icon: 'User' as const,
-                  })) ?? []),
-                ]}
-                value={field.value ?? ''}
-                onChange={field.onChange}
-                disabled={!canAssign}
-              />
-            )}
-          />
+        {/* Phễu CRM & Nhân viên phụ trách */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="form-field">
+            <label htmlFor="lead_status">Phễu CRM</label>
+            <Controller
+              name="lead_status"
+              control={control}
+              render={({ field }) => (
+                <Combobox
+                  options={LEAD_STATUS_OPTIONS}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          </div>
+
+          <div className="form-field">
+            <label htmlFor="salesperson_id">Nhân viên phụ trách</label>
+            <Controller
+              name="salesperson_id"
+              control={control}
+              render={({ field }) => (
+                <Combobox
+                  options={[
+                    { value: '', label: '(Chưa phân công)' },
+                    ...(salesEmployees?.map((emp) => ({
+                      value: emp.id,
+                      label: `${emp.name} (${emp.code})`,
+                      icon: 'User' as const,
+                    })) ?? []),
+                  ]}
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  disabled={!canAssign}
+                />
+              )}
+            />
+          </div>
         </div>
 
         {/* Ghi chú */}
@@ -349,10 +386,10 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         <Button
           variant="primary"
           type="submit"
-          disabled={isPending}
+          isLoading={isPending}
           className="w-full sm:w-auto justify-center"
         >
-          {isPending ? 'Đang lưu...' : isEditing ? 'Cập nhật' : 'Tạo mới'}
+          {isEditing ? 'Cập nhật' : 'Tạo mới'}
         </Button>
       </div>
     </form>

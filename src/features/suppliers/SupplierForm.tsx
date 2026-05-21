@@ -127,10 +127,10 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
             variant="primary"
             type="submit"
             form="supplier-form"
-            disabled={isPending}
+            isLoading={isPending}
             className="w-full sm:w-auto justify-center"
           >
-            {isPending ? 'Đang lưu…' : isEditing ? 'Cập nhật' : 'Tạo mới'}
+            {isEditing ? 'Cập nhật' : 'Tạo mới'}
           </Button>
         </div>
       }

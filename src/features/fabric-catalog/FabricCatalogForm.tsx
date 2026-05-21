@@ -130,18 +130,14 @@ export function FabricCatalogForm({
           >
             Hủy
           </Button>
-          <button
-            className="primary-button btn-standard"
+          <Button
+            variant="primary"
             type="submit"
             form="fabric-catalog-form"
-            disabled={isPending}
+            isLoading={isPending}
           >
-            {isPending
-              ? 'Đang lưu...'
-              : isEditing
-                ? 'Cập nhật'
-                : 'Thêm loại vải'}
-          </button>
+            {isEditing ? 'Cập nhật' : 'Thêm loại vải'}
+          </Button>
         </>
       }
     >

@@ -93,7 +93,17 @@ const mockDbFactory = (table: string) => {
 };
 
 vi.mock('@/services/supabase/client', () => ({
-  supabase: { from: vi.fn(mockDbFactory) },
+  supabase: {
+    from: vi.fn(mockDbFactory),
+    auth: {
+      getUser: vi.fn(() =>
+        Promise.resolve({ data: { user: null }, error: null }),
+      ),
+      getSession: vi.fn(() =>
+        Promise.resolve({ data: { session: null }, error: null }),
+      ),
+    },
+  },
   untypedDb: { from: vi.fn(mockDbFactory), rpc: vi.fn() },
 }));
 

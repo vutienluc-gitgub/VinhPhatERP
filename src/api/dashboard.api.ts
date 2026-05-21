@@ -84,6 +84,27 @@ const SOURCE_COLORS: Record<string, string> = {
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const SEVEN_DAYS_MS = 7 * ONE_DAY_MS;
 const THREE_DAYS_MS = 3 * ONE_DAY_MS;
+async function getSalespersonCustomerIds(): Promise<string[] | null> {
+  const { data: userData } = await supabase.auth.getUser();
+  if (userData?.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, employee_id')
+      .eq('id', userData.user.id)
+      .single();
+    if (profile?.role === 'sale' && profile.employee_id) {
+      const { data: customerIdsData } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('salesperson_id', profile.employee_id);
+      const customerIds = customerIdsData?.map((c) => c.id) || [];
+      return customerIds.length > 0
+        ? customerIds
+        : ['00000000-0000-0000-0000-000000000000'];
+    }
+  }
+  return null;
+}
 
 export async function fetchDashboardStats(): Promise<DashboardStats> {
   const today = new Date().toISOString().slice(0, 10);
@@ -91,46 +112,74 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
     .toISOString()
     .slice(0, 10);
 
+  const customerIds = await getSalespersonCustomerIds();
+
+  let draftsQuery = supabase
+    .from('orders')
+    .select('id', {
+      count: 'exact',
+      head: true,
+    })
+    .eq('status', 'draft');
+
+  let activeQuery = supabase
+    .from('orders')
+    .select('id', {
+      count: 'exact',
+      head: true,
+    })
+    .in('status', ['confirmed', 'in_progress']);
+
+  let overdueQuery = supabase
+    .from('orders')
+    .select('id', {
+      count: 'exact',
+      head: true,
+    })
+    .in('status', ['confirmed', 'in_progress'])
+    .lt('delivery_date', today);
+
+  let debtQuery = supabase
+    .from('orders')
+    .select('total_amount, paid_amount')
+    .in('status', ['confirmed', 'in_progress', 'completed']);
+
+  let paymentsQuery = supabase
+    .from('payments')
+    .select('amount')
+    .gte('payment_date', sevenDaysAgo);
+
+  let shipmentsQuery = supabase
+    .from('shipments')
+    .select('id', {
+      count: 'exact',
+      head: true,
+    })
+    .eq('status', 'preparing');
+
+  let quotationsQuery = supabase
+    .from('quotations')
+    .select('id, status, valid_until');
+
+  if (customerIds) {
+    draftsQuery = draftsQuery.in('customer_id', customerIds);
+    activeQuery = activeQuery.in('customer_id', customerIds);
+    overdueQuery = overdueQuery.in('customer_id', customerIds);
+    debtQuery = debtQuery.in('customer_id', customerIds);
+    paymentsQuery = paymentsQuery.in('customer_id', customerIds);
+    shipmentsQuery = shipmentsQuery.in('customer_id', customerIds);
+    quotationsQuery = quotationsQuery.in('customer_id', customerIds);
+  }
+
   const [drafts, active, overdue, debt, payments, shipments, quotations] =
     await Promise.all([
-      supabase
-        .from('orders')
-        .select('id', {
-          count: 'exact',
-          head: true,
-        })
-        .eq('status', 'draft'),
-      supabase
-        .from('orders')
-        .select('id', {
-          count: 'exact',
-          head: true,
-        })
-        .in('status', ['confirmed', 'in_progress']),
-      supabase
-        .from('orders')
-        .select('id', {
-          count: 'exact',
-          head: true,
-        })
-        .in('status', ['confirmed', 'in_progress'])
-        .lt('delivery_date', today),
-      supabase
-        .from('orders')
-        .select('total_amount, paid_amount')
-        .in('status', ['confirmed', 'in_progress', 'completed']),
-      supabase
-        .from('payments')
-        .select('amount')
-        .gte('payment_date', sevenDaysAgo),
-      supabase
-        .from('shipments')
-        .select('id', {
-          count: 'exact',
-          head: true,
-        })
-        .eq('status', 'preparing'),
-      supabase.from('quotations').select('id, status, valid_until'),
+      draftsQuery,
+      activeQuery,
+      overdueQuery,
+      debtQuery,
+      paymentsQuery,
+      shipmentsQuery,
+      quotationsQuery,
     ]);
 
   const totalDebt = (debt.data ?? []).reduce(
@@ -227,13 +276,20 @@ export function buildPendingTasks(stats: DashboardStats): PendingTask[] {
 }
 
 export async function fetchRecentOrders(): Promise<RecentOrder[]> {
-  const { data } = await supabase
+  let query = supabase
     .from('orders')
     .select(
       'id, order_number, total_amount, status, created_at, customers(name)',
     )
     .order('created_at', { ascending: false })
     .limit(5);
+
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds) {
+    query = query.in('customer_id', customerIds);
+  }
+
+  const { data } = await query;
 
   return (data ?? []).map((row) => {
     const customer = row.customers as { name: string } | null;
@@ -249,7 +305,14 @@ export async function fetchRecentOrders(): Promise<RecentOrder[]> {
 }
 
 export async function fetchCustomerSources(): Promise<CustomerSourceItem[]> {
-  const { data } = await supabase.from('customers').select('source');
+  let query = supabase.from('customers').select('source');
+
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds) {
+    query = query.in('id', customerIds);
+  }
+
+  const { data } = await query;
   if (!data || data.length === 0) return [];
 
   const counts: Record<string, number> = {};
@@ -303,12 +366,19 @@ export async function fetchMonthlyRevenue(): Promise<{
   const endOfYear = `${year}-12-31`;
   const currentMonth = now.getMonth();
 
-  const { data } = await supabase
+  let query = supabase
     .from('orders')
     .select('total_amount, created_at')
     .in('status', ['confirmed', 'in_progress', 'completed'])
     .gte('created_at', startOfYear)
     .lte('created_at', endOfYear);
+
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds) {
+    query = query.in('customer_id', customerIds);
+  }
+
+  const { data } = await query;
 
   const monthlyTotals = new Array<number>(12).fill(0);
   for (const row of data ?? []) {
@@ -347,6 +417,12 @@ export async function fetchYarnSpending(): Promise<{
   changePercent: number | null;
   breakdown: SpendingBreakdown[];
 }> {
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds) {
+    // Salesperson does not manage yarn purchases
+    return { total: 0, changePercent: null, breakdown: [] };
+  }
+
   const now = new Date();
   const startOfMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
   const prevMonth = now.getMonth() === 0 ? 12 : now.getMonth();
@@ -405,34 +481,44 @@ export async function fetchYarnSpending(): Promise<{
  * Maps to "Công nợ sắp đến hạn" card.
  */
 export async function fetchUpcomingDebts(): Promise<UpcomingDebt[]> {
-  const { data: supplierDebts } = await supabase
-    .from('yarn_receipts')
-    .select('id, total_amount, paid_amount, receipt_date, suppliers(name)')
-    .gt('total_amount', 0)
-    .order('receipt_date', { ascending: true })
-    .limit(20);
-
+  const customerIds = await getSalespersonCustomerIds();
   const debts: UpcomingDebt[] = [];
 
-  for (const row of supplierDebts ?? []) {
-    const remaining = (row.total_amount ?? 0) - (row.paid_amount ?? 0);
-    if (remaining <= 0) continue;
-    const supplier = row.suppliers as { name: string } | null;
-    debts.push({
-      id: row.id,
-      name: supplier?.name ?? 'NCC',
-      type: 'supplier',
-      amount: remaining,
-      due_date: row.receipt_date,
-    });
+  // Fetch supplier debts only for admins/managers
+  if (!customerIds) {
+    const { data: supplierDebts } = await supabase
+      .from('yarn_receipts')
+      .select('id, total_amount, paid_amount, receipt_date, suppliers(name)')
+      .gt('total_amount', 0)
+      .order('receipt_date', { ascending: true })
+      .limit(20);
+
+    for (const row of supplierDebts ?? []) {
+      const remaining = (row.total_amount ?? 0) - (row.paid_amount ?? 0);
+      if (remaining <= 0) continue;
+      const supplier = row.suppliers as { name: string } | null;
+      debts.push({
+        id: row.id,
+        name: supplier?.name ?? 'NCC',
+        type: 'supplier',
+        amount: remaining,
+        due_date: row.receipt_date,
+      });
+    }
   }
 
-  const { data: customerDebts } = await supabase
+  let customerQuery = supabase
     .from('orders')
     .select('id, total_amount, paid_amount, delivery_date, customers(name)')
     .in('status', ['confirmed', 'in_progress', 'completed'])
     .order('delivery_date', { ascending: true })
     .limit(20);
+
+  if (customerIds) {
+    customerQuery = customerQuery.in('customer_id', customerIds);
+  }
+
+  const { data: customerDebts } = await customerQuery;
 
   for (const row of customerDebts ?? []) {
     const remaining = (row.total_amount ?? 0) - (row.paid_amount ?? 0);
@@ -455,11 +541,18 @@ export async function fetchUpcomingDebts(): Promise<UpcomingDebt[]> {
  * Maps to "Giao dịch gần đây" card.
  */
 export async function fetchRecentTransactions(): Promise<RecentTransaction[]> {
-  const { data: payments } = await supabase
+  let query = supabase
     .from('payments')
     .select('id, amount, payment_date, notes')
     .order('payment_date', { ascending: false })
     .limit(5);
+
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds) {
+    query = query.in('customer_id', customerIds);
+  }
+
+  const { data: payments } = await query;
 
   return (payments ?? []).map((p) => ({
     id: p.id,

@@ -386,14 +386,12 @@ export function RecurringTransactionForm({
           <Button
             variant="primary"
             type="submit"
-            disabled={isPending}
+            isLoading={isPending}
             className="w-full sm:w-auto justify-center"
           >
-            {isPending
-              ? RECURRING_LABELS.formSaving
-              : isEditing
-                ? RECURRING_LABELS.formUpdate
-                : RECURRING_LABELS.formCreate}
+            {isEditing
+              ? RECURRING_LABELS.formUpdate
+              : RECURRING_LABELS.formCreate}
           </Button>
         </div>
       </form>
