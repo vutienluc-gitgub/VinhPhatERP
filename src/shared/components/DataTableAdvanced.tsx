@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, memo } from 'react';
+import { useState, useRef, useEffect, memo, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import {
   useReactTable,
@@ -22,6 +22,13 @@ import { Button } from './Button';
 import { Pagination } from './Pagination';
 import type { PaginationConfig } from './DataTable';
 
+export interface BulkActionConfig<TData> {
+  label: string;
+  icon: IconName;
+  onClick: (selectedRows: TData[]) => void;
+  variant?: 'primary' | 'secondary' | 'danger' | 'outline' | 'ghost';
+}
+
 export interface DataTableAdvancedProps<TData> {
   data: TData[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,6 +46,7 @@ export interface DataTableAdvancedProps<TData> {
   onRowClick?: (item: TData) => void;
   exportFileName?: string;
   pagination?: PaginationConfig<TData>;
+  bulkActions?: BulkActionConfig<TData>[];
 }
 
 function DataTableAdvancedInner<TData>({
@@ -57,14 +65,53 @@ function DataTableAdvancedInner<TData>({
   onRowClick,
   exportFileName = 'export_data',
   pagination,
+  bulkActions,
 }: DataTableAdvancedProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
+  const finalColumns = useMemo(() => {
+    if (!bulkActions || bulkActions.length === 0) return columns;
+    const selectColumn: ColumnDef<TData, unknown> = {
+      id: 'select',
+      header: ({ table }) => (
+        <div className="px-1 flex items-center justify-center">
+          <input
+            type="checkbox"
+            className="w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
+            checked={table.getIsAllPageRowsSelected()}
+            ref={(input) => {
+              if (input)
+                input.indeterminate = table.getIsSomePageRowsSelected();
+            }}
+            onChange={table.getToggleAllPageRowsSelectedHandler()}
+          />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div
+          className="px-1 flex items-center justify-center"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <input
+            type="checkbox"
+            className="w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
+            checked={row.getIsSelected()}
+            disabled={!row.getCanSelect()}
+            onChange={row.getToggleSelectedHandler()}
+          />
+        </div>
+      ),
+      meta: { className: 'w-10 text-center' },
+      enableSorting: false,
+    };
+    return [selectColumn, ...columns];
+  }, [columns, bulkActions]);
+
   const table = useReactTable({
     data,
-    columns,
+    columns: finalColumns,
     state: {
       sorting,
       columnVisibility,
@@ -112,8 +159,11 @@ function DataTableAdvancedInner<TData>({
       ),
     );
 
-    // Add rows
-    const rows = table.getCoreRowModel().rows;
+    // Add rows (only selected if any, else all)
+    const hasSelection = table.getSelectedRowModel().rows.length > 0;
+    const rows = hasSelection
+      ? table.getSelectedRowModel().rows
+      : table.getCoreRowModel().rows;
     rows.forEach((row) => {
       const rowData = visibleColumns.map((col) => {
         const val = row.getValue(col.id);
@@ -135,6 +185,55 @@ function DataTableAdvancedInner<TData>({
 
   return (
     <div className={clsx('flex flex-col gap-4', className)}>
+      {/* Floating Bulk Actions Toolbar */}
+      {table.getSelectedRowModel().rows.length > 0 &&
+        bulkActions &&
+        bulkActions.length > 0 && (
+          <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-3 px-6 py-3 bg-surface shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-border/80 rounded-full animate-in slide-in-from-bottom-8">
+            <div className="flex items-center gap-2 pr-4 border-r border-border">
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">
+                {table.getSelectedRowModel().rows.length}
+              </span>
+              <span className="text-sm font-medium whitespace-nowrap">
+                đã chọn
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {bulkActions.map((action, i) => (
+                <Button
+                  key={i}
+                  variant={action.variant || 'outline'}
+                  leftIcon={action.icon}
+                  size="sm"
+                  onClick={() =>
+                    action.onClick(
+                      table.getSelectedRowModel().rows.map((r) => r.original),
+                    )
+                  }
+                  className={clsx(
+                    'whitespace-nowrap',
+                    action.variant === 'danger' &&
+                      'text-danger border-danger/20 hover:bg-danger/10',
+                  )}
+                >
+                  {action.label}
+                </Button>
+              ))}
+            </div>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => table.toggleAllRowsSelected(false)}
+              className="w-8 h-8 rounded-full ml-2 hover:bg-surface-subtle text-muted"
+              title="Hủy chọn"
+            >
+              <Icon name="X" size={16} />
+            </Button>
+          </div>
+        )}
+
       {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">

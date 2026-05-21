@@ -11,6 +11,30 @@ import { apiQuotationHeader } from '@/schema/api-validation.schema';
 
 const HEADER_TABLE = 'quotations';
 
+/* ── Helper for salesperson boundary check ── */
+
+async function getSalespersonCustomerIds(): Promise<string[] | null> {
+  const { data: userData } = await supabase.auth.getUser();
+  if (userData?.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, employee_id')
+      .eq('id', userData.user.id)
+      .single();
+    if (profile?.role === 'sale' && profile.employee_id) {
+      const { data: customerIdsData } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('salesperson_id', profile.employee_id);
+      const customerIds = customerIdsData?.map((c) => c.id) || [];
+      return customerIds.length > 0
+        ? customerIds
+        : ['00000000-0000-0000-0000-000000000000'];
+    }
+  }
+  return null;
+}
+
 /* ── Fetch list with pagination ── */
 
 export async function fetchQuotationsPaginated(
@@ -25,6 +49,11 @@ export async function fetchQuotationsPaginated(
     .select('*, customers(name, code)', { count: 'exact' })
     .order('quotation_date', { ascending: false })
     .range(from, to);
+
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds) {
+    query = query.in('customer_id', customerIds);
+  }
 
   if (filters.status) query = query.eq('status', filters.status);
   if (filters.customerId) query = query.eq('customer_id', filters.customerId);
@@ -59,11 +88,17 @@ export async function fetchQuotationsPaginated(
 /* ── Single quotation with items ── */
 
 export async function fetchQuotationById(id: string): Promise<Quotation> {
-  const { data, error } = await supabase
+  let query = supabase
     .from(HEADER_TABLE)
     .select('*, customers(name, code), quotation_items(*)')
-    .eq('id', id)
-    .single();
+    .eq('id', id);
+
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds) {
+    query = query.in('customer_id', customerIds);
+  }
+
+  const { data, error } = await query.single();
   if (error) throw error;
   return data as unknown as Quotation;
 }
@@ -120,6 +155,12 @@ export async function createQuotation(
   items: Omit<QuotationItemInsert, 'quotation_id'>[],
 ): Promise<Quotation> {
   validateApiInput(apiQuotationHeader.passthrough(), header);
+
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds && !customerIds.includes(header.customer_id)) {
+    throw new Error('Bạn không có quyền tạo báo giá cho khách hàng này.');
+  }
+
   const { data, error } = await supabase.rpc('rpc_create_quotation', {
     p_header: header as never,
     p_items: items as never,
@@ -136,6 +177,21 @@ export async function updateQuotationWithItems(
   header: Omit<QuotationHeaderInsert, 'status'>,
   items: Omit<QuotationItemInsert, 'quotation_id'>[],
 ): Promise<void> {
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds && !customerIds.includes(header.customer_id)) {
+    throw new Error('Bạn không có quyền cập nhật báo giá cho khách hàng này.');
+  }
+  if (customerIds) {
+    const { count, error: checkError } = await supabase
+      .from(HEADER_TABLE)
+      .select('id', { count: 'exact', head: true })
+      .eq('id', id)
+      .in('customer_id', customerIds);
+    if (checkError || count === 0) {
+      throw new Error('Bạn không có quyền cập nhật báo giá này.');
+    }
+  }
+
   const { error } = await supabase.rpc('rpc_update_quotation', {
     p_quotation_id: id,
     p_header: header as never,
@@ -155,16 +211,23 @@ export async function updateQuotationWithItems(
 /* ── Status transitions ── */
 
 export async function sendQuotation(id: string): Promise<void> {
-  const { error } = await supabase
+  let query = supabase
     .from(HEADER_TABLE)
     .update({ status: 'sent' as QuotationStatus })
     .eq('id', id)
     .in('status', ['draft']);
+
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds) {
+    query = query.in('customer_id', customerIds);
+  }
+
+  const { error } = await query;
   if (error) throw error;
 }
 
 export async function confirmQuotation(id: string): Promise<void> {
-  const { error } = await supabase
+  let query = supabase
     .from(HEADER_TABLE)
     .update({
       status: 'confirmed' as QuotationStatus,
@@ -172,20 +235,41 @@ export async function confirmQuotation(id: string): Promise<void> {
     })
     .eq('id', id)
     .in('status', ['sent', 'draft']);
+
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds) {
+    query = query.in('customer_id', customerIds);
+  }
+
+  const { error } = await query;
   if (error) throw error;
 }
 
 export async function rejectQuotation(id: string): Promise<void> {
-  const { error } = await supabase
+  let query = supabase
     .from(HEADER_TABLE)
     .update({ status: 'rejected' as QuotationStatus })
     .eq('id', id)
     .in('status', ['sent', 'draft']);
+
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds) {
+    query = query.in('customer_id', customerIds);
+  }
+
+  const { error } = await query;
   if (error) throw error;
 }
 
 export async function deleteQuotation(id: string): Promise<void> {
-  const { error } = await supabase.from(HEADER_TABLE).delete().eq('id', id);
+  let query = supabase.from(HEADER_TABLE).delete().eq('id', id);
+
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds) {
+    query = query.in('customer_id', customerIds);
+  }
+
+  const { error } = await query;
   if (error) throw error;
 }
 
@@ -201,7 +285,7 @@ export async function fetchExpiringQuotationsCount(): Promise<{
     .toISOString()
     .slice(0, 10);
 
-  const { count: expiringCount, error: err1 } = await supabase
+  let query1 = supabase
     .from(HEADER_TABLE)
     .select('*', {
       count: 'exact',
@@ -210,9 +294,8 @@ export async function fetchExpiringQuotationsCount(): Promise<{
     .in('status', ['draft', 'sent'])
     .gte('valid_until', today)
     .lte('valid_until', threeDaysLater);
-  if (err1) throw err1;
 
-  const { count: expiredCount, error: err2 } = await supabase
+  let query2 = supabase
     .from(HEADER_TABLE)
     .select('*', {
       count: 'exact',
@@ -220,6 +303,17 @@ export async function fetchExpiringQuotationsCount(): Promise<{
     })
     .in('status', ['draft', 'sent'])
     .lt('valid_until', today);
+
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds) {
+    query1 = query1.in('customer_id', customerIds);
+    query2 = query2.in('customer_id', customerIds);
+  }
+
+  const { count: expiringCount, error: err1 } = await query1;
+  if (err1) throw err1;
+
+  const { count: expiredCount, error: err2 } = await query2;
   if (err2) throw err2;
 
   return {
@@ -233,6 +327,20 @@ export async function fetchExpiringQuotationsCount(): Promise<{
 export async function convertQuotationToOrder(
   quotationId: string,
 ): Promise<{ orderId: string; orderNumber: string }> {
+  const customerIds = await getSalespersonCustomerIds();
+  if (customerIds) {
+    const { count, error: checkError } = await supabase
+      .from(HEADER_TABLE)
+      .select('id', { count: 'exact', head: true })
+      .eq('id', quotationId)
+      .in('customer_id', customerIds);
+    if (checkError || count === 0) {
+      throw new Error(
+        'Bạn không có quyền chuyển đổi báo giá này thành đơn hàng.',
+      );
+    }
+  }
+
   const { data, error } = await supabase.rpc('rpc_convert_quotation_to_order', {
     p_quotation_id: quotationId,
   });

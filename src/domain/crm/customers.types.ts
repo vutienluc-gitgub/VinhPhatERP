@@ -21,6 +21,8 @@ export type CustomersFilter = {
   query?: string;
   status?: 'active' | 'inactive';
   salesperson_id?: string;
+  created_from?: string;
+  created_to?: string;
 };
 
 export interface PortalAccount {

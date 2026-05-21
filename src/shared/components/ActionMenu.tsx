@@ -97,7 +97,7 @@ export function ActionMenu({
         <Button
           variant="ghost"
           size="icon"
-          className="w-8 h-8 rounded-full min-h-0 min-w-0"
+          className="rounded-full"
           onClick={toggleMenu}
           leftIcon={triggerIcon}
         />
@@ -120,14 +120,14 @@ export function ActionMenu({
                   {item.separated && (
                     <div className="h-px bg-border/40 my-1 mx-2" />
                   )}
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
                     disabled={item.disabled}
-                    className={`w-full text-left px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap ${
+                    className={`w-full justify-start text-left px-3 py-2.5 font-medium rounded-lg h-auto min-h-[44px] gap-2 whitespace-nowrap ${
                       item.disabled
                         ? 'opacity-50 cursor-not-allowed'
                         : item.danger
-                          ? 'hover:bg-danger/10 hover:text-danger'
+                          ? 'hover:bg-danger/10 text-danger hover:text-danger'
                           : 'hover:bg-surface-subtle text-foreground'
                     }`}
                     onClick={(e) => {
@@ -148,7 +148,7 @@ export function ActionMenu({
                       />
                     )}
                     {item.label}
-                  </button>
+                  </Button>
                 </React.Fragment>
               ))}
             </div>

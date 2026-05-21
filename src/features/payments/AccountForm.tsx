@@ -252,14 +252,10 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
           <Button
             variant="primary"
             type="submit"
-            disabled={isPending}
+            isLoading={isPending}
             className="w-full sm:w-auto justify-center"
           >
-            {isPending
-              ? 'Đang lưu...'
-              : isEditing
-                ? 'Cập nhật'
-                : 'Tạo tài khoản'}
+            {isEditing ? 'Cập nhật' : 'Tạo tài khoản'}
           </Button>
         </div>
       </form>

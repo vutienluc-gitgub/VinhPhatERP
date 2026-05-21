@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import ReactSignatureCanvas from 'react-signature-canvas';
 
-import { Icon } from '@/shared/components/Icon';
+import { Button } from '@/shared/components/Button';
 
 type Props = {
   onConfirm: (pngDataUrl: string) => void;
@@ -36,13 +36,7 @@ export function SignaturePad({ onConfirm, onCancel }: Props) {
               Mời khách ký tên xác nhận nhận hàng
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onCancel}
-            className="w-8 h-8 rounded-full bg-[var(--surface-alt)] flex items-center justify-center text-[var(--text-secondary)]"
-          >
-            <Icon name="X" size={16} />
-          </button>
+          <Button variant="ghost" size="icon" onClick={onCancel} leftIcon="X" />
         </div>
 
         {/* Canvas area */}
@@ -69,23 +63,23 @@ export function SignaturePad({ onConfirm, onCancel }: Props) {
 
         {/* Actions */}
         <div className="flex gap-3 px-5 pb-6">
-          <button
-            type="button"
+          <Button
+            variant="outline"
+            className="flex-1"
             onClick={handleClear}
-            className="flex-1 py-2.5 rounded-xl border border-[var(--border)] text-[var(--text-secondary)] text-sm font-medium flex items-center justify-center gap-2"
+            leftIcon="RotateCcw"
           >
-            <Icon name="RotateCcw" size={15} />
             Xoá
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="primary"
+            className="flex-2 flex-grow"
             onClick={handleConfirm}
             disabled={isEmpty}
-            className="flex-2 flex-grow py-2.5 rounded-xl bg-[#0f3460] text-white text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-40"
+            leftIcon="Check"
           >
-            <Icon name="Check" size={15} />
             Xác nhận chữ ký
-          </button>
+          </Button>
         </div>
       </div>
     </div>

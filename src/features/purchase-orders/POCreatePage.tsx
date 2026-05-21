@@ -330,8 +330,8 @@ export function POCreatePage() {
             onClick={() => navigate('/purchase-orders')}
             disabled={isPending}
           />
-          <Button type="submit" variant="primary" disabled={isPending}>
-            {isPending ? 'Đang tạo...' : 'Tạo Đơn Đặt Hàng'}
+          <Button type="submit" variant="primary" isLoading={isPending}>
+            Tạo Đơn Đặt Hàng
           </Button>
         </div>
       </form>

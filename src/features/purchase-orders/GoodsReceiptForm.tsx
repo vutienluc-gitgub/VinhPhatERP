@@ -199,9 +199,10 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
             form="gr-form"
             type="submit"
             variant="primary"
-            disabled={isPending || fields.length === 0}
+            disabled={fields.length === 0}
+            isLoading={isPending}
           >
-            {isPending ? 'Đang xử lý...' : 'Xác nhận nhập kho'}
+            Xác nhận nhập kho
           </Button>
         </div>
       </div>

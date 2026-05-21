@@ -6,6 +6,7 @@ import {
 import type { ScanMode } from '@/shared/hooks/useBarcodeScanner';
 
 import { AdaptiveSheet } from './AdaptiveSheet';
+import { Button } from './Button';
 import { Icon } from './Icon';
 
 import '@/styles/barcode-scanner.css';
@@ -67,20 +68,22 @@ export function BarcodeScanner({
           !scanner.error &&
           scanner.cameraState === 'active' && (
             <div className="scanner-mode-toggle">
-              <button
-                type="button"
-                className={`scanner-mode-btn${scanner.scanMode === 'single' ? ' is-active' : ''}`}
+              <Button
+                variant={scanner.scanMode === 'single' ? 'primary' : 'ghost'}
+                className="flex-1"
                 onClick={() => scanner.setScanMode('single')}
               >
                 {SCANNER_MESSAGES.modeSingle}
-              </button>
-              <button
-                type="button"
-                className={`scanner-mode-btn${scanner.scanMode === 'continuous' ? ' is-active' : ''}`}
+              </Button>
+              <Button
+                variant={
+                  scanner.scanMode === 'continuous' ? 'primary' : 'ghost'
+                }
+                className="flex-1"
                 onClick={() => scanner.setScanMode('continuous')}
               >
                 {SCANNER_MESSAGES.modeContinuous}
-              </button>
+              </Button>
             </div>
           )}
 
@@ -89,14 +92,15 @@ export function BarcodeScanner({
 
         {/* Idle: "Tap to start" button */}
         {!insecure && !scanner.error && scanner.cameraState === 'idle' && (
-          <button
-            type="button"
-            className="scanner-start-btn"
+          <Button
+            variant="primary"
+            size="lg"
+            className="mx-auto mt-4 px-8 py-4 flex-col gap-2 h-auto"
             onClick={scanner.startCamera}
+            leftIcon="Camera"
           >
-            <Icon name="camera" size={28} />
             <span>{SCANNER_MESSAGES.tapToStart}</span>
-          </button>
+          </Button>
         )}
 
         {/* Starting: spinner */}
@@ -119,26 +123,24 @@ export function BarcodeScanner({
             {scanner.cameraReady && (
               <div className="scanner-toolbar">
                 {scanner.torchSupported && (
-                  <button
-                    type="button"
-                    className={`scanner-toolbar-btn${scanner.torchOn ? ' is-active' : ''}`}
+                  <Button
+                    variant={scanner.torchOn ? 'primary' : 'outline'}
                     onClick={scanner.toggleTorch}
+                    leftIcon="Zap"
                   >
-                    <Icon name="flashlight" size={16} />
                     {scanner.torchOn
                       ? SCANNER_MESSAGES.torchOn
                       : SCANNER_MESSAGES.torchOff}
-                  </button>
+                  </Button>
                 )}
                 {scanner.cameras.length > 1 && (
-                  <button
-                    type="button"
-                    className="scanner-toolbar-btn"
+                  <Button
+                    variant="outline"
                     onClick={scanner.switchCamera}
+                    leftIcon="SwitchCamera"
                   >
-                    <Icon name="switch-camera" size={16} />
                     {SCANNER_MESSAGES.switchCamera}
-                  </button>
+                  </Button>
                 )}
               </div>
             )}
@@ -191,17 +193,17 @@ export function BarcodeScanner({
             className="hidden"
             id={`${scanner.readerId}-file-input`}
           />
-          <button
-            type="button"
+          <Button
+            variant="outline"
             disabled={scanner.isFileProcessing}
             onClick={() => scanner.fileInputRef.current?.click()}
-            className="scanner-file-btn"
+            className="w-full mt-4"
+            leftIcon="Image"
           >
-            <Icon name="image" size={18} />
             {scanner.isFileProcessing
               ? SCANNER_MESSAGES.scanFileProcessing
               : SCANNER_MESSAGES.captureLabel}
-          </button>
+          </Button>
         </div>
       </div>
     </AdaptiveSheet>

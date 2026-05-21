@@ -484,7 +484,7 @@
 
 .filter-compact-premium .filter-field {
   flex: 1 1 180px;
-  max-width: 320px;
+  max-width: 260px;
   overflow: visible; /* Allow dropdown to overflow */
 }
 

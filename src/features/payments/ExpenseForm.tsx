@@ -342,14 +342,10 @@ export function ExpenseForm({
             variant="primary"
             type="submit"
             form="expense-form"
-            disabled={isPending}
+            isLoading={isPending}
             className="w-full sm:w-auto justify-center"
           >
-            {isPending
-              ? 'Đang lưu...'
-              : isEditing
-                ? 'Cập nhật'
-                : 'Tạo phiếu chi'}
+            {isEditing ? 'Cập nhật' : 'Tạo phiếu chi'}
           </Button>
         </>
       }

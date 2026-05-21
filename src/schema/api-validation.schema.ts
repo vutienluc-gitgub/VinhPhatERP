@@ -60,6 +60,7 @@ export const apiCustomerInsert = z.object({
   phone: nullableStr,
   tax_code: nullableStr,
   address: nullableStr,
+  lead_status: z.string().optional(),
 });
 
 // ── Payments ──────────────────────────────────────────────────────────────

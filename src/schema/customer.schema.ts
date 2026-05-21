@@ -66,6 +66,9 @@ export const customersSchema = z.object({
   notes: z.string().trim().optional().or(z.literal('')),
   status: z.enum(['active', 'inactive']),
   salesperson_id: z.string().uuid().optional().nullable().or(z.literal('')),
+  lead_status: z
+    .enum(['lead', 'opportunity', 'customer', 'lost'])
+    .default('lead'),
 });
 
 export type CustomersFormValues = z.infer<typeof customersSchema>;
@@ -82,11 +85,28 @@ export const customersDefaultValues: CustomersFormValues = {
   notes: '',
   status: 'active',
   salesperson_id: '',
+  lead_status: 'lead',
 };
 
 export const CUSTOMER_STATUS_LABELS: Record<'active' | 'inactive', string> = {
   active: 'Hoạt động',
   inactive: 'Ngừng hoạt động',
+};
+
+export type LeadStatus = 'lead' | 'opportunity' | 'customer' | 'lost';
+
+export const CRM_STATUS_LABELS: Record<LeadStatus, string> = {
+  lead: 'Tiềm năng',
+  opportunity: 'Cơ hội/Báo giá',
+  customer: 'Khách hàng',
+  lost: 'Thất bại',
+};
+
+export const CRM_STATUS_ICONS: Record<LeadStatus, string> = {
+  lead: 'UserPlus',
+  opportunity: 'FileText',
+  customer: 'Briefcase',
+  lost: 'XCircle',
 };
 
 export type CustomersFilters = {
@@ -116,6 +136,7 @@ export type Customer = {
     | null;
   notes: string | null;
   status: 'active' | 'inactive';
+  lead_status: LeadStatus;
   created_at: string;
   updated_at: string;
   salesperson_id?: string | null;

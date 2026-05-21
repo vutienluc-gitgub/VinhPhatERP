@@ -152,18 +152,14 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
           >
             Hủy
           </Button>
-          <button
-            className="primary-button btn-standard"
+          <Button
+            variant="primary"
             type="submit"
             form="yarn-catalog-form"
-            disabled={isPending}
+            isLoading={isPending}
           >
-            {isPending
-              ? 'Đang lưu...'
-              : isEditing
-                ? 'Cập nhật'
-                : 'Thêm loại sợi'}
-          </button>
+            {isEditing ? 'Cập nhật' : 'Thêm loại sợi'}
+          </Button>
         </>
       }
     >

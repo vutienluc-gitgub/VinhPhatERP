@@ -186,9 +186,9 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
             variant="primary"
             type="submit"
             form="employee-form"
-            disabled={isPending}
+            isLoading={isPending}
           >
-            {isPending ? 'Đang lưu...' : 'Lưu nhân viên'}
+            Lưu nhân viên
           </Button>
         </>
       }

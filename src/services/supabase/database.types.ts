@@ -1075,6 +1075,7 @@ export type Database = {
           tenant_id: string | null;
           updated_at: string;
           salesperson_id: string | null;
+          lead_status: string;
         };
         Insert: {
           account_balance?: number;
@@ -1098,6 +1099,7 @@ export type Database = {
           tenant_id?: string | null;
           updated_at?: string;
           salesperson_id?: string | null;
+          lead_status?: string;
         };
         Update: {
           account_balance?: number;
@@ -1121,6 +1123,7 @@ export type Database = {
           tenant_id?: string | null;
           updated_at?: string;
           salesperson_id?: string | null;
+          lead_status?: string;
         };
         Relationships: [
           {

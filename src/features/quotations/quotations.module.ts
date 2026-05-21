@@ -74,6 +74,13 @@ export const quotationsPlugin: FeaturePlugin = {
         import('./QuotationsPage').then((m) => ({ default: m.QuotationsPage })),
     },
   ],
+  printRoutes: [
+    {
+      path: 'print/quotation/:id',
+      component: () =>
+        import('./QuotationPrint').then((m) => ({ default: m.default })),
+    },
+  ],
 };
 
 export default createModule(quotationsFeature);

@@ -1,9 +1,14 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import dayjs from 'dayjs';
 
 import {
   CUSTOMER_SOURCE_LABELS,
   CUSTOMER_SOURCE_ICONS,
   CUSTOMER_STATUS_LABELS,
+  CRM_STATUS_LABELS,
+  CRM_STATUS_ICONS,
+  type LeadStatus,
 } from '@/schema/customer.schema';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
@@ -18,15 +23,23 @@ import {
   type BadgeVariant,
   KpiCard,
   KpiGrid,
+  TabSwitcher,
+  type TabItem,
+  AdaptiveSheet,
+  Combobox,
+  Button,
 } from '@/shared/components';
+import type { BulkActionConfig } from '@/shared/components/DataTableAdvanced';
 import {
   useCustomerList,
   useDeleteCustomer,
   useEmployees,
+  useBulkUpdateCustomers,
 } from '@/application/crm';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { useCustomerVisibilityScope } from '@/shared/hooks';
-import { formatCurrencyFull } from '@/shared/utils/format';
+import { useAuth } from '@/shared/hooks/useAuth';
+import { formatCurrencyFull, formatPhoneNumber } from '@/shared/utils/format';
 
 import { DEPOSIT_FORM_LABELS } from './customers.constants';
 import type { Customer, CustomersFilter } from './types';
@@ -40,6 +53,13 @@ const SOURCE_BADGE_VARIANT: Record<string, BadgeVariant> = {
   direct: 'gray',
   cold_call: 'warning',
   other: 'gray',
+};
+
+const CRM_STATUS_BADGE_VARIANTS: Record<string, BadgeVariant> = {
+  lead: 'info',
+  opportunity: 'warning',
+  customer: 'success',
+  lost: 'danger',
 };
 
 type CustomerListProps = {
@@ -58,10 +78,18 @@ export function CustomerList({
   onChat,
 }: CustomerListProps) {
   const { filters, setFilter, clearFilters, hasActiveFilter } =
-    useUrlFilterState(['query', 'status', 'salesperson_id']);
+    useUrlFilterState([
+      'query',
+      'status',
+      'salesperson_id',
+      'created_from',
+      'created_to',
+    ]);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
+  const { profile } = useAuth();
 
-  const { canSelectSalesperson, forcedSalespersonId } =
+  const { canSelectSalesperson, forcedSalespersonId, isSale } =
     useCustomerVisibilityScope();
 
   const { data: salesEmployees } = useEmployees({
@@ -77,7 +105,16 @@ export function CustomerList({
   const { data: result, isLoading } = useCustomerList(effectiveFilters, page);
   const customers = result?.data ?? [];
   const deleteMutation = useDeleteCustomer();
+  const bulkUpdateMutation = useBulkUpdateCustomers();
   const { confirm } = useConfirm();
+
+  const [bulkAssignOpen, setBulkAssignOpen] = useState(false);
+  const [bulkStatusOpen, setBulkStatusOpen] = useState(false);
+  const [selectedBulkCustomers, setSelectedBulkCustomers] = useState<
+    Customer[]
+  >([]);
+  const [selectedSalesperson, setSelectedSalesperson] = useState<string>('');
+  const [selectedStatus, setSelectedStatus] = useState<string>('');
 
   const filterSchema: FilterFieldConfig[] = [
     {
@@ -122,6 +159,59 @@ export function CustomerList({
     setFilter(key, value);
   }
 
+  function handleTabChange(key: string) {
+    const next = new URLSearchParams(searchParams);
+    const filterKeys = [
+      'query',
+      'status',
+      'salesperson_id',
+      'created_from',
+      'created_to',
+    ];
+    filterKeys.forEach((k) => next.delete(k));
+
+    if (key === 'mine' && profile?.employee_id) {
+      next.set('salesperson_id', profile.employee_id);
+    } else if (key === 'new') {
+      next.set('created_from', dayjs().startOf('week').toISOString());
+    }
+
+    setSearchParams(next, { replace: true });
+    setPage(1);
+  }
+
+  let activeTab = 'all';
+  if (
+    filters.salesperson_id === profile?.employee_id &&
+    Object.keys(filters).length === 1
+  ) {
+    activeTab = 'mine';
+  } else if (filters.created_from && Object.keys(filters).length === 1) {
+    activeTab = 'new';
+  } else if (Object.keys(filters).length === 0) {
+    activeTab = 'all';
+  } else {
+    activeTab = 'custom';
+  }
+
+  const tabs: TabItem<string>[] = [
+    {
+      key: 'all',
+      label: 'Tất cả khách hàng',
+      icon: <Icon name="Users" size={16} />,
+    },
+    {
+      key: 'mine',
+      label: 'Khách của tôi',
+      icon: <Icon name="User" size={16} />,
+    },
+    {
+      key: 'new',
+      label: 'Khách mới tuần này',
+      icon: <Icon name="Star" size={16} />,
+    },
+  ];
+
   async function handleDelete(customer: Customer) {
     const ok = await confirm({
       message: `Xóa khách hàng "${customer.name}"? Hành động này không thể hoàn tác.`,
@@ -130,6 +220,40 @@ export function CustomerList({
     if (!ok) return;
     deleteMutation.mutate(customer.id);
   }
+
+  const bulkActions: BulkActionConfig<Customer>[] = [
+    ...(canSelectSalesperson
+      ? [
+          {
+            label: 'Đổi người phụ trách',
+            icon: 'UserPlus' as IconName,
+            onClick: (rows: Customer[]) => {
+              setSelectedBulkCustomers(rows);
+              setSelectedSalesperson('');
+              setBulkAssignOpen(true);
+            },
+          },
+        ]
+      : []),
+    {
+      label: 'Cập nhật trạng thái',
+      icon: 'Activity' as IconName,
+      onClick: (rows: Customer[]) => {
+        setSelectedBulkCustomers(rows);
+        setSelectedStatus('');
+        setBulkStatusOpen(true);
+      },
+    },
+    {
+      label: 'Gửi SMS/Email',
+      icon: 'Mail' as IconName,
+      onClick: (rows: Customer[]) => {
+        alert(
+          `Tính năng gửi SMS/Email cho ${rows.length} khách hàng đang được phát triển.`,
+        );
+      },
+    },
+  ];
 
   const hasFilter = hasActiveFilter;
 
@@ -167,6 +291,16 @@ export function CustomerList({
         />
       </KpiGrid>
 
+      {/* Tabs / Saved Views */}
+      <div className="px-4 pt-2">
+        <TabSwitcher
+          tabs={tabs}
+          active={activeTab === 'custom' ? 'all' : activeTab}
+          onChange={handleTabChange}
+          variant="pill"
+        />
+      </div>
+
       {/* Filter Area (Config-Driven) */}
       <FilterBar
         schema={filterSchema}
@@ -184,6 +318,8 @@ export function CustomerList({
         isLoading={isLoading}
         rowKey={(c) => c.id}
         onRowClick={onEdit}
+        exportFileName="DanhSachKhachHang"
+        bulkActions={bulkActions}
         emptyStateTitle={
           hasFilter
             ? 'Không tìm thấy khách hàng'
@@ -232,7 +368,37 @@ export function CustomerList({
             accessorKey: 'phone',
             enableSorting: true,
             meta: { className: 'text-sm font-medium' },
-            cell: (info) => info.row.original.phone ?? '—',
+            cell: (info) => {
+              const phone = info.row.original.phone;
+              if (!phone) return <span className="text-muted">—</span>;
+
+              const cleanPhone = phone.replace(/\D/g, '');
+              const isVietnamZalo =
+                cleanPhone.startsWith('0') && cleanPhone.length === 10;
+
+              return (
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`tel:${cleanPhone}`}
+                    className="hover:text-primary hover:underline transition-colors font-semibold"
+                    title="Gọi điện thoại"
+                  >
+                    {formatPhoneNumber(phone)}
+                  </a>
+                  {isVietnamZalo && (
+                    <a
+                      href={`https://zalo.me/${cleanPhone}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#0068FF] hover:opacity-80 transition-opacity flex items-center justify-center bg-[#0068FF]/10 rounded-full w-5 h-5"
+                      title="Nhắn tin Zalo"
+                    >
+                      <Icon name="MessageCircle" size={12} />
+                    </a>
+                  )}
+                </div>
+              );
+            },
           },
           {
             header: DEPOSIT_FORM_LABELS.balanceColumnHeader,
@@ -256,6 +422,24 @@ export function CustomerList({
                   icon={CUSTOMER_SOURCE_ICONS[sourceKey] as IconName}
                 >
                   {CUSTOMER_SOURCE_LABELS[sourceKey]}
+                </Badge>
+              );
+            },
+          },
+          {
+            header: 'Phễu CRM',
+            id: 'lead_status',
+            accessorKey: 'lead_status',
+            enableSorting: true,
+            cell: (info) => {
+              const leadStatus =
+                (info.row.original.lead_status as LeadStatus) || 'lead';
+              return (
+                <Badge
+                  variant={CRM_STATUS_BADGE_VARIANTS[leadStatus] ?? 'gray'}
+                  icon={CRM_STATUS_ICONS[leadStatus] as IconName}
+                >
+                  {CRM_STATUS_LABELS[leadStatus]}
                 </Badge>
               );
             },
@@ -308,13 +492,17 @@ export function CustomerList({
                       onClick: () => onChat?.(c),
                       label: 'Nhắn tin',
                     },
-                    {
-                      icon: 'Wallet',
-                      onClick: () => {
-                        if (onDeposit) onDeposit(c);
-                      },
-                      label: 'Nạp tiền',
-                    },
+                    ...(!isSale
+                      ? [
+                          {
+                            icon: 'Wallet' as const,
+                            onClick: () => {
+                              if (onDeposit) onDeposit(c);
+                            },
+                            label: 'Nạp tiền',
+                          },
+                        ]
+                      : []),
                     {
                       icon: 'FileText',
                       onClick: () => onCreateContract(c),
@@ -325,79 +513,236 @@ export function CustomerList({
                       onClick: () => onEdit(c),
                       label: 'Chỉnh sửa',
                     },
-                    {
-                      icon: 'Trash2',
-                      onClick: () => handleDelete(c),
-                      label: 'Xóa khách hàng',
-                      danger: true,
-                      separated: true,
-                      disabled: deleteMutation.isPending,
-                    },
+                    ...(!isSale
+                      ? [
+                          {
+                            icon: 'Trash2' as const,
+                            onClick: () => handleDelete(c),
+                            label: 'Xóa khách hàng',
+                            danger: true,
+                            separated: true,
+                            disabled: deleteMutation.isPending,
+                          },
+                        ]
+                      : []),
                   ]}
                 />
               );
             },
           },
         ]}
-        renderMobileCard={(customer) => (
-          <div className="mobile-card">
-            <div className="mobile-card-header">
-              <span className="mobile-card-title">{customer.code}</span>
-              <Badge
-                variant={customer.status === 'active' ? 'success' : 'gray'}
-                icon={customer.status === 'active' ? 'CheckCircle2' : 'XCircle'}
-              >
-                {CUSTOMER_STATUS_LABELS[customer.status]}
-              </Badge>
-            </div>
-            <div className="mobile-card-body">
-              <p className="font-bold text-lg">{customer.name}</p>
-              <div className="mobile-card-row">
-                <span className="label">Liên hệ:</span>
-                <span className="value">{customer.phone || '—'}</span>
-              </div>
-              {customer.address && (
-                <div className="mobile-card-row">
-                  <span className="label">Địa chỉ:</span>
-                  <span className="value truncate ml-4 italic">
-                    {customer.address}
-                  </span>
-                </div>
-              )}
-              {customer.salesperson && (
-                <div className="mobile-card-row">
-                  <span className="label">Phụ trách:</span>
-                  <span className="value flex items-center gap-1">
-                    <Icon name="User" size={12} className="text-muted" />
-                    {customer.salesperson.name}
-                  </span>
-                </div>
-              )}
-              <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/10">
+        renderMobileCard={(customer) => {
+          const leadStatus = (customer.lead_status as LeadStatus) || 'lead';
+          return (
+            <div className="mobile-card">
+              <div className="mobile-card-header">
+                <span className="mobile-card-title">{customer.code}</span>
                 <Badge
-                  variant={
-                    SOURCE_BADGE_VARIANT[customer.source || 'other'] ?? 'gray'
-                  }
+                  variant={customer.status === 'active' ? 'success' : 'gray'}
                   icon={
-                    CUSTOMER_SOURCE_ICONS[
-                      customer.source || 'other'
-                    ] as IconName
+                    customer.status === 'active' ? 'CheckCircle2' : 'XCircle'
                   }
-                  iconSize={12}
                 >
-                  {CUSTOMER_SOURCE_LABELS[customer.source || 'other']}
+                  {CUSTOMER_STATUS_LABELS[customer.status]}
                 </Badge>
-                <Icon name="ChevronRight" size={16} className="text-muted" />
+              </div>
+              <div className="mobile-card-body">
+                <p className="font-bold text-lg">{customer.name}</p>
+                <div className="mobile-card-row">
+                  <span className="label">Liên hệ:</span>
+                  <span className="value flex items-center gap-2">
+                    {(() => {
+                      if (!customer.phone) return '—';
+                      const cleanPhone = customer.phone.replace(/\D/g, '');
+                      const isVietnamZalo =
+                        cleanPhone.startsWith('0') && cleanPhone.length === 10;
+                      return (
+                        <>
+                          <a
+                            href={`tel:${cleanPhone}`}
+                            className="hover:text-primary hover:underline font-semibold"
+                          >
+                            {formatPhoneNumber(customer.phone)}
+                          </a>
+                          {isVietnamZalo && (
+                            <a
+                              href={`https://zalo.me/${cleanPhone}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[#0068FF] bg-[#0068FF]/10 rounded-full w-5 h-5 flex items-center justify-center"
+                            >
+                              <Icon name="MessageCircle" size={12} />
+                            </a>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </span>
+                </div>
+                {customer.address && (
+                  <div className="mobile-card-row">
+                    <span className="label">Địa chỉ:</span>
+                    <span className="value truncate ml-4 italic">
+                      {customer.address}
+                    </span>
+                  </div>
+                )}
+                <div className="mobile-card-row">
+                  <span className="label">Phễu CRM:</span>
+                  <span className="value">
+                    <Badge
+                      variant={CRM_STATUS_BADGE_VARIANTS[leadStatus] ?? 'gray'}
+                      icon={CRM_STATUS_ICONS[leadStatus] as IconName}
+                      iconSize={12}
+                    >
+                      {CRM_STATUS_LABELS[leadStatus]}
+                    </Badge>
+                  </span>
+                </div>
+                {customer.salesperson && (
+                  <div className="mobile-card-row">
+                    <span className="label">Phụ trách:</span>
+                    <span className="value flex items-center gap-1">
+                      <Icon name="User" size={12} className="text-muted" />
+                      {customer.salesperson.name}
+                    </span>
+                  </div>
+                )}
+                <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/10">
+                  <Badge
+                    variant={
+                      SOURCE_BADGE_VARIANT[customer.source || 'other'] ?? 'gray'
+                    }
+                    icon={
+                      CUSTOMER_SOURCE_ICONS[
+                        customer.source || 'other'
+                      ] as IconName
+                    }
+                    iconSize={12}
+                  >
+                    {CUSTOMER_SOURCE_LABELS[customer.source || 'other']}
+                  </Badge>
+                  <Icon name="ChevronRight" size={16} className="text-muted" />
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        }}
         pagination={{
           result,
           onPageChange: setPage,
           itemLabel: 'khách hàng',
         }}
       />
+
+      {/* Bulk Action Dialogs */}
+      <AdaptiveSheet
+        open={bulkAssignOpen}
+        onClose={() => setBulkAssignOpen(false)}
+        title="Đổi người phụ trách"
+        footer={
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setBulkAssignOpen(false)}>
+              Hủy
+            </Button>
+            <Button
+              variant="primary"
+              disabled={!selectedSalesperson || bulkUpdateMutation.isPending}
+              isLoading={bulkUpdateMutation.isPending}
+              onClick={() => {
+                bulkUpdateMutation.mutate(
+                  {
+                    ids: selectedBulkCustomers.map((c) => c.id),
+                    values: { salesperson_id: selectedSalesperson },
+                  },
+                  {
+                    onSuccess: () => {
+                      setBulkAssignOpen(false);
+                    },
+                  },
+                );
+              }}
+            >
+              Xác nhận
+            </Button>
+          </div>
+        }
+      >
+        <div className="flex flex-col gap-4 py-4">
+          <p className="text-sm text-muted">
+            Bạn đang chọn {selectedBulkCustomers.length} khách hàng để chuyển
+            người phụ trách.
+          </p>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-foreground">
+              Nhân viên phụ trách mới
+            </label>
+            <Combobox
+              options={
+                salesEmployees?.map((e) => ({ value: e.id, label: e.name })) ||
+                []
+              }
+              value={selectedSalesperson}
+              onChange={setSelectedSalesperson}
+              placeholder="Chọn nhân viên..."
+            />
+          </div>
+        </div>
+      </AdaptiveSheet>
+
+      <AdaptiveSheet
+        open={bulkStatusOpen}
+        onClose={() => setBulkStatusOpen(false)}
+        title="Cập nhật trạng thái"
+        footer={
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setBulkStatusOpen(false)}>
+              Hủy
+            </Button>
+            <Button
+              variant="primary"
+              disabled={!selectedStatus || bulkUpdateMutation.isPending}
+              isLoading={bulkUpdateMutation.isPending}
+              onClick={() => {
+                bulkUpdateMutation.mutate(
+                  {
+                    ids: selectedBulkCustomers.map((c) => c.id),
+                    values: { status: selectedStatus as 'active' | 'inactive' },
+                  },
+                  {
+                    onSuccess: () => {
+                      setBulkStatusOpen(false);
+                    },
+                  },
+                );
+              }}
+            >
+              Cập nhật
+            </Button>
+          </div>
+        }
+      >
+        <div className="flex flex-col gap-4 py-4">
+          <p className="text-sm text-muted">
+            Bạn đang chọn {selectedBulkCustomers.length} khách hàng để cập nhật
+            trạng thái CRM.
+          </p>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-foreground">
+              Trạng thái mới
+            </label>
+            <Combobox
+              options={[
+                { value: 'active', label: CUSTOMER_STATUS_LABELS.active },
+                { value: 'inactive', label: CUSTOMER_STATUS_LABELS.inactive },
+              ]}
+              value={selectedStatus}
+              onChange={setSelectedStatus}
+              placeholder="Chọn trạng thái..."
+            />
+          </div>
+        </div>
+      </AdaptiveSheet>
     </div>
   );
 }
