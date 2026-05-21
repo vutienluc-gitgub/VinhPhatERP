@@ -25,6 +25,7 @@ import {
   useEmployees,
 } from '@/application/crm';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
+import { useCustomerVisibilityScope } from '@/shared/hooks';
 import { formatCurrencyFull } from '@/shared/utils/format';
 
 import { DEPOSIT_FORM_LABELS } from './customers.constants';
@@ -56,22 +57,24 @@ export function CustomerList({
   onDeposit,
   onChat,
 }: CustomerListProps) {
-  const { filters, setFilter, clearFilters } = useUrlFilterState([
-    'query',
-    'status',
-    'salesperson_id',
-  ]);
+  const { filters, setFilter, clearFilters, hasActiveFilter } =
+    useUrlFilterState(['query', 'status', 'salesperson_id']);
   const [page, setPage] = useState(1);
+
+  const { canSelectSalesperson, forcedSalespersonId } =
+    useCustomerVisibilityScope();
 
   const { data: salesEmployees } = useEmployees({
     role: 'sales',
     status: 'active',
   });
 
-  const { data: result, isLoading } = useCustomerList(
-    filters as CustomersFilter,
-    page,
-  );
+  const effectiveFilters = {
+    ...filters,
+    salesperson_id: forcedSalespersonId || filters.salesperson_id,
+  } as CustomersFilter;
+
+  const { data: result, isLoading } = useCustomerList(effectiveFilters, page);
   const customers = result?.data ?? [];
   const deleteMutation = useDeleteCustomer();
   const { confirm } = useConfirm();
@@ -90,26 +93,28 @@ export function CustomerList({
       options: [
         {
           value: 'active',
-          label: 'Hoat dong',
+          label: CUSTOMER_STATUS_LABELS.active,
         },
         {
           value: 'inactive',
-          label: 'Ngung hoat dong',
+          label: CUSTOMER_STATUS_LABELS.inactive,
         },
       ],
     },
-    {
-      key: 'salesperson_id',
-      type: 'combobox',
-      label: 'Phụ trách',
-      options: [
-        { value: '', label: 'Tất cả' },
-        ...(salesEmployees?.map((emp) => ({
-          value: emp.id,
-          label: emp.name,
-        })) ?? []),
-      ],
-    },
+    ...(canSelectSalesperson
+      ? [
+          {
+            key: 'salesperson_id',
+            type: 'combobox' as const,
+            label: 'Phụ trách',
+            options:
+              salesEmployees?.map((emp) => ({
+                value: emp.id,
+                label: emp.name,
+              })) ?? [],
+          },
+        ]
+      : []),
   ];
 
   function handleFilterChange(key: string, value: string | undefined) {
@@ -126,7 +131,7 @@ export function CustomerList({
     deleteMutation.mutate(customer.id);
   }
 
-  const hasFilter = !!(filters.query || filters.status);
+  const hasFilter = hasActiveFilter;
 
   return (
     <div className="panel-card card-flush">

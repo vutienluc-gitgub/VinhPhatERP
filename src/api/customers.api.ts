@@ -22,6 +22,20 @@ export async function fetchCustomers(
     .select('*, salesperson:employees!salesperson_id(id, code, name)')
     .order('name', { ascending: true });
 
+  let salespersonId = filters.salesperson_id;
+
+  const { data: userData } = await supabase.auth.getUser();
+  if (userData?.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, employee_id')
+      .eq('id', userData.user.id)
+      .single();
+    if (profile?.role === 'sale') {
+      salespersonId = profile.employee_id || undefined;
+    }
+  }
+
   if (filters.status) {
     query = query.eq('status', filters.status);
   }
@@ -29,8 +43,8 @@ export async function fetchCustomers(
     const q = filters.query.trim();
     query = query.or(`name.ilike.%${q}%,code.ilike.%${q}%,phone.ilike.%${q}%`);
   }
-  if (filters.salesperson_id) {
-    query = query.eq('salesperson_id', filters.salesperson_id);
+  if (salespersonId) {
+    query = query.eq('salesperson_id', salespersonId);
   }
 
   const { data, error } = await query;
