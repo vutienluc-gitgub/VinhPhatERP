@@ -19,3 +19,4 @@ export { useStepper } from './useStepper';
 export { useTheme } from './useTheme';
 export { useUserPreferences } from './useUserPreferences';
 export type { UserPreferences } from './useUserPreferences';
+export { useCustomerVisibilityScope } from './useCustomerVisibilityScope';

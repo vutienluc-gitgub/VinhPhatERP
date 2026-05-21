@@ -6,7 +6,9 @@ import {
   useCreateCustomer,
   useNextCustomerCode,
   useUpdateCustomer,
+  useEmployees,
 } from '@/application/crm';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 import { CustomerForm } from './CustomerForm';
 import type { Customer } from './types';
@@ -16,6 +18,11 @@ vi.mock('@/application/crm', () => ({
   useCreateCustomer: vi.fn(),
   useUpdateCustomer: vi.fn(),
   useNextCustomerCode: vi.fn(),
+  useEmployees: vi.fn(),
+}));
+
+vi.mock('@/shared/hooks/useAuth', () => ({
+  useAuth: vi.fn(),
 }));
 
 vi.mock('react-hot-toast', () => ({
@@ -53,6 +60,17 @@ describe('CustomerForm', () => {
       useNextCustomerCode as unknown as ReturnType<typeof vi.fn>
     ).mockReturnValue({
       data: 'KH-001',
+    });
+
+    (useAuth as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
+      profile: {
+        role: 'admin',
+        employee_id: 'emp-123',
+      },
+    });
+
+    (useEmployees as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
+      data: [],
     });
   });
 

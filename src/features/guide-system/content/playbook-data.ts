@@ -106,13 +106,27 @@ export const PLAYBOOK_REGISTRY: PlaybookSection[] = [
     id: VALUE_CHAINS.SALES,
     title: VALUE_CHAIN_LABELS[VALUE_CHAINS.SALES],
     roles: ['admin', 'manager', 'sale'],
-    modules: ['Quotations', 'Orders', 'OrderKanban', 'Shipments'],
+    modules: ['Customers', 'Quotations', 'Orders', 'OrderKanban', 'Shipments'],
     steps: [
+      {
+        id: 'sale-0',
+        title: '0. Quản Lý Khách Hàng (CRM) & Phân Công Lead',
+        content:
+          'Khởi tạo và phân công trách nhiệm chăm sóc khách hàng cho đội ngũ kinh doanh (Sales Rep).\n\n[CHECKLIST] CHECKLIST CÔNG VIỆC\n• Tạo hồ sơ Khách hàng mới với đầy đủ thông tin liên hệ và mã số thuế.\n• Nếu là Quản lý: Có quyền chọn và gán Khách hàng cho bất kỳ nhân viên Sale nào trong danh sách.\n• Nếu là Sale: Khách hàng được tạo sẽ mặc định gắn với tài khoản của chính bạn.\n• Liên tục cập nhật trạng thái Khách hàng (Đang hoạt động / Ngừng hoạt động).\n\n[WARNING] LƯU Ý QUAN TRỌNG\n- Mọi sự thay đổi về người phụ trách đều được hệ thống lưu vết lịch sử (History) ngầm ở Database để truy vết phục vụ tính KPI và hoa hồng.\n- Các đơn hàng sau này sẽ tự động link với người phụ trách của khách hàng.',
+        actions: [
+          {
+            type: 'navigate',
+            payload: '/customers',
+            label: 'Tới Quản lý Khách hàng',
+          },
+        ],
+        nextSteps: ['sale-1'],
+      },
       {
         id: 'sale-1',
         title: '1. Báo Giá & Chốt Đơn',
         content:
-          'Khởi đầu quy trình bán hàng bằng việc tiếp nhận nhu cầu và gửi báo giá cho khách.\n\n[CHECKLIST] CHECKLIST CÔNG VIỆC\n• Tạo Báo Giá (Quotation): Chọn khách hàng, mã vải, màu sắc, số lượng dự kiến và đơn giá.\n• Xuất file PDF Báo Giá từ hệ thống và gửi cho khách hàng.\n• Khi khách đồng ý, bấm "Convert to Order" để chuyển báo giá thành Đơn Hàng (Sales Order) chính thức.\n\n[WARNING] LƯU Ý QUAN TRỌNG\n- Kiểm tra Hạn Mức Công Nợ (Credit Limit) của khách hàng trước khi chốt đơn. Nếu khách vượt hạn mức, hệ thống sẽ cảnh báo đỏ, cần xin ý kiến Giám đốc.\n- Chú ý thời gian giao hàng cam kết (Delivery Date).',
+          'Tiếp nhận nhu cầu và gửi báo giá cho khách sau khi đã có thông tin phân công.\n\n[CHECKLIST] CHECKLIST CÔNG VIỆC\n• Tạo Báo Giá (Quotation): Chọn khách hàng, mã vải, màu sắc, số lượng dự kiến và đơn giá.\n• Xuất file PDF Báo Giá từ hệ thống và gửi cho khách hàng.\n• Khi khách đồng ý, bấm "Convert to Order" để chuyển báo giá thành Đơn Hàng (Sales Order) chính thức.\n\n[WARNING] LƯU Ý QUAN TRỌNG\n- Kiểm tra Hạn Mức Công Nợ (Credit Limit) của khách hàng trước khi chốt đơn. Nếu khách vượt hạn mức, hệ thống sẽ cảnh báo đỏ, cần xin ý kiến Giám đốc.\n- Chú ý thời gian giao hàng cam kết (Delivery Date).',
         actions: [
           {
             type: 'navigate',

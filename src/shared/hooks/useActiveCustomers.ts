@@ -10,11 +10,25 @@ export function useActiveCustomers() {
   return useQuery({
     queryKey: ['customers', 'active-list'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('customers')
         .select('id, code, name')
         .eq('status', 'active')
         .order('name');
+
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role, employee_id')
+          .eq('id', userData.user.id)
+          .single();
+        if (profile?.role === 'sale' && profile.employee_id) {
+          query = query.eq('salesperson_id', profile.employee_id);
+        }
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data ?? [];
     },
