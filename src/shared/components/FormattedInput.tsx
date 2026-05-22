@@ -19,6 +19,7 @@ type FormattedInputProps = {
   placeholder?: string;
   disabled?: boolean;
   readOnly?: boolean;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
 // Format ra display chuan vi-VN
@@ -47,6 +48,7 @@ export const FormattedInput = memo(function FormattedInput({
   placeholder = '0',
   disabled,
   readOnly,
+  onKeyDown,
 }: FormattedInputProps) {
   const { display, setDisplay } = useControlledDisplay(
     value,
@@ -144,6 +146,7 @@ export const FormattedInput = memo(function FormattedInput({
       value={display}
       onChange={handleChange}
       onBlur={onBlur}
+      onKeyDown={onKeyDown}
       disabled={disabled}
       readOnly={readOnly}
     />

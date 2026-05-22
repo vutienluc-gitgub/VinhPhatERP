@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import type { ColumnDef } from '@tanstack/react-table';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
@@ -10,6 +11,10 @@ import {
   ActionMenu,
   FilterBar,
   type FilterFieldConfig,
+  KpiCard,
+  KpiGrid,
+  TabSwitcher,
+  type TabItem,
 } from '@/shared/components';
 import {
   useDeleteSupplier,
@@ -23,6 +28,7 @@ import {
 } from '@/schema/supplier.schema';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 
+import { SUPPLIER_LIST_LABELS } from './suppliers.constants';
 import type { Supplier, SupplierFilter } from './types';
 
 type SuppliersListProps = {
@@ -36,10 +42,12 @@ export function SuppliersList({
   onNew,
   onCreateContract,
 }: SuppliersListProps) {
-  const { filters, setFilter, clearFilters } = useUrlFilterState(
-    ['search', 'category', 'status'] as const,
-    { status: 'active' }, // Default: chỉ hiện NCC đang giao dịch
-  );
+  const { filters, setFilter, clearFilters, hasActiveFilter } =
+    useUrlFilterState(
+      ['search', 'category', 'status'] as const,
+      { status: 'active' }, // Default: chỉ hiện NCC đang giao dịch
+    );
+  const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
 
   const {
@@ -53,32 +61,17 @@ export function SuppliersList({
   const deleteMutation = useDeleteSupplier();
   const { confirm } = useConfirm();
 
-  // Handler để xóa status filter và hiện tất cả NCC
-  const handleViewAll = () => {
-    setFilter('status', ''); // Set thành empty string để hiện tất cả
-    setPage(1);
-  };
-
-  const hasFilter = !!(filters.search || filters.category || filters.status);
-
-  // Kiểm tra xem có phải đang dùng default filter không (status='active' từ default, không phải từ URL)
-  const isDefaultActiveFilter =
-    filters.status === 'active' &&
-    !new URLSearchParams(window.location.search).has('status');
-
-  const showViewAllChip = isDefaultActiveFilter;
-
   const filterSchema: FilterFieldConfig[] = [
     {
       key: 'search',
       type: 'search',
-      label: 'Tìm kiếm',
-      placeholder: 'Tên hoặc mã NCC...',
+      label: SUPPLIER_LIST_LABELS.FILTER_SEARCH,
+      placeholder: SUPPLIER_LIST_LABELS.SEARCH_PLACEHOLDER,
     },
     {
       key: 'category',
       type: 'combobox',
-      label: 'Danh mục',
+      label: SUPPLIER_LIST_LABELS.FILTER_CATEGORY,
       options: categories.map((cat) => ({
         value: cat.code,
         label: cat.name,
@@ -87,7 +80,7 @@ export function SuppliersList({
     {
       key: 'status',
       type: 'combobox',
-      label: 'Trạng thái',
+      label: SUPPLIER_LIST_LABELS.FILTER_STATUS,
       options: SUPPLIER_STATUSES.map((st) => ({
         value: st,
         label: SUPPLIER_STATUS_LABELS[st],
@@ -100,14 +93,57 @@ export function SuppliersList({
     setFilter(key, value);
   }
 
+  function handleTabChange(key: string) {
+    const next = new URLSearchParams(searchParams);
+    const filterKeys = ['search', 'category', 'status'];
+    filterKeys.forEach((k) => next.delete(k));
+
+    if (key === 'active') {
+      next.set('status', 'active');
+    } else if (key === 'all') {
+      next.set('status', ''); // Set empty to override default 'active'
+    }
+
+    setSearchParams(next, { replace: true });
+    setPage(1);
+  }
+
+  let activeTab = 'all';
+  if (filters.status === 'active' && Object.keys(filters).length === 1) {
+    activeTab = 'active';
+  } else if (filters.status === '' && Object.keys(filters).length === 1) {
+    activeTab = 'all';
+  } else {
+    activeTab = 'custom';
+  }
+
+  const tabs: TabItem<string>[] = [
+    {
+      key: 'all',
+      label: SUPPLIER_LIST_LABELS.TAB_ALL,
+      icon: <Icon name="Truck" size={16} />,
+    },
+    {
+      key: 'active',
+      label: SUPPLIER_LIST_LABELS.TAB_ACTIVE,
+      icon: <Icon name="CheckCircle2" size={16} />,
+    },
+  ];
+
+  const hasFilter = hasActiveFilter;
+
   const handleDelete = useCallback(
     async (supplier: Supplier) => {
       const ok = await confirm({
-        message: `Xóa NCC "${supplier.name}"? Hành động này không thể hoàn tác.`,
+        message: `${SUPPLIER_LIST_LABELS.CONFIRM_DELETE_PREFIX} "${supplier.name}"? ${SUPPLIER_LIST_LABELS.CONFIRM_DELETE_SUFFIX}`,
         variant: 'danger',
       });
       if (!ok) return;
-      deleteMutation.mutate(supplier.id);
+      try {
+        await deleteMutation.mutateAsync(supplier.id);
+      } catch (err) {
+        console.error('[SupplierDeleteError]', err);
+      }
     },
     [confirm, deleteMutation],
   );
@@ -116,22 +152,22 @@ export function SuppliersList({
     () => [
       {
         accessorKey: 'code',
-        header: 'Mã NCC',
+        header: SUPPLIER_LIST_LABELS.COL_CODE,
         cell: ({ row }) => (
           <span className="font-bold text-primary">{row.original.code}</span>
         ),
       },
       {
         accessorKey: 'name',
-        header: 'Tên nhà cung cấp',
+        header: SUPPLIER_LIST_LABELS.COL_NAME,
         cell: ({ row }) => {
-          const s = row.original;
+          const supplier = row.original;
           return (
             <div className="flex flex-col">
-              <span className="font-bold">{s.name}</span>
-              {s.address && (
+              <span className="font-bold">{supplier.name}</span>
+              {supplier.address && (
                 <span className="text-xs text-muted truncate max-w-[250px]">
-                  {s.address}
+                  {supplier.address}
                 </span>
               )}
             </div>
@@ -140,7 +176,7 @@ export function SuppliersList({
       },
       {
         accessorKey: 'category_name',
-        header: 'Danh mục',
+        header: SUPPLIER_LIST_LABELS.COL_CATEGORY,
         cell: ({ row }) => (
           <span className="badge-outline">
             {row.original.category_name ?? row.original.category}
@@ -149,33 +185,38 @@ export function SuppliersList({
       },
       {
         accessorKey: 'phone',
-        header: 'Liên hệ',
+        header: SUPPLIER_LIST_LABELS.COL_PHONE,
         meta: { className: 'td-muted' },
         cell: ({ row }) => {
-          const s = row.original;
+          const supplier = row.original;
           return (
             <div className="flex flex-col text-sm">
-              {s.phone && <span>{s.phone}</span>}
-              {s.contact_person && (
-                <span className="text-xs">NLH: {s.contact_person}</span>
+              {supplier.phone && <span>{supplier.phone}</span>}
+              {supplier.contact_person && (
+                <span className="text-xs">
+                  {SUPPLIER_LIST_LABELS.CONTACT_PERSON_PREFIX}{' '}
+                  {supplier.contact_person}
+                </span>
               )}
-              {!s.phone && !s.contact_person && '—'}
+              {!supplier.phone &&
+                !supplier.contact_person &&
+                SUPPLIER_LIST_LABELS.NOT_AVAILABLE}
             </div>
           );
         },
       },
       {
         accessorKey: 'performance',
-        header: 'Hiệu suất (OTD / Đánh giá)',
+        header: SUPPLIER_LIST_LABELS.COL_PERFORMANCE,
         cell: ({ row }) => {
-          const s = row.original;
+          const supplier = row.original;
           return (
             <div className="flex flex-col text-sm">
               <span className="font-medium text-emerald-600">
-                OTD: {s.on_time_rate ?? 0}%
+                OTD: {supplier.on_time_rate ?? 0}%
               </span>
               <span className="text-xs text-muted">
-                Đánh giá: {s.rating ?? 0}/5.0
+                Đánh giá: {supplier.rating ?? 0}/5.0
               </span>
             </div>
           );
@@ -183,11 +224,15 @@ export function SuppliersList({
       },
       {
         accessorKey: 'credit_limit',
-        header: 'Hạn mức',
+        header: SUPPLIER_LIST_LABELS.COL_LIMIT,
         cell: ({ row }) => {
           const limit = row.original.credit_limit;
           if (!limit || limit === 0)
-            return <span className="text-muted">—</span>;
+            return (
+              <span className="text-muted">
+                {SUPPLIER_LIST_LABELS.NOT_AVAILABLE}
+              </span>
+            );
           // We can format it roughly
           return (
             <span className="font-semibold text-primary">
@@ -198,40 +243,42 @@ export function SuppliersList({
       },
       {
         accessorKey: 'status',
-        header: 'Trạng thái',
+        header: SUPPLIER_LIST_LABELS.COL_STATUS,
         cell: ({ row }) => {
-          const s = row.original;
+          const supplier = row.original;
           return (
-            <Badge variant={s.status === 'active' ? 'success' : 'gray'}>
-              {SUPPLIER_STATUS_LABELS[s.status]}
+            <Badge variant={supplier.status === 'active' ? 'success' : 'gray'}>
+              {SUPPLIER_STATUS_LABELS[supplier.status]}
             </Badge>
           );
         },
       },
       {
         id: 'actions',
-        header: () => <div className="text-right">Thao tác</div>,
+        header: () => (
+          <div className="text-right">{SUPPLIER_LIST_LABELS.COL_ACTIONS}</div>
+        ),
         meta: { className: 'text-right' },
         cell: ({ row }) => {
-          const s = row.original;
+          const supplier = row.original;
           return (
             <div className="flex justify-end">
               <ActionMenu
                 items={[
                   {
                     icon: 'FileText',
-                    onClick: () => onCreateContract(s),
-                    label: 'Tạo hợp đồng',
+                    onClick: () => onCreateContract(supplier),
+                    label: SUPPLIER_LIST_LABELS.ACTION_CREATE_CONTRACT,
                   },
                   {
                     icon: 'Pencil',
-                    onClick: () => onEdit(s),
-                    label: 'Sửa',
+                    onClick: () => onEdit(supplier),
+                    label: SUPPLIER_LIST_LABELS.ACTION_EDIT,
                   },
                   {
                     icon: 'Trash2',
-                    onClick: () => handleDelete(s),
-                    label: 'Xóa',
+                    onClick: () => handleDelete(supplier),
+                    label: SUPPLIER_LIST_LABELS.ACTION_DELETE,
                     danger: true,
                     disabled: deleteMutation.isPending,
                     separated: true,
@@ -250,76 +297,58 @@ export function SuppliersList({
     <div className="panel-card card-flush">
       {/* Action bar */}
       <div className="card-header-area">
-        <AddButton onClick={onNew} label="Thêm NCC" />
-      </div>
-
-      {/* KPI Dashboard */}
-      <div className="kpi-section kpi-grid">
-        <div className="kpi-card-premium kpi-primary">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Tổng nhà cung cấp</p>
-              <p className="kpi-value">{stats?.total ?? result?.total ?? 0}</p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="Truck" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Đối tác cung cấp vật tư
-          </div>
-        </div>
-
-        <div className="kpi-card-premium kpi-success">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Đang giao dịch</p>
-              <p className="kpi-value">{stats?.active ?? 0}</p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="CheckCircle" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Trạng thái hoạt động
-          </div>
-        </div>
-      </div>
-
-      {/* Filter (Config-Driven) + View All Chip */}
-      <div className="flex flex-wrap items-start gap-3 px-4 py-3 border-b border-border/50 overflow-visible">
-        <FilterBar
-          variant="inline"
-          schema={filterSchema}
-          value={filters}
-          onChange={handleFilterChange}
-          onClear={() => {
-            clearFilters();
-            setPage(1);
-          }}
+        <AddButton
+          onClick={onNew}
+          label={SUPPLIER_LIST_LABELS.ADD_BUTTON}
+          icon="UserPlus"
         />
-        {showViewAllChip && (
-          <button
-            onClick={handleViewAll}
-            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-colors h-9"
-            title="Hiển thị tất cả nhà cung cấp"
-          >
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="font-medium">Đang giao dịch</span>
-            <span className="mx-1 text-emerald-300">|</span>
-            <span className="text-emerald-600 hover:text-emerald-800 underline underline-offset-2">
-              Xem tất cả
-            </span>
-          </button>
-        )}
       </div>
+
+      {/* 📊 KPI Dashboard area */}
+      <KpiGrid>
+        <KpiCard
+          label={SUPPLIER_LIST_LABELS.KPI_TOTAL}
+          value={stats?.total ?? result?.total ?? 0}
+          icon="Truck"
+          variant="primary"
+          footer={SUPPLIER_LIST_LABELS.KPI_TOTAL_DESC}
+        />
+
+        <KpiCard
+          label={SUPPLIER_LIST_LABELS.KPI_ACTIVE}
+          value={stats?.active ?? 0}
+          icon="CheckCircle"
+          variant="success"
+          footer={SUPPLIER_LIST_LABELS.KPI_ACTIVE_DESC}
+        />
+      </KpiGrid>
+
+      {/* Tabs / Saved Views */}
+      <div className="px-4 pt-2">
+        <TabSwitcher
+          tabs={tabs}
+          active={activeTab === 'custom' ? 'all' : activeTab}
+          onChange={handleTabChange}
+          variant="pill"
+        />
+      </div>
+
+      {/* Filter Area (Config-Driven) */}
+      <FilterBar
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => {
+          clearFilters();
+          setPage(1);
+        }}
+      />
 
       {error && (
         <div className="p-4">
           <p className="error-inline">
-            Lỗi: {error instanceof Error ? error.message : String(error)}
+            {SUPPLIER_LIST_LABELS.ERROR_PREFIX}{' '}
+            {error instanceof Error ? error.message : String(error)}
           </p>
         </div>
       )}
@@ -331,72 +360,64 @@ export function SuppliersList({
         rowKey={(s) => s.id}
         onRowClick={onEdit}
         emptyStateTitle={
-          isDefaultActiveFilter
-            ? 'Không có nhà cung cấp đang giao dịch'
-            : hasFilter
-              ? 'Không tìm thấy nhà cung cấp'
-              : 'Chưa có nhà cung cấp'
+          hasFilter
+            ? SUPPLIER_LIST_LABELS.EMPTY_STATE_TITLE_SEARCH
+            : SUPPLIER_LIST_LABELS.EMPTY_STATE_TITLE_NO_DATA
         }
         emptyStateDescription={
-          isDefaultActiveFilter
-            ? 'Tất cả nhà cung cấp hiện đang ở trạng thái không hoạt động. Bạn có thể xem tất cả hoặc thêm mới.'
-            : hasFilter
-              ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
-              : 'Nhấn nút thêm nhà cung cấp mới để lưu trữ thông tin liên hệ.'
+          hasFilter
+            ? SUPPLIER_LIST_LABELS.EMPTY_STATE_DESC_SEARCH
+            : SUPPLIER_LIST_LABELS.EMPTY_STATE_DESC_NO_DATA
         }
-        emptyStateIcon={isDefaultActiveFilter || hasFilter ? 'Search' : 'Truck'}
+        emptyStateIcon={hasFilter ? 'Search' : 'Truck'}
         emptyStateActionLabel={
-          isDefaultActiveFilter
-            ? 'Xem tất cả'
-            : !hasFilter
-              ? '+ Thêm NCC mới'
-              : undefined
+          !hasFilter ? SUPPLIER_LIST_LABELS.EMPTY_STATE_ADD : undefined
         }
-        onEmptyStateAction={
-          isDefaultActiveFilter ? handleViewAll : !hasFilter ? onNew : undefined
-        }
+        onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={columns}
         exportFileName="danh_sach_ncc"
-        renderMobileCard={(s) => (
+        renderMobileCard={(supplier) => (
           <div className="mobile-card">
             <div className="mobile-card-header">
-              <span className="mobile-card-title">{s.code}</span>
-              <Badge variant={s.status === 'active' ? 'success' : 'gray'}>
-                {SUPPLIER_STATUS_LABELS[s.status]}
+              <span className="mobile-card-title">{supplier.code}</span>
+              <Badge
+                variant={supplier.status === 'active' ? 'success' : 'gray'}
+              >
+                {SUPPLIER_STATUS_LABELS[supplier.status]}
               </Badge>
             </div>
             <div className="mobile-card-body space-y-2">
-              <p className="font-bold text-lg">{s.name}</p>
+              <p className="font-bold text-lg">{supplier.name}</p>
 
               <div className="grid grid-cols-2 gap-2 text-sm">
-                {s.phone && (
+                {supplier.phone && (
                   <div className="flex items-center gap-2 text-muted">
                     <Icon name="Phone" size={16} />
-                    <span>{s.phone}</span>
+                    <span>{supplier.phone}</span>
                   </div>
                 )}
-                {s.contact_person && (
+                {supplier.contact_person && (
                   <div className="flex items-center gap-2 text-muted">
                     <Icon name="User" size={16} />
-                    <span>{s.contact_person}</span>
+                    <span>{supplier.contact_person}</span>
                   </div>
                 )}
               </div>
 
-              {s.address && (
+              {supplier.address && (
                 <div className="flex items-start gap-2 text-xs text-muted mt-1">
                   <Icon
                     name="MapPin"
                     size={16}
                     className="mt-0.5 flex-shrink-0"
                   />
-                  <span className="truncate">{s.address}</span>
+                  <span className="truncate">{supplier.address}</span>
                 </div>
               )}
 
               <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/10">
                 <span className="text-[10px] uppercase font-bold text-muted bg-surface-subtle px-1.5 py-0.5 rounded">
-                  {s.category_name ?? s.category}
+                  {supplier.category_name ?? supplier.category}
                 </span>
                 <Icon name="ChevronRight" size={16} className="text-muted" />
               </div>
@@ -406,7 +427,7 @@ export function SuppliersList({
         pagination={{
           result,
           onPageChange: setPage,
-          itemLabel: 'nhà cung cấp',
+          itemLabel: SUPPLIER_LIST_LABELS.PAGINATION_ITEM,
         }}
       />
     </div>

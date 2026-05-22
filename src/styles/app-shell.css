@@ -225,9 +225,9 @@ html.fluid .content-shell {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  margin-bottom: 0.125rem;
+  gap: 0.75rem;
+  padding: 0.65rem 0.875rem;
+  margin-bottom: 0.25rem;
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--muted);
@@ -248,7 +248,7 @@ html.fluid .content-shell {
 .nav-link-inner {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: 0.875rem;
   min-width: 0;
 }
 
@@ -257,9 +257,9 @@ html.fluid .content-shell {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   color: var(--muted);
   transition: color 160ms ease;
 }
@@ -637,6 +637,10 @@ html.fluid .content-shell {
 
   .shell-layout.is-collapsed {
     grid-template-columns: 90px minmax(0, 1fr);
+  }
+
+  .shell-layout.is-collapsed .sidebar-nav {
+    width: 90px;
   }
 
   .shell-layout.is-collapsed .nav-link-title,
@@ -1344,6 +1348,17 @@ html.fluid .content-shell {
   }
 
   /* Responsive Collapsed */
+  .shell-layout.is-collapsed .brand-logo-text {
+    display: none;
+  }
+  .shell-layout.is-collapsed .brand-logo-container {
+    justify-content: center;
+  }
+  .shell-layout.is-collapsed .sidebar-zircon {
+    transition:
+      width 220ms cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 220ms ease;
+  }
   .shell-layout.is-collapsed .sidebar-zircon .zircon-promo {
     margin: 1rem 0.5rem;
     padding: 0.5rem;
@@ -1368,5 +1383,62 @@ html.fluid .content-shell {
   .shell-layout.is-collapsed .sidebar-zircon .nav-link.is-active::before,
   .shell-layout.is-collapsed .sidebar-zircon .nav-link.is-active::after {
     display: none;
+  }
+
+  /* ── Hybrid Sidebar Hover Expand States ── */
+  .shell-layout.is-collapsed .sidebar-zircon:hover {
+    width: 260px !important;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+  }
+  .shell-layout.is-collapsed .sidebar-zircon:hover .brand-logo-text {
+    display: flex;
+  }
+  .shell-layout.is-collapsed .sidebar-zircon:hover .brand-logo-container {
+    justify-content: flex-start;
+  }
+  .shell-layout.is-collapsed .sidebar-zircon:hover .nav-link-title,
+  .shell-layout.is-collapsed .sidebar-zircon:hover .nav-group-label,
+  .shell-layout.is-collapsed .sidebar-zircon:hover .nav-group-chevron {
+    display: inline-block;
+  }
+  .shell-layout.is-collapsed .sidebar-zircon:hover .nav-link {
+    justify-content: flex-start;
+    padding: 0.6rem 1.25rem;
+  }
+  .shell-layout.is-collapsed .sidebar-zircon:hover .nav-link-inner {
+    justify-content: flex-start;
+    gap: 0.75rem;
+  }
+  .shell-layout.is-collapsed .sidebar-zircon:hover .nav-group-toggle {
+    display: flex;
+  }
+  .shell-layout.is-collapsed .sidebar-zircon:hover .nav-group-items {
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+  }
+  .shell-layout.is-collapsed .sidebar-zircon:hover .zircon-promo {
+    margin: 1.5rem 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-sm);
+  }
+  .shell-layout.is-collapsed .sidebar-zircon:hover .zircon-promo-title,
+  .shell-layout.is-collapsed .sidebar-zircon:hover .zircon-promo-btn {
+    display: block;
+  }
+  .shell-layout.is-collapsed .sidebar-zircon:hover .zircon-promo-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 0.75rem;
+  }
+  .shell-layout.is-collapsed .sidebar-zircon:hover .nav-link.is-active {
+    width: calc(100% + 1.25rem);
+    border-radius: 20px 0 0 20px;
+    padding-right: 1.25rem;
+  }
+  .shell-layout.is-collapsed .sidebar-zircon:hover .nav-link.is-active::before,
+  .shell-layout.is-collapsed .sidebar-zircon:hover .nav-link.is-active::after {
+    display: block;
   }
 }

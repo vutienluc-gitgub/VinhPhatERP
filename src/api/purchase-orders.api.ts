@@ -48,6 +48,13 @@ export async function createPurchaseOrder(
   values: PurchaseOrderFormValues,
   userId: string,
 ) {
+  const subtotal = values.items.reduce(
+    (sum, item) => sum + item.ordered_qty * item.unit_price,
+    0,
+  );
+  const vatAmount = subtotal * (values.vat_rate / 100);
+  const totalAmount = subtotal + vatAmount + values.shipping_fee;
+
   const { data: poId, error: rpcError } = await untypedDb.rpc(
     'rpc_create_purchase_order',
     {
@@ -55,12 +62,23 @@ export async function createPurchaseOrder(
       p_supplier_name_snapshot: values.supplier_name_snapshot,
       p_order_date: values.order_date,
       p_expected_date: values.expected_date || null,
-      p_total_amount: values.items.reduce(
-        (sum, item) => sum + item.ordered_qty * item.unit_price,
-        0,
-      ),
+      p_total_amount: totalAmount,
       p_items: values.items,
       p_created_by: userId,
+      p_person_in_charge: values.person_in_charge || null,
+      p_payment_terms: values.payment_terms || null,
+      p_currency: values.currency || 'VND',
+      p_vat_rate: values.vat_rate || 0,
+      p_shipping_fee: values.shipping_fee || 0,
+      p_delivery_warehouse: values.delivery_warehouse || null,
+      p_subtotal_amount: subtotal,
+      p_vat_amount: vatAmount,
+      p_supplier_ref: values.supplier_ref || null,
+      p_incoterms: values.incoterms || null,
+      p_payment_deadline: values.payment_deadline || null,
+      p_priority: values.priority || 'normal',
+      p_attachments: values.attachments || [],
+      p_vat_terms: values.vat_terms || null,
     },
   );
 
