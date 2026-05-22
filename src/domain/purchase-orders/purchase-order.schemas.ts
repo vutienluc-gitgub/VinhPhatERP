@@ -17,6 +17,18 @@ export const purchaseOrderFormSchema = z.object({
     .min(1, 'Vui lòng chọn nhà cung cấp để lấy tên'),
   order_date: z.string().min(1, 'Vui lòng chọn ngày đặt hàng'),
   expected_date: z.string().optional().nullable(),
+  person_in_charge: z.string().optional().nullable(),
+  payment_terms: z.string().optional().nullable(),
+  currency: z.string().default('VND'),
+  vat_rate: z.number().min(0).default(0),
+  shipping_fee: z.number().min(0).default(0),
+  delivery_warehouse: z.string().optional().nullable(),
+  supplier_ref: z.string().optional().nullable(),
+  incoterms: z.string().optional().nullable(),
+  payment_deadline: z.string().optional().nullable(),
+  priority: z.string().default('normal'),
+  attachments: z.array(z.string()).default([]),
+  vat_terms: z.string().optional().nullable(),
   items: z.array(poItemSchema).min(1, 'Cần ít nhất một dòng hàng'),
 });
 

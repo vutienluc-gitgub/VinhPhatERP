@@ -245,7 +245,7 @@ export function AppShell() {
         >
           <div className="nav-link-inner">
             <span className="nav-icon" aria-hidden="true">
-              <Icon name={iconName} size={18} strokeWidth={1.5} />
+              <Icon name={iconName} size={20} strokeWidth={1.5} />
             </span>
             <span className="nav-link-title">{item.label}</span>
           </div>
@@ -277,40 +277,23 @@ export function AppShell() {
 
         <aside className="sidebar-nav sidebar-zircon">
           <div className="brand-block" style={{ position: 'relative' }}>
-            {!isSidebarCollapsed ? (
-              <div className="flex items-center gap-3">
-                <div className="brand-icon-wrapper">
-                  <Icon
-                    name="Hexagon"
-                    size={24}
-                    className="text-primary-strong"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <p className="eyebrow-premium text-[10px] uppercase tracking-widest opacity-70 mb-0">
-                    Vĩnh Phát
-                  </p>
-                  <h1 className="title-premium-gradient text-lg font-black tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-r from-primary-strong to-primary">
-                    ERP Sản xuất
-                  </h1>
-                </div>
-              </div>
-            ) : (
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: '42px',
-                }}
-              >
+            <div className="flex items-center gap-3 brand-logo-container">
+              <div className="brand-icon-wrapper flex items-center justify-center">
                 <Icon
                   name="Hexagon"
                   size={24}
                   className="text-primary-strong"
                 />
               </div>
-            )}
+              <div className="flex flex-col brand-logo-text">
+                <p className="eyebrow-premium text-[10px] uppercase tracking-widest opacity-70 mb-0">
+                  Vĩnh Phát
+                </p>
+                <h1 className="title-premium-gradient text-lg font-black tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-r from-primary-strong to-primary">
+                  ERP Sản xuất
+                </h1>
+              </div>
+            </div>
             <button
               type="button"
               className="sidebar-collapse-btn hidden lg:flex"
@@ -411,6 +394,23 @@ export function AppShell() {
                 <Icon name="BookOpen" size={16} strokeWidth={1.5} />
                 <span className="hidden md:inline">Sổ tay</span>
               </NavLink>
+
+              <button
+                type="button"
+                onClick={() =>
+                  document.dispatchEvent(
+                    new KeyboardEvent('keydown', { key: 'k', metaKey: true }),
+                  )
+                }
+                className="hidden sm:flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-muted hover:bg-surface-subtle hover:text-foreground transition-colors mr-1"
+                title="Tìm kiếm nhanh (Ctrl+K)"
+              >
+                <Icon name="Search" size={16} strokeWidth={1.5} />
+                <span className="hidden md:inline">Tìm kiếm</span>
+                <kbd className="hidden lg:inline-flex items-center px-1.5 py-0.5 rounded border border-border bg-surface-subtle text-[10px] font-medium text-muted">
+                  Ctrl K
+                </kbd>
+              </button>
 
               <button
                 type="button"

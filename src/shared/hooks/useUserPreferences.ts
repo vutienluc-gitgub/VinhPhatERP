@@ -29,7 +29,7 @@ export interface UserPreferences {
 const DEFAULT_PREFERENCES: UserPreferences = {
   theme: 'light',
   fluid_layout: false,
-  sidebar_collapsed: false,
+  sidebar_collapsed: true,
   sidebar_groups_collapsed: {},
 };
 

@@ -22,6 +22,7 @@ export type ComboboxOption = {
   code?: string;
   phone?: string;
   icon?: string;
+  desc?: string;
 };
 
 type ComboboxProps = {
@@ -38,6 +39,8 @@ type ComboboxProps = {
    * Khi allowInput=true, Combobox hoạt động như input có gợi ý (autocomplete).
    */
   allowInput?: boolean;
+  onKeyDown?: (e: React.KeyboardEvent) => void;
+  id?: string;
 };
 
 export const Combobox = memo(function Combobox({
@@ -50,6 +53,8 @@ export const Combobox = memo(function Combobox({
   className = '',
   hasError,
   allowInput = false,
+  onKeyDown,
+  id,
 }: ComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -101,7 +106,8 @@ export const Combobox = memo(function Combobox({
       (opt) =>
         normalize(opt.label).includes(q) ||
         (opt.code && normalize(opt.code).includes(q)) ||
-        (opt.phone && normalize(opt.phone).includes(q)),
+        (opt.phone && normalize(opt.phone).includes(q)) ||
+        (opt.desc && normalize(opt.desc).includes(q)),
     );
   }, [options, search]);
 
@@ -115,12 +121,13 @@ export const Combobox = memo(function Combobox({
           className={`field-input flex items-center p-0${hasError ? ' is-error' : ''}${disabled ? ' opacity-50' : ''}`}
         >
           <input
+            id={id}
             ref={inputRef}
             type="text"
             disabled={disabled}
             value={search}
             placeholder={placeholder}
-            className="field-input border-none outline-none bg-transparent flex-1 min-h-[44px] px-3 focus:ring-0"
+            className={`field-input border-none outline-none bg-transparent flex-1 px-3 focus:ring-0 ${className?.includes('h-') ? 'h-full min-h-0' : 'min-h-[44px]'}`}
             onChange={(e) => {
               setSearch(e.target.value);
               setIsOpen(true);
@@ -156,6 +163,7 @@ export const Combobox = memo(function Combobox({
                 }
                 setIsOpen(false);
               }
+              onKeyDown?.(e);
             }}
           />
           <ChevronDown
@@ -201,9 +209,10 @@ export const Combobox = memo(function Combobox({
                       )}
                       <div className="flex flex-col">
                         <span>{opt.label}</span>
-                        {opt.code && (
+                        {(opt.code || opt.desc) && (
                           <span className="text-xs text-muted mt-0.5">
-                            Ma: {opt.code}
+                            {opt.code && `Ma: ${opt.code} `}
+                            {opt.desc && opt.desc}
                           </span>
                         )}
                       </div>
@@ -228,17 +237,19 @@ export const Combobox = memo(function Combobox({
   return (
     <div className={`relative ${className}`} ref={containerRef}>
       <button
+        id={id}
         type="button"
         disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
         onBlur={() => {
           if (!isOpen) onBlur?.();
         }}
-        className={`field-select flex items-center justify-between w-full text-left bg-surface relative pr-10 min-h-[44px] ${
-          hasError ? 'is-error' : ''
-        } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`field-input flex items-center justify-between w-full text-left bg-surface px-3 ${className?.includes('h-') ? 'h-full min-h-0' : 'min-h-[44px]'} ${hasError ? 'is-error' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        onKeyDown={(e) => {
+          onKeyDown?.(e);
+        }}
       >
-        <span className="flex items-center gap-2 truncate">
+        <span className="flex items-center gap-2 truncate pr-2">
           {selectedOption ? (
             <>
               {selectedOption.icon && (
@@ -256,7 +267,7 @@ export const Combobox = memo(function Combobox({
             <span className="text-muted">{placeholder}</span>
           )}
         </span>
-        <ChevronDown className="w-4 h-4 text-[var(--text-secondary)] absolute right-3 top-1/2 -translate-y-1/2" />
+        <ChevronDown className="w-4 h-4 text-[var(--text-secondary)] shrink-0 ml-2" />
       </button>
 
       {isOpen &&
@@ -315,10 +326,11 @@ export const Combobox = memo(function Combobox({
                         )}
                         <div className="flex flex-col">
                           <span>{opt.label}</span>
-                          {(opt.code || opt.phone) && (
+                          {(opt.code || opt.phone || opt.desc) && (
                             <span className="text-xs text-muted mt-0.5">
                               {opt.code && `Ma: ${opt.code} `}
-                              {opt.phone && `SDT: ${opt.phone}`}
+                              {opt.phone && `SDT: ${opt.phone} `}
+                              {opt.desc && opt.desc}
                             </span>
                           )}
                         </div>

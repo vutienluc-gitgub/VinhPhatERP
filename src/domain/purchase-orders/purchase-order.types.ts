@@ -24,6 +24,22 @@ export interface PurchaseOrder {
   updated_at: string;
   tenant_id: string;
 
+  // New ERP fields
+  person_in_charge?: string | null;
+  payment_terms?: string | null;
+  currency?: string | null;
+  vat_rate?: number;
+  shipping_fee?: number;
+  delivery_warehouse?: string | null;
+  subtotal_amount?: number;
+  vat_amount?: number;
+  supplier_ref?: string | null;
+  incoterms?: string | null;
+  payment_deadline?: string | null;
+  priority?: string | null;
+  attachments?: string[] | null;
+  vat_terms?: string | null;
+
   // From views
   total_ordered_qty?: number;
   total_received_qty?: number;

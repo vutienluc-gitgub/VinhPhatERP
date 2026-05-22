@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
+import toast from 'react-hot-toast';
 
 import {
   usePurchaseOrder,
   useGoodsReceiptsByPo,
+  useApprovePurchaseOrder,
+  useRejectPurchaseOrder,
 } from '@/application/purchase-orders';
 import { Badge, Button } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
@@ -22,11 +25,43 @@ export function PODetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [showGrForm, setShowGrForm] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
   const { user } = useAuth();
 
   const { data: po, isLoading: poLoading } = usePurchaseOrder(id);
   const { data: receipts = [], isLoading: receiptsLoading } =
     useGoodsReceiptsByPo(id);
+
+  const approveMutation = useApprovePurchaseOrder();
+  const rejectMutation = useRejectPurchaseOrder();
+
+  const handleApprove = async () => {
+    if (!po) return;
+    try {
+      await approveMutation.mutateAsync(po.id);
+      toast.success('Duyệt đơn đặt hàng thành công');
+    } catch (err) {
+      toast.error(
+        'Duyệt thất bại: ' + (err instanceof Error ? err.message : String(err)),
+      );
+    }
+  };
+
+  const handleReject = async () => {
+    if (!po || !rejectReason.trim()) return;
+    try {
+      await rejectMutation.mutateAsync({ id: po.id, reason: rejectReason });
+      toast.success('Từ chối đơn đặt hàng thành công');
+      setShowRejectModal(false);
+      setRejectReason('');
+    } catch (err) {
+      toast.error(
+        'Từ chối thất bại: ' +
+          (err instanceof Error ? err.message : String(err)),
+      );
+    }
+  };
 
   if (poLoading || receiptsLoading)
     return <div className="p-8 text-center">Đang tải...</div>;
@@ -47,7 +82,9 @@ export function PODetailPage() {
                   ? 'success'
                   : po.status === 'approved'
                     ? 'info'
-                    : 'gray'
+                    : po.status === 'rejected'
+                      ? 'danger'
+                      : 'gray'
               }
             >
               {po.status}
@@ -86,6 +123,12 @@ export function PODetailPage() {
                 {formatCurrency(po.total_amount)} đ
               </span>
             </div>
+            {po.status === 'rejected' && po.rejection_reason && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
+                <span className="font-bold">Lý do từ chối:</span>{' '}
+                {po.rejection_reason}
+              </div>
+            )}
           </div>
         </div>
 
@@ -97,8 +140,19 @@ export function PODetailPage() {
             {po.status === 'draft' &&
               (user?.role === 'admin' || user?.role === 'manager') && (
                 <>
-                  <Button variant="primary">Duyệt PO</Button>
-                  <Button variant="danger">Từ chối</Button>
+                  <Button
+                    variant="primary"
+                    isLoading={approveMutation.isPending}
+                    onClick={handleApprove}
+                  >
+                    Duyệt PO
+                  </Button>
+                  <Button
+                    variant="danger"
+                    onClick={() => setShowRejectModal(true)}
+                  >
+                    Từ chối
+                  </Button>
                 </>
               )}
             {(po.status === 'approved' || po.status === 'partial_received') &&
@@ -227,6 +281,55 @@ export function PODetailPage() {
           onClose={() => setShowGrForm(false)}
         />
       )}
+
+      {showRejectModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl border border-border p-6 max-w-md w-full space-y-4">
+            <h3 className="font-semibold text-lg text-gray-900 m-0">
+              Từ chối Đơn đặt hàng
+            </h3>
+            <p className="text-sm text-gray-500">
+              Vui lòng nhập lý do từ chối đơn đặt hàng này để phản hồi cho nhân
+              viên phụ trách.
+            </p>
+            <div className="form-field">
+              <label className="text-xs font-bold text-gray-600 uppercase tracking-wider">
+                Lý do từ chối <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="Nhập lý do từ chối..."
+                className="field-input min-h-[100px] w-full p-2 border border-border rounded-lg"
+                rows={3}
+                required
+              />
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowRejectModal(false);
+                  setRejectReason('');
+                }}
+              >
+                Hủy
+              </Button>
+              <Button
+                variant="danger"
+                disabled={!rejectReason.trim() || rejectMutation.isPending}
+                isLoading={rejectMutation.isPending}
+                onClick={handleReject}
+              >
+                Xác nhận từ chối
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
+// Force Vite HMR
+export default PODetailPage;

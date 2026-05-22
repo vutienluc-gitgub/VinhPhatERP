@@ -45,7 +45,7 @@ const TYPE_RULES: Array<{ pattern: RegExp; type: ParamType }> = [
   { pattern: /(_at|_date|_time)$/i, type: 'timestamptz' },
   { pattern: /(_count|_qty|_quantity|_order|_index|_position)$/i, type: 'int' },
   {
-    pattern: /(_amount|_price|_cost|_total|_rate|_percent)$/i,
+    pattern: /(_amount|_price|_cost|_total|_rate|_percent|_fee)$/i,
     type: 'numeric',
   },
   { pattern: /^(is_|has_|can_|_flag|_enabled|_active)/i, type: 'boolean' },

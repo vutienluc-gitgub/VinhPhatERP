@@ -42,21 +42,21 @@ export const purchaseOrdersPlugin: FeaturePlugin = {
       path: 'purchase-orders',
       component: () =>
         import('./PurchaseOrdersPage').then((m) => ({
-          default: m.PurchaseOrdersPage,
+          default: m.default || m.PurchaseOrdersPage,
         })),
     },
     {
       path: 'purchase-orders/create',
       component: () =>
         import('./POCreatePage').then((m) => ({
-          default: m.POCreatePage,
+          default: m.default || m.POCreatePage,
         })),
     },
     {
       path: 'purchase-orders/:id',
       component: () =>
         import('./PODetailPage').then((m) => ({
-          default: m.PODetailPage,
+          default: m.default || m.PODetailPage,
         })),
     },
   ],

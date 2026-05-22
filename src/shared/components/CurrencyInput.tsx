@@ -31,6 +31,7 @@ type CurrencyInputProps = {
   className?: string;
   placeholder?: string;
   disabled?: boolean;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
 /** Format number -> display string (VD: 115000 -> "115.000") */
@@ -53,6 +54,7 @@ export const CurrencyInput = memo(function CurrencyInput({
   className,
   placeholder = '0',
   disabled,
+  onKeyDown,
 }: CurrencyInputProps) {
   const { display, setDisplay } = useControlledDisplay(
     value,
@@ -118,6 +120,7 @@ export const CurrencyInput = memo(function CurrencyInput({
       value={display}
       onChange={handleChange}
       onBlur={onBlur}
+      onKeyDown={onKeyDown}
       disabled={disabled}
     />
   );
