@@ -41,6 +41,8 @@ type ComboboxProps = {
   allowInput?: boolean;
   onKeyDown?: (e: React.KeyboardEvent) => void;
   id?: string;
+  /** Choose visual style based on context */
+  variant?: 'default' | 'table-cell';
 };
 
 export const Combobox = memo(function Combobox({
@@ -55,6 +57,7 @@ export const Combobox = memo(function Combobox({
   allowInput = false,
   onKeyDown,
   id,
+  variant = 'default',
 }: ComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -113,12 +116,15 @@ export const Combobox = memo(function Combobox({
 
   const selectedOption = options.find((o) => o.value === value);
 
+  const boxClass =
+    variant === 'table-cell' ? 'table-cell-input' : 'field-input';
+
   /* ── allowInput mode: render as <input> with dropdown suggestions ── */
   if (allowInput) {
     return (
       <div className={`relative ${className}`} ref={containerRef}>
         <div
-          className={`field-input flex items-center p-0${hasError ? ' is-error' : ''}${disabled ? ' opacity-50' : ''}`}
+          className={`${boxClass} flex items-center p-0${hasError ? ' is-error' : ''}${disabled ? ' opacity-50' : ''} ${className?.includes('h-') ? 'h-full min-h-0' : 'min-h-[44px]'}`}
         >
           <input
             id={id}
@@ -127,7 +133,7 @@ export const Combobox = memo(function Combobox({
             disabled={disabled}
             value={search}
             placeholder={placeholder}
-            className={`field-input border-none outline-none bg-transparent flex-1 px-3 focus:ring-0 ${className?.includes('h-') ? 'h-full min-h-0' : 'min-h-[44px]'}`}
+            className={`border-none outline-none bg-transparent flex-1 px-3 focus:ring-0 ${className?.includes('h-') ? 'h-full min-h-0' : 'min-h-[44px]'}`}
             onChange={(e) => {
               setSearch(e.target.value);
               setIsOpen(true);
@@ -244,7 +250,7 @@ export const Combobox = memo(function Combobox({
         onBlur={() => {
           if (!isOpen) onBlur?.();
         }}
-        className={`field-input flex items-center justify-between w-full text-left bg-surface px-3 ${className?.includes('h-') ? 'h-full min-h-0' : 'min-h-[44px]'} ${hasError ? 'is-error' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`${boxClass} flex items-center justify-between w-full text-left bg-surface px-3 ${className?.includes('h-') ? 'h-full min-h-0' : 'min-h-[44px]'} ${hasError ? 'is-error' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         onKeyDown={(e) => {
           onKeyDown?.(e);
         }}

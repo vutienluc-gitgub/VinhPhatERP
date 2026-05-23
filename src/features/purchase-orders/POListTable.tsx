@@ -15,6 +15,22 @@ import type { PurchaseOrder } from '@/domain/purchase-orders';
 
 import { PO_CONSTANTS } from './purchase-orders.constants';
 
+function renderPOStatusBadge(s: string) {
+  if (s === 'draft')
+    return <Badge variant="gray">{PO_CONSTANTS.STATUS_DRAFT}</Badge>;
+  if (s === 'approved')
+    return <Badge variant="info">{PO_CONSTANTS.STATUS_APPROVED}</Badge>;
+  if (s === 'partial_received')
+    return <Badge variant="warning">{PO_CONSTANTS.STATUS_PARTIAL}</Badge>;
+  if (s === 'completed')
+    return <Badge variant="success">{PO_CONSTANTS.STATUS_COMPLETED}</Badge>;
+  if (s === 'rejected')
+    return <Badge variant="danger">{PO_CONSTANTS.STATUS_REJECTED}</Badge>;
+  if (s === 'cancelled')
+    return <Badge variant="danger">{PO_CONSTANTS.STATUS_CANCELLED}</Badge>;
+  return <Badge variant="gray">{s}</Badge>;
+}
+
 export function POListTable({
   data,
   isLoading,
@@ -56,30 +72,7 @@ export function POListTable({
       {
         accessorKey: 'status',
         header: PO_CONSTANTS.COL_STATUS,
-        cell: ({ row }) => {
-          const s = row.original.status;
-          if (s === 'draft')
-            return <Badge variant="gray">{PO_CONSTANTS.STATUS_DRAFT}</Badge>;
-          if (s === 'approved')
-            return <Badge variant="info">{PO_CONSTANTS.STATUS_APPROVED}</Badge>;
-          if (s === 'partial_received')
-            return (
-              <Badge variant="warning">{PO_CONSTANTS.STATUS_PARTIAL}</Badge>
-            );
-          if (s === 'completed')
-            return (
-              <Badge variant="success">{PO_CONSTANTS.STATUS_COMPLETED}</Badge>
-            );
-          if (s === 'rejected')
-            return (
-              <Badge variant="danger">{PO_CONSTANTS.STATUS_REJECTED}</Badge>
-            );
-          if (s === 'cancelled')
-            return (
-              <Badge variant="danger">{PO_CONSTANTS.STATUS_CANCELLED}</Badge>
-            );
-          return <Badge variant="gray">{s}</Badge>;
-        },
+        cell: ({ row }) => renderPOStatusBadge(row.original.status),
       },
       {
         accessorKey: 'progress_percentage',
@@ -148,31 +141,7 @@ export function POListTable({
           const p = po.progress_percentage ?? 0;
           const s = po.status;
 
-          let StatusBadge = <Badge variant="gray">{s}</Badge>;
-          if (s === 'draft')
-            StatusBadge = (
-              <Badge variant="gray">{PO_CONSTANTS.STATUS_DRAFT}</Badge>
-            );
-          if (s === 'approved')
-            StatusBadge = (
-              <Badge variant="info">{PO_CONSTANTS.STATUS_APPROVED}</Badge>
-            );
-          if (s === 'partial_received')
-            StatusBadge = (
-              <Badge variant="warning">{PO_CONSTANTS.STATUS_PARTIAL}</Badge>
-            );
-          if (s === 'completed')
-            StatusBadge = (
-              <Badge variant="success">{PO_CONSTANTS.STATUS_COMPLETED}</Badge>
-            );
-          if (s === 'rejected')
-            StatusBadge = (
-              <Badge variant="danger">{PO_CONSTANTS.STATUS_REJECTED}</Badge>
-            );
-          if (s === 'cancelled')
-            StatusBadge = (
-              <Badge variant="danger">{PO_CONSTANTS.STATUS_CANCELLED}</Badge>
-            );
+          const StatusBadge = renderPOStatusBadge(s);
 
           return (
             <div className="mobile-card">
