@@ -144,10 +144,23 @@ export const Combobox = memo(function Combobox({
             onBlur={() => {
               // Commit giá trị khi blur nếu có text
               if (search.trim()) {
+                const searchLower = search.trim().toLowerCase();
                 const match = options.find(
-                  (o) => o.label.toLowerCase() === search.trim().toLowerCase(),
+                  (o) =>
+                    o.label.toLowerCase() === searchLower ||
+                    o.value.toLowerCase() === searchLower ||
+                    (o.code && o.code.toLowerCase() === searchLower),
                 );
-                onChange(match ? match.value : search.trim());
+                if (match) {
+                  onChange(match.value);
+                  setSearch(match.label);
+                } else if (filteredOptions.length === 1) {
+                  const first = filteredOptions[0]!;
+                  onChange(first.value);
+                  setSearch(first.label);
+                } else {
+                  onChange(search.trim());
+                }
               } else {
                 onChange('');
               }

@@ -132,7 +132,12 @@ export function POPaymentPanel({
             variant="primary"
             className="w-full py-3 h-auto text-base"
             isLoading={isPending}
-            onClick={handleSubmit(onSubmit)}
+            onClick={handleSubmit(onSubmit, (errors) => {
+              console.error('Form validation failed:', errors);
+              import('react-hot-toast').then(({ default: toast }) => {
+                toast.error(PO_CONSTANTS.ERR_FORM_VALIDATION);
+              });
+            })}
           >
             <Icon name="Check" size={18} className="mr-2" />
             {PO_CONSTANTS.BTN_CONFIRM_CREATE}
