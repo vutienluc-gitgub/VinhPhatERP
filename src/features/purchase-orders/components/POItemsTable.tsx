@@ -1,28 +1,38 @@
-import { KeyboardEvent } from 'react';
+import { KeyboardEvent, useMemo } from 'react';
 import { UseFormReturn, useFieldArray, Controller } from 'react-hook-form';
 
 import type { PurchaseOrderFormValues } from '@/domain/purchase-orders';
-import { Button, FormattedInput, Icon, Combobox } from '@/shared/components';
+import {
+  Button,
+  FormattedInput,
+  CurrencyInput,
+  Icon,
+  Combobox,
+} from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import { PO_CONSTANTS } from '@/features/purchase-orders/purchase-orders.constants';
 import type { SupplierPrice } from '@/api/suppliers.api';
+import type { GlobalMaterialOption } from '@/features/purchase-orders/useMaterialAutoFill';
 
 interface POItemsTableProps {
   form: UseFormReturn<PurchaseOrderFormValues>;
   handleMaterialBlur: (index: number, materialId: string) => Promise<void>;
   supplierPrices: (SupplierPrice & { material_id: string })[];
+  globalMaterials: GlobalMaterialOption[];
+  lineTotals: number[];
 }
 
 export function POItemsTable({
   form,
   handleMaterialBlur,
   supplierPrices,
+  globalMaterials,
+  lineTotals,
 }: POItemsTableProps) {
   const {
     control,
     register,
     watch,
-    setValue,
     formState: { errors },
   } = form;
 
@@ -31,11 +41,39 @@ export function POItemsTable({
     name: 'items',
   });
 
-  const materialOptions = supplierPrices.map((priceInfo) => ({
-    value: priceInfo.material_id,
-    label: priceInfo.material_id,
-    desc: `Giá HĐ: ${formatCurrency(priceInfo.unit_price)} | ĐVT: ${priceInfo.uom} | MOQ: ${priceInfo.moq} | Leadtime: ${priceInfo.lead_time_days} ngày`,
-  }));
+  const materialOptions = useMemo(() => {
+    const options = globalMaterials.map((mat) => {
+      const priceInfo = supplierPrices.find((p) => p.material_id === mat.code);
+
+      if (priceInfo) {
+        return {
+          value: mat.code,
+          label: `${mat.code} - ${mat.name}`,
+          desc: `Giá HĐ: ${formatCurrency(priceInfo.unit_price)} | ĐVT: ${priceInfo.uom} | MOQ: ${priceInfo.moq} | Leadtime: ${priceInfo.lead_time_days} ngày`,
+        };
+      }
+
+      return {
+        value: mat.code,
+        label: `${mat.code} - ${mat.name}`,
+        desc: `(Chưa có giá hợp đồng) Loại: ${mat.type === 'yarn' ? 'Sợi' : 'Vải'} | ĐVT: ${mat.unit}`,
+      };
+    });
+
+    // Include any supplier materials that might not be in the global catalog (just in case)
+    const globalCodes = new Set(globalMaterials.map((m) => m.code));
+    supplierPrices.forEach((p) => {
+      if (!globalCodes.has(p.material_id)) {
+        options.push({
+          value: p.material_id,
+          label: p.material_id,
+          desc: `Giá HĐ: ${formatCurrency(p.unit_price)} | ĐVT: ${p.uom} | MOQ: ${p.moq} | Leadtime: ${p.lead_time_days} ngày`,
+        });
+      }
+    });
+
+    return options;
+  }, [globalMaterials, supplierPrices]);
 
   const handleKeyDown = (
     e: KeyboardEvent<Element>,
@@ -143,9 +181,8 @@ export function POItemsTable({
           </thead>
           <tbody>
             {fields.map((item, index) => {
-              const qty = watch(`items.${index}.ordered_qty`) || 0;
               const price = watch(`items.${index}.unit_price`) || 0;
-              const lineTotal = Number(qty) * Number(price);
+              const lineTotal = lineTotals[index] || 0;
 
               const currentMaterialId = watch(`items.${index}.material_id`);
               const contractPriceInfo = supplierPrices.find(
@@ -172,29 +209,11 @@ export function POItemsTable({
                       render={({ field }) => (
                         <Combobox
                           id={`input-material_id-${index}`}
+                          allowInput
                           options={materialOptions}
                           value={field.value}
                           onChange={(val) => {
                             field.onChange(val);
-                            const priceInfo = supplierPrices.find(
-                              (p) => p.material_id === val,
-                            );
-                            if (priceInfo) {
-                              setValue(
-                                `items.${index}.unit_price`,
-                                priceInfo.unit_price,
-                                {
-                                  shouldValidate: true,
-                                },
-                              );
-                              setValue(
-                                `items.${index}.uom`,
-                                priceInfo.uom as 'kg' | 'cây' | 'mét' | 'cuộn',
-                                {
-                                  shouldValidate: true,
-                                },
-                              );
-                            }
                             handleMaterialBlur(index, val);
                           }}
                           onKeyDown={(e) =>
@@ -202,6 +221,7 @@ export function POItemsTable({
                           }
                           placeholder={PO_CONSTANTS.PLACEHOLDER_MATERIAL}
                           className="h-9 w-full"
+                          variant="table-cell"
                           hasError={!!errors.items?.[index]?.material_id}
                         />
                       )}
@@ -245,7 +265,7 @@ export function POItemsTable({
                       control={control}
                       render={({ field }) => (
                         <div className="flex flex-col items-stretch">
-                          <FormattedInput
+                          <CurrencyInput
                             id={`input-unit_price-${index}`}
                             className={`table-cell-input table-cell-input-numeric ${
                               isPriceHigherThanContract

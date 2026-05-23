@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { UseFormReturn, Controller } from 'react-hook-form';
 
 import type { PurchaseOrderFormValues } from '@/domain/purchase-orders';
@@ -26,16 +26,24 @@ export function POGeneralInfoCard({
     formState: { errors },
   } = form;
 
-  const supplierOptions = suppliers.map((s) => ({
-    value: s.id,
-    label: s.name,
-    code: s.code,
-  }));
+  const supplierOptions = useMemo(
+    () =>
+      suppliers.map((s) => ({
+        value: s.id,
+        label: s.name,
+        code: s.code,
+      })),
+    [suppliers],
+  );
 
-  const employeeOptions = employees.map((e) => ({
-    value: `${e.code ? `${e.code} - ` : ''}${e.name}`,
-    label: `${e.code ? `${e.code} - ` : ''}${e.name}`,
-  }));
+  const employeeOptions = useMemo(
+    () =>
+      employees.map((e) => ({
+        value: `${e.code ? `${e.code} - ` : ''}${e.name}`,
+        label: `${e.code ? `${e.code} - ` : ''}${e.name}`,
+      })),
+    [employees],
+  );
 
   const incotermsValue = watch('incoterms');
   const [tradeType, setTradeType] = useState<'domestic' | 'import'>(

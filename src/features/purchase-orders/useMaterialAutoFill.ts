@@ -9,6 +9,16 @@ import {
 } from '@/api/suppliers.api';
 import type { PurchaseOrderFormValues } from '@/domain/purchase-orders';
 import { PO_CONSTANTS } from '@/features/purchase-orders/purchase-orders.constants';
+import { fetchYarnCatalogOptions } from '@/api/yarn-catalog.api';
+import { fetchFabricCatalogOptions } from '@/api/fabric-catalog.api';
+
+export type GlobalMaterialOption = {
+  id: string;
+  name: string;
+  code: string;
+  type: 'yarn' | 'fabric';
+  unit: string;
+};
 
 interface UseMaterialAutoFillProps {
   watch: UseFormWatch<PurchaseOrderFormValues>;
@@ -23,6 +33,41 @@ export function useMaterialAutoFill({
   const [supplierPrices, setSupplierPrices] = useState<
     (SupplierPrice & { material_id: string })[]
   >([]);
+  const [globalMaterials, setGlobalMaterials] = useState<
+    GlobalMaterialOption[]
+  >([]);
+
+  useEffect(() => {
+    let active = true;
+    Promise.all([fetchYarnCatalogOptions(), fetchFabricCatalogOptions()])
+      .then(([yarns, fabrics]) => {
+        if (!active) return;
+        const mappedYarns: GlobalMaterialOption[] = yarns.map((y) => ({
+          id: y.id,
+          name: y.name,
+          code: y.code,
+          type: 'yarn',
+          unit: y.unit,
+        }));
+        const mappedFabrics: GlobalMaterialOption[] = fabrics.map((f) => ({
+          id: f.id,
+          name: f.name,
+          code: f.code,
+          type: 'fabric',
+          unit: f.unit,
+        }));
+        setGlobalMaterials([...mappedYarns, ...mappedFabrics]);
+      })
+      .catch((err) => {
+        console.error(
+          '[useMaterialAutoFill] Failed to fetch global materials',
+          err,
+        );
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!supplierId) {
@@ -88,11 +133,16 @@ export function useMaterialAutoFill({
             { icon: 'ℹ️' },
           );
         }
+      } else {
+        toast(
+          `Không tìm thấy giá hợp đồng cho ${materialId}. Vui lòng nhập giá thủ công.`,
+          { icon: 'ℹ️' },
+        );
       }
     } catch (error) {
       console.error('[useMaterialAutoFill] Failed to fetch price', error);
     }
   };
 
-  return { handleMaterialBlur, supplierPrices };
+  return { handleMaterialBlur, supplierPrices, globalMaterials };
 }

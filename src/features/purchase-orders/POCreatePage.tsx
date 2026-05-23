@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
 import toast from 'react-hot-toast';
@@ -54,23 +54,25 @@ export function POCreatePage() {
     watch,
     handleSubmit,
     setValue,
+    control,
     formState: { isSubmitting },
   } = form;
 
-  const watchItems = watch('items');
+  const watchItems = useWatch({ control, name: 'items' }) || watch('items');
   const watchVatRate = watch('vat_rate') || 0;
   const watchShippingFee = watch('shipping_fee') || 0;
 
-  const { subtotal, vatAmount, totalAmount } = usePOCalculations(
+  const { subtotal, vatAmount, totalAmount, lineTotals } = usePOCalculations(
     watchItems,
     watchVatRate,
     watchShippingFee,
   );
 
-  const { handleMaterialBlur, supplierPrices } = useMaterialAutoFill({
-    watch,
-    setValue,
-  });
+  const { handleMaterialBlur, supplierPrices, globalMaterials } =
+    useMaterialAutoFill({
+      watch,
+      setValue,
+    });
 
   const isPending = isSubmitting || createMutation.isPending;
 
@@ -136,6 +138,8 @@ export function POCreatePage() {
             form={form}
             handleMaterialBlur={handleMaterialBlur}
             supplierPrices={supplierPrices}
+            globalMaterials={globalMaterials}
+            lineTotals={lineTotals}
           />
 
           <POAttachmentsCard />
