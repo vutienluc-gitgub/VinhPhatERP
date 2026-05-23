@@ -91,6 +91,7 @@ export function POGeneralInfoCard({
                   }}
                   placeholder={PO_CONSTANTS.SELECT_SUPPLIER}
                   className="h-9"
+                  hasError={!!errors.supplier_id}
                 />
               )}
             />
@@ -163,9 +164,14 @@ export function POGeneralInfoCard({
             </label>
             <input
               type="date"
-              className="field-input h-9"
+              className={`field-input h-9 ${errors.order_date ? 'is-error border-red-500' : ''}`}
               {...register('order_date')}
             />
+            {errors.order_date && (
+              <span className="text-red-500 text-sm mt-1 block">
+                {errors.order_date.message}
+              </span>
+            )}
           </div>
         </div>
       </div>

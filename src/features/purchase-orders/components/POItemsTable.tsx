@@ -42,31 +42,38 @@ export function POItemsTable({
   });
 
   const materialOptions = useMemo(() => {
-    const options = globalMaterials.map((mat) => {
-      const priceInfo = supplierPrices.find((p) => p.material_id === mat.code);
+    const options: Array<{
+      value: string;
+      label: string;
+      code?: string;
+      desc?: string;
+    }> = globalMaterials.map((mat) => {
+      const priceInfo = supplierPrices.find((p) => p.material_id === mat.id);
 
       if (priceInfo) {
         return {
-          value: mat.code,
+          value: mat.id,
           label: `${mat.code} - ${mat.name}`,
+          code: mat.code,
           desc: `Giá HĐ: ${formatCurrency(priceInfo.unit_price)} | ĐVT: ${priceInfo.uom} | MOQ: ${priceInfo.moq} | Leadtime: ${priceInfo.lead_time_days} ngày`,
         };
       }
 
       return {
-        value: mat.code,
+        value: mat.id,
         label: `${mat.code} - ${mat.name}`,
+        code: mat.code,
         desc: `(Chưa có giá hợp đồng) Loại: ${mat.type === 'yarn' ? 'Sợi' : 'Vải'} | ĐVT: ${mat.unit}`,
       };
     });
 
     // Include any supplier materials that might not be in the global catalog (just in case)
-    const globalCodes = new Set(globalMaterials.map((m) => m.code));
+    const globalIds = new Set(globalMaterials.map((m) => m.id));
     supplierPrices.forEach((p) => {
-      if (!globalCodes.has(p.material_id)) {
+      if (!globalIds.has(p.material_id)) {
         options.push({
           value: p.material_id,
-          label: p.material_id,
+          label: p.material_id, // We don't have the code/name if not in global catalog
           desc: `Giá HĐ: ${formatCurrency(p.unit_price)} | ĐVT: ${p.uom} | MOQ: ${p.moq} | Leadtime: ${p.lead_time_days} ngày`,
         });
       }
@@ -207,23 +214,30 @@ export function POItemsTable({
                       name={`items.${index}.material_id`}
                       control={control}
                       render={({ field }) => (
-                        <Combobox
-                          id={`input-material_id-${index}`}
-                          allowInput
-                          options={materialOptions}
-                          value={field.value}
-                          onChange={(val) => {
-                            field.onChange(val);
-                            handleMaterialBlur(index, val);
-                          }}
-                          onKeyDown={(e) =>
-                            handleKeyDown(e, index, 'material_id')
-                          }
-                          placeholder={PO_CONSTANTS.PLACEHOLDER_MATERIAL}
-                          className="h-9 w-full"
-                          variant="table-cell"
-                          hasError={!!errors.items?.[index]?.material_id}
-                        />
+                        <div className="flex flex-col">
+                          <Combobox
+                            id={`input-material_id-${index}`}
+                            allowInput
+                            options={materialOptions}
+                            value={field.value}
+                            onChange={(val) => {
+                              field.onChange(val);
+                              handleMaterialBlur(index, val);
+                            }}
+                            onKeyDown={(e) =>
+                              handleKeyDown(e, index, 'material_id')
+                            }
+                            placeholder={PO_CONSTANTS.PLACEHOLDER_MATERIAL}
+                            className="h-9 w-full"
+                            variant="table-cell"
+                            hasError={!!errors.items?.[index]?.material_id}
+                          />
+                          {errors.items?.[index]?.material_id && (
+                            <span className="text-[10px] text-red-500 mt-0.5 leading-tight">
+                              {errors.items[index]?.material_id?.message}
+                            </span>
+                          )}
+                        </div>
                       )}
                     />
                   </td>
@@ -246,16 +260,27 @@ export function POItemsTable({
                       name={`items.${index}.ordered_qty`}
                       control={control}
                       render={({ field }) => (
-                        <FormattedInput
-                          id={`input-ordered_qty-${index}`}
-                          className="table-cell-input table-cell-input-numeric"
-                          placeholder="0"
-                          value={field.value}
-                          onChange={(val) => field.onChange(val || 0)}
-                          onKeyDown={(e) =>
-                            handleKeyDown(e, index, 'ordered_qty')
-                          }
-                        />
+                        <div className="flex flex-col items-stretch">
+                          <FormattedInput
+                            id={`input-ordered_qty-${index}`}
+                            className={`table-cell-input table-cell-input-numeric ${
+                              errors.items?.[index]?.ordered_qty
+                                ? 'is-error'
+                                : ''
+                            }`}
+                            placeholder="0"
+                            value={field.value}
+                            onChange={(val) => field.onChange(val || 0)}
+                            onKeyDown={(e) =>
+                              handleKeyDown(e, index, 'ordered_qty')
+                            }
+                          />
+                          {errors.items?.[index]?.ordered_qty && (
+                            <span className="text-[10px] text-red-500 mt-0.5 leading-tight text-right">
+                              {errors.items[index]?.ordered_qty?.message}
+                            </span>
+                          )}
+                        </div>
                       )}
                     />
                   </td>
@@ -271,7 +296,7 @@ export function POItemsTable({
                               isPriceHigherThanContract
                                 ? 'border-amber-400 focus:border-amber-500 text-amber-700 bg-amber-50/20 font-semibold'
                                 : ''
-                            }`}
+                            } ${errors.items?.[index]?.unit_price ? 'is-error' : ''}`}
                             placeholder="0"
                             value={field.value}
                             onChange={(val) => field.onChange(val || 0)}
@@ -279,14 +304,20 @@ export function POItemsTable({
                               handleKeyDown(e, index, 'unit_price')
                             }
                           />
-                          {isPriceHigherThanContract && (
-                            <div className="text-[10px] text-amber-700 flex items-center gap-1 mt-1 bg-amber-50 p-1 rounded border border-amber-200 justify-end font-semibold">
-                              <span>
-                                {PO_CONSTANTS.MSG_PRICE_HIGHER_THAN_CONTRACT} (
-                                {formatCurrency(contractPrice)})
-                              </span>
-                            </div>
+                          {errors.items?.[index]?.unit_price && (
+                            <span className="text-[10px] text-red-500 mt-0.5 leading-tight text-right">
+                              {errors.items[index]?.unit_price?.message}
+                            </span>
                           )}
+                          {isPriceHigherThanContract &&
+                            !errors.items?.[index]?.unit_price && (
+                              <div className="text-[10px] text-amber-700 flex items-center gap-1 mt-1 bg-amber-50 p-1 rounded border border-amber-200 justify-end font-semibold">
+                                <span>
+                                  {PO_CONSTANTS.MSG_PRICE_HIGHER_THAN_CONTRACT}{' '}
+                                  ({formatCurrency(contractPrice)})
+                                </span>
+                              </div>
+                            )}
                         </div>
                       )}
                     />

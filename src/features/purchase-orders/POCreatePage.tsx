@@ -119,7 +119,10 @@ export function POCreatePage() {
             type="button"
             variant="primary"
             isLoading={isPending}
-            onClick={handleSubmit(onSubmit)}
+            onClick={handleSubmit(onSubmit, (errors) => {
+              console.error('Form validation failed:', errors);
+              toast.error(PO_CONSTANTS.ERR_FORM_VALIDATION);
+            })}
           >
             {PO_CONSTANTS.BTN_CONFIRM_CREATE}
           </Button>

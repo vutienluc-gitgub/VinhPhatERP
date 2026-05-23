@@ -68,6 +68,8 @@ export const PO_CONSTANTS = {
 
   // Messages
   ERR_CREATE_FAILED: 'Có lỗi xảy ra khi tạo PO: ',
+  ERR_FORM_VALIDATION: 'Vui lòng kiểm tra lại thông tin bị lỗi màu đỏ',
+  ERR_MATERIAL_REQUIRED: 'Vui lòng chọn nguyên liệu từ danh sách',
 
   // Form Options
   UOM_OPTIONS: ['kg', 'cây', 'mét', 'cuộn'] as const,

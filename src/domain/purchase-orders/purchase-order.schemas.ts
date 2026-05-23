@@ -2,7 +2,10 @@ import { z } from 'zod';
 
 export const poItemSchema = z.object({
   id: z.string().optional(),
-  material_id: z.string().min(1, 'Vui lòng chọn nguyên liệu'),
+  material_id: z
+    .string()
+    .min(1, 'Vui lòng chọn nguyên liệu')
+    .uuid('Vui lòng chọn nguyên liệu từ danh sách'),
   uom: z.enum(['kg', 'cây', 'mét', 'cuộn'], {
     required_error: 'Vui lòng chọn đơn vị',
   }),
