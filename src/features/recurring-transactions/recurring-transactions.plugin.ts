@@ -8,7 +8,7 @@ export const recurringTransactionsPlugin: FeaturePlugin = {
   description:
     'Quản lý nghiệp vụ định kỳ — tự động tạo phiếu chi thuê kho, lương hàng tháng.',
   icon: 'CalendarClock',
-  requiredRoles: ['admin', 'manager'],
+  requiredRoles: ['admin', 'manager', 'staff'],
   group: 'finance',
   order: 102,
   routes: [

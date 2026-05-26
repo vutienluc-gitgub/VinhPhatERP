@@ -1,120 +1,149 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useRef, Fragment } from 'react';
 
-import { Icon } from '@/shared/components/Icon';
-import { TabSwitcher, type TabItem } from '@/shared/components/TabSwitcher';
-import { Switch } from '@/shared/components/Switch';
 import { Button } from '@/shared/components/Button';
+import { Icon } from '@/shared/components/Icon';
 import { PanelIcon } from '@/features/settings/PanelIcon';
-import {
-  usePermissions,
-  useRolePermissions,
-  useUpsertRolePermissions,
-} from '@/api/permissions.api';
 import {
   PERMISSION_MODULE_LABELS,
   PERMISSION_MODULE_ICONS,
+  PERMISSION_ACTION_LABELS,
   ROLE_LABELS,
   CONFIGURABLE_ROLES,
-  type Permission,
 } from '@/schema/permissions.schema';
 
-const ROLE_TABS: TabItem<string>[] = CONFIGURABLE_ROLES.map((r) => ({
-  key: r,
-  label: ROLE_LABELS[r] ?? r,
-}));
+import { usePermissionMatrix } from './usePermissionMatrix';
 
 const MESSAGES = {
   TITLE: 'Phân quyền chi tiết',
-  SUBTITLE: 'Cấu hình quyền truy cập cho từng vai trò',
+  SUBTITLE: 'Cấu hình quyền truy cập cho tất cả vai trò',
   ADMIN_NOTE: 'Admin luôn có toàn quyền và không thể chỉnh sửa.',
   SAVE_SUCCESS: 'Đã lưu phân quyền thành công!',
-  SAVE_ERROR: 'Lỗi khi lưu:',
   BTN_SAVE: 'Lưu thay đổi',
-  BTN_SAVING: 'Đang lưu...',
   BTN_UNDO: 'Hoàn tác',
-  LOADING: 'Đang tải...',
   EMPTY: 'Chưa có quyền nào được cấu hình.',
+  BTN_RETRY: 'Thử lại',
+  SEARCH_PLACEHOLDER: 'Tìm kiếm quyền...',
+  HEADER_PERMISSION: 'Quyền / Chức năng',
+  DIRTY_MESSAGE: (count: number) => `Có ${count} thay đổi chưa lưu`,
 } as const;
 
-function groupByModule(permissions: Permission[]) {
-  const groups = new Map<string, Permission[]>();
-  for (const p of permissions) {
-    const list = groups.get(p.module) ?? [];
-    list.push(p);
-    groups.set(p.module, list);
-  }
-  return groups;
+interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  indeterminate?: boolean;
 }
 
-type ConfigurableRole = (typeof CONFIGURABLE_ROLES)[number];
+function Checkbox({ indeterminate, className = '', ...props }: CheckboxProps) {
+  const ref = useRef<HTMLInputElement>(null);
 
-export function PermissionMatrixForm() {
-  const { data: allPermissions, isLoading: loadingPerms } = usePermissions();
-  const [activeRole, setActiveRole] = useState<ConfigurableRole>('manager');
-  const { data: rolePerms, isLoading: loadingRole } =
-    useRolePermissions(activeRole);
-  const mutation = useUpsertRolePermissions();
-
-  /**
-   * Derive the "initial" (server-side) grants via useMemo instead of
-   * useEffect + setState. This eliminates the transient frame where
-   * localGrants holds OLD role data while rolePerms already has new data,
-   * which caused a brief flash of incorrect "dirty" state during tab switching.
-   */
-  const initialGrants = useMemo(() => {
-    if (!rolePerms || !allPermissions) return {};
-    const map: Record<string, boolean> = {};
-    for (const p of allPermissions) {
-      map[p.key] = false;
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.indeterminate = !!indeterminate;
     }
-    for (const rp of rolePerms) {
-      map[rp.permission_key] = rp.granted;
-    }
-    return map;
-  }, [rolePerms, allPermissions]);
-
-  // Local state: permission_key → granted (user edits)
-  const [localGrants, setLocalGrants] = useState<Record<string, boolean>>({});
-
-  /**
-   * Stable key to track which role's grants we've loaded into local state.
-   * When server data arrives for a new role, we re-initialize local grants.
-   */
-  const [syncedKey, setSyncedKey] = useState('');
-  const currentKey = `${activeRole}-${rolePerms?.length ?? 'x'}`;
-
-  if (currentKey !== syncedKey && Object.keys(initialGrants).length > 0) {
-    setLocalGrants(initialGrants);
-    setSyncedKey(currentKey);
-  }
-
-  const isDirty = useMemo(() => {
-    return Object.keys(localGrants).some(
-      (k) => localGrants[k] !== initialGrants[k],
-    );
-  }, [localGrants, initialGrants]);
-
-  const handleToggle = (key: string, granted: boolean) => {
-    setLocalGrants((prev) => ({ ...prev, [key]: granted }));
-  };
-
-  const handleSave = async () => {
-    const changes = Object.entries(localGrants).map(([key, granted]) => ({
-      key,
-      granted,
-    }));
-    await mutation.mutateAsync({ role: activeRole, permissions: changes });
-  };
-
-  const handleUndo = () => {
-    setLocalGrants({ ...initialGrants });
-  };
-
-  const isLoading = loadingPerms || loadingRole;
-  const permGroups = allPermissions ? groupByModule(allPermissions) : null;
+  }, [indeterminate]);
 
   return (
-    <div className="panel-card card-flush">
+    <input
+      type="checkbox"
+      ref={ref}
+      className={`cursor-pointer w-4 h-4 accent-[var(--primary)] border-border rounded transition-all duration-200 hover:scale-105 ${className}`}
+      {...props}
+    />
+  );
+}
+
+export function PermissionMatrixForm() {
+  const {
+    allPermissions,
+    localGrants,
+    searchQuery,
+    setSearchQuery,
+    isSaving,
+    saveSuccess,
+    dirtyCount,
+    handleToggle,
+    handleToggleModule,
+    handleToggleRole,
+    handleUndo,
+    handleSave,
+    roleCheckStates,
+    moduleCheckStates,
+    filteredGroups,
+    isLoading,
+    isError,
+    errDetail,
+  } = usePermissionMatrix();
+
+  if (isLoading) {
+    return (
+      <div className="panel-card card-flush p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <PanelIcon name="ShieldCheck" color="indigo" />
+          <div>
+            <span className="font-bold text-lg block">{MESSAGES.TITLE}</span>
+            <span className="text-xs text-muted">{MESSAGES.SUBTITLE}</span>
+          </div>
+        </div>
+        <div className="flex flex-col gap-4">
+          <div className="skeleton-block h-[40px] w-[200px] rounded-md" />
+          <div className="border border-border rounded-lg overflow-hidden">
+            <div className="skeleton-block h-[42px] w-full" />
+            <div className="divide-y divide-border">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={`skel-row-${i}`}
+                  className="flex gap-4 p-3.5 items-center"
+                >
+                  <div className="skeleton-block h-[20px] w-1/4 rounded" />
+                  <div className="flex-1" />
+                  {CONFIGURABLE_ROLES.map((role) => (
+                    <div
+                      key={`skel-cell-${role}-${i}`}
+                      className="skeleton-block h-[20px] w-[60px] rounded"
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="panel-card card-flush p-6 text-center">
+        <Icon
+          name="ShieldAlert"
+          size={48}
+          className="mx-auto text-[var(--danger)] mb-2"
+        />
+        <p className="text-sm font-semibold text-[var(--danger)]">
+          {errDetail instanceof Error ? errDetail.message : String(errDetail)}
+        </p>
+        <Button variant="outline" className="mt-4 mx-auto" onClick={handleUndo}>
+          {MESSAGES.BTN_RETRY}
+        </Button>
+      </div>
+    );
+  }
+
+  if (!allPermissions || allPermissions.length === 0) {
+    return (
+      <div className="panel-card card-flush p-6 text-center">
+        <Icon
+          name="ShieldAlert"
+          size={48}
+          className="mx-auto text-muted mb-2"
+        />
+        <p className="text-sm text-muted">{MESSAGES.EMPTY}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`panel-card card-flush transition-all duration-300 ${dirtyCount > 0 ? 'pb-20' : ''}`}
+    >
       <div className="card-header-area">
         <div className="flex items-center gap-3">
           <PanelIcon name="ShieldCheck" color="indigo" />
@@ -125,135 +154,203 @@ export function PermissionMatrixForm() {
         </div>
       </div>
 
-      <div className="p-6 flex flex-col gap-5">
-        {/* Admin note */}
-        <div className="info-box flex items-center gap-2 text-sm">
-          <Icon
-            name="Info"
-            size={14}
-            strokeWidth={2}
-            className="text-muted shrink-0"
-          />
-          <span>{MESSAGES.ADMIN_NOTE}</span>
+      <div className="p-6 flex flex-col gap-4">
+        {/* Controls block */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
+          <div className="info-box flex items-center gap-2 text-sm max-w-xl">
+            <Icon
+              name="Info"
+              size={14}
+              strokeWidth={2}
+              className="text-muted shrink-0"
+            />
+            <span>{MESSAGES.ADMIN_NOTE}</span>
+          </div>
+
+          <div className="perm-search-wrapper ml-auto w-full md:w-auto">
+            <Icon name="Search" size={16} className="perm-search-icon" />
+            <input
+              type="text"
+              placeholder={MESSAGES.SEARCH_PLACEHOLDER}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="perm-search-input"
+            />
+          </div>
         </div>
 
-        {/* Role tabs */}
-        <TabSwitcher
-          tabs={ROLE_TABS}
-          active={activeRole}
-          onChange={(key) => setActiveRole(key as ConfigurableRole)}
-          variant="premium"
-        />
-
-        {/* Feedback */}
-        {mutation.isSuccess && (
+        {/* Feedback alerts */}
+        {saveSuccess && (
           <div className="success-inline">
             <Icon name="CheckCircle2" size={16} strokeWidth={2} />
             {MESSAGES.SAVE_SUCCESS}
           </div>
         )}
 
-        {mutation.error && (
-          <p className="error-inline">
-            {MESSAGES.SAVE_ERROR}{' '}
-            {mutation.error instanceof Error
-              ? mutation.error.message
-              : String(mutation.error)}
-          </p>
-        )}
-
-        {/* Loading */}
-        {isLoading && (
-          <div className="flex flex-col gap-3">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={`perm-skel-${i}`}
-                className="skeleton-block h-[48px] rounded-lg"
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Empty state */}
-        {!isLoading && (!allPermissions || allPermissions.length === 0) && (
-          <p className="text-sm text-muted text-center py-8">
-            {MESSAGES.EMPTY}
-          </p>
-        )}
-
-        {/* Permission groups */}
-        {!isLoading && permGroups && (
-          <div className="flex flex-col gap-4">
-            {Array.from(permGroups.entries()).map(([module, perms]) => (
-              <div
-                key={module}
-                className="border border-border rounded-lg overflow-hidden"
-              >
-                {/* Module header */}
-                <div className="flex items-center gap-2 px-4 py-2.5 bg-surface">
-                  <Icon
-                    name={PERMISSION_MODULE_ICONS[module] ?? 'Layers'}
-                    size={16}
-                    strokeWidth={1.5}
-                    className="text-muted"
-                  />
-                  <span className="text-xs font-bold uppercase tracking-wider text-muted">
-                    {PERMISSION_MODULE_LABELS[module] ?? module}
-                  </span>
-                </div>
-
-                {/* Permission rows */}
-                <div className="divide-y divide-border">
-                  {perms.map((perm) => (
-                    <div
-                      key={perm.key}
-                      className="flex items-center justify-between px-4 py-3"
-                    >
-                      <div className="flex flex-col gap-0.5 min-w-0">
-                        <span className="text-sm font-medium truncate">
-                          {perm.label}
+        {/* Matrix Table */}
+        <div className="perm-matrix-wrapper">
+          <table className="perm-matrix">
+            <thead>
+              <tr>
+                <th className="sticky-col min-w-[240px]">
+                  {MESSAGES.HEADER_PERMISSION}
+                </th>
+                {CONFIGURABLE_ROLES.map((role) => {
+                  const state = roleCheckStates[role] || {
+                    checked: false,
+                    indeterminate: false,
+                  };
+                  return (
+                    <th key={role} className="text-center min-w-[110px]">
+                      <div className="flex flex-col items-center gap-1.5 py-1">
+                        <span className="font-bold text-xs uppercase tracking-wide">
+                          {ROLE_LABELS[role] ?? role}
                         </span>
-                        {perm.description && (
-                          <span className="text-xs text-muted truncate">
-                            {perm.description}
-                          </span>
-                        )}
+                        <Checkbox
+                          id={`header-toggle-${role}`}
+                          checked={state.checked}
+                          indeterminate={state.indeterminate}
+                          onChange={(e) =>
+                            handleToggleRole(role, e.target.checked)
+                          }
+                          title={`Bật/Tắt toàn bộ quyền của ${ROLE_LABELS[role] ?? role}`}
+                        />
                       </div>
-                      <Switch
-                        id={`perm-${activeRole}-${perm.key}`}
-                        checked={localGrants[perm.key] ?? false}
-                        onChange={(val) => handleToggle(perm.key, val)}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+                    </th>
+                  );
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from(filteredGroups.entries()).map(([module, perms]) => {
+                if (perms.length === 0) return null;
+                return (
+                  <Fragment key={`mod-frag-${module}`}>
+                    {/* Module header row */}
+                    <tr className="perm-matrix-module-row">
+                      <td className="sticky-col font-bold">
+                        <div className="flex items-center gap-2">
+                          <Icon
+                            name={PERMISSION_MODULE_ICONS[module] ?? 'Layers'}
+                            size={14}
+                            strokeWidth={2}
+                            className="text-muted"
+                          />
+                          <span>
+                            {PERMISSION_MODULE_LABELS[module] ?? module}
+                          </span>
+                        </div>
+                      </td>
+                      {CONFIGURABLE_ROLES.map((role) => {
+                        const state = moduleCheckStates[module]?.[role] || {
+                          checked: false,
+                          indeterminate: false,
+                        };
+                        return (
+                          <td
+                            key={`mod-cell-${module}-${role}`}
+                            className="text-center"
+                          >
+                            <Checkbox
+                              id={`mod-toggle-${module}-${role}`}
+                              checked={state.checked}
+                              indeterminate={state.indeterminate}
+                              onChange={(e) =>
+                                handleToggleModule(
+                                  role,
+                                  module,
+                                  e.target.checked,
+                                  perms,
+                                )
+                              }
+                              title={`Bật/Tắt toàn bộ quyền module ${PERMISSION_MODULE_LABELS[module] ?? module} cho ${ROLE_LABELS[role] ?? role}`}
+                            />
+                          </td>
+                        );
+                      })}
+                    </tr>
 
-        {/* Actions */}
-        {!isLoading && permGroups && (
-          <div className="flex justify-end gap-3 pt-2">
+                    {/* Permissions list */}
+                    {perms.map((perm) => (
+                      <tr
+                        key={perm.key}
+                        className="hover:bg-[var(--surface-hover)]"
+                      >
+                        <td className="sticky-col py-1.5 px-3">
+                          <div className="flex flex-col gap-0.5">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-sm">
+                                {perm.label}
+                              </span>
+                              <span className="text-[10px] px-1.5 py-0.5 bg-[var(--surface-subtle)] text-[var(--muted)] rounded font-mono uppercase tracking-tight">
+                                {PERMISSION_ACTION_LABELS[perm.action] ??
+                                  perm.action}
+                              </span>
+                            </div>
+                            {perm.description && (
+                              <span className="text-xs text-muted">
+                                {perm.description}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        {CONFIGURABLE_ROLES.map((role) => (
+                          <td
+                            key={`cell-${role}-${perm.key}`}
+                            className="perm-matrix-cell"
+                          >
+                            <input
+                              type="checkbox"
+                              id={`perm-${role}-${perm.key}`}
+                              checked={localGrants[role]?.[perm.key] ?? false}
+                              onChange={(e) =>
+                                handleToggle(role, perm.key, e.target.checked)
+                              }
+                            />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Sticky Save Bar */}
+      {dirtyCount > 0 && (
+        <div className="perm-sticky-bar">
+          <div className="flex items-center gap-2 text-white">
+            <Icon name="AlertCircle" size={18} className="text-amber-400" />
+            <span className="text-sm font-semibold">
+              {MESSAGES.DIRTY_MESSAGE(dirtyCount)}
+            </span>
+          </div>
+          <div className="flex gap-3">
             <Button
-              variant="secondary"
-              type="button"
-              disabled={mutation.isPending || !isDirty}
+              variant="outline"
+              size="sm"
+              className="!bg-white/10 !text-white hover:!bg-white/20 border-none min-h-[38px] px-4 font-bold"
+              disabled={isSaving}
               onClick={handleUndo}
             >
               {MESSAGES.BTN_UNDO}
             </Button>
-            <button
-              className="primary-button btn-standard"
-              type="button"
-              disabled={mutation.isPending || !isDirty}
+            <Button
+              variant="primary"
+              size="sm"
+              className="!bg-white !text-[var(--primary)] hover:!bg-white/90 border-none min-h-[38px] px-4 font-bold"
+              disabled={isSaving}
+              isLoading={isSaving}
               onClick={handleSave}
             >
-              {mutation.isPending ? MESSAGES.BTN_SAVING : MESSAGES.BTN_SAVE}
-            </button>
+              {MESSAGES.BTN_SAVE}
+            </Button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
