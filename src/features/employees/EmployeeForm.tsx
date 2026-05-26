@@ -18,6 +18,7 @@ import {
   useUpdateEmployee,
   useNextEmployeeCode,
   useAvailableDriverProfiles,
+  useCompanyRoles,
 } from '@/application/crm';
 import { linkProfileToEmployee } from '@/api';
 
@@ -26,25 +27,6 @@ interface EmployeeFormProps {
   onClose: () => void;
   employee?: Employee | null;
 }
-
-const ROLE_OPTIONS = [
-  {
-    value: 'admin',
-    label: 'Quản trị viên',
-  },
-  {
-    value: 'sales',
-    label: 'Kinh doanh',
-  },
-  {
-    value: 'warehouse',
-    label: 'Kho bãi',
-  },
-  {
-    value: 'driver',
-    label: 'Tài xế',
-  },
-];
 
 const STATUS_OPTIONS = [
   {
@@ -62,6 +44,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
   const createMutation = useCreateEmployee();
   const updateMutation = useUpdateEmployee();
   const { data: nextCode } = useNextEmployeeCode();
+  const { data: rolesData, isLoading: isLoadingRoles } = useCompanyRoles();
 
   // State for login account link
   const [linkedProfileId, setLinkedProfileId] = useState<string | null>(null);
@@ -165,7 +148,14 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
     toast.error('Vui lòng kiểm tra lại thông tin nhập hợp lệ');
   };
 
-  const isPending = createMutation.isPending || updateMutation.isPending;
+  const isPending =
+    createMutation.isPending || updateMutation.isPending || isLoadingRoles;
+
+  const roleOptions =
+    rolesData?.map((r) => ({
+      value: r.code,
+      label: r.name,
+    })) || [];
 
   return (
     <AdaptiveSheet
@@ -265,7 +255,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
               Vai trò <span className="field-required">*</span>
             </label>
             <Combobox
-              options={ROLE_OPTIONS}
+              options={roleOptions}
               value={form.watch('role')}
               onChange={(val) =>
                 form.setValue('role', val as EmployeeRole, {
@@ -305,6 +295,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
           </div>
         </div>
 
+        {/* Show linked profile option if the selected role is a system driver role, or just if the code is driver for now */}
         {form.watch('role') === 'driver' && (
           <div className="form-field mt-4 p-4 bg-[var(--surface-accent)] rounded-[var(--radius)]">
             <label>Tài khoản đăng nhập (Cổng tài xế)</label>
