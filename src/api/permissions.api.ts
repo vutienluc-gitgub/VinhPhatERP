@@ -1,11 +1,18 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useQueries,
+} from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
-import type {
-  Permission,
-  RolePermission,
-  RolePermissionUpdate,
+import {
+  CONFIGURABLE_ROLES,
+  type Permission,
+  type RolePermission,
+  type RolePermissionUpdate,
 } from '@/schema/permissions.schema';
 
 // ── Query Keys ──
@@ -55,6 +62,35 @@ export function useRolePermissions(role: string) {
     queryFn: () => fetchRolePermissions(role),
     enabled: role.length > 0,
   });
+}
+
+export function useAllRolesPermissions() {
+  const queries = useQueries({
+    queries: CONFIGURABLE_ROLES.map((role) => ({
+      queryKey: ROLE_PERMISSIONS_KEY(role),
+      queryFn: () => fetchRolePermissions(role),
+    })),
+  });
+
+  const isLoading = queries.some((q) => q.isLoading);
+  const isError = queries.some((q) => q.isError);
+  const error = queries.find((q) => q.error)?.error;
+
+  const data = useMemo(() => {
+    if (isLoading || isError) return undefined;
+    const result: Record<string, RolePermission[]> = {};
+    CONFIGURABLE_ROLES.forEach((role, index) => {
+      result[role] = queries[index]?.data ?? [];
+    });
+    return result;
+  }, [queries, isLoading, isError]);
+
+  return {
+    data,
+    isLoading,
+    isError,
+    error,
+  };
 }
 
 // ── Fetch current user's permissions (based on their role) ──

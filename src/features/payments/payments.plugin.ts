@@ -7,7 +7,7 @@ export const paymentsPlugin: FeaturePlugin = {
   shortLabel: 'Tiền',
   description: 'Quản lý chi phí, công nợ NCC và các giao dịch thanh toán.',
   icon: 'CircleDollarSign',
-  requiredRoles: ['admin', 'manager'],
+  requiredRoles: ['admin', 'manager', 'staff'],
   group: 'finance',
   order: 100,
   routes: [
@@ -26,7 +26,7 @@ export const debtsPlugin: FeaturePlugin = {
   shortLabel: 'Công nợ',
   description: 'Quản lý nợ phải thu và nợ phải trả.',
   icon: 'CreditCard',
-  requiredRoles: ['admin', 'manager'],
+  requiredRoles: ['admin', 'manager', 'staff'],
   group: 'finance',
   order: 101,
   routes: [

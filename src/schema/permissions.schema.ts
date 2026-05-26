@@ -44,6 +44,18 @@ export const PERMISSION_MODULE_ICONS: Record<string, string> = {
   system: 'Shield',
 };
 
+export const PERMISSION_ACTION_LABELS: Record<string, string> = {
+  read: 'Xem',
+  create: 'Tạo',
+  update: 'Sửa',
+  delete: 'Xóa',
+  export: 'Xuất file',
+  import: 'Nhập',
+  manage: 'Quản lý',
+  update_status: 'Cập nhật TT',
+  write: 'Cấu hình',
+};
+
 // ── Role labels cho UI ──
 
 export const ROLE_LABELS: Record<string, string> = {
