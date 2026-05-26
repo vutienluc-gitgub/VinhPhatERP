@@ -20,3 +20,4 @@ export * from './settings.api';
 // dashboard.api excluded from barrel (fetchMonthlyRevenue name conflict with reports.api)
 export * from './employees.api';
 export * from './cost-estimations.api';
+export * from './roles.api';

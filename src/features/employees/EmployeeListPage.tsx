@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 import type { Employee } from '@/schema';
 import {
@@ -6,22 +6,21 @@ import {
   Badge,
   DataTable,
   AddButton,
+  Button,
   ActionBar,
   FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { useEmployees, useDeactivateEmployee } from '@/application/crm';
+import {
+  useEmployees,
+  useDeactivateEmployee,
+  useCompanyRoles,
+} from '@/application/crm';
 
 import { EmployeeForm } from './EmployeeForm';
-
-const ROLE_LABELS: Record<string, string> = {
-  admin: 'Quản trị viên',
-  sales: 'Kinh doanh',
-  warehouse: 'Kho bãi',
-  driver: 'Tài xế',
-};
+import { RoleManagementModal } from './RoleManagementModal';
 
 const STATUS_LABELS: Record<string, string> = {
   active: 'Hoạt động',
@@ -43,6 +42,17 @@ export function EmployeeListPage() {
     query: filterValues.query || undefined,
   });
 
+  const { data: rolesData } = useCompanyRoles();
+  const roleOptions = useMemo(
+    () => rolesData?.map((r) => ({ value: r.code, label: r.name })) || [],
+    [rolesData],
+  );
+
+  const roleLabels = useMemo(
+    () => Object.fromEntries(rolesData?.map((r) => [r.code, r.name]) || []),
+    [rolesData],
+  );
+
   const filterSchema: FilterFieldConfig[] = [
     {
       key: 'query',
@@ -54,24 +64,7 @@ export function EmployeeListPage() {
       key: 'role',
       type: 'combobox',
       label: 'Vai trò',
-      options: [
-        {
-          value: 'admin',
-          label: 'Quản trị viên',
-        },
-        {
-          value: 'sales',
-          label: 'Kinh doanh',
-        },
-        {
-          value: 'warehouse',
-          label: 'Kho bãi',
-        },
-        {
-          value: 'driver',
-          label: 'Tài xế',
-        },
-      ],
+      options: roleOptions,
     },
   ];
 
@@ -86,6 +79,7 @@ export function EmployeeListPage() {
   const { confirm } = useConfirm();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
     null,
   );
@@ -125,8 +119,17 @@ export function EmployeeListPage() {
     <div className="page-container">
       <div className="panel-card card-flush">
         {/* Header Area */}
-        <div className="card-header-area">
-          <AddButton onClick={handleCreate} label="Thêm mới" />
+        <div className="card-header-area flex items-center justify-between">
+          <div className="flex gap-2">
+            <AddButton onClick={handleCreate} label="Thêm mới" />
+            <Button
+              variant="secondary"
+              onClick={() => setIsRoleModalOpen(true)}
+            >
+              <Icon name="Settings" size={16} className="mr-2" /> Quản lý vai
+              trò
+            </Button>
+          </div>
         </div>
 
         {/* KPI Dashboard area */}
@@ -272,7 +275,7 @@ export function EmployeeListPage() {
               sortable: true,
               cell: (emp) => (
                 <span className="badge-outline">
-                  {ROLE_LABELS[emp.role] ?? emp.role}
+                  {roleLabels[emp.role] ?? emp.role}
                 </span>
               ),
             },
@@ -330,7 +333,7 @@ export function EmployeeListPage() {
                 </div>
                 <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/10">
                   <span className="text-[10px] uppercase font-bold text-muted bg-surface-subtle px-1.5 py-0.5 rounded">
-                    {ROLE_LABELS[emp.role] ?? emp.role}
+                    {roleLabels[emp.role] ?? emp.role}
                   </span>
                 </div>
               </div>
@@ -342,6 +345,10 @@ export function EmployeeListPage() {
           open={isFormOpen}
           onClose={() => setIsFormOpen(false)}
           employee={selectedEmployee}
+        />
+        <RoleManagementModal
+          open={isRoleModalOpen}
+          onClose={() => setIsRoleModalOpen(false)}
         />
       </div>
     </div>
