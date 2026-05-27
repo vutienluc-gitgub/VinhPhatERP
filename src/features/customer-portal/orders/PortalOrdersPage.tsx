@@ -1,34 +1,247 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
 import { usePortalOrders } from '@/application/crm/portal';
 import { formatCurrency } from '@/shared/utils/format';
 import { Button, Icon } from '@/shared/components';
+import type { PortalOrder, PortalOrderItem } from '@/domain/portal/types';
+import {
+  ORDER_STATUS_LABELS,
+  ORDER_STATUS_BADGE,
+  TIMELINE_STEPS,
+} from '@/features/customer-portal/constants';
 
 import { OrderRequestModal } from './OrderRequestModal';
+import {
+  getPaymentBadge,
+  getStepStates,
+  getMobileStatusLabel,
+} from './order-utils';
 
-const STATUS_LABEL: Record<string, string> = {
-  pending_review: 'Chờ duyệt',
-  draft: 'Nháp',
-  confirmed: 'Đã xác nhận',
-  in_progress: 'Đang sản xuất',
-  completed: 'Hoàn thành',
-  cancelled: 'Đã hủy',
-};
+const MAX_PREVIEW_ITEMS = 2;
 
-const STATUS_BADGE: Record<string, string> = {
-  pending_review: 'portal-badge portal-badge--draft',
-  draft: 'portal-badge portal-badge--draft',
-  confirmed: 'portal-badge portal-badge--confirmed',
-  in_progress: 'portal-badge portal-badge--in-progress',
-  completed: 'portal-badge portal-badge--completed',
-  cancelled: 'portal-badge portal-badge--cancelled',
-};
+/* ── Sub-components ── */
+
+function CheckIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
+
+function HorizontalStepper({ order }: { order: PortalOrder }) {
+  const { steps } = getStepStates(order);
+  if (steps.length === 0) return null;
+
+  // Calculate progress line width
+  const lastCompleted = steps.lastIndexOf('completed');
+  const activeIdx = steps.indexOf('active');
+  const furthest = activeIdx >= 0 ? activeIdx : lastCompleted;
+  const progressPercent =
+    furthest >= 0 ? (furthest / (steps.length - 1)) * 100 : 0;
+
+  return (
+    <div>
+      <div className="portal-stepper-mobile-status">
+        Tiến độ: {getMobileStatusLabel(order)}
+      </div>
+      <div className="portal-stepper">
+        <div
+          className="portal-stepper-progress"
+          style={{
+            width: `${progressPercent * 0.8}%`,
+          }}
+        />
+        {TIMELINE_STEPS.map((step, idx) => {
+          const state = steps[idx];
+          const stepClass = [
+            'portal-stepper-step',
+            state === 'completed' ? 'portal-stepper-step--completed' : '',
+            state === 'active' ? 'portal-stepper-step--active' : '',
+          ]
+            .filter(Boolean)
+            .join(' ');
+
+          const dotClass = [
+            'portal-stepper-dot',
+            state === 'completed' ? 'portal-stepper-dot--completed' : '',
+            state === 'active' ? 'portal-stepper-dot--active' : '',
+          ]
+            .filter(Boolean)
+            .join(' ');
+
+          return (
+            <div key={step.key} className={stepClass}>
+              <div className={dotClass}>
+                {state === 'completed' && <CheckIcon />}
+                {state === 'active' && (
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="12" r="5" />
+                  </svg>
+                )}
+              </div>
+              <span className="portal-stepper-label">{step.label}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ProductList({ items }: { items: PortalOrderItem[] }) {
+  const [expanded, setExpanded] = useState(false);
+
+  if (items.length === 0) return null;
+
+  const visibleItems = expanded ? items : items.slice(0, MAX_PREVIEW_ITEMS);
+  const hiddenCount = items.length - MAX_PREVIEW_ITEMS;
+
+  return (
+    <div className="portal-product-list">
+      {visibleItems.map((item) => (
+        <div key={item.id} className="portal-product-item">
+          <div className="portal-product-info">
+            <span className="portal-product-fabric">{item.fabric_name}</span>
+            {item.color && (
+              <span className="portal-product-color">- {item.color}</span>
+            )}
+          </div>
+          <span className="portal-product-qty">x{item.quantity}</span>
+        </div>
+      ))}
+      {hiddenCount > 0 && (
+        <button
+          type="button"
+          className="portal-items-toggle"
+          onClick={() => setExpanded((prev) => !prev)}
+        >
+          {expanded ? 'Thu gọn' : `+ ${hiddenCount} sản phẩm khác`}
+          <Icon name={expanded ? 'ChevronUp' : 'ChevronDown'} size={14} />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function OrderCard({
+  order,
+  onReorder,
+}: {
+  order: PortalOrder;
+  onReorder: (items: PortalOrderItem[]) => void;
+}) {
+  const isCancelled = order.status === 'cancelled';
+  const paymentBadge = getPaymentBadge(order);
+  const items = order.items ?? [];
+
+  const cardClass = [
+    'portal-order-card-premium',
+    isCancelled ? 'portal-order-card-premium--cancelled' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  return (
+    <div className={cardClass}>
+      {/* Header */}
+      <div className="portal-card-premium-header">
+        <div className="portal-card-premium-header-left">
+          <Link
+            to={`/portal/orders/${order.id}`}
+            className="portal-card-premium-order-number"
+          >
+            #{order.order_number}
+          </Link>
+          <div className="portal-card-premium-meta">
+            <span>{order.order_date}</span>
+            <span>·</span>
+            <span>{items.length} sản phẩm</span>
+          </div>
+        </div>
+        <div className="portal-card-premium-header-right">
+          <span className="portal-card-premium-amount">
+            {formatCurrency(order.total_amount)} ₫
+          </span>
+          <div className="portal-card-premium-badges">
+            <span
+              className={ORDER_STATUS_BADGE[order.status] ?? 'portal-badge'}
+            >
+              {ORDER_STATUS_LABELS[order.status] ?? order.status}
+            </span>
+            {!isCancelled && (
+              <span className={paymentBadge.className}>
+                {paymentBadge.label}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div className="portal-card-premium-body">
+        {/* Product list (collapsible) */}
+        {items.length > 0 && <ProductList items={items} />}
+
+        {/* Timeline or cancelled notice */}
+        {isCancelled ? (
+          <div className="portal-cancelled-notice">
+            <Icon name="XCircle" size={18} />
+            Đơn hàng đã bị hủy
+          </div>
+        ) : (
+          <HorizontalStepper order={order} />
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="portal-card-premium-footer">
+        {!isCancelled && items.length > 0 && (
+          <button
+            type="button"
+            className="portal-btn-reorder"
+            onClick={() => onReorder(items)}
+          >
+            <Icon name="RefreshCw" size={14} />
+            Đặt lại
+          </button>
+        )}
+        <Link to={`/portal/orders/${order.id}`} className="portal-btn-detail">
+          <Icon name="FileText" size={14} />
+          Chi tiết
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+/* ── Main page ── */
 
 export function PortalOrdersPage() {
   const { orders, loading, error, page, setPage, PAGE_SIZE } =
     usePortalOrders();
+  const [reorderItems, setReorderItems] = useState<PortalOrderItem[] | null>(
+    null,
+  );
   const [showRequestModal, setShowRequestModal] = useState(false);
+
+  const handleReorder = useCallback((items: PortalOrderItem[]) => {
+    setReorderItems(items);
+    setShowRequestModal(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setShowRequestModal(false);
+    setReorderItems(null);
+  }, []);
 
   if (loading)
     return (
@@ -51,7 +264,7 @@ export function PortalOrdersPage() {
   if (error) return <div className="portal-error">{error}</div>;
 
   return (
-    <div className="portal-section relative">
+    <div className="portal-section">
       <div className="flex items-center justify-between mb-4">
         <h1 className="portal-page-title mb-0">Đơn hàng</h1>
         <Button variant="primary" onClick={() => setShowRequestModal(true)}>
@@ -86,103 +299,10 @@ export function PortalOrdersPage() {
           </div>
         </div>
       ) : (
-        <div className="portal-table-wrap">
-          {/* Desktop table */}
-          <div className="portal-table-desktop" style={{ overflowX: 'auto' }}>
-            <table className="portal-table">
-              <thead>
-                <tr>
-                  <th>Số đơn</th>
-                  <th>Ngày đặt</th>
-                  <th>Ngày giao</th>
-                  <th className="right">Tổng tiền</th>
-                  <th className="right">Đã thanh toán</th>
-                  <th>Trạng thái</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((o) => (
-                  <tr key={o.id}>
-                    <td>
-                      <Link
-                        to={`/portal/orders/${o.id}`}
-                        className="portal-link"
-                      >
-                        {o.order_number}
-                      </Link>
-                    </td>
-                    <td
-                      style={{
-                        color: '#647284',
-                        fontSize: '0.82rem',
-                      }}
-                    >
-                      {o.order_date}
-                    </td>
-                    <td
-                      style={{
-                        color: '#647284',
-                        fontSize: '0.82rem',
-                      }}
-                    >
-                      {o.due_date ?? '—'}
-                    </td>
-                    <td className="right" style={{ fontWeight: 600 }}>
-                      {formatCurrency(o.total_amount)} đ
-                    </td>
-                    <td className="right" style={{ color: '#647284' }}>
-                      {formatCurrency(o.paid_amount)} đ
-                    </td>
-                    <td>
-                      <span
-                        className={STATUS_BADGE[o.status] ?? 'portal-badge'}
-                      >
-                        {STATUS_LABEL[o.status] ?? o.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Mobile cards */}
-          <div className="portal-order-cards" style={{ padding: '0.75rem' }}>
+        <>
+          <div className="portal-order-card-list">
             {orders.map((o) => (
-              <div key={o.id} className="portal-order-card">
-                <div className="portal-order-card-row">
-                  <Link
-                    to={`/portal/orders/${o.id}`}
-                    className="portal-link"
-                    style={{ fontSize: '0.9rem' }}
-                  >
-                    {o.order_number}
-                  </Link>
-                  <span className={STATUS_BADGE[o.status] ?? 'portal-badge'}>
-                    {STATUS_LABEL[o.status] ?? o.status}
-                  </span>
-                </div>
-                <div className="portal-order-card-row">
-                  <span className="portal-order-card-meta">
-                    {o.order_date}
-                    {o.due_date && ` — Giao: ${o.due_date}`}
-                  </span>
-                  <span className="portal-order-card-amount">
-                    {formatCurrency(o.total_amount)} đ
-                  </span>
-                </div>
-                {o.paid_amount > 0 && (
-                  <div
-                    style={{
-                      fontSize: '0.75rem',
-                      color: '#647284',
-                      textAlign: 'right',
-                    }}
-                  >
-                    Đã TT: {formatCurrency(o.paid_amount)} đ
-                  </div>
-                )}
-              </div>
+              <OrderCard key={o.id} order={o} onReorder={handleReorder} />
             ))}
           </div>
 
@@ -201,11 +321,14 @@ export function PortalOrdersPage() {
               Tiếp &raquo;
             </button>
           </div>
-        </div>
+        </>
       )}
 
       {showRequestModal && (
-        <OrderRequestModal onClose={() => setShowRequestModal(false)} />
+        <OrderRequestModal
+          onClose={handleCloseModal}
+          initialItems={reorderItems ?? undefined}
+        />
       )}
     </div>
   );

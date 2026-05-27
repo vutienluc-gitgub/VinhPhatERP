@@ -5,22 +5,10 @@ import { usePortalDebt } from '@/application/crm/portal';
 import { usePortalShipments } from '@/application/crm/portal';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { formatCurrency } from '@/shared/utils/format';
-
-const STATUS_LABEL: Record<string, string> = {
-  draft: 'Nháp',
-  confirmed: 'Đã xác nhận',
-  in_progress: 'Đang sản xuất',
-  completed: 'Hoàn thành',
-  cancelled: 'Đã hủy',
-};
-
-const STATUS_BADGE: Record<string, string> = {
-  draft: 'portal-badge portal-badge--draft',
-  confirmed: 'portal-badge portal-badge--confirmed',
-  in_progress: 'portal-badge portal-badge--in-progress',
-  completed: 'portal-badge portal-badge--completed',
-  cancelled: 'portal-badge portal-badge--cancelled',
-};
+import {
+  ORDER_STATUS_LABELS,
+  ORDER_STATUS_BADGE,
+} from '@/features/customer-portal/constants';
 
 export function PortalDashboardPage() {
   const { profile } = useAuth();
@@ -189,9 +177,11 @@ export function PortalDashboardPage() {
                     </td>
                     <td>
                       <span
-                        className={STATUS_BADGE[o.status] ?? 'portal-badge'}
+                        className={
+                          ORDER_STATUS_BADGE[o.status] ?? 'portal-badge'
+                        }
                       >
-                        {STATUS_LABEL[o.status] ?? o.status}
+                        {ORDER_STATUS_LABELS[o.status] ?? o.status}
                       </span>
                     </td>
                   </tr>
@@ -211,8 +201,10 @@ export function PortalDashboardPage() {
                   >
                     {o.order_number}
                   </Link>
-                  <span className={STATUS_BADGE[o.status] ?? 'portal-badge'}>
-                    {STATUS_LABEL[o.status] ?? o.status}
+                  <span
+                    className={ORDER_STATUS_BADGE[o.status] ?? 'portal-badge'}
+                  >
+                    {ORDER_STATUS_LABELS[o.status] ?? o.status}
                   </span>
                 </div>
                 <div className="portal-order-card-row">

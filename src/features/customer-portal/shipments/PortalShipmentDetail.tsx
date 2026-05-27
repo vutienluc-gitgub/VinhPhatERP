@@ -1,16 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
 
 import { usePortalShipments } from '@/application/crm/portal';
-// eslint-disable-next-line boundaries/dependencies
 import { ChatWidget } from '@/features/chat/ChatWidget';
-
-const STATUS_LABEL: Record<string, string> = {
-  preparing: 'Đang chuẩn bị',
-  shipped: 'Đã giao',
-  delivered: 'Đã nhận',
-  partially_returned: 'Trả một phần',
-  returned: 'Đã trả',
-};
+import { SHIPMENT_STATUS_LABELS } from '@/features/customer-portal/constants';
 
 export function PortalShipmentDetail() {
   const { id } = useParams<{ id: string }>();
@@ -33,7 +25,7 @@ export function PortalShipmentDetail() {
         <div className="portal-card-header">
           <span>{shipment.shipment_number}</span>
           <span className="portal-badge">
-            {STATUS_LABEL[shipment.status] ?? shipment.status}
+            {SHIPMENT_STATUS_LABELS[shipment.status] ?? shipment.status}
           </span>
         </div>
         <div className="portal-card-body">

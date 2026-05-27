@@ -4,14 +4,7 @@ import dayjs from 'dayjs';
 import { usePortalQuotations } from '@/application/crm/portal';
 import { formatCurrency } from '@/shared/utils/format';
 import { Icon } from '@/shared/components';
-
-const STATUS_LABEL: Record<string, string> = {
-  sent: 'Mới',
-  confirmed: 'Đã chấp nhận',
-  rejected: 'Từ chối',
-  expired: 'Hết hạn',
-  converted: 'Đã lên đơn',
-};
+import { QUOTATION_STATUS_LABELS } from '@/features/customer-portal/constants';
 
 const STATUS_BADGE: Record<string, string> = {
   sent: 'portal-badge portal-badge--in-progress',
@@ -108,7 +101,8 @@ export function PortalQuotationsPage() {
                             STATUS_BADGE[displayStatus] ?? 'portal-badge'
                           }
                         >
-                          {STATUS_LABEL[displayStatus] ?? displayStatus}
+                          {QUOTATION_STATUS_LABELS[displayStatus] ??
+                            displayStatus}
                         </span>
                       </td>
                       <td className="right">
@@ -147,7 +141,7 @@ export function PortalQuotationsPage() {
                     <span
                       className={STATUS_BADGE[displayStatus] ?? 'portal-badge'}
                     >
-                      {STATUS_LABEL[displayStatus] ?? displayStatus}
+                      {QUOTATION_STATUS_LABELS[displayStatus] ?? displayStatus}
                     </span>
                   </div>
                   <div className="flex justify-between items-end">

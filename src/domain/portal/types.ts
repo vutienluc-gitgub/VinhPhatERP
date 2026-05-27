@@ -21,6 +21,12 @@ export interface PortalOrderItem {
   amount: number;
 }
 
+/** Lightweight shipment info embedded in order list queries. */
+export interface PortalOrderShipmentSummary {
+  id: string;
+  status: ShipmentStatus;
+}
+
 export interface PortalOrder {
   id: string;
   order_number: string;
@@ -31,6 +37,7 @@ export interface PortalOrder {
   status: OrderStatus;
   customer_id: string;
   items?: PortalOrderItem[];
+  shipments?: PortalOrderShipmentSummary[];
 }
 
 export interface PortalQuotationItem {
