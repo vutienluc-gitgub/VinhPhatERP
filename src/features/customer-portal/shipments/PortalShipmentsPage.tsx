@@ -1,14 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import { usePortalShipments } from '@/application/crm/portal';
-
-const STATUS_LABEL: Record<string, string> = {
-  preparing: 'Đang chuẩn bị',
-  shipped: 'Đã giao',
-  delivered: 'Đã nhận',
-  partially_returned: 'Trả một phần',
-  returned: 'Đã trả',
-};
+import { SHIPMENT_STATUS_LABELS } from '@/features/customer-portal/constants';
 
 export function PortalShipmentsPage() {
   const { shipments, loading, error } = usePortalShipments();
@@ -50,7 +43,7 @@ export function PortalShipmentsPage() {
                     <td>{s.order_number ?? '—'}</td>
                     <td>
                       <span className="portal-badge">
-                        {STATUS_LABEL[s.status] ?? s.status}
+                        {SHIPMENT_STATUS_LABELS[s.status] ?? s.status}
                       </span>
                     </td>
                     <td

@@ -11,6 +11,7 @@ import {
 } from '@/shared/hooks/useColorOptions';
 import { orderRequestFormSchema } from '@/schema/order-request.schema';
 import type { OrderRequestFormValues } from '@/schema/order-request.schema';
+import type { PortalOrderItem } from '@/domain/portal/types';
 
 type RequestFormValues = OrderRequestFormValues;
 
@@ -24,12 +25,15 @@ type OrderRequestModalProps = {
   onClose: () => void;
   onSuccess?: () => void;
   initialFabricType?: string;
+  /** Pre-fill form with items from a previous order (re-order flow). */
+  initialItems?: PortalOrderItem[];
 };
 
 export function OrderRequestModal({
   onClose,
   onSuccess,
   initialFabricType,
+  initialItems,
 }: OrderRequestModalProps) {
   const { submitOrderRequest, isPending, error } = usePortalOrderRequest();
   const { data: fabricOptions = [] } = useFabricCatalogOptions();
@@ -45,6 +49,25 @@ export function OrderRequestModal({
     [fabricOptions],
   );
 
+  const defaultItems: RequestFormValues['items'] =
+    initialItems && initialItems.length > 0
+      ? initialItems.map((item) => ({
+          fabric_type: item.fabric_name,
+          color_name: item.color ?? '',
+          quantity: item.quantity,
+          unit: 'kg',
+          notes: '',
+        }))
+      : [
+          {
+            fabric_type: initialFabricType || '',
+            color_name: '',
+            quantity: 100,
+            unit: 'kg',
+            notes: '',
+          },
+        ];
+
   const {
     register,
     control,
@@ -56,15 +79,7 @@ export function OrderRequestModal({
     defaultValues: {
       delivery_date: '',
       notes: '',
-      items: [
-        {
-          fabric_type: initialFabricType || '',
-          color_name: '',
-          quantity: 100,
-          unit: 'kg',
-          notes: '',
-        },
-      ],
+      items: defaultItems,
     },
   });
 

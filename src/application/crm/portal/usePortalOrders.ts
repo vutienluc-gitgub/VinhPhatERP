@@ -5,6 +5,7 @@ import { computeStageOverdue } from '@/features/customer-portal/utils';
 import type {
   OrderStatus,
   PortalOrder,
+  PortalOrderShipmentSummary,
   PortalProgressStage,
   StageStatus,
 } from '@/domain/portal/types';
@@ -37,7 +38,7 @@ export function usePortalOrders(orderId?: string) {
     const { data, error: err } = await supabase
       .from('orders')
       .select(
-        'id, order_number, order_date, delivery_date, total_amount, paid_amount, status, customer_id, order_items(id, fabric_type, color_name, quantity, unit_price, amount)',
+        'id, order_number, order_date, delivery_date, total_amount, paid_amount, status, customer_id, order_items(id, fabric_type, color_name, quantity, unit_price, amount), shipments(id, status)',
       )
       .order('order_date', { ascending: false })
       .range(from, to);
@@ -63,6 +64,10 @@ export function usePortalOrders(orderId?: string) {
             unit_price: i.unit_price,
             amount: i.amount ?? i.quantity * i.unit_price,
           })),
+          shipments:
+            ((o as Record<string, unknown>).shipments as
+              | PortalOrderShipmentSummary[]
+              | undefined) ?? [],
         })),
       );
     }
@@ -77,7 +82,7 @@ export function usePortalOrders(orderId?: string) {
       supabase
         .from('orders')
         .select(
-          'id, order_number, order_date, delivery_date, total_amount, paid_amount, status, customer_id, order_items(id, fabric_type, color_name, quantity, unit_price, amount)',
+          'id, order_number, order_date, delivery_date, total_amount, paid_amount, status, customer_id, order_items(id, fabric_type, color_name, quantity, unit_price, amount), shipments(id, status)',
         )
         .eq('id', id)
         .single(),
@@ -109,6 +114,10 @@ export function usePortalOrders(orderId?: string) {
           unit_price: i.unit_price,
           amount: i.amount ?? i.quantity * i.unit_price,
         })),
+        shipments:
+          ((o as Record<string, unknown>).shipments as
+            | PortalOrderShipmentSummary[]
+            | undefined) ?? [],
       });
     }
 
