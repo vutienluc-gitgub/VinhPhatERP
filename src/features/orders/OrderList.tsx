@@ -16,7 +16,6 @@ import {
 import type { ActionConfig } from '@/shared/components';
 import { formatCurrency } from '@/shared/utils/format';
 import { useDeleteOrder, useOrderList } from '@/application/orders';
-import { sumBy } from '@/shared/utils/array.util';
 import {
   ORDER_STATUS_LABELS,
   ORDER_STATUS_BADGE_VARIANTS,
@@ -27,43 +26,44 @@ import { useAuth } from '@/shared/hooks/useAuth';
 import { isOrderEditable } from '@/domain/orders/OrderStateMachine';
 
 import type { Order, OrdersFilter } from './types';
+import {
+  daysUntilDelivery,
+  calculateOrderKPIs,
+  calculateBalanceDue,
+} from './utils';
+
+const filterSchema: FilterFieldConfig[] = [
+  {
+    key: 'search',
+    type: 'search',
+    label: 'Tìm kiếm',
+    placeholder: 'Mã đơn, tên khách hàng...',
+  },
+  {
+    key: 'status',
+    type: 'combobox',
+    label: 'Trạng thái',
+    options: Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => ({
+      value,
+      label,
+    })),
+  },
+  {
+    key: 'orderType',
+    type: 'combobox',
+    label: 'Loại đơn',
+    options: ORDER_TYPE_OPTIONS.map((opt) => ({
+      value: opt.value,
+      label: opt.label,
+    })),
+  },
+];
 
 type OrderListProps = {
   onEdit: (order: Order) => void;
   onNew: () => void;
   onView: (order: Order) => void;
 };
-
-function daysUntilDelivery(
-  deliveryDate: string | null,
-): { text: string; urgent: boolean } | null {
-  if (!deliveryDate) return null;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const delivery = new Date(deliveryDate);
-  const diff = Math.ceil(
-    (delivery.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
-  );
-  if (diff < 0)
-    return {
-      text: `Trễ ${Math.abs(diff)} ngày`,
-      urgent: true,
-    };
-  if (diff === 0)
-    return {
-      text: 'Hôm nay',
-      urgent: true,
-    };
-  if (diff <= 3)
-    return {
-      text: `Còn ${diff} ngày`,
-      urgent: true,
-    };
-  return {
-    text: `Còn ${diff} ngày`,
-    urgent: false,
-  };
-}
 
 export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
   const navigate = useNavigate();
@@ -85,36 +85,8 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
   const deleteMutation = useDeleteOrder();
   const { confirm, alert: showAlert } = useConfirm();
 
-  const pendingReviewCount = orders.filter(
-    (o) => o.status === 'pending_review',
-  ).length;
-
-  const filterSchema: FilterFieldConfig[] = [
-    {
-      key: 'search',
-      type: 'search',
-      label: 'Tìm kiếm',
-      placeholder: 'Mã đơn, tên khách hàng...',
-    },
-    {
-      key: 'status',
-      type: 'combobox',
-      label: 'Trạng thái',
-      options: Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => ({
-        value,
-        label,
-      })),
-    },
-    {
-      key: 'orderType',
-      type: 'combobox',
-      label: 'Loại đơn',
-      options: ORDER_TYPE_OPTIONS.map((opt) => ({
-        value: opt.value,
-        label: opt.label,
-      })),
-    },
-  ];
+  const { pendingReviewCount, totalRevenue, totalDebt } =
+    calculateOrderKPIs(orders);
 
   function handleFilterChange(key: string, value: string | undefined) {
     setPage(1);
@@ -180,10 +152,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               <p className="kpi-label">Doanh thu dự kiến</p>
               <div className="flex items-baseline gap-1">
                 <p className="kpi-value">
-                  {formatCurrency(sumBy(orders, (o) => o.total_amount)).replace(
-                    ' đ',
-                    '',
-                  )}
+                  {formatCurrency(totalRevenue).replace(' đ', '')}
                 </p>
                 <span className="text-lg font-bold opacity-80">đ</span>
               </div>
@@ -204,11 +173,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               <p className="kpi-label">Tổng công nợ</p>
               <div className="flex items-baseline gap-1">
                 <p className="kpi-value">
-                  {formatCurrency(
-                    sumBy(orders, (o) =>
-                      Math.max(0, o.total_amount - o.paid_amount),
-                    ),
-                  ).replace(' đ', '')}
+                  {formatCurrency(totalDebt).replace(' đ', '')}
                 </p>
                 <span className="text-lg font-bold opacity-80">đ</span>
               </div>
@@ -325,11 +290,10 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               header: 'Còn nợ',
               id: 'paid_amount',
               sortable: true,
-              accessor: (order) =>
-                order.total_amount - (order.paid_amount || 0),
+              accessor: (order) => calculateBalanceDue(order),
               className: 'text-right numeric-cell font-bold',
               cell: (order) => {
-                const balanceDue = order.total_amount - order.paid_amount;
+                const balanceDue = calculateBalanceDue(order);
                 return (
                   <span
                     className={balanceDue > 0 ? 'text-danger' : 'text-success'}
@@ -387,7 +351,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           ]}
           renderMobileCard={(order) => {
             const due = daysUntilDelivery(order.delivery_date);
-            const balanceDue = order.total_amount - order.paid_amount;
+            const balanceDue = calculateBalanceDue(order);
             return (
               <div className="mobile-card">
                 <div className="mobile-card-header border-b border-border/10 pb-2 mb-2">
