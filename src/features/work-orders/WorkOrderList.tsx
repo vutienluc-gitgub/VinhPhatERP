@@ -352,6 +352,19 @@ export function WorkOrderList({
                 ),
               },
               {
+                header: 'Máy dệt',
+                id: 'loom',
+                sortable: true,
+                accessor: (wo) => wo.loom?.code,
+                cell: (wo) => (
+                  <div className="flex flex-col">
+                    <span className="font-medium text-slate-800">
+                      {wo.loom?.code || '—'}
+                    </span>
+                  </div>
+                ),
+              },
+              {
                 header: 'Trạng Thái',
                 id: 'status',
                 sortable: true,

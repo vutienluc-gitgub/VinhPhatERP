@@ -62,6 +62,7 @@ export const createWorkOrderSchema = z.object({
   start_date: z.string().nullable().optional(),
   end_date: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
+  loom_id: z.string().nullable().optional(),
   standard_loss_pct: z.number().default(0),
   yarn_requirements: z
     .array(

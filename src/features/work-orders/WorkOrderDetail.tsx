@@ -239,6 +239,12 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                 </p>
               </div>
               <div className="form-field">
+                <label>Máy dệt</label>
+                <p className="font-bold">
+                  {wo.loom?.code ? `${wo.loom.code} - ${wo.loom.name}` : '—'}
+                </p>
+              </div>
+              <div className="form-field">
                 <label>Đơn giá dệt</label>
                 <p className="font-bold">
                   {formatCurrency(wo.weaving_unit_price)}đ/m

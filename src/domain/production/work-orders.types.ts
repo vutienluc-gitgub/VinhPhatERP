@@ -23,6 +23,7 @@ export interface WorkOrder {
   supplier_id: string;
   weaving_unit_price: number;
   notes: string | null;
+  loom_id: string | null;
   created_by: string | null;
   updated_by: string | null;
   created_at: string;
@@ -61,6 +62,11 @@ export interface WorkOrderWithRelations extends WorkOrder {
     };
   };
   supplier?: {
+    id: string;
+    code: string;
+    name: string;
+  };
+  loom?: {
     id: string;
     code: string;
     name: string;

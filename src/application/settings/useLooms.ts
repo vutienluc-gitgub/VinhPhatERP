@@ -28,10 +28,14 @@ function toDbRow(values: LoomFormValues) {
     max_width_cm: values.max_width_cm ?? null,
     max_speed_rpm: values.max_speed_rpm ?? null,
     daily_capacity_m: values.daily_capacity_m ?? null,
+    daily_capacity_kg: values.daily_capacity_kg ?? null,
     year_manufactured: values.year_manufactured ?? null,
     diameter_inch: values.diameter_inch ?? null,
     gauge: values.gauge ?? null,
     feeders: values.feeders ?? null,
+    needles: values.needles ?? null,
+    gsm_range: values.gsm_range?.trim() || null,
+    yarn_support: values.yarn_support?.trim() || null,
     motor_power_kw: values.motor_power_kw ?? null,
     voltage: values.voltage?.trim() || null,
     weight_kg: values.weight_kg ?? null,
@@ -54,10 +58,11 @@ export function useLoomOptions() {
   });
 }
 
-export function useNextLoomCode() {
+export function useNextLoomCode(prefix?: string) {
   return useQuery({
-    queryKey: [...QUERY_KEY, 'next-code'],
-    queryFn: fetchNextLoomCode,
+    queryKey: [...QUERY_KEY, 'next-code', prefix ?? 'LOOM'],
+    queryFn: () => fetchNextLoomCode(prefix),
+    enabled: !!prefix,
   });
 }
 

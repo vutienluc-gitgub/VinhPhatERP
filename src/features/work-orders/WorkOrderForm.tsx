@@ -22,6 +22,7 @@ import {
   useUnitOptions,
   useWorkOrderRequirements,
 } from '@/application/production';
+import { useLoomOptions } from '@/application/settings/useLooms';
 import { useWorkOrderLogic } from '@/application/production';
 import {
   createWorkOrderSchema,
@@ -77,6 +78,7 @@ export function WorkOrderForm({
     status: 'active',
   });
   const { data: units = [] } = useUnitOptions();
+  const { data: looms = [] } = useLoomOptions();
 
   const orderOptions = useMemo(
     () =>
@@ -156,6 +158,7 @@ export function WorkOrderForm({
             ? new Date(initialData.end_date).toISOString().split('T')[0]
             : '',
           notes: initialData.notes ?? '',
+          loom_id: initialData.loom_id ?? '',
           yarn_requirements: [],
         }
       : {
@@ -171,10 +174,24 @@ export function WorkOrderForm({
           start_date: new Date().toISOString().split('T')[0],
           end_date: '',
           notes: '',
+          loom_id: '',
           yarn_requirements: [],
         },
     mode: 'onTouched',
   });
+
+  const selectedSupplierId = watch('supplier_id');
+
+  const loomOptions = useMemo(() => {
+    return looms
+      .filter(
+        (l) => !selectedSupplierId || l.supplier_id === selectedSupplierId,
+      )
+      .map((l) => ({
+        value: l.id,
+        label: `${l.code} — ${l.name}`,
+      }));
+  }, [looms, selectedSupplierId]);
 
   const handleCancel = useCallback(() => {
     if (isDirty) {
@@ -389,7 +406,11 @@ export function WorkOrderForm({
                     <Combobox
                       options={supplierOptions}
                       value={field.value}
-                      onChange={field.onChange}
+                      onChange={(val) => {
+                        field.onChange(val);
+                        // Reset loom_id if supplier changes
+                        setValue('loom_id', '');
+                      }}
                       placeholder="— Chọn nhà dệt —"
                       hasError={!!errors.supplier_id}
                     />
@@ -399,6 +420,33 @@ export function WorkOrderForm({
                   <span className="field-error">
                     {errors.supplier_id.message}
                   </span>
+                )}
+              </div>
+
+              <div className="form-field">
+                <label>Máy dệt dự kiến (Điều độ)</label>
+                <Controller
+                  name="loom_id"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={loomOptions}
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      placeholder={
+                        selectedSupplierId
+                          ? loomOptions.length === 0
+                            ? '— Nhà dệt này chưa có máy —'
+                            : '— Chọn máy dệt —'
+                          : '— Chọn nhà dệt trước —'
+                      }
+                      hasError={!!errors.loom_id}
+                      disabled={!selectedSupplierId}
+                    />
+                  )}
+                />
+                {errors.loom_id && (
+                  <span className="field-error">{errors.loom_id.message}</span>
                 )}
               </div>
 
