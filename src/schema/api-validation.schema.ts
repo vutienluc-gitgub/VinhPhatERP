@@ -153,12 +153,11 @@ export const apiTaskInsert = z.object({
 });
 
 // ── Looms ─────────────────────────────────────────────────────────────────
+import { LOOM_TYPES } from './loom.schema';
 export const apiLoomInsert = z.object({
   code: nonEmpty,
   name: nonEmpty,
-  loom_type: z
-    .enum(['rapier', 'air_jet', 'water_jet', 'shuttle', 'other'])
-    .default('rapier'),
+  loom_type: z.enum(LOOM_TYPES).default('rapier'),
   supplier_id: uuid,
   status: z.enum(['active', 'maintenance', 'inactive']).default('active'),
 });

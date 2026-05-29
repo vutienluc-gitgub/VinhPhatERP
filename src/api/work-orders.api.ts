@@ -35,7 +35,8 @@ export async function fetchWorkOrders(
         id, order_number,
         customer:customers(id, name)
       ),
-      supplier:suppliers(id, code, name)
+      supplier:suppliers(id, code, name),
+      loom:looms(id, code, name)
     `;
 
   // yarn_issued is not in the DB enum type — use untypedDb when filtering by it
@@ -95,7 +96,8 @@ export async function fetchWorkOrderById(
         id, order_number,
         customer:customers(id, name)
       ),
-      supplier:suppliers(id, code, name)
+      supplier:suppliers(id, code, name),
+      loom:looms(id, code, name)
     `,
     )
     .eq('id', id)
@@ -175,6 +177,7 @@ export async function createWorkOrder(
     supplier_id: input.supplier_id,
     weaving_unit_price: input.weaving_unit_price || 0,
     notes: input.notes || null,
+    loom_id: input.loom_id || null,
   };
 
   // 4. Generate Yarn Requirements (using Table Data if provided)
@@ -276,6 +279,7 @@ export async function updateWorkOrder(
     standard_loss_pct: number;
     bom_version?: number;
     target_weight_kg?: number | null;
+    loom_id?: string | null;
   }
 
   const update: WorkOrderUpdateData = {
@@ -293,6 +297,7 @@ export async function updateWorkOrder(
     notes: input.notes !== undefined ? input.notes : current.notes,
     standard_loss_pct:
       input.standard_loss_pct ?? (current.standard_loss_pct || 0),
+    loom_id: input.loom_id === 'none' ? null : input.loom_id || current.loom_id,
   };
 
   // 2. Determine if recalculation is needed

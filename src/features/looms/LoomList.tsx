@@ -1,14 +1,13 @@
 import { useState, useMemo, useCallback } from 'react';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
-  DataTableAdvanced,
   AddButton,
-  ActionMenu,
   FilterBar,
   type FilterFieldConfig,
   KpiCard,
+  Pagination,
+  EmptyState,
 } from '@/shared/components';
 import { useDeleteLoom, useLoomList } from '@/application/settings';
 import type { LoomStatus, LoomType } from '@/schema/loom.schema';
@@ -21,7 +20,7 @@ import {
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 
 import type { LoomWithSupplier, LoomFilter } from './types';
-import { SaaSBadge, LoomMobileCard } from './components/LoomMobileCard';
+import { LoomCompactCard } from './components/LoomCompactCard';
 
 type LoomListProps = {
   onEdit: (loom: LoomWithSupplier) => void;
@@ -76,12 +75,16 @@ export function LoomList({ onEdit, onNew }: LoomListProps) {
   const { confirm } = useConfirm();
 
   const looms = useMemo(() => data?.data ?? [], [data?.data]);
-  const activeCount = useMemo(
-    () => looms.filter((l) => l.status === 'active').length,
+  const runningCount = useMemo(
+    () => looms.filter((l) => l.status === 'running').length,
     [looms],
   );
-  const maintenanceCount = useMemo(
-    () => looms.filter((l) => l.status === 'maintenance').length,
+  const idleCount = useMemo(
+    () => looms.filter((l) => l.status === 'idle').length,
+    [looms],
+  );
+  const breakdownCount = useMemo(
+    () => looms.filter((l) => l.status === 'breakdown').length,
     [looms],
   );
 
@@ -102,174 +105,116 @@ export function LoomList({ onEdit, onNew }: LoomListProps) {
     [confirm, deleteMutation],
   );
 
-  const columns = useMemo<ColumnDef<LoomWithSupplier>[]>(
-    () => [
-      {
-        accessorKey: 'code',
-        header: 'Máy dệt',
-        cell: ({ row }) => {
-          const l = row.original;
-          return (
-            <div className="flex flex-col gap-1.5 items-start">
-              <div className="flex items-center gap-2">
-                <span className="text-foreground text-[0.9rem] font-bold tracking-tight">
-                  {l.code}
-                </span>
-                <SaaSBadge status={l.status} />
-              </div>
-              <span className="text-muted-foreground text-[0.75rem] mt-0.5 line-clamp-1">
-                <span className="font-medium text-foreground">{l.name}</span> •{' '}
-                {LOOM_TYPE_LABELS[l.loom_type]}
-              </span>
-            </div>
-          );
-        },
-      },
-      {
-        accessorFn: (l) => l.supplier?.name,
-        id: 'supplier',
-        header: 'Nhà dệt',
-        cell: ({ row }) => (
-          <span className="font-medium text-[0.85rem]">
-            {row.original.supplier?.name ?? '—'}
-          </span>
-        ),
-      },
-      {
-        accessorKey: 'daily_capacity_m',
-        header: () => <div className="text-right w-full">Thông số</div>,
-        meta: { className: 'text-right' },
-        cell: ({ row }) => {
-          const l = row.original;
-          return (
-            <div className="flex flex-col items-end text-right w-full gap-1.5">
-              <span className="font-medium text-foreground text-[0.85rem]">
-                {l.daily_capacity_m
-                  ? `${l.daily_capacity_m.toLocaleString()} m/ngày`
-                  : '—'}
-              </span>
-              <span className="text-muted-foreground text-[0.75rem]">
-                {l.max_width_cm ? `Khổ: ${l.max_width_cm} cm` : ''}
-                {l.max_width_cm && (l.diameter_inch || l.gauge) ? ' | ' : ''}
-                {l.diameter_inch ? `${l.diameter_inch}"` : ''}
-                {l.diameter_inch && l.gauge ? 'x' : ''}
-                {l.gauge ? `${l.gauge}G` : ''}
-              </span>
-            </div>
-          );
-        },
-      },
-      {
-        id: 'actions',
-        header: '',
-        meta: { className: 'td-actions w-12' },
-        cell: ({ row }) => {
-          const l = row.original;
-          return (
-            <div className="flex justify-end pr-2">
-              <ActionMenu
-                items={[
-                  {
-                    label: 'Chỉnh sửa',
-                    icon: 'Pencil',
-                    onClick: () => onEdit(l),
-                  },
-                  {
-                    label: 'Xóa máy dệt',
-                    icon: 'Trash2',
-                    onClick: () => handleDelete(l),
-                    danger: true,
-                    disabled: deleteMutation.isPending,
-                  },
-                ]}
-              />
-            </div>
-          );
-        },
-      },
-    ],
-    [onEdit, handleDelete, deleteMutation.isPending],
-  );
-
   return (
-    <div className="panel-card card-flush">
-      {/* Action bar */}
-      <div className="card-header-area">
+    <div className="flex flex-col gap-6">
+      {/* Action bar & Title */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Máy dệt (MES)</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Quản lý hiệu suất, trạng thái thời gian thực và thông số kỹ thuật.
+          </p>
+        </div>
         <AddButton onClick={onNew} label="Thêm máy dệt" />
       </div>
 
       {/* KPI Dashboard */}
-      <div className="kpi-section kpi-grid">
+      <div className="kpi-grid">
         <KpiCard
           label="Tổng số máy"
           value={data?.total ?? 0}
           icon="Cog"
           variant="primary"
           formatMode="number"
-          footer="Toàn bộ danh mục"
         />
         <KpiCard
-          label="Đang hoạt động"
-          value={activeCount}
+          label="Đang chạy (Running)"
+          value={runningCount}
           icon="Activity"
           variant="success"
           formatMode="number"
-          footer="Trên trang hiện tại"
         />
         <KpiCard
-          label="Đang bảo trì"
-          value={maintenanceCount}
-          icon="Wrench"
-          variant="warning"
+          label="Chờ việc (Idle)"
+          value={idleCount}
+          icon="Coffee"
+          variant="secondary"
           formatMode="number"
-          footer="Cần theo dõi"
+        />
+        <KpiCard
+          label="Lỗi/Hỏng (Breakdown)"
+          value={breakdownCount}
+          icon="AlertTriangle"
+          variant="danger"
+          formatMode="number"
         />
       </div>
 
-      {/* Filters (Config-Driven) */}
-      <div className="flex flex-wrap items-start gap-3 px-4 py-3 border-b border-border/50 overflow-visible">
-        <FilterBar
-          variant="inline"
-          schema={FILTER_SCHEMA}
-          value={filters}
-          onChange={handleFilterChange}
-          onClear={() => {
-            clearFilters();
-            setPage(1);
-          }}
-        />
-      </div>
-
-      {/* Table (DataTableAdvanced) */}
-      <DataTableAdvanced
-        data={looms}
-        isLoading={isLoading}
-        rowKey={(l) => l.id}
-        onRowClick={onEdit}
-        emptyStateTitle={
-          hasActiveFilter
-            ? 'Không tìm thấy máy dệt phù hợp'
-            : 'Chưa có máy dệt nào'
-        }
-        emptyStateIcon={hasActiveFilter ? 'Search' : 'Cog'}
-        emptyStateActionLabel={!hasActiveFilter ? '+ Thêm máy dệt' : undefined}
-        onEmptyStateAction={!hasActiveFilter ? onNew : undefined}
-        columns={columns}
-        exportFileName="danh_sach_may_det"
-        renderMobileCard={(l) => (
-          <LoomMobileCard
-            loom={l}
-            onEdit={onEdit}
-            onDelete={handleDelete}
-            isDeleting={deleteMutation.isPending}
+      <div className="panel-card card-flush overflow-visible">
+        {/* Filters */}
+        <div className="flex flex-wrap items-start gap-3 px-4 py-3 border-b border-border/50">
+          <FilterBar
+            variant="inline"
+            schema={FILTER_SCHEMA}
+            value={filters}
+            onChange={handleFilterChange}
+            onClear={() => {
+              clearFilters();
+              setPage(1);
+            }}
           />
+        </div>
+
+        {/* Content */}
+        <div className="p-4">
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-48 rounded-xl bg-surface-subtle animate-pulse border border-border/40"
+                ></div>
+              ))}
+            </div>
+          ) : looms.length === 0 ? (
+            <div className="py-20 border border-border/50 rounded-xl">
+              <EmptyState
+                icon={hasActiveFilter ? 'Search' : 'Cog'}
+                title={
+                  hasActiveFilter
+                    ? 'Không tìm thấy máy dệt phù hợp'
+                    : 'Chưa có máy dệt nào'
+                }
+                actionLabel={!hasActiveFilter ? '+ Thêm máy dệt' : undefined}
+                actionClick={!hasActiveFilter ? onNew : undefined}
+              />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {looms.map((loom) => (
+                <LoomCompactCard
+                  key={loom.id}
+                  loom={loom}
+                  onEdit={onEdit}
+                  onDelete={handleDelete}
+                  isDeleting={deleteMutation.isPending}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Pagination */}
+        {data && data.totalPages > 1 && (
+          <div className="px-4 py-3 border-t border-border/50">
+            <Pagination
+              result={data}
+              onPageChange={setPage}
+              itemLabel="máy dệt"
+            />
+          </div>
         )}
-        pagination={{
-          result: data,
-          onPageChange: setPage,
-          itemLabel: 'máy dệt',
-        }}
-      />
+      </div>
     </div>
   );
 }
