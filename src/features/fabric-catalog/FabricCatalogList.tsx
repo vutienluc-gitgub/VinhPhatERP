@@ -29,6 +29,7 @@ import type {
   FabricCatalogStatus,
 } from './types';
 import { FabricCatalogMobileCard } from './components/FabricCatalogMobileCard';
+import { FabricSampleQRModal } from './components/FabricSampleQRModal';
 
 type FabricCatalogListProps = {
   onEdit: (catalog: FabricCatalog) => void;
@@ -63,6 +64,7 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
   const { filters, setFilter, clearFilters, hasActiveFilter } =
     useUrlFilterState(FILTER_KEYS);
   const [page, setPage] = useState(1);
+  const [qrCatalog, setQrCatalog] = useState<FabricCatalog | null>(null);
 
   const apiFilters: FabricCatalogFilter = useMemo(
     () => ({
@@ -200,6 +202,11 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
                   title: 'Chỉnh sửa',
                 },
                 {
+                  icon: 'QrCode',
+                  onClick: () => setQrCatalog(c),
+                  title: 'In Tem Mẫu',
+                },
+                {
                   icon: 'Trash2',
                   onClick: () => handleDelete(c),
                   title: 'Xóa',
@@ -284,6 +291,7 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
             catalog={c}
             onEdit={onEdit}
             onDelete={handleDelete}
+            onShowQR={() => setQrCatalog(c)}
             isDeleting={deleteMutation.isPending}
           />
         )}
@@ -293,6 +301,13 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
           itemLabel: 'loại vải',
         }}
       />
+
+      {qrCatalog && (
+        <FabricSampleQRModal
+          catalog={qrCatalog}
+          onClose={() => setQrCatalog(null)}
+        />
+      )}
     </div>
   );
 }
