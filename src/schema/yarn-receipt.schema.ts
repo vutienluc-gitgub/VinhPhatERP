@@ -52,6 +52,21 @@ export const yarnReceiptItemSchema = z.object({
     .optional()
     .default(null),
   dist: z.string().trim().max(100).optional().or(z.literal('')),
+  conesPerBox: z
+    .number()
+    .int()
+    .min(1, 'Côn/thùng >= 1')
+    .nullable()
+    .optional()
+    .default(null),
+  boxCount: z
+    .number()
+    .int()
+    .min(1, 'Số thùng >= 1')
+    .nullable()
+    .optional()
+    .default(null),
+  boxNo: z.string().trim().max(20).optional().or(z.literal('')),
 });
 
 export type YarnReceiptItemFormValues = z.infer<typeof yarnReceiptItemSchema>;
@@ -97,6 +112,9 @@ export const emptyYarnReceiptItem: YarnReceiptItemFormValues = {
   serialNumber: '',
   productionWeek: null,
   dist: '',
+  conesPerBox: null,
+  boxCount: null,
+  boxNo: '',
 };
 
 export const yarnReceiptsDefaultValues: YarnReceiptsFormValues = {

@@ -61,6 +61,7 @@ export function StepperFooter({
       <div className="w-full sm:w-auto">
         {!stepper.isLast ? (
           <Button
+            key="btn-next"
             variant="primary"
             type="button"
             onClick={() => void stepper.next()}
@@ -71,6 +72,7 @@ export function StepperFooter({
           </Button>
         ) : (
           <Button
+            key="btn-submit"
             variant="primary"
             type="submit"
             form={formId}

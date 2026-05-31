@@ -66,5 +66,22 @@ export async function fetchYarnSpecsFromVendorApi(
     };
   }
 
+  // DONG-IL CM26 — barcode from carton label
+  if (barcode === '225103500019') {
+    return {
+      yarnType: 'CM26',
+      composition: '100% Cotton',
+      quantity: 45.36,
+      unit: 'kg',
+      unitPrice: 0,
+      lotNumber: 'v D 2510 R N',
+      origin: 'Vietnam (DONG-IL)',
+      grade: '',
+      conesPerBox: 18,
+      boxNo: '19',
+      notes: 'NET WT: 45.36 KGS | 18 CONES | 05/10/2025 00:23',
+    };
+  }
+
   throw new Error('Barcode không tồn tại hoặc lỗi kết nối API NCC!');
 }
