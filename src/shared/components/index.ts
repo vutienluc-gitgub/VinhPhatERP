@@ -52,6 +52,9 @@ export * from './ActionMenu';
 export * from './Card';
 export * from './ChartLegend';
 export * from './StatWidget';
+export * from './AdaptiveSheet';
+export * from './QRCodeDisplay';
+export * from './BarcodeDisplay';
 
 export { FadeUp } from './FadeUp';
 export { LiveIndicator } from './LiveIndicator';

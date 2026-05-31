@@ -26,6 +26,7 @@ import { DOC_STATUS_LABELS } from '@/schema/yarn-receipt.schema';
 import type { DocStatus, YarnReceipt, YarnReceiptsFilter } from './types';
 import { getReceiptUnitPriceDisplay, getReceiptAvgUnitPrice } from './utils';
 import { LotQRModal } from './components/LotQRModal';
+import { LotBarcodeModal } from './components/LotBarcodeModal';
 
 type YarnReceiptListProps = {
   onEdit: (receipt: YarnReceipt) => void;
@@ -56,6 +57,9 @@ export function YarnReceiptList({
   const [filters, setFilters] = useState<YarnReceiptsFilter>({});
   const [page, setPage] = useState(1);
   const [qrReceipt, setQrReceipt] = useState<YarnReceipt | null>(null);
+  const [barcodeReceipt, setBarcodeReceipt] = useState<YarnReceipt | null>(
+    null,
+  );
 
   const { data: result, isLoading, error } = useYarnReceiptList(filters, page);
   const receipts = result?.data ?? [];
@@ -130,6 +134,10 @@ export function YarnReceiptList({
 
   const handleShowQR = useCallback((receipt: YarnReceipt) => {
     setQrReceipt(receipt);
+  }, []);
+
+  const handleShowBarcode = useCallback((receipt: YarnReceipt) => {
+    setBarcodeReceipt(receipt);
   }, []);
 
   return (
@@ -316,6 +324,11 @@ export function YarnReceiptList({
                         onClick: () => handleShowQR(r),
                         title: 'QR Lô',
                       },
+                      {
+                        icon: 'Barcode',
+                        onClick: () => handleShowBarcode(r),
+                        title: 'Barcode Lô',
+                      },
                     ].filter(Boolean) as ActionConfig[]
                   }
                 />
@@ -408,6 +421,16 @@ export function YarnReceiptList({
                     }}
                     title="QR Lô"
                   />
+                  <Button
+                    variant="secondary"
+                    className="px-3"
+                    leftIcon="Barcode"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleShowBarcode(r);
+                    }}
+                    title="Barcode Lô"
+                  />
                 </div>
               </div>
             </div>
@@ -422,6 +445,12 @@ export function YarnReceiptList({
 
       {qrReceipt && (
         <LotQRModal receipt={qrReceipt} onClose={() => setQrReceipt(null)} />
+      )}
+      {barcodeReceipt && (
+        <LotBarcodeModal
+          receipt={barcodeReceipt}
+          onClose={() => setBarcodeReceipt(null)}
+        />
       )}
     </>
   );

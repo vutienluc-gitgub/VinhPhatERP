@@ -14,6 +14,7 @@ interface FabricCatalogMobileCardProps {
   catalog: FabricCatalog;
   onEdit: (catalog: FabricCatalog) => void;
   onDelete: (catalog: FabricCatalog) => void;
+  onShowQR?: () => void;
   isDeleting: boolean;
 }
 
@@ -21,6 +22,7 @@ export function FabricCatalogMobileCard({
   catalog: c,
   onEdit,
   onDelete,
+  onShowQR,
   isDeleting,
 }: FabricCatalogMobileCardProps) {
   return (
@@ -73,6 +75,18 @@ export function FabricCatalogMobileCard({
             >
               <Icon name="Pencil" size={16} />
             </button>
+            {onShowQR && (
+              <button
+                className="btn-icon p-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onShowQR();
+                }}
+                title="In Tem Mẫu"
+              >
+                <Icon name="QrCode" size={16} />
+              </button>
+            )}
             <button
               className="btn-icon p-1 text-danger"
               onClick={(e) => {

@@ -2,8 +2,8 @@ import { useRef } from 'react';
 
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
-import { QRCodeDisplay } from '@/shared/components/QRCodeDisplay';
-import { buildQRPayload } from '@/shared/lib/identifier.service';
+import { BarcodeDisplay } from '@/shared/components/BarcodeDisplay';
+import { buildBarcodeValue } from '@/shared/lib/identifier.service';
 import { openPrintWindow } from '@/shared/lib/print-template.engine';
 import { LOT_TAG_CSS } from '@/shared/lib/print-template.css';
 import { formatPackaging } from '@/shared/utils/packaging.util';
@@ -12,7 +12,7 @@ import type { YarnReceipt } from '@/features/yarn-receipts/types';
 /* ── Constants ── */
 
 const LABELS = {
-  title: 'QR Truy xuất Lô',
+  title: 'Barcode Truy xuất Lô',
   receiptNumber: 'Số phiếu',
   supplier: 'Nhà cung cấp',
   receiptDate: 'Ngày nhập',
@@ -20,24 +20,24 @@ const LABELS = {
   lotNumber: 'Mã lô',
   quantity: 'Số lượng',
   packaging: 'Đóng gói',
-  print: 'In QR',
+  print: 'In Barcode',
   close: 'Đóng',
   noItems: 'Không có dòng hàng nào',
 } as const;
 
-type LotQRModalProps = {
+type LotBarcodeModalProps = {
   receipt: YarnReceipt;
   onClose: () => void;
 };
 
-export function LotQRModal({ receipt, onClose }: LotQRModalProps) {
+export function LotBarcodeModal({ receipt, onClose }: LotBarcodeModalProps) {
   const printAreaRef = useRef<HTMLDivElement>(null);
   const items = receipt.yarn_receipt_items ?? [];
   const supplierName = receipt.suppliers?.name ?? '—';
 
   const handlePrint = () => {
     openPrintWindow(printAreaRef.current, {
-      title: `QR - ${receipt.receipt_number}`,
+      title: `Barcode - ${receipt.receipt_number}`,
       css: LOT_TAG_CSS,
     });
   };
@@ -78,23 +78,16 @@ export function LotQRModal({ receipt, onClose }: LotQRModalProps) {
       ) : (
         <div ref={printAreaRef} className="flex flex-col gap-4">
           {items.map((item, idx) => {
-            const qrData = buildQRPayload('yarn_lot', item.lot_number ?? '', {
-              receipt: receipt.receipt_number,
-              yarn: item.yarn_type ?? '',
-            });
+            const barcodeData = buildBarcodeValue(
+              'yarn_lot',
+              item.lot_number ?? '',
+            );
             return (
-              <div key={item.id} className="form-item-box">
-                <div className="flex items-start gap-4">
-                  <QRCodeDisplay
-                    value={qrData}
-                    size={140}
-                    label={item.lot_number ?? '—'}
-                  />
-                  <div className="flex flex-col gap-1 flex-1 min-w-0">
-                    <div className="lot-card">
-                      <div className="lot-header">
-                        {LABELS.yarnType}: {item.yarn_type ?? '—'}
-                      </div>
+              <div key={item.id} className="form-item-box lot-card">
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-1">
+                    <div className="lot-header">
+                      {LABELS.yarnType}: {item.yarn_type ?? '—'}
                     </div>
                     <p className="lot-detail text-sm">
                       <strong>{LABELS.lotNumber}:</strong>{' '}
@@ -113,6 +106,9 @@ export function LotQRModal({ receipt, onClose }: LotQRModalProps) {
                     <p className="lot-detail text-xs text-muted mt-1">
                       #{idx + 1}
                     </p>
+                  </div>
+                  <div className="barcode-wrapper w-full flex justify-center bg-white p-2 rounded">
+                    <BarcodeDisplay value={barcodeData} />
                   </div>
                 </div>
               </div>
