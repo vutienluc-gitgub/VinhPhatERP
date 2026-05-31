@@ -383,6 +383,64 @@ export function YarnReceiptItemRow({
         </div>
       </div>
 
+      {/* ── Quy cách đóng gói ── */}
+      <div className="form-grid form-grid-auto">
+        <div className="form-field">
+          <label htmlFor={`items.${index}.conesPerBox`}>Côn/thùng</label>
+          <input
+            id={`items.${index}.conesPerBox`}
+            className={`field-input${itemErrors?.conesPerBox ? ' is-error' : ''}`}
+            type="number"
+            min={1}
+            placeholder="VD: 18"
+            {...register(`items.${index}.conesPerBox` as const, {
+              setValueAs: (v: string) => {
+                if (v === '' || v === null || v === undefined) return null;
+                const n = Number(v);
+                return Number.isNaN(n) ? null : n;
+              },
+            })}
+          />
+          {itemErrors?.conesPerBox && (
+            <span className="field-error">
+              {itemErrors.conesPerBox.message}
+            </span>
+          )}
+        </div>
+
+        <div className="form-field">
+          <label htmlFor={`items.${index}.boxCount`}>Số thùng</label>
+          <input
+            id={`items.${index}.boxCount`}
+            className={`field-input${itemErrors?.boxCount ? ' is-error' : ''}`}
+            type="number"
+            min={1}
+            placeholder="VD: 10"
+            {...register(`items.${index}.boxCount` as const, {
+              setValueAs: (v: string) => {
+                if (v === '' || v === null || v === undefined) return null;
+                const n = Number(v);
+                return Number.isNaN(n) ? null : n;
+              },
+            })}
+          />
+          {itemErrors?.boxCount && (
+            <span className="field-error">{itemErrors.boxCount.message}</span>
+          )}
+        </div>
+
+        <div className="form-field">
+          <label htmlFor={`items.${index}.boxNo`}>Mã thùng (Box No)</label>
+          <input
+            id={`items.${index}.boxNo`}
+            className="field-input"
+            type="text"
+            placeholder="VD: 19"
+            {...register(`items.${index}.boxNo` as const)}
+          />
+        </div>
+      </div>
+
       <div className="form-grid">
         <div className="form-field">
           <label htmlFor={`items.${index}.notes`}>

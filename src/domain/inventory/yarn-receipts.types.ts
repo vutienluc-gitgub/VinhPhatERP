@@ -11,7 +11,17 @@ import type { DocStatus } from '@/schema/yarn-receipt.schema';
 
 export type { DocStatus };
 
-export type YarnReceiptItem = TableRow<'yarn_receipt_items'>;
+/**
+ * Packaging fields added in migration 20260531000001.
+ * Remove this extension after regenerating types with `supabase gen types`.
+ */
+type PackagingFields = {
+  cones_per_box: number | null;
+  box_count: number | null;
+  box_no: string | null;
+};
+
+export type YarnReceiptItem = TableRow<'yarn_receipt_items'> & PackagingFields;
 export type YarnReceiptItemInsert = TableInsert<'yarn_receipt_items'>;
 
 export type YarnReceipt = TableRow<'yarn_receipts'> & {

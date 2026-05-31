@@ -100,6 +100,9 @@ function receiptToFormValues(receipt: YarnReceipt): YarnReceiptsFormValues {
       productionWeek:
         it.production_week != null ? Number(it.production_week) : null,
       dist: it.dist ?? '',
+      conesPerBox: it.cones_per_box != null ? Number(it.cones_per_box) : null,
+      boxCount: it.box_count != null ? Number(it.box_count) : null,
+      boxNo: it.box_no ?? '',
     })),
   };
 }
