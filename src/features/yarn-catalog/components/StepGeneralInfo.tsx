@@ -43,9 +43,10 @@ export function StepGeneralInfo({ hidden, isEditing }: StepGeneralInfoProps) {
               </label>
               <input
                 id="name"
-                className={`field-input${errors.name ? ' is-error' : ''}`}
+                className={`field-input bg-surface/50${errors.name ? ' is-error' : ''}`}
                 type="text"
-                placeholder="VD: DTY 150D/48F SD"
+                placeholder="Tự động tạo từ thông số kỹ thuật"
+                readOnly
                 {...register('name')}
               />
               {errors.name && (

@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useRef, useMemo, useCallback } from 'react';
+import { useEffect, useMemo, useCallback } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
+import { useConfirm } from '@/shared/hooks/useConfirm';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { StepperFooter } from '@/shared/components/StepperFooter';
 import { useStepper } from '@/shared/hooks/useStepper';
@@ -27,11 +28,37 @@ import type { YarnCatalog } from './types';
 import { StepGeneralInfo } from './components/StepGeneralInfo';
 import { StepTechnicalSpecs } from './components/StepTechnicalSpecs';
 import { StepAdditionalInfo } from './components/StepAdditionalInfo';
+import { StepKnittingEngineering } from './components/StepKnittingEngineering';
+import { useYarnNameGenerator } from './hooks/useYarnNameGenerator';
 
 const FORM_MESSAGES = {
   genericError: 'Có lỗi xảy ra',
   unsavedConfirm: 'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
 };
+
+const STEP_1_FIELDS: (keyof YarnCatalogFormValues)[] = [
+  'category',
+  'yarn_type',
+  'count_ne',
+  'spinning_method',
+  'denier',
+  'filament_count',
+  'tensile_strength',
+  'twist_type',
+  'is_fancy',
+  'fancy_details',
+  'finish',
+  'color_status',
+  'color_name',
+  'intermingle',
+];
+const STEP_2_FIELDS: (keyof YarnCatalogFormValues)[] = ['unit', 'status'];
+
+function getStepForField(fieldName: keyof YarnCatalogFormValues): number {
+  if (STEP_1_FIELDS.includes(fieldName)) return 1;
+  if (STEP_2_FIELDS.includes(fieldName)) return 2;
+  return 0; // default to step 0
+}
 
 type YarnCatalogFormProps = {
   catalog: YarnCatalog | null;
@@ -88,20 +115,29 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
     formState: { isSubmitting, isDirty },
   } = methods;
 
+  const { confirm } = useConfirm();
+
   const handleCancel = useCallback(() => {
     if (isDirty) {
-      if (!window.confirm(FORM_MESSAGES.unsavedConfirm)) {
-        return false;
-      }
+      void confirm({
+        title: 'Chưa lưu',
+        message: FORM_MESSAGES.unsavedConfirm,
+        cancelLabel: 'Tiếp tục chỉnh sửa',
+        confirmLabel: 'Đóng',
+        variant: 'danger',
+      }).then((confirmed) => {
+        if (confirmed) onClose();
+      });
+      return false;
     }
     onClose();
     return true;
-  }, [isDirty, onClose]);
+  }, [isDirty, onClose, confirm]);
 
   const stepper = useStepper({
-    totalSteps: 3,
+    totalSteps: 4,
     stepValidation: {
-      0: () => trigger(['code', 'name', 'composition', 'origin']),
+      0: () => trigger(['code', 'composition', 'origin']),
       1: () =>
         trigger([
           'category',
@@ -117,16 +153,12 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
           'finish',
           'color_status',
           'color_name',
+          'intermingle',
         ]),
       2: () => trigger(['unit', 'status']),
     },
     onCancel: handleCancel,
   });
-
-  const stepRef = useRef(0);
-  useEffect(() => {
-    stepRef.current = stepper.currentStep;
-  }, [stepper.currentStep]);
 
   useEffect(() => {
     reset(isEditing ? catalogToFormValues(catalog) : yarnCatalogDefaultValues);
@@ -143,9 +175,14 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
     [colorOptions],
   );
 
+  // Auto-generate name based on specs (extracted to custom hook)
+  useYarnNameGenerator(methods);
+
   async function onSubmit(values: YarnCatalogFormValues) {
-    // Guard bằng ref để tránh stale closure khi stepper vừa next()
-    if (stepRef.current !== stepper.totalSteps - 1) return;
+    if (stepper.currentStep !== stepper.totalSteps - 1) {
+      void stepper.next();
+      return;
+    }
 
     try {
       if (isEditing) {
@@ -188,17 +225,29 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
           onSubmit={handleSubmit(onSubmit, (validationErrors) => {
             const errorMessage = extractFormErrorMessage(validationErrors);
             toast.error(errorMessage);
-            // Scroll to first error field
-            const firstKey = Object.keys(validationErrors)[0];
-            if (firstKey) {
-              const el =
-                document.getElementById(firstKey) ??
-                document.querySelector(`[name="${firstKey}"]`);
-              el?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center',
-              });
+
+            // Tìm step chứa field bị lỗi đầu tiên
+            const firstKey = Object.keys(
+              validationErrors,
+            )[0] as keyof YarnCatalogFormValues;
+            const errorStep = getStepForField(firstKey);
+
+            if (stepper.currentStep !== errorStep) {
+              stepper.goTo(errorStep);
             }
+
+            // Scroll to element after step is visible
+            setTimeout(() => {
+              if (firstKey) {
+                const el =
+                  document.getElementById(firstKey) ??
+                  document.querySelector(`[name="${firstKey}"]`);
+                el?.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'center',
+                });
+              }
+            }, 100);
           })}
           onKeyDown={stepper.handleKeyDown}
           noValidate
@@ -215,6 +264,11 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
             />
 
             <StepAdditionalInfo hidden={stepper.currentStep !== 2} />
+
+            <StepKnittingEngineering
+              hidden={stepper.currentStep !== 3}
+              catalog={catalog}
+            />
           </div>
 
           <StepperFooter

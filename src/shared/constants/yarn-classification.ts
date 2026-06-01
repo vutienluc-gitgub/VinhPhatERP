@@ -25,6 +25,9 @@ export const YARN_CATEGORY_OPTIONS = YARN_CATEGORIES.map((c) => ({
 
 // ─── Level 2: Core Yarn Type (Nhóm kỹ thuật chính) ─────────────────────────
 
+/** Categories that use Ne (English Count) instead of Denier */
+export const SPUN_YARN_CATEGORIES = new Set(['Cotton', 'Rayon', 'Blend']);
+
 export const YARN_TYPES = [
   // Filament Yarn
   { code: 'DTY', label: 'DTY — Draw Textured Yarn' },
@@ -104,6 +107,14 @@ export const YARN_COLOR_STATUS_OPTIONS = YARN_COLOR_STATUSES.map((s) => ({
   value: s.code,
   label: s.label,
 }));
+
+export const YARN_INTERMINGLE_OPTIONS = [
+  { value: 'NIM', label: 'NIM (Non-Intermingled)' },
+  { value: 'SIM', label: 'SIM (Slightly Intermingled)' },
+  { value: 'HIM', label: 'HIM (Highly Intermingled)' },
+];
+
+// ─── Level 3: Label Mappers ──────────────────────────────────────────────────
 
 // ─── Common Denier Presets ──────────────────────────────────────────────────
 
