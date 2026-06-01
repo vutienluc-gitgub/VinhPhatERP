@@ -12,10 +12,9 @@ import {
   YARN_NE_COUNT_OPTIONS,
   YARN_SPINNING_METHOD_OPTIONS,
   YARN_TWIST_TYPE_OPTIONS,
+  SPUN_YARN_CATEGORIES,
+  YARN_INTERMINGLE_OPTIONS,
 } from '@/shared/constants/yarn-classification';
-
-/** Categories that use Ne (English Count) instead of Denier */
-const SPUN_YARN_CATEGORIES = new Set(['Cotton', 'Rayon', 'Blend']);
 
 type StepTechnicalSpecsProps = {
   hidden: boolean;
@@ -171,6 +170,18 @@ export function StepTechnicalSpecs({
               label="Màu mặc định"
               placeholder="Chọn hoặc nhập màu..."
             />
+            {!isSpunYarn && (
+              <div className="form-field">
+                <label htmlFor="intermingle">Độ đan gút (Intermingle)</label>
+                <ComboboxField
+                  name="intermingle"
+                  control={control}
+                  options={YARN_INTERMINGLE_OPTIONS}
+                  placeholder="VD: SIM, NIM..."
+                  allowInput
+                />
+              </div>
+            )}
           </div>
         </fieldset>
       </div>
