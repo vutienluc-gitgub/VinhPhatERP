@@ -58,17 +58,10 @@ export function useToggleMachineSpecStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    mutationFn: async ({
-      id,
-      is_active,
-    }: {
-      id: string;
-      is_active: boolean;
-    }) => {
+    mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
       const { error } = await (supabase.from as any)('machine_specifications')
-        .update({ is_active })
+        .update({ is_active: isActive })
         .eq('id', id);
 
       if (error) throw error;
@@ -77,7 +70,7 @@ export function useToggleMachineSpecStatus() {
       queryClient.invalidateQueries({ queryKey: ['machine-specs-admin'] });
       queryClient.invalidateQueries({ queryKey: ['machine-specifications'] });
       toast.success(
-        variables.is_active ? 'Đã khôi phục cấu hình' : 'Đã ẩn cấu hình',
+        variables.isActive ? 'Đã khôi phục cấu hình' : 'Đã ẩn cấu hình',
       );
     },
     onError: (error) => {

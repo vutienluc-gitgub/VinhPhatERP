@@ -23,6 +23,7 @@ import {
 } from '@/schema/fabric-catalog.schema';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 
+import { LABELS, MESSAGES } from './fabric-catalog.constants';
 import type {
   FabricCatalog,
   FabricCatalogFilter,
@@ -46,13 +47,13 @@ const FILTER_SCHEMA: FilterFieldConfig[] = [
   {
     key: 'search',
     type: 'search',
-    label: 'Tìm kiếm',
-    placeholder: 'Tên, mã, thành phần...',
+    label: LABELS.SEARCH,
+    placeholder: LABELS.SEARCH_PLACEHOLDER,
   },
   {
     key: 'status',
     type: 'combobox',
-    label: 'Trạng thái',
+    label: LABELS.STATUS,
     options: FABRIC_CATALOG_STATUSES.map((st) => ({
       value: st,
       label: FABRIC_CATALOG_STATUS_LABELS[st],
@@ -86,12 +87,16 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
 
   const handleDelete = useCallback(
     async (catalog: FabricCatalog) => {
-      const ok = await confirm({
-        message: `Xóa loại vải "${catalog.name}"? Hành động này không thể hoàn tác.`,
-        variant: 'danger',
-      });
-      if (!ok) return;
-      deleteMutation.mutate(catalog.id);
+      try {
+        const ok = await confirm({
+          message: MESSAGES.CONFIRM_DELETE(catalog.name),
+          variant: 'danger',
+        });
+        if (!ok) return;
+        await deleteMutation.mutateAsync(catalog.id);
+      } catch (err) {
+        console.error('[DeleteFabricCatalogError]', err);
+      }
     },
     [confirm, deleteMutation],
   );
@@ -125,45 +130,45 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
       },
       {
         accessorKey: 'code',
-        header: 'Mã',
+        header: LABELS.CODE,
         cell: ({ row }) => (
           <span className="font-bold text-primary">{row.original.code}</span>
         ),
       },
       {
         accessorKey: 'name',
-        header: 'Tên loại vải',
+        header: LABELS.NAME,
         cell: ({ row }) => (
           <span className="font-medium">{row.original.name}</span>
         ),
       },
       {
         accessorKey: 'composition',
-        header: 'Thành phần',
+        header: LABELS.COMPOSITION,
         cell: ({ row }) => (
           <span className="text-muted text-sm italic">
-            {row.original.composition ?? '—'}
+            {row.original.composition ?? LABELS.NA}
           </span>
         ),
       },
       {
         id: 'specs',
-        header: 'Quy cách (chuẩn)',
+        header: LABELS.SPECS,
         enableSorting: false,
         cell: ({ row }) => {
           const c = row.original;
           return (
             <div className="flex flex-col gap-0.5 text-sm">
               <span className="text-muted">
-                Khổ:{' '}
+                {LABELS.WIDTH}:{' '}
                 <span className="font-medium text-text">
-                  {c.target_width_cm ? `${c.target_width_cm} cm` : '—'}
+                  {c.target_width_cm ? `${c.target_width_cm} cm` : LABELS.NA}
                 </span>
               </span>
               <span className="text-muted">
-                K/L:{' '}
+                {LABELS.GSM}:{' '}
                 <span className="font-medium text-text">
-                  {c.target_gsm ? `${c.target_gsm} gsm` : '—'}
+                  {c.target_gsm ? `${c.target_gsm} gsm` : LABELS.NA}
                 </span>
               </span>
             </div>
@@ -172,12 +177,12 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
       },
       {
         accessorKey: 'unit',
-        header: 'Đơn vị',
+        header: LABELS.UNIT,
         cell: ({ row }) => <span className="text-sm">{row.original.unit}</span>,
       },
       {
         accessorKey: 'status',
-        header: 'Trạng thái',
+        header: LABELS.STATUS,
         cell: ({ row }) => {
           const c = row.original;
           return (
@@ -189,7 +194,7 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
       },
       {
         id: 'actions',
-        header: () => <div className="text-right">Thao tác</div>,
+        header: () => <div className="text-right">{LABELS.ACTIONS}</div>,
         meta: { className: 'text-right' },
         cell: ({ row }) => {
           const c = row.original;
@@ -199,17 +204,17 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
                 {
                   icon: 'Pencil',
                   onClick: () => onEdit(c),
-                  title: 'Chỉnh sửa',
+                  title: LABELS.EDIT,
                 },
                 {
                   icon: 'QrCode',
                   onClick: () => setQrCatalog(c),
-                  title: 'In Tem Mẫu',
+                  title: LABELS.PRINT_QR,
                 },
                 {
                   icon: 'Trash2',
                   onClick: () => handleDelete(c),
-                  title: 'Xóa',
+                  title: LABELS.DELETE,
                   variant: 'danger',
                   disabled: deleteMutation.isPending,
                 },
@@ -226,33 +231,33 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
     <div className="panel-card card-flush">
       {/* Action bar */}
       <div className="card-header-area">
-        <AddButton onClick={onNew} label="Thêm loại vải" />
+        <AddButton onClick={onNew} label={LABELS.ADD_NEW} />
       </div>
 
       {/* KPI Dashboard */}
       <div className="kpi-section kpi-grid">
         <KpiCard
-          label="Tổng loại vải"
+          label={LABELS.TOTAL_CATALOGS}
           value={data?.total ?? 0}
           icon="Layers"
           variant="primary"
           formatMode="number"
-          footer="Toàn bộ danh mục hệ thống"
+          footer={LABELS.TOTAL_CATALOGS_DESC}
         />
         <KpiCard
-          label="Đang hoạt động"
+          label={LABELS.ACTIVE}
           value={activeCount}
           icon="Activity"
           variant="success"
           formatMode="number"
-          footer="Trên trang hiện tại"
+          footer={LABELS.ACTIVE_DESC}
         />
         <KpiCard
-          label="Thành phần chính"
+          label={LABELS.MAIN_COMPOSITION}
           value="Cotton/Pol"
           icon="Zap"
           variant="secondary"
-          footer="Được ưa chuộng nhất"
+          footer={LABELS.MAIN_COMPOSITION_DESC}
         />
       </div>
 
@@ -277,12 +282,12 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
         rowKey={(c) => c.id}
         onRowClick={onEdit}
         emptyStateTitle={
-          hasActiveFilter
-            ? 'Không tìm thấy loại vải phù hợp'
-            : 'Chưa có loại vải nào'
+          hasActiveFilter ? LABELS.EMPTY_SEARCH : LABELS.EMPTY_LIST
         }
         emptyStateIcon={hasActiveFilter ? 'Search' : 'Layers'}
-        emptyStateActionLabel={!hasActiveFilter ? '+ Thêm loại vải' : undefined}
+        emptyStateActionLabel={
+          !hasActiveFilter ? LABELS.ADD_NEW_BTN : undefined
+        }
         onEmptyStateAction={!hasActiveFilter ? onNew : undefined}
         columns={columns}
         exportFileName="danh_muc_loai_vai"
@@ -298,7 +303,7 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
         pagination={{
           result: data,
           onPageChange: setPage,
-          itemLabel: 'loại vải',
+          itemLabel: LABELS.ITEM_LABEL,
         }}
       />
 

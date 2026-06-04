@@ -5,6 +5,7 @@ import type {
   FabricCatalog,
   FabricCatalogStatus,
 } from '@/features/fabric-catalog/types';
+import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 
 function getStatusVariant(status: FabricCatalogStatus): BadgeVariant {
   return status === 'active' ? 'success' : 'gray';
@@ -48,23 +49,29 @@ export function FabricCatalogMobileCard({
       </div>
       <div className="mobile-card-body space-y-2">
         <p className="font-bold text-sm">{c.name}</p>
-        <p className="text-xs text-muted italic">{c.composition || '—'}</p>
+        <p className="text-xs text-muted italic">
+          {c.composition || LABELS.NA}
+        </p>
         {(c.target_width_cm || c.target_gsm) && (
           <div className="text-xs text-muted bg-surface p-2 rounded border border-border">
             {c.target_width_cm && (
               <div>
-                Khổ: <span className="font-medium">{c.target_width_cm} cm</span>
+                {LABELS.WIDTH}:{' '}
+                <span className="font-medium">{c.target_width_cm} cm</span>
               </div>
             )}
             {c.target_gsm && (
               <div>
-                K/L: <span className="font-medium">{c.target_gsm} gsm</span>
+                {LABELS.GSM}:{' '}
+                <span className="font-medium">{c.target_gsm} gsm</span>
               </div>
             )}
           </div>
         )}
         <div className="flex justify-between items-center text-xs text-muted pt-2 border-t border-border/10">
-          <span>Đơn vị: {c.unit}</span>
+          <span>
+            {LABELS.UNIT}: {c.unit}
+          </span>
           <div className="flex gap-2">
             <button
               className="btn-icon p-1"
@@ -82,7 +89,7 @@ export function FabricCatalogMobileCard({
                   e.stopPropagation();
                   onShowQR();
                 }}
-                title="In Tem Mẫu"
+                title={LABELS.PRINT_QR}
               >
                 <Icon name="QrCode" size={16} />
               </button>

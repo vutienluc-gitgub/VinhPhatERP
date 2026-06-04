@@ -42,9 +42,9 @@ export function FabricCatalogPage() {
 
   return (
     <div className="page-container">
-      {view === 'list' && (
+      <div className={view === 'list' ? 'block' : 'hidden'}>
         <FabricCatalogList onEdit={openDetail} onNew={openCreate} />
-      )}
+      </div>
 
       {view === 'detail' && selectedCatalog && (
         <FabricCatalogDetail
