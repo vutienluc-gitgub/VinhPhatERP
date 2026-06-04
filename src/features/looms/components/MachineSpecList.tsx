@@ -69,7 +69,7 @@ export function MachineSpecList() {
       variant: isActivating ? 'default' : 'danger',
     });
     if (isConfirmed && record.id) {
-      toggleStatusMutation.mutate({ id: record.id, is_active: isActivating });
+      toggleStatusMutation.mutate({ id: record.id, isActive: isActivating });
     }
   };
 
