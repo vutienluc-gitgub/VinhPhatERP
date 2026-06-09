@@ -58,6 +58,17 @@ export async function fetchCustomers(
   return customerResponseSchema.array().parse(data ?? []) as Customer[];
 }
 
+export async function fetchCustomerById(id: string): Promise<Customer> {
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select('*, salesperson:employees!salesperson_id(id, code, name)')
+    .eq('id', id)
+    .single();
+
+  if (error) throw error;
+  return customerResponseSchema.parse(data) as Customer;
+}
+
 export async function createCustomer(row: CustomerInsert): Promise<Customer> {
   validateApiInput(apiCustomerInsert.passthrough(), row);
   const tenantId = await getTenantId();

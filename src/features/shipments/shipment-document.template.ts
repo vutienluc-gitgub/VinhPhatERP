@@ -4,6 +4,7 @@ import type { ShipmentDocument } from './types';
 import {
   SHIPMENT_DOCUMENT_LABELS,
   SHIPMENT_DOCUMENT_CSS,
+  SHIPMENT_DOCUMENT_A5_DOT_MATRIX_CSS,
   VERIFY_BASE_URL,
 } from './shipment-document.constants';
 import {
@@ -21,6 +22,7 @@ type PrintOptions = {
   createdByName?: string;
   companyName?: string;
   verifyBaseUrl?: string;
+  format?: 'A4' | 'A5_DOT_MATRIX';
 };
 
 export async function buildShipmentPrintHtml(
@@ -96,19 +98,10 @@ export async function buildShipmentPrintHtml(
       </tr>`;
   const totalRolls = flatRows.length;
 
-  const html = `<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<title>${escapeHtml(fileName)}</title>
-<style>
-${SHIPMENT_DOCUMENT_CSS}
-</style>
-</head>
-<body>
-  <div class="accent-bar"></div>
-  <div class="page">
+  const isA5 = options.format === 'A5_DOT_MATRIX';
 
+  // Build the form content block (reused for both copies in A5 mode)
+  const formContent = `
     <!-- HEADER -->
     <div class="header">
       <div class="brand">
@@ -182,7 +175,7 @@ ${SHIPMENT_DOCUMENT_CSS}
       <table>
         <thead>
           <tr>
-            <th style="width:6%"  class="text-center">${SHIPMENT_DOCUMENT_LABELS.TABLE_INDEX}</th>
+            <th style="width:6%" class="text-center">${SHIPMENT_DOCUMENT_LABELS.TABLE_INDEX}</th>
             <th style="width:22%">${SHIPMENT_DOCUMENT_LABELS.TABLE_FABRIC}</th>
             <th style="width:12%">${SHIPMENT_DOCUMENT_LABELS.TABLE_COLOR}</th>
             <th style="width:38%">${SHIPMENT_DOCUMENT_LABELS.TABLE_ROLL_CODE}</th>
@@ -207,9 +200,9 @@ ${SHIPMENT_DOCUMENT_CSS}
       </div>
     </div>
 
-    <!-- SIGNATURES + QR -->
+    <!-- SIGNATURES -->
     <div class="signature-section">
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:5mm;align-items:start">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:${isA5 ? '3mm' : '5mm'};align-items:start">
         <div class="sign-cell">
           <div class="sign-title">${SHIPMENT_DOCUMENT_LABELS.SIGN_CREATOR}</div>
           <div class="sign-name">${escapeHtml(createdByName)}</div>
@@ -238,8 +231,23 @@ ${SHIPMENT_DOCUMENT_CSS}
       <span>${escapeHtml(companyName)} — ${SHIPMENT_DOCUMENT_LABELS.FOOTER_DISCLAIMER}</span>
       <span>${SHIPMENT_DOCUMENT_LABELS.PRINTED_AT}: ${escapeHtml(generatedAt)}</span>
     </div>
+  `;
 
-  </div>
+  const bodyContent = isA5
+    ? `<div class="half-page">${formContent}</div>`
+    : `<div class="accent-bar"></div><div class="page">${formContent}</div>`;
+
+  const html = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>${escapeHtml(fileName)}</title>
+<style>
+${isA5 ? SHIPMENT_DOCUMENT_A5_DOT_MATRIX_CSS : SHIPMENT_DOCUMENT_CSS}
+</style>
+</head>
+<body>
+  ${bodyContent}
 </body>
 </html>`;
 

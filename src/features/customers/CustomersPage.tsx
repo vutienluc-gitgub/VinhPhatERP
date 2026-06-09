@@ -4,6 +4,7 @@ import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { ContractForm } from '@/features/contracts/ContractForm';
 // eslint-disable-next-line boundaries/dependencies
 import { ChatDrawer } from '@/features/chat/ChatDrawer';
+import { usePreviewIdFromUrl } from '@/shared/hooks/usePreviewIdFromUrl';
 
 import { CustomerForm } from './CustomerForm';
 import { CustomerList } from './CustomerList';
@@ -18,6 +19,8 @@ export function CustomersPage() {
   );
   const [depositCustomer, setDepositCustomer] = useState<Customer | null>(null);
   const [chatCustomer, setChatCustomer] = useState<Customer | null>(null);
+
+  usePreviewIdFromUrl('customer');
 
   function openCreate() {
     setEditCustomer(null);

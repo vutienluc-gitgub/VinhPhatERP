@@ -11,6 +11,7 @@ import {
   fetchCustomerPortalAccount,
   createCustomerPortalAccount,
   updateCustomerPortalAccountStatus,
+  fetchCustomerById,
 } from '@/api/customers.api';
 import type {
   Customer,
@@ -62,6 +63,14 @@ export function useCustomerList(filters: CustomersFilter = {}, page = 1) {
         totalPages: Math.ceil(total / DEFAULT_PAGE_SIZE),
       };
     },
+  });
+}
+
+export function useCustomerById(id: string | null) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'detail', id],
+    queryFn: () => (id ? fetchCustomerById(id) : null),
+    enabled: !!id,
   });
 }
 

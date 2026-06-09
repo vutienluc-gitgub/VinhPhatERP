@@ -12,6 +12,7 @@ import {
   FilterBar,
   type FilterFieldConfig,
   type ActionConfig,
+  EntityLink,
 } from '@/shared/components';
 // eslint-disable-next-line boundaries/dependencies
 import { ChatDrawer } from '@/features/chat/ChatDrawer';
@@ -182,9 +183,12 @@ export function ShipmentList() {
     deleteMutation.mutate(id);
   }
 
-  async function handleExportPdf(shipment: Shipment) {
+  async function handleExportPdf(
+    shipment: Shipment,
+    format?: 'A4' | 'A5_DOT_MATRIX',
+  ) {
     try {
-      await exportPdfMutation.mutateAsync(shipment.id);
+      await exportPdfMutation.mutateAsync({ shipmentId: shipment.id, format });
     } catch (error) {
       await showAlert(
         `Không thể tạo phiếu PDF cho ${shipment.shipment_number}. ${getErrorMessage(error)}`,
@@ -324,7 +328,16 @@ export function ShipmentList() {
                   <span className="text-muted-foreground text-[0.75rem] mt-0.5 line-clamp-1">
                     Khách:{' '}
                     <span className="font-medium text-foreground">
-                      {s.customers?.name ?? '—'}
+                      {s.customers?.name ? (
+                        <EntityLink
+                          entityType="customer"
+                          entityId={s.customer_id}
+                          label={s.customers.name}
+                          showIcon={false}
+                        />
+                      ) : (
+                        '—'
+                      )}
                     </span>{' '}
                     • ĐH: {s.orders.order_number}
                   </span>
@@ -462,8 +475,17 @@ export function ShipmentList() {
                       s.status !== 'preparing'
                         ? {
                             icon: 'Printer',
-                            onClick: () => void handleExportPdf(s),
-                            title: 'In PDF',
+                            onClick: () => void handleExportPdf(s, 'A4'),
+                            title: 'In A4',
+                            disabled: exportPdfMutation.isPending,
+                          }
+                        : null,
+                      s.status !== 'preparing'
+                        ? {
+                            icon: 'Printer',
+                            onClick: () =>
+                              void handleExportPdf(s, 'A5_DOT_MATRIX'),
+                            title: 'In A5 (Kim)',
                             disabled: exportPdfMutation.isPending,
                           }
                         : null,
@@ -510,7 +532,17 @@ export function ShipmentList() {
                 </div>
                 <div className="mobile-card-row">
                   <span className="label">Khách hàng:</span>
-                  <span className="value">{s.customers?.name ?? '—'}</span>
+                  <span className="value">
+                    {s.customers?.name ? (
+                      <EntityLink
+                        entityType="customer"
+                        entityId={s.customer_id}
+                        label={s.customers.name}
+                      />
+                    ) : (
+                      '—'
+                    )}
+                  </span>
                 </div>
                 {s.delivery_staff && (
                   <div className="mobile-card-row">
@@ -551,16 +583,28 @@ export function ShipmentList() {
                   </div>
                 )}
                 {s.status !== 'preparing' && (
-                  <button
-                    className="btn-secondary w-full py-2.5 justify-center text-xs font-bold"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      void handleExportPdf(s);
-                    }}
-                    disabled={exportPdfMutation.isPending}
-                  >
-                    <Icon name="Printer" size={16} /> In phiếu PDF
-                  </button>
+                  <div className="flex flex-row gap-2 w-full">
+                    <button
+                      className="btn-secondary flex-1 py-2.5 justify-center text-xs font-bold"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void handleExportPdf(s, 'A4');
+                      }}
+                      disabled={exportPdfMutation.isPending}
+                    >
+                      <Icon name="Printer" size={16} /> In A4
+                    </button>
+                    <button
+                      className="btn-secondary flex-1 py-2.5 justify-center text-xs font-bold"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void handleExportPdf(s, 'A5_DOT_MATRIX');
+                      }}
+                      disabled={exportPdfMutation.isPending}
+                    >
+                      <Icon name="Printer" size={16} /> In A5 (Kim)
+                    </button>
+                  </div>
                 )}
                 {s.status === 'shipped' && (
                   <button

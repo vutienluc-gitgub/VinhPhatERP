@@ -124,11 +124,18 @@ export function useExportShipmentPdf() {
   const { data: settings } = useCompanySettings();
 
   return useMutation({
-    mutationFn: async (shipmentId: string) => {
+    mutationFn: async ({
+      shipmentId,
+      format,
+    }: {
+      shipmentId: string;
+      format?: 'A4' | 'A5_DOT_MATRIX';
+    }) => {
       const shipment = await fetchShipmentDocument(shipmentId);
       exportShipmentToPdf(shipment, {
         createdByName: profile?.full_name ?? undefined,
         companyName: settings?.company_name ?? undefined,
+        format,
       });
       return shipment;
     },
