@@ -60,6 +60,7 @@ export { FadeUp } from './FadeUp';
 export { LiveIndicator } from './LiveIndicator';
 export { TimelineProgress } from './TimelineProgress';
 export type { TimelineStep } from './TimelineProgress';
+export * from './EntityLink';
 
 // End of exports
 export { DebtAgingSection } from './DebtAgingSection';

@@ -77,6 +77,16 @@ export async function fetchSuppliers(
   return (data ?? []) as Supplier[];
 }
 
+export async function fetchSupplierById(id: string): Promise<Supplier> {
+  const { data, error } = await untypedDb
+    .from('v_supplier_full')
+    .select('*')
+    .eq('id', id)
+    .single();
+  if (error) throw error;
+  return data as Supplier;
+}
+
 export async function fetchNextSupplierCode(): Promise<string> {
   const { data, error } = await supabase
     .from(TABLE)

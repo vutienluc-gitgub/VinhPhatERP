@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { ContractForm } from '@/features/contracts/ContractForm';
+import { usePreviewIdFromUrl } from '@/shared/hooks/usePreviewIdFromUrl';
 
 import { SupplierForm } from './SupplierForm';
 import { SuppliersList } from './SuppliersList';
@@ -13,6 +14,8 @@ export function SuppliersPage() {
   const [contractSupplier, setContractSupplier] = useState<Supplier | null>(
     null,
   );
+
+  usePreviewIdFromUrl('supplier');
 
   function openCreate() {
     setEditSupplier(null);

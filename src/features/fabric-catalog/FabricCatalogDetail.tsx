@@ -1,15 +1,11 @@
-import { Badge, type BadgeVariant, Icon } from '@/shared/components';
+import { Badge, Icon } from '@/shared/components';
 import { FABRIC_CATALOG_STATUS_LABELS } from '@/schema/fabric-catalog.schema';
-import type {
-  FabricCatalog,
-  FabricCatalogStatus,
-} from '@/domain/settings/fabric-catalog.types';
+import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 
 import { FabricVariantList } from './FabricVariantList';
-
-function getStatusVariant(status: FabricCatalogStatus): BadgeVariant {
-  return status === 'active' ? 'success' : 'gray';
-}
+import { FabricCategoryBadge } from './components/FabricCategoryBadge';
+import { getStatusVariant } from './fabric-catalog.helpers';
+import { LABELS } from './fabric-catalog.constants';
 
 type FabricCatalogDetailProps = {
   catalog: FabricCatalog;
@@ -28,11 +24,11 @@ export function FabricCatalogDetail({
       <div className="card-header-area">
         <button className="btn-secondary" onClick={onBack}>
           <Icon name="ArrowLeft" size={16} />
-          Danh mục vải
+          {LABELS.BACK_TO_LIST}
         </button>
         <button className="btn-secondary" onClick={onEdit}>
           <Icon name="Pencil" size={16} />
-          Chỉnh sửa
+          {LABELS.EDIT}
         </button>
       </div>
 
@@ -63,6 +59,11 @@ export function FabricCatalogDetail({
               </Badge>
             </div>
             <p className="font-semibold text-base mt-0.5">{catalog.name}</p>
+            {catalog.category && (
+              <div className="mt-1">
+                <FabricCategoryBadge category={catalog.category} />
+              </div>
+            )}
             {catalog.composition && (
               <p className="text-sm text-muted italic mt-0.5">
                 {catalog.composition}

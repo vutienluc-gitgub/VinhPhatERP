@@ -1,11 +1,11 @@
 import { useState, useMemo, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import type { ColumnDef } from '@tanstack/react-table';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
   Badge,
-  type BadgeVariant,
   DataTableAdvanced,
   AddButton,
   ActionBar,
@@ -16,6 +16,7 @@ import {
 import {
   useDeleteFabricCatalog,
   useFabricCatalogList,
+  useFabricCategories,
 } from '@/application/settings';
 import {
   FABRIC_CATALOG_STATUS_LABELS,
@@ -23,12 +24,18 @@ import {
 } from '@/schema/fabric-catalog.schema';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 
-import { LABELS, MESSAGES } from './fabric-catalog.constants';
+import {
+  LABELS,
+  MESSAGES,
+  ROUTE_FABRIC_CATALOG,
+} from './fabric-catalog.constants';
+import { getStatusVariant } from './fabric-catalog.helpers';
 import type {
   FabricCatalog,
   FabricCatalogFilter,
   FabricCatalogStatus,
 } from './types';
+import { FabricCategoryBadge } from './components/FabricCategoryBadge';
 import { FabricCatalogMobileCard } from './components/FabricCatalogMobileCard';
 import { FabricSampleQRModal } from './components/FabricSampleQRModal';
 
@@ -37,29 +44,7 @@ type FabricCatalogListProps = {
   onNew: () => void;
 };
 
-function getStatusVariant(status: FabricCatalogStatus): BadgeVariant {
-  return status === 'active' ? 'success' : 'gray';
-}
-
-const FILTER_KEYS = ['search', 'status'] as const;
-
-const FILTER_SCHEMA: FilterFieldConfig[] = [
-  {
-    key: 'search',
-    type: 'search',
-    label: LABELS.SEARCH,
-    placeholder: LABELS.SEARCH_PLACEHOLDER,
-  },
-  {
-    key: 'status',
-    type: 'combobox',
-    label: LABELS.STATUS,
-    options: FABRIC_CATALOG_STATUSES.map((st) => ({
-      value: st,
-      label: FABRIC_CATALOG_STATUS_LABELS[st],
-    })),
-  },
-];
+const FILTER_KEYS = ['search', 'category_id', 'composition', 'status'] as const;
 
 export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
   const { filters, setFilter, clearFilters, hasActiveFilter } =
@@ -67,12 +52,48 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
   const [page, setPage] = useState(1);
   const [qrCatalog, setQrCatalog] = useState<FabricCatalog | null>(null);
 
+  const { data: categories } = useFabricCategories();
+
+  const filterSchema = useMemo<FilterFieldConfig[]>(() => {
+    return [
+      {
+        key: 'category_id',
+        type: 'combobox',
+        label: LABELS.CATEGORY,
+        options: categories?.map((c) => ({ value: c.id, label: c.name })) ?? [],
+      },
+      {
+        key: 'composition',
+        type: 'search',
+        label: LABELS.COMPOSITION,
+        placeholder: LABELS.COMPOSITION_PLACEHOLDER,
+      },
+      {
+        key: 'status',
+        type: 'combobox',
+        label: LABELS.STATUS,
+        options: FABRIC_CATALOG_STATUSES.map((st) => ({
+          value: st,
+          label: FABRIC_CATALOG_STATUS_LABELS[st],
+        })),
+      },
+      {
+        key: 'search',
+        type: 'search',
+        label: LABELS.SEARCH,
+        placeholder: LABELS.SEARCH_PLACEHOLDER,
+      },
+    ];
+  }, [categories]);
+
   const apiFilters: FabricCatalogFilter = useMemo(
     () => ({
       search: filters.search,
+      category_id: filters.category_id,
+      composition: filters.composition,
       status: filters.status as FabricCatalogStatus | undefined,
     }),
-    [filters.search, filters.status],
+    [filters.search, filters.category_id, filters.composition, filters.status],
   );
 
   const { data, isLoading } = useFabricCatalogList(apiFilters, page);
@@ -132,14 +153,33 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
         accessorKey: 'code',
         header: LABELS.CODE,
         cell: ({ row }) => (
-          <span className="font-bold text-primary">{row.original.code}</span>
+          <Link
+            to={`${ROUTE_FABRIC_CATALOG}/${row.original.id}`}
+            className="font-bold text-primary hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {row.original.code}
+          </Link>
+        ),
+      },
+      {
+        id: 'category',
+        header: LABELS.CATEGORY,
+        cell: ({ row }) => (
+          <FabricCategoryBadge category={row.original.category} />
         ),
       },
       {
         accessorKey: 'name',
         header: LABELS.NAME,
         cell: ({ row }) => (
-          <span className="font-medium">{row.original.name}</span>
+          <Link
+            to={`${ROUTE_FABRIC_CATALOG}/${row.original.id}`}
+            className="font-medium hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {row.original.name}
+          </Link>
         ),
       },
       {
@@ -265,7 +305,7 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
       <div className="flex flex-wrap items-start gap-3 px-4 py-3 border-b border-border/50 overflow-visible">
         <FilterBar
           variant="inline"
-          schema={FILTER_SCHEMA}
+          schema={filterSchema}
           value={filters}
           onChange={handleFilterChange}
           onClear={() => {

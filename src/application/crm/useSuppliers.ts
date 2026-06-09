@@ -13,6 +13,7 @@ import {
   upsertSupplierPrice,
   fetchSupplierCategories,
   fetchSupplierStats,
+  fetchSupplierById,
 } from '@/api/suppliers.api';
 import type { SupplierFormValues } from '@/features/suppliers/suppliers.module';
 import type {
@@ -24,6 +25,14 @@ import type {
 export type { Supplier, SupplierFilter };
 
 const QUERY_KEY = ['suppliers'] as const;
+
+export function useSupplierById(id: string | null) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'detail', id],
+    queryFn: () => (id ? fetchSupplierById(id) : null),
+    enabled: !!id,
+  });
+}
 
 function toInsertRow(values: SupplierFormValues): SupplierInsert {
   return {

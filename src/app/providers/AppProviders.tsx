@@ -9,6 +9,8 @@ import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { TenantProvider } from '@/shared/context/TenantContext';
 import { GlobalModalProvider } from '@/shared/hooks/useGlobalModal';
 import { GlobalModalDispatcher } from '@/app/components/GlobalModalDispatcher';
+import { GlobalEntityProvider } from '@/shared/contexts/GlobalEntityContext';
+import { GlobalEntityDispatcher } from '@/app/components/GlobalEntityDispatcher';
 
 export function AppProviders({ children }: PropsWithChildren) {
   const [queryClient] = useState(
@@ -31,37 +33,40 @@ export function AppProviders({ children }: PropsWithChildren) {
           <AuthProvider>
             <ConfirmProvider>
               <GlobalModalProvider>
-                {children}
-                <GlobalModalDispatcher />
-                <Toaster
-                  position="top-right"
-                  toastOptions={{
-                    className: 'premium-toast',
-                    style: {
-                      background: 'var(--surface)',
-                      backdropFilter: 'blur(12px)',
-                      color: 'var(--text)',
-                      border: '1px solid var(--border)',
-                      borderRadius: '16px',
-                      padding: '14px 20px',
-                      boxShadow: '0 12px 40px rgba(16, 35, 61, 0.15)',
-                      fontSize: '0.85rem',
-                      fontWeight: 500,
-                    },
-                    success: {
-                      iconTheme: {
-                        primary: 'var(--success)',
-                        secondary: '#fff',
+                <GlobalEntityProvider>
+                  {children}
+                  <GlobalModalDispatcher />
+                  <GlobalEntityDispatcher />
+                  <Toaster
+                    position="top-right"
+                    toastOptions={{
+                      className: 'premium-toast',
+                      style: {
+                        background: 'var(--surface)',
+                        backdropFilter: 'blur(12px)',
+                        color: 'var(--text)',
+                        border: '1px solid var(--border)',
+                        borderRadius: '16px',
+                        padding: '14px 20px',
+                        boxShadow: '0 12px 40px rgba(16, 35, 61, 0.15)',
+                        fontSize: '0.85rem',
+                        fontWeight: 500,
                       },
-                    },
-                    error: {
-                      iconTheme: {
-                        primary: 'var(--danger)',
-                        secondary: '#fff',
+                      success: {
+                        iconTheme: {
+                          primary: 'var(--success)',
+                          secondary: '#fff',
+                        },
                       },
-                    },
-                  }}
-                />
+                      error: {
+                        iconTheme: {
+                          primary: 'var(--danger)',
+                          secondary: '#fff',
+                        },
+                      },
+                    }}
+                  />
+                </GlobalEntityProvider>
               </GlobalModalProvider>
             </ConfirmProvider>
           </AuthProvider>

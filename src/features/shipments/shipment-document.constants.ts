@@ -333,3 +333,219 @@ export const SHIPMENT_DOCUMENT_CSS = `
     color: #9aaab8;
   }
 `;
+
+export const SHIPMENT_DOCUMENT_A5_DOT_MATRIX_CSS = `
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    color: #000;
+    font-family: Arial, "Segoe UI", sans-serif;
+    font-size: 8pt;
+    line-height: 1.3;
+    background: #fff;
+  }
+
+  .accent-bar { display: none; }
+
+  /* ── Half-page wrapper: content fits top half of A4 ── */
+  .half-page {
+    height: 148.5mm;
+    width: 210mm;
+    overflow: hidden;
+    padding: 3mm 6mm 2mm;
+  }
+
+  /* Hide original .page wrapper */
+  .page { display: contents; }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid #000;
+    padding-bottom: 1.5mm;
+    margin-bottom: 1.5mm;
+  }
+  .brand {
+    display: flex;
+    flex-direction: column;
+  }
+  .brand-name {
+    font-size: 9pt;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  .doc-title {
+    font-size: 12pt;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  .doc-subtitle {
+    font-size: 8pt;
+  }
+  .meta-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .meta-row {
+    font-size: 8pt;
+    line-height: 1.4;
+  }
+  .meta-label {
+    display: inline-block;
+    width: 18mm;
+  }
+  .meta-value {
+    font-weight: bold;
+  }
+  .meta-value.strong {
+    font-size: 9pt;
+  }
+
+  /* ── Info cards ── */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2mm;
+    margin-bottom: 1.5mm;
+  }
+  .info-card {
+    border: 1px solid #000;
+  }
+  .info-card-header {
+    border-bottom: 1px solid #000;
+    font-weight: bold;
+    padding: 0.5mm 1.5mm;
+    text-transform: uppercase;
+    font-size: 8pt;
+  }
+  .info-card-body {
+    padding: 0.5mm 1.5mm;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .info-row {
+    display: flex;
+    font-size: 8pt;
+    line-height: 1.4;
+  }
+  .info-key {
+    min-width: 22mm;
+    flex-shrink: 0;
+  }
+  .info-val {
+    font-weight: bold;
+  }
+  .info-val.large {
+    font-size: 9pt;
+  }
+
+  /* ── Table ── */
+  .table-wrap {
+    border: 1px solid #000;
+    margin-bottom: 1mm;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead tr {
+    border-bottom: 1px solid #000;
+  }
+  th {
+    font-size: 8pt;
+    font-weight: bold;
+    text-align: left;
+    padding: 0.5mm 1.5mm;
+    border-right: 1px solid #000;
+  }
+  th:last-child { border-right: none; }
+  td {
+    font-size: 8pt;
+    padding: 0.5mm 1.5mm;
+    border-bottom: 1px solid #000;
+    border-right: 1px solid #000;
+    vertical-align: top;
+  }
+  td:last-child { border-right: none; }
+  tbody tr:last-child td { border-bottom: none; }
+  .text-center { text-align: center; }
+  .text-right { text-align: right; }
+  .font-bold { font-weight: bold; }
+  .idx-cell { font-size: 8pt; }
+
+  /* ── Roll pills (plain text for dot matrix) ── */
+  .roll-pills {
+    display: inline;
+  }
+  .roll-pill {
+    font-size: 8pt;
+  }
+  .roll-pill:not(:last-child)::after {
+    content: ", ";
+  }
+  .roll-qty {
+    font-size: 7pt;
+  }
+
+  /* ── Summary bar ── */
+  .summary-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8mm;
+    padding: 0.5mm 1.5mm;
+    border: 1px solid #000;
+    font-size: 9pt;
+    font-weight: bold;
+  }
+  .summary-item { display: flex; gap: 2mm; }
+  .summary-label {}
+  .summary-value {}
+
+  /* ── Signature ── */
+  .signature-section {
+    margin-top: 2mm;
+  }
+  .sign-cell {
+    text-align: center;
+  }
+  .sign-title {
+    font-size: 8pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 1px dotted #000;
+    padding-bottom: 0.5mm;
+  }
+  .sign-name {
+    font-size: 8pt;
+    min-height: 2mm;
+  }
+  .sign-note {
+    font-size: 7pt;
+    font-style: italic;
+    margin-top: 8mm;
+  }
+
+  /* Hide QR block for dot matrix */
+  .qr-block { display: none; }
+
+  /* ── Footer ── */
+  .doc-footer {
+    margin-top: 1mm;
+    border-top: 1px solid #000;
+    padding-top: 0.5mm;
+    display: flex;
+    justify-content: space-between;
+    font-size: 7pt;
+  }
+
+  @media print {
+    body { margin: 0; padding: 0; }
+  }
+`;

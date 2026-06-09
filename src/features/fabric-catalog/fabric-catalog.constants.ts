@@ -1,10 +1,15 @@
+export const ROUTE_FABRIC_CATALOG = '/fabric-catalog';
+
 export const LABELS = {
   SEARCH_PLACEHOLDER: 'Tên, mã, thành phần...',
   SEARCH: 'Tìm kiếm',
   STATUS: 'Trạng thái',
   CODE: 'Mã',
   NAME: 'Tên loại vải',
+  CATEGORY: 'Nhóm vải',
+  CATEGORY_PLACEHOLDER: 'Chọn nhóm vải...',
   COMPOSITION: 'Thành phần',
+  COMPOSITION_PLACEHOLDER: 'VD: Cotton...',
   SPECS: 'Quy cách (chuẩn)',
   WIDTH: 'Khổ',
   GSM: 'K/L',
@@ -24,6 +29,9 @@ export const LABELS = {
   EMPTY_LIST: 'Chưa có loại vải nào',
   ADD_NEW_BTN: '+ Thêm loại vải',
   ITEM_LABEL: 'loại vải',
+  BACK_TO_LIST: 'Danh mục vải',
+  NOT_FOUND: 'Không tìm thấy loại vải hoặc có lỗi xảy ra.',
+  BACK: 'Quay lại danh sách',
   NA: '—',
 } as const;
 

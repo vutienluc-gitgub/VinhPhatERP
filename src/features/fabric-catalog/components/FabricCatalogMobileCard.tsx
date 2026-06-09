@@ -1,15 +1,9 @@
 import { Icon } from '@/shared/components/Icon';
-import { Badge, type BadgeVariant } from '@/shared/components';
+import { Badge } from '@/shared/components';
 import { FABRIC_CATALOG_STATUS_LABELS } from '@/schema/fabric-catalog.schema';
-import type {
-  FabricCatalog,
-  FabricCatalogStatus,
-} from '@/features/fabric-catalog/types';
+import type { FabricCatalog } from '@/features/fabric-catalog/types';
 import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
-
-function getStatusVariant(status: FabricCatalogStatus): BadgeVariant {
-  return status === 'active' ? 'success' : 'gray';
-}
+import { getStatusVariant } from '@/features/fabric-catalog/fabric-catalog.helpers';
 
 interface FabricCatalogMobileCardProps {
   catalog: FabricCatalog;

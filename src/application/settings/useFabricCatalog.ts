@@ -8,6 +8,8 @@ import {
   createFabricCatalog,
   updateFabricCatalog,
   deleteFabricCatalog,
+  fetchFabricCategories,
+  fetchFabricCatalogByIdOrCode,
 } from '@/api/fabric-catalog.api';
 import type { FabricCatalogFormValues } from '@/features/fabric-catalog/fabric-catalog.module';
 import type {
@@ -21,6 +23,7 @@ function toDbRow(
   values: FabricCatalogFormValues,
 ): Omit<FabricCatalog, 'id' | 'created_at' | 'updated_at'> {
   return {
+    category_id: values.category_id || null,
     code: values.code.trim(),
     name: values.name.trim(),
     composition: values.composition?.trim() || null,
@@ -95,5 +98,23 @@ export function useDeleteFabricCatalog() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
+  });
+}
+
+export function useFabricCategories() {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'categories'],
+    queryFn: fetchFabricCategories,
+  });
+}
+
+export function useFabricCatalogDetail(identifier: string | undefined) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'detail', identifier],
+    queryFn: () => {
+      if (!identifier) return Promise.reject(new Error('Missing identifier'));
+      return fetchFabricCatalogByIdOrCode(identifier);
+    },
+    enabled: !!identifier,
   });
 }

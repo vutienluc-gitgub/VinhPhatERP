@@ -13,6 +13,13 @@ export type FabricCatalog = {
   target_gsm: number | null;
   unit: string;
   notes: string | null;
+  category_id: string | null;
+  category?: {
+    id: string;
+    code: string;
+    name: string;
+    color_hint: string | null;
+  } | null;
   status: FabricCatalogStatus;
   image_url: string | null;
   created_at: string;
@@ -21,6 +28,8 @@ export type FabricCatalog = {
 
 export type FabricCatalogFilter = {
   search?: string;
+  category_id?: string;
+  composition?: string;
   status?: FabricCatalogStatus;
 };
 

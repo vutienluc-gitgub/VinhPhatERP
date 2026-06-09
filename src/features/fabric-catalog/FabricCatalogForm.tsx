@@ -10,6 +10,7 @@ import {
   useCreateFabricCatalog,
   useNextFabricCatalogCode,
   useUpdateFabricCatalog,
+  useFabricCategories,
 } from '@/application/settings';
 import {
   useUploadFabricImage,
@@ -24,6 +25,7 @@ import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 import { getErrorMessage } from '@/shared/utils/error';
 
 import type { FabricCatalog } from './types';
+import { LABELS } from './fabric-catalog.constants';
 
 const UNIT_OPTIONS = [
   { value: 'kg', label: 'kg' },
@@ -43,6 +45,7 @@ type FabricCatalogFormProps = {
 
 function catalogToFormValues(catalog: FabricCatalog): FabricCatalogFormValues {
   return {
+    category_id: catalog.category_id ?? null,
     code: catalog.code,
     name: catalog.name,
     composition: catalog.composition ?? '',
@@ -65,6 +68,13 @@ export function FabricCatalogForm({
   const uploadImageMutation = useUploadFabricImage();
   const deleteImageMutation = useDeleteFabricImage();
   const { data: nextCode } = useNextFabricCatalogCode();
+  const { data: categories } = useFabricCategories();
+
+  const categoryOptions =
+    categories?.map((c) => ({
+      value: c.id,
+      label: c.name,
+    })) ?? [];
 
   const {
     register,
@@ -217,8 +227,30 @@ export function FabricCatalogForm({
             </div>
           </div>
 
-          {/* Thành phần + Đơn vị */}
+          {/* Nhóm vải + Thành phần */}
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+            <div className="form-field">
+              <label>{LABELS.CATEGORY}</label>
+              <Controller
+                name="category_id"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={categoryOptions}
+                    value={field.value ?? undefined}
+                    onChange={(val) => field.onChange(val || null)}
+                    hasError={!!errors.category_id}
+                    placeholder={LABELS.CATEGORY_PLACEHOLDER}
+                  />
+                )}
+              />
+              {errors.category_id && (
+                <span className="field-error">
+                  {errors.category_id.message}
+                </span>
+              )}
+            </div>
+
             <div className="form-field">
               <label htmlFor="fc-composition">Thành phần</label>
               <input
@@ -229,7 +261,10 @@ export function FabricCatalogForm({
                 {...register('composition')}
               />
             </div>
+          </div>
 
+          {/* Đơn vị + Quy cách */}
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="fc-unit">
                 Đơn vị <span className="field-required">*</span>
@@ -251,10 +286,7 @@ export function FabricCatalogForm({
                 <span className="field-error">{errors.unit.message}</span>
               )}
             </div>
-          </div>
 
-          {/* Quy cách */}
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="fc-target-width">Khổ chuẩn (cm)</label>
               <input

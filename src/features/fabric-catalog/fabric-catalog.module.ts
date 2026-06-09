@@ -64,6 +64,13 @@ export const fabricCatalogPlugin: FeaturePlugin = {
           default: m.FabricCatalogPage,
         })),
     },
+    {
+      path: 'fabric-catalog/:id',
+      component: () =>
+        import('./FabricCatalogDetailPage').then((m) => ({
+          default: m.FabricCatalogDetailPage,
+        })),
+    },
   ],
 };
 

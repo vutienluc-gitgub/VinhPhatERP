@@ -8,6 +8,7 @@ type PrintOptions = {
   createdByName?: string;
   companyName?: string;
   verifyBaseUrl?: string;
+  format?: 'A4' | 'A5_DOT_MATRIX';
 };
 
 export async function exportShipmentToPdf(
