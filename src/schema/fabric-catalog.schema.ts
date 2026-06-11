@@ -9,7 +9,7 @@ export const FABRIC_CATALOG_STATUS_LABELS: Record<
   inactive: 'Ngưng dùng',
 };
 
-export const fabricCatalogSchema = z.object({
+const baseFabricCatalogSchema = z.object({
   code: z
     .string()
     .trim()
@@ -22,17 +22,37 @@ export const fabricCatalogSchema = z.object({
     .max(200, 'Tên tối đa 200 ký tự'),
   composition: z.string().trim().max(200).optional().or(z.literal('')),
   unit: z.string().trim().min(1, 'Chọn đơn vị').max(20).default('kg'),
-  category_id: z.string().uuid('Chọn nhóm vải hợp lệ').optional().nullable(),
+  category_id: z.string().uuid('Chọn danh mục hợp lệ').optional().nullable(),
   target_width_cm: z.number().min(0).optional().nullable(),
   target_gsm: z.number().min(0).optional().nullable(),
   notes: z.string().trim().max(500).optional().or(z.literal('')),
   status: z.enum(FABRIC_CATALOG_STATUSES),
   image_url: z.string().url().nullable().optional(),
+  specifications: z.record(z.any()).optional().nullable(),
 });
+
+export const fabricCatalogSchema = z.discriminatedUnion('fabric_type', [
+  baseFabricCatalogSchema.extend({
+    fabric_type: z.literal('knitted'),
+    gauge: z.number().min(0, 'Gauge không hợp lệ').optional().nullable(),
+    diameter: z.number().min(0, 'Diameter không hợp lệ').optional().nullable(),
+    machine_type: z.string().trim().max(100).optional().nullable(),
+    needle_count: z.number().min(0).optional().nullable(),
+  }),
+  baseFabricCatalogSchema.extend({
+    fabric_type: z.literal('woven'),
+    warp_count: z.string().trim().max(50).optional().nullable(),
+    weft_count: z.string().trim().max(50).optional().nullable(),
+    epi: z.number().min(0).optional().nullable(),
+    ppi: z.number().min(0).optional().nullable(),
+    weave_pattern: z.string().trim().max(100).optional().nullable(),
+  }),
+]);
 
 export type FabricCatalogFormValues = z.infer<typeof fabricCatalogSchema>;
 
 export const fabricCatalogDefaultValues: FabricCatalogFormValues = {
+  fabric_type: 'knitted',
   code: '',
   name: '',
   composition: '',
@@ -43,4 +63,9 @@ export const fabricCatalogDefaultValues: FabricCatalogFormValues = {
   notes: '',
   status: 'active',
   image_url: null,
+  specifications: {},
+  gauge: null,
+  diameter: null,
+  machine_type: null,
+  needle_count: null,
 };
