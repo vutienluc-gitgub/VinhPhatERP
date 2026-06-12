@@ -18,6 +18,12 @@ const TenantRegisterPage = lazy(() =>
   })),
 );
 
+const PublicFabricDetailPage = lazy(() =>
+  import('@/features/fabric-catalog/PublicFabricDetailPage').then((m) => ({
+    default: m.PublicFabricDetailPage,
+  })),
+);
+
 export const publicRoutes: RouteObject[] = [
   authRoute,
   {
@@ -35,5 +41,9 @@ export const publicRoutes: RouteObject[] = [
   {
     path: '/verify/:shipmentNumber',
     element: withSuspense(<ShipmentVerifyPage />),
+  },
+  {
+    path: '/p/fabric/:slug',
+    element: withSuspense(<PublicFabricDetailPage />),
   },
 ];

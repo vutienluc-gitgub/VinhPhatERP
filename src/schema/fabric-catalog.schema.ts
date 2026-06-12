@@ -28,7 +28,9 @@ const baseFabricCatalogSchema = z.object({
   notes: z.string().trim().max(500).optional().or(z.literal('')),
   status: z.enum(FABRIC_CATALOG_STATUSES),
   image_url: z.string().url().nullable().optional(),
-  specifications: z.record(z.any()).optional().nullable(),
+  specifications: z.record(z.unknown()).optional().nullable(),
+  is_public: z.boolean().default(false),
+  slug: z.string().trim().max(100).optional().or(z.literal('')),
 });
 
 export const fabricCatalogSchema = z.discriminatedUnion('fabric_type', [
@@ -68,4 +70,6 @@ export const fabricCatalogDefaultValues: FabricCatalogFormValues = {
   diameter: null,
   machine_type: null,
   needle_count: null,
+  is_public: false,
+  slug: '',
 };

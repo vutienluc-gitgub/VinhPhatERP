@@ -10,6 +10,7 @@ import {
   deleteFabricCatalog,
   fetchFabricCategories,
   fetchFabricCatalogByIdOrCode,
+  fetchPublicFabricBySlug,
 } from '@/api/fabric-catalog.api';
 import type { FabricCatalogFormValues } from '@/features/fabric-catalog/fabric-catalog.module';
 import type {
@@ -22,7 +23,7 @@ const QUERY_KEY = ['fabric-catalog'] as const;
 function toDbRow(
   values: FabricCatalogFormValues,
 ): Omit<FabricCatalog, 'id' | 'created_at' | 'updated_at'> {
-  return {
+  const base = {
     category_id: values.category_id || null,
     code: values.code.trim(),
     name: values.name.trim(),
@@ -33,6 +34,40 @@ function toDbRow(
     notes: values.notes?.trim() || null,
     status: values.status,
     image_url: values.image_url ?? null,
+    specifications: values.specifications ?? null,
+    is_public: values.is_public,
+    slug:
+      values.slug || values.code.replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase(),
+  };
+
+  if (values.fabric_type === 'woven') {
+    return {
+      ...base,
+      fabric_type: 'woven',
+      warp_count: values.warp_count?.trim() || null,
+      weft_count: values.weft_count?.trim() || null,
+      epi: values.epi ?? null,
+      ppi: values.ppi ?? null,
+      weave_pattern: values.weave_pattern?.trim() || null,
+      gauge: null,
+      diameter: null,
+      machine_type: null,
+      needle_count: null,
+    };
+  }
+
+  return {
+    ...base,
+    fabric_type: 'knitted',
+    gauge: values.gauge ?? null,
+    diameter: values.diameter ?? null,
+    machine_type: values.machine_type?.trim() || null,
+    needle_count: values.needle_count ?? null,
+    warp_count: null,
+    weft_count: null,
+    epi: null,
+    ppi: null,
+    weave_pattern: null,
   };
 }
 
@@ -116,5 +151,17 @@ export function useFabricCatalogDetail(identifier: string | undefined) {
       return fetchFabricCatalogByIdOrCode(identifier);
     },
     enabled: !!identifier,
+  });
+}
+
+export function usePublicFabricBySlug(slug: string | undefined) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'public', slug],
+    queryFn: () => {
+      if (!slug) return Promise.reject(new Error('Missing slug'));
+      return fetchPublicFabricBySlug(slug);
+    },
+    enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
   });
 }

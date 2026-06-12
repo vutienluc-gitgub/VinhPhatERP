@@ -22,8 +22,21 @@ export type FabricCatalog = {
   } | null;
   status: FabricCatalogStatus;
   image_url: string | null;
+  fabric_type: 'knitted' | 'woven';
+  gauge: number | null;
+  diameter: number | null;
+  machine_type: string | null;
+  needle_count: number | null;
+  warp_count: string | null;
+  weft_count: string | null;
+  epi: number | null;
+  ppi: number | null;
+  weave_pattern: string | null;
+  specifications: Record<string, unknown> | null;
   created_at: string;
   updated_at: string;
+  is_public: boolean;
+  slug: string;
 };
 
 export type FabricCatalogFilter = {

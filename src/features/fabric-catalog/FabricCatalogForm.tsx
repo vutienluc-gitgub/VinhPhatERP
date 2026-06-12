@@ -44,7 +44,7 @@ type FabricCatalogFormProps = {
 };
 
 function catalogToFormValues(catalog: FabricCatalog): FabricCatalogFormValues {
-  return {
+  const base = {
     category_id: catalog.category_id ?? null,
     code: catalog.code,
     name: catalog.name,
@@ -55,6 +55,29 @@ function catalogToFormValues(catalog: FabricCatalog): FabricCatalogFormValues {
     notes: catalog.notes ?? '',
     status: catalog.status,
     image_url: catalog.image_url ?? null,
+    is_public: catalog.is_public ?? false,
+    slug: catalog.slug ?? '',
+  };
+
+  if (catalog.fabric_type === 'woven') {
+    return {
+      ...base,
+      fabric_type: 'woven',
+      warp_count: catalog.warp_count ?? null,
+      weft_count: catalog.weft_count ?? null,
+      epi: catalog.epi ?? null,
+      ppi: catalog.ppi ?? null,
+      weave_pattern: catalog.weave_pattern ?? null,
+    };
+  }
+
+  return {
+    ...base,
+    fabric_type: 'knitted',
+    gauge: catalog.gauge ?? null,
+    diameter: catalog.diameter ?? null,
+    machine_type: catalog.machine_type ?? null,
+    needle_count: catalog.needle_count ?? null,
   };
 }
 
@@ -102,6 +125,8 @@ export function FabricCatalogForm({
   useEffect(() => {
     if (!isEditing && nextCode) {
       setValue('code', nextCode);
+      const autoSlug = nextCode.replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase();
+      setValue('slug', autoSlug);
     }
   }, [isEditing, nextCode, setValue]);
 
@@ -223,6 +248,35 @@ export function FabricCatalogForm({
               />
               {errors.name && (
                 <span className="field-error">{errors.name.message}</span>
+              )}
+            </div>
+          </div>
+
+          {/* Công khai + Slug */}
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+            <div className="form-field flex items-center gap-2 mt-8">
+              <input
+                id="fc-is-public"
+                type="checkbox"
+                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                {...register('is_public')}
+              />
+              <label htmlFor="fc-is-public" className="mb-0 cursor-pointer">
+                Công khai cho khách hàng (Public)
+              </label>
+            </div>
+
+            <div className="form-field">
+              <label htmlFor="fc-slug">Đường dẫn tĩnh (Slug)</label>
+              <input
+                id="fc-slug"
+                className={`field-input${errors.slug ? ' is-error' : ''}`}
+                type="text"
+                placeholder="VD: vp-cs-001"
+                {...register('slug')}
+              />
+              {errors.slug && (
+                <span className="field-error">{errors.slug.message}</span>
               )}
             </div>
           </div>
