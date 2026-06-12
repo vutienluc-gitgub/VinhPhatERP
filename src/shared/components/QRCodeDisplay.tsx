@@ -1,4 +1,4 @@
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 
 type QRCodeDisplayProps = {
   /** Data encoded in the QR code */
@@ -10,8 +10,8 @@ type QRCodeDisplayProps = {
 };
 
 /**
- * Renders a QR code as SVG with optional label.
- * Used for lot traceability in yarn receipts.
+ * Renders a QR code as Canvas with optional label.
+ * Canvas-based rendering is compatible with html2canvas for image export.
  */
 export function QRCodeDisplay({
   value,
@@ -20,7 +20,7 @@ export function QRCodeDisplay({
 }: QRCodeDisplayProps) {
   return (
     <div className="flex flex-col items-center gap-2">
-      <QRCodeSVG
+      <QRCodeCanvas
         value={value}
         size={size}
         level="M"
