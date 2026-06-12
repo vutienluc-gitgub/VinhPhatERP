@@ -4,27 +4,10 @@ import { useParams } from 'react-router-dom';
 import { usePublicFabricBySlug } from '@/application/settings/useFabricCatalog';
 import { Button, Icon } from '@/shared/components';
 
-const HOTLINE = '0989072670';
-
-const LABELS = {
-  loading: 'Đang tải thông tin...',
-  notFound: 'Không tìm thấy mẫu vải',
-  notFoundDesc: 'Mẫu vải không tồn tại hoặc đã ngừng kinh doanh.',
-  backHome: 'Về trang chủ',
-  callNow: 'Gọi ngay',
-  zaloQuote: 'Nhận báo giá',
-  zaloMsgPrefix: 'Tôi muốn nhận báo giá mẫu vải',
-  composition: 'Thành phần',
-  specs: 'Quy cách',
-  weavePattern: 'Kiểu dệt',
-  machineType: 'Kỹ thuật',
-  fabricType: 'Nhóm vải',
-  knitted: 'Dệt kim',
-  woven: 'Dệt thoi',
-  noImage: 'Chưa có hình ảnh',
-  width: 'Khổ',
-  gsm: 'Định lượng',
-} as const;
+import {
+  HOTLINE,
+  PUBLIC_PAGE_LABELS as LABELS,
+} from './fabric-catalog.constants';
 
 export function PublicFabricDetailPage() {
   const { slug } = useParams<{ slug: string }>();

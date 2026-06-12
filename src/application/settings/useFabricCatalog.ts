@@ -38,6 +38,8 @@ function toDbRow(
     is_public: values.is_public,
     slug:
       values.slug || values.code.replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase(),
+    color: values.color ?? null,
+    technique: values.technique ?? null,
   };
 
   if (values.fabric_type === 'woven') {
