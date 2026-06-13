@@ -3179,3 +3179,216 @@ select.field-select.h-12 {
   align-items: center;
   gap: 0.5rem;
 }
+
+/* ---- Fabric Public Preview Card ---- */
+.fabric-preview-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-strong);
+  overflow: hidden;
+}
+
+.fabric-preview-card__title {
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  margin: 0;
+}
+
+.fabric-preview-card__body {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.fabric-preview-card__image {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.fabric-preview-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fabric-preview-card__image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+.fabric-preview-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.fabric-preview-card__code {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: 0.02em;
+}
+
+.fabric-preview-card__name {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fabric-preview-card__meta {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.fabric-preview-card__specs {
+  font-weight: 600;
+  color: var(--text-secondary, var(--muted));
+}
+
+/* ---- Slug locked display ---- */
+.slug-locked {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  min-height: 44px;
+}
+
+.slug-locked__value {
+  flex: 1;
+  font-size: 0.88rem;
+  color: var(--text);
+  font-weight: 500;
+  font-family: var(--font-mono, 'SF Mono', 'Fira Code', monospace);
+}
+
+.slug-locked__icon {
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+/* ---- Public toggle section ---- */
+.public-toggle-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-strong);
+}
+
+.public-toggle-section__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.public-toggle-section__title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.public-toggle-section__desc {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.public-toggle-section__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* ---- Public status dot badge ---- */
+.public-status-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.public-status-dot::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex-shrink: 0;
+}
+
+.public-status-dot.is-active::before {
+  background: var(--success);
+  box-shadow: 0 0 6px rgba(var(--success-rgb), 0.4);
+}
+
+/* ---- QR section in public tab ---- */
+.qr-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  align-items: center;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-strong);
+}
+
+@media (min-width: 480px) {
+  .qr-section {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.qr-section__code {
+  background: #fff;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.qr-section__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+@media (min-width: 480px) {
+  .qr-section__actions {
+    width: auto;
+  }
+}

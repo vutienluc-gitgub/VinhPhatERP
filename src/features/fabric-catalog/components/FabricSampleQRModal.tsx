@@ -130,7 +130,9 @@ export function FabricSampleQRModal({
                 {LABELS_PRINT.composition}:
               </span>
               <span className="font-medium">
-                {catalog.composition || LABELS_PRINT.noValue}
+                {catalog.composition_tags?.length
+                  ? catalog.composition_tags.join(', ')
+                  : catalog.composition || LABELS_PRINT.noValue}
               </span>
             </div>
             {specsDisplay && (

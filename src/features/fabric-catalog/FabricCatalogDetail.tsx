@@ -64,9 +64,13 @@ export function FabricCatalogDetail({
                 <FabricCategoryBadge category={catalog.category} />
               </div>
             )}
-            {catalog.composition && (
-              <p className="text-sm text-muted italic mt-0.5">
-                {catalog.composition}
+            {(catalog.composition_tags?.length
+              ? catalog.composition_tags.join(', ')
+              : catalog.composition) && (
+              <p className="text-sm">
+                {catalog.composition_tags?.length
+                  ? catalog.composition_tags.join(', ')
+                  : catalog.composition}
               </p>
             )}
 

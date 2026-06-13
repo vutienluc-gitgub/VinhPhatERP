@@ -21,6 +21,7 @@ const baseFabricCatalogSchema = z.object({
     .min(2, 'Tên tối thiểu 2 ký tự')
     .max(200, 'Tên tối đa 200 ký tự'),
   composition: z.string().trim().max(200).optional().or(z.literal('')),
+  composition_tags: z.array(z.string()).default([]),
   unit: z.string().trim().min(1, 'Chọn đơn vị').max(20).default('kg'),
   category_id: z.string().uuid('Chọn danh mục hợp lệ').optional().nullable(),
   target_width_cm: z.number().min(0).optional().nullable(),
@@ -32,6 +33,7 @@ const baseFabricCatalogSchema = z.object({
   is_public: z.boolean().default(false),
   slug: z.string().trim().max(100).optional().or(z.literal('')),
   color: z.string().trim().max(100).optional().nullable(),
+  color_tags: z.array(z.string()).default([]),
   technique: z.string().trim().max(100).optional().nullable(),
 });
 
@@ -60,6 +62,7 @@ export const fabricCatalogDefaultValues: FabricCatalogFormValues = {
   code: '',
   name: '',
   composition: '',
+  composition_tags: [],
   target_width_cm: null,
   target_gsm: null,
   category_id: null,
@@ -75,5 +78,6 @@ export const fabricCatalogDefaultValues: FabricCatalogFormValues = {
   is_public: false,
   slug: '',
   color: null,
+  color_tags: [],
   technique: null,
 };

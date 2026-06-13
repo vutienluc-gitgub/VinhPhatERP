@@ -31,6 +31,7 @@ export { Pagination } from './Pagination';
 export { Portal } from './Portal';
 export { default as SaveStatus } from './SaveStatus';
 export { TableSkeleton } from './TableSkeleton';
+export * from './TagInput';
 export { TabSwitcher } from './TabSwitcher';
 export type { TabItem } from './TabSwitcher';
 export { Switch } from './Switch';
@@ -61,6 +62,7 @@ export { LiveIndicator } from './LiveIndicator';
 export { TimelineProgress } from './TimelineProgress';
 export type { TimelineStep } from './TimelineProgress';
 export * from './EntityLink';
+export { ImagePicker } from './ImagePicker';
 
 // End of exports
 export { DebtAgingSection } from './DebtAgingSection';

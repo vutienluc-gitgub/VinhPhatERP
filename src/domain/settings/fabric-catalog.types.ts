@@ -9,6 +9,7 @@ export type FabricCatalog = {
   code: string;
   name: string;
   composition: string | null;
+  composition_tags: string[] | null;
   target_width_cm: number | null;
   target_gsm: number | null;
   unit: string;
@@ -33,6 +34,7 @@ export type FabricCatalog = {
   ppi: number | null;
   weave_pattern: string | null;
   color: string | null;
+  color_tags: string[] | null;
   technique: string | null;
   specifications: Record<string, unknown> | null;
   created_at: string;
