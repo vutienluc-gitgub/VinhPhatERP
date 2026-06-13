@@ -33,6 +33,35 @@ export const LABELS = {
   NOT_FOUND: 'Không tìm thấy loại vải hoặc có lỗi xảy ra.',
   BACK: 'Quay lại danh sách',
   NA: '—',
+
+  // Form tabs
+  TAB_INFO: 'Thông tin',
+  TAB_PUBLIC: 'Công khai',
+  TAB_ADMIN: 'Quản trị',
+
+  // Slug UX
+  SLUG_LABEL: 'Đường dẫn tĩnh (Slug)',
+  SLUG_AUTO_HINT: 'Tự động tạo từ mã vải',
+  SLUG_EDIT: 'Sửa',
+  SLUG_CANCEL: 'Hủy',
+
+  // Public toggle
+  PUBLIC_TITLE: 'Công khai cho khách hàng',
+  PUBLIC_DESC: 'Khách hàng có thể quét QR và xem thông tin trực tuyến',
+  PUBLIC_ON: 'Đang công khai',
+  PUBLIC_OFF: 'Chưa công khai',
+  PUBLIC_PAGE_LABEL: 'Trang công khai',
+
+  // Preview card
+  PREVIEW_TITLE: 'Xem trước trang công khai',
+  PREVIEW_NO_IMAGE: 'Chưa có ảnh',
+  PREVIEW_WIDTH_UNIT: 'cm',
+  PREVIEW_GSM_UNIT: 'gsm',
+
+  // Tag inputs
+  OLD_DATA_HINT: 'Dữ liệu cũ: ',
+  COMPOSITION_TAG_PLACEHOLDER: 'VD: 65% Polyester, 35% Cotton (Nhấn Enter)',
+  COLOR_TAG_PLACEHOLDER: 'VD: Trắng, Đen (Nhấn Enter)',
 } as const;
 
 export const MESSAGES = {

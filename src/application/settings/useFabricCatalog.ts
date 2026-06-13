@@ -28,6 +28,7 @@ function toDbRow(
     code: values.code.trim(),
     name: values.name.trim(),
     composition: values.composition?.trim() || null,
+    composition_tags: values.composition_tags ?? [],
     target_width_cm: values.target_width_cm ?? null,
     target_gsm: values.target_gsm ?? null,
     unit: values.unit.trim(),
@@ -39,6 +40,7 @@ function toDbRow(
     slug:
       values.slug || values.code.replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase(),
     color: values.color ?? null,
+    color_tags: values.color_tags ?? [],
     technique: values.technique ?? null,
   };
 

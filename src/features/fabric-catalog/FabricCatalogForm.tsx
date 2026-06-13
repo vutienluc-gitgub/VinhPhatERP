@@ -1,13 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import { Button } from '@/shared/components';
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
-import { Combobox } from '@/shared/components/Combobox';
-import { ImagePicker } from '@/shared/components/ImagePicker';
-import { Switch } from '@/shared/components/Switch';
-import { Badge } from '@/shared/components/Badge';
+import {
+  AdaptiveSheet,
+  Button,
+  Combobox,
+  Icon,
+  ImagePicker,
+  Switch,
+  TabSwitcher,
+  TagInput,
+} from '@/shared/components';
 import { QRCodeDisplay } from '@/shared/components/QRCodeDisplay';
 import {
   useCreateFabricCatalog,
@@ -29,6 +33,7 @@ import { getErrorMessage } from '@/shared/utils/error';
 
 import type { FabricCatalog } from './types';
 import { LABELS } from './fabric-catalog.constants';
+import { FabricPublicPreview } from './components/FabricPublicPreview';
 
 const UNIT_OPTIONS = [
   { value: 'kg', label: 'kg' },
@@ -53,6 +58,14 @@ const TECHNIQUE_OPTIONS = [
   { value: 'Jacquard', label: 'Jacquard' },
 ];
 
+type FormTab = 'info' | 'public' | 'admin';
+
+const FORM_TABS: { key: FormTab; label: string }[] = [
+  { key: 'info', label: LABELS.TAB_INFO },
+  { key: 'public', label: LABELS.TAB_PUBLIC },
+  { key: 'admin', label: LABELS.TAB_ADMIN },
+];
+
 type FabricCatalogFormProps = {
   catalog: FabricCatalog | null;
   onClose: () => void;
@@ -64,6 +77,7 @@ function catalogToFormValues(catalog: FabricCatalog): FabricCatalogFormValues {
     code: catalog.code,
     name: catalog.name,
     composition: catalog.composition ?? '',
+    composition_tags: catalog.composition_tags ?? [],
     target_width_cm: catalog.target_width_cm,
     target_gsm: catalog.target_gsm,
     unit: catalog.unit,
@@ -73,6 +87,7 @@ function catalogToFormValues(catalog: FabricCatalog): FabricCatalogFormValues {
     is_public: catalog.is_public ?? false,
     slug: catalog.slug ?? '',
     color: catalog.color ?? null,
+    color_tags: catalog.color_tags ?? [],
     technique: catalog.technique ?? null,
   };
 
@@ -110,6 +125,8 @@ export function FabricCatalogForm({
   const { data: nextCode } = useNextFabricCatalogCode();
   const { data: categories } = useFabricCategories();
 
+  const [activeTab, setActiveTab] = useState<FormTab>('info');
+  const [isSlugEditing, setIsSlugEditing] = useState(false);
   const isCustomSlug = useRef(isEditing && Boolean(catalog?.slug));
 
   const categoryOptions =
@@ -138,6 +155,7 @@ export function FabricCatalogForm({
       isEditing ? catalogToFormValues(catalog) : fabricCatalogDefaultValues,
     );
     isCustomSlug.current = isEditing && Boolean(catalog?.slug);
+    setIsSlugEditing(false);
   }, [catalog, isEditing, reset]);
 
   const currentImageUrl = watch('image_url');
@@ -145,6 +163,13 @@ export function FabricCatalogForm({
   const watchSlug = watch('slug');
   const watchIsPublic = watch('is_public');
   const watchName = watch('name');
+  const watchComposition = watch('composition_tags');
+  const watchWidthCm = watch('target_width_cm');
+  const watchGsm = watch('target_gsm');
+  const watchTechnique = watch('technique');
+  const watchCategoryId = watch('category_id');
+
+  const selectedCategory = categories?.find((c) => c.id === watchCategoryId);
 
   useEffect(() => {
     if (!isEditing && nextCode && !watchCode) {
@@ -171,7 +196,7 @@ export function FabricCatalogForm({
       }
       onClose();
     } catch {
-      // Lỗi hiện qua mutationError bên dưới
+      // Error shown via mutationError below
     }
   }
 
@@ -229,7 +254,23 @@ export function FabricCatalogForm({
     try {
       await navigator.clipboard.writeText(publicUrl);
     } catch (e) {
-      console.error(e);
+      const message = e instanceof Error ? e.message : String(e);
+      console.error('[CopyLinkError]', message);
+    }
+  };
+
+  const handleSlugEditStart = () => {
+    isCustomSlug.current = true;
+    setIsSlugEditing(true);
+  };
+
+  const handleSlugEditCancel = () => {
+    setIsSlugEditing(false);
+    // Reset to auto-generated slug
+    if (watchCode) {
+      isCustomSlug.current = false;
+      const autoSlug = watchCode.replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase();
+      setValue('slug', autoSlug, { shouldValidate: true });
     }
   };
 
@@ -271,24 +312,32 @@ export function FabricCatalogForm({
         </p>
       )}
 
+      {/* Tab Switcher */}
+      <div className="mb-4">
+        <TabSwitcher
+          tabs={FORM_TABS}
+          active={activeTab}
+          onChange={setActiveTab}
+          variant="pill"
+        />
+      </div>
+
       <form
         id="fabric-catalog-form"
         onSubmit={handleSubmit(onSubmit)}
         noValidate
-        className="space-y-8 pb-8"
+        className="space-y-6 pb-4"
       >
-        {/* THÔNG TIN CƠ BẢN */}
-        <section>
-          <h3 className="text-lg font-semibold mb-4 text-foreground">
-            Thông tin cơ bản
-          </h3>
-          <div className="form-grid">
+        {/* ── TAB: Thong tin ── */}
+        {activeTab === 'info' && (
+          <>
+            {/* Image */}
             <div className="form-field">
               <label>Ảnh mẫu vải</label>
               <ImagePicker
                 value={currentImageUrl}
-                onUpload={(file) =>
-                  uploadImageMutation.mutate(file, {
+                onUpload={(file: File) =>
+                  uploadImageMutation.mutateAsync(file, {
                     onSuccess: (url) => setValue('image_url', url),
                   })
                 }
@@ -310,6 +359,7 @@ export function FabricCatalogForm({
               />
             </div>
 
+            {/* Code + Name */}
             <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
               <div className="form-field">
                 <label htmlFor="fc-code">
@@ -344,17 +394,8 @@ export function FabricCatalogForm({
                 )}
               </div>
             </div>
-          </div>
-        </section>
 
-        <hr className="border-border" />
-
-        {/* THÔNG TIN KỸ THUẬT */}
-        <section>
-          <h3 className="text-lg font-semibold mb-4 text-foreground">
-            Thông tin kỹ thuật
-          </h3>
-          <div className="form-grid">
+            {/* Category + Composition */}
             <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
               <div className="form-field">
                 <label>{LABELS.CATEGORY}</label>
@@ -379,16 +420,31 @@ export function FabricCatalogForm({
               </div>
 
               <div className="form-field">
-                <label htmlFor="fc-composition">Thành phần</label>
-                <input
-                  id="fc-composition"
-                  className="field-input"
-                  type="text"
-                  placeholder="VD: 65% Polyester, 35% Cotton"
-                  {...register('composition')}
+                <label>Thành phần</label>
+                <Controller
+                  name="composition_tags"
+                  control={control}
+                  render={({ field }) => (
+                    <TagInput
+                      value={field.value ?? []}
+                      onChange={field.onChange}
+                      placeholder={LABELS.COMPOSITION_TAG_PLACEHOLDER}
+                    />
+                  )}
                 />
+                {catalog?.composition &&
+                  (!watch('composition_tags') ||
+                    watch('composition_tags')?.length === 0) && (
+                    <p className="text-xs text-muted mt-1">
+                      {LABELS.OLD_DATA_HINT}
+                      {catalog.composition}
+                    </p>
+                  )}
               </div>
+            </div>
 
+            {/* Width + GSM */}
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
               <div className="form-field">
                 <label htmlFor="fc-target-width">Khổ chuẩn (cm)</label>
                 <input
@@ -424,16 +480,31 @@ export function FabricCatalogForm({
                   </span>
                 )}
               </div>
+            </div>
 
+            {/* Color + Technique */}
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
               <div className="form-field">
-                <label htmlFor="fc-color">Màu sắc</label>
-                <input
-                  id="fc-color"
-                  className={`field-input${errors.color ? ' is-error' : ''}`}
-                  type="text"
-                  placeholder="VD: Trắng, Đen, Melange Grey"
-                  {...register('color')}
+                <label>Màu sắc</label>
+                <Controller
+                  name="color_tags"
+                  control={control}
+                  render={({ field }) => (
+                    <TagInput
+                      value={field.value ?? []}
+                      onChange={field.onChange}
+                      placeholder={LABELS.COLOR_TAG_PLACEHOLDER}
+                    />
+                  )}
                 />
+                {catalog?.color &&
+                  (!watch('color_tags') ||
+                    watch('color_tags')?.length === 0) && (
+                    <p className="text-xs text-muted mt-1">
+                      {LABELS.OLD_DATA_HINT}
+                      {catalog.color}
+                    </p>
+                  )}
               </div>
 
               <div className="form-field">
@@ -451,7 +522,10 @@ export function FabricCatalogForm({
                   )}
                 />
               </div>
+            </div>
 
+            {/* Unit */}
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
               <div className="form-field">
                 <label htmlFor="fc-unit">
                   Đơn vị <span className="field-required">*</span>
@@ -474,30 +548,28 @@ export function FabricCatalogForm({
                 )}
               </div>
             </div>
-          </div>
-        </section>
+          </>
+        )}
 
-        <hr className="border-border" />
-
-        {/* CÔNG KHAI */}
-        <section>
-          <h3 className="text-lg font-semibold mb-4 text-foreground">
-            Công khai
-          </h3>
-          <div className="p-4 rounded-lg border border-border bg-card">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="font-medium text-foreground">
-                  Công khai cho khách hàng (Public)
+        {/* ── TAB: Cong khai ── */}
+        {activeTab === 'public' && (
+          <div className="space-y-5">
+            {/* Public toggle */}
+            <div className="public-toggle-section">
+              <div className="public-toggle-section__text">
+                <p className="public-toggle-section__title">
+                  {LABELS.PUBLIC_TITLE}
                 </p>
-                <p className="text-sm text-muted">
-                  Bật để khách hàng có thể quét QR và xem thông tin trực tuyến
+                <p className="public-toggle-section__desc">
+                  {LABELS.PUBLIC_DESC}
                 </p>
               </div>
-              <div className="flex items-center gap-3">
-                <Badge variant={watchIsPublic ? 'success' : 'gray'}>
-                  {watchIsPublic ? '🟢 Đang công khai' : '🔴 Chưa công khai'}
-                </Badge>
+              <div className="public-toggle-section__controls">
+                <span
+                  className={`public-status-dot${watchIsPublic ? ' is-active' : ''}`}
+                >
+                  {watchIsPublic ? LABELS.PUBLIC_ON : LABELS.PUBLIC_OFF}
+                </span>
                 <Controller
                   name="is_public"
                   control={control}
@@ -508,124 +580,159 @@ export function FabricCatalogForm({
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="form-field">
-                <label htmlFor="fc-slug">Đường dẫn tĩnh (Slug)</label>
+            {/* Slug */}
+            <div className="form-field">
+              <label>{LABELS.SLUG_LABEL}</label>
+
+              {!isSlugEditing ? (
+                /* Locked slug display */
+                <div className="slug-locked">
+                  <Icon name="Lock" size={14} className="slug-locked__icon" />
+                  <span className="slug-locked__value">
+                    {watchSlug || LABELS.NA}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleSlugEditStart}
+                  >
+                    {LABELS.SLUG_EDIT}
+                  </Button>
+                </div>
+              ) : (
+                /* Editable slug input */
                 <div className="flex gap-2">
                   <input
                     id="fc-slug"
                     className={`field-input flex-1${errors.slug ? ' is-error' : ''}`}
                     type="text"
                     placeholder="VD: fc-001"
-                    readOnly={!isCustomSlug.current}
                     {...register('slug')}
                   />
-                  {!isCustomSlug.current && (
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={() => {
-                        isCustomSlug.current = true;
-                      }}
-                    >
-                      Tùy chỉnh URL
-                    </Button>
-                  )}
-                </div>
-                {errors.slug && (
-                  <span className="field-error">{errors.slug.message}</span>
-                )}
-                <div className="mt-2 text-sm text-muted flex items-center gap-2">
-                  <span>🌐 Trang công khai: {publicUrl}</span>
-                  {watchIsPublic && watchSlug && (
-                    <>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleCopyLink}
-                      >
-                        Sao chép
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => window.open(publicUrl, '_blank')}
-                      >
-                        Mở trang
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {watchIsPublic && watchSlug && (
-                <div className="pt-4 border-t border-border flex flex-col sm:flex-row items-center gap-6">
-                  <div
-                    id="qr-container"
-                    className="bg-white p-2 rounded-lg border border-border"
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleSlugEditCancel}
                   >
-                    <QRCodeDisplay value={publicUrl} size={150} />
-                  </div>
-                  <div className="flex flex-col gap-2 w-full sm:w-auto">
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={handleDownloadQR}
-                    >
-                      Tải QR (.png)
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={handlePrintQR}
-                    >
-                      In Tem Mẫu
-                    </Button>
-                  </div>
+                    {LABELS.SLUG_CANCEL}
+                  </Button>
                 </div>
               )}
-            </div>
-          </div>
-        </section>
 
-        <hr className="border-border" />
+              {!isSlugEditing && (
+                <p className="text-xs text-muted mt-1">
+                  {LABELS.SLUG_AUTO_HINT}
+                </p>
+              )}
 
-        {/* QUẢN TRỊ */}
-        <section>
-          <h3 className="text-lg font-semibold mb-4 text-foreground">
-            Quản trị
-          </h3>
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-            <div className="form-field">
-              <label>Trạng thái</label>
-              <Controller
-                name="status"
-                control={control}
-                render={({ field }) => (
-                  <Combobox
-                    options={STATUS_OPTIONS}
-                    value={field.value}
-                    onChange={field.onChange}
-                    hasError={!!errors.status}
-                  />
+              {errors.slug && (
+                <span className="field-error">{errors.slug.message}</span>
+              )}
+
+              {/* URL preview */}
+              <div className="mt-2 text-sm text-muted flex items-center gap-2 flex-wrap">
+                <span>
+                  {LABELS.PUBLIC_PAGE_LABEL}: {publicUrl}
+                </span>
+                {watchIsPublic && watchSlug && (
+                  <>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleCopyLink}
+                    >
+                      Sao chép
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => window.open(publicUrl, '_blank')}
+                    >
+                      Mở trang
+                    </Button>
+                  </>
                 )}
-              />
+              </div>
             </div>
 
-            <div className="form-field col-span-full">
+            {/* QR + Actions */}
+            {watchIsPublic && watchSlug && (
+              <div className="qr-section">
+                <div id="qr-container" className="qr-section__code">
+                  <QRCodeDisplay value={publicUrl} size={160} />
+                </div>
+                <div className="qr-section__actions">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={handleDownloadQR}
+                  >
+                    Tải QR (.png)
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={handlePrintQR}
+                  >
+                    In Tem Mẫu
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Public Preview Card */}
+            {watchIsPublic && (
+              <FabricPublicPreview
+                imageUrl={currentImageUrl}
+                code={watchCode}
+                name={watchName}
+                composition={watchComposition}
+                targetWidthCm={watchWidthCm}
+                targetGsm={watchGsm}
+                technique={watchTechnique}
+                category={selectedCategory?.name}
+              />
+            )}
+          </div>
+        )}
+
+        {/* ── TAB: Quan tri ── */}
+        {activeTab === 'admin' && (
+          <div className="space-y-4">
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+              <div className="form-field">
+                <label>Trạng thái</label>
+                <Controller
+                  name="status"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={STATUS_OPTIONS}
+                      value={field.value}
+                      onChange={field.onChange}
+                      hasError={!!errors.status}
+                    />
+                  )}
+                />
+              </div>
+            </div>
+
+            <div className="form-field">
               <label htmlFor="fc-notes">Ghi chú</label>
               <textarea
                 id="fc-notes"
                 className="field-textarea"
-                rows={2}
+                rows={4}
                 placeholder="Ghi chú nội bộ..."
                 {...register('notes')}
               />
             </div>
           </div>
-        </section>
+        )}
       </form>
     </AdaptiveSheet>
   );

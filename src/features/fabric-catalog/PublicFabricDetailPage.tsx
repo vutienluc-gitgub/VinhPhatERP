@@ -112,11 +112,15 @@ export function PublicFabricDetailPage() {
               </div>
             )}
 
-            {fabric.composition && (
+            {(fabric.composition_tags?.length
+              ? fabric.composition_tags.join(', ')
+              : fabric.composition) && (
               <div className="flex justify-between border-b border-gray-100 pb-2">
                 <span className="text-muted">{LABELS.composition}</span>
                 <span className="font-medium text-gray-800">
-                  {fabric.composition}
+                  {fabric.composition_tags?.length
+                    ? fabric.composition_tags.join(', ')
+                    : fabric.composition}
                 </span>
               </div>
             )}

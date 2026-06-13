@@ -185,11 +185,17 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
       {
         accessorKey: 'composition',
         header: LABELS.COMPOSITION,
-        cell: ({ row }) => (
-          <span className="text-muted text-sm italic">
-            {row.original.composition ?? LABELS.NA}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const tags = row.original.composition_tags;
+          const fallback = row.original.composition;
+          const displayValue =
+            tags && tags.length > 0 ? tags.join(', ') : fallback;
+          return (
+            <span className="text-muted text-sm italic">
+              {displayValue ?? LABELS.NA}
+            </span>
+          );
+        },
       },
       {
         id: 'specs',
