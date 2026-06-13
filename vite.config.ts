@@ -16,6 +16,24 @@ export default defineConfig({
     include: ['src/**/*.test.{ts,tsx}'],
     css: true,
   },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'lucide-react',
+      '@tanstack/react-query',
+      '@tanstack/react-table',
+      'react-hook-form',
+      '@hookform/resolvers/zod',
+      'zod',
+      '@supabase/supabase-js',
+      'dayjs',
+      'recharts',
+      'exceljs',
+      'fuse.js',
+    ],
+  },
   build: {
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
