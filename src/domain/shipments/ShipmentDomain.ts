@@ -154,3 +154,83 @@ export function canMarkDelivered(status: ShipmentStatus): boolean {
 export function isShipmentTerminal(status: ShipmentStatus): boolean {
   return status === 'delivered' || status === 'returned';
 }
+
+// ─── Ad-hoc Shipment (without order) ─────────────────────────────────────────
+
+export interface AdHocShipmentItemPayload {
+  finishedRollId: string | null;
+  fabricType: string;
+  quantity: number;
+  unit: string;
+  pricePerKg: number;
+  totalAmount: number;
+}
+
+export interface AdHocShipmentDbPayload {
+  shipmentNumber: string;
+  purpose: string;
+  syncDebt: boolean;
+  customerId: string;
+  shipmentDate: string;
+  deliveryAddress: string | null;
+  deliveryStaffId: string | null;
+  employeeId: string | null;
+  shippingRateId: string | null;
+  shippingCost: number;
+  loadingFee: number;
+  vehicleInfo: string | null;
+  notes: string | null;
+  items: AdHocShipmentItemPayload[];
+}
+
+/**
+ * Map ad-hoc shipment form values sang DB payload.
+ * Không có orderId — phiếu xuất thủ công.
+ */
+export function mapAdHocShipmentFormToPayload(values: {
+  shipmentNumber: string;
+  purpose: string;
+  syncDebt: boolean;
+  customerId: string;
+  shipmentDate: string;
+  deliveryAddress?: string;
+  deliveryStaffId?: string;
+  employeeId?: string;
+  shippingRateId?: string;
+  shippingCost: number;
+  loadingFee: number;
+  vehicleInfo?: string;
+  notes?: string;
+  items: Array<{
+    finishedRollId?: string | null;
+    fabricType: string;
+    quantity: number;
+    unit: string;
+    pricePerKg: number;
+    totalAmount: number;
+  }>;
+}): AdHocShipmentDbPayload {
+  return {
+    shipmentNumber: values.shipmentNumber,
+    purpose: values.purpose,
+    syncDebt: values.syncDebt,
+    customerId: values.customerId,
+    shipmentDate: values.shipmentDate,
+    deliveryAddress: values.deliveryAddress?.trim() || null,
+    deliveryStaffId: values.deliveryStaffId?.trim() || null,
+    employeeId: values.employeeId?.trim() || null,
+    shippingRateId: values.shippingRateId?.trim() || null,
+    shippingCost: values.shippingCost,
+    loadingFee: values.loadingFee,
+    vehicleInfo: values.vehicleInfo?.trim() || null,
+    notes: values.notes?.trim() || null,
+    items: values.items.map((item) => ({
+      finishedRollId: item.finishedRollId?.trim() || null,
+      fabricType: item.fabricType.trim(),
+      quantity: item.quantity,
+      unit: item.unit,
+      pricePerKg: item.pricePerKg,
+      totalAmount: item.totalAmount,
+    })),
+  };
+}

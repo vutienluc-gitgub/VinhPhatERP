@@ -21,6 +21,13 @@ export const shipmentsPlugin: FeaturePlugin = {
         import('./ShipmentsPage').then((m) => ({ default: m.ShipmentsPage })),
     },
     {
+      path: 'shipments/k80-quick-print',
+      component: () =>
+        import('./pages/K80QuickShipmentPage').then((m) => ({
+          default: m.K80QuickShipmentPage,
+        })),
+    },
+    {
       path: 'shipments/dispatch',
       component: () =>
         import('./pages/ShipmentDispatchPage').then((m) => ({

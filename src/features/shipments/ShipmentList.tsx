@@ -1,5 +1,11 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Link } from 'react-router-dom';
+
+const AdHocShipmentForm = lazy(() =>
+  import('./AdHocShipmentForm').then((m) => ({
+    default: m.AdHocShipmentForm,
+  })),
+);
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
@@ -98,12 +104,14 @@ export function ShipmentList() {
     'search',
     'deliveryStaffId',
     'status',
+    'unreconciled',
   ]);
   const [page, setPage] = useState(1);
   const [deliveryShipment, setDeliveryShipment] = useState<Shipment | null>(
     null,
   );
   const [chatShipment, setChatShipment] = useState<Shipment | null>(null);
+  const [showAdHocForm, setShowAdHocForm] = useState(false);
 
   const {
     data: result,
@@ -140,6 +148,15 @@ export function ShipmentList() {
       type: 'combobox',
       label: 'Tài xế giao hàng',
       options: staffOptions,
+    },
+    {
+      key: 'unreconciled',
+      type: 'combobox',
+      label: 'Loại phiếu',
+      options: [
+        { value: '', label: 'Tất cả phiếu' },
+        { value: 'true', label: 'Phiếu xuất thủ công' },
+      ],
     },
   ];
 
@@ -215,12 +232,28 @@ export function ShipmentList() {
     <div className="panel-card card-flush">
       {/* Action bar */}
       <div className="card-header-area">
-        <Link to="/shipments/dispatch">
-          <button className="btn-primary bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 flex items-center gap-2">
-            <Icon name="Navigation" size={18} />
-            Sa Bàn Điều Phối
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            type="button"
+            className="btn-primary flex items-center gap-2"
+            onClick={() => setShowAdHocForm(true)}
+          >
+            <Icon name="FilePlus" size={18} />
+            Phiếu xuất thủ công
           </button>
-        </Link>
+          <Link to="/shipments/dispatch">
+            <button className="btn-primary bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 flex items-center gap-2">
+              <Icon name="Navigation" size={18} />
+              Sa Bàn Điều Phối
+            </button>
+          </Link>
+          <Link to="/shipments/k80-quick-print">
+            <button className="btn-secondary flex items-center gap-2">
+              <Icon name="Printer" size={18} />
+              In Nhanh K80
+            </button>
+          </Link>
+        </div>
       </div>
 
       {/* Stats Section */}
@@ -324,24 +357,28 @@ export function ShipmentList() {
                   {s.shipment_number}
                 </span>
                 <SaaSBadge status={s.status} />
-                {s.orders?.order_number && (
-                  <span className="text-muted-foreground text-[0.75rem] mt-0.5 line-clamp-1">
-                    Khách:{' '}
-                    <span className="font-medium text-foreground">
-                      {s.customers?.name ? (
-                        <EntityLink
-                          entityType="customer"
-                          entityId={s.customer_id}
-                          label={s.customers.name}
-                          showIcon={false}
-                        />
-                      ) : (
-                        '—'
-                      )}
-                    </span>{' '}
-                    • ĐH: {s.orders.order_number}
+                <span className="text-muted-foreground text-[0.75rem] mt-0.5 line-clamp-1">
+                  Khách:{' '}
+                  <span className="font-medium text-foreground">
+                    {s.customers?.name ? (
+                      <EntityLink
+                        entityType="customer"
+                        entityId={s.customer_id}
+                        label={s.customers.name}
+                        showIcon={false}
+                      />
+                    ) : (
+                      '—'
+                    )}
                   </span>
-                )}
+                  {s.orders?.order_number ? (
+                    <> • ĐH: {s.orders.order_number}</>
+                  ) : (
+                    <span className="ml-1 text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">
+                      Thủ công
+                    </span>
+                  )}
+                </span>
               </div>
             ),
           },
@@ -528,7 +565,13 @@ export function ShipmentList() {
               <div className="mobile-card-body">
                 <div className="mobile-card-row">
                   <span className="label">Đơn hàng:</span>
-                  <span className="value">{s.orders?.order_number ?? '—'}</span>
+                  <span className="value">
+                    {s.orders?.order_number ?? (
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">
+                        Thủ công
+                      </span>
+                    )}
+                  </span>
                 </div>
                 <div className="mobile-card-row">
                   <span className="label">Khách hàng:</span>
@@ -660,6 +703,13 @@ export function ShipmentList() {
           subtitle={chatShipment.customers?.name ?? undefined}
         />
       ) : null}
+
+      {/* Ad-hoc Shipment Form */}
+      {showAdHocForm && (
+        <Suspense fallback={null}>
+          <AdHocShipmentForm onClose={() => setShowAdHocForm(false)} />
+        </Suspense>
+      )}
     </div>
   );
 }

@@ -108,12 +108,17 @@ export {
   deliveryConfirmSchema,
   deliveryConfirmDefaultValues,
   SHIPMENT_STATUS_LABELS,
+  adHocShipmentSchema,
+  adHocShipmentDefaultValues,
+  emptyAdHocItem,
 } from './shipment.schema';
 export type {
   ShipmentStatus,
   ShipmentItemFormValues,
   ShipmentsFormValues,
   DeliveryConfirmFormValues,
+  AdHocShipmentFormValues,
+  AdHocShipmentItemFormValues,
 } from './shipment.schema';
 
 export { CreateShipmentFromFinishedSchema } from './shipments.schema';

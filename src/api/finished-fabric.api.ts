@@ -329,3 +329,20 @@ export async function fetchTraceChain(
 
   return result;
 }
+
+export async function fetchFinishedRollByBarcode(
+  barcode: string,
+): Promise<FinishedFabricRoll | null> {
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select('*')
+    .eq('roll_number', barcode.trim())
+    .maybeSingle();
+
+  if (error) {
+    console.error('[fetchFinishedRollByBarcode] Error:', error);
+    throw new Error('Lỗi khi tìm kiếm mã cuộn vải');
+  }
+
+  return (data as FinishedFabricRoll) || null;
+}

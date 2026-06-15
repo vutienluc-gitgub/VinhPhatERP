@@ -13,10 +13,13 @@ import {
   assignDeliveryStaff,
   fetchDeliveryStaff,
   deleteShipmentFull,
+  createAdHocShipment,
+  fetchActiveCustomerOptions,
 } from '@/api/shipments.api';
 import {
   mapShipmentFormToPayload,
   mapDeliveryConfirmToPayload,
+  mapAdHocShipmentFormToPayload,
 } from '@/domain/shipments/ShipmentDomain';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useCompanySettings } from '@/shared/hooks/useCompanySettings';
@@ -24,6 +27,7 @@ import { exportShipmentToPdf } from '@/features/shipments/shipment-document';
 import type {
   ShipmentsFormValues,
   DeliveryConfirmFormValues,
+  AdHocShipmentFormValues,
 } from '@/schema/shipment.schema';
 import type {
   ShipmentDocument,
@@ -228,5 +232,34 @@ export function useOrderShipments(orderId: string | undefined) {
     queryKey: [...QUERY_KEY, 'by-order', orderId],
     enabled: !!orderId,
     queryFn: () => fetchShipmentsByOrder(orderId!),
+  });
+}
+
+/* ── Create ad-hoc shipment (without order) ── */
+
+export function useCreateAdHocShipment() {
+  const [clientId, setClientId] = useState(() => crypto.randomUUID());
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (values: AdHocShipmentFormValues) => {
+      const reqPayload = {
+        id: clientId,
+        ...mapAdHocShipmentFormToPayload(values),
+      };
+      return createAdHocShipment(reqPayload);
+    },
+    onSuccess: () => {
+      setClientId(crypto.randomUUID());
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+  });
+}
+
+/* ── Active customer options ── */
+
+export function useActiveCustomerOptions() {
+  return useQuery({
+    queryKey: ['customers', 'active-options'],
+    queryFn: fetchActiveCustomerOptions,
   });
 }

@@ -1,0 +1,53 @@
+export const K80_QUICK_PRINT_LABELS = {
+  PAGE_TITLE: 'Công Cụ In Nhanh K80',
+  GENERAL_INFO: 'Thông tin chung',
+  CUSTOMER: 'Khách hàng',
+  SELECT_CUSTOMER: '— Chọn khách hàng —',
+  SHIP_DATE: 'Ngày xuất',
+  TICKET_NUMBER: 'Số phiếu',
+  AUTO: 'Tự động',
+  PRODUCT_DATA: 'Dữ liệu hàng hóa (Cột = Mã vải, Ô = Số Kg)',
+  ADD_COLUMN: 'Thêm Cột',
+  COLUMN: 'Mã vải #',
+  FABRIC_CODE: 'Mã Vải',
+  DELETE_COLUMN: 'Xóa cột',
+  TIP_EXCEL:
+    'Mẹo: Bạn có thể copy một cột dữ liệu từ Excel và dán trực tiếp vào ô số Kg. Hệ thống tự nhận diện dòng mới, dấu phẩy, khoảng trắng.',
+  PROCESS_AND_PRINT: 'Xử Lý & In K80',
+  CHECK_INFO: 'Kiểm tra thông tin trước khi in',
+  SAVE_TO_DB: 'Lưu thành phiếu xuất kho',
+  BTN_SAVE_PRINT: '💾 LƯU & IN K80',
+  BTN_PRINT_ONLY: '🖨 IN K80 (Không Lưu)',
+  PREVIEW_TITLE: 'Xem trước bản in K80',
+  PROCESSING: 'Đang xử lý...',
+};
+
+export const K80_QUICK_PRINT_MESSAGES = {
+  MAX_COLUMNS: 'Tối đa 5 mã vải trên 1 phiếu K80',
+  REQUIRE_CUSTOMER: 'Vui lòng chọn khách hàng để lưu phiếu xuất',
+  REQUIRE_DATA: 'Chưa có dữ liệu hàng hóa',
+  INVALID_DATA: 'Chưa nhập dữ liệu cuộn vải hợp lệ',
+  SAVE_SUCCESS: 'Lưu phiếu xuất kho thành công',
+  SAVE_ERROR: 'Lỗi khi lưu phiếu:',
+  PURPOSE_NOTE: 'In nhanh K80',
+};
+
+export const K80_PRINT_LAYOUT_LABELS = {
+  COMPANY_NAME: 'VĨNH PHÁT TEXTILE',
+  RECEIPT_TITLE: 'BẢNG KÊ XUẤT HÀNG',
+  TICKET_NO: 'Số phiếu:',
+  DATE: 'Ngày xuất:',
+  EXPORT_TIME: 'Giờ xuất:',
+  PRINT_TIME: 'In lúc:',
+  PRINTED_BY: 'Người in:',
+  CUSTOMER: 'Khách hàng:',
+  NO_DATA: 'Chưa có dữ liệu',
+  TOTAL_CODES: 'Số mã:',
+  TOTAL_ROLLS: 'Tổng cuộn:',
+  TOTAL_KG: 'Tổng KG:',
+  SENDER: 'Người giao',
+  RECEIVER: 'Người nhận',
+  SIGN_INSTRUCTION: '(Ký, ghi rõ họ tên)',
+  EMPTY_VALUE: '---',
+  EMPTY_DASH: '-',
+};

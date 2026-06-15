@@ -28,7 +28,10 @@ export const SHIPMENT_DOCUMENT_LABELS = {
   SIGN_INSTRUCTION: 'Ký và ghi rõ họ tên',
   QR_VERIFY: 'Quét để xác minh',
   FOOTER_DISCLAIMER:
-    'Tài liệu nội bộ, không có giá trị pháp lý khi không có chữ ký.',
+    'Vui lòng kiểm tra kỹ số lượng và chất lượng trước khi rời kho.',
+  COPY_1_LABEL: 'Liên 1: Bản lưu kho',
+  COPY_2_LABEL: 'Liên 2: Bản khách hàng',
+  PAGE_LABEL: 'Trang',
 };
 
 export const VERIFY_BASE_URL = 'https://quantri.detmayvinhphat.com/verify';
@@ -348,14 +351,24 @@ export const SHIPMENT_DOCUMENT_A5_DOT_MATRIX_CSS = `
     background: #fff;
   }
 
+  @media print {
+    body { margin: 0; }
+    .page, .half-page { page-break-after: always; }
+    .page:last-child, .half-page:last-child { page-break-after: auto; }
+  }
+
   .accent-bar { display: none; }
 
   /* ── Half-page wrapper: content fits top half of A4 ── */
   .half-page {
     height: 148.5mm;
+    max-height: 148.5mm;
     width: 210mm;
     overflow: hidden;
     padding: 3mm 6mm 2mm;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    box-sizing: border-box;
   }
 
   /* Hide original .page wrapper */
