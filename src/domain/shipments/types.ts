@@ -27,6 +27,7 @@ export type ShipmentsFilter = {
   status?: ShipmentStatus;
   orderId?: string;
   deliveryStaffId?: string;
+  unreconciled?: string;
 };
 
 export type ShipmentCustomerSummary = {

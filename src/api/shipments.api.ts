@@ -4,6 +4,13 @@ import type {
   ShipmentsFilter,
   DeliveryStaffSummary,
 } from '@/domain/shipments/types';
+import {
+  fetchNextDocNumber,
+  monthlyPrefix,
+} from '@/api/helpers/next-doc-number';
+import type { AdHocShipmentDbPayload } from '@/domain/shipments/ShipmentDomain';
+import { safeUpsert } from '@/lib/db-guard';
+import { withTenantId } from '@/services/supabase/tenant';
 import { supabase } from '@/services/supabase/client';
 import type { Database } from '@/services/supabase/database.types';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
@@ -136,6 +143,10 @@ export async function fetchShipmentsPaginated(
     query = query.eq('delivery_staff_id', filters.deliveryStaffId);
   if (filters.search?.trim()) {
     query = query.ilike('shipment_number', `%${filters.search.trim()}%`);
+  }
+  if (filters.unreconciled === 'true') {
+    // Phiếu xuất thủ công không có đơn hàng
+    query = query.is('order_id', null);
   }
 
   const { data, error, count } = await query;
@@ -454,4 +465,121 @@ export async function createShipmentFromFinishedFabric(input: {
   }
 
   return result.shipment_id;
+}
+
+/* ── Create ad-hoc shipment (without order) ── */
+
+export async function createAdHocShipment(
+  input: AdHocShipmentDbPayload & { id: string },
+): Promise<Shipment> {
+  const headerId = input.id;
+  let finalShipmentNumber = input.shipmentNumber.trim();
+  if (!finalShipmentNumber || finalShipmentNumber === 'Tự động') {
+    finalShipmentNumber = await fetchNextDocNumber({
+      table: HEADER_TABLE,
+      column: 'shipment_number',
+      prefix: monthlyPrefix('XK'),
+      pad: 4,
+    });
+  }
+
+  // 1. Upsert header (idempotent via id conflict)
+  const headerResult = await safeUpsert<Record<string, unknown>>({
+    table: HEADER_TABLE,
+    data: withTenantId({
+      id: headerId,
+      shipment_number: finalShipmentNumber,
+      order_id: null,
+      customer_id: input.customerId,
+      shipment_date: input.shipmentDate,
+      delivery_address: input.deliveryAddress,
+      delivery_staff_id: input.deliveryStaffId,
+      employee_id: input.employeeId,
+      shipping_rate_id: input.shippingRateId,
+      shipping_cost: input.shippingCost,
+      loading_fee: input.loadingFee,
+      vehicle_info: input.vehicleInfo,
+      notes: input.purpose
+        ? `[${input.purpose}] ${input.notes || ''}`.trim()
+        : input.notes,
+      status: 'preparing',
+    }),
+    conflictKey: 'id',
+  });
+
+  // 2. Upsert items (idempotent via id conflict)
+  const itemsPayload = input.items.map((item, idx) =>
+    withTenantId({
+      id: crypto.randomUUID(),
+      shipment_id: headerId,
+      finished_roll_id: item.finishedRollId || null,
+      fabric_type: item.fabricType.trim(),
+      color_name: null,
+      quantity: item.quantity,
+      unit: item.unit,
+      sort_order: idx,
+      price_per_meter: item.pricePerKg,
+    }),
+  );
+
+  if (itemsPayload.length > 0) {
+    await safeUpsert<Record<string, unknown>>({
+      table: 'shipment_items',
+      data: itemsPayload,
+      conflictKey: 'id',
+    });
+
+    // Update roll status to shipped if any
+    const rollIds = itemsPayload
+      .map((item) => item.finished_roll_id)
+      .filter((id): id is string => !!id);
+
+    if (rollIds.length > 0) {
+      const { error: updateError } = await supabase
+        .from('finished_fabric_rolls')
+        .update({ status: 'shipped' })
+        .in('id', rollIds);
+
+      if (updateError) {
+        console.error(
+          '[AdHocShipment] Failed to update roll status:',
+          updateError,
+        );
+        throw new Error('Lỗi cập nhật trạng thái cuộn vải thành đã xuất.');
+      }
+    }
+  }
+
+  // 3. Sync debt if requested
+  if (input.syncDebt) {
+    const { error: debtError } = await supabase.rpc('rpc_sync_shipment_debt', {
+      p_shipment_id: headerId,
+    });
+    if (debtError) {
+      console.error('[AdHocShipment] Failed to sync debt:', debtError);
+      // We don't throw to prevent failing the shipment creation, but we could
+    }
+  }
+
+  const result = Array.isArray(headerResult) ? headerResult[0] : headerResult;
+  return result as unknown as Shipment;
+}
+
+/* ── Active customer options for ad-hoc shipment picker ── */
+
+export async function fetchActiveCustomerOptions(): Promise<
+  { value: string; label: string; code: string }[]
+> {
+  const { data, error } = await supabase
+    .from('customers')
+    .select('id, code, name')
+    .eq('status', 'active')
+    .order('name');
+
+  if (error) throw error;
+  return (data ?? []).map((c) => ({
+    value: c.id,
+    label: c.name,
+    code: c.code,
+  }));
 }

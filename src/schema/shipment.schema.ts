@@ -91,3 +91,63 @@ export const shipmentResponseSchema = z
     shipment_number: z.string(),
   })
   .passthrough();
+
+// ─── Ad-hoc Shipment (without order) ─────────────────────────────────────────
+
+const adHocShipmentItemSchema = z.object({
+  finishedRollId: z.string().uuid().optional().nullable(),
+  fabricType: z.string().trim().min(2, 'Nhập loại vải'),
+  quantity: z.number().positive('Số lượng > 0'),
+  unit: z.enum(['kg', 'm']).default('kg'),
+  pricePerKg: z.number().min(0, 'Đơn giá >= 0').default(0),
+  totalAmount: z.number().min(0).default(0),
+});
+
+export type AdHocShipmentItemFormValues = z.infer<
+  typeof adHocShipmentItemSchema
+>;
+
+export const emptyAdHocItem: AdHocShipmentItemFormValues = {
+  finishedRollId: null,
+  fabricType: '',
+  quantity: 0,
+  unit: 'kg',
+  pricePerKg: 0,
+  totalAmount: 0,
+};
+
+export const adHocShipmentSchema = z.object({
+  shipmentNumber: z.string().trim().optional().default(''),
+  purpose: z.string().trim().default('Hàng bán lẻ'),
+  syncDebt: z.boolean().default(false),
+  customerId: z.string().uuid('Chọn khách hàng'),
+  shipmentDate: z.string().trim().min(1, 'Chọn ngày giao'),
+  deliveryAddress: z.string().trim().max(255).optional().or(z.literal('')),
+  deliveryStaffId: z.string().uuid().optional().or(z.literal('')),
+  employeeId: z.string().uuid().optional().or(z.literal('')),
+  shippingRateId: z.string().uuid().optional().or(z.literal('')),
+  shippingCost: z.number().min(0, 'Chi phí phải >= 0'),
+  loadingFee: z.number().min(0, 'Phí bốc xếp phải >= 0'),
+  vehicleInfo: z.string().trim().max(100).optional().or(z.literal('')),
+  notes: z.string().trim().max(500).optional().or(z.literal('')),
+  items: z.array(adHocShipmentItemSchema).min(1, 'Thêm ít nhất 1 dòng hàng'),
+});
+
+export type AdHocShipmentFormValues = z.infer<typeof adHocShipmentSchema>;
+
+export const adHocShipmentDefaultValues: AdHocShipmentFormValues = {
+  shipmentNumber: '',
+  purpose: 'Hàng bán lẻ',
+  syncDebt: false,
+  customerId: '',
+  shipmentDate: new Date().toISOString().slice(0, 10),
+  deliveryAddress: '',
+  deliveryStaffId: '',
+  employeeId: '',
+  shippingRateId: '',
+  shippingCost: 0,
+  loadingFee: 0,
+  vehicleInfo: '',
+  notes: '',
+  items: [{ ...emptyAdHocItem }],
+};
