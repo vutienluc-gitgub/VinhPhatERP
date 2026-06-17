@@ -11,6 +11,7 @@ import {
   fetchFabricCategories,
   fetchFabricCatalogByIdOrCode,
   fetchPublicFabricBySlug,
+  fetchRelatedPublicFabrics,
 } from '@/api/fabric-catalog.api';
 import type { FabricCatalogFormValues } from '@/features/fabric-catalog/fabric-catalog.module';
 import type {
@@ -42,6 +43,18 @@ function toDbRow(
     color: values.color ?? null,
     color_tags: values.color_tags ?? [],
     technique: values.technique ?? null,
+    applications: null,
+    characteristics: null,
+    stretch_type: null,
+    thickness: null,
+    stock_status: null,
+    minimum_order_qty: null,
+    minimum_order_unit: null,
+    lead_time_min: null,
+    lead_time_max: null,
+    lead_time_unit: null,
+    public_images: null,
+    view_count: 0,
   };
 
   if (values.fabric_type === 'woven') {
@@ -166,6 +179,21 @@ export function usePublicFabricBySlug(slug: string | undefined) {
       return fetchPublicFabricBySlug(slug);
     },
     enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useRelatedPublicFabrics(
+  fabricId: string | undefined,
+  limit = 3,
+) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'related-public', fabricId, limit],
+    queryFn: () => {
+      if (!fabricId) return Promise.reject(new Error('Missing fabricId'));
+      return fetchRelatedPublicFabrics(fabricId, limit);
+    },
+    enabled: !!fabricId,
     staleTime: 5 * 60 * 1000,
   });
 }

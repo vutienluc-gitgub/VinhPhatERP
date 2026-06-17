@@ -20,6 +20,9 @@ export const K80_QUICK_PRINT_LABELS = {
   BTN_PRINT_ONLY: '🖨 IN K80 (Không Lưu)',
   PREVIEW_TITLE: 'Xem trước bản in K80',
   PROCESSING: 'Đang xử lý...',
+  PAPER_SIZE_K80: 'Giấy K80 (Mặc định)',
+  PAPER_SIZE_A5: 'Giấy A5',
+  BTN_EXPORT_EXCEL: 'Xuất Excel',
 };
 
 export const K80_QUICK_PRINT_MESSAGES = {
@@ -30,6 +33,8 @@ export const K80_QUICK_PRINT_MESSAGES = {
   SAVE_SUCCESS: 'Lưu phiếu xuất kho thành công',
   SAVE_ERROR: 'Lỗi khi lưu phiếu:',
   PURPOSE_NOTE: 'In nhanh K80',
+  EXPORT_SUCCESS: 'Xuất Excel thành công',
+  EXPORT_ERROR: 'Lỗi khi xuất Excel:',
 };
 
 export const K80_PRINT_LAYOUT_LABELS = {

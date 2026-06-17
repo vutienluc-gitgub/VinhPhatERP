@@ -20,41 +20,46 @@ export type K80PrintData = {
   maxRows: number;
   totalRolls: number;
   totalKg: number;
+  paperSize?: 'K80' | 'A5';
 };
 
 type K80PrintLayoutProps = {
   data: K80PrintData;
+  isPrintPortal?: boolean;
 };
 
 export const K80PrintLayout = React.forwardRef<
   HTMLDivElement,
   K80PrintLayoutProps
->(({ data }, ref) => {
+>(({ data, isPrintPortal }, ref) => {
+  const isA5 = data.paperSize === 'A5';
+  const containerWidth = isA5 ? '560px' : '300px';
+
   return (
     <div
       ref={ref}
-      className="k80-print-container bg-white text-black p-4 text-sm font-mono mx-auto"
-      style={{ width: '300px', maxWidth: '300px' }} // Approx 80mm
+      className={`${isPrintPortal ? 'k80-print-container hidden print:block' : 'k80-preview-container'} bg-white text-black p-4 font-mono mx-auto ${isA5 ? 'text-base' : 'text-sm'}`}
+      style={{ width: containerWidth, maxWidth: '100%' }}
     >
       <style>
         {`
             @media print {
-              body * {
-                visibility: hidden;
+              html, body {
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
               }
-              .k80-print-container, .k80-print-container * {
-                visibility: visible;
+              #root, #modal-root {
+                display: none !important;
               }
               .k80-print-container {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 80mm !important;
+                width: ${isA5 ? '148mm' : '80mm'} !important;
                 margin: 0;
-                padding: 0;
+                padding: ${isA5 ? '5mm' : '0'};
               }
               @page {
-                size: 80mm auto;
+                size: ${isA5 ? 'A5' : '80mm auto'};
                 margin: 0;
               }
             }
@@ -109,7 +114,7 @@ export const K80PrintLayout = React.forwardRef<
                 {data.columns.map((col) => (
                   <th
                     key={col.id}
-                    className="text-center border-b border-dashed border-black pb-1"
+                    className="text-right border-b border-dashed border-black pb-1"
                     style={{ width: `${100 / data.columns.length}%` }}
                   >
                     {col.fabricCode || LABELS.EMPTY_DASH}

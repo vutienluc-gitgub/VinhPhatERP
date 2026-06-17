@@ -181,3 +181,18 @@ export async function fetchPublicFabricBySlug(
   if (!data) throw new Error('Không tìm thấy thông tin công khai.');
   return data as Partial<FabricCatalog>;
 }
+
+export async function fetchRelatedPublicFabrics(
+  fabricId: string,
+  limit = 3,
+): Promise<Partial<FabricCatalog>[]> {
+  const { data, error } = await untypedDb.rpc(
+    'rpc_get_related_public_fabrics',
+    {
+      p_fabric_id: fabricId,
+      p_limit: limit,
+    },
+  );
+  if (error) throw error;
+  return (data ?? []) as Partial<FabricCatalog>[];
+}

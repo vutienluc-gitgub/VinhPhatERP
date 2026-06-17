@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
-import { Button } from '@/shared/components';
+import { Button, PrintPreviewBox } from '@/shared/components';
 import { Icon } from '@/shared/components/Icon';
 import { Combobox } from '@/shared/components/Combobox';
 import { K80PrintLayout } from '@/features/shipments/components/quick-print/K80PrintLayout';
@@ -24,12 +25,17 @@ export function K80QuickShipmentPage() {
     removeColumn,
     updateColumn,
     printData,
-    printRef,
     handleProcess,
+    handleExportExcel,
     isPending,
+    paperSize,
+    setPaperSize,
   } = useK80QuickShipment();
 
-  const [zoom, setZoom] = useState(1);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="flex flex-col gap-6 p-4 sm:p-6 pb-20">
@@ -40,9 +46,9 @@ export function K80QuickShipmentPage() {
         </h1>
       </div>
 
-      <div className="flex flex-col gap-6 items-start">
-        {/* TOP: FORM */}
-        <div className="w-full flex flex-col gap-4">
+      <div className="flex flex-col xl:flex-row gap-6 items-start">
+        {/* LEFT COLUMN: FORM */}
+        <div className="w-full xl:flex-1 flex flex-col gap-6">
           <div className="bg-surface rounded-2xl shadow-sm border border-[var(--border)] p-4 sm:p-6 space-y-6">
             <h2 className="font-semibold text-lg border-b border-dashed border-[var(--border)] pb-2">
               {LABELS.GENERAL_INFO}
@@ -98,10 +104,10 @@ export function K80QuickShipmentPage() {
               {columns.map((col, idx) => (
                 <div
                   key={col.id}
-                  className="flex flex-col gap-2 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-200 dark:border-slate-700"
+                  className="flex flex-col gap-2 bg-[var(--surface-subtle)] p-3 rounded-xl border border-[var(--border)]"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-sm text-[var(--text-secondary)]">
+                    <span className="font-medium text-sm text-muted">
                       {LABELS.COLUMN} {idx + 1}
                     </span>
                     {columns.length > 1 && (
@@ -117,7 +123,7 @@ export function K80QuickShipmentPage() {
                   </div>
                   <input
                     type="text"
-                    className="field-input font-bold text-center bg-white dark:bg-slate-900 border-slate-300 focus:border-emerald-500"
+                    className="field-input font-bold text-center bg-surface focus:border-primary"
                     placeholder={LABELS.FABRIC_CODE}
                     value={col.fabricCode}
                     onChange={(e) =>
@@ -125,7 +131,7 @@ export function K80QuickShipmentPage() {
                     }
                   />
                   <textarea
-                    className="field-input font-mono text-sm resize-y bg-white dark:bg-slate-900 border-slate-300 focus:border-emerald-500"
+                    className="field-input font-mono text-sm resize-y bg-surface focus:border-primary"
                     rows={8}
                     placeholder="24.5&#10;25.2&#10;24.8"
                     value={col.weightsText}
@@ -136,87 +142,102 @@ export function K80QuickShipmentPage() {
                 </div>
               ))}
             </div>
-            <p className="text-xs text-[var(--text-tertiary)] mt-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 p-3 rounded-lg flex items-start gap-2">
+            <p className="text-xs mt-2 bg-info/10 text-info p-3 rounded-lg flex items-start gap-2">
               <Icon name="Info" size={16} className="mt-0.5 shrink-0" />
               <span>{LABELS.TIP_EXCEL}</span>
             </p>
           </div>
         </div>
 
-        {/* BOTTOM: ACTION & PREVIEW */}
-        <div className="w-full flex flex-col items-center gap-6 mt-4">
-          <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col gap-6">
+        {/* RIGHT COLUMN: ACTION & PREVIEW */}
+        <div className="w-full xl:w-[450px] shrink-0 flex flex-col gap-6 xl:sticky xl:top-20">
+          <div className="w-full bg-surface rounded-2xl shadow-sm border border-[var(--border)] p-6 flex flex-col gap-6">
             <div className="text-center">
-              <h2 className="font-bold text-xl text-slate-800 dark:text-white">
-                {LABELS.PROCESS_AND_PRINT}
-              </h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                {LABELS.CHECK_INFO}
-              </p>
+              <h2 className="font-bold text-xl">{LABELS.PROCESS_AND_PRINT}</h2>
+              <p className="text-sm text-muted mt-1">{LABELS.CHECK_INFO}</p>
             </div>
 
-            <label className="flex items-center gap-3 cursor-pointer p-4 bg-indigo-50/50 hover:bg-indigo-50 dark:bg-indigo-900/10 dark:hover:bg-indigo-900/20 rounded-xl border border-indigo-100/50 hover:border-indigo-200 dark:border-indigo-800/30 transition-all">
+            <label className="flex items-center gap-3 cursor-pointer p-4 bg-[var(--surface-subtle)] hover:bg-[var(--surface-hover)] rounded-xl border border-[var(--border)] transition-all">
               <input
                 type="checkbox"
-                className="rounded border-indigo-300 text-indigo-600 focus:ring-indigo-600 w-5 h-5 shadow-sm"
+                className="rounded border-[var(--border)] text-primary focus:ring-primary w-5 h-5 shadow-sm"
                 checked={saveToDb}
                 onChange={(e) => setSaveToDb(e.target.checked)}
               />
-              <span className="font-medium text-base text-indigo-900 dark:text-indigo-200">
-                {LABELS.SAVE_TO_DB}
-              </span>
+              <span className="font-medium text-base">{LABELS.SAVE_TO_DB}</span>
             </label>
 
-            <Button
-              variant="primary"
-              size="lg"
-              className="w-full text-lg h-14 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-emerald-500/25 border-transparent text-white"
-              onClick={handleProcess}
-              disabled={isPending}
-            >
-              {isPending ? (
-                <span className="animate-pulse">{LABELS.PROCESSING}</span>
-              ) : (
-                <>
-                  <Icon name="Printer" size={20} className="mr-2" />
-                  {saveToDb ? LABELS.BTN_SAVE_PRINT : LABELS.BTN_PRINT_ONLY}
-                </>
-              )}
-            </Button>
+            <div className="flex gap-4 p-4 bg-[var(--surface-subtle)] rounded-xl border border-[var(--border)] w-full justify-center">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="paperSize"
+                  value="K80"
+                  checked={paperSize === 'K80'}
+                  onChange={() => setPaperSize('K80')}
+                  className="text-primary focus:ring-primary w-4 h-4"
+                />
+                <span className="font-medium">{LABELS.PAPER_SIZE_K80}</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="paperSize"
+                  value="A5"
+                  checked={paperSize === 'A5'}
+                  onChange={() => setPaperSize('A5')}
+                  className="text-primary focus:ring-primary w-4 h-4"
+                />
+                <span className="font-medium">{LABELS.PAPER_SIZE_A5}</span>
+              </label>
+            </div>
+
+            <div className="flex w-full gap-3">
+              <Button
+                variant="primary"
+                size="lg"
+                className="w-full text-lg h-14 flex-1"
+                onClick={handleProcess}
+                disabled={isPending}
+              >
+                {isPending ? (
+                  <span className="animate-pulse">{LABELS.PROCESSING}</span>
+                ) : (
+                  <>
+                    <Icon name="Printer" size={20} className="mr-2" />
+                    {saveToDb ? LABELS.BTN_SAVE_PRINT : LABELS.BTN_PRINT_ONLY}
+                  </>
+                )}
+              </Button>
+
+              <Button
+                variant="secondary"
+                size="lg"
+                className="h-14 px-6 flex items-center gap-2 whitespace-nowrap"
+                onClick={handleExportExcel}
+                disabled={
+                  isPending || columns.every((c) => c.weightsText.trim() === '')
+                }
+              >
+                <Icon name="FileSpreadsheet" size={20} />
+                {LABELS.BTN_EXPORT_EXCEL}
+              </Button>
+            </div>
           </div>
 
-          <div className="w-full max-w-md flex flex-col items-center gap-4">
-            <div className="flex items-center justify-between w-full">
-              <h3 className="font-medium text-sm text-slate-500 uppercase tracking-widest">
-                {LABELS.PREVIEW_TITLE}
-              </h3>
-              <div className="flex gap-1 bg-slate-200 dark:bg-slate-700 p-1 rounded-lg">
-                {[1, 1.25, 1.5].map((level) => (
-                  <button
-                    key={level}
-                    type="button"
-                    onClick={() => setZoom(level)}
-                    className={`px-3 py-1 text-xs font-bold rounded shadow-sm transition-colors ${zoom === level ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
-                  >
-                    {level * 100}%
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="bg-slate-100 dark:bg-slate-900 p-8 rounded-3xl w-full flex justify-center shadow-inner border border-slate-200 dark:border-slate-800 overflow-hidden">
-              <div
-                className="shadow-2xl border border-slate-300 dark:border-slate-600 transform transition-transform"
-                style={{
-                  transform: `scale(${zoom})`,
-                  transformOrigin: 'top center',
-                }}
-              >
-                <K80PrintLayout ref={printRef} data={printData} />
-              </div>
-            </div>
-          </div>
+          <PrintPreviewBox title={LABELS.PREVIEW_TITLE}>
+            <K80PrintLayout data={printData} />
+          </PrintPreviewBox>
         </div>
       </div>
+
+      {mounted &&
+        createPortal(
+          <div className="hidden print:block">
+            <K80PrintLayout data={printData} isPrintPortal={true} />
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
