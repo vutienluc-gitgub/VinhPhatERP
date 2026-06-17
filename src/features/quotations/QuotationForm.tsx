@@ -54,6 +54,7 @@ const UNIT_COMBO_OPTIONS = UNIT_OPTIONS.map((opt) => ({
 
 type QuotationFormProps = {
   quotation: Quotation | null;
+  initialData?: Partial<QuotationsFormValues>;
   onClose: () => void;
 };
 
@@ -215,7 +216,11 @@ function ItemQuantityFields({
   );
 }
 
-export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
+export function QuotationForm({
+  quotation,
+  initialData,
+  onClose,
+}: QuotationFormProps) {
   const isEditing = quotation !== null;
   const createMutation = useCreateQuotation();
   const updateMutation = useUpdateQuotation();
@@ -255,7 +260,7 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
     resolver: zodResolver(quotationsSchema),
     defaultValues: isEditing
       ? quotationToFormValues(quotation)
-      : quotationsDefaultValues,
+      : { ...quotationsDefaultValues, ...initialData },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -265,9 +270,11 @@ export function QuotationForm({ quotation, onClose }: QuotationFormProps) {
 
   useEffect(() => {
     reset(
-      isEditing ? quotationToFormValues(quotation) : quotationsDefaultValues,
+      isEditing
+        ? quotationToFormValues(quotation)
+        : { ...quotationsDefaultValues, ...initialData },
     );
-  }, [quotation, isEditing, reset]);
+  }, [quotation, initialData, isEditing, reset]);
 
   async function onSubmit(values: QuotationsFormValues) {
     try {

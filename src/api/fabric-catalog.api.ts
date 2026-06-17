@@ -1,6 +1,9 @@
 import type {
   FabricCatalog,
   FabricCatalogFilter,
+  FabricVariant,
+  FabricImage,
+  FabricPricingTier,
 } from '@/domain/settings/fabric-catalog.types';
 import { supabase, untypedDb } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
@@ -171,15 +174,40 @@ export async function fetchFabricCategories(): Promise<
   }[];
 }
 
-export async function fetchPublicFabricBySlug(
+export async function fetchPublicFabricBasic(
   slug: string,
+  sessionId?: string,
 ): Promise<Partial<FabricCatalog>> {
-  const { data, error } = await untypedDb.rpc('rpc_get_public_fabric', {
+  const { data, error } = await untypedDb.rpc('rpc_get_public_fabric_basic', {
     p_slug: slug,
+    p_session_id: sessionId || null,
   });
   if (error) throw error;
   if (!data) throw new Error('Không tìm thấy thông tin công khai.');
   return data as Partial<FabricCatalog>;
+}
+
+export async function fetchPublicFabricVariants(
+  fabricId: string,
+): Promise<FabricVariant[]> {
+  const { data, error } = await untypedDb.rpc(
+    'rpc_get_public_fabric_variants',
+    {
+      p_fabric_id: fabricId,
+    },
+  );
+  if (error) throw error;
+  return (data ?? []) as FabricVariant[];
+}
+
+export async function fetchPublicFabricImages(
+  fabricId: string,
+): Promise<FabricImage[]> {
+  const { data, error } = await untypedDb.rpc('rpc_get_public_fabric_images', {
+    p_fabric_id: fabricId,
+  });
+  if (error) throw error;
+  return (data ?? []) as FabricImage[];
 }
 
 export async function fetchRelatedPublicFabrics(
@@ -195,4 +223,80 @@ export async function fetchRelatedPublicFabrics(
   );
   if (error) throw error;
   return (data ?? []) as Partial<FabricCatalog>[];
+}
+
+export async function fetchAlsoViewedPublicFabrics(
+  fabricId: string,
+  limit = 3,
+): Promise<Partial<FabricCatalog>[]> {
+  const { data, error } = await untypedDb.rpc(
+    'rpc_get_also_viewed_public_fabrics',
+    {
+      p_fabric_id: fabricId,
+      p_limit: limit,
+    },
+  );
+  if (error) throw error;
+  return (data ?? []) as Partial<FabricCatalog>[];
+}
+
+export async function createPublicSampleRequest(payload: {
+  fabricCatalogId: string;
+  contactName: string;
+  contactPhone: string;
+  contactAddress: string;
+  companyName?: string;
+  selectedVariants?: Array<{ variant_code: string; color_name: string }>;
+}): Promise<string> {
+  const { data, error } = await untypedDb.rpc(
+    'rpc_create_public_sample_request',
+    {
+      p_fabric_catalog_id: payload.fabricCatalogId,
+      p_contact_name: payload.contactName,
+      p_contact_phone: payload.contactPhone,
+      p_contact_address: payload.contactAddress,
+      p_company_name: payload.companyName || null,
+      p_selected_variants: payload.selectedVariants || [],
+    },
+  );
+  if (error) throw error;
+  return data as string;
+}
+
+export async function fetchPublicPricingTiers(
+  fabricId: string,
+): Promise<FabricPricingTier[]> {
+  const { data, error } = await untypedDb.rpc('rpc_get_fabric_pricing_tiers', {
+    p_fabric_id: fabricId,
+  });
+  if (error) throw error;
+  return (data ?? []) as FabricPricingTier[];
+}
+
+export async function createPublicRFQRequest(payload: {
+  fabricCatalogId: string;
+  variantId: string | null;
+  quantity: number;
+  unit?: string;
+  targetPrice?: number | null;
+  targetDeliveryDate?: string | null;
+  contactName: string;
+  contactPhone: string;
+  contactEmail?: string | null;
+  companyName?: string | null;
+}): Promise<string> {
+  const { data, error } = await untypedDb.rpc('rpc_create_public_rfq_request', {
+    p_fabric_catalog_id: payload.fabricCatalogId,
+    p_variant_id: payload.variantId,
+    p_quantity: payload.quantity,
+    p_unit: payload.unit || 'kg',
+    p_target_price: payload.targetPrice || null,
+    p_target_delivery_date: payload.targetDeliveryDate || null,
+    p_contact_name: payload.contactName,
+    p_contact_phone: payload.contactPhone,
+    p_contact_email: payload.contactEmail || null,
+    p_company_name: payload.companyName || null,
+  });
+  if (error) throw error;
+  return data as string;
 }
