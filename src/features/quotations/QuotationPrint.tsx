@@ -48,28 +48,6 @@ export default function QuotationPrint() {
           body { background: #fff; margin: 0; padding: 0; }
           .no-print { display: none; }
         }
-        .print-wrapper {
-          max-width: 210mm;
-          margin: 0 auto;
-          font-family: 'Times New Roman', Times, serif;
-          font-size: 14pt;
-          line-height: 1.5;
-        }
-        .print-table {
-          width: 100%;
-          border-collapse: collapse;
-          margin: 1.5rem 0;
-        }
-        .print-table th, .print-table td {
-          border: 1px solid #000;
-          padding: 8px;
-        }
-        .print-table th {
-          background-color: #f0f0f0;
-          font-weight: bold;
-        }
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
       `}</style>
 
       <div className="no-print text-center mb-8">
@@ -81,7 +59,10 @@ export default function QuotationPrint() {
         </button>
       </div>
 
-      <div className="print-wrapper">
+      <div
+        className="max-w-[210mm] mx-auto print-spacing-normal text-[14pt]"
+        style={{ fontFamily: "'Times New Roman', Times, serif" }}
+      >
         <div className="flex justify-between items-start">
           <div>
             <h1 className="m-0 text-2xl uppercase">{companyName}</h1>
@@ -130,7 +111,7 @@ export default function QuotationPrint() {
           </p>
         </div>
 
-        <table className="print-table">
+        <table className="print-table-normal">
           <thead>
             <tr>
               <th className="text-center w-[5%]">STT</th>

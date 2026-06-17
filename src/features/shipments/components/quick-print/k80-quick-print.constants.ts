@@ -1,5 +1,5 @@
 export const K80_QUICK_PRINT_LABELS = {
-  PAGE_TITLE: 'Công Cụ In Nhanh K80',
+  PAGE_TITLE: 'Công Cụ In Nhanh',
   GENERAL_INFO: 'Thông tin chung',
   CUSTOMER: 'Khách hàng',
   SELECT_CUSTOMER: '— Chọn khách hàng —',
@@ -13,16 +13,18 @@ export const K80_QUICK_PRINT_LABELS = {
   DELETE_COLUMN: 'Xóa cột',
   TIP_EXCEL:
     'Mẹo: Bạn có thể copy một cột dữ liệu từ Excel và dán trực tiếp vào ô số Kg. Hệ thống tự nhận diện dòng mới, dấu phẩy, khoảng trắng.',
-  PROCESS_AND_PRINT: 'Xử Lý & In K80',
+  PROCESS_AND_PRINT: 'Xử Lý & In',
   CHECK_INFO: 'Kiểm tra thông tin trước khi in',
   SAVE_TO_DB: 'Lưu thành phiếu xuất kho',
-  BTN_SAVE_PRINT: '💾 LƯU & IN K80',
-  BTN_PRINT_ONLY: '🖨 IN K80 (Không Lưu)',
-  PREVIEW_TITLE: 'Xem trước bản in K80',
+  BTN_SAVE_PRINT_PREFIX: 'LƯU & IN',
+  BTN_PRINT_ONLY_PREFIX: 'IN',
+  BTN_PRINT_ONLY_SUFFIX: '(Không Lưu)',
+  PREVIEW_TITLE: 'Xem trước bản in',
   PROCESSING: 'Đang xử lý...',
   PAPER_SIZE_K80: 'Giấy K80 (Mặc định)',
   PAPER_SIZE_A5: 'Giấy A5',
   BTN_EXPORT_EXCEL: 'Xuất Excel',
+  BTN_SHARE_ZALO: 'Gửi Zalo (Copy Ảnh)',
 };
 
 export const K80_QUICK_PRINT_MESSAGES = {
@@ -35,6 +37,12 @@ export const K80_QUICK_PRINT_MESSAGES = {
   PURPOSE_NOTE: 'In nhanh K80',
   EXPORT_SUCCESS: 'Xuất Excel thành công',
   EXPORT_ERROR: 'Lỗi khi xuất Excel:',
+  ZALO_CREATING: 'Đang tạo ảnh...',
+  ZALO_ERROR_CREATE: 'Không tạo được ảnh',
+  ZALO_COPY_SUCCESS: 'Đã copy ảnh! Bạn có thể nhấn Ctrl+V để dán vào Zalo.',
+  ZALO_DOWNLOAD_SUCCESS: 'Đã tải ảnh về máy! Bạn có thể gửi ảnh này qua Zalo.',
+  ZALO_ERROR_GENERAL: 'Có lỗi xảy ra khi tạo ảnh. Vui lòng thử lại.',
+  PLACEHOLDER_WEIGHTS: '24.5\n25.2\n24.8',
 };
 
 export const K80_PRINT_LAYOUT_LABELS = {
@@ -55,4 +63,6 @@ export const K80_PRINT_LAYOUT_LABELS = {
   SIGN_INSTRUCTION: '(Ký, ghi rõ họ tên)',
   EMPTY_VALUE: '---',
   EMPTY_DASH: '-',
+  ROLL_UNIT_ABBR: 'C',
+  SEPARATOR_LINE: '=================',
 };
