@@ -4,6 +4,22 @@
  */
 export type FabricCatalogStatus = 'active' | 'inactive';
 
+export type StretchType =
+  | 'NONE'
+  | 'HORIZONTAL'
+  | 'VERTICAL'
+  | 'TWO_WAY'
+  | 'FOUR_WAY';
+export type ThicknessType = 'THIN' | 'MEDIUM' | 'THICK' | 'EXTRA_THICK';
+export type StockStatusType =
+  | 'SAMPLE_AVAILABLE'
+  | 'READY_STOCK'
+  | 'CUSTOM_ORDER'
+  | 'OUT_OF_STOCK';
+
+export type FabricApplication = { name: string; image?: string; url?: string };
+export type FabricCharacteristic = { icon: string; label: string };
+
 export type FabricCatalog = {
   id: string;
   code: string;
@@ -41,6 +57,21 @@ export type FabricCatalog = {
   updated_at: string;
   is_public: boolean;
   slug: string;
+
+  /* Public Catalog Fields */
+  applications: FabricApplication[] | null;
+  characteristics: FabricCharacteristic[] | null;
+  stretch_type: StretchType | null;
+  thickness: ThicknessType | null;
+  stock_status: StockStatusType | null;
+  minimum_order_qty: number | null;
+  minimum_order_unit: string | null;
+  lead_time_min: number | null;
+  lead_time_max: number | null;
+  lead_time_unit: string | null;
+  public_images: string[] | null;
+  view_count: number;
+  variants?: FabricVariant[];
 };
 
 export type FabricCatalogFilter = {
@@ -91,6 +122,11 @@ export type FabricVariant = {
   tenant_id: string | null;
   created_at: string;
   updated_at: string;
+
+  /* Public Catalog Fields */
+  is_public: boolean;
+  display_order: number;
+  public_image_url: string | null;
 };
 
 export type FabricVariantFilter = {

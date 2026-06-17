@@ -1,7 +1,9 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo } from 'react';
 import toast from 'react-hot-toast';
 
 import { useAuth } from '@/shared/hooks/useAuth';
+import { exportToExcel, type ExportColumn } from '@/shared/utils/export';
+import { printService } from '@/shared/services/print/PrintService';
 import {
   useActiveCustomerOptions,
   useCreateAdHocShipment,
@@ -26,12 +28,12 @@ export function useK80QuickShipment() {
   const { profile } = useAuth();
   const { data: customerOptions = [] } = useActiveCustomerOptions();
   const createMutation = useCreateAdHocShipment();
-  const printRef = useRef<HTMLDivElement>(null);
 
   const [ticketNumber, setTicketNumber] = useState('');
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [customerId, setCustomerId] = useState<string>('');
   const [saveToDb, setSaveToDb] = useState(false);
+  const [paperSize, setPaperSize] = useState<'K80' | 'A5'>('K80');
 
   const [columns, setColumns] = useState<ColumnState[]>([
     { id: crypto.randomUUID(), fabricCode: '', weightsText: '' },
@@ -121,11 +123,77 @@ export function useK80QuickShipment() {
       maxRows,
       totalRolls,
       totalKg,
+      paperSize,
     };
-  }, [columns, ticketNumber, date, customerId, profile, customerComboOptions]);
+  }, [
+    columns,
+    ticketNumber,
+    date,
+    customerId,
+    profile,
+    customerComboOptions,
+    paperSize,
+  ]);
 
   const handlePrint = () => {
-    window.print();
+    if (paperSize === 'A5') {
+      printService.printA5();
+    } else {
+      printService.printK80();
+    }
+  };
+
+  const handleExportExcel = async () => {
+    if (printData.columns.length === 0) {
+      toast.error(MESSAGES.REQUIRE_DATA);
+      return;
+    }
+
+    const exportColumns: ExportColumn[] = printData.columns.map((c, i) => ({
+      label: c.fabricCode || `Mã vải ${i + 1}`,
+      key: c.id,
+      align: 'right',
+      width: 15,
+    }));
+
+    const dataRows = Array.from({ length: printData.maxRows }).map(
+      (_, rowIdx) => {
+        const row: Record<string, string | number> = {};
+        printData.columns.forEach((c) => {
+          row[c.id] = c.weights[rowIdx] !== undefined ? c.weights[rowIdx] : '';
+        });
+        return row;
+      },
+    );
+
+    // Total rolls row
+    const totalRollsRow: Record<string, string | number> = {};
+    printData.columns.forEach((c) => {
+      totalRollsRow[c.id] =
+        c.weights.length > 0 ? `${c.weights.length} Cuộn` : '';
+    });
+    dataRows.push(totalRollsRow);
+
+    // Total Kg row
+    const totalKgRow: Record<string, string | number> = {};
+    printData.columns.forEach((c) => {
+      totalKgRow[c.id] = c.weights.length > 0 ? c.totalKg : '';
+    });
+    dataRows.push(totalKgRow);
+
+    const fileName = `K80_${printData.ticketNumber || 'QuickPrint'}_${new Date().getTime()}`;
+
+    try {
+      await exportToExcel(dataRows, exportColumns, {
+        fileName,
+        sheetName: 'K80 Print',
+        title: LABELS.RECEIPT_TITLE,
+      });
+      toast.success(MESSAGES.EXPORT_SUCCESS);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error(`${MESSAGES.EXPORT_ERROR} ${msg}`);
+    }
   };
 
   const handleProcess = async () => {
@@ -198,8 +266,10 @@ export function useK80QuickShipment() {
     removeColumn,
     updateColumn,
     printData,
-    printRef,
     handleProcess,
+    handleExportExcel,
     isPending: createMutation.isPending,
+    paperSize,
+    setPaperSize,
   };
 }
