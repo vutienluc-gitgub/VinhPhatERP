@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import toast from 'react-hot-toast';
+import html2canvas from 'html2canvas';
 
 import { useAuth } from '@/shared/hooks/useAuth';
 import { exportToExcel, type ExportColumn } from '@/shared/utils/export';
@@ -143,6 +144,64 @@ export function useK80QuickShipment() {
     }
   };
 
+  const [isExportingImage, setIsExportingImage] = useState(false);
+
+  const handleShareZalo = async () => {
+    const previewEl = document.querySelector(
+      '.k80-preview-container',
+    ) as HTMLElement;
+    if (!previewEl) return;
+
+    setIsExportingImage(true);
+    const toastId = toast.loading(MESSAGES.ZALO_CREATING);
+
+    const clone = previewEl.cloneNode(true) as HTMLElement;
+    clone.style.position = 'absolute';
+    clone.style.left = '-9999px';
+    clone.style.top = '-9999px';
+    clone.style.transform = 'none';
+    document.body.appendChild(clone);
+
+    try {
+      const canvas = await html2canvas(clone, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+      });
+
+      canvas.toBlob(async (blob) => {
+        if (!blob) throw new Error(MESSAGES.ZALO_ERROR_CREATE);
+
+        try {
+          const item = new ClipboardItem({ 'image/png': blob });
+          await navigator.clipboard.write([item]);
+          toast.success(MESSAGES.ZALO_COPY_SUCCESS, {
+            id: toastId,
+            duration: 4000,
+          });
+        } catch (clipboardError) {
+          console.error('Clipboard failed, downloading:', clipboardError);
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `Phieu_Xuat_${ticketNumber || 'Nhanh'}.png`;
+          link.click();
+          URL.revokeObjectURL(url);
+          toast.success(MESSAGES.ZALO_DOWNLOAD_SUCCESS, {
+            id: toastId,
+            duration: 4000,
+          });
+        }
+      }, 'image/png');
+    } catch (error) {
+      console.error('Lỗi khi tạo ảnh:', error);
+      toast.error(MESSAGES.ZALO_ERROR_GENERAL, { id: toastId });
+    } finally {
+      setIsExportingImage(false);
+      document.body.removeChild(clone);
+    }
+  };
+
   const handleExportExcel = async () => {
     if (printData.columns.length === 0) {
       toast.error(MESSAGES.REQUIRE_DATA);
@@ -268,7 +327,9 @@ export function useK80QuickShipment() {
     printData,
     handleProcess,
     handleExportExcel,
+    handleShareZalo,
     isPending: createMutation.isPending,
+    isExportingImage,
     paperSize,
     setPaperSize,
   };

@@ -5,7 +5,10 @@ import { Button, PrintPreviewBox } from '@/shared/components';
 import { Icon } from '@/shared/components/Icon';
 import { Combobox } from '@/shared/components/Combobox';
 import { K80PrintLayout } from '@/features/shipments/components/quick-print/K80PrintLayout';
-import { K80_QUICK_PRINT_LABELS as LABELS } from '@/features/shipments/components/quick-print/k80-quick-print.constants';
+import {
+  K80_QUICK_PRINT_LABELS as LABELS,
+  K80_QUICK_PRINT_MESSAGES as MESSAGES,
+} from '@/features/shipments/components/quick-print/k80-quick-print.constants';
 
 import { useK80QuickShipment } from './useK80QuickShipment';
 
@@ -27,12 +30,15 @@ export function K80QuickShipmentPage() {
     printData,
     handleProcess,
     handleExportExcel,
+    handleShareZalo,
     isPending,
+    isExportingImage,
     paperSize,
     setPaperSize,
   } = useK80QuickShipment();
 
   const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -133,7 +139,7 @@ export function K80QuickShipmentPage() {
                   <textarea
                     className="field-input font-mono text-sm resize-y bg-surface focus:border-primary"
                     rows={8}
-                    placeholder="24.5&#10;25.2&#10;24.8"
+                    placeholder={MESSAGES.PLACEHOLDER_WEIGHTS}
                     value={col.weightsText}
                     onChange={(e) =>
                       updateColumn(col.id, 'weightsText', e.target.value)
@@ -153,7 +159,7 @@ export function K80QuickShipmentPage() {
         <div className="w-full xl:w-[450px] shrink-0 flex flex-col gap-6 xl:sticky xl:top-20">
           <div className="w-full bg-surface rounded-2xl shadow-sm border border-[var(--border)] p-6 flex flex-col gap-6">
             <div className="text-center">
-              <h2 className="font-bold text-xl">{LABELS.PROCESS_AND_PRINT}</h2>
+              <h2 className="font-bold text-xl">{`${LABELS.PROCESS_AND_PRINT} ${paperSize}`}</h2>
               <p className="text-sm text-muted mt-1">{LABELS.CHECK_INFO}</p>
             </div>
 
@@ -192,7 +198,7 @@ export function K80QuickShipmentPage() {
               </label>
             </div>
 
-            <div className="flex w-full gap-3">
+            <div className="flex flex-col w-full gap-3">
               <Button
                 variant="primary"
                 size="lg"
@@ -205,27 +211,56 @@ export function K80QuickShipmentPage() {
                 ) : (
                   <>
                     <Icon name="Printer" size={20} className="mr-2" />
-                    {saveToDb ? LABELS.BTN_SAVE_PRINT : LABELS.BTN_PRINT_ONLY}
+                    {saveToDb
+                      ? `${LABELS.BTN_SAVE_PRINT_PREFIX} ${paperSize}`
+                      : `${LABELS.BTN_PRINT_ONLY_PREFIX} ${paperSize} ${LABELS.BTN_PRINT_ONLY_SUFFIX}`}
                   </>
                 )}
               </Button>
 
-              <Button
-                variant="secondary"
-                size="lg"
-                className="h-14 px-6 flex items-center gap-2 whitespace-nowrap"
-                onClick={handleExportExcel}
-                disabled={
-                  isPending || columns.every((c) => c.weightsText.trim() === '')
-                }
-              >
-                <Icon name="FileSpreadsheet" size={20} />
-                {LABELS.BTN_EXPORT_EXCEL}
-              </Button>
+              <div className="flex w-full gap-3">
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  className="flex-1 h-14 px-2 flex justify-center items-center gap-2 whitespace-nowrap overflow-hidden"
+                  onClick={handleShareZalo}
+                  disabled={
+                    isPending ||
+                    isExportingImage ||
+                    columns.every((c) => c.weightsText.trim() === '')
+                  }
+                >
+                  {isExportingImage ? (
+                    <Icon name="Loader2" size={20} className="animate-spin" />
+                  ) : (
+                    <Icon name="Image" size={20} />
+                  )}
+                  {LABELS.BTN_SHARE_ZALO}
+                </Button>
+
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  className="flex-1 h-14 px-2 flex justify-center items-center gap-2 whitespace-nowrap overflow-hidden"
+                  onClick={handleExportExcel}
+                  disabled={
+                    isPending ||
+                    columns.every((c) => c.weightsText.trim() === '')
+                  }
+                >
+                  <Icon name="FileSpreadsheet" size={20} />
+                  {LABELS.BTN_EXPORT_EXCEL}
+                </Button>
+              </div>
             </div>
           </div>
 
-          <PrintPreviewBox title={LABELS.PREVIEW_TITLE}>
+          <PrintPreviewBox
+            title={LABELS.PREVIEW_TITLE}
+            zoomLevels={paperSize === 'A5' ? [0.5, 0.75, 1] : [0.75, 1, 1.25]}
+            defaultZoom={paperSize === 'A5' ? 0.5 : 1}
+            key={paperSize}
+          >
             <K80PrintLayout data={printData} />
           </PrintPreviewBox>
         </div>

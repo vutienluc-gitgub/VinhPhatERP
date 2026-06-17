@@ -77,3 +77,32 @@ button:focus-visible {
     display: none; /* Chrome, Safari and Opera */
   }
 }
+
+/* BỘ CLASS CHUẨN DÀNH CHO BẢN IN (PRINT LAYOUT) */
+@layer components {
+  /* Khổ A4/A5: Khoảng cách thoáng, dễ nhìn */
+  .print-spacing-normal {
+    @apply leading-relaxed;
+  }
+  .print-section-normal {
+    @apply mb-4 pb-4 border-b border-dashed border-black;
+  }
+  .print-table-normal {
+    @apply w-full border-collapse my-4;
+  }
+  .print-table-normal th,
+  .print-table-normal td {
+    @apply border border-black p-2;
+  }
+  .print-table-normal th {
+    @apply bg-gray-100 font-bold;
+  }
+
+  /* Khổ K80/K58/Tag: Khoảng cách sát, tiết kiệm giấy */
+  .print-spacing-tight {
+    @apply leading-tight;
+  }
+  .print-section-tight {
+    @apply mb-1 pb-1 border-b border-dashed border-black;
+  }
+}
