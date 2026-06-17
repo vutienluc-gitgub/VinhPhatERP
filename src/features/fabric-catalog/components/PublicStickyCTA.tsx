@@ -7,15 +7,24 @@ import {
 type Props = {
   fabricCode: string;
   fabricName: string;
+  activeColorName: string | null;
+  activeMOQ: string | null;
 };
 
-export function PublicStickyCTA({ fabricCode, fabricName }: Props) {
+export function PublicStickyCTA({
+  fabricCode,
+  fabricName,
+  activeColorName,
+  activeMOQ,
+}: Props) {
   const handleZaloClick = (type: 'quote' | 'sample') => {
     const template =
       type === 'quote' ? LABELS.zaloQuoteMsg : LABELS.zaloSampleMsg;
     const msg = template
       .replace('{code}', fabricCode)
-      .replace('{name}', fabricName);
+      .replace('{name}', fabricName)
+      .replace('{color}', activeColorName || 'Tất cả màu')
+      .replace('{moq}', activeMOQ || 'N/A');
     window.open(
       `https://zalo.me/${HOTLINE}?text=${encodeURIComponent(msg)}`,
       '_blank',

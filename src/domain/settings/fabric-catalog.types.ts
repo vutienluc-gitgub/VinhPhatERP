@@ -17,8 +17,49 @@ export type StockStatusType =
   | 'CUSTOM_ORDER'
   | 'OUT_OF_STOCK';
 
-export type FabricApplication = { name: string; image?: string; url?: string };
-export type FabricCharacteristic = { icon: string; label: string };
+export type FabricApplicationNormalized = {
+  id: string;
+  name: string;
+  slug: string;
+  icon: string | null;
+  image: string | null;
+  description: string | null;
+};
+
+export type FabricCharacteristicNormalized = {
+  id: string;
+  name: string;
+  icon: string | null;
+  description: string | null;
+};
+
+export type FabricCommercial = {
+  sample_status: 'AVAILABLE' | 'OUT_OF_STOCK' | 'PREPARING';
+  stock_status: 'READY' | 'CUSTOM' | 'OUT_OF_STOCK' | 'COMING_SOON';
+  minimum_order_qty: number | null;
+  minimum_order_unit: string | null;
+  lead_time_min: number | null;
+  lead_time_max: number | null;
+  lead_time_unit: string | null;
+  origin_country: string | null;
+};
+
+export type FabricVariantCommercial = {
+  minimum_stock_order: number | null;
+  minimum_custom_order: number | null;
+  lead_time_stock: number | null;
+  lead_time_custom: number | null;
+  lead_time_unit: string | null;
+};
+
+export type FabricImage = {
+  id: string;
+  variant_id: string | null;
+  application_id: string | null;
+  type: 'SWATCH' | 'SURFACE' | 'BACK' | 'STRETCH' | 'APPLICATION';
+  image_url: string;
+  display_order: number;
+};
 
 export type FabricCatalog = {
   id: string;
@@ -59,18 +100,12 @@ export type FabricCatalog = {
   slug: string;
 
   /* Public Catalog Fields */
-  applications: FabricApplication[] | null;
-  characteristics: FabricCharacteristic[] | null;
-  stretch_type: StretchType | null;
-  thickness: ThicknessType | null;
-  stock_status: StockStatusType | null;
-  minimum_order_qty: number | null;
-  minimum_order_unit: string | null;
-  lead_time_min: number | null;
-  lead_time_max: number | null;
-  lead_time_unit: string | null;
-  public_images: string[] | null;
-  view_count: number;
+  applications?: FabricApplicationNormalized[] | null;
+  characteristics?: FabricCharacteristicNormalized[] | null;
+  stretch_type?: StretchType | null;
+  thickness?: ThicknessType | null;
+  commercial?: FabricCommercial | null;
+  view_count?: number;
   variants?: FabricVariant[];
 };
 
@@ -127,6 +162,9 @@ export type FabricVariant = {
   is_public: boolean;
   display_order: number;
   public_image_url: string | null;
+  color_standard: 'PANTONE' | 'LAB' | 'CUSTOM';
+  color_code: string | null;
+  commercial_override: FabricVariantCommercial | null;
 };
 
 export type FabricVariantFilter = {
@@ -137,4 +175,56 @@ export type FabricVariantFilter = {
 /** FabricCatalog with nested variants for detail view */
 export type FabricCatalogWithVariants = FabricCatalog & {
   variants: FabricVariant[];
+};
+
+export type PublicSampleRequestStatus =
+  | 'PENDING'
+  | 'APPROVED'
+  | 'DISPATCHED'
+  | 'REJECTED';
+
+export type PublicSampleRequest = {
+  id: string;
+  fabric_catalog_id: string;
+  contact_name: string;
+  contact_phone: string;
+  contact_address: string;
+  company_name: string | null;
+  selected_variants: Array<{ variant_code: string; color_name: string }> | null;
+  status: PublicSampleRequestStatus;
+  tenant_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type FabricPricingTier = {
+  id: string;
+  min_quantity: number;
+  max_quantity: number | null;
+  unit_price: number;
+  currency: string;
+};
+
+export type PublicRFQRequestStatus =
+  | 'PENDING'
+  | 'CONTACTED'
+  | 'QUOTED'
+  | 'REJECTED';
+
+export type PublicRFQRequest = {
+  id: string;
+  fabric_catalog_id: string;
+  variant_id: string | null;
+  quantity: number;
+  unit: string;
+  target_price: number | null;
+  target_delivery_date: string | null;
+  contact_name: string;
+  contact_phone: string;
+  contact_email: string | null;
+  company_name: string | null;
+  status: PublicRFQRequestStatus;
+  tenant_id: string | null;
+  created_at: string;
+  updated_at: string;
 };

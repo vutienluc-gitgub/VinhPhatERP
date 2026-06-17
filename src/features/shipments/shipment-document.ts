@@ -1,5 +1,10 @@
 import type { ShipmentDocument } from './types';
 import { buildShipmentPrintHtml } from './shipment-document.template';
+import {
+  SHIPMENT_DOCUMENT_ERRORS,
+  PRINT_CLEANUP_DELAY_MS,
+} from './shipment-document.constants';
+
 export * from './shipment-document.constants';
 export * from './shipment-document.utils';
 export * from './shipment-document.template';
@@ -16,7 +21,7 @@ export async function exportShipmentToPdf(
   options: PrintOptions = {},
 ): Promise<void> {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
-    throw new Error('Không thể in PDF ngoài môi trường trình duyệt.');
+    throw new Error(SHIPMENT_DOCUMENT_ERRORS.NOT_BROWSER_ENV);
   }
 
   const { html } = await buildShipmentPrintHtml(shipment, options);
@@ -35,13 +40,13 @@ export async function exportShipmentToPdf(
   const frameWindow = printFrame.contentWindow;
   if (!frameWindow) {
     printFrame.remove();
-    throw new Error('Không thể mở trình in PDF trong trình duyệt này.');
+    throw new Error(SHIPMENT_DOCUMENT_ERRORS.CANNOT_OPEN_PRINTER);
   }
 
   const cleanup = () => {
     window.setTimeout(() => {
       printFrame.remove();
-    }, 1_000);
+    }, PRINT_CLEANUP_DELAY_MS);
   };
 
   let printed = false;

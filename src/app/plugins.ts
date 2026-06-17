@@ -12,6 +12,7 @@ import { bomPlugin } from '@/features/bom';
 import { workOrdersPlugin } from '@/features/work-orders';
 import { rawFabricPlugin } from '@/features/raw-fabric';
 import { weavingInvoicesPlugin } from '@/features/weaving-invoices';
+import { crmPlugin } from '@/features/crm';
 import { finishedFabricPlugin } from '@/features/finished-fabric';
 import { suppliersPlugin } from '@/features/suppliers';
 import { yarnCatalogPlugin } from '@/features/yarn-catalog';
@@ -49,6 +50,7 @@ const plugins: FeaturePlugin[] = [
   contractsPlugin,
   orderProgressPlugin,
   orderKanbanPlugin,
+  crmPlugin,
   customersPlugin,
   shipmentsPlugin,
 

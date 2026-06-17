@@ -79,20 +79,6 @@ export async function buildShipmentPrintHtml(
   if (isA5) {
     // Với A5 in kim, ta giới hạn số dòng để không tràn
     pages = paginateGroupedRows(groupedRows, 14, 4);
-
-    // Nhân bản để in đúp 2 liên trên A4
-    const duplicatedPages: DocumentPage[] = [];
-    for (const page of pages) {
-      duplicatedPages.push({
-        ...page,
-        copyLabel: SHIPMENT_DOCUMENT_LABELS.COPY_1_LABEL,
-      });
-      duplicatedPages.push({
-        ...page,
-        copyLabel: SHIPMENT_DOCUMENT_LABELS.COPY_2_LABEL,
-      });
-    }
-    pages = duplicatedPages;
   } else {
     // Với A4 thường, không cần ngắt khắt khe, tuỳ CSS xử lý
     pages = [
@@ -288,7 +274,7 @@ export async function buildShipmentPrintHtml(
   const bodyContent = pages
     .map((page) =>
       isA5
-        ? `<div class="half-page">${renderPageHtml(page)}</div>`
+        ? `<div class="a5-page">${renderPageHtml(page)}</div>`
         : `<div class="page"><div class="accent-bar"></div>${renderPageHtml(page)}</div>`,
     )
     .join('');

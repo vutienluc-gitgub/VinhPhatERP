@@ -10,8 +10,14 @@ import {
   deleteFabricCatalog,
   fetchFabricCategories,
   fetchFabricCatalogByIdOrCode,
-  fetchPublicFabricBySlug,
+  fetchPublicFabricBasic,
+  fetchPublicFabricVariants,
+  fetchPublicFabricImages,
   fetchRelatedPublicFabrics,
+  fetchAlsoViewedPublicFabrics,
+  createPublicSampleRequest,
+  fetchPublicPricingTiers,
+  createPublicRFQRequest,
 } from '@/api/fabric-catalog.api';
 import type { FabricCatalogFormValues } from '@/features/fabric-catalog/fabric-catalog.module';
 import type {
@@ -47,13 +53,7 @@ function toDbRow(
     characteristics: null,
     stretch_type: null,
     thickness: null,
-    stock_status: null,
-    minimum_order_qty: null,
-    minimum_order_unit: null,
-    lead_time_min: null,
-    lead_time_max: null,
-    lead_time_unit: null,
-    public_images: null,
+    commercial: null,
     view_count: 0,
   };
 
@@ -171,14 +171,41 @@ export function useFabricCatalogDetail(identifier: string | undefined) {
   });
 }
 
-export function usePublicFabricBySlug(slug: string | undefined) {
+export function usePublicFabricBasic(
+  slug: string | undefined,
+  sessionId?: string,
+) {
   return useQuery({
-    queryKey: [...QUERY_KEY, 'public', slug],
+    queryKey: [...QUERY_KEY, 'public-basic', slug, sessionId],
     queryFn: () => {
       if (!slug) return Promise.reject(new Error('Missing slug'));
-      return fetchPublicFabricBySlug(slug);
+      return fetchPublicFabricBasic(slug, sessionId);
     },
     enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function usePublicFabricVariants(fabricId: string | undefined) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'public-variants', fabricId],
+    queryFn: () => {
+      if (!fabricId) return Promise.reject(new Error('Missing fabricId'));
+      return fetchPublicFabricVariants(fabricId);
+    },
+    enabled: !!fabricId,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function usePublicFabricImages(fabricId: string | undefined) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'public-images', fabricId],
+    queryFn: () => {
+      if (!fabricId) return Promise.reject(new Error('Missing fabricId'));
+      return fetchPublicFabricImages(fabricId);
+    },
+    enabled: !!fabricId,
     staleTime: 5 * 60 * 1000,
   });
 }
@@ -195,5 +222,56 @@ export function useRelatedPublicFabrics(
     },
     enabled: !!fabricId,
     staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useAlsoViewedPublicFabrics(
+  fabricId: string | undefined,
+  limit = 3,
+) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'also-viewed-public', fabricId, limit],
+    queryFn: () => {
+      if (!fabricId) return Promise.reject(new Error('Missing fabricId'));
+      return fetchAlsoViewedPublicFabrics(fabricId, limit);
+    },
+    enabled: !!fabricId,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useCreatePublicSampleRequest() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createPublicSampleRequest,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEY, 'sample-requests'],
+      });
+    },
+  });
+}
+
+export function usePublicPricingTiers(fabricId: string | undefined) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'public-pricing-tiers', fabricId],
+    queryFn: () => {
+      if (!fabricId) return Promise.reject(new Error('Missing fabricId'));
+      return fetchPublicPricingTiers(fabricId);
+    },
+    enabled: !!fabricId,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useCreatePublicRFQRequest() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createPublicRFQRequest,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEY, 'rfq-requests'],
+      });
+    },
   });
 }

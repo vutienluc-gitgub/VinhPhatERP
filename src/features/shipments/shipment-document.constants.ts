@@ -34,6 +34,13 @@ export const SHIPMENT_DOCUMENT_LABELS = {
   PAGE_LABEL: 'Trang',
 };
 
+export const SHIPMENT_DOCUMENT_ERRORS = {
+  NOT_BROWSER_ENV: 'Không thể in PDF ngoài môi trường trình duyệt.',
+  CANNOT_OPEN_PRINTER: 'Không thể mở trình in PDF trong trình duyệt này.',
+};
+
+export const PRINT_CLEANUP_DELAY_MS = 1000;
+
 export const VERIFY_BASE_URL = 'https://quantri.detmayvinhphat.com/verify';
 
 export const SHIPMENT_DOCUMENT_CSS = `
@@ -339,7 +346,8 @@ export const SHIPMENT_DOCUMENT_CSS = `
 
 export const SHIPMENT_DOCUMENT_A5_DOT_MATRIX_CSS = `
   @page {
-    size: A4 portrait;
+    /* Không ép cứng size ở đây để tránh Chrome tự động xoay ngang 90 độ (Landscape).
+       Thay vào đó, user sẽ set Custom Paper Size (210mm x 148.5mm) trong Driver máy in. */
     margin: 0;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -353,16 +361,15 @@ export const SHIPMENT_DOCUMENT_A5_DOT_MATRIX_CSS = `
 
   @media print {
     body { margin: 0; }
-    .page, .half-page { page-break-after: always; }
-    .page:last-child, .half-page:last-child { page-break-after: auto; }
+    .page, .a5-page { page-break-after: always; }
+    .page:last-child, .a5-page:last-child { page-break-after: auto; }
   }
 
   .accent-bar { display: none; }
 
-  /* ── Half-page wrapper: content fits top half of A4 ── */
-  .half-page {
+  /* ── A5 Page wrapper for continuous printing ── */
+  .a5-page {
     height: 148.5mm;
-    max-height: 148.5mm;
     width: 210mm;
     overflow: hidden;
     padding: 3mm 6mm 2mm;
