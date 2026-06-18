@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   useForm,
   Controller,
@@ -154,30 +154,167 @@ export function FabricVariantForm({
     formState: { errors, isSubmitting },
   } = formMethods;
 
+  const stepper = useStepper({
+    totalSteps: 2,
+    stepValidation: {
+      0: async () => {
+        try {
+          // Ensure form is in a stable state before validation
+          await new Promise((resolve) => requestAnimationFrame(resolve));
+
+          // Define required fields for step 1 with validation priority
+          const requiredFields = ['color_name'] as const;
+          const optionalFields = [
+            'color_hex',
+            'actual_width_cm',
+            'actual_gsm',
+            'shrinkage_rate_warp',
+            'shrinkage_rate_weft',
+            'base_uom',
+            'conversion_rate',
+          ] as const;
+
+          // First validate required fields
+          const requiredValid = await formMethods.trigger(requiredFields);
+          if (!requiredValid) {
+            // Focus on first invalid required field
+            const errors = formMethods.formState.errors;
+            for (const field of requiredFields) {
+              if (errors[field]) {
+                const element = document.getElementById(
+                  `fv-${field.replace('_', '-')}`,
+                );
+                if (element) {
+                  element.focus();
+                  break;
+                }
+              }
+            }
+            return false;
+          }
+
+          // Then validate optional fields
+          const optionalValid = await formMethods.trigger(optionalFields);
+          if (!optionalValid) {
+            // Focus on first invalid optional field
+            const errors = formMethods.formState.errors;
+            for (const field of optionalFields) {
+              if (errors[field]) {
+                const element = document.getElementById(
+                  `fv-${field.replace('_', '-')}`,
+                );
+                if (element) {
+                  element.focus();
+                  break;
+                }
+              }
+            }
+            return false;
+          }
+
+          // Validate business rules
+          const values = formMethods.getValues();
+
+          // Color hex validation if provided
+          if (values.color_hex && values.color_hex.trim() !== '') {
+            const hexPattern = /^#[0-9a-fA-F]{6}$/;
+            if (!hexPattern.test(values.color_hex)) {
+              formMethods.setError('color_hex', {
+                type: 'pattern',
+                message: 'Mã hex không hợp lệ (VD: #000000)',
+              });
+              document.getElementById('fv-color-hex')?.focus();
+              return false;
+            }
+          }
+
+          // GSM and width validation for conversion rate calculation
+          if (values.actual_gsm && values.actual_width_cm) {
+            if (values.actual_gsm <= 0) {
+              formMethods.setError('actual_gsm', {
+                type: 'min',
+                message: 'GSM phải lớn hơn 0',
+              });
+              document.getElementById('fv-actual-gsm')?.focus();
+              return false;
+            }
+            if (values.actual_width_cm <= 0) {
+              formMethods.setError('actual_width_cm', {
+                type: 'min',
+                message: 'Khổ phải lớn hơn 0',
+              });
+              document.getElementById('fv-actual-width')?.focus();
+              return false;
+            }
+          }
+
+          // Shrinkage rates validation
+          if (
+            values.shrinkage_rate_warp !== null &&
+            values.shrinkage_rate_warp !== undefined
+          ) {
+            if (
+              values.shrinkage_rate_warp < 0 ||
+              values.shrinkage_rate_warp > 100
+            ) {
+              formMethods.setError('shrinkage_rate_warp', {
+                type: 'range',
+                message: 'Rút dọc phải từ 0-100%',
+              });
+              document.getElementById('fv-shrink-warp')?.focus();
+              return false;
+            }
+          }
+
+          if (
+            values.shrinkage_rate_weft !== null &&
+            values.shrinkage_rate_weft !== undefined
+          ) {
+            if (
+              values.shrinkage_rate_weft < 0 ||
+              values.shrinkage_rate_weft > 100
+            ) {
+              formMethods.setError('shrinkage_rate_weft', {
+                type: 'range',
+                message: 'Rút ngang phải từ 0-100%',
+              });
+              document.getElementById('fv-shrink-weft')?.focus();
+              return false;
+            }
+          }
+
+          // Wait for validation state to stabilize
+          await new Promise((resolve) => setTimeout(resolve, 50));
+
+          return true;
+        } catch (error) {
+          console.error('[FabricVariantForm] Step validation error:', error);
+          return false;
+        }
+      },
+    },
+  });
+
+  // Create a ref to provide stepper state to autosave hook
+  const stepperRef = useRef({
+    isTransitioning: stepper.isTransitioning,
+    isValidating: stepper.isValidating,
+  });
+
+  // Update ref values when stepper state changes
+  stepperRef.current.isTransitioning = stepper.isTransitioning;
+  stepperRef.current.isValidating = stepper.isValidating;
+
   const { status, lastSavedTimeText, clearDraft } = useFormAutoSave({
     formId: isEditing
       ? `fabric-variant-edit-${variant.id}`
       : `fabric-variant-create-${parentCode}`,
     methods: formMethods,
-    enabled: true,
-  });
-
-  const stepper = useStepper({
-    totalSteps: 2,
-    stepValidation: {
-      0: async () => {
-        return await formMethods.trigger([
-          'color_name',
-          'color_hex',
-          'actual_width_cm',
-          'actual_gsm',
-          'shrinkage_rate_warp',
-          'shrinkage_rate_weft',
-          'base_uom',
-          'conversion_rate',
-        ]);
-      },
-    },
+    // Auto-save chỉ cần thiết khi tạo mới.
+    // Edit mode: data đã có trong DB, không cần draft recovery.
+    enabled: !isEditing,
+    // Pass stepper reference to prevent autosave during transitions
+    stepperRef,
   });
 
   useEffect(() => {
@@ -260,9 +397,12 @@ export function FabricVariantForm({
               variant="primary"
               type="button"
               onClick={() => void stepper.next()}
-              disabled={isPending}
+              disabled={
+                isPending || stepper.isTransitioning || stepper.isValidating
+              }
+              isLoading={stepper.isValidating}
             >
-              Tiếp tục
+              {stepper.isValidating ? 'Đang kiểm tra...' : 'Tiếp tục'}
             </Button>
           )}
         </>

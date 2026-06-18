@@ -26,6 +26,11 @@ type UseFormAutoSaveOptions<T extends FieldValues> = {
   methods: UseFormReturn<T>;
   delay?: number;
   enabled?: boolean;
+  /** Optional stepper reference to prevent autosave during step transitions */
+  stepperRef?: React.MutableRefObject<{
+    isTransitioning: boolean;
+    isValidating?: boolean;
+  }>;
 };
 
 // ── Hook ───────────────────────────────────────────────────────────────────
@@ -42,6 +47,7 @@ export function useFormAutoSave<T extends FieldValues>({
   methods,
   delay = 1000,
   enabled = true,
+  stepperRef,
 }: UseFormAutoSaveOptions<T>) {
   const { user } = useAuth();
   const { confirm } = useConfirm();
@@ -74,6 +80,14 @@ export function useFormAutoSave<T extends FieldValues>({
       if (serialized === lastSavedRef.current) return;
       if (!mountedRef.current) return;
 
+      // Prevent autosave during step transitions to avoid interference
+      if (
+        stepperRef?.current?.isTransitioning ||
+        stepperRef?.current?.isValidating
+      ) {
+        return;
+      }
+
       setStatus('saving');
 
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -82,6 +96,15 @@ export function useFormAutoSave<T extends FieldValues>({
 
       timeoutRef.current = setTimeout(() => {
         if (!mountedRef.current || latestSaveIdRef.current !== saveId) return;
+
+        // Double-check stepper state before saving to localStorage
+        if (
+          stepperRef?.current?.isTransitioning ||
+          stepperRef?.current?.isValidating
+        ) {
+          setStatus('idle');
+          return;
+        }
 
         const payload = { data: values, updatedAt: Date.now() };
         try {
@@ -103,7 +126,7 @@ export function useFormAutoSave<T extends FieldValues>({
     });
 
     return () => subscription.unsubscribe();
-  }, [enabled, fullKey, delay, methods]);
+  }, [enabled, fullKey, delay, methods, stepperRef]);
 
   // Restore draft on mount
   useEffect(() => {
