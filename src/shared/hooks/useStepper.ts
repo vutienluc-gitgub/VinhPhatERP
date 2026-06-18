@@ -37,6 +37,10 @@ type StepperReturn = {
   reset: () => void;
   /** Xử lý phím Enter trên form để tự động next thay vì submit sớm */
   handleKeyDown: (e: React.KeyboardEvent<HTMLFormElement>) => void;
+  /** Trạng thái đang chuyển bước (để ngăn chặn nhiều lần click đồng thời) */
+  isTransitioning: boolean;
+  /** Trạng thái đang validate (để theo dõi quá trình validation) */
+  isValidating: boolean;
 };
 
 /**
@@ -55,20 +59,67 @@ export function useStepper({
   onCancel,
 }: StepperOptions): StepperReturn {
   const [currentStep, setCurrentStep] = useState(initialStep);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
   const currentStepRef = useRef(currentStep);
+  const isTransitioningRef = useRef(false);
+  const isValidatingRef = useRef(false);
+
   currentStepRef.current = currentStep;
+  isTransitioningRef.current = isTransitioning;
+  isValidatingRef.current = isValidating;
+
   const onCancelRef = useRef(onCancel);
   onCancelRef.current = onCancel;
   const cleanupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const next = useCallback(async () => {
-    if (stepValidation && stepValidation[currentStep]) {
-      const isValid = await stepValidation[currentStep]();
-      if (!isValid) return false;
+    // Transition guard: Prevent concurrent step transitions using ref to avoid closure issues
+    if (isTransitioningRef.current || isValidatingRef.current) {
+      return false;
     }
-    setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
-    return true;
-  }, [totalSteps, currentStep, stepValidation]);
+
+    try {
+      // Set transitioning flag to prevent rapid clicking
+      setIsTransitioning(true);
+
+      // Run step validation if configured
+      if (stepValidation && stepValidation[currentStepRef.current]) {
+        const validationFn = stepValidation[currentStepRef.current];
+        if (validationFn) {
+          // Set validating flag to track validation state
+          setIsValidating(true);
+
+          try {
+            // Ensure validation completes fully before proceeding
+            const isValid = await validationFn();
+
+            // Add small delay to ensure all validation side effects complete
+            // This prevents timing conflicts with form state updates
+            await new Promise((resolve) => setTimeout(resolve, 10));
+
+            if (!isValid) {
+              return false;
+            }
+          } catch (error) {
+            // If validation throws an error, treat it as validation failure
+            console.error('[useStepper] Step validation error:', error);
+            return false;
+          } finally {
+            // Always reset validation flag
+            setIsValidating(false);
+          }
+        }
+      }
+
+      // Advance to next step only after validation fully completes
+      setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+      return true;
+    } finally {
+      // Always reset transition flag to ensure proper cleanup
+      setIsTransitioning(false);
+    }
+  }, [totalSteps, stepValidation]);
 
   const prev = useCallback(() => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
@@ -168,5 +219,7 @@ export function useStepper({
     goTo,
     reset,
     handleKeyDown,
+    isTransitioning,
+    isValidating,
   };
 }
