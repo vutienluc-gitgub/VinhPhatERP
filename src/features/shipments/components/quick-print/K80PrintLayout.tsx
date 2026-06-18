@@ -38,7 +38,7 @@ export const K80PrintLayout = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={`${isPrintPortal ? 'k80-print-container hidden print:block' : 'k80-preview-container'} bg-white text-black p-2 font-mono mx-auto print-spacing-tight text-sm`}
+      className={`${isPrintPortal ? 'k80-print-container hidden print:flex' : 'k80-preview-container'} bg-white text-black p-2 font-mono mx-auto print-spacing-tight text-sm flex flex-col`}
       style={{
         width: containerWidth,
         maxWidth: '100%',
@@ -202,29 +202,31 @@ export const K80PrintLayout = React.forwardRef<
         </div>
       )}
 
-      <div className="print-section-tight border-t pt-2 mt-2 space-y-1">
-        <div className="flex justify-between">
-          <span>{LABELS.TOTAL_CODES}</span>
-          <span className="font-bold">{data.columns.length}</span>
+      <div className="mt-auto">
+        <div className="print-section-tight border-t pt-2 mt-2 space-y-1">
+          <div className="flex justify-between">
+            <span>{LABELS.TOTAL_CODES}</span>
+            <span className="font-bold">{data.columns.length}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>{LABELS.TOTAL_ROLLS}</span>
+            <span className="font-bold">{data.totalRolls}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>{LABELS.TOTAL_KG}</span>
+            <span className="font-bold">{data.totalKg.toFixed(1)}</span>
+          </div>
         </div>
-        <div className="flex justify-between">
-          <span>{LABELS.TOTAL_ROLLS}</span>
-          <span className="font-bold">{data.totalRolls}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>{LABELS.TOTAL_KG}</span>
-          <span className="font-bold">{data.totalKg.toFixed(1)}</span>
-        </div>
-      </div>
 
-      <div className="flex justify-between mt-2 text-center">
-        <div className="w-1/2">
-          <div className="font-bold">{LABELS.SENDER}</div>
-          <div className="text-[0.7em] mt-4">{LABELS.SIGN_INSTRUCTION}</div>
-        </div>
-        <div className="w-1/2">
-          <div className="font-bold">{LABELS.RECEIVER}</div>
-          <div className="text-[0.7em] mt-4">{LABELS.SIGN_INSTRUCTION}</div>
+        <div className="flex justify-between mt-2 text-center">
+          <div className="w-1/2">
+            <div className="font-bold">{LABELS.SENDER}</div>
+            <div className="text-[0.7em] mt-4">{LABELS.SIGN_INSTRUCTION}</div>
+          </div>
+          <div className="w-1/2">
+            <div className="font-bold">{LABELS.RECEIVER}</div>
+            <div className="text-[0.7em] mt-4">{LABELS.SIGN_INSTRUCTION}</div>
+          </div>
         </div>
       </div>
     </div>
