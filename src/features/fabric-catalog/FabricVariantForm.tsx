@@ -14,7 +14,7 @@ import {
   useCreateFabricVariant,
   useUpdateFabricVariant,
 } from '@/application/settings';
-import { useFormAutoSave } from '@/shared/hooks';
+import { useFormAutoSave, useStepper } from '@/shared/hooks';
 import {
   fabricVariantSchema,
   fabricVariantDefaultValues,
@@ -162,6 +162,24 @@ export function FabricVariantForm({
     enabled: true,
   });
 
+  const stepper = useStepper({
+    totalSteps: 2,
+    stepValidation: {
+      0: async () => {
+        return await formMethods.trigger([
+          'color_name',
+          'color_hex',
+          'actual_width_cm',
+          'actual_gsm',
+          'shrinkage_rate_warp',
+          'shrinkage_rate_weft',
+          'base_uom',
+          'conversion_rate',
+        ]);
+      },
+    },
+  });
+
   useEffect(() => {
     reset(
       isEditing ? variantToFormValues(variant) : fabricVariantDefaultValues,
@@ -208,36 +226,64 @@ export function FabricVariantForm({
       }
       footer={
         <>
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={onClose}
-            disabled={isPending}
-          >
-            {LABELS.CANCEL}
-          </Button>
-          <Button
-            variant="primary"
-            type="submit"
-            form="fabric-variant-form"
-            isLoading={isPending}
-          >
-            {isEditing ? LABELS.UPDATE : LABELS.ADD}
-          </Button>
+          {stepper.isFirst ? (
+            <Button
+              variant="secondary"
+              type="button"
+              onClick={onClose}
+              disabled={isPending}
+            >
+              {LABELS.CANCEL}
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              type="button"
+              onClick={stepper.prev}
+              disabled={isPending}
+            >
+              Quay lại
+            </Button>
+          )}
+
+          {stepper.isLast ? (
+            <Button
+              variant="primary"
+              type="submit"
+              form="fabric-variant-form"
+              isLoading={isPending}
+            >
+              {isEditing ? LABELS.UPDATE : LABELS.ADD}
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              type="button"
+              onClick={() => void stepper.next()}
+              disabled={isPending}
+            >
+              Tiếp tục
+            </Button>
+          )}
         </>
       }
     >
-      <div className="flex items-center justify-end mb-2">
-        {status === 'saving' && (
-          <span className="text-xs text-muted italic">
-            {LABELS.SAVING_DRAFT}
-          </span>
-        )}
-        {status === 'saved' && (
-          <span className="text-xs text-emerald-600 italic">
-            {LABELS.SAVED_DRAFT}: {lastSavedTimeText}
-          </span>
-        )}
+      <div className="flex items-center justify-between mb-4">
+        <div className="text-sm font-medium text-muted">
+          Bước {stepper.currentStep + 1} / {stepper.totalSteps}
+        </div>
+        <div className="flex gap-2">
+          {status === 'saving' && (
+            <span className="text-xs text-muted italic">
+              {LABELS.SAVING_DRAFT}
+            </span>
+          )}
+          {status === 'saved' && (
+            <span className="text-xs text-emerald-600 italic">
+              {LABELS.SAVED_DRAFT}: {lastSavedTimeText}
+            </span>
+          )}
+        </div>
       </div>
 
       {mutationError && (
@@ -249,288 +295,304 @@ export function FabricVariantForm({
       <form
         id="fabric-variant-form"
         onSubmit={handleSubmit(onSubmit)}
+        onKeyDown={stepper.handleKeyDown}
         noValidate
       >
         <div className="form-grid">
-          {/* ── Section: Màu sắc ── */}
-          <fieldset className="form-section">
-            <legend className="form-section-title">
-              {LABELS.COLOR_SECTION}
-            </legend>
-            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-              <div className="form-field">
-                <label htmlFor="fv-color-name">
-                  {LABELS.COLOR_NAME} <span className="field-required">*</span>
-                </label>
-                <input
-                  id="fv-color-name"
-                  className={`field-input${errors.color_name ? ' is-error' : ''}`}
-                  type="text"
-                  placeholder={MESSAGES.PLACEHOLDER_COLOR}
-                  {...register('color_name')}
-                />
-                {errors.color_name && (
-                  <span className="field-error">
-                    {errors.color_name.message}
-                  </span>
-                )}
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="fv-color-hex">{LABELS.COLOR_HEX}</label>
-                <div className="flex gap-2 items-center">
-                  <input
-                    id="fv-color-hex"
-                    className={`field-input flex-1${errors.color_hex ? ' is-error' : ''}`}
-                    type="text"
-                    placeholder={MESSAGES.PLACEHOLDER_HEX}
-                    {...register('color_hex')}
-                  />
-                  {watch('color_hex') &&
-                    /^#[0-9a-fA-F]{6}$/.test(watch('color_hex') ?? '') && (
-                      <div
-                        className="w-8 h-8 rounded border border-border shrink-0"
-                        style={{ backgroundColor: watch('color_hex') ?? '' }}
-                      />
+          {stepper.currentStep === 0 && (
+            <>
+              <fieldset className="form-section">
+                <legend className="form-section-title">
+                  {LABELS.COLOR_SECTION}
+                </legend>
+                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+                  <div className="form-field">
+                    <label htmlFor="fv-color-name">
+                      {LABELS.COLOR_NAME}{' '}
+                      <span className="field-required">*</span>
+                    </label>
+                    <input
+                      id="fv-color-name"
+                      className={`field-input${errors.color_name ? ' is-error' : ''}`}
+                      type="text"
+                      placeholder={MESSAGES.PLACEHOLDER_COLOR}
+                      {...register('color_name')}
+                    />
+                    {errors.color_name && (
+                      <span className="field-error">
+                        {errors.color_name.message}
+                      </span>
                     )}
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="fv-color-hex">{LABELS.COLOR_HEX}</label>
+                    <div className="flex gap-2 items-center">
+                      <input
+                        id="fv-color-hex"
+                        className={`field-input flex-1${errors.color_hex ? ' is-error' : ''}`}
+                        type="text"
+                        placeholder={MESSAGES.PLACEHOLDER_HEX}
+                        {...register('color_hex')}
+                      />
+                      {watch('color_hex') &&
+                        /^#[0-9a-fA-F]{6}$/.test(watch('color_hex') ?? '') && (
+                          <div
+                            className="w-8 h-8 rounded border border-border shrink-0"
+                            style={{
+                              backgroundColor: watch('color_hex') ?? '',
+                            }}
+                          />
+                        )}
+                    </div>
+                    {errors.color_hex && (
+                      <span className="field-error">
+                        {errors.color_hex.message}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                {errors.color_hex && (
-                  <span className="field-error">
-                    {errors.color_hex.message}
-                  </span>
-                )}
-              </div>
-            </div>
-          </fieldset>
+              </fieldset>
 
-          {/* ── Section: Quy cách thực tế ── */}
-          <fieldset className="form-section">
-            <legend className="form-section-title">
-              {LABELS.SPEC_SECTION}
-            </legend>
-            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
-              <div className="form-field">
-                <label htmlFor="fv-actual-width">{LABELS.ACTUAL_WIDTH}</label>
-                <input
-                  id="fv-actual-width"
-                  className={`field-input${errors.actual_width_cm ? ' is-error' : ''}`}
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  placeholder={MESSAGES.PLACEHOLDER_WIDTH}
-                  {...register('actual_width_cm', { valueAsNumber: true })}
-                />
-                {errors.actual_width_cm && (
-                  <span className="field-error">
-                    {errors.actual_width_cm.message}
-                  </span>
-                )}
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="fv-actual-gsm">{LABELS.ACTUAL_GSM}</label>
-                <input
-                  id="fv-actual-gsm"
-                  className={`field-input${errors.actual_gsm ? ' is-error' : ''}`}
-                  type="number"
-                  step="1"
-                  min="0"
-                  placeholder={MESSAGES.PLACEHOLDER_GSM}
-                  {...register('actual_gsm', { valueAsNumber: true })}
-                />
-                {errors.actual_gsm && (
-                  <span className="field-error">
-                    {errors.actual_gsm.message}
-                  </span>
-                )}
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="fv-shrink-warp">{LABELS.SHRINK_WARP}</label>
-                <input
-                  id="fv-shrink-warp"
-                  className={`field-input${errors.shrinkage_rate_warp ? ' is-error' : ''}`}
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  max="100"
-                  placeholder={MESSAGES.PLACEHOLDER_SHRINK_WARP}
-                  {...register('shrinkage_rate_warp', { valueAsNumber: true })}
-                />
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="fv-shrink-weft">{LABELS.SHRINK_WEFT}</label>
-                <input
-                  id="fv-shrink-weft"
-                  className={`field-input${errors.shrinkage_rate_weft ? ' is-error' : ''}`}
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  max="100"
-                  placeholder={MESSAGES.PLACEHOLDER_SHRINK_WEFT}
-                  {...register('shrinkage_rate_weft', { valueAsNumber: true })}
-                />
-              </div>
-            </div>
-          </fieldset>
-
-          {/* ── Section: Đơn vị tính & Quy đổi ── */}
-          <fieldset className="form-section">
-            <legend className="form-section-title">{LABELS.UOM_SECTION}</legend>
-            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-              <div className="form-field">
-                <label>{LABELS.BASE_UOM}</label>
-                <Controller
-                  name="base_uom"
-                  control={control}
-                  render={({ field }) => (
-                    <Combobox
-                      options={[...FABRIC_UOM_OPTIONS]}
-                      value={field.value}
-                      onChange={field.onChange}
-                      hasError={!!errors.base_uom}
+              <fieldset className="form-section">
+                <legend className="form-section-title">
+                  {LABELS.SPEC_SECTION}
+                </legend>
+                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
+                  <div className="form-field">
+                    <label htmlFor="fv-actual-width">
+                      {LABELS.ACTUAL_WIDTH}
+                    </label>
+                    <input
+                      id="fv-actual-width"
+                      className={`field-input${errors.actual_width_cm ? ' is-error' : ''}`}
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      placeholder={MESSAGES.PLACEHOLDER_WIDTH}
+                      {...register('actual_width_cm', { valueAsNumber: true })}
                     />
-                  )}
-                />
-              </div>
+                    {errors.actual_width_cm && (
+                      <span className="field-error">
+                        {errors.actual_width_cm.message}
+                      </span>
+                    )}
+                  </div>
 
-              <div className="form-field">
-                <label htmlFor="fv-conversion-rate">
-                  {LABELS.CONVERSION_RATE}
-                </label>
-                <input
-                  id="fv-conversion-rate"
-                  className="field-input field-input--readonly"
-                  type="number"
-                  step="0.001"
-                  readOnly
-                  {...register('conversion_rate', { valueAsNumber: true })}
-                />
-                <span className="text-xs text-muted italic">
-                  {LABELS.AUTO_CALC}
-                </span>
-              </div>
-            </div>
-          </fieldset>
-
-          {/* ── Section: Truy xuất nguồn ── */}
-          <fieldset className="form-section">
-            <legend className="form-section-title">
-              {LABELS.SOURCING_SECTION}
-            </legend>
-            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-              <div className="form-field">
-                <label htmlFor="fv-lot">{LABELS.LOT_NUMBER}</label>
-                <input
-                  id="fv-lot"
-                  className="field-input"
-                  type="text"
-                  placeholder={MESSAGES.PLACEHOLDER_LOT}
-                  {...register('lot_number')}
-                />
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="fv-sku">{LABELS.SKU}</label>
-                <input
-                  id="fv-sku"
-                  className="field-input"
-                  type="text"
-                  placeholder={MESSAGES.PLACEHOLDER_SKU}
-                  {...register('sku')}
-                />
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="fv-barcode">{LABELS.BARCODE}</label>
-                <input
-                  id="fv-barcode"
-                  className="field-input"
-                  type="text"
-                  placeholder={MESSAGES.PLACEHOLDER_BARCODE}
-                  {...register('barcode')}
-                />
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="fv-moq">{LABELS.MOQ}</label>
-                <input
-                  id="fv-moq"
-                  className={`field-input${errors.moq ? ' is-error' : ''}`}
-                  type="number"
-                  step="1"
-                  min="0"
-                  placeholder={MESSAGES.PLACEHOLDER_MOQ}
-                  {...register('moq', { valueAsNumber: true })}
-                />
-              </div>
-            </div>
-          </fieldset>
-
-          {/* ── Section: Giá & Trạng thái ── */}
-          <fieldset className="form-section">
-            <legend className="form-section-title">
-              {LABELS.PRICE_SECTION}
-            </legend>
-            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
-              <div className="form-field">
-                <label htmlFor="fv-purchase-price">
-                  {LABELS.PURCHASE_PRICE}
-                </label>
-                <input
-                  id="fv-purchase-price"
-                  className="field-input"
-                  type="number"
-                  step="100"
-                  min="0"
-                  placeholder={MESSAGES.PLACEHOLDER_PURCHASE}
-                  {...register('purchase_price', { valueAsNumber: true })}
-                />
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="fv-selling-price">{LABELS.SELLING_PRICE}</label>
-                <input
-                  id="fv-selling-price"
-                  className="field-input"
-                  type="number"
-                  step="100"
-                  min="0"
-                  placeholder={MESSAGES.PLACEHOLDER_SELLING}
-                  {...register('selling_price', { valueAsNumber: true })}
-                />
-              </div>
-
-              <div className="form-field">
-                <label>{LABELS.STATUS}</label>
-                <Controller
-                  name="status"
-                  control={control}
-                  render={({ field }) => (
-                    <Combobox
-                      options={STATUS_OPTIONS}
-                      value={field.value}
-                      onChange={field.onChange}
-                      hasError={!!errors.status}
+                  <div className="form-field">
+                    <label htmlFor="fv-actual-gsm">{LABELS.ACTUAL_GSM}</label>
+                    <input
+                      id="fv-actual-gsm"
+                      className={`field-input${errors.actual_gsm ? ' is-error' : ''}`}
+                      type="number"
+                      step="1"
+                      min="0"
+                      placeholder={MESSAGES.PLACEHOLDER_GSM}
+                      {...register('actual_gsm', { valueAsNumber: true })}
                     />
-                  )}
+                    {errors.actual_gsm && (
+                      <span className="field-error">
+                        {errors.actual_gsm.message}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="fv-shrink-warp">{LABELS.SHRINK_WARP}</label>
+                    <input
+                      id="fv-shrink-warp"
+                      className={`field-input${errors.shrinkage_rate_warp ? ' is-error' : ''}`}
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="100"
+                      placeholder={MESSAGES.PLACEHOLDER_SHRINK_WARP}
+                      {...register('shrinkage_rate_warp', {
+                        valueAsNumber: true,
+                      })}
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="fv-shrink-weft">{LABELS.SHRINK_WEFT}</label>
+                    <input
+                      id="fv-shrink-weft"
+                      className={`field-input${errors.shrinkage_rate_weft ? ' is-error' : ''}`}
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="100"
+                      placeholder={MESSAGES.PLACEHOLDER_SHRINK_WEFT}
+                      {...register('shrinkage_rate_weft', {
+                        valueAsNumber: true,
+                      })}
+                    />
+                  </div>
+                </div>
+              </fieldset>
+
+              <fieldset className="form-section">
+                <legend className="form-section-title">
+                  {LABELS.UOM_SECTION}
+                </legend>
+                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+                  <div className="form-field">
+                    <label>{LABELS.BASE_UOM}</label>
+                    <Controller
+                      name="base_uom"
+                      control={control}
+                      render={({ field }) => (
+                        <Combobox
+                          options={[...FABRIC_UOM_OPTIONS]}
+                          value={field.value}
+                          onChange={field.onChange}
+                          hasError={!!errors.base_uom}
+                        />
+                      )}
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="fv-conversion-rate">
+                      {LABELS.CONVERSION_RATE}
+                    </label>
+                    <input
+                      id="fv-conversion-rate"
+                      className="field-input field-input--readonly"
+                      type="number"
+                      step="0.001"
+                      readOnly
+                      {...register('conversion_rate', { valueAsNumber: true })}
+                    />
+                    <span className="text-xs text-muted italic">
+                      {LABELS.AUTO_CALC}
+                    </span>
+                  </div>
+                </div>
+              </fieldset>
+            </>
+          )}
+
+          {stepper.currentStep === 1 && (
+            <>
+              <fieldset className="form-section">
+                <legend className="form-section-title">
+                  {LABELS.SOURCING_SECTION}
+                </legend>
+                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+                  <div className="form-field">
+                    <label htmlFor="fv-lot">{LABELS.LOT_NUMBER}</label>
+                    <input
+                      id="fv-lot"
+                      className="field-input"
+                      type="text"
+                      placeholder={MESSAGES.PLACEHOLDER_LOT}
+                      {...register('lot_number')}
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="fv-sku">{LABELS.SKU}</label>
+                    <input
+                      id="fv-sku"
+                      className="field-input"
+                      type="text"
+                      placeholder={MESSAGES.PLACEHOLDER_SKU}
+                      {...register('sku')}
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="fv-barcode">{LABELS.BARCODE}</label>
+                    <input
+                      id="fv-barcode"
+                      className="field-input"
+                      type="text"
+                      placeholder={MESSAGES.PLACEHOLDER_BARCODE}
+                      {...register('barcode')}
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="fv-moq">{LABELS.MOQ}</label>
+                    <input
+                      id="fv-moq"
+                      className={`field-input${errors.moq ? ' is-error' : ''}`}
+                      type="number"
+                      step="1"
+                      min="0"
+                      placeholder={MESSAGES.PLACEHOLDER_MOQ}
+                      {...register('moq', { valueAsNumber: true })}
+                    />
+                  </div>
+                </div>
+              </fieldset>
+
+              <fieldset className="form-section">
+                <legend className="form-section-title">
+                  {LABELS.PRICE_SECTION}
+                </legend>
+                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
+                  <div className="form-field">
+                    <label htmlFor="fv-purchase-price">
+                      {LABELS.PURCHASE_PRICE}
+                    </label>
+                    <input
+                      id="fv-purchase-price"
+                      className="field-input"
+                      type="number"
+                      step="100"
+                      min="0"
+                      placeholder={MESSAGES.PLACEHOLDER_PURCHASE}
+                      {...register('purchase_price', { valueAsNumber: true })}
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="fv-selling-price">
+                      {LABELS.SELLING_PRICE}
+                    </label>
+                    <input
+                      id="fv-selling-price"
+                      className="field-input"
+                      type="number"
+                      step="100"
+                      min="0"
+                      placeholder={MESSAGES.PLACEHOLDER_SELLING}
+                      {...register('selling_price', { valueAsNumber: true })}
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label>{LABELS.STATUS}</label>
+                    <Controller
+                      name="status"
+                      control={control}
+                      render={({ field }) => (
+                        <Combobox
+                          options={STATUS_OPTIONS}
+                          value={field.value}
+                          onChange={field.onChange}
+                          hasError={!!errors.status}
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+              </fieldset>
+
+              <div className="form-field">
+                <label htmlFor="fv-notes">{LABELS.NOTES}</label>
+                <textarea
+                  id="fv-notes"
+                  className="field-textarea"
+                  rows={2}
+                  placeholder={MESSAGES.PLACEHOLDER_NOTES}
+                  {...register('notes')}
                 />
               </div>
-            </div>
-          </fieldset>
-
-          {/* ── Notes ── */}
-          <div className="form-field">
-            <label htmlFor="fv-notes">{LABELS.NOTES}</label>
-            <textarea
-              id="fv-notes"
-              className="field-textarea"
-              rows={2}
-              placeholder={MESSAGES.PLACEHOLDER_NOTES}
-              {...register('notes')}
-            />
-          </div>
+            </>
+          )}
         </div>
       </form>
     </AdaptiveSheet>

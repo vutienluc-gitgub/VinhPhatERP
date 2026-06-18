@@ -1,64 +1,142 @@
-import { useEffect, useRef } from 'react';
-import { UseFormReturn, FieldValues } from 'react-hook-form';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { FieldValues, UseFormReturn } from 'react-hook-form';
 
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useConfirm } from '@/shared/hooks/useConfirm';
 
-import { useAutoSave, loadDraft, clearDraft, formatTime } from './useAutoSave';
+import { clearDraft, formatTime, loadDraft } from './useAutoSave';
+
+// ── Constants ──────────────────────────────────────────────────────────────
+
+const RESTORE_PROMPT_DELAY_MS = 300;
+
+const DRAFT_MESSAGES = {
+  TITLE: 'Phục hồi bản nháp',
+  MESSAGE: 'Bạn có dữ liệu đang nhập dở, bạn muốn tiếp tục hay tạo mới?',
+  CONFIRM_LABEL: 'Tiếp tục',
+  CANCEL_LABEL: 'Tạo mới',
+};
+
+// ── Types ──────────────────────────────────────────────────────────────────
+
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
 type UseFormAutoSaveOptions<T extends FieldValues> = {
   formId: string;
   methods: UseFormReturn<T>;
+  delay?: number;
   enabled?: boolean;
 };
 
+// ── Hook ───────────────────────────────────────────────────────────────────
+
+/**
+ * Auto-saves form values to localStorage WITHOUT causing extra re-renders.
+ *
+ * Uses RHF's watch(callback) API instead of watch() in render to avoid
+ * creating a reactive subscription that re-renders the host component on every
+ * keystroke — which would fight with stepper state or any other local state.
+ */
 export function useFormAutoSave<T extends FieldValues>({
   formId,
   methods,
+  delay = 1000,
   enabled = true,
 }: UseFormAutoSaveOptions<T>) {
   const { user } = useAuth();
   const { confirm } = useConfirm();
-  const userId = user?.id || 'anonymous';
+  const userId = user?.id ?? 'anonymous';
+  const fullKey = `${formId}-${userId}`;
+
   const hasPromptedRef = useRef(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastSavedRef = useRef<string>('');
+  const latestSaveIdRef = useRef(0);
+  const mountedRef = useRef(true);
 
-  const values = methods.watch();
+  const [status, setStatus] = useState<SaveStatus>('idle');
+  const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
 
-  const { status, lastSavedAt } = useAutoSave({
-    key: formId,
-    data: values,
-    userId,
-    delay: 1000,
-  });
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
-  // Restore logic
+  // Subscribe to form changes WITHOUT calling watch() in render
+  useEffect(() => {
+    if (!enabled) return;
+
+    const save = (values: T) => {
+      const serialized = JSON.stringify(values);
+      if (serialized === lastSavedRef.current) return;
+      if (!mountedRef.current) return;
+
+      setStatus('saving');
+
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      latestSaveIdRef.current += 1;
+      const saveId = latestSaveIdRef.current;
+
+      timeoutRef.current = setTimeout(() => {
+        if (!mountedRef.current || latestSaveIdRef.current !== saveId) return;
+
+        const payload = { data: values, updatedAt: Date.now() };
+        try {
+          localStorage.setItem(fullKey, JSON.stringify(payload));
+        } catch (err) {
+          console.error('[useFormAutoSave] localStorage write failed:', err);
+          setStatus('error');
+          return;
+        }
+
+        lastSavedRef.current = serialized;
+        setLastSavedAt(payload.updatedAt);
+        setStatus('saved');
+      }, delay);
+    };
+
+    const subscription = methods.watch((values) => {
+      save(values as T);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [enabled, fullKey, delay, methods]);
+
+  // Restore draft on mount
   useEffect(() => {
     if (!enabled || hasPromptedRef.current) return;
 
     const draft = loadDraft<T>(formId, userId);
-    if (draft) {
-      hasPromptedRef.current = true;
-      // Use setTimeout to avoid interfering with initial render / mount
-      setTimeout(() => {
-        confirm({
-          title: 'Phục hồi bản nháp',
-          message:
-            'Bạn có dữ liệu đang nhập dở, bạn muốn tiếp tục hay tạo mới?',
-          confirmLabel: 'Tiếp tục',
-          cancelLabel: 'Tạo mới',
-        }).then((restore) => {
+    if (!draft) return;
+
+    hasPromptedRef.current = true;
+
+    const timerId = setTimeout(() => {
+      confirm({
+        title: DRAFT_MESSAGES.TITLE,
+        message: DRAFT_MESSAGES.MESSAGE,
+        confirmLabel: DRAFT_MESSAGES.CONFIRM_LABEL,
+        cancelLabel: DRAFT_MESSAGES.CANCEL_LABEL,
+      })
+        .then((restore) => {
           if (restore) {
             methods.reset(draft);
           } else {
             clearDraft(formId, userId);
           }
+        })
+        .catch((err: unknown) => {
+          console.error('[useFormAutoSave] restore prompt failed:', err);
         });
-      }, 300);
-    }
+    }, RESTORE_PROMPT_DELAY_MS);
+
+    return () => clearTimeout(timerId);
   }, [formId, userId, methods, enabled, confirm]);
 
-  // Provide a method to clear draft when form is successfully submitted
-  const clear = () => clearDraft(formId, userId);
+  const clear = useCallback(() => clearDraft(formId, userId), [formId, userId]);
 
   return {
     status,
