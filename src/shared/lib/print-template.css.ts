@@ -85,3 +85,81 @@ export const SAMPLE_TAG_CSS = `
     justify-content: center;
   }
 `;
+
+/** Print CSS for fabric sample horizontal tags (80mm x 40mm) */
+export const FABRIC_SAMPLE_HORIZONTAL_CSS = `
+  @page {
+    size: 80mm 40mm;
+    margin: 0;
+  }
+  html, body {
+    width: 80mm;
+    min-height: 40mm;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: #ffffff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .label {
+    width: 80mm;
+    height: 40mm;
+    box-sizing: border-box;
+    padding: 2mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .label-left {
+    width: 28mm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .label-left svg,
+  .label-left canvas,
+  .label-left img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 25mm;
+    max-height: 25mm;
+    object-fit: contain;
+    display: block;
+  }
+  .label-right {
+    flex: 1;
+    padding-left: 3mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+  }
+  .code {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 2mm;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .name {
+    font-size: 11px;
+    line-height: 1.2;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    word-break: break-word;
+  }
+  .domain {
+    font-size: 8px;
+    margin-top: 3mm;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+`;

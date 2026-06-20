@@ -3,16 +3,13 @@ import { toast } from 'react-hot-toast';
 
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
-import { QRCodeDisplay } from '@/shared/components/QRCodeDisplay';
 import { buildQRPayload } from '@/shared/lib/identifier.service';
 import { openPrintWindow } from '@/shared/lib/print-template.engine';
-import { SAMPLE_TAG_CSS } from '@/shared/lib/print-template.css';
+import { FABRIC_SAMPLE_HORIZONTAL_CSS } from '@/shared/lib/print-template.css';
 import type { FabricCatalog } from '@/features/fabric-catalog/types';
-import {
-  drawTagToCanvas,
-  formatSpecs,
-  LABELS_PRINT,
-} from '@/features/fabric-catalog/fabric-sample-qr.utils';
+import { drawTagToCanvas } from '@/features/fabric-catalog/fabric-sample-qr.utils';
+
+import { QRFabricLabel } from './QRFabricLabel';
 
 const MODAL_LABELS = {
   title: 'In Tem Mẫu Vải',
@@ -23,8 +20,6 @@ const MODAL_LABELS = {
   downloadPrefix: 'Tem_Mau_',
   downloadError: 'Lỗi khi tải ảnh tem mẫu.',
 } as const;
-
-const QR_SIZE = 150;
 
 type FabricSampleQRModalProps = {
   catalog: FabricCatalog;
@@ -42,7 +37,7 @@ export function FabricSampleQRModal({
   const handlePrint = () => {
     openPrintWindow(printAreaRef.current, {
       title: `${MODAL_LABELS.printTitlePrefix}${catalog.code}`,
-      css: SAMPLE_TAG_CSS,
+      css: FABRIC_SAMPLE_HORIZONTAL_CSS,
     });
   };
 
@@ -75,8 +70,6 @@ export function FabricSampleQRModal({
     code: catalog.code,
     name: catalog.name,
   });
-
-  const specsDisplay = formatSpecs(catalog.target_width_cm, catalog.target_gsm);
 
   return (
     <AdaptiveSheet
@@ -111,50 +104,24 @@ export function FabricSampleQRModal({
         </>
       }
     >
-      <div ref={printAreaRef} className="flex flex-col items-center">
+      <div className="flex flex-col items-center">
         {!catalog.is_public && (
           <div className="w-full mb-4 p-3 bg-warning-50 text-warning-900 border border-warning-200 rounded-md text-sm text-center">
             ⚠️ Mẫu vải này <b>chưa được bật Công khai</b>. Khách hàng quét mã QR
             sẽ không xem được.
           </div>
         )}
-        <div className="sample-tag w-full p-4 border border-border rounded-lg bg-white shadow-sm flex flex-col items-center">
-          <div className="text-lg font-bold tag-header">{catalog.name}</div>
-          <div className="text-primary font-semibold text-base mb-3 tag-code">
-            {catalog.code}
-          </div>
-
-          <div className="w-full text-left bg-surface/50 p-3 rounded-md mb-4 flex flex-col gap-1">
-            <div className="text-sm tag-detail">
-              <span className="text-muted mr-1">
-                {LABELS_PRINT.composition}:
-              </span>
-              <span className="font-medium">
-                {catalog.composition_tags?.length
-                  ? catalog.composition_tags.join(', ')
-                  : catalog.composition || LABELS_PRINT.noValue}
-              </span>
-            </div>
-            {specsDisplay && (
-              <div className="text-sm tag-detail">
-                <span className="text-muted mr-1">{LABELS_PRINT.specs}:</span>
-                <span className="font-medium">{specsDisplay}</span>
-              </div>
-            )}
-            <div className="text-sm tag-detail">
-              <span className="text-muted mr-1">{LABELS_PRINT.unit}:</span>
-              <span className="font-medium">{catalog.unit}</span>
-            </div>
-          </div>
-
+        <div ref={printAreaRef}>
           <div
             ref={qrWrapperRef}
-            className="qr-wrapper flex justify-center p-2 bg-white rounded"
+            className="border border-border rounded-lg overflow-hidden bg-white shadow-sm flex justify-center items-center p-2"
+            style={{ width: 'fit-content', margin: '0 auto' }}
           >
-            <QRCodeDisplay value={qrData} size={QR_SIZE} />
-          </div>
-          <div className="text-[10px] text-muted mt-2">
-            {LABELS_PRINT.scanHint}
+            <QRFabricLabel
+              code={catalog.code}
+              name={catalog.name}
+              qrValue={qrData}
+            />
           </div>
         </div>
       </div>

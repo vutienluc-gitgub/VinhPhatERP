@@ -30,10 +30,13 @@ import {
 } from '@/schema/fabric-catalog.schema';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 import { getErrorMessage } from '@/shared/utils/error';
+import { openPrintWindow } from '@/shared/lib/print-template.engine';
+import { FABRIC_SAMPLE_HORIZONTAL_CSS } from '@/shared/lib/print-template.css';
 
 import type { FabricCatalog } from './types';
 import { LABELS } from './fabric-catalog.constants';
 import { FabricPublicPreview } from './components/FabricPublicPreview';
+import { QRFabricLabel } from './components/QRFabricLabel';
 
 const UNIT_OPTIONS = [
   { value: 'kg', label: 'kg' },
@@ -128,6 +131,7 @@ export function FabricCatalogForm({
   const [activeTab, setActiveTab] = useState<FormTab>('info');
   const [isSlugEditing, setIsSlugEditing] = useState(false);
   const isCustomSlug = useRef(isEditing && Boolean(catalog?.slug));
+  const printAreaRef = useRef<HTMLDivElement>(null);
 
   const categoryOptions =
     categories?.map((c) => ({
@@ -213,41 +217,10 @@ export function FabricCatalogForm({
   };
 
   const handlePrintQR = () => {
-    const canvas = document.querySelector(
-      '#qr-container canvas',
-    ) as HTMLCanvasElement;
-    if (!canvas) return;
-    const imgData = canvas.toDataURL('image/png');
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>In QR Mẫu Vải</title>
-            <style>
-              body { font-family: sans-serif; text-align: center; padding: 20px; }
-              .container { display: inline-block; border: 1px solid #ccc; padding: 20px; border-radius: 8px; }
-              img { width: 200px; height: 200px; }
-              h2 { margin: 10px 0 5px; font-size: 18px; }
-              p { margin: 0; color: #555; }
-              .domain { margin-top: 15px; font-size: 12px; color: #888; }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <img src="${imgData}" alt="QR Code" />
-              <h2>${watchCode}</h2>
-              <p>${watchName}</p>
-              <div class="domain">${window.location.host}</div>
-            </div>
-            <script>
-              window.onload = function() { window.print(); window.close(); }
-            </script>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-    }
+    openPrintWindow(printAreaRef.current, {
+      title: 'In QR Mẫu Vải',
+      css: FABRIC_SAMPLE_HORIZONTAL_CSS,
+    });
   };
 
   const handleCopyLink = async () => {
@@ -734,6 +707,15 @@ export function FabricCatalogForm({
           </div>
         )}
       </form>
+      <div style={{ display: 'none' }}>
+        <div ref={printAreaRef}>
+          <QRFabricLabel
+            code={watchCode}
+            name={watchName}
+            qrValue={publicUrl}
+          />
+        </div>
+      </div>
     </AdaptiveSheet>
   );
 }
