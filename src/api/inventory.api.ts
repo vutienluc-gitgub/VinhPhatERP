@@ -1,10 +1,5 @@
-import type {
-  InventoryAdjustment,
-  InventoryAdjustmentInsert,
-} from '@/domain/inventory/inventory.types';
-import { supabase } from '@/services/supabase/client';
-import { getTenantId } from '@/services/supabase/tenant';
-import { safeUpsertOne } from '@/lib/db-guard';
+import type { InventoryAdjustment } from '@/domain/inventory/inventory.types';
+import { supabase, untypedDb } from '@/services/supabase/client';
 import type { YarnAvailability } from '@/api/yarn-reservation.api';
 
 const TABLE = 'inventory_adjustments';
@@ -53,19 +48,24 @@ export async function fetchInventoryAdjustments(): Promise<
   return (data ?? []) as InventoryAdjustment[];
 }
 
-export async function createInventoryAdjustment(
-  row: InventoryAdjustmentInsert,
-): Promise<InventoryAdjustment> {
-  const tenantId = await getTenantId();
-  const inserted = await safeUpsertOne({
-    table: TABLE,
-    data: {
-      ...row,
-      tenant_id: tenantId,
-    },
-    conflictKey: 'id',
+export async function createInventoryAdjustment(payload: {
+  itemType: string;
+  itemId: string;
+  adjustmentType: string;
+  adjustmentQty: number;
+  reason: string;
+  notes?: string;
+}): Promise<string> {
+  const { data, error } = await untypedDb.rpc('rpc_adjust_inventory', {
+    p_item_type: payload.itemType,
+    p_item_id: payload.itemId,
+    p_adjustment_type: payload.adjustmentType,
+    p_adjustment_qty: payload.adjustmentQty,
+    p_reason: payload.reason,
+    p_notes: payload.notes || null,
   });
-  return inserted as unknown as InventoryAdjustment;
+  if (error) throw error;
+  return data as string;
 }
 
 export async function fetchRawFabricInventory(): Promise<{

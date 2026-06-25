@@ -1,10 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
   fetchRawFabricInventory,
   fetchFinishedFabricInventory,
   fetchYarnInventoryList,
   fetchAgingStock,
+  createInventoryAdjustment,
+  fetchInventoryAdjustments,
 } from '@/api/inventory.api';
 import type {
   InventoryStats,
@@ -48,5 +50,23 @@ export function useAgingStock() {
       rolls: data,
       stats: calculateAgingStats(data),
     }),
+  });
+}
+
+export function useInventoryAdjustmentHistory() {
+  return useQuery({
+    queryKey: ['inventory', 'adjustments'],
+    queryFn: fetchInventoryAdjustments,
+  });
+}
+
+export function useAdjustInventory() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createInventoryAdjustment,
+    onSuccess: () => {
+      // Invalidate everything to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ['inventory'] });
+    },
   });
 }

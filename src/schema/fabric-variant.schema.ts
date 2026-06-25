@@ -81,6 +81,7 @@ export const fabricVariantSchema = z.object({
 
   /* Metadata */
   status: z.enum(FABRIC_VARIANT_STATUSES).default('active'),
+  is_public: z.boolean().default(false),
   image_url: z.string().url().nullable().optional(),
   notes: z.string().trim().max(500).nullable().optional().or(z.literal('')),
 });
@@ -104,6 +105,7 @@ export const fabricVariantDefaultValues: FabricVariantFormValues = {
   purchase_price: null,
   selling_price: null,
   status: 'active',
+  is_public: false,
   image_url: null,
   notes: null,
 };

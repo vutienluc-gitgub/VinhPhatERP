@@ -37,7 +37,30 @@ export const LABELS = {
   // Form tabs
   TAB_INFO: 'Thông tin',
   TAB_PUBLIC: 'Công khai',
+  TAB_GALLERY: 'Thư viện ảnh',
   TAB_ADMIN: 'Quản trị',
+
+  // Gallery UX
+  GALLERY_TITLE: 'Thư viện ảnh sản phẩm',
+  GALLERY_DESC: 'Kéo thả hoặc tải lên các ảnh chi tiết cho mẫu vải này.',
+  GALLERY_UPLOAD: 'Tải ảnh lên',
+  GALLERY_EMPTY: 'Chưa có ảnh nào trong thư viện',
+  GALLERY_EMPTY_HINT: 'Nhấn Tải ảnh lên để bắt đầu',
+  GALLERY_SEO_WARNING: 'Khuyến nghị SEO & Trải nghiệm khách hàng:',
+  GALLERY_WARNING_SWATCH: 'Nên có ít nhất 1 ảnh Mẫu vải (SWATCH)',
+  GALLERY_WARNING_SURFACE: 'Nên có ít nhất 1 ảnh Chi tiết bề mặt (SURFACE)',
+  GALLERY_WARNING_APPLICATION:
+    'Nên có ít nhất 1 ảnh Ứng dụng/Góc gấp (APPLICATION)',
+  GALLERY_IMAGE_TYPE: 'Loại ảnh',
+  GALLERY_IMAGE_POS: 'Vị trí',
+  GALLERY_ALT_TEXT: 'Alt Text (SEO)',
+  GALLERY_CAPTION: 'Caption',
+  GALLERY_IS_PRIMARY: 'Ảnh chính',
+  GALLERY_REMOVE_IMAGE: 'Xóa ảnh',
+  GALLERY_ALT_PLACEHOLDER: 'VD: Vải nỉ bông màu xám...',
+  GALLERY_CAPTION_PLACEHOLDER: 'VD: Chi tiết bề mặt sợi dệt...',
+  GALLERY_DEFAULT_ALT: 'Ảnh mẫu vải',
+  GALLERY_UPLOADING: 'Đang tải lên...',
 
   // Slug UX
   SLUG_LABEL: 'Đường dẫn tĩnh (Slug)',
@@ -176,10 +199,12 @@ export const PUBLIC_PAGE_LABELS = {
 
 export const IMAGE_TYPE_MAP: Record<string, string> = {
   SWATCH: 'Mẫu vải',
-  SURFACE: 'Cận bề mặt',
+  SURFACE: 'Chi tiết sợi',
   BACK: 'Mặt trái',
-  STRETCH: 'Kéo giãn',
-  APPLICATION: 'Thành phẩm',
+  STRETCH: 'Độ co giãn',
+  APPLICATION: 'Ứng dụng',
+  COMPOSITION: 'Thành phần',
+  CERTIFICATE: 'Chứng nhận',
 };
 
 export const STRETCH_TYPE_MAP: Record<string, string> = {
@@ -195,53 +220,6 @@ export const THICKNESS_MAP: Record<string, string> = {
   MEDIUM: 'Trung bình',
   THICK: 'Dày',
   EXTRA_THICK: 'Rất dày',
-};
-
-export const SAMPLE_STATUS_MAP: Record<
-  string,
-  { label: string; dot: string; colorClass: string }
-> = {
-  AVAILABLE: {
-    label: 'Có sẵn mẫu',
-    dot: '🟢',
-    colorClass: 'bg-emerald-50 text-emerald-700 border-emerald-100',
-  },
-  OUT_OF_STOCK: {
-    label: 'Tạm hết mẫu',
-    dot: '🔴',
-    colorClass: 'bg-red-50 text-red-700 border-red-100',
-  },
-  PREPARING: {
-    label: 'Đang chuẩn bị mẫu',
-    dot: '🟡',
-    colorClass: 'bg-amber-50 text-amber-700 border-amber-100',
-  },
-};
-
-export const STOCK_STATUS_MAP: Record<
-  string,
-  { label: string; dot: string; colorClass: string }
-> = {
-  READY: {
-    label: 'Có sẵn hàng',
-    dot: '🔵',
-    colorClass: 'bg-blue-50 text-blue-700 border-blue-100',
-  },
-  CUSTOM: {
-    label: 'Dệt theo yêu cầu',
-    dot: '🟡',
-    colorClass: 'bg-amber-50 text-amber-700 border-amber-100',
-  },
-  OUT_OF_STOCK: {
-    label: 'Hết hàng',
-    dot: '🔴',
-    colorClass: 'bg-red-50 text-red-700 border-red-100',
-  },
-  COMING_SOON: {
-    label: 'Hàng sắp về',
-    dot: '🟣',
-    colorClass: 'bg-purple-50 text-purple-700 border-purple-100',
-  },
 };
 
 export const LEAD_TIME_UNIT_MAP: Record<string, string> = {

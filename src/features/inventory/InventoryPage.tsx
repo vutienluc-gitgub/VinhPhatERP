@@ -6,6 +6,7 @@ import {
   Badge,
   DataTable,
   TabSwitcher,
+  Button,
   type DataTableColumn,
 } from '@/shared/components';
 import {
@@ -26,6 +27,8 @@ import {
   YARN_INVENTORY_COLUMNS,
   YarnInventoryMobileCard,
 } from './components/YarnInventoryColumns';
+import { InventoryAdjustmentModal } from './components/InventoryAdjustmentModal';
+import { InventoryAdjustmentHistory } from './components/InventoryAdjustmentHistory';
 
 const AGING_COLUMNS: DataTableColumn<AgingRoll>[] = [
   {
@@ -217,13 +220,14 @@ function BreakdownMobileCard({ row }: { row: InventoryBreakdownRow }) {
   );
 }
 
-type InventoryTab = 'yarn' | 'raw' | 'finished' | 'aging';
+type InventoryTab = 'yarn' | 'raw' | 'finished' | 'aging' | 'history';
 
 const INVENTORY_TABS: { key: InventoryTab; label: string }[] = [
   { key: 'yarn', label: 'Sợi (Yarn)' },
   { key: 'raw', label: 'Vải mộc' },
   { key: 'finished', label: 'Thành phẩm' },
   { key: 'aging', label: 'Tồn lâu (Aging)' },
+  { key: 'history', label: 'Lịch sử điều chỉnh' },
 ];
 
 function InventoryBreakdownTabs({
@@ -351,11 +355,15 @@ function InventoryBreakdownTabs({
           )}
         </>
       )}
+
+      {activeTab === 'history' && <InventoryAdjustmentHistory />}
     </div>
   );
 }
 
 export function InventoryPage() {
+  const [isAdjustModalOpen, setIsAdjustModalOpen] = useState(false);
+
   const rawQuery = useRawFabricInventory();
   const finishedQuery = useFinishedFabricInventory();
   const yarnQuery = useYarnInventory();
@@ -375,7 +383,25 @@ export function InventoryPage() {
   const warningCount = agingQuery.data?.stats.warningCount ?? 0;
 
   return (
-    <div className="page-container">
+    <div className="page-container relative">
+      {activeGuides.length > 0 && (
+        <ContextualGuide activeGuides={activeGuides} />
+      )}
+      <div className="flex justify-between items-end mb-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight m-0">Tồn kho</h1>
+          <p className="text-muted-foreground m-0">
+            Quản lý kho nguyên phụ liệu và thành phẩm
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <Button variant="primary" onClick={() => setIsAdjustModalOpen(true)}>
+            <Icon name="Settings2" size={16} className="mr-2" />
+            Điều chỉnh tồn kho
+          </Button>
+        </div>
+      </div>
+
       <div className="flex flex-col gap-6">
         {/* KPI Dashboard Card */}
         <div className="panel-card card-flush">
@@ -537,6 +563,11 @@ export function InventoryPage() {
         )}
       </div>
       <ContextualGuide activeGuides={activeGuides} />
+
+      <InventoryAdjustmentModal
+        isOpen={isAdjustModalOpen}
+        onClose={() => setIsAdjustModalOpen(false)}
+      />
     </div>
   );
 }

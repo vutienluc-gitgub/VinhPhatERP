@@ -26,6 +26,15 @@ export type FabricApplicationNormalized = {
   description: string | null;
 };
 
+export type GarmentConversionRule = {
+  id: string;
+  key: string;
+  name: string;
+  avg_consumption_kg: number;
+  description: string | null;
+  is_active: boolean;
+};
+
 export type FabricCharacteristicNormalized = {
   id: string;
   name: string;
@@ -42,6 +51,10 @@ export type FabricCommercial = {
   lead_time_max: number | null;
   lead_time_unit: string | null;
   origin_country: string | null;
+  minimum_order_qty_kg?: number | null;
+  lead_time_days?: number | null;
+  production_capacity_monthly_tons?: number | null;
+  yield_factor?: number | null;
 };
 
 export type FabricVariantCommercial = {
@@ -56,8 +69,18 @@ export type FabricImage = {
   id: string;
   variant_id: string | null;
   application_id: string | null;
-  type: 'SWATCH' | 'SURFACE' | 'BACK' | 'STRETCH' | 'APPLICATION';
+  type:
+    | 'SWATCH'
+    | 'SURFACE'
+    | 'BACK'
+    | 'STRETCH'
+    | 'APPLICATION'
+    | 'COMPOSITION'
+    | 'CERTIFICATE';
   image_url: string;
+  alt_text?: string | null;
+  caption?: string | null;
+  is_primary?: boolean;
   display_order: number;
 };
 
@@ -203,6 +226,8 @@ export type FabricPricingTier = {
   max_quantity: number | null;
   unit_price: number;
   currency: string;
+  display_label?: string | null;
+  is_public_visible?: boolean;
 };
 
 export type PublicRFQRequestStatus =

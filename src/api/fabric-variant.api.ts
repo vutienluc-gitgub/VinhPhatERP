@@ -109,6 +109,7 @@ export async function createFabricVariant(
     status: values.status,
     image_url: values.image_url ?? null,
     notes: values.notes?.trim() || null,
+    is_public: values.is_public ?? false,
     tenant_id: tenantId,
   };
 
@@ -155,6 +156,7 @@ export async function updateFabricVariant(
     status: values.status,
     image_url: values.image_url ?? null,
     notes: values.notes?.trim() || null,
+    is_public: values.is_public ?? false,
   };
 
   const { data, error } = await untypedDb

@@ -18,6 +18,10 @@ import {
   createPublicSampleRequest,
   fetchPublicPricingTiers,
   createPublicRFQRequest,
+  fetchGarmentConversionRules,
+  updateFabricCommercial,
+  updateFabricPricingTiers,
+  syncFabricImages,
 } from '@/api/fabric-catalog.api';
 import type { FabricCatalogFormValues } from '@/features/fabric-catalog/fabric-catalog.module';
 import type {
@@ -110,9 +114,19 @@ export function useCreateFabricCatalog() {
   const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: FabricCatalogFormValues) => {
+    mutationFn: async (values: FabricCatalogFormValues) => {
       const reqPayload = { id: clientId, ...toDbRow(values) };
-      return createFabricCatalog(reqPayload);
+      const created = await createFabricCatalog(reqPayload);
+      if (values.b2b_planner) {
+        await updateFabricCommercial(created.id, values.b2b_planner);
+      }
+      if (values.pricing_tiers) {
+        await updateFabricPricingTiers(created.id, values.pricing_tiers);
+      }
+      if (values.images) {
+        await syncFabricImages(created.id, values.images);
+      }
+      return created;
     },
     onSuccess: () => {
       setClientId(crypto.randomUUID());
@@ -124,13 +138,25 @@ export function useCreateFabricCatalog() {
 export function useUpdateFabricCatalog() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       id,
       values,
     }: {
       id: string;
       values: FabricCatalogFormValues;
-    }) => updateFabricCatalog(id, toDbRow(values)),
+    }) => {
+      const updated = await updateFabricCatalog(id, toDbRow(values));
+      if (values.b2b_planner) {
+        await updateFabricCommercial(id, values.b2b_planner);
+      }
+      if (values.pricing_tiers) {
+        await updateFabricPricingTiers(id, values.pricing_tiers);
+      }
+      if (values.images) {
+        await syncFabricImages(id, values.images);
+      }
+      return updated;
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
@@ -162,6 +188,14 @@ export function useFabricCatalogDetail(identifier: string | undefined) {
       return fetchFabricCatalogByIdOrCode(identifier);
     },
     enabled: !!identifier,
+  });
+}
+
+export function useGarmentConversionRules() {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'garment-conversion-rules'],
+    queryFn: fetchGarmentConversionRules,
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 }
 
@@ -221,16 +255,32 @@ export function useRelatedPublicFabrics(
 
 export function useAlsoViewedPublicFabrics(
   fabricId: string | undefined,
-  limit = 3,
+  limit = 4,
 ) {
   return useQuery({
-    queryKey: [...QUERY_KEY, 'also-viewed-public', fabricId, limit],
+    queryKey: [...QUERY_KEY, 'also-viewed', fabricId, limit],
     queryFn: () => {
       if (!fabricId) return Promise.reject(new Error('Missing fabricId'));
       return fetchAlsoViewedPublicFabrics(fabricId, limit);
     },
     enabled: !!fabricId,
     staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useSyncFabricImages() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (args: {
+      fabricId: string;
+      images: import('@/domain/settings/fabric-catalog.types').FabricImage[];
+    }) => syncFabricImages(args.fabricId, args.images),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEY, 'public-images', variables.fabricId],
+      });
+    },
   });
 }
 
