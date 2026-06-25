@@ -51,18 +51,31 @@ export function LeadDetailDrawer({ leadId, onClose }: LeadDetailDrawerProps) {
     };
 
     if (lead.type === 'RFQ' && lead.rfq_detail) {
-      initialData.items = [
-        {
-          fabricType: lead.rfq_detail.fabric_catalog?.name || '',
-          colorName: lead.rfq_detail.variant?.color_name || '',
-          quantity: lead.rfq_detail.quantity || 0,
-          unit: lead.rfq_detail.unit === 'kg' ? 'kg' : 'm',
-          unitPrice: lead.rfq_detail.target_price || 0,
+      if (lead.rfq_detail.rfq_items && lead.rfq_detail.rfq_items.length > 0) {
+        initialData.items = lead.rfq_detail.rfq_items.map((item) => ({
+          fabricType: item.code || '',
+          colorName: item.color_name || '',
+          quantity: item.quantity || 0,
+          unit: item.unit === 'kg' ? 'kg' : 'm',
+          unitPrice: item.target_price || 0,
           widthCm: 0,
           leadTimeDays: 0,
           notes: '',
-        },
-      ];
+        }));
+      } else {
+        initialData.items = [
+          {
+            fabricType: lead.rfq_detail.fabric_catalog?.name || '',
+            colorName: lead.rfq_detail.variant?.color_name || '',
+            quantity: lead.rfq_detail.quantity || 0,
+            unit: lead.rfq_detail.unit === 'kg' ? 'kg' : 'm',
+            unitPrice: lead.rfq_detail.target_price || 0,
+            widthCm: 0,
+            leadTimeDays: 0,
+            notes: '',
+          },
+        ];
+      }
     }
 
     navigate('/sales/quotations', {
@@ -165,36 +178,70 @@ export function LeadDetailDrawer({ leadId, onClose }: LeadDetailDrawerProps) {
                   Chi tiết Yêu cầu Báo giá
                 </h3>
                 <div className="bg-surface border border-border rounded-lg p-4 space-y-3">
-                  <div className="flex justify-between items-center border-b border-border border-dashed pb-2">
-                    <span className="text-sm text-muted">Sản phẩm</span>
-                    <span className="text-sm font-semibold">
-                      {lead.rfq_detail.fabric_catalog?.name}
-                    </span>
-                  </div>
-                  {lead.rfq_detail.variant && (
-                    <div className="flex justify-between items-center border-b border-border border-dashed pb-2">
-                      <span className="text-sm text-muted">
-                        Màu sắc/Biến thể
-                      </span>
-                      <span className="text-sm font-medium">
-                        {lead.rfq_detail.variant.color_name}
-                      </span>
+                  {lead.rfq_detail.rfq_items &&
+                  lead.rfq_detail.rfq_items.length > 0 ? (
+                    <div className="space-y-4">
+                      {lead.rfq_detail.rfq_items.map((item, idx: number) => (
+                        <div
+                          key={idx}
+                          className="border-b border-border border-dashed pb-3 last:border-0 last:pb-0"
+                        >
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-sm font-semibold text-foreground">
+                              {item.code}{' '}
+                              {item.color_name && `- ${item.color_name}`}
+                            </span>
+                            <span className="text-sm font-bold text-primary">
+                              {item.quantity} {item.unit}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs text-muted">
+                              Giá kỳ vọng
+                            </span>
+                            <span className="text-xs font-medium text-amber-600">
+                              {item.target_price
+                                ? `${Number(item.target_price).toLocaleString()} đ`
+                                : 'Chưa có'}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
+                  ) : (
+                    <>
+                      <div className="flex justify-between items-center border-b border-border border-dashed pb-2">
+                        <span className="text-sm text-muted">Sản phẩm</span>
+                        <span className="text-sm font-semibold">
+                          {lead.rfq_detail.fabric_catalog?.name}
+                        </span>
+                      </div>
+                      {lead.rfq_detail.variant && (
+                        <div className="flex justify-between items-center border-b border-border border-dashed pb-2">
+                          <span className="text-sm text-muted">
+                            Màu sắc/Biến thể
+                          </span>
+                          <span className="text-sm font-medium">
+                            {lead.rfq_detail.variant.color_name}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex justify-between items-center border-b border-border border-dashed pb-2">
+                        <span className="text-sm text-muted">Số lượng</span>
+                        <span className="text-sm font-bold text-primary">
+                          {lead.rfq_detail.quantity} {lead.rfq_detail.unit}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-border border-dashed pb-2">
+                        <span className="text-sm text-muted">Giá kỳ vọng</span>
+                        <span className="text-sm font-medium text-amber-600">
+                          {lead.rfq_detail.target_price
+                            ? `${lead.rfq_detail.target_price.toLocaleString()} đ`
+                            : 'Chưa có'}
+                        </span>
+                      </div>
+                    </>
                   )}
-                  <div className="flex justify-between items-center border-b border-border border-dashed pb-2">
-                    <span className="text-sm text-muted">Số lượng</span>
-                    <span className="text-sm font-bold text-primary">
-                      {lead.rfq_detail.quantity} {lead.rfq_detail.unit}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center border-b border-border border-dashed pb-2">
-                    <span className="text-sm text-muted">Giá kỳ vọng</span>
-                    <span className="text-sm font-medium text-amber-600">
-                      {lead.rfq_detail.target_price
-                        ? `${lead.rfq_detail.target_price.toLocaleString()} đ`
-                        : 'Chưa có'}
-                    </span>
-                  </div>
                 </div>
                 <div className="mt-4 flex justify-end">
                   <Button
@@ -215,26 +262,54 @@ export function LeadDetailDrawer({ leadId, onClose }: LeadDetailDrawerProps) {
                   Chi tiết Gửi mẫu
                 </h3>
                 <div className="bg-surface border border-border rounded-lg p-4 space-y-3">
-                  <div className="flex justify-between items-center border-b border-border border-dashed pb-2">
-                    <span className="text-sm text-muted">Mẫu vải yêu cầu</span>
-                    <span className="text-sm font-semibold">
-                      {lead.sample_detail.fabric_catalog?.name}
-                    </span>
-                  </div>
-                  <div className="flex flex-col border-b border-border border-dashed pb-2">
-                    <span className="text-sm text-muted mb-1">
-                      Các màu yêu cầu
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {lead.sample_detail.selected_variants.map(
-                        (v: { color_name: string }, i: number) => (
-                          <Badge key={i} variant="gray">
-                            {v.color_name}
-                          </Badge>
+                  {lead.sample_detail.sample_items &&
+                  lead.sample_detail.sample_items.length > 0 ? (
+                    <div className="space-y-3 border-b border-border border-dashed pb-2">
+                      <span className="text-sm text-muted block">
+                        Mẫu vải yêu cầu (Hàng loạt)
+                      </span>
+                      {lead.sample_detail.sample_items.map(
+                        (item, idx: number) => (
+                          <div
+                            key={idx}
+                            className="flex justify-between items-center"
+                          >
+                            <span className="text-sm font-semibold">
+                              {item.code}
+                            </span>
+                            <Badge variant="gray">
+                              {item.color_name || 'Tất cả màu'}
+                            </Badge>
+                          </div>
                         ),
                       )}
                     </div>
-                  </div>
+                  ) : (
+                    <>
+                      <div className="flex justify-between items-center border-b border-border border-dashed pb-2">
+                        <span className="text-sm text-muted">
+                          Mẫu vải yêu cầu
+                        </span>
+                        <span className="text-sm font-semibold">
+                          {lead.sample_detail.fabric_catalog?.name}
+                        </span>
+                      </div>
+                      <div className="flex flex-col border-b border-border border-dashed pb-2">
+                        <span className="text-sm text-muted mb-1">
+                          Các màu yêu cầu
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {lead.sample_detail.selected_variants?.map(
+                            (v: { color_name: string }, i: number) => (
+                              <Badge key={i} variant="gray">
+                                {v.color_name}
+                              </Badge>
+                            ),
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
                   <div className="flex flex-col pb-2">
                     <span className="text-sm text-muted mb-1">
                       Địa chỉ nhận mẫu

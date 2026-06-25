@@ -7,7 +7,7 @@ import {
   UseFormSetValue,
 } from 'react-hook-form';
 
-import { Button } from '@/shared/components';
+import { Button, Switch } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import {
@@ -62,6 +62,11 @@ const LABELS = {
   SAVED_DRAFT: 'Lưu nháp lần cuối',
   AUTO_CALC: 'Tự tính: 1000 / (GSM x Khổ_m)',
   ERROR_PREFIX: 'Lỗi:',
+  PUBLIC_SECTION: 'Hiển thị công khai',
+  PUBLIC_DESC:
+    'Cho phép biến thể này hiển thị trên trang công khai cho khách hàng xem.',
+  PUBLIC_ON: 'Công khai',
+  PUBLIC_OFF: 'Ẩn',
 };
 
 const MESSAGES = {
@@ -105,6 +110,7 @@ function variantToFormValues(v: FabricVariant): FabricVariantFormValues {
     purchase_price: v.purchase_price,
     selling_price: v.selling_price,
     status: v.status,
+    is_public: v.is_public ?? false,
     image_url: v.image_url,
     notes: v.notes,
   };
@@ -730,6 +736,32 @@ export function FabricVariantForm({
                   placeholder={MESSAGES.PLACEHOLDER_NOTES}
                   {...register('notes')}
                 />
+              </div>
+
+              {/* Public toggle */}
+              <div className="public-toggle-section">
+                <div className="public-toggle-section__text">
+                  <p className="public-toggle-section__title">
+                    {LABELS.PUBLIC_SECTION}
+                  </p>
+                  <p className="public-toggle-section__desc">
+                    {LABELS.PUBLIC_DESC}
+                  </p>
+                </div>
+                <div className="public-toggle-section__controls">
+                  <span
+                    className={`public-status-dot${watch('is_public') ? ' is-active' : ''}`}
+                  >
+                    {watch('is_public') ? LABELS.PUBLIC_ON : LABELS.PUBLIC_OFF}
+                  </span>
+                  <Controller
+                    name="is_public"
+                    control={control}
+                    render={({ field }) => (
+                      <Switch checked={field.value} onChange={field.onChange} />
+                    )}
+                  />
+                </div>
               </div>
             </>
           )}

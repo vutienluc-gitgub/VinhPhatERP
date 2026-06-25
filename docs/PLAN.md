@@ -270,11 +270,22 @@ Mục tiêu:
 - Báo cáo công nợ
 - Báo cáo tồn kho
 - Báo cáo đơn hàng trễ hạn
+- Chuẩn bị dữ liệu cho Báo cáo hao hụt (Shrinkage Report), Báo cáo hàng hỏng (Damage Report), Báo cáo chênh lệch tồn kho (Variance Report).
 
 Kết quả cần đạt:
 
 - Chủ doanh nghiệp có số liệu để ra quyết định
 - Sales và kho có dashboard theo dõi hàng ngày
+
+> **Roadmap Note (Future Phase): Inventory Ledger**
+>
+> Giai đoạn này hệ thống sử dụng mô hình "Update Current Stock + Insert Audit Log" cho tính năng Điều chỉnh tồn kho (`rpc_adjust_inventory`).
+>
+> Trong tương lai (Phase 6+), kiến trúc cần chuyển đổi sang mô hình **Transaction-based Inventory** (Inventory Ledger):
+>
+> - Tồn kho được tính toán realtime bằng công thức: `SUM(inventory_transactions)`.
+> - Các bảng như `raw_fabric_rolls` hay `yarn_receipt_items` chỉ đóng vai trò materialized view hoặc snapshot.
+> - Việc này đảm bảo tính toàn vẹn 100% về luân chuyển dòng tiền và dòng hàng hóa chuẩn ERP.
 
 ---
 

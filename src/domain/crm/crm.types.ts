@@ -57,6 +57,15 @@ export interface CrmRfqDetail {
     code: string;
     color_name: string;
   };
+
+  // Batch requests
+  rfq_items?: Array<{
+    code: string;
+    color_name?: string;
+    quantity: number;
+    unit: string;
+    target_price?: number;
+  }>;
 }
 
 export interface CrmSampleDetail {
@@ -73,6 +82,12 @@ export interface CrmSampleDetail {
     code: string;
     name: string;
   };
+
+  // Batch requests
+  sample_items?: Array<{
+    code: string;
+    color_name?: string;
+  }>;
 }
 
 export interface CrmActivity {

@@ -35,6 +35,49 @@ const baseFabricCatalogSchema = z.object({
   color: z.string().trim().max(100).optional().nullable(),
   color_tags: z.array(z.string()).default([]),
   technique: z.string().trim().max(100).optional().nullable(),
+  b2b_planner: z
+    .object({
+      minimum_order_qty_kg: z.number().min(0).default(100),
+      lead_time_days: z.number().min(0).default(7),
+      production_capacity_monthly_tons: z.number().min(0).default(20),
+      yield_factor: z.number().min(0.5).max(2.0).default(1.0),
+    })
+    .optional(),
+  pricing_tiers: z
+    .array(
+      z.object({
+        min_quantity: z.number().min(0, 'Số lượng tối thiểu phải >= 0'),
+        max_quantity: z.number().nullable().optional(),
+        unit_price: z.number().min(0, 'Đơn giá phải >= 0'),
+        currency: z.string().default('VND'),
+        display_label: z.string().nullable().optional(),
+        is_public_visible: z.boolean().default(true),
+      }),
+    )
+    .default([]),
+  images: z
+    .array(
+      z.object({
+        id: z.string().uuid(),
+        variant_id: z.string().nullable().optional(),
+        application_id: z.string().nullable().optional(),
+        type: z.enum([
+          'SWATCH',
+          'SURFACE',
+          'BACK',
+          'STRETCH',
+          'APPLICATION',
+          'COMPOSITION',
+          'CERTIFICATE',
+        ]),
+        image_url: z.string().url(),
+        alt_text: z.string().nullable().optional(),
+        caption: z.string().nullable().optional(),
+        is_primary: z.boolean().optional(),
+        display_order: z.number().default(0),
+      }),
+    )
+    .default([]),
 });
 
 export const fabricCatalogSchema = z.discriminatedUnion('fabric_type', [
@@ -80,4 +123,12 @@ export const fabricCatalogDefaultValues: FabricCatalogFormValues = {
   color: null,
   color_tags: [],
   technique: null,
+  b2b_planner: {
+    minimum_order_qty_kg: 100,
+    lead_time_days: 7,
+    production_capacity_monthly_tons: 20,
+    yield_factor: 1.0,
+  },
+  pricing_tiers: [],
+  images: [],
 };

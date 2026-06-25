@@ -11,6 +11,21 @@ type QRFabricLabelProps = {
   className?: string;
 };
 
+// Reusable styling objects to prevent inline style duplication (Coding Standards Rule 21)
+const STYLES = {
+  flexCenter: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  } as const,
+  truncateText: {
+    whiteSpace: 'nowrap' as const,
+    overflow: 'hidden' as const,
+    textOverflow: 'ellipsis' as const,
+    textAlign: 'left' as const,
+  } as const,
+};
+
 export function QRFabricLabel({
   code,
   name,
@@ -39,7 +54,7 @@ export function QRFabricLabel({
   return (
     <div
       ref={containerRef}
-      className={`label-container ${className}`}
+      className={`label label-container ${className}`} // Added "label" to match print-template.css selector
       style={{
         width: '80mm',
         height: '40mm',
@@ -56,9 +71,7 @@ export function QRFabricLabel({
         className="label-left"
         style={{
           width: '28mm',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          ...STYLES.flexCenter,
         }}
       >
         {/* Hidden canvas used for image downloader */}
@@ -103,13 +116,10 @@ export function QRFabricLabel({
             fontWeight: 700,
             marginBottom: '2mm',
             color: '#000000',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            textAlign: 'left',
+            ...STYLES.truncateText,
           }}
         >
-          {code}
+          {code || 'N/A'}
         </div>
         <div
           className="name line-clamp-2"
@@ -126,7 +136,7 @@ export function QRFabricLabel({
             textAlign: 'left',
           }}
         >
-          {name}
+          {name || 'N/A'}
         </div>
         <div
           className="domain"
@@ -134,10 +144,7 @@ export function QRFabricLabel({
             fontSize: '8px',
             marginTop: '3mm',
             color: '#666',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            textAlign: 'left',
+            ...STYLES.truncateText,
           }}
         >
           {displayDomain}
