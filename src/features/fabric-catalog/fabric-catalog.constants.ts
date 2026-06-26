@@ -80,11 +80,57 @@ export const LABELS = {
   PREVIEW_NO_IMAGE: 'Chưa có ảnh',
   PREVIEW_WIDTH_UNIT: 'cm',
   PREVIEW_GSM_UNIT: 'gsm',
+  PREVIEW_KPI_MOQ: 'MOQ',
+  PREVIEW_KPI_LEAD_TIME: 'Lead Time',
+  PREVIEW_KPI_CAPACITY: 'Capacity',
+  PREVIEW_KPI_CONSUMPTION: 'Định mức',
+  PREVIEW_TRUST_SAMPLE: '✓ Có sẵn mẫu',
+  PREVIEW_TRUST_FAST: '✓ Giao nhanh',
+  PREVIEW_TRUST_TECH: '✓ Hỗ trợ kỹ thuật',
+  PREVIEW_STOCK_QUANTITY: 'Còn hàng: {qty} kg (Giả lập)',
+  PREVIEW_STOCK_STATUS: 'Có sẵn hàng',
+  PREVIEW_PRICE_PREFIX: 'Từ',
+  PREVIEW_PRICE_UNIT: 'đ/kg',
+  PREVIEW_UNIT_KG: 'kg',
+  PREVIEW_UNIT_DAY: 'ngày',
+  PREVIEW_UNIT_CAPACITY: 'T/th',
+  PREVIEW_UNIT_CONSUMPTION: 'kg/áo',
 
   // Tag inputs
   OLD_DATA_HINT: 'Dữ liệu cũ: ',
   COMPOSITION_TAG_PLACEHOLDER: 'VD: 65% Polyester, 35% Cotton (Nhấn Enter)',
   COLOR_TAG_PLACEHOLDER: 'VD: Trắng, Đen (Nhấn Enter)',
+
+  // Accordion section titles
+  SECTION_CUSTOMER: 'Công khai khách hàng',
+  SECTION_PLANNER: 'Thông số Planner',
+  SECTION_PRICING: 'Bảng giá',
+  SECTION_SEO_QR: 'SEO & QR',
+
+  // Stock display options
+  STOCK_DISPLAY_NONE: 'Không hiển thị',
+  STOCK_DISPLAY_STATUS: 'Chỉ hiển thị trạng thái',
+  STOCK_DISPLAY_QUANTITY: 'Hiển thị số lượng thực',
+  STOCK_DISPLAY_LABEL: 'Hiển thị tồn kho công khai',
+
+  // Trust signals
+  TRUST_HAS_SAMPLE: 'Có sẵn mẫu',
+  TRUST_FAST_DELIVERY: 'Giao nhanh',
+  TRUST_TECH_SUPPORT: 'Hỗ trợ kỹ thuật',
+  TRUST_SIGNALS_LABEL: 'Đặc tính kinh doanh (Trust Signals)',
+
+  // Planner groups
+  PLANNER_REQUIRED: 'Bắt buộc',
+  PLANNER_ADVANCED: 'Nâng cao',
+  STANDARD_CONSUMPTION_LABEL: 'Định mức chuẩn (kg/áo)',
+  STANDARD_CONSUMPTION_PLACEHOLDER: 'VD: 0.25',
+
+  // Pricing
+  PRICING_LOWEST_PREFIX: 'Từ',
+  PRICING_EMPTY: 'Chưa cấu hình bảng giá',
+
+  // CTA
+  VIEW_PUBLIC_PAGE: 'Xem trang công khai',
 } as const;
 
 export const MESSAGES = {
