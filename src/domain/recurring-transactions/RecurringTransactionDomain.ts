@@ -147,3 +147,35 @@ export function isDue(nextRunDate: string): boolean {
   next.setHours(0, 0, 0, 0);
   return next <= today;
 }
+
+/**
+ * Returns the number of days from today to the given date.
+ * Negative number means the date is in the past (overdue).
+ * Positive number means the date is in the future.
+ * 0 means today.
+ */
+export function getRelativeDays(dateString: string): number {
+  const target = new Date(dateString);
+  target.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const diffTime = target.getTime() - today.getTime();
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+}
+
+export type RelativeDateColor = 'danger' | 'warning' | 'info' | 'success';
+
+/**
+ * Returns a color representation based on the relative days.
+ * - Overdue (days < 0): danger
+ * - Today (days === 0): warning
+ * - Soon (0 < days <= 7): info
+ * - Future (days > 7): success
+ */
+export function getRelativeDateColor(days: number): RelativeDateColor {
+  if (days < 0) return 'danger';
+  if (days === 0) return 'warning';
+  if (days <= 7) return 'info';
+  return 'success';
+}

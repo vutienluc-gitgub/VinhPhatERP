@@ -179,7 +179,7 @@ export async function generateDueExpenses(): Promise<GenerateResult> {
       const nextDate = calculateNextRunDate(
         tx.frequency as RecurringFrequency,
         tx.day_of_month,
-        new Date(),
+        new Date(tx.next_run_date),
       );
 
       await untypedDb
