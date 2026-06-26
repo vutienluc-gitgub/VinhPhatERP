@@ -3392,3 +3392,203 @@ select.field-select.h-12 {
     width: auto;
   }
 }
+
+/* ---- B2B Catalog Form Accordions & Layouts ---- */
+.accordion-section {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-strong);
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+  transition: box-shadow 160ms ease;
+}
+
+.accordion-section:focus-within {
+  box-shadow: 0 0 0 3px rgba(var(--brand-rgb), 0.08);
+}
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.85rem 1.25rem;
+  background: var(--surface-strong);
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  transition: background-color 160ms ease;
+}
+
+.accordion-header:hover {
+  background: var(--surface-hover);
+}
+
+.accordion-header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.accordion-header-chevron {
+  color: var(--muted);
+  transition: transform 200ms ease;
+}
+
+.accordion-section.is-expanded .accordion-header-chevron {
+  transform: rotate(180deg);
+}
+
+.accordion-content {
+  border-top: 1px solid var(--border);
+  padding: 1.25rem;
+  background: var(--surface);
+}
+
+.planner-group-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  margin-bottom: 0.5rem;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 0.25rem;
+}
+
+.trust-signals-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 0.5rem 0;
+}
+
+.trust-signal-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.trust-signal-checkbox-label input {
+  width: 1rem;
+  height: 1rem;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+}
+
+.stock-display-radio {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.stock-display-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.stock-display-radio-label input {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
+.pricing-tier-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.pricing-tier-preview-card {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-strong);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.pricing-tier-preview-qty {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.pricing-tier-preview-price {
+  font-weight: 700;
+  color: var(--primary);
+  margin-top: 0.15rem;
+}
+
+.lowest-price-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full);
+  background: rgba(var(--brand-rgb), 0.1);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+}
+
+.preview-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-strong);
+  padding: 0.65rem;
+  margin: 0.75rem 0;
+}
+
+.preview-kpi-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.preview-kpi-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.preview-kpi-value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 0.15rem;
+}
+
+.view-public-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  font-weight: 600;
+}

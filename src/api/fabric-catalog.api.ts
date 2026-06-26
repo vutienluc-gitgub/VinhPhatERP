@@ -136,6 +136,11 @@ export async function updateFabricCommercial(
     lead_time_days?: number | null;
     production_capacity_monthly_tons?: number | null;
     yield_factor?: number | null;
+    public_stock_display?: 'none' | 'status' | 'quantity' | null;
+    trust_has_sample?: boolean | null;
+    trust_fast_delivery?: boolean | null;
+    trust_tech_support?: boolean | null;
+    standard_consumption_kg?: number | null;
   },
 ): Promise<void> {
   const { error } = await untypedDb

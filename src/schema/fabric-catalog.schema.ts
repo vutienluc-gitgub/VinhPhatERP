@@ -41,6 +41,13 @@ const baseFabricCatalogSchema = z.object({
       lead_time_days: z.number().min(0).default(7),
       production_capacity_monthly_tons: z.number().min(0).default(20),
       yield_factor: z.number().min(0.5).max(2.0).default(1.0),
+      public_stock_display: z
+        .enum(['none', 'status', 'quantity'])
+        .default('status'),
+      trust_has_sample: z.boolean().default(false),
+      trust_fast_delivery: z.boolean().default(false),
+      trust_tech_support: z.boolean().default(false),
+      standard_consumption_kg: z.number().min(0.05).max(2.0).default(0.25),
     })
     .optional(),
   pricing_tiers: z
@@ -128,6 +135,11 @@ export const fabricCatalogDefaultValues: FabricCatalogFormValues = {
     lead_time_days: 7,
     production_capacity_monthly_tons: 20,
     yield_factor: 1.0,
+    public_stock_display: 'status',
+    trust_has_sample: false,
+    trust_fast_delivery: false,
+    trust_tech_support: false,
+    standard_consumption_kg: 0.25,
   },
   pricing_tiers: [],
   images: [],

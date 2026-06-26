@@ -10,6 +10,15 @@ type FabricPublicPreviewProps = {
   targetGsm: number | null | undefined;
   technique: string | null | undefined;
   category?: string;
+  moq?: number | null;
+  leadTimeDays?: number | null;
+  capacityMonthlyTons?: number | null;
+  trustHasSample?: boolean;
+  trustFastDelivery?: boolean;
+  trustTechSupport?: boolean;
+  publicStockDisplay?: 'none' | 'status' | 'quantity' | null;
+  lowestPrice?: number | null;
+  standardConsumptionKg?: number | null;
 };
 
 /**
@@ -25,6 +34,15 @@ export function FabricPublicPreview({
   targetGsm,
   technique,
   category,
+  moq,
+  leadTimeDays,
+  capacityMonthlyTons,
+  trustHasSample,
+  trustFastDelivery,
+  trustTechSupport,
+  publicStockDisplay,
+  lowestPrice,
+  standardConsumptionKg,
 }: FabricPublicPreviewProps) {
   const specs = [
     targetWidthCm
@@ -38,6 +56,12 @@ export function FabricPublicPreview({
   const displayComposition = Array.isArray(composition)
     ? composition.join(', ')
     : composition;
+
+  const trustSignals = [
+    trustHasSample ? LABELS.PREVIEW_TRUST_SAMPLE : null,
+    trustFastDelivery ? LABELS.PREVIEW_TRUST_FAST : null,
+    trustTechSupport ? LABELS.PREVIEW_TRUST_TECH : null,
+  ].filter(Boolean);
 
   return (
     <div className="fabric-preview-card">
@@ -79,6 +103,71 @@ export function FabricPublicPreview({
             <span className="fabric-preview-card__meta fabric-preview-card__specs">
               {specs}
             </span>
+          )}
+
+          {/* Trust Signals */}
+          {trustSignals.length > 0 && (
+            <div className="text-xs text-emerald-600 font-semibold flex flex-wrap gap-x-2 gap-y-1 mt-1">
+              {trustSignals.map((sig, i) => (
+                <span key={i}>{sig}</span>
+              ))}
+            </div>
+          )}
+
+          {/* KPI Grid */}
+          <div className="preview-kpi-grid">
+            <div className="preview-kpi-item">
+              <span className="preview-kpi-label">
+                {LABELS.PREVIEW_KPI_MOQ}
+              </span>
+              <span className="preview-kpi-value">
+                {moq ?? 100} {LABELS.PREVIEW_UNIT_KG}
+              </span>
+            </div>
+            <div className="preview-kpi-item">
+              <span className="preview-kpi-label">
+                {LABELS.PREVIEW_KPI_LEAD_TIME}
+              </span>
+              <span className="preview-kpi-value">
+                {leadTimeDays ?? 7} {LABELS.PREVIEW_UNIT_DAY}
+              </span>
+            </div>
+            <div className="preview-kpi-item">
+              <span className="preview-kpi-label">
+                {LABELS.PREVIEW_KPI_CAPACITY}
+              </span>
+              <span className="preview-kpi-value">
+                {capacityMonthlyTons ?? 20}
+                {LABELS.PREVIEW_UNIT_CAPACITY}
+              </span>
+            </div>
+            <div className="preview-kpi-item">
+              <span className="preview-kpi-label">
+                {LABELS.PREVIEW_KPI_CONSUMPTION}
+              </span>
+              <span className="preview-kpi-value">
+                {standardConsumptionKg ?? 0.25}{' '}
+                {LABELS.PREVIEW_UNIT_CONSUMPTION}
+              </span>
+            </div>
+          </div>
+
+          {/* Stock display badge simulation */}
+          {publicStockDisplay && publicStockDisplay !== 'none' && (
+            <div className="text-xs font-semibold text-emerald-700 flex items-center gap-1 mt-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+              {publicStockDisplay === 'quantity'
+                ? LABELS.PREVIEW_STOCK_QUANTITY.replace('{qty}', '150')
+                : LABELS.PREVIEW_STOCK_STATUS}
+            </div>
+          )}
+
+          {/* Lowest price */}
+          {lowestPrice != null && (
+            <div className="text-sm font-bold text-primary mt-1">
+              {LABELS.PREVIEW_PRICE_PREFIX}{' '}
+              {lowestPrice.toLocaleString('vi-VN')} {LABELS.PREVIEW_PRICE_UNIT}
+            </div>
           )}
         </div>
       </div>

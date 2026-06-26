@@ -1,7 +1,18 @@
 -- 20260624000001_inventory_adjustments_enhancement.sql
 
 -- 1. Add new columns and rename quantity_delta
-ALTER TABLE public.inventory_adjustments RENAME COLUMN quantity_delta TO adjustment_qty;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 
+    FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+      AND table_name = 'inventory_adjustments' 
+      AND column_name = 'quantity_delta'
+  ) THEN
+    ALTER TABLE public.inventory_adjustments RENAME COLUMN quantity_delta TO adjustment_qty;
+  END IF;
+END $$;
 
 ALTER TABLE public.inventory_adjustments
   ADD COLUMN IF NOT EXISTS before_qty numeric(14,3) DEFAULT 0,
