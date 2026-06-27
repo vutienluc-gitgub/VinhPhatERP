@@ -1,23 +1,23 @@
+
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef, useState } from 'react';
 import {
   useForm,
-  Controller,
-  useFieldArray,
   FormProvider,
 } from 'react-hook-form';
 
 import {
   AdaptiveSheet,
   Button,
-  Combobox,
-  Icon,
-  ImagePicker,
-  Switch,
+//   Combobox,
+//   Icon,
+//   ImagePicker,
+//   Switch,
   TabSwitcher,
-  TagInput,
+//   TagInput,
 } from '@/shared/components';
-import { QRCodeDisplay } from '@/shared/components/QRCodeDisplay';
+// import { QRCodeDisplay } from '@/shared/components/QRCodeDisplay';
 import {
   useCreateFabricCatalog,
   useNextFabricCatalogCode,
@@ -33,41 +33,22 @@ import {
 import {
   fabricCatalogDefaultValues,
   fabricCatalogSchema,
-  FABRIC_CATALOG_STATUS_LABELS,
 } from '@/schema/fabric-catalog.schema';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 import { getErrorMessage } from '@/shared/utils/error';
 import { openPrintWindow } from '@/shared/lib/print-template.engine';
 import { FABRIC_SAMPLE_HORIZONTAL_CSS } from '@/shared/lib/print-template.css';
 
+import { FabricAdminTab } from './components/FabricAdminTab';
+import { FabricPublicTab } from './components/FabricPublicTab';
+import { FabricInfoTab } from './components/FabricInfoTab';
 import type { FabricCatalog } from './types';
 import { LABELS } from './fabric-catalog.constants';
-import { FabricPublicPreview } from './components/FabricPublicPreview';
+// import { FabricPublicPreview } from './components/FabricPublicPreview';
 import { QRFabricLabel } from './components/QRFabricLabel';
 import { FabricImageGalleryEditor } from './components/FabricImageGalleryEditor';
 
-const UNIT_OPTIONS = [
-  { value: 'kg', label: 'kg' },
-  { value: 'm', label: 'mét (m)' },
-  { value: 'cuộn', label: 'cuộn' },
-];
 
-const STATUS_OPTIONS = (['active', 'inactive'] as const).map((s) => ({
-  value: s,
-  label: FABRIC_CATALOG_STATUS_LABELS[s],
-}));
-
-const TECHNIQUE_OPTIONS = [
-  { value: 'Single Jersey', label: 'Single Jersey' },
-  { value: 'Interlock', label: 'Interlock' },
-  { value: 'Rib', label: 'Rib' },
-  { value: 'Pique', label: 'Pique' },
-  { value: 'French Terry', label: 'French Terry' },
-  { value: 'Fleece', label: 'Fleece' },
-  { value: 'Polar Fleece', label: 'Polar Fleece' },
-  { value: 'Waffle', label: 'Waffle' },
-  { value: 'Jacquard', label: 'Jacquard' },
-];
 
 type FormTab = 'info' | 'public' | 'gallery' | 'admin';
 
@@ -141,18 +122,6 @@ function catalogToFormValues(catalog: FabricCatalog): FabricCatalogFormValues {
   } as FabricCatalogFormValues;
 }
 
-function getLowestPrice(
-  tiers: Array<{ unit_price: number | string }>,
-): number | null {
-  let min: number | null = null;
-  for (const tier of tiers) {
-    const price = Number(tier.unit_price);
-    if (price > 0 && (min === null || price < min)) {
-      min = price;
-    }
-  }
-  return min;
-}
 
 export function FabricCatalogForm({
   catalog,
@@ -169,20 +138,10 @@ export function FabricCatalogForm({
   const { data: existingImages } = usePublicFabricImages(catalog?.id);
 
   const [activeTab, setActiveTab] = useState<FormTab>('info');
-  const [expandedSections, setExpandedSections] = useState<string[]>([
-    'customer',
-  ]);
+
   const [isSlugEditing, setIsSlugEditing] = useState(false);
   const isCustomSlug = useRef(isEditing && Boolean(catalog?.slug));
   const printAreaRef = useRef<HTMLDivElement>(null);
-
-  const toggleSection = (section: string) => {
-    setExpandedSections((prev) =>
-      prev.includes(section)
-        ? prev.filter((s) => s !== section)
-        : [...prev, section],
-    );
-  };
 
   const categoryOptions =
     categories?.map((c) => ({
@@ -198,23 +157,14 @@ export function FabricCatalogForm({
   });
 
   const {
-    register,
-    control,
     handleSubmit,
     reset,
     setValue,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = methods;
 
-  const {
-    fields: pricingTiers,
-    append: appendTier,
-    remove: removeTier,
-  } = useFieldArray({
-    control,
-    name: 'pricing_tiers',
-  });
+
 
   useEffect(() => {
     reset(
@@ -245,20 +195,12 @@ export function FabricCatalogForm({
     }
   }, [existingImages, setValue]);
 
-  const currentImageUrl = watch('image_url');
   const watchCode = watch('code');
   const watchSlug = watch('slug');
-  const watchIsPublic = watch('is_public');
   const watchName = watch('name');
-  const watchComposition = watch('composition_tags');
-  const watchWidthCm = watch('target_width_cm');
-  const watchGsm = watch('target_gsm');
-  const watchTechnique = watch('technique');
   const watchCategoryId = watch('category_id');
 
   const selectedCategory = categories?.find((c) => c.id === watchCategoryId);
-
-  const lowestPrice = getLowestPrice(pricingTiers);
 
   useEffect(() => {
     if (!isEditing && nextCode && !watchCode) {
@@ -387,913 +329,33 @@ export function FabricCatalogForm({
           noValidate
           className="space-y-6 pb-4"
         >
-          {/* ── TAB: Thong tin ── */}
           {activeTab === 'info' && (
-            <>
-              {/* Image */}
-              <div className="form-field">
-                <label>Ảnh mẫu vải</label>
-                <ImagePicker
-                  value={currentImageUrl}
-                  onUpload={(file: File) =>
-                    uploadImageMutation.mutateAsync(file, {
-                      onSuccess: (url) => setValue('image_url', url),
-                    })
-                  }
-                  onRemove={() => {
-                    const currentUrl = currentImageUrl;
-                    setValue('image_url', null);
-                    if (currentUrl) {
-                      deleteImageMutation.mutate(currentUrl);
-                    }
-                  }}
-                  isUploading={uploadImageMutation.isPending}
-                  error={
-                    uploadImageMutation.error instanceof Error
-                      ? uploadImageMutation.error.message
-                      : uploadImageMutation.error
-                        ? String(uploadImageMutation.error)
-                        : null
-                  }
-                />
-              </div>
-
-              {/* Code + Name */}
-              <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                <div className="form-field">
-                  <label htmlFor="fc-code">
-                    Mã vải <span className="field-required">*</span>
-                  </label>
-                  <input
-                    id="fc-code"
-                    className={`field-input${errors.code ? ' is-error' : ''}`}
-                    type="text"
-                    placeholder="VD: FC-001"
-                    readOnly={!isEditing}
-                    {...register('code')}
-                  />
-                  {errors.code && (
-                    <span className="field-error">{errors.code.message}</span>
-                  )}
-                </div>
-
-                <div className="form-field">
-                  <label htmlFor="fc-name">
-                    Tên vải <span className="field-required">*</span>
-                  </label>
-                  <input
-                    id="fc-name"
-                    className={`field-input${errors.name ? ' is-error' : ''}`}
-                    type="text"
-                    placeholder="VD: Cotton TC 65/35"
-                    {...register('name')}
-                  />
-                  {errors.name && (
-                    <span className="field-error">{errors.name.message}</span>
-                  )}
-                </div>
-              </div>
-
-              {/* Category + Composition */}
-              <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                <div className="form-field">
-                  <label>{LABELS.CATEGORY}</label>
-                  <Controller
-                    name="category_id"
-                    control={control}
-                    render={({ field }) => (
-                      <Combobox
-                        options={categoryOptions}
-                        value={field.value ?? undefined}
-                        onChange={(val) => field.onChange(val || null)}
-                        hasError={!!errors.category_id}
-                        placeholder={LABELS.CATEGORY_PLACEHOLDER}
-                      />
-                    )}
-                  />
-                  {errors.category_id && (
-                    <span className="field-error">
-                      {errors.category_id.message}
-                    </span>
-                  )}
-                </div>
-
-                <div className="form-field">
-                  <label>Thành phần</label>
-                  <Controller
-                    name="composition_tags"
-                    control={control}
-                    render={({ field }) => (
-                      <TagInput
-                        value={field.value ?? []}
-                        onChange={field.onChange}
-                        placeholder={LABELS.COMPOSITION_TAG_PLACEHOLDER}
-                      />
-                    )}
-                  />
-                  {catalog?.composition &&
-                    (!watch('composition_tags') ||
-                      watch('composition_tags')?.length === 0) && (
-                      <p className="text-xs text-muted mt-1">
-                        {LABELS.OLD_DATA_HINT}
-                        {catalog.composition}
-                      </p>
-                    )}
-                </div>
-              </div>
-
-              {/* Width + GSM */}
-              <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                <div className="form-field">
-                  <label htmlFor="fc-target-width">Khổ chuẩn (cm)</label>
-                  <input
-                    id="fc-target-width"
-                    className={`field-input${errors.target_width_cm ? ' is-error' : ''}`}
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    placeholder="VD: 160"
-                    {...register('target_width_cm', { valueAsNumber: true })}
-                  />
-                  {errors.target_width_cm && (
-                    <span className="field-error">
-                      {errors.target_width_cm.message}
-                    </span>
-                  )}
-                </div>
-
-                <div className="form-field">
-                  <label htmlFor="fc-target-weight">K/L chuẩn (gsm)</label>
-                  <input
-                    id="fc-target-weight"
-                    className={`field-input${errors.target_gsm ? ' is-error' : ''}`}
-                    type="number"
-                    step="1"
-                    min="0"
-                    placeholder="VD: 250"
-                    {...register('target_gsm', { valueAsNumber: true })}
-                  />
-                  {errors.target_gsm && (
-                    <span className="field-error">
-                      {errors.target_gsm.message}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Color + Technique */}
-              <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                <div className="form-field">
-                  <label>Màu sắc</label>
-                  <Controller
-                    name="color_tags"
-                    control={control}
-                    render={({ field }) => (
-                      <TagInput
-                        value={field.value ?? []}
-                        onChange={field.onChange}
-                        placeholder={LABELS.COLOR_TAG_PLACEHOLDER}
-                      />
-                    )}
-                  />
-                  {catalog?.color &&
-                    (!watch('color_tags') ||
-                      watch('color_tags')?.length === 0) && (
-                      <p className="text-xs text-muted mt-1">
-                        {LABELS.OLD_DATA_HINT}
-                        {catalog.color}
-                      </p>
-                    )}
-                </div>
-
-                <div className="form-field">
-                  <label>Kỹ thuật</label>
-                  <Controller
-                    name="technique"
-                    control={control}
-                    render={({ field }) => (
-                      <Combobox
-                        options={TECHNIQUE_OPTIONS}
-                        value={field.value ?? undefined}
-                        onChange={(val) => field.onChange(val || null)}
-                        placeholder="Chọn kỹ thuật dệt..."
-                      />
-                    )}
-                  />
-                </div>
-              </div>
-
-              {/* Unit */}
-              <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                <div className="form-field">
-                  <label htmlFor="fc-unit">
-                    Đơn vị <span className="field-required">*</span>
-                  </label>
-                  <Controller
-                    name="unit"
-                    control={control}
-                    render={({ field }) => (
-                      <Combobox
-                        options={UNIT_OPTIONS}
-                        value={field.value}
-                        onChange={field.onChange}
-                        hasError={!!errors.unit}
-                        placeholder="Chọn..."
-                      />
-                    )}
-                  />
-                  {errors.unit && (
-                    <span className="field-error">{errors.unit.message}</span>
-                  )}
-                </div>
-              </div>
-            </>
+            <FabricInfoTab
+              catalog={catalog}
+              isEditing={isEditing}
+              categoryOptions={categoryOptions}
+              uploadImageMutation={uploadImageMutation}
+              deleteImageMutation={deleteImageMutation}
+            />
           )}
 
-          {/* ── TAB: Cong khai ── */}
           {activeTab === 'public' && (
-            <div className="space-y-4">
-              {/* Accordion 1: Công khai khách hàng */}
-              <div
-                className={`accordion-section${expandedSections.includes('customer') ? ' is-expanded' : ''}`}
-              >
-                <button
-                  type="button"
-                  className="accordion-header"
-                  onClick={() => toggleSection('customer')}
-                >
-                  <div className="accordion-header-title">
-                    <Icon
-                      name="ChevronDown"
-                      className="accordion-header-chevron w-4 h-4"
-                    />
-                    <span>{LABELS.SECTION_CUSTOMER}</span>
-                  </div>
-                </button>
-                {expandedSections.includes('customer') && (
-                  <div className="accordion-content space-y-4">
-                    {/* Public toggle */}
-                    <div className="public-toggle-section">
-                      <div className="public-toggle-section__text">
-                        <p className="public-toggle-section__title">
-                          {LABELS.PUBLIC_TITLE}
-                        </p>
-                        <p className="public-toggle-section__desc">
-                          {LABELS.PUBLIC_DESC}
-                        </p>
-                      </div>
-                      <div className="public-toggle-section__controls">
-                        <span
-                          className={`public-status-dot${watchIsPublic ? ' is-active' : ''}`}
-                        >
-                          {watchIsPublic ? LABELS.PUBLIC_ON : LABELS.PUBLIC_OFF}
-                        </span>
-                        <Controller
-                          name="is_public"
-                          control={control}
-                          render={({ field }) => (
-                            <Switch
-                              checked={field.value}
-                              onChange={field.onChange}
-                            />
-                          )}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Stock Display Mode */}
-                    <div className="form-field">
-                      <label className="font-semibold block mb-2">
-                        {LABELS.STOCK_DISPLAY_LABEL}
-                      </label>
-                      <div className="stock-display-radio">
-                        <label className="stock-display-radio-label">
-                          <input
-                            type="radio"
-                            value="none"
-                            checked={
-                              watch('b2b_planner.public_stock_display') ===
-                              'none'
-                            }
-                            onChange={() =>
-                              setValue(
-                                'b2b_planner.public_stock_display',
-                                'none',
-                              )
-                            }
-                          />
-                          <span>{LABELS.STOCK_DISPLAY_NONE}</span>
-                        </label>
-                        <label className="stock-display-radio-label">
-                          <input
-                            type="radio"
-                            value="status"
-                            checked={
-                              watch('b2b_planner.public_stock_display') ===
-                              'status'
-                            }
-                            onChange={() =>
-                              setValue(
-                                'b2b_planner.public_stock_display',
-                                'status',
-                              )
-                            }
-                          />
-                          <span>{LABELS.STOCK_DISPLAY_STATUS}</span>
-                        </label>
-                        <label className="stock-display-radio-label">
-                          <input
-                            type="radio"
-                            value="quantity"
-                            checked={
-                              watch('b2b_planner.public_stock_display') ===
-                              'quantity'
-                            }
-                            onChange={() =>
-                              setValue(
-                                'b2b_planner.public_stock_display',
-                                'quantity',
-                              )
-                            }
-                          />
-                          <span>{LABELS.STOCK_DISPLAY_QUANTITY}</span>
-                        </label>
-                      </div>
-                    </div>
-
-                    {/* Trust Signals */}
-                    <div className="form-field">
-                      <label className="font-semibold block mb-2">
-                        {LABELS.TRUST_SIGNALS_LABEL}
-                      </label>
-                      <div className="trust-signals-row">
-                        <label className="trust-signal-checkbox-label">
-                          <input
-                            type="checkbox"
-                            checked={
-                              watch('b2b_planner.trust_has_sample') || false
-                            }
-                            onChange={(e) =>
-                              setValue(
-                                'b2b_planner.trust_has_sample',
-                                e.target.checked,
-                              )
-                            }
-                          />
-                          <span>{LABELS.TRUST_HAS_SAMPLE}</span>
-                        </label>
-                        <label className="trust-signal-checkbox-label">
-                          <input
-                            type="checkbox"
-                            checked={
-                              watch('b2b_planner.trust_fast_delivery') || false
-                            }
-                            onChange={(e) =>
-                              setValue(
-                                'b2b_planner.trust_fast_delivery',
-                                e.target.checked,
-                              )
-                            }
-                          />
-                          <span>{LABELS.TRUST_FAST_DELIVERY}</span>
-                        </label>
-                        <label className="trust-signal-checkbox-label">
-                          <input
-                            type="checkbox"
-                            checked={
-                              watch('b2b_planner.trust_tech_support') || false
-                            }
-                            onChange={(e) =>
-                              setValue(
-                                'b2b_planner.trust_tech_support',
-                                e.target.checked,
-                              )
-                            }
-                          />
-                          <span>{LABELS.TRUST_TECH_SUPPORT}</span>
-                        </label>
-                      </div>
-                    </div>
-
-                    {/* Xem trang công khai */}
-                    {watchIsPublic && watchSlug && (
-                      <Button
-                        type="button"
-                        variant="primary"
-                        className="view-public-btn"
-                        onClick={() => window.open(publicUrl, '_blank')}
-                      >
-                        <Icon name="ExternalLink" className="w-4 h-4 mr-1" />
-                        {LABELS.VIEW_PUBLIC_PAGE}
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Accordion 2: Thông số Planner */}
-              <div
-                className={`accordion-section${expandedSections.includes('planner') ? ' is-expanded' : ''}`}
-              >
-                <button
-                  type="button"
-                  className="accordion-header"
-                  onClick={() => toggleSection('planner')}
-                >
-                  <div className="accordion-header-title">
-                    <Icon
-                      name="ChevronDown"
-                      className="accordion-header-chevron w-4 h-4"
-                    />
-                    <span>{LABELS.SECTION_PLANNER}</span>
-                  </div>
-                </button>
-                {expandedSections.includes('planner') && (
-                  <div className="accordion-content space-y-4">
-                    <div>
-                      <div className="planner-group-label">
-                        {LABELS.PLANNER_REQUIRED}
-                      </div>
-                      <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                        <div className="form-field">
-                          <label htmlFor="b2b-moq">MOQ (kg)</label>
-                          <input
-                            id="b2b-moq"
-                            className={`field-input${errors.b2b_planner?.minimum_order_qty_kg ? ' is-error' : ''}`}
-                            type="number"
-                            min="0"
-                            {...register('b2b_planner.minimum_order_qty_kg', {
-                              valueAsNumber: true,
-                            })}
-                          />
-                        </div>
-                        <div className="form-field">
-                          <label htmlFor="b2b-lead-time">
-                            Giao hàng (ngày)
-                          </label>
-                          <input
-                            id="b2b-lead-time"
-                            className={`field-input${errors.b2b_planner?.lead_time_days ? ' is-error' : ''}`}
-                            type="number"
-                            min="0"
-                            {...register('b2b_planner.lead_time_days', {
-                              valueAsNumber: true,
-                            })}
-                          />
-                        </div>
-                        <div className="form-field">
-                          <label htmlFor="b2b-capacity">
-                            Năng lực SX (tấn/tháng)
-                          </label>
-                          <input
-                            id="b2b-capacity"
-                            className={`field-input${errors.b2b_planner?.production_capacity_monthly_tons ? ' is-error' : ''}`}
-                            type="number"
-                            min="0"
-                            {...register(
-                              'b2b_planner.production_capacity_monthly_tons',
-                              {
-                                valueAsNumber: true,
-                              },
-                            )}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="planner-group-label">
-                        {LABELS.PLANNER_ADVANCED}
-                      </div>
-                      <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                        <div className="form-field">
-                          <label htmlFor="b2b-yield">
-                            Hệ số hao hụt (0.5 - 2.0)
-                          </label>
-                          <input
-                            id="b2b-yield"
-                            className={`field-input${errors.b2b_planner?.yield_factor ? ' is-error' : ''}`}
-                            type="number"
-                            step="0.01"
-                            min="0.5"
-                            max="2.0"
-                            {...register('b2b_planner.yield_factor', {
-                              valueAsNumber: true,
-                            })}
-                          />
-                          {errors.b2b_planner?.yield_factor && (
-                            <span className="field-error">
-                              {errors.b2b_planner.yield_factor.message}
-                            </span>
-                          )}
-                        </div>
-                        <div className="form-field">
-                          <label htmlFor="b2b-standard-consumption">
-                            {LABELS.STANDARD_CONSUMPTION_LABEL}
-                          </label>
-                          <input
-                            id="b2b-standard-consumption"
-                            className={`field-input${errors.b2b_planner?.standard_consumption_kg ? ' is-error' : ''}`}
-                            type="number"
-                            step="0.01"
-                            min="0.05"
-                            max="2.0"
-                            placeholder={
-                              LABELS.STANDARD_CONSUMPTION_PLACEHOLDER
-                            }
-                            {...register(
-                              'b2b_planner.standard_consumption_kg',
-                              {
-                                valueAsNumber: true,
-                              },
-                            )}
-                          />
-                          {errors.b2b_planner?.standard_consumption_kg && (
-                            <span className="field-error">
-                              {
-                                errors.b2b_planner.standard_consumption_kg
-                                  .message
-                              }
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Accordion 3: Bảng giá */}
-              <div
-                className={`accordion-section${expandedSections.includes('pricing') ? ' is-expanded' : ''}`}
-              >
-                <button
-                  type="button"
-                  className="accordion-header"
-                  onClick={() => toggleSection('pricing')}
-                >
-                  <div className="accordion-header-title">
-                    <Icon
-                      name="ChevronDown"
-                      className="accordion-header-chevron w-4 h-4"
-                    />
-                    <span>{LABELS.SECTION_PRICING}</span>
-                    {lowestPrice !== null && (
-                      <span className="lowest-price-badge">
-                        {LABELS.PRICING_LOWEST_PREFIX}{' '}
-                        {lowestPrice.toLocaleString('vi-VN')}đ/kg
-                      </span>
-                    )}
-                  </div>
-                </button>
-                {expandedSections.includes('pricing') && (
-                  <div className="accordion-content space-y-4">
-                    {pricingTiers.length > 0 && (
-                      <div className="pricing-tier-preview">
-                        {pricingTiers.map((tier, index) => (
-                          <div
-                            className="pricing-tier-preview-card"
-                            key={tier.id || index}
-                          >
-                            <div className="pricing-tier-preview-qty">
-                              {tier.min_quantity}
-                              {tier.max_quantity
-                                ? `–${tier.max_quantity}`
-                                : '+'}{' '}
-                              kg
-                            </div>
-                            <div className="pricing-tier-preview-price">
-                              {Number(tier.unit_price).toLocaleString('vi-VN')}{' '}
-                              đ
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    <div className="flex items-center justify-between mt-4 mb-2">
-                      <h4 className="font-semibold text-sm">
-                        Chỉnh sửa chi tiết bậc giá
-                      </h4>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          appendTier({
-                            min_quantity: 0,
-                            max_quantity: null,
-                            unit_price: 0,
-                            currency: 'VND',
-                            display_label: '',
-                            is_public_visible: true,
-                          })
-                        }
-                      >
-                        <Icon name="Plus" className="w-4 h-4 mr-1" /> Thêm bậc
-                        giá
-                      </Button>
-                    </div>
-
-                    {pricingTiers.length > 0 ? (
-                      <div className="border border-slate-200 rounded-lg overflow-hidden">
-                        <table className="w-full text-sm text-left">
-                          <thead className="bg-slate-50 text-slate-500 font-medium">
-                            <tr>
-                              <th className="p-3 w-32">Từ số lượng</th>
-                              <th className="p-3 w-32">Đến số lượng</th>
-                              <th className="p-3 w-40">Giá thật (VND)</th>
-                              <th className="p-3">Nhãn hiển thị Public</th>
-                              <th className="p-3 w-20 text-center">Public?</th>
-                              <th className="p-3 w-16"></th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-100">
-                            {pricingTiers.map((field, index) => (
-                              <tr key={field.id} className="bg-white">
-                                <td className="p-2">
-                                  <input
-                                    className="field-input text-sm px-2 py-1.5 w-full"
-                                    type="number"
-                                    min="0"
-                                    {...register(
-                                      `pricing_tiers.${index}.min_quantity`,
-                                      {
-                                        valueAsNumber: true,
-                                      },
-                                    )}
-                                  />
-                                </td>
-                                <td className="p-2">
-                                  <input
-                                    className="field-input text-sm px-2 py-1.5 w-full"
-                                    type="number"
-                                    min="0"
-                                    placeholder="Trở lên"
-                                    {...register(
-                                      `pricing_tiers.${index}.max_quantity`,
-                                      {
-                                        setValueAs: (v) =>
-                                          v === '' ? null : Number(v),
-                                      },
-                                    )}
-                                  />
-                                </td>
-                                <td className="p-2">
-                                  <input
-                                    className="field-input text-sm px-2 py-1.5 w-full"
-                                    type="number"
-                                    min="0"
-                                    {...register(
-                                      `pricing_tiers.${index}.unit_price`,
-                                      {
-                                        valueAsNumber: true,
-                                      },
-                                    )}
-                                  />
-                                </td>
-                                <td className="p-2">
-                                  <input
-                                    className="field-input text-sm px-2 py-1.5 w-full"
-                                    type="text"
-                                    placeholder="VD: Liên hệ, Giá nhà máy"
-                                    {...register(
-                                      `pricing_tiers.${index}.display_label`,
-                                    )}
-                                  />
-                                </td>
-                                <td className="p-2 text-center">
-                                  <Controller
-                                    name={`pricing_tiers.${index}.is_public_visible`}
-                                    control={control}
-                                    render={({ field: switchField }) => (
-                                      <Switch
-                                        checked={switchField.value}
-                                        onChange={switchField.onChange}
-                                      />
-                                    )}
-                                  />
-                                </td>
-                                <td className="p-2 text-center">
-                                  <button
-                                    type="button"
-                                    className="text-red-500 hover:text-red-700 p-1"
-                                    onClick={() => removeTier(index)}
-                                    title="Xóa bậc giá"
-                                  >
-                                    <Icon name="Trash2" className="w-4 h-4" />
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : (
-                      <div className="p-4 border border-dashed border-slate-300 rounded-lg text-center text-muted text-sm bg-slate-50">
-                        {LABELS.PRICING_EMPTY}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Accordion 4: SEO & QR */}
-              <div
-                className={`accordion-section${expandedSections.includes('seo') ? ' is-expanded' : ''}`}
-              >
-                <button
-                  type="button"
-                  className="accordion-header"
-                  onClick={() => toggleSection('seo')}
-                >
-                  <div className="accordion-header-title">
-                    <Icon
-                      name="ChevronDown"
-                      className="accordion-header-chevron w-4 h-4"
-                    />
-                    <span>{LABELS.SECTION_SEO_QR}</span>
-                  </div>
-                </button>
-                {expandedSections.includes('seo') && (
-                  <div className="accordion-content space-y-4">
-                    {/* Slug */}
-                    <div className="form-field">
-                      <label>{LABELS.SLUG_LABEL}</label>
-
-                      {!isSlugEditing ? (
-                        /* Locked slug display */
-                        <div className="slug-locked">
-                          <Icon
-                            name="Lock"
-                            size={14}
-                            className="slug-locked__icon"
-                          />
-                          <span className="slug-locked__value">
-                            {watchSlug || LABELS.NA}
-                          </span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={handleSlugEditStart}
-                          >
-                            {LABELS.SLUG_EDIT}
-                          </Button>
-                        </div>
-                      ) : (
-                        /* Editable slug input */
-                        <div className="flex gap-2">
-                          <input
-                            id="fc-slug"
-                            className={`field-input flex-1${errors.slug ? ' is-error' : ''}`}
-                            type="text"
-                            placeholder="VD: fc-001"
-                            {...register('slug')}
-                          />
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={handleSlugEditCancel}
-                          >
-                            {LABELS.SLUG_CANCEL}
-                          </Button>
-                        </div>
-                      )}
-
-                      {!isSlugEditing && (
-                        <p className="text-xs text-muted mt-1">
-                          {LABELS.SLUG_AUTO_HINT}
-                        </p>
-                      )}
-
-                      {errors.slug && (
-                        <span className="field-error">
-                          {errors.slug.message}
-                        </span>
-                      )}
-
-                      {/* URL preview */}
-                      <div className="mt-2 text-sm text-muted flex items-center gap-2 flex-wrap">
-                        <span>
-                          {LABELS.PUBLIC_PAGE_LABEL}: {publicUrl}
-                        </span>
-                        {watchIsPublic && watchSlug && (
-                          <>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={handleCopyLink}
-                            >
-                              Sao chép
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => window.open(publicUrl, '_blank')}
-                            >
-                              Mở trang
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* QR + Actions */}
-                    {watchIsPublic && watchSlug && (
-                      <div className="qr-section">
-                        <div id="qr-container" className="qr-section__code">
-                          <QRCodeDisplay value={publicUrl} size={160} />
-                        </div>
-                        <div className="qr-section__actions">
-                          <Button
-                            type="button"
-                            variant="secondary"
-                            onClick={handleDownloadQR}
-                          >
-                            Tải QR (.png)
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="secondary"
-                            onClick={handlePrintQR}
-                          >
-                            In Tem Mẫu
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Public Preview Card */}
-              {watchIsPublic && (
-                <FabricPublicPreview
-                  imageUrl={currentImageUrl}
-                  code={watchCode}
-                  name={watchName}
-                  composition={watchComposition}
-                  targetWidthCm={watchWidthCm}
-                  targetGsm={watchGsm}
-                  technique={watchTechnique}
-                  category={selectedCategory?.name}
-                  moq={watch('b2b_planner.minimum_order_qty_kg')}
-                  leadTimeDays={watch('b2b_planner.lead_time_days')}
-                  capacityMonthlyTons={watch(
-                    'b2b_planner.production_capacity_monthly_tons',
-                  )}
-                  trustHasSample={watch('b2b_planner.trust_has_sample')}
-                  trustFastDelivery={watch('b2b_planner.trust_fast_delivery')}
-                  trustTechSupport={watch('b2b_planner.trust_tech_support')}
-                  publicStockDisplay={watch('b2b_planner.public_stock_display')}
-                  lowestPrice={lowestPrice}
-                  standardConsumptionKg={watch(
-                    'b2b_planner.standard_consumption_kg',
-                  )}
-                />
-              )}
-            </div>
+            <FabricPublicTab
+              publicUrl={publicUrl}
+              isSlugEditing={isSlugEditing}
+              handleSlugEditStart={handleSlugEditStart}
+              handleSlugEditCancel={handleSlugEditCancel}
+              handleCopyLink={handleCopyLink}
+              handleDownloadQR={handleDownloadQR}
+              handlePrintQR={handlePrintQR}
+              selectedCategoryName={selectedCategory?.name}
+            />
           )}
 
-          {/* ── TAB: Thu vien anh ── */}
           {activeTab === 'gallery' && <FabricImageGalleryEditor />}
 
-          {/* ── TAB: Quan tri ── */}
           {activeTab === 'admin' && (
-            <div className="space-y-4">
-              <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                <div className="form-field">
-                  <label>Trạng thái</label>
-                  <Controller
-                    name="status"
-                    control={control}
-                    render={({ field }) => (
-                      <Combobox
-                        options={STATUS_OPTIONS}
-                        value={field.value}
-                        onChange={field.onChange}
-                        hasError={!!errors.status}
-                      />
-                    )}
-                  />
-                </div>
-              </div>
-
-              <div className="form-field">
-                <label htmlFor="fc-notes">Ghi chú</label>
-                <textarea
-                  id="fc-notes"
-                  className="field-textarea"
-                  rows={4}
-                  placeholder="Ghi chú nội bộ..."
-                  {...register('notes')}
-                />
-              </div>
-            </div>
+            <FabricAdminTab />
           )}
         </form>
         <div style={{ display: 'none' }}>

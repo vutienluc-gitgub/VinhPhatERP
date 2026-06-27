@@ -13,8 +13,12 @@ type AdaptiveSheetProps = {
   open: boolean;
   /** Callback khi đóng */
   onClose: () => void;
-  /** Tiêu đề hiển thị trên Header */
-  title: string;
+  /** Tiêu đề hiển thị trên mặc định Header (nếu không truyền custom header) */
+  title?: ReactNode;
+  /** Custom header thay thế toàn bộ header mặc định */
+  header?: ReactNode;
+  /** Nội dung dính ngay dưới header (thường dùng cho Tabs) */
+  subHeader?: ReactNode;
   /** Nội dung chính (cuộn được) */
   children: ReactNode;
   /** Các nút bấm ở Footer (Sticky) */
@@ -23,9 +27,25 @@ type AdaptiveSheetProps = {
   stepInfo?: { current: number; total: number };
   /** ID cho aria-labelledby */
   titleId?: string;
-  /** Độ rộng tối đa của modal trên Desktop */
+  /** Kích thước chuẩn của modal trên Desktop */
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
+  /** Độ rộng tối đa (legacy, ưu tiên dùng size) */
   maxWidth?: number | string;
 };
+
+const SIZE_MAP = {
+  sm: 400,
+  md: 600,
+  lg: 800,
+  xl: 1100,
+  '2xl': 1400,
+  full: '100%',
+};
+
+const LABELS = {
+  CLOSE: 'Đóng',
+  STEP: 'Bước',
+} as const;
 
 /** Minimum swipe distance (px) to trigger dismiss */
 const SWIPE_DISMISS_THRESHOLD = 100;
@@ -48,10 +68,13 @@ export function AdaptiveSheet({
   open,
   onClose,
   title,
+  header,
+  subHeader,
   children,
   footer,
   stepInfo,
   titleId: titleIdProp,
+  size = 'md',
   maxWidth,
 }: AdaptiveSheetProps) {
   const generatedId = useId();
@@ -228,6 +251,8 @@ export function AdaptiveSheet({
     ? 'modal-sheet modal-sheet--closing'
     : 'modal-sheet';
 
+  const computedMaxWidth = maxWidth ?? SIZE_MAP[size];
+
   return createPortal(
     <div
       ref={overlayRef}
@@ -242,7 +267,7 @@ export function AdaptiveSheet({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        style={maxWidth ? { maxWidth } : undefined}
+        style={{ maxWidth: computedMaxWidth }}
       >
         {/* Swipe handle area (mobile only — hidden via CSS on desktop) */}
         <div
@@ -253,24 +278,35 @@ export function AdaptiveSheet({
         />
 
         {/* Header */}
-        <div className="modal-header">
-          <div>
-            <h3 id={titleId}>{title}</h3>
-            {stepInfo && (
-              <span className="sheet-step-indicator">
-                Bước {stepInfo.current + 1}/{stepInfo.total}
-              </span>
-            )}
+        {header ? (
+          header
+        ) : title ? (
+          <div className="modal-header">
+            <div className="modal-header-content">
+              <h3 id={titleId}>{title}</h3>
+              {stepInfo && (
+                <span className="sheet-step-indicator">
+                  {LABELS.STEP} {stepInfo.current + 1}/{stepInfo.total}
+                </span>
+              )}
+            </div>
+            <button
+              className="btn-icon"
+              type="button"
+              onClick={onClose}
+              aria-label={LABELS.CLOSE}
+            >
+              ✕
+            </button>
           </div>
-          <button
-            className="btn-icon"
-            type="button"
-            onClick={onClose}
-            aria-label="Đóng"
-          >
-            ✕
-          </button>
-        </div>
+        ) : null}
+
+        {/* Sub Header (Sticky under header) */}
+        {subHeader && (
+          <div className="modal-subheader">
+            {subHeader}
+          </div>
+        )}
 
         {/* Step Progress Bar */}
         {stepInfo && (

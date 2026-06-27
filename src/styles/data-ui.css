@@ -806,6 +806,23 @@
   flex-shrink: 0;
 }
 
+.modal-header-content {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.modal-subheader {
+  background: var(--surface-strong);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+
 .modal-content {
   flex: 1 1 auto;
   min-height: 0;
