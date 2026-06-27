@@ -1,3 +1,28 @@
+
+import { FABRIC_CATALOG_STATUS_LABELS } from '@/schema/fabric-catalog.schema';
+
+export const UNIT_OPTIONS = [
+  { value: 'kg', label: 'kg' },
+  { value: 'm', label: 'mét (m)' },
+  { value: 'cuộn', label: 'cuộn' },
+];
+
+export const STATUS_OPTIONS = (['active', 'inactive'] as const).map((s) => ({
+  value: s,
+  label: FABRIC_CATALOG_STATUS_LABELS[s],
+}));
+
+export const TECHNIQUE_OPTIONS = [
+  { value: 'Single Jersey', label: 'Single Jersey' },
+  { value: 'Interlock', label: 'Interlock' },
+  { value: 'Rib', label: 'Rib' },
+  { value: 'Pique', label: 'Pique' },
+  { value: 'French Terry', label: 'French Terry' },
+  { value: 'Fleece', label: 'Fleece' },
+  { value: 'Polar Fleece', label: 'Polar Fleece' },
+  { value: 'Waffle', label: 'Waffle' },
+  { value: 'Jacquard', label: 'Jacquard' },
+];
 export const ROUTE_FABRIC_CATALOG = '/fabric-catalog';
 
 export const LABELS = {
@@ -33,6 +58,22 @@ export const LABELS = {
   NOT_FOUND: 'Không tìm thấy loại vải hoặc có lỗi xảy ra.',
   BACK: 'Quay lại danh sách',
   NA: '—',
+  UNSAVED: 'Chưa lưu',
+  COPY_LINK: 'Sao chép',
+  NOTES_LABEL: 'Ghi chú',
+  NOTES_PLACEHOLDER: 'Ghi chú nội bộ...',
+
+  // Info Tab
+  LABEL_IMAGE: 'Ảnh mẫu vải',
+  LABEL_COLOR: 'Màu sắc',
+  LABEL_TECHNIQUE: 'Kỹ thuật',
+
+  // B2B Config
+  B2B_CONFIG_TITLE: 'Cấu hình B2B & Công khai',
+  B2B_CONFIG_DESC: 'Quản lý cách mẫu vải hiển thị trên trang khách hàng',
+  PUBLIC_URL_PREFIX: '/p/fabric/',
+  QR_CODE_TITLE: 'Mã QR Sản Phẩm',
+  QR_CODE_DESC: 'Dùng mã QR này để in tem nhãn. Khách hàng quét mã sẽ được dẫn thẳng đến trang chi tiết sản phẩm.',
 
   // Form tabs
   TAB_INFO: 'Thông tin',
@@ -95,6 +136,23 @@ export const LABELS = {
   PREVIEW_UNIT_DAY: 'ngày',
   PREVIEW_UNIT_CAPACITY: 'T/th',
   PREVIEW_UNIT_CONSUMPTION: 'kg/áo',
+  PREVIEW_DESKTOP: 'Xem trên Desktop',
+  PREVIEW_MOBILE: 'Xem trên Mobile',
+  PREVIEW_GALLERY: 'Xem thư viện',
+
+  // Readiness Score
+  SCORE_TITLE: 'Public Readiness Score',
+  SCORE_LIVE: 'Live',
+  SCORE_DESC: 'Điều kiện để xuất bản lên trang khách hàng',
+  SCORE_LAST_UPDATED: 'Cập nhật lần cuối:',
+  SCORE_PUBLIC_ON: 'Đang Công Khai',
+  SCORE_PUBLIC_OFF: 'Chưa Công Khai',
+  SCORE_CHECK_IMAGE: 'Có ảnh chính',
+  SCORE_CHECK_PLANNER: 'Cấu hình Planner',
+  SCORE_CHECK_MOQ: 'MOQ hợp lệ',
+  SCORE_CHECK_SEO: 'SEO Slug',
+  SCORE_CHECK_GALLERY: 'Thư viện ảnh',
+  SCORE_CHECK_PRICING: 'Bảng giá sỉ',
 
   // Tag inputs
   OLD_DATA_HINT: 'Dữ liệu cũ: ',
@@ -131,6 +189,34 @@ export const LABELS = {
 
   // CTA
   VIEW_PUBLIC_PAGE: 'Xem trang công khai',
+
+  // Extra strings from FabricPublicTab
+  MOQ_LABEL: 'MOQ (kg)',
+  LEAD_TIME_LABEL: 'Giao hàng (ngày)',
+  CAPACITY_LABEL: 'Năng lực SX (tấn/tháng)',
+  YIELD_LABEL: 'Hệ số hao hụt (0.5 - 2.0)',
+  PRICING_EDIT_TITLE: 'Chỉnh sửa chi tiết bậc giá',
+  PRICING_ADD_TIER: 'Thêm bậc giá',
+  PRICING_COL_MIN: 'Từ số lượng',
+  PRICING_COL_MAX: 'Đến số lượng',
+  PRICING_COL_PRICE: 'Giá thật (VND)',
+  PRICING_COL_LABEL: 'Nhãn hiển thị Public',
+  PRICING_COL_PUBLIC: 'Public?',
+  PRICING_MAX_PLACEHOLDER: 'Trở lên',
+  PRICING_LABEL_PLACEHOLDER: 'VD: Liên hệ, Giá nhà máy',
+  SLUG_PLACEHOLDER: 'VD: fc-001',
+  ACTION_COPY: 'Sao chép',
+  ACTION_OPEN_PAGE: 'Mở trang',
+  ACTION_DOWNLOAD_QR: 'Tải QR (.png)',
+  ACTION_PRINT_QR: 'In Tem Mẫu',
+
+  // Extra strings from FabricInfoTab
+  CODE_PLACEHOLDER: 'VD: FC-001',
+  NAME_PLACEHOLDER: 'VD: Cotton TC 65/35',
+  WIDTH_PLACEHOLDER: 'VD: 160',
+  GSM_PLACEHOLDER: 'VD: 250',
+  TECHNIQUE_PLACEHOLDER: 'Chọn kỹ thuật dệt...',
+  COMBOBOX_DEFAULT_PLACEHOLDER: 'Chọn...',
 } as const;
 
 export const MESSAGES = {
