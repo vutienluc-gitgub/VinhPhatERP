@@ -23,6 +23,7 @@ import type {
   WorkOrderWithRelations,
   WorkOrderStatus,
 } from '@/features/work-orders/types';
+import { formatQuantity } from '@/shared/utils/format';
 
 interface ColumnDef {
   key: WorkOrderStatus;
@@ -105,7 +106,7 @@ function KanbanCard({
         <div className="flex justify-between">
           <span className="text-muted-foreground">Mục tiêu:</span>
           <span className="font-bold text-indigo-600">
-            {wo.target_quantity.toLocaleString()} m
+            {formatQuantity(wo.target_quantity)} m
           </span>
         </div>
       </div>
@@ -295,7 +296,7 @@ export function WorkOrderKanbanBoard({
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Mục tiêu:</span>
                 <span className="font-bold text-indigo-600">
-                  {activeWO.target_quantity.toLocaleString()} m
+                  {formatQuantity(activeWO.target_quantity)} m
                 </span>
               </div>
             </div>

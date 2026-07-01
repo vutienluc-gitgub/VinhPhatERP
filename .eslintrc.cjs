@@ -290,6 +290,18 @@ module.exports = {
             selector: "CallExpression[callee.property.name='reduce']",
             message: "❌ Không được dùng 'reduce' trong UI component. Hãy tách logic tính toán ra các hàm utils / use-case.",
           },
+          {
+            selector: "CallExpression[callee.name='formatCurrency']",
+            message: "⚠️ Không sử dụng formatCurrency() trong giao diện. Hãy dùng <MoneyText /> hoặc <MoneyCell />.",
+          },
+          {
+            selector: "CallExpression[callee.property.name='toLocaleString']",
+            message: "⚠️ Không sử dụng toLocaleString() trong giao diện. Hãy dùng <MoneyText /> hoặc <MoneyCell />.",
+          },
+          {
+            selector: "NewExpression[callee.object.name='Intl'][callee.property.name='NumberFormat']",
+            message: "⚠️ Không sử dụng Intl.NumberFormat() trong giao diện. Hãy dùng <MoneyText /> hoặc <MoneyCell />.",
+          },
         ],
       },
     },

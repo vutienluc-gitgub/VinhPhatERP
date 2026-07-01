@@ -1,5 +1,5 @@
 import { Icon, Badge } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import { EXPENSE_CATEGORY_LABELS } from '@/schema/payment.schema';
 import { getRecurringStatus, isDue } from '@/domain/recurring-transactions';
 import type { RecurringTransaction } from '@/domain/recurring-transactions/types';
@@ -42,7 +42,7 @@ export function RecurringTransactionMobileCard({
           </div>
         </div>
         <span className="font-bold text-danger text-lg">
-          {formatCurrency(tx.amount)}đ
+          <MoneyText value={tx.amount} />đ
         </span>
       </div>
       <div className="mobile-card-body space-y-2">

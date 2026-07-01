@@ -7,7 +7,6 @@ import { KpiCard, KpiGrid } from '@/shared/components';
 import { RevenueBarChart } from '@/features/reports/RevenueBarChart';
 import { FabricRevenueChart } from '@/features/reports/FabricRevenueChart';
 import { PaymentMethodChart } from '@/features/reports/PaymentMethodChart';
-import { formatCurrency } from '@/shared/utils/format';
 import { sumBy } from '@/shared/utils/array.util';
 
 type RevenueTrendSectionProps = {
@@ -74,14 +73,16 @@ export function RevenueTrendSection({
       <KpiGrid className="px-5 py-4">
         <KpiCard
           label="Tổng doanh thu"
-          value={`${formatCurrency(totalRevenue)} đ`}
+          value={totalRevenue}
+          formatMode="currency"
           icon="TrendingUp"
           variant="primary"
           isLoading={isLoading}
         />
         <KpiCard
           label="Đã thu"
-          value={`${formatCurrency(totalCollected)} đ`}
+          value={totalCollected}
+          formatMode="currency"
           icon="CheckCircle"
           variant="success"
           footer={`${collectionRate}% tỷ lệ thu hồi`}
@@ -98,7 +99,8 @@ export function RevenueTrendSection({
         )}
         <KpiCard
           label="Phải thu"
-          value={`${formatCurrency(totalRevenue - totalCollected)} đ`}
+          value={totalRevenue - totalCollected}
+          formatMode="currency"
           icon="Clock"
           variant="warning"
           isLoading={isLoading}

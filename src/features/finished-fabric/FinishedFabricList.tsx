@@ -21,6 +21,7 @@ import {
   useFinishedFabricStats,
 } from '@/application/inventory';
 import { useFinishedFabricExport } from '@/application/inventory';
+import { formatQuantity } from '@/shared/value/core/formatter';
 import {
   QUALITY_GRADE_LABELS,
   QUALITY_GRADES,
@@ -186,11 +187,7 @@ export function FinishedFabricList({
           />
           <KpiCard
             label="Tổng chiều dài"
-            value={
-              stats
-                ? `${stats.totalLengthM.toLocaleString('vi-VN', { maximumFractionDigits: 1 })} m`
-                : ''
-            }
+            value={stats ? `${formatQuantity(stats.totalLengthM, 1)} m` : ''}
             icon="Ruler"
             variant="success"
             footer="Đã kiểm tra chất lượng (QC)"
@@ -198,11 +195,7 @@ export function FinishedFabricList({
           />
           <KpiCard
             label="Tổng khối lượng"
-            value={
-              stats
-                ? `${stats.totalWeightKg.toLocaleString('vi-VN', { maximumFractionDigits: 1 })} kg`
-                : ''
-            }
+            value={stats ? `${formatQuantity(stats.totalWeightKg, 1)} kg` : ''}
             icon="Weight"
             variant="warning"
             footer="Trọng lượng tịnh xuất kho"

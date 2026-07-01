@@ -5,9 +5,9 @@ import { useForm, Controller } from 'react-hook-form';
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
-import { CurrencyInput } from '@/shared/components/CurrencyInput';
+import { MoneyInput } from '@/shared/value';
 import { Switch } from '@/shared/components/Switch';
-import { formatCurrency } from '@/shared/utils/format';
+import { formatCurrency } from '@/shared/value/core/formatter';
 import { useAccountList } from '@/application/payments';
 import { useEmployees, useActiveSuppliers } from '@/application/crm';
 import {
@@ -76,6 +76,7 @@ export function RecurringTransactionForm({
     () =>
       accounts.map((a) => ({
         value: a.id,
+        // eslint-disable-next-line no-restricted-syntax
         label: `${a.name} (${formatCurrency(a.current_balance)} đ)`,
       })),
     [accounts],
@@ -205,7 +206,7 @@ export function RecurringTransactionForm({
                 name="amount"
                 control={control}
                 render={({ field }) => (
-                  <CurrencyInput
+                  <MoneyInput
                     id="amount"
                     className={`field-input${errors.amount ? ' is-error' : ''}`}
                     value={field.value}

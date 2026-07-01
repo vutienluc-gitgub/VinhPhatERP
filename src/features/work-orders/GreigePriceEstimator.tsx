@@ -7,6 +7,7 @@ import {
   calculateDirectYarnCost,
   calculateGreigeCostEstimation,
 } from '@/domain/production/ProductionDomain';
+import { MoneyText } from '@/shared/value';
 import type { CreateWorkOrderInput } from '@/schema/work-order.schema';
 
 /* ── Snapshot that parent form captures for persistence ── */
@@ -151,7 +152,7 @@ export function GreigePriceEstimator({
             {isPriceLoading ? (
               <span className="text-muted animate-pulse">Đang tải...</span>
             ) : derivedAvgPrice > 0 ? (
-              derivedAvgPrice.toLocaleString()
+              <MoneyText value={derivedAvgPrice} />
             ) : (
               <span className="text-warning">Chưa có dữ liệu</span>
             )}
@@ -186,13 +187,13 @@ export function GreigePriceEstimator({
           <div>
             <p className="text-muted mb-1">Chi phí Sợi (từ phiếu nhập):</p>
             <p className="font-semibold">
-              {result.directYarnCost.toLocaleString()} đ
+              <MoneyText value={result.directYarnCost} /> đ
             </p>
           </div>
           <div>
             <p className="text-muted mb-1">{processingLabel}:</p>
             <p className="font-semibold">
-              {result.processingCost.toLocaleString()} đ
+              <MoneyText value={result.processingCost} /> đ
             </p>
           </div>
           <div>
@@ -200,29 +201,29 @@ export function GreigePriceEstimator({
               Chi phí Hao hụt ({standardLossPct}%):
             </p>
             <p className="font-semibold text-danger">
-              {result.wasteCost.toLocaleString()} đ
+              <MoneyText value={result.wasteCost} /> đ
             </p>
           </div>
           <div>
             <p className="text-muted mb-1">Tổng Giá Vốn:</p>
             <p className="font-bold text-primary">
-              {result.totalCost.toLocaleString()} đ
+              <MoneyText value={result.totalCost} /> đ
             </p>
           </div>
           <div className="col-span-2 mt-2 pt-2 border-t border-border/50 flex justify-between items-end">
             <div>
               <p className="text-muted mb-1">Giá Bán Khuyến nghị:</p>
               <h4 className="text-lg font-bold text-success">
-                {result.finalPrice.toLocaleString()} đ
+                <MoneyText value={result.finalPrice} /> đ
               </h4>
             </div>
             {targetQuantity > 0 && (
               <div className="text-right">
                 <p className="text-muted mb-1">Giá bán trên 1 {targetUnit}:</p>
                 <p className="font-bold">
-                  {Math.round(
-                    result.finalPrice / targetQuantity,
-                  ).toLocaleString()}{' '}
+                  <MoneyText
+                    value={Math.round(result.finalPrice / targetQuantity)}
+                  />{' '}
                   đ/{targetUnit}
                 </p>
               </div>

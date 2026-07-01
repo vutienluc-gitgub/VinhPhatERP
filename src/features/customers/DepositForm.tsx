@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { Button } from '@/shared/components';
-import { CurrencyInput } from '@/shared/components/CurrencyInput';
+import { MoneyInput } from '@/shared/value';
 import { paymentsSchema, paymentsDefaultValues } from '@/schema/payment.schema';
 import type { PaymentsFormValues } from '@/schema/payment.schema';
 import { useCreatePayment } from '@/application/payments';
@@ -104,10 +104,10 @@ export function DepositForm({
                 name="amount"
                 control={control}
                 render={({ field }) => (
-                  <CurrencyInput
+                  <MoneyInput
                     className={`field-input${errors.amount ? ' is-error' : ''}`}
                     value={field.value}
-                    onChange={(v) => field.onChange(v ?? 0)}
+                    onChange={field.onChange}
                     onBlur={field.onBlur}
                     placeholder={DEPOSIT_FORM_LABELS.amountPlaceholder}
                   />

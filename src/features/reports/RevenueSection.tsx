@@ -6,7 +6,7 @@ import {
   Badge,
   type DataTableColumn,
 } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import { sumBy } from '@/shared/utils/array.util';
 
 type RevenueSectionProps = {
@@ -37,20 +37,20 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
     },
     {
       header: 'Tổng tiền',
-      cell: (r) => `${formatCurrency(r.total_amount)}đ`,
-      footer: `${formatCurrency(totalRevenue)}đ`,
+      cell: (r) => <MoneyText value={r.total_amount} />,
+      footer: <MoneyText value={totalRevenue} />,
       className: 'text-right font-medium',
     },
     {
       header: 'Đã thu',
-      cell: (r) => `${formatCurrency(r.paid_amount)}đ`,
-      footer: `${formatCurrency(totalPaid)}đ`,
+      cell: (r) => <MoneyText value={r.paid_amount} />,
+      footer: <MoneyText value={totalPaid} />,
       className: 'text-right text-success',
     },
     {
       header: 'Còn nợ',
-      cell: (r) => `${formatCurrency(r.balance_due)}đ`,
-      footer: `${formatCurrency(totalBalance)}đ`,
+      cell: (r) => <MoneyText value={r.balance_due} />,
+      footer: <MoneyText value={totalBalance} />,
       className: 'text-right font-bold text-warning',
     },
   ];
@@ -64,21 +64,24 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
       <KpiGrid className="px-5 py-4">
         <KpiCard
           label="Tổng doanh thu"
-          value={`${formatCurrency(totalRevenue)} đ`}
+          value={totalRevenue}
+          formatMode="currency"
           icon="TrendingUp"
           variant="primary"
           isLoading={isLoading}
         />
         <KpiCard
           label="Đã thu"
-          value={`${formatCurrency(totalPaid)} đ`}
+          value={totalPaid}
+          formatMode="currency"
           icon="CheckCircle"
           variant="success"
           isLoading={isLoading}
         />
         <KpiCard
           label="Còn nợ"
-          value={`${formatCurrency(totalBalance)} đ`}
+          value={totalBalance}
+          formatMode="currency"
           icon="Wallet"
           variant={totalBalance > 0 ? 'warning' : 'success'}
           isLoading={isLoading}
@@ -107,12 +110,14 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
             <div className="grid grid-cols-2 gap-2 text-xs border-t pt-2">
               <div>
                 <p className="opacity-70">Tổng tiền</p>
-                <p className="font-bold">{formatCurrency(r.total_amount)}đ</p>
+                <p className="font-bold">
+                  <MoneyText value={r.total_amount} />đ
+                </p>
               </div>
               <div className="text-right">
                 <p className="opacity-70">Còn nợ</p>
                 <p className="font-bold text-warning">
-                  {formatCurrency(r.balance_due)}đ
+                  <MoneyText value={r.balance_due} />đ
                 </p>
               </div>
             </div>

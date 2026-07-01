@@ -8,8 +8,9 @@ import {
   useAllSupplierPrices,
   useUpsertSupplierPrice,
 } from '@/application/crm';
-import { Button, CurrencyInput, FormattedInput } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { Button } from '@/shared/components';
+import { MoneyInput, QuantityInput, MoneyText } from '@/shared/value';
+import { formatQuantity } from '@/shared/value/core/formatter';
 
 type Props = {
   supplierId: string;
@@ -112,7 +113,7 @@ export function SupplierPriceList({ supplierId }: Props) {
                 name="unit_price"
                 control={control}
                 render={({ field }) => (
-                  <CurrencyInput
+                  <MoneyInput
                     className="field-input"
                     value={field.value}
                     onChange={(v) => field.onChange(v || 0)}
@@ -136,11 +137,12 @@ export function SupplierPriceList({ supplierId }: Props) {
                 name="moq"
                 control={control}
                 render={({ field }) => (
-                  <FormattedInput
+                  <QuantityInput
                     className="field-input"
                     value={field.value}
                     onChange={(v) => field.onChange(v || 0)}
                     onBlur={field.onBlur}
+                    decimals={4}
                   />
                 )}
               />
@@ -212,13 +214,11 @@ export function SupplierPriceList({ supplierId }: Props) {
                     {p.material_id}
                   </td>
                   <td className="px-4 py-3 text-sm text-right text-primary font-semibold">
-                    {formatCurrency(p.unit_price)}
+                    <MoneyText value={p.unit_price} />
                   </td>
                   <td className="px-4 py-3 text-sm">{p.uom}</td>
                   <td className="px-4 py-3 text-sm text-right">
-                    {p.moq > 0
-                      ? new Intl.NumberFormat('vi-VN').format(p.moq)
-                      : '—'}
+                    {p.moq > 0 ? formatQuantity(p.moq, 0) : '—'}
                   </td>
                   <td className="px-4 py-3 text-sm text-right">
                     {p.lead_time_days} ngày

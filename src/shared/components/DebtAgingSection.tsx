@@ -5,7 +5,8 @@ import {
   DataTable,
   type DataTableColumn,
 } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
+import { formatCurrency } from '@/shared/value/core/formatter';
 import { sumBy } from '@/shared/utils/array.util';
 
 type DebtAgingSectionProps = {
@@ -91,7 +92,7 @@ export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
     },
     {
       header: 'Còn nợ',
-      cell: (r) => `${formatCurrency(r.balance_due)}đ`,
+      cell: (r) => <MoneyText value={r.balance_due} />,
       className: 'text-right font-bold text-danger',
     },
   ];
@@ -105,7 +106,7 @@ export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
       <div className="p-5">
         <div className="mb-4">
           <p className="text-xs font-bold text-muted uppercase tracking-wider mb-2">
-            Phân bổ tổng nợ: {formatCurrency(totalDebt)} đ
+            Phân bổ tổng nợ: <MoneyText value={totalDebt} /> đ
           </p>
           <div className="flex h-6 rounded-full overflow-hidden border border-border bg-surface shadow-inner">
             {buckets
@@ -113,6 +114,7 @@ export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
               .map((b) => (
                 <div
                   key={b.bucket}
+                  // eslint-disable-next-line no-restricted-syntax
                   title={`${b.label}: ${formatCurrency(b.total)} đ (${b.percent}%)`}
                   style={{
                     width: `${b.percent}%`,
@@ -131,7 +133,8 @@ export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
             <KpiCard
               key={b.bucket}
               label={b.label}
-              value={`${formatCurrency(b.total)} đ`}
+              value={b.total}
+              formatMode="currency"
               icon={b.bucket === '90+' ? 'AlertCircle' : 'Clock'}
               variant={b.variant}
               footer={`${b.percent}% tổng nợ`}
@@ -161,7 +164,7 @@ export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
                 </div>
                 <div className="text-xs text-muted mb-2">{r.customer_name}</div>
                 <div className="text-right text-sm font-bold text-danger">
-                  {formatCurrency(r.balance_due)} đ
+                  <MoneyText value={r.balance_due} /> đ
                 </div>
               </div>
             )}

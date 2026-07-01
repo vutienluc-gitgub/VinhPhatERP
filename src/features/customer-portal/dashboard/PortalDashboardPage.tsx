@@ -4,7 +4,7 @@ import { usePortalOrders } from '@/application/crm/portal';
 import { usePortalDebt } from '@/application/crm/portal';
 import { usePortalShipments } from '@/application/crm/portal';
 import { useAuth } from '@/features/auth/AuthProvider';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import {
   ORDER_STATUS_LABELS,
   ORDER_STATUS_BADGE,
@@ -85,7 +85,11 @@ export function PortalDashboardPage() {
           </div>
           <p className="portal-stat-label">Công nợ còn lại</p>
           <p className="portal-stat-value portal-stat-value--danger">
-            {debtLoading ? '…' : `${formatCurrency(remainingDebt)} đ`}
+            {debtLoading ? (
+              '…'
+            ) : (
+              <MoneyText value={remainingDebt} suffix=" đ" />
+            )}
           </p>
           <Link to="/portal/debt" className="portal-stat-link">
             Chi tiết &rarr;
@@ -173,7 +177,7 @@ export function PortalDashboardPage() {
                       {o.order_date}
                     </td>
                     <td className="right font-semibold">
-                      {formatCurrency(o.total_amount)} đ
+                      <MoneyText value={o.total_amount} suffix=" đ" />
                     </td>
                     <td>
                       <span
@@ -210,7 +214,7 @@ export function PortalDashboardPage() {
                 <div className="portal-order-card-row">
                   <span className="portal-order-card-meta">{o.order_date}</span>
                   <span className="portal-order-card-amount">
-                    {formatCurrency(o.total_amount)} đ
+                    <MoneyText value={o.total_amount} suffix=" đ" />
                   </span>
                 </div>
               </div>

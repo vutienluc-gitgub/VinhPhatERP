@@ -34,6 +34,7 @@ function getStatusVariant(status: string): BadgeVariant {
 }
 
 function fmt(n: number) {
+  // eslint-disable-next-line no-restricted-syntax
   return new Intl.NumberFormat('vi-VN').format(Math.round(n));
 }
 

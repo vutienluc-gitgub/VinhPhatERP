@@ -6,7 +6,7 @@ import { Icon } from '@/shared/components';
 import { SignaturePad } from '@/shared/components/SignaturePad';
 // eslint-disable-next-line boundaries/dependencies
 import { ChatDrawer } from '@/features/chat/ChatDrawer';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import {
   useMyDriverEmployee,
   useDriverShipments,
@@ -205,7 +205,11 @@ function ShipmentCard({
             <div>
               <p className="text-[var(--text-tertiary)]">Cước vận chuyển</p>
               <p className="font-semibold text-primary">
-                {totalCost ? `${formatCurrency(totalCost)}đ` : 'Miễn phí'}
+                {totalCost ? (
+                  <MoneyText value={totalCost} suffix="đ" />
+                ) : (
+                  'Miễn phí'
+                )}
               </p>
             </div>
             {shipment.delivery_address && (

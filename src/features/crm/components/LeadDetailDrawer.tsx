@@ -7,6 +7,7 @@ import { Button } from '@/shared/components/Button';
 import { Icon } from '@/shared/components/Icon';
 import { Badge } from '@/shared/components/Badge';
 import { LEAD_STATUS_MAP, LEAD_TYPE_MAP } from '@/features/crm/crm.constants';
+import { MoneyText } from '@/shared/value';
 
 import { ActivityTimeline } from './ActivityTimeline';
 
@@ -200,9 +201,16 @@ export function LeadDetailDrawer({ leadId, onClose }: LeadDetailDrawerProps) {
                               Giá kỳ vọng
                             </span>
                             <span className="text-xs font-medium text-amber-600">
-                              {item.target_price
-                                ? `${Number(item.target_price).toLocaleString()} đ`
-                                : 'Chưa có'}
+                              {item.target_price ? (
+                                <>
+                                  <MoneyText
+                                    value={Number(item.target_price)}
+                                  />{' '}
+                                  đ
+                                </>
+                              ) : (
+                                'Chưa có'
+                              )}
                             </span>
                           </div>
                         </div>
@@ -235,9 +243,14 @@ export function LeadDetailDrawer({ leadId, onClose }: LeadDetailDrawerProps) {
                       <div className="flex justify-between items-center border-b border-border border-dashed pb-2">
                         <span className="text-sm text-muted">Giá kỳ vọng</span>
                         <span className="text-sm font-medium text-amber-600">
-                          {lead.rfq_detail.target_price
-                            ? `${lead.rfq_detail.target_price.toLocaleString()} đ`
-                            : 'Chưa có'}
+                          {lead.rfq_detail.target_price ? (
+                            <>
+                              <MoneyText value={lead.rfq_detail.target_price} />{' '}
+                              đ
+                            </>
+                          ) : (
+                            'Chưa có'
+                          )}
                         </span>
                       </div>
                     </>

@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { Icon } from '@/shared/components/Icon';
 import type { IconName } from '@/shared/components/Icon';
+import { WeightText, QuantityText, MoneyText } from '@/shared/value';
 import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 
 type FabricPublicPreviewProps = {
@@ -65,15 +66,23 @@ export function FabricPublicPreview({
     : composition;
 
   const trustSignals = [
-    trustHasSample ? { label: LABELS.PREVIEW_TRUST_SAMPLE, icon: 'CheckCircle2' } : null,
-    trustFastDelivery ? { label: LABELS.PREVIEW_TRUST_FAST, icon: 'Truck' } : null,
-    trustTechSupport ? { label: LABELS.PREVIEW_TRUST_TECH, icon: 'Wrench' } : null,
+    trustHasSample
+      ? { label: LABELS.PREVIEW_TRUST_SAMPLE, icon: 'CheckCircle2' }
+      : null,
+    trustFastDelivery
+      ? { label: LABELS.PREVIEW_TRUST_FAST, icon: 'Truck' }
+      : null,
+    trustTechSupport
+      ? { label: LABELS.PREVIEW_TRUST_TECH, icon: 'Wrench' }
+      : null,
   ].filter(Boolean) as { label: string; icon: IconName }[];
 
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between mb-3 px-1">
-        <p className="font-semibold text-sm text-slate-700">{LABELS.PREVIEW_TITLE}</p>
+        <p className="font-semibold text-sm text-slate-700">
+          {LABELS.PREVIEW_TITLE}
+        </p>
         <div className="flex bg-slate-100 p-0.5 rounded-lg border">
           <button
             type="button"
@@ -94,10 +103,12 @@ export function FabricPublicPreview({
         </div>
       </div>
 
-      <div className={`fabric-preview-card transition-all duration-300 mx-auto ${device === 'mobile' ? 'w-[320px]' : 'w-full'}`}>
+      <div
+        className={`fabric-preview-card transition-all duration-300 mx-auto ${device === 'mobile' ? 'w-[320px]' : 'w-full'}`}
+      >
         <div className="fabric-preview-card__body">
           {/* Image */}
-          <div 
+          <div
             className="fabric-preview-card__image group relative cursor-pointer"
             onClick={() => onNavigate?.('gallery')}
           >
@@ -116,110 +127,123 @@ export function FabricPublicPreview({
             </div>
           </div>
 
-        {/* Info */}
-        <div className="fabric-preview-card__info">
-          <span className="fabric-preview-card__code">{code || LABELS.NA}</span>
-          <span className="fabric-preview-card__name">{name || LABELS.NA}</span>
-
-          {category && (
-            <span className="fabric-preview-card__meta">{category}</span>
-          )}
-
-          {technique && (
-            <span className="fabric-preview-card__meta">{technique}</span>
-          )}
-
-          {displayComposition && (
-            <span className="fabric-preview-card__meta">
-              {displayComposition}
+          {/* Info */}
+          <div className="fabric-preview-card__info">
+            <span className="fabric-preview-card__code">
+              {code || LABELS.NA}
             </span>
-          )}
-
-          {specs && (
-            <span className="fabric-preview-card__meta fabric-preview-card__specs">
-              {specs}
+            <span className="fabric-preview-card__name">
+              {name || LABELS.NA}
             </span>
-          )}
 
-          {/* Trust Signals */}
-          {trustSignals.length > 0 && (
-            <div 
-              className="flex flex-wrap gap-x-3 gap-y-2 mt-2 cursor-pointer hover:bg-slate-50 p-1 -mx-1 rounded"
-              onClick={() => onNavigate?.('customer')}
+            {category && (
+              <span className="fabric-preview-card__meta">{category}</span>
+            )}
+
+            {technique && (
+              <span className="fabric-preview-card__meta">{technique}</span>
+            )}
+
+            {displayComposition && (
+              <span className="fabric-preview-card__meta">
+                {displayComposition}
+              </span>
+            )}
+
+            {specs && (
+              <span className="fabric-preview-card__meta fabric-preview-card__specs">
+                {specs}
+              </span>
+            )}
+
+            {/* Trust Signals */}
+            {trustSignals.length > 0 && (
+              <div
+                className="flex flex-wrap gap-x-3 gap-y-2 mt-2 cursor-pointer hover:bg-slate-50 p-1 -mx-1 rounded"
+                onClick={() => onNavigate?.('customer')}
+              >
+                {trustSignals.map((sig, i) => (
+                  <span
+                    key={i}
+                    className="text-[11px] text-slate-700 font-medium flex items-center gap-1"
+                  >
+                    <Icon
+                      name={sig.icon}
+                      size={12}
+                      className="text-emerald-500"
+                    />
+                    {sig.label}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* KPI Grid */}
+            <div
+              className="preview-kpi-grid cursor-pointer hover:bg-slate-50 transition-colors"
+              onClick={() => onNavigate?.('planner')}
             >
-              {trustSignals.map((sig, i) => (
-                <span key={i} className="text-[11px] text-slate-700 font-medium flex items-center gap-1">
-                  <Icon name={sig.icon} size={12} className="text-emerald-500" />
-                  {sig.label}
+              <div className="preview-kpi-item">
+                <span className="preview-kpi-label">
+                  {LABELS.PREVIEW_KPI_MOQ}
                 </span>
-              ))}
+                <WeightText className="preview-kpi-value" value={moq ?? 100} />
+              </div>
+              <div className="preview-kpi-item">
+                <span className="preview-kpi-label">
+                  {LABELS.PREVIEW_KPI_LEAD_TIME}
+                </span>
+                <QuantityText
+                  className="preview-kpi-value"
+                  value={leadTimeDays ?? 7}
+                  suffix={LABELS.PREVIEW_UNIT_DAY}
+                />
+              </div>
+              <div className="preview-kpi-item">
+                <span className="preview-kpi-label">
+                  {LABELS.PREVIEW_KPI_CAPACITY}
+                </span>
+                <WeightText
+                  className="preview-kpi-value"
+                  value={capacityMonthlyTons ?? 20}
+                  suffix={LABELS.PREVIEW_UNIT_CAPACITY}
+                />
+              </div>
+              <div className="preview-kpi-item">
+                <span className="preview-kpi-label">
+                  {LABELS.PREVIEW_KPI_CONSUMPTION}
+                </span>
+                <WeightText
+                  className="preview-kpi-value"
+                  value={standardConsumptionKg ?? 0.25}
+                  suffix={LABELS.PREVIEW_UNIT_CONSUMPTION}
+                />
+              </div>
             </div>
-          )}
 
-          {/* KPI Grid */}
-          <div 
-            className="preview-kpi-grid cursor-pointer hover:bg-slate-50 transition-colors"
-            onClick={() => onNavigate?.('planner')}
-          >
-            <div className="preview-kpi-item">
-              <span className="preview-kpi-label">
-                {LABELS.PREVIEW_KPI_MOQ}
-              </span>
-              <span className="preview-kpi-value">
-                {moq ?? 100} {LABELS.PREVIEW_UNIT_KG}
-              </span>
-            </div>
-            <div className="preview-kpi-item">
-              <span className="preview-kpi-label">
-                {LABELS.PREVIEW_KPI_LEAD_TIME}
-              </span>
-              <span className="preview-kpi-value">
-                {leadTimeDays ?? 7} {LABELS.PREVIEW_UNIT_DAY}
-              </span>
-            </div>
-            <div className="preview-kpi-item">
-              <span className="preview-kpi-label">
-                {LABELS.PREVIEW_KPI_CAPACITY}
-              </span>
-              <span className="preview-kpi-value">
-                {capacityMonthlyTons ?? 20}
-                {LABELS.PREVIEW_UNIT_CAPACITY}
-              </span>
-            </div>
-            <div className="preview-kpi-item">
-              <span className="preview-kpi-label">
-                {LABELS.PREVIEW_KPI_CONSUMPTION}
-              </span>
-              <span className="preview-kpi-value">
-                {standardConsumptionKg ?? 0.25}{' '}
-                {LABELS.PREVIEW_UNIT_CONSUMPTION}
-              </span>
-            </div>
+            {/* Stock display badge simulation */}
+            {publicStockDisplay && publicStockDisplay !== 'none' && (
+              <div className="text-xs font-semibold text-emerald-700 flex items-center gap-1 mt-1">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                {publicStockDisplay === 'quantity'
+                  ? LABELS.PREVIEW_STOCK_QUANTITY.replace('{qty}', '150')
+                  : LABELS.PREVIEW_STOCK_STATUS}
+              </div>
+            )}
+
+            {/* Lowest price */}
+            {lowestPrice != null && (
+              <div
+                className="text-sm font-bold text-primary mt-2 cursor-pointer hover:bg-slate-50 p-1 -mx-1 rounded"
+                onClick={() => onNavigate?.('pricing')}
+              >
+                {LABELS.PREVIEW_PRICE_PREFIX} <MoneyText value={lowestPrice} />/
+                {LABELS.PREVIEW_UNIT_KG}
+              </div>
+            )}
           </div>
-
-          {/* Stock display badge simulation */}
-          {publicStockDisplay && publicStockDisplay !== 'none' && (
-            <div className="text-xs font-semibold text-emerald-700 flex items-center gap-1 mt-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
-              {publicStockDisplay === 'quantity'
-                ? LABELS.PREVIEW_STOCK_QUANTITY.replace('{qty}', '150')
-                : LABELS.PREVIEW_STOCK_STATUS}
-            </div>
-          )}
-
-          {/* Lowest price */}
-          {lowestPrice != null && (
-            <div 
-              className="text-sm font-bold text-primary mt-2 cursor-pointer hover:bg-slate-50 p-1 -mx-1 rounded"
-              onClick={() => onNavigate?.('pricing')}
-            >
-              {LABELS.PREVIEW_PRICE_PREFIX}{' '}
-              {lowestPrice.toLocaleString('vi-VN')} {LABELS.PREVIEW_PRICE_UNIT}
-            </div>
-          )}
         </div>
       </div>
-    </div>
     </div>
   );
 }

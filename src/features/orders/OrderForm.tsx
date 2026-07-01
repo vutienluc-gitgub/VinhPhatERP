@@ -9,7 +9,6 @@ import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions'
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { StepperFooter } from '@/shared/components/StepperFooter';
 import { Combobox } from '@/shared/components/Combobox';
-import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers';
 import {
   useColorOptions,
@@ -19,7 +18,7 @@ import { useStepper } from '@/shared/hooks/useStepper';
 import { useAutoSave, loadDraft, clearDraft } from '@/shared/hooks/useAutoSave';
 import DraftBanner from '@/shared/components/DraftBanner';
 import SaveStatus from '@/shared/components/SaveStatus';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyInput, MoneyText } from '@/shared/value';
 import {
   useCreateOrderV2,
   isCreditWarning,
@@ -122,8 +121,8 @@ function LineTotals({
   });
   const total = calculateOrderTotal(items);
   return (
-    <div className="text-right font-semibold text-base py-2 border-t-2 border-border mt-3">
-      Tổng cộng: {formatCurrency(total)} đ
+    <div className="text-right font-semibold text-base py-2 border-t-2 border-border mt-3 flex items-center justify-end gap-1">
+      Tổng cộng: <MoneyText value={total} suffix="đ" />
     </div>
   );
 }
@@ -180,13 +179,14 @@ function ItemQuantityFields({
           name={`items.${index}.unitPrice` as const}
           control={control}
           render={({ field }) => (
-            <CurrencyInput
+            <MoneyInput
               id={`items.${index}.unitPrice`}
               className={`field-input${errors.items?.[index]?.unitPrice ? ' is-error' : ''}`}
               value={field.value}
               onChange={field.onChange}
               onBlur={field.onBlur}
               placeholder="0"
+              suffix={` đ/${unitLabel}`}
             />
           )}
         />

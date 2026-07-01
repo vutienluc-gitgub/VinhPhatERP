@@ -5,7 +5,7 @@ import {
   DataTable,
   type DataTableColumn,
 } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import { sumBy } from '@/shared/utils/array.util';
 
 type OverdueSectionProps = {
@@ -49,12 +49,20 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
     },
     {
       header: 'Tổng tiền',
-      cell: (r) => `${formatCurrency(r.total_amount)}đ`,
+      cell: (r) => (
+        <>
+          <MoneyText value={r.total_amount} />đ
+        </>
+      ),
       className: 'text-right hide-mobile td-muted',
     },
     {
       header: 'Còn nợ',
-      cell: (r) => `${formatCurrency(r.balance_due)}đ`,
+      cell: (r) => (
+        <>
+          <MoneyText value={r.balance_due} />đ
+        </>
+      ),
       className: 'text-right font-bold text-danger',
     },
   ];
@@ -82,7 +90,8 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
         />
         <KpiCard
           label="Tổng nợ trễ"
-          value={`${formatCurrency(totalBalance)} đ`}
+          value={totalBalance}
+          formatMode="currency"
           icon="Wallet"
           variant="warning"
           isLoading={isLoading}
@@ -115,7 +124,7 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
             <div className="flex justify-between items-center border-t pt-2 mt-2">
               <span className="text-[10px] text-muted uppercase">Nợ:</span>
               <span className="font-bold text-danger">
-                {formatCurrency(r.balance_due)}đ
+                <MoneyText value={r.balance_due} />đ
               </span>
             </div>
           </div>

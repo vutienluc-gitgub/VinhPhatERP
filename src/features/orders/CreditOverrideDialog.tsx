@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CreditOverrideDialog
  * =====================
  * Hiển thị khi createOrder trả về lỗi CREDIT_OVERDUE hoặc CREDIT_LIMIT_EXCEEDED.
@@ -15,6 +15,7 @@
  */
 
 import { Icon } from '@/shared/components/Icon';
+import { MoneyText } from '@/shared/value';
 import type { CreateOrderError } from '@/application/orders';
 
 interface CreditOverrideDialogProps {
@@ -29,12 +30,7 @@ interface CreditOverrideDialogProps {
 }
 
 const VND = (n: number | undefined) =>
-  n === undefined
-    ? '—'
-    : new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND',
-      }).format(n);
+  n === undefined ? '—' : <MoneyText value={n} suffix="đ" />;
 
 export function CreditOverrideDialog({
   open,

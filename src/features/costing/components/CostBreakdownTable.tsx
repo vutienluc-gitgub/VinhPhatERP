@@ -1,3 +1,4 @@
+import { MoneyText } from '@/shared/value';
 import type { CostBreakdownItem } from '@/features/costing/types/greige-costing.type';
 
 interface CostBreakdownTableProps {
@@ -31,7 +32,9 @@ export function CostBreakdownTable({
               <td className="p-3 text-right text-muted">
                 {item.percentage.toFixed(1)}%
               </td>
-              <td className="p-3 text-right">{item.amount.toLocaleString()}</td>
+              <td className="p-3 text-right">
+                <MoneyText value={item.amount} />
+              </td>
             </tr>
           ))}
         </tbody>
@@ -40,7 +43,7 @@ export function CostBreakdownTable({
             <td className="p-3">Tổng giá vốn (Total Cost)</td>
             <td className="p-3 text-right">100%</td>
             <td className="p-3 text-right text-primary">
-              {totalCost.toLocaleString()}
+              <MoneyText value={totalCost} />
             </td>
           </tr>
         </tfoot>

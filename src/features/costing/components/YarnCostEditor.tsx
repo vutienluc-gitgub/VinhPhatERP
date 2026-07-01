@@ -1,3 +1,4 @@
+import { MoneyText } from '@/shared/value';
 import type { CostingYarnItem } from '@/features/costing/types/greige-costing.type';
 
 interface YarnCostEditorProps {
@@ -57,7 +58,7 @@ export function YarnCostEditor({ items, onChange }: YarnCostEditorProps) {
               />
             ) : (
               <div className="field-input text-sm w-32 bg-muted/10 text-right cursor-not-allowed">
-                {item.base_price.toLocaleString()}
+                <MoneyText value={item.base_price} />
               </div>
             )}
           </div>

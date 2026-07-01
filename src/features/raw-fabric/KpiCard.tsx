@@ -1,4 +1,5 @@
 import { Icon, type IconName } from '@/shared/components/Icon';
+import { formatQuantity } from '@/shared/value/core/formatter';
 
 export interface KpiCardProps {
   type: 'rolls' | 'length' | 'weight';
@@ -51,9 +52,7 @@ export function KpiCard({
   const isLengthEmpty = type === 'length' && value === 0;
   const effectiveVariant = isLengthEmpty ? 'neutral' : colorVariant;
 
-  const formattedValue = value.toLocaleString('vi-VN', {
-    maximumFractionDigits: 1,
-  });
+  const formattedValue = formatQuantity(value, 1);
 
   return (
     <div

@@ -1,4 +1,4 @@
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import type {
   PurchaseOrder,
   PurchaseOrderItem,
@@ -66,7 +66,7 @@ export function POMaterialsTable({
                     })()}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    {formatCurrency(item.unit_price)} đ
+                    <MoneyText value={item.unit_price} /> đ
                   </td>
                   <td className="px-4 py-3 text-right">
                     {item.ordered_qty} {item.uom}

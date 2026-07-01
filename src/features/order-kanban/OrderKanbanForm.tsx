@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 
 import { Icon, type IconName } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 
 import { KANBAN_LABELS, isOrderOverdue } from './constants';
 import type { OrderKanbanItem, OrderKanbanStatus } from './types';
@@ -107,7 +107,7 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
       {/* Meta */}
       <div className="flex items-center justify-between mt-0.5">
         <div className="kanban-card-amount">
-          {formatCurrency(item.total_amount)}đ
+          <MoneyText value={item.total_amount} />
         </div>
         <div className="text-[0.7rem] text-muted font-medium flex items-center gap-1">
           <Icon name="Calendar" size={16} /> {deliveryLabel}

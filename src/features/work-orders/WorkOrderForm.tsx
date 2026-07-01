@@ -11,7 +11,7 @@ import {
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { StepperFooter } from '@/shared/components/StepperFooter';
 import { Combobox } from '@/shared/components/Combobox';
-import { CurrencyInput } from '@/shared/components/CurrencyInput';
+import { MoneyInput } from '@/shared/value';
 import DraftBanner from '@/shared/components/DraftBanner';
 import SaveStatus from '@/shared/components/SaveStatus';
 import { useAutoSave, loadDraft, clearDraft } from '@/shared/hooks/useAutoSave';
@@ -495,12 +495,13 @@ export function WorkOrderForm({
                   name="weaving_unit_price"
                   control={control}
                   render={({ field }) => (
-                    <CurrencyInput
+                    <MoneyInput
                       className={`field-input${errors.weaving_unit_price ? ' is-error' : ''}`}
                       value={field.value}
                       onChange={field.onChange}
                       onBlur={field.onBlur}
                       placeholder="Ví dụ: 3.500"
+                      suffix=" đ/m"
                     />
                   )}
                 />

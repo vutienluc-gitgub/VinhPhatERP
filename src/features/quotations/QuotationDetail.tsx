@@ -1,6 +1,7 @@
 import { Badge, type BadgeVariant, Icon } from '@/shared/components';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
+import { formatQuantity } from '@/shared/value/core/formatter';
 import { useConvertToOrder } from '@/application/quotations';
 import {
   useConfirmQuotation,
@@ -170,7 +171,7 @@ export function QuotationDetail({
             Tạm tính
           </div>
           <div className="font-medium text-primary">
-            {formatCurrency(quotation.subtotal)}đ
+            <MoneyText value={quotation.subtotal} />
           </div>
         </div>
         <div>
@@ -186,7 +187,7 @@ export function QuotationDetail({
           >
             {quotation.discount_amount > 0 ? (
               <>
-                -{formatCurrency(quotation.discount_amount)}đ
+                -<MoneyText value={quotation.discount_amount} />
                 <span className="text-xs text-muted ml-1 font-normal italic">
                   (
                   {quotation.discount_type === 'percent'
@@ -205,7 +206,7 @@ export function QuotationDetail({
             VAT ({quotation.vat_rate}%)
           </div>
           <div className="font-medium">
-            {formatCurrency(quotation.vat_amount)}đ
+            <MoneyText value={quotation.vat_amount} />
           </div>
         </div>
         <div>
@@ -213,7 +214,7 @@ export function QuotationDetail({
             Tổng cộng
           </div>
           <div className="font-extrabold text-lg text-primary">
-            {formatCurrency(quotation.total_amount)}đ
+            <MoneyText value={quotation.total_amount} />
           </div>
         </div>
       </div>
@@ -389,14 +390,13 @@ export function QuotationDetail({
                         {item.width_cm ?? '—'}
                       </td>
                       <td className="text-right tabular-nums">
-                        {new Intl.NumberFormat('vi-VN').format(item.quantity)}{' '}
-                        {item.unit}
+                        {formatQuantity(item.quantity)} {item.unit}
                       </td>
                       <td className="text-right tabular-nums">
-                        {formatCurrency(item.unit_price)}đ
+                        <MoneyText value={item.unit_price} />
                       </td>
                       <td className="text-right font-bold tabular-nums">
-                        {formatCurrency(item.amount)}đ
+                        <MoneyText value={item.amount} />
                       </td>
                       <td className="text-muted hide-mobile">
                         {item.lead_time_days ?? '—'}
@@ -408,7 +408,7 @@ export function QuotationDetail({
                     Tạm tính
                   </td>
                   <td className="text-right tabular-nums">
-                    {formatCurrency(quotation.subtotal)}đ
+                    <MoneyText value={quotation.subtotal} />
                   </td>
                   <td className="hide-mobile"></td>
                 </tr>
@@ -422,7 +422,7 @@ export function QuotationDetail({
                       )
                     </td>
                     <td className="text-right tabular-nums">
-                      -{formatCurrency(quotation.discount_amount)}đ
+                      -<MoneyText value={quotation.discount_amount} />
                     </td>
                     <td className="hide-mobile"></td>
                   </tr>
@@ -433,7 +433,7 @@ export function QuotationDetail({
                       VAT ({quotation.vat_rate}%)
                     </td>
                     <td className="text-right tabular-nums">
-                      +{formatCurrency(quotation.vat_amount)}đ
+                      +<MoneyText value={quotation.vat_amount} />
                     </td>
                     <td className="hide-mobile"></td>
                   </tr>
@@ -443,7 +443,7 @@ export function QuotationDetail({
                     Tổng cộng
                   </td>
                   <td className="text-right text-lg tabular-nums">
-                    {formatCurrency(quotation.total_amount)}đ
+                    <MoneyText value={quotation.total_amount} />
                   </td>
                   <td className="hide-mobile"></td>
                 </tr>

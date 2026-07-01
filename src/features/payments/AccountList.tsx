@@ -9,7 +9,7 @@ import {
   AddButton,
   KpiCard,
 } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyCell, MoneyText } from '@/shared/value';
 import { useAllAccounts, useDeleteAccount } from '@/application/payments';
 import { sumBy } from '@/shared/utils/array.util';
 
@@ -76,11 +76,7 @@ export function AccountList({ onEdit, onNew }: AccountListProps) {
         accessorKey: 'initial_balance',
         header: 'Số dư ban đầu',
         meta: { className: 'text-right' },
-        cell: ({ getValue }) => (
-          <span className="font-medium">
-            {formatCurrency(getValue<number>())}đ
-          </span>
-        ),
+        cell: ({ getValue }) => <MoneyCell value={getValue<number>()} bold />,
       },
       {
         accessorKey: 'current_balance',
@@ -89,11 +85,7 @@ export function AccountList({ onEdit, onNew }: AccountListProps) {
         cell: ({ getValue }) => {
           const v = getValue<number>();
           return (
-            <span
-              className={`font-bold ${v >= 0 ? 'text-success' : 'text-danger'}`}
-            >
-              {formatCurrency(v)}đ
-            </span>
+            <MoneyCell value={v} tone={v >= 0 ? 'success' : 'danger'} bold />
           );
         },
       },
@@ -224,7 +216,7 @@ export function AccountList({ onEdit, onNew }: AccountListProps) {
                   <div className="flex flex-col">
                     <span className="text-xs text-muted">Số dư ban đầu</span>
                     <span className="font-medium">
-                      {formatCurrency(acc.initial_balance)}đ
+                      <MoneyText value={acc.initial_balance} />
                     </span>
                   </div>
                   <div className="flex flex-col text-right">
@@ -232,7 +224,7 @@ export function AccountList({ onEdit, onNew }: AccountListProps) {
                     <span
                       className={`font-bold ${acc.current_balance >= 0 ? 'text-success' : 'text-danger'}`}
                     >
-                      {formatCurrency(acc.current_balance)}đ
+                      <MoneyText value={acc.current_balance} />
                     </span>
                   </div>
                 </div>

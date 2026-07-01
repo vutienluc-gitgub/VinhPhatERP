@@ -124,4 +124,18 @@ export const PO_CONSTANTS = {
   MSG_PRICE_HIGHER_THAN_CONTRACT: 'Cao hơn giá HĐ',
   BTN_DUPLICATE_ROW: 'Nhân bản dòng',
   BTN_DELETE_ROW: 'Xóa dòng',
+
+  // Goods Receipt Form
+  GR_TITLE: 'Nhập kho (Goods Receipt)',
+  GR_DATE: 'Ngày nhập kho',
+  GR_COL_MATERIAL: 'Nguyên liệu',
+  GR_COL_ORDERED: 'SL Đặt',
+  GR_COL_REMAINING: 'Còn lại',
+  GR_COL_RECEIVED: 'SL Thực nhận',
+  GR_BTN_CONFIRM: 'Xác nhận nhập kho',
+  GR_MSG_NO_QTY: 'Vui lòng nhập số lượng cho ít nhất 1 mặt hàng',
+  GR_MSG_SUCCESS: 'Nhập kho thành công',
+  GR_MSG_ERROR: 'Có lỗi xảy ra khi nhập kho',
+  GR_ALL_RECEIVED: 'Tất cả mặt hàng đã được nhập đủ.',
+  GR_ERROR_LABEL: 'Lỗi',
 };

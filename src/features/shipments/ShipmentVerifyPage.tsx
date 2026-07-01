@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
+import { formatQuantity } from '@/shared/value/core/formatter';
 import { fetchPublicShipmentSummary } from '@/api/verify.api';
 import type { PublicShipmentSummary } from '@/api/verify.api';
 
@@ -39,6 +40,7 @@ function formatDateTime(value: string | null | undefined): string {
   if (!value) return '—';
   const d = new Date(value);
   if (isNaN(d.getTime())) return value;
+  // eslint-disable-next-line no-restricted-syntax
   return d.toLocaleString('vi-VN', {
     day: '2-digit',
     month: '2-digit',
@@ -50,7 +52,7 @@ function formatDateTime(value: string | null | undefined): string {
 
 function formatQty(qty: number | null, unit: string | null): string {
   if (qty === null || qty === undefined) return '—';
-  return `${Number(qty).toLocaleString('vi-VN', { maximumFractionDigits: 2 })} ${unit ?? 'm'}`;
+  return `${formatQuantity(qty, 2)} ${unit ?? 'm'}`;
 }
 
 export function ShipmentVerifyPage() {

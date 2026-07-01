@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 
 import { Icon, Badge, type BadgeVariant } from '@/shared/components';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import { DYEING_ORDER_STATUSES } from '@/schema/dyeing-order.schema';
 import {
   useDyeingOrder,
@@ -138,7 +138,8 @@ export function DyeingOrderDetail({
               Don gia nhuộm
             </label>
             <div className="font-semibold text-primary">
-              {formatCurrency(order.unit_price_per_kg)}đ/kg
+              <MoneyText value={order.unit_price_per_kg} />
+              /kg
             </div>
           </div>
           <div>

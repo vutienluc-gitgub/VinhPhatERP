@@ -12,7 +12,8 @@ import {
   FilterBar,
 } from '@/shared/components';
 import type { IconName } from '@/shared/components/Icon';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
+import { formatCurrency } from '@/shared/value/core/formatter';
 import {
   useRecurringTransactionList,
   useDeleteRecurringTransaction,
@@ -239,6 +240,7 @@ export function RecurringTransactionList() {
           value={metrics.totalCurrentMonthAmount}
           formatMode="currency"
           icon="TrendingUp"
+          // eslint-disable-next-line no-restricted-syntax
           trendValue={`${RECURRING_LABELS.kpiNextMonthEst}: ${formatCurrency(metrics.totalEstimatedNextMonthAmount)}đ`}
           trendDirection="up"
         />
@@ -327,7 +329,7 @@ export function RecurringTransactionList() {
             className: 'text-right',
             cell: (tx) => (
               <span className="font-bold text-text">
-                {formatCurrency(tx.amount)}đ
+                <MoneyText value={tx.amount} />đ
               </span>
             ),
           },

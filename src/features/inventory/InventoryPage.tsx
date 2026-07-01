@@ -18,7 +18,8 @@ import {
 import type { InventoryBreakdownRow, AgingRoll } from '@/application/inventory';
 import type { YarnAvailability } from '@/api/yarn-reservation.api';
 import { AGING_CONFIG, getAgingSeverity } from '@/domain/inventory';
-import { formatQuantity } from '@/shared/utils/format';
+import { WeightText, LengthText } from '@/shared/value';
+import { formatQuantity } from '@/shared/value/core/formatter';
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 
@@ -114,14 +115,14 @@ const BREAKDOWN_COLUMNS: ColumnDef<InventoryBreakdownRow, unknown>[] = [
     header: 'Dài (m)',
     id: 'total_length_m',
     accessorKey: 'total_length_m',
-    cell: ({ row }) => formatQuantity(row.original.total_length_m ?? 0),
+    cell: ({ row }) => <LengthText value={row.original.total_length_m ?? 0} />,
     meta: { className: 'text-right hide-mobile font-medium' },
   },
   {
     header: 'Nặng (kg)',
     id: 'total_weight_kg',
     accessorKey: 'total_weight_kg',
-    cell: ({ row }) => formatQuantity(row.original.total_weight_kg ?? 0),
+    cell: ({ row }) => <WeightText value={row.original.total_weight_kg ?? 0} />,
     meta: { className: 'text-right' },
   },
 ];
@@ -200,19 +201,27 @@ function BreakdownMobileCard({ row }: { row: InventoryBreakdownRow }) {
             <p className="text-[9px] uppercase text-muted font-bold mb-0.5">
               Tổng dài
             </p>
-            <p className="text-sm font-black text-primary">
-              {formatQuantity(row.total_length_m ?? 0)}
-              <span className="text-[10px] ml-0.5">m</span>
-            </p>
+            <LengthText
+              value={row.total_length_m ?? 0}
+              className="text-sm font-black text-primary"
+              suffix=""
+            />
+            <span className="text-[10px] ml-0.5 font-black text-primary">
+              m
+            </span>
           </div>
           <div>
             <p className="text-[9px] uppercase text-muted font-bold mb-0.5">
               Trọng lượng
             </p>
-            <p className="text-sm font-black text-slate-700">
-              {formatQuantity(row.total_weight_kg ?? 0)}
-              <span className="text-[10px] ml-0.5">kg</span>
-            </p>
+            <WeightText
+              value={row.total_weight_kg ?? 0}
+              className="text-sm font-black text-slate-700"
+              suffix=""
+            />
+            <span className="text-[10px] ml-0.5 font-black text-slate-700">
+              kg
+            </span>
           </div>
         </div>
       </div>
@@ -427,9 +436,11 @@ export function InventoryPage() {
                     <p className="kpi-label m-0">Sợi — Khả dụng</p>
                   </div>
                   <div className="flex items-baseline gap-1 mt-1">
-                    <p className="kpi-value text-4xl tracking-tight">
-                      {formatQuantity(yarnStats?.totalAvailableKg ?? 0)}
-                    </p>
+                    <WeightText
+                      value={yarnStats?.totalAvailableKg ?? 0}
+                      className="kpi-value text-4xl tracking-tight"
+                      suffix=""
+                    />
                     <span className="text-sm font-bold opacity-80 uppercase">
                       kg
                     </span>
@@ -440,13 +451,20 @@ export function InventoryPage() {
                   <div className="flex justify-between items-center opacity-90">
                     <span>Tổng kho (Total):</span>
                     <span className="font-bold">
-                      {formatQuantity(yarnStats?.totalStockKg ?? 0)} kg
+                      <WeightText
+                        value={yarnStats?.totalStockKg ?? 0}
+                        suffix="kg"
+                      />
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-red-100">
                     <span>Đã giữ (Reserved):</span>
                     <span>
-                      - {formatQuantity(yarnStats?.totalReservedKg ?? 0)} kg
+                      -{' '}
+                      <WeightText
+                        value={yarnStats?.totalReservedKg ?? 0}
+                        suffix="kg"
+                      />
                     </span>
                   </div>
                 </div>
@@ -460,7 +478,7 @@ export function InventoryPage() {
                 <div className="kpi-info">
                   <p className="kpi-label">Vải mộc — Cuộn</p>
                   <p className="kpi-value">
-                    {(rawStats?.totalRolls ?? 0).toLocaleString('vi-VN')}
+                    {formatQuantity(rawStats?.totalRolls ?? 0, 0)}
                   </p>
                 </div>
                 <div className="kpi-icon-box">
@@ -478,9 +496,11 @@ export function InventoryPage() {
                 <div className="kpi-info">
                   <p className="kpi-label">Vải mộc — Tổng dài</p>
                   <div className="flex items-baseline gap-1">
-                    <p className="kpi-value">
-                      {formatQuantity(rawStats?.totalLengthM ?? 0)}
-                    </p>
+                    <LengthText
+                      value={rawStats?.totalLengthM ?? 0}
+                      className="kpi-value"
+                      suffix=""
+                    />
                     <span className="text-base font-bold opacity-80 uppercase">
                       m
                     </span>
@@ -502,7 +522,7 @@ export function InventoryPage() {
                 <div className="kpi-info">
                   <p className="kpi-label">Thành phẩm — Cuộn</p>
                   <p className="kpi-value">
-                    {(finishedStats?.totalRolls ?? 0).toLocaleString('vi-VN')}
+                    {formatQuantity(finishedStats?.totalRolls ?? 0, 0)}
                   </p>
                 </div>
                 <div className="kpi-icon-box">
@@ -520,9 +540,11 @@ export function InventoryPage() {
                 <div className="kpi-info">
                   <p className="kpi-label">Thành phẩm — Tổng dài</p>
                   <div className="flex items-baseline gap-1">
-                    <p className="kpi-value">
-                      {formatQuantity(finishedStats?.totalLengthM ?? 0)}
-                    </p>
+                    <LengthText
+                      value={finishedStats?.totalLengthM ?? 0}
+                      className="kpi-value"
+                      suffix=""
+                    />
                     <span className="text-base font-bold opacity-80 uppercase">
                       m
                     </span>

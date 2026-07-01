@@ -9,7 +9,7 @@ import {
   ActionBar,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import { DYEING_ORDER_STATUSES } from '@/schema/dyeing-order.schema';
 
 import type { DyeingOrder } from './types';
@@ -91,7 +91,7 @@ export function DyeingOrderList({
       className: 'text-right',
       cell: (row: DyeingOrder) => (
         <span className="tabular-nums font-medium">
-          {formatCurrency(row.unit_price_per_kg)}đ
+          <MoneyText value={row.unit_price_per_kg} />
         </span>
       ),
     },
@@ -165,7 +165,8 @@ export function DyeingOrderList({
                 : '—'}
             </div>
             <div className="font-bold text-sm">
-              {formatCurrency(row.unit_price_per_kg)}đ/kg
+              <MoneyText value={row.unit_price_per_kg} />
+              /kg
             </div>
           </div>
         </div>

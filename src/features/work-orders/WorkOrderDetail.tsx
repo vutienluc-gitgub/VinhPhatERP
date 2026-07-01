@@ -4,7 +4,8 @@ import { Icon } from '@/shared/components/Icon';
 import { Badge } from '@/shared/components/Badge';
 import { TimelineProgress, type TimelineStep } from '@/shared/components';
 import { FadeUp } from '@/shared/components';
-import { formatCurrency, formatQuantity } from '@/shared/utils/format';
+import { formatQuantity } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import {
   calcTotalBomRatio,
   calcTotalRequiredKg,
@@ -247,13 +248,17 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
               <div className="form-field">
                 <label>Đơn giá dệt</label>
                 <p className="font-bold">
-                  {formatCurrency(wo.weaving_unit_price)}đ/m
+                  <MoneyText value={wo.weaving_unit_price} />
+                  đ/m
                 </p>
               </div>
               <div className="form-field">
                 <label>Tổng phí dự kiến</label>
                 <p className="font-bold text-success">
-                  {formatCurrency(wo.target_quantity * wo.weaving_unit_price)}đ
+                  <MoneyText
+                    value={wo.target_quantity * wo.weaving_unit_price}
+                  />
+                  đ
                 </p>
               </div>
             </div>
@@ -315,12 +320,10 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                         </td>
                         <td className="text-right">{req.bom_ratio_pct}%</td>
                         <td className="text-right font-bold text-primary">
-                          {req.required_kg.toLocaleString(undefined, {
-                            minimumFractionDigits: 1,
-                          })}
+                          {formatQuantity(req.required_kg, 1)}
                         </td>
                         <td className="text-right font-bold text-success">
-                          {req.allocated_kg.toLocaleString()}
+                          {formatQuantity(req.allocated_kg, 1)}
                         </td>
                       </tr>
                     ))}
@@ -332,21 +335,11 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                         {calcTotalBomRatio(requirements)}%
                       </td>
                       <td className="text-right text-primary">
-                        {calcTotalRequiredKg(requirements).toLocaleString(
-                          undefined,
-                          {
-                            maximumFractionDigits: 1,
-                          },
-                        )}{' '}
+                        {formatQuantity(calcTotalRequiredKg(requirements), 1)}{' '}
                         kg
                       </td>
                       <td className="text-right text-success">
-                        {calcTotalAllocatedKg(requirements).toLocaleString(
-                          undefined,
-                          {
-                            maximumFractionDigits: 1,
-                          },
-                        )}{' '}
+                        {formatQuantity(calcTotalAllocatedKg(requirements), 1)}{' '}
                         kg
                       </td>
                     </tr>
@@ -369,14 +362,14 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
               <div className="stat-card">
                 <span className="stat-label">Tổng mét mục tiêu</span>
                 <span className="stat-value text-primary">
-                  {wo.target_quantity.toLocaleString()} m
+                  {formatQuantity(wo.target_quantity)} m
                 </span>
               </div>
               <div className="stat-card">
                 <span className="stat-label">Khối lượng mộc dự kiến</span>
                 <span className="stat-value">
                   {wo.target_weight_kg
-                    ? `${wo.target_weight_kg.toLocaleString()} kg`
+                    ? `${formatQuantity(wo.target_weight_kg)} kg`
                     : 'N/A'}
                 </span>
               </div>
@@ -392,7 +385,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                 <div className="stat-card">
                   <span className="stat-label">Sản lượng mộc thu được</span>
                   <span className="stat-value text-success">
-                    {wo.actual_yield_m?.toLocaleString()} m
+                    {formatQuantity(wo.actual_yield_m ?? 0)} m
                   </span>
                 </div>
                 <div className="stat-card">

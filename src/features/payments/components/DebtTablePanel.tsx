@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import { Badge, Icon, DataTable, Button } from '@/shared/components';
 import type { DataTableColumn } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import {
   calculateTotalDebt,
   countDebtors,
@@ -85,8 +85,7 @@ export function DebtTablePanel<T extends DebtRowBase>({
               <div className="kpi-info">
                 <p className="kpi-label">{kpiTitle}</p>
                 <p className="kpi-value">
-                  {formatCurrency(totalDebt)}
-                  <span className="text-xs font-normal ml-1">đ</span>
+                  <MoneyText value={totalDebt} compact />
                 </p>
               </div>
               <div className="kpi-icon-box">
@@ -174,19 +173,21 @@ export function DebtMobileCard({
           {code && <span className="text-xs text-muted">{code}</span>}
         </div>
         <span className="font-bold text-danger text-lg">
-          -{formatCurrency(balanceDue)}đ
+          -<MoneyText value={balanceDue} tone="danger" />
         </span>
       </div>
       <div className="mobile-card-body space-y-3">
         <div className="grid grid-cols-3 gap-2 text-sm">
           <div className="flex flex-col">
             <span className="text-xs text-muted">{totalLabel}</span>
-            <span className="font-medium">{formatCurrency(totalAmount)}đ</span>
+            <span className="font-medium">
+              <MoneyText value={totalAmount} />
+            </span>
           </div>
           <div className="flex flex-col text-center">
             <span className="text-xs text-muted">{paidLabel}</span>
             <span className="font-medium text-success">
-              {formatCurrency(totalPaid)}đ
+              <MoneyText value={totalPaid} tone="success" />
             </span>
           </div>
           <div className="flex flex-col text-right">

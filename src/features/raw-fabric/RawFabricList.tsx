@@ -16,6 +16,7 @@ import {
   useRawFabricStats,
   useRawFabricAll,
 } from '@/application/inventory';
+import { formatQuantity } from '@/shared/value/core/formatter';
 import { useRawFabricExport } from '@/application/inventory';
 import { StatWidget } from '@/shared/components/StatWidget';
 import { getRollStatusVariant } from '@/shared/utils/status-variant';
@@ -156,7 +157,7 @@ export function RawFabricList({
           <StatWidget
             title="Tổng số cuộn"
             icon="Box"
-            value={stats.totalRolls.toLocaleString()}
+            value={formatQuantity(stats.totalRolls, 0)}
             subtitle="Cuộn đang trong kho"
             color="primary"
             onClick={() => {
@@ -166,7 +167,7 @@ export function RawFabricList({
           <StatWidget
             title="Tổng chiều dài"
             icon="Ruler"
-            value={`${stats.totalLengthM.toLocaleString()}m`}
+            value={`${formatQuantity(stats.totalLengthM, 0)}m`}
             subtitle="Cuộn đang trong kho"
             color="success"
             onClick={() => {
@@ -179,7 +180,7 @@ export function RawFabricList({
           <StatWidget
             title="Trọng lượng tịnh"
             icon="Scale"
-            value={`${stats.totalWeightKg.toLocaleString()}kg`}
+            value={`${formatQuantity(stats.totalWeightKg, 0)}kg`}
             subtitle="Trọng lượng tịnh thực tế"
             color="amber"
             legend={
@@ -271,7 +272,7 @@ export function RawFabricList({
               className: 'text-right',
               cell: (r) => (
                 <span className="font-medium">
-                  {r.weight_kg?.toLocaleString()}
+                  {formatQuantity(r.weight_kg)}
                   <span className="text-xs ml-1 text-muted">kg</span>
                 </span>
               ),
@@ -283,7 +284,7 @@ export function RawFabricList({
               className: 'text-right',
               cell: (r) => (
                 <span className="font-medium text-success">
-                  {r.length_m?.toLocaleString()}
+                  {formatQuantity(r.length_m)}
                   <span className="text-xs ml-1 text-muted">m</span>
                 </span>
               ),

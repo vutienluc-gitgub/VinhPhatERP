@@ -10,7 +10,10 @@ import type {
   PurchaseOrder,
   PurchaseOrderItem,
 } from '@/domain/purchase-orders';
-import { Button, CancelButton, FormattedInput } from '@/shared/components';
+import { Button, CancelButton } from '@/shared/components';
+import { QuantityInput } from '@/shared/value';
+
+import { PO_CONSTANTS } from './purchase-orders.constants';
 
 interface GoodsReceiptFormProps {
   po: PurchaseOrder;
@@ -61,17 +64,17 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
     };
 
     if (filteredValues.items.length === 0) {
-      toast.error('Vui lòng nhập số lượng cho ít nhất 1 mặt hàng');
+      toast.error(PO_CONSTANTS.GR_MSG_NO_QTY);
       return;
     }
 
     try {
       await createMutation.mutateAsync(filteredValues);
-      toast.success('Nhập kho thành công');
+      toast.success(PO_CONSTANTS.GR_MSG_SUCCESS);
       onClose();
     } catch (error) {
       const msg =
-        error instanceof Error ? error.message : 'Có lỗi xảy ra khi nhập kho';
+        error instanceof Error ? error.message : PO_CONSTANTS.GR_MSG_ERROR;
       toast.error(msg);
     }
   }
@@ -86,7 +89,7 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
       <div className="bg-surface rounded-xl shadow-xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
         <div className="p-4 border-b border-border flex justify-between items-center bg-gray-50">
           <div>
-            <h2 className="text-xl font-bold m-0">Nhập kho (Goods Receipt)</h2>
+            <h2 className="text-xl font-bold m-0">{PO_CONSTANTS.GR_TITLE}</h2>
             <p className="text-sm text-muted mt-1">PO: {po.po_code}</p>
           </div>
           <button
@@ -107,7 +110,7 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="form-field">
                 <label>
-                  Ngày nhập kho <span className="text-red-500">*</span>
+                  {PO_CONSTANTS.GR_DATE} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
@@ -126,10 +129,14 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
               <table className="w-full text-left">
                 <thead className="bg-gray-50 text-sm text-muted border-b border-border">
                   <tr>
-                    <th className="p-3">Nguyên liệu</th>
-                    <th className="p-3 text-right">SL Đặt</th>
-                    <th className="p-3 text-right">Còn lại</th>
-                    <th className="p-3 w-40">SL Thực nhận</th>
+                    <th className="p-3">{PO_CONSTANTS.GR_COL_MATERIAL}</th>
+                    <th className="p-3 text-right">
+                      {PO_CONSTANTS.GR_COL_ORDERED}
+                    </th>
+                    <th className="p-3 text-right">
+                      {PO_CONSTANTS.GR_COL_REMAINING}
+                    </th>
+                    <th className="p-3 w-40">{PO_CONSTANTS.GR_COL_RECEIVED}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -157,18 +164,19 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
                             render={({
                               field: { value, onChange, onBlur },
                             }) => (
-                              <FormattedInput
+                              <QuantityInput
                                 className={`field-input text-right ${errors.items?.[index]?.received_qty ? 'border-red-500' : ''}`}
                                 value={value}
-                                onChange={(v) => onChange(v || 0)}
+                                onChange={onChange}
                                 onBlur={onBlur}
                                 placeholder="0"
+                                decimals={2}
                               />
                             )}
                           />
                           {errors.items?.[index]?.received_qty && (
                             <span className="text-red-500 text-xs mt-1 block">
-                              Lỗi
+                              {PO_CONSTANTS.GR_ERROR_LABEL}
                             </span>
                           )}
                         </td>
@@ -178,7 +186,7 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
                   {fields.length === 0 && (
                     <tr>
                       <td colSpan={4} className="p-4 text-center text-muted">
-                        Tất cả mặt hàng đã được nhập đủ.
+                        {PO_CONSTANTS.GR_ALL_RECEIVED}
                       </td>
                     </tr>
                   )}
@@ -202,7 +210,7 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
             disabled={fields.length === 0}
             isLoading={isPending}
           >
-            Xác nhận nhập kho
+            {PO_CONSTANTS.GR_BTN_CONFIRM}
           </Button>
         </div>
       </div>
