@@ -32,6 +32,70 @@ export const DEBT_LABELS = {
   },
 } as const;
 
+export const EXPENSE_FORM_LABELS = {
+  titleEdit: 'Sửa phiếu chi:',
+  titleCreate: 'Tạo phiếu chi mới',
+  cancel: 'Hủy',
+  submitEdit: 'Cập nhật',
+  submitCreate: 'Tạo phiếu chi',
+  errorPrefix: 'Lỗi:',
+  expenseNumber: 'Số phiếu chi',
+  expenseNumberAuto: 'Tự động',
+  expenseDate: 'Ngày chi',
+  category: 'Danh mục',
+  amount: 'Số tiền (đ)',
+  amountPlaceholder: 'VD: 5.000.000',
+  supplierId: 'Nhà cung cấp / Đối tác',
+  supplierPlaceholder: '— Chọn nhà cung cấp —',
+  description: 'Mô tả',
+  descriptionPlaceholder: 'VD: Thanh toán tiền sợi tháng 3',
+  accountId: 'Tài khoản chi',
+  accountIdPlaceholder: '— Không chọn —',
+  referenceNumber: 'Số chứng từ',
+  referenceNumberPlaceholder: 'Mã giao dịch, số hóa đơn...',
+  employeeId: 'Nhân viên phụ trách',
+  employeeIdPlaceholder: '— Không chọn —',
+  notes: 'Ghi chú',
+  notesPlaceholder: 'Ghi chú thêm...',
+} as const;
+
+export const PAYMENT_FORM_LABELS = {
+  titlePrefix: 'Thu tiền —',
+  cancel: 'Hủy',
+  submitReady: 'Xác nhận thu',
+  submitPending: 'Đang lưu...',
+  errorPrefix: 'Lỗi:',
+  balanceDuePrefix: 'Còn nợ:',
+  paymentNumber: 'Số phiếu thu',
+  paymentNumberAuto: 'Tự động',
+  paymentDate: 'Ngày thu',
+  amount: 'Số tiền (đ)',
+  amountPlaceholder: 'VD: 5.000.000',
+  paymentMethod: 'Hình thức',
+  referenceNumber: 'Số chứng từ / mã giao dịch',
+  referenceNumberPlaceholder: 'Số séc, mã giao dịch...',
+} as const;
+
+export const ACCOUNT_FORM_LABELS = {
+  titleEdit: 'Sửa:',
+  titleCreate: 'Thêm tài khoản mới',
+  cancel: 'Hủy',
+  submitEdit: 'Cập nhật',
+  submitCreate: 'Tạo tài khoản',
+  errorPrefix: 'Lỗi:',
+  name: 'Tên tài khoản',
+  namePlaceholder: 'VD: VCB - Vĩnh Phát',
+  type: 'Loại tài khoản',
+  bankName: 'Tên ngân hàng',
+  bankNamePlaceholder: 'VD: Vietcombank',
+  accountNumber: 'Số tài khoản',
+  accountNumberPlaceholder: 'VD: 1234567890',
+  initialBalance: 'Số dư ban đầu (đ)',
+  status: 'Trạng thái',
+  notes: 'Ghi chú',
+  notesPlaceholder: 'Ghi chú thêm...',
+} as const;
+
 /** Badge mapping per debt risk tier → shared Badge component variant */
 export const DEBT_RISK_TIER_BADGE: Record<
   string,

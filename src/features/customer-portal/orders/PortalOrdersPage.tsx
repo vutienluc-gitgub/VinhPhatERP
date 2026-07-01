@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
 import { usePortalOrders } from '@/application/crm/portal';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import { Button, Icon } from '@/shared/components';
 import type { PortalOrder, PortalOrderItem } from '@/domain/portal/types';
 import {
@@ -169,7 +169,7 @@ function OrderCard({
         </div>
         <div className="portal-card-premium-header-right">
           <span className="portal-card-premium-amount">
-            {formatCurrency(order.total_amount)} ₫
+            <MoneyText value={order.total_amount} suffix=" ₫" />
           </span>
           <div className="portal-card-premium-badges">
             <span

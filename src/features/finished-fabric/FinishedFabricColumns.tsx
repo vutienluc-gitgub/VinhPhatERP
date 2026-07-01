@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 
 import { Badge, Icon, ActionBar } from '@/shared/components';
-import { formatQuantity } from '@/shared/utils/format';
+import { formatQuantity } from '@/shared/value/core/formatter';
 import { getRollStatusVariant } from '@/shared/utils/status-variant';
 import { ROLL_STATUS_LABELS } from '@/schema/finished-fabric.schema';
 
@@ -201,7 +201,7 @@ export function renderFinishedFabricMobileCard(
             </span>
             <span className="text-sm font-medium">
               {r.weight_kg != null
-                ? `${r.weight_kg.toLocaleString('vi-VN', { maximumFractionDigits: 3 })} kg`
+                ? `${formatQuantity(r.weight_kg, 3)} kg`
                 : '—'}
             </span>
           </div>

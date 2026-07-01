@@ -20,6 +20,7 @@ import type {
   FabricVariant,
   FabricVariantStatus,
 } from '@/domain/settings/fabric-catalog.types';
+import { MoneyText } from '@/shared/value';
 
 import { FabricVariantForm } from './FabricVariantForm';
 
@@ -34,11 +35,6 @@ function getVariantStatusVariant(status: FabricVariantStatus): BadgeVariant {
     default:
       return 'gray';
   }
-}
-
-function formatCurrency(value: number | null): string {
-  if (value === null || value === undefined) return '—';
-  return new Intl.NumberFormat('vi-VN').format(value);
 }
 
 type FabricVariantListProps = {
@@ -208,7 +204,11 @@ export function FabricVariantList({
                       <span>
                         Nhập:{' '}
                         <strong className="text-text">
-                          {formatCurrency(v.purchase_price)}
+                          {v.purchase_price != null ? (
+                            <MoneyText value={v.purchase_price} />
+                          ) : (
+                            '—'
+                          )}
                         </strong>
                       </span>
                     )}
@@ -216,7 +216,11 @@ export function FabricVariantList({
                       <span>
                         Bán:{' '}
                         <strong className="text-success">
-                          {formatCurrency(v.selling_price)}
+                          {v.selling_price != null ? (
+                            <MoneyText value={v.selling_price} />
+                          ) : (
+                            '—'
+                          )}
                         </strong>
                       </span>
                     )}

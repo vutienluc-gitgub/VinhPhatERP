@@ -1,6 +1,7 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
+import { formatCurrency } from '@/shared/value/core/formatter';
 import { sumBy } from '@/shared/utils/array.util';
 
 type PaymentSlice = {
@@ -45,6 +46,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
         </span>
       </div>
       <p className="text-[13px] font-bold text-[var(--text)] pl-[18px]">
+        {/* eslint-disable-next-line no-restricted-syntax */}
         {formatCurrency(entry?.value ?? 0)} đ
       </p>
     </div>
@@ -132,7 +134,7 @@ export function PaymentMethodChart({
             </span>
             {/* Value */}
             <span className="text-[12px] font-bold text-[var(--text)] shrink-0 min-w-[72px] text-right tabular-nums">
-              {formatCurrency(s.value)} đ
+              <MoneyText value={s.value} /> đ
             </span>
           </div>
         ))}

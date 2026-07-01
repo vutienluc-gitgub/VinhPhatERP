@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 import { useState, useEffect } from 'react';
 
 import { usePortalQuotationDetail } from '@/application/crm/portal';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import { Button, Icon } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 
@@ -134,10 +134,10 @@ export function PortalQuotationDetail() {
                         {item.quantity} {item.unit}
                       </td>
                       <td className="py-4 text-right text-slate-600 font-medium">
-                        {formatCurrency(item.unit_price)}
+                        <MoneyText value={item.unit_price} suffix="" />
                       </td>
                       <td className="py-4 text-right font-bold text-slate-800">
-                        {formatCurrency(item.amount)} đ
+                        <MoneyText value={item.amount} suffix=" đ" />
                       </td>
                     </tr>
                   ))}
@@ -165,7 +165,9 @@ export function PortalQuotationDetail() {
             <h2 className="text-lg font-bold mb-4">Tổng cộng</h2>
             <div className="space-y-4">
               <div className="flex justify-between items-center text-2xl font-black text-primary">
-                <span>{formatCurrency(quotation.total_amount)} đ</span>
+                <span>
+                  <MoneyText value={quotation.total_amount} suffix=" đ" />
+                </span>
               </div>
 
               <div className="h-px bg-slate-100" />
@@ -306,7 +308,10 @@ export function PortalQuotationDetail() {
               Bạn đang xác nhận chuyển đổi báo giá{' '}
               <strong>{quotation.quotation_number}</strong> thành đơn hàng chính
               thức với tổng giá trị{' '}
-              <strong>{formatCurrency(quotation.total_amount)} đ</strong>.
+              <strong>
+                <MoneyText value={quotation.total_amount} suffix=" đ" />
+              </strong>
+              .
             </p>
           </div>
 

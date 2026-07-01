@@ -243,6 +243,7 @@ export function BomDetail({
                   </p>
                   <p className="td-muted text-xs mt-0.5">
                     {ver.created_by_profile?.full_name ?? 'N/A'} •{' '}
+                    {/* eslint-disable-next-line no-restricted-syntax */}
                     {new Date(ver.created_at).toLocaleString('vi-VN')}
                   </p>
                 </div>

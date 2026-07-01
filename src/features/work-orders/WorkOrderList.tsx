@@ -15,7 +15,8 @@ import {
   type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { formatQuantity } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import {
   useWorkOrders,
   useStartWorkOrder,
@@ -328,7 +329,8 @@ export function WorkOrderList({
                   <div className="flex flex-col">
                     <span className="font-medium">{wo.supplier?.name}</span>
                     <span className="text-xs text-muted">
-                      {formatCurrency(wo.weaving_unit_price)}đ/m
+                      <MoneyText value={wo.weaving_unit_price} />
+                      đ/m
                     </span>
                   </div>
                 ),
@@ -341,11 +343,11 @@ export function WorkOrderList({
                 cell: (wo) => (
                   <div className="flex flex-col text-right">
                     <span className="font-bold">
-                      {wo.target_quantity.toLocaleString()} m
+                      {formatQuantity(wo.target_quantity)} m
                     </span>
                     {wo.target_weight_kg && (
                       <span className="text-xs text-muted">
-                        ~{wo.target_weight_kg.toLocaleString()} kg
+                        ~{formatQuantity(wo.target_weight_kg)} kg
                       </span>
                     )}
                   </div>
@@ -442,7 +444,7 @@ export function WorkOrderList({
                       <div className="flex flex-col text-right">
                         <span className="text-xs text-muted">Mục tiêu</span>
                         <span className="font-bold text-primary">
-                          {wo.target_quantity.toLocaleString()} m
+                          {formatQuantity(wo.target_quantity)} m
                         </span>
                       </div>
                     </div>
@@ -457,7 +459,8 @@ export function WorkOrderList({
                       <div className="flex flex-col text-right">
                         <span className="text-xs text-muted">Đơn giá dệt</span>
                         <span className="font-medium">
-                          {formatCurrency(wo.weaving_unit_price)}đ/m
+                          <MoneyText value={wo.weaving_unit_price} />
+                          đ/m
                         </span>
                       </div>
                     </div>

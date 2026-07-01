@@ -12,7 +12,7 @@ import {
   type FilterFieldConfig,
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyCell, MoneyText } from '@/shared/value';
 import { useDeleteExpense, useExpenseList } from '@/application/payments';
 
 import { EXPENSE_CATEGORIES, EXPENSE_CATEGORY_LABELS } from './payments.module';
@@ -194,11 +194,7 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
             id: 'amount',
             sortable: true,
             className: 'text-right',
-            cell: (exp) => (
-              <span className="font-bold text-danger">
-                {formatCurrency(exp.amount)}đ
-              </span>
-            ),
+            cell: (exp) => <MoneyCell value={exp.amount} bold tone="danger" />,
           },
           {
             header: 'Tài khoản',
@@ -240,7 +236,7 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
                 <span className="text-xs text-muted">{exp.expense_date}</span>
               </div>
               <span className="font-bold text-danger text-lg">
-                {formatCurrency(exp.amount)}đ
+                <MoneyText value={exp.amount} tone="danger" />
               </span>
             </div>
             <div className="mobile-card-body space-y-2">

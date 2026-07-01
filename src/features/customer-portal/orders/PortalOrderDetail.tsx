@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 
 import { usePortalOrders } from '@/application/crm/portal';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 
 import { PortalProgressTimeline } from './PortalProgressTimeline';
 
@@ -40,12 +40,14 @@ export function PortalOrderDetail() {
             <div className="portal-detail-item">
               <label>Tổng tiền</label>
               <p style={{ fontWeight: 600 }}>
-                {formatCurrency(order.total_amount)} ₫
+                <MoneyText value={order.total_amount} suffix=" ₫" />
               </p>
             </div>
             <div className="portal-detail-item">
               <label>Đã thanh toán</label>
-              <p>{formatCurrency(order.paid_amount)} ₫</p>
+              <p>
+                <MoneyText value={order.paid_amount} suffix=" ₫" />
+              </p>
             </div>
           </div>
         </div>
@@ -73,10 +75,10 @@ export function PortalOrderDetail() {
                     <td>{item.color ?? '—'}</td>
                     <td className="right">{item.quantity}</td>
                     <td className="right">
-                      {formatCurrency(item.unit_price)} ₫
+                      <MoneyText value={item.unit_price} suffix=" ₫" />
                     </td>
                     <td className="right" style={{ fontWeight: 500 }}>
-                      {formatCurrency(item.amount)} ₫
+                      <MoneyText value={item.amount} suffix=" ₫" />
                     </td>
                   </tr>
                 ))}

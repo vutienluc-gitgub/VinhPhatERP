@@ -2,6 +2,7 @@
  * FulfillmentKpiCards — 4 KPI cards tổng hợp.
  */
 import { Icon } from '@/shared/components';
+import { formatQuantity } from '@/shared/utils/format';
 import type { FulfillmentSummary } from '@/api/order-fulfillment.api';
 
 interface FulfillmentKpiCardsProps {
@@ -53,7 +54,7 @@ export function FulfillmentKpiCards({
     {
       label: 'Tỉ lệ hoàn thành TB',
       value: `${summary.avgFulfillmentPct}%`,
-      subtitle: `${summary.totalProducedM.toLocaleString()}m / ${summary.totalTargetM.toLocaleString()}m`,
+      subtitle: `${formatQuantity(summary.totalProducedM)}m / ${formatQuantity(summary.totalTargetM)}m`,
       icon: 'TrendingUp',
       color: 'text-violet-600',
       bgColor: 'bg-violet-50 border-violet-100',

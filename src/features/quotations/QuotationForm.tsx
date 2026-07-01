@@ -13,7 +13,7 @@ import {
   useColorOptions,
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import {
   useCreateQuotation,
   useUpdateQuotation,
@@ -121,27 +121,37 @@ function TotalsSummary({
     <div className="border-t-2 border-border py-3 flex flex-col gap-1.5 text-[0.92rem]">
       <div className="flex justify-between">
         <span>Tạm tính:</span>
-        <span>{formatCurrency(totals.subtotal)}đ</span>
+        <span>
+          <MoneyText value={totals.subtotal} />
+        </span>
       </div>
       {totals.discountAmount > 0 && (
         <div className="flex justify-between text-danger">
           <span>Chiết khấu:</span>
-          <span>-{formatCurrency(totals.discountAmount)}đ</span>
+          <span>
+            -<MoneyText value={totals.discountAmount} />
+          </span>
         </div>
       )}
       <div className="flex justify-between">
         <span>Trước VAT:</span>
-        <span>{formatCurrency(totals.totalBeforeVat)}đ</span>
+        <span>
+          <MoneyText value={totals.totalBeforeVat} />
+        </span>
       </div>
       {totals.vatAmount > 0 && (
         <div className="flex justify-between">
           <span>VAT ({vatRate}%):</span>
-          <span>+{formatCurrency(totals.vatAmount)}đ</span>
+          <span>
+            +<MoneyText value={totals.vatAmount} />
+          </span>
         </div>
       )}
       <div className="flex justify-between font-bold text-[1.05rem] border-t border-border pt-2">
         <span>Tổng cộng:</span>
-        <span>{formatCurrency(totals.totalAmount)}đ</span>
+        <span>
+          <MoneyText value={totals.totalAmount} />
+        </span>
       </div>
     </div>
   );

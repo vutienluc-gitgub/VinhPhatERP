@@ -1,5 +1,5 @@
 import { usePortalPayments } from '@/application/crm/portal';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 
 const METHOD_LABEL: Record<string, string> = {
   cash: 'Tiền mặt',
@@ -39,7 +39,7 @@ export function PortalPaymentsPage() {
                     <td style={{ fontWeight: 500 }}>{p.payment_number}</td>
                     <td>{p.payment_date}</td>
                     <td className="right" style={{ fontWeight: 500 }}>
-                      {formatCurrency(p.amount)} ₫
+                      <MoneyText value={p.amount} suffix=" ₫" />
                     </td>
                     <td>
                       {METHOD_LABEL[p.payment_method] ?? p.payment_method}

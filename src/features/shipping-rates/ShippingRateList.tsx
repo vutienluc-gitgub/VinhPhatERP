@@ -10,7 +10,8 @@ import {
   type FilterFieldConfig,
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
+import { formatQuantity } from '@/shared/value/core/formatter';
 import {
   useDeleteShippingRate,
   useShippingRateList,
@@ -26,13 +27,13 @@ type Props = {
 function rateDescription(item: ShippingRate): string {
   const parts: string[] = [];
   if (item.rate_per_trip != null)
-    parts.push(`${formatCurrency(item.rate_per_trip)}đ/chuyến`);
+    parts.push(`${formatQuantity(item.rate_per_trip, 0)}đ/chuyến`);
   if (item.rate_per_meter != null)
-    parts.push(`${formatCurrency(item.rate_per_meter)}đ/m`);
+    parts.push(`${formatQuantity(item.rate_per_meter, 0)}đ/m`);
   if (item.rate_per_kg != null)
-    parts.push(`${formatCurrency(item.rate_per_kg)}đ/kg`);
+    parts.push(`${formatQuantity(item.rate_per_kg, 0)}đ/kg`);
   if (item.loading_fee > 0)
-    parts.push(`Bốc xếp: ${formatCurrency(item.loading_fee)}đ`);
+    parts.push(`Bốc xếp: ${formatQuantity(item.loading_fee, 0)}đ`);
   return parts.length > 0 ? parts.join(' · ') : '—';
 }
 
@@ -143,9 +144,13 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
             header: 'Phí tối thiểu',
             cell: (item) => (
               <span className="font-medium">
-                {item.min_charge > 0
-                  ? `${formatCurrency(item.min_charge)}đ`
-                  : '—'}
+                {item.min_charge > 0 ? (
+                  <>
+                    <MoneyText value={item.min_charge} />đ
+                  </>
+                ) : (
+                  '—'
+                )}
               </span>
             ),
           },
@@ -200,9 +205,11 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
                 <div className="flex flex-col text-right">
                   <span className="text-xs text-muted">Phí tối thiểu</span>
                   <span className="font-medium">
-                    {item.min_charge > 0
-                      ? formatCurrency(item.min_charge)
-                      : '—'}
+                    {item.min_charge > 0 ? (
+                      <MoneyText value={item.min_charge} />
+                    ) : (
+                      '—'
+                    )}
                   </span>
                 </div>
               </div>

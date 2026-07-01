@@ -145,8 +145,10 @@ export async function updateFabricCommercial(
 ): Promise<void> {
   const { error } = await untypedDb
     .from('fabric_commercials')
-    .update(data)
-    .eq('fabric_catalog_id', fabricId);
+    .upsert(
+      { fabric_catalog_id: fabricId, ...data },
+      { onConflict: 'fabric_catalog_id' },
+    );
   if (error) throw error;
 }
 

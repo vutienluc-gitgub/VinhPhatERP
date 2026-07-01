@@ -1,6 +1,8 @@
 import { memo } from 'react';
 import type { ReactNode } from 'react';
 
+import { formatCurrency, formatQuantity } from '@/shared/value/core/formatter';
+
 import { Icon, type IconName } from './Icon';
 
 export type KpiVariant =
@@ -63,9 +65,10 @@ export const KpiCard = memo(function KpiCard({
   let displayValue = value;
   if (typeof value === 'number') {
     if (formatMode === 'number') {
-      displayValue = new Intl.NumberFormat('vi-VN').format(value);
+      displayValue = formatQuantity(value);
     } else if (formatMode === 'currency') {
-      displayValue = `${new Intl.NumberFormat('vi-VN').format(value)} ₫`;
+      // eslint-disable-next-line no-restricted-syntax
+      displayValue = formatCurrency(value, { compact: false });
     } else if (formatMode === 'percent') {
       displayValue = `${value}%`;
     }

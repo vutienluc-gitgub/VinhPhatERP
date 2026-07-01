@@ -155,7 +155,10 @@ export function NotificationBell() {
                       </p>
                       <p className="text-[13px] text-muted leading-relaxed line-clamp-3">
                         Khoảng{' '}
-                        {new Date(order.created_at).toLocaleString('vi-VN')} -{' '}
+                        {/* eslint-disable-next-line no-restricted-syntax */}
+                        {new Date(order.created_at).toLocaleString(
+                          'vi-VN',
+                        )} -{' '}
                         {order.customer?.name
                           ? `Khách hàng ${order.customer.name}`
                           : 'Một khách hàng'}{' '}

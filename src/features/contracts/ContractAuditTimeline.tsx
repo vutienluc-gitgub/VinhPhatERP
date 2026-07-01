@@ -34,6 +34,7 @@ function AuditLogEntry({ log, isLast }: AuditLogEntryProps) {
     typeof Icon
   >[0]['name'];
 
+  // eslint-disable-next-line no-restricted-syntax
   const formattedTime = new Date(log.performed_at).toLocaleString('vi-VN', {
     day: '2-digit',
     month: '2-digit',

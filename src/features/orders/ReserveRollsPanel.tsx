@@ -12,6 +12,7 @@ import {
   calculateReservedLengthM,
   calculateReservedWeightKg,
 } from '@/domain/orders';
+import { LengthText, WeightText, QuantityText } from '@/shared/value';
 
 import type { Order, OrderItem } from './types';
 
@@ -19,11 +20,6 @@ type ReserveRollsPanelProps = {
   order: Order;
   onClose: () => void;
 };
-
-function fmtNum(val: number | null, unit: string): string {
-  if (val === null || val === undefined) return '—';
-  return `${val.toLocaleString('vi-VN')} ${unit}`;
-}
 
 export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
   const items = order.order_items ?? [];
@@ -120,8 +116,11 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                   {item.color_name ? ` · ${item.color_name}` : ''}
                 </span>
                 <span className="reserve-tab-qty">
-                  {new Intl.NumberFormat('vi-VN').format(item.quantity)}{' '}
-                  {item.unit}
+                  <QuantityText
+                    value={item.quantity}
+                    suffix={item.unit}
+                    decimals={2}
+                  />
                 </span>
               </button>
             ))}
@@ -136,12 +135,12 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
               <span> · {selectedItem.color_name}</span>
             )}
             <span className="td-muted">
-              {' '}
               — Cần:{' '}
-              {new Intl.NumberFormat('vi-VN').format(
-                selectedItem.quantity,
-              )}{' '}
-              {selectedItem.unit}
+              <QuantityText
+                value={selectedItem.quantity}
+                suffix={selectedItem.unit}
+                decimals={2}
+              />
             </span>
           </div>
         )}
@@ -157,13 +156,13 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
           <div className="reserve-summary-item">
             <span className="reserve-summary-label">Tổng dài</span>
             <span className="reserve-summary-value">
-              {fmtNum(reservedLengthM, 'm')}
+              <LengthText value={reservedLengthM} suffix="m" />
             </span>
           </div>
           <div className="reserve-summary-item">
             <span className="reserve-summary-label">Tổng nặng</span>
             <span className="reserve-summary-value">
-              {fmtNum(reservedWeightKg, 'kg')}
+              <WeightText value={reservedWeightKg} suffix="kg" />
             </span>
           </div>
         </div>
@@ -193,9 +192,11 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                         <strong>{roll.roll_number}</strong>
                       </td>
                       <td className="td-muted">{roll.fabric_type}</td>
-                      <td className="td-muted">{fmtNum(roll.length_m, 'm')}</td>
                       <td className="td-muted">
-                        {fmtNum(roll.weight_kg, 'kg')}
+                        <LengthText value={roll.length_m} suffix="m" />
+                      </td>
+                      <td className="td-muted">
+                        <WeightText value={roll.weight_kg} suffix="kg" />
                       </td>
                       <td>
                         {roll.quality_grade ? (
@@ -272,9 +273,11 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                       <td className="td-muted hide-mobile">
                         {roll.color_name ?? '—'}
                       </td>
-                      <td className="td-muted">{fmtNum(roll.length_m, 'm')}</td>
                       <td className="td-muted">
-                        {fmtNum(roll.weight_kg, 'kg')}
+                        <LengthText value={roll.length_m} suffix="m" />
+                      </td>
+                      <td className="td-muted">
+                        <WeightText value={roll.weight_kg} suffix="kg" />
                       </td>
                       <td className="hide-mobile">
                         {roll.quality_grade ? (

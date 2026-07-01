@@ -1,8 +1,7 @@
 import { Controller, useFormContext } from 'react-hook-form';
 
 import { Combobox } from '@/shared/components/Combobox';
-import { CurrencyInput } from '@/shared/components/CurrencyInput';
-import { FormattedInput } from '@/shared/components/FormattedInput';
+import { MoneyInput, QuantityInput } from '@/shared/value';
 import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
 
 const YARN_UNIT_OPTIONS = [
@@ -135,13 +134,14 @@ export function YarnReceiptItemRow({
             name={`items.${index}.quantity` as const}
             control={control}
             render={({ field }) => (
-              <FormattedInput
+              <QuantityInput
                 id={`items.${index}.quantity`}
                 className={`field-input${itemErrors?.quantity ? ' is-error' : ''}`}
                 value={field.value}
                 onChange={(val) => field.onChange(val ?? 0)}
                 onBlur={field.onBlur}
                 placeholder="0"
+                decimals={4}
               />
             )}
           />
@@ -158,7 +158,7 @@ export function YarnReceiptItemRow({
             name={`items.${index}.unitPrice` as const}
             control={control}
             render={({ field }) => (
-              <CurrencyInput
+              <MoneyInput
                 id={`items.${index}.unitPrice`}
                 className={`field-input${itemErrors?.unitPrice ? ' is-error' : ''}`}
                 value={field.value}
@@ -294,13 +294,14 @@ export function YarnReceiptItemRow({
             name={`items.${index}.netWeight` as const}
             control={control}
             render={({ field }) => (
-              <FormattedInput
+              <QuantityInput
                 id={`items.${index}.netWeight`}
                 className={`field-input${itemErrors?.netWeight ? ' is-error' : ''}`}
                 value={field.value}
                 onChange={(val) => field.onChange(val ?? null)}
                 onBlur={field.onBlur}
                 placeholder="VD: 27.0"
+                decimals={4}
               />
             )}
           />
@@ -315,13 +316,14 @@ export function YarnReceiptItemRow({
             name={`items.${index}.grossWeight` as const}
             control={control}
             render={({ field }) => (
-              <FormattedInput
+              <QuantityInput
                 id={`items.${index}.grossWeight`}
                 className={`field-input${itemErrors?.grossWeight ? ' is-error' : ''}`}
                 value={field.value}
                 onChange={(val) => field.onChange(val ?? null)}
                 onBlur={field.onBlur}
                 placeholder="VD: 31.0"
+                decimals={4}
               />
             )}
           />

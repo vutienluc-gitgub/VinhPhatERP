@@ -1,4 +1,5 @@
 import { Icon } from '@/shared/components/Icon';
+import { formatQuantity } from '@/shared/value/core/formatter';
 import type { LoomStatus } from '@/schema/loom.schema';
 import { LOOM_STATUS_LABELS, LOOM_TYPE_LABELS } from '@/schema/loom.schema';
 import type { LoomWithSupplier } from '@/features/looms/types';
@@ -68,7 +69,7 @@ export function LoomMobileCard({
             <span className="text-xs text-muted">Công suất</span>
             <span className="font-bold text-primary">
               {l.daily_capacity_m
-                ? `${l.daily_capacity_m.toLocaleString()} m/ngày`
+                ? `${formatQuantity(l.daily_capacity_m, 0)} m/ngày`
                 : '—'}
             </span>
           </div>

@@ -1,8 +1,8 @@
 import { UseFormReturn, Controller } from 'react-hook-form';
 
 import type { PurchaseOrderFormValues } from '@/domain/purchase-orders';
-import { Button, CurrencyInput, Icon } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { Button, Icon } from '@/shared/components';
+import { MoneyText, MoneyInput } from '@/shared/value';
 import { PO_CONSTANTS } from '@/features/purchase-orders/purchase-orders.constants';
 
 interface POPaymentPanelProps {
@@ -58,9 +58,9 @@ export function POPaymentPanel({
                 name="vat_rate"
                 control={control}
                 render={({ field }) => (
-                  <CurrencyInput
+                  <MoneyInput
                     value={field.value}
-                    onChange={(val) => field.onChange(val || 0)}
+                    onChange={field.onChange}
                     placeholder="0"
                     className="h-9 w-full text-right bg-white font-medium tabular-nums"
                   />
@@ -74,9 +74,9 @@ export function POPaymentPanel({
                 name="shipping_fee"
                 control={control}
                 render={({ field }) => (
-                  <CurrencyInput
+                  <MoneyInput
                     value={field.value}
-                    onChange={(val) => field.onChange(val || 0)}
+                    onChange={field.onChange}
                     placeholder="0"
                     className="h-9 w-full text-right bg-white font-medium tabular-nums"
                   />
@@ -91,21 +91,21 @@ export function POPaymentPanel({
           <div className="flex justify-between items-center text-sm text-gray-600">
             <span>{PO_CONSTANTS.SUBTOTAL}</span>
             <span className="font-semibold tabular-nums text-gray-800">
-              {formatCurrency(subtotal)} {watchCurrency}
+              <MoneyText value={subtotal} /> {watchCurrency}
             </span>
           </div>
 
           <div className="flex justify-between items-center text-sm text-gray-600">
             <span>VAT ({watchVatRate}%)</span>
             <span className="font-semibold tabular-nums text-gray-800">
-              {formatCurrency(vatAmount)} {watchCurrency}
+              <MoneyText value={vatAmount} /> {watchCurrency}
             </span>
           </div>
 
           <div className="flex justify-between items-center text-sm text-gray-600">
             <span>{PO_CONSTANTS.SHIPPING_FEE}</span>
             <span className="font-semibold tabular-nums text-gray-800">
-              {formatCurrency(watchShippingFee)} {watchCurrency}
+              <MoneyText value={watchShippingFee} /> {watchCurrency}
             </span>
           </div>
 
@@ -116,7 +116,7 @@ export function POPaymentPanel({
               </span>
               <div className="text-right">
                 <span className="text-2xl font-extrabold text-primary tabular-nums">
-                  {formatCurrency(totalAmount)}
+                  <MoneyText value={totalAmount} />
                 </span>
                 <span className="text-xs font-bold text-gray-500 ml-1.5 uppercase">
                   {watchCurrency}

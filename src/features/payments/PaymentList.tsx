@@ -7,7 +7,7 @@ import {
   FilterBar,
   type FilterFieldConfig,
 } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyCell, MoneyText } from '@/shared/value';
 import { useDeletePayment, usePaymentList } from '@/application/payments';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 
@@ -141,11 +141,7 @@ export function PaymentList() {
             id: 'amount',
             sortable: true,
             className: 'text-right',
-            cell: (p) => (
-              <span className="font-bold text-success">
-                {formatCurrency(p.amount)}đ
-              </span>
-            ),
+            cell: (p) => <MoneyCell value={p.amount} bold tone="success" />,
           },
           {
             header: 'Hình thức',
@@ -175,7 +171,7 @@ export function PaymentList() {
             <div className="mobile-card-header">
               <span className="mobile-card-title">{p.payment_number}</span>
               <span className="font-bold text-success text-lg">
-                {formatCurrency(p.amount)}đ
+                <MoneyText value={p.amount} tone="success" />
               </span>
             </div>
             <div className="mobile-card-body space-y-2">

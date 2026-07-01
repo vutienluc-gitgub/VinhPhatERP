@@ -2,8 +2,13 @@ import { useFormContext, Controller } from 'react-hook-form';
 import { UseMutationResult } from '@tanstack/react-query';
 
 import { ImagePicker, Combobox, TagInput } from '@/shared/components';
+import { LengthField, DensityField } from '@/shared/value';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
-import { LABELS, UNIT_OPTIONS, TECHNIQUE_OPTIONS } from '@/features/fabric-catalog/fabric-catalog.constants';
+import {
+  LABELS,
+  UNIT_OPTIONS,
+  TECHNIQUE_OPTIONS,
+} from '@/features/fabric-catalog/fabric-catalog.constants';
 import type { FabricCatalog } from '@/features/fabric-catalog/types';
 
 type FabricInfoTabProps = {
@@ -145,39 +150,22 @@ export function FabricInfoTab({
 
       {/* Width + GSM */}
       <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-        <div className="form-field">
-          <label htmlFor="fc-target-width">{LABELS.WIDTH} (cm)</label>
-          <input
-            id="fc-target-width"
-            className={`field-input${errors.target_width_cm ? ' is-error' : ''}`}
-            type="number"
-            step="0.1"
-            min="0"
-            placeholder={LABELS.WIDTH_PLACEHOLDER}
-            {...register('target_width_cm', { valueAsNumber: true })}
-          />
-          {errors.target_width_cm && (
-            <span className="field-error">
-              {errors.target_width_cm.message}
-            </span>
-          )}
-        </div>
+        <LengthField
+          control={control}
+          name="target_width_cm"
+          label={LABELS.WIDTH}
+          suffix="cm"
+          placeholder={LABELS.WIDTH_PLACEHOLDER}
+          allowNegative={false}
+        />
 
-        <div className="form-field">
-          <label htmlFor="fc-target-weight">{LABELS.GSM} (gsm)</label>
-          <input
-            id="fc-target-weight"
-            className={`field-input${errors.target_gsm ? ' is-error' : ''}`}
-            type="number"
-            step="1"
-            min="0"
-            placeholder={LABELS.GSM_PLACEHOLDER}
-            {...register('target_gsm', { valueAsNumber: true })}
-          />
-          {errors.target_gsm && (
-            <span className="field-error">{errors.target_gsm.message}</span>
-          )}
-        </div>
+        <DensityField
+          control={control}
+          name="target_gsm"
+          label={LABELS.GSM}
+          placeholder={LABELS.GSM_PLACEHOLDER}
+          allowNegative={false}
+        />
       </div>
 
       {/* Color + Technique */}

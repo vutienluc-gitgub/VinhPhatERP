@@ -10,7 +10,7 @@ import {
   Icon,
   ActionMenu,
 } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import type { PurchaseOrder } from '@/domain/purchase-orders';
 
 import { PO_CONSTANTS } from './purchase-orders.constants';
@@ -67,7 +67,11 @@ export function POListTable({
         accessorKey: 'total_amount',
         header: PO_CONSTANTS.COL_TOTAL_AMOUNT,
         meta: { className: 'text-right font-medium text-success' },
-        cell: ({ row }) => formatCurrency(row.original.total_amount) + ' đ',
+        cell: ({ row }) => (
+          <>
+            <MoneyText value={row.original.total_amount} /> đ
+          </>
+        ),
       },
       {
         accessorKey: 'status',
@@ -152,7 +156,7 @@ export function POListTable({
               <div className="mobile-card-body space-y-2">
                 <div className="flex justify-between items-start">
                   <div className="font-bold text-lg text-success">
-                    {formatCurrency(po.total_amount)} đ
+                    <MoneyText value={po.total_amount} /> đ
                   </div>
                   <div className="text-sm text-muted flex items-center gap-1">
                     <Icon name="Calendar" size={14} />

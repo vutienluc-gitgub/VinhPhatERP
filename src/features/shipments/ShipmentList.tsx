@@ -23,7 +23,7 @@ import {
 // eslint-disable-next-line boundaries/dependencies
 import { ChatDrawer } from '@/features/chat/ChatDrawer';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import {
   useConfirmShipment,
   useDeleteShipment,
@@ -274,7 +274,9 @@ export function ShipmentList() {
           </div>
           <div className="stat-content-premium">
             <p>Tổng cước (Trang)</p>
-            <p>{formatCurrency(sumBy(shipments, calcShipmentCost))} đ</p>
+            <p>
+              <MoneyText value={sumBy(shipments, calcShipmentCost)} /> đ
+            </p>
           </div>
         </div>
 
@@ -402,7 +404,13 @@ export function ShipmentList() {
                   <span className="text-muted-foreground text-[0.75rem]">
                     Cước:{' '}
                     <span className="font-medium text-foreground">
-                      {totalCost ? `${formatCurrency(totalCost)}đ` : '—'}
+                      {totalCost ? (
+                        <>
+                          <MoneyText value={totalCost} />đ
+                        </>
+                      ) : (
+                        '—'
+                      )}
                     </span>
                   </span>
                 </div>
@@ -596,7 +604,13 @@ export function ShipmentList() {
                 <div className="mobile-card-row border-t border-border mt-2 pt-2">
                   <span className="label font-bold">Cước VC:</span>
                   <span className="value font-bold text-primary">
-                    {totalCost ? `${formatCurrency(totalCost)}đ` : '—'}
+                    {totalCost ? (
+                      <>
+                        <MoneyText value={totalCost} />đ
+                      </>
+                    ) : (
+                      '—'
+                    )}
                   </span>
                 </div>
               </div>

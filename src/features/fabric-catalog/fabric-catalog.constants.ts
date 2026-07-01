@@ -1,4 +1,3 @@
-
 import { FABRIC_CATALOG_STATUS_LABELS } from '@/schema/fabric-catalog.schema';
 
 export const UNIT_OPTIONS = [
@@ -73,7 +72,8 @@ export const LABELS = {
   B2B_CONFIG_DESC: 'Quản lý cách mẫu vải hiển thị trên trang khách hàng',
   PUBLIC_URL_PREFIX: '/p/fabric/',
   QR_CODE_TITLE: 'Mã QR Sản Phẩm',
-  QR_CODE_DESC: 'Dùng mã QR này để in tem nhãn. Khách hàng quét mã sẽ được dẫn thẳng đến trang chi tiết sản phẩm.',
+  QR_CODE_DESC:
+    'Dùng mã QR này để in tem nhãn. Khách hàng quét mã sẽ được dẫn thẳng đến trang chi tiết sản phẩm.',
 
   // Form tabs
   TAB_INFO: 'Thông tin',
@@ -210,6 +210,12 @@ export const LABELS = {
   ACTION_DOWNLOAD_QR: 'Tải QR (.png)',
   ACTION_PRINT_QR: 'In Tem Mẫu',
 
+  // Form buttons & titles
+  EDIT_TITLE: 'Sửa',
+  UPDATE: 'Cập nhật',
+  CANCEL: 'Hủy',
+  ERROR_PREFIX: 'Lỗi:',
+
   // Extra strings from FabricInfoTab
   CODE_PLACEHOLDER: 'VD: FC-001',
   NAME_PLACEHOLDER: 'VD: Cotton TC 65/35',
@@ -327,6 +333,35 @@ export const PUBLIC_PAGE_LABELS = {
   validationQtyPositive: 'Số lượng phải lớn hơn 0',
   validationEmailInvalid: 'Email không đúng định dạng',
   validationTargetPricePositive: 'Giá kỳ vọng phải lớn hơn 0',
+  loginToViewPrice: 'Đăng nhập để xem giá sỉ & đại lý',
+  loginBtn: 'Đăng nhập B2B',
+  logoutBtn: 'Đăng xuất',
+  goToPortal: 'Cổng Portal',
+  openInErp: 'Mở trong ERP',
+  welcomeCustomer: 'Xin chào,',
+  stockAvailableDetail: 'Sẵn có: {qty} {unit} ({rolls} cuộn)',
+  orderViaPortal: 'Đặt hàng qua Portal',
+  badgePublic: 'Công khai',
+  badgeDealer: 'Dealer',
+  badgeVIP: 'VIP',
+  badgeFactory: 'Factory',
+  unwishlistSuccess: 'Đã bỏ lưu mẫu vải.',
+  wishlistSuccess: 'Đã lưu mẫu vải.',
+  removeCompareSuccess: 'Đã xóa khỏi danh sách so sánh.',
+  addCompareSuccess: 'Đã thêm vào danh sách so sánh.',
+  inStock: 'Hàng sẵn',
+  customProduction: 'Đặt sản xuất',
+  production: 'Sản xuất',
+  b2bPlannerTool: 'Công cụ B2B Planner',
+  stockStatusColor: 'Trạng thái kho ({color})',
+  available: 'Sẵn có',
+  outOfStock: 'Hết hàng',
+  pricingTierTitle: 'Bảng giá bậc thang',
+  loginToViewDiscount:
+    'Đăng nhập tài khoản B2B để xem chiết khấu theo số lượng.',
+  fromTo: 'Từ {min} - {max}',
+  from: 'Từ {min}',
+  buyQty: 'Mua {range} {unit}',
 } as const;
 
 export const IMAGE_TYPE_MAP: Record<string, string> = {

@@ -2,7 +2,7 @@ import { useCostEstimationHistory } from '@/features/costing/hooks/useGreigeCost
 import type { CostingSimulationState } from '@/features/costing/types/greige-costing.type';
 import { Icon } from '@/shared/components/Icon';
 import { Badge } from '@/shared/components/Badge';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 
 interface CostEstimationHistoryTableProps {
   referenceType: string;
@@ -65,16 +65,17 @@ export function CostEstimationHistoryTable({
                   </div>
                 </td>
                 <td className="td-muted">
+                  {/* eslint-disable-next-line no-restricted-syntax */}
                   {new Date(record.created_at).toLocaleString('vi-VN')}
                 </td>
                 <td className="text-right">
-                  {formatCurrency(record.est_yarn_price)}
+                  <MoneyText value={record.est_yarn_price} />
                 </td>
                 <td className="text-right font-medium">
-                  {formatCurrency(record.est_total_cost)}
+                  <MoneyText value={record.est_total_cost} />
                 </td>
                 <td className="text-right font-bold text-primary">
-                  {formatCurrency(record.suggested_price)}
+                  <MoneyText value={record.suggested_price} />
                 </td>
                 <td className="text-right">
                   <button

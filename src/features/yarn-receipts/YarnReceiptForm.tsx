@@ -13,7 +13,7 @@ import {
   useColorOptions,
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import { extractFormErrorMessage } from '@/shared/utils/form';
 import {
   useActiveSuppliers,
@@ -112,7 +112,7 @@ function LineTotals({ control }: { control: Control<YarnReceiptsFormValues> }) {
   const total = useYarnReceiptTotal(control);
   return (
     <div className="text-right font-semibold text-base py-2.5 border-t-2 border-[var(--border)] mt-4">
-      Tổng cộng: {formatCurrency(total)} đ
+      Tổng cộng: <MoneyText value={total} /> đ
     </div>
   );
 }

@@ -1,18 +1,13 @@
-import { KeyboardEvent, useMemo } from 'react';
 import { UseFormReturn, useFieldArray, Controller } from 'react-hook-form';
 
 import type { PurchaseOrderFormValues } from '@/domain/purchase-orders';
-import {
-  Button,
-  FormattedInput,
-  CurrencyInput,
-  Icon,
-  Combobox,
-} from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { Button, Icon, Combobox } from '@/shared/components';
+import { MoneyText, MoneyInput, QuantityInput } from '@/shared/value';
 import { PO_CONSTANTS } from '@/features/purchase-orders/purchase-orders.constants';
 import type { SupplierPrice } from '@/api/suppliers.api';
 import type { GlobalMaterialOption } from '@/features/purchase-orders/useMaterialAutoFill';
+import { usePOItemsTableLogic } from '@/features/purchase-orders/hooks/usePOItemsTableLogic';
+import { useTableKeyboardNav } from '@/features/purchase-orders/hooks/useTableKeyboardNav';
 
 interface POItemsTableProps {
   form: UseFormReturn<PurchaseOrderFormValues>;
@@ -41,90 +36,12 @@ export function POItemsTable({
     name: 'items',
   });
 
-  const materialOptions = useMemo(() => {
-    const options: Array<{
-      value: string;
-      label: string;
-      code?: string;
-      desc?: string;
-    }> = globalMaterials.map((mat) => {
-      const priceInfo = supplierPrices.find((p) => p.material_id === mat.id);
+  const { materialOptions } = usePOItemsTableLogic(
+    globalMaterials,
+    supplierPrices,
+  );
 
-      if (priceInfo) {
-        return {
-          value: mat.id,
-          label: `${mat.code} - ${mat.name}`,
-          code: mat.code,
-          desc: `Giá HĐ: ${formatCurrency(priceInfo.unit_price)} | ĐVT: ${priceInfo.uom} | MOQ: ${priceInfo.moq} | Leadtime: ${priceInfo.lead_time_days} ngày`,
-        };
-      }
-
-      return {
-        value: mat.id,
-        label: `${mat.code} - ${mat.name}`,
-        code: mat.code,
-        desc: `(Chưa có giá hợp đồng) Loại: ${mat.type === 'yarn' ? 'Sợi' : 'Vải'} | ĐVT: ${mat.unit}`,
-      };
-    });
-
-    // Include any supplier materials that might not be in the global catalog (just in case)
-    const globalIds = new Set(globalMaterials.map((m) => m.id));
-    supplierPrices.forEach((p) => {
-      if (!globalIds.has(p.material_id)) {
-        options.push({
-          value: p.material_id,
-          label: p.material_id, // We don't have the code/name if not in global catalog
-          desc: `Giá HĐ: ${formatCurrency(p.unit_price)} | ĐVT: ${p.uom} | MOQ: ${p.moq} | Leadtime: ${p.lead_time_days} ngày`,
-        });
-      }
-    });
-
-    return options;
-  }, [globalMaterials, supplierPrices]);
-
-  const handleKeyDown = (
-    e: KeyboardEvent<Element>,
-    index: number,
-    field: 'material_id' | 'uom' | 'ordered_qty' | 'unit_price',
-  ) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      const nextId = `input-${field}-${index + 1}`;
-      const nextEl = document.getElementById(nextId);
-      if (nextEl) {
-        nextEl.focus();
-      }
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (index > 0) {
-        const prevId = `input-${field}-${index - 1}`;
-        const prevEl = document.getElementById(prevId);
-        if (prevEl) {
-          prevEl.focus();
-        }
-      }
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      if (field === 'unit_price' && index === fields.length - 1) {
-        append({ material_id: '', uom: 'kg', ordered_qty: 0, unit_price: 0 });
-        setTimeout(() => {
-          const nextEl = document.getElementById(
-            `input-material_id-${index + 1}`,
-          );
-          if (nextEl) {
-            nextEl.focus();
-          }
-        }, 50);
-      } else if (field === 'unit_price' && index < fields.length - 1) {
-        const nextEl = document.getElementById(
-          `input-material_id-${index + 1}`,
-        );
-        if (nextEl) {
-          nextEl.focus();
-        }
-      }
-    }
-  };
+  const { handleKeyDown } = useTableKeyboardNav(fields.length, append);
 
   return (
     <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden">
@@ -261,7 +178,7 @@ export function POItemsTable({
                       control={control}
                       render={({ field }) => (
                         <div className="flex flex-col items-stretch">
-                          <FormattedInput
+                          <QuantityInput
                             id={`input-ordered_qty-${index}`}
                             className={`table-cell-input table-cell-input-numeric ${
                               errors.items?.[index]?.ordered_qty
@@ -270,7 +187,8 @@ export function POItemsTable({
                             }`}
                             placeholder="0"
                             value={field.value}
-                            onChange={(val) => field.onChange(val || 0)}
+                            onChange={field.onChange}
+                            decimals={2}
                             onKeyDown={(e) =>
                               handleKeyDown(e, index, 'ordered_qty')
                             }
@@ -290,7 +208,7 @@ export function POItemsTable({
                       control={control}
                       render={({ field }) => (
                         <div className="flex flex-col items-stretch">
-                          <CurrencyInput
+                          <MoneyInput
                             id={`input-unit_price-${index}`}
                             className={`table-cell-input table-cell-input-numeric ${
                               isPriceHigherThanContract
@@ -299,7 +217,7 @@ export function POItemsTable({
                             } ${errors.items?.[index]?.unit_price ? 'is-error' : ''}`}
                             placeholder="0"
                             value={field.value}
-                            onChange={(val) => field.onChange(val || 0)}
+                            onChange={field.onChange}
                             onKeyDown={(e) =>
                               handleKeyDown(e, index, 'unit_price')
                             }
@@ -314,7 +232,7 @@ export function POItemsTable({
                               <div className="text-[10px] text-amber-700 flex items-center gap-1 mt-1 bg-amber-50 p-1 rounded border border-amber-200 justify-end font-semibold">
                                 <span>
                                   {PO_CONSTANTS.MSG_PRICE_HIGHER_THAN_CONTRACT}{' '}
-                                  ({formatCurrency(contractPrice)})
+                                  (<MoneyText value={contractPrice} />)
                                 </span>
                               </div>
                             )}
@@ -323,7 +241,7 @@ export function POItemsTable({
                     />
                   </td>
                   <td className="px-3 py-1.5 text-right tabular-nums text-gray-800 font-semibold align-middle">
-                    {formatCurrency(lineTotal)}
+                    <MoneyText value={lineTotal} />
                   </td>
                   <td className="px-3 py-1.5 text-center whitespace-nowrap align-middle">
                     <button

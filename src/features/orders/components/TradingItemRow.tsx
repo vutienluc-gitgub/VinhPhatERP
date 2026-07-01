@@ -9,20 +9,14 @@
  */
 import { Controller } from 'react-hook-form';
 import type { Control, UseFormSetValue } from 'react-hook-form';
-import { useMemo } from 'react';
 
 import { Combobox } from '@/shared/components/Combobox';
-import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { Badge } from '@/shared/components/Badge';
+import { MoneyInput } from '@/shared/value';
 import { formatQuantity } from '@/shared/utils/format';
-import {
-  useTradingYarnStock,
-  useTradingYarnLots,
-  useTradingRawFabricRolls,
-  useTradingFinishedFabricRolls,
-} from '@/application/orders';
 import { PRODUCT_CATEGORY_OPTIONS } from '@/schema/order.schema';
 import type { OrdersFormValues, ProductCategory } from '@/schema/order.schema';
+import { useTradingItemStock } from '@/features/orders/hooks/useTradingItemStock';
 
 type TradingItemRowProps = {
   index: number;
@@ -52,140 +46,12 @@ export function TradingItemRow({
   onRemove,
   canRemove,
 }: TradingItemRowProps) {
-  const { data: yarnStock = [] } = useTradingYarnStock();
-  const { data: rawRolls = [] } = useTradingRawFabricRolls();
-  const { data: finishedRolls = [] } = useTradingFinishedFabricRolls();
-
-  // Current sourceStockId for yarn lot lookup
-  const currentSourceStockId =
-    (control._formValues as OrdersFormValues).items?.[index]?.sourceStockId ??
-    '';
-  const { data: yarnLots = [] } = useTradingYarnLots(
-    productCategory === 'yarn' ? currentSourceStockId : '',
-  );
-
-  const lotOptions = useMemo(
-    () =>
-      yarnLots.map((lot) => ({
-        value: lot.lot_number ?? lot.receipt_item_id,
-        label: lot.lot_number
-          ? `${lot.lot_number} (${lot.receipt_number})`
-          : `Khong co lo — ${lot.receipt_number}`,
-        badge: `${formatQuantity(lot.quantity)} ${lot.unit}`,
-      })),
-    [yarnLots],
-  );
+  const { lotOptions, stockOptions, handleStockSelect, getMaxAvailableQty } =
+    useTradingItemStock(index, control, setValue, productCategory);
 
   const itemErrors = (errors.items as Record<string, unknown>[] | undefined)?.[
     index
   ] as Record<string, { message?: string }> | undefined;
-
-  // Build combobox options based on selected category
-  const stockOptions = useMemo(() => {
-    switch (productCategory) {
-      case 'yarn':
-        return yarnStock.map((y) => ({
-          value: y.id,
-          label: `${y.code} — ${y.name}`,
-          badge: `${formatQuantity(y.available_qty)} ${y.unit}`,
-        }));
-      case 'raw_fabric':
-        return rawRolls.map((r) => ({
-          value: r.id,
-          label: `${r.roll_number} — ${r.fabric_type}`,
-          badge: r.weight_kg
-            ? `${formatQuantity(r.weight_kg)} kg`
-            : r.length_m
-              ? `${formatQuantity(r.length_m)} m`
-              : '',
-        }));
-      case 'finished_fabric':
-        return finishedRolls.map((r) => ({
-          value: r.id,
-          label: `${r.roll_number} — ${r.fabric_type}`,
-          badge: r.weight_kg
-            ? `${formatQuantity(r.weight_kg)} kg`
-            : r.length_m
-              ? `${formatQuantity(r.length_m)} m`
-              : '',
-        }));
-      default:
-        return [];
-    }
-  }, [productCategory, yarnStock, rawRolls, finishedRolls]);
-
-  // When stock item is selected, auto-fill fields
-  function handleStockSelect(stockId: string) {
-    setValue(`items.${index}.sourceStockId`, stockId);
-
-    if (productCategory === 'yarn') {
-      const yarn = yarnStock.find((y) => y.id === stockId);
-      if (yarn) {
-        setValue(`items.${index}.fabricType`, yarn.name);
-        setValue(`items.${index}.colorName`, yarn.color_name ?? '');
-        setValue(`items.${index}.unit`, yarn.unit === 'm' ? 'm' : 'kg');
-      }
-    } else if (productCategory === 'raw_fabric') {
-      const roll = rawRolls.find((r) => r.id === stockId);
-      if (roll) {
-        setValue(`items.${index}.fabricType`, roll.fabric_type);
-        setValue(`items.${index}.colorName`, roll.color_name ?? '');
-        setValue(`items.${index}.colorCode`, roll.color_code ?? '');
-        if (roll.weight_kg) {
-          setValue(`items.${index}.quantity`, roll.weight_kg);
-          setValue(`items.${index}.unit`, 'kg');
-        } else if (roll.length_m) {
-          setValue(`items.${index}.quantity`, roll.length_m);
-          setValue(`items.${index}.unit`, 'm');
-        }
-      }
-    } else if (productCategory === 'finished_fabric') {
-      const roll = finishedRolls.find((r) => r.id === stockId);
-      if (roll) {
-        setValue(`items.${index}.fabricType`, roll.fabric_type);
-        setValue(`items.${index}.colorName`, roll.color_name ?? '');
-        setValue(`items.${index}.colorCode`, roll.color_code ?? '');
-        if (roll.weight_kg) {
-          setValue(`items.${index}.quantity`, roll.weight_kg);
-          setValue(`items.${index}.unit`, 'kg');
-        } else if (roll.length_m) {
-          setValue(`items.${index}.quantity`, roll.length_m);
-          setValue(`items.${index}.unit`, 'm');
-        }
-      }
-    }
-  }
-
-  // Get available qty for selected stock (for display + validation)
-  function getMaxAvailableQty(): { label: string; max: number } | null {
-    const sourceId = (control._formValues as OrdersFormValues).items?.[index]
-      ?.sourceStockId;
-    if (!sourceId) return null;
-
-    if (productCategory === 'yarn') {
-      const yarn = yarnStock.find((y) => y.id === sourceId);
-      if (yarn)
-        return {
-          label: `Khả dụng: ${formatQuantity(yarn.available_qty)} ${yarn.unit}`,
-          max: yarn.available_qty,
-        };
-    } else if (productCategory === 'raw_fabric') {
-      const roll = rawRolls.find((r) => r.id === sourceId);
-      if (roll) {
-        const qty = roll.weight_kg ?? roll.length_m ?? 0;
-        const unit = roll.weight_kg ? 'kg' : 'm';
-        return { label: `Cuộn: ${formatQuantity(qty)} ${unit}`, max: qty };
-      }
-    } else if (productCategory === 'finished_fabric') {
-      const roll = finishedRolls.find((r) => r.id === sourceId);
-      if (roll) {
-        const qty = roll.weight_kg ?? roll.length_m ?? 0;
-        const unit = roll.weight_kg ? 'kg' : 'm';
-        return { label: `Cuộn: ${formatQuantity(qty)} ${unit}`, max: qty };
-      }
-    }
-    return null;
-  }
 
   const stockInfo = getMaxAvailableQty();
   const currentQty =
@@ -374,7 +240,7 @@ export function TradingItemRow({
               name={`items.${index}.unitPrice`}
               control={control}
               render={({ field }) => (
-                <CurrencyInput
+                <MoneyInput
                   id={`items.${index}.unitPrice`}
                   className={`field-input${itemErrors?.unitPrice ? ' is-error' : ''}`}
                   value={field.value}

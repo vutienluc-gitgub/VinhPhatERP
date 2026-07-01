@@ -6,6 +6,7 @@
  */
 import { useYarnAvailability } from '@/application/production/useYarnReservation';
 import { Icon } from '@/shared/components';
+import { formatQuantity } from '@/shared/utils/format';
 
 interface YarnRequirementRow {
   yarn_catalog_id: string;
@@ -76,9 +77,9 @@ export function YarnAvailabilityWarning({
               {w.yarnName}
             </span>
             <span className="shrink-0 ml-2">
-              Cần <strong>{w.required.toLocaleString()}</strong> — Còn{' '}
+              Cần <strong>{formatQuantity(w.required)}</strong> — Còn{' '}
               <strong className={w.available <= 0 ? 'text-red-600' : ''}>
-                {w.available.toLocaleString()}
+                {formatQuantity(w.available)}
               </strong>
             </span>
           </div>

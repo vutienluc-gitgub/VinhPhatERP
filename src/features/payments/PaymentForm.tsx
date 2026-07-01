@@ -5,9 +5,8 @@ import { useForm, Controller } from 'react-hook-form';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
 import { CancelButton, Button } from '@/shared/components';
-import { CurrencyInput } from '@/shared/components/CurrencyInput';
 import { createPaymentsSchema } from '@/schema/payment.schema';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText, MoneyInput } from '@/shared/value';
 import { useCreatePayment } from '@/application/payments';
 
 import {
@@ -16,6 +15,7 @@ import {
 } from './payments.module';
 import type { PaymentsFormValues } from './payments.module';
 import type { PaymentMethod } from './types';
+import { PAYMENT_FORM_LABELS } from './payments.constants';
 
 type PaymentFormProps = {
   orderId: string;
@@ -63,8 +63,10 @@ export function PaymentForm({
       <AdaptiveSheet
         open={true}
         onClose={onClose}
-        title={`Thu tiền — ${orderNumber}`}
-        footer={<CancelButton onClick={onClose} label="Đóng" />}
+        title={`${PAYMENT_FORM_LABELS.titlePrefix} ${orderNumber}`}
+        footer={
+          <CancelButton onClick={onClose} label={PAYMENT_FORM_LABELS.cancel} />
+        }
       >
         <div className="p-4 bg-[var(--surface-success)] text-[var(--success-strong)] rounded text-[0.9rem] border border-[var(--success)] text-center">
           ✅ Đơn hàng đã được thanh toán đầy đủ.
@@ -77,7 +79,7 @@ export function PaymentForm({
     <AdaptiveSheet
       open={true}
       onClose={onClose}
-      title={`Thu tiền — ${orderNumber}`}
+      title={`${PAYMENT_FORM_LABELS.titlePrefix} ${orderNumber}`}
       footer={
         <>
           <Button
@@ -87,7 +89,7 @@ export function PaymentForm({
             disabled={isSubmitting || createMutation.isPending}
             className="w-full sm:w-auto justify-center"
           >
-            Hủy
+            {PAYMENT_FORM_LABELS.cancel}
           </Button>
           <Button
             variant="primary"
@@ -96,7 +98,9 @@ export function PaymentForm({
             disabled={isSubmitting || createMutation.isPending}
             className="w-full sm:w-auto justify-center"
           >
-            {createMutation.isPending ? 'Đang lưu...' : 'Xác nhận thu'}
+            {createMutation.isPending
+              ? PAYMENT_FORM_LABELS.submitPending
+              : PAYMENT_FORM_LABELS.submitReady}
           </Button>
         </>
       }
@@ -105,13 +109,16 @@ export function PaymentForm({
         {/* Balance due info */}
         {balanceDue > 0 && (
           <div className="p-3 bg-[var(--surface-warning)] text-[var(--warning-strong)] rounded text-[0.88rem] border border-[var(--warning)] mb-4">
-            Còn nợ: <strong>{formatCurrency(balanceDue)} đ</strong>
+            {PAYMENT_FORM_LABELS.balanceDuePrefix}{' '}
+            <strong>
+              <MoneyText value={balanceDue} />
+            </strong>
           </div>
         )}
 
         {createMutation.error && (
           <p className="error-inline mb-4">
-            Lỗi:{' '}
+            {PAYMENT_FORM_LABELS.errorPrefix}{' '}
             {createMutation.error instanceof Error
               ? createMutation.error.message
               : String(createMutation.error)}
@@ -122,17 +129,18 @@ export function PaymentForm({
           {/* Payment number + date */}
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
-              <label>Số phiếu thu</label>
+              <label>{PAYMENT_FORM_LABELS.paymentNumber}</label>
               <input
                 className="field-input bg-[var(--surface-disabled)] text-[var(--text-tertiary)] italic"
-                value="Tự động"
+                value={PAYMENT_FORM_LABELS.paymentNumberAuto}
                 readOnly
                 disabled
               />
             </div>
             <div className="form-field">
               <label>
-                Ngày thu <span className="field-required">*</span>
+                {PAYMENT_FORM_LABELS.paymentDate}{' '}
+                <span className="field-required">*</span>
               </label>
               <input
                 className={`field-input${errors.paymentDate ? ' is-error' : ''}`}
@@ -149,18 +157,19 @@ export function PaymentForm({
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label>
-                Số tiền (đ) <span className="field-required">*</span>
+                {PAYMENT_FORM_LABELS.amount}{' '}
+                <span className="field-required">*</span>
               </label>
               <Controller
                 name="amount"
                 control={control}
                 render={({ field }) => (
-                  <CurrencyInput
+                  <MoneyInput
                     className={`field-input${errors.amount ? ' is-error' : ''}`}
                     value={field.value}
-                    onChange={(v) => field.onChange(v ?? 0)}
+                    onChange={field.onChange}
                     onBlur={field.onBlur}
-                    placeholder="VD: 5.000.000"
+                    placeholder={PAYMENT_FORM_LABELS.amountPlaceholder}
                   />
                 )}
               />
@@ -170,7 +179,8 @@ export function PaymentForm({
             </div>
             <div className="form-field">
               <label>
-                Hình thức <span className="field-required">*</span>
+                {PAYMENT_FORM_LABELS.paymentMethod}{' '}
+                <span className="field-required">*</span>
               </label>
               <Controller
                 name="paymentMethod"
@@ -197,11 +207,11 @@ export function PaymentForm({
 
           {/* Reference */}
           <div className="form-field">
-            <label>Số chứng từ / mã giao dịch</label>
+            <label>{PAYMENT_FORM_LABELS.referenceNumber}</label>
             <input
               className="field-input"
               {...register('referenceNumber')}
-              placeholder="Số séc, mã giao dịch..."
+              placeholder={PAYMENT_FORM_LABELS.referenceNumberPlaceholder}
             />
           </div>
         </div>

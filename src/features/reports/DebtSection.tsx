@@ -6,7 +6,7 @@ import {
   Badge,
   type DataTableColumn,
 } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import { sumBy } from '@/shared/utils/array.util';
 
 type DebtSectionProps = {
@@ -38,20 +38,20 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
     },
     {
       header: 'Tổng tiền',
-      cell: (r) => `${formatCurrency(r.total_amount)}đ`,
-      footer: `${formatCurrency(totalAmount)}đ`,
+      cell: (r) => <MoneyText value={r.total_amount} />,
+      footer: <MoneyText value={totalAmount} />,
       className: 'text-right hide-mobile font-medium',
     },
     {
       header: 'Đã thu',
-      cell: (r) => `${formatCurrency(r.paid_amount)}đ`,
-      footer: `${formatCurrency(totalPaid)}đ`,
+      cell: (r) => <MoneyText value={r.paid_amount} />,
+      footer: <MoneyText value={totalPaid} />,
       className: 'text-right hide-mobile text-success',
     },
     {
       header: 'Còn nợ',
-      cell: (r) => `${formatCurrency(r.balance_due)}đ`,
-      footer: `${formatCurrency(totalDebt)}đ`,
+      cell: (r) => <MoneyText value={r.balance_due} />,
+      footer: <MoneyText value={totalDebt} />,
       className: 'text-right font-bold text-danger',
     },
   ];
@@ -65,7 +65,8 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
       <KpiGrid className="px-5 py-4">
         <KpiCard
           label="Tổng công nợ"
-          value={`${formatCurrency(totalDebt)} đ`}
+          value={totalDebt}
+          formatMode="currency"
           icon="Wallet"
           variant={totalDebt > 0 ? 'danger' : 'success'}
           isLoading={isLoading}
@@ -88,7 +89,9 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
           <div className="mobile-card">
             <div className="flex justify-between items-start">
               <span className="font-bold">{r.customer_name}</span>
-              <Badge variant="danger">{formatCurrency(r.balance_due)}đ</Badge>
+              <Badge variant="danger">
+                <MoneyText value={r.balance_due} />đ
+              </Badge>
             </div>
             <div className="text-sm text-muted mb-2">
               {r.customer_code || '—'}
@@ -96,7 +99,9 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
             <div className="grid grid-cols-2 gap-2 text-xs border-t pt-2">
               <div>
                 <p className="opacity-70">Tổng tiền</p>
-                <p className="font-medium">{formatCurrency(r.total_amount)}đ</p>
+                <p className="font-medium">
+                  <MoneyText value={r.total_amount} />đ
+                </p>
               </div>
               <div className="text-right">
                 <p className="opacity-70">Số đơn</p>

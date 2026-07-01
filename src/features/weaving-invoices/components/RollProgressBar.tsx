@@ -1,11 +1,12 @@
 import { clsx } from 'clsx';
 
+import { MoneyText } from '@/shared/value';
+
 interface RollProgressBarProps {
   scanned: number;
   total: number;
   totalKg: number;
   totalAmount: number;
-  formatCurrency: (v: number) => string;
 }
 
 export function RollProgressBar({
@@ -13,7 +14,6 @@ export function RollProgressBar({
   total,
   totalKg,
   totalAmount,
-  formatCurrency,
 }: RollProgressBarProps) {
   const pct = total > 0 ? Math.min(100, (scanned / total) * 100) : 0;
   const isComplete = scanned >= total && total > 0;
@@ -57,7 +57,7 @@ export function RollProgressBar({
           <span>
             Thành tiền:{' '}
             <strong className="text-[var(--text-primary)]">
-              {formatCurrency(totalAmount)} đ
+              <MoneyText value={totalAmount} /> đ
             </strong>
           </span>
         </div>

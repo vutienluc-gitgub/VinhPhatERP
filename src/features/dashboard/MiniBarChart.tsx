@@ -12,6 +12,8 @@ const PALETTE = [
   '#EF4444',
 ];
 
+import { formatQuantity } from '@/shared/value/core/formatter';
+
 export type MiniBarChartItem = {
   label: string;
   value: number;
@@ -43,8 +45,7 @@ export function MiniBarChart({
   valueFormatter,
   showRank = false,
 }: MiniBarChartProps) {
-  const format =
-    valueFormatter ?? ((val: number) => val.toLocaleString('vi-VN'));
+  const format = valueFormatter ?? ((val: number) => formatQuantity(val, 0));
 
   return (
     <div className="flex flex-col gap-2.5">

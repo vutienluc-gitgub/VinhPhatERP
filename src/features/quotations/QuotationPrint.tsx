@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { useCompanySettings } from '@/shared/hooks/useCompanySettings';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import { useQuotation } from '@/application/quotations';
 
 function formatDateLong(dateStr: string | null): string {
@@ -136,9 +136,11 @@ export default function QuotationPrint() {
                     {item.quantity} {item.unit}
                   </td>
                   <td className="text-right">
-                    {formatCurrency(item.unit_price)}đ
+                    <MoneyText value={item.unit_price} />đ
                   </td>
-                  <td className="text-right">{formatCurrency(item.amount)}đ</td>
+                  <td className="text-right">
+                    <MoneyText value={item.amount} />đ
+                  </td>
                 </tr>
               ))}
           </tbody>
@@ -148,7 +150,9 @@ export default function QuotationPrint() {
                 <strong>Tạm tính:</strong>
               </td>
               <td className="text-right">
-                <strong>{formatCurrency(quotation.subtotal)}đ</strong>
+                <strong>
+                  <MoneyText value={quotation.subtotal} />đ
+                </strong>
               </td>
             </tr>
             {quotation.discount_amount > 0 && (
@@ -157,7 +161,7 @@ export default function QuotationPrint() {
                   Chiết khấu:
                 </td>
                 <td className="text-right">
-                  -{formatCurrency(quotation.discount_amount)}đ
+                  -<MoneyText value={quotation.discount_amount} />đ
                 </td>
               </tr>
             )}
@@ -167,7 +171,7 @@ export default function QuotationPrint() {
                   Thuế GTGT ({quotation.vat_rate}%):
                 </td>
                 <td className="text-right">
-                  {formatCurrency(quotation.vat_amount)}đ
+                  <MoneyText value={quotation.vat_amount} />đ
                 </td>
               </tr>
             )}
@@ -176,7 +180,9 @@ export default function QuotationPrint() {
                 <strong>Tổng thanh toán:</strong>
               </td>
               <td className="text-right">
-                <strong>{formatCurrency(quotation.total_amount)} đ</strong>
+                <strong>
+                  <MoneyText value={quotation.total_amount} /> đ
+                </strong>
               </td>
             </tr>
           </tfoot>

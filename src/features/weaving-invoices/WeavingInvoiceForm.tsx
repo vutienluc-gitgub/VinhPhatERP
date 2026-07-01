@@ -7,10 +7,9 @@ import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions'
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { StepperFooter } from '@/shared/components/StepperFooter';
 import { Combobox } from '@/shared/components/Combobox';
-import { CurrencyInput } from '@/shared/components/CurrencyInput';
+import { MoneyInput } from '@/shared/value';
 import { Button } from '@/shared/components';
 import { useStepper } from '@/shared/hooks/useStepper';
-import { formatCurrency } from '@/shared/utils/format';
 import { useAutoSave, loadDraft, clearDraft } from '@/shared/hooks/useAutoSave';
 import DraftBanner from '@/shared/components/DraftBanner';
 import SaveStatus from '@/shared/components/SaveStatus';
@@ -482,12 +481,13 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
                   control={control}
                   name="unit_price_per_kg"
                   render={({ field }) => (
-                    <CurrencyInput
+                    <MoneyInput
                       className={`field-input${errors.unit_price_per_kg ? ' is-error' : ''}`}
                       value={field.value}
                       onChange={(v) => field.onChange(v ?? 0)}
                       onBlur={field.onBlur}
                       placeholder="0"
+                      suffix=" đ/kg"
                     />
                   )}
                 />
@@ -523,7 +523,6 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
             total={fields.length}
             totalKg={totalKg}
             totalAmount={totalAmount}
-            formatCurrency={formatCurrency}
           />
 
           {errors.rolls?.root && (

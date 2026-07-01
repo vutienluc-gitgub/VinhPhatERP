@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import { usePortalDebt } from '@/application/crm/portal';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 
 export function PortalDebtPage() {
   const {
@@ -23,18 +23,20 @@ export function PortalDebtPage() {
       <div className="portal-summary-grid">
         <div className="portal-stat-card">
           <p className="portal-stat-label">Tổng tiền đơn hàng</p>
-          <p className="portal-stat-value">{formatCurrency(totalAmount)} ₫</p>
+          <p className="portal-stat-value">
+            <MoneyText value={totalAmount} suffix=" ₫" />
+          </p>
         </div>
         <div className="portal-stat-card">
           <p className="portal-stat-label">Đã thanh toán</p>
           <p className="portal-stat-value portal-stat-value--success">
-            {formatCurrency(paidAmount)} ₫
+            <MoneyText value={paidAmount} suffix=" ₫" />
           </p>
         </div>
         <div className="portal-stat-card">
           <p className="portal-stat-label">Còn nợ</p>
           <p className="portal-stat-value portal-stat-value--danger">
-            {formatCurrency(remainingDebt)} ₫
+            <MoneyText value={remainingDebt} suffix=" ₫" />
           </p>
         </div>
       </div>
@@ -66,7 +68,10 @@ export function PortalDebtPage() {
                         color: 'var(--danger)',
                       }}
                     >
-                      {formatCurrency(o.total_amount - o.paid_amount)} ₫
+                      <MoneyText
+                        value={o.total_amount - o.paid_amount}
+                        suffix=" ₫"
+                      />
                     </div>
                     <div
                       style={{

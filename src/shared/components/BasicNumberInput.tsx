@@ -1,5 +1,6 @@
 import { memo, useCallback } from 'react';
 
+import { formatQuantity } from '@/shared/value/core/formatter';
 import { useControlledDisplay } from '@/shared/hooks/useControlledDisplay';
 
 type BasicNumberInputProps = {
@@ -19,10 +20,7 @@ type BasicNumberInputProps = {
 /** Format for unfocused display — vi-VN locale with thousands separators */
 function toDisplay(num: number | null | undefined): string {
   if (num == null) return '';
-  return new Intl.NumberFormat('vi-VN', {
-    maximumFractionDigits: 4,
-    minimumFractionDigits: 0,
-  }).format(num);
+  return formatQuantity(num);
 }
 
 /** Parse raw text input to number */

@@ -1,6 +1,7 @@
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { useTraceChain } from '@/application/inventory';
 import { QUALITY_GRADE_LABELS } from '@/schema/finished-fabric.schema';
+import { formatQuantity, formatCurrency } from '@/shared/value/core/formatter';
 
 import type { FinishedFabricRoll } from './types';
 
@@ -26,11 +27,12 @@ function fmtDate(d: string | null): string {
 
 function fmtNum(val: number | null, unit: string): string {
   if (val === null || val === undefined) return '—';
-  return `${val.toLocaleString('vi-VN')} ${unit}`;
+  return `${formatQuantity(val)} ${unit}`;
 }
 
 function fmtCurrency(val: number): string {
-  return new Intl.NumberFormat('vi-VN').format(val) + ' đ';
+  // eslint-disable-next-line no-restricted-syntax
+  return formatCurrency(val) + ' đ';
 }
 
 export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {

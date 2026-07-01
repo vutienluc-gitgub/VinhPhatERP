@@ -1,4 +1,4 @@
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyCell } from '@/shared/value';
 import { useDebtSummary } from '@/application/payments';
 
 import { DEBT_LABELS } from './payments.constants';
@@ -60,33 +60,21 @@ export function DebtSummary() {
           id: 'total_ordered',
           sortable: true,
           className: 'text-right',
-          cell: (d) => (
-            <span className="font-medium">
-              {formatCurrency(d.total_ordered)}đ
-            </span>
-          ),
+          cell: (d) => <MoneyCell value={d.total_ordered} bold />,
         },
         {
           header: L.paidLabel,
           id: 'total_paid',
           sortable: true,
           className: 'text-right',
-          cell: (d) => (
-            <span className="font-medium text-success">
-              {formatCurrency(d.total_paid)}đ
-            </span>
-          ),
+          cell: (d) => <MoneyCell value={d.total_paid} bold tone="success" />,
         },
         {
           header: 'Còn nợ',
           id: 'balance_due',
           sortable: true,
           className: 'text-right',
-          cell: (d) => (
-            <span className="font-bold text-danger">
-              {formatCurrency(d.balance_due)}đ
-            </span>
-          ),
+          cell: (d) => <MoneyCell value={d.balance_due} bold tone="danger" />,
         },
       ]}
       renderMobileCard={(d) => (

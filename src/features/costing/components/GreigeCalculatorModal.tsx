@@ -10,6 +10,7 @@ import { useGreigeCosting } from '@/features/costing/hooks/useGreigeCosting';
 import { YarnCostEditor } from '@/features/costing/components/YarnCostEditor';
 import { CostBreakdownTable } from '@/features/costing/components/CostBreakdownTable';
 import { CostEstimationHistoryTable } from '@/features/costing/components/CostEstimationHistoryTable';
+import { MoneyText } from '@/shared/value';
 
 interface GreigeCalculatorModalProps {
   open: boolean;
@@ -284,7 +285,10 @@ export function GreigeCalculatorModal({
                       Giá Bán Đề Xuất
                     </p>
                     <div className="text-2xl font-black text-primary-strong">
-                      {Math.round(result.suggestedPricePerM).toLocaleString()} đ
+                      <MoneyText
+                        value={Math.round(result.suggestedPricePerM)}
+                      />{' '}
+                      đ
                       <span className="text-sm font-normal text-muted">/m</span>
                     </div>
                   </div>

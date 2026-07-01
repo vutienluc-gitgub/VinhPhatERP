@@ -13,7 +13,7 @@ import {
   type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import {
   useDeleteQuotation,
   useExpiringQuotationsCount,
@@ -286,7 +286,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
             className: 'text-right',
             cell: (q) => (
               <span className="font-bold">
-                {formatCurrency(q.total_amount)}đ
+                <MoneyText value={q.total_amount} />đ
               </span>
             ),
           },
@@ -371,7 +371,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                       Tổng tiền
                     </span>
                     <span className="font-bold text-lg text-primary">
-                      {formatCurrency(q.total_amount)}đ
+                      <MoneyText value={q.total_amount} />đ
                     </span>
                   </div>
                   <div className="flex flex-col items-end">

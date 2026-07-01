@@ -2,7 +2,7 @@ import { ProgressTimeline } from '@/features/orders/progress/ProgressTimeline';
 import { useOrderProgress } from '@/application/orders';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { Button } from '@/shared/components/Button';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText, QuantityText } from '@/shared/value';
 import {
   calculateBalanceDue,
   calculatePaymentPercentage,
@@ -191,13 +191,13 @@ export function OrderDetail({
           <div>
             <div className="td-muted summary-label">Tổng tiền</div>
             <div className="summary-value">
-              {formatCurrency(order.total_amount)} đ
+              <MoneyText value={order.total_amount} suffix="đ" />
             </div>
           </div>
           <div>
             <div className="td-muted summary-label">Đã thu</div>
             <div className="summary-value text-[var(--success)]">
-              {formatCurrency(order.paid_amount)} đ
+              <MoneyText value={order.paid_amount} suffix="đ" />
             </div>
           </div>
           <div>
@@ -205,7 +205,7 @@ export function OrderDetail({
             <div
               className={`summary-value${balanceDue > 0 ? ' summary-value--danger' : ''}`}
             >
-              {formatCurrency(balanceDue)} đ
+              <MoneyText value={balanceDue} suffix="đ" />
             </div>
           </div>
         </div>
@@ -395,14 +395,17 @@ export function OrderDetail({
                           {item.color_name ?? '\u2014'}
                         </td>
                         <td className="numeric-cell">
-                          {new Intl.NumberFormat('vi-VN').format(item.quantity)}{' '}
-                          {item.unit}
+                          <QuantityText
+                            value={item.quantity}
+                            suffix={item.unit}
+                            decimals={2}
+                          />
                         </td>
                         <td className="numeric-cell">
-                          {formatCurrency(item.unit_price)}đ
+                          <MoneyText value={item.unit_price} suffix="đ" />
                         </td>
                         <td className="numeric-cell font-bold">
-                          {formatCurrency(item.amount ?? 0)}đ
+                          <MoneyText value={item.amount ?? 0} suffix="đ" />
                         </td>
                       </tr>
                     );
@@ -415,7 +418,7 @@ export function OrderDetail({
                     Tổng cộng
                   </td>
                   <td className="numeric-cell font-bold">
-                    {formatCurrency(order.total_amount)} đ
+                    <MoneyText value={order.total_amount} suffix="đ" />
                   </td>
                 </tr>
               </tbody>

@@ -9,9 +9,7 @@ export { AdaptiveSheet } from './AdaptiveSheet';
 export { Badge } from './Badge';
 export type { BadgeVariant } from './Badge';
 export { Combobox } from './Combobox';
-export { CurrencyInput } from './CurrencyInput';
 export { BasicNumberInput } from './BasicNumberInput';
-export { FormattedInput } from './FormattedInput';
 export { ConfirmProvider, ConfirmContext, useConfirm } from './ConfirmDialog';
 export { DataTable } from './DataTable';
 export type { Column as DataTableColumn, PaginationConfig } from './DataTable';
@@ -67,3 +65,6 @@ export { ImagePicker } from './ImagePicker';
 // End of exports
 export { DebtAgingSection } from './DebtAgingSection';
 export { PrintPreviewBox } from './PrintPreviewBox';
+export * from '@/shared/value';
+
+export * from '@/shared/value';

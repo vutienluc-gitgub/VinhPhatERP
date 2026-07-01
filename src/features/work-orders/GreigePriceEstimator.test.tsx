@@ -78,22 +78,12 @@ describe('GreigePriceEstimator', () => {
     // finalPrice = 7500000 * 1.15 = 8625000
 
     expect(screen.getByText('Dự toán Giá Thành Vải Mộc')).toBeInTheDocument();
-    expect(screen.getByText((55000).toLocaleString())).toBeInTheDocument(); // Giá sợi TB
-    expect(
-      screen.getByText(`${(5500000).toLocaleString()} đ`),
-    ).toBeInTheDocument(); // Chi phí Sợi
-    expect(
-      screen.getByText(`${(2000000).toLocaleString()} đ`),
-    ).toBeInTheDocument(); // Giá công
-    expect(
-      screen.getByText(`${(275000).toLocaleString()} đ`),
-    ).toBeInTheDocument(); // Hao hụt
-    expect(
-      screen.getByText(`${(7500000).toLocaleString()} đ`),
-    ).toBeInTheDocument(); // Tổng Giá Vốn
-    expect(
-      screen.getByText(`${(8625000).toLocaleString()} đ`),
-    ).toBeInTheDocument(); // Giá Bán Khuyến nghị
+    expect(screen.getByText('55.000')).toBeInTheDocument(); // Giá sợi TB
+    expect(screen.getByText('5.500.000 đ')).toBeInTheDocument(); // Chi phí Sợi
+    expect(screen.getByText('2.000.000 đ')).toBeInTheDocument(); // Giá công
+    expect(screen.getByText('275.000 đ')).toBeInTheDocument(); // Hao hụt
+    expect(screen.getByText('7.500.000 đ')).toBeInTheDocument(); // Tổng Giá Vốn
+    expect(screen.getByText('8.625.000 đ')).toBeInTheDocument(); // Giá Bán Khuyến nghị
   });
 
   it('renders loading state when prices are fetching', () => {

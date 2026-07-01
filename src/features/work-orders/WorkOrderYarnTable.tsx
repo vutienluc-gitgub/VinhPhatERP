@@ -14,6 +14,7 @@ import {
   calcTotalBomRatio,
   calcTotalRequiredKg,
 } from '@/shared/utils/yarn-requirement.util';
+import { formatQuantity } from '@/shared/utils/format';
 import type { CreateWorkOrderInput } from '@/schema/work-order.schema';
 
 interface WorkOrderYarnTableProps {
@@ -101,11 +102,7 @@ export function WorkOrderYarnTable({
                     {isLocked && (
                       <div className="text-xs text-success mt-1 flex items-center gap-1 font-medium">
                         <Icon name="CheckCircle2" size={12} />
-                        Đã xuất:{' '}
-                        {allocatedKg.toLocaleString(undefined, {
-                          maximumFractionDigits: 2,
-                        })}{' '}
-                        kg
+                        Đã xuất: {formatQuantity(allocatedKg, 2)} kg
                       </div>
                     )}
                   </td>

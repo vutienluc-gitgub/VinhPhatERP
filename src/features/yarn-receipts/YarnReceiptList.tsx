@@ -15,7 +15,8 @@ import {
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
 import { useAuth } from '@/shared/hooks/useAuth';
-import { formatCurrency } from '@/shared/utils/format';
+import { formatQuantity } from '@/shared/utils/format';
+import { MoneyCell, MoneyText } from '@/shared/value';
 import {
   useDeleteYarnReceipt,
   useYarnReceiptList,
@@ -153,7 +154,7 @@ export function YarnReceiptList({
           <KpiCard
             variant="primary"
             label="Tổng lượng sợi nhập"
-            value={`${totalWeight.toLocaleString('vi-VN')} kg`}
+            value={`${formatQuantity(totalWeight)} kg`}
             icon="Package"
             footer="Cập nhật trong tháng này"
           />
@@ -260,11 +261,7 @@ export function YarnReceiptList({
               id: 'total_amount',
               sortable: true,
               className: 'text-right',
-              cell: (r) => (
-                <span className="font-medium">
-                  {formatCurrency(r.total_amount ?? 0)}đ
-                </span>
-              ),
+              cell: (r) => <MoneyCell value={r.total_amount ?? 0} bold />,
             },
             {
               header: 'Trạng thái',
@@ -370,7 +367,7 @@ export function YarnReceiptList({
                   <div className="flex flex-col text-right justify-end">
                     <span className="text-xs text-muted">Tổng tiền</span>
                     <span className="font-bold text-primary">
-                      {formatCurrency(r.total_amount ?? 0)}đ
+                      <MoneyText value={r.total_amount ?? 0} />
                     </span>
                   </div>
                 </div>

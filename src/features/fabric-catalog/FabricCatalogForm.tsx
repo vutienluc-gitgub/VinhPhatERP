@@ -1,21 +1,16 @@
-
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef, useState } from 'react';
-import {
-  useForm,
-  FormProvider,
-} from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 
 import {
   AdaptiveSheet,
   Button,
-//   Combobox,
-//   Icon,
-//   ImagePicker,
-//   Switch,
+  //   Combobox,
+  //   Icon,
+  //   ImagePicker,
+  //   Switch,
   TabSwitcher,
-//   TagInput,
+  //   TagInput,
 } from '@/shared/components';
 // import { QRCodeDisplay } from '@/shared/components/QRCodeDisplay';
 import {
@@ -47,8 +42,6 @@ import { LABELS } from './fabric-catalog.constants';
 // import { FabricPublicPreview } from './components/FabricPublicPreview';
 import { QRFabricLabel } from './components/QRFabricLabel';
 import { FabricImageGalleryEditor } from './components/FabricImageGalleryEditor';
-
-
 
 type FormTab = 'info' | 'public' | 'gallery' | 'admin';
 
@@ -122,7 +115,6 @@ function catalogToFormValues(catalog: FabricCatalog): FabricCatalogFormValues {
   } as FabricCatalogFormValues;
 }
 
-
 export function FabricCatalogForm({
   catalog,
   onClose,
@@ -163,8 +155,6 @@ export function FabricCatalogForm({
     watch,
     formState: { isSubmitting },
   } = methods;
-
-
 
   useEffect(() => {
     reset(
@@ -245,7 +235,7 @@ export function FabricCatalogForm({
 
   const handlePrintQR = () => {
     openPrintWindow(printAreaRef.current, {
-      title: 'In QR Mẫu Vải',
+      title: LABELS.ACTION_PRINT_QR,
       css: FABRIC_SAMPLE_HORIZONTAL_CSS,
     });
   };
@@ -284,7 +274,9 @@ export function FabricCatalogForm({
     <AdaptiveSheet
       open={true}
       onClose={onClose}
-      title={isEditing ? `Sửa: ${catalog.name}` : 'Thêm loại vải'}
+      title={
+        isEditing ? `${LABELS.EDIT_TITLE}: ${catalog.name}` : LABELS.ADD_NEW
+      }
       footer={
         <>
           <Button
@@ -293,7 +285,7 @@ export function FabricCatalogForm({
             onClick={onClose}
             disabled={isPending}
           >
-            Hủy
+            {LABELS.CANCEL}
           </Button>
           <Button
             variant="primary"
@@ -301,7 +293,7 @@ export function FabricCatalogForm({
             form="fabric-catalog-form"
             isLoading={isPending}
           >
-            {isEditing ? 'Cập nhật' : 'Thêm loại vải'}
+            {isEditing ? LABELS.UPDATE : LABELS.ADD_NEW}
           </Button>
         </>
       }
@@ -309,7 +301,7 @@ export function FabricCatalogForm({
       <FormProvider {...methods}>
         {mutationError && (
           <p className="error-inline mb-4">
-            Lỗi: {getErrorMessage(mutationError)}
+            {LABELS.ERROR_PREFIX} {getErrorMessage(mutationError)}
           </p>
         )}
 
@@ -354,9 +346,7 @@ export function FabricCatalogForm({
 
           {activeTab === 'gallery' && <FabricImageGalleryEditor />}
 
-          {activeTab === 'admin' && (
-            <FabricAdminTab />
-          )}
+          {activeTab === 'admin' && <FabricAdminTab />}
         </form>
         <div style={{ display: 'none' }}>
           <div ref={printAreaRef}>

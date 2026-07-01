@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyCell, MoneyText } from '@/shared/value';
 import { KpiCard, KpiGrid, DataTableAdvanced } from '@/shared/components';
 import { useAccountList } from '@/application/payments';
 import {
@@ -66,7 +66,7 @@ export function CashFlowDashboard() {
         cell: ({ getValue }) => {
           const v = getValue<number>();
           return v > 0 ? (
-            <span className="numeric-paid">{formatCurrency(v)} đ</span>
+            <MoneyCell value={v} tone="success" bold />
           ) : (
             <span className="td-muted">—</span>
           );
@@ -79,7 +79,7 @@ export function CashFlowDashboard() {
         cell: ({ getValue }) => {
           const v = getValue<number>();
           return v > 0 ? (
-            <span className="numeric-debt">{formatCurrency(v)} đ</span>
+            <MoneyCell value={v} tone="danger" bold />
           ) : (
             <span className="td-muted">—</span>
           );
@@ -96,7 +96,7 @@ export function CashFlowDashboard() {
               className={`tabular-nums font-semibold ${v >= 0 ? 'text-[var(--success-strong)]' : 'text-[var(--danger-strong)]'}`}
             >
               {v >= 0 ? '+' : ''}
-              {formatCurrency(v)} đ
+              <MoneyText value={v} />
             </span>
           );
         },
@@ -143,9 +143,7 @@ export function CashFlowDashboard() {
         header: 'Tổng tiền',
         meta: { className: 'text-right' },
         cell: ({ getValue }) => (
-          <span className="numeric-debt">
-            {formatCurrency(getValue<number>())} đ
-          </span>
+          <MoneyCell value={getValue<number>()} tone="danger" bold />
         ),
       },
       {
@@ -259,7 +257,7 @@ export function CashFlowDashboard() {
                   </span>
                 </div>
                 <span className="numeric-debt text-sm font-bold">
-                  {formatCurrency(row.total_amount)} đ
+                  <MoneyText value={row.total_amount} />
                 </span>
               </div>
             )}
@@ -287,19 +285,19 @@ export function CashFlowDashboard() {
                 <div className="flex flex-col items-end gap-0.5">
                   {row.total_inflow > 0 && (
                     <span className="numeric-paid text-xs">
-                      +{formatCurrency(row.total_inflow)} đ
+                      +<MoneyText value={row.total_inflow} />
                     </span>
                   )}
                   {row.total_outflow > 0 && (
                     <span className="numeric-debt text-xs">
-                      -{formatCurrency(row.total_outflow)} đ
+                      -<MoneyText value={row.total_outflow} />
                     </span>
                   )}
                   <span
                     className={`text-xs font-bold tabular-nums ${row.net_flow >= 0 ? 'text-[var(--success-strong)]' : 'text-[var(--danger-strong)]'}`}
                   >
                     {row.net_flow >= 0 ? '+' : ''}
-                    {formatCurrency(row.net_flow)} đ
+                    <MoneyText value={row.net_flow} />
                   </span>
                 </div>
               </div>

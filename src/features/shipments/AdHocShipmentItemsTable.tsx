@@ -6,7 +6,7 @@ import {
 
 import { Icon } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import type { AdHocShipmentFormValues } from '@/schema/shipment.schema';
 
 const UNIT_OPTIONS = [
@@ -227,7 +227,7 @@ export function AdHocShipmentItemsTable({
           </span>
           <span className="text-[0.85rem] font-bold text-[#047857]">
             {AD_HOC_SHIPMENT_MESSAGES.SUMMARY_TOTAL}:{' '}
-            {formatCurrency(itemsSummary.totalAmount)}đ
+            <MoneyText value={itemsSummary.totalAmount} />đ
           </span>
         </div>
       )}

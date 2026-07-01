@@ -28,7 +28,7 @@ import {
   extractReceiptInfo,
   type ExtractedReceipt,
 } from '@/features/media/media.ai.service';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 
 interface MediaDetailPanelProps {
   asset: MediaAsset | null;
@@ -235,8 +235,12 @@ export function MediaDetailPanel({ asset, onClose }: MediaDetailPanelProps) {
             <div className="ai-row">
               <span className="ai-label">Số tiền:</span>
               <span className="ai-value font-bold text-[var(--primary-strong)]">
-                {formatCurrency(extractedData.amount ?? 0)}{' '}
-                {extractedData.currency}
+                <MoneyText
+                  value={extractedData.amount ?? 0}
+                  suffix={
+                    extractedData.currency ? ` ${extractedData.currency}` : ' đ'
+                  }
+                />
               </span>
             </div>
             <div className="ai-row">

@@ -281,6 +281,7 @@ export const ChatDrawer = React.memo(function ChatDrawer({
                 onClick={() => handleSearchResultClick(msg.id)}
               >
                 <div className="chat-search-result-time">
+                  {/* eslint-disable-next-line no-restricted-syntax */}
                   {new Date(msg.created_at).toLocaleString('vi-VN')}
                 </div>
                 <div className="chat-search-result-content">{msg.content}</div>

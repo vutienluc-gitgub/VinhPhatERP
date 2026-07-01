@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
-import { CurrencyInput } from '@/shared/components/CurrencyInput';
+import { MoneyInput } from '@/shared/value';
 import { useCreateAccount, useUpdateAccount } from '@/application/payments';
 import { getErrorMessage } from '@/shared/utils/error';
 
@@ -16,7 +16,10 @@ import {
   accountSchema,
 } from './payments.module';
 import type { AccountFormValues } from './payments.module';
-import { ACCOUNT_STATUS_OPTIONS } from './payments.constants';
+import {
+  ACCOUNT_STATUS_OPTIONS,
+  ACCOUNT_FORM_LABELS,
+} from './payments.constants';
 import type { PaymentAccount } from './types';
 
 const TYPE_OPTIONS = ACCOUNT_TYPES.map((t) => ({
@@ -101,11 +104,15 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
     <AdaptiveSheet
       open={true}
       onClose={onClose}
-      title={isEditing ? `Sửa: ${account.name}` : 'Thêm tài khoản mới'}
+      title={
+        isEditing
+          ? `${ACCOUNT_FORM_LABELS.titleEdit} ${account.name}`
+          : ACCOUNT_FORM_LABELS.titleCreate
+      }
     >
       {mutationError && (
         <p className="error-inline mb-4">
-          Lỗi: {getErrorMessage(mutationError)}
+          {ACCOUNT_FORM_LABELS.errorPrefix} {getErrorMessage(mutationError)}
         </p>
       )}
 
@@ -115,13 +122,14 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="name">
-                Tên tài khoản <span className="field-required">*</span>
+                {ACCOUNT_FORM_LABELS.name}{' '}
+                <span className="field-required">*</span>
               </label>
               <input
                 id="name"
                 className={`field-input${errors.name ? ' is-error' : ''}`}
                 type="text"
-                placeholder="VD: VCB - Vĩnh Phát"
+                placeholder={ACCOUNT_FORM_LABELS.namePlaceholder}
                 {...register('name')}
               />
               {errors.name && (
@@ -132,7 +140,8 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
             {/* Fix #2 — add hasError + error message for type Combobox */}
             <div className="form-field">
               <label htmlFor="type">
-                Loại tài khoản <span className="field-required">*</span>
+                {ACCOUNT_FORM_LABELS.type}{' '}
+                <span className="field-required">*</span>
               </label>
               <Controller
                 name="type"
@@ -156,22 +165,24 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
           {accountType === 'bank' && (
             <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
               <div className="form-field">
-                <label htmlFor="bankName">Tên ngân hàng</label>
+                <label htmlFor="bankName">{ACCOUNT_FORM_LABELS.bankName}</label>
                 <input
                   id="bankName"
                   className="field-input"
                   type="text"
-                  placeholder="VD: Vietcombank"
+                  placeholder={ACCOUNT_FORM_LABELS.bankNamePlaceholder}
                   {...register('bankName')}
                 />
               </div>
               <div className="form-field">
-                <label htmlFor="accountNumber">Số tài khoản</label>
+                <label htmlFor="accountNumber">
+                  {ACCOUNT_FORM_LABELS.accountNumber}
+                </label>
                 <input
                   id="accountNumber"
                   className="field-input"
                   type="text"
-                  placeholder="VD: 1234567890"
+                  placeholder={ACCOUNT_FORM_LABELS.accountNumberPlaceholder}
                   {...register('accountNumber')}
                 />
               </div>
@@ -182,7 +193,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="initialBalance">
-                Số dư ban đầu (đ){' '}
+                {ACCOUNT_FORM_LABELS.initialBalance}{' '}
                 {/* Field is locked in edit mode, required on create */}
                 {!isEditing && <span className="field-required">*</span>}
               </label>
@@ -190,11 +201,11 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
                 name="initialBalance"
                 control={control}
                 render={({ field }) => (
-                  <CurrencyInput
+                  <MoneyInput
                     id="initialBalance"
                     className={`field-input${errors.initialBalance ? ' is-error' : ''}`}
                     value={field.value}
-                    onChange={(v) => field.onChange(v ?? 0)}
+                    onChange={field.onChange}
                     onBlur={field.onBlur}
                     disabled={isEditing}
                     placeholder="0"
@@ -210,7 +221,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
 
             {/* Fix #3 — use centralized ACCOUNT_STATUS_OPTIONS */}
             <div className="form-field">
-              <label htmlFor="status">Trạng thái</label>
+              <label htmlFor="status">{ACCOUNT_FORM_LABELS.status}</label>
               <Controller
                 name="status"
                 control={control}
@@ -227,12 +238,12 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
 
           {/* Ghi chú */}
           <div className="form-field">
-            <label htmlFor="notes">Ghi chú</label>
+            <label htmlFor="notes">{ACCOUNT_FORM_LABELS.notes}</label>
             <textarea
               id="notes"
               className="field-textarea"
               rows={2}
-              placeholder="Ghi chú thêm..."
+              placeholder={ACCOUNT_FORM_LABELS.notesPlaceholder}
               {...register('notes')}
             />
           </div>
@@ -247,7 +258,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
             disabled={isPending}
             className="w-full sm:w-auto justify-center"
           >
-            Hủy
+            {ACCOUNT_FORM_LABELS.cancel}
           </Button>
           <Button
             variant="primary"
@@ -255,7 +266,9 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
             isLoading={isPending}
             className="w-full sm:w-auto justify-center"
           >
-            {isEditing ? 'Cập nhật' : 'Tạo tài khoản'}
+            {isEditing
+              ? ACCOUNT_FORM_LABELS.submitEdit
+              : ACCOUNT_FORM_LABELS.submitCreate}
           </Button>
         </div>
       </form>

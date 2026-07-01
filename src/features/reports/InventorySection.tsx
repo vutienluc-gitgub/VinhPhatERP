@@ -186,6 +186,7 @@ function InventoryTable({
 }
 
 function formatNumber(value: number): string {
+  // eslint-disable-next-line no-restricted-syntax
   return new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 1 }).format(
     value,
   );

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import { Icon } from '@/shared/components';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import type { RecentOrder } from '@/application/analytics';
 
 type RecentOrdersCardProps = {
@@ -82,7 +82,7 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
                     {formatDate(order.created_at)}
                   </span>
                   <span className="font-bold text-[0.85rem] shrink-0 tabular-nums">
-                    {formatCurrency(order.total_amount)}đ
+                    <MoneyText value={order.total_amount} />đ
                   </span>
                 </div>
               </Link>

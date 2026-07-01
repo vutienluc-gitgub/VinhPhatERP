@@ -8,7 +8,7 @@ import {
   type ShippingRate,
 } from '@/schema';
 import { Combobox } from '@/shared/components/Combobox';
-import { CurrencyInput } from '@/shared/components/CurrencyInput';
+import { MoneyInput } from '@/shared/value';
 import { CancelButton } from '@/shared/components';
 import {
   useCreateShippingRate,
@@ -103,12 +103,13 @@ export function ShippingRateForm({ item, onClose }: Props) {
             name="ratePerTrip"
             control={control}
             render={({ field }) => (
-              <CurrencyInput
+              <MoneyInput
                 className={`field-input${errors.ratePerTrip ? ' is-error' : ''}`}
                 value={field.value}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
                 placeholder="0"
+                suffix=" đ/chuyến"
               />
             )}
           />
@@ -124,12 +125,13 @@ export function ShippingRateForm({ item, onClose }: Props) {
             name="ratePerMeter"
             control={control}
             render={({ field }) => (
-              <CurrencyInput
+              <MoneyInput
                 className={`field-input${errors.ratePerMeter ? ' is-error' : ''}`}
                 value={field.value}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
                 placeholder="0"
+                suffix=" đ/m"
               />
             )}
           />
@@ -145,12 +147,13 @@ export function ShippingRateForm({ item, onClose }: Props) {
             name="ratePerKg"
             control={control}
             render={({ field }) => (
-              <CurrencyInput
+              <MoneyInput
                 className={`field-input${errors.ratePerKg ? ' is-error' : ''}`}
                 value={field.value}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
                 placeholder="0"
+                suffix=" đ/kg"
               />
             )}
           />
@@ -168,12 +171,13 @@ export function ShippingRateForm({ item, onClose }: Props) {
             name="loadingFee"
             control={control}
             render={({ field }) => (
-              <CurrencyInput
+              <MoneyInput
                 className={`field-input${errors.loadingFee ? ' is-error' : ''}`}
                 value={field.value}
                 onChange={(v) => field.onChange(v ?? 0)}
                 onBlur={field.onBlur}
                 placeholder="0"
+                suffix=" đ"
               />
             )}
           />
@@ -189,12 +193,13 @@ export function ShippingRateForm({ item, onClose }: Props) {
             name="minCharge"
             control={control}
             render={({ field }) => (
-              <CurrencyInput
+              <MoneyInput
                 className={`field-input${errors.minCharge ? ' is-error' : ''}`}
                 value={field.value}
                 onChange={(v) => field.onChange(v ?? 0)}
                 onBlur={field.onBlur}
                 placeholder="0"
+                suffix=" đ"
               />
             )}
           />

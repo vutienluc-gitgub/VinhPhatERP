@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import type { ColumnDef } from '@tanstack/react-table';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
+import { MoneyText } from '@/shared/value';
 import {
   Icon,
   Badge,
@@ -236,7 +237,7 @@ export function SuppliersList({
           // We can format it roughly
           return (
             <span className="font-semibold text-primary">
-              {new Intl.NumberFormat('vi-VN').format(limit)}đ
+              <MoneyText value={limit} />đ
             </span>
           );
         },

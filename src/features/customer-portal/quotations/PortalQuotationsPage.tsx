@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 import { usePortalQuotations } from '@/application/crm/portal';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 import { Icon } from '@/shared/components';
 import { QUOTATION_STATUS_LABELS } from '@/features/customer-portal/constants';
 
@@ -93,7 +93,7 @@ export function PortalQuotationsPage() {
                         )}
                       </td>
                       <td className="right font-bold text-slate-800">
-                        {formatCurrency(q.total_amount)} đ
+                        <MoneyText value={q.total_amount} suffix=" đ" />
                       </td>
                       <td>
                         <span
@@ -160,7 +160,7 @@ export function PortalQuotationsPage() {
                       )}
                     </div>
                     <div className="font-bold text-slate-800">
-                      {formatCurrency(q.total_amount)} đ
+                      <MoneyText value={q.total_amount} suffix=" đ" />
                     </div>
                   </div>
                 </Link>

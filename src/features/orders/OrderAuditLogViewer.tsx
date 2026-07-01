@@ -155,6 +155,7 @@ function AuditLogEntry({
         </div>
         <div className="text-[11px] text-muted flex items-center gap-1 font-mono">
           <Icon name="Clock" size={12} />
+          {/* eslint-disable-next-line no-restricted-syntax */}
           {new Date(createdAt).toLocaleString(DATE_LOCALE)}
         </div>
       </div>

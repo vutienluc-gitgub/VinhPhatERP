@@ -1,5 +1,8 @@
 import { Icon } from '@/shared/components';
-import { formatCompactCurrency, formatCurrency } from '@/shared/utils/format';
+import {
+  formatCompactCurrency,
+  formatCurrency,
+} from '@/shared/value/core/formatter';
 import type { SpendingBreakdown } from '@/application/analytics';
 
 import { DashCardHeader } from './DashCardHeader';
@@ -45,6 +48,7 @@ function BreakdownBar({
               key={item.label}
               className="dash-breakdown-segment"
               style={{ width: `${pct}%`, background: item.color }}
+              // eslint-disable-next-line no-restricted-syntax
               title={`${item.label}: ${formatCurrency(item.value)}đ`}
             />
           );

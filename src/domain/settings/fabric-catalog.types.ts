@@ -193,6 +193,9 @@ export type FabricVariant = {
   color_standard: 'PANTONE' | 'LAB' | 'CUSTOM';
   color_code: string | null;
   commercial_override: FabricVariantCommercial | null;
+  stock_status?: 'in-stock' | 'out-of-stock' | null;
+  available_kg?: number | null;
+  roll_count?: number | null;
 };
 
 export type FabricVariantFilter = {

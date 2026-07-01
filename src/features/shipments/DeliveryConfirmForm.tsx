@@ -11,7 +11,7 @@ import {
   deliveryConfirmDefaultValues,
   type DeliveryConfirmFormValues,
 } from '@/schema/shipment.schema';
-import { formatCurrency } from '@/shared/utils/format';
+import { MoneyText } from '@/shared/value';
 
 import type { Shipment } from './types';
 
@@ -147,7 +147,7 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
                 />
                 {commission > 0 && (
                   <p className="text-xs text-[var(--success)] mt-1">
-                    = {formatCurrency(commission)} VND
+                    = <MoneyText value={commission} /> VND
                   </p>
                 )}
               </div>

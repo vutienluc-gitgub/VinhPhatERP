@@ -4,7 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type { YarnAvailability } from '@/api/yarn-reservation.api';
 import { Badge } from '@/shared/components';
 import type { BadgeVariant } from '@/shared/components';
-import { formatQuantity } from '@/shared/utils/format';
+import { WeightText } from '@/shared/value';
 
 type StockHealth = {
   label: string;
@@ -57,7 +57,7 @@ export const YARN_INVENTORY_COLUMNS: ColumnDef<YarnAvailability, unknown>[] = [
     header: 'Tổng tồn (kg)',
     id: 'total_stock_qty',
     accessorKey: 'total_stock_qty',
-    cell: ({ row }) => formatQuantity(row.original.total_stock_qty),
+    cell: ({ row }) => <WeightText value={row.original.total_stock_qty} />,
     meta: { className: 'text-right hide-mobile text-slate-600' },
   },
   {
@@ -66,9 +66,14 @@ export const YARN_INVENTORY_COLUMNS: ColumnDef<YarnAvailability, unknown>[] = [
     accessorKey: 'reserved_qty',
     cell: ({ row }) => (
       <span className="text-red-600 font-medium">
-        {row.original.reserved_qty > 0
-          ? `-${formatQuantity(row.original.reserved_qty)}`
-          : 0}
+        {row.original.reserved_qty > 0 ? (
+          <>
+            -
+            <WeightText value={row.original.reserved_qty} />
+          </>
+        ) : (
+          0
+        )}
       </span>
     ),
     meta: { className: 'text-right hide-mobile' },
@@ -87,7 +92,7 @@ export const YARN_INVENTORY_COLUMNS: ColumnDef<YarnAvailability, unknown>[] = [
         <div className="flex flex-col gap-1.5 w-full min-w-[140px]">
           <div className="flex justify-between items-center text-sm">
             <span className="font-bold">
-              {formatQuantity(originalRow.available_qty)} kg
+              <WeightText value={originalRow.available_qty} suffix="kg" />
             </span>
             <Badge variant={health.variant} className="text-[10px]">
               {health.label}
@@ -140,28 +145,40 @@ export function YarnInventoryMobileCard({ row }: { row: YarnAvailability }) {
             <p className="text-[9px] uppercase text-muted font-bold mb-0.5">
               Tổng
             </p>
-            <p className="text-sm font-black text-slate-700">
-              {formatQuantity(row.total_stock_qty)}
-              <span className="text-[10px] ml-0.5">kg</span>
-            </p>
+            <WeightText
+              value={row.total_stock_qty}
+              className="text-sm font-black text-slate-700"
+              suffix=""
+            />
+            <span className="text-[10px] ml-0.5 font-black text-slate-700">
+              kg
+            </span>
           </div>
           <div>
             <p className="text-[9px] uppercase text-red-400 font-bold mb-0.5">
               Giữ chỗ
             </p>
-            <p className="text-sm font-black text-red-600">
-              {formatQuantity(row.reserved_qty)}
-              <span className="text-[10px] ml-0.5">kg</span>
-            </p>
+            <WeightText
+              value={row.reserved_qty}
+              className="text-sm font-black text-red-600"
+              suffix=""
+            />
+            <span className="text-[10px] ml-0.5 font-black text-red-600">
+              kg
+            </span>
           </div>
           <div>
             <p className="text-[9px] uppercase text-emerald-600 font-bold mb-0.5">
               Khả dụng
             </p>
-            <p className="text-sm font-black text-emerald-700">
-              {formatQuantity(row.available_qty)}
-              <span className="text-[10px] ml-0.5">kg</span>
-            </p>
+            <WeightText
+              value={row.available_qty}
+              className="text-sm font-black text-emerald-700"
+              suffix=""
+            />
+            <span className="text-[10px] ml-0.5 font-black text-emerald-700">
+              kg
+            </span>
           </div>
         </div>
       </div>
