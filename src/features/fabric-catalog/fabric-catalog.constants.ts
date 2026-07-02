@@ -139,6 +139,16 @@ export const LABELS = {
   PREVIEW_DESKTOP: 'Xem trên Desktop',
   PREVIEW_MOBILE: 'Xem trên Mobile',
   PREVIEW_GALLERY: 'Xem thư viện',
+  PREVIEW_B2B_PORTAL: 'B2B Portal',
+  PREVIEW_PRICE_REF: 'Giá sỉ tham khảo',
+  PREVIEW_CONTACT_PRICE: 'Liên hệ báo giá',
+  PREVIEW_MOQ_LABEL: 'Số lượng đặt tối thiểu',
+  PREVIEW_STOCK_CONDITION: 'Tình trạng kho',
+  PREVIEW_SERVICES: 'Dịch vụ đi kèm',
+  PREVIEW_CONTACT_ORDER: 'Liên hệ / Đặt hàng',
+  PREVIEW_HIDDEN: 'Đang ẩn',
+  PREVIEW_HIDDEN_DESC:
+    'Trang này chưa được công khai với khách hàng. Bật công khai để hiển thị.',
 
   // Readiness Score
   SCORE_TITLE: 'Public Readiness Score',
@@ -204,6 +214,9 @@ export const LABELS = {
   PRICING_COL_PUBLIC: 'Public?',
   PRICING_MAX_PLACEHOLDER: 'Trở lên',
   PRICING_LABEL_PLACEHOLDER: 'VD: Liên hệ, Giá nhà máy',
+  PRICING_MOQ_CONFLICT_WARNING:
+    'Có bậc giá công khai bắt đầu từ số lượng nhỏ hơn MOQ ({moq} kg). Khách hàng sẽ không thể đặt hàng dưới mức MOQ này.',
+  PRICING_DELETE_TIER: 'Xóa bậc giá',
   SLUG_PLACEHOLDER: 'VD: fc-001',
   ACTION_COPY: 'Sao chép',
   ACTION_OPEN_PAGE: 'Mở trang',

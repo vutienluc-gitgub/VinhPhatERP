@@ -15,10 +15,15 @@ export function FabricPublicPricingSection({
   isExpanded,
   onToggle,
 }: FabricPublicPricingSectionProps) {
-  const { control, register, watch } =
-    useFormContext<FabricCatalogFormValues>();
+  const {
+    control,
+    register,
+    watch,
+    formState: { errors },
+  } = useFormContext<FabricCatalogFormValues>();
 
   const unit = watch('unit') || 'kg';
+  const moq = watch('b2b_planner.minimum_order_qty_kg') ?? 0;
 
   const {
     fields: pricingTiers,
@@ -30,6 +35,23 @@ export function FabricPublicPricingSection({
   });
 
   const lowestPrice = getLowestPrice(pricingTiers);
+
+  const hasPublicMoqConflict =
+    moq > 0 &&
+    pricingTiers.some(
+      (tier) => tier.is_public_visible && tier.min_quantity < moq,
+    );
+
+  function handleAppendTier() {
+    appendTier({
+      min_quantity: pricingTiers.length === 0 && moq > 0 ? moq : 0,
+      max_quantity: null,
+      unit_price: 0,
+      currency: 'VND',
+      display_label: '',
+      is_public_visible: true,
+    });
+  }
 
   return (
     <div className={`accordion-section${isExpanded ? ' is-expanded' : ''}`}>
@@ -66,6 +88,18 @@ export function FabricPublicPricingSection({
             </div>
           )}
 
+          {hasPublicMoqConflict && (
+            <div className="pricing-tier-moq-warning">
+              <Icon name="AlertTriangle" className="w-4 h-4 mt-0.5 shrink-0" />
+              <span>
+                {LABELS.PRICING_MOQ_CONFLICT_WARNING.replace(
+                  '{moq}',
+                  String(moq),
+                )}
+              </span>
+            </div>
+          )}
+
           <div className="flex items-center justify-between mt-4 mb-2">
             <h4 className="font-semibold text-sm">
               {LABELS.PRICING_EDIT_TITLE}
@@ -74,16 +108,7 @@ export function FabricPublicPricingSection({
               type="button"
               variant="outline"
               size="sm"
-              onClick={() =>
-                appendTier({
-                  min_quantity: 0,
-                  max_quantity: null,
-                  unit_price: 0,
-                  currency: 'VND',
-                  display_label: '',
-                  is_public_visible: true,
-                })
-              }
+              onClick={handleAppendTier}
             >
               <Icon name="Plus" className="w-4 h-4 mr-1" />{' '}
               {LABELS.PRICING_ADD_TIER}
@@ -106,77 +131,89 @@ export function FabricPublicPricingSection({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {pricingTiers.map((field, index) => (
-                    <tr key={field.id} className="bg-white">
-                      <td className="p-2">
-                        <Controller
-                          name={`pricing_tiers.${index}.min_quantity`}
-                          control={control}
-                          render={({ field: ctrlField }) => (
-                            <NumericInput
-                              {...ctrlField}
-                              className="text-sm px-2 py-1.5 w-full"
-                            />
-                          )}
-                        />
-                      </td>
-                      <td className="p-2">
-                        <Controller
-                          name={`pricing_tiers.${index}.max_quantity`}
-                          control={control}
-                          render={({ field: ctrlField }) => (
-                            <NumericInput
-                              {...ctrlField}
-                              className="text-sm px-2 py-1.5 w-full"
-                              placeholder={LABELS.PRICING_MAX_PLACEHOLDER}
-                            />
-                          )}
-                        />
-                      </td>
-                      <td className="p-2">
-                        <Controller
-                          name={`pricing_tiers.${index}.unit_price`}
-                          control={control}
-                          render={({ field: ctrlField }) => (
-                            <MoneyInput
-                              {...ctrlField}
-                              className="text-sm px-2 py-1.5 w-full"
-                            />
-                          )}
-                        />
-                      </td>
-                      <td className="p-2">
-                        <input
-                          className="field-input text-sm px-2 py-1.5 w-full"
-                          type="text"
-                          placeholder={LABELS.PRICING_LABEL_PLACEHOLDER}
-                          {...register(`pricing_tiers.${index}.display_label`)}
-                        />
-                      </td>
-                      <td className="p-2 text-center">
-                        <Controller
-                          name={`pricing_tiers.${index}.is_public_visible`}
-                          control={control}
-                          render={({ field: switchField }) => (
-                            <Switch
-                              checked={switchField.value}
-                              onChange={switchField.onChange}
-                            />
-                          )}
-                        />
-                      </td>
-                      <td className="p-2 text-center">
-                        <button
-                          type="button"
-                          className="text-red-500 hover:text-red-700 p-1"
-                          onClick={() => removeTier(index)}
-                          title="Xóa bậc giá"
-                        >
-                          <Icon name="Trash2" className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {pricingTiers.map((field, index) => {
+                    const tierErrors = errors.pricing_tiers?.[index];
+                    return (
+                      <tr key={field.id} className="bg-white">
+                        <td className="p-2">
+                          <Controller
+                            name={`pricing_tiers.${index}.min_quantity`}
+                            control={control}
+                            render={({ field: ctrlField }) => (
+                              <div>
+                                <NumericInput
+                                  {...ctrlField}
+                                  className={`field-input pricing-tier-cell-input${tierErrors?.min_quantity ? ' is-error' : ''}`}
+                                />
+                                {tierErrors?.min_quantity?.message && (
+                                  <p className="field-error mt-1">
+                                    {tierErrors.min_quantity.message}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          />
+                        </td>
+                        <td className="p-2">
+                          <Controller
+                            name={`pricing_tiers.${index}.max_quantity`}
+                            control={control}
+                            render={({ field: ctrlField }) => (
+                              <NumericInput
+                                {...ctrlField}
+                                className="field-input pricing-tier-cell-input"
+                                placeholder={LABELS.PRICING_MAX_PLACEHOLDER}
+                              />
+                            )}
+                          />
+                        </td>
+                        <td className="p-2">
+                          <Controller
+                            name={`pricing_tiers.${index}.unit_price`}
+                            control={control}
+                            render={({ field: ctrlField }) => (
+                              <MoneyInput
+                                {...ctrlField}
+                                className="field-input pricing-tier-cell-input"
+                              />
+                            )}
+                          />
+                        </td>
+                        <td className="p-2">
+                          <input
+                            className="field-input pricing-tier-cell-input"
+                            type="text"
+                            placeholder={LABELS.PRICING_LABEL_PLACEHOLDER}
+                            {...register(
+                              `pricing_tiers.${index}.display_label`,
+                            )}
+                          />
+                        </td>
+                        <td className="p-2 text-center">
+                          <Controller
+                            name={`pricing_tiers.${index}.is_public_visible`}
+                            control={control}
+                            render={({ field: switchField }) => (
+                              <Switch
+                                checked={switchField.value}
+                                onChange={switchField.onChange}
+                              />
+                            )}
+                          />
+                        </td>
+                        <td className="p-2 text-center">
+                          <button
+                            type="button"
+                            className="text-red-500 hover:text-red-700 p-1"
+                            onClick={() => removeTier(index)}
+                            title={LABELS.PRICING_DELETE_TIER}
+                          >
+                            <Icon name="Trash2" className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
