@@ -87,7 +87,7 @@ const baseFabricCatalogSchema = z.object({
     .default([]),
 });
 
-export const fabricCatalogSchema = z.discriminatedUnion('fabric_type', [
+const fabricCatalogUnion = z.discriminatedUnion('fabric_type', [
   baseFabricCatalogSchema.extend({
     fabric_type: z.literal('knitted'),
     gauge: z.number().min(0, 'Gauge không hợp lệ').optional().nullable(),
@@ -105,7 +105,49 @@ export const fabricCatalogSchema = z.discriminatedUnion('fabric_type', [
   }),
 ]);
 
-export type FabricCatalogFormValues = z.infer<typeof fabricCatalogSchema>;
+export const fabricCatalogSchema = fabricCatalogUnion.superRefine(
+  (data, ctx) => {
+    const moq = data.b2b_planner?.minimum_order_qty_kg ?? 0;
+    const tiers = data.pricing_tiers ?? [];
+
+    if (tiers.length === 0 || moq <= 0) return;
+
+    // Sort tiers by min_quantity for overlap detection
+    const sorted = tiers
+      .map((t, i) => ({ ...t, originalIndex: i }))
+      .sort((a, b) => a.min_quantity - b.min_quantity);
+
+    sorted.forEach((tier, sortedIdx) => {
+      // MOQ alignment: only for public tiers
+      if (tier.is_public_visible && tier.min_quantity < moq) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Số lượng tối thiểu (${tier.min_quantity} kg) không được nhỏ hơn MOQ (${moq} kg)`,
+          path: ['pricing_tiers', tier.originalIndex, 'min_quantity'],
+        });
+      }
+
+      // Overlap detection: min_quantity of tier N must be > max_quantity of tier N-1
+      if (sortedIdx > 0) {
+        const prevTier = sorted[sortedIdx - 1];
+        if (
+          prevTier !== undefined &&
+          prevTier.max_quantity !== null &&
+          prevTier.max_quantity !== undefined &&
+          tier.min_quantity <= prevTier.max_quantity
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Bậc giá bị trùng lắp: từ ${tier.min_quantity} kg nằm trong phạm vi bậc trước (đến ${prevTier.max_quantity} kg)`,
+            path: ['pricing_tiers', tier.originalIndex, 'min_quantity'],
+          });
+        }
+      }
+    });
+  },
+);
+
+export type FabricCatalogFormValues = z.infer<typeof fabricCatalogUnion>;
 
 export const fabricCatalogDefaultValues: FabricCatalogFormValues = {
   fabric_type: 'knitted',

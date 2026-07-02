@@ -16,13 +16,20 @@ const TABLE = 'fabric_catalogs';
 
 type FabricCatalogRow = Omit<FabricCatalog, 'id' | 'created_at' | 'updated_at'>;
 
-const CATEGORY_SELECT = '*, fabric_categories(id, code, name, color_hint)';
+const CATEGORY_SELECT =
+  '*, fabric_categories(id, code, name, color_hint), commercial:fabric_commercials(*)';
 
 /** Transform Supabase joined row: rename fabric_categories -> category */
 function transformCategoryRow(row: Record<string, unknown>): FabricCatalog {
   const category = row.fabric_categories;
   delete row.fabric_categories;
-  return { ...row, category } as unknown as FabricCatalog;
+
+  let commercial = row.commercial;
+  if (Array.isArray(commercial)) {
+    commercial = commercial[0] || null;
+  }
+
+  return { ...row, category, commercial } as unknown as FabricCatalog;
 }
 
 export async function fetchFabricCatalogPaginated(

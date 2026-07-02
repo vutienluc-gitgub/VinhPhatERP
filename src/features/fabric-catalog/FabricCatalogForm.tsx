@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import {
@@ -188,9 +188,6 @@ export function FabricCatalogForm({
   const watchCode = watch('code');
   const watchSlug = watch('slug');
   const watchName = watch('name');
-  const watchCategoryId = watch('category_id');
-
-  const selectedCategory = categories?.find((c) => c.id === watchCategoryId);
 
   useEffect(() => {
     if (!isEditing && nextCode && !watchCode) {
@@ -205,6 +202,41 @@ export function FabricCatalogForm({
     }
   }, [watchCode, setValue]);
 
+  // MOQ watch listener: auto-align first public pricing tier when MOQ increases
+  const prevMoqRef = useRef<number | null>(null);
+  const watchMoq = watch('b2b_planner.minimum_order_qty_kg');
+
+  const alignFirstTierToMoq = useCallback(
+    (newMoq: number) => {
+      const tiers = watch('pricing_tiers') ?? [];
+      if (tiers.length === 0 || newMoq <= 0) return;
+
+      const firstPublicIndex = tiers.findIndex((t) => t.is_public_visible);
+      if (firstPublicIndex === -1) return;
+
+      const firstPublicTier = tiers[firstPublicIndex];
+      if (
+        firstPublicTier !== undefined &&
+        firstPublicTier.min_quantity < newMoq
+      ) {
+        setValue(`pricing_tiers.${firstPublicIndex}.min_quantity`, newMoq, {
+          shouldValidate: true,
+        });
+      }
+    },
+    [watch, setValue],
+  );
+
+  useEffect(() => {
+    const currentMoq = watchMoq ?? 0;
+    const prevMoq = prevMoqRef.current;
+
+    if (prevMoq !== null && currentMoq > prevMoq) {
+      alignFirstTierToMoq(currentMoq);
+    }
+    prevMoqRef.current = currentMoq;
+  }, [watchMoq, alignFirstTierToMoq]);
+
   async function onSubmit(values: FabricCatalogFormValues) {
     try {
       if (isEditing) {
@@ -216,8 +248,9 @@ export function FabricCatalogForm({
         await createMutation.mutateAsync(values);
       }
       onClose();
-    } catch {
+    } catch (err) {
       // Error shown via mutationError below
+      console.error('[FabricCatalogSubmitError]', err);
     }
   }
 
@@ -340,7 +373,6 @@ export function FabricCatalogForm({
               handleCopyLink={handleCopyLink}
               handleDownloadQR={handleDownloadQR}
               handlePrintQR={handlePrintQR}
-              selectedCategoryName={selectedCategory?.name}
             />
           )}
 
