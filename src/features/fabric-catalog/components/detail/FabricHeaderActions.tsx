@@ -5,9 +5,9 @@ interface FabricHeaderActionsProps {
   canViewWholesale: boolean;
   isAuthenticated: boolean;
   compareCount: number;
-  wishlistCount: number;
+  inquiryCartCount: number;
   onOpenCompare: () => void;
-  onOpenWishlist: () => void;
+  onOpenInquiryCart: () => void;
   onShare: () => void;
   onOpenLogin: () => void;
   onSignOut: () => void;
@@ -17,9 +17,9 @@ export function FabricHeaderActions({
   canViewWholesale,
   isAuthenticated,
   compareCount,
-  wishlistCount,
+  inquiryCartCount,
   onOpenCompare,
-  onOpenWishlist,
+  onOpenInquiryCart,
   onShare,
   onOpenLogin,
   onSignOut,
@@ -56,14 +56,14 @@ export function FabricHeaderActions({
           )}
         </button>
         <button
-          onClick={onOpenWishlist}
+          onClick={onOpenInquiryCart}
           className="relative p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-slate-600"
-          title={LABELS.wishlistTitle}
+          title={LABELS.inquiryCartTitle}
         >
-          <Icon name="Heart" className="w-5 h-5" />
-          {wishlistCount > 0 && (
+          <Icon name="ShoppingCart" className="w-5 h-5" />
+          {inquiryCartCount > 0 && (
             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-              {wishlistCount}
+              {inquiryCartCount}
             </span>
           )}
         </button>

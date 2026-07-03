@@ -3,9 +3,9 @@ import toast from 'react-hot-toast';
 
 import { Icon, Button } from '@/shared/components';
 import { useCreatePublicSampleRequest } from '@/application/settings/useFabricCatalog';
-import type { WishlistItem } from '@/shared/wishlist';
+import type { InquiryCartItem } from '@/shared/inquiry-cart';
 import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
-import { useWishlist } from '@/shared/wishlist';
+import { useInquiryCart } from '@/shared/inquiry-cart';
 import { PUBLIC_PAGE_LABELS as LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 
 interface PublicSampleModalProps {
@@ -14,7 +14,7 @@ interface PublicSampleModalProps {
   fabric: Partial<FabricCatalog>;
   activeColorName: string | null;
   isBatchRequest: boolean;
-  wishlist: Record<string, WishlistItem>;
+  inquiryCart: Record<string, InquiryCartItem>;
 }
 
 export function PublicSampleModal({
@@ -23,7 +23,7 @@ export function PublicSampleModal({
   fabric,
   activeColorName,
   isBatchRequest,
-  wishlist,
+  inquiryCart,
 }: PublicSampleModalProps) {
   const [contactName, setContactName] = useState('');
   const [contactPhone, setContactPhone] = useState('');
@@ -31,7 +31,7 @@ export function PublicSampleModal({
   const [companyName, setCompanyName] = useState('');
 
   const requestMutation = useCreatePublicSampleRequest();
-  const { clearWishlist } = useWishlist();
+  const { clearInquiryCart } = useInquiryCart();
 
   if (!isOpen) return null;
 
@@ -42,7 +42,7 @@ export function PublicSampleModal({
       return;
     }
     const selectedVariants = isBatchRequest
-      ? Object.values(wishlist).map((item: WishlistItem) => ({
+      ? Object.values(inquiryCart).map((item: InquiryCartItem) => ({
           variant_code: item.code,
           color_name: item.color_name || 'Tất cả màu',
         }))
@@ -73,7 +73,7 @@ export function PublicSampleModal({
       setCompanyName('');
 
       if (isBatchRequest) {
-        clearWishlist();
+        clearInquiryCart();
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -112,7 +112,7 @@ export function PublicSampleModal({
             </span>
             {isBatchRequest ? (
               <div className="space-y-1">
-                {Object.values(wishlist).map((item: WishlistItem) => (
+                {Object.values(inquiryCart).map((item: InquiryCartItem) => (
                   <div
                     key={item.id}
                     className="text-xs font-semibold text-slate-800"

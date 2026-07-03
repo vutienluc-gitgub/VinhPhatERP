@@ -32,7 +32,7 @@ import { PublicFabricDetailSkeleton } from '@/features/fabric-catalog/components
 import { PublicLoginModal } from '@/features/fabric-catalog/components/PublicLoginModal';
 import { PublicRFQModal } from '@/features/fabric-catalog/components/PublicRFQModal';
 import { PublicSampleModal } from '@/features/fabric-catalog/components/PublicSampleModal';
-import { WishlistDrawer } from '@/features/fabric-catalog/components/WishlistDrawer';
+import { InquiryCartDrawer } from '@/features/fabric-catalog/components/InquiryCartDrawer';
 import { PUBLIC_PAGE_LABELS as LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 import { useFabricCompare } from '@/features/fabric-catalog/hooks/useFabricCompare';
 import {
@@ -67,16 +67,16 @@ function PublicFabricDetailPageInner() {
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
 
   // Modals — only non-RFQ modals remain as local state
-  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+  const [isInquiryCartOpen, setIsInquiryCartOpen] = useState(false);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  // Interaction handlers (Wishlist, RFQ, Sample)
+  // Interaction handlers (InquiryCart, RFQ, Sample)
   const {
-    wishlist,
+    inquiryCart,
     isSaved,
-    handleToggleWishlist,
-    removeFromWishlist,
+    handleToggleInquiryCart,
+    removeFromInquiryCart,
     handleCTAAction,
     openRFQ,
     openSample,
@@ -140,9 +140,9 @@ function PublicFabricDetailPageInner() {
         canViewWholesale={viewer.permissions.canViewWholesale}
         isAuthenticated={viewer.isAuthenticated}
         compareCount={compareList.length}
-        wishlistCount={Object.keys(wishlist).length}
+        inquiryCartCount={Object.keys(inquiryCart).length}
         onOpenCompare={() => setIsCompareOpen(true)}
-        onOpenWishlist={() => setIsWishlistOpen(true)}
+        onOpenInquiryCart={() => setIsInquiryCartOpen(true)}
         onShare={handleShare}
         onOpenLogin={() => setIsLoginModalOpen(true)}
         onSignOut={() => viewer.signOut()}
@@ -168,7 +168,7 @@ function PublicFabricDetailPageInner() {
           isCompared={isCompared}
           isSaved={isSaved}
           handleToggleCompare={handleToggleCompare}
-          handleToggleWishlist={handleToggleWishlist}
+          handleToggleInquiryCart={handleToggleInquiryCart}
         />
 
         {/* Color Variant Selector */}
@@ -245,27 +245,27 @@ function PublicFabricDetailPageInner() {
         onAction={handleCTAAction}
       />
 
-      {/* Wishlist Drawer */}
-      <WishlistDrawer
-        isOpen={isWishlistOpen}
-        onClose={() => setIsWishlistOpen(false)}
-        items={wishlist}
-        onRemoveItem={removeFromWishlist}
+      {/* Inquiry Cart Drawer */}
+      <InquiryCartDrawer
+        isOpen={isInquiryCartOpen}
+        onClose={() => setIsInquiryCartOpen(false)}
+        items={inquiryCart}
+        onRemoveItem={removeFromInquiryCart}
         onRequestSample={() => {
           openSample({
-            leadSource: 'wishlist',
+            leadSource: 'inquiry_cart',
             leadChannel: 'website',
             isBatch: true,
           });
-          setIsWishlistOpen(false);
+          setIsInquiryCartOpen(false);
         }}
         onRequestRFQ={() => {
           openRFQ({
-            leadSource: 'wishlist',
+            leadSource: 'inquiry_cart',
             leadChannel: 'website',
             isBatchRequest: true,
           });
-          setIsWishlistOpen(false);
+          setIsInquiryCartOpen(false);
         }}
       />
 
@@ -286,15 +286,14 @@ function PublicFabricDetailPageInner() {
         fabric={fabric}
         activeColorName={activeColorName}
         isBatchRequest={false}
-        wishlist={wishlist}
+        inquiryCart={inquiryCart}
       />
 
-      {/* Request for Quote (RFQ) Modal — now driven by RFQProvider */}
       <PublicRFQModal
         fabric={fabric}
         variants={variants}
         activeColorName={activeColorName}
-        wishlist={wishlist}
+        inquiryCart={inquiryCart}
       />
 
       {/* B2B Login Modal */}
