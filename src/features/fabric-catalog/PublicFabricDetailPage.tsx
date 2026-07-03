@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import toast from 'react-hot-toast';
 
 import {
   usePublicFabricBasic,
@@ -11,7 +10,10 @@ import {
   usePublicPricingTiers,
 } from '@/application/settings/useFabricCatalog';
 import { Button, Icon } from '@/shared/components';
-import { useWishlist } from '@/shared/wishlist';
+import {
+  trackLeadEvent,
+  getOrCreateSessionId,
+} from '@/shared/services/analytics';
 import { B2BPlanner } from '@/features/fabric-catalog/components/B2BPlanner';
 import { FabricColorSelector } from '@/features/fabric-catalog/components/detail/FabricColorSelector';
 import { FabricHeaderActions } from '@/features/fabric-catalog/components/detail/FabricHeaderActions';
@@ -33,24 +35,17 @@ import { PublicSampleModal } from '@/features/fabric-catalog/components/PublicSa
 import { WishlistDrawer } from '@/features/fabric-catalog/components/WishlistDrawer';
 import { PUBLIC_PAGE_LABELS as LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 import { useFabricCompare } from '@/features/fabric-catalog/hooks/useFabricCompare';
-import { useFabricDisplayLogic } from '@/features/fabric-catalog/hooks/useFabricDisplayLogic';
+import {
+  useFabricDisplayLogic,
+  getLowestPriceLabel,
+} from '@/features/fabric-catalog/hooks/useFabricDisplayLogic';
+import { useFabricInteractions } from '@/features/fabric-catalog/hooks/useFabricInteractions';
 import { useFabricSeo } from '@/features/fabric-catalog/hooks/useFabricSeo';
 import { usePublicViewer } from '@/features/fabric-catalog/hooks/usePublicViewer';
+import { useCTAEngine } from '@/features/fabric-catalog/hooks/useCTAEngine';
+import { RFQProvider } from '@/features/fabric-catalog/context/RFQProvider';
 
-function getOrCreateSessionId(): string {
-  if (typeof window === 'undefined') return '';
-  let sid = localStorage.getItem('fabric_session_id');
-  if (!sid) {
-    sid =
-      typeof crypto !== 'undefined' && crypto.randomUUID
-        ? crypto.randomUUID()
-        : Math.random().toString(36).substring(2) + Date.now().toString(36);
-    localStorage.setItem('fabric_session_id', sid);
-  }
-  return sid;
-}
-
-export function PublicFabricDetailPage() {
+function PublicFabricDetailPageInner() {
   const { slug } = useParams<{ slug: string }>();
   const sessionId = getOrCreateSessionId();
 
@@ -59,6 +54,7 @@ export function PublicFabricDetailPage() {
     data: fabric,
     isLoading: basicLoading,
     isError,
+    error,
   } = usePublicFabricBasic(slug, sessionId);
   const { data: variants } = usePublicFabricVariants(fabric?.id);
   const { data: images } = usePublicFabricImages(fabric?.id);
@@ -70,28 +66,38 @@ export function PublicFabricDetailPage() {
   const [activeColorName, setActiveColorName] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
 
-  // Wishlist Context & Hook
-  const { wishlist, addToWishlist, removeFromWishlist, addRecentlyViewed } =
-    useWishlist();
-
-  // Modals Visibility States
+  // Modals — only non-RFQ modals remain as local state
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
-  const [isSampleModalOpen, setIsSampleModalOpen] = useState(false);
-  const [isBatchRequest, setIsBatchRequest] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isRfqModalOpen, setIsRfqModalOpen] = useState(false);
+
+  // Interaction handlers (Wishlist, RFQ, Sample)
+  const {
+    wishlist,
+    isSaved,
+    handleToggleWishlist,
+    removeFromWishlist,
+    handleCTAAction,
+    openRFQ,
+    openSample,
+  } = useFabricInteractions(fabric, activeColorName);
 
   const viewer = usePublicViewer();
 
   // Extract presentation and display logic calculations
-  const {
-    activeVariant,
-    displayMOQ,
-    displayLeadTime,
-    handleShare,
-    getZaloQuoteUrl,
-  } = useFabricDisplayLogic(fabric, variants, activeColorName);
+  const { activeVariant, displayMOQ, displayLeadTime, handleShare } =
+    useFabricDisplayLogic(fabric, variants, activeColorName);
+
+  // Dynamic CTA engine
+  const ctaButtons = useCTAEngine({
+    permissions: viewer.permissions,
+    fabric,
+    hasPricingTiers: (pricingTiers?.length ?? 0) > 0,
+    slug: fabric?.slug,
+    code: fabric?.code,
+  });
+
+  const lowestPrice = getLowestPriceLabel(pricingTiers);
 
   // Extract dynamically synced compare list
   const { compareList, setCompareList, isCompared, handleToggleCompare } =
@@ -99,13 +105,6 @@ export function PublicFabricDetailPage() {
 
   // Extract dynamic page title and OG metadata updating
   useFabricSeo(fabric);
-
-  // Track recently viewed history side-effect
-  useEffect(() => {
-    if (fabric?.id) {
-      addRecentlyViewed(fabric.id);
-    }
-  }, [fabric?.id, addRecentlyViewed]);
 
   if (basicLoading) {
     return <PublicFabricDetailSkeleton />;
@@ -121,7 +120,12 @@ export function PublicFabricDetailPage() {
         <h1 className="text-xl font-bold text-gray-800 mb-2">
           {LABELS.notFound}
         </h1>
-        <p className="text-muted mb-6">{LABELS.notFoundDesc}</p>
+        <p className="text-muted mb-2">{LABELS.notFoundDesc}</p>
+        {isError && error instanceof Error && (
+          <p className="text-xs text-red-500 mb-6 font-mono break-all">
+            {error.message}
+          </p>
+        )}
         <Button variant="primary" onClick={() => (window.location.href = '/')}>
           {LABELS.backHome}
         </Button>
@@ -129,28 +133,8 @@ export function PublicFabricDetailPage() {
     );
   }
 
-  // Wishlist handler
-  const isSaved = Object.keys(wishlist).includes(fabric.id || '');
-  const handleToggleWishlist = () => {
-    if (!fabric) return;
-
-    if (isSaved) {
-      removeFromWishlist(fabric.id || '');
-      toast.success(LABELS.unwishlistSuccess);
-    } else {
-      addToWishlist({
-        id: fabric.id || '',
-        code: fabric.code || '',
-        name: fabric.name || '',
-        image_url: fabric.image_url || undefined,
-        color_name: activeColorName || undefined,
-      });
-      toast.success(LABELS.wishlistSuccess);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col pb-24 font-sans relative">
+    <div className="min-h-screen bg-slate-50 flex flex-col pb-28 font-sans relative">
       {/* Header Actions */}
       <FabricHeaderActions
         canViewWholesale={viewer.permissions.canViewWholesale}
@@ -167,7 +151,7 @@ export function PublicFabricDetailPage() {
       {/* Hero Image Slider */}
       <FabricHeroGallery
         fabric={fabric}
-        galleryImages={images || []}
+        galleryImages={images ?? []}
         activeColorImage={activeColorImage}
         activeColorName={activeColorName}
         setActiveColorImage={setActiveColorImage}
@@ -213,7 +197,13 @@ export function PublicFabricDetailPage() {
           <Button
             variant="outline"
             fullWidth
-            onClick={() => setIsRfqModalOpen(true)}
+            onClick={() => {
+              openRFQ({ leadSource: 'planner', leadChannel: 'website' });
+              trackLeadEvent('sticky_cta_click_rfq', {
+                fabricCode: fabric.code,
+                leadSource: 'planner',
+              });
+            }}
             className="mt-4 text-xs font-semibold"
           >
             <Icon name="FileText" className="w-4 h-4 mr-1.5" />
@@ -245,16 +235,14 @@ export function PublicFabricDetailPage() {
         <FabricRecommendations alsoViewed={alsoViewed} related={related} />
       </main>
 
-      {/* Fixed Sticky CTA Bottom Bar */}
+      {/* Fixed Sticky CTA Bottom Bar — Dynamic */}
       <FabricStickyCTA
         fabric={fabric}
-        canOpenERP={viewer.permissions.canOpenERP}
-        canOrder={viewer.permissions.canOrder}
-        zaloQuoteUrl={getZaloQuoteUrl()}
-        onRequestSample={() => {
-          setIsBatchRequest(false);
-          setIsSampleModalOpen(true);
-        }}
+        ctaButtons={ctaButtons}
+        displayMOQ={displayMOQ}
+        displayLeadTime={displayLeadTime}
+        lowestPrice={lowestPrice}
+        onAction={handleCTAAction}
       />
 
       {/* Wishlist Drawer */}
@@ -264,13 +252,19 @@ export function PublicFabricDetailPage() {
         items={wishlist}
         onRemoveItem={removeFromWishlist}
         onRequestSample={() => {
-          setIsBatchRequest(true);
-          setIsSampleModalOpen(true);
+          openSample({
+            leadSource: 'wishlist',
+            leadChannel: 'website',
+            isBatch: true,
+          });
           setIsWishlistOpen(false);
         }}
         onRequestRFQ={() => {
-          setIsBatchRequest(true);
-          setIsRfqModalOpen(true);
+          openRFQ({
+            leadSource: 'wishlist',
+            leadChannel: 'website',
+            isBatchRequest: true,
+          });
           setIsWishlistOpen(false);
         }}
       />
@@ -285,22 +279,21 @@ export function PublicFabricDetailPage() {
 
       {/* Sample Request Lead Form Modal */}
       <PublicSampleModal
-        isOpen={isSampleModalOpen}
-        onClose={() => setIsSampleModalOpen(false)}
+        isOpen={false}
+        onClose={() => {
+          /* handled by RFQ context */
+        }}
         fabric={fabric}
         activeColorName={activeColorName}
-        isBatchRequest={isBatchRequest}
+        isBatchRequest={false}
         wishlist={wishlist}
       />
 
-      {/* Request for Quote (RFQ) Modal */}
+      {/* Request for Quote (RFQ) Modal — now driven by RFQProvider */}
       <PublicRFQModal
-        isOpen={isRfqModalOpen}
-        onClose={() => setIsRfqModalOpen(false)}
         fabric={fabric}
         variants={variants}
         activeColorName={activeColorName}
-        isBatchRequest={isBatchRequest}
         wishlist={wishlist}
       />
 
@@ -310,5 +303,17 @@ export function PublicFabricDetailPage() {
         onClose={() => setIsLoginModalOpen(false)}
       />
     </div>
+  );
+}
+
+/**
+ * Wraps the page in RFQProvider so all children
+ * can access openRFQ() / openSample() via context.
+ */
+export function PublicFabricDetailPage() {
+  return (
+    <RFQProvider>
+      <PublicFabricDetailPageInner />
+    </RFQProvider>
   );
 }

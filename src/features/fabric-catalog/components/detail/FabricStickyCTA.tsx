@@ -1,75 +1,111 @@
 import { Icon } from '@/shared/components';
+import { MoneyText } from '@/shared/value';
 import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 import {
-  PUBLIC_PAGE_LABELS as LABELS,
   HOTLINE,
+  PUBLIC_PAGE_LABELS as LABELS,
 } from '@/features/fabric-catalog/fabric-catalog.constants';
+import type { CTAButtonConfig } from '@/features/fabric-catalog/hooks/useCTAEngine';
+import { trackLeadEvent } from '@/shared/services/analytics';
 
 interface FabricStickyCTAProps {
   fabric: Partial<FabricCatalog>;
-  canOpenERP: boolean;
-  canOrder: boolean;
-  zaloQuoteUrl: string;
-  onRequestSample: () => void;
+  ctaButtons: CTAButtonConfig[];
+  displayMOQ: string;
+  displayLeadTime: string;
+  lowestPrice: number | null;
+  onAction: (action: CTAButtonConfig['action']) => void;
 }
+
+const VARIANT_CLASSES: Record<CTAButtonConfig['variant'], string> = {
+  primary:
+    'flex-[2] flex flex-col items-center justify-center gap-1 bg-[#0068ff] hover:bg-[#0054cc] text-white py-2.5 px-2 rounded-xl transition-colors shadow-sm shadow-[#0068ff]/30',
+  secondary:
+    'flex-[2] flex flex-col items-center justify-center gap-1 bg-[#0068ff]/10 hover:bg-[#0068ff]/20 text-[#0068ff] border border-[#0068ff]/20 py-2.5 px-2 rounded-xl transition-colors',
+  tertiary:
+    'flex-1 flex flex-col items-center justify-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2.5 px-2 rounded-xl transition-colors',
+};
 
 export function FabricStickyCTA({
   fabric,
-  canOpenERP,
-  canOrder,
-  zaloQuoteUrl,
-  onRequestSample,
+  ctaButtons,
+  displayMOQ,
+  displayLeadTime,
+  lowestPrice,
+  onAction,
 }: FabricStickyCTAProps) {
+  const handleClick = (btn: CTAButtonConfig) => {
+    trackLeadEvent(
+      btn.action === 'rfq'
+        ? 'sticky_cta_click_rfq'
+        : btn.action === 'sample'
+          ? 'sticky_cta_click_sample'
+          : btn.action === 'call'
+            ? 'sticky_cta_click_call'
+            : 'sticky_cta_click_order',
+      {
+        fabricCode: fabric.code,
+        fabricName: fabric.name,
+        leadSource: 'sticky_cta',
+      },
+    );
+
+    if (btn.action === 'call') {
+      window.location.href = `tel:${HOTLINE}`;
+      return;
+    }
+
+    if (btn.href && (btn.action === 'order' || btn.action === 'erp')) {
+      window.location.href = btn.href;
+      return;
+    }
+
+    onAction(btn.action);
+  };
+
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-3 bg-white border-t border-gray-200 shadow-[0_-4px_12px_-1px_rgba(0,0,0,0.08)] z-40">
-      <div className="flex gap-2 max-w-md mx-auto">
-        {canOpenERP ? (
-          <a
-            href={`/fabric-catalog/${fabric.slug}`}
-            className="flex-1 flex flex-col items-center justify-center gap-1 bg-slate-800 hover:bg-slate-700 text-white py-2.5 px-2 rounded-xl transition-colors"
-          >
-            <Icon name="ExternalLink" className="w-5 h-5" />
-            <span className="text-[10px] font-semibold">
-              {LABELS.openInErp}
-            </span>
-          </a>
-        ) : canOrder ? (
-          <a
-            href={`/portal/fabric-catalog?search=${fabric.code}`}
-            className="flex-1 flex flex-col items-center justify-center gap-1 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 py-2.5 px-2 rounded-xl transition-colors"
-          >
-            <Icon name="ShoppingCart" className="w-5 h-5" />
-            <span className="text-[10px] font-semibold text-center leading-tight">
-              {LABELS.orderViaPortal}
-            </span>
-          </a>
-        ) : (
-          <a
-            href={`tel:${HOTLINE}`}
-            className="flex-1 flex flex-col items-center justify-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2.5 px-2 rounded-xl transition-colors"
-          >
-            <Icon name="Phone" className="w-5 h-5" />
-            <span className="text-xs font-semibold">{LABELS.callNow}</span>
-          </a>
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-4px_12px_-1px_rgba(0,0,0,0.08)] z-40">
+      {/* Value Bar */}
+      <div className="flex items-center justify-center gap-4 px-3 py-1.5 bg-slate-50 border-b border-slate-100 max-w-md mx-auto">
+        <div className="flex items-center gap-1 text-[10px] text-slate-600">
+          <Icon name="Package" className="w-3 h-3 text-slate-400" />
+          <span className="font-semibold">MOQ:</span>
+          <span className="font-bold text-slate-800">{displayMOQ}</span>
+        </div>
+        <div className="w-px h-3 bg-slate-200" />
+        <div className="flex items-center gap-1 text-[10px] text-slate-600">
+          <Icon name="Clock" className="w-3 h-3 text-slate-400" />
+          <span className="font-semibold">Lead:</span>
+          <span className="font-bold text-slate-800">{displayLeadTime}</span>
+        </div>
+        {lowestPrice !== null && (
+          <>
+            <div className="w-px h-3 bg-slate-200" />
+            <div className="flex items-center gap-1 text-[10px] text-slate-600">
+              <Icon name="Tag" className="w-3 h-3 text-slate-400" />
+              <span className="font-bold text-emerald-700">
+                {LABELS.fromPrefix} <MoneyText value={lowestPrice} />
+                /kg
+              </span>
+            </div>
+          </>
         )}
-        <button
-          onClick={() => {
-            if (zaloQuoteUrl) {
-              window.open(zaloQuoteUrl, '_blank');
-            }
-          }}
-          className="flex-[2] flex flex-col items-center justify-center gap-1 bg-[#0068ff]/10 hover:bg-[#0068ff]/20 text-[#0068ff] border border-[#0068ff]/20 py-2.5 px-2 rounded-xl transition-colors"
-        >
-          <Icon name="MessageCircle" className="w-5 h-5" />
-          <span className="text-xs font-semibold">{LABELS.zaloQuote}</span>
-        </button>
-        <button
-          onClick={onRequestSample}
-          className="flex-[2] flex flex-col items-center justify-center gap-1 bg-[#0068ff] hover:bg-[#0054cc] text-white py-2.5 px-2 rounded-xl transition-colors shadow-sm shadow-[#0068ff]/30"
-        >
-          <Icon name="Package" className="w-5 h-5" />
-          <span className="text-xs font-semibold">{LABELS.zaloSample}</span>
-        </button>
+      </div>
+
+      {/* CTA Buttons */}
+      <div className="flex gap-2 max-w-md mx-auto p-3">
+        {ctaButtons.map((btn) => (
+          <button
+            key={btn.id}
+            onClick={() => handleClick(btn)}
+            className={VARIANT_CLASSES[btn.variant]}
+          >
+            <Icon name={btn.icon} className="w-5 h-5" />
+            <span className="text-[10px] font-semibold text-center leading-tight">
+              {btn.label}
+            </span>
+          </button>
+        ))}
       </div>
     </div>
   );

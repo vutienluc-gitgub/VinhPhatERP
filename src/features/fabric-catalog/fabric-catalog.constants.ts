@@ -80,6 +80,7 @@ export const LABELS = {
   TAB_PUBLIC: 'Công khai',
   TAB_GALLERY: 'Thư viện ảnh',
   TAB_ADMIN: 'Quản trị',
+  ADMIN_GENERAL_CONFIG: 'Cấu hình chung',
 
   // Gallery UX
   GALLERY_TITLE: 'Thư viện ảnh sản phẩm',
@@ -375,6 +376,36 @@ export const PUBLIC_PAGE_LABELS = {
   fromTo: 'Từ {min} - {max}',
   from: 'Từ {min}',
   buyQty: 'Mua {range} {unit}',
+  // RFQ Modal & Intents
+  rfqIntentQuote: 'Báo giá thương mại',
+  rfqIntentQuoteDesc: 'MOQ từ 100kg, giá sỉ theo số lượng',
+  rfqIntentBulk: 'Báo giá số lượng lớn',
+  rfqIntentBulkDesc: 'Trên 1 tấn, chiết khấu đặc biệt',
+  rfqIntentOem: 'Sản xuất OEM',
+  rfqIntentOemDesc: 'Đặt riêng theo yêu cầu thương hiệu',
+  rfqIntentProcessing: 'Gia công hoàn thiện',
+  rfqIntentProcessingDesc: 'Nhuộm, in, xử lý bề mặt',
+  rfqWhatDoYouNeed: 'Bạn cần gì?',
+  rfqFabricRequested: 'MÃ VẢI YÊU CẦU:',
+  rfqPlaceholderName: 'VD: Nguyễn Văn A',
+  rfqPlaceholderPhone: 'VD: 0989xxxxxx',
+  rfqPlaceholderEmail: 'VD: khachhang@gmail.com',
+  rfqPlaceholderCompany: 'VD: Thời trang Tấn Phát',
+  rfqSubmitBtn: 'Gửi yêu cầu',
+  rfqSubmitFailed: 'Gửi yêu cầu báo giá thất bại:',
+  rfqZaloFallbackMsg:
+    'Xin chào,\nTôi muốn nhận báo giá:\n- Mã vải: {code}\n- Tên: {name}\n- Màu: {color}\nVui lòng tư vấn giúp.',
+  rfqSuccessTitle: 'Đã gửi thành công!',
+  rfqLeadId: 'Mã yêu cầu:',
+  rfqSuccessWait1: 'Đội ngũ Sales Vĩnh Phát sẽ liên hệ phản hồi bạn trong vòng',
+  rfqSuccessWait2: '< 24 giờ',
+  rfqSuccessWait3: 'làm việc.',
+  rfqViewMore: 'Xem thêm mẫu vải',
+  rfqCloseBtn: 'Đóng',
+  rfqAllColors: 'Tất cả màu',
+  rfqZaloQuick: 'Liên hệ nhanh qua Zalo',
+  orOption: 'hoặc',
+  fromPrefix: 'Từ',
 } as const;
 
 export const IMAGE_TYPE_MAP: Record<string, string> = {

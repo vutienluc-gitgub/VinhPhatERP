@@ -1,85 +1,41 @@
-import React from 'react';
-import { useFormContext } from 'react-hook-form';
-
-import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
-
-import { FabricPublicPreview } from './FabricPublicPreview';
-import { FabricPublicCustomerSection } from './FabricPublicCustomerSection';
-import { FabricPublicPlannerSection } from './FabricPublicPlannerSection';
-import { FabricPublicPricingSection } from './FabricPublicPricingSection';
-import { FabricPublicSeoSection } from './FabricPublicSeoSection';
+import { FabricPublicPreview } from './public-tab-sections/FabricPublicPreview';
+import { FabricPublicCustomerSection } from './public-tab-sections/FabricPublicCustomerSection';
+import { FabricPublicPlannerSection } from './public-tab-sections/FabricPublicPlannerSection';
+import { FabricPublicPricingSection } from './public-tab-sections/FabricPublicPricingSection';
+import { FabricPublicStatusSection } from './public-tab-sections/FabricPublicStatusSection';
 
 type FabricPublicTabProps = {
   publicUrl: string;
-  isSlugEditing: boolean;
-  handleSlugEditStart: () => void;
-  handleSlugEditCancel: () => void;
-  handleCopyLink: () => void;
-  handleDownloadQR: () => void;
-  handlePrintQR: () => void;
+  updatedAt?: string | null;
 };
+
 export function FabricPublicTab({
   publicUrl,
-  isSlugEditing,
-  handleSlugEditStart,
-  handleSlugEditCancel,
-  handleCopyLink,
-  handleDownloadQR,
-  handlePrintQR,
+  updatedAt,
 }: FabricPublicTabProps) {
-  const { watch } = useFormContext<FabricCatalogFormValues>();
-
-  const [expandedSections, setExpandedSections] = React.useState<string[]>([
-    'pricing',
-    'planner',
-    'trust',
-    'inventory',
-    'public_page',
-    'customer',
-    'seo',
-  ]);
-
-  const toggleSection = (id: string) => {
-    setExpandedSections((prev) =>
-      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id],
-    );
-  };
-
-  const isExpanded = (id: string) => expandedSections.includes(id);
-
-  const watchIsPublic = watch('is_public');
-
   return (
-    <div className="space-y-4">
-      <FabricPublicCustomerSection
-        isExpanded={isExpanded('customer')}
-        onToggle={() => toggleSection('customer')}
-        publicUrl={publicUrl}
-      />
+    <div className="space-y-6">
+      {/* Command Center (Publish -> Preview) */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-10">
+        <FabricPublicStatusSection
+          publicUrl={publicUrl}
+          updatedAt={updatedAt}
+        />
+        <FabricPublicPreview />
+      </div>
 
-      <FabricPublicPlannerSection
-        isExpanded={isExpanded('planner')}
-        onToggle={() => toggleSection('planner')}
-      />
+      {/* Workflow (Planner -> Pricing -> Customer Exp) */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-12">
+        <FabricPublicPlannerSection />
 
-      <FabricPublicPricingSection
-        isExpanded={isExpanded('pricing')}
-        onToggle={() => toggleSection('pricing')}
-      />
+        <div className="h-px bg-slate-100 w-full" />
 
-      <FabricPublicSeoSection
-        isExpanded={isExpanded('seo')}
-        onToggle={() => toggleSection('seo')}
-        publicUrl={publicUrl}
-        isSlugEditing={isSlugEditing}
-        handleSlugEditStart={handleSlugEditStart}
-        handleSlugEditCancel={handleSlugEditCancel}
-        handleCopyLink={handleCopyLink}
-        handleDownloadQR={handleDownloadQR}
-        handlePrintQR={handlePrintQR}
-      />
+        <FabricPublicPricingSection />
 
-      {watchIsPublic && <FabricPublicPreview />}
+        <div className="h-px bg-slate-100 w-full" />
+
+        <FabricPublicCustomerSection />
+      </div>
     </div>
   );
 }
