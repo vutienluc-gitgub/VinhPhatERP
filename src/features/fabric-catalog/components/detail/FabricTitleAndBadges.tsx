@@ -13,7 +13,7 @@ interface FabricTitleAndBadgesProps {
   isCompared: boolean;
   isSaved: boolean;
   handleToggleCompare: () => void;
-  handleToggleWishlist: () => void;
+  handleToggleInquiryCart: () => void;
 }
 
 export function FabricTitleAndBadges({
@@ -21,7 +21,7 @@ export function FabricTitleAndBadges({
   isCompared,
   isSaved,
   handleToggleCompare,
-  handleToggleWishlist,
+  handleToggleInquiryCart,
 }: FabricTitleAndBadgesProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm p-4">
@@ -46,7 +46,7 @@ export function FabricTitleAndBadges({
             {isCompared ? LABELS.addedCompare : LABELS.addToCompare}
           </button>
           <button
-            onClick={handleToggleWishlist}
+            onClick={handleToggleInquiryCart}
             className={cn(
               'p-2 rounded-xl border transition-all flex items-center justify-center gap-1.5 text-xs font-semibold',
               isSaved
@@ -55,10 +55,10 @@ export function FabricTitleAndBadges({
             )}
           >
             <Icon
-              name="Heart"
+              name="ShoppingCart"
               className={cn('w-4 h-4', isSaved && 'fill-current')}
             />
-            {isSaved ? LABELS.savedWishlist : LABELS.saveWishlist}
+            {isSaved ? LABELS.savedInquiryCart : LABELS.saveInquiryCart}
           </button>
         </div>
       </div>

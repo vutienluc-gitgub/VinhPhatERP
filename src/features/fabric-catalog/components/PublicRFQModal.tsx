@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
+import dayjs from 'dayjs';
 
 import { Icon, Button } from '@/shared/components';
 import { useCreatePublicRFQRequest } from '@/application/settings/useFabricCatalog';
-import type { WishlistItem } from '@/shared/wishlist';
+import type { InquiryCartItem } from '@/shared/inquiry-cart';
 import type {
   FabricCatalog,
   FabricVariant,
 } from '@/domain/settings/fabric-catalog.types';
-import { useWishlist } from '@/shared/wishlist';
+import { useInquiryCart } from '@/shared/inquiry-cart';
 import {
   PUBLIC_PAGE_LABELS as LABELS,
   HOTLINE,
@@ -20,12 +21,16 @@ import type {
 } from '@/features/fabric-catalog/context/RFQContext';
 import { useRFQ } from '@/features/fabric-catalog/hooks/useRFQ';
 import { trackLeadEvent } from '@/shared/services/analytics';
+import {
+  generateRFQTicketPdf,
+  type RFQTicketData,
+} from '@/features/fabric-catalog/utils/pdf-generator';
 
 interface PublicRFQModalProps {
   fabric: Partial<FabricCatalog>;
   variants?: FabricVariant[];
   activeColorName: string | null;
-  wishlist: Record<string, WishlistItem>;
+  inquiryCart: Record<string, InquiryCartItem>;
 }
 
 const RFQ_INTENT_CARDS: {
@@ -79,7 +84,7 @@ export function PublicRFQModal({
   fabric,
   variants,
   activeColorName,
-  wishlist,
+  inquiryCart,
 }: PublicRFQModalProps) {
   const { isRFQOpen, rfqRequest, closeRFQ, setRFQIntent } = useRFQ();
   const [rfqQty, setRfqQty] = useState<string>('100');
@@ -88,9 +93,12 @@ export function PublicRFQModal({
   const [rfqEmail, setRfqEmail] = useState('');
   const [rfqCompanyName, setRfqCompanyName] = useState('');
   const [successLeadId, setSuccessLeadId] = useState<string | null>(null);
+  const [rfqTicketData, setRfqTicketData] = useState<RFQTicketData | null>(
+    null,
+  );
 
   const rfqMutation = useCreatePublicRFQRequest();
-  const { clearWishlist } = useWishlist();
+  const { clearInquiryCart } = useInquiryCart();
 
   if (!isRFQOpen) return null;
 
@@ -135,7 +143,7 @@ export function PublicRFQModal({
       const unit = fabric.commercial?.minimum_order_unit ?? fabric.unit ?? 'kg';
 
       const rfqItems = rfqRequest.isBatchRequest
-        ? Object.values(wishlist).map((item) => ({
+        ? Object.values(inquiryCart).map((item) => ({
             fabric_catalog_id: item.id,
             variant_code: item.code,
             color_name: item.color_name ?? LABELS.rfqAllColors,
@@ -172,8 +180,45 @@ export function PublicRFQModal({
           : 'RFQ-2026';
       setSuccessLeadId(shortId);
 
+      const intentMap: Record<string, string> = {
+        quote: LABELS.rfqIntentQuote,
+        bulk_quote: LABELS.rfqIntentBulk,
+        oem: LABELS.rfqIntentOem,
+        processing: LABELS.rfqIntentProcessing,
+      };
+
+      const ticketItems = rfqRequest.isBatchRequest
+        ? Object.values(inquiryCart).map((item) => ({
+            code: item.code,
+            name: item.name,
+            color: item.color_name || LABELS.rfqAllColors,
+            qty: parsedQty,
+            unit,
+          }))
+        : [
+            {
+              code: fabric.code || '',
+              name: fabric.name || '',
+              color: activeColorName || LABELS.rfqAllColors,
+              qty: parsedQty,
+              unit,
+            },
+          ];
+
+      setRfqTicketData({
+        leadId: shortId,
+        contactName: rfqContactName.trim(),
+        contactPhone: rfqContactPhone.trim(),
+        contactEmail: rfqEmail.trim(),
+        companyName: rfqCompanyName.trim(),
+        requestType:
+          intentMap[rfqRequest.intent || 'quote'] || 'Yêu cầu báo giá',
+        date: dayjs().format('DD/MM/YYYY HH:mm'),
+        items: ticketItems,
+      });
+
       if (rfqRequest.isBatchRequest) {
-        clearWishlist();
+        clearInquiryCart();
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -187,6 +232,7 @@ export function PublicRFQModal({
 
   const handleClose = () => {
     setSuccessLeadId(null);
+    setRfqTicketData(null);
     setRfqQty('100');
     setRfqContactName('');
     setRfqContactPhone('');
@@ -233,7 +279,7 @@ export function PublicRFQModal({
             fabric={fabric}
             variants={variants}
             activeColorName={activeColorName}
-            wishlist={wishlist}
+            inquiryCart={inquiryCart}
             rfqRequest={rfqRequest}
             rfqQty={rfqQty}
             setRfqQty={setRfqQty}
@@ -253,7 +299,11 @@ export function PublicRFQModal({
 
         {/* Step 3: Success State */}
         {currentStep === 'success' && (
-          <RFQSuccessStep successLeadId={successLeadId} onClose={handleClose} />
+          <RFQSuccessStep
+            successLeadId={successLeadId}
+            rfqTicketData={rfqTicketData}
+            onClose={handleClose}
+          />
         )}
       </div>
     </div>
@@ -300,7 +350,7 @@ interface RFQFormStepProps {
   fabric: Partial<FabricCatalog>;
   variants?: FabricVariant[];
   activeColorName: string | null;
-  wishlist: Record<string, WishlistItem>;
+  inquiryCart: Record<string, InquiryCartItem>;
   rfqRequest: RFQRequest;
   rfqQty: string;
   setRfqQty: (qty: string) => void;
@@ -320,7 +370,7 @@ interface RFQFormStepProps {
 function RFQFormStep({
   fabric,
   activeColorName,
-  wishlist,
+  inquiryCart,
   rfqRequest,
   rfqQty,
   setRfqQty,
@@ -347,7 +397,7 @@ function RFQFormStep({
         </span>
         {rfqRequest.isBatchRequest ? (
           <div className="space-y-1">
-            {Object.values(wishlist).map((item) => (
+            {Object.values(inquiryCart).map((item) => (
               <div
                 key={item.id}
                 className="text-xs font-semibold text-slate-800"
@@ -475,10 +525,15 @@ function RFQFormStep({
 
 interface RFQSuccessStepProps {
   successLeadId: string | null;
+  rfqTicketData: RFQTicketData | null;
   onClose: () => void;
 }
 
-function RFQSuccessStep({ successLeadId, onClose }: RFQSuccessStepProps) {
+function RFQSuccessStep({
+  successLeadId,
+  rfqTicketData,
+  onClose,
+}: RFQSuccessStepProps) {
   return (
     <div className="p-6 text-center space-y-4">
       <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto">
@@ -508,8 +563,14 @@ function RFQSuccessStep({ successLeadId, onClose }: RFQSuccessStepProps) {
         <Button variant="secondary" fullWidth onClick={onClose}>
           {LABELS.rfqViewMore}
         </Button>
-        <Button variant="primary" fullWidth onClick={onClose}>
-          {LABELS.rfqCloseBtn}
+        <Button
+          variant="outline"
+          fullWidth
+          disabled={!rfqTicketData}
+          onClick={() => rfqTicketData && generateRFQTicketPdf(rfqTicketData)}
+        >
+          <Icon name="Download" className="w-4 h-4 mr-2" />
+          Tải PDF
         </Button>
       </div>
     </div>

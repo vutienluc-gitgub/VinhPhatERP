@@ -22,7 +22,7 @@ export type LeadChannel =
 export type LeadSource =
   | 'sticky_cta'
   | 'planner'
-  | 'wishlist'
+  | 'inquiry_cart'
   | 'product_card'
   | 'hero_banner'
   | 'search'

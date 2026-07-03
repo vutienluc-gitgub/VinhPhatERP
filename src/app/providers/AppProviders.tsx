@@ -11,7 +11,7 @@ import { GlobalModalProvider } from '@/shared/hooks/useGlobalModal';
 import { GlobalModalDispatcher } from '@/app/components/GlobalModalDispatcher';
 import { GlobalEntityProvider } from '@/shared/contexts/GlobalEntityContext';
 import { GlobalEntityDispatcher } from '@/app/components/GlobalEntityDispatcher';
-import { WishlistProvider } from '@/shared/wishlist';
+import { InquiryCartProvider } from '@/shared/inquiry-cart';
 
 export function AppProviders({ children }: PropsWithChildren) {
   const [queryClient] = useState(
@@ -35,7 +35,7 @@ export function AppProviders({ children }: PropsWithChildren) {
             <ConfirmProvider>
               <GlobalModalProvider>
                 <GlobalEntityProvider>
-                  <WishlistProvider>
+                  <InquiryCartProvider>
                     {children}
                     <GlobalModalDispatcher />
                     <GlobalEntityDispatcher />
@@ -68,7 +68,7 @@ export function AppProviders({ children }: PropsWithChildren) {
                         },
                       }}
                     />
-                  </WishlistProvider>
+                  </InquiryCartProvider>
                 </GlobalEntityProvider>
               </GlobalModalProvider>
             </ConfirmProvider>

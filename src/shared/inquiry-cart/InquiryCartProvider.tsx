@@ -1,7 +1,7 @@
 import { createContext, useCallback, useEffect, useState } from 'react';
 
-import { wishlistStorage } from './wishlist.storage';
-import { WishlistContextValue, WishlistItem } from './wishlist.types';
+import { inquiryCartStorage } from './inquiry-cart.storage';
+import { InquiryCartContextValue, InquiryCartItem } from './inquiry-cart.types';
 
 // Placeholder for analytics tracking
 const trackEvent = (eventName: string, payload: Record<string, unknown>) => {
@@ -11,18 +11,22 @@ const trackEvent = (eventName: string, payload: Record<string, unknown>) => {
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const WishlistContext = createContext<WishlistContextValue | undefined>(
-  undefined,
-);
+export const InquiryCartContext = createContext<
+  InquiryCartContextValue | undefined
+>(undefined);
 
-export function WishlistProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<Record<string, WishlistItem>>({});
+export function InquiryCartProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [items, setItems] = useState<Record<string, InquiryCartItem>>({});
   const [recentlyViewed, setRecentlyViewed] = useState<string[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Initial load
   useEffect(() => {
-    const data = wishlistStorage.get();
+    const data = inquiryCartStorage.get();
     setItems(data.items || {});
     setRecentlyViewed(data.recentlyViewed || []);
     setIsLoaded(true);
@@ -31,20 +35,20 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   // Sync to storage
   useEffect(() => {
     if (isLoaded) {
-      wishlistStorage.set({ items, recentlyViewed });
+      inquiryCartStorage.set({ items, recentlyViewed });
     }
   }, [items, recentlyViewed, isLoaded]);
 
-  const addToWishlist = useCallback((item: WishlistItem) => {
+  const addToInquiryCart = useCallback((item: InquiryCartItem) => {
     setItems((prev) => {
       // Don't modify if it already exists to avoid unnecessary renders
       if (prev[item.id]) return prev;
       return { ...prev, [item.id]: item };
     });
-    trackEvent('wishlist_add', { fabricId: item.id });
+    trackEvent('inquiry_cart_add', { fabricId: item.id });
   }, []);
 
-  const removeFromWishlist = useCallback((id: string) => {
+  const removeFromInquiryCart = useCallback((id: string) => {
     setItems((prev) => {
       if (!prev[id]) return prev;
       const newItems = { ...prev };
@@ -53,7 +57,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const clearWishlist = useCallback(() => {
+  const clearInquiryCart = useCallback(() => {
     setItems({});
   }, []);
 
@@ -65,17 +69,17 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <WishlistContext.Provider
+    <InquiryCartContext.Provider
       value={{
-        wishlist: items,
+        inquiryCart: items,
         recentlyViewed,
-        addToWishlist,
-        removeFromWishlist,
-        clearWishlist,
+        addToInquiryCart,
+        removeFromInquiryCart,
+        clearInquiryCart,
         addRecentlyViewed,
       }}
     >
       {children}
-    </WishlistContext.Provider>
+    </InquiryCartContext.Provider>
   );
 }
