@@ -309,6 +309,8 @@ export async function createPublicSampleRequest(payload: {
   companyName?: string;
   selectedVariants?: Array<{ variant_code: string; color_name: string }>;
   sampleItems?: Array<Record<string, unknown>>;
+  leadChannel?: string;
+  leadSource?: string;
 }): Promise<string> {
   const { data, error } = await untypedDb.rpc(
     'rpc_create_public_sample_request',
@@ -320,6 +322,8 @@ export async function createPublicSampleRequest(payload: {
       p_company_name: payload.companyName || null,
       p_selected_variants: payload.selectedVariants || [],
       p_sample_items: payload.sampleItems || [],
+      p_lead_channel: payload.leadChannel || 'website',
+      p_lead_source: payload.leadSource || 'unknown',
     },
   );
   if (error) throw error;
@@ -348,6 +352,9 @@ export async function createPublicRFQRequest(payload: {
   contactEmail?: string | null;
   companyName?: string | null;
   rfqItems?: Array<Record<string, unknown>>;
+  leadChannel?: string;
+  leadSource?: string;
+  rfqType?: string;
 }): Promise<string> {
   const { data, error } = await untypedDb.rpc('rpc_create_public_rfq_request', {
     p_fabric_catalog_id: payload.fabricCatalogId || null,
@@ -361,6 +368,9 @@ export async function createPublicRFQRequest(payload: {
     p_contact_email: payload.contactEmail || null,
     p_company_name: payload.companyName || null,
     p_rfq_items: payload.rfqItems || [],
+    p_lead_channel: payload.leadChannel || 'website',
+    p_lead_source: payload.leadSource || 'unknown',
+    p_rfq_type: payload.rfqType || 'quote',
   });
   if (error) throw error;
   return data as string;

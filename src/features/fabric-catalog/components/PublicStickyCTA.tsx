@@ -1,3 +1,8 @@
+/**
+ * @deprecated Use FabricStickyCTA from `components/detail/FabricStickyCTA.tsx` instead.
+ * This component is no longer imported anywhere and will be removed after
+ * a stable release cycle. See migration: 20260702 B2B Lead Funnel.
+ */
 import { Icon } from '@/shared/components';
 import {
   HOTLINE,

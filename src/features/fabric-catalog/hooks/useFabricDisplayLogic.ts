@@ -10,6 +10,18 @@ import {
   HOTLINE,
 } from '@/features/fabric-catalog/fabric-catalog.constants';
 
+/**
+ * Compute lowest visible price label from pricing tiers.
+ */
+export function getLowestPriceLabel(
+  tiers: Array<{ unit_price: number; is_public_visible?: boolean }> | undefined,
+): number | null {
+  if (!tiers || tiers.length === 0) return null;
+  const publicTiers = tiers.filter((t) => t.is_public_visible !== false);
+  if (publicTiers.length === 0) return null;
+  return Math.min(...publicTiers.map((t) => t.unit_price));
+}
+
 export function useFabricDisplayLogic(
   fabric: Partial<FabricCatalog> | null | undefined,
   variants: FabricVariant[] | undefined,
