@@ -358,6 +358,7 @@ export const PUBLIC_PAGE_LABELS = {
   validationEmailInvalid: 'Email không đúng định dạng',
   validationTargetPricePositive: 'Giá kỳ vọng phải lớn hơn 0',
   loginToViewPrice: 'Đăng nhập để xem giá sỉ & đại lý',
+  wholesaleOnly: 'Dành cho khách hàng sỉ & đại lý',
   loginBtn: 'Đăng nhập B2B',
   logoutBtn: 'Đăng xuất',
   goToPortal: 'Cổng Portal',

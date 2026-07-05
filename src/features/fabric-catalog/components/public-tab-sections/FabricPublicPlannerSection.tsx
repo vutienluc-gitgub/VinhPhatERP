@@ -4,7 +4,10 @@ import { useFormContext } from 'react-hook-form';
 import { Icon } from '@/shared/components';
 import { WeightField, QuantityField } from '@/shared/value';
 import { NumericField } from '@/shared/value/core/NumericField';
-import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
+import {
+  LABELS,
+  PUBLIC_PAGE_LABELS,
+} from '@/features/fabric-catalog/fabric-catalog.constants';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 
 export function FabricPublicPlannerSection() {
@@ -58,7 +61,7 @@ export function FabricPublicPlannerSection() {
               htmlFor="b2b_planner.origin_country"
               className="text-sm font-medium text-slate-700 mb-1"
             >
-              {LABELS.origin}
+              {PUBLIC_PAGE_LABELS.origin}
             </label>
             <input
               id="b2b_planner.origin_country"
