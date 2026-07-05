@@ -31,6 +31,7 @@ export type WeavingInvoice = {
   paid_amount: number;
   status: WeavingInvoiceStatus;
   notes: string | null;
+  lookup_code: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;

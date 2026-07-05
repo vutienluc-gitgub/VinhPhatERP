@@ -18,7 +18,8 @@ type LeadEventName =
   | 'rfq_submit_failed'
   | 'sample_modal_open'
   | 'sample_submit_success'
-  | 'sample_submit_failed';
+  | 'sample_submit_failed'
+  | 'inquiry_cart_add';
 
 interface LeadEventPayload {
   fabricCode?: string;

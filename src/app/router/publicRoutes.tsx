@@ -24,6 +24,18 @@ const PublicFabricDetailPage = lazy(() =>
   })),
 );
 
+const InvoiceSearchPage = lazy(() =>
+  import('@/features/weaving-invoices/InvoiceSearchPage').then((m) => ({
+    default: m.InvoiceSearchPage,
+  })),
+);
+
+const PublicInvoiceDetailPage = lazy(() =>
+  import('@/features/weaving-invoices/PublicInvoiceDetailPage').then((m) => ({
+    default: m.PublicInvoiceDetailPage,
+  })),
+);
+
 export const publicRoutes: RouteObject[] = [
   authRoute,
   {
@@ -45,5 +57,13 @@ export const publicRoutes: RouteObject[] = [
   {
     path: '/p/fabric/:slug',
     element: withSuspense(<PublicFabricDetailPage />),
+  },
+  {
+    path: '/tra-cuu',
+    element: withSuspense(<InvoiceSearchPage />),
+  },
+  {
+    path: '/tra-cuu/:lookupCode',
+    element: withSuspense(<PublicInvoiceDetailPage />),
   },
 ];

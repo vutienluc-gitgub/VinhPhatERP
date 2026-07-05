@@ -193,6 +193,12 @@ export const LABELS = {
   PLANNER_ADVANCED: 'Nâng cao',
   STANDARD_CONSUMPTION_LABEL: 'Định mức chuẩn (kg/áo)',
   STANDARD_CONSUMPTION_PLACEHOLDER: 'VD: 0.25',
+  ORIGIN_PLACEHOLDER: 'VD: Việt Nam, Trung Quốc, Hàn Quốc...',
+  ADVANCED_SETTINGS_TOGGLE: 'Cài đặt nâng cao',
+  UNIT_TON_MONTH: 'tấn/tháng',
+  UNIT_KG: 'kg',
+  UNIT_DAY: 'ngày',
+  UNIT_TON: 'tấn',
 
   // Pricing
   PRICING_LOWEST_PREFIX: 'Từ',

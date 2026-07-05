@@ -52,6 +52,7 @@ function catalogToFormValues(catalog: FabricCatalog): FabricCatalogFormValues {
       trust_tech_support: catalog.commercial?.trust_tech_support ?? false,
       standard_consumption_kg:
         catalog.commercial?.standard_consumption_kg ?? 0.25,
+      origin_country: catalog.commercial?.origin_country ?? null,
     },
     pricing_tiers: [],
     images: [],

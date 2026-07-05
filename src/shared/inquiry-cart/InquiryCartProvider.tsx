@@ -1,14 +1,17 @@
-import { createContext, useCallback, useEffect, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+} from 'react';
+
+import { trackLeadEvent } from '@/shared/services/analytics';
 
 import { inquiryCartStorage } from './inquiry-cart.storage';
 import { InquiryCartContextValue, InquiryCartItem } from './inquiry-cart.types';
 
-// Placeholder for analytics tracking
-const trackEvent = (eventName: string, payload: Record<string, unknown>) => {
-  // eslint-disable-next-line no-console
-  console.log(`[Analytics] ${eventName}:`, payload);
-  // CRM Tracking logic goes here
-};
+const MAX_RECENTLY_VIEWED = 10;
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const InquiryCartContext = createContext<
@@ -45,7 +48,7 @@ export function InquiryCartProvider({
       if (prev[item.id]) return prev;
       return { ...prev, [item.id]: item };
     });
-    trackEvent('inquiry_cart_add', { fabricId: item.id });
+    trackLeadEvent('inquiry_cart_add', { fabricId: item.id });
   }, []);
 
   const removeFromInquiryCart = useCallback((id: string) => {
@@ -64,21 +67,31 @@ export function InquiryCartProvider({
   const addRecentlyViewed = useCallback((id: string) => {
     setRecentlyViewed((prev) => {
       const filtered = prev.filter((item) => item !== id);
-      return [id, ...filtered].slice(0, 10); // Keep max 10
+      return [id, ...filtered].slice(0, MAX_RECENTLY_VIEWED);
     });
   }, []);
 
+  const contextValue = useMemo(
+    () => ({
+      inquiryCart: items,
+      recentlyViewed,
+      addToInquiryCart,
+      removeFromInquiryCart,
+      clearInquiryCart,
+      addRecentlyViewed,
+    }),
+    [
+      items,
+      recentlyViewed,
+      addToInquiryCart,
+      removeFromInquiryCart,
+      clearInquiryCart,
+      addRecentlyViewed,
+    ],
+  );
+
   return (
-    <InquiryCartContext.Provider
-      value={{
-        inquiryCart: items,
-        recentlyViewed,
-        addToInquiryCart,
-        removeFromInquiryCart,
-        clearInquiryCart,
-        addRecentlyViewed,
-      }}
-    >
+    <InquiryCartContext.Provider value={contextValue}>
       {children}
     </InquiryCartContext.Provider>
   );
