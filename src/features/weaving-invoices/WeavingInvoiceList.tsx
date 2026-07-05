@@ -321,6 +321,18 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
                           disabled: deleteMutation.isPending,
                         }
                       : null,
+                    inv.lookup_code
+                      ? {
+                          icon: 'ExternalLink',
+                          onClick: () => {
+                            window.open(
+                              `/tra-cuu/${inv.lookup_code}`,
+                              '_blank',
+                            );
+                          },
+                          title: 'Tra cứu QR & in hóa đơn',
+                        }
+                      : null,
                   ].filter(Boolean) as ActionConfig[]
                 }
               />
@@ -403,6 +415,19 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
                     disabled={deleteMutation.isPending}
                   >
                     <Icon name="Trash2" size={16} />
+                  </button>
+                </div>
+              )}
+              {inv.status !== 'draft' && inv.lookup_code && (
+                <div className="flex gap-2 pt-3 mt-1 border-t border-border/10">
+                  <button
+                    className="btn-secondary flex-1 text-primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(`/tra-cuu/${inv.lookup_code}`, '_blank');
+                    }}
+                  >
+                    <Icon name="ExternalLink" size={16} /> Tra cứu QR & In
                   </button>
                 </div>
               )}

@@ -77,8 +77,9 @@ export function FabricHeaderActions({
         {!isAuthenticated ? (
           <button
             onClick={onOpenLogin}
-            className="text-xs font-semibold text-primary hover:bg-primary/5 px-2 py-1.5 rounded-lg transition-colors"
+            className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:bg-primary/5 px-2.5 py-1.5 rounded-lg transition-colors"
           >
+            <Icon name="Lock" className="w-4 h-4" />
             {LABELS.loginBtn}
           </button>
         ) : (

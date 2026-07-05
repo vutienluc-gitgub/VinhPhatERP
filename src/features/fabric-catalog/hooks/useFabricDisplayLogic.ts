@@ -36,9 +36,11 @@ export function useFabricDisplayLogic(
       : override.minimum_custom_order
         ? `${override.minimum_custom_order} ${fabric?.commercial?.minimum_order_unit || fabric?.unit || 'kg'} (Đặt sản xuất)`
         : LABELS.na
-    : fabric?.commercial?.minimum_order_qty
-      ? `${fabric.commercial.minimum_order_qty} ${fabric.commercial.minimum_order_unit || fabric.unit || 'kg'}`
-      : LABELS.na;
+    : fabric?.commercial?.minimum_order_qty_kg
+      ? `${fabric.commercial.minimum_order_qty_kg} kg`
+      : fabric?.commercial?.minimum_order_qty
+        ? `${fabric.commercial.minimum_order_qty} ${fabric.commercial.minimum_order_unit || fabric.unit || 'kg'}`
+        : LABELS.na;
 
   const displayLeadTime = override
     ? override.lead_time_stock
@@ -46,9 +48,11 @@ export function useFabricDisplayLogic(
       : override.lead_time_custom
         ? `${override.lead_time_custom} ${LEAD_TIME_UNIT_MAP[override.lead_time_unit || 'day'] || override.lead_time_unit} (Sản xuất)`
         : LABELS.na
-    : fabric?.commercial?.lead_time_min
-      ? `${fabric.commercial.lead_time_min}-${fabric.commercial.lead_time_max} ${LEAD_TIME_UNIT_MAP[fabric.commercial.lead_time_unit || 'day'] || fabric.commercial.lead_time_unit}`
-      : LABELS.na;
+    : fabric?.commercial?.lead_time_days
+      ? `${fabric.commercial.lead_time_days} ngày`
+      : fabric?.commercial?.lead_time_min
+        ? `${fabric.commercial.lead_time_min}-${fabric.commercial.lead_time_max} ${LEAD_TIME_UNIT_MAP[fabric.commercial.lead_time_unit || 'day'] || fabric.commercial.lead_time_unit}`
+        : LABELS.na;
 
   const handleShare = () => {
     if (!fabric) return;

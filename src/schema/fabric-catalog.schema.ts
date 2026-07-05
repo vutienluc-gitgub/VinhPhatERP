@@ -48,6 +48,7 @@ const baseFabricCatalogSchema = z.object({
       trust_fast_delivery: z.boolean().default(false),
       trust_tech_support: z.boolean().default(false),
       standard_consumption_kg: z.number().min(0.05).max(2.0).default(0.25),
+      origin_country: z.string().trim().max(100).optional().nullable(),
     })
     .optional(),
   pricing_tiers: z
@@ -182,6 +183,7 @@ export const fabricCatalogDefaultValues: FabricCatalogFormValues = {
     trust_fast_delivery: false,
     trust_tech_support: false,
     standard_consumption_kg: 0.25,
+    origin_country: null,
   },
   pricing_tiers: [],
   images: [],

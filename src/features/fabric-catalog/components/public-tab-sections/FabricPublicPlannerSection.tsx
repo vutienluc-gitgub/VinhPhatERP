@@ -8,7 +8,11 @@ import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 
 export function FabricPublicPlannerSection() {
-  const { control } = useFormContext<FabricCatalogFormValues>();
+  const {
+    control,
+    register,
+    formState: { errors },
+  } = useFormContext<FabricCatalogFormValues>();
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
   return (
@@ -32,23 +36,43 @@ export function FabricPublicPlannerSection() {
             control={control}
             name="b2b_planner.lead_time_days"
             label={LABELS.LEAD_TIME_LABEL}
-            suffix="ngày"
+            suffix={LABELS.UNIT_DAY}
             allowNegative={false}
           />
           <WeightField
             control={control}
             name="b2b_planner.production_capacity_monthly_tons"
             label={LABELS.CAPACITY_LABEL}
-            suffix="tấn"
+            suffix={LABELS.UNIT_TON}
             allowNegative={false}
           />
           <WeightField
             control={control}
             name="b2b_planner.standard_consumption_kg"
             label={LABELS.STANDARD_CONSUMPTION_LABEL}
-            suffix="kg"
+            suffix={LABELS.UNIT_KG}
             allowNegative={false}
           />
+          <div className="form-field col-span-2">
+            <label
+              htmlFor="b2b_planner.origin_country"
+              className="text-sm font-medium text-slate-700 mb-1"
+            >
+              {LABELS.origin}
+            </label>
+            <input
+              id="b2b_planner.origin_country"
+              type="text"
+              className={`field-input ${errors.b2b_planner?.origin_country ? 'is-error' : ''}`}
+              placeholder={LABELS.ORIGIN_PLACEHOLDER}
+              {...register('b2b_planner.origin_country')}
+            />
+            {errors.b2b_planner?.origin_country && (
+              <span className="field-error">
+                {errors.b2b_planner.origin_country.message}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Advanced Toggle */}
@@ -58,7 +82,7 @@ export function FabricPublicPlannerSection() {
             className="flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
             onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
           >
-            <span>Advanced settings</span>
+            <span>{LABELS.ADVANCED_SETTINGS_TOGGLE}</span>
             <Icon
               name="ChevronDown"
               size={16}
