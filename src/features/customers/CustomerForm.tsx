@@ -395,62 +395,74 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
           />
         </div>
 
-        {/* Nhóm khách hàng (Many-to-Many Tags / Checkbox toggles) */}
-        <div className="form-field">
-          <span className="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-2">
-            Nhóm khách hàng (Phân hạng sỉ)
-          </span>
-          {groupsList.length === 0 ? (
-            <span className="text-xs text-slate-400 italic">
-              Chưa có nhóm nào được định nghĩa trên hệ thống.
+        {/* Phân hạng sỉ & Tài khoản Portal */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Nhóm khách hàng (Many-to-Many Tags / Checkbox toggles) */}
+          <div className="form-field">
+            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-2">
+              Nhóm khách hàng (Phân hạng sỉ)
             </span>
-          ) : (
-            <div className="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200">
-              {groupsList
-                .filter(
-                  (g) =>
-                    g.status === 'active' || selectedGroupIds.includes(g.id),
-                )
-                .map((g) => {
-                  const isSelected = selectedGroupIds.includes(g.id);
-                  return (
-                    <button
-                      key={g.id}
-                      type="button"
-                      onClick={() => {
-                        if (isSelected) {
-                          setSelectedGroupIds(
-                            selectedGroupIds.filter((id) => id !== g.id),
-                          );
-                        } else {
-                          setSelectedGroupIds([...selectedGroupIds, g.id]);
-                        }
-                      }}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
-                        isSelected
-                          ? 'bg-primary/10 border-primary text-primary'
-                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
-                      }`}
-                    >
-                      <span>{isSelected ? '✓' : '+'}</span>
-                      <span>{g.name}</span>
-                      <span className="text-[10px] opacity-60 font-mono">
-                        ({g.code})
-                      </span>
-                    </button>
-                  );
-                })}
-            </div>
-          )}
-        </div>
+            {groupsList.length === 0 ? (
+              <span className="text-xs text-slate-400 italic">
+                Chưa có nhóm nào được định nghĩa trên hệ thống.
+              </span>
+            ) : (
+              <div className="flex flex-wrap gap-2 p-3.5 bg-slate-50 rounded-xl border border-slate-200 h-full min-h-[90px] content-start">
+                {groupsList
+                  .filter(
+                    (g) =>
+                      g.status === 'active' || selectedGroupIds.includes(g.id),
+                  )
+                  .map((g) => {
+                    const isSelected = selectedGroupIds.includes(g.id);
+                    return (
+                      <button
+                        key={g.id}
+                        type="button"
+                        onClick={() => {
+                          if (isSelected) {
+                            setSelectedGroupIds(
+                              selectedGroupIds.filter((id) => id !== g.id),
+                            );
+                          } else {
+                            setSelectedGroupIds([...selectedGroupIds, g.id]);
+                          }
+                        }}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer h-fit ${
+                          isSelected
+                            ? 'bg-primary/10 border-primary text-primary'
+                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                        }`}
+                      >
+                        <span>{isSelected ? '✓' : '+'}</span>
+                        <span>{g.name}</span>
+                        <span className="text-[10px] opacity-60 font-mono">
+                          ({g.code})
+                        </span>
+                      </button>
+                    );
+                  })}
+              </div>
+            )}
+          </div>
 
-        {/* Customer Portal Account — chỉ hiện khi đang edit */}
-        {isEditing && (
-          <CustomerPortalAccountPanel
-            customerId={customer.id}
-            customerName={customer.name}
-          />
-        )}
+          {/* Tài khoản Customer Portal */}
+          <div className="form-field">
+            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-2">
+              Tài khoản Customer Portal
+            </span>
+            {isEditing ? (
+              <CustomerPortalAccountPanel
+                customerId={customer.id}
+                customerName={customer.name}
+              />
+            ) : (
+              <div className="border border-dashed border-slate-200 bg-slate-50/50 rounded-xl p-4 min-h-[90px] flex items-center justify-center text-center text-xs text-slate-400 italic">
+                Tài khoản Portal sẽ khả dụng sau khi lưu khách hàng.
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
