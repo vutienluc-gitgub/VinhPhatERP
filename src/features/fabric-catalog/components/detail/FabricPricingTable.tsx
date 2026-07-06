@@ -26,15 +26,22 @@ export function FabricPricingTable({
 }: FabricPricingTableProps) {
   const sortedTiers = useMemo(() => {
     if (!pricingTiers) return [];
-    return [...pricingTiers].sort((a, b) => a.min_quantity - b.min_quantity);
-  }, [pricingTiers]);
+    const visibleTiers = canViewWholesale
+      ? pricingTiers
+      : pricingTiers.filter((t) => t.is_public_visible !== false);
+    return [...visibleTiers].sort((a, b) => {
+      const priorityDiff = (b.priority || 0) - (a.priority || 0);
+      if (priorityDiff !== 0) return priorityDiff;
+      return a.min_quantity - b.min_quantity;
+    });
+  }, [pricingTiers, canViewWholesale]);
 
   return (
-    <div className="mt-6">
+    <div className="bg-white rounded-xl shadow-sm p-4">
       <div className="flex justify-between items-end mb-3">
-        <h4 className="text-sm font-semibold text-gray-800">
+        <h3 className="text-base font-bold text-gray-900">
           {PUBLIC_PAGE_LABELS.pricingTierTitle}
-        </h4>
+        </h3>
         {!canViewWholesale && (
           <button
             onClick={onOpenLogin}
@@ -66,22 +73,20 @@ export function FabricPricingTable({
                       String(tier.min_quantity),
                     );
 
-                const buyLabel = PUBLIC_PAGE_LABELS.buyQty
-                  .replace('{range}', rangeLabel)
-                  .replace('{unit}', fabric.unit || LABELS.PREVIEW_UNIT_KG);
+                const buyLabel = tier.display_label
+                  ? tier.display_label
+                  : PUBLIC_PAGE_LABELS.buyQty
+                      .replace('{range}', rangeLabel)
+                      .replace('{unit}', fabric.unit || LABELS.PREVIEW_UNIT_KG);
 
                 return (
                   <tr key={tier.id} className="hover:bg-slate-50/50">
                     <td className="p-3 font-medium">{buyLabel}</td>
                     <td className="p-3 text-right font-semibold text-primary">
-                      {tier.display_label ? (
-                        tier.display_label
-                      ) : (
-                        <MoneyText
-                          value={tier.unit_price}
-                          suffix={tier.currency === 'USD' ? ' USD' : ' đ'}
-                        />
-                      )}
+                      <MoneyText
+                        value={tier.unit_price}
+                        suffix={tier.currency === 'USD' ? ' USD' : ' đ'}
+                      />
                     </td>
                   </tr>
                 );

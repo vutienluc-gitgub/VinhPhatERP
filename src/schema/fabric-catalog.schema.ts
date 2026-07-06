@@ -60,6 +60,8 @@ const baseFabricCatalogSchema = z.object({
         currency: z.string().default('VND'),
         display_label: z.string().nullable().optional(),
         is_public_visible: z.boolean().default(true),
+        priority: z.number().int().default(0),
+        customer_group_ids: z.array(z.string()).default([]),
       }),
     )
     .default([]),
@@ -128,20 +130,31 @@ export const fabricCatalogSchema = fabricCatalogUnion.superRefine(
         });
       }
 
-      // Overlap detection: min_quantity of tier N must be > max_quantity of tier N-1
+      // Overlap detection: min_quantity of tier N must be > max_quantity of tier N-1 for same customer group
       if (sortedIdx > 0) {
-        const prevTier = sorted[sortedIdx - 1];
-        if (
-          prevTier !== undefined &&
-          prevTier.max_quantity !== null &&
-          prevTier.max_quantity !== undefined &&
-          tier.min_quantity <= prevTier.max_quantity
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: `Bậc giá bị trùng lắp: từ ${tier.min_quantity} kg nằm trong phạm vi bậc trước (đến ${prevTier.max_quantity} kg)`,
-            path: ['pricing_tiers', tier.originalIndex, 'min_quantity'],
-          });
+        for (let j = 0; j < sortedIdx; j++) {
+          const prevTier = sorted[j];
+          if (
+            prevTier !== undefined &&
+            prevTier.max_quantity !== null &&
+            prevTier.max_quantity !== undefined &&
+            tier.min_quantity <= prevTier.max_quantity
+          ) {
+            // Check if they share any customer group or both are general
+            const groupsI = tier.customer_group_ids || [];
+            const groupsJ = prevTier.customer_group_ids || [];
+            const hasCommonGroup = groupsI.some((id) => groupsJ.includes(id));
+            const bothGeneral = groupsI.length === 0 && groupsJ.length === 0;
+
+            if (bothGeneral || hasCommonGroup) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: `Bậc giá bị trùng lắp phạm vi số lượng với bậc giá có cùng đối tượng nhóm (từ ${tier.min_quantity} kg trùng với bậc ${prevTier.min_quantity}-${prevTier.max_quantity} kg)`,
+                path: ['pricing_tiers', tier.originalIndex, 'min_quantity'],
+              });
+              break; // Only trigger one overlap error per tier
+            }
+          }
         }
       }
     });

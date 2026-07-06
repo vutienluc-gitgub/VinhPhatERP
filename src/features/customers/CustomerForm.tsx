@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { Button } from '@/shared/components';
 import {
@@ -25,6 +26,11 @@ import {
 } from '@/application/crm';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { getErrorMessage } from '@/shared/utils/error';
+import {
+  useCustomerGroupList,
+  useCustomerGroupMembers,
+} from '@/application/crm/useCustomerGroups';
+import { saveCustomerGroupsForCustomer } from '@/api/customer-groups.api';
 
 import type { Customer } from './types';
 import { CustomerPortalAccountPanel } from './CustomerPortalAccountPanel';
@@ -79,6 +85,7 @@ function customerToFormValues(customer: Customer): CustomersFormValues {
 
 export function CustomerForm({ customer, onClose }: CustomerFormProps) {
   const isEditing = customer !== null;
+  const queryClient = useQueryClient();
   const createMutation = useCreateCustomer();
   const updateMutation = useUpdateCustomer();
   const { data: nextCode } = useNextCustomerCode();
@@ -87,6 +94,18 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
     role: 'sales',
     status: 'active',
   });
+
+  // Tải danh sách nhóm và thành viên nhóm của khách hàng
+  const { data: groupsList = [] } = useCustomerGroupList();
+  const { data: currentGroupIds = [] } = useCustomerGroupMembers(customer?.id);
+  const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
+
+  // Đồng bộ nhóm đã chọn khi dữ liệu tải xong
+  useEffect(() => {
+    if (currentGroupIds) {
+      setSelectedGroupIds(currentGroupIds);
+    }
+  }, [currentGroupIds]);
 
   const canAssign = profile?.role === 'admin' || profile?.role === 'manager';
 
@@ -125,11 +144,23 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
           values,
           expectedUpdatedAt: customer.updated_at,
         });
+        // Lưu liên kết nhóm khách hàng (Many-to-Many)
+        await saveCustomerGroupsForCustomer(customer.id, selectedGroupIds);
         toast.success('Cập nhật khách hàng thành công');
       } else {
-        await createMutation.mutateAsync(values);
+        const newCustomer = await createMutation.mutateAsync(values);
+        if (newCustomer?.id && selectedGroupIds.length > 0) {
+          // Lưu liên kết nhóm cho khách hàng mới vừa tạo
+          await saveCustomerGroupsForCustomer(newCustomer.id, selectedGroupIds);
+        }
         toast.success('Tạo khách hàng mới thành công');
       }
+
+      // Invalidate cache để cập nhật giao diện
+      void queryClient.invalidateQueries({
+        queryKey: ['customer_groups', 'members'],
+      });
+      void queryClient.invalidateQueries({ queryKey: ['customers'] });
       onClose();
     } catch {
       // Lỗi hiện qua mutationError bên dưới
@@ -362,6 +393,55 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
             placeholder="Ghi chú thêm về khách hàng..."
             {...register('notes')}
           />
+        </div>
+
+        {/* Nhóm khách hàng (Many-to-Many Tags / Checkbox toggles) */}
+        <div className="form-field">
+          <span className="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-2">
+            Nhóm khách hàng (Phân hạng sỉ)
+          </span>
+          {groupsList.length === 0 ? (
+            <span className="text-xs text-slate-400 italic">
+              Chưa có nhóm nào được định nghĩa trên hệ thống.
+            </span>
+          ) : (
+            <div className="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200">
+              {groupsList
+                .filter(
+                  (g) =>
+                    g.status === 'active' || selectedGroupIds.includes(g.id),
+                )
+                .map((g) => {
+                  const isSelected = selectedGroupIds.includes(g.id);
+                  return (
+                    <button
+                      key={g.id}
+                      type="button"
+                      onClick={() => {
+                        if (isSelected) {
+                          setSelectedGroupIds(
+                            selectedGroupIds.filter((id) => id !== g.id),
+                          );
+                        } else {
+                          setSelectedGroupIds([...selectedGroupIds, g.id]);
+                        }
+                      }}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-primary/10 border-primary text-primary'
+                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span>{isSelected ? '✓' : '+'}</span>
+                      <span>{g.name}</span>
+                      <span className="text-[10px] opacity-60 font-mono">
+                        ({g.code})
+                      </span>
+                    </button>
+                  );
+                })}
+            </div>
+          )}
         </div>
 
         {/* Customer Portal Account — chỉ hiện khi đang edit */}

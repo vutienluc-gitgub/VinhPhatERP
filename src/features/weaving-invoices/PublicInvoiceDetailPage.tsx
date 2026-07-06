@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 import { fetchPublicWeavingInvoice } from '@/api/verify-invoice.api';
 import type { PublicWeavingInvoiceSummary } from '@/api/verify-invoice.api';
@@ -64,6 +65,18 @@ export function PublicInvoiceDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // 1. Chèn thẻ meta robots noindex/nofollow động để chặn thu thập thông tin cá nhân
+  useEffect(() => {
+    const meta = document.createElement('meta');
+    meta.name = 'robots';
+    meta.content = 'noindex, nofollow';
+    document.head.appendChild(meta);
+    return () => {
+      document.head.removeChild(meta);
+    };
+  }, []);
+
+  // 2. Gọi API lấy dữ liệu hóa đơn dệt gia công
   useEffect(() => {
     if (!lookupCode) return;
     setLoading(true);
@@ -87,6 +100,56 @@ export function PublicInvoiceDetailPage() {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const lookupUrl = window.location.origin + '/tra-cuu/' + lookupCode;
+
+  // 3. Sao chép liên kết với giải pháp dự phòng an toàn (Fallback Clipboard)
+  const handleCopyLink = async () => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(lookupUrl);
+        toast.success('Đã sao chép liên kết tra cứu hóa đơn!');
+      } else {
+        // Dự phòng cho trình duyệt cũ hoặc kết nối HTTP
+        const textArea = document.createElement('textarea');
+        textArea.value = lookupUrl;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const success = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        if (success) {
+          toast.success('Đã sao chép liên kết tra cứu hóa đơn!');
+        } else {
+          toast.error('Không thể sao chép liên kết.');
+        }
+      }
+    } catch (err) {
+      console.error('Copy link error:', err);
+      toast.error('Đã xảy ra lỗi khi sao chép liên kết.');
+    }
+  };
+
+  // 4. Chia sẻ thiết bị di động (Native Share)
+  const isShareSupported =
+    typeof navigator !== 'undefined' && !!navigator.share;
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Hóa đơn dệt gia công ${invoice?.invoice_number}`,
+          text: `Tra cứu hóa đơn gia công dệt của Công ty Dệt may Vĩnh Phát. Mã tra cứu: ${lookupCode}`,
+          url: lookupUrl,
+        });
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          console.error('Native share error:', err);
+        }
+      }
+    }
   };
 
   if (loading) {
@@ -135,7 +198,6 @@ export function PublicInvoiceDetailPage() {
     );
   }
 
-  const lookupUrl = window.location.origin + '/tra-cuu/' + lookupCode;
   const statusInfo = STATUS_LABELS[invoice.status] ?? {
     label: invoice.status,
     className: 'bg-slate-100 text-slate-700',
@@ -146,23 +208,75 @@ export function PublicInvoiceDetailPage() {
   return (
     <div className="min-h-screen bg-[#f0f5fb] py-8 px-4 font-sans print:bg-white print:py-0 print:px-0">
       {/* Action Bar (hidden on print) */}
-      <div className="max-w-4xl mx-auto mb-6 flex justify-between items-center print:hidden">
+      <div className="max-w-4xl mx-auto mb-6 flex flex-col sm:flex-row gap-4 justify-between items-stretch sm:items-center print:hidden">
         <button
           onClick={() => navigate('/tra-cuu')}
-          className="flex items-center gap-2 text-sm font-semibold text-[#0f3460] hover:text-[#1a6bb5] transition-all bg-transparent border-none p-2 cursor-pointer"
+          className="flex items-center justify-center sm:justify-start gap-2 text-sm font-semibold text-[#0f3460] hover:text-[#1a6bb5] transition-all bg-transparent border-none p-2 cursor-pointer"
         >
           <Icon name="ArrowLeft" size={16} />
           <span>Về trang tra cứu</span>
         </button>
 
-        <Button
-          onClick={handlePrint}
-          variant="secondary"
-          className="flex items-center gap-2 rounded-xl shadow-sm bg-white border border-[#dce6f0] hover:bg-slate-50"
-        >
-          <Icon name="Printer" size={16} />
-          <span>In hóa đơn / Lưu PDF</span>
-        </Button>
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          {/* Nút chia sẻ Zalo */}
+          <button
+            onClick={() => {
+              window.open(
+                `https://zalo.me/share?to=&url=${encodeURIComponent(lookupUrl)}`,
+                '_blank',
+              );
+            }}
+            className="flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-blue-600"
+            aria-label="Chia sẻ hóa đơn qua Zalo"
+          >
+            <span>💬 Zalo</span>
+          </button>
+
+          {/* Nút chia sẻ Email */}
+          <button
+            onClick={() => {
+              window.location.href = `mailto:?subject=Tra cứu Hóa đơn dệt gia công ${invoice.invoice_number}&body=Xem hóa đơn dệt gia công số ${invoice.invoice_number} tại địa chỉ: ${lookupUrl}`;
+            }}
+            className="flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-slate-700"
+            aria-label="Chia sẻ hóa đơn qua Email"
+          >
+            <Icon name="Mail" size={14} />
+            <span>Email</span>
+          </button>
+
+          {/* Nút Copy Link */}
+          <button
+            onClick={handleCopyLink}
+            className="flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-emerald-700"
+            aria-label="Sao chép liên kết tra cứu hóa đơn"
+          >
+            <Icon name="Copy" size={14} />
+            <span>Copy Link</span>
+          </button>
+
+          {/* Nút Native Share (nếu trình duyệt hỗ trợ) */}
+          {isShareSupported && (
+            <button
+              onClick={handleNativeShare}
+              className="flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-indigo-700"
+              aria-label="Mở khay chia sẻ hệ thống"
+            >
+              <Icon name="Share2" size={14} />
+              <span>Chia sẻ khác</span>
+            </button>
+          )}
+
+          {/* Nút In hóa đơn */}
+          <Button
+            onClick={handlePrint}
+            variant="secondary"
+            className="flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 shadow-sm bg-white border border-[#dce6f0] hover:bg-slate-50"
+            aria-label="In hóa đơn hoặc lưu bản PDF vector"
+          >
+            <Icon name="Printer" size={14} />
+            <span>In hóa đơn / Lưu PDF</span>
+          </Button>
+        </div>
       </div>
 
       {/* Invoice Layout Card */}

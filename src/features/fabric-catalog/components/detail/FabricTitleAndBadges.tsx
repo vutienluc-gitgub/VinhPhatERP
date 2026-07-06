@@ -65,7 +65,11 @@ export function FabricTitleAndBadges({
 
       <div className="flex flex-wrap gap-2 mt-3">
         <StatusBadge
-          status={fabric.commercial?.sample_status}
+          status={
+            fabric.commercial?.trust_has_sample
+              ? 'AVAILABLE'
+              : fabric.commercial?.sample_status || 'OUT_OF_STOCK'
+          }
           configMap={SAMPLE_STATUS_CONFIG}
         />
         <StatusBadge

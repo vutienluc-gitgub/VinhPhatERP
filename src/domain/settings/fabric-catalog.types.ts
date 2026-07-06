@@ -236,6 +236,8 @@ export type FabricPricingTier = {
   currency: string;
   display_label?: string | null;
   is_public_visible?: boolean;
+  priority?: number;
+  customer_group_ids?: string[];
 };
 
 export type PublicRFQRequestStatus =

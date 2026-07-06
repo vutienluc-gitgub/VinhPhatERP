@@ -1,19 +1,19 @@
 import { useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 
-import { Icon } from '@/shared/components';
+import { Icon, Combobox } from '@/shared/components';
 import { WeightField, QuantityField } from '@/shared/value';
 import { NumericField } from '@/shared/value/core/NumericField';
 import {
   LABELS,
   PUBLIC_PAGE_LABELS,
+  ORIGIN_OPTIONS,
 } from '@/features/fabric-catalog/fabric-catalog.constants';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 
 export function FabricPublicPlannerSection() {
   const {
     control,
-    register,
     formState: { errors },
   } = useFormContext<FabricCatalogFormValues>();
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
@@ -63,17 +63,23 @@ export function FabricPublicPlannerSection() {
             >
               {PUBLIC_PAGE_LABELS.origin}
             </label>
-            <input
-              id="b2b_planner.origin_country"
-              type="text"
-              className={`field-input ${errors.b2b_planner?.origin_country ? 'is-error' : ''}`}
-              placeholder={LABELS.ORIGIN_PLACEHOLDER}
-              {...register('b2b_planner.origin_country')}
+            <Controller
+              name="b2b_planner.origin_country"
+              control={control}
+              render={({ field }) => (
+                <Combobox
+                  options={ORIGIN_OPTIONS}
+                  value={field.value ?? undefined}
+                  onChange={(val) => field.onChange(val || null)}
+                  hasError={!!errors.b2b_planner?.origin_country}
+                  placeholder={LABELS.ORIGIN_PLACEHOLDER}
+                />
+              )}
             />
             {errors.b2b_planner?.origin_country && (
-              <span className="field-error">
+              <p className="text-xs text-red-500 mt-1">
                 {errors.b2b_planner.origin_country.message}
-              </span>
+              </p>
             )}
           </div>
         </div>

@@ -130,6 +130,8 @@ export function useFabricCatalogForm(
           currency: t.currency ?? 'VND',
           display_label: t.display_label ?? null,
           is_public_visible: t.is_public_visible ?? true,
+          priority: t.priority ?? 0,
+          customer_group_ids: t.customer_group_ids ?? [],
         })),
       );
     }
