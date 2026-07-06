@@ -27,3 +27,36 @@ export const DEPOSIT_PAYMENT_METHOD_OPTIONS = Object.entries(
 )
   .filter(([key]) => key !== 'customer_balance')
   .map(([value, label]) => ({ value, label }));
+
+/** Centralized labels for Customer Groups CRM CRUD. */
+export const CUSTOMER_GROUP_LABELS = {
+  title: 'Danh mục nhóm khách hàng',
+  createBtn: 'Thêm nhóm mới',
+  editBtn: 'Chỉnh sửa',
+  deleteBtn: 'Xóa',
+  codeLabel: 'Mã nhóm (viết liền, không dấu, duy nhất)',
+  codePlaceholder: 'VD: VIP, DEALER_SOUTH, OEM_KEY',
+  nameLabel: 'Tên nhóm',
+  namePlaceholder: 'VD: Khách hàng VIP, Đại lý miền Nam',
+  descriptionLabel: 'Mô tả nhóm',
+  descriptionPlaceholder: 'VD: Khách hàng sỉ đạt hạn mức lớn...',
+  statusLabel: 'Trạng thái hoạt động',
+  statusActive: 'Hoạt động',
+  statusInactive: 'Ngưng hoạt động',
+  saveBtn: 'Lưu nhóm',
+  cancelBtn: 'Hủy',
+  saving: 'Đang lưu...',
+  confirmDeleteTitle: 'Xác nhận xóa nhóm khách hàng',
+  confirmDeleteMessage:
+    'Bạn có chắc chắn muốn xóa nhóm này? Thao tác này sẽ bị chặn nếu nhóm đang có thành viên hoặc bảng giá liên kết.',
+  deleteSuccess: 'Xóa nhóm khách hàng thành công!',
+  saveSuccess: 'Lưu nhóm khách hàng thành công!',
+  deleteErrorRestrict:
+    'Không thể xóa nhóm khách hàng này vì đang có khách hàng hoặc bảng giá sử dụng. Vui lòng chuyển trạng thái sang ngưng hoạt động (inactive).',
+  generalError: 'Đã xảy ra lỗi. Vui lòng thử lại.',
+  codeRequired: 'Mã nhóm không được để trống',
+  codeInvalid: 'Mã nhóm chỉ được chứa chữ cái viết hoa, số và dấu gạch dưới',
+  nameRequired: 'Tên nhóm không được để trống',
+  noGroups: 'Chưa có nhóm khách hàng nào được cấu hình.',
+  searchPlaceholder: 'Tìm kiếm nhóm khách hàng...',
+} as const;

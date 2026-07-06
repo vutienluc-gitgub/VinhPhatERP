@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useFormContext, useFieldArray, Controller } from 'react-hook-form';
 
 import { Button, Icon, Switch } from '@/shared/components';
@@ -6,6 +6,8 @@ import { NumericInput, MoneyInput, MoneyText } from '@/shared/value';
 import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 import { getLowestPrice } from '@/features/fabric-catalog/fabric-catalog.utils';
+import { useCustomerGroupList } from '@/application/crm/useCustomerGroups';
+import type { CustomerGroup } from '@/domain/crm/customer-groups.types';
 
 export function FabricPublicPricingSection() {
   const {
@@ -16,6 +18,9 @@ export function FabricPublicPricingSection() {
   } = useFormContext<FabricCatalogFormValues>();
 
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+
+  // Tải danh sách nhóm khách hàng để lựa chọn
+  const { data: groupsList = [] } = useCustomerGroupList();
 
   const unit = watch('unit') || 'kg';
   const moq = watch('b2b_planner.minimum_order_qty_kg') ?? 0;
@@ -49,6 +54,8 @@ export function FabricPublicPricingSection() {
       currency: 'VND',
       display_label: '',
       is_public_visible: true,
+      priority: 0,
+      customer_group_ids: [],
     });
   }
 
@@ -152,17 +159,19 @@ export function FabricPublicPricingSection() {
 
             {pricingTiers.length > 0 ? (
               <div className="border border-slate-200 rounded-lg overflow-x-auto">
-                <table className="w-full text-sm text-left min-w-[600px]">
+                <table className="w-full text-sm text-left min-w-[850px]">
                   <thead className="bg-slate-50 text-slate-500 font-medium">
                     <tr>
-                      <th className="p-3 w-32">{LABELS.PRICING_COL_MIN}</th>
-                      <th className="p-3 w-32">{LABELS.PRICING_COL_MAX}</th>
-                      <th className="p-3 w-40">{LABELS.PRICING_COL_PRICE}</th>
+                      <th className="p-3 w-28">{LABELS.PRICING_COL_MIN}</th>
+                      <th className="p-3 w-28">{LABELS.PRICING_COL_MAX}</th>
+                      <th className="p-3 w-32">{LABELS.PRICING_COL_PRICE}</th>
                       <th className="p-3">{LABELS.PRICING_COL_LABEL}</th>
+                      <th className="p-3 w-24 text-center">Ưu tiên</th>
+                      <th className="p-3 w-52">Nhóm áp dụng</th>
                       <th className="p-3 w-20 text-center">
                         {LABELS.PRICING_COL_PUBLIC}
                       </th>
-                      <th className="p-3 w-16"></th>
+                      <th className="p-3 w-14"></th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -173,6 +182,7 @@ export function FabricPublicPricingSection() {
                           key={field.id}
                           className="bg-white hover:bg-slate-50/50"
                         >
+                          {/* Min Qty */}
                           <td className="p-2">
                             <Controller
                               name={`pricing_tiers.${index}.min_quantity`}
@@ -187,6 +197,8 @@ export function FabricPublicPricingSection() {
                               )}
                             />
                           </td>
+
+                          {/* Max Qty */}
                           <td className="p-2">
                             <Controller
                               name={`pricing_tiers.${index}.max_quantity`}
@@ -200,6 +212,8 @@ export function FabricPublicPricingSection() {
                               )}
                             />
                           </td>
+
+                          {/* Price */}
                           <td className="p-2">
                             <Controller
                               name={`pricing_tiers.${index}.unit_price`}
@@ -212,6 +226,8 @@ export function FabricPublicPricingSection() {
                               )}
                             />
                           </td>
+
+                          {/* Display Label */}
                           <td className="p-2">
                             <input
                               className="field-input pricing-tier-cell-input h-9 text-sm"
@@ -222,6 +238,38 @@ export function FabricPublicPricingSection() {
                               )}
                             />
                           </td>
+
+                          {/* Priority */}
+                          <td className="p-2">
+                            <Controller
+                              name={`pricing_tiers.${index}.priority`}
+                              control={control}
+                              render={({ field: ctrlField }) => (
+                                <NumericInput
+                                  {...ctrlField}
+                                  className="field-input pricing-tier-cell-input h-9 text-sm text-center font-bold"
+                                  placeholder="0"
+                                />
+                              )}
+                            />
+                          </td>
+
+                          {/* Customer Group Multi-Select */}
+                          <td className="p-2">
+                            <Controller
+                              name={`pricing_tiers.${index}.customer_group_ids`}
+                              control={control}
+                              render={({ field: ctrlField }) => (
+                                <GroupSelector
+                                  selectedIds={ctrlField.value || []}
+                                  onChange={ctrlField.onChange}
+                                  groups={groupsList}
+                                />
+                              )}
+                            />
+                          </td>
+
+                          {/* Public Switch */}
                           <td className="p-2 text-center">
                             <Controller
                               name={`pricing_tiers.${index}.is_public_visible`}
@@ -234,6 +282,8 @@ export function FabricPublicPricingSection() {
                               )}
                             />
                           </td>
+
+                          {/* Action Delete */}
                           <td className="p-2 text-center">
                             <button
                               type="button"
@@ -258,6 +308,95 @@ export function FabricPublicPricingSection() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// Component phụ trợ: Popup chọn nhiều nhóm khách hàng
+interface GroupSelectorProps {
+  selectedIds: string[];
+  onChange: (ids: string[]) => void;
+  groups: CustomerGroup[];
+}
+
+function GroupSelector({ selectedIds, onChange, groups }: GroupSelectorProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const displayLabel = useMemo(() => {
+    if (selectedIds.length === 0) return 'Tất cả (Chung)';
+    const selectedNames = groups
+      .filter((g) => selectedIds.includes(g.id))
+      .map((g) => g.code);
+    return selectedNames.join(', ');
+  }, [selectedIds, groups]);
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full h-9 px-3 py-1.5 border border-slate-200 rounded-xl bg-slate-50 text-left text-xs font-semibold hover:bg-white focus:outline-none transition-all truncate flex items-center justify-between cursor-pointer"
+      >
+        <span className="truncate">{displayLabel}</span>
+        <Icon
+          name="ChevronDown"
+          size={14}
+          className="text-slate-400 shrink-0 ml-1"
+        />
+      </button>
+
+      {isOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute right-0 top-10 mt-1 w-64 bg-white border border-slate-200 rounded-xl shadow-xl z-50 p-3.5 space-y-3 text-xs max-h-60 overflow-y-auto">
+            <span className="font-bold text-slate-700 block mb-1">
+              Chọn nhóm khách hàng
+            </span>
+            <div className="space-y-2">
+              {groups.map((g) => {
+                const isChecked = selectedIds.includes(g.id);
+                return (
+                  <label
+                    key={g.id}
+                    className="flex items-center gap-2 cursor-pointer text-slate-600 hover:text-slate-900 select-none py-1 hover:bg-slate-50 rounded px-1"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      className="accent-primary w-3.5 h-3.5 cursor-pointer"
+                      onChange={() => {
+                        if (isChecked) {
+                          onChange(selectedIds.filter((id) => id !== g.id));
+                        } else {
+                          onChange([...selectedIds, g.id]);
+                        }
+                      }}
+                    />
+                    <div className="flex flex-col">
+                      <span className="font-semibold">{g.name}</span>
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        ({g.code})
+                      </span>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+            {selectedIds.length > 0 && (
+              <button
+                type="button"
+                onClick={() => onChange([])}
+                className="w-full text-center text-primary font-bold hover:underline border-t border-slate-100 pt-2 block mt-2 cursor-pointer bg-transparent border-none"
+              >
+                Xóa tất cả (Chung)
+              </button>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
