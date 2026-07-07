@@ -85,8 +85,13 @@ function PublicFabricDetailPageInner() {
   const viewer = usePublicViewer();
 
   // Extract presentation and display logic calculations
-  const { activeVariant, displayMOQ, displayLeadTime, handleShare } =
-    useFabricDisplayLogic(fabric, variants, activeColorName);
+  const {
+    activeVariant,
+    displayMOQ,
+    displayLeadTime,
+    displayYieldMetersPerKg,
+    handleShare,
+  } = useFabricDisplayLogic(fabric, variants, activeColorName);
 
   // Dynamic CTA engine
   const ctaButtons = useCTAEngine({
@@ -216,6 +221,7 @@ function PublicFabricDetailPageInner() {
           fabric={fabric}
           displayMOQ={displayMOQ}
           displayLeadTime={displayLeadTime}
+          displayYieldMetersPerKg={displayYieldMetersPerKg}
           canViewInventory={viewer.permissions.canViewInventory}
           activeVariant={activeVariant}
         />
