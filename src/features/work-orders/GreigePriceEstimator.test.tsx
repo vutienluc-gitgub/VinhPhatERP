@@ -78,7 +78,7 @@ describe('GreigePriceEstimator', () => {
     // finalPrice = 7500000 * 1.15 = 8625000
 
     expect(screen.getByText('Dự toán Giá Thành Vải Mộc')).toBeInTheDocument();
-    expect(screen.getByText('55.000')).toBeInTheDocument(); // Giá sợi TB
+    expect(screen.getByText('55.000 đ')).toBeInTheDocument(); // Giá sợi TB
     expect(screen.getByText('5.500.000 đ')).toBeInTheDocument(); // Chi phí Sợi
     expect(screen.getByText('2.000.000 đ')).toBeInTheDocument(); // Giá công
     expect(screen.getByText('275.000 đ')).toBeInTheDocument(); // Hao hụt
