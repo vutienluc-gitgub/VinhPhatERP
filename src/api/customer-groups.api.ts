@@ -44,20 +44,19 @@ export async function updateCustomerGroup(
   id: string,
   group: CustomerGroupUpdate,
 ): Promise<CustomerGroup> {
-  const payload = {
-    id,
-    ...group,
-  };
+  const { data, error } = await untypedDb
+    .from('customer_groups')
+    .update(group)
+    .eq('id', id)
+    .select()
+    .single();
 
-  const result = await safeUpsert({
-    table: 'customer_groups',
-    data: payload,
-    conflictKey: 'id',
-  });
+  if (error) {
+    console.error('[customer-groups.api] update error:', error);
+    throw error;
+  }
 
-  return (Array.isArray(result) && result.length > 0
-    ? result[0]
-    : result) as unknown as CustomerGroup;
+  return data as CustomerGroup;
 }
 
 export async function deleteCustomerGroup(id: string): Promise<void> {

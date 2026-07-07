@@ -1,13 +1,21 @@
 import { useCustomerLeads } from '@/application/crm/useCrm';
 import { Icon } from '@/shared/components/Icon';
 
+import { CUSTOMER_TIMELINE_LABELS } from './customers.constants';
+
 const TYPE_META = {
-  RFQ: { label: 'Yêu cầu Báo giá', colorClass: 'bg-amber-100 text-amber-800' },
+  RFQ: {
+    label: CUSTOMER_TIMELINE_LABELS.rfqPrefix,
+    colorClass: 'bg-amber-100 text-amber-800',
+  },
   SAMPLE: {
-    label: 'Yêu cầu Gửi mẫu',
+    label: CUSTOMER_TIMELINE_LABELS.samplePrefix,
     colorClass: 'bg-purple-100 text-purple-800',
   },
-  CONTACT: { label: 'Liên hệ chung', colorClass: 'bg-blue-100 text-blue-800' },
+  CONTACT: {
+    label: CUSTOMER_TIMELINE_LABELS.contactGeneral,
+    colorClass: 'bg-blue-100 text-blue-800',
+  },
 };
 
 interface CustomerTimelineProps {
@@ -38,7 +46,7 @@ export function CustomerTimeline({ customerId }: CustomerTimelineProps) {
       <div className="text-center p-8 border border-dashed border-slate-200 rounded-xl bg-slate-50/50">
         <Icon name="History" className="w-8 h-8 text-slate-300 mx-auto mb-2" />
         <p className="text-sm text-slate-500">
-          Khách hàng chưa có lịch sử tương tác nào
+          {CUSTOMER_TIMELINE_LABELS.empty}
         </p>
       </div>
     );
@@ -48,7 +56,7 @@ export function CustomerTimeline({ customerId }: CustomerTimelineProps) {
     <div className="relative border-l border-slate-200 ml-3 md:ml-4 space-y-6 pb-4">
       {leads.map((lead) => {
         const meta = TYPE_META[lead.type as keyof typeof TYPE_META] || {
-          label: 'Khác',
+          label: CUSTOMER_TIMELINE_LABELS.other,
           colorClass: 'bg-slate-100 text-slate-800',
         };
         return (
@@ -80,11 +88,12 @@ export function CustomerTimeline({ customerId }: CustomerTimelineProps) {
                   <span className="text-sm font-medium text-slate-800">
                     {lead.type === 'RFQ' &&
                       lead.rfq_detail &&
-                      `Báo giá ${lead.rfq_detail.quantity}kg`}
+                      `${CUSTOMER_TIMELINE_LABELS.rfqPrefix} ${lead.rfq_detail.quantity}kg`}
                     {lead.type === 'SAMPLE' &&
                       lead.sample_detail &&
-                      `Xin mẫu ${lead.sample_detail.fabric_catalog?.name || ''}`}
-                    {lead.type === 'CONTACT' && 'Liên hệ chung'}
+                      `${CUSTOMER_TIMELINE_LABELS.samplePrefix} ${lead.sample_detail.fabric_catalog?.name || ''}`}
+                    {lead.type === 'CONTACT' &&
+                      CUSTOMER_TIMELINE_LABELS.contactGeneral}
                   </span>
                 </div>
                 <div className="text-xs text-slate-500 flex items-center gap-1">
@@ -100,7 +109,8 @@ export function CustomerTimeline({ customerId }: CustomerTimelineProps) {
               </div>
 
               <div className="text-sm text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                Khách hàng từ nguồn: {lead.source || 'Trực tiếp'}
+                {CUSTOMER_TIMELINE_LABELS.sourcePrefix}{' '}
+                {lead.source || CUSTOMER_TIMELINE_LABELS.sourceDirect}
               </div>
             </div>
           </div>
