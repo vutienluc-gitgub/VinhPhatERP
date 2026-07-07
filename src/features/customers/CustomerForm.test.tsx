@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import toast from 'react-hot-toast';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import {
   useCreateCustomer,
@@ -12,6 +13,22 @@ import { useAuth } from '@/shared/hooks/useAuth';
 
 import { CustomerForm } from './CustomerForm';
 import type { Customer } from './types';
+
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+
+function renderWithClient(ui: React.ReactElement) {
+  const testQueryClient = createTestQueryClient();
+  return render(
+    <QueryClientProvider client={testQueryClient}>{ui}</QueryClientProvider>,
+  );
+}
 
 // Mock dependencies
 vi.mock('@/application/crm', () => ({
@@ -34,6 +51,10 @@ vi.mock('react-hot-toast', () => ({
 
 vi.mock('./CustomerPortalAccountPanel', () => ({
   CustomerPortalAccountPanel: () => <div data-testid="portal-panel" />,
+}));
+
+vi.mock('./CustomerTimeline', () => ({
+  CustomerTimeline: () => <div data-testid="customer-timeline" />,
 }));
 
 describe('CustomerForm', () => {
@@ -91,7 +112,7 @@ describe('CustomerForm', () => {
   } as unknown as Customer;
 
   it('renders create form correctly and defaults code', async () => {
-    render(<CustomerForm customer={null} onClose={mockOnClose} />);
+    renderWithClient(<CustomerForm customer={null} onClose={mockOnClose} />);
 
     expect(screen.getByLabelText(/Tên khách hàng/i)).toBeInTheDocument();
 
@@ -104,7 +125,9 @@ describe('CustomerForm', () => {
   });
 
   it('renders edit form correctly with customer data', () => {
-    render(<CustomerForm customer={mockCustomer} onClose={mockOnClose} />);
+    renderWithClient(
+      <CustomerForm customer={mockCustomer} onClose={mockOnClose} />,
+    );
 
     expect(screen.getByLabelText(/Mã khách hàng/i)).toHaveValue('KH-002');
     expect(screen.getByLabelText(/Tên khách hàng/i)).toHaveValue(
@@ -122,7 +145,7 @@ describe('CustomerForm', () => {
   });
 
   it('calls create mutation on valid submit', async () => {
-    render(<CustomerForm customer={null} onClose={mockOnClose} />);
+    renderWithClient(<CustomerForm customer={null} onClose={mockOnClose} />);
 
     // Fill in required fields
     fireEvent.change(screen.getByLabelText(/Tên khách hàng/i), {
@@ -148,7 +171,9 @@ describe('CustomerForm', () => {
   });
 
   it('calls update mutation on valid edit submit', async () => {
-    render(<CustomerForm customer={mockCustomer} onClose={mockOnClose} />);
+    renderWithClient(
+      <CustomerForm customer={mockCustomer} onClose={mockOnClose} />,
+    );
 
     // Edit a field
     fireEvent.change(screen.getByLabelText(/Tên khách hàng/i), {
@@ -177,7 +202,7 @@ describe('CustomerForm', () => {
   });
 
   it('displays validation errors on invalid submit', async () => {
-    render(<CustomerForm customer={null} onClose={mockOnClose} />);
+    renderWithClient(<CustomerForm customer={null} onClose={mockOnClose} />);
 
     // Submit without filling name
     fireEvent.click(screen.getByRole('button', { name: /Tạo mới/i }));
@@ -198,7 +223,7 @@ describe('CustomerForm', () => {
       ),
     });
 
-    render(<CustomerForm customer={null} onClose={mockOnClose} />);
+    renderWithClient(<CustomerForm customer={null} onClose={mockOnClose} />);
 
     expect(screen.getByText(/Lỗi: Khách hàng đã tồn tại/i)).toBeInTheDocument();
   });
