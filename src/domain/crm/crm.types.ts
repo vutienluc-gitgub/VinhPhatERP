@@ -6,7 +6,8 @@ export type LeadStatus =
   | 'QUOTED'
   | 'NEGOTIATING'
   | 'WON'
-  | 'LOST';
+  | 'LOST'
+  | 'CONVERTED';
 export type ActivityType =
   | 'CALL'
   | 'NOTE'
@@ -27,6 +28,11 @@ export interface CrmLead {
   score: number;
   owner_id: string | null;
   tenant_id: string;
+  customer_id?: string | null;
+  contact_id?: string | null;
+  source?: string | null;
+  converted_at?: string | null;
+  converted_by?: string | null;
   created_at: string;
   updated_at: string;
 
@@ -34,6 +40,11 @@ export interface CrmLead {
   rfq_detail?: CrmRfqDetail;
   sample_detail?: CrmSampleDetail;
   activities?: CrmActivity[];
+  customer?: {
+    id: string;
+    code: string;
+    name: string;
+  };
 }
 
 export interface CrmRfqDetail {

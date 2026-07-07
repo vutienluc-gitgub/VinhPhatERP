@@ -6,6 +6,10 @@ import {
   updateLeadStatus,
   fetchLeadActivities,
   createLeadActivity,
+  checkDuplicateContact,
+  createLead,
+  convertLead,
+  fetchLeadsByCustomerId,
 } from '@/api/crm.api';
 import type {
   LeadFilter,
@@ -21,6 +25,10 @@ export const crmKeys = {
   lead: (id: string) => [...crmKeys.leads(), id] as const,
   activities: (leadId: string) =>
     [...crmKeys.lead(leadId), 'activities'] as const,
+  duplicateCheck: (params: { phone?: string; email?: string }) =>
+    [...crmKeys.all, 'duplicateCheck', params] as const,
+  customerLeads: (customerId: string) =>
+    [...crmKeys.leads(), 'by-customer', customerId] as const,
 };
 
 export function useLeads(filters: LeadFilter, page: number) {
@@ -74,5 +82,60 @@ export function useCreateLeadActivity() {
         queryKey: crmKeys.activities(variables.leadId),
       });
     },
+  });
+}
+
+export function useCreateLead() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: {
+      customer_name: string;
+      phone: string;
+      email?: string;
+      company_name?: string;
+      type: 'RFQ' | 'SAMPLE' | 'CONTACT';
+      source?: string;
+      customer_id?: string;
+    }) => createLead(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: crmKeys.leads() });
+    },
+  });
+}
+
+export function useConvertLead() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: { leadId: string; customerId?: string }) =>
+      convertLead(payload),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: crmKeys.leads() });
+      queryClient.invalidateQueries({
+        queryKey: crmKeys.lead(variables.leadId),
+      });
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
+    },
+  });
+}
+
+export function useCheckDuplicateContact(params: {
+  phone?: string;
+  email?: string;
+}) {
+  return useQuery({
+    queryKey: crmKeys.duplicateCheck(params),
+    queryFn: () => checkDuplicateContact(params),
+    enabled: !!(params.phone || params.email),
+    staleTime: 0,
+  });
+}
+
+export function useCustomerLeads(customerId?: string) {
+  return useQuery({
+    queryKey: crmKeys.customerLeads(customerId!),
+    queryFn: () => fetchLeadsByCustomerId(customerId!),
+    enabled: !!customerId,
   });
 }

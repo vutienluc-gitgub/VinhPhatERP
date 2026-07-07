@@ -1,15 +1,17 @@
-import { useNavigate } from 'react-router-dom';
-
-import type { QuotationsFormValues } from '@/schema/quotation.schema';
 import { useLead, useUpdateLeadStatus } from '@/application/crm/useCrm';
 import type { LeadStatus } from '@/domain/crm/crm.types';
-import { Button } from '@/shared/components/Button';
 import { Icon } from '@/shared/components/Icon';
-import { Badge } from '@/shared/components/Badge';
-import { LEAD_STATUS_MAP, LEAD_TYPE_MAP } from '@/features/crm/crm.constants';
-import { MoneyText } from '@/shared/value';
+import {
+  LEAD_STATUS_MAP,
+  LEAD_TYPE_MAP,
+  LEAD_DETAIL_MESSAGES,
+} from '@/features/crm/crm.constants';
 
 import { ActivityTimeline } from './ActivityTimeline';
+import { LeadContactInfo } from './LeadContactInfo';
+import { LeadContextualActions } from './LeadContextualActions';
+import { LeadRfqDetail } from './LeadRfqDetail';
+import { LeadSampleDetail } from './LeadSampleDetail';
 
 interface LeadDetailDrawerProps {
   leadId: string;
@@ -17,7 +19,6 @@ interface LeadDetailDrawerProps {
 }
 
 export function LeadDetailDrawer({ leadId, onClose }: LeadDetailDrawerProps) {
-  const navigate = useNavigate();
   const { data: lead, isLoading } = useLead(leadId);
   const { mutate: updateStatus, isPending: isUpdating } = useUpdateLeadStatus();
 
@@ -34,7 +35,7 @@ export function LeadDetailDrawer({ leadId, onClose }: LeadDetailDrawerProps) {
   if (!lead) {
     return (
       <div className="p-6 text-center text-muted">
-        Không tìm thấy thông tin Lead.
+        {LEAD_DETAIL_MESSAGES.NOT_FOUND}
       </div>
     );
   }
@@ -44,50 +45,6 @@ export function LeadDetailDrawer({ leadId, onClose }: LeadDetailDrawerProps) {
 
   const handleStatusChange = (newStatus: LeadStatus) => {
     updateStatus({ id: lead.id, status: newStatus });
-  };
-
-  const handleConvertToQuote = () => {
-    const initialData: Partial<QuotationsFormValues> = {
-      notes: `Báo giá cho Lead: ${lead.customer_name} - ${lead.phone}`,
-    };
-
-    if (lead.type === 'RFQ' && lead.rfq_detail) {
-      if (lead.rfq_detail.rfq_items && lead.rfq_detail.rfq_items.length > 0) {
-        initialData.items = lead.rfq_detail.rfq_items.map((item) => ({
-          fabricType: item.code || '',
-          colorName: item.color_name || '',
-          quantity: item.quantity || 0,
-          unit: item.unit === 'kg' ? 'kg' : 'm',
-          unitPrice: item.target_price || 0,
-          widthCm: 0,
-          leadTimeDays: 0,
-          notes: '',
-        }));
-      } else {
-        initialData.items = [
-          {
-            fabricType: lead.rfq_detail.fabric_catalog?.name || '',
-            colorName: lead.rfq_detail.variant?.color_name || '',
-            quantity: lead.rfq_detail.quantity || 0,
-            unit: lead.rfq_detail.unit === 'kg' ? 'kg' : 'm',
-            unitPrice: lead.rfq_detail.target_price || 0,
-            widthCm: 0,
-            leadTimeDays: 0,
-            notes: '',
-          },
-        ];
-      }
-    }
-
-    navigate('/sales/quotations', {
-      state: {
-        createFromLead: true,
-        initialData,
-      },
-    });
-
-    // Đóng drawer sau khi chuyển hướng
-    onClose();
   };
 
   return (
@@ -118,7 +75,7 @@ export function LeadDetailDrawer({ leadId, onClose }: LeadDetailDrawerProps) {
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 bg-surface-subtle p-1 rounded-lg border border-border">
               <span className="text-xs font-medium text-muted pl-2">
-                Trạng thái:
+                {LEAD_DETAIL_MESSAGES.STATUS_LABEL}
               </span>
               <select
                 value={lead.status}
@@ -143,197 +100,15 @@ export function LeadDetailDrawer({ leadId, onClose }: LeadDetailDrawerProps) {
         <div className="p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
           {/* Cột trái: Thông tin chi tiết */}
           <div className="space-y-6">
-            <section>
-              <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                <Icon name="User" size={16} className="text-primary" />
-                Thông tin liên hệ
-              </h3>
-              <div className="bg-surface border border-border rounded-lg p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <div className="text-xs text-muted mb-1">Số điện thoại</div>
-                  <div className="font-medium text-sm flex items-center gap-2">
-                    {lead.phone}
-                    <a
-                      href={`tel:${lead.phone}`}
-                      className="text-primary hover:underline text-xs"
-                    >
-                      Gọi ngay
-                    </a>
-                  </div>
-                </div>
-                <div>
-                  <div className="text-xs text-muted mb-1">Email</div>
-                  <div className="font-medium text-sm">
-                    {lead.email || (
-                      <span className="text-muted-subtle">Chưa có</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </section>
+            <LeadContextualActions lead={lead} />
 
-            {lead.type === 'RFQ' && lead.rfq_detail && (
-              <section>
-                <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                  <Icon name="FileText" size={16} className="text-indigo-600" />
-                  Chi tiết Yêu cầu Báo giá
-                </h3>
-                <div className="bg-surface border border-border rounded-lg p-4 space-y-3">
-                  {lead.rfq_detail.rfq_items &&
-                  lead.rfq_detail.rfq_items.length > 0 ? (
-                    <div className="space-y-4">
-                      {lead.rfq_detail.rfq_items.map((item, idx: number) => (
-                        <div
-                          key={idx}
-                          className="border-b border-border border-dashed pb-3 last:border-0 last:pb-0"
-                        >
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="text-sm font-semibold text-foreground">
-                              {item.code}{' '}
-                              {item.color_name && `- ${item.color_name}`}
-                            </span>
-                            <span className="text-sm font-bold text-primary">
-                              {item.quantity} {item.unit}
-                            </span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs text-muted">
-                              Giá kỳ vọng
-                            </span>
-                            <span className="text-xs font-medium text-amber-600">
-                              {item.target_price ? (
-                                <>
-                                  <MoneyText
-                                    value={Number(item.target_price)}
-                                  />{' '}
-                                  đ
-                                </>
-                              ) : (
-                                'Chưa có'
-                              )}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex justify-between items-center border-b border-border border-dashed pb-2">
-                        <span className="text-sm text-muted">Sản phẩm</span>
-                        <span className="text-sm font-semibold">
-                          {lead.rfq_detail.fabric_catalog?.name}
-                        </span>
-                      </div>
-                      {lead.rfq_detail.variant && (
-                        <div className="flex justify-between items-center border-b border-border border-dashed pb-2">
-                          <span className="text-sm text-muted">
-                            Màu sắc/Biến thể
-                          </span>
-                          <span className="text-sm font-medium">
-                            {lead.rfq_detail.variant.color_name}
-                          </span>
-                        </div>
-                      )}
-                      <div className="flex justify-between items-center border-b border-border border-dashed pb-2">
-                        <span className="text-sm text-muted">Số lượng</span>
-                        <span className="text-sm font-bold text-primary">
-                          {lead.rfq_detail.quantity} {lead.rfq_detail.unit}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center border-b border-border border-dashed pb-2">
-                        <span className="text-sm text-muted">Giá kỳ vọng</span>
-                        <span className="text-sm font-medium text-amber-600">
-                          {lead.rfq_detail.target_price ? (
-                            <>
-                              <MoneyText value={lead.rfq_detail.target_price} />{' '}
-                              đ
-                            </>
-                          ) : (
-                            'Chưa có'
-                          )}
-                        </span>
-                      </div>
-                    </>
-                  )}
-                </div>
-                <div className="mt-4 flex justify-end">
-                  <Button
-                    variant="primary"
-                    rightIcon="ArrowRight"
-                    onClick={handleConvertToQuote}
-                  >
-                    Tạo Báo giá chính thức
-                  </Button>
-                </div>
-              </section>
+            <LeadContactInfo lead={lead} />
+
+            {lead.type === 'RFQ' && (
+              <LeadRfqDetail lead={lead} onClose={onClose} />
             )}
 
-            {lead.type === 'SAMPLE' && lead.sample_detail && (
-              <section>
-                <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                  <Icon name="Package" size={16} className="text-emerald-600" />
-                  Chi tiết Gửi mẫu
-                </h3>
-                <div className="bg-surface border border-border rounded-lg p-4 space-y-3">
-                  {lead.sample_detail.sample_items &&
-                  lead.sample_detail.sample_items.length > 0 ? (
-                    <div className="space-y-3 border-b border-border border-dashed pb-2">
-                      <span className="text-sm text-muted block">
-                        Mẫu vải yêu cầu (Hàng loạt)
-                      </span>
-                      {lead.sample_detail.sample_items.map(
-                        (item, idx: number) => (
-                          <div
-                            key={idx}
-                            className="flex justify-between items-center"
-                          >
-                            <span className="text-sm font-semibold">
-                              {item.code}
-                            </span>
-                            <Badge variant="gray">
-                              {item.color_name || 'Tất cả màu'}
-                            </Badge>
-                          </div>
-                        ),
-                      )}
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex justify-between items-center border-b border-border border-dashed pb-2">
-                        <span className="text-sm text-muted">
-                          Mẫu vải yêu cầu
-                        </span>
-                        <span className="text-sm font-semibold">
-                          {lead.sample_detail.fabric_catalog?.name}
-                        </span>
-                      </div>
-                      <div className="flex flex-col border-b border-border border-dashed pb-2">
-                        <span className="text-sm text-muted mb-1">
-                          Các màu yêu cầu
-                        </span>
-                        <div className="flex flex-wrap gap-1.5">
-                          {lead.sample_detail.selected_variants?.map(
-                            (v: { color_name: string }, i: number) => (
-                              <Badge key={i} variant="gray">
-                                {v.color_name}
-                              </Badge>
-                            ),
-                          )}
-                        </div>
-                      </div>
-                    </>
-                  )}
-                  <div className="flex flex-col pb-2">
-                    <span className="text-sm text-muted mb-1">
-                      Địa chỉ nhận mẫu
-                    </span>
-                    <span className="text-sm font-medium leading-relaxed">
-                      {lead.sample_detail.delivery_address}
-                    </span>
-                  </div>
-                </div>
-              </section>
-            )}
+            {lead.type === 'SAMPLE' && <LeadSampleDetail lead={lead} />}
           </div>
 
           {/* Cột phải: Timeline */}

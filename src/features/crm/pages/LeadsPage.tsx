@@ -11,6 +11,7 @@ import { useDebouncedValue } from '@/shared/components/filter-bar';
 import { LeadsList } from '@/features/crm/components/LeadsList';
 import { LeadsKanban } from '@/features/crm/components/LeadsKanban';
 import { LeadDetailDrawer } from '@/features/crm/components/LeadDetailDrawer';
+import { CreateLeadModal } from '@/features/crm/components/CreateLeadModal';
 import { LEAD_STATUS_MAP } from '@/features/crm/crm.constants';
 
 export function LeadsPage() {
@@ -31,6 +32,7 @@ export function LeadsPage() {
   const { data, isLoading } = useLeads(filters, page);
 
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const handleStatusFilter = (status: LeadStatus | 'ALL') => {
     if (status === 'ALL') {
@@ -61,7 +63,11 @@ export function LeadsPage() {
             value={viewMode}
             onChange={(v) => setViewMode(v as 'table' | 'grid')}
           />
-          <Button variant="primary" leftIcon="Plus">
+          <Button
+            variant="primary"
+            leftIcon="Plus"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
             Thêm Lead
           </Button>
         </div>
@@ -131,6 +137,14 @@ export function LeadsPage() {
           <LeadDetailDrawer leadId={selectedLeadId} onClose={closeDrawer} />
         )}
       </AdaptiveSheet>
+
+      <CreateLeadModal
+        open={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
+        onSuccess={(id) => {
+          setSelectedLeadId(id);
+        }}
+      />
     </div>
   );
 }
