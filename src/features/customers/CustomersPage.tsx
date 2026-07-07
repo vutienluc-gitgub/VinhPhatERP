@@ -6,6 +6,8 @@ import { ContractForm } from '@/features/contracts/ContractForm';
 // eslint-disable-next-line boundaries/dependencies
 import { ChatDrawer } from '@/features/chat/ChatDrawer';
 import { usePreviewIdFromUrl } from '@/shared/hooks/usePreviewIdFromUrl';
+import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
+import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 
 import { CUSTOMERS_PAGE_LABELS } from './customers.constants';
 import { CustomerForm } from './CustomerForm';
@@ -25,6 +27,8 @@ export function CustomersPage() {
   );
   const [depositCustomer, setDepositCustomer] = useState<Customer | null>(null);
   const [chatCustomer, setChatCustomer] = useState<Customer | null>(null);
+
+  const { activeGuides } = useContextualGuide('Customers');
 
   usePreviewIdFromUrl('customer');
 
@@ -114,6 +118,8 @@ export function CustomersPage() {
         title={chatCustomer?.name ?? ''}
         subtitle={CUSTOMERS_PAGE_LABELS.chatSubtitle}
       />
+
+      <ContextualGuide activeGuides={activeGuides} />
     </div>
   );
 }

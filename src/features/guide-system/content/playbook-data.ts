@@ -120,6 +120,20 @@ export const PLAYBOOK_REGISTRY: PlaybookSection[] = [
             label: 'Tới Quản lý Khách hàng',
           },
         ],
+        nextSteps: ['sale-0-1'],
+      },
+      {
+        id: 'sale-0-1',
+        title: 'Phân loại Mô hình kinh doanh',
+        content:
+          'Phân loại nhóm khách hàng giúp hệ thống tối ưu bảng giá và chính sách công nợ tự động:\n\n[CHECKLIST] CÁC MÔ HÌNH CHÍNH\n• Đại lý / Chợ đầu mối: Cần giá tốt, hàng sẵn số lượng lớn, đẩy tồn kho nhanh.\n• Xưởng may: Cần độ ổn định tuyệt đối về chất lượng và định lượng vải.\n• Local Brand / Studio: Cần mẫu mã độc lạ, thường xuyên gửi sample, chấp nhận giá cao.\n\n[WARNING] LƯU Ý QUAN TRỌNG\n- Việc phân loại đúng giúp hệ thống gợi ý chính xác Bảng giá (Pricing Tiers) và Hạn mức công nợ phù hợp.',
+        actions: [
+          {
+            type: 'navigate',
+            payload: '/customers?tab=customer_groups',
+            label: 'Tới Nhóm khách hàng',
+          },
+        ],
         nextSteps: ['sale-1'],
       },
       {
