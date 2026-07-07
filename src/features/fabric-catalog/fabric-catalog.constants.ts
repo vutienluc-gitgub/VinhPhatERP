@@ -280,6 +280,7 @@ export const PUBLIC_PAGE_LABELS = {
   weavePattern: 'Kiểu dệt',
   machineType: 'Kỹ thuật',
   fabricType: 'Nhóm vải',
+  yieldMetersPerKg: 'Định mức (m/kg)',
   knitted: 'Dệt kim',
   woven: 'Dệt thoi',
   noImage: 'Chưa có hình ảnh',

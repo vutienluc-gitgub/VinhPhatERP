@@ -13,14 +13,33 @@ interface FabricSpecsListProps {
   fabric: Partial<FabricCatalog>;
   displayMOQ: string;
   displayLeadTime: string;
+  displayYieldMetersPerKg?: string | null;
   canViewInventory: boolean;
   activeVariant: FabricVariant | undefined;
+}
+
+function SpecItem({
+  label,
+  value,
+  className,
+}: {
+  label: string;
+  value: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn('flex flex-col', className)}>
+      <span className="text-xs text-muted mb-0.5">{label}</span>
+      <span className="font-semibold text-gray-800 text-sm">{value}</span>
+    </div>
+  );
 }
 
 export function FabricSpecsList({
   fabric,
   displayMOQ,
   displayLeadTime,
+  displayYieldMetersPerKg,
   canViewInventory,
   activeVariant,
 }: FabricSpecsListProps) {
@@ -33,89 +52,62 @@ export function FabricSpecsList({
         </h3>
         <div className="grid grid-cols-2 gap-y-3 gap-x-4">
           {fabric.fabric_type && (
-            <div className="flex flex-col">
-              <span className="text-xs text-muted mb-0.5">
-                {LABELS.fabricType}
-              </span>
-              <span className="font-semibold text-gray-800 text-sm">
-                {fabric.fabric_type === 'knitted'
-                  ? LABELS.knitted
-                  : LABELS.woven}
-              </span>
-            </div>
+            <SpecItem
+              label={LABELS.fabricType}
+              value={
+                fabric.fabric_type === 'knitted' ? LABELS.knitted : LABELS.woven
+              }
+            />
           )}
 
           {fabric.composition && (
-            <div className="flex flex-col">
-              <span className="text-xs text-muted mb-0.5">
-                {LABELS.composition}
-              </span>
-              <span className="font-semibold text-gray-800 text-sm">
-                {fabric.composition}
-              </span>
-            </div>
+            <SpecItem label={LABELS.composition} value={fabric.composition} />
           )}
 
           {fabric.target_width_cm && (
-            <div className="flex flex-col">
-              <span className="text-xs text-muted mb-0.5">{LABELS.width}</span>
-              <span className="font-semibold text-gray-800 text-sm">
-                {fabric.target_width_cm} {LABELS.unitCm}
-              </span>
-            </div>
+            <SpecItem
+              label={LABELS.width}
+              value={`${fabric.target_width_cm} ${LABELS.unitCm}`}
+            />
           )}
 
           {fabric.target_gsm && (
-            <div className="flex flex-col">
-              <span className="text-xs text-muted mb-0.5">{LABELS.gsm}</span>
-              <span className="font-semibold text-gray-800 text-sm">
-                {fabric.target_gsm} {LABELS.unitGsm}
-              </span>
-            </div>
+            <SpecItem
+              label={LABELS.gsm}
+              value={`${fabric.target_gsm} ${LABELS.unitGsm}`}
+            />
+          )}
+
+          {displayYieldMetersPerKg && (
+            <SpecItem
+              label={LABELS.yieldMetersPerKg}
+              value={`~${displayYieldMetersPerKg}`}
+            />
           )}
 
           {fabric.stretch_type && STRETCH_TYPE_MAP[fabric.stretch_type] && (
-            <div className="flex flex-col">
-              <span className="text-xs text-muted mb-0.5">
-                {LABELS.stretch}
-              </span>
-              <span className="font-semibold text-gray-800 text-sm">
-                {STRETCH_TYPE_MAP[fabric.stretch_type]}
-              </span>
-            </div>
+            <SpecItem
+              label={LABELS.stretch}
+              value={STRETCH_TYPE_MAP[fabric.stretch_type]}
+            />
           )}
 
           {fabric.thickness && THICKNESS_MAP[fabric.thickness] && (
-            <div className="flex flex-col">
-              <span className="text-xs text-muted mb-0.5">
-                {LABELS.thickness}
-              </span>
-              <span className="font-semibold text-gray-800 text-sm">
-                {THICKNESS_MAP[fabric.thickness]}
-              </span>
-            </div>
+            <SpecItem
+              label={LABELS.thickness}
+              value={THICKNESS_MAP[fabric.thickness]}
+            />
           )}
 
           {fabric.weave_pattern && (
-            <div className="flex flex-col">
-              <span className="text-xs text-muted mb-0.5">
-                {LABELS.weavePattern}
-              </span>
-              <span className="font-semibold text-gray-800 text-sm">
-                {fabric.weave_pattern}
-              </span>
-            </div>
+            <SpecItem
+              label={LABELS.weavePattern}
+              value={fabric.weave_pattern}
+            />
           )}
 
           {fabric.technique && (
-            <div className="flex flex-col">
-              <span className="text-xs text-muted mb-0.5">
-                {LABELS.machineType}
-              </span>
-              <span className="font-semibold text-gray-800 text-sm">
-                {fabric.technique}
-              </span>
-            </div>
+            <SpecItem label={LABELS.machineType} value={fabric.technique} />
           )}
         </div>
       </div>
@@ -126,27 +118,22 @@ export function FabricSpecsList({
           {LABELS.specsCommercial}
         </h3>
         <div className="grid grid-cols-2 gap-y-3 gap-x-4">
-          <div className="flex flex-col">
-            <span className="text-xs text-muted mb-0.5">{LABELS.moq}</span>
-            <span className="font-bold text-gray-800 text-sm">
-              {displayMOQ}
-            </span>
-          </div>
+          <SpecItem
+            label={LABELS.moq}
+            value={<span className="font-bold">{displayMOQ}</span>}
+          />
 
-          <div className="flex flex-col">
-            <span className="text-xs text-muted mb-0.5">{LABELS.leadTime}</span>
-            <span className="font-bold text-gray-800 text-sm">
-              {displayLeadTime}
-            </span>
-          </div>
+          <SpecItem
+            label={LABELS.leadTime}
+            value={<span className="font-bold">{displayLeadTime}</span>}
+          />
 
           {fabric.commercial?.origin_country && (
-            <div className="flex flex-col col-span-2">
-              <span className="text-xs text-muted mb-0.5">{LABELS.origin}</span>
-              <span className="font-semibold text-gray-800 text-sm">
-                {fabric.commercial.origin_country}
-              </span>
-            </div>
+            <SpecItem
+              className="col-span-2"
+              label={LABELS.origin}
+              value={fabric.commercial.origin_country}
+            />
           )}
 
           {canViewInventory && activeVariant && activeVariant.stock_status && (

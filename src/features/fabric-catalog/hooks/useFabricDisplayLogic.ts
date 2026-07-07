@@ -84,10 +84,16 @@ export function useFabricDisplayLogic(
     return `https://zalo.me/${HOTLINE}?text=${encodeURIComponent(msg)}`;
   };
 
+  const displayYieldMetersPerKg =
+    fabric?.target_gsm && fabric?.target_width_cm
+      ? (1000 / ((fabric.target_width_cm / 100) * fabric.target_gsm)).toFixed(1)
+      : null;
+
   return {
     activeVariant,
     displayMOQ,
     displayLeadTime,
+    displayYieldMetersPerKg,
     handleShare,
     getZaloQuoteUrl,
   };
