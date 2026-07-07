@@ -37,6 +37,11 @@ export const LEAD_STATUS_MAP: Record<
     dot: '🔴',
     colorClass: 'bg-red-50 text-red-700 border-red-100',
   },
+  CONVERTED: {
+    label: 'Đã chuyển đổi',
+    dot: '✅',
+    colorClass: 'bg-teal-50 text-teal-700 border-teal-100',
+  },
 };
 
 export const LEAD_TYPE_MAP: Record<
@@ -104,4 +109,26 @@ export const CRM_LABELS = {
     'Danh sách này sẽ hiển thị các yêu cầu báo giá và yêu cầu mẫu vải.',
   ITEM_LABEL: 'yêu cầu',
   EMPTY_TEXT: '-',
+};
+
+export const LEAD_DETAIL_MESSAGES = {
+  NOT_FOUND: 'Không tìm thấy thông tin Lead.',
+  STATUS_LABEL: 'Trạng thái:',
+  CONTACT_INFO: 'Thông tin liên hệ',
+  PHONE: 'Số điện thoại',
+  CALL_NOW: 'Gọi ngay',
+  EMAIL: 'Email',
+  NOT_AVAILABLE: 'Chưa có',
+  RFQ_DETAIL_TITLE: 'Chi tiết Yêu cầu Báo giá',
+  EXPECTED_PRICE: 'Giá kỳ vọng',
+  PRODUCT: 'Sản phẩm',
+  COLOR_VARIANT: 'Màu sắc/Biến thể',
+  QUANTITY: 'Số lượng',
+  CREATE_QUOTE_BTN: 'Tạo Báo giá chính thức',
+  SAMPLE_DETAIL_TITLE: 'Chi tiết Gửi mẫu',
+  BULK_SAMPLE_REQ: 'Mẫu vải yêu cầu (Hàng loạt)',
+  ALL_COLORS: 'Tất cả màu',
+  SAMPLE_REQ: 'Mẫu vải yêu cầu',
+  COLORS_REQ: 'Các màu yêu cầu',
+  DELIVERY_ADDRESS: 'Địa chỉ nhận mẫu',
 };

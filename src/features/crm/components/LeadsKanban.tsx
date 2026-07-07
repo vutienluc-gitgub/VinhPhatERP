@@ -49,6 +49,7 @@ export function LeadsKanban({ filters, onSelectLead }: LeadsKanbanProps) {
       NEGOTIATING: [],
       WON: [],
       LOST: [],
+      CONVERTED: [],
     };
     leads.forEach((lead) => {
       if (cols[lead.status]) {

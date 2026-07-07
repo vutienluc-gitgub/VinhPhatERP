@@ -122,3 +122,150 @@ export async function createLeadActivity(payload: {
 
   if (error) throw error;
 }
+
+export async function createLead(payload: {
+  customer_name: string;
+  phone: string;
+  email?: string;
+  company_name?: string;
+  type: 'RFQ' | 'SAMPLE' | 'CONTACT';
+  source?: string;
+  customer_id?: string;
+}): Promise<{ id: string }> {
+  const { getTenantId } = await import('@/services/supabase/tenant');
+  const tenantId = await getTenantId();
+
+  const { data, error } = await untypedDb
+    .from(LEADS_TABLE)
+    .insert({
+      ...payload,
+      status: 'NEW',
+      score: 0,
+      tenant_id: tenantId,
+    })
+    .select('id')
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function convertLead(payload: {
+  leadId: string;
+  customerId?: string; // If provided, link to this customer. If not, create new customer.
+}): Promise<{ customerId: string }> {
+  // Ideally this should be an RPC call for atomicity.
+  // For now, we simulate transaction in client side if RPC is not available yet.
+
+  const lead = await fetchLeadById(payload.leadId);
+  if (!lead) throw new Error('Lead not found');
+
+  let finalCustomerId = payload.customerId;
+
+  if (!finalCustomerId) {
+    // Create new customer
+    const { getTenantId } = await import('@/services/supabase/tenant');
+    const tenantId = await getTenantId();
+
+    const { data: cust, error: custError } = await untypedDb
+      .from('customers')
+      .insert({
+        name: lead.customer_name,
+        phone: lead.phone,
+        email: lead.email,
+        source: lead.source || 'other',
+        status: 'active',
+        tenant_id: tenantId,
+        lead_status: 'opportunity',
+      })
+      .select('id')
+      .single();
+
+    if (custError) throw custError;
+    finalCustomerId = cust.id;
+  }
+
+  // Update lead
+  const { error: leadError } = await untypedDb
+    .from(LEADS_TABLE)
+    .update({
+      customer_id: finalCustomerId,
+      status: 'CONVERTED',
+      converted_at: new Date().toISOString(),
+    })
+    .eq('id', payload.leadId);
+
+  if (leadError) throw leadError;
+
+  return { customerId: finalCustomerId! };
+}
+
+export async function checkDuplicateContact(params: {
+  phone?: string;
+  email?: string;
+}): Promise<{
+  customers: Array<{ id: string; name: string }>;
+  leads: Array<{ id: string; customer_name: string }>;
+}> {
+  const result = {
+    customers: [] as Array<{ id: string; name: string }>,
+    leads: [] as Array<{ id: string; customer_name: string }>,
+  };
+
+  if (!params.phone && !params.email) return result;
+
+  // Search in customers
+  let customerQuery = untypedDb.from('customers').select('id, name');
+  if (params.phone && params.email) {
+    customerQuery = customerQuery.or(
+      `phone.eq.${params.phone},email.eq.${params.email}`,
+    );
+  } else if (params.phone) {
+    customerQuery = customerQuery.eq('phone', params.phone);
+  } else if (params.email) {
+    customerQuery = customerQuery.eq('email', params.email);
+  }
+
+  const { data: customers } = await customerQuery;
+  if (customers) {
+    result.customers = customers;
+  }
+
+  // Search in leads
+  let leadQuery = untypedDb.from(LEADS_TABLE).select('id, customer_name');
+  if (params.phone && params.email) {
+    leadQuery = leadQuery.or(
+      `phone.eq.${params.phone},email.eq.${params.email}`,
+    );
+  } else if (params.phone) {
+    leadQuery = leadQuery.eq('phone', params.phone);
+  } else if (params.email) {
+    leadQuery = leadQuery.eq('email', params.email);
+  }
+
+  const { data: leads } = await leadQuery;
+  if (leads) {
+    result.leads = leads;
+  }
+
+  return result;
+}
+
+export async function fetchLeadsByCustomerId(
+  customerId: string,
+): Promise<CrmLead[]> {
+  const { data, error } = await untypedDb
+    .from(LEADS_TABLE)
+    .select(
+      `
+      *,
+      rfq_detail:crm_rfq_details(*, fabric_catalog:fabric_catalogs(code, name), variant:fabric_variants(code, color_name)),
+      sample_detail:crm_sample_details(*, fabric_catalog:fabric_catalogs(code, name))
+    `,
+    )
+    .eq('customer_id', customerId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data as unknown as CrmLead[];
+}

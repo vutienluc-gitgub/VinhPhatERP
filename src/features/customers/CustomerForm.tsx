@@ -34,6 +34,7 @@ import { saveCustomerGroupsForCustomer } from '@/api/customer-groups.api';
 
 import type { Customer } from './types';
 import { CustomerPortalAccountPanel } from './CustomerPortalAccountPanel';
+import { CustomerTimeline } from './CustomerTimeline';
 
 const SOURCE_OPTIONS = CUSTOMER_SOURCES.map((s) => ({
   value: s,
@@ -464,6 +465,15 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
           </div>
         </div>
       </div>
+
+      {isEditing && (
+        <div className="mt-8 pt-6 border-t border-slate-200">
+          <h3 className="text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider">
+            Lịch sử tương tác (Leads)
+          </h3>
+          <CustomerTimeline customerId={customer.id} />
+        </div>
+      )}
 
       <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
         <Button
