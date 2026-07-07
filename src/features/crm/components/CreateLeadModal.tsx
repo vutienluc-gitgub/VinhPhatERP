@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import toast from 'react-hot-toast';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Button } from '@/shared/components/Button';
@@ -107,8 +108,13 @@ export function CreateLeadModal({
       });
       onOpenChange(false);
       onSuccess?.(res.id);
+      toast.success('Tạo Lead thành công');
     } catch (error) {
       console.error('[CreateLeadError]', error);
+      toast.error(
+        'Không thể tạo Lead: ' +
+          (error instanceof Error ? error.message : String(error)),
+      );
     }
   };
 
