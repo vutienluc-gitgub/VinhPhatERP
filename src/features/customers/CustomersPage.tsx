@@ -7,6 +7,7 @@ import { ContractForm } from '@/features/contracts/ContractForm';
 import { ChatDrawer } from '@/features/chat/ChatDrawer';
 import { usePreviewIdFromUrl } from '@/shared/hooks/usePreviewIdFromUrl';
 
+import { CUSTOMERS_PAGE_LABELS } from './customers.constants';
 import { CustomerForm } from './CustomerForm';
 import { CustomerList } from './CustomerList';
 import { DepositForm } from './DepositForm';
@@ -50,8 +51,8 @@ export function CustomersPage() {
           active={activeTab}
           onChange={setActiveTab}
           tabs={[
-            { key: 'customers', label: 'Khách hàng' },
-            { key: 'customer_groups', label: 'Nhóm khách hàng' },
+            { key: 'customers', label: CUSTOMERS_PAGE_LABELS.tabCustomers },
+            { key: 'customer_groups', label: CUSTOMERS_PAGE_LABELS.tabGroups },
           ]}
           variant="underline"
         />
@@ -73,7 +74,9 @@ export function CustomersPage() {
         open={showForm && activeTab === 'customers'}
         onClose={closeForm}
         title={
-          editCustomer ? `Sửa: ${editCustomer.name}` : 'Thêm khách hàng mới'
+          editCustomer
+            ? `${CUSTOMERS_PAGE_LABELS.editPrefix} ${editCustomer.name}`
+            : CUSTOMERS_PAGE_LABELS.createTitle
         }
       >
         <CustomerForm customer={editCustomer} onClose={closeForm} />
@@ -82,7 +85,7 @@ export function CustomersPage() {
       <AdaptiveSheet
         open={!!contractCustomer}
         onClose={() => setContractCustomer(null)}
-        title="Tạo hợp đồng"
+        title={CUSTOMERS_PAGE_LABELS.createContractTitle}
       >
         {contractCustomer && (
           <ContractForm
@@ -109,7 +112,7 @@ export function CustomersPage() {
         entityType="customer"
         entityId={chatCustomer?.id ?? ''}
         title={chatCustomer?.name ?? ''}
-        subtitle="Trò chuyện trực tiếp"
+        subtitle={CUSTOMERS_PAGE_LABELS.chatSubtitle}
       />
     </div>
   );

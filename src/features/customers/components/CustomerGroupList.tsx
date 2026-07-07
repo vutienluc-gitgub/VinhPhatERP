@@ -125,10 +125,12 @@ export function CustomerGroupList() {
       handleCloseForm();
     } catch (err: unknown) {
       console.error('[CustomerGroupList] save error:', err);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const errCode = (err as any)?.code;
+      const errCode =
+        typeof err === 'object' && err !== null && 'code' in err
+          ? (err as { code: string }).code
+          : undefined;
       if (errCode === '23505') {
-        toast.error('Mã nhóm đã tồn tại trên hệ thống!');
+        toast.error(CUSTOMER_GROUP_LABELS.codeExistsError);
       } else {
         toast.error(
           err instanceof Error
@@ -143,8 +145,8 @@ export function CustomerGroupList() {
     const confirmed = await confirm({
       title: CUSTOMER_GROUP_LABELS.confirmDeleteTitle,
       message: CUSTOMER_GROUP_LABELS.confirmDeleteMessage,
-      confirmLabel: 'Xác nhận xóa',
-      cancelLabel: 'Quay lại',
+      confirmLabel: CUSTOMER_GROUP_LABELS.confirmDeleteAction,
+      cancelLabel: CUSTOMER_GROUP_LABELS.cancelAction,
       variant: 'danger',
     });
 
@@ -155,8 +157,10 @@ export function CustomerGroupList() {
       toast.success(CUSTOMER_GROUP_LABELS.deleteSuccess);
     } catch (err: unknown) {
       console.error('[CustomerGroupList] delete error:', err);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const errCode = (err as any)?.code;
+      const errCode =
+        typeof err === 'object' && err !== null && 'code' in err
+          ? (err as { code: string }).code
+          : undefined;
       if (errCode === '23503') {
         toast.error(CUSTOMER_GROUP_LABELS.deleteErrorRestrict);
       } else {
@@ -248,7 +252,7 @@ export function CustomerGroupList() {
 
               <div className="flex justify-between items-center mt-4 pt-3 border-t border-slate-50">
                 <span className="text-[10px] text-slate-400 font-semibold">
-                  Cập nhật:{' '}
+                  {CUSTOMER_GROUP_LABELS.updatePrefix}{' '}
                   {new Date(group.updated_at).toLocaleDateString('vi-VN')}
                 </span>
                 <span

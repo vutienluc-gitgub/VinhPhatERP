@@ -35,6 +35,7 @@ import { saveCustomerGroupsForCustomer } from '@/api/customer-groups.api';
 import type { Customer } from './types';
 import { CustomerPortalAccountPanel } from './CustomerPortalAccountPanel';
 import { CustomerTimeline } from './CustomerTimeline';
+import { CUSTOMER_FORM_LABELS } from './customers.constants';
 
 const SOURCE_OPTIONS = CUSTOMER_SOURCES.map((s) => ({
   value: s,
@@ -43,8 +44,16 @@ const SOURCE_OPTIONS = CUSTOMER_SOURCES.map((s) => ({
 }));
 
 const STATUS_OPTIONS = [
-  { value: 'active', label: 'Hoạt động', icon: 'CheckCircle2' as const },
-  { value: 'inactive', label: 'Ngừng hoạt động', icon: 'XCircle' as const },
+  {
+    value: 'active',
+    label: CUSTOMER_FORM_LABELS.statusActive,
+    icon: 'CheckCircle2' as const,
+  },
+  {
+    value: 'inactive',
+    label: CUSTOMER_FORM_LABELS.statusInactive,
+    icon: 'XCircle' as const,
+  },
 ];
 
 const LEAD_STATUS_OPTIONS = [
@@ -147,14 +156,14 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         });
         // Lưu liên kết nhóm khách hàng (Many-to-Many)
         await saveCustomerGroupsForCustomer(customer.id, selectedGroupIds);
-        toast.success('Cập nhật khách hàng thành công');
+        toast.success(CUSTOMER_FORM_LABELS.successUpdate);
       } else {
         const newCustomer = await createMutation.mutateAsync(values);
         if (newCustomer?.id && selectedGroupIds.length > 0) {
           // Lưu liên kết nhóm cho khách hàng mới vừa tạo
           await saveCustomerGroupsForCustomer(newCustomer.id, selectedGroupIds);
         }
-        toast.success('Tạo khách hàng mới thành công');
+        toast.success(CUSTOMER_FORM_LABELS.successCreate);
       }
 
       // Invalidate cache để cập nhật giao diện
@@ -163,8 +172,10 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
       });
       void queryClient.invalidateQueries({ queryKey: ['customers'] });
       onClose();
-    } catch {
-      // Lỗi hiện qua mutationError bên dưới
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error(message);
+      console.error('[CustomerForm Error]', err);
     }
   }
 
@@ -176,7 +187,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
     <form id="customer-form" onSubmit={handleSubmit(onSubmit)} noValidate>
       {mutationError && (
         <p className="error-inline mb-4">
-          Lỗi: {getErrorMessage(mutationError)}
+          {CUSTOMER_FORM_LABELS.errorPrefix} {getErrorMessage(mutationError)}
         </p>
       )}
 
@@ -185,13 +196,14 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
             <label htmlFor="code">
-              Mã khách hàng <span className="field-required">*</span>
+              {CUSTOMER_FORM_LABELS.codeLabel}{' '}
+              <span className="field-required">*</span>
             </label>
             <input
               id="code"
               className={`field-input${errors.code ? ' is-error' : ''}`}
               type="text"
-              placeholder="VD: KH-001"
+              placeholder={CUSTOMER_FORM_LABELS.codePlaceholder}
               readOnly={!isEditing}
               {...register('code')}
             />
@@ -202,13 +214,14 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
 
           <div className="form-field">
             <label htmlFor="name">
-              Tên khách hàng <span className="field-required">*</span>
+              {CUSTOMER_FORM_LABELS.nameLabel}{' '}
+              <span className="field-required">*</span>
             </label>
             <input
               id="name"
               className={`field-input${errors.name ? ' is-error' : ''}`}
               type="text"
-              placeholder="VD: Công ty TNHH ABC"
+              placeholder={CUSTOMER_FORM_LABELS.namePlaceholder}
               {...register('name')}
             />
             {errors.name && (
@@ -220,12 +233,12 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         {/* Điện thoại + Email */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
-            <label htmlFor="phone">Số điện thoại</label>
+            <label htmlFor="phone">{CUSTOMER_FORM_LABELS.phoneLabel}</label>
             <input
               id="phone"
               className={`field-input${errors.phone ? ' is-error' : ''}`}
               type="tel"
-              placeholder="VD: 0901 234 567"
+              placeholder={CUSTOMER_FORM_LABELS.phonePlaceholder}
               {...register('phone')}
               onKeyDown={(e) => {
                 // Cho phép: Xóa, Điều hướng, Copy/Paste, các phím số và dấu cấu trúc cơ bản
@@ -256,12 +269,12 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
           </div>
 
           <div className="form-field">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">{CUSTOMER_FORM_LABELS.emailLabel}</label>
             <input
               id="email"
               className={`field-input${errors.email ? ' is-error' : ''}`}
               type="email"
-              placeholder="VD: lienhe@congty.vn"
+              placeholder={CUSTOMER_FORM_LABELS.emailPlaceholder}
               {...register('email')}
             />
             {errors.email && (
@@ -272,12 +285,12 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
 
         {/* Địa chỉ */}
         <div className="form-field">
-          <label htmlFor="address">Địa chỉ</label>
+          <label htmlFor="address">{CUSTOMER_FORM_LABELS.addressLabel}</label>
           <input
             id="address"
             className="field-input"
             type="text"
-            placeholder="VD: 123 Đường Lê Lợi, Q.1, TP.HCM"
+            placeholder={CUSTOMER_FORM_LABELS.addressPlaceholder}
             {...register('address')}
           />
         </div>
@@ -285,12 +298,14 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         {/* Mã số thuế + Người liên hệ */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
-            <label htmlFor="tax_code">Mã số thuế</label>
+            <label htmlFor="tax_code">
+              {CUSTOMER_FORM_LABELS.taxCodeLabel}
+            </label>
             <input
               id="tax_code"
               className={`field-input${errors.tax_code ? ' is-error' : ''}`}
               type="text"
-              placeholder="VD: 0312345678"
+              placeholder={CUSTOMER_FORM_LABELS.taxCodePlaceholder}
               {...register('tax_code')}
             />
             {errors.tax_code && (
@@ -299,12 +314,14 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
           </div>
 
           <div className="form-field">
-            <label htmlFor="contact_person">Người liên hệ</label>
+            <label htmlFor="contact_person">
+              {CUSTOMER_FORM_LABELS.contactPersonLabel}
+            </label>
             <input
               id="contact_person"
               className="field-input"
               type="text"
-              placeholder="VD: Nguyễn Văn A"
+              placeholder={CUSTOMER_FORM_LABELS.contactPersonPlaceholder}
               {...register('contact_person')}
             />
           </div>
@@ -313,7 +330,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         {/* Trạng thái + Nguồn KH */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
-            <label htmlFor="source">Nguồn khách hàng</label>
+            <label htmlFor="source">{CUSTOMER_FORM_LABELS.sourceLabel}</label>
             <Controller
               name="source"
               control={control}
@@ -328,7 +345,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
           </div>
 
           <div className="form-field">
-            <label htmlFor="status">Trạng thái</label>
+            <label htmlFor="status">{CUSTOMER_FORM_LABELS.statusLabel}</label>
             <Controller
               name="status"
               control={control}
@@ -346,7 +363,9 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         {/* Phễu CRM & Nhân viên phụ trách */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
-            <label htmlFor="lead_status">Phễu CRM</label>
+            <label htmlFor="lead_status">
+              {CUSTOMER_FORM_LABELS.leadStatusLabel}
+            </label>
             <Controller
               name="lead_status"
               control={control}
@@ -361,14 +380,16 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
           </div>
 
           <div className="form-field">
-            <label htmlFor="salesperson_id">Nhân viên phụ trách</label>
+            <label htmlFor="salesperson_id">
+              {CUSTOMER_FORM_LABELS.salespersonLabel}
+            </label>
             <Controller
               name="salesperson_id"
               control={control}
               render={({ field }) => (
                 <Combobox
                   options={[
-                    { value: '', label: '(Chưa phân công)' },
+                    { value: '', label: CUSTOMER_FORM_LABELS.unassigned },
                     ...(salesEmployees?.map((emp) => ({
                       value: emp.id,
                       label: `${emp.name} (${emp.code})`,
@@ -386,12 +407,12 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
 
         {/* Ghi chú */}
         <div className="form-field">
-          <label htmlFor="notes">Ghi chú</label>
+          <label htmlFor="notes">{CUSTOMER_FORM_LABELS.notesLabel}</label>
           <textarea
             id="notes"
             className="field-textarea"
             rows={3}
-            placeholder="Ghi chú thêm về khách hàng..."
+            placeholder={CUSTOMER_FORM_LABELS.notesPlaceholder}
             {...register('notes')}
           />
         </div>
@@ -401,11 +422,11 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
           {/* Nhóm khách hàng (Many-to-Many Tags / Checkbox toggles) */}
           <div className="form-field">
             <span className="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-2">
-              Nhóm khách hàng (Phân hạng sỉ)
+              {CUSTOMER_FORM_LABELS.groupsLabel}
             </span>
             {groupsList.length === 0 ? (
               <span className="text-xs text-slate-400 italic">
-                Chưa có nhóm nào được định nghĩa trên hệ thống.
+                {CUSTOMER_FORM_LABELS.noGroups}
               </span>
             ) : (
               <div className="flex flex-wrap gap-2 p-3.5 bg-slate-50 rounded-xl border border-slate-200 h-full min-h-[90px] content-start">
@@ -450,7 +471,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
           {/* Tài khoản Customer Portal */}
           <div className="form-field">
             <span className="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-2">
-              Tài khoản Customer Portal
+              {CUSTOMER_FORM_LABELS.portalLabel}
             </span>
             {isEditing ? (
               <CustomerPortalAccountPanel
@@ -459,7 +480,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
               />
             ) : (
               <div className="border border-dashed border-slate-200 bg-slate-50/50 rounded-xl p-4 min-h-[90px] flex items-center justify-center text-center text-xs text-slate-400 italic">
-                Tài khoản Portal sẽ khả dụng sau khi lưu khách hàng.
+                {CUSTOMER_FORM_LABELS.portalPending}
               </div>
             )}
           </div>
@@ -469,7 +490,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
       {isEditing && (
         <div className="mt-8 pt-6 border-t border-slate-200">
           <h3 className="text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider">
-            Lịch sử tương tác (Leads)
+            {CUSTOMER_FORM_LABELS.timelineLabel}
           </h3>
           <CustomerTimeline customerId={customer.id} />
         </div>
@@ -483,7 +504,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
           disabled={isPending}
           className="w-full sm:w-auto justify-center"
         >
-          Hủy
+          {CUSTOMER_FORM_LABELS.cancelBtn}
         </Button>
         <Button
           variant="primary"
@@ -491,7 +512,9 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
           isLoading={isPending}
           className="w-full sm:w-auto justify-center"
         >
-          {isEditing ? 'Cập nhật' : 'Tạo mới'}
+          {isEditing
+            ? CUSTOMER_FORM_LABELS.updateBtn
+            : CUSTOMER_FORM_LABELS.createBtn}
         </Button>
       </div>
     </form>
