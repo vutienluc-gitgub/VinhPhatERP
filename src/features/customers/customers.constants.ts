@@ -109,6 +109,17 @@ export const CUSTOMERS_PAGE_LABELS = {
   createTitle: 'Thêm khách hàng mới',
   createContractTitle: 'Tạo hợp đồng',
   chatSubtitle: 'Trò chuyện trực tiếp',
+  guideTitle: 'Mẹo phân nhóm theo Mô hình kinh doanh',
+  guideIntro:
+    'Phân loại nhóm giúp hệ thống tối ưu bảng giá và chính sách công nợ tự động:',
+  guideTypeDealer: 'Đại lý / Chợ đầu mối',
+  guideDescDealer: 'Cần giá tốt, hàng sẵn số lượng lớn, đẩy tồn kho nhanh.',
+  guideTypeWorkshop: 'Xưởng may',
+  guideDescWorkshop:
+    'Cần độ ổn định tuyệt đối về chất lượng và định lượng vải.',
+  guideTypeBrand: 'Local Brand / Studio',
+  guideDescBrand:
+    'Cần mẫu mã độc lạ, thường xuyên gửi sample, chấp nhận giá cao.',
 } as const;
 
 export const CUSTOMER_TIMELINE_LABELS = {
