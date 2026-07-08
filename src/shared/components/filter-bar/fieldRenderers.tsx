@@ -7,6 +7,7 @@
  */
 
 import { Combobox } from '@/shared/components/Combobox';
+import { UI_LABELS } from '@/shared/constants/ui.constants';
 
 import { DebouncedSearchInput } from './DebouncedSearchInput';
 import { FilterDateInput } from './FilterDateInput';
@@ -32,7 +33,8 @@ export const FieldRenderers: FieldRenderersRegistry = {
           id={inputId}
           fieldKey={field.key}
           placeholder={
-            field.placeholder || `Tìm kiếm ${field.label.toLowerCase()}...`
+            field.placeholder ||
+            `${UI_LABELS.SEARCH_PLACEHOLDER.replace('...', '')} ${field.label.toLowerCase()}...`
           }
           initialValue={value[field.key] || ''}
           onChange={onChange}
@@ -53,7 +55,7 @@ export const FieldRenderers: FieldRenderersRegistry = {
           options={[
             {
               value: '',
-              label: `Tất cả ${field.label.toLowerCase()}`,
+              label: `${UI_LABELS.ALL} ${field.label.toLowerCase()}`,
             },
             ...field.options,
           ]}
@@ -83,14 +85,14 @@ export const FieldRenderers: FieldRenderersRegistry = {
         <div className="flex items-end gap-2">
           <FilterDateInput
             id={`${idPrefix}${field.keyFrom}`}
-            label={field.labelFrom ?? 'Từ ngày'}
+            label={field.labelFrom ?? UI_LABELS.FROM_DATE}
             value={(value[field.keyFrom] as string) ?? ''}
             onChange={(val) => onChange(field.keyFrom, val)}
           />
           <span className="text-muted mb-[10px] flex-shrink-0">→</span>
           <FilterDateInput
             id={`${idPrefix}${field.keyTo}`}
-            label={field.labelTo ?? 'Đến ngày'}
+            label={field.labelTo ?? UI_LABELS.TO_DATE}
             value={(value[field.keyTo] as string) ?? ''}
             onChange={(val) => onChange(field.keyTo, val)}
           />

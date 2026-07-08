@@ -35,7 +35,7 @@ export const ORIGIN_OPTIONS = [
 export const ROUTE_FABRIC_CATALOG = '/fabric-catalog';
 
 export const LABELS = {
-  SEARCH_PLACEHOLDER: 'Tên, mã, thành phần...',
+  SEARCH_PLACEHOLDER: 'Tìm kiếm...',
   SEARCH: 'Tìm kiếm',
   STATUS: 'Trạng thái',
   CODE: 'Mã',

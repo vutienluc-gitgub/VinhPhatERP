@@ -3,6 +3,49 @@ import { createPortal } from 'react-dom';
 
 import { Search, ChevronDown, Check } from '@/shared/icons';
 import { Icon, type IconName } from '@/shared/components/Icon';
+import { UI_LABELS } from '@/shared/constants/ui.constants';
+
+type ComboboxOptionItemProps = {
+  opt: ComboboxOption;
+  isSelected: boolean;
+  onSelect: (value: string, label: string) => void;
+};
+
+function ComboboxOptionItem({
+  opt,
+  isSelected,
+  onSelect,
+}: ComboboxOptionItemProps) {
+  return (
+    <button
+      type="button"
+      onMouseDown={(e) => {
+        e.preventDefault(); // Prevent blur before click
+      }}
+      onClick={() => onSelect(opt.value, opt.label)}
+      className={`combobox-option${isSelected ? ' is-selected' : ''}`}
+    >
+      <div className="flex flex-row items-center gap-2">
+        {opt.icon && (
+          <Icon name={opt.icon as IconName} size={16} className="text-muted" />
+        )}
+        <div className="flex flex-col text-left">
+          <span>{opt.label}</span>
+          {(opt.code || opt.phone || opt.desc) && (
+            <span className="text-xs text-muted mt-0.5">
+              {opt.code && `${UI_LABELS.CODE_PREFIX} ${opt.code} `}
+              {opt.phone && `${UI_LABELS.PHONE_PREFIX} ${opt.phone} `}
+              {opt.desc && opt.desc}
+            </span>
+          )}
+        </div>
+      </div>
+      {isSelected && (
+        <Check className="w-4 h-4 shrink-0" color="var(--primary)" />
+      )}
+    </button>
+  );
+}
 
 /** Tính toán vị trí dropdown dựa trên trigger element */
 function getDropdownStyle(triggerEl: HTMLElement): React.CSSProperties {
@@ -43,6 +86,8 @@ type ComboboxProps = {
   id?: string;
   /** Choose visual style based on context */
   variant?: 'default' | 'table-cell';
+  /** Data density size */
+  size?: 'default' | 'compact';
 };
 
 export const Combobox = memo(function Combobox({
@@ -50,7 +95,7 @@ export const Combobox = memo(function Combobox({
   value,
   onChange,
   onBlur,
-  placeholder = 'Chọn...',
+  placeholder = UI_LABELS.SELECT_PLACEHOLDER,
   disabled,
   className = '',
   hasError,
@@ -58,6 +103,7 @@ export const Combobox = memo(function Combobox({
   onKeyDown,
   id,
   variant = 'default',
+  size = 'default',
 }: ComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -119,12 +165,18 @@ export const Combobox = memo(function Combobox({
   const boxClass =
     variant === 'table-cell' ? 'table-cell-input' : 'field-input';
 
+  const minHeightClass = className?.includes('h-')
+    ? 'h-full min-h-0'
+    : size === 'compact'
+      ? 'min-h-[36px]'
+      : 'min-h-[44px]';
+
   /* ── allowInput mode: render as <input> with dropdown suggestions ── */
   if (allowInput) {
     return (
       <div className={`relative ${className}`} ref={containerRef}>
         <div
-          className={`${boxClass} flex items-center p-0${hasError ? ' is-error' : ''}${disabled ? ' opacity-50' : ''} ${className?.includes('h-') ? 'h-full min-h-0' : 'min-h-[44px]'}`}
+          className={`${boxClass} flex items-center p-0${hasError ? ' is-error' : ''}${disabled ? ' opacity-50' : ''} ${minHeightClass}`}
         >
           <input
             id={id}
@@ -133,7 +185,7 @@ export const Combobox = memo(function Combobox({
             disabled={disabled}
             value={search}
             placeholder={placeholder}
-            className={`border-none outline-none bg-transparent flex-1 px-3 focus:ring-0 ${className?.includes('h-') ? 'h-full min-h-0' : 'min-h-[44px]'}`}
+            className={`border-none outline-none bg-transparent flex-1 px-3 focus:ring-0 ${minHeightClass}`}
             onChange={(e) => {
               setSearch(e.target.value);
               setIsOpen(true);
@@ -202,49 +254,18 @@ export const Combobox = memo(function Combobox({
               style={dropdownStyle}
               className="border border-[var(--border)] rounded-lg shadow-xl max-h-[240px] overflow-y-auto bg-surface"
             >
-              {filteredOptions.map((opt) => {
-                const isSelected = value === opt.value;
-                return (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onMouseDown={(e) => {
-                      e.preventDefault(); // Prevent blur before click
-                    }}
-                    onClick={() => {
-                      onChange(opt.value);
-                      setSearch(opt.label);
-                      setIsOpen(false);
-                    }}
-                    className={`combobox-option${isSelected ? ' is-selected' : ''}`}
-                  >
-                    <div className="flex flex-row items-center gap-2">
-                      {opt.icon && (
-                        <Icon
-                          name={opt.icon as IconName}
-                          size={16}
-                          className="text-muted"
-                        />
-                      )}
-                      <div className="flex flex-col">
-                        <span>{opt.label}</span>
-                        {(opt.code || opt.desc) && (
-                          <span className="text-xs text-muted mt-0.5">
-                            {opt.code && `Ma: ${opt.code} `}
-                            {opt.desc && opt.desc}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {isSelected && (
-                      <Check
-                        className="w-4 h-4 shrink-0"
-                        color="var(--primary)"
-                      />
-                    )}
-                  </button>
-                );
-              })}
+              {filteredOptions.map((opt) => (
+                <ComboboxOptionItem
+                  key={opt.value}
+                  opt={opt}
+                  isSelected={value === opt.value}
+                  onSelect={(val, label) => {
+                    onChange(val);
+                    setSearch(label);
+                    setIsOpen(false);
+                  }}
+                />
+              ))}
             </div>,
             document.body,
           )}
@@ -263,7 +284,7 @@ export const Combobox = memo(function Combobox({
         onBlur={() => {
           if (!isOpen) onBlur?.();
         }}
-        className={`${boxClass} flex items-center justify-between w-full text-left bg-surface px-3 ${className?.includes('h-') ? 'h-full min-h-0' : 'min-h-[44px]'} ${hasError ? 'is-error' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`${boxClass} flex items-center justify-between w-full text-left bg-surface px-3 ${minHeightClass} ${hasError ? 'is-error' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         onKeyDown={(e) => {
           onKeyDown?.(e);
         }}
@@ -301,7 +322,7 @@ export const Combobox = memo(function Combobox({
               <input
                 type="text"
                 className="w-full text-sm outline-none bg-transparent text-[var(--text-primary)] border-none min-h-[32px]"
-                placeholder="Tìm kiếm..."
+                placeholder={UI_LABELS.SEARCH_PLACEHOLDER}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onClick={(e) => e.stopPropagation()}
@@ -315,54 +336,22 @@ export const Combobox = memo(function Combobox({
             <div className="p-1">
               {filteredOptions.length === 0 ? (
                 <div className="p-2 text-sm text-center text-[var(--text-secondary)]">
-                  Không tìm thấy kết quả
+                  {UI_LABELS.NO_RESULTS}
                 </div>
               ) : (
-                filteredOptions.map((opt) => {
-                  const isSelected = value === opt.value;
-                  return (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onMouseDown={(e) => {
-                        e.preventDefault(); // Prevent blur before click
-                      }}
-                      onClick={() => {
-                        onChange(opt.value);
-                        setIsOpen(false);
-                        setSearch('');
-                        onBlur?.();
-                      }}
-                      className={`combobox-option${isSelected ? ' is-selected' : ''}`}
-                    >
-                      <div className="flex flex-row items-center gap-2">
-                        {opt.icon && (
-                          <Icon
-                            name={opt.icon as IconName}
-                            size={16}
-                            className="text-muted"
-                          />
-                        )}
-                        <div className="flex flex-col">
-                          <span>{opt.label}</span>
-                          {(opt.code || opt.phone || opt.desc) && (
-                            <span className="text-xs text-muted mt-0.5">
-                              {opt.code && `Ma: ${opt.code} `}
-                              {opt.phone && `SDT: ${opt.phone} `}
-                              {opt.desc && opt.desc}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      {isSelected && (
-                        <Check
-                          className="w-4 h-4 shrink-0"
-                          color="var(--primary)"
-                        />
-                      )}
-                    </button>
-                  );
-                })
+                filteredOptions.map((opt) => (
+                  <ComboboxOptionItem
+                    key={opt.value}
+                    opt={opt}
+                    isSelected={value === opt.value}
+                    onSelect={(val) => {
+                      onChange(val);
+                      setIsOpen(false);
+                      setSearch('');
+                      onBlur?.();
+                    }}
+                  />
+                ))
               )}
             </div>
           </div>,

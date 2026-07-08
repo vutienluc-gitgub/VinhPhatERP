@@ -385,6 +385,7 @@ function DataTableAdvancedInner<TData>({
                   <tr
                     key={row.id}
                     className={clsx(
+                      'group', // <-- Added for row hover actions
                       onRowClick &&
                         'hover:bg-surface-subtle transition-colors cursor-pointer',
                       row.getIsSelected() && 'bg-primary/5',
