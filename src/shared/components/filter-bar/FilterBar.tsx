@@ -11,6 +11,10 @@ import { ClearFilterButton } from '@/shared/components/ClearFilterButton';
 import { FieldRenderers } from './fieldRenderers';
 import type { FilterBarProps, DateRangeFilterField } from './types';
 
+export interface FilterBarComponentProps extends FilterBarProps {
+  size?: 'default' | 'compact';
+}
+
 /**
  * Kiểm tra xem có filter nào đang active không
  */
@@ -53,7 +57,8 @@ export function FilterBar({
   onClear,
   variant = 'card',
   idPrefix: externalIdPrefix,
-}: FilterBarProps) {
+  size = 'default',
+}: FilterBarComponentProps) {
   const hasActiveFilter = useHasActiveFilter(schema, value);
   const containerClasses = useContainerClasses(variant);
 
@@ -62,8 +67,13 @@ export function FilterBar({
   const autoIdPrefix = React.useId();
   const idPrefix = externalIdPrefix || `filter-${autoIdPrefix}-`;
 
+  const sizeClasses =
+    size === 'compact'
+      ? '[&_.field-input]:min-h-[36px] [&_.field-input]:h-[36px] [&_.table-cell-input]:min-h-[36px] [&_.table-cell-input]:h-[36px]'
+      : '';
+
   return (
-    <div className={containerClasses}>
+    <div className={`${containerClasses} ${sizeClasses}`}>
       <div className="filter-compact-premium overflow-visible">
         {schema.map((field) => {
           const Renderer = FieldRenderers[field.type];

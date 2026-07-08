@@ -1,14 +1,9 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import type { ColumnDef } from '@tanstack/react-table';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
-  Icon,
-  Badge,
   DataTableAdvanced,
   AddButton,
-  ActionBar,
   FilterBar,
   type FilterFieldConfig,
   KpiCard,
@@ -24,18 +19,13 @@ import {
 } from '@/schema/fabric-catalog.schema';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 
-import {
-  LABELS,
-  MESSAGES,
-  ROUTE_FABRIC_CATALOG,
-} from './fabric-catalog.constants';
-import { getStatusVariant } from './fabric-catalog.helpers';
+import { LABELS, MESSAGES } from './fabric-catalog.constants';
+import { useFabricCatalogColumns } from './useFabricCatalogColumns';
 import type {
   FabricCatalog,
   FabricCatalogFilter,
   FabricCatalogStatus,
 } from './types';
-import { FabricCategoryBadge } from './components/FabricCategoryBadge';
 import { FabricCatalogMobileCard } from './components/FabricCatalogMobileCard';
 import { FabricSampleQRModal } from './components/FabricSampleQRModal';
 
@@ -127,154 +117,15 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
     setFilter(key, value);
   }
 
-  const columns = useMemo<ColumnDef<FabricCatalog>[]>(
-    () => [
-      {
-        id: 'thumbnail',
-        header: '',
-        meta: { className: 'w-20' },
-        cell: ({ row }) => {
-          const c = row.original;
-          return c.image_url ? (
-            <img
-              src={c.image_url}
-              alt={c.name}
-              className="w-10 h-10 rounded object-cover shrink-0"
-              loading="lazy"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded bg-surface-subtle flex items-center justify-center shrink-0">
-              <Icon name="Image" size={16} className="text-muted" />
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: 'code',
-        header: LABELS.CODE,
-        cell: ({ row }) => (
-          <Link
-            to={`${ROUTE_FABRIC_CATALOG}/${row.original.id}`}
-            className="font-bold text-primary hover:underline"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {row.original.code}
-          </Link>
-        ),
-      },
-      {
-        id: 'category',
-        header: LABELS.CATEGORY,
-        cell: ({ row }) => (
-          <FabricCategoryBadge category={row.original.category} />
-        ),
-      },
-      {
-        accessorKey: 'name',
-        header: LABELS.NAME,
-        cell: ({ row }) => (
-          <Link
-            to={`${ROUTE_FABRIC_CATALOG}/${row.original.id}`}
-            className="font-medium hover:underline"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {row.original.name}
-          </Link>
-        ),
-      },
-      {
-        accessorKey: 'composition',
-        header: LABELS.COMPOSITION,
-        cell: ({ row }) => {
-          const tags = row.original.composition_tags;
-          const fallback = row.original.composition;
-          const displayValue =
-            tags && tags.length > 0 ? tags.join(', ') : fallback;
-          return (
-            <span className="text-muted text-sm italic">
-              {displayValue ?? LABELS.NA}
-            </span>
-          );
-        },
-      },
-      {
-        id: 'specs',
-        header: LABELS.SPECS,
-        enableSorting: false,
-        cell: ({ row }) => {
-          const c = row.original;
-          return (
-            <div className="flex flex-col gap-0.5 text-sm">
-              <span className="text-muted">
-                {LABELS.WIDTH}:{' '}
-                <span className="font-medium text-text">
-                  {c.target_width_cm ? `${c.target_width_cm} cm` : LABELS.NA}
-                </span>
-              </span>
-              <span className="text-muted">
-                {LABELS.GSM}:{' '}
-                <span className="font-medium text-text">
-                  {c.target_gsm ? `${c.target_gsm} gsm` : LABELS.NA}
-                </span>
-              </span>
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: 'unit',
-        header: LABELS.UNIT,
-        cell: ({ row }) => <span className="text-sm">{row.original.unit}</span>,
-      },
-      {
-        accessorKey: 'status',
-        header: LABELS.STATUS,
-        cell: ({ row }) => {
-          const c = row.original;
-          return (
-            <Badge variant={getStatusVariant(c.status)}>
-              {FABRIC_CATALOG_STATUS_LABELS[c.status]}
-            </Badge>
-          );
-        },
-      },
-      {
-        id: 'actions',
-        header: () => <div className="text-right">{LABELS.ACTIONS}</div>,
-        meta: { className: 'text-right' },
-        cell: ({ row }) => {
-          const c = row.original;
-          return (
-            <ActionBar
-              actions={[
-                {
-                  icon: 'Pencil',
-                  onClick: () => onEdit(c),
-                  title: LABELS.EDIT,
-                },
-                {
-                  icon: 'QrCode',
-                  onClick: () => setQrCatalog(c),
-                  title: LABELS.PRINT_QR,
-                },
-                {
-                  icon: 'Trash2',
-                  onClick: () => handleDelete(c),
-                  title: LABELS.DELETE,
-                  variant: 'danger',
-                  disabled: deleteMutation.isPending,
-                },
-              ]}
-            />
-          );
-        },
-      },
-    ],
-    [onEdit, handleDelete, deleteMutation.isPending],
-  );
+  const columns = useFabricCatalogColumns({
+    onEdit,
+    setQrCatalog,
+    handleDelete,
+    isDeleting: deleteMutation.isPending,
+  });
 
   return (
-    <div className="panel-card card-flush">
+    <div className="panel-card card-flush flex flex-col h-full min-h-0">
       {/* Action bar */}
       <div className="card-header-area">
         <AddButton onClick={onNew} label={LABELS.ADD_NEW} />
@@ -310,6 +161,7 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
       {/* Filters (Config-Driven) */}
       <div className="flex flex-wrap items-start gap-3 px-4 py-3 border-b border-border/50 overflow-visible">
         <FilterBar
+          size="compact"
           variant="inline"
           schema={filterSchema}
           value={filters}
@@ -323,6 +175,7 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
 
       {/* Table (DataTableAdvanced) */}
       <DataTableAdvanced
+        className="flex-1 min-h-0"
         data={catalogs}
         isLoading={isLoading}
         rowKey={(c) => c.id}

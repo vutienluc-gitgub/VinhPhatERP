@@ -48,7 +48,7 @@ export const KpiCard = memo(function KpiCard({
   if (isLoading) {
     return (
       <div
-        className={`kpi-card-premium kpi-${variant} animate-pulse h-[140px]`}
+        className={`kpi-card-premium kpi-${variant} animate-pulse min-h-[88px] flex flex-col justify-between`}
       >
         <div className="flex justify-between items-start">
           <div className="space-y-3">
@@ -78,6 +78,10 @@ export const KpiCard = memo(function KpiCard({
   const isClickable = !!onClick;
   const cardClasses = [
     'kpi-card-premium',
+    'min-h-[88px]',
+    'flex',
+    'flex-col',
+    'justify-between',
     'fade-up',
     `kpi-${variant}`,
     isClickable &&

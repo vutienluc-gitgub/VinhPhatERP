@@ -90,7 +90,7 @@ export const CUSTOMER_FORM_LABELS = {
   unassigned: '(Chưa phân công)',
   notesLabel: 'Ghi chú',
   notesPlaceholder: 'Ghi chú thêm về khách hàng...',
-  groupsLabel: 'Nhóm khách hàng (Phân hạng sỉ)',
+  groupsLabel: 'Nhóm khách hàng (Mô hình KD)',
   noGroups: 'Chưa có nhóm nào được định nghĩa trên hệ thống.',
   portalLabel: 'Tài khoản Customer Portal',
   portalPending: 'Tài khoản Portal sẽ khả dụng sau khi lưu khách hàng.',
