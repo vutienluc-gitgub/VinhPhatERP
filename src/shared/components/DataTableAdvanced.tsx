@@ -8,11 +8,13 @@ import {
   flexRender,
   ColumnDef,
   SortingState,
-  VisibilityState,
 } from '@tanstack/react-table';
+import type { Column } from '@tanstack/react-table';
 import { clsx } from 'clsx';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+
+import { usePersistedColumnVisibility } from '@/shared/hooks/usePersistedColumnVisibility';
 
 import { Icon } from './Icon';
 import type { IconName } from './Icon';
@@ -21,6 +23,45 @@ import { TableSkeleton } from './TableSkeleton';
 import { Button } from './Button';
 import { Pagination } from './Pagination';
 import type { PaginationConfig } from './DataTable';
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const TABLE_LABELS = {
+  NO_DATA_TITLE: 'Không tìm thấy dữ liệu',
+  NO_DATA_DESC: 'Không có dữ liệu phù hợp với điều kiện.',
+  SELECTED_SUFFIX: 'đã chọn',
+  CANCEL_SELECTION: 'Hủy chọn',
+  DISPLAY_LABEL: 'Hiển thị:',
+  ROWS_SUFFIX: 'dòng',
+  EXPORT_EXCEL: 'Xuất Excel',
+  SHOW_COLUMNS: 'Hiển thị cột',
+  SHOWING: 'Hiển thị',
+  OF_TOTAL: 'trong tổng số',
+  RECORDS: 'bản ghi',
+} as const;
+
+const CHECKBOX_CLASS =
+  'w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer';
+
+const CHECKBOX_WRAPPER_CLASS = 'px-1 flex items-center justify-center';
+
+const PAGE_SIZE_OPTIONS = [10, 20, 30, 40, 50];
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+interface ColumnMeta {
+  className?: string;
+}
+
+/** Type-safe accessor cho column meta className — tránh `as` cast lặp lại. */
+function getColumnMetaClass(meta: unknown): string | undefined {
+  if (meta && typeof meta === 'object' && 'className' in meta) {
+    return (meta as ColumnMeta).className;
+  }
+  return undefined;
+}
+
+// ─── Types (public) ───────────────────────────────────────────────────────────
 
 export interface BulkActionConfig<TData> {
   label: string;
@@ -47,7 +88,218 @@ export interface DataTableAdvancedProps<TData> {
   exportFileName?: string;
   pagination?: PaginationConfig<TData>;
   bulkActions?: BulkActionConfig<TData>[];
+  /** Khi cung cấp, trạng thái ẩn/hiện cột được lưu vào localStorage và giữ lại sau khi tải lại trang. */
+  storageKey?: string;
 }
+
+// ─── Sub-component: BulkActionsFloatingBar ────────────────────────────────────
+
+interface BulkActionsBarProps<TData> {
+  selectedCount: number;
+  bulkActions: BulkActionConfig<TData>[];
+  getSelectedRows: () => TData[];
+  onClearSelection: () => void;
+}
+
+function BulkActionsFloatingBar<TData>({
+  selectedCount,
+  bulkActions,
+  getSelectedRows,
+  onClearSelection,
+}: BulkActionsBarProps<TData>) {
+  if (selectedCount === 0) return null;
+
+  return (
+    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-3 px-6 py-3 bg-surface shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-border/80 rounded-full animate-in slide-in-from-bottom-8">
+      <div className="flex items-center gap-2 pr-4 border-r border-border">
+        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">
+          {selectedCount}
+        </span>
+        <span className="text-sm font-medium whitespace-nowrap">
+          {TABLE_LABELS.SELECTED_SUFFIX}
+        </span>
+      </div>
+
+      <div className="flex items-center gap-2">
+        {bulkActions.map((action) => (
+          <Button
+            key={action.label}
+            variant={action.variant || 'outline'}
+            leftIcon={action.icon}
+            size="sm"
+            onClick={() => action.onClick(getSelectedRows())}
+            className={clsx(
+              'whitespace-nowrap',
+              action.variant === 'danger' &&
+                'text-danger border-danger/20 hover:bg-danger/10',
+            )}
+          >
+            {action.label}
+          </Button>
+        ))}
+      </div>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onClearSelection}
+        className="w-8 h-8 rounded-full ml-2 hover:bg-surface-subtle text-muted"
+        title={TABLE_LABELS.CANCEL_SELECTION}
+      >
+        <Icon name="X" size={16} />
+      </Button>
+    </div>
+  );
+}
+
+// ─── Sub-component: ColumnVisibilityMenu ──────────────────────────────────────
+
+interface ColumnVisibilityMenuProps<TData> {
+  columns: Column<TData, unknown>[];
+}
+
+function ColumnVisibilityMenu<TData>({
+  columns,
+}: ColumnVisibilityMenuProps<TData>) {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div className="relative inline-flex" ref={menuRef}>
+      <Button
+        variant="outline"
+        size="icon"
+        leftIcon="Columns3"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className={clsx('w-9 h-9', isOpen && 'bg-surface-subtle')}
+        title={TABLE_LABELS.SHOW_COLUMNS}
+      />
+      {isOpen && (
+        <div className="absolute right-0 top-full mt-2 w-56 bg-surface shadow-2xl border border-border/60 rounded-xl overflow-hidden z-[100] animate-in fade-in zoom-in-95 duration-200">
+          <div className="p-2 flex flex-col gap-1 max-h-60 overflow-y-auto">
+            {columns.map((column) => (
+              <label
+                key={column.id}
+                className="flex items-center gap-2 px-2 py-1.5 hover:bg-surface-subtle rounded-lg cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  className="rounded border-border text-primary focus:ring-primary"
+                  checked={column.getIsVisible()}
+                  onChange={column.getToggleVisibilityHandler()}
+                />
+                <span className="text-sm font-medium text-foreground truncate">
+                  {typeof column.columnDef.header === 'string'
+                    ? column.columnDef.header
+                    : column.id}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Sub-component: SortIcon ──────────────────────────────────────────────────
+
+function SortIcon({ direction }: { direction: false | 'asc' | 'desc' }) {
+  if (direction === 'asc') {
+    return (
+      <Icon
+        name="ArrowUp"
+        className="w-4 h-4 text-foreground shrink-0"
+        strokeWidth={1.5}
+      />
+    );
+  }
+  if (direction === 'desc') {
+    return (
+      <Icon
+        name="ArrowDown"
+        className="w-4 h-4 text-foreground shrink-0"
+        strokeWidth={1.5}
+      />
+    );
+  }
+  return (
+    <Icon
+      name="ChevronsUpDown"
+      className="w-4 h-4 text-muted/50 shrink-0"
+      strokeWidth={1.5}
+    />
+  );
+}
+
+// ─── Sub-component: InlinePagination ──────────────────────────────────────────
+
+interface InlinePaginationProps {
+  pageIndex: number;
+  pageSize: number;
+  pageCount: number;
+  totalItems: number;
+  canPreviousPage: boolean;
+  canNextPage: boolean;
+  onPreviousPage: () => void;
+  onNextPage: () => void;
+}
+
+function InlinePagination({
+  pageIndex,
+  pageSize,
+  pageCount,
+  totalItems,
+  canPreviousPage,
+  canNextPage,
+  onPreviousPage,
+  onNextPage,
+}: InlinePaginationProps) {
+  const from = pageIndex * pageSize + 1;
+  const to = Math.min((pageIndex + 1) * pageSize, totalItems);
+
+  return (
+    <div className="flex items-center justify-between gap-3 mt-2">
+      <div className="text-sm text-muted">
+        {TABLE_LABELS.SHOWING} {from} - {to} {TABLE_LABELS.OF_TOTAL}{' '}
+        {totalItems} {TABLE_LABELS.RECORDS}
+      </div>
+      <div className="flex items-center gap-1">
+        <Button
+          variant="outline"
+          size="icon"
+          className="w-8 h-8 rounded-lg"
+          onClick={onPreviousPage}
+          disabled={!canPreviousPage}
+          leftIcon="ChevronLeft"
+        />
+        <span className="text-sm font-medium px-2">
+          {pageIndex + 1} / {pageCount}
+        </span>
+        <Button
+          variant="outline"
+          size="icon"
+          className="w-8 h-8 rounded-lg"
+          onClick={onNextPage}
+          disabled={!canNextPage}
+          leftIcon="ChevronRight"
+        />
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 function DataTableAdvancedInner<TData>({
   data,
@@ -55,8 +307,8 @@ function DataTableAdvancedInner<TData>({
   renderMobileCard,
   isLoading = false,
   skeletonRows = 8,
-  emptyStateTitle = 'Không tìm thấy dữ liệu',
-  emptyStateDescription = 'Không có dữ liệu phù hợp với điều kiện.',
+  emptyStateTitle = TABLE_LABELS.NO_DATA_TITLE,
+  emptyStateDescription = TABLE_LABELS.NO_DATA_DESC,
   emptyStateIcon = 'Search',
   emptyStateActionLabel,
   onEmptyStateAction,
@@ -66,37 +318,38 @@ function DataTableAdvancedInner<TData>({
   exportFileName = 'export_data',
   pagination,
   bulkActions,
+  storageKey,
 }: DataTableAdvancedProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] =
+    usePersistedColumnVisibility(storageKey);
   const [rowSelection, setRowSelection] = useState({});
 
   const finalColumns = useMemo(() => {
     if (!bulkActions || bulkActions.length === 0) return columns;
     const selectColumn: ColumnDef<TData, unknown> = {
       id: 'select',
-      header: ({ table }) => (
-        <div className="px-1 flex items-center justify-center">
+      header: ({ table: tbl }) => (
+        <div className={CHECKBOX_WRAPPER_CLASS}>
           <input
             type="checkbox"
-            className="w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
-            checked={table.getIsAllPageRowsSelected()}
+            className={CHECKBOX_CLASS}
+            checked={tbl.getIsAllPageRowsSelected()}
             ref={(input) => {
-              if (input)
-                input.indeterminate = table.getIsSomePageRowsSelected();
+              if (input) input.indeterminate = tbl.getIsSomePageRowsSelected();
             }}
-            onChange={table.getToggleAllPageRowsSelectedHandler()}
+            onChange={tbl.getToggleAllPageRowsSelectedHandler()}
           />
         </div>
       ),
       cell: ({ row }) => (
         <div
-          className="px-1 flex items-center justify-center"
+          className={CHECKBOX_WRAPPER_CLASS}
           onClick={(e) => e.stopPropagation()}
         >
           <input
             type="checkbox"
-            className="w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
+            className={CHECKBOX_CLASS}
             checked={row.getIsSelected()}
             disabled={!row.getCanSelect()}
             onChange={row.getToggleSelectedHandler()}
@@ -112,11 +365,7 @@ function DataTableAdvancedInner<TData>({
   const table = useReactTable({
     data,
     columns: finalColumns,
-    state: {
-      sorting,
-      columnVisibility,
-      rowSelection,
-    },
+    state: { sorting, columnVisibility, rowSelection },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
@@ -127,127 +376,78 @@ function DataTableAdvancedInner<TData>({
     getRowId: rowKey ? (row) => String(rowKey(row)) : undefined,
   });
 
-  const [colMenuOpen, setColMenuOpen] = useState(false);
-  const colMenuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        colMenuRef.current &&
-        !colMenuRef.current.contains(event.target as Node)
-      ) {
-        setColMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const handleExportExcel = async () => {
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Data');
+    try {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Data');
 
-    // Get visible columns for export
-    const visibleColumns = table
-      .getVisibleLeafColumns()
-      .filter((col) => col.id !== 'actions' && col.id !== 'select');
+      const visibleColumns = table
+        .getVisibleLeafColumns()
+        .filter((col) => col.id !== 'actions' && col.id !== 'select');
 
-    // Add header
-    worksheet.addRow(
-      visibleColumns.map((c) =>
-        typeof c.columnDef.header === 'string' ? c.columnDef.header : c.id,
-      ),
-    );
+      worksheet.addRow(
+        visibleColumns.map((c) =>
+          typeof c.columnDef.header === 'string' ? c.columnDef.header : c.id,
+        ),
+      );
 
-    // Add rows (only selected if any, else all)
-    const hasSelection = table.getSelectedRowModel().rows.length > 0;
-    const rows = hasSelection
-      ? table.getSelectedRowModel().rows
-      : table.getCoreRowModel().rows;
-    rows.forEach((row) => {
-      const rowData = visibleColumns.map((col) => {
-        const val = row.getValue(col.id);
-        return val != null ? String(val) : '';
+      const hasSelection = table.getSelectedRowModel().rows.length > 0;
+      const exportRows = hasSelection
+        ? table.getSelectedRowModel().rows
+        : table.getCoreRowModel().rows;
+      exportRows.forEach((row) => {
+        const rowData = visibleColumns.map((col) => {
+          const val = row.getValue(col.id);
+          return val != null ? String(val) : '';
+        });
+        worksheet.addRow(rowData);
       });
-      worksheet.addRow(rowData);
-    });
 
-    const buffer = await workbook.xlsx.writeBuffer();
-    saveAs(
-      new Blob([buffer]),
-      `${exportFileName}_${new Date().getTime()}.xlsx`,
-    );
+      const buffer = await workbook.xlsx.writeBuffer();
+      saveAs(
+        new Blob([buffer]),
+        `${exportFileName}_${new Date().getTime()}.xlsx`,
+      );
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error('[ExportExcelError]', message);
+    }
   };
 
   if (isLoading) {
     return <TableSkeleton rows={skeletonRows} columns={columns.length} />;
   }
 
+  const selectedCount = table.getSelectedRowModel().rows.length;
+
   return (
     <div className={clsx('flex flex-col gap-4', className)}>
       {/* Floating Bulk Actions Toolbar */}
-      {table.getSelectedRowModel().rows.length > 0 &&
-        bulkActions &&
-        bulkActions.length > 0 && (
-          <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-3 px-6 py-3 bg-surface shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-border/80 rounded-full animate-in slide-in-from-bottom-8">
-            <div className="flex items-center gap-2 pr-4 border-r border-border">
-              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">
-                {table.getSelectedRowModel().rows.length}
-              </span>
-              <span className="text-sm font-medium whitespace-nowrap">
-                đã chọn
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              {bulkActions.map((action, i) => (
-                <Button
-                  key={i}
-                  variant={action.variant || 'outline'}
-                  leftIcon={action.icon}
-                  size="sm"
-                  onClick={() =>
-                    action.onClick(
-                      table.getSelectedRowModel().rows.map((r) => r.original),
-                    )
-                  }
-                  className={clsx(
-                    'whitespace-nowrap',
-                    action.variant === 'danger' &&
-                      'text-danger border-danger/20 hover:bg-danger/10',
-                  )}
-                >
-                  {action.label}
-                </Button>
-              ))}
-            </div>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => table.toggleAllRowsSelected(false)}
-              className="w-8 h-8 rounded-full ml-2 hover:bg-surface-subtle text-muted"
-              title="Hủy chọn"
-            >
-              <Icon name="X" size={16} />
-            </Button>
-          </div>
-        )}
+      {bulkActions && bulkActions.length > 0 && (
+        <BulkActionsFloatingBar
+          selectedCount={selectedCount}
+          bulkActions={bulkActions}
+          getSelectedRows={() =>
+            table.getSelectedRowModel().rows.map((r) => r.original)
+          }
+          onClearSelection={() => table.toggleAllRowsSelected(false)}
+        />
+      )}
 
       {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted">Hiển thị:</span>
+          <span className="text-sm text-muted">
+            {TABLE_LABELS.DISPLAY_LABEL}
+          </span>
           <select
             className="h-9 px-3 py-1 rounded-lg border border-border bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
             value={table.getState().pagination.pageSize}
-            onChange={(e) => {
-              table.setPageSize(Number(e.target.value));
-            }}
+            onChange={(e) => table.setPageSize(Number(e.target.value))}
           >
-            {[10, 20, 30, 40, 50].map((pageSize) => (
+            {PAGE_SIZE_OPTIONS.map((pageSize) => (
               <option key={pageSize} value={pageSize}>
-                {pageSize} dòng
+                {pageSize} {TABLE_LABELS.ROWS_SUFFIX}
               </option>
             ))}
           </select>
@@ -260,47 +460,9 @@ function DataTableAdvancedInner<TData>({
             leftIcon="FileDown"
             onClick={handleExportExcel}
             className="w-9 h-9"
-            title="Xuất Excel"
+            title={TABLE_LABELS.EXPORT_EXCEL}
           />
-
-          <div className="relative inline-flex" ref={colMenuRef}>
-            <Button
-              variant="outline"
-              size="icon"
-              leftIcon="Columns3"
-              onClick={() => setColMenuOpen(!colMenuOpen)}
-              className={clsx('w-9 h-9', colMenuOpen && 'bg-surface-subtle')}
-              title="Hiển thị cột"
-            />
-            {colMenuOpen && (
-              <div className="absolute right-0 top-full mt-2 w-56 bg-surface shadow-2xl border border-border/60 rounded-xl overflow-hidden z-[100] animate-in fade-in zoom-in-95 duration-200">
-                <div className="p-2 flex flex-col gap-1 max-h-60 overflow-y-auto">
-                  {table.getAllLeafColumns().map((column) => {
-                    return (
-                      <label
-                        key={column.id}
-                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-surface-subtle rounded-lg cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          className="rounded border-border text-primary focus:ring-primary"
-                          {...{
-                            checked: column.getIsVisible(),
-                            onChange: column.getToggleVisibilityHandler(),
-                          }}
-                        />
-                        <span className="text-sm font-medium text-foreground truncate">
-                          {typeof column.columnDef.header === 'string'
-                            ? column.columnDef.header
-                            : column.id}
-                        </span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
+          <ColumnVisibilityMenu columns={table.getAllLeafColumns()} />
         </div>
       </div>
 
@@ -323,16 +485,13 @@ function DataTableAdvancedInner<TData>({
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
+                      const sortDir = header.column.getIsSorted();
                       return (
                         <th
                           key={header.id}
                           colSpan={header.colSpan}
                           className={clsx(
-                            (
-                              header.column.columnDef.meta as {
-                                className?: string;
-                              }
-                            )?.className,
+                            getColumnMetaClass(header.column.columnDef.meta),
                             header.column.getCanSort() &&
                               'cursor-pointer select-none hover:bg-surface-subtle transition-colors',
                           )}
@@ -349,29 +508,9 @@ function DataTableAdvancedInner<TData>({
                                 header.column.columnDef.header,
                                 header.getContext(),
                               )}
-                              {{
-                                asc: (
-                                  <Icon
-                                    name="ArrowUp"
-                                    className="w-4 h-4 text-foreground shrink-0"
-                                    strokeWidth={1.5}
-                                  />
-                                ),
-                                desc: (
-                                  <Icon
-                                    name="ArrowDown"
-                                    className="w-4 h-4 text-foreground shrink-0"
-                                    strokeWidth={1.5}
-                                  />
-                                ),
-                              }[header.column.getIsSorted() as string] ??
-                                (header.column.getCanSort() ? (
-                                  <Icon
-                                    name="ChevronsUpDown"
-                                    className="w-4 h-4 text-muted/50 shrink-0"
-                                    strokeWidth={1.5}
-                                  />
-                                ) : null)}
+                              {header.column.getCanSort() && (
+                                <SortIcon direction={sortDir} />
+                              )}
                             </div>
                           )}
                         </th>
@@ -385,7 +524,7 @@ function DataTableAdvancedInner<TData>({
                   <tr
                     key={row.id}
                     className={clsx(
-                      'group', // <-- Added for row hover actions
+                      'group',
                       onRowClick &&
                         'hover:bg-surface-subtle transition-colors cursor-pointer',
                       row.getIsSelected() && 'bg-primary/5',
@@ -395,10 +534,9 @@ function DataTableAdvancedInner<TData>({
                     {row.getVisibleCells().map((cell) => (
                       <td
                         key={cell.id}
-                        className={
-                          (cell.column.columnDef.meta as { className?: string })
-                            ?.className
-                        }
+                        className={getColumnMetaClass(
+                          cell.column.columnDef.meta,
+                        )}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
@@ -439,43 +577,16 @@ function DataTableAdvancedInner<TData>({
       ) : (
         data.length > 0 &&
         table.getPageCount() > 1 && (
-          <div className="flex items-center justify-between gap-3 mt-2">
-            <div className="text-sm text-muted">
-              Hiển thị{' '}
-              {table.getState().pagination.pageIndex *
-                table.getState().pagination.pageSize +
-                1}{' '}
-              -{' '}
-              {Math.min(
-                (table.getState().pagination.pageIndex + 1) *
-                  table.getState().pagination.pageSize,
-                data.length,
-              )}{' '}
-              trong tổng số {data.length} bản ghi
-            </div>
-            <div className="flex items-center gap-1">
-              <Button
-                variant="outline"
-                size="icon"
-                className="w-8 h-8 rounded-lg"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-                leftIcon="ChevronLeft"
-              />
-              <span className="text-sm font-medium px-2">
-                {table.getState().pagination.pageIndex + 1} /{' '}
-                {table.getPageCount()}
-              </span>
-              <Button
-                variant="outline"
-                size="icon"
-                className="w-8 h-8 rounded-lg"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-                leftIcon="ChevronRight"
-              />
-            </div>
-          </div>
+          <InlinePagination
+            pageIndex={table.getState().pagination.pageIndex}
+            pageSize={table.getState().pagination.pageSize}
+            pageCount={table.getPageCount()}
+            totalItems={data.length}
+            canPreviousPage={table.getCanPreviousPage()}
+            canNextPage={table.getCanNextPage()}
+            onPreviousPage={() => table.previousPage()}
+            onNextPage={() => table.nextPage()}
+          />
         )
       )}
     </div>
