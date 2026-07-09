@@ -12,10 +12,12 @@ export function hasSupabaseEnv(): boolean {
 }
 
 if (!hasSupabaseEnv()) {
-  console.warn(
-    '[Supabase] VITE_SUPABASE_URL hoặc VITE_SUPABASE_ANON_KEY chưa được cấu hình.\n' +
-      'Tạo file .env.local với đúng giá trị để kết nối Supabase.',
-  );
+  if (import.meta.env.MODE !== 'test') {
+    console.warn(
+      '[Supabase] VITE_SUPABASE_URL hoặc VITE_SUPABASE_ANON_KEY chưa được cấu hình.\n' +
+        'Tạo file .env.local với đúng giá trị để kết nối Supabase.',
+    );
+  }
 }
 
 function createSupabaseClient() {

@@ -30,7 +30,10 @@ describe('ProtectedRoute', () => {
     mockAuth.session = null;
 
     render(
-      <MemoryRouter initialEntries={['/protected']}>
+      <MemoryRouter
+        initialEntries={['/protected']}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
         <Routes>
           <Route path="/auth" element={<div>Login Page</div>} />
           <Route element={<ProtectedRoute />}>
@@ -55,7 +58,10 @@ describe('ProtectedRoute', () => {
     } as unknown as AuthContextValue['session'];
 
     render(
-      <MemoryRouter initialEntries={['/protected']}>
+      <MemoryRouter
+        initialEntries={['/protected']}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/protected" element={<div>Protected Content</div>} />
