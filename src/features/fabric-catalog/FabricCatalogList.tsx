@@ -175,6 +175,7 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
 
       {/* Table (DataTableAdvanced) */}
       <DataTableAdvanced
+        storageKey="fabric-catalog-cols"
         className="flex-1 min-h-0"
         data={catalogs}
         isLoading={isLoading}
