@@ -138,7 +138,9 @@ describe('DashboardPage', () => {
 
   it('renders KPI values correctly with data', () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
         <DashboardPage />
       </MemoryRouter>,
     );
@@ -165,7 +167,9 @@ describe('DashboardPage', () => {
 
   it('renders v3 overview cards', () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
         <DashboardPage />
       </MemoryRouter>,
     );
@@ -196,7 +200,9 @@ describe('DashboardPage', () => {
     });
 
     const { container } = render(
-      <MemoryRouter>
+      <MemoryRouter
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
         <DashboardPage />
       </MemoryRouter>,
     );

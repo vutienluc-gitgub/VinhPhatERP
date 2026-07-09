@@ -82,6 +82,10 @@ describe('useStepper', () => {
     const mockValidation = vi
       .fn()
       .mockRejectedValue(new Error('Validation error'));
+
+    // Silence expected console.error during this test
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
     const { result } = renderHook(() =>
       useStepper({
         totalSteps: 3,
@@ -98,5 +102,7 @@ describe('useStepper', () => {
     expect(result.current.currentStep).toBe(0);
     expect(result.current.isTransitioning).toBe(false);
     expect(result.current.isValidating).toBe(false);
+
+    consoleSpy.mockRestore();
   });
 });

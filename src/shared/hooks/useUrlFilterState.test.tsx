@@ -10,7 +10,12 @@ import { useUrlFilterState } from './useUrlFilterState';
 function createWrapper(initialUrl = '/') {
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return (
-      <MemoryRouter initialEntries={[initialUrl]}>{children}</MemoryRouter>
+      <MemoryRouter
+        initialEntries={[initialUrl]}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        {children}
+      </MemoryRouter>
     );
   };
 }
