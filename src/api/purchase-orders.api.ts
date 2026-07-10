@@ -44,6 +44,18 @@ export async function fetchPurchaseOrderById(id: string) {
   return { ...po, items };
 }
 
+export async function fetchPurchaseOrderAuditLogs(poId: string) {
+  const { data, error } = await untypedDb
+    .from('po_audit_logs')
+    .select('*, profiles(full_name)')
+    .eq('entity_type', 'purchase_order')
+    .eq('entity_id', poId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
 export async function createPurchaseOrder(
   values: PurchaseOrderFormValues,
   userId: string,
@@ -95,13 +107,84 @@ export async function createPurchaseOrder(
   return po;
 }
 
-export async function approvePurchaseOrder(poId: string, userId: string) {
+export async function fetchApprovalPolicies() {
+  const { data, error } = await untypedDb.from('approval_policies').select('*');
+  if (error) throw error;
+  return data;
+}
+
+export async function submitPurchaseOrder(poId: string, userId: string) {
+  const { data, error } = await untypedDb
+    .from('purchase_orders')
+    .update({ status: 'pending_approval' })
+    .eq('id', poId)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  await untypedDb.from('po_audit_logs').insert({
+    entity_type: 'purchase_order',
+    entity_id: poId,
+    action: 'submitted',
+    actor_id: userId,
+    snapshot: data,
+  });
+
+  return data;
+}
+
+export async function approvePurchaseOrder(
+  poId: string,
+  userId: string,
+  comment?: string,
+  sendImmediately?: boolean,
+) {
+  const targetStatus = sendImmediately ? 'sent' : 'approved';
+
   const { data, error } = await untypedDb
     .from('purchase_orders')
     .update({
-      status: 'approved',
+      status: targetStatus,
       approved_by: userId,
       approved_at: new Date().toISOString(),
+    })
+    .eq('id', poId)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  // Insert PO audit log for approval
+  await untypedDb.from('po_audit_logs').insert({
+    entity_type: 'purchase_order',
+    entity_id: poId,
+    action: 'approved',
+    actor_id: userId,
+    snapshot: data,
+    comment,
+  });
+
+  // If send immediately is enabled, insert another audit log for sending
+  if (sendImmediately) {
+    await untypedDb.from('po_audit_logs').insert({
+      entity_type: 'purchase_order',
+      entity_id: poId,
+      action: 'sent',
+      actor_id: userId,
+      snapshot: data,
+      comment: 'Tự động gửi khi duyệt (Approved & Sent)',
+    });
+  }
+
+  return data;
+}
+
+export async function sendPurchaseOrder(poId: string, userId: string) {
+  const { data, error } = await untypedDb
+    .from('purchase_orders')
+    .update({
+      status: 'sent',
     })
     .eq('id', poId)
     .select()
@@ -112,9 +195,63 @@ export async function approvePurchaseOrder(poId: string, userId: string) {
   await untypedDb.from('po_audit_logs').insert({
     entity_type: 'purchase_order',
     entity_id: poId,
-    action: 'approved',
+    action: 'sent',
     actor_id: userId,
     snapshot: data,
+    comment: 'Đã gửi nhà cung cấp (Sent to Supplier)',
+  });
+
+  return data;
+}
+
+export async function confirmPurchaseOrder(poId: string, userId: string) {
+  const { data, error } = await untypedDb
+    .from('purchase_orders')
+    .update({
+      status: 'supplier_confirmed',
+    })
+    .eq('id', poId)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  await untypedDb.from('po_audit_logs').insert({
+    entity_type: 'purchase_order',
+    entity_id: poId,
+    action: 'supplier_confirmed',
+    actor_id: userId,
+    snapshot: data,
+    comment: 'Nhà cung cấp xác nhận đơn (Supplier Confirmed)',
+  });
+
+  return data;
+}
+
+export async function requestChangesPurchaseOrder(
+  poId: string,
+  reason: string,
+  userId: string,
+) {
+  const { data, error } = await untypedDb
+    .from('purchase_orders')
+    .update({
+      status: 'request_changes',
+      rejection_reason: reason,
+    })
+    .eq('id', poId)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  await untypedDb.from('po_audit_logs').insert({
+    entity_type: 'purchase_order',
+    entity_id: poId,
+    action: 'request_changes',
+    actor_id: userId,
+    snapshot: data,
+    comment: reason,
   });
 
   return data;
@@ -143,6 +280,7 @@ export async function rejectPurchaseOrder(
     action: 'rejected',
     actor_id: userId,
     snapshot: data,
+    comment: reason,
   });
 
   return data;

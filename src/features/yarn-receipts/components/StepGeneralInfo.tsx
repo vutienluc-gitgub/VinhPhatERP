@@ -4,7 +4,7 @@ import { useFormContext, Controller } from 'react-hook-form';
 import { Button } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 // eslint-disable-next-line boundaries/dependencies
-import { QuickSupplierForm } from '@/features/suppliers/QuickSupplierForm';
+import { QuickSupplierForm } from '@/features/procurement/suppliers/QuickSupplierForm';
 import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
 
 type StepGeneralInfoProps = {

@@ -93,7 +93,7 @@ create table if not exists profiles (
 );
 
 create table if not exists customers (
-  id             uuid          primary key default uuid_generate_v4(),
+  id             uuid          primary key default gen_random_uuid(),
   code           text          not null unique,
   name           text          not null,
   phone          text,
@@ -108,7 +108,7 @@ create table if not exists customers (
 );
 
 create table if not exists suppliers (
-  id             uuid              primary key default uuid_generate_v4(),
+  id             uuid              primary key default gen_random_uuid(),
   code           text              not null unique,
   name           text              not null,
   category       supplier_category not null default 'other',
@@ -124,7 +124,7 @@ create table if not exists suppliers (
 );
 
 create table if not exists yarn_receipts (
-  id             uuid          primary key default uuid_generate_v4(),
+  id             uuid          primary key default gen_random_uuid(),
   receipt_number text          not null unique,
   supplier_id    uuid          not null references suppliers(id),
   receipt_date   date          not null default current_date,
@@ -137,7 +137,7 @@ create table if not exists yarn_receipts (
 );
 
 create table if not exists yarn_receipt_items (
-  id          uuid          primary key default uuid_generate_v4(),
+  id          uuid          primary key default gen_random_uuid(),
   receipt_id  uuid          not null references yarn_receipts(id) on delete cascade,
   yarn_type   text          not null,
   color_name  text,
@@ -151,7 +151,7 @@ create table if not exists yarn_receipt_items (
 );
 
 create table if not exists raw_fabric_rolls (
-  id                uuid        primary key default uuid_generate_v4(),
+  id                uuid        primary key default gen_random_uuid(),
   roll_number       text        not null unique,
   yarn_receipt_id   uuid        references yarn_receipts(id),
   fabric_type       text        not null,
@@ -170,7 +170,7 @@ create table if not exists raw_fabric_rolls (
 );
 
 create table if not exists finished_fabric_rolls (
-  id                uuid        primary key default uuid_generate_v4(),
+  id                uuid        primary key default gen_random_uuid(),
   roll_number       text        not null unique,
   raw_roll_id       uuid        references raw_fabric_rolls(id),
   fabric_type       text        not null,
@@ -189,7 +189,7 @@ create table if not exists finished_fabric_rolls (
 );
 
 create table if not exists orders (
-  id              uuid          primary key default uuid_generate_v4(),
+  id              uuid          primary key default gen_random_uuid(),
   order_number    text          not null unique,
   customer_id     uuid          not null references customers(id),
   order_date      date          not null default current_date,
@@ -204,7 +204,7 @@ create table if not exists orders (
 );
 
 create table if not exists order_items (
-  id           uuid          primary key default uuid_generate_v4(),
+  id           uuid          primary key default gen_random_uuid(),
   order_id     uuid          not null references orders(id) on delete cascade,
   fabric_type  text          not null,
   color_name   text,
@@ -218,7 +218,7 @@ create table if not exists order_items (
 );
 
 create table if not exists order_progress (
-  id            uuid             primary key default uuid_generate_v4(),
+  id            uuid             primary key default gen_random_uuid(),
   order_id      uuid             not null references orders(id) on delete cascade,
   stage         production_stage not null,
   status        stage_status     not null default 'pending',
@@ -232,7 +232,7 @@ create table if not exists order_progress (
 );
 
 create table if not exists shipments (
-  id                uuid            primary key default uuid_generate_v4(),
+  id                uuid            primary key default gen_random_uuid(),
   shipment_number   text            not null unique,
   order_id          uuid            not null references orders(id),
   customer_id       uuid            not null references customers(id),
@@ -248,7 +248,7 @@ create table if not exists shipments (
 );
 
 create table if not exists shipment_items (
-  id               uuid          primary key default uuid_generate_v4(),
+  id               uuid          primary key default gen_random_uuid(),
   shipment_id      uuid          not null references shipments(id) on delete cascade,
   finished_roll_id uuid          references finished_fabric_rolls(id),
   fabric_type      text          not null,
@@ -260,7 +260,7 @@ create table if not exists shipment_items (
 );
 
 create table if not exists payments (
-  id               uuid           primary key default uuid_generate_v4(),
+  id               uuid           primary key default gen_random_uuid(),
   payment_number   text           not null unique,
   order_id         uuid           not null references orders(id),
   customer_id      uuid           not null references customers(id),
@@ -275,7 +275,7 @@ create table if not exists payments (
 );
 
 create table if not exists inventory_adjustments (
-  id              uuid                primary key default uuid_generate_v4(),
+  id              uuid                primary key default gen_random_uuid(),
   adjustment_date date                not null default current_date,
   item_type       inventory_item_type not null,
   reference_id    uuid,
@@ -288,7 +288,7 @@ create table if not exists inventory_adjustments (
 );
 
 create table if not exists settings (
-  id          uuid        primary key default uuid_generate_v4(),
+  id          uuid        primary key default gen_random_uuid(),
   key         text        not null unique,
   value       text,
   description text,

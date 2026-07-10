@@ -30,7 +30,7 @@ import {
 } from '@/features/fabric-catalog/components/PublicCompareModal';
 import { PublicFabricDetailSkeleton } from '@/features/fabric-catalog/components/PublicFabricDetailSkeleton';
 import { PublicLoginModal } from '@/features/fabric-catalog/components/PublicLoginModal';
-import { PublicRFQModal } from '@/features/fabric-catalog/components/PublicRFQModal';
+import { PublicInquiryModal } from '@/features/fabric-catalog/components/PublicInquiryModal';
 import { PublicSampleModal } from '@/features/fabric-catalog/components/PublicSampleModal';
 import { InquiryCartDrawer } from '@/features/fabric-catalog/components/InquiryCartDrawer';
 import { PUBLIC_PAGE_LABELS as LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
@@ -43,7 +43,7 @@ import { useFabricInteractions } from '@/features/fabric-catalog/hooks/useFabric
 import { useFabricSeo } from '@/features/fabric-catalog/hooks/useFabricSeo';
 import { usePublicViewer } from '@/features/fabric-catalog/hooks/usePublicViewer';
 import { useCTAEngine } from '@/features/fabric-catalog/hooks/useCTAEngine';
-import { RFQProvider } from '@/features/fabric-catalog/context/RFQProvider';
+import { InquiryProvider } from '@/features/fabric-catalog/context/InquiryProvider';
 
 function PublicFabricDetailPageInner() {
   const { slug } = useParams<{ slug: string }>();
@@ -78,7 +78,7 @@ function PublicFabricDetailPageInner() {
     handleToggleInquiryCart,
     removeFromInquiryCart,
     handleCTAAction,
-    openRFQ,
+    openInquiry,
     openSample,
   } = useFabricInteractions(fabric, activeColorName);
 
@@ -203,7 +203,7 @@ function PublicFabricDetailPageInner() {
             variant="outline"
             fullWidth
             onClick={() => {
-              openRFQ({ leadSource: 'planner', leadChannel: 'website' });
+              openInquiry({ leadSource: 'planner', leadChannel: 'website' });
               trackLeadEvent('sticky_cta_click_rfq', {
                 fabricCode: fabric.code,
                 leadSource: 'planner',
@@ -266,7 +266,7 @@ function PublicFabricDetailPageInner() {
           setIsInquiryCartOpen(false);
         }}
         onRequestRFQ={() => {
-          openRFQ({
+          openInquiry({
             leadSource: 'inquiry_cart',
             leadChannel: 'website',
             isBatchRequest: true,
@@ -295,7 +295,7 @@ function PublicFabricDetailPageInner() {
         inquiryCart={inquiryCart}
       />
 
-      <PublicRFQModal
+      <PublicInquiryModal
         fabric={fabric}
         variants={variants}
         activeColorName={activeColorName}
@@ -312,13 +312,13 @@ function PublicFabricDetailPageInner() {
 }
 
 /**
- * Wraps the page in RFQProvider so all children
- * can access openRFQ() / openSample() via context.
+ * Wraps the page in InquiryProvider so all children
+ * can access openInquiry() / openSample() via context.
  */
 export function PublicFabricDetailPage() {
   return (
-    <RFQProvider>
+    <InquiryProvider>
       <PublicFabricDetailPageInner />
-    </RFQProvider>
+    </InquiryProvider>
   );
 }

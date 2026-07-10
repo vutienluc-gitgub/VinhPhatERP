@@ -112,7 +112,7 @@ create trigger trg_on_auth_user_created
 -- 4. Customers (khách hàng)
 -- ---------------------------------------------------------------------------
 create table customers (
-  id             uuid        primary key default uuid_generate_v4(),
+  id             uuid        primary key default gen_random_uuid(),
   code           text        not null unique,
   name           text        not null,
   phone          text,
@@ -141,7 +141,7 @@ create trigger trg_customers_updated_at
 create type supplier_category as enum ('yarn', 'dye', 'accessories', 'other');
 
 create table suppliers (
-  id             uuid              primary key default uuid_generate_v4(),
+  id             uuid              primary key default gen_random_uuid(),
   code           text              not null unique,
   name           text              not null,
   category       supplier_category not null default 'other',
@@ -169,7 +169,7 @@ create trigger trg_suppliers_updated_at
 -- 6. Yarn Receipts (nhập sợi)
 -- ---------------------------------------------------------------------------
 create table yarn_receipts (
-  id             uuid        primary key default uuid_generate_v4(),
+  id             uuid        primary key default gen_random_uuid(),
   receipt_number text        not null unique,
   supplier_id    uuid        not null references suppliers(id),
   receipt_date   date        not null default current_date,
@@ -191,7 +191,7 @@ create trigger trg_yarn_receipts_updated_at
 
 -- Line items inside a yarn receipt
 create table yarn_receipt_items (
-  id          uuid         primary key default uuid_generate_v4(),
+  id          uuid         primary key default gen_random_uuid(),
   receipt_id  uuid         not null references yarn_receipts(id) on delete cascade,
   yarn_type   text         not null,          -- e.g. "Cotton 30/1", "PE 75D"
   color_name  text,
@@ -211,7 +211,7 @@ create index idx_yri_receipt on yarn_receipt_items (receipt_id);
 -- 7. Raw Fabric Rolls (cuộn vải mộc)
 -- ---------------------------------------------------------------------------
 create table raw_fabric_rolls (
-  id                uuid        primary key default uuid_generate_v4(),
+  id                uuid        primary key default gen_random_uuid(),
   roll_number       text        not null unique,
   yarn_receipt_id   uuid        references yarn_receipts(id),
   fabric_type       text        not null,   -- e.g. "Dệt thoi 60/40 TC"
@@ -242,7 +242,7 @@ create trigger trg_raw_fabric_rolls_updated_at
 -- 8. Finished Fabric Rolls (cuộn vải thành phẩm)
 -- ---------------------------------------------------------------------------
 create table finished_fabric_rolls (
-  id                uuid        primary key default uuid_generate_v4(),
+  id                uuid        primary key default gen_random_uuid(),
   roll_number       text        not null unique,
   raw_roll_id       uuid        references raw_fabric_rolls(id),
   fabric_type       text        not null,
@@ -273,7 +273,7 @@ create trigger trg_finished_fabric_rolls_updated_at
 -- 9. Orders (đơn hàng)
 -- ---------------------------------------------------------------------------
 create table orders (
-  id              uuid         primary key default uuid_generate_v4(),
+  id              uuid         primary key default gen_random_uuid(),
   order_number    text         not null unique,
   customer_id     uuid         not null references customers(id),
   order_date      date         not null default current_date,
@@ -297,7 +297,7 @@ create trigger trg_orders_updated_at
 
 -- Order line items
 create table order_items (
-  id           uuid          primary key default uuid_generate_v4(),
+  id           uuid          primary key default gen_random_uuid(),
   order_id     uuid          not null references orders(id) on delete cascade,
   fabric_type  text          not null,
   color_name   text,
@@ -317,7 +317,7 @@ create index idx_order_items_order on order_items (order_id);
 -- 10. Order Progress (tiến độ sản xuất)
 -- ---------------------------------------------------------------------------
 create table order_progress (
-  id            uuid             primary key default uuid_generate_v4(),
+  id            uuid             primary key default gen_random_uuid(),
   order_id      uuid             not null references orders(id) on delete cascade,
   stage         production_stage not null,
   status        stage_status     not null default 'pending',
@@ -342,7 +342,7 @@ create trigger trg_order_progress_updated_at
 -- 11. Shipments (xuất hàng)
 -- ---------------------------------------------------------------------------
 create table shipments (
-  id                uuid             primary key default uuid_generate_v4(),
+  id                uuid             primary key default gen_random_uuid(),
   shipment_number   text             not null unique,
   order_id          uuid             not null references orders(id),
   customer_id       uuid             not null references customers(id),
@@ -368,7 +368,7 @@ create trigger trg_shipments_updated_at
 
 -- Items inside a shipment (which finished rolls are shipped)
 create table shipment_items (
-  id               uuid          primary key default uuid_generate_v4(),
+  id               uuid          primary key default gen_random_uuid(),
   shipment_id      uuid          not null references shipments(id) on delete cascade,
   finished_roll_id uuid          references finished_fabric_rolls(id),
   fabric_type      text          not null,
@@ -387,7 +387,7 @@ create index idx_shipment_items_roll     on shipment_items (finished_roll_id);
 -- 12. Payments (thanh toán)
 -- ---------------------------------------------------------------------------
 create table payments (
-  id               uuid           primary key default uuid_generate_v4(),
+  id               uuid           primary key default gen_random_uuid(),
   payment_number   text           not null unique,
   order_id         uuid           not null references orders(id),
   customer_id      uuid           not null references customers(id),
@@ -435,7 +435,7 @@ create trigger trg_payments_sync_paid
 create type inventory_item_type as enum ('yarn', 'raw_fabric', 'finished_fabric');
 
 create table inventory_adjustments (
-  id              uuid               primary key default uuid_generate_v4(),
+  id              uuid               primary key default gen_random_uuid(),
   adjustment_date date               not null default current_date,
   item_type       inventory_item_type not null,
   reference_id    uuid,              -- FK to the specific roll/receipt (optional)
@@ -455,7 +455,7 @@ create index idx_inv_adj_item_type on inventory_adjustments (item_type);
 -- 14. Settings (cài đặt hệ thống)
 -- ---------------------------------------------------------------------------
 create table settings (
-  id          uuid        primary key default uuid_generate_v4(),
+  id          uuid        primary key default gen_random_uuid(),
   key         text        not null unique,
   value       text,
   description text,

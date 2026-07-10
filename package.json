@@ -50,6 +50,7 @@
     "@types/react-signature-canvas": "^1.0.7",
     "browser-image-compression": "^2.0.2",
     "clsx": "^2.1.1",
+    "date-fns": "^4.4.0",
     "dayjs": "^1.11.13",
     "dompurify": "^3.3.3",
     "exceljs": "^4.4.0",

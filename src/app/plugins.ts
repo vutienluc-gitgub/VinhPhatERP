@@ -7,14 +7,16 @@ import { orderProgressPlugin } from '@/features/orders/progress';
 import { orderKanbanPlugin } from '@/features/order-kanban';
 import { shipmentsPlugin } from '@/features/shipments';
 import { yarnReceiptsPlugin } from '@/features/yarn-receipts';
-import { purchaseOrdersPlugin } from '@/features/purchase-orders';
+import { purchaseOrdersPlugin } from '@/features/procurement/purchase-orders';
+import { purchaseRequestsPlugin } from '@/features/procurement/purchase-requests';
+import { rfqsPlugin } from '@/features/procurement/rfqs';
 import { bomPlugin } from '@/features/bom';
 import { workOrdersPlugin } from '@/features/work-orders';
 import { rawFabricPlugin } from '@/features/raw-fabric';
 import { weavingInvoicesPlugin } from '@/features/weaving-invoices';
 import { crmPlugin } from '@/features/crm';
 import { finishedFabricPlugin } from '@/features/finished-fabric';
-import { suppliersPlugin } from '@/features/suppliers';
+import { suppliersPlugin } from '@/features/procurement/suppliers';
 import { yarnCatalogPlugin } from '@/features/yarn-catalog';
 import { fabricCatalogPlugin } from '@/features/fabric-catalog';
 import { inventoryPlugin } from '@/features/inventory';
@@ -55,6 +57,8 @@ const plugins: FeaturePlugin[] = [
   shipmentsPlugin,
 
   // ── PRODUCTION ──
+  purchaseRequestsPlugin,
+  rfqsPlugin,
   purchaseOrdersPlugin,
   yarnReceiptsPlugin,
   bomPlugin,

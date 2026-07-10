@@ -308,7 +308,7 @@ export function usePublicPricingTiers(fabricId: string | undefined) {
   });
 }
 
-export function useCreatePublicRFQRequest() {
+export function useCreatePublicInquiryRequest() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createPublicRFQRequest,

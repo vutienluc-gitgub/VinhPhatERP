@@ -50,8 +50,8 @@ class ModuleRegistry {
   }
 
   bootstrap() {
-    // Vite specific: Eagerly load all .module.tsx files across the features directory
-    const modules = import.meta.glob('@/features/**/*.module.tsx', {
+    // Vite specific: Eagerly load all .module.ts and .module.tsx files across the features directory
+    const modules = import.meta.glob('@/features/**/*.module.{ts,tsx}', {
       eager: true,
     });
 
