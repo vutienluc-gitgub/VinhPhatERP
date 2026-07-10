@@ -1,7 +1,13 @@
 export type PurchaseOrderStatus =
   | 'draft'
+  | 'submitted'
+  | 'pending_approval'
   | 'approved'
+  | 'request_changes'
   | 'rejected'
+  | 'sent'
+  | 'supplier_confirmed'
+  | 'receiving'
   | 'partial_received'
   | 'completed'
   | 'cancelled';

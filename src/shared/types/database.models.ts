@@ -9,7 +9,7 @@ export type StageStatus = Database['public']['Enums']['stage_status'];
 export type RollStatus = Database['public']['Enums']['roll_status'];
 export type ShipmentStatus = Database['public']['Enums']['shipment_status'];
 export type PaymentMethod = Database['public']['Enums']['payment_method'];
-export type AdjustmentType = Database['public']['Enums']['adjustment_type'];
+
 export type SupplierCategory = Database['public']['Enums']['supplier_category'];
 export type CustomerSource = Database['public']['Enums']['customer_source'];
 export type InventoryItemType =

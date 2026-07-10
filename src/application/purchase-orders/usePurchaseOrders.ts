@@ -9,6 +9,12 @@ import {
   rejectPurchaseOrder,
   createGoodsReceipt,
   fetchGoodsReceiptsByPo,
+  fetchApprovalPolicies,
+  submitPurchaseOrder,
+  requestChangesPurchaseOrder,
+  fetchPurchaseOrderAuditLogs,
+  sendPurchaseOrder,
+  confirmPurchaseOrder,
 } from '@/api/purchase-orders.api';
 import type {
   PurchaseOrderFormValues,
@@ -36,6 +42,14 @@ export function usePurchaseOrder(id: string | undefined) {
   });
 }
 
+export function usePurchaseOrderAuditLogs(id: string | undefined) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'audit-logs', id],
+    enabled: !!id,
+    queryFn: () => fetchPurchaseOrderAuditLogs(id!),
+  });
+}
+
 export function useGoodsReceiptsByPo(poId: string | undefined) {
   return useQuery({
     queryKey: [...QUERY_KEY, 'receipts', poId],
@@ -56,12 +70,93 @@ export function useCreatePurchaseOrder() {
   });
 }
 
+export function useApprovalPolicies() {
+  return useQuery({
+    queryKey: ['approval-policies'],
+    queryFn: fetchApprovalPolicies,
+  });
+}
+
+export function useSubmitPurchaseOrder() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: (id: string) => submitPurchaseOrder(id, user!.id),
+    onSuccess: (_, id) => {
+      void queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEY, 'detail', id],
+      });
+      void queryClient.invalidateQueries({ queryKey: [...QUERY_KEY, 'list'] });
+    },
+  });
+}
+
 export function useApprovePurchaseOrder() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   return useMutation({
-    mutationFn: (id: string) => approvePurchaseOrder(id, user!.id),
+    mutationFn: ({
+      id,
+      comment,
+      sendImmediately,
+    }: {
+      id: string;
+      comment?: string;
+      sendImmediately?: boolean;
+    }) => approvePurchaseOrder(id, user!.id, comment, sendImmediately),
+    onSuccess: (_, { id }) => {
+      void queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEY, 'detail', id],
+      });
+      void queryClient.invalidateQueries({ queryKey: [...QUERY_KEY, 'list'] });
+      void queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEY, 'audit-logs', id],
+      });
+    },
+  });
+}
+
+export function useSendPurchaseOrder() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: (id: string) => sendPurchaseOrder(id, user!.id),
     onSuccess: (_, id) => {
+      void queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEY, 'detail', id],
+      });
+      void queryClient.invalidateQueries({ queryKey: [...QUERY_KEY, 'list'] });
+      void queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEY, 'audit-logs', id],
+      });
+    },
+  });
+}
+
+export function useConfirmPurchaseOrder() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: (id: string) => confirmPurchaseOrder(id, user!.id),
+    onSuccess: (_, id) => {
+      void queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEY, 'detail', id],
+      });
+      void queryClient.invalidateQueries({ queryKey: [...QUERY_KEY, 'list'] });
+      void queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEY, 'audit-logs', id],
+      });
+    },
+  });
+}
+
+export function useRequestChangesPurchaseOrder() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      requestChangesPurchaseOrder(id, reason, user!.id),
+    onSuccess: (_, { id }) => {
       void queryClient.invalidateQueries({
         queryKey: [...QUERY_KEY, 'detail', id],
       });

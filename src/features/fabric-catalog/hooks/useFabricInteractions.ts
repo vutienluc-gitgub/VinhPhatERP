@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 import { useInquiryCart } from '@/shared/inquiry-cart';
 import { PUBLIC_PAGE_LABELS as LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
-import { useRFQ } from '@/features/fabric-catalog/hooks/useRFQ';
+import { useInquiry } from '@/features/fabric-catalog/hooks/useInquiry';
 
 export function useFabricInteractions(
   fabric: Partial<FabricCatalog> | null | undefined,
@@ -16,7 +16,7 @@ export function useFabricInteractions(
     removeFromInquiryCart,
     addRecentlyViewed,
   } = useInquiryCart();
-  const { openRFQ, openSample } = useRFQ();
+  const { openInquiry, openSample } = useInquiry();
 
   const isSaved = fabric?.id
     ? Object.keys(inquiryCart).includes(fabric.id)
@@ -44,7 +44,7 @@ export function useFabricInteractions(
     action: 'rfq' | 'sample' | 'call' | 'order' | 'erp',
   ) => {
     if (action === 'rfq') {
-      openRFQ({ leadSource: 'sticky_cta', leadChannel: 'website' });
+      openInquiry({ leadSource: 'sticky_cta', leadChannel: 'website' });
     } else if (action === 'sample') {
       openSample({ leadSource: 'sticky_cta', leadChannel: 'website' });
     }
@@ -64,7 +64,7 @@ export function useFabricInteractions(
     removeFromInquiryCart,
     handleToggleInquiryCart,
     handleCTAAction,
-    openRFQ,
+    openInquiry,
     openSample,
   };
 }

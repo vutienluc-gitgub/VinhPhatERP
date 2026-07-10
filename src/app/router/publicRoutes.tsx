@@ -36,6 +36,12 @@ const PublicInvoiceDetailPage = lazy(() =>
   })),
 );
 
+const SupplierQuotePage = lazy(() =>
+  import('@/features/supplier-portal/SupplierQuotePage').then((m) => ({
+    default: m.SupplierQuotePage,
+  })),
+);
+
 export const publicRoutes: RouteObject[] = [
   authRoute,
   {
@@ -65,5 +71,9 @@ export const publicRoutes: RouteObject[] = [
   {
     path: '/tra-cuu/:lookupCode',
     element: withSuspense(<PublicInvoiceDetailPage />),
+  },
+  {
+    path: '/rfq/:id',
+    element: withSuspense(<SupplierQuotePage />),
   },
 ];

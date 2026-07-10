@@ -15,7 +15,7 @@ const CustomerForm = lazy(() =>
 );
 
 const SupplierForm = lazy(() =>
-  import('@/features/suppliers/SupplierForm').then((m) => ({
+  import('@/features/procurement/suppliers/SupplierForm').then((m) => ({
     default: m.SupplierForm,
   })),
 );

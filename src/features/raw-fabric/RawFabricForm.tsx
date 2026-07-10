@@ -8,7 +8,7 @@ import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { StepperFooter } from '@/shared/components/StepperFooter';
 import { Combobox } from '@/shared/components/Combobox';
 // eslint-disable-next-line boundaries/dependencies
-import { QuickSupplierForm } from '@/features/suppliers/QuickSupplierForm';
+import { QuickSupplierForm } from '@/features/procurement/suppliers/QuickSupplierForm';
 import {
   useColorOptions,
   toColorComboboxOptions,

@@ -38,6 +38,17 @@ vi.mock('@/application/crm', () => ({
   useEmployees: vi.fn(),
 }));
 
+vi.mock('@/application/crm/useCustomerGroups', () => ({
+  useCustomerGroupList: vi.fn().mockReturnValue({ data: [], isLoading: false }),
+  useCustomerGroupMembers: vi
+    .fn()
+    .mockReturnValue({ data: [], isLoading: false }),
+}));
+
+vi.mock('@/api/customer-groups.api', () => ({
+  saveCustomerGroupsForCustomer: vi.fn().mockResolvedValue(null),
+}));
+
 vi.mock('@/shared/hooks/useAuth', () => ({
   useAuth: vi.fn(),
 }));

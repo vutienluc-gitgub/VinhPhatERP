@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -39,6 +39,88 @@ export type Database = {
   };
   public: {
     Tables: {
+      applications: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          icon: string | null;
+          id: string;
+          image: string | null;
+          name: string;
+          slug: string;
+          sort_order: number | null;
+          tenant_id: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          icon?: string | null;
+          id?: string;
+          image?: string | null;
+          name: string;
+          slug: string;
+          sort_order?: number | null;
+          tenant_id?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          icon?: string | null;
+          id?: string;
+          image?: string | null;
+          name?: string;
+          slug?: string;
+          sort_order?: number | null;
+          tenant_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'applications_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      approval_policies: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          max_amount: number | null;
+          role: Database['public']['Enums']['user_role'];
+          tenant_id: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string;
+          max_amount?: number | null;
+          role: Database['public']['Enums']['user_role'];
+          tenant_id: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          max_amount?: number | null;
+          role?: Database['public']['Enums']['user_role'];
+          tenant_id?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'approval_policies_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       background_jobs: {
         Row: {
           attempts: number | null;
@@ -352,6 +434,47 @@ export type Database = {
           },
         ];
       };
+      characteristics: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          icon: string | null;
+          id: string;
+          name: string;
+          sort_order: number | null;
+          tenant_id: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          icon?: string | null;
+          id?: string;
+          name: string;
+          sort_order?: number | null;
+          tenant_id?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          icon?: string | null;
+          id?: string;
+          name?: string;
+          sort_order?: number | null;
+          tenant_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'characteristics_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       chat_messages: {
         Row: {
           client_id: string;
@@ -535,6 +658,36 @@ export type Database = {
             referencedColumns: ['id'];
           },
         ];
+      };
+      company_roles: {
+        Row: {
+          code: string;
+          created_at: string;
+          id: string;
+          is_system: boolean | null;
+          name: string;
+          system_role_ref: string | null;
+          tenant_id: string;
+        };
+        Insert: {
+          code: string;
+          created_at?: string;
+          id?: string;
+          is_system?: boolean | null;
+          name: string;
+          system_role_ref?: string | null;
+          tenant_id?: string;
+        };
+        Update: {
+          code?: string;
+          created_at?: string;
+          id?: string;
+          is_system?: boolean | null;
+          name?: string;
+          system_role_ref?: string | null;
+          tenant_id?: string;
+        };
+        Relationships: [];
       };
       company_settings: {
         Row: {
@@ -957,6 +1110,7 @@ export type Database = {
           id: string;
           reference_id: string;
           reference_type: Database['public']['Enums']['cost_estimation_ref_type'];
+          simulation_state: Json | null;
           suggested_price: number;
           target_gsm: number | null;
           target_width_cm: number | null;
@@ -974,6 +1128,7 @@ export type Database = {
           id?: string;
           reference_id: string;
           reference_type: Database['public']['Enums']['cost_estimation_ref_type'];
+          simulation_state?: Json | null;
           suggested_price?: number;
           target_gsm?: number | null;
           target_width_cm?: number | null;
@@ -991,6 +1146,7 @@ export type Database = {
           id?: string;
           reference_id?: string;
           reference_type?: Database['public']['Enums']['cost_estimation_ref_type'];
+          simulation_state?: Json | null;
           suggested_price?: number;
           target_gsm?: number | null;
           target_width_cm?: number | null;
@@ -1004,6 +1160,347 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'tenants';
             referencedColumns: ['id'];
+          },
+        ];
+      };
+      crm_activities: {
+        Row: {
+          created_at: string;
+          description: string;
+          id: string;
+          lead_id: string;
+          owner_id: string | null;
+          tenant_id: string | null;
+          type: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          description: string;
+          id?: string;
+          lead_id: string;
+          owner_id?: string | null;
+          tenant_id?: string | null;
+          type: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string;
+          id?: string;
+          lead_id?: string;
+          owner_id?: string | null;
+          tenant_id?: string | null;
+          type?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'crm_activities_lead_id_fkey';
+            columns: ['lead_id'];
+            isOneToOne: false;
+            referencedRelation: 'crm_leads';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'crm_activities_owner_id_fkey';
+            columns: ['owner_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'crm_activities_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      crm_leads: {
+        Row: {
+          company_name: string | null;
+          contact_id: string | null;
+          converted_at: string | null;
+          converted_by: string | null;
+          created_at: string;
+          customer_id: string | null;
+          customer_name: string;
+          email: string | null;
+          id: string;
+          lead_channel: string | null;
+          lead_source: string | null;
+          owner_id: string | null;
+          phone: string;
+          score: number | null;
+          source: string | null;
+          status: string;
+          tenant_id: string | null;
+          type: string;
+          updated_at: string;
+        };
+        Insert: {
+          company_name?: string | null;
+          contact_id?: string | null;
+          converted_at?: string | null;
+          converted_by?: string | null;
+          created_at?: string;
+          customer_id?: string | null;
+          customer_name: string;
+          email?: string | null;
+          id?: string;
+          lead_channel?: string | null;
+          lead_source?: string | null;
+          owner_id?: string | null;
+          phone: string;
+          score?: number | null;
+          source?: string | null;
+          status?: string;
+          tenant_id?: string | null;
+          type: string;
+          updated_at?: string;
+        };
+        Update: {
+          company_name?: string | null;
+          contact_id?: string | null;
+          converted_at?: string | null;
+          converted_by?: string | null;
+          created_at?: string;
+          customer_id?: string | null;
+          customer_name?: string;
+          email?: string | null;
+          id?: string;
+          lead_channel?: string | null;
+          lead_source?: string | null;
+          owner_id?: string | null;
+          phone?: string;
+          score?: number | null;
+          source?: string | null;
+          status?: string;
+          tenant_id?: string | null;
+          type?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'crm_leads_customer_id_fkey';
+            columns: ['customer_id'];
+            isOneToOne: false;
+            referencedRelation: 'customers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'crm_leads_owner_id_fkey';
+            columns: ['owner_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'crm_leads_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      crm_rfq_details: {
+        Row: {
+          created_at: string;
+          fabric_catalog_id: string | null;
+          id: string;
+          lead_id: string;
+          quantity: number | null;
+          rfq_items: Json | null;
+          rfq_type: string | null;
+          target_delivery_date: string | null;
+          target_price: number | null;
+          unit: string | null;
+          updated_at: string;
+          variant_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          fabric_catalog_id?: string | null;
+          id?: string;
+          lead_id: string;
+          quantity?: number | null;
+          rfq_items?: Json | null;
+          rfq_type?: string | null;
+          target_delivery_date?: string | null;
+          target_price?: number | null;
+          unit?: string | null;
+          updated_at?: string;
+          variant_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          fabric_catalog_id?: string | null;
+          id?: string;
+          lead_id?: string;
+          quantity?: number | null;
+          rfq_items?: Json | null;
+          rfq_type?: string | null;
+          target_delivery_date?: string | null;
+          target_price?: number | null;
+          unit?: string | null;
+          updated_at?: string;
+          variant_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'crm_rfq_details_fabric_catalog_id_fkey';
+            columns: ['fabric_catalog_id'];
+            isOneToOne: false;
+            referencedRelation: 'fabric_catalogs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'crm_rfq_details_lead_id_fkey';
+            columns: ['lead_id'];
+            isOneToOne: true;
+            referencedRelation: 'crm_leads';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'crm_rfq_details_variant_id_fkey';
+            columns: ['variant_id'];
+            isOneToOne: false;
+            referencedRelation: 'fabric_variants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      crm_sample_details: {
+        Row: {
+          created_at: string;
+          delivery_address: string;
+          fabric_catalog_id: string | null;
+          id: string;
+          lead_id: string;
+          sample_items: Json | null;
+          selected_variants: Json | null;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          delivery_address: string;
+          fabric_catalog_id?: string | null;
+          id?: string;
+          lead_id: string;
+          sample_items?: Json | null;
+          selected_variants?: Json | null;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          delivery_address?: string;
+          fabric_catalog_id?: string | null;
+          id?: string;
+          lead_id?: string;
+          sample_items?: Json | null;
+          selected_variants?: Json | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'crm_sample_details_fabric_catalog_id_fkey';
+            columns: ['fabric_catalog_id'];
+            isOneToOne: false;
+            referencedRelation: 'fabric_catalogs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'crm_sample_details_lead_id_fkey';
+            columns: ['lead_id'];
+            isOneToOne: true;
+            referencedRelation: 'crm_leads';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      customer_assignment_history: {
+        Row: {
+          assigned_at: string;
+          assigned_by: string | null;
+          customer_id: string;
+          from_salesperson_id: string | null;
+          id: string;
+          reason: string | null;
+          tenant_id: string;
+          to_salesperson_id: string | null;
+        };
+        Insert: {
+          assigned_at?: string;
+          assigned_by?: string | null;
+          customer_id: string;
+          from_salesperson_id?: string | null;
+          id?: string;
+          reason?: string | null;
+          tenant_id: string;
+          to_salesperson_id?: string | null;
+        };
+        Update: {
+          assigned_at?: string;
+          assigned_by?: string | null;
+          customer_id?: string;
+          from_salesperson_id?: string | null;
+          id?: string;
+          reason?: string | null;
+          tenant_id?: string;
+          to_salesperson_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'customer_assignment_history_assigned_by_fkey';
+            columns: ['assigned_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'customer_assignment_history_customer_id_fkey';
+            columns: ['customer_id'];
+            isOneToOne: false;
+            referencedRelation: 'customers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'customer_assignment_history_from_salesperson_id_fkey';
+            columns: ['from_salesperson_id'];
+            isOneToOne: false;
+            referencedRelation: 'employees';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'customer_assignment_history_from_salesperson_id_fkey';
+            columns: ['from_salesperson_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_employee_workload';
+            referencedColumns: ['employee_id'];
+          },
+          {
+            foreignKeyName: 'customer_assignment_history_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'customer_assignment_history_to_salesperson_id_fkey';
+            columns: ['to_salesperson_id'];
+            isOneToOne: false;
+            referencedRelation: 'employees';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'customer_assignment_history_to_salesperson_id_fkey';
+            columns: ['to_salesperson_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_employee_workload';
+            referencedColumns: ['employee_id'];
           },
         ];
       };
@@ -1052,6 +1549,77 @@ export type Database = {
           },
         ];
       };
+      customer_group_members: {
+        Row: {
+          customer_id: string;
+          group_id: string;
+        };
+        Insert: {
+          customer_id: string;
+          group_id: string;
+        };
+        Update: {
+          customer_id?: string;
+          group_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'customer_group_members_customer_id_fkey';
+            columns: ['customer_id'];
+            isOneToOne: false;
+            referencedRelation: 'customers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'customer_group_members_group_id_fkey';
+            columns: ['group_id'];
+            isOneToOne: false;
+            referencedRelation: 'customer_groups';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      customer_groups: {
+        Row: {
+          code: string;
+          created_at: string;
+          description: string | null;
+          id: string;
+          name: string;
+          status: string;
+          tenant_id: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          code: string;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          name: string;
+          status?: string;
+          tenant_id?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          code?: string;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          name?: string;
+          status?: string;
+          tenant_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'customer_groups_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       customers: {
         Row: {
           account_balance: number;
@@ -1064,18 +1632,18 @@ export type Database = {
           current_debt: number;
           email: string | null;
           id: string;
+          lead_status: string;
           name: string;
           notes: string | null;
           overdue_debt: number;
           payment_terms: string;
           phone: string | null;
+          salesperson_id: string | null;
           source: Database['public']['Enums']['customer_source'] | null;
           status: Database['public']['Enums']['active_status'];
           tax_code: string | null;
           tenant_id: string | null;
           updated_at: string;
-          salesperson_id: string | null;
-          lead_status: string;
         };
         Insert: {
           account_balance?: number;
@@ -1088,18 +1656,18 @@ export type Database = {
           current_debt?: number;
           email?: string | null;
           id?: string;
+          lead_status?: string;
           name: string;
           notes?: string | null;
           overdue_debt?: number;
           payment_terms?: string;
           phone?: string | null;
+          salesperson_id?: string | null;
           source?: Database['public']['Enums']['customer_source'] | null;
           status?: Database['public']['Enums']['active_status'];
           tax_code?: string | null;
           tenant_id?: string | null;
           updated_at?: string;
-          salesperson_id?: string | null;
-          lead_status?: string;
         };
         Update: {
           account_balance?: number;
@@ -1112,20 +1680,34 @@ export type Database = {
           current_debt?: number;
           email?: string | null;
           id?: string;
+          lead_status?: string;
           name?: string;
           notes?: string | null;
           overdue_debt?: number;
           payment_terms?: string;
           phone?: string | null;
+          salesperson_id?: string | null;
           source?: Database['public']['Enums']['customer_source'] | null;
           status?: Database['public']['Enums']['active_status'];
           tax_code?: string | null;
           tenant_id?: string | null;
           updated_at?: string;
-          salesperson_id?: string | null;
-          lead_status?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: 'customers_salesperson_id_fkey';
+            columns: ['salesperson_id'];
+            isOneToOne: false;
+            referencedRelation: 'employees';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'customers_salesperson_id_fkey';
+            columns: ['salesperson_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_employee_workload';
+            referencedColumns: ['employee_id'];
+          },
           {
             foreignKeyName: 'customers_tenant_id_fkey';
             columns: ['tenant_id'];
@@ -1569,58 +2151,658 @@ export type Database = {
           },
         ];
       };
-      fabric_catalogs: {
+      fabric_application_map: {
         Row: {
-          code: string;
-          composition: string | null;
-          created_at: string;
-          id: string;
-          image_url: string | null;
-          name: string;
-          notes: string | null;
-          status: Database['public']['Enums']['active_status'];
-          target_gsm: number | null;
-          target_width_cm: number | null;
-          tenant_id: string | null;
-          unit: string;
-          updated_at: string;
+          application_id: string;
+          fabric_catalog_id: string;
         };
         Insert: {
-          code: string;
-          composition?: string | null;
-          created_at?: string;
-          id?: string;
-          image_url?: string | null;
-          name: string;
-          notes?: string | null;
-          status?: Database['public']['Enums']['active_status'];
-          target_gsm?: number | null;
-          target_width_cm?: number | null;
-          tenant_id?: string | null;
-          unit?: string;
-          updated_at?: string;
+          application_id: string;
+          fabric_catalog_id: string;
         };
         Update: {
-          code?: string;
-          composition?: string | null;
-          created_at?: string;
-          id?: string;
-          image_url?: string | null;
-          name?: string;
-          notes?: string | null;
-          status?: Database['public']['Enums']['active_status'];
-          target_gsm?: number | null;
-          target_width_cm?: number | null;
-          tenant_id?: string | null;
-          unit?: string;
-          updated_at?: string;
+          application_id?: string;
+          fabric_catalog_id?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: 'fabric_application_map_application_id_fkey';
+            columns: ['application_id'];
+            isOneToOne: false;
+            referencedRelation: 'applications';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'fabric_application_map_fabric_catalog_id_fkey';
+            columns: ['fabric_catalog_id'];
+            isOneToOne: false;
+            referencedRelation: 'fabric_catalogs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      fabric_catalogs: {
+        Row: {
+          applications: Json | null;
+          category_id: string | null;
+          characteristics: Json | null;
+          code: string;
+          color: string | null;
+          color_tags: Json | null;
+          composition: string | null;
+          composition_tags: Json | null;
+          created_at: string;
+          diameter: number | null;
+          epi: number | null;
+          fabric_type: Database['public']['Enums']['fabric_type_enum'] | null;
+          gauge: number | null;
+          id: string;
+          image_url: string | null;
+          is_public: boolean;
+          lead_time_max: number | null;
+          lead_time_min: number | null;
+          lead_time_unit: string | null;
+          machine_type: string | null;
+          minimum_order_qty: number | null;
+          minimum_order_unit: string | null;
+          name: string;
+          needle_count: number | null;
+          notes: string | null;
+          ppi: number | null;
+          public_images: string[] | null;
+          slug: string;
+          specifications: Json | null;
+          status: Database['public']['Enums']['active_status'];
+          stock_status: string | null;
+          stretch_type: string | null;
+          target_gsm: number | null;
+          target_width_cm: number | null;
+          technique: string | null;
+          tenant_id: string | null;
+          thickness: string | null;
+          unit: string;
+          updated_at: string;
+          view_count: number | null;
+          warp_count: string | null;
+          weave_pattern: string | null;
+          weft_count: string | null;
+        };
+        Insert: {
+          applications?: Json | null;
+          category_id?: string | null;
+          characteristics?: Json | null;
+          code: string;
+          color?: string | null;
+          color_tags?: Json | null;
+          composition?: string | null;
+          composition_tags?: Json | null;
+          created_at?: string;
+          diameter?: number | null;
+          epi?: number | null;
+          fabric_type?: Database['public']['Enums']['fabric_type_enum'] | null;
+          gauge?: number | null;
+          id?: string;
+          image_url?: string | null;
+          is_public?: boolean;
+          lead_time_max?: number | null;
+          lead_time_min?: number | null;
+          lead_time_unit?: string | null;
+          machine_type?: string | null;
+          minimum_order_qty?: number | null;
+          minimum_order_unit?: string | null;
+          name: string;
+          needle_count?: number | null;
+          notes?: string | null;
+          ppi?: number | null;
+          public_images?: string[] | null;
+          slug: string;
+          specifications?: Json | null;
+          status?: Database['public']['Enums']['active_status'];
+          stock_status?: string | null;
+          stretch_type?: string | null;
+          target_gsm?: number | null;
+          target_width_cm?: number | null;
+          technique?: string | null;
+          tenant_id?: string | null;
+          thickness?: string | null;
+          unit?: string;
+          updated_at?: string;
+          view_count?: number | null;
+          warp_count?: string | null;
+          weave_pattern?: string | null;
+          weft_count?: string | null;
+        };
+        Update: {
+          applications?: Json | null;
+          category_id?: string | null;
+          characteristics?: Json | null;
+          code?: string;
+          color?: string | null;
+          color_tags?: Json | null;
+          composition?: string | null;
+          composition_tags?: Json | null;
+          created_at?: string;
+          diameter?: number | null;
+          epi?: number | null;
+          fabric_type?: Database['public']['Enums']['fabric_type_enum'] | null;
+          gauge?: number | null;
+          id?: string;
+          image_url?: string | null;
+          is_public?: boolean;
+          lead_time_max?: number | null;
+          lead_time_min?: number | null;
+          lead_time_unit?: string | null;
+          machine_type?: string | null;
+          minimum_order_qty?: number | null;
+          minimum_order_unit?: string | null;
+          name?: string;
+          needle_count?: number | null;
+          notes?: string | null;
+          ppi?: number | null;
+          public_images?: string[] | null;
+          slug?: string;
+          specifications?: Json | null;
+          status?: Database['public']['Enums']['active_status'];
+          stock_status?: string | null;
+          stretch_type?: string | null;
+          target_gsm?: number | null;
+          target_width_cm?: number | null;
+          technique?: string | null;
+          tenant_id?: string | null;
+          thickness?: string | null;
+          unit?: string;
+          updated_at?: string;
+          view_count?: number | null;
+          warp_count?: string | null;
+          weave_pattern?: string | null;
+          weft_count?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'fabric_catalogs_category_id_fkey';
+            columns: ['category_id'];
+            isOneToOne: false;
+            referencedRelation: 'fabric_categories';
+            referencedColumns: ['id'];
+          },
           {
             foreignKeyName: 'fabric_catalogs_tenant_id_fkey';
             columns: ['tenant_id'];
             isOneToOne: false;
             referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      fabric_categories: {
+        Row: {
+          code: string;
+          color_hint: string | null;
+          created_at: string;
+          fabric_type: Database['public']['Enums']['fabric_type_enum'] | null;
+          id: string;
+          is_active: boolean;
+          name: string;
+          parent_id: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          code: string;
+          color_hint?: string | null;
+          created_at?: string;
+          fabric_type?: Database['public']['Enums']['fabric_type_enum'] | null;
+          id?: string;
+          is_active?: boolean;
+          name: string;
+          parent_id?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          code?: string;
+          color_hint?: string | null;
+          created_at?: string;
+          fabric_type?: Database['public']['Enums']['fabric_type_enum'] | null;
+          id?: string;
+          is_active?: boolean;
+          name?: string;
+          parent_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'fabric_categories_parent_id_fkey';
+            columns: ['parent_id'];
+            isOneToOne: false;
+            referencedRelation: 'fabric_categories';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      fabric_characteristic_map: {
+        Row: {
+          characteristic_id: string;
+          fabric_catalog_id: string;
+        };
+        Insert: {
+          characteristic_id: string;
+          fabric_catalog_id: string;
+        };
+        Update: {
+          characteristic_id?: string;
+          fabric_catalog_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'fabric_characteristic_map_characteristic_id_fkey';
+            columns: ['characteristic_id'];
+            isOneToOne: false;
+            referencedRelation: 'characteristics';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'fabric_characteristic_map_fabric_catalog_id_fkey';
+            columns: ['fabric_catalog_id'];
+            isOneToOne: false;
+            referencedRelation: 'fabric_catalogs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      fabric_commercials: {
+        Row: {
+          created_at: string;
+          fabric_catalog_id: string;
+          id: string;
+          lead_time_days: number | null;
+          lead_time_max: number | null;
+          lead_time_min: number | null;
+          lead_time_unit: string | null;
+          minimum_order_qty: number | null;
+          minimum_order_qty_kg: number | null;
+          minimum_order_unit: string | null;
+          origin_country: string | null;
+          production_capacity_monthly_tons: number | null;
+          public_stock_display:
+            | Database['public']['Enums']['public_stock_display_type']
+            | null;
+          sample_status: string | null;
+          standard_consumption_kg: number | null;
+          stock_status: string | null;
+          tenant_id: string | null;
+          trust_fast_delivery: boolean | null;
+          trust_has_sample: boolean | null;
+          trust_tech_support: boolean | null;
+          updated_at: string;
+          yield_factor: number | null;
+        };
+        Insert: {
+          created_at?: string;
+          fabric_catalog_id: string;
+          id?: string;
+          lead_time_days?: number | null;
+          lead_time_max?: number | null;
+          lead_time_min?: number | null;
+          lead_time_unit?: string | null;
+          minimum_order_qty?: number | null;
+          minimum_order_qty_kg?: number | null;
+          minimum_order_unit?: string | null;
+          origin_country?: string | null;
+          production_capacity_monthly_tons?: number | null;
+          public_stock_display?:
+            | Database['public']['Enums']['public_stock_display_type']
+            | null;
+          sample_status?: string | null;
+          standard_consumption_kg?: number | null;
+          stock_status?: string | null;
+          tenant_id?: string | null;
+          trust_fast_delivery?: boolean | null;
+          trust_has_sample?: boolean | null;
+          trust_tech_support?: boolean | null;
+          updated_at?: string;
+          yield_factor?: number | null;
+        };
+        Update: {
+          created_at?: string;
+          fabric_catalog_id?: string;
+          id?: string;
+          lead_time_days?: number | null;
+          lead_time_max?: number | null;
+          lead_time_min?: number | null;
+          lead_time_unit?: string | null;
+          minimum_order_qty?: number | null;
+          minimum_order_qty_kg?: number | null;
+          minimum_order_unit?: string | null;
+          origin_country?: string | null;
+          production_capacity_monthly_tons?: number | null;
+          public_stock_display?:
+            | Database['public']['Enums']['public_stock_display_type']
+            | null;
+          sample_status?: string | null;
+          standard_consumption_kg?: number | null;
+          stock_status?: string | null;
+          tenant_id?: string | null;
+          trust_fast_delivery?: boolean | null;
+          trust_has_sample?: boolean | null;
+          trust_tech_support?: boolean | null;
+          updated_at?: string;
+          yield_factor?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'fabric_commercials_fabric_catalog_id_fkey';
+            columns: ['fabric_catalog_id'];
+            isOneToOne: true;
+            referencedRelation: 'fabric_catalogs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'fabric_commercials_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      fabric_images: {
+        Row: {
+          alt_text: string | null;
+          application_id: string | null;
+          caption: string | null;
+          created_at: string;
+          display_order: number | null;
+          fabric_catalog_id: string;
+          id: string;
+          image_url: string;
+          is_primary: boolean | null;
+          tenant_id: string | null;
+          type: string | null;
+          updated_at: string;
+          variant_id: string | null;
+        };
+        Insert: {
+          alt_text?: string | null;
+          application_id?: string | null;
+          caption?: string | null;
+          created_at?: string;
+          display_order?: number | null;
+          fabric_catalog_id: string;
+          id?: string;
+          image_url: string;
+          is_primary?: boolean | null;
+          tenant_id?: string | null;
+          type?: string | null;
+          updated_at?: string;
+          variant_id?: string | null;
+        };
+        Update: {
+          alt_text?: string | null;
+          application_id?: string | null;
+          caption?: string | null;
+          created_at?: string;
+          display_order?: number | null;
+          fabric_catalog_id?: string;
+          id?: string;
+          image_url?: string;
+          is_primary?: boolean | null;
+          tenant_id?: string | null;
+          type?: string | null;
+          updated_at?: string;
+          variant_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'fabric_images_application_id_fkey';
+            columns: ['application_id'];
+            isOneToOne: false;
+            referencedRelation: 'applications';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'fabric_images_fabric_catalog_id_fkey';
+            columns: ['fabric_catalog_id'];
+            isOneToOne: false;
+            referencedRelation: 'fabric_catalogs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'fabric_images_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'fabric_images_variant_id_fkey';
+            columns: ['variant_id'];
+            isOneToOne: false;
+            referencedRelation: 'fabric_variants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      fabric_pricing_tier_groups: {
+        Row: {
+          customer_group_id: string;
+          pricing_tier_id: string;
+        };
+        Insert: {
+          customer_group_id: string;
+          pricing_tier_id: string;
+        };
+        Update: {
+          customer_group_id?: string;
+          pricing_tier_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'fabric_pricing_tier_groups_customer_group_id_fkey';
+            columns: ['customer_group_id'];
+            isOneToOne: false;
+            referencedRelation: 'customer_groups';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'fabric_pricing_tier_groups_pricing_tier_id_fkey';
+            columns: ['pricing_tier_id'];
+            isOneToOne: false;
+            referencedRelation: 'fabric_pricing_tiers';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      fabric_pricing_tiers: {
+        Row: {
+          created_at: string;
+          currency: string | null;
+          display_label: string | null;
+          fabric_catalog_id: string;
+          id: string;
+          is_public_visible: boolean | null;
+          max_quantity: number | null;
+          min_quantity: number;
+          priority: number | null;
+          tenant_id: string | null;
+          unit_price: number;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          currency?: string | null;
+          display_label?: string | null;
+          fabric_catalog_id: string;
+          id?: string;
+          is_public_visible?: boolean | null;
+          max_quantity?: number | null;
+          min_quantity: number;
+          priority?: number | null;
+          tenant_id?: string | null;
+          unit_price: number;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          currency?: string | null;
+          display_label?: string | null;
+          fabric_catalog_id?: string;
+          id?: string;
+          is_public_visible?: boolean | null;
+          max_quantity?: number | null;
+          min_quantity?: number;
+          priority?: number | null;
+          tenant_id?: string | null;
+          unit_price?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'fabric_pricing_tiers_fabric_catalog_id_fkey';
+            columns: ['fabric_catalog_id'];
+            isOneToOne: false;
+            referencedRelation: 'fabric_catalogs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'fabric_pricing_tiers_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      fabric_public_views: {
+        Row: {
+          country: string | null;
+          device_type: string | null;
+          fabric_catalog_id: string;
+          id: string;
+          referrer: string | null;
+          session_id: string;
+          utm_campaign: string | null;
+          utm_source: string | null;
+          viewed_at: string | null;
+        };
+        Insert: {
+          country?: string | null;
+          device_type?: string | null;
+          fabric_catalog_id: string;
+          id?: string;
+          referrer?: string | null;
+          session_id: string;
+          utm_campaign?: string | null;
+          utm_source?: string | null;
+          viewed_at?: string | null;
+        };
+        Update: {
+          country?: string | null;
+          device_type?: string | null;
+          fabric_catalog_id?: string;
+          id?: string;
+          referrer?: string | null;
+          session_id?: string;
+          utm_campaign?: string | null;
+          utm_source?: string | null;
+          viewed_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'fabric_public_views_fabric_catalog_id_fkey';
+            columns: ['fabric_catalog_id'];
+            isOneToOne: false;
+            referencedRelation: 'fabric_catalogs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      fabric_structures: {
+        Row: {
+          code: string;
+          created_at: string;
+          description: string | null;
+          id: string;
+          name: string;
+          tenant_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          code: string;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          name: string;
+          tenant_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          code?: string;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          name?: string;
+          tenant_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'fabric_structures_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      fabric_variant_commercials: {
+        Row: {
+          created_at: string;
+          id: string;
+          lead_time_custom: number | null;
+          lead_time_stock: number | null;
+          lead_time_unit: string | null;
+          minimum_custom_order: number | null;
+          minimum_stock_order: number | null;
+          tenant_id: string | null;
+          updated_at: string;
+          variant_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          lead_time_custom?: number | null;
+          lead_time_stock?: number | null;
+          lead_time_unit?: string | null;
+          minimum_custom_order?: number | null;
+          minimum_stock_order?: number | null;
+          tenant_id?: string | null;
+          updated_at?: string;
+          variant_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          lead_time_custom?: number | null;
+          lead_time_stock?: number | null;
+          lead_time_unit?: string | null;
+          minimum_custom_order?: number | null;
+          minimum_stock_order?: number | null;
+          tenant_id?: string | null;
+          updated_at?: string;
+          variant_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'fabric_variant_commercials_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'fabric_variant_commercials_variant_id_fkey';
+            columns: ['variant_id'];
+            isOneToOne: true;
+            referencedRelation: 'fabric_variants';
             referencedColumns: ['id'];
           },
         ];
@@ -1631,16 +2813,21 @@ export type Database = {
           actual_width_cm: number | null;
           barcode: string | null;
           base_uom: Database['public']['Enums']['fabric_uom'];
+          color_code: string | null;
           color_hex: string | null;
           color_name: string;
+          color_standard: string | null;
           conversion_rate: number | null;
           created_at: string;
+          display_order: number | null;
           fabric_catalog_id: string;
           id: string;
           image_url: string | null;
+          is_public: boolean | null;
           lot_number: string | null;
           moq: number | null;
           notes: string | null;
+          public_image_url: string | null;
           purchase_price: number | null;
           selling_price: number | null;
           shrinkage_rate_warp: number | null;
@@ -1657,16 +2844,21 @@ export type Database = {
           actual_width_cm?: number | null;
           barcode?: string | null;
           base_uom?: Database['public']['Enums']['fabric_uom'];
+          color_code?: string | null;
           color_hex?: string | null;
           color_name: string;
+          color_standard?: string | null;
           conversion_rate?: number | null;
           created_at?: string;
+          display_order?: number | null;
           fabric_catalog_id: string;
           id?: string;
           image_url?: string | null;
+          is_public?: boolean | null;
           lot_number?: string | null;
           moq?: number | null;
           notes?: string | null;
+          public_image_url?: string | null;
           purchase_price?: number | null;
           selling_price?: number | null;
           shrinkage_rate_warp?: number | null;
@@ -1683,16 +2875,21 @@ export type Database = {
           actual_width_cm?: number | null;
           barcode?: string | null;
           base_uom?: Database['public']['Enums']['fabric_uom'];
+          color_code?: string | null;
           color_hex?: string | null;
           color_name?: string;
+          color_standard?: string | null;
           conversion_rate?: number | null;
           created_at?: string;
+          display_order?: number | null;
           fabric_catalog_id?: string;
           id?: string;
           image_url?: string | null;
+          is_public?: boolean | null;
           lot_number?: string | null;
           moq?: number | null;
           notes?: string | null;
+          public_image_url?: string | null;
           purchase_price?: number | null;
           selling_price?: number | null;
           shrinkage_rate_warp?: number | null;
@@ -1924,6 +3121,39 @@ export type Database = {
           },
         ];
       };
+      garment_conversion_rules: {
+        Row: {
+          avg_consumption_kg: number;
+          created_at: string;
+          description: string | null;
+          id: string;
+          is_active: boolean | null;
+          key: string;
+          name: string;
+          updated_at: string;
+        };
+        Insert: {
+          avg_consumption_kg: number;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          is_active?: boolean | null;
+          key: string;
+          name: string;
+          updated_at?: string;
+        };
+        Update: {
+          avg_consumption_kg?: number;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          is_active?: boolean | null;
+          key?: string;
+          name?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       goods_receipt_items: {
         Row: {
           created_at: string | null;
@@ -2027,41 +3257,50 @@ export type Database = {
       inventory_adjustments: {
         Row: {
           adjustment_date: string;
-          adjustment_type: Database['public']['Enums']['adjustment_type'];
+          adjustment_qty: number;
+          adjustment_type: string;
+          after_qty: number | null;
+          before_qty: number | null;
           created_at: string;
           created_by: string | null;
           id: string;
           item_type: Database['public']['Enums']['inventory_item_type'];
           notes: string | null;
-          quantity_delta: number;
           reason: string;
           reference_id: string | null;
+          status: string | null;
           tenant_id: string | null;
         };
         Insert: {
           adjustment_date?: string;
-          adjustment_type: Database['public']['Enums']['adjustment_type'];
+          adjustment_qty: number;
+          adjustment_type: string;
+          after_qty?: number | null;
+          before_qty?: number | null;
           created_at?: string;
           created_by?: string | null;
           id?: string;
           item_type: Database['public']['Enums']['inventory_item_type'];
           notes?: string | null;
-          quantity_delta: number;
           reason: string;
           reference_id?: string | null;
+          status?: string | null;
           tenant_id?: string | null;
         };
         Update: {
           adjustment_date?: string;
-          adjustment_type?: Database['public']['Enums']['adjustment_type'];
+          adjustment_qty?: number;
+          adjustment_type?: string;
+          after_qty?: number | null;
+          before_qty?: number | null;
           created_at?: string;
           created_by?: string | null;
           id?: string;
           item_type?: Database['public']['Enums']['inventory_item_type'];
           notes?: string | null;
-          quantity_delta?: number;
           reason?: string;
           reference_id?: string | null;
+          status?: string | null;
           tenant_id?: string | null;
         };
         Relationships: [
@@ -2118,20 +3357,98 @@ export type Database = {
           },
         ];
       };
+      loom_production_states: {
+        Row: {
+          created_at: string;
+          current_employee_id: string | null;
+          current_work_order_id: string | null;
+          efficiency_pct: number | null;
+          last_status_changed_at: string | null;
+          loom_id: string;
+          running_hours: number | null;
+          tenant_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          current_employee_id?: string | null;
+          current_work_order_id?: string | null;
+          efficiency_pct?: number | null;
+          last_status_changed_at?: string | null;
+          loom_id: string;
+          running_hours?: number | null;
+          tenant_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          current_employee_id?: string | null;
+          current_work_order_id?: string | null;
+          efficiency_pct?: number | null;
+          last_status_changed_at?: string | null;
+          loom_id?: string;
+          running_hours?: number | null;
+          tenant_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'loom_production_states_current_employee_id_fkey';
+            columns: ['current_employee_id'];
+            isOneToOne: false;
+            referencedRelation: 'employees';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'loom_production_states_current_employee_id_fkey';
+            columns: ['current_employee_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_employee_workload';
+            referencedColumns: ['employee_id'];
+          },
+          {
+            foreignKeyName: 'loom_production_states_current_work_order_id_fkey';
+            columns: ['current_work_order_id'];
+            isOneToOne: false;
+            referencedRelation: 'work_orders';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'loom_production_states_loom_id_fkey';
+            columns: ['loom_id'];
+            isOneToOne: true;
+            referencedRelation: 'looms';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'loom_production_states_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       looms: {
         Row: {
           code: string;
+          country_of_origin: string | null;
           created_at: string;
+          daily_capacity_kg: number | null;
           daily_capacity_m: number | null;
           diameter_inch: number | null;
           feeders: number | null;
           gauge: number | null;
+          gsm_range: string | null;
           id: string;
           loom_type: string;
+          manufacturer: string | null;
           max_speed_rpm: number | null;
           max_width_cm: number | null;
+          model: string | null;
           motor_power_kw: number | null;
           name: string;
+          needles: number | null;
           notes: string | null;
           status: string;
           supplier_id: string;
@@ -2139,21 +3456,28 @@ export type Database = {
           updated_at: string;
           voltage: string | null;
           weight_kg: number | null;
+          yarn_support: string | null;
           year_manufactured: number | null;
         };
         Insert: {
           code: string;
+          country_of_origin?: string | null;
           created_at?: string;
+          daily_capacity_kg?: number | null;
           daily_capacity_m?: number | null;
           diameter_inch?: number | null;
           feeders?: number | null;
           gauge?: number | null;
+          gsm_range?: string | null;
           id?: string;
           loom_type?: string;
+          manufacturer?: string | null;
           max_speed_rpm?: number | null;
           max_width_cm?: number | null;
+          model?: string | null;
           motor_power_kw?: number | null;
           name: string;
+          needles?: number | null;
           notes?: string | null;
           status?: string;
           supplier_id: string;
@@ -2161,21 +3485,28 @@ export type Database = {
           updated_at?: string;
           voltage?: string | null;
           weight_kg?: number | null;
+          yarn_support?: string | null;
           year_manufactured?: number | null;
         };
         Update: {
           code?: string;
+          country_of_origin?: string | null;
           created_at?: string;
+          daily_capacity_kg?: number | null;
           daily_capacity_m?: number | null;
           diameter_inch?: number | null;
           feeders?: number | null;
           gauge?: number | null;
+          gsm_range?: string | null;
           id?: string;
           loom_type?: string;
+          manufacturer?: string | null;
           max_speed_rpm?: number | null;
           max_width_cm?: number | null;
+          model?: string | null;
           motor_power_kw?: number | null;
           name?: string;
+          needles?: number | null;
           notes?: string | null;
           status?: string;
           supplier_id?: string;
@@ -2183,6 +3514,7 @@ export type Database = {
           updated_at?: string;
           voltage?: string | null;
           weight_kg?: number | null;
+          yarn_support?: string | null;
           year_manufactured?: number | null;
         };
         Relationships: [
@@ -2216,6 +3548,62 @@ export type Database = {
           },
           {
             foreignKeyName: 'looms_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      machine_specifications: {
+        Row: {
+          code: string | null;
+          created_at: string;
+          diameter: number | null;
+          feeder_count: number | null;
+          gauge: number | null;
+          id: string;
+          is_active: boolean | null;
+          machine_family: string | null;
+          machine_type: string | null;
+          manufacturer: string | null;
+          source_type: string | null;
+          tenant_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          code?: string | null;
+          created_at?: string;
+          diameter?: number | null;
+          feeder_count?: number | null;
+          gauge?: number | null;
+          id?: string;
+          is_active?: boolean | null;
+          machine_family?: string | null;
+          machine_type?: string | null;
+          manufacturer?: string | null;
+          source_type?: string | null;
+          tenant_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          code?: string | null;
+          created_at?: string;
+          diameter?: number | null;
+          feeder_count?: number | null;
+          gauge?: number | null;
+          id?: string;
+          is_active?: boolean | null;
+          machine_family?: string | null;
+          machine_type?: string | null;
+          manufacturer?: string | null;
+          source_type?: string | null;
+          tenant_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'machine_specifications_tenant_id_fkey';
             columns: ['tenant_id'];
             isOneToOne: false;
             referencedRelation: 'tenants';
@@ -2916,6 +4304,7 @@ export type Database = {
         Row: {
           action: string;
           actor_id: string | null;
+          comment: string | null;
           entity_id: string;
           entity_type: string;
           id: string;
@@ -2926,6 +4315,7 @@ export type Database = {
         Insert: {
           action: string;
           actor_id?: string | null;
+          comment?: string | null;
           entity_id: string;
           entity_type: string;
           id?: string;
@@ -2936,6 +4326,7 @@ export type Database = {
         Update: {
           action?: string;
           actor_id?: string | null;
+          comment?: string | null;
           entity_id?: string;
           entity_type?: string;
           id?: string;
@@ -3180,53 +4571,95 @@ export type Database = {
         Row: {
           approved_at: string | null;
           approved_by: string | null;
+          attachments: Json | null;
           created_at: string | null;
           created_by: string | null;
+          currency: string | null;
+          delivery_warehouse: string | null;
           expected_date: string | null;
           id: string;
+          incoterms: string | null;
           order_date: string;
+          payment_deadline: string | null;
+          payment_terms: string | null;
+          person_in_charge: string | null;
           po_code: string;
+          priority: string | null;
           rejection_reason: string | null;
+          shipping_fee: number | null;
           status: Database['public']['Enums']['purchase_order_status'] | null;
+          subtotal_amount: number | null;
           supplier_id: string;
           supplier_name_snapshot: string;
+          supplier_ref: string | null;
           tenant_id: string;
           total_amount: number | null;
           updated_at: string | null;
+          vat_amount: number | null;
+          vat_rate: number | null;
+          vat_terms: string | null;
         };
         Insert: {
           approved_at?: string | null;
           approved_by?: string | null;
+          attachments?: Json | null;
           created_at?: string | null;
           created_by?: string | null;
+          currency?: string | null;
+          delivery_warehouse?: string | null;
           expected_date?: string | null;
           id?: string;
+          incoterms?: string | null;
           order_date: string;
+          payment_deadline?: string | null;
+          payment_terms?: string | null;
+          person_in_charge?: string | null;
           po_code: string;
+          priority?: string | null;
           rejection_reason?: string | null;
+          shipping_fee?: number | null;
           status?: Database['public']['Enums']['purchase_order_status'] | null;
+          subtotal_amount?: number | null;
           supplier_id: string;
           supplier_name_snapshot: string;
+          supplier_ref?: string | null;
           tenant_id?: string;
           total_amount?: number | null;
           updated_at?: string | null;
+          vat_amount?: number | null;
+          vat_rate?: number | null;
+          vat_terms?: string | null;
         };
         Update: {
           approved_at?: string | null;
           approved_by?: string | null;
+          attachments?: Json | null;
           created_at?: string | null;
           created_by?: string | null;
+          currency?: string | null;
+          delivery_warehouse?: string | null;
           expected_date?: string | null;
           id?: string;
+          incoterms?: string | null;
           order_date?: string;
+          payment_deadline?: string | null;
+          payment_terms?: string | null;
+          person_in_charge?: string | null;
           po_code?: string;
+          priority?: string | null;
           rejection_reason?: string | null;
+          shipping_fee?: number | null;
           status?: Database['public']['Enums']['purchase_order_status'] | null;
+          subtotal_amount?: number | null;
           supplier_id?: string;
           supplier_name_snapshot?: string;
+          supplier_ref?: string | null;
           tenant_id?: string;
           total_amount?: number | null;
           updated_at?: string | null;
+          vat_amount?: number | null;
+          vat_rate?: number | null;
+          vat_terms?: string | null;
         };
         Relationships: [
           {
@@ -3617,6 +5050,123 @@ export type Database = {
             columns: ['yarn_receipt_id'];
             isOneToOne: false;
             referencedRelation: 'yarn_receipts';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      recurring_transactions: {
+        Row: {
+          account_id: string | null;
+          amount: number;
+          category: string;
+          created_at: string;
+          day_of_month: number;
+          description: string;
+          employee_id: string | null;
+          frequency: string;
+          id: string;
+          is_active: boolean;
+          last_generated_date: string | null;
+          name: string;
+          next_run_date: string;
+          notes: string | null;
+          supplier_id: string | null;
+          tenant_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          account_id?: string | null;
+          amount: number;
+          category: string;
+          created_at?: string;
+          day_of_month?: number;
+          description?: string;
+          employee_id?: string | null;
+          frequency: string;
+          id?: string;
+          is_active?: boolean;
+          last_generated_date?: string | null;
+          name: string;
+          next_run_date: string;
+          notes?: string | null;
+          supplier_id?: string | null;
+          tenant_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          account_id?: string | null;
+          amount?: number;
+          category?: string;
+          created_at?: string;
+          day_of_month?: number;
+          description?: string;
+          employee_id?: string | null;
+          frequency?: string;
+          id?: string;
+          is_active?: boolean;
+          last_generated_date?: string | null;
+          name?: string;
+          next_run_date?: string;
+          notes?: string | null;
+          supplier_id?: string | null;
+          tenant_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'recurring_transactions_account_id_fkey';
+            columns: ['account_id'];
+            isOneToOne: false;
+            referencedRelation: 'payment_accounts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'recurring_transactions_employee_id_fkey';
+            columns: ['employee_id'];
+            isOneToOne: false;
+            referencedRelation: 'employees';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'recurring_transactions_employee_id_fkey';
+            columns: ['employee_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_employee_workload';
+            referencedColumns: ['employee_id'];
+          },
+          {
+            foreignKeyName: 'recurring_transactions_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'suppliers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'recurring_transactions_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_debt';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'recurring_transactions_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_full';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'recurring_transactions_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_performance';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'recurring_transactions_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
             referencedColumns: ['id'];
           },
         ];
@@ -4950,6 +6500,33 @@ export type Database = {
           },
         ];
       };
+      weaving_invoice_lookup_logs: {
+        Row: {
+          created_at: string;
+          id: string;
+          ip_hash: string | null;
+          lookup_code: string;
+          success: boolean;
+          user_agent: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          ip_hash?: string | null;
+          lookup_code: string;
+          success: boolean;
+          user_agent?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          ip_hash?: string | null;
+          lookup_code?: string;
+          success?: boolean;
+          user_agent?: string | null;
+        };
+        Relationships: [];
+      };
       weaving_invoice_rolls: {
         Row: {
           created_at: string;
@@ -5028,9 +6605,12 @@ export type Database = {
           id: string;
           invoice_date: string;
           invoice_number: string;
+          is_public: boolean | null;
+          lookup_code: string;
           notes: string | null;
           paid_amount: number;
           payment_status: string | null;
+          public_until: string | null;
           status: string;
           supplier_id: string;
           tenant_id: string | null;
@@ -5047,9 +6627,12 @@ export type Database = {
           id?: string;
           invoice_date?: string;
           invoice_number: string;
+          is_public?: boolean | null;
+          lookup_code?: string;
           notes?: string | null;
           paid_amount?: number;
           payment_status?: string | null;
+          public_until?: string | null;
           status?: string;
           supplier_id: string;
           tenant_id?: string | null;
@@ -5066,9 +6649,12 @@ export type Database = {
           id?: string;
           invoice_date?: string;
           invoice_number?: string;
+          is_public?: boolean | null;
+          lookup_code?: string;
           notes?: string | null;
           paid_amount?: number;
           payment_status?: string | null;
+          public_until?: string | null;
           status?: string;
           supplier_id?: string;
           tenant_id?: string | null;
@@ -5194,6 +6780,68 @@ export type Database = {
             columns: ['yarn_catalog_id'];
             isOneToOne: false;
             referencedRelation: 'yarn_catalogs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      work_order_yarn_issues: {
+        Row: {
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          issued_kg: number;
+          notes: string | null;
+          tenant_id: string | null;
+          work_order_id: string;
+          yarn_receipt_item_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          issued_kg: number;
+          notes?: string | null;
+          tenant_id?: string | null;
+          work_order_id: string;
+          yarn_receipt_item_id: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          issued_kg?: number;
+          notes?: string | null;
+          tenant_id?: string | null;
+          work_order_id?: string;
+          yarn_receipt_item_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'work_order_yarn_issues_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'work_order_yarn_issues_work_order_id_fkey';
+            columns: ['work_order_id'];
+            isOneToOne: false;
+            referencedRelation: 'work_orders';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'work_order_yarn_issues_yarn_receipt_item_id_fkey';
+            columns: ['yarn_receipt_item_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_yarn_receipt_item_availability';
+            referencedColumns: ['yarn_receipt_item_id'];
+          },
+          {
+            foreignKeyName: 'work_order_yarn_issues_yarn_receipt_item_id_fkey';
+            columns: ['yarn_receipt_item_id'];
+            isOneToOne: false;
+            referencedRelation: 'yarn_receipt_items';
             referencedColumns: ['id'];
           },
         ];
@@ -5385,72 +7033,93 @@ export type Database = {
       yarn_catalogs: {
         Row: {
           category: string | null;
+          certifications: string[] | null;
           code: string;
           color_name: string | null;
+          color_status: string | null;
           composition: string | null;
+          count_ne: string | null;
           created_at: string;
+          denier: string | null;
+          fancy_details: string | null;
+          filament_count: string | null;
+          finish: string | null;
           grade: string | null;
           id: string;
+          intermingle: string | null;
+          is_fancy: boolean | null;
           lot_no: string | null;
           name: string;
           notes: string | null;
           origin: string | null;
+          spinning_method: string | null;
           status: Database['public']['Enums']['active_status'];
           tenant_id: string | null;
           tensile_strength: string | null;
+          twist_type: string | null;
           unit: string;
           updated_at: string;
           yarn_type: string | null;
-          denier: string | null;
-          filament_count: string | null;
-          finish: string | null;
-          color_status: string | null;
         };
         Insert: {
           category?: string | null;
+          certifications?: string[] | null;
           code: string;
           color_name?: string | null;
+          color_status?: string | null;
           composition?: string | null;
+          count_ne?: string | null;
           created_at?: string;
+          denier?: string | null;
+          fancy_details?: string | null;
+          filament_count?: string | null;
+          finish?: string | null;
           grade?: string | null;
           id?: string;
+          intermingle?: string | null;
+          is_fancy?: boolean | null;
           lot_no?: string | null;
           name: string;
           notes?: string | null;
           origin?: string | null;
+          spinning_method?: string | null;
           status?: Database['public']['Enums']['active_status'];
           tenant_id?: string | null;
           tensile_strength?: string | null;
+          twist_type?: string | null;
           unit?: string;
           updated_at?: string;
           yarn_type?: string | null;
-          denier?: string | null;
-          filament_count?: string | null;
-          finish?: string | null;
-          color_status?: string | null;
         };
         Update: {
           category?: string | null;
+          certifications?: string[] | null;
           code?: string;
           color_name?: string | null;
+          color_status?: string | null;
           composition?: string | null;
+          count_ne?: string | null;
           created_at?: string;
+          denier?: string | null;
+          fancy_details?: string | null;
+          filament_count?: string | null;
+          finish?: string | null;
           grade?: string | null;
           id?: string;
+          intermingle?: string | null;
+          is_fancy?: boolean | null;
           lot_no?: string | null;
           name?: string;
           notes?: string | null;
           origin?: string | null;
+          spinning_method?: string | null;
           status?: Database['public']['Enums']['active_status'];
           tenant_id?: string | null;
           tensile_strength?: string | null;
+          twist_type?: string | null;
           unit?: string;
           updated_at?: string;
           yarn_type?: string | null;
-          denier?: string | null;
-          filament_count?: string | null;
-          finish?: string | null;
-          color_status?: string | null;
         };
         Relationships: [
           {
@@ -5462,23 +7131,136 @@ export type Database = {
           },
         ];
       };
+      yarn_knitting_engineering: {
+        Row: {
+          compatibility_level: string;
+          created_at: string;
+          expected_efficiency: number | null;
+          expected_waste_pct: number | null;
+          fabric_structure_id: string;
+          feeding_type: string | null;
+          historical_quality_score: number | null;
+          id: string;
+          machine_spec_id: string;
+          max_rpm: number | null;
+          need_lycra_attachment: boolean | null;
+          need_special_feeder: boolean | null;
+          production_notes: string | null;
+          quality_risk_level: string | null;
+          recommended_rpm: number | null;
+          recommended_stitch_length: number | null;
+          recommended_tension: string | null;
+          tenant_id: string;
+          updated_at: string;
+          yarn_id: string;
+        };
+        Insert: {
+          compatibility_level: string;
+          created_at?: string;
+          expected_efficiency?: number | null;
+          expected_waste_pct?: number | null;
+          fabric_structure_id: string;
+          feeding_type?: string | null;
+          historical_quality_score?: number | null;
+          id?: string;
+          machine_spec_id: string;
+          max_rpm?: number | null;
+          need_lycra_attachment?: boolean | null;
+          need_special_feeder?: boolean | null;
+          production_notes?: string | null;
+          quality_risk_level?: string | null;
+          recommended_rpm?: number | null;
+          recommended_stitch_length?: number | null;
+          recommended_tension?: string | null;
+          tenant_id: string;
+          updated_at?: string;
+          yarn_id: string;
+        };
+        Update: {
+          compatibility_level?: string;
+          created_at?: string;
+          expected_efficiency?: number | null;
+          expected_waste_pct?: number | null;
+          fabric_structure_id?: string;
+          feeding_type?: string | null;
+          historical_quality_score?: number | null;
+          id?: string;
+          machine_spec_id?: string;
+          max_rpm?: number | null;
+          need_lycra_attachment?: boolean | null;
+          need_special_feeder?: boolean | null;
+          production_notes?: string | null;
+          quality_risk_level?: string | null;
+          recommended_rpm?: number | null;
+          recommended_stitch_length?: number | null;
+          recommended_tension?: string | null;
+          tenant_id?: string;
+          updated_at?: string;
+          yarn_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'yarn_knitting_engineering_fabric_structure_id_fkey';
+            columns: ['fabric_structure_id'];
+            isOneToOne: false;
+            referencedRelation: 'fabric_structures';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_knitting_engineering_machine_spec_id_fkey';
+            columns: ['machine_spec_id'];
+            isOneToOne: false;
+            referencedRelation: 'machine_specifications';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_knitting_engineering_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_knitting_engineering_yarn_id_fkey';
+            columns: ['yarn_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_yarn_availability';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_knitting_engineering_yarn_id_fkey';
+            columns: ['yarn_id'];
+            isOneToOne: false;
+            referencedRelation: 'yarn_catalogs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       yarn_receipt_items: {
         Row: {
           allocated_cost: number;
           amount: number | null;
+          box_count: number | null;
+          box_no: string | null;
           color_code: string | null;
           color_name: string | null;
           composition: string | null;
+          cones_per_box: number | null;
+          dist: string | null;
           dtex: string | null;
           grade: string | null;
+          gross_weight: number | null;
           id: string;
           landed_price: number;
           lot_number: string | null;
           machine_no: string | null;
+          net_weight: number | null;
           notes: string | null;
           origin: string | null;
+          production_week: number | null;
           quantity: number;
           receipt_id: string;
+          serial_number: string | null;
           sort_order: number;
           tenant_id: string | null;
           tensile_strength: string | null;
@@ -5487,28 +7269,31 @@ export type Database = {
           unit_price: number;
           yarn_catalog_id: string | null;
           yarn_type: string;
-          net_weight: number | null;
-          gross_weight: number | null;
-          serial_number: string | null;
-          production_week: number | null;
-          dist: string | null;
         };
         Insert: {
           allocated_cost?: number;
           amount?: number | null;
+          box_count?: number | null;
+          box_no?: string | null;
           color_code?: string | null;
           color_name?: string | null;
           composition?: string | null;
+          cones_per_box?: number | null;
+          dist?: string | null;
           dtex?: string | null;
           grade?: string | null;
+          gross_weight?: number | null;
           id?: string;
           landed_price?: number;
           lot_number?: string | null;
           machine_no?: string | null;
+          net_weight?: number | null;
           notes?: string | null;
           origin?: string | null;
+          production_week?: number | null;
           quantity: number;
           receipt_id: string;
+          serial_number?: string | null;
           sort_order?: number;
           tenant_id?: string | null;
           tensile_strength?: string | null;
@@ -5517,28 +7302,31 @@ export type Database = {
           unit_price?: number;
           yarn_catalog_id?: string | null;
           yarn_type: string;
-          net_weight?: number | null;
-          gross_weight?: number | null;
-          serial_number?: string | null;
-          production_week?: number | null;
-          dist?: string | null;
         };
         Update: {
           allocated_cost?: number;
           amount?: number | null;
+          box_count?: number | null;
+          box_no?: string | null;
           color_code?: string | null;
           color_name?: string | null;
           composition?: string | null;
+          cones_per_box?: number | null;
+          dist?: string | null;
           dtex?: string | null;
           grade?: string | null;
+          gross_weight?: number | null;
           id?: string;
           landed_price?: number;
           lot_number?: string | null;
           machine_no?: string | null;
+          net_weight?: number | null;
           notes?: string | null;
           origin?: string | null;
+          production_week?: number | null;
           quantity?: number;
           receipt_id?: string;
+          serial_number?: string | null;
           sort_order?: number;
           tenant_id?: string | null;
           tensile_strength?: string | null;
@@ -5547,11 +7335,6 @@ export type Database = {
           unit_price?: number;
           yarn_catalog_id?: string | null;
           yarn_type?: string;
-          net_weight?: number | null;
-          gross_weight?: number | null;
-          serial_number?: string | null;
-          production_week?: number | null;
-          dist?: string | null;
         };
         Relationships: [
           {
@@ -5729,6 +7512,79 @@ export type Database = {
           },
           {
             foreignKeyName: 'yarn_reservations_yarn_catalog_id_fkey';
+            columns: ['yarn_catalog_id'];
+            isOneToOne: false;
+            referencedRelation: 'yarn_catalogs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      yarn_slub_specs: {
+        Row: {
+          created_at: string;
+          id: string;
+          notes: string | null;
+          slub_distance_max: number | null;
+          slub_distance_min: number | null;
+          slub_length_max: number | null;
+          slub_length_min: number | null;
+          slub_thick_max: number | null;
+          slub_thick_min: number | null;
+          spec_name: string;
+          spec_set: number;
+          tenant_id: string | null;
+          updated_at: string;
+          yarn_catalog_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          notes?: string | null;
+          slub_distance_max?: number | null;
+          slub_distance_min?: number | null;
+          slub_length_max?: number | null;
+          slub_length_min?: number | null;
+          slub_thick_max?: number | null;
+          slub_thick_min?: number | null;
+          spec_name: string;
+          spec_set: number;
+          tenant_id?: string | null;
+          updated_at?: string;
+          yarn_catalog_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          notes?: string | null;
+          slub_distance_max?: number | null;
+          slub_distance_min?: number | null;
+          slub_length_max?: number | null;
+          slub_length_min?: number | null;
+          slub_thick_max?: number | null;
+          slub_thick_min?: number | null;
+          spec_name?: string;
+          spec_set?: number;
+          tenant_id?: string | null;
+          updated_at?: string;
+          yarn_catalog_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'yarn_slub_specs_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_slub_specs_yarn_catalog_id_fkey';
+            columns: ['yarn_catalog_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_yarn_availability';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_slub_specs_yarn_catalog_id_fkey';
             columns: ['yarn_catalog_id'];
             isOneToOne: false;
             referencedRelation: 'yarn_catalogs';
@@ -6231,6 +8087,85 @@ export type Database = {
         };
         Relationships: [];
       };
+      v_yarn_receipt_item_availability: {
+        Row: {
+          available_qty: number | null;
+          color_name: string | null;
+          grade: string | null;
+          issued_qty: number | null;
+          landed_price: number | null;
+          lot_number: string | null;
+          receipt_date: string | null;
+          receipt_id: string | null;
+          receipt_number: string | null;
+          received_qty: number | null;
+          supplier_id: string | null;
+          supplier_name: string | null;
+          tenant_id: string | null;
+          unit: string | null;
+          yarn_catalog_id: string | null;
+          yarn_receipt_item_id: string | null;
+          yarn_type: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'yarn_receipt_items_receipt_id_fkey';
+            columns: ['receipt_id'];
+            isOneToOne: false;
+            referencedRelation: 'yarn_receipts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_receipt_items_tenant_id_fkey';
+            columns: ['tenant_id'];
+            isOneToOne: false;
+            referencedRelation: 'tenants';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_receipt_items_yarn_catalog_id_fkey';
+            columns: ['yarn_catalog_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_yarn_availability';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_receipt_items_yarn_catalog_id_fkey';
+            columns: ['yarn_catalog_id'];
+            isOneToOne: false;
+            referencedRelation: 'yarn_catalogs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_receipts_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'suppliers';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_receipts_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_debt';
+            referencedColumns: ['supplier_id'];
+          },
+          {
+            foreignKeyName: 'yarn_receipts_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_full';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'yarn_receipts_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'v_supplier_performance';
+            referencedColumns: ['supplier_id'];
+          },
+        ];
+      };
     };
     Functions: {
       accept_invitation: {
@@ -6331,6 +8266,7 @@ export type Database = {
             };
             Returns: Json;
           };
+      generate_lookup_code: { Args: never; Returns: string };
       generate_next_doc_number: {
         Args: {
           p_column: string;
@@ -6338,6 +8274,10 @@ export type Database = {
           p_prefix: string;
           p_table: string;
         };
+        Returns: string;
+      };
+      generate_unique_weaving_invoice_lookup_code: {
+        Args: never;
         Returns: string;
       };
       get_tenant_user_count: { Args: { p_tenant_id: string }; Returns: number };
@@ -6351,6 +8291,17 @@ export type Database = {
       rpc_acquire_entity_lock: {
         Args: { p_entity_id: string; p_entity_table: string };
         Returns: undefined;
+      };
+      rpc_adjust_inventory: {
+        Args: {
+          p_adjustment_qty: number;
+          p_adjustment_type: string;
+          p_item_id: string;
+          p_item_type: string;
+          p_notes?: string;
+          p_reason: string;
+        };
+        Returns: string;
       };
       rpc_approve_bom: {
         Args: { p_bom_id: string; p_reason: string; p_user_id: string };
@@ -6428,6 +8379,82 @@ export type Database = {
         Returns: Json;
       };
       rpc_create_payment: { Args: { p_data: Json }; Returns: Json };
+      rpc_create_public_rfq_request:
+        | {
+            Args: {
+              p_company_name?: string;
+              p_contact_email?: string;
+              p_contact_name: string;
+              p_contact_phone: string;
+              p_fabric_catalog_id?: string;
+              p_quantity?: number;
+              p_rfq_items?: Json;
+              p_target_delivery_date?: string;
+              p_target_price?: number;
+              p_unit?: string;
+              p_variant_id?: string;
+            };
+            Returns: string;
+          }
+        | {
+            Args: {
+              p_company_name?: string;
+              p_contact_email?: string;
+              p_contact_name: string;
+              p_contact_phone: string;
+              p_fabric_catalog_id?: string;
+              p_lead_channel?: string;
+              p_lead_source?: string;
+              p_quantity?: number;
+              p_rfq_items?: Json;
+              p_rfq_type?: string;
+              p_target_delivery_date?: string;
+              p_target_price?: number;
+              p_unit?: string;
+              p_variant_id?: string;
+            };
+            Returns: string;
+          };
+      rpc_create_public_sample_request: {
+        Args: {
+          p_company_name?: string;
+          p_contact_address: string;
+          p_contact_name: string;
+          p_contact_phone: string;
+          p_fabric_catalog_id?: string;
+          p_lead_channel?: string;
+          p_lead_source?: string;
+          p_sample_items?: Json;
+          p_selected_variants?: Json;
+        };
+        Returns: string;
+      };
+      rpc_create_purchase_order: {
+        Args: {
+          p_attachments?: Json;
+          p_created_by: string;
+          p_currency?: string;
+          p_delivery_warehouse?: string;
+          p_expected_date: string;
+          p_incoterms?: string;
+          p_items: Json;
+          p_order_date: string;
+          p_payment_deadline?: string;
+          p_payment_terms?: string;
+          p_person_in_charge?: string;
+          p_priority?: string;
+          p_shipping_fee?: number;
+          p_subtotal_amount?: number;
+          p_supplier_id: string;
+          p_supplier_name_snapshot: string;
+          p_supplier_ref?: string;
+          p_total_amount: number;
+          p_vat_amount?: number;
+          p_vat_rate?: number;
+          p_vat_terms?: string;
+        };
+        Returns: string;
+      };
       rpc_create_quotation: {
         Args: { p_header: Json; p_items: Json };
         Returns: Json;
@@ -6509,6 +8536,10 @@ export type Database = {
           isSetofReturn: true;
         };
       };
+      rpc_get_also_viewed_public_fabrics: {
+        Args: { p_fabric_id: string; p_limit?: number };
+        Returns: Json;
+      };
       rpc_get_cash_flow_summary: {
         Args: { p_from?: string; p_to?: string };
         Returns: {
@@ -6539,6 +8570,10 @@ export type Database = {
           expense_count: number;
           total_amount: number;
         }[];
+      };
+      rpc_get_fabric_pricing_tiers: {
+        Args: { p_fabric_id: string };
+        Returns: Json;
       };
       rpc_get_kanban_dashboard: { Args: never; Returns: Json };
       rpc_get_my_chat_rooms: {
@@ -6597,6 +8632,19 @@ export type Database = {
           isSetofReturn: true;
         };
       };
+      rpc_get_public_fabric: { Args: { p_slug: string }; Returns: Json };
+      rpc_get_public_fabric_basic: {
+        Args: { p_session_id?: string; p_slug: string };
+        Returns: Json;
+      };
+      rpc_get_public_fabric_images: {
+        Args: { p_fabric_id: string };
+        Returns: Json;
+      };
+      rpc_get_public_fabric_variants: {
+        Args: { p_fabric_id: string; p_session_id?: string };
+        Returns: Json;
+      };
       rpc_get_public_shipment: {
         Args: { p_number: string };
         Returns: {
@@ -6612,6 +8660,29 @@ export type Database = {
           signed_at: string;
           status: string;
         }[];
+      };
+      rpc_get_public_weaving_invoice: {
+        Args: { p_lookup_code: string };
+        Returns: {
+          fabric_type: string;
+          id: string;
+          invoice_date: string;
+          invoice_number: string;
+          item_count: number;
+          items: Json;
+          notes: string;
+          paid_amount: number;
+          status: string;
+          supplier_code: string;
+          supplier_name: string;
+          total_amount: number;
+          total_weight_kg: number;
+          unit_price_per_kg: number;
+        }[];
+      };
+      rpc_get_related_public_fabrics: {
+        Args: { p_fabric_id: string; p_limit?: number };
+        Returns: Json;
       };
       rpc_get_supplier_price: {
         Args: { p_material_id: string; p_supplier_id: string };
@@ -6654,6 +8725,10 @@ export type Database = {
       };
       rpc_increment_weaving_invoice_paid: {
         Args: { p_amount_to_add: number; p_id: string };
+        Returns: undefined;
+      };
+      rpc_issue_yarn_lots: {
+        Args: { p_lots: Json; p_work_order_id: string };
         Returns: undefined;
       };
       rpc_link_profile_to_employee: {
@@ -6728,6 +8803,10 @@ export type Database = {
         Args: { p_today: string; p_wo_id: string };
         Returns: undefined;
       };
+      rpc_sync_fabric_images: {
+        Args: { p_fabric_id: string; p_images: Json };
+        Returns: undefined;
+      };
       rpc_sync_shipment_debt: {
         Args: { p_shipment_id: string };
         Returns: undefined;
@@ -6752,6 +8831,10 @@ export type Database = {
       rpc_update_expense: {
         Args: { p_data: Json; p_expense_id: string };
         Returns: Json;
+      };
+      rpc_update_fabric_pricing_tiers: {
+        Args: { p_fabric_id: string; p_tiers: Json };
+        Returns: undefined;
       };
       rpc_update_order_with_items: {
         Args: {
@@ -6831,7 +8914,6 @@ export type Database = {
     Enums: {
       account_type: 'cash' | 'bank';
       active_status: 'active' | 'inactive';
-      adjustment_type: 'increase' | 'decrease' | 'correction';
       bom_status: 'draft' | 'approved' | 'deprecated';
       cost_estimation_ref_type: 'work_order' | 'bom' | 'quotation';
       credit_status: 'active' | 'on_hold' | 'blocked';
@@ -6867,6 +8949,7 @@ export type Database = {
         | 'logistics'
         | 'equipment'
         | 'other';
+      fabric_type_enum: 'knitted' | 'woven';
       fabric_uom: 'meter' | 'yard' | 'kg';
       fabric_variant_status: 'active' | 'draft' | 'discontinued';
       inventory_item_type: 'yarn' | 'raw_fabric' | 'finished_fabric';
@@ -6895,13 +8978,20 @@ export type Database = {
         | 'finishing'
         | 'final_check'
         | 'packing';
+      public_stock_display_type: 'none' | 'status' | 'quantity';
       purchase_order_status:
         | 'draft'
         | 'approved'
         | 'rejected'
         | 'partial_received'
         | 'completed'
-        | 'cancelled';
+        | 'cancelled'
+        | 'submitted'
+        | 'pending_approval'
+        | 'request_changes'
+        | 'sent'
+        | 'supplier_confirmed'
+        | 'receiving';
       quotation_status:
         | 'draft'
         | 'sent'
@@ -6929,7 +9019,7 @@ export type Database = {
         | 'payment'
         | 'adjustment'
         | 'return_credit';
-      uom_type: 'kg' | 'c├óy' | 'm├⌐t' | 'cuß╗Ön';
+      uom_type: 'kg' | 'cây' | 'mét' | 'cuộn';
       user_role:
         | 'admin'
         | 'manager'
@@ -7079,7 +9169,6 @@ export const Constants = {
     Enums: {
       account_type: ['cash', 'bank'],
       active_status: ['active', 'inactive'],
-      adjustment_type: ['increase', 'decrease', 'correction'],
       bom_status: ['draft', 'approved', 'deprecated'],
       cost_estimation_ref_type: ['work_order', 'bom', 'quotation'],
       credit_status: ['active', 'on_hold', 'blocked'],
@@ -7119,6 +9208,7 @@ export const Constants = {
         'equipment',
         'other',
       ],
+      fabric_type_enum: ['knitted', 'woven'],
       fabric_uom: ['meter', 'yard', 'kg'],
       fabric_variant_status: ['active', 'draft', 'discontinued'],
       inventory_item_type: ['yarn', 'raw_fabric', 'finished_fabric'],
@@ -7151,6 +9241,7 @@ export const Constants = {
         'final_check',
         'packing',
       ],
+      public_stock_display_type: ['none', 'status', 'quantity'],
       purchase_order_status: [
         'draft',
         'approved',
@@ -7158,6 +9249,12 @@ export const Constants = {
         'partial_received',
         'completed',
         'cancelled',
+        'submitted',
+        'pending_approval',
+        'request_changes',
+        'sent',
+        'supplier_confirmed',
+        'receiving',
       ],
       quotation_status: [
         'draft',
@@ -7190,7 +9287,7 @@ export const Constants = {
         'adjustment',
         'return_credit',
       ],
-      uom_type: ['kg', 'c├óy', 'm├⌐t', 'cuß╗Ön'],
+      uom_type: ['kg', 'cây', 'mét', 'cuộn'],
       user_role: [
         'admin',
         'manager',
