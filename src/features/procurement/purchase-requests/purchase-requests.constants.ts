@@ -61,6 +61,8 @@ export const PR_LABELS = {
   /* ── Actions ── */
   ACTION_DELETE: 'Xóa',
   CONFIRM_DELETE: 'Bạn có chắc muốn xóa yêu cầu mua hàng này?',
+  DELETE_SUCCESS: 'Đã xóa yêu cầu mua hàng thành công!',
+  DELETE_ERROR: 'Không thể xóa yêu cầu mua hàng:',
 
   /* ── KPI ── */
   KPI_TOTAL: 'Tổng PR',

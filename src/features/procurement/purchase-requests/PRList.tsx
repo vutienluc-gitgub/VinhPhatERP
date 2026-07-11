@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnDef } from '@tanstack/react-table';
+import toast from 'react-hot-toast';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
@@ -31,6 +32,11 @@ import {
   PR_KPI_VARIANTS,
 } from './purchase-requests.constants';
 
+function formatDate(dateStr: string | null | undefined): string {
+  if (!dateStr) return 'N/A';
+  return new Date(dateStr).toLocaleDateString('vi-VN');
+}
+
 export function PRList() {
   const navigate = useNavigate();
   const { filters, setFilter, clearFilters, hasActiveFilter } =
@@ -42,9 +48,19 @@ export function PRList() {
     isLoading,
     error,
   } = usePurchaseRequestsList(filters, page);
-  const purchaseRequests = result?.data ?? [];
+  const purchaseRequests = useMemo(() => result?.data ?? [], [result?.data]);
   const deleteMutation = useDeletePurchaseRequest();
   const { confirm } = useConfirm();
+
+  const counts = useMemo(() => {
+    let draft = 0;
+    let submitted = 0;
+    for (const p of purchaseRequests) {
+      if (p.status === 'draft') draft++;
+      else if (p.status === 'submitted') submitted++;
+    }
+    return { draft, submitted };
+  }, [purchaseRequests]);
 
   const filterSchema: FilterFieldConfig[] = [
     {
@@ -87,7 +103,10 @@ export function PRList() {
       if (!ok) return;
       try {
         await deleteMutation.mutateAsync(pr.id);
+        toast.success(PR_LABELS.DELETE_SUCCESS);
       } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        toast.error(`${PR_LABELS.DELETE_ERROR} ${msg}`);
         console.error('[PRDeleteError]', err);
       }
     },
@@ -135,15 +154,11 @@ export function PRList() {
       {
         accessorKey: 'created_at',
         header: PR_LABELS.COL_CREATED_AT,
-        cell: ({ row }) => {
-          const date = row.original.created_at;
-          if (!date) return <span className="text-muted">N/A</span>;
-          return (
-            <span className="text-sm text-muted">
-              {new Date(date).toLocaleDateString('vi-VN')}
-            </span>
-          );
-        },
+        cell: ({ row }) => (
+          <span className="text-sm text-muted">
+            {formatDate(row.original.created_at)}
+          </span>
+        ),
       },
       {
         id: 'actions',
@@ -188,20 +203,21 @@ export function PRList() {
           value={result?.total ?? 0}
           icon="ClipboardList"
           variant="primary"
+          isLoading={isLoading}
         />
         <KpiCard
           label={PR_LABELS.KPI_DRAFT}
-          value={purchaseRequests.filter((p) => p.status === 'draft').length}
+          value={counts.draft}
           icon="FileEdit"
           variant={PR_KPI_VARIANTS.draft}
+          isLoading={isLoading}
         />
         <KpiCard
           label={PR_LABELS.KPI_SUBMITTED}
-          value={
-            purchaseRequests.filter((p) => p.status === 'submitted').length
-          }
+          value={counts.submitted}
           icon="Clock"
           variant="warning"
+          isLoading={isLoading}
         />
       </KpiGrid>
 
@@ -259,11 +275,7 @@ export function PRList() {
                 <Badge variant={PR_PRIORITY_COLORS[pr.priority] ?? 'gray'}>
                   {PR_PRIORITY_LABELS[pr.priority] ?? pr.priority}
                 </Badge>
-                <span>
-                  {pr.created_at
-                    ? new Date(pr.created_at).toLocaleDateString('vi-VN')
-                    : 'N/A'}
-                </span>
+                <span>{formatDate(pr.created_at)}</span>
               </div>
               <div className="flex justify-end pt-2 border-t border-border/10">
                 <Icon name="ChevronRight" size={16} className="text-muted" />
