@@ -86,7 +86,7 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
             </label>
             <input
               id="receiverName"
-              className={`field-input${errors.receiverName ? ' is-error' : ''}`}
+              className={`field-input${errors.receiverName ? ' border-danger' : ''}`}
               {...register('receiverName')}
               placeholder="Họ tên người nhận hàng"
             />
@@ -113,7 +113,7 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
             Ảnh biên nhận / chữ ký <span className="field-required">*</span>
           </label>
           <input
-            className={`field-input${errors.deliveryProof ? ' is-error' : ''}`}
+            className={`field-input${errors.deliveryProof ? ' border-danger' : ''}`}
             type="file"
             accept="image/*"
             capture="environment"

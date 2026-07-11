@@ -201,7 +201,7 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
             id: 'payment_accounts',
             sortable: true,
             accessor: (exp) => exp.payment_accounts?.name,
-            className: 'td-muted',
+            className: 'text-muted text-sm',
             cell: (exp) => exp.payment_accounts?.name ?? '—',
           },
           {

@@ -170,7 +170,7 @@ export function RecurringTransactionForm({
             </label>
             <input
               id="name"
-              className={`field-input${errors.name ? ' is-error' : ''}`}
+              className={`field-input${errors.name ? ' border-danger' : ''}`}
               type="text"
               placeholder="VD: Tiền thuê kho tháng, Lương nhân viên"
               {...register('name')}
@@ -208,7 +208,7 @@ export function RecurringTransactionForm({
                 render={({ field }) => (
                   <MoneyInput
                     id="amount"
-                    className={`field-input${errors.amount ? ' is-error' : ''}`}
+                    className={`field-input${errors.amount ? ' border-danger' : ''}`}
                     value={field.value}
                     onChange={(v) => field.onChange(v ?? 0)}
                     onBlur={field.onBlur}
@@ -268,7 +268,7 @@ export function RecurringTransactionForm({
             </label>
             <input
               id="nextRunDate"
-              className={`field-input${errors.nextRunDate ? ' is-error' : ''}`}
+              className={`field-input${errors.nextRunDate ? ' border-danger' : ''}`}
               type="date"
               {...register('nextRunDate')}
             />
@@ -335,7 +335,7 @@ export function RecurringTransactionForm({
             </label>
             <input
               id="description"
-              className={`field-input${errors.description ? ' is-error' : ''}`}
+              className={`field-input${errors.description ? ' border-danger' : ''}`}
               type="text"
               placeholder="VD: Tiền thuê kho hàng tại Q.Bình Tân"
               {...register('description')}

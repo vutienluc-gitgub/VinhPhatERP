@@ -134,7 +134,7 @@ export function QuickSupplierForm({
             <div className="form-field">
               <label className="text-xs">Ma NCC</label>
               <input
-                className={`field-input${errors.code ? ' is-error' : ''}`}
+                className={`field-input${errors.code ? ' border-danger' : ''}`}
                 type="text"
                 readOnly
                 {...register('code')}
@@ -165,7 +165,7 @@ export function QuickSupplierForm({
               Ten NCC <span className="field-required">*</span>
             </label>
             <input
-              className={`field-input${errors.name ? ' is-error' : ''}`}
+              className={`field-input${errors.name ? ' border-danger' : ''}`}
               type="text"
               placeholder="VD: Cong ty TNHH ABC"
               autoFocus

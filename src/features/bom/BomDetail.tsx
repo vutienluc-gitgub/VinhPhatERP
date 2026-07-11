@@ -186,7 +186,7 @@ export function BomDetail({
           <thead>
             <tr>
               <th>Loại Sợi</th>
-              <th className="hide-mobile">Thành phần</th>
+              <th className="max-sm:hidden">Thành phần</th>
               <th className="text-right">Tỉ lệ (%)</th>
               <th className="text-right">Tiêu hao (kg/m)</th>
             </tr>
@@ -196,15 +196,15 @@ export function BomDetail({
               <tr key={item.id}>
                 <td>
                   <strong>{item.yarn_catalogs?.code}</strong>
-                  <div className="td-muted text-xs">
+                  <div className="text-muted text-sm text-xs">
                     {item.yarn_catalogs?.name}
                   </div>
                 </td>
-                <td className="hide-mobile td-muted">
+                <td className="max-sm:hidden text-muted text-sm">
                   {item.yarn_catalogs?.composition || '\u2014'}
                 </td>
                 <td className="text-right font-bold">{item.ratio_pct}%</td>
-                <td className="text-right td-muted">
+                <td className="text-right text-muted text-sm">
                   {item.consumption_kg_per_m} kg/m
                 </td>
               </tr>
@@ -226,7 +226,7 @@ export function BomDetail({
       <div className="p-5">
         <span className="font-bold text-lg block mb-3">Lich su phien ban</span>
         {versions.length === 0 ? (
-          <p className="td-muted text-sm italic">
+          <p className="text-muted text-sm text-sm italic">
             Chưa có lịch sử (chưa từng được duyệt).
           </p>
         ) : (
@@ -241,7 +241,7 @@ export function BomDetail({
                   <p className="text-sm font-bold">
                     {ver.change_reason || 'Phê duyệt ban đầu'}
                   </p>
-                  <p className="td-muted text-xs mt-0.5">
+                  <p className="text-muted text-sm text-xs mt-0.5">
                     {ver.created_by_profile?.full_name ?? 'N/A'} •{' '}
                     {/* eslint-disable-next-line no-restricted-syntax */}
                     {new Date(ver.created_at).toLocaleString('vi-VN')}

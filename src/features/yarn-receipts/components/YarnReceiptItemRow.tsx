@@ -141,7 +141,7 @@ export function YarnReceiptItemRow({
             render={({ field }) => (
               <QuantityInput
                 id={`items.${index}.quantity`}
-                className={`field-input${itemErrors?.quantity ? ' is-error' : ''}`}
+                className={`field-input${itemErrors?.quantity ? ' border-danger' : ''}`}
                 value={field.value}
                 onChange={(val) => field.onChange(val ?? 0)}
                 onBlur={field.onBlur}
@@ -165,7 +165,7 @@ export function YarnReceiptItemRow({
             render={({ field }) => (
               <MoneyInput
                 id={`items.${index}.unitPrice`}
-                className={`field-input${itemErrors?.unitPrice ? ' is-error' : ''}`}
+                className={`field-input${itemErrors?.unitPrice ? ' border-danger' : ''}`}
                 value={field.value}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
@@ -308,7 +308,7 @@ export function YarnReceiptItemRow({
             render={({ field }) => (
               <QuantityInput
                 id={`items.${index}.netWeight`}
-                className={`field-input${itemErrors?.netWeight ? ' is-error' : ''}`}
+                className={`field-input${itemErrors?.netWeight ? ' border-danger' : ''}`}
                 value={field.value}
                 onChange={(val) => field.onChange(val ?? null)}
                 onBlur={field.onBlur}
@@ -330,7 +330,7 @@ export function YarnReceiptItemRow({
             render={({ field }) => (
               <QuantityInput
                 id={`items.${index}.grossWeight`}
-                className={`field-input${itemErrors?.grossWeight ? ' is-error' : ''}`}
+                className={`field-input${itemErrors?.grossWeight ? ' border-danger' : ''}`}
                 value={field.value}
                 onChange={(val) => field.onChange(val ?? null)}
                 onBlur={field.onBlur}
@@ -403,7 +403,7 @@ export function YarnReceiptItemRow({
           <label htmlFor={`items.${index}.conesPerBox`}>Côn/thùng</label>
           <input
             id={`items.${index}.conesPerBox`}
-            className={`field-input${itemErrors?.conesPerBox ? ' is-error' : ''}`}
+            className={`field-input${itemErrors?.conesPerBox ? ' border-danger' : ''}`}
             type="number"
             min={1}
             placeholder="VD: 18"
@@ -426,7 +426,7 @@ export function YarnReceiptItemRow({
           <label htmlFor={`items.${index}.boxCount`}>Số thùng</label>
           <input
             id={`items.${index}.boxCount`}
-            className={`field-input${itemErrors?.boxCount ? ' is-error' : ''}`}
+            className={`field-input${itemErrors?.boxCount ? ' border-danger' : ''}`}
             type="number"
             min={1}
             placeholder="VD: 10"

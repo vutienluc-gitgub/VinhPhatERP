@@ -289,7 +289,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               header: 'Tổng tiền',
               id: 'total_amount',
               sortable: true,
-              className: 'text-right numeric-cell font-medium',
+              className: 'text-right text-right tabular-nums font-medium',
               cell: (order) => (
                 <MoneyText value={order.total_amount} suffix="đ" />
               ),
@@ -299,7 +299,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               id: 'paid_amount',
               sortable: true,
               accessor: (order) => calculateBalanceDue(order),
-              className: 'text-right numeric-cell font-bold',
+              className: 'text-right text-right tabular-nums font-bold',
               cell: (order) => {
                 const balanceDue = calculateBalanceDue(order);
                 return (

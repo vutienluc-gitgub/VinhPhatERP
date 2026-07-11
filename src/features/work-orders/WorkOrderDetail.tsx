@@ -303,7 +303,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                   <thead>
                     <tr>
                       <th>Loại sợi</th>
-                      <th className="hide-mobile">Mã màu</th>
+                      <th className="max-sm:hidden">Mã màu</th>
                       <th className="text-right">% BOM</th>
                       <th className="text-right">Cần (kg)</th>
                       <th className="text-right">Đã xuất</th>
@@ -315,7 +315,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                         <td>
                           <strong>{req.yarn_catalog?.name || '—'}</strong>
                         </td>
-                        <td className="hide-mobile td-muted">
+                        <td className="max-sm:hidden text-muted text-sm">
                           {req.yarn_catalog?.color_name || '—'}
                         </td>
                         <td className="text-right">{req.bom_ratio_pct}%</td>
@@ -426,11 +426,11 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                 <thead>
                   <tr>
                     <th>Phieu nhap</th>
-                    <th className="hide-mobile">NCC soi</th>
+                    <th className="max-sm:hidden">NCC soi</th>
                     <th>Loai soi</th>
-                    <th className="hide-mobile">Lo (Lot)</th>
+                    <th className="max-sm:hidden">Lo (Lot)</th>
                     <th className="text-right">So luong (kg)</th>
-                    <th className="hide-mobile">Ngay xuat</th>
+                    <th className="max-sm:hidden">Ngay xuat</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -441,17 +441,17 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                           {issue.receipt_number}
                         </span>
                       </td>
-                      <td className="hide-mobile td-muted">
+                      <td className="max-sm:hidden text-muted text-sm">
                         {issue.supplier_name}
                       </td>
                       <td className="font-medium">{issue.yarn_type}</td>
-                      <td className="hide-mobile td-muted">
+                      <td className="max-sm:hidden text-muted text-sm">
                         {issue.lot_number ?? '—'}
                       </td>
                       <td className="text-right font-bold text-success tabular-nums">
                         {formatQuantity(issue.issued_kg)}
                       </td>
-                      <td className="hide-mobile td-muted">
+                      <td className="max-sm:hidden text-muted text-sm">
                         {new Date(issue.created_at).toLocaleDateString('vi-VN')}
                       </td>
                     </tr>
@@ -463,7 +463,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                     <td className="text-right text-success tabular-nums">
                       {formatQuantity(calcTotalIssuedKg(yarnIssues))} kg
                     </td>
-                    <td className="hide-mobile" />
+                    <td className="max-sm:hidden" />
                   </tr>
                 </tbody>
               </table>

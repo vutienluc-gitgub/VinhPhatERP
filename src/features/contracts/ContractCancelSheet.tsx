@@ -56,7 +56,7 @@ export function ContractCancelSheet({
           Lý do huỷ <span className="field-required">*</span>
         </label>
         <textarea
-          className={`field-textarea${hasError ? ' is-error' : ''}`}
+          className={`field-textarea${hasError ? ' border-danger' : ''}`}
           rows={4}
           placeholder="Nhập lý do huỷ hợp đồng..."
           value={reason}

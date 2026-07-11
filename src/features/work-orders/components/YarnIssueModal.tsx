@@ -113,8 +113,8 @@ function RequirementGroup({
             <thead>
               <tr>
                 <th>Phieu nhap</th>
-                <th className="hide-mobile">NCC</th>
-                <th className="hide-mobile">Lo (Lot)</th>
+                <th className="max-sm:hidden">NCC</th>
+                <th className="max-sm:hidden">Lo (Lot)</th>
                 <th className="text-right">Ton kho (kg)</th>
                 <th className="text-right" style={{ width: 120 }}>
                   Xuat (kg)
@@ -139,10 +139,10 @@ function RequirementGroup({
                         </p>
                       </div>
                     </td>
-                    <td className="hide-mobile td-muted">
+                    <td className="max-sm:hidden text-muted text-sm">
                       {lot.supplier_name}
                     </td>
-                    <td className="hide-mobile td-muted">
+                    <td className="max-sm:hidden text-muted text-sm">
                       {lot.lot_number ?? '—'}
                     </td>
                     <td className="text-right font-medium tabular-nums">

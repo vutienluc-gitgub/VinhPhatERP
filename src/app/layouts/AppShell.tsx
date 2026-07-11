@@ -9,10 +9,9 @@ import {
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
-import { useDashboardStats } from '@/application/analytics';
 import { useChatNotifications, useTotalUnread } from '@/application/chat';
 import { ChatInboxDrawer } from '@/features/chat/ChatInboxDrawer';
-import { getNavigationItems } from '@/app/router/routes';
+import { getNavigationItems, hasAccess } from '@/app/router/routes';
 import type { NavigationItem } from '@/app/router/routes';
 import type { UserRole } from '@/shared/types/database.models';
 import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
@@ -21,30 +20,19 @@ import {
   PreferencesContext,
   type PreferencesContextValue,
 } from '@/shared/context/preferences-context';
-import {
-  GROUP_LABELS,
-  GROUP_ORDER,
-  getDefaultCollapsedByRole,
-} from '@/shared/constants/navigation';
+import { GROUP_LABELS } from '@/shared/constants/navigation';
 import { GuideCommandPalette } from '@/features/guide-system/components/GuideCommandPalette';
 import { GreigeCalculatorModal } from '@/features/costing/components/GreigeCalculatorModal';
+import { APP_SHELL_LABELS } from '@/shared/constants/layout';
 
 import { MobileMoreDrawer } from './MobileMoreDrawer';
 import { NotificationBell } from './NotificationBell';
-import { SidebarPromo } from './SidebarPromo';
+import { AppLauncher } from './AppLauncher';
 
 function getCurrentItem(pathname: string) {
   return getNavigationItems().find((item) =>
     item.path === '/' ? pathname === '/' : pathname.startsWith(item.path),
   );
-}
-
-function hasAccess(
-  requiredRoles: UserRole[] | undefined,
-  role: UserRole | undefined,
-): boolean {
-  if (!requiredRoles || requiredRoles.length === 0) return true;
-  return role !== undefined && requiredRoles.includes(role);
 }
 
 const roleLabel: Record<UserRole, string> = {
@@ -55,13 +43,6 @@ const roleLabel: Record<UserRole, string> = {
   viewer: 'Viewer',
   sale: 'Sale',
   customer: 'Khách hàng',
-};
-
-type GroupedNav = {
-  group: string;
-  label: string;
-  icon: string;
-  items: NavigationItem[];
 };
 
 /** Paths của các tab cố định ở bottom nav (mobile). */
@@ -87,48 +68,24 @@ export function AppShell() {
   const totalUnread = useTotalUnread();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const currentItem = getCurrentItem(pathname);
-  const { data: stats } = useDashboardStats();
   const navigationItems = getNavigationItems();
 
   // ── User Preferences từ DB (nguồn sự thật duy nhất) ─────────────────────────
-  const {
-    prefs,
-    toggleTheme,
-    setFluidLayout,
-    setSidebarCollapsed,
-    setSidebarGroupsCollapsed,
-  } = useUserPreferences(profile?.id);
+  const { prefs, toggleTheme, setFluidLayout } = useUserPreferences(
+    profile?.id,
+  );
 
-  const isSidebarCollapsed = prefs.sidebar_collapsed;
-  const savedCollapsed = prefs.sidebar_groups_collapsed;
-
-  // Nếu user chưa có preference thu gọn nào → dùng default theo role
-  const collapsed = useMemo(() => {
-    const hasUserPreference = Object.keys(savedCollapsed).length > 0;
-    if (hasUserPreference) return savedCollapsed;
-    return getDefaultCollapsedByRole(profile?.role);
-  }, [savedCollapsed, profile?.role]);
-
-  // ── Khi bật fluid → tự động thu gọn sidebar ──────────────────────────────────
+  // ── Khi bật fluid → lưu lại nhưng không còn ảnh hưởng đến sidebar ──────────────────────────────────
   useEffect(() => {
     const handleFluidChange = () => {
       if (prefs.fluid_layout) {
-        setSidebarCollapsed(true);
+        // fluid_layout enabled
       }
     };
     window.addEventListener('layout-mode-changed', handleFluidChange);
     return () =>
       window.removeEventListener('layout-mode-changed', handleFluidChange);
-  }, [prefs.fluid_layout, setSidebarCollapsed]);
-
-  const toggleSidebar = useCallback(() => {
-    const next = !isSidebarCollapsed;
-    setSidebarCollapsed(next);
-    // Khi mở sidebar từ icon-only → reset tất cả group về trạng thái mở
-    if (!next) {
-      setSidebarGroupsCollapsed({});
-    }
-  }, [isSidebarCollapsed, setSidebarCollapsed, setSidebarGroupsCollapsed]);
+  }, [prefs.fluid_layout]);
 
   const userRole = profile?.role;
   const visibleNavItems = navigationItems.filter((item) =>
@@ -150,39 +107,6 @@ export function AppShell() {
   // Check if active page is in the drawer (not in bottom tabs)
   const isDrawerActive = drawerItems.some((item) =>
     item.path === '/' ? pathname === '/' : pathname.startsWith(item.path),
-  );
-
-  // Dashboard item (no group) for sidebar
-  const dashboardItem = visibleNavItems.find((item) => item.path === '/');
-
-  // Group remaining items for sidebar
-  const grouped: GroupedNav[] = useMemo(() => {
-    const itemsWithGroup = visibleNavItems.filter(
-      (item) => item.path !== '/' && item.group,
-    );
-    return GROUP_ORDER.map((groupKey) => {
-      const meta = GROUP_LABELS[groupKey];
-      if (!meta) return null;
-      const items = itemsWithGroup.filter((item) => item.group === groupKey);
-      if (items.length === 0) return null;
-      return {
-        group: groupKey,
-        label: meta.label,
-        icon: meta.icon,
-        items,
-      };
-    }).filter((g): g is GroupedNav => g !== null);
-  }, [visibleNavItems]);
-
-  const toggleGroup = useCallback(
-    (group: string) => {
-      const next = {
-        ...collapsed,
-        [group]: !collapsed[group],
-      };
-      setSidebarGroupsCollapsed(next);
-    },
-    [collapsed, setSidebarGroupsCollapsed],
   );
 
   // Close user menu on click outside
@@ -218,136 +142,39 @@ export function AppShell() {
       prefs,
       toggleTheme,
       setFluidLayout,
-      setSidebarCollapsed,
-      setSidebarGroupsCollapsed,
+      // Pass noops for legacy context consumers if any
+      setSidebarCollapsed: () => {},
+      setSidebarGroupsCollapsed: () => {},
     }),
-    [
-      prefs,
-      toggleTheme,
-      setFluidLayout,
-      setSidebarCollapsed,
-      setSidebarGroupsCollapsed,
-    ],
-  );
-
-  const renderNavLink = useCallback(
-    (item: NavigationItem) => {
-      const iconName = item.icon ?? 'Component';
-      return (
-        <NavLink
-          key={item.path}
-          to={item.path}
-          className={({ isActive }) =>
-            `nav-link${isActive ? ' is-active' : ''}`
-          }
-          end={item.path === '/'}
-          title={isSidebarCollapsed ? item.label : undefined}
-        >
-          <div className="nav-link-inner">
-            <span className="nav-icon" aria-hidden="true">
-              <Icon name={iconName} size={20} strokeWidth={1.5} />
-            </span>
-            <span className="nav-link-title">{item.label}</span>
-          </div>
-          {!isSidebarCollapsed &&
-          item.path === '/orders' &&
-          stats?.overdueOrders ? (
-            <span className="nav-badge danger">{stats.overdueOrders}</span>
-          ) : !isSidebarCollapsed &&
-            item.path === '/quotations' &&
-            stats?.expiringQuotations ? (
-            <span className="nav-badge warning">
-              {stats.expiringQuotations}
-            </span>
-          ) : null}
-        </NavLink>
-      );
-    },
-    [isSidebarCollapsed, stats],
+    [prefs, toggleTheme, setFluidLayout],
   );
 
   return (
     <PreferencesContext.Provider value={preferencesContextValue}>
-      <div
-        className={`shell-layout${isSidebarCollapsed ? ' is-collapsed' : ''}`}
-      >
+      <div className="shell-layout">
         {/* Hiệu ứng Glow Premium */}
         <div className="bg-glow bg-glow-1" />
         <div className="bg-glow bg-glow-2" />
 
-        <aside className="sidebar-nav sidebar-zircon">
-          <div className="brand-block" style={{ position: 'relative' }}>
-            <div className="flex items-center gap-3 brand-logo-container">
-              <div className="brand-icon-wrapper flex items-center justify-center">
-                <Icon
-                  name="Hexagon"
-                  size={24}
-                  className="text-primary-strong"
-                />
-              </div>
-              <div className="flex flex-col brand-logo-text">
-                <p className="eyebrow-premium text-[10px] uppercase tracking-widest opacity-70 mb-0">
-                  Vĩnh Phát
-                </p>
-                <h1 className="title-premium-gradient text-lg font-black tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-r from-primary-strong to-primary">
-                  ERP Sản xuất
-                </h1>
-              </div>
-            </div>
-            <button
-              type="button"
-              className="sidebar-collapse-btn hidden lg:flex"
-              onClick={toggleSidebar}
-              title={isSidebarCollapsed ? 'Mở rộng menu' : 'Thu gọn menu'}
-            >
-              <Icon
-                name={isSidebarCollapsed ? 'ChevronRight' : 'ChevronLeft'}
-                size={14}
-              />
-            </button>
-          </div>
-
-          <nav className="nav-stack" aria-label="Main navigation">
-            {/* Dashboard - always visible at top */}
-            {dashboardItem && renderNavLink(dashboardItem)}
-
-            {/* Grouped navigation */}
-            {grouped.map((g) => {
-              const isCollapsed = collapsed[g.group] ?? false;
-              const hasActive = g.items.some((item) =>
-                pathname.startsWith(item.path),
-              );
-              return (
-                <div key={g.group} className="nav-group">
-                  <button
-                    type="button"
-                    className={`nav-group-toggle${hasActive ? ' has-active' : ''}`}
-                    onClick={() => toggleGroup(g.group)}
-                    aria-expanded={!isCollapsed}
-                  >
-                    <span className="nav-group-label">{g.label}</span>
-                    <Icon
-                      name="ChevronDown"
-                      size={14}
-                      strokeWidth={2}
-                      className={`nav-group-chevron${isCollapsed ? ' is-collapsed' : ''}`}
-                    />
-                  </button>
-                  <div
-                    className={`nav-group-items${isCollapsed ? ' is-collapsed' : ''}`}
-                  >
-                    <div>{g.items.map(renderNavLink)}</div>
-                  </div>
-                </div>
-              );
-            })}
-          </nav>
-
-          <SidebarPromo />
-        </aside>
-
         <div className="content-shell">
           <header className="topbar">
+            {/* App Launcher & Brand Block */}
+            <div className="topbar-brand-block">
+              <AppLauncher />
+              <NavLink to="/" className="topbar-brand-logo">
+                <Icon
+                  name="Hexagon"
+                  size={20}
+                  className="text-primary-strong"
+                />
+                <h1 className="title-premium-gradient text-base font-black tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-r from-primary-strong to-primary">
+                  {APP_SHELL_LABELS.BRAND_NAME}
+                </h1>
+              </NavLink>
+            </div>
+
+            <div className="topbar-divider" />
+
             {/* Breadcrumb */}
             <nav className="topbar-breadcrumb" aria-label="Breadcrumb">
               <NavLink to="/">
@@ -378,7 +205,9 @@ export function AppShell() {
                 </>
               )}
               {!currentItem && (
-                <span className="topbar-breadcrumb-current">Tổng quan</span>
+                <span className="topbar-breadcrumb-current">
+                  {APP_SHELL_LABELS.HOME}
+                </span>
               )}
             </nav>
 
@@ -389,10 +218,12 @@ export function AppShell() {
               <NavLink
                 to="/guide"
                 className="hidden sm:flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-muted hover:bg-surface-subtle hover:text-foreground transition-colors mr-1"
-                title="Sổ tay / Hướng dẫn sử dụng"
+                title={APP_SHELL_LABELS.GUIDE_TITLE}
               >
                 <Icon name="BookOpen" size={16} strokeWidth={1.5} />
-                <span className="hidden md:inline">Sổ tay</span>
+                <span className="hidden md:inline">
+                  {APP_SHELL_LABELS.GUIDE}
+                </span>
               </NavLink>
 
               <button
@@ -403,12 +234,14 @@ export function AppShell() {
                   )
                 }
                 className="hidden sm:flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-muted hover:bg-surface-subtle hover:text-foreground transition-colors mr-1"
-                title="Tìm kiếm nhanh (Ctrl+K)"
+                title={APP_SHELL_LABELS.SEARCH_PLACEHOLDER}
               >
                 <Icon name="Search" size={16} strokeWidth={1.5} />
-                <span className="hidden md:inline">Tìm kiếm</span>
+                <span className="hidden md:inline">
+                  {APP_SHELL_LABELS.SEARCH}
+                </span>
                 <kbd className="hidden lg:inline-flex items-center px-1.5 py-0.5 rounded border border-border bg-surface-subtle text-[10px] font-medium text-muted">
-                  Ctrl K
+                  {APP_SHELL_LABELS.SEARCH_KBD}
                 </kbd>
               </button>
 
@@ -416,17 +249,23 @@ export function AppShell() {
                 type="button"
                 className="hidden sm:flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-primary hover:bg-primary/10 transition-colors mr-1"
                 onClick={() => setShowCostingModal(true)}
-                title="Máy tính giá mộc (Costing Studio)"
+                title={APP_SHELL_LABELS.CALCULATOR_TITLE}
               >
                 <Icon name="Calculator" size={16} strokeWidth={1.5} />
-                <span className="hidden md:inline">Tính giá</span>
+                <span className="hidden md:inline">
+                  {APP_SHELL_LABELS.CALCULATOR}
+                </span>
               </button>
 
               <button
                 type="button"
                 className="topbar-icon-btn"
                 onClick={toggleTheme}
-                title={prefs.theme === 'dark' ? 'Chế độ Sáng' : 'Chế độ Tối'}
+                title={
+                  prefs.theme === 'dark'
+                    ? APP_SHELL_LABELS.THEME_LIGHT
+                    : APP_SHELL_LABELS.THEME_DARK
+                }
                 aria-label="Toggle Theme"
               >
                 <Icon
@@ -442,8 +281,8 @@ export function AppShell() {
                     type="button"
                     className="topbar-icon-btn topbar-chat-inbox-btn"
                     onClick={() => setShowChatInbox(true)}
-                    title="Hộp thư"
-                    aria-label="Hộp thư"
+                    title={APP_SHELL_LABELS.INBOX}
+                    aria-label={APP_SHELL_LABELS.INBOX}
                     style={{ position: 'relative' }}
                   >
                     <svg
@@ -508,7 +347,7 @@ export function AppShell() {
                     }}
                   >
                     <Icon name="LogOut" size={16} strokeWidth={1.5} />
-                    Đăng xuất
+                    {APP_SHELL_LABELS.LOGOUT}
                   </button>
                 </div>
               )}
@@ -538,7 +377,7 @@ export function AppShell() {
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) =>
-                  `mobile-nav-link${isActive ? ' is-active' : ''}`
+                  `mobile-nav-link${isActive ? ' text-primary bg-primary/10' : ''}`
                 }
                 end={item.path === '/'}
               >
@@ -557,7 +396,7 @@ export function AppShell() {
           })}
           <button
             type="button"
-            className={`mobile-nav-link mobile-menu-btn${isDrawerActive ? ' is-active' : ''}`}
+            className={`mobile-nav-link mobile-menu-btn${isDrawerActive ? ' text-primary bg-primary/10' : ''}`}
             onClick={() => setShowMore(true)}
             aria-label="Menu"
           >
@@ -566,7 +405,7 @@ export function AppShell() {
               size={22}
               strokeWidth={isDrawerActive ? 2.2 : 1.6}
             />
-            <span>Menu</span>
+            <span>{APP_SHELL_LABELS.MENU}</span>
           </button>
         </nav>
 

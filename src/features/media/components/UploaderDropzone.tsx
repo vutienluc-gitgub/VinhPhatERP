@@ -72,7 +72,7 @@ export function UploaderDropzone({
   return (
     <>
       <div
-        className={`media-dropzone${isDragActive ? ' is-active' : ''}`}
+        className={`media-dropzone${isDragActive ? ' text-primary bg-primary/10' : ''}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -127,7 +127,7 @@ export function UploaderDropzone({
                 <div
                   className={`media-upload-bar-fill${
                     u.status === 'error'
-                      ? ' is-error'
+                      ? ' border-danger'
                       : u.status === 'done'
                         ? ' is-done'
                         : ''

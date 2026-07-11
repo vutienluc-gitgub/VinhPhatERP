@@ -189,7 +189,7 @@ function ItemQuantityFields({
         </label>
         <input
           id={`items.${index}.quantity`}
-          className={`field-input${errors.items?.[index]?.quantity ? ' is-error' : ''}`}
+          className={`field-input${errors.items?.[index]?.quantity ? ' border-danger' : ''}`}
           type="number"
           step="0.001"
           min="0"
@@ -209,7 +209,7 @@ function ItemQuantityFields({
         </label>
         <input
           id={`items.${index}.unitPrice`}
-          className={`field-input${errors.items?.[index]?.unitPrice ? ' is-error' : ''}`}
+          className={`field-input${errors.items?.[index]?.unitPrice ? ' border-danger' : ''}`}
           type="number"
           step="1"
           min="0"
@@ -387,7 +387,7 @@ export function QuotationForm({
                 </label>
                 <input
                   id="quotationDate"
-                  className={`field-input${errors.quotationDate ? ' is-error' : ''}`}
+                  className={`field-input${errors.quotationDate ? ' border-danger' : ''}`}
                   type="date"
                   {...register('quotationDate')}
                 />
@@ -431,7 +431,7 @@ export function QuotationForm({
                 <label htmlFor="validUntil">Hiệu lực đến</label>
                 <input
                   id="validUntil"
-                  className={`field-input${errors.validUntil ? ' is-error' : ''}`}
+                  className={`field-input${errors.validUntil ? ' border-danger' : ''}`}
                   type="date"
                   {...register('validUntil')}
                 />

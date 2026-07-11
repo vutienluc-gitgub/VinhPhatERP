@@ -115,7 +115,7 @@ export function TemplateEditor({
             <input
               id="template-name"
               type="text"
-              className={`field-input${errors.name ? ' is-error' : ''}`}
+              className={`field-input${errors.name ? ' border-danger' : ''}`}
               {...register('name')}
             />
             {errors.name && (
@@ -150,7 +150,7 @@ export function TemplateEditor({
             </label>
             <textarea
               id="template-content"
-              className={`field-textarea font-mono text-sm${errors.content ? ' is-error' : ''}`}
+              className={`field-textarea font-mono text-sm${errors.content ? ' border-danger' : ''}`}
               rows={20}
               placeholder="<p>Nội dung hợp đồng với {{placeholder}}...</p>"
               {...register('content')}

@@ -165,7 +165,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
                 <input
                   id="code"
                   type="text"
-                  className={`field-input${errors.code ? ' is-error' : ''}`}
+                  className={`field-input${errors.code ? ' border-danger' : ''}`}
                   placeholder="VD: NCC-001"
                   readOnly={!isEditing}
                   {...register('code')}
@@ -182,7 +182,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
                 <input
                   id="name"
                   type="text"
-                  className={`field-input${errors.name ? ' is-error' : ''}`}
+                  className={`field-input${errors.name ? ' border-danger' : ''}`}
                   placeholder="VD: Công ty TNHH ABC"
                   {...register('name')}
                 />
@@ -199,7 +199,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
                 <input
                   id="phone"
                   type="tel"
-                  className={`field-input${errors.phone ? ' is-error' : ''}`}
+                  className={`field-input${errors.phone ? ' border-danger' : ''}`}
                   placeholder="VD: 0901 234 567"
                   {...register('phone')}
                 />
@@ -213,7 +213,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
                 <input
                   id="email"
                   type="email"
-                  className={`field-input${errors.email ? ' is-error' : ''}`}
+                  className={`field-input${errors.email ? ' border-danger' : ''}`}
                   placeholder="VD: supplier@example.com"
                   {...register('email')}
                 />
@@ -242,7 +242,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
                 <input
                   id="tax_code"
                   type="text"
-                  className={`field-input${errors.tax_code ? ' is-error' : ''}`}
+                  className={`field-input${errors.tax_code ? ' border-danger' : ''}`}
                   placeholder="VD: 0312345678"
                   {...register('tax_code')}
                 />

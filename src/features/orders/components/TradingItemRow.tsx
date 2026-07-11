@@ -214,7 +214,7 @@ export function TradingItemRow({
             </label>
             <input
               id={`items.${index}.quantity`}
-              className={`field-input${itemErrors?.quantity ? ' is-error' : ''}`}
+              className={`field-input${itemErrors?.quantity ? ' border-danger' : ''}`}
               type="number"
               step="0.001"
               min="0"
@@ -242,7 +242,7 @@ export function TradingItemRow({
               render={({ field }) => (
                 <MoneyInput
                   id={`items.${index}.unitPrice`}
-                  className={`field-input${itemErrors?.unitPrice ? ' is-error' : ''}`}
+                  className={`field-input${itemErrors?.unitPrice ? ' border-danger' : ''}`}
                   value={field.value}
                   onChange={field.onChange}
                   onBlur={field.onBlur}

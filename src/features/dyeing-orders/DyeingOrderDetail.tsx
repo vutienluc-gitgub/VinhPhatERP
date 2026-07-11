@@ -222,7 +222,7 @@ export function DyeingOrderDetail({
                 <th>Loai vai</th>
                 <th className="text-right">Trong luong (kg)</th>
                 <th>Mau nhuom</th>
-                <th className="hide-mobile">Ghi chu item</th>
+                <th className="max-sm:hidden">Ghi chu item</th>
               </tr>
             </thead>
             <tbody>
@@ -248,7 +248,7 @@ export function DyeingOrderDetail({
                       </span>
                     </div>
                   </td>
-                  <td className="text-muted hide-mobile">
+                  <td className="text-muted max-sm:hidden">
                     {item.notes || '—'}
                   </td>
                 </tr>

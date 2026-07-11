@@ -74,7 +74,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
             Tên bảng giá <span className="field-required">*</span>
           </label>
           <input
-            className={`field-input${errors.name ? ' is-error' : ''}`}
+            className={`field-input${errors.name ? ' border-danger' : ''}`}
             {...register('name')}
             placeholder="VD: Tuyến HCM - Bình Dương"
           />
@@ -87,7 +87,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
             Khu vực giao <span className="field-required">*</span>
           </label>
           <input
-            className={`field-input${errors.destinationArea ? ' is-error' : ''}`}
+            className={`field-input${errors.destinationArea ? ' border-danger' : ''}`}
             {...register('destinationArea')}
             placeholder="VD: Bình Dương"
           />
@@ -104,7 +104,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
             control={control}
             render={({ field }) => (
               <MoneyInput
-                className={`field-input${errors.ratePerTrip ? ' is-error' : ''}`}
+                className={`field-input${errors.ratePerTrip ? ' border-danger' : ''}`}
                 value={field.value}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
@@ -126,7 +126,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
             control={control}
             render={({ field }) => (
               <MoneyInput
-                className={`field-input${errors.ratePerMeter ? ' is-error' : ''}`}
+                className={`field-input${errors.ratePerMeter ? ' border-danger' : ''}`}
                 value={field.value}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
@@ -148,7 +148,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
             control={control}
             render={({ field }) => (
               <MoneyInput
-                className={`field-input${errors.ratePerKg ? ' is-error' : ''}`}
+                className={`field-input${errors.ratePerKg ? ' border-danger' : ''}`}
                 value={field.value}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
@@ -172,7 +172,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
             control={control}
             render={({ field }) => (
               <MoneyInput
-                className={`field-input${errors.loadingFee ? ' is-error' : ''}`}
+                className={`field-input${errors.loadingFee ? ' border-danger' : ''}`}
                 value={field.value}
                 onChange={(v) => field.onChange(v ?? 0)}
                 onBlur={field.onBlur}
@@ -194,7 +194,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
             control={control}
             render={({ field }) => (
               <MoneyInput
-                className={`field-input${errors.minCharge ? ' is-error' : ''}`}
+                className={`field-input${errors.minCharge ? ' border-danger' : ''}`}
                 value={field.value}
                 onChange={(v) => field.onChange(v ?? 0)}
                 onBlur={field.onBlur}

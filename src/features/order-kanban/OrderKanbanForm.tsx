@@ -70,7 +70,7 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
 
   return (
     <div
-      className={`kanban-card-premium ${isOverdue ? 'is-overdue' : ''} ${isInProgress ? 'is-active' : ''}`}
+      className={`kanban-card-premium ${isOverdue ? 'is-overdue' : ''} ${isInProgress ? 'text-primary bg-primary/10' : ''}`}
       onClick={() => navigate(`/orders/${item.id}`)}
       role="button"
       tabIndex={0}

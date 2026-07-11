@@ -51,14 +51,14 @@ export const YARN_INVENTORY_COLUMNS: ColumnDef<YarnAvailability, unknown>[] = [
     id: 'color_name',
     accessorKey: 'color_name',
     cell: ({ row }) => row.original.color_name || '—',
-    meta: { className: 'hide-mobile' },
+    meta: { className: 'max-sm:hidden' },
   },
   {
     header: 'Tổng tồn (kg)',
     id: 'total_stock_qty',
     accessorKey: 'total_stock_qty',
     cell: ({ row }) => <WeightText value={row.original.total_stock_qty} />,
-    meta: { className: 'text-right hide-mobile text-slate-600' },
+    meta: { className: 'text-right max-sm:hidden text-slate-600' },
   },
   {
     header: 'Đã giữ (kg)',
@@ -76,7 +76,7 @@ export const YARN_INVENTORY_COLUMNS: ColumnDef<YarnAvailability, unknown>[] = [
         )}
       </span>
     ),
-    meta: { className: 'text-right hide-mobile' },
+    meta: { className: 'text-right max-sm:hidden' },
   },
   {
     header: 'Khả dụng (Available)',

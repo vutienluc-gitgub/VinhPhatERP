@@ -25,12 +25,12 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
     {
       header: 'Khách hàng',
       cell: (r) => r.customer_name,
-      className: 'hide-mobile td-muted',
+      className: 'max-sm:hidden text-muted text-sm',
     },
     {
       header: 'Hạn giao',
       cell: (r) => r.delivery_date,
-      className: 'td-muted',
+      className: 'text-muted text-sm',
     },
     {
       header: 'Trễ',
@@ -54,7 +54,7 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
           <MoneyText value={r.total_amount} />đ
         </>
       ),
-      className: 'text-right hide-mobile td-muted',
+      className: 'text-right max-sm:hidden text-muted text-sm',
     },
     {
       header: 'Còn nợ',

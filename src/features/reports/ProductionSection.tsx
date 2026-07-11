@@ -136,7 +136,7 @@ export function ProductionSection({
     {
       header: 'TB trễ (ngày)',
       cell: (st) => formatNum(st.avgDeviation),
-      className: 'text-right hide-mobile',
+      className: 'text-right max-sm:hidden',
     },
   ];
 

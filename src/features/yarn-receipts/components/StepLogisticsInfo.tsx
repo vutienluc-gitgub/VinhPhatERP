@@ -34,7 +34,7 @@ export function StepLogisticsInfo({ hidden }: StepLogisticsInfoProps) {
             <label htmlFor="vehicleInfo">Thông tin xe / Tài xế</label>
             <input
               id="vehicleInfo"
-              className={`field-input${errors.vehicleInfo ? ' is-error' : ''}`}
+              className={`field-input${errors.vehicleInfo ? ' border-danger' : ''}`}
               type="text"
               placeholder="VD: Xe 51C-123.45, Tài xế Hải"
               {...register('vehicleInfo')}
@@ -52,7 +52,7 @@ export function StepLogisticsInfo({ hidden }: StepLogisticsInfoProps) {
               <div key={field.id} className="flex items-start gap-2">
                 <div className="flex-1">
                   <input
-                    className={`field-input${errors.additionalFees?.[index]?.name ? ' is-error' : ''}`}
+                    className={`field-input${errors.additionalFees?.[index]?.name ? ' border-danger' : ''}`}
                     type="text"
                     placeholder="Tên loại phí (VD: Cước vận chuyển)"
                     {...register(`additionalFees.${index}.name`)}
@@ -65,7 +65,7 @@ export function StepLogisticsInfo({ hidden }: StepLogisticsInfoProps) {
                 </div>
                 <div className="w-[140px]">
                   <input
-                    className={`field-input text-right${errors.additionalFees?.[index]?.amount ? ' is-error' : ''}`}
+                    className={`field-input text-right${errors.additionalFees?.[index]?.amount ? ' border-danger' : ''}`}
                     type="number"
                     min="0"
                     placeholder="0"

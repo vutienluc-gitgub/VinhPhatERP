@@ -130,7 +130,7 @@ export function ShipmentSettingsForm() {
               </label>
               <input
                 id="sh-days"
-                className={`field-input${errors.default_delivery_days ? ' is-error' : ''}`}
+                className={`field-input${errors.default_delivery_days ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.DEFAULT_DELIVERY_DAYS}
                 {...register('default_delivery_days')}

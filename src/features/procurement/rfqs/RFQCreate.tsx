@@ -157,7 +157,7 @@ export function RFQCreate() {
               <input
                 id="title"
                 type="text"
-                className={`field-input${errors.title ? ' is-error' : ''}`}
+                className={`field-input${errors.title ? ' border-danger' : ''}`}
                 placeholder={RFQ_LABELS.FIELD_TITLE_PLACEHOLDER}
                 {...register('title')}
               />
@@ -174,7 +174,7 @@ export function RFQCreate() {
               <input
                 id="deadline_date"
                 type="datetime-local"
-                className={`field-input${errors.deadline_date ? ' is-error' : ''}`}
+                className={`field-input${errors.deadline_date ? ' border-danger' : ''}`}
                 {...register('deadline_date')}
               />
               {errors.deadline_date && (

@@ -74,7 +74,7 @@ export function FabricPublicSeoSection({
               <div className="flex-1">
                 <input
                   id="fc-slug"
-                  className={`field-input w-full ${errors.slug ? 'is-error' : ''}`}
+                  className={`field-input w-full ${errors.slug ? 'border-danger' : ''}`}
                   type="text"
                   placeholder={LABELS.SLUG_PLACEHOLDER}
                   {...register('slug')}

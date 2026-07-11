@@ -171,7 +171,9 @@ export function OrderDetail({
                 ] ?? 'Sản xuất'}
               </Badge>
             </div>
-            <span className="td-muted">{order.customers?.name ?? '—'}</span>
+            <span className="text-muted text-sm">
+              {order.customers?.name ?? '—'}
+            </span>
           </div>
           <Badge variant={ORDER_STATUS_BADGE_VARIANTS[order.status] ?? 'gray'}>
             {ORDER_STATUS_LABELS[order.status]}
@@ -181,27 +183,27 @@ export function OrderDetail({
         {/* Info grid */}
         <div className="dashboard-summary-row mb-4">
           <div>
-            <div className="td-muted summary-label">Ngày đặt</div>
+            <div className="text-muted text-sm summary-label">Ngày đặt</div>
             <div>{order.order_date}</div>
           </div>
           <div>
-            <div className="td-muted summary-label">Ngày giao</div>
+            <div className="text-muted text-sm summary-label">Ngày giao</div>
             <div>{order.delivery_date ?? '—'}</div>
           </div>
           <div>
-            <div className="td-muted summary-label">Tổng tiền</div>
+            <div className="text-muted text-sm summary-label">Tổng tiền</div>
             <div className="summary-value">
               <MoneyText value={order.total_amount} suffix="đ" />
             </div>
           </div>
           <div>
-            <div className="td-muted summary-label">Đã thu</div>
+            <div className="text-muted text-sm summary-label">Đã thu</div>
             <div className="summary-value text-[var(--success)]">
               <MoneyText value={order.paid_amount} suffix="đ" />
             </div>
           </div>
           <div>
-            <div className="td-muted summary-label">Còn nợ</div>
+            <div className="text-muted text-sm summary-label">Còn nợ</div>
             <div
               className={`summary-value${balanceDue > 0 ? ' summary-value--danger' : ''}`}
             >
@@ -378,7 +380,7 @@ export function OrderDetail({
                       .product_category as ProductCategory | undefined;
                     return (
                       <tr key={item.id}>
-                        <td className="td-muted">{idx + 1}</td>
+                        <td className="text-muted text-sm">{idx + 1}</td>
                         {order.order_type === 'trading' && (
                           <td>
                             <Badge variant="info">
@@ -391,20 +393,20 @@ export function OrderDetail({
                         <td>
                           <strong>{item.fabric_type}</strong>
                         </td>
-                        <td className="td-muted">
+                        <td className="text-muted text-sm">
                           {item.color_name ?? '\u2014'}
                         </td>
-                        <td className="numeric-cell">
+                        <td className="text-right tabular-nums">
                           <QuantityText
                             value={item.quantity}
                             suffix={item.unit}
                             decimals={2}
                           />
                         </td>
-                        <td className="numeric-cell">
+                        <td className="text-right tabular-nums">
                           <MoneyText value={item.unit_price} suffix="đ" />
                         </td>
-                        <td className="numeric-cell font-bold">
+                        <td className="text-right tabular-nums font-bold">
                           <MoneyText value={item.amount ?? 0} suffix="đ" />
                         </td>
                       </tr>
@@ -417,7 +419,7 @@ export function OrderDetail({
                   >
                     Tổng cộng
                   </td>
-                  <td className="numeric-cell font-bold">
+                  <td className="text-right tabular-nums font-bold">
                     <MoneyText value={order.total_amount} suffix="đ" />
                   </td>
                 </tr>

@@ -493,7 +493,7 @@ export function ShipmentList() {
           },
           {
             header: '',
-            className: 'td-actions',
+            className: 'whitespace-nowrap text-right',
             onCellClick: () => {},
             cell: (s) => (
               <div className="flex justify-end gap-1 items-center">

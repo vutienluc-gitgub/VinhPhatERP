@@ -133,7 +133,7 @@ export function PaymentList() {
             header: 'Ngày thu',
             id: 'payment_date',
             sortable: true,
-            className: 'td-muted',
+            className: 'text-muted text-sm',
             cell: (p) => p.payment_date,
           },
           {
@@ -147,7 +147,7 @@ export function PaymentList() {
             header: 'Hình thức',
             id: 'payment_method',
             sortable: true,
-            className: 'td-muted',
+            className: 'text-muted text-sm',
             cell: (p) => PAYMENT_METHOD_LABELS[p.payment_method],
           },
           {

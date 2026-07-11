@@ -164,7 +164,9 @@ function DashboardSection({
               <div className="flex justify-between items-center flex-wrap gap-[0.4rem] mb-[0.4rem]">
                 <div>
                   <strong>{order.orderNumber}</strong>
-                  <span className="td-muted ml-2">{order.customerName}</span>
+                  <span className="text-muted text-sm ml-2">
+                    {order.customerName}
+                  </span>
                   {order.fabricInfo && (
                     <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-secondary text-secondary-foreground ml-2">
                       {order.fabricInfo}

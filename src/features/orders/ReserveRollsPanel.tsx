@@ -134,7 +134,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
             {selectedItem.color_name && (
               <span> · {selectedItem.color_name}</span>
             )}
-            <span className="td-muted">
+            <span className="text-muted text-sm">
               — Cần:{' '}
               <QuantityText
                 value={selectedItem.quantity}
@@ -191,11 +191,11 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                       <td>
                         <strong>{roll.roll_number}</strong>
                       </td>
-                      <td className="td-muted">{roll.fabric_type}</td>
-                      <td className="td-muted">
+                      <td className="text-muted text-sm">{roll.fabric_type}</td>
+                      <td className="text-muted text-sm">
                         <LengthText value={roll.length_m} suffix="m" />
                       </td>
-                      <td className="td-muted">
+                      <td className="text-muted text-sm">
                         <WeightText value={roll.weight_kg} suffix="kg" />
                       </td>
                       <td>
@@ -209,7 +209,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                           '—'
                         )}
                       </td>
-                      <td className="td-actions">
+                      <td className="whitespace-nowrap text-right">
                         <Button
                           variant="secondary"
                           type="button"
@@ -235,7 +235,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
           <h4 className="text-[0.88rem] mb-2">
             Cuộn khả dụng
             {selectedItem && (
-              <span className="td-muted">
+              <span className="text-muted text-sm">
                 {' '}
                 — {selectedItem.fabric_type}
                 {selectedItem.color_name ? ` · ${selectedItem.color_name}` : ''}
@@ -256,11 +256,11 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                 <thead>
                   <tr>
                     <th>Mã cuộn</th>
-                    <th className="hide-mobile">Màu</th>
+                    <th className="max-sm:hidden">Màu</th>
                     <th>Dài</th>
                     <th>Nặng</th>
-                    <th className="hide-mobile">CL</th>
-                    <th className="hide-mobile">Vị trí</th>
+                    <th className="max-sm:hidden">CL</th>
+                    <th className="max-sm:hidden">Vị trí</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -270,16 +270,16 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                       <td>
                         <strong>{roll.roll_number}</strong>
                       </td>
-                      <td className="td-muted hide-mobile">
+                      <td className="text-muted text-sm max-sm:hidden">
                         {roll.color_name ?? '—'}
                       </td>
-                      <td className="td-muted">
+                      <td className="text-muted text-sm">
                         <LengthText value={roll.length_m} suffix="m" />
                       </td>
-                      <td className="td-muted">
+                      <td className="text-muted text-sm">
                         <WeightText value={roll.weight_kg} suffix="kg" />
                       </td>
-                      <td className="hide-mobile">
+                      <td className="max-sm:hidden">
                         {roll.quality_grade ? (
                           <span
                             className={`grade-badge grade-${roll.quality_grade}`}
@@ -290,10 +290,10 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                           '—'
                         )}
                       </td>
-                      <td className="td-muted hide-mobile">
+                      <td className="text-muted text-sm max-sm:hidden">
                         {roll.warehouse_location ?? '—'}
                       </td>
-                      <td className="td-actions">
+                      <td className="whitespace-nowrap text-right">
                         <button
                           className="primary-button !text-[0.8rem] !px-[0.6rem] !py-[0.3rem]"
                           type="button"

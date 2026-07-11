@@ -1,0 +1,120 @@
+/* ---- Quality & status badges ---- */
+.grade-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 0.78rem;
+}
+
+.roll-status {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.roll-status.in_stock {
+  background: rgba(var(--success-rgb), 0.12);
+  color: var(--success);
+}
+
+.roll-status.reserved {
+  background: rgba(var(--brand-rgb), 0.12);
+  color: var(--primary);
+}
+
+.roll-status.in_process {
+  background: rgba(155, 89, 182, 0.12);
+  color: #7d3c98;
+}
+
+.roll-status.shipped {
+  background: rgba(52, 73, 94, 0.1);
+  color: #34495e;
+}
+
+.roll-status.damaged {
+  background: rgba(var(--danger-rgb), 0.12);
+  color: var(--danger);
+}
+
+.roll-status.written_off {
+  background: rgba(var(--base-rgb), 0.08);
+  color: var(--muted);
+}
+
+/* Standardized Badge System */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.badge-info {
+  background: rgba(var(--brand-rgb), 0.12);
+  color: var(--primary);
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px currentColor;
+}
+
+/* ---- Tab Badge ---- */
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 99px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+  background: rgba(var(--base-rgb), 0.1);
+  color: var(--muted);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.tab-badge--active {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* ---- Public status dot badge ---- */
+.public-status-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.public-status-dot::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex-shrink: 0;
+}

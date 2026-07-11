@@ -28,12 +28,12 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
     {
       header: 'Khách hàng',
       cell: (r) => r.customer_name,
-      className: 'hide-mobile td-muted',
+      className: 'max-sm:hidden text-muted text-sm',
     },
     {
       header: 'Ngày đặt',
       cell: (r) => r.order_date,
-      className: 'td-muted',
+      className: 'text-muted text-sm',
     },
     {
       header: 'Tổng tiền',

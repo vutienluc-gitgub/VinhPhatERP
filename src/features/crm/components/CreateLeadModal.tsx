@@ -163,7 +163,7 @@ export function CreateLeadModal({
             </label>
             <div className="relative">
               <input
-                className={`field-input w-full ${errors.phone ? 'is-error' : ''}`}
+                className={`field-input w-full ${errors.phone ? 'border-danger' : ''}`}
                 placeholder="090..."
                 {...register('phone')}
               />
@@ -183,7 +183,7 @@ export function CreateLeadModal({
             <label>Email</label>
             <div className="relative">
               <input
-                className={`field-input w-full ${errors.email ? 'is-error' : ''}`}
+                className={`field-input w-full ${errors.email ? 'border-danger' : ''}`}
                 type="email"
                 placeholder="abc@gmail.com"
                 {...register('email')}
@@ -305,7 +305,7 @@ export function CreateLeadModal({
               Tên người liên hệ <span className="field-required">*</span>
             </label>
             <input
-              className={`field-input w-full ${errors.customer_name ? 'is-error' : ''}`}
+              className={`field-input w-full ${errors.customer_name ? 'border-danger' : ''}`}
               placeholder="Nguyễn Văn A"
               {...register('customer_name')}
             />

@@ -85,7 +85,7 @@ export function ContractEditSheet({
             </label>
             <input
               type="text"
-              className={`field-input${errors.party_a_name ? ' is-error' : ''}`}
+              className={`field-input${errors.party_a_name ? ' border-danger' : ''}`}
               {...register('party_a_name')}
             />
             {errors.party_a_name && (
@@ -138,7 +138,7 @@ export function ContractEditSheet({
             </label>
             <input
               type="text"
-              className={`field-input${errors.party_b_name ? ' is-error' : ''}`}
+              className={`field-input${errors.party_b_name ? ' border-danger' : ''}`}
               {...register('party_b_name')}
             />
             {errors.party_b_name && (

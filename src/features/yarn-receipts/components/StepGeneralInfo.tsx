@@ -60,7 +60,7 @@ export function StepGeneralInfo({
             </label>
             <input
               id="receiptDate"
-              className={`field-input${errors.receiptDate ? ' is-error' : ''}`}
+              className={`field-input${errors.receiptDate ? ' border-danger' : ''}`}
               type="date"
               {...register('receiptDate')}
             />

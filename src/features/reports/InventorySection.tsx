@@ -117,12 +117,12 @@ function InventoryTable({
           )}
         </span>
       ),
-      className: 'hide-mobile td-muted',
+      className: 'max-sm:hidden text-muted text-sm',
     },
     {
       header: 'Phân loại',
       cell: (r) => r.quality_grade ?? '—',
-      className: 'td-muted hide-mobile',
+      className: 'text-muted text-sm max-sm:hidden',
     },
     {
       header: 'Cuộn',
@@ -140,7 +140,7 @@ function InventoryTable({
       header: 'Kg',
       cell: (r) => formatNumber(r.total_weight_kg),
       footer: formatNumber(totalWeight),
-      className: 'text-right hide-mobile td-muted',
+      className: 'text-right max-sm:hidden text-muted text-sm',
     },
   ];
 

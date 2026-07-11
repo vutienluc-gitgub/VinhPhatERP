@@ -262,7 +262,7 @@ export function ContractForm({
             <label>Ngày hiệu lực</label>
             <input
               type="date"
-              className={`field-input${errors.effective_date ? ' is-error' : ''}`}
+              className={`field-input${errors.effective_date ? ' border-danger' : ''}`}
               {...register('effective_date')}
             />
           </div>
@@ -270,7 +270,7 @@ export function ContractForm({
             <label>Ngày hết hạn</label>
             <input
               type="date"
-              className={`field-input${errors.expiry_date ? ' is-error' : ''}`}
+              className={`field-input${errors.expiry_date ? ' border-danger' : ''}`}
               {...register('expiry_date')}
             />
             {errors.expiry_date && (

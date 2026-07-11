@@ -7,4 +7,12 @@ export const UI_LABELS = {
   ALL: 'Tất cả',
   FROM_DATE: 'Từ ngày',
   TO_DATE: 'Đến ngày',
+  CANCEL: 'Hủy',
+  SAVE: 'Lưu',
+  CLOSE: 'Đóng',
+} as const;
+
+export const DASHBOARD_LABELS = {
+  PENDING_TASKS_TITLE: 'Nhiệm vụ cần xử lý',
+  PENDING_TASKS_EMPTY: 'Tuyệt vời! Không còn nhiệm vụ nào chưa xử lý.',
 } as const;

@@ -129,7 +129,7 @@ export function UserManagementSettingsForm() {
               </label>
               <input
                 id="um-timeout"
-                className={`field-input${errors.session_timeout_minutes ? ' is-error' : ''}`}
+                className={`field-input${errors.session_timeout_minutes ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.SESSION_TIMEOUT}
                 {...register('session_timeout_minutes')}
@@ -145,7 +145,7 @@ export function UserManagementSettingsForm() {
               <label htmlFor="um-devices">{SETTINGS_LABELS.MAX_DEVICES}</label>
               <input
                 id="um-devices"
-                className={`field-input${errors.max_concurrent_devices ? ' is-error' : ''}`}
+                className={`field-input${errors.max_concurrent_devices ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.MAX_DEVICES}
                 {...register('max_concurrent_devices')}

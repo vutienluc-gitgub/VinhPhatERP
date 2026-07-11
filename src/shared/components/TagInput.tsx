@@ -47,7 +47,7 @@ export function TagInput({
   return (
     <div
       className={`field-input flex flex-wrap gap-2 items-center !h-auto min-h-[40px] py-1.5 ${
-        hasError ? 'is-error' : ''
+        hasError ? 'border-danger' : ''
       } ${className}`}
       onClick={() => inputRef.current?.focus()}
     >

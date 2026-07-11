@@ -56,7 +56,7 @@ export function CashFlowDashboard() {
       {
         accessorKey: 'period',
         header: 'Ngày',
-        meta: { className: 'td-muted' },
+        meta: { className: 'text-muted text-sm' },
         cell: ({ getValue }) => getValue<string>(),
       },
       {
@@ -68,7 +68,7 @@ export function CashFlowDashboard() {
           return v > 0 ? (
             <MoneyCell value={v} tone="success" bold />
           ) : (
-            <span className="td-muted">—</span>
+            <span className="text-muted text-sm">—</span>
           );
         },
       },
@@ -81,7 +81,7 @@ export function CashFlowDashboard() {
           return v > 0 ? (
             <MoneyCell value={v} tone="danger" bold />
           ) : (
-            <span className="td-muted">—</span>
+            <span className="text-muted text-sm">—</span>
           );
         },
       },
@@ -135,7 +135,7 @@ export function CashFlowDashboard() {
         header: 'Số phiếu',
         meta: { className: 'text-right' },
         cell: ({ getValue }) => (
-          <span className="numeric-cell">{getValue<number>()}</span>
+          <span className="text-right tabular-nums">{getValue<number>()}</span>
         ),
       },
       {
@@ -281,7 +281,7 @@ export function CashFlowDashboard() {
             emptyStateIcon="LineChart"
             renderMobileCard={(row) => (
               <div className="flex items-center justify-between py-1">
-                <span className="td-muted text-sm">{row.period}</span>
+                <span className="text-muted text-sm text-sm">{row.period}</span>
                 <div className="flex flex-col items-end gap-0.5">
                   {row.total_inflow > 0 && (
                     <span className="numeric-paid text-xs">

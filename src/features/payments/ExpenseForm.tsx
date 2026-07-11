@@ -205,7 +205,7 @@ export function ExpenseForm({
               </label>
               <input
                 id="expenseDate"
-                className={`field-input${errors.expenseDate ? ' is-error' : ''}`}
+                className={`field-input${errors.expenseDate ? ' border-danger' : ''}`}
                 type="date"
                 {...register('expenseDate')}
               />
@@ -247,7 +247,7 @@ export function ExpenseForm({
                 render={({ field }) => (
                   <MoneyInput
                     id="amount"
-                    className={`field-input${errors.amount ? ' is-error' : ''}`}
+                    className={`field-input${errors.amount ? ' border-danger' : ''}`}
                     value={field.value}
                     onChange={field.onChange}
                     onBlur={field.onBlur}
@@ -291,7 +291,7 @@ export function ExpenseForm({
               </label>
               <input
                 id="description"
-                className={`field-input${errors.description ? ' is-error' : ''}`}
+                className={`field-input${errors.description ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={EXPENSE_FORM_LABELS.descriptionPlaceholder}
                 {...register('description')}

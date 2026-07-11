@@ -85,7 +85,7 @@ export function TaskFormView({
         </label>
         <input
           {...register('title')}
-          className={`field-input ${errors.title ? 'is-error' : ''}`}
+          className={`field-input ${errors.title ? 'border-danger' : ''}`}
           placeholder={OPERATIONS_MESSAGES.TASK_TITLE_PLACEHOLDER}
         />
         {errors.title && <p className="field-error">{errors.title.message}</p>}

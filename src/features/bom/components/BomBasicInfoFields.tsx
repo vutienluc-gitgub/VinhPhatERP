@@ -40,7 +40,7 @@ export function BomBasicInfoFields({ fabricOptions }: BomBasicInfoFieldsProps) {
           <input
             type="text"
             {...register('name')}
-            className={`field-input${errors.name ? ' is-error' : ''}`}
+            className={`field-input${errors.name ? ' border-danger' : ''}`}
             placeholder="VD: Định mức Cotton 65/35..."
           />
           {errors.name && (

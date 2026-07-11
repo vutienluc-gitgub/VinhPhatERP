@@ -89,7 +89,7 @@ export function IntegrationSettingsForm() {
             <label htmlFor="ig-webhook">{SETTINGS_LABELS.WEBHOOK_URL}</label>
             <input
               id="ig-webhook"
-              className={`field-input${errors.webhook_url ? ' is-error' : ''}`}
+              className={`field-input${errors.webhook_url ? ' border-danger' : ''}`}
               type="text"
               placeholder={SETTINGS_PLACEHOLDERS.WEBHOOK_URL}
               {...register('webhook_url')}
@@ -107,7 +107,7 @@ export function IntegrationSettingsForm() {
               <label htmlFor="ig-smtp-host">{SETTINGS_LABELS.SMTP_HOST}</label>
               <input
                 id="ig-smtp-host"
-                className={`field-input${errors.smtp_host ? ' is-error' : ''}`}
+                className={`field-input${errors.smtp_host ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.SMTP_HOST}
                 {...register('smtp_host')}
@@ -121,7 +121,7 @@ export function IntegrationSettingsForm() {
               <label htmlFor="ig-smtp-port">{SETTINGS_LABELS.SMTP_PORT}</label>
               <input
                 id="ig-smtp-port"
-                className={`field-input${errors.smtp_port ? ' is-error' : ''}`}
+                className={`field-input${errors.smtp_port ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.SMTP_PORT}
                 {...register('smtp_port')}
@@ -137,7 +137,7 @@ export function IntegrationSettingsForm() {
               </label>
               <input
                 id="ig-smtp-email"
-                className={`field-input${errors.smtp_from_email ? ' is-error' : ''}`}
+                className={`field-input${errors.smtp_from_email ? ' border-danger' : ''}`}
                 type="email"
                 placeholder={SETTINGS_PLACEHOLDERS.SMTP_FROM_EMAIL}
                 {...register('smtp_from_email')}

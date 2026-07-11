@@ -102,7 +102,7 @@ export function CompanySettingsForm({
                 </label>
                 <input
                   id="cs-company-name"
-                  className={`field-input${errors.company_name ? ' is-error' : ''}`}
+                  className={`field-input${errors.company_name ? ' border-danger' : ''}`}
                   type="text"
                   placeholder={SETTINGS_PLACEHOLDERS.COMPANY_NAME}
                   {...register('company_name')}
@@ -118,7 +118,7 @@ export function CompanySettingsForm({
                 <label htmlFor="cs-tax-code">{SETTINGS_LABELS.TAX_CODE}</label>
                 <input
                   id="cs-tax-code"
-                  className={`field-input${errors.tax_code ? ' is-error' : ''}`}
+                  className={`field-input${errors.tax_code ? ' border-danger' : ''}`}
                   type="text"
                   placeholder={SETTINGS_PLACEHOLDERS.TAX_CODE}
                   {...register('tax_code')}
@@ -137,7 +137,7 @@ export function CompanySettingsForm({
               </label>
               <input
                 id="cs-address"
-                className={`field-input${errors.address ? ' is-error' : ''}`}
+                className={`field-input${errors.address ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.ADDRESS}
                 {...register('address')}
@@ -153,7 +153,7 @@ export function CompanySettingsForm({
                 <label htmlFor="cs-phone">{SETTINGS_LABELS.PHONE}</label>
                 <input
                   id="cs-phone"
-                  className={`field-input${errors.phone ? ' is-error' : ''}`}
+                  className={`field-input${errors.phone ? ' border-danger' : ''}`}
                   type="text"
                   placeholder={SETTINGS_PLACEHOLDERS.PHONE}
                   {...register('phone')}
@@ -167,7 +167,7 @@ export function CompanySettingsForm({
                 <label htmlFor="cs-email">{SETTINGS_LABELS.EMAIL}</label>
                 <input
                   id="cs-email"
-                  className={`field-input${errors.email ? ' is-error' : ''}`}
+                  className={`field-input${errors.email ? ' border-danger' : ''}`}
                   type="email"
                   placeholder={SETTINGS_PLACEHOLDERS.EMAIL}
                   {...register('email')}
@@ -265,7 +265,7 @@ export function CompanySettingsForm({
               </label>
               <select
                 id="cs-default-role"
-                className={`field-select w-full ${errors.default_user_role ? 'is-error' : ''}`}
+                className={`field-select w-full ${errors.default_user_role ? 'border-danger' : ''}`}
                 {...register('default_user_role')}
               >
                 {USER_ROLE_OPTIONS.map((opt) => (

@@ -112,7 +112,7 @@ export function FinanceSettingsForm() {
               <label htmlFor="fs-vat">{SETTINGS_LABELS.DEFAULT_VAT_RATE}</label>
               <input
                 id="fs-vat"
-                className={`field-input${errors.default_vat_rate ? ' is-error' : ''}`}
+                className={`field-input${errors.default_vat_rate ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.DEFAULT_VAT_RATE}
                 {...register('default_vat_rate')}
@@ -132,7 +132,7 @@ export function FinanceSettingsForm() {
               </label>
               <input
                 id="fs-payment-terms"
-                className={`field-input${errors.default_payment_terms ? ' is-error' : ''}`}
+                className={`field-input${errors.default_payment_terms ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.DEFAULT_PAYMENT_TERMS}
                 {...register('default_payment_terms')}
@@ -150,7 +150,7 @@ export function FinanceSettingsForm() {
               </label>
               <input
                 id="fs-credit-limit"
-                className={`field-input${errors.default_credit_limit ? ' is-error' : ''}`}
+                className={`field-input${errors.default_credit_limit ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.DEFAULT_CREDIT_LIMIT}
                 {...register('default_credit_limit')}

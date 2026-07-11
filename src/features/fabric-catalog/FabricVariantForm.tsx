@@ -459,7 +459,7 @@ export function FabricVariantForm({
                     </label>
                     <input
                       id="fv-color-name"
-                      className={`field-input${errors.color_name ? ' is-error' : ''}`}
+                      className={`field-input${errors.color_name ? ' border-danger' : ''}`}
                       type="text"
                       placeholder={MESSAGES.PLACEHOLDER_COLOR}
                       {...register('color_name')}
@@ -476,7 +476,7 @@ export function FabricVariantForm({
                     <div className="flex gap-2 items-center">
                       <input
                         id="fv-color-hex"
-                        className={`field-input flex-1${errors.color_hex ? ' is-error' : ''}`}
+                        className={`field-input flex-1${errors.color_hex ? ' border-danger' : ''}`}
                         type="text"
                         placeholder={MESSAGES.PLACEHOLDER_HEX}
                         {...register('color_hex')}
@@ -511,7 +511,7 @@ export function FabricVariantForm({
                     </label>
                     <input
                       id="fv-actual-width"
-                      className={`field-input${errors.actual_width_cm ? ' is-error' : ''}`}
+                      className={`field-input${errors.actual_width_cm ? ' border-danger' : ''}`}
                       type="number"
                       step="0.1"
                       min="0"
@@ -529,7 +529,7 @@ export function FabricVariantForm({
                     <label htmlFor="fv-actual-gsm">{LABELS.ACTUAL_GSM}</label>
                     <input
                       id="fv-actual-gsm"
-                      className={`field-input${errors.actual_gsm ? ' is-error' : ''}`}
+                      className={`field-input${errors.actual_gsm ? ' border-danger' : ''}`}
                       type="number"
                       step="1"
                       min="0"
@@ -547,7 +547,7 @@ export function FabricVariantForm({
                     <label htmlFor="fv-shrink-warp">{LABELS.SHRINK_WARP}</label>
                     <input
                       id="fv-shrink-warp"
-                      className={`field-input${errors.shrinkage_rate_warp ? ' is-error' : ''}`}
+                      className={`field-input${errors.shrinkage_rate_warp ? ' border-danger' : ''}`}
                       type="number"
                       step="0.1"
                       min="0"
@@ -563,7 +563,7 @@ export function FabricVariantForm({
                     <label htmlFor="fv-shrink-weft">{LABELS.SHRINK_WEFT}</label>
                     <input
                       id="fv-shrink-weft"
-                      className={`field-input${errors.shrinkage_rate_weft ? ' is-error' : ''}`}
+                      className={`field-input${errors.shrinkage_rate_weft ? ' border-danger' : ''}`}
                       type="number"
                       step="0.1"
                       min="0"
@@ -663,7 +663,7 @@ export function FabricVariantForm({
                     <label htmlFor="fv-moq">{LABELS.MOQ}</label>
                     <input
                       id="fv-moq"
-                      className={`field-input${errors.moq ? ' is-error' : ''}`}
+                      className={`field-input${errors.moq ? ' border-danger' : ''}`}
                       type="number"
                       step="1"
                       min="0"
@@ -750,7 +750,7 @@ export function FabricVariantForm({
                 </div>
                 <div className="public-toggle-section__controls">
                   <span
-                    className={`public-status-dot${watch('is_public') ? ' is-active' : ''}`}
+                    className={`public-status-dot${watch('is_public') ? ' text-primary bg-primary/10' : ''}`}
                   >
                     {watch('is_public') ? LABELS.PUBLIC_ON : LABELS.PUBLIC_OFF}
                   </span>
