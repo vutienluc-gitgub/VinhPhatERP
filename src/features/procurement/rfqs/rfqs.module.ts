@@ -27,17 +27,17 @@ export const rfqsPlugin: FeaturePlugin = {
   order: 2,
   routes: [
     {
-      path: 'rfqs',
+      path: 'sourcing-rfqs',
       component: () =>
         import('./RFQList').then((m) => ({ default: m.RFQList })),
     },
     {
-      path: 'rfqs/create',
+      path: 'sourcing-rfqs/create',
       component: () =>
         import('./RFQCreate').then((m) => ({ default: m.RFQCreate })),
     },
     {
-      path: 'rfqs/:id',
+      path: 'sourcing-rfqs/:id',
       component: () =>
         import('./RFQDetail').then((m) => ({ default: m.RFQDetail })),
     },
