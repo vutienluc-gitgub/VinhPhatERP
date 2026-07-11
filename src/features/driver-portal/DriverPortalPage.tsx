@@ -40,17 +40,21 @@ function JourneyStepButton({
       type="button"
       onClick={onClick}
       disabled={disabled || isDone}
-      className={`flex items-center gap-3 w-full py-[0.875rem] px-4 rounded-[var(--radius)] text-left ${
+      className={`flex items-center gap-3 w-full py-3.5 px-4 rounded-xl text-left transition-colors ${
         isActive
-          ? 'border-2 border-primary bg-[rgba(11,107,203,0.07)]'
+          ? 'border-2 border-[var(--primary)] bg-[var(--surface-selected)]'
           : isDone
-            ? 'border-[1.5px] border-success bg-[rgba(10,128,92,0.06)] cursor-default'
-            : 'border-[1.5px] border-border bg-surface'
+            ? 'border-2 border-[var(--success)] bg-[rgba(var(--success-rgb),0.06)] cursor-default'
+            : 'border-2 border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)]'
       } ${isDone || disabled ? 'cursor-default' : 'cursor-pointer'}`}
     >
       <div
         className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white ${
-          isDone ? 'bg-success' : isActive ? 'bg-primary' : 'bg-muted'
+          isDone
+            ? 'bg-[var(--success)]'
+            : isActive
+              ? 'bg-[var(--primary)]'
+              : 'bg-[var(--muted)]'
         }`}
       >
         {isDone ? (
@@ -58,16 +62,20 @@ function JourneyStepButton({
         ) : isActive ? (
           <Icon name="ChevronRight" size={14} />
         ) : (
-          <Icon name="Circle" size={14} className="text-muted-foreground" />
+          <Icon
+            name="Circle"
+            size={14}
+            className="text-[var(--text-tertiary)]"
+          />
         )}
       </div>
       <span
-        className={`text-[0.9rem] ${isActive || isDone ? 'font-semibold' : 'font-normal'} ${
+        className={`text-sm ${isActive || isDone ? 'font-semibold' : 'font-normal'} ${
           isDone
-            ? 'text-success'
+            ? 'text-[var(--success)]'
             : isActive
-              ? 'text-primary'
-              : 'text-muted-foreground'
+              ? 'text-[var(--primary)]'
+              : 'text-[var(--muted)]'
         }`}
       >
         {label}
@@ -161,26 +169,26 @@ function ShipmentCard({
   const totalCost = (shipment.shipping_cost ?? 0) + (shipment.loading_fee ?? 0);
 
   return (
-    <div className="bg-surface rounded-xl border-[1.5px] border-border overflow-hidden mb-4">
+    <div className="bg-[var(--surface)] rounded-xl border-2 border-[var(--border)] overflow-hidden mb-4">
       {/* Card header */}
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className="flex items-center justify-between w-full p-4 bg-transparent border-none cursor-pointer gap-3"
+        className="flex items-center justify-between w-full p-4 bg-transparent border-none cursor-pointer gap-3 hover:bg-[var(--surface-hover)] transition-colors"
       >
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-[var(--radius)] bg-[rgba(11,107,203,0.1)] flex items-center justify-center shrink-0">
-            <Icon name="Truck" size={20} className="text-primary" />
+          <div className="w-10 h-10 rounded-xl bg-[var(--surface-selected)] flex items-center justify-center shrink-0">
+            <Icon name="Truck" size={20} className="text-[var(--primary)]" />
           </div>
           <div className="text-left">
-            <p className="font-bold text-[0.95rem] text-[var(--text-primary)]">
+            <p className="font-bold text-base text-[var(--text)]">
               {shipment.shipment_number}
             </p>
-            <p className="text-[0.8rem] text-[var(--text-secondary)] mt-[2px]">
+            <p className="text-sm text-[var(--muted)] mt-0.5">
               {shipment.customers?.name ?? 'Khách hàng'}
             </p>
             {shipment.journey_status && (
-              <span className="inline-block mt-1 text-[0.72rem] font-semibold text-primary bg-[rgba(11,107,203,0.1)] px-2 py-0.5 rounded-full">
+              <span className="inline-block mt-1 text-xs font-semibold text-[var(--primary)] bg-[var(--surface-selected)] px-2 py-0.5 rounded-full">
                 {JOURNEY_STATUS_LABELS[shipment.journey_status]}
               </span>
             )}
@@ -189,7 +197,7 @@ function ShipmentCard({
         <Icon
           name={expanded ? 'ChevronUp' : 'ChevronDown'}
           size={18}
-          className="text-muted-foreground shrink-0"
+          className="text-[var(--text-tertiary)] shrink-0"
         />
       </button>
 
@@ -197,7 +205,7 @@ function ShipmentCard({
       {expanded && (
         <div className="px-4 pb-4">
           {/* Info row */}
-          <div className="grid grid-cols-2 gap-2 p-3 bg-[var(--surface-accent)] rounded-[var(--radius)] mb-4 text-[0.82rem]">
+          <div className="grid grid-cols-2 gap-2 p-3 bg-[var(--surface-subtle)] rounded-xl mb-4 text-sm">
             <div>
               <p className="text-[var(--text-tertiary)]">Ngày giao</p>
               <p className="font-semibold">{shipment.shipment_date}</p>
@@ -258,11 +266,11 @@ function ShipmentCard({
           {nextStatus && shipment.status !== 'delivered' && (
             <div className="mb-3 flex flex-col gap-2">
               <div>
-                <label className="text-[0.8rem] text-[var(--text-secondary)] block mb-1">
+                <label className="text-sm text-[var(--muted)] block mb-1">
                   Ghi chú (tùy chọn)
                 </label>
                 <input
-                  className="field-input"
+                  className="field-input w-full p-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] text-[var(--text)] text-sm focus:border-[var(--primary)] outline-none"
                   value={notesInput}
                   onChange={(e) => setNotesInput(e.target.value)}
                   placeholder="Ví dụ: Đã đến địa chỉ, chờ khách ra nhận..."
@@ -271,7 +279,7 @@ function ShipmentCard({
 
               {nextStatus === 'delivered_confirmed' && (
                 <div className="flex flex-col gap-2">
-                  <label className="text-[0.8rem] font-semibold text-[var(--text-secondary)] block">
+                  <label className="text-sm font-semibold text-[var(--muted)] block">
                     Bằng chứng giao hàng
                     <span className="text-[var(--text-tertiary)] font-normal ml-1">
                       (tùy chọn)
@@ -280,19 +288,19 @@ function ShipmentCard({
 
                   {/* Signature */}
                   {signatureDataUrl ? (
-                    <div className="relative rounded-[var(--radius)] border border-border bg-white overflow-hidden">
+                    <div className="relative rounded-xl border border-[var(--border)] bg-white overflow-hidden">
                       <img
                         src={signatureDataUrl}
                         alt="Chữ ký"
                         className="w-full max-h-24 object-contain"
                       />
-                      <div className="absolute top-1 left-2 text-[9px] text-[var(--text-tertiary)] font-semibold uppercase">
+                      <div className="absolute top-1 left-2 text-[10px] text-[var(--text-tertiary)] font-semibold uppercase">
                         ✒ Chữ ký
                       </div>
                       <button
                         type="button"
                         onClick={() => setSignatureDataUrl(null)}
-                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white"
+                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70"
                       >
                         <Icon name="X" size={12} />
                       </button>
@@ -301,7 +309,7 @@ function ShipmentCard({
                     <button
                       type="button"
                       onClick={() => setShowSignaturePad(true)}
-                      className="flex items-center gap-2 w-full py-2.5 px-4 rounded-[var(--radius)] border-[1.5px] border-dashed border-border text-[var(--text-secondary)] text-[0.85rem] hover:border-primary hover:text-primary transition-colors"
+                      className="flex items-center gap-2 w-full py-2.5 px-4 rounded-xl border-2 border-dashed border-[var(--border)] text-[var(--muted)] text-sm hover:border-[var(--primary)] hover:text-[var(--primary)] transition-colors"
                     >
                       <Icon name="PenLine" size={16} />
                       Lấy chữ ký khách hàng
@@ -318,13 +326,13 @@ function ShipmentCard({
                     onChange={handlePhotoSelect}
                   />
                   {photoPreview ? (
-                    <div className="relative w-full rounded-[var(--radius)] overflow-hidden border border-border">
+                    <div className="relative w-full rounded-xl overflow-hidden border border-[var(--border)]">
                       <img
                         src={photoPreview}
                         alt="Ảnh"
                         className="w-full max-h-32 object-cover"
                       />
-                      <div className="absolute top-1 left-2 text-[9px] text-[var(--text-tertiary)] font-semibold uppercase">
+                      <div className="absolute top-1 left-2 text-[10px] text-[var(--text-tertiary)] font-semibold uppercase drop-shadow-md">
                         📸 Ảnh hiện trường
                       </div>
                       <button
@@ -333,7 +341,7 @@ function ShipmentCard({
                           setPhotoFile(null);
                           setPhotoPreview(null);
                         }}
-                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white"
+                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70"
                       >
                         <Icon name="X" size={12} />
                       </button>
@@ -342,7 +350,7 @@ function ShipmentCard({
                     <button
                       type="button"
                       onClick={() => photoInputRef.current?.click()}
-                      className="flex items-center gap-2 w-full py-2.5 px-4 rounded-[var(--radius)] border-[1.5px] border-dashed border-border text-[var(--text-secondary)] text-[0.85rem] hover:border-primary hover:text-primary transition-colors"
+                      className="flex items-center gap-2 w-full py-2.5 px-4 rounded-xl border-2 border-dashed border-[var(--border)] text-[var(--muted)] text-sm hover:border-[var(--primary)] hover:text-[var(--primary)] transition-colors"
                     >
                       <Icon name="Camera" size={16} />
                       Chụp ảnh hiện trường
@@ -370,11 +378,11 @@ function ShipmentCard({
                 {logs.map((log) => (
                   <div
                     key={log.id}
-                    className="flex gap-2 text-[0.78rem] text-[var(--text-secondary)]"
+                    className="flex gap-2 text-xs text-[var(--muted)]"
                   >
                     <Icon name="Clock" size={13} className="shrink-0 mt-0.5" />
                     <div className="flex-1 min-w-0">
-                      <span className="font-semibold">
+                      <span className="font-semibold text-[var(--text)]">
                         {JOURNEY_STATUS_LABELS[log.journey_status]}
                       </span>
                       {log.notes && <span> — {log.notes}</span>}
@@ -394,7 +402,7 @@ function ShipmentCard({
                           <img
                             src={log.photo_url}
                             alt="Ảnh xác nhận giao hàng"
-                            className="rounded-[var(--radius)] max-h-28 object-cover border border-border"
+                            className="rounded-lg max-h-28 object-cover border border-[var(--border)]"
                           />
                         </a>
                       )}
@@ -408,7 +416,7 @@ function ShipmentCard({
           {/* Chat button */}
           <button
             type="button"
-            className="flex items-center justify-center gap-2 w-full py-3 mt-3 rounded-[var(--radius)] border-[1.5px] border-primary text-primary font-semibold text-[0.85rem] bg-transparent cursor-pointer"
+            className="flex items-center justify-center gap-2 w-full py-3 mt-3 rounded-xl border-2 border-[var(--primary)] text-[var(--primary)] font-semibold text-sm bg-transparent cursor-pointer hover:bg-[var(--surface-selected)] transition-colors"
             onClick={() => onOpenChat(shipment)}
           >
             <Icon name="MessageCircle" size={18} />
@@ -437,18 +445,18 @@ export function DriverPortalPage() {
     if (loadingEmployee) {
       return (
         <div className="text-center p-12 text-[var(--text-tertiary)]">
-          <Icon name="Loader2" size={32} />
-          <p className="mt-2 text-[0.85rem]">Đang tải thông tin tài xế...</p>
+          <Icon name="Loader2" size={32} className="animate-spin mx-auto" />
+          <p className="mt-2 text-sm">Đang tải thông tin tài xế...</p>
         </div>
       );
     }
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 p-8 text-center">
         <Icon name="UserX" size={48} className="text-[var(--text-tertiary)]" />
-        <p className="font-bold text-base">
+        <p className="font-bold text-base text-[var(--text)]">
           Tài khoản chưa liên kết với nhân viên
         </p>
-        <p className="text-[0.85rem] text-[var(--text-secondary)]">
+        <p className="text-sm text-[var(--muted)]">
           Vui lòng liên hệ quản trị viên để liên kết tài khoản này với hồ sơ
           nhân viên tài xế.
         </p>
@@ -460,10 +468,10 @@ export function DriverPortalPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 p-8 text-center">
         <Icon name="UserX" size={48} className="text-[var(--text-tertiary)]" />
-        <p className="font-bold text-base">
+        <p className="font-bold text-base text-[var(--text)]">
           Tài khoản chưa liên kết với nhân viên
         </p>
-        <p className="text-[0.85rem] text-[var(--text-secondary)]">
+        <p className="text-sm text-[var(--muted)]">
           Vui lòng liên hệ quản trị viên để liên kết tài khoản này với hồ sơ
           nhân viên tài xế.
         </p>
@@ -472,16 +480,16 @@ export function DriverPortalPage() {
   }
 
   return (
-    <div className="max-w-[600px] mx-auto p-4">
+    <div className="max-w-2xl mx-auto p-4">
       {/* Header */}
       <div className="mb-6">
         <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
           CỔNG TÀI XẾ
         </p>
-        <h1 className="text-2xl font-extrabold text-[var(--text-primary)] mt-1 mb-0.5 mx-0">
+        <h1 className="text-2xl font-extrabold text-[var(--text)] mt-1 mb-0.5 mx-0">
           Đơn giao hôm nay
         </h1>
-        <p className="text-[0.85rem] text-[var(--text-secondary)]">
+        <p className="text-sm text-[var(--muted)]">
           Xin chào, {profile?.full_name ?? 'Tài xế'}
         </p>
       </div>
@@ -489,8 +497,8 @@ export function DriverPortalPage() {
       {/* Loading */}
       {isLoading && (
         <div className="text-center p-12 text-[var(--text-tertiary)]">
-          <Icon name="Loader2" size={32} />
-          <p className="mt-2 text-[0.85rem]">Đang tải đơn giao hàng...</p>
+          <Icon name="Loader2" size={32} className="animate-spin mx-auto" />
+          <p className="mt-2 text-sm">Đang tải đơn giao hàng...</p>
         </div>
       )}
 
@@ -503,10 +511,12 @@ export function DriverPortalPage() {
 
       {/* Empty state */}
       {!isLoading && shipments.length === 0 && (
-        <div className="text-center py-12 px-4 text-[var(--text-tertiary)] bg-surface rounded-xl border-[1.5px] border-dashed border-border">
-          <Icon name="PackageCheck" size={40} />
-          <p className="font-bold mt-3">Không có đơn giao nào</p>
-          <p className="text-[0.82rem] mt-1">
+        <div className="text-center py-12 px-4 text-[var(--text-tertiary)] bg-[var(--surface)] rounded-xl border-2 border-dashed border-[var(--border)]">
+          <Icon name="PackageCheck" size={40} className="mx-auto" />
+          <p className="font-bold mt-3 text-[var(--text)]">
+            Không có đơn giao nào
+          </p>
+          <p className="text-sm mt-1 text-[var(--muted)]">
             Hiện tại bạn chưa được phân công đơn giao hàng nào.
           </p>
         </div>
