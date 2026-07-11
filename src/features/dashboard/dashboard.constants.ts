@@ -31,7 +31,10 @@ export const TX_STATUS_MAP: Record<
   string,
   { label: string; cssClass: string }
 > = {
-  success: { label: 'Hoàn thành', cssClass: 'is-success' },
+  success: {
+    label: 'Hoàn thành',
+    cssClass: 'text-emerald-500 bg-emerald-500/10',
+  },
   pending: { label: 'Đang xử lý', cssClass: 'is-pending' },
   failed: { label: 'Thất bại', cssClass: 'is-failed' },
 };

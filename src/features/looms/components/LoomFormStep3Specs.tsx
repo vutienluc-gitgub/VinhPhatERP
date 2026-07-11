@@ -24,7 +24,7 @@ export function LoomFormStep3Specs({ isTechnicalLocked }: Props) {
           <label htmlFor="loom-feeders">Feeders (đầu sợi)</label>
           <input
             id="loom-feeders"
-            className={`field-input${errors.feeders ? ' is-error' : ''}`}
+            className={`field-input${errors.feeders ? ' border-danger' : ''}`}
             type="number"
             step="1"
             min="0"
@@ -44,7 +44,7 @@ export function LoomFormStep3Specs({ isTechnicalLocked }: Props) {
           <label htmlFor="loom-needles">Kim (Needles)</label>
           <input
             id="loom-needles"
-            className={`field-input${errors.needles ? ' is-error' : ''}`}
+            className={`field-input${errors.needles ? ' border-danger' : ''}`}
             type="number"
             step="1"
             min="0"
@@ -64,7 +64,7 @@ export function LoomFormStep3Specs({ isTechnicalLocked }: Props) {
           <label htmlFor="loom-gsm">GSM Range</label>
           <input
             id="loom-gsm"
-            className={`field-input${errors.gsm_range ? ' is-error' : ''}`}
+            className={`field-input${errors.gsm_range ? ' border-danger' : ''}`}
             type="text"
             placeholder="VD: 140-220"
             disabled={isTechnicalLocked}
@@ -79,7 +79,7 @@ export function LoomFormStep3Specs({ isTechnicalLocked }: Props) {
           <label htmlFor="loom-yarn">Yarn Support</label>
           <input
             id="loom-yarn"
-            className={`field-input${errors.yarn_support ? ' is-error' : ''}`}
+            className={`field-input${errors.yarn_support ? ' border-danger' : ''}`}
             type="text"
             placeholder="VD: Cotton/CVC/TC"
             disabled={isTechnicalLocked}
@@ -94,7 +94,7 @@ export function LoomFormStep3Specs({ isTechnicalLocked }: Props) {
           <label htmlFor="loom-motor">Công suất motor (kW)</label>
           <input
             id="loom-motor"
-            className={`field-input${errors.motor_power_kw ? ' is-error' : ''}`}
+            className={`field-input${errors.motor_power_kw ? ' border-danger' : ''}`}
             type="number"
             step="0.1"
             min="0"
@@ -114,7 +114,7 @@ export function LoomFormStep3Specs({ isTechnicalLocked }: Props) {
           <label htmlFor="loom-voltage">Điện áp</label>
           <input
             id="loom-voltage"
-            className={`field-input${errors.voltage ? ' is-error' : ''}`}
+            className={`field-input${errors.voltage ? ' border-danger' : ''}`}
             type="text"
             placeholder="VD: 380V/3P/50Hz"
             disabled={isTechnicalLocked}
@@ -129,7 +129,7 @@ export function LoomFormStep3Specs({ isTechnicalLocked }: Props) {
           <label htmlFor="loom-weight">Trọng lượng (kg)</label>
           <input
             id="loom-weight"
-            className={`field-input${errors.weight_kg ? ' is-error' : ''}`}
+            className={`field-input${errors.weight_kg ? ' border-danger' : ''}`}
             type="number"
             step="1"
             min="0"

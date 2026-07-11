@@ -224,7 +224,7 @@ export function BulkRollStation({
                 <input
                   className={clsx(
                     'field-input text-lg font-semibold h-12',
-                    errors.rolls?.[activeIndex]?.roll_number && 'is-error',
+                    errors.rolls?.[activeIndex]?.roll_number && 'border-danger',
                   )}
                   placeholder="Quét barcode hoặc gõ mã..."
                   {...register(`rolls.${activeIndex}.roll_number`)}
@@ -253,7 +253,7 @@ export function BulkRollStation({
                     min="0.1"
                     className={clsx(
                       'field-input text-xl font-black h-14 text-center tabular-nums',
-                      errors.rolls?.[activeIndex]?.weight_kg && 'is-error',
+                      errors.rolls?.[activeIndex]?.weight_kg && 'border-danger',
                     )}
                     placeholder="0.0"
                     {...register(`rolls.${activeIndex}.weight_kg`)}
@@ -289,7 +289,8 @@ export function BulkRollStation({
                   <select
                     className={clsx(
                       'field-select h-12',
-                      errors.rolls?.[activeIndex]?.quality_grade && 'is-error',
+                      errors.rolls?.[activeIndex]?.quality_grade &&
+                        'border-danger',
                     )}
                     {...register(`rolls.${activeIndex}.quality_grade`)}
                   >

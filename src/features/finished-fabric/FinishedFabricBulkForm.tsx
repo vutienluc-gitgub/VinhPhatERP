@@ -538,7 +538,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                       </label>
                       <input
                         id="bulk_purchase_price"
-                        className={`field-input${errors.purchase_price ? ' is-error' : ''}`}
+                        className={`field-input${errors.purchase_price ? ' border-danger' : ''}`}
                         type="number"
                         min="0"
                         placeholder="VD: 50000"
@@ -561,7 +561,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                     </label>
                     <input
                       id="bulk_lot_number"
-                      className={`field-input${errors.lot_number ? ' is-error' : ''}`}
+                      className={`field-input${errors.lot_number ? ' border-danger' : ''}`}
                       type="text"
                       placeholder="VD: LOT-2026-001"
                       {...register('lot_number')}
@@ -641,7 +641,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                     <label htmlFor="bulk_width_cm">Khổ vải (cm)</label>
                     <input
                       id="bulk_width_cm"
-                      className={`field-input${errors.width_cm ? ' is-error' : ''}`}
+                      className={`field-input${errors.width_cm ? ' border-danger' : ''}`}
                       type="number"
                       step="0.01"
                       min="0"
@@ -723,7 +723,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                     </label>
                     <input
                       id="bulk_roll_prefix"
-                      className={`field-input${errors.roll_prefix ? ' is-error' : ''}`}
+                      className={`field-input${errors.roll_prefix ? ' border-danger' : ''}`}
                       type="text"
                       placeholder="VD: FN-"
                       {...register('roll_prefix')}
@@ -739,7 +739,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                     <label htmlFor="bulk_start_number">Số bắt đầu</label>
                     <input
                       id="bulk_start_number"
-                      className={`field-input${errors.start_number ? ' is-error' : ''}`}
+                      className={`field-input${errors.start_number ? ' border-danger' : ''}`}
                       type="number"
                       min="1"
                       step="1"

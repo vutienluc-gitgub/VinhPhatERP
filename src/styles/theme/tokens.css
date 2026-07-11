@@ -1,0 +1,78 @@
+/* ============================================================
+   BRAND TOKENS — Single Source of Truth
+   ============================================================
+   To rebrand the ENTIRE app, edit ONLY this block.
+   Every other color in the system derives from these values.
+
+   Convention:
+     --brand-rgb   = Primary brand color as R,G,B (for alpha)
+     --base-rgb    = Dark text base color as R,G,B (for alpha)
+     --accent-rgb  = Accent color as R,G,B (for alpha)
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+  font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* ── Brand Palette (Pepsi-inspired) ────────────────────────── */
+  --brand-rgb: 33, 81, 161; /* #2151A1 — Primary blue */
+  --brand-strong-rgb: 22, 56, 112; /* #163870 — Darker blue */
+  --accent-rgb: 235, 25, 51; /* #EB1933 — Pepsi red */
+  --base-rgb: 16, 30, 52; /* #101E34 — Dark navy text */
+
+  /* ── Semantic Colors (derived from brand) ──────────────────── */
+  --primary: rgb(var(--brand-rgb));
+  --primary-strong: rgb(var(--brand-strong-rgb));
+  --accent: rgb(var(--accent-rgb));
+
+  /* ── Surface & Layout ──────────────────────────────────────── */
+  --surface: rgba(255, 255, 255, 0.86);
+  --surface-strong: #ffffff;
+  --surface-hover: rgba(var(--brand-rgb), 0.05);
+  --surface-selected: rgba(var(--brand-rgb), 0.08);
+  --surface-subtle: rgba(var(--base-rgb), 0.03);
+  --surface-disabled: rgba(var(--base-rgb), 0.04);
+  --border: rgba(var(--base-rgb), 0.1);
+
+  /* ── Text ───────────────────────────────────────────────────── */
+  --text: rgb(var(--base-rgb));
+  --muted: #5c6f88;
+  --text-tertiary: #8899aa;
+
+  /* ── Status Colors ─────────────────────────────────────────── */
+  --warning: #d97706;
+  --warning-strong: #b45309;
+  --danger: #c0392b;
+  --danger-rgb: 192, 57, 43;
+  --success: #0a805c;
+  --success-rgb: 10, 128, 92;
+  --info: rgb(var(--brand-rgb));
+
+  /* ── Elevation & Shape ─────────────────────────────────────── */
+  --shadow: 0 16px 40px rgba(var(--base-rgb), 0.08);
+  --radius-xl: 28px;
+  --radius-lg: 24px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+
+  /* ── Auth Page Accent (Login / Register) ────────────────────── */
+  --auth-accent: rgb(var(--brand-rgb));
+  --auth-accent-strong: rgb(var(--brand-strong-rgb));
+  --auth-accent-rgb: var(--brand-rgb);
+
+  /* ── Computed Backgrounds ───────────────────────────────────── */
+  color: rgb(var(--base-rgb));
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(var(--brand-rgb), 0.12),
+      transparent 28%
+    ),
+    linear-gradient(180deg, #f6fbff 0%, #edf4fb 100%);
+}

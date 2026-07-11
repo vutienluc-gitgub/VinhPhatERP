@@ -110,7 +110,7 @@ export function ProductionSettingsForm() {
               </label>
               <input
                 id="ps-waste"
-                className={`field-input${errors.default_waste_rate ? ' is-error' : ''}`}
+                className={`field-input${errors.default_waste_rate ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.DEFAULT_WASTE_RATE}
                 {...register('default_waste_rate')}
@@ -128,7 +128,7 @@ export function ProductionSettingsForm() {
               </label>
               <input
                 id="ps-days"
-                className={`field-input${errors.default_production_days ? ' is-error' : ''}`}
+                className={`field-input${errors.default_production_days ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.DEFAULT_PRODUCTION_DAYS}
                 {...register('default_production_days')}

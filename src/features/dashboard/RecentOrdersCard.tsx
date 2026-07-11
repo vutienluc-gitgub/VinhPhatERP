@@ -77,7 +77,7 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-2 min-w-0">
-                  <span className="td-muted text-[0.8rem] overflow-hidden text-ellipsis whitespace-nowrap">
+                  <span className="text-muted text-sm text-[0.8rem] overflow-hidden text-ellipsis whitespace-nowrap">
                     {order.customer_name ?? '—'} ·{' '}
                     {formatDate(order.created_at)}
                   </span>

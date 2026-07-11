@@ -164,7 +164,7 @@ export function POGeneralInfoCard({
             </label>
             <input
               type="date"
-              className={`field-input h-9 ${errors.order_date ? 'is-error border-red-500' : ''}`}
+              className={`field-input h-9 ${errors.order_date ? 'border-danger border-red-500' : ''}`}
               {...register('order_date')}
             />
             {errors.order_date && (

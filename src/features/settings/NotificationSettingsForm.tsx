@@ -145,7 +145,7 @@ export function NotificationSettingsForm() {
               </label>
               <input
                 id="nf-threshold"
-                className={`field-input${errors.low_stock_threshold ? ' is-error' : ''}`}
+                className={`field-input${errors.low_stock_threshold ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.LOW_STOCK_THRESHOLD}
                 {...register('low_stock_threshold')}
@@ -163,7 +163,7 @@ export function NotificationSettingsForm() {
               </label>
               <input
                 id="nf-email"
-                className={`field-input${errors.notification_email ? ' is-error' : ''}`}
+                className={`field-input${errors.notification_email ? ' border-danger' : ''}`}
                 type="email"
                 placeholder={SETTINGS_PLACEHOLDERS.NOTIFICATION_EMAIL}
                 {...register('notification_email')}

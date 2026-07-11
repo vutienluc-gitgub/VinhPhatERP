@@ -140,7 +140,7 @@ export function AdHocShipmentItemsTable({
             {/* Quantity */}
             <div className="pr-2">
               <input
-                className={`field-input text-sm text-right ${errors.items?.[index]?.quantity ? 'is-error' : ''}`}
+                className={`field-input text-sm text-right ${errors.items?.[index]?.quantity ? 'border-danger' : ''}`}
                 type="number"
                 step="0.1"
                 placeholder="0"

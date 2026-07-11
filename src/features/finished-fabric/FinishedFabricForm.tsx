@@ -274,7 +274,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                     </label>
                     <input
                       id="roll_number"
-                      className={`field-input${errors.roll_number ? ' is-error' : ''}`}
+                      className={`field-input${errors.roll_number ? ' border-danger' : ''}`}
                       type="text"
                       placeholder="VD: FN-2026-001"
                       {...register('roll_number')}
@@ -461,7 +461,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                     <label htmlFor="width_cm">Khổ vải (cm)</label>
                     <input
                       id="width_cm"
-                      className={`field-input${errors.width_cm ? ' is-error' : ''}`}
+                      className={`field-input${errors.width_cm ? ' border-danger' : ''}`}
                       type="number"
                       step="0.01"
                       min="0"
@@ -479,7 +479,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                     <label htmlFor="length_m">Độ dài (m)</label>
                     <input
                       id="length_m"
-                      className={`field-input${errors.length_m ? ' is-error' : ''}`}
+                      className={`field-input${errors.length_m ? ' border-danger' : ''}`}
                       type="number"
                       step="0.001"
                       min="0"
@@ -500,7 +500,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
                     <label htmlFor="weight_kg">Trọng lượng (kg)</label>
                     <input
                       id="weight_kg"
-                      className={`field-input${errors.weight_kg ? ' is-error' : ''}`}
+                      className={`field-input${errors.weight_kg ? ' border-danger' : ''}`}
                       type="number"
                       step="0.001"
                       min="0"

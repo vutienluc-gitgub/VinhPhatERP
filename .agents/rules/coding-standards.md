@@ -90,6 +90,17 @@ npm run rpc:check    # 0 issues required
 
 ---
 
+## Styling Hierarchy
+
+When creating or modifying components, follow this strict priority order for styling:
+
+1. **Tailwind Utility Classes (Priority 1):** Use Tailwind directly in `className` for 90% of styling needs. It ensures consistency and no dead code.
+2. **shadcn/ui Variants (Priority 2):** If a component has multiple visual states (e.g., Button `primary`, `outline`, `ghost`), use `cva` (Class Variance Authority) to manage Tailwind classes.
+3. **CSS Modules (Priority 3):** Use `.module.css` files ONLY when a component has highly custom, complex layout CSS that would make JSX unreadable. Keep styles scoped to the component.
+4. **Global CSS (Priority 4 - Avoid):** Only use `src/styles/global.css` (or files in `src/styles/*`) for global resets, theme tokens (`:root`), typography, and app-wide structural layouts. Never write component-specific logic here.
+
+---
+
 ## Render Safety
 
 **Null/undefined guard before render:**

@@ -182,7 +182,7 @@ export function POItemsTable({
                             id={`input-ordered_qty-${index}`}
                             className={`table-cell-input table-cell-input-numeric ${
                               errors.items?.[index]?.ordered_qty
-                                ? 'is-error'
+                                ? 'border-danger'
                                 : ''
                             }`}
                             placeholder="0"
@@ -214,7 +214,7 @@ export function POItemsTable({
                               isPriceHigherThanContract
                                 ? 'border-amber-400 focus:border-amber-500 text-amber-700 bg-amber-50/20 font-semibold'
                                 : ''
-                            } ${errors.items?.[index]?.unit_price ? 'is-error' : ''}`}
+                            } ${errors.items?.[index]?.unit_price ? 'border-danger' : ''}`}
                             placeholder="0"
                             value={field.value}
                             onChange={field.onChange}

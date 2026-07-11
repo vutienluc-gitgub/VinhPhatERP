@@ -33,7 +33,7 @@ export function StepGeneralInfo({ hidden, isEditing }: StepGeneralInfoProps) {
               </label>
               <input
                 id="code"
-                className={`field-input${errors.code ? ' is-error' : ''}`}
+                className={`field-input${errors.code ? ' border-danger' : ''}`}
                 type="text"
                 placeholder="VD: YS-001"
                 readOnly={!isEditing}
@@ -50,7 +50,7 @@ export function StepGeneralInfo({ hidden, isEditing }: StepGeneralInfoProps) {
               </label>
               <input
                 id="name"
-                className={`field-input bg-surface/50${errors.name ? ' is-error' : ''}`}
+                className={`field-input bg-surface/50${errors.name ? ' border-danger' : ''}`}
                 type="text"
                 placeholder="Tự động tạo từ thông số kỹ thuật"
                 readOnly

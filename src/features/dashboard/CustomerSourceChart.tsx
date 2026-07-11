@@ -18,7 +18,7 @@ export function CustomerSourceChart({
         <div className="card-header-row">
           <h3 className="text-lg font-bold m-0">Nguồn khách hàng</h3>
         </div>
-        <p className="td-muted text-[0.85rem] mt-[0.35rem] mb-0">
+        <p className="text-muted text-sm text-[0.85rem] mt-[0.35rem] mb-0">
           Phân bổ theo nguồn tiếp cận
         </p>
       </div>

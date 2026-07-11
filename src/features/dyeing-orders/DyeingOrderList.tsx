@@ -99,7 +99,7 @@ export function DyeingOrderList({
       header: 'Trả hàng (DK)',
       id: 'expected_return_date',
       sortable: true,
-      className: 'hide-mobile',
+      className: 'max-sm:hidden',
       cell: (row: DyeingOrder) => (
         <div className="flex items-center gap-1.5 text-muted">
           <Icon name="Calendar" size={16} />

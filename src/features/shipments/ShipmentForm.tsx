@@ -288,7 +288,7 @@ export function ShipmentForm({
                 Ngày giao <span className="field-required">*</span>
               </label>
               <input
-                className={`field-input${errors.shipmentDate ? ' is-error' : ''}`}
+                className={`field-input${errors.shipmentDate ? ' border-danger' : ''}`}
                 type="date"
                 {...register('shipmentDate')}
               />

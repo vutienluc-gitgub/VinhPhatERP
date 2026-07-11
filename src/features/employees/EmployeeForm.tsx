@@ -189,7 +189,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
       >
         {isEditing && (
           <div className="mb-4">
-            <span className="td-muted">
+            <span className="text-muted text-sm">
               Mã nhân viên: <strong>{employee.code}</strong>
             </span>
           </div>
@@ -202,7 +202,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
             </label>
             <input
               {...form.register('name')}
-              className={`field-input${form.formState.errors.name ? ' is-error' : ''}`}
+              className={`field-input${form.formState.errors.name ? ' border-danger' : ''}`}
               placeholder="Nhập họ tên"
               disabled={isPending}
             />

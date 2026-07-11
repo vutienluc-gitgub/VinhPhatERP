@@ -51,12 +51,12 @@ const AGING_COLUMNS: DataTableColumn<AgingRoll>[] = [
   {
     header: 'Màu',
     cell: (r) => r.color_name ?? '—',
-    className: 'hide-mobile td-muted',
+    className: 'max-sm:hidden text-muted text-sm',
   },
   {
     header: 'Vị trí',
     cell: (r) => r.warehouse_location ?? '—',
-    className: 'hide-mobile td-muted',
+    className: 'max-sm:hidden text-muted text-sm',
   },
   {
     header: 'Ngày tồn',
@@ -89,7 +89,7 @@ const BREAKDOWN_COLUMNS: ColumnDef<InventoryBreakdownRow, unknown>[] = [
     id: 'color_name',
     accessorKey: 'color_name',
     cell: ({ row }) => row.original.color_name ?? '—',
-    meta: { className: 'hide-mobile td-muted' },
+    meta: { className: 'max-sm:hidden text-muted text-sm' },
   },
   {
     header: 'Chất lượng',
@@ -116,7 +116,7 @@ const BREAKDOWN_COLUMNS: ColumnDef<InventoryBreakdownRow, unknown>[] = [
     id: 'total_length_m',
     accessorKey: 'total_length_m',
     cell: ({ row }) => <LengthText value={row.original.total_length_m ?? 0} />,
-    meta: { className: 'text-right hide-mobile font-medium' },
+    meta: { className: 'text-right max-sm:hidden font-medium' },
   },
   {
     header: 'Nặng (kg)',

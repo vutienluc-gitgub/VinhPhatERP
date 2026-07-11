@@ -1,0 +1,253 @@
+/* ============================================================
+   BRAND TOKENS — Single Source of Truth
+   ============================================================
+   To rebrand the ENTIRE app, edit ONLY this block.
+   Every other color in the system derives from these values.
+
+   Convention:
+     --brand-rgb   = Primary brand color as R,G,B (for alpha)
+     --base-rgb    = Dark text base color as R,G,B (for alpha)
+     --accent-rgb  = Accent color as R,G,B (for alpha)
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+  font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* ── Brand Palette (Pepsi-inspired) ────────────────────────── */
+  --brand-rgb: 33, 81, 161; /* #2151A1 — Primary blue */
+  --brand-strong-rgb: 22, 56, 112; /* #163870 — Darker blue */
+  --accent-rgb: 235, 25, 51; /* #EB1933 — Pepsi red */
+  --base-rgb: 16, 30, 52; /* #101E34 — Dark navy text */
+
+  /* ── Semantic Colors (derived from brand) ──────────────────── */
+  --primary: rgb(var(--brand-rgb));
+  --primary-strong: rgb(var(--brand-strong-rgb));
+  --accent: rgb(var(--accent-rgb));
+
+  /* ── Surface & Layout ──────────────────────────────────────── */
+  --surface: rgba(255, 255, 255, 0.86);
+  --surface-strong: #ffffff;
+  --surface-hover: rgba(var(--brand-rgb), 0.05);
+  --surface-selected: rgba(var(--brand-rgb), 0.08);
+  --surface-subtle: rgba(var(--base-rgb), 0.03);
+  --surface-disabled: rgba(var(--base-rgb), 0.04);
+  --border: rgba(var(--base-rgb), 0.1);
+
+  /* ── Text ───────────────────────────────────────────────────── */
+  --text: rgb(var(--base-rgb));
+  --muted: #5c6f88;
+  --text-tertiary: #8899aa;
+
+  /* ── Status Colors ─────────────────────────────────────────── */
+  --warning: #d97706;
+  --warning-strong: #b45309;
+  --danger: #c0392b;
+  --danger-rgb: 192, 57, 43;
+  --success: #0a805c;
+  --success-rgb: 10, 128, 92;
+  --info: rgb(var(--brand-rgb));
+
+  /* ── Elevation & Shape ─────────────────────────────────────── */
+  --shadow: 0 16px 40px rgba(var(--base-rgb), 0.08);
+  --radius-xl: 28px;
+  --radius-lg: 24px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+
+  /* ── Auth Page Accent (Login / Register) ────────────────────── */
+  --auth-accent: rgb(var(--brand-rgb));
+  --auth-accent-strong: rgb(var(--brand-strong-rgb));
+  --auth-accent-rgb: var(--brand-rgb);
+
+  /* ── Computed Backgrounds ───────────────────────────────────── */
+  color: rgb(var(--base-rgb));
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(var(--brand-rgb), 0.12),
+      transparent 28%
+    ),
+    linear-gradient(180deg, #f6fbff 0%, #edf4fb 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-width: 320px;
+  min-height: 100vh;
+  color: var(--text);
+  /* background-attachment: fixed gây floating/parallax trên iOS Safari khi overscroll */
+  overflow-x: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+#root {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+/* ============================================================
+   Dark Mode Foundation
+   ============================================================ */
+[data-theme='dark'] {
+  color-scheme: dark;
+  color: #eef7ff;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(var(--brand-rgb), 0.15),
+      transparent 28%
+    ),
+    linear-gradient(180deg, #091524 0%, #060e18 100%);
+
+  --surface: rgba(var(--base-rgb), 0.86);
+  --surface-strong: #0d1e34;
+  --surface-hover: rgba(255, 255, 255, 0.06);
+  --surface-selected: rgba(var(--brand-rgb), 0.15);
+  --surface-subtle: rgba(255, 255, 255, 0.03);
+  --surface-disabled: rgba(255, 255, 255, 0.04);
+  --border: rgba(255, 255, 255, 0.12);
+  --text: #eef7ff;
+  --muted: #94a3b8;
+  --text-tertiary: #64748b;
+
+  --primary: #4a8fd4;
+  --primary-strong: #7ab3e8;
+  --accent: #f04d5f;
+
+  --warning: #f59e0b;
+  --warning-strong: #d97706;
+  --danger: #f87171;
+  --danger-rgb: 248, 113, 113;
+  --success: #34d399;
+  --success-rgb: 52, 211, 153;
+  --info: #7ab3e8;
+
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+
+  --auth-accent: #4a8fd4;
+  --auth-accent-strong: #7ab3e8;
+  --auth-accent-rgb: 74, 143, 212;
+}
+
+/* ============================================================
+   Premium Effects & Animations
+   ============================================================ */
+
+.bg-glow {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme='dark'] .bg-glow {
+  opacity: 0.08;
+}
+
+.bg-glow-1 {
+  top: -100px;
+  right: 10%;
+  background: var(--accent);
+}
+.bg-glow-2 {
+  bottom: -80px;
+  left: 20%;
+  background: var(--primary);
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up {
+  animation: fadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.fade-up:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.fade-up:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.fade-up:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.fade-up:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+@keyframes pulse-live {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--success);
+  border-radius: 50%;
+  animation: pulse-live 2s infinite;
+  display: inline-block;
+}

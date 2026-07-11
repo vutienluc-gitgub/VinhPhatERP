@@ -357,7 +357,7 @@ export function WorkOrderForm({
                     firstInputRef.current = e;
                   }}
                   placeholder="Ví dụ: WO-2024-001"
-                  className={`field-input${errors.work_order_number ? ' is-error' : ''}`}
+                  className={`field-input${errors.work_order_number ? ' border-danger' : ''}`}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
@@ -496,7 +496,7 @@ export function WorkOrderForm({
                   control={control}
                   render={({ field }) => (
                     <MoneyInput
-                      className={`field-input${errors.weaving_unit_price ? ' is-error' : ''}`}
+                      className={`field-input${errors.weaving_unit_price ? ' border-danger' : ''}`}
                       value={field.value}
                       onChange={field.onChange}
                       onBlur={field.onBlur}
@@ -524,7 +524,7 @@ export function WorkOrderForm({
                       {...register('target_quantity', {
                         valueAsNumber: true,
                       })}
-                      className={`field-input flex-1${errors.target_quantity ? ' is-error' : ''}`}
+                      className={`field-input flex-1${errors.target_quantity ? ' border-danger' : ''}`}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
@@ -559,7 +559,7 @@ export function WorkOrderForm({
                     type="number"
                     step="0.01"
                     {...register('target_weight_kg', { valueAsNumber: true })}
-                    className={`field-input${errors.target_weight_kg ? ' is-error' : ''}`}
+                    className={`field-input${errors.target_weight_kg ? ' border-danger' : ''}`}
                   />
                   <span className="field-hint whitespace-nowrap">
                     Tự tính từ BOM nếu trống

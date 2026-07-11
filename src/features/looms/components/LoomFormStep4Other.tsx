@@ -24,7 +24,7 @@ export function LoomFormStep4Other({ isTechnicalLocked }: Props) {
           <label htmlFor="loom-year">Năm sản xuất</label>
           <input
             id="loom-year"
-            className={`field-input${errors.year_manufactured ? ' is-error' : ''}`}
+            className={`field-input${errors.year_manufactured ? ' border-danger' : ''}`}
             type="number"
             step="1"
             min="1950"

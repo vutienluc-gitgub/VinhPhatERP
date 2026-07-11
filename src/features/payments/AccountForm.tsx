@@ -127,7 +127,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
               </label>
               <input
                 id="name"
-                className={`field-input${errors.name ? ' is-error' : ''}`}
+                className={`field-input${errors.name ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={ACCOUNT_FORM_LABELS.namePlaceholder}
                 {...register('name')}
@@ -203,7 +203,7 @@ export function AccountForm({ account, onClose }: AccountFormProps) {
                 render={({ field }) => (
                   <MoneyInput
                     id="initialBalance"
-                    className={`field-input${errors.initialBalance ? ' is-error' : ''}`}
+                    className={`field-input${errors.initialBalance ? ' border-danger' : ''}`}
                     value={field.value}
                     onChange={field.onChange}
                     onBlur={field.onBlur}

@@ -90,7 +90,7 @@ export function PRCreate() {
               <input
                 id="requester_dept"
                 type="text"
-                className={`field-input${errors.requester_dept ? ' is-error' : ''}`}
+                className={`field-input${errors.requester_dept ? ' border-danger' : ''}`}
                 placeholder={PR_LABELS.FIELD_DEPT_PLACEHOLDER}
                 {...register('requester_dept')}
               />

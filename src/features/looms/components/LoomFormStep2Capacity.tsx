@@ -82,7 +82,7 @@ export function LoomFormStep2Capacity({
             <label htmlFor="loom-width">Khổ dệt tối đa (cm)</label>
             <input
               id="loom-width"
-              className={`field-input${errors.max_width_cm ? ' is-error' : ''}`}
+              className={`field-input${errors.max_width_cm ? ' border-danger' : ''}`}
               type="number"
               step="0.1"
               min="0"
@@ -102,7 +102,7 @@ export function LoomFormStep2Capacity({
             <label htmlFor="loom-speed">Tốc độ (vòng/phút)</label>
             <input
               id="loom-speed"
-              className={`field-input${errors.max_speed_rpm ? ' is-error' : ''}`}
+              className={`field-input${errors.max_speed_rpm ? ' border-danger' : ''}`}
               type="number"
               step="1"
               min="0"
@@ -124,7 +124,7 @@ export function LoomFormStep2Capacity({
             <label htmlFor="loom-capacity">Công suất (m/ngày)</label>
             <input
               id="loom-capacity"
-              className={`field-input${errors.daily_capacity_m ? ' is-error' : ''}`}
+              className={`field-input${errors.daily_capacity_m ? ' border-danger' : ''}`}
               type="number"
               step="0.1"
               min="0"
@@ -146,7 +146,7 @@ export function LoomFormStep2Capacity({
             <label htmlFor="loom-capacity-kg">Công suất (kg/ngày)</label>
             <input
               id="loom-capacity-kg"
-              className={`field-input${errors.daily_capacity_kg ? ' is-error' : ''}`}
+              className={`field-input${errors.daily_capacity_kg ? ' border-danger' : ''}`}
               type="number"
               step="0.1"
               min="0"

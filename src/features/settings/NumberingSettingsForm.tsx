@@ -102,7 +102,7 @@ export function NumberingSettingsForm() {
               <label htmlFor="ns-order">{SETTINGS_LABELS.ORDER_PREFIX}</label>
               <input
                 id="ns-order"
-                className={`field-input${errors.order_prefix ? ' is-error' : ''}`}
+                className={`field-input${errors.order_prefix ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.ORDER_PREFIX}
                 {...register('order_prefix')}
@@ -120,7 +120,7 @@ export function NumberingSettingsForm() {
               </label>
               <input
                 id="ns-quotation"
-                className={`field-input${errors.quotation_prefix ? ' is-error' : ''}`}
+                className={`field-input${errors.quotation_prefix ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.QUOTATION_PREFIX}
                 {...register('quotation_prefix')}
@@ -138,7 +138,7 @@ export function NumberingSettingsForm() {
               </label>
               <input
                 id="ns-invoice"
-                className={`field-input${errors.invoice_prefix ? ' is-error' : ''}`}
+                className={`field-input${errors.invoice_prefix ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.INVOICE_PREFIX}
                 {...register('invoice_prefix')}
@@ -158,7 +158,7 @@ export function NumberingSettingsForm() {
               </label>
               <input
                 id="ns-payment"
-                className={`field-input${errors.payment_prefix ? ' is-error' : ''}`}
+                className={`field-input${errors.payment_prefix ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.PAYMENT_PREFIX}
                 {...register('payment_prefix')}
@@ -176,7 +176,7 @@ export function NumberingSettingsForm() {
               </label>
               <input
                 id="ns-expense"
-                className={`field-input${errors.expense_prefix ? ' is-error' : ''}`}
+                className={`field-input${errors.expense_prefix ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.EXPENSE_PREFIX}
                 {...register('expense_prefix')}

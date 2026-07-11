@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom';
 
 import { Icon, Badge } from '@/shared/components';
 import type { PendingTask } from '@/application/analytics';
+import { DASHBOARD_LABELS } from '@/shared/constants/ui.constants';
+
+import styles from './PendingTasksCard.module.css';
 
 type PendingTasksCardProps = {
   tasks: PendingTask[];
@@ -15,7 +18,7 @@ export function PendingTasksCard({ tasks }: PendingTasksCardProps) {
       <div className="card-header-area">
         <div className="card-header-row">
           <h3 className="text-lg font-bold m-0 flex items-center">
-            Nhiệm vụ cần xử lý
+            {DASHBOARD_LABELS.PENDING_TASKS_TITLE}
             {totalTasks > 0 && (
               <Badge variant="info" className="ml-2 text-[0.65rem]">
                 {totalTasks}
@@ -27,21 +30,25 @@ export function PendingTasksCard({ tasks }: PendingTasksCardProps) {
 
       <div className="pt-3">
         {tasks.length === 0 ? (
-          <div className="task-empty text-success flex items-center justify-center gap-2">
+          <div
+            className={`${styles.taskEmpty} text-success flex items-center justify-center gap-2`}
+          >
             <Icon name="Sparkles" size={20} />
-            Tuyệt vời! Không còn nhiệm vụ nào chưa xử lý.
+            {DASHBOARD_LABELS.PENDING_TASKS_EMPTY}
           </div>
         ) : (
-          <div className="task-list">
+          <div className={styles.taskList}>
             {tasks.map((task) => (
-              <Link key={task.text} to={task.href} className="task-item">
-                <span className="task-item-icon">
+              <Link key={task.text} to={task.href} className={styles.taskItem}>
+                <span className={styles.taskItemIcon}>
                   <Icon name={task.icon} size={20} />
                 </span>
-                <span className="task-item-text font-medium">{task.text}</span>
+                <span className={`${styles.taskItemText} font-medium`}>
+                  {task.text}
+                </span>
                 {task.count > 0 && (
                   <span
-                    className={`task-item-count${task.isAlert ? ' is-alert' : ''}`}
+                    className={`${styles.taskItemCount}${task.isAlert ? ` ${styles.isAlert}` : ''}`}
                   >
                     {task.count}
                   </span>

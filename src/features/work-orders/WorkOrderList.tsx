@@ -383,7 +383,7 @@ export function WorkOrderList({
                 header: 'Bắt Đầu',
                 id: 'start_date',
                 sortable: true,
-                className: 'td-muted',
+                className: 'text-muted text-sm',
                 cell: (wo) =>
                   wo.start_date
                     ? new Date(wo.start_date).toLocaleDateString('vi-VN')

@@ -109,7 +109,7 @@ export function ReportSettingsForm() {
               </label>
               <input
                 id="rp-fiscal"
-                className={`field-input${errors.fiscal_year_start ? ' is-error' : ''}`}
+                className={`field-input${errors.fiscal_year_start ? ' border-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.FISCAL_YEAR_START}
                 {...register('fiscal_year_start')}

@@ -369,11 +369,11 @@ export function QuotationDetail({
                   <th className="w-10">#</th>
                   <th>Loại vải</th>
                   <th>Màu</th>
-                  <th className="hide-mobile">Khổ (cm)</th>
+                  <th className="max-sm:hidden">Khổ (cm)</th>
                   <th className="text-right">Số lượng</th>
                   <th className="text-right">Đơn giá</th>
                   <th className="text-right">Thành tiền</th>
-                  <th className="hide-mobile">SX (ngày)</th>
+                  <th className="max-sm:hidden">SX (ngày)</th>
                 </tr>
               </thead>
               <tbody>
@@ -386,7 +386,7 @@ export function QuotationDetail({
                         <span className="font-bold">{item.fabric_type}</span>
                       </td>
                       <td className="text-muted">{item.color_name ?? '—'}</td>
-                      <td className="text-muted hide-mobile">
+                      <td className="text-muted max-sm:hidden">
                         {item.width_cm ?? '—'}
                       </td>
                       <td className="text-right tabular-nums">
@@ -398,7 +398,7 @@ export function QuotationDetail({
                       <td className="text-right font-bold tabular-nums">
                         <MoneyText value={item.amount} />
                       </td>
-                      <td className="text-muted hide-mobile">
+                      <td className="text-muted max-sm:hidden">
                         {item.lead_time_days ?? '—'}
                       </td>
                     </tr>
@@ -410,7 +410,7 @@ export function QuotationDetail({
                   <td className="text-right tabular-nums">
                     <MoneyText value={quotation.subtotal} />
                   </td>
-                  <td className="hide-mobile"></td>
+                  <td className="max-sm:hidden"></td>
                 </tr>
                 {quotation.discount_amount > 0 && (
                   <tr className="text-danger">
@@ -424,7 +424,7 @@ export function QuotationDetail({
                     <td className="text-right tabular-nums">
                       -<MoneyText value={quotation.discount_amount} />
                     </td>
-                    <td className="hide-mobile"></td>
+                    <td className="max-sm:hidden"></td>
                   </tr>
                 )}
                 {quotation.vat_amount > 0 && (
@@ -435,7 +435,7 @@ export function QuotationDetail({
                     <td className="text-right tabular-nums">
                       +<MoneyText value={quotation.vat_amount} />
                     </td>
-                    <td className="hide-mobile"></td>
+                    <td className="max-sm:hidden"></td>
                   </tr>
                 )}
                 <tr className="font-extrabold text-primary bg-surface/50">
@@ -445,7 +445,7 @@ export function QuotationDetail({
                   <td className="text-right text-lg tabular-nums">
                     <MoneyText value={quotation.total_amount} />
                   </td>
-                  <td className="hide-mobile"></td>
+                  <td className="max-sm:hidden"></td>
                 </tr>
               </tbody>
             </table>

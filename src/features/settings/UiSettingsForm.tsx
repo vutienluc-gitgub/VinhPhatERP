@@ -138,7 +138,7 @@ export function UiSettingsForm() {
                 />
                 <input
                   id="ui-brand"
-                  className={`field-input flex-1${errors.brand_color ? ' is-error' : ''}`}
+                  className={`field-input flex-1${errors.brand_color ? ' border-danger' : ''}`}
                   type="text"
                   placeholder={SETTINGS_PLACEHOLDERS.BRAND_COLOR}
                   {...register('brand_color')}
@@ -158,7 +158,7 @@ export function UiSettingsForm() {
             </label>
             <input
               id="ui-print-logo"
-              className={`field-input${errors.print_logo_url ? ' is-error' : ''}`}
+              className={`field-input${errors.print_logo_url ? ' border-danger' : ''}`}
               type="text"
               placeholder={SETTINGS_PLACEHOLDERS.PRINT_LOGO_URL}
               {...register('print_logo_url')}

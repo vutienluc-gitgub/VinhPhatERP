@@ -116,7 +116,7 @@ export function BomList({
           id: 'created_by',
           sortable: true,
           accessor: (bom) => bom.created_by_profile?.full_name || '',
-          className: 'td-muted text-sm',
+          className: 'text-muted text-sm text-sm',
           cell: (bom) => bom.created_by_profile?.full_name || 'N/A',
         },
         {

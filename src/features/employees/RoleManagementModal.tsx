@@ -144,7 +144,7 @@ export function RoleManagementModal({
                 </label>
                 <input
                   {...form.register('code')}
-                  className={`field-input text-sm ${form.formState.errors.code ? 'is-error' : ''}`}
+                  className={`field-input text-sm ${form.formState.errors.code ? 'border-danger' : ''}`}
                   placeholder="VD: ketoan"
                   disabled={isPending}
                 />
@@ -160,7 +160,7 @@ export function RoleManagementModal({
                 </label>
                 <input
                   {...form.register('name')}
-                  className={`field-input text-sm ${form.formState.errors.name ? 'is-error' : ''}`}
+                  className={`field-input text-sm ${form.formState.errors.name ? 'border-danger' : ''}`}
                   placeholder="VD: Kế toán"
                   disabled={isPending}
                 />

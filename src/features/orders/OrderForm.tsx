@@ -157,7 +157,7 @@ function ItemQuantityFields({
         </label>
         <input
           id={`items.${index}.quantity`}
-          className={`field-input${errors.items?.[index]?.quantity ? ' is-error' : ''}`}
+          className={`field-input${errors.items?.[index]?.quantity ? ' border-danger' : ''}`}
           type="number"
           step="0.001"
           min="0"
@@ -181,7 +181,7 @@ function ItemQuantityFields({
           render={({ field }) => (
             <MoneyInput
               id={`items.${index}.unitPrice`}
-              className={`field-input${errors.items?.[index]?.unitPrice ? ' is-error' : ''}`}
+              className={`field-input${errors.items?.[index]?.unitPrice ? ' border-danger' : ''}`}
               value={field.value}
               onChange={field.onChange}
               onBlur={field.onBlur}
@@ -486,7 +486,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                     </label>
                     <input
                       id="orderDate"
-                      className={`field-input${errors.orderDate ? ' is-error' : ''}`}
+                      className={`field-input${errors.orderDate ? ' border-danger' : ''}`}
                       type="date"
                       {...register('orderDate')}
                     />
@@ -529,7 +529,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                     <label htmlFor="deliveryDate">Ngày giao dự kiến</label>
                     <input
                       id="deliveryDate"
-                      className={`field-input${errors.deliveryDate ? ' is-error' : ''}`}
+                      className={`field-input${errors.deliveryDate ? ' border-danger' : ''}`}
                       type="date"
                       {...register('deliveryDate')}
                     />

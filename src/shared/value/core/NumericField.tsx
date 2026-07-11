@@ -46,7 +46,7 @@ export function NumericField<TFieldValues extends FieldValues>({
         value={value as number | null}
         onChange={onChange}
         onBlur={onBlur}
-        className={error ? 'is-error' : ''}
+        className={error ? 'border-danger' : ''}
         {...inputProps}
       />
       {helpText && !error && (

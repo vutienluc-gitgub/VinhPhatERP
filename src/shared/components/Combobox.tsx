@@ -176,7 +176,7 @@ export const Combobox = memo(function Combobox({
     return (
       <div className={`relative ${className}`} ref={containerRef}>
         <div
-          className={`${boxClass} flex items-center p-0${hasError ? ' is-error' : ''}${disabled ? ' opacity-50' : ''} ${minHeightClass}`}
+          className={`${boxClass} flex items-center p-0${hasError ? ' border-danger' : ''}${disabled ? ' opacity-50' : ''} ${minHeightClass}`}
         >
           <input
             id={id}
@@ -284,7 +284,7 @@ export const Combobox = memo(function Combobox({
         onBlur={() => {
           if (!isOpen) onBlur?.();
         }}
-        className={`${boxClass} flex items-center justify-between w-full text-left bg-surface px-3 ${minHeightClass} ${hasError ? 'is-error' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`${boxClass} flex items-center justify-between w-full text-left bg-surface px-3 ${minHeightClass} ${hasError ? 'border-danger' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         onKeyDown={(e) => {
           onKeyDown?.(e);
         }}

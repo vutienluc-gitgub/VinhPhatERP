@@ -280,7 +280,7 @@ export function OrderRequestModal({
                       <input
                         type="number"
                         min="1"
-                        className={`field-input${errors.items?.[index]?.quantity ? ' is-error' : ''}`}
+                        className={`field-input${errors.items?.[index]?.quantity ? ' border-danger' : ''}`}
                         {...register(`items.${index}.quantity`, {
                           valueAsNumber: true,
                         })}

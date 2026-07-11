@@ -75,7 +75,7 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
         <input
           id="code"
           type="text"
-          className={`field-input ${errors.code ? 'is-error' : ''}`}
+          className={`field-input ${errors.code ? 'border-danger' : ''}`}
           placeholder="VD: RD-02"
           readOnly={isEditing}
           {...register('code')}
@@ -95,7 +95,7 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
         <input
           id="name"
           type="text"
-          className={`field-input ${errors.name ? 'is-error' : ''}`}
+          className={`field-input ${errors.name ? 'border-danger' : ''}`}
           placeholder="VD: Đỏ đô (Maroon)"
           {...register('name')}
         />
@@ -107,7 +107,7 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
         <input
           id="trend_year"
           type="number"
-          className={`field-input ${errors.trend_year ? 'is-error' : ''}`}
+          className={`field-input ${errors.trend_year ? 'border-danger' : ''}`}
           {...register('trend_year', { valueAsNumber: true })}
         />
         {errors.trend_year && (
@@ -119,7 +119,7 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
         <label htmlFor="color_group">Nhóm màu</label>
         <select
           id="color_group"
-          className={`field-select ${errors.color_group ? 'is-error' : ''}`}
+          className={`field-select ${errors.color_group ? 'border-danger' : ''}`}
           {...register('color_group')}
         >
           <option value="">-- Chọn nhóm màu --</option>

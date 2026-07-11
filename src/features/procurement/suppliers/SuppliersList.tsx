@@ -187,7 +187,7 @@ export function SuppliersList({
       {
         accessorKey: 'phone',
         header: SUPPLIER_LIST_LABELS.COL_PHONE,
-        meta: { className: 'td-muted' },
+        meta: { className: 'text-muted text-sm' },
         cell: ({ row }) => {
           const supplier = row.original;
           return (

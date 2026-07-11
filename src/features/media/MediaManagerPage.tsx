@@ -206,7 +206,7 @@ export function MediaManagerPage() {
                         <div
                           className={`media-upload-bar-fill${
                             u.status === 'error'
-                              ? ' is-error'
+                              ? ' border-danger'
                               : u.status === 'done'
                                 ? ' is-done'
                                 : ''

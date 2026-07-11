@@ -64,7 +64,7 @@ export function CostEstimationHistoryTable({
                     {isCurrent && <Badge variant="info">Đang chọn</Badge>}
                   </div>
                 </td>
-                <td className="td-muted">
+                <td className="text-muted text-sm">
                   {/* eslint-disable-next-line no-restricted-syntax */}
                   {new Date(record.created_at).toLocaleString('vi-VN')}
                 </td>

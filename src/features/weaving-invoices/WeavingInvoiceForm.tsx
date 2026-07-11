@@ -340,7 +340,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
                   Số phiếu <span className="field-required">*</span>
                 </label>
                 <input
-                  className={`field-input${errors.invoice_number ? ' is-error' : ''}`}
+                  className={`field-input${errors.invoice_number ? ' border-danger' : ''}`}
                   {...register('invoice_number')}
                 />
                 {errors.invoice_number && (
@@ -383,7 +383,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
                 </label>
                 <input
                   type="date"
-                  className={`field-input${errors.invoice_date ? ' is-error' : ''}`}
+                  className={`field-input${errors.invoice_date ? ' border-danger' : ''}`}
                   {...register('invoice_date')}
                 />
                 {errors.invoice_date && (
@@ -482,7 +482,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
                   name="unit_price_per_kg"
                   render={({ field }) => (
                     <MoneyInput
-                      className={`field-input${errors.unit_price_per_kg ? ' is-error' : ''}`}
+                      className={`field-input${errors.unit_price_per_kg ? ' border-danger' : ''}`}
                       value={field.value}
                       onChange={(v) => field.onChange(v ?? 0)}
                       onBlur={field.onBlur}

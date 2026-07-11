@@ -201,7 +201,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
             </label>
             <input
               id="code"
-              className={`field-input${errors.code ? ' is-error' : ''}`}
+              className={`field-input${errors.code ? ' border-danger' : ''}`}
               type="text"
               placeholder={CUSTOMER_FORM_LABELS.codePlaceholder}
               readOnly={!isEditing}
@@ -219,7 +219,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
             </label>
             <input
               id="name"
-              className={`field-input${errors.name ? ' is-error' : ''}`}
+              className={`field-input${errors.name ? ' border-danger' : ''}`}
               type="text"
               placeholder={CUSTOMER_FORM_LABELS.namePlaceholder}
               {...register('name')}
@@ -236,7 +236,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
             <label htmlFor="phone">{CUSTOMER_FORM_LABELS.phoneLabel}</label>
             <input
               id="phone"
-              className={`field-input${errors.phone ? ' is-error' : ''}`}
+              className={`field-input${errors.phone ? ' border-danger' : ''}`}
               type="tel"
               placeholder={CUSTOMER_FORM_LABELS.phonePlaceholder}
               {...register('phone')}
@@ -272,7 +272,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
             <label htmlFor="email">{CUSTOMER_FORM_LABELS.emailLabel}</label>
             <input
               id="email"
-              className={`field-input${errors.email ? ' is-error' : ''}`}
+              className={`field-input${errors.email ? ' border-danger' : ''}`}
               type="email"
               placeholder={CUSTOMER_FORM_LABELS.emailPlaceholder}
               {...register('email')}
@@ -303,7 +303,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
             </label>
             <input
               id="tax_code"
-              className={`field-input${errors.tax_code ? ' is-error' : ''}`}
+              className={`field-input${errors.tax_code ? ' border-danger' : ''}`}
               type="text"
               placeholder={CUSTOMER_FORM_LABELS.taxCodePlaceholder}
               {...register('tax_code')}

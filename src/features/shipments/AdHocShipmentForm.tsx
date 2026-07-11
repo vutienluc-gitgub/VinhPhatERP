@@ -185,7 +185,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                   </label>
                   <input
                     type="date"
-                    className={`field-input ${errors.shipmentDate ? 'is-error' : ''}`}
+                    className={`field-input ${errors.shipmentDate ? 'border-danger' : ''}`}
                     {...register('shipmentDate')}
                   />
                   {errors.shipmentDate && (

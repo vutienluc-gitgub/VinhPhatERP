@@ -51,7 +51,7 @@ const ADJUSTMENT_COLUMNS: DataTableColumn<InventoryAdjustment>[] = [
   {
     header: 'Trước ĐC',
     cell: (r) => <span className="text-muted">{r.before_qty ?? 0}</span>,
-    className: 'text-right hide-mobile',
+    className: 'text-right max-sm:hidden',
   },
   {
     header: 'Mức ĐC',
@@ -71,7 +71,7 @@ const ADJUSTMENT_COLUMNS: DataTableColumn<InventoryAdjustment>[] = [
   {
     header: 'Sau ĐC',
     cell: (r) => <span className="font-bold">{r.after_qty ?? 0}</span>,
-    className: 'text-right hide-mobile',
+    className: 'text-right max-sm:hidden',
   },
   {
     header: 'Trạng thái',

@@ -240,7 +240,7 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
             },
             {
               header: 'Ngày tạo',
-              className: 'td-muted text-sm',
+              className: 'text-muted text-sm text-sm',
               cell: (c) => formatDate(c.created_at),
             },
             {

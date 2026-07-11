@@ -14,7 +14,7 @@ const DrawerNavItem = memo(
     <NavLink
       to={item.path}
       className={({ isActive }) =>
-        `drawer-list-item${isActive ? ' is-active' : ''}`
+        `drawer-list-item${isActive ? ' text-primary bg-primary/10' : ''}`
       }
       onClick={onClose}
     >

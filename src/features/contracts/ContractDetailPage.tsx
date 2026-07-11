@@ -189,7 +189,7 @@ export function ContractDetailPage({
               <h3 className="m-0 font-mono text-lg">
                 {contract.contract_number}
               </h3>
-              <span className="td-muted text-sm">
+              <span className="text-muted text-sm text-sm">
                 {CONTRACT_TYPE_LABELS[contract.type]}
               </span>
             </div>
@@ -199,7 +199,7 @@ export function ContractDetailPage({
           {/* Info grid */}
           <div className="dashboard-summary-row mb-4">
             <div>
-              <div className="td-muted summary-label">Bên A</div>
+              <div className="text-muted text-sm summary-label">Bên A</div>
               <div className="font-medium">{contract.party_a_name}</div>
               {contract.party_a_tax_code && (
                 <div className="text-xs text-muted">
@@ -208,7 +208,9 @@ export function ContractDetailPage({
               )}
             </div>
             <div>
-              <div className="td-muted summary-label">Người đại diện A</div>
+              <div className="text-muted text-sm summary-label">
+                Người đại diện A
+              </div>
               <div>{contract.party_a_representative ?? '—'}</div>
               {contract.party_a_title && (
                 <div className="text-xs text-muted">
@@ -217,15 +219,21 @@ export function ContractDetailPage({
               )}
             </div>
             <div>
-              <div className="td-muted summary-label">Ngày hiệu lực</div>
+              <div className="text-muted text-sm summary-label">
+                Ngày hiệu lực
+              </div>
               <div>{formatContractDate(contract.effective_date)}</div>
             </div>
             <div>
-              <div className="td-muted summary-label">Ngày hết hạn</div>
+              <div className="text-muted text-sm summary-label">
+                Ngày hết hạn
+              </div>
               <div>{formatContractDate(contract.expiry_date)}</div>
             </div>
             <div>
-              <div className="td-muted summary-label">Điều khoản TT</div>
+              <div className="text-muted text-sm summary-label">
+                Điều khoản TT
+              </div>
               <div>{contract.payment_term ?? '—'}</div>
             </div>
           </div>

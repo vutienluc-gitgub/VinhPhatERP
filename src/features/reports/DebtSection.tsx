@@ -29,24 +29,24 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
     {
       header: 'Mã KH',
       cell: (r) => r.customer_code || '—',
-      className: 'hide-mobile td-muted',
+      className: 'max-sm:hidden text-muted text-sm',
     },
     {
       header: 'Số đơn',
       cell: (r) => r.total_orders,
-      className: 'text-right hide-mobile',
+      className: 'text-right max-sm:hidden',
     },
     {
       header: 'Tổng tiền',
       cell: (r) => <MoneyText value={r.total_amount} />,
       footer: <MoneyText value={totalAmount} />,
-      className: 'text-right hide-mobile font-medium',
+      className: 'text-right max-sm:hidden font-medium',
     },
     {
       header: 'Đã thu',
       cell: (r) => <MoneyText value={r.paid_amount} />,
       footer: <MoneyText value={totalPaid} />,
-      className: 'text-right hide-mobile text-success',
+      className: 'text-right max-sm:hidden text-success',
     },
     {
       header: 'Còn nợ',

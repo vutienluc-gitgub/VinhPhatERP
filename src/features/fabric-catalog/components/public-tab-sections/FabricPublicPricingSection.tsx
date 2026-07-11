@@ -191,7 +191,7 @@ export function FabricPublicPricingSection() {
                                 <div>
                                   <NumericInput
                                     {...ctrlField}
-                                    className={`field-input pricing-tier-cell-input h-9 text-sm ${tierErrors?.min_quantity ? ' is-error' : ''}`}
+                                    className={`field-input pricing-tier-cell-input h-9 text-sm ${tierErrors?.min_quantity ? ' border-danger' : ''}`}
                                   />
                                 </div>
                               )}

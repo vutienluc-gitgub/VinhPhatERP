@@ -74,7 +74,7 @@ export function FabricInfoTab({
           </label>
           <input
             id="fc-code"
-            className={`field-input${errors.code ? ' is-error' : ''}`}
+            className={`field-input${errors.code ? ' border-danger' : ''}`}
             type="text"
             placeholder={LABELS.CODE_PLACEHOLDER}
             readOnly={!isEditing}
@@ -91,7 +91,7 @@ export function FabricInfoTab({
           </label>
           <input
             id="fc-name"
-            className={`field-input${errors.name ? ' is-error' : ''}`}
+            className={`field-input${errors.name ? ' border-danger' : ''}`}
             type="text"
             placeholder={LABELS.NAME_PLACEHOLDER}
             {...register('name')}

@@ -143,7 +143,7 @@ export function PaymentForm({
                 <span className="field-required">*</span>
               </label>
               <input
-                className={`field-input${errors.paymentDate ? ' is-error' : ''}`}
+                className={`field-input${errors.paymentDate ? ' border-danger' : ''}`}
                 type="date"
                 {...register('paymentDate')}
               />
@@ -165,7 +165,7 @@ export function PaymentForm({
                 control={control}
                 render={({ field }) => (
                   <MoneyInput
-                    className={`field-input${errors.amount ? ' is-error' : ''}`}
+                    className={`field-input${errors.amount ? ' border-danger' : ''}`}
                     value={field.value}
                     onChange={field.onChange}
                     onBlur={field.onBlur}

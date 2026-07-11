@@ -102,6 +102,14 @@ function pluginToRoute(plugin: FeaturePlugin): RouteObject[] {
   return routes;
 }
 
+export function hasAccess(
+  requiredRoles: UserRole[] | undefined,
+  role: UserRole | undefined,
+): boolean {
+  if (!requiredRoles || requiredRoles.length === 0) return true;
+  return role !== undefined && requiredRoles.includes(role);
+}
+
 /* ── Navigation (re-exported for Sidebar/BottomNav) ── */
 
 export type NavigationItem = {

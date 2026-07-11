@@ -151,7 +151,7 @@ export function PRCreateItemsTable({
                       type="number"
                       step="0.01"
                       min="0"
-                      className={`field-input text-sm${itemErrors?.qty_required ? ' is-error' : ''}`}
+                      className={`field-input text-sm${itemErrors?.qty_required ? ' border-danger' : ''}`}
                       {...register(`items.${index}.qty_required`, {
                         valueAsNumber: true,
                       })}

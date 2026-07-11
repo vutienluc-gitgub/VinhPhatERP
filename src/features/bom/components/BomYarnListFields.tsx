@@ -112,7 +112,7 @@ export function BomYarnListFields({ yarnOptions }: BomYarnListFieldsProps) {
                   control={control}
                   render={({ field }) => (
                     <BasicNumberInput
-                      className={`field-input${errors.bom_yarn_items?.[index]?.ratio_pct ? ' is-error' : ''}`}
+                      className={`field-input${errors.bom_yarn_items?.[index]?.ratio_pct ? ' border-danger' : ''}`}
                       value={field.value}
                       onChange={field.onChange}
                       onBlur={field.onBlur}
@@ -141,7 +141,7 @@ export function BomYarnListFields({ yarnOptions }: BomYarnListFieldsProps) {
                   control={control}
                   render={({ field }) => (
                     <BasicNumberInput
-                      className={`field-input${watchWidthCm && watchGsm ? ' bg-surface-raised cursor-default' : ''}${errors.bom_yarn_items?.[index]?.consumption_kg_per_m ? ' is-error' : ''}`}
+                      className={`field-input${watchWidthCm && watchGsm ? ' bg-surface-raised cursor-default' : ''}${errors.bom_yarn_items?.[index]?.consumption_kg_per_m ? ' border-danger' : ''}`}
                       value={field.value}
                       onChange={field.onChange}
                       onBlur={field.onBlur}

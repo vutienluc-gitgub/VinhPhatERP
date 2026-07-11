@@ -61,7 +61,7 @@ export function LoomFormStep1General({
             <label htmlFor="loom-diameter">Đường kính (inch)</label>
             <input
               id="loom-diameter"
-              className={`field-input${errors.diameter_inch ? ' is-error' : ''}`}
+              className={`field-input${errors.diameter_inch ? ' border-danger' : ''}`}
               type="number"
               step="0.1"
               min="0"
@@ -83,7 +83,7 @@ export function LoomFormStep1General({
             <label htmlFor="loom-gauge">Gauge (mật độ kim)</label>
             <input
               id="loom-gauge"
-              className={`field-input${errors.gauge ? ' is-error' : ''}`}
+              className={`field-input${errors.gauge ? ' border-danger' : ''}`}
               type="number"
               step="1"
               min="0"
@@ -108,7 +108,7 @@ export function LoomFormStep1General({
             </label>
             <input
               id="loom-code"
-              className={`field-input${errors.code ? ' is-error' : ''}`}
+              className={`field-input${errors.code ? ' border-danger' : ''}`}
               type="text"
               readOnly
               {...register('code')}
@@ -127,7 +127,7 @@ export function LoomFormStep1General({
             </label>
             <input
               id="loom-name"
-              className={`field-input${errors.name ? ' is-error' : ''}`}
+              className={`field-input${errors.name ? ' border-danger' : ''}`}
               type="text"
               placeholder="VD: Toyota JAT 810"
               {...register('name')}
