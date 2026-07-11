@@ -13,6 +13,11 @@ import {
   type AuthFormValues,
 } from './auth.module';
 import { useAuth } from './AuthProvider';
+import { AUTH_MESSAGES, AUTH_LABELS } from './constants';
+import { vietnameseAuthError } from './utils';
+
+const INPUT_CLASSNAME =
+  'w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-all duration-200';
 
 export function LoginForm({
   onForgotPassword,
@@ -35,7 +40,7 @@ export function LoginForm({
 
   const onSubmit = async (values: AuthFormValues) => {
     if (!captchaToken) {
-      setServerError('Vui lòng hoàn thành xác thực bảo mật.');
+      setServerError(AUTH_MESSAGES.captchaRequired);
       return;
     }
     setServerError(null);
@@ -59,8 +64,8 @@ export function LoginForm({
       await signInWithGoogle();
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : 'Lỗi không xác định';
-      setServerError('Không thể kết nối với Google: ' + message);
+        error instanceof Error ? error.message : AUTH_MESSAGES.errorUnknown;
+      setServerError(AUTH_MESSAGES.googleLoginError + message);
     }
   };
 
@@ -68,25 +73,13 @@ export function LoginForm({
     return (
       <div className="bg-amber-500/10 border border-amber-500/20 p-6 rounded-2xl text-center">
         <p className="text-amber-500 font-semibold text-sm uppercase tracking-wider mb-2">
-          Cấu hình chưa đủ
+          {AUTH_MESSAGES.missingEnvTitle}
         </p>
         <h2 className="text-xl font-bold text-white mb-4">
-          Chưa có thông tin Supabase
+          {AUTH_MESSAGES.missingEnvDesc}
         </h2>
         <p className="text-white/70 text-sm leading-relaxed">
-          Tạo file{' '}
-          <code className="px-1.5 py-0.5 bg-black/30 rounded text-amber-400">
-            .env.local
-          </code>{' '}
-          và điền{' '}
-          <code className="px-1.5 py-0.5 bg-black/30 rounded text-amber-400">
-            VITE_SUPABASE_URL
-          </code>{' '}
-          và{' '}
-          <code className="px-1.5 py-0.5 bg-black/30 rounded text-amber-400">
-            VITE_SUPABASE_ANON_KEY
-          </code>{' '}
-          từ trang Supabase Project Settings.
+          {AUTH_MESSAGES.missingEnvInstruction}
         </p>
       </div>
     );
@@ -100,9 +93,9 @@ export function LoginForm({
     >
       <div className="text-center mb-2">
         <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-          Chào mừng trở lại
+          {AUTH_MESSAGES.welcomeBack}
         </h2>
-        <p className="text-white/50 text-sm">Vui lòng đăng nhập để tiếp tục</p>
+        <p className="text-white/50 text-sm">{AUTH_MESSAGES.loginToContinue}</p>
       </div>
 
       <div className="flex flex-col gap-5">
@@ -111,16 +104,16 @@ export function LoginForm({
             htmlFor="email"
             className="text-sm font-medium text-white/80 ml-1"
           >
-            Email
+            {AUTH_LABELS.email}
           </label>
           <div className="relative">
             <input
               id="email"
               type="email"
               autoComplete="email"
-              placeholder="admin@vinhphat.vn"
+              placeholder={AUTH_LABELS.emailPlaceholder}
               aria-invalid={Boolean(errors.email)}
-              className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-all duration-200"
+              className={INPUT_CLASSNAME}
               {...register('email')}
             />
           </div>
@@ -136,16 +129,16 @@ export function LoginForm({
             htmlFor="password"
             className="text-sm font-medium text-white/80 ml-1"
           >
-            Mật khẩu
+            {AUTH_LABELS.password}
           </label>
           <div className="relative">
             <input
               id="password"
               type="password"
               autoComplete="current-password"
-              placeholder="••••••••"
+              placeholder={AUTH_LABELS.passwordPlaceholder}
               aria-invalid={Boolean(errors.password)}
-              className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-all duration-200"
+              className={INPUT_CLASSNAME}
               {...register('password')}
             />
           </div>
@@ -168,7 +161,7 @@ export function LoginForm({
               htmlFor="rememberMe"
               className="text-sm text-white/70 cursor-pointer select-none"
             >
-              Ghi nhớ
+              {AUTH_LABELS.rememberMe}
             </label>
           </div>
 
@@ -178,7 +171,7 @@ export function LoginForm({
               onClick={onForgotPassword}
               className="text-[#818cf8] hover:text-white text-sm font-medium transition-colors"
             >
-              Quên mật khẩu?
+              {AUTH_LABELS.forgotPassword}
             </button>
           )}
         </div>
@@ -193,7 +186,7 @@ export function LoginForm({
       <div className="flex items-center gap-4 my-2">
         <div className="flex-1 h-px bg-white/10" />
         <span className="text-xs font-medium text-white/40 uppercase tracking-wider">
-          Hoặc
+          {AUTH_MESSAGES.or}
         </span>
         <div className="flex-1 h-px bg-white/10" />
       </div>
@@ -221,11 +214,11 @@ export function LoginForm({
             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
           />
         </svg>
-        Tiếp tục với Google
+        {AUTH_MESSAGES.continueWithGoogle}
       </button>
 
       <div className="flex justify-center min-h-[65px]">
-        <Turnstile onVerify={setCaptchaToken} />
+        <Turnstile onVerify={setCaptchaToken} options={{ theme: 'dark' }} />
       </div>
 
       <Button
@@ -236,20 +229,10 @@ export function LoginForm({
         isLoading={isSubmitting}
         className="bg-gradient-to-r from-[#6366f1] to-[#4f46e5] hover:from-[#818cf8] hover:to-[#6366f1] border-none shadow-lg shadow-[#6366f1]/30 text-white font-bold py-3.5"
       >
-        {isSubmitting ? 'Đang xác thực…' : 'Đăng nhập vào hệ thống'}
+        {isSubmitting
+          ? AUTH_MESSAGES.authenticating
+          : AUTH_MESSAGES.loginButton}
       </Button>
     </form>
   );
-}
-
-function vietnameseAuthError(message: string): string {
-  if (/invalid login credentials/i.test(message))
-    return 'Email hoặc mật khẩu không đúng.';
-  if (/email not confirmed/i.test(message))
-    return 'Email chưa được xác nhận. Vui lòng kiểm tra hộp thư.';
-  if (/too many requests/i.test(message))
-    return 'Đăng nhập thất bại. Vui lòng thử lại sau.';
-  if (/network/i.test(message))
-    return 'Không thể kết nối đến máy chủ. Kiểm tra kết nối mạng.';
-  return message;
 }

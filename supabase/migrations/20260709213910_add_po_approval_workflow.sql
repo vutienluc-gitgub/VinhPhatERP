@@ -21,11 +21,13 @@ CREATE TABLE IF NOT EXISTS public.approval_policies (
 ALTER TABLE public.approval_policies ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
+DROP POLICY IF EXISTS "Users can view their tenant's approval_policies" ON public.approval_policies;
 CREATE POLICY "Users can view their tenant's approval_policies"
 ON public.approval_policies FOR SELECT
 TO authenticated
 USING (tenant_id = (SELECT tenant_id FROM public.profiles WHERE id = auth.uid()));
 
+DROP POLICY IF EXISTS "Admins can manage their tenant's approval_policies" ON public.approval_policies;
 CREATE POLICY "Admins can manage their tenant's approval_policies"
 ON public.approval_policies FOR ALL
 TO authenticated

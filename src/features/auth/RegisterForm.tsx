@@ -11,6 +11,8 @@ import {
   type RegisterFormValues,
 } from './auth.module';
 import { useAuth } from './AuthProvider';
+import { AUTH_MESSAGES, AUTH_LABELS } from './constants';
+import { vietnameseAuthError } from './utils';
 
 interface RegisterFormProps {
   onSuccess: () => void;
@@ -33,7 +35,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
   const onSubmit = async (values: RegisterFormValues) => {
     if (!captchaToken) {
-      setServerError('Vui lòng hoàn thành xác thực bảo mật.');
+      setServerError(AUTH_MESSAGES.captchaRequired);
       return;
     }
     setServerError(null);
@@ -56,8 +58,8 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
   if (!hasSupabaseEnv()) {
     return (
       <div className="login-env-warning">
-        <p className="logo-text">Cấu hình chưa đủ</p>
-        <h2>Chưa có thông tin Supabase</h2>
+        <p className="logo-text">{AUTH_MESSAGES.missingEnvTitle}</p>
+        <h2>{AUTH_MESSAGES.missingEnvDesc}</h2>
       </div>
     );
   }
@@ -67,11 +69,10 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       <div className="auth-container">
         <div className="auth-header">
           <span className="logo-text">Vinh Phat ERP</span>
-          <h2>Đăng ký thành công!</h2>
+          <h2>{AUTH_MESSAGES.registerSuccessTitle}</h2>
         </div>
         <p className="text-center text-white/70">
-          Vui lòng kiểm tra email để xác nhận tài khoản trước khi đăng nhập.
-          Đang chuyển hướng về trang đăng nhập...
+          {AUTH_MESSAGES.registerSuccessBody}
         </p>
       </div>
     );
@@ -81,17 +82,17 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
     <form className="auth-form" onSubmit={handleSubmit(onSubmit)} noValidate>
       <div className="auth-header">
         <span className="logo-text">Vinh Phat ERP</span>
-        <h2>Tạo tài khoản</h2>
+        <h2>{AUTH_MESSAGES.createAccount}</h2>
       </div>
 
       <div className="form-group">
-        <label htmlFor="reg-email">Email</label>
+        <label htmlFor="reg-email">{AUTH_LABELS.email}</label>
         <div className="input-wrapper">
           <input
             id="reg-email"
             type="email"
             autoComplete="email"
-            placeholder="your-email@example.com"
+            placeholder={AUTH_LABELS.emailPlaceholder}
             {...register('email')}
           />
         </div>
@@ -101,13 +102,13 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       </div>
 
       <div className="form-group">
-        <label htmlFor="reg-password">Mật khẩu</label>
+        <label htmlFor="reg-password">{AUTH_LABELS.password}</label>
         <div className="input-wrapper">
           <input
             id="reg-password"
             type="password"
             autoComplete="new-password"
-            placeholder="••••••••"
+            placeholder={AUTH_LABELS.passwordPlaceholder}
             {...register('password')}
           />
         </div>
@@ -117,13 +118,13 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       </div>
 
       <div className="form-group">
-        <label htmlFor="reg-confirm">Xác nhận mật khẩu</label>
+        <label htmlFor="reg-confirm">{AUTH_LABELS.confirmPassword}</label>
         <div className="input-wrapper">
           <input
             id="reg-confirm"
             type="password"
             autoComplete="new-password"
-            placeholder="••••••••"
+            placeholder={AUTH_LABELS.passwordPlaceholder}
             {...register('confirmPassword')}
           />
         </div>
@@ -136,24 +137,15 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
       {serverError && <p className="form-error-banner">{serverError}</p>}
 
-      <Turnstile onVerify={setCaptchaToken} />
+      <Turnstile onVerify={setCaptchaToken} options={{ theme: 'dark' }} />
 
       <button
         type="submit"
         className="auth-submit-btn"
         disabled={isSubmitting || !captchaToken}
       >
-        {isSubmitting ? 'Đang xử lý…' : 'Đăng ký ngay'}
+        {isSubmitting ? AUTH_MESSAGES.processing : AUTH_MESSAGES.registerNow}
       </button>
     </form>
   );
-}
-
-function vietnameseAuthError(message: string): string {
-  if (/user already registered/i.test(message))
-    return 'Email này đã được đăng ký.';
-  if (/captcha/i.test(message))
-    return 'Xác thực bảo mật không thành công. Vui lòng thử lại.';
-  if (/network/i.test(message)) return 'Lỗi kết nối mạng.';
-  return message;
 }
