@@ -1,4 +1,5 @@
 import { Icon } from '@/shared/components/Icon';
+import { LABEL_ORIGIN } from '@/shared/constants/origin.constants';
 import type { YarnCatalog } from '@/features/yarn-catalog/types';
 
 import { YarnColorBadge } from './YarnColorBadge';
@@ -33,7 +34,7 @@ export function YarnCatalogMobileCard({
             <span className="font-medium">{c.composition ?? '—'}</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-xs text-muted">Xuất xứ</span>
+            <span className="text-xs text-muted">{LABEL_ORIGIN}</span>
             <span className="font-medium">{c.origin ?? '—'}</span>
           </div>
           <div className="flex flex-col">

@@ -23,14 +23,7 @@ export const TECHNIQUE_OPTIONS = [
   { value: 'Jacquard', label: 'Jacquard' },
 ];
 
-export const ORIGIN_OPTIONS = [
-  { value: 'Việt Nam', label: 'Việt Nam' },
-  { value: 'Trung Quốc', label: 'Trung Quốc' },
-  { value: 'Hàn Quốc', label: 'Hàn Quốc' },
-  { value: 'Đài Loan', label: 'Đài Loan' },
-  { value: 'Nhật Bản', label: 'Nhật Bản' },
-  { value: 'Thái Lan', label: 'Thái Lan' },
-];
+export { ORIGIN_OPTIONS } from '@/shared/constants/origin.constants';
 
 export const ROUTE_FABRIC_CATALOG = '/fabric-catalog';
 
