@@ -40,6 +40,7 @@ export const AUTH_MESSAGES = {
   sendRequest: 'Gửi yêu cầu',
   goBack: 'Quay lại',
   errorUserNotFound: 'Email không tồn tại hoặc chưa đăng ký.',
+  capsLockWarning: 'Caps Lock đang bật',
 };
 
 export const AUTH_LABELS = {

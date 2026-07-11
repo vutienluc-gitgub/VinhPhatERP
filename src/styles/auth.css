@@ -392,3 +392,86 @@
   line-height: 1.5;
   margin: 0;
 }
+
+/* ── Auth Premium Animations ───────────────────────────── */
+
+@keyframes auth-shake-keyframes {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10% {
+    transform: translateX(-6px);
+  }
+  30% {
+    transform: translateX(6px);
+  }
+  50% {
+    transform: translateX(-4px);
+  }
+  70% {
+    transform: translateX(4px);
+  }
+  85% {
+    transform: translateX(-2px);
+  }
+  95% {
+    transform: translateX(2px);
+  }
+}
+
+.auth-shake {
+  animation: auth-shake-keyframes 0.35s ease-in-out;
+}
+
+.auth-glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  background: conic-gradient(
+    from 0deg,
+    #4285f4,
+    #34a853,
+    #fbbc05,
+    #ea4335,
+    #4285f4
+  );
+  filter: blur(6px);
+}
+
+.group:hover .auth-glow {
+  opacity: 0.35;
+}
+
+/* ── Chrome Autofill Fix for Floating Labels ───────────── */
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(0, 0, 0, 0.2) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* When Chrome autofills, float the label up (same as peer-focus) */
+input:-webkit-autofill ~ label,
+input:-webkit-autofill:focus ~ label {
+  transform: translateY(-1.75rem) scale(0.85);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ── Caps Lock Warning ─────────────────────────────────── */
+
+.auth-caps-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: #fbbf24;
+  margin-top: 0.25rem;
+  margin-left: 0.25rem;
+  animation: fadeIn 0.2s ease-out;
+}
