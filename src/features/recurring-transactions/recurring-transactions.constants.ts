@@ -58,6 +58,13 @@ export const RECURRING_LABELS = {
   // Action labels
   actionPause: 'Tạm dừng',
   actionActivate: 'Kích hoạt',
+  // Filter labels
+  filterSearch: 'Tìm kiếm',
+  filterQuick: 'Lọc nhanh',
+  filterCategory: 'Danh mục',
+  filterFrequency: 'Tần suất',
+  filterStatus: 'Trạng thái',
+  searchPlaceholder: 'Tên nghiệp vụ...',
   actionPauseShort: 'Dừng',
   actionActivateShort: 'Bật',
   actionEdit: 'Sửa',
