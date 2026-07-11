@@ -45,6 +45,10 @@ export type DriverShipment = {
   vehicle_info: string | null;
   shipping_cost: number | null;
   loading_fee: number | null;
-  customers?: { name: string; address: string | null } | null;
+  customers?: {
+    name: string;
+    address: string | null;
+    phone?: string | null;
+  } | null;
   orders?: { order_number: string } | null;
 };
