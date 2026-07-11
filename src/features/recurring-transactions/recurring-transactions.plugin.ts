@@ -15,8 +15,8 @@ export const recurringTransactionsPlugin: FeaturePlugin = {
     {
       path: 'recurring-transactions',
       component: () =>
-        import('./RecurringTransactionList').then((m) => ({
-          default: m.RecurringTransactionList,
+        import('./RecurringTransactionsPage').then((m) => ({
+          default: m.RecurringTransactionsPage,
         })),
     },
   ],
