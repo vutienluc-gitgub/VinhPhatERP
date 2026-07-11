@@ -48,7 +48,7 @@ export async function fetchDriverShipments(
   const { data, error } = await supabase
     .from('shipments')
     .select(
-      'id, shipment_number, shipment_date, status, journey_status, delivery_address, vehicle_info, shipping_cost, loading_fee, customers(name, address), orders(order_number)',
+      'id, shipment_number, shipment_date, status, journey_status, delivery_address, vehicle_info, shipping_cost, loading_fee, customers(name, address, phone), orders(order_number)',
     )
     .eq('delivery_staff_id', employeeId)
     .in('status', ['shipped', 'delivered'])
