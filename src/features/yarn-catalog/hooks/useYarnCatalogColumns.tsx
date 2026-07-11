@@ -6,6 +6,7 @@ import {
   getYarnTypeLabel,
   getYarnCategoryLabel,
 } from '@/shared/constants/yarn-classification';
+import { LABEL_ORIGIN } from '@/shared/constants/origin.constants';
 import type { YarnCatalog } from '@/features/yarn-catalog/types';
 import { YarnColorBadge } from '@/features/yarn-catalog/components/YarnColorBadge';
 import { YarnStatusBadge } from '@/features/yarn-catalog/components/YarnStatusBadge';
@@ -51,7 +52,7 @@ export function useYarnCatalogColumns(
         },
       }),
       columnHelper.accessor('origin', {
-        header: 'Xuất xứ',
+        header: LABEL_ORIGIN,
         cell: (info) => {
           const c = info.row.original;
           return (

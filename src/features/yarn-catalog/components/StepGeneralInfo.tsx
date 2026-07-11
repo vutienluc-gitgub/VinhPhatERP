@@ -1,5 +1,11 @@
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 
+import { Combobox } from '@/shared/components/Combobox';
+import {
+  LABEL_ORIGIN,
+  ORIGIN_OPTIONS,
+  ORIGIN_PLACEHOLDER,
+} from '@/shared/constants/origin.constants';
 import type { YarnCatalogFormValues } from '@/schema/yarn-catalog.schema';
 
 type StepGeneralInfoProps = {
@@ -10,6 +16,7 @@ type StepGeneralInfoProps = {
 export function StepGeneralInfo({ hidden, isEditing }: StepGeneralInfoProps) {
   const {
     register,
+    control,
     formState: { errors },
   } = useFormContext<YarnCatalogFormValues>();
 
@@ -68,13 +75,20 @@ export function StepGeneralInfo({ hidden, isEditing }: StepGeneralInfoProps) {
             </div>
 
             <div className="form-field">
-              <label htmlFor="origin">Xuất xứ</label>
-              <input
-                id="origin"
-                className="field-input"
-                type="text"
-                placeholder="VD: Trung Quốc, Đài Loan..."
-                {...register('origin')}
+              <label htmlFor="origin">{LABEL_ORIGIN}</label>
+              <Controller
+                name="origin"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    id="origin"
+                    options={ORIGIN_OPTIONS}
+                    value={field.value ?? undefined}
+                    onChange={(val) => field.onChange(val || null)}
+                    allowInput
+                    placeholder={ORIGIN_PLACEHOLDER}
+                  />
+                )}
               />
             </div>
           </div>

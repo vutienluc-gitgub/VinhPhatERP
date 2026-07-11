@@ -2,6 +2,11 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import { Combobox } from '@/shared/components/Combobox';
 import { MoneyInput, QuantityInput } from '@/shared/value';
+import {
+  LABEL_ORIGIN,
+  ORIGIN_OPTIONS,
+  ORIGIN_PLACEHOLDER,
+} from '@/shared/constants/origin.constants';
 import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
 
 const YARN_UNIT_OPTIONS = [
@@ -240,13 +245,20 @@ export function YarnReceiptItemRow({
         </div>
 
         <div className="form-field">
-          <label htmlFor={`items.${index}.origin`}>Xuất xứ</label>
-          <input
-            id={`items.${index}.origin`}
-            className="field-input"
-            type="text"
-            placeholder="VD: Việt Nam"
-            {...register(`items.${index}.origin` as const)}
+          <label htmlFor={`items.${index}.origin`}>{LABEL_ORIGIN}</label>
+          <Controller
+            name={`items.${index}.origin` as const}
+            control={control}
+            render={({ field }) => (
+              <Combobox
+                id={`items.${index}.origin`}
+                options={ORIGIN_OPTIONS}
+                value={field.value ?? undefined}
+                onChange={(val) => field.onChange(val || null)}
+                allowInput
+                placeholder={ORIGIN_PLACEHOLDER}
+              />
+            )}
           />
         </div>
       </div>
