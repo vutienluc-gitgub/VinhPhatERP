@@ -5,18 +5,14 @@ import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import {
   Icon,
-  Badge,
-  type BadgeVariant,
-  DataTable,
-  AddButton,
-  Button,
-  ActionBar,
+  DataTableAdvanced,
   FilterBar,
   type FilterFieldConfig,
+  Button,
+  PageLayout,
+  PageHeader,
+  TableSection,
 } from '@/shared/components';
-import type { ActionConfig } from '@/shared/components';
-import { formatQuantity } from '@/shared/utils/format';
-import { MoneyText } from '@/shared/value';
 import {
   useWorkOrders,
   useStartWorkOrder,
@@ -31,21 +27,9 @@ import type {
   WorkOrderStatus,
   WorkOrderWithRelations,
 } from './types';
-
-function getStatusVariant(status: WorkOrderStatus): BadgeVariant {
-  switch (status) {
-    case 'draft':
-      return 'gray';
-    case 'in_progress':
-      return 'warning';
-    case 'completed':
-      return 'success';
-    case 'cancelled':
-      return 'danger';
-    default:
-      return 'gray';
-  }
-}
+import { WORK_ORDER_MESSAGES as MSG } from './work-orders.constants';
+import { useWorkOrderColumns } from './hooks/useWorkOrderColumns';
+import { WorkOrderMobileCard } from './components/WorkOrderMobileCard';
 
 interface WorkOrderListProps {
   onView: (id: string) => void;
@@ -83,7 +67,6 @@ export function WorkOrderList({
     (filter.status && filter.status !== 'all')
   );
 
-  // Adapter: FilterBar dung '' cho 'all'
   const filterBarValue = {
     search: filter.search || '',
     status: filter.status === 'all' ? '' : (filter.status ?? ''),
@@ -93,13 +76,13 @@ export function WorkOrderList({
     {
       key: 'search',
       type: 'search',
-      label: 'Tìm kiếm',
-      placeholder: 'Mã lệnh sản xuất...',
+      label: MSG.FILTER_SEARCH_LABEL,
+      placeholder: MSG.FILTER_SEARCH_PLACEHOLDER,
     },
     {
       key: 'status',
       type: 'combobox',
-      label: 'Trạng thái',
+      label: MSG.FILTER_STATUS_LABEL,
       options: (
         Object.entries(WORK_ORDER_STATUSES) as [
           WorkOrderStatus,
@@ -186,329 +169,120 @@ export function WorkOrderList({
     }
   };
 
+  const columns = useWorkOrderColumns({
+    onView,
+    onEdit,
+    onStart: handleStart,
+    isStarting: startMutation.isPending,
+  });
+
   return (
-    <div className="panel-card card-flush">
-      {/* Action bar */}
-      <div className="card-header-area">
-        <div className="flex bg-slate-100 p-1 rounded-lg">
-          <button
-            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'kanban' ? 'bg-white shadow text-primary' : 'text-slate-600 hover:text-slate-900'}`}
-            onClick={() => setViewMode('kanban')}
-          >
-            Kanban
-          </button>
-          <button
-            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'table' ? 'bg-white shadow text-primary' : 'text-slate-600 hover:text-slate-900'}`}
-            onClick={() => setViewMode('table')}
-          >
-            Danh sách
-          </button>
-        </div>
-        <AddButton onClick={onCreate} label="Tạo lệnh SX" />
-      </div>
-
-      {/* KPI Dashboard */}
-      <div className="kpi-section kpi-grid">
-        <div className="kpi-card-premium kpi-primary">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Tổng lệnh sản xuất</p>
-              <p className="kpi-value">{data?.count ?? 0}</p>
+    <PageLayout>
+      <PageHeader
+        title={MSG.PAGE_TITLE}
+        subtitle={MSG.PAGE_SUBTITLE}
+        actions={
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex bg-slate-100 p-1 rounded-lg mr-2">
+              <button
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'kanban' ? 'bg-white shadow text-primary' : 'text-slate-600 hover:text-slate-900'}`}
+                onClick={() => setViewMode('kanban')}
+              >
+                Kanban
+              </button>
+              <button
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'table' ? 'bg-white shadow text-primary' : 'text-slate-600 hover:text-slate-900'}`}
+                onClick={() => setViewMode('table')}
+              >
+                Danh sách
+              </button>
             </div>
-            <div className="kpi-icon-box">
-              <Icon name="Layers" size={32} />
-            </div>
+            <button
+              type="button"
+              className="btn-primary flex items-center gap-2"
+              onClick={onCreate}
+            >
+              <Icon name="Plus" size={18} />
+              {MSG.BTN_CREATE}
+            </button>
           </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Tất cả các lệnh dệt
-          </div>
-        </div>
-
-        <div className="kpi-card-premium kpi-warning">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Đang sản xuất</p>
-              <p className="kpi-value">
-                {orders.filter((wo) => wo.status === 'in_progress').length}
-              </p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="PlayCircle" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Dây chuyền đang hoạt động
-          </div>
-        </div>
-      </div>
-
-      {/* Filters (Config-Driven) */}
-      <FilterBar
-        schema={filterSchema}
-        value={filterBarValue}
-        onChange={handleFilterChange}
-        onClear={() => {
-          setFilter({
-            status: 'all',
-            search: '',
-          });
-          setPage(1);
-        }}
+        }
       />
 
-      {viewMode === 'kanban' ? (
-        <div className="mt-4">
-          <WorkOrderKanbanBoard
-            workOrders={orders}
-            onView={onView}
-            onEdit={onEdit}
-            onStatusChange={handleStatusChange}
+      <div className="stats-grid-premium px-4 sm:px-6 lg:px-8 mt-4">
+        <div className="stat-item-premium">
+          <div className="stat-icon-wrapper bg-[rgba(11,107,203,0.1)] text-[var(--primary)]">
+            <Icon name="Layers" size={24} />
+          </div>
+          <div className="stat-content-premium">
+            <p>{MSG.KPI_TOTAL}</p>
+            <p>{data?.count ?? 0}</p>
+          </div>
+        </div>
+
+        <div className="stat-item-premium">
+          <div className="stat-icon-wrapper bg-[rgba(234,179,8,0.1)] text-warning">
+            <Icon name="PlayCircle" size={24} />
+          </div>
+          <div className="stat-content-premium">
+            <p>{MSG.KPI_IN_PROGRESS}</p>
+            <p>{orders.filter((wo) => wo.status === 'in_progress').length}</p>
+          </div>
+        </div>
+      </div>
+
+      <TableSection>
+        <div className="w-full px-4 sm:px-6 lg:px-8 mt-2 pb-4 border-b border-border flex flex-col gap-4">
+          <FilterBar
+            schema={filterSchema}
+            value={filterBarValue}
+            onChange={handleFilterChange}
+            onClear={() => {
+              setFilter({
+                status: 'all',
+                search: '',
+              });
+              setPage(1);
+            }}
           />
         </div>
-      ) : (
-        <>
-          {/* Table & Cards */}
-          <DataTable
+
+        {viewMode === 'kanban' ? (
+          <div className="mt-4 p-4">
+            <WorkOrderKanbanBoard
+              workOrders={orders}
+              onView={onView}
+              onEdit={onEdit}
+              onStatusChange={handleStatusChange}
+            />
+          </div>
+        ) : (
+          <DataTableAdvanced
             data={orders}
+            columns={columns}
             isLoading={isLoading}
             rowKey={(wo) => wo.id}
             onRowClick={(wo) => onView(wo.id)}
             emptyStateTitle={
-              hasFilter
-                ? 'Không tìm thấy lệnh sản xuất'
-                : 'Chưa có lệnh sản xuất'
+              hasFilter ? MSG.EMPTY_STATE_FILTER_TITLE : MSG.EMPTY_STATE_TITLE
             }
             emptyStateDescription={
-              hasFilter
-                ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
-                : 'Nhấn "Tạo lệnh SX" để bắt đầu thiết lập quy trình.'
+              hasFilter ? MSG.EMPTY_STATE_FILTER_DESC : MSG.EMPTY_STATE_DESC
             }
             emptyStateIcon={hasFilter ? 'Search' : 'Factory'}
-            emptyStateActionLabel={!hasFilter ? '+ Tạo Lệnh SX' : undefined}
+            emptyStateActionLabel={
+              !hasFilter ? `+ ${MSG.BTN_CREATE}` : undefined
+            }
             onEmptyStateAction={!hasFilter ? onCreate : undefined}
-            columns={[
-              {
-                header: 'Mã Lệnh',
-                id: 'work_order_number',
-                sortable: true,
-                cell: (wo) => (
-                  <div className="flex flex-col">
-                    <span className="font-bold text-primary">
-                      {wo.work_order_number}
-                    </span>
-                    {wo.order && (
-                      <span className="text-xs text-muted truncate max-w-[200px]">
-                        ĐH: {wo.order.order_number}
-                      </span>
-                    )}
-                  </div>
-                ),
-              },
-              {
-                header: 'Công Thức (BOM)',
-                id: 'bom_template',
-                sortable: true,
-                accessor: (wo) => wo.bom_template?.code,
-                cell: (wo) => (
-                  <div className="flex flex-col">
-                    <span className="font-bold">{wo.bom_template?.code}</span>
-                    <span className="text-xs text-muted">
-                      V{wo.bom_version}
-                    </span>
-                  </div>
-                ),
-              },
-              {
-                header: 'Đối tác dệt',
-                id: 'supplier',
-                sortable: true,
-                accessor: (wo) => wo.supplier?.name,
-                cell: (wo) => (
-                  <div className="flex flex-col">
-                    <span className="font-medium">{wo.supplier?.name}</span>
-                    <span className="text-xs text-muted">
-                      <MoneyText value={wo.weaving_unit_price} />
-                      đ/m
-                    </span>
-                  </div>
-                ),
-              },
-              {
-                header: 'Mục Tiêu',
-                id: 'target_quantity',
-                sortable: true,
-                className: 'text-right',
-                cell: (wo) => (
-                  <div className="flex flex-col text-right">
-                    <span className="font-bold">
-                      {formatQuantity(wo.target_quantity)} m
-                    </span>
-                    {wo.target_weight_kg && (
-                      <span className="text-xs text-muted">
-                        ~{formatQuantity(wo.target_weight_kg)} kg
-                      </span>
-                    )}
-                  </div>
-                ),
-              },
-              {
-                header: 'Máy dệt',
-                id: 'loom',
-                sortable: true,
-                accessor: (wo) => wo.loom?.code,
-                cell: (wo) => (
-                  <div className="flex flex-col">
-                    <span className="font-medium text-slate-800">
-                      {wo.loom?.code || '—'}
-                    </span>
-                  </div>
-                ),
-              },
-              {
-                header: 'Trạng Thái',
-                id: 'status',
-                sortable: true,
-                cell: (wo) => {
-                  const statusConfig = WORK_ORDER_STATUSES[wo.status];
-                  return (
-                    <Badge variant={getStatusVariant(wo.status)}>
-                      {statusConfig?.label || wo.status}
-                    </Badge>
-                  );
-                },
-              },
-              {
-                header: 'Bắt Đầu',
-                id: 'start_date',
-                sortable: true,
-                className: 'text-muted text-sm',
-                cell: (wo) =>
-                  wo.start_date
-                    ? new Date(wo.start_date).toLocaleDateString('vi-VN')
-                    : '—',
-              },
-              {
-                header: 'Thao tác',
-                className: 'text-right',
-                onCellClick: () => {},
-                cell: (wo) => (
-                  <ActionBar
-                    actions={
-                      [
-                        {
-                          icon: 'Eye',
-                          onClick: () => onView(wo.id),
-                          title: 'Chi tiết',
-                        },
-                        wo.status === 'draft'
-                          ? {
-                              icon: 'Pencil',
-                              onClick: () => onEdit(wo),
-                              title: 'Sửa lệnh',
-                            }
-                          : null,
-                        wo.status === 'draft'
-                          ? {
-                              icon: 'Play',
-                              onClick: () => handleStart(wo.id),
-                              title: 'Bắt đầu sản xuất',
-                              disabled: startMutation.isPending,
-                            }
-                          : null,
-                      ].filter(Boolean) as ActionConfig[]
-                    }
-                  />
-                ),
-              },
-            ]}
-            renderMobileCard={(wo) => {
-              const statusConfig = WORK_ORDER_STATUSES[wo.status];
-              return (
-                <div className="mobile-card">
-                  <div className="mobile-card-header">
-                    <span className="mobile-card-title">
-                      {wo.work_order_number}
-                    </span>
-                    <Badge variant={getStatusVariant(wo.status)}>
-                      {statusConfig?.label || wo.status}
-                    </Badge>
-                  </div>
-                  <div className="mobile-card-body space-y-2">
-                    <div className="flex justify-between items-start">
-                      <div className="flex flex-col">
-                        <span className="text-xs text-muted">Đối tác dệt</span>
-                        <span className="font-bold">{wo.supplier?.name}</span>
-                      </div>
-                      <div className="flex flex-col text-right">
-                        <span className="text-xs text-muted">Mục tiêu</span>
-                        <span className="font-bold text-primary">
-                          {formatQuantity(wo.target_quantity)} m
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 text-sm mt-2">
-                      <div className="flex flex-col">
-                        <span className="text-xs text-muted">BOM</span>
-                        <span className="font-medium">
-                          {wo.bom_template?.code} (V{wo.bom_version})
-                        </span>
-                      </div>
-                      <div className="flex flex-col text-right">
-                        <span className="text-xs text-muted">Đơn giá dệt</span>
-                        <span className="font-medium">
-                          <MoneyText value={wo.weaving_unit_price} />
-                          đ/m
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2 pt-3 mt-1 border-t border-border/10">
-                      <Button
-                        variant="secondary"
-                        className="flex-1"
-                        leftIcon="Eye"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onView(wo.id);
-                        }}
-                      >
-                        Chi tiết
-                      </Button>
-                      {wo.status === 'draft' && (
-                        <Button
-                          variant="secondary"
-                          className="flex-1 text-primary"
-                          leftIcon="Pencil"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onEdit(wo);
-                          }}
-                        >
-                          Sửa
-                        </Button>
-                      )}
-                      {wo.status === 'draft' && (
-                        <Button
-                          variant="primary"
-                          className="flex-1"
-                          leftIcon="Play"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleStart(wo.id);
-                          }}
-                          disabled={startMutation.isPending}
-                        >
-                          Bắt đầu
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            }}
+            renderMobileCard={(wo) => (
+              <WorkOrderMobileCard
+                workOrder={wo}
+                onView={onView}
+                onEdit={onEdit}
+                onStart={handleStart}
+                isStarting={startMutation.isPending}
+              />
+            )}
             pagination={{
               result: {
                 data: orders,
@@ -518,11 +292,11 @@ export function WorkOrderList({
                 totalPages: Math.ceil((data?.count ?? 0) / 20),
               },
               onPageChange: setPage,
-              itemLabel: 'lệnh sản xuất',
+              itemLabel: MSG.PAGINATION_LABEL,
             }}
           />
-        </>
-      )}
+        )}
+      </TableSection>
 
       {/* Complete Work Order Modal */}
       <AdaptiveSheet
@@ -564,6 +338,6 @@ export function WorkOrderList({
           </div>
         </div>
       </AdaptiveSheet>
-    </div>
+    </PageLayout>
   );
 }

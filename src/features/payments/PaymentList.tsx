@@ -2,17 +2,21 @@ import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
-  Icon,
-  DataTable,
+  DataTableAdvanced,
   FilterBar,
   type FilterFieldConfig,
+  PageLayout,
+  PageHeader,
+  FilterSection,
+  TableSection,
 } from '@/shared/components';
-import { MoneyCell, MoneyText } from '@/shared/value';
 import { useDeletePayment, usePaymentList } from '@/application/payments';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 
-import { PAYMENT_METHOD_LABELS } from './payments.module';
 import type { PaymentsFilter } from './types';
+import { usePaymentColumns } from './hooks/usePaymentColumns';
+import { PaymentMobileCard } from './components/PaymentMobileCard';
+import { PAYMENT_LIST_MESSAGES as MSG } from './payments.constants';
 
 export function PaymentList() {
   const { filters, setFilter, clearFilters } = useUrlFilterState([
@@ -35,13 +39,13 @@ export function PaymentList() {
     {
       key: 'search',
       type: 'search',
-      label: 'Tìm kiếm',
-      placeholder: 'Số phiếu thu, khách hàng...',
+      label: MSG.FILTER_SEARCH_LABEL,
+      placeholder: MSG.FILTER_SEARCH_PLACEHOLDER,
     },
     {
       key: 'payment_date', // Used merely for identification, date_range fields use keyFrom/keyTo
       type: 'date_range',
-      label: 'Thời gian thu',
+      label: MSG.FILTER_DATE,
       keyFrom: 'fromDate',
       keyTo: 'toDate',
     },
@@ -54,7 +58,7 @@ export function PaymentList() {
 
   async function handleDelete(id: string) {
     const ok = await confirm({
-      message: 'Xoá phiếu thu này? Số tiền sẽ bị trừ khỏi đơn hàng.',
+      message: MSG.DELETE_CONFIRM,
       variant: 'danger',
     });
     if (!ok) return;
@@ -63,164 +67,72 @@ export function PaymentList() {
 
   const hasFilter = !!(filters.search || filters.fromDate || filters.toDate);
 
-  return (
-    <div className="panel-card card-flush">
-      {/* Filters (Config-Driven) */}
-      <FilterBar
-        schema={filterSchema}
-        value={filters}
-        onChange={handleFilterChange}
-        onClear={() => {
-          clearFilters();
-          setPage(1);
-        }}
-      />
+  const columns = usePaymentColumns({
+    handleDelete,
+    isDeleting: deleteMutation.isPending,
+  });
 
-      {/* Error */}
+  return (
+    <PageLayout>
+      <PageHeader title={MSG.TITLE} subtitle={MSG.SUBTITLE} />
+
+      <FilterSection>
+        <FilterBar
+          schema={filterSchema}
+          value={filters}
+          onChange={handleFilterChange}
+          onClear={() => {
+            clearFilters();
+            setPage(1);
+          }}
+        />
+      </FilterSection>
+
       {error && (
         <div className="p-4">
           <p className="error-inline">
-            Lỗi tải dữ liệu:{' '}
+            {MSG.ERROR_LOAD}
             {error instanceof Error ? error.message : String(error)}
           </p>
         </div>
       )}
 
-      {/* Table & Cards */}
-      <DataTable
-        data={payments}
-        isLoading={isLoading}
-        rowKey={(p) => p.id}
-        emptyStateTitle={
-          hasFilter ? 'Không tìm thấy phiếu thu' : 'Chưa có phiếu thu nào'
-        }
-        emptyStateDescription={
-          hasFilter
-            ? 'Thử điều chỉnh bộ lọc.'
-            : 'Phiếu thu được tạo tự động khi xác nhận thanh toán đơn hàng.'
-        }
-        emptyStateIcon={hasFilter ? 'Search' : 'Wallet'}
-        columns={[
-          {
-            header: 'Số phiếu',
-            id: 'payment_number',
-            sortable: true,
-            cell: (p) => (
-              <span className="font-bold text-primary">{p.payment_number}</span>
-            ),
-          },
-          {
-            header: 'Đơn hàng',
-            id: 'orders',
-            sortable: true,
-            accessor: (p) => p.orders?.order_number,
-            cell: (p) => (
-              <span className="text-muted">
-                {p.orders?.order_number ?? '—'}
-              </span>
-            ),
-          },
-          {
-            header: 'Khách hàng',
-            id: 'customers',
-            sortable: true,
-            accessor: (p) => p.customers?.name,
-            cell: (p) => (
-              <span className="font-medium">{p.customers?.name ?? '—'}</span>
-            ),
-          },
-          {
-            header: 'Ngày thu',
-            id: 'payment_date',
-            sortable: true,
-            className: 'text-muted text-sm',
-            cell: (p) => p.payment_date,
-          },
-          {
-            header: 'Số tiền',
-            id: 'amount',
-            sortable: true,
-            className: 'text-right',
-            cell: (p) => <MoneyCell value={p.amount} bold tone="success" />,
-          },
-          {
-            header: 'Hình thức',
-            id: 'payment_method',
-            sortable: true,
-            className: 'text-muted text-sm',
-            cell: (p) => PAYMENT_METHOD_LABELS[p.payment_method],
-          },
-          {
-            header: '',
-            onCellClick: () => {},
-            cell: (p) => (
-              <button
-                className="btn-icon text-danger hover:bg-danger/10"
-                type="button"
-                onClick={() => handleDelete(p.id)}
-                disabled={deleteMutation.isPending}
-                title="Xóa phiếu thu"
-              >
-                <Icon name="Trash2" size={16} />
-              </button>
-            ),
-          },
-        ]}
-        renderMobileCard={(p) => (
-          <div className="mobile-card">
-            <div className="mobile-card-header">
-              <span className="mobile-card-title">{p.payment_number}</span>
-              <span className="font-bold text-success text-lg">
-                <MoneyText value={p.amount} tone="success" />
-              </span>
-            </div>
-            <div className="mobile-card-body space-y-2">
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <div className="flex flex-col">
-                  <span className="text-xs text-muted">Khách hàng</span>
-                  <span className="font-bold">{p.customers?.name ?? '—'}</span>
-                </div>
-                <div className="flex flex-col text-right">
-                  <span className="text-xs text-muted">Đơn hàng</span>
-                  <span className="font-medium">
-                    {p.orders?.order_number ?? '—'}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between text-xs text-muted">
-                <span>Ngày: {p.payment_date}</span>
-                <span>{PAYMENT_METHOD_LABELS[p.payment_method]}</span>
-              </div>
-              <div className="pt-2 border-t border-border/10">
-                <button
-                  className="btn-secondary w-full text-danger border-danger/20"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(p.id);
-                  }}
-                  disabled={deleteMutation.isPending}
-                >
-                  <Icon name="Trash2" size={16} /> Xóa phiếu
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        pagination={{
-          result,
-          onPageChange: setPage,
-          itemLabel: 'phiếu thu',
-        }}
-      />
-
       {deleteMutation.error && (
-        <p className="error-inline-sm">
-          Lỗi:{' '}
-          {deleteMutation.error instanceof Error
-            ? deleteMutation.error.message
-            : String(deleteMutation.error)}
-        </p>
+        <div className="p-4 pt-0">
+          <p className="error-inline-sm">
+            {MSG.ERROR_DELETE}
+            {deleteMutation.error instanceof Error
+              ? deleteMutation.error.message
+              : String(deleteMutation.error)}
+          </p>
+        </div>
       )}
-    </div>
+
+      <TableSection>
+        <DataTableAdvanced
+          data={payments}
+          isLoading={isLoading}
+          rowKey={(p) => p.id}
+          emptyStateTitle={hasFilter ? MSG.EMPTY_TITLE_FILTER : MSG.EMPTY_TITLE}
+          emptyStateDescription={
+            hasFilter ? MSG.EMPTY_DESC_FILTER : MSG.EMPTY_DESC
+          }
+          emptyStateIcon={hasFilter ? 'Search' : 'Wallet'}
+          columns={columns}
+          renderMobileCard={(p) => (
+            <PaymentMobileCard
+              payment={p}
+              handleDelete={handleDelete}
+              isDeleting={deleteMutation.isPending}
+            />
+          )}
+          pagination={{
+            result,
+            onPageChange: setPage,
+            itemLabel: MSG.PAGINATION_LABEL,
+          }}
+        />
+      </TableSection>
+    </PageLayout>
   );
 }

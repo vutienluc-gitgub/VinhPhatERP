@@ -6,19 +6,17 @@ const AdHocShipmentForm = lazy(() =>
     default: m.AdHocShipmentForm,
   })),
 );
-
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
-  DataTable,
-  ClearFilterButton,
-  ActionBar,
-  TabSwitcher,
-  type TabItem,
+  DataTableAdvanced,
   FilterBar,
+  TabSwitcher,
   type FilterFieldConfig,
-  type ActionConfig,
-  EntityLink,
+  type TabItem,
+  PageLayout,
+  PageHeader,
+  TableSection,
 } from '@/shared/components';
 // eslint-disable-next-line boundaries/dependencies
 import { ChatDrawer } from '@/features/chat/ChatDrawer';
@@ -31,70 +29,33 @@ import {
   useShipmentList,
   useDeliveryStaffList,
 } from '@/application/shipments';
-import { SHIPMENT_STATUS_LABELS } from '@/schema/shipment.schema';
 import { sumBy } from '@/shared/utils/array.util';
 
 import { DeliveryConfirmForm } from './DeliveryConfirmForm';
 import { exportShipmentToPdf } from './shipment-document';
-import type { Shipment, ShipmentsFilter, ShipmentStatus } from './types';
-
-function SaaSBadge({ status }: { status: ShipmentStatus }) {
-  const label = SHIPMENT_STATUS_LABELS[status];
-
-  const styles: Record<string, string> = {
-    shipped: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 ring-blue-500/20',
-    delivered:
-      'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 ring-emerald-500/20',
-    partially_returned:
-      'bg-purple-500/10 text-purple-700 dark:text-purple-400 ring-purple-500/20',
-    returned: 'bg-red-500/10 text-red-700 dark:text-red-400 ring-red-500/20',
-    preparing:
-      'bg-amber-500/10 text-amber-700 dark:text-amber-400 ring-amber-500/20',
-  };
-  const dotColors: Record<string, string> = {
-    shipped: 'bg-blue-500',
-    delivered: 'bg-emerald-500',
-    partially_returned: 'bg-purple-500',
-    returned: 'bg-red-500',
-    preparing: 'bg-amber-500',
-  };
-
-  const currentStyle =
-    styles[status] ||
-    'bg-slate-500/10 text-slate-700 dark:text-slate-400 ring-slate-500/20';
-  const currentDot = dotColors[status] || 'bg-slate-500';
-
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ring-1 ring-inset ${currentStyle}`}
-    >
-      <span className={`w-1.5 h-1.5 rounded-full ${currentDot}`} />
-      {label}
-    </span>
-  );
-}
-
-function calcShipmentCost(s: Shipment): number {
-  return (s.shipping_cost || 0) + (s.loading_fee || 0);
-}
+import type { Shipment, ShipmentsFilter } from './types';
+import { SHIPMENT_LIST_MESSAGES as MSG } from './shipments.constants';
+import { ShipmentMobileCard } from './components/ShipmentMobileCard';
+import { calcShipmentCost } from './shipments.constants';
+import { useShipmentColumns } from './hooks/useShipmentColumns';
 
 type ShipmentTab = '' | 'preparing' | 'shipped' | 'delivered';
 
 const BASE_TABS: TabItem<ShipmentTab>[] = [
-  { key: '', label: 'Tất cả', icon: <Icon name="List" size={16} /> },
+  { key: '', label: MSG.TAB_ALL, icon: <Icon name="List" size={16} /> },
   {
     key: 'preparing',
-    label: 'Đang chuẩn bị',
+    label: MSG.TAB_PREPARING,
     icon: <Icon name="Clock" size={16} />,
   },
   {
     key: 'shipped',
-    label: 'Đang đi giao',
+    label: MSG.TAB_SHIPPED,
     icon: <Icon name="Truck" size={16} />,
   },
   {
     key: 'delivered',
-    label: 'Đã nhận hàng',
+    label: MSG.TAB_DELIVERED,
     icon: <Icon name="CircleCheck" size={16} />,
   },
 ];
@@ -126,9 +87,7 @@ export function ShipmentList() {
   const { confirm, alert: showAlert } = useConfirm();
 
   function getErrorMessage(error: unknown): string {
-    return error instanceof Error
-      ? error.message
-      : 'Đã xảy ra lỗi không xác định.';
+    return error instanceof Error ? error.message : MSG.ERR_UNKNOWN;
   }
 
   const staffOptions = (staffListResult.data ?? []).map((s) => ({
@@ -140,22 +99,22 @@ export function ShipmentList() {
     {
       key: 'search',
       type: 'search',
-      label: 'Tìm kiếm',
-      placeholder: 'Số phiếu xuất, tên khách...',
+      label: MSG.FILTER_SEARCH_LABEL,
+      placeholder: MSG.FILTER_SEARCH_PLACEHOLDER,
     },
     {
       key: 'deliveryStaffId',
       type: 'combobox',
-      label: 'Tài xế giao hàng',
+      label: MSG.FILTER_STAFF_LABEL,
       options: staffOptions,
     },
     {
       key: 'unreconciled',
       type: 'combobox',
-      label: 'Loại phiếu',
+      label: MSG.FILTER_TYPE_LABEL,
       options: [
-        { value: '', label: 'Tất cả phiếu' },
-        { value: 'true', label: 'Phiếu xuất thủ công' },
+        { value: '', label: MSG.FILTER_TYPE_ALL },
+        { value: 'true', label: MSG.FILTER_TYPE_MANUAL },
       ],
     },
   ];
@@ -167,7 +126,7 @@ export function ShipmentList() {
 
   async function handleConfirm(shipment: Shipment) {
     const ok = await confirm({
-      message: `Xác nhận xuất kho phiếu "${shipment.shipment_number}"? Hệ thống sẽ chuyển trạng thái sang Đã giao và mở phiếu PDF để in hoặc lưu.`,
+      message: MSG.CONFIRM_DELIVERY_MSG(shipment.shipment_number),
     });
     if (!ok) return;
 
@@ -193,7 +152,7 @@ export function ShipmentList() {
 
   async function handleDelete(id: string) {
     const ok = await confirm({
-      message: 'Xoá phiếu xuất? Cuộn vải sẽ trả lại kho.',
+      message: MSG.CONFIRM_DELETE_MSG,
       variant: 'danger',
     });
     if (!ok) return;
@@ -228,42 +187,56 @@ export function ShipmentList() {
     return t;
   });
 
+  const columns = useShipmentColumns({
+    onConfirm: handleConfirm,
+    onDelete: handleDelete,
+    onExportPdf: handleExportPdf,
+    onDeliveryConfirm: setDeliveryShipment,
+    onChat: setChatShipment,
+    isConfirming: confirmMutation.isPending,
+    isDeleting: deleteMutation.isPending,
+    isExporting: exportPdfMutation.isPending,
+  });
+
   return (
-    <div className="panel-card card-flush">
-      {/* Action bar */}
-      <div className="card-header-area">
-        <div className="flex items-center gap-2 flex-wrap">
-          <button
-            type="button"
-            className="btn-primary flex items-center gap-2"
-            onClick={() => setShowAdHocForm(true)}
-          >
-            <Icon name="FilePlus" size={18} />
-            Phiếu xuất thủ công
-          </button>
-          <Link to="/shipments/dispatch">
-            <button className="btn-primary bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 flex items-center gap-2">
-              <Icon name="Navigation" size={18} />
-              Sa Bàn Điều Phối
+    <PageLayout>
+      <PageHeader
+        title={MSG.PAGE_TITLE}
+        subtitle={MSG.PAGE_SUBTITLE}
+        actions={
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              className="btn-primary flex items-center gap-2"
+              onClick={() => setShowAdHocForm(true)}
+            >
+              <Icon name="FilePlus" size={18} />
+              {MSG.BTN_CREATE_MANUAL}
             </button>
-          </Link>
-          <Link to="/shipments/k80-quick-print">
-            <button className="btn-secondary flex items-center gap-2">
-              <Icon name="Printer" size={18} />
-              In Nhanh K80
-            </button>
-          </Link>
-        </div>
-      </div>
+            <Link to="/shipments/dispatch">
+              <button className="btn-primary bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 flex items-center gap-2">
+                <Icon name="Navigation" size={18} />
+                {MSG.BTN_DISPATCH_BOARD}
+              </button>
+            </Link>
+            <Link to="/shipments/k80-quick-print">
+              <button className="btn-secondary flex items-center gap-2">
+                <Icon name="Printer" size={18} />
+                {MSG.BTN_QUICK_PRINT}
+              </button>
+            </Link>
+          </div>
+        }
+      />
 
       {/* Stats Section */}
-      <div className="stats-grid-premium">
+      <div className="stats-grid-premium px-4 sm:px-6 lg:px-8 mt-4">
         <div className="stat-item-premium">
           <div className="stat-icon-wrapper bg-[rgba(11,107,203,0.1)] text-[var(--primary)]">
             <Icon name="Truck" size={24} />
           </div>
           <div className="stat-content-premium">
-            <p>Số chuyến (Trang)</p>
+            <p>{MSG.STAT_COUNT_TITLE}</p>
             <p>{shipments.length}</p>
           </div>
         </div>
@@ -273,7 +246,7 @@ export function ShipmentList() {
             <Icon name="Banknote" size={24} />
           </div>
           <div className="stat-content-premium">
-            <p>Tổng cước (Trang)</p>
+            <p>{MSG.STAT_COST_TITLE}</p>
             <p>
               <MoneyText value={sumBy(shipments, calcShipmentCost)} /> đ
             </p>
@@ -285,418 +258,88 @@ export function ShipmentList() {
             <Icon name="Clock" size={24} />
           </div>
           <div className="stat-content-premium">
-            <p>Chờ xác nhận</p>
+            <p>{MSG.STAT_PENDING_TITLE}</p>
             <p>{preparingCount}</p>
           </div>
         </div>
       </div>
 
-      {/* Filter Section (Config-Driven) */}
-      <FilterBar
-        schema={filterSchema}
-        value={filters}
-        onChange={handleFilterChange}
-        onClear={undefined}
-      />
-
-      <div className="filter-bar card-filter-section flex-col items-start gap-4 px-4 pb-4">
-        <div className="flex w-full items-center justify-between gap-4">
-          <div className="overflow-x-auto pb-1 flex-1 no-scrollbar">
-            <TabSwitcher
-              tabs={tabsWithBadge}
-              active={filters.status || ''}
-              onChange={(val) => {
-                setPage(1);
-                setFilter('status', val ? val : undefined);
-              }}
-              variant="premium"
-            />
-          </div>
-
-          {hasFilter && (
-            <div className="shrink-0">
-              <ClearFilterButton
-                onClick={() => {
-                  clearFilters();
-                  setPage(1);
-                }}
-                label="Xóa lọc"
-              />
-            </div>
-          )}
-        </div>
+      <div className="w-full px-4 sm:px-6 lg:px-8 mt-2 pb-4 border-b border-border flex flex-col gap-4">
+        <TabSwitcher
+          tabs={tabsWithBadge}
+          active={filters.status || ''}
+          onChange={(val) => {
+            setPage(1);
+            setFilter('status', val ? val : undefined);
+          }}
+          variant="underline"
+        />
+        <FilterBar
+          schema={filterSchema}
+          value={filters}
+          onChange={handleFilterChange}
+          onClear={hasFilter ? clearFilters : undefined}
+        />
       </div>
 
-      {/* Error */}
       {error && (
-        <p className="error-inline">
-          Lỗi tải dữ liệu: {getErrorMessage(error)}
-        </p>
+        <div className="px-4 sm:px-6 lg:px-8 mt-4">
+          <p className="error-inline">
+            {MSG.ERR_LOAD} {getErrorMessage(error)}
+          </p>
+        </div>
       )}
-
-      {/* Table & Cards */}
-      <DataTable
-        data={shipments}
-        isLoading={isLoading}
-        rowKey={(s) => s.id}
-        emptyStateTitle={
-          hasFilter ? 'Không tìm thấy phiếu xuất' : 'Chưa có phiếu xuất kho'
-        }
-        emptyStateDescription={
-          hasFilter
-            ? 'Hãy thử thay đổi tiêu chí tìm kiếm.'
-            : 'Sẽ có dữ liệu ở đây khi có yêu cầu chuyển hàng hoặc đơn giao cần xử lý.'
-        }
-        emptyStateIcon={hasFilter ? 'Search' : 'Truck'}
-        columns={[
-          {
-            header: 'Phiếu giao',
-            id: 'shipment_number',
-            sortable: true,
-            cell: (s) => (
-              <div className="flex flex-col gap-1.5 items-start">
-                <span className="text-foreground text-[0.9rem] font-bold tracking-tight">
-                  {s.shipment_number}
-                </span>
-                <SaaSBadge status={s.status} />
-                <span className="text-muted-foreground text-[0.75rem] mt-0.5 line-clamp-1">
-                  Khách:{' '}
-                  <span className="font-medium text-foreground">
-                    {s.customers?.name ? (
-                      <EntityLink
-                        entityType="customer"
-                        entityId={s.customer_id}
-                        label={s.customers.name}
-                        showIcon={false}
-                      />
-                    ) : (
-                      '—'
-                    )}
-                  </span>
-                  {s.orders?.order_number ? (
-                    <> • ĐH: {s.orders.order_number}</>
-                  ) : (
-                    <span className="ml-1 text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">
-                      Thủ công
-                    </span>
-                  )}
-                </span>
-              </div>
-            ),
-          },
-          {
-            header: <div className="text-right w-full">Thời gian & Cước</div>,
-            id: 'shipment_date',
-            sortable: true,
-            cell: (s) => {
-              const totalCost = calcShipmentCost(s);
-              const dateParts = s.shipment_date.split('-');
-              const displayDate =
-                dateParts.length === 3
-                  ? `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`
-                  : s.shipment_date;
-
-              return (
-                <div className="flex flex-col gap-1.5 items-end text-right w-full">
-                  <span className="font-medium text-foreground text-[0.85rem]">
-                    {displayDate}
-                  </span>
-                  <span className="text-muted-foreground text-[0.75rem]">
-                    Cước:{' '}
-                    <span className="font-medium text-foreground">
-                      {totalCost ? (
-                        <>
-                          <MoneyText value={totalCost} />đ
-                        </>
-                      ) : (
-                        '—'
-                      )}
-                    </span>
-                  </span>
-                </div>
-              );
-            },
-          },
-          {
-            header: 'Lộ trình',
-            id: 'destination',
-            sortable: true,
-            accessor: (s) =>
-              s.delivery_address ||
-              s.customers?.address ||
-              s.customers?.name ||
-              'Z',
-            className: 'w-[280px]',
-            cell: (s) => {
-              const origin = 'Kho Vĩnh Phát';
-              const isCompleted = s.status === 'delivered';
-              const destination =
-                s.delivery_address ||
-                s.customers?.address ||
-                s.customers?.name ||
-                'Chưa rõ địa chỉ đích';
-
-              return (
-                <div className="flex bg-transparent w-full group cursor-default">
-                  <div className="flex flex-col items-center mr-3 mt-1 shrink-0">
-                    <div className="w-2.5 h-2.5 rounded-full bg-slate-300 ring-2 ring-slate-100 dark:ring-slate-800" />
-                    <div className="w-[1.5px] h-[22px] bg-slate-200 border-l border-dashed border-slate-300 dark:border-slate-600 my-0.5" />
-                    <div
-                      className={`w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-800 ${isCompleted ? 'bg-success' : s.status === 'preparing' ? 'bg-slate-300' : 'bg-orange-500 animate-pulse'}`}
-                    />
-                  </div>
-                  <div className="flex w-[220px] flex-col justify-between py-[1px]">
-                    <span
-                      className="text-[0.85rem] font-medium text-foreground truncate"
-                      title={origin}
-                    >
-                      {origin}
-                    </span>
-                    <span
-                      className="text-[0.85rem] text-muted-foreground truncate mt-1.5 transition-colors group-hover:text-foreground"
-                      title={destination}
-                    >
-                      {destination}
-                    </span>
-                  </div>
-                </div>
-              );
-            },
-          },
-          {
-            header: 'Tài xế',
-            id: 'delivery_staff',
-            sortable: true,
-            accessor: (s) => s.delivery_staff?.full_name || 'Z',
-            cell: (s) => {
-              if (!s.delivery_staff) {
-                return (
-                  <span className="text-warning text-[0.82rem] font-medium">
-                    [Tìm tài xế] Chưa phân công
-                  </span>
-                );
-              }
-              return (
-                <div className="flex flex-col gap-1 items-start">
-                  <span className="font-semibold text-foreground text-[0.85rem]">
-                    {s.delivery_staff.full_name}
-                  </span>
-                  <div className="flex items-center gap-1 mt-1 text-muted-foreground">
-                    <Icon name="Phone" size={12} />
-                    <span className="text-[0.75rem]">
-                      {s.delivery_staff.phone || 'Không rõ sđt'}
-                    </span>
-                  </div>
-                </div>
-              );
-            },
-          },
-          {
-            header: '',
-            className: 'whitespace-nowrap text-right',
-            onCellClick: () => {},
-            cell: (s) => (
-              <div className="flex justify-end gap-1 items-center">
-                <ActionBar
-                  actions={
-                    [
-                      s.status === 'preparing'
-                        ? {
-                            icon: 'CheckCircle',
-                            onClick: () => void handleConfirm(s),
-                            title: 'Xác nhận & Mở PDF',
-                            disabled: confirmMutation.isPending,
-                          }
-                        : null,
-                      s.status === 'preparing'
-                        ? {
-                            icon: 'Trash2',
-                            onClick: () => void handleDelete(s.id),
-                            title: 'Xóa',
-                            variant: 'danger',
-                            disabled: deleteMutation.isPending,
-                          }
-                        : null,
-                      s.status !== 'preparing'
-                        ? {
-                            icon: 'Printer',
-                            onClick: () => void handleExportPdf(s, 'A4'),
-                            title: 'In A4',
-                            disabled: exportPdfMutation.isPending,
-                          }
-                        : null,
-                      s.status !== 'preparing'
-                        ? {
-                            icon: 'Printer',
-                            onClick: () =>
-                              void handleExportPdf(s, 'A5_DOT_MATRIX'),
-                            title: 'In A5 (Kim)',
-                            disabled: exportPdfMutation.isPending,
-                          }
-                        : null,
-                    ].filter(Boolean) as ActionConfig[]
-                  }
-                />
-                {s.status === 'shipped' && (
-                  <button
-                    className="btn-primary h-8 px-2 text-[0.75rem] flex items-center gap-1"
-                    type="button"
-                    onClick={() => setDeliveryShipment(s)}
-                  >
-                    <Icon name="Check" size={16} /> Nhận hàng
-                  </button>
-                )}
-                {s.status !== 'preparing' && (
-                  <button
-                    className="btn-icon"
-                    type="button"
-                    title="Chat"
-                    onClick={() => setChatShipment(s)}
-                  >
-                    <Icon name="MessageCircle" size={16} />
-                  </button>
-                )}
-              </div>
-            ),
-          },
-        ]}
-        renderMobileCard={(s) => {
-          const totalCost = (s.shipping_cost || 0) + (s.loading_fee || 0);
-          return (
-            <div className="mobile-card">
-              <div className="mobile-card-header">
-                <span className="mobile-card-title text-lg font-bold">
-                  {s.shipment_number}
-                </span>
-                <SaaSBadge status={s.status} />
-              </div>
-              <div className="mobile-card-body">
-                <div className="mobile-card-row">
-                  <span className="label">Đơn hàng:</span>
-                  <span className="value">
-                    {s.orders?.order_number ?? (
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">
-                        Thủ công
-                      </span>
-                    )}
-                  </span>
-                </div>
-                <div className="mobile-card-row">
-                  <span className="label">Khách hàng:</span>
-                  <span className="value">
-                    {s.customers?.name ? (
-                      <EntityLink
-                        entityType="customer"
-                        entityId={s.customer_id}
-                        label={s.customers.name}
-                      />
-                    ) : (
-                      '—'
-                    )}
-                  </span>
-                </div>
-                {s.delivery_staff && (
-                  <div className="mobile-card-row">
-                    <span className="label">Giao hàng:</span>
-                    <span className="value">{s.delivery_staff.full_name}</span>
-                  </div>
-                )}
-                <div className="mobile-card-row border-t border-border mt-2 pt-2">
-                  <span className="label font-bold">Cước VC:</span>
-                  <span className="value font-bold text-primary">
-                    {totalCost ? (
-                      <>
-                        <MoneyText value={totalCost} />đ
-                      </>
-                    ) : (
-                      '—'
-                    )}
-                  </span>
-                </div>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-2 mt-4 pt-3 border-t border-border/10">
-                {s.status === 'preparing' && (
-                  <div className="flex flex-row gap-2 w-full">
-                    <button
-                      className="btn-secondary flex-1 py-2.5 justify-center text-success text-xs font-bold"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        void handleConfirm(s);
-                      }}
-                      disabled={confirmMutation.isPending}
-                    >
-                      <Icon name="CheckCircle" size={16} /> Xác nhận
-                    </button>
-                    <button
-                      className="btn-secondary flex-1 py-2.5 justify-center text-danger text-xs font-bold"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        void handleDelete(s.id);
-                      }}
-                      disabled={deleteMutation.isPending}
-                    >
-                      <Icon name="Trash2" size={16} /> Xóa
-                    </button>
-                  </div>
-                )}
-                {s.status !== 'preparing' && (
-                  <div className="flex flex-row gap-2 w-full">
-                    <button
-                      className="btn-secondary flex-1 py-2.5 justify-center text-xs font-bold"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        void handleExportPdf(s, 'A4');
-                      }}
-                      disabled={exportPdfMutation.isPending}
-                    >
-                      <Icon name="Printer" size={16} /> In A4
-                    </button>
-                    <button
-                      className="btn-secondary flex-1 py-2.5 justify-center text-xs font-bold"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        void handleExportPdf(s, 'A5_DOT_MATRIX');
-                      }}
-                      disabled={exportPdfMutation.isPending}
-                    >
-                      <Icon name="Printer" size={16} /> In A5 (Kim)
-                    </button>
-                  </div>
-                )}
-                {s.status === 'shipped' && (
-                  <button
-                    className="btn-primary w-full py-3 justify-center text-xs font-black shadow-lg shadow-primary/20"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setDeliveryShipment(s);
-                    }}
-                  >
-                    <Icon name="Check" size={18} /> XÁC NHẬN GIAO HÀNG
-                  </button>
-                )}
-              </div>
-            </div>
-          );
-        }}
-        pagination={{
-          result,
-          onPageChange: setPage,
-          itemLabel: 'đợt giao',
-        }}
-      />
 
       {(confirmMutation.error ||
         deleteMutation.error ||
         exportPdfMutation.error) && (
-        <p className="error-inline-sm">
-          Lỗi:{' '}
-          {getErrorMessage(
-            confirmMutation.error ||
-              deleteMutation.error ||
-              exportPdfMutation.error,
-          )}
-        </p>
+        <div className="px-4 sm:px-6 lg:px-8 mt-4">
+          <p className="error-inline-sm">
+            {MSG.ERR_GENERIC}{' '}
+            {getErrorMessage(
+              confirmMutation.error ||
+                deleteMutation.error ||
+                exportPdfMutation.error,
+            )}
+          </p>
+        </div>
       )}
+
+      <TableSection>
+        <DataTableAdvanced
+          data={shipments}
+          isLoading={isLoading}
+          rowKey={(s) => s.id}
+          columns={columns}
+          renderMobileCard={(s) => (
+            <ShipmentMobileCard
+              shipment={s}
+              onConfirm={handleConfirm}
+              onDelete={handleDelete}
+              onExportPdf={handleExportPdf}
+              onDeliveryConfirm={setDeliveryShipment}
+              isConfirming={confirmMutation.isPending}
+              isDeleting={deleteMutation.isPending}
+              isExporting={exportPdfMutation.isPending}
+            />
+          )}
+          emptyStateTitle={
+            hasFilter
+              ? MSG.EMPTY_STATE_FILTER_TITLE
+              : MSG.EMPTY_STATE_DEFAULT_TITLE
+          }
+          emptyStateDescription={
+            hasFilter
+              ? MSG.EMPTY_STATE_FILTER_DESC
+              : MSG.EMPTY_STATE_DEFAULT_DESC
+          }
+          emptyStateIcon={hasFilter ? 'Search' : 'Truck'}
+          pagination={{
+            result,
+            onPageChange: setPage,
+          }}
+        />
+      </TableSection>
 
       {/* Delivery confirm modal */}
       {deliveryShipment && (
@@ -724,6 +367,6 @@ export function ShipmentList() {
           <AdHocShipmentForm onClose={() => setShowAdHocForm(false)} />
         </Suspense>
       )}
-    </div>
+    </PageLayout>
   );
 }

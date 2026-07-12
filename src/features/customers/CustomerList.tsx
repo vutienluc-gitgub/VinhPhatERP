@@ -2,25 +2,15 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-import {
-  CUSTOMER_SOURCE_LABELS,
-  CUSTOMER_SOURCE_ICONS,
-  CUSTOMER_STATUS_LABELS,
-  CRM_STATUS_LABELS,
-  CRM_STATUS_ICONS,
-  type LeadStatus,
-} from '@/schema/customer.schema';
+import { CUSTOMER_STATUS_LABELS } from '@/schema/customer.schema';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
-  Badge,
   DataTableAdvanced,
   AddButton,
-  ActionMenu,
   FilterBar,
   type FilterFieldConfig,
   type IconName,
-  type BadgeVariant,
   KpiCard,
   KpiGrid,
   TabSwitcher,
@@ -28,6 +18,11 @@ import {
   AdaptiveSheet,
   Combobox,
   Button,
+  PageLayout,
+  PageHeader,
+  KPISection,
+  FilterSection,
+  TableSection,
 } from '@/shared/components';
 import type { BulkActionConfig } from '@/shared/components/DataTableAdvanced';
 import {
@@ -39,28 +34,10 @@ import {
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { useCustomerVisibilityScope } from '@/shared/hooks';
 import { useAuth } from '@/shared/hooks/useAuth';
-import { formatCurrencyFull, formatPhoneNumber } from '@/shared/utils/format';
 
-import { DEPOSIT_FORM_LABELS } from './customers.constants';
+import { useCustomerColumns } from './hooks/useCustomerColumns';
+import { CustomerMobileCard } from './components/CustomerMobileCard';
 import type { Customer, CustomersFilter } from './types';
-
-const SOURCE_BADGE_VARIANT: Record<string, BadgeVariant> = {
-  referral: 'success',
-  exhibition: 'warning',
-  zalo: 'info',
-  facebook: 'info',
-  online: 'info',
-  direct: 'gray',
-  cold_call: 'warning',
-  other: 'gray',
-};
-
-const CRM_STATUS_BADGE_VARIANTS: Record<string, BadgeVariant> = {
-  lead: 'info',
-  opportunity: 'warning',
-  customer: 'success',
-  lost: 'danger',
-};
 
 type CustomerListProps = {
   onEdit: (customer: Customer) => void;
@@ -115,6 +92,16 @@ export function CustomerList({
   >([]);
   const [selectedSalesperson, setSelectedSalesperson] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
+
+  const columns = useCustomerColumns({
+    onEdit,
+    onCreateContract,
+    handleDelete,
+    isDeleting: deleteMutation.isPending,
+    isSale,
+    onDeposit,
+    onChat,
+  });
 
   const filterSchema: FilterFieldConfig[] = [
     {
@@ -258,382 +245,100 @@ export function CustomerList({
   const hasFilter = hasActiveFilter;
 
   return (
-    <div className="panel-card card-flush">
-      {/* Action bar */}
-      <div className="card-header-area">
-        <AddButton onClick={onNew} label="Thêm khách hàng" icon="UserPlus" />
-      </div>
+    <PageLayout>
+      <PageHeader
+        title="Danh sách khách hàng"
+        subtitle="Quản lý thông tin khách hàng"
+        actions={
+          <AddButton onClick={onNew} label="Thêm khách hàng" icon="UserPlus" />
+        }
+      />
 
       {/* 📊 KPI Dashboard area */}
-      <KpiGrid>
-        <KpiCard
-          label="Tổng khách hàng"
-          value={result?.total ?? 0}
-          icon="Users"
-          variant="primary"
-          footer="Cơ sở dữ liệu khách hàng"
-        />
+      <KPISection>
+        <KpiGrid>
+          <KpiCard
+            label="Tổng khách hàng"
+            value={result?.total ?? 0}
+            icon="Users"
+            variant="primary"
+            footer="Cơ sở dữ liệu khách hàng"
+          />
 
-        <KpiCard
-          label="Đang hoạt động"
-          value={customers.filter((c) => c.status === 'active').length}
-          icon="Activity"
-          variant="success"
-          footer="Khách hàng có giao dịch"
-        />
+          <KpiCard
+            label="Đang hoạt động"
+            value={customers.filter((c) => c.status === 'active').length}
+            icon="Activity"
+            variant="success"
+            footer="Khách hàng có giao dịch"
+          />
 
-        <KpiCard
-          label="Khách hàng mới"
-          value={`+${customers.length}`}
-          icon="Star"
-          variant="warning"
-          footer="Đã thêm trong kỳ"
-        />
-      </KpiGrid>
+          <KpiCard
+            label="Khách hàng mới"
+            value={`+${customers.length}`}
+            icon="Star"
+            variant="warning"
+            footer="Đã thêm trong kỳ"
+          />
+        </KpiGrid>
+      </KPISection>
 
-      {/* Tabs / Saved Views */}
-      <div className="px-4 pt-2">
-        <TabSwitcher
-          tabs={tabs}
-          active={activeTab === 'custom' ? 'all' : activeTab}
-          onChange={handleTabChange}
-          variant="pill"
-        />
-      </div>
+      <FilterSection>
+        {/* Tabs / Saved Views */}
+        <div className="pb-2">
+          <TabSwitcher
+            tabs={tabs}
+            active={activeTab === 'custom' ? 'all' : activeTab}
+            onChange={handleTabChange}
+            variant="pill"
+          />
+        </div>
 
-      {/* Filter Area (Config-Driven) */}
-      <FilterBar
-        schema={filterSchema}
-        value={filters}
-        onChange={handleFilterChange}
-        onClear={() => {
-          clearFilters();
-          setPage(1);
-        }}
-      />
+        {/* Filter Area (Config-Driven) */}
+        <FilterBar
+          schema={filterSchema}
+          value={filters}
+          onChange={handleFilterChange}
+          onClear={() => {
+            clearFilters();
+            setPage(1);
+          }}
+        />
+      </FilterSection>
 
       {/* 📑 Data Section */}
-      <DataTableAdvanced
-        data={customers}
-        isLoading={isLoading}
-        rowKey={(c) => c.id}
-        onRowClick={onEdit}
-        exportFileName="DanhSachKhachHang"
-        bulkActions={bulkActions}
-        emptyStateTitle={
-          hasFilter
-            ? 'Không tìm thấy khách hàng'
-            : 'Chưa có thông tin khách hàng'
-        }
-        emptyStateDescription={
-          hasFilter
-            ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
-            : 'Hãy thêm khách hàng mới để quản lý thông tin.'
-        }
-        emptyStateIcon={hasFilter ? 'Search' : 'Users'}
-        emptyStateActionLabel={!hasFilter ? '+ Thêm khách hàng' : undefined}
-        onEmptyStateAction={!hasFilter ? onNew : undefined}
-        columns={[
-          {
-            header: 'Mã KH',
-            id: 'code',
-            accessorKey: 'code',
-            enableSorting: true,
-            cell: (info) => (
-              <span className="font-bold text-primary">
-                {info.row.original.code}
-              </span>
-            ),
-          },
-          {
-            header: 'Tên & Địa chỉ',
-            id: 'name',
-            accessorKey: 'name',
-            enableSorting: true,
-            cell: (info) => {
-              const c = info.row.original;
-              return (
-                <div className="flex flex-col">
-                  <span className="font-bold">{c.name}</span>
-                  <span className="text-xs text-muted truncate max-w-[300px]">
-                    {c.address || '—'}
-                  </span>
-                </div>
-              );
-            },
-          },
-          {
-            header: 'Liên hệ',
-            id: 'phone',
-            accessorKey: 'phone',
-            enableSorting: true,
-            meta: { className: 'text-sm font-medium' },
-            cell: (info) => {
-              const phone = info.row.original.phone;
-              if (!phone) return <span className="text-muted">—</span>;
-
-              const cleanPhone = phone.replace(/\D/g, '');
-              const isVietnamZalo =
-                cleanPhone.startsWith('0') && cleanPhone.length === 10;
-
-              return (
-                <div className="flex items-center gap-2">
-                  <a
-                    href={`tel:${cleanPhone}`}
-                    className="hover:text-primary hover:underline transition-colors font-semibold"
-                    title="Gọi điện thoại"
-                  >
-                    {formatPhoneNumber(phone)}
-                  </a>
-                  {isVietnamZalo && (
-                    <a
-                      href={`https://zalo.me/${cleanPhone}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#0068FF] hover:opacity-80 transition-opacity flex items-center justify-center bg-[#0068FF]/10 rounded-full w-5 h-5"
-                      title="Nhắn tin Zalo"
-                    >
-                      <Icon name="MessageCircle" size={12} />
-                    </a>
-                  )}
-                </div>
-              );
-            },
-          },
-          {
-            header: DEPOSIT_FORM_LABELS.balanceColumnHeader,
-            id: 'account_balance',
-            accessorKey: 'account_balance',
-            enableSorting: true,
-            meta: { className: 'text-right font-bold text-success' },
-            cell: (info) =>
-              formatCurrencyFull(info.row.original.account_balance),
-          },
-          {
-            header: 'Nguồn',
-            id: 'source',
-            accessorKey: 'source',
-            enableSorting: true,
-            cell: (info) => {
-              const sourceKey = info.row.original.source || 'other';
-              return (
-                <Badge
-                  variant={SOURCE_BADGE_VARIANT[sourceKey] ?? 'gray'}
-                  icon={CUSTOMER_SOURCE_ICONS[sourceKey] as IconName}
-                >
-                  {CUSTOMER_SOURCE_LABELS[sourceKey]}
-                </Badge>
-              );
-            },
-          },
-          {
-            header: 'Phễu CRM',
-            id: 'lead_status',
-            accessorKey: 'lead_status',
-            enableSorting: true,
-            cell: (info) => {
-              const leadStatus =
-                (info.row.original.lead_status as LeadStatus) || 'lead';
-              return (
-                <Badge
-                  variant={CRM_STATUS_BADGE_VARIANTS[leadStatus] ?? 'gray'}
-                  icon={CRM_STATUS_ICONS[leadStatus] as IconName}
-                >
-                  {CRM_STATUS_LABELS[leadStatus]}
-                </Badge>
-              );
-            },
-          },
-          {
-            header: 'Trạng thái',
-            id: 'status',
-            accessorKey: 'status',
-            enableSorting: true,
-            cell: (info) => {
-              const c = info.row.original;
-              return (
-                <Badge
-                  variant={c.status === 'active' ? 'success' : 'gray'}
-                  icon={c.status === 'active' ? 'CheckCircle2' : 'XCircle'}
-                >
-                  {CUSTOMER_STATUS_LABELS[c.status]}
-                </Badge>
-              );
-            },
-          },
-          {
-            header: 'Phụ trách',
-            id: 'salesperson',
-            accessorKey: 'salesperson_id',
-            enableSorting: false,
-            cell: (info) => {
-              const salesperson = info.row.original.salesperson;
-              return salesperson ? (
-                <div className="flex items-center gap-1.5 text-sm">
-                  <Icon name="User" size={14} className="text-muted" />
-                  <span>{salesperson.name}</span>
-                </div>
-              ) : (
-                <span className="text-muted text-sm">—</span>
-              );
-            },
-          },
-          {
-            header: 'Thao tác',
-            id: 'actions',
-            meta: { className: 'text-right' },
-            cell: (info) => {
-              const c = info.row.original;
-              return (
-                <ActionMenu
-                  items={[
-                    {
-                      icon: 'MessageSquare',
-                      onClick: () => onChat?.(c),
-                      label: 'Nhắn tin',
-                    },
-                    ...(!isSale
-                      ? [
-                          {
-                            icon: 'Wallet' as const,
-                            onClick: () => {
-                              if (onDeposit) onDeposit(c);
-                            },
-                            label: 'Nạp tiền',
-                          },
-                        ]
-                      : []),
-                    {
-                      icon: 'FileText',
-                      onClick: () => onCreateContract(c),
-                      label: 'Tạo hợp đồng',
-                    },
-                    {
-                      icon: 'Pencil',
-                      onClick: () => onEdit(c),
-                      label: 'Chỉnh sửa',
-                    },
-                    ...(!isSale
-                      ? [
-                          {
-                            icon: 'Trash2' as const,
-                            onClick: () => handleDelete(c),
-                            label: 'Xóa khách hàng',
-                            danger: true,
-                            separated: true,
-                            disabled: deleteMutation.isPending,
-                          },
-                        ]
-                      : []),
-                  ]}
-                />
-              );
-            },
-          },
-        ]}
-        renderMobileCard={(customer) => {
-          const leadStatus = (customer.lead_status as LeadStatus) || 'lead';
-          return (
-            <div className="mobile-card">
-              <div className="mobile-card-header">
-                <span className="mobile-card-title">{customer.code}</span>
-                <Badge
-                  variant={customer.status === 'active' ? 'success' : 'gray'}
-                  icon={
-                    customer.status === 'active' ? 'CheckCircle2' : 'XCircle'
-                  }
-                >
-                  {CUSTOMER_STATUS_LABELS[customer.status]}
-                </Badge>
-              </div>
-              <div className="mobile-card-body">
-                <p className="font-bold text-lg">{customer.name}</p>
-                <div className="mobile-card-row">
-                  <span className="label">Liên hệ:</span>
-                  <span className="value flex items-center gap-2">
-                    {(() => {
-                      if (!customer.phone) return '—';
-                      const cleanPhone = customer.phone.replace(/\D/g, '');
-                      const isVietnamZalo =
-                        cleanPhone.startsWith('0') && cleanPhone.length === 10;
-                      return (
-                        <>
-                          <a
-                            href={`tel:${cleanPhone}`}
-                            className="hover:text-primary hover:underline font-semibold"
-                          >
-                            {formatPhoneNumber(customer.phone)}
-                          </a>
-                          {isVietnamZalo && (
-                            <a
-                              href={`https://zalo.me/${cleanPhone}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-[#0068FF] bg-[#0068FF]/10 rounded-full w-5 h-5 flex items-center justify-center"
-                            >
-                              <Icon name="MessageCircle" size={12} />
-                            </a>
-                          )}
-                        </>
-                      );
-                    })()}
-                  </span>
-                </div>
-                {customer.address && (
-                  <div className="mobile-card-row">
-                    <span className="label">Địa chỉ:</span>
-                    <span className="value truncate ml-4 italic">
-                      {customer.address}
-                    </span>
-                  </div>
-                )}
-                <div className="mobile-card-row">
-                  <span className="label">Phễu CRM:</span>
-                  <span className="value">
-                    <Badge
-                      variant={CRM_STATUS_BADGE_VARIANTS[leadStatus] ?? 'gray'}
-                      icon={CRM_STATUS_ICONS[leadStatus] as IconName}
-                      iconSize={12}
-                    >
-                      {CRM_STATUS_LABELS[leadStatus]}
-                    </Badge>
-                  </span>
-                </div>
-                {customer.salesperson && (
-                  <div className="mobile-card-row">
-                    <span className="label">Phụ trách:</span>
-                    <span className="value flex items-center gap-1">
-                      <Icon name="User" size={12} className="text-muted" />
-                      {customer.salesperson.name}
-                    </span>
-                  </div>
-                )}
-                <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/10">
-                  <Badge
-                    variant={
-                      SOURCE_BADGE_VARIANT[customer.source || 'other'] ?? 'gray'
-                    }
-                    icon={
-                      CUSTOMER_SOURCE_ICONS[
-                        customer.source || 'other'
-                      ] as IconName
-                    }
-                    iconSize={12}
-                  >
-                    {CUSTOMER_SOURCE_LABELS[customer.source || 'other']}
-                  </Badge>
-                  <Icon name="ChevronRight" size={16} className="text-muted" />
-                </div>
-              </div>
-            </div>
-          );
-        }}
-        pagination={{
-          result,
-          onPageChange: setPage,
-          itemLabel: 'khách hàng',
-        }}
-      />
+      <TableSection>
+        <DataTableAdvanced
+          data={customers}
+          isLoading={isLoading}
+          rowKey={(c) => c.id}
+          onRowClick={onEdit}
+          exportFileName="DanhSachKhachHang"
+          bulkActions={bulkActions}
+          emptyStateTitle={
+            hasFilter
+              ? 'Không tìm thấy khách hàng'
+              : 'Chưa có thông tin khách hàng'
+          }
+          emptyStateDescription={
+            hasFilter
+              ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
+              : 'Hãy thêm khách hàng mới để quản lý thông tin.'
+          }
+          emptyStateIcon={hasFilter ? 'Search' : 'Users'}
+          emptyStateActionLabel={!hasFilter ? '+ Thêm khách hàng' : undefined}
+          onEmptyStateAction={!hasFilter ? onNew : undefined}
+          columns={columns}
+          renderMobileCard={(customer) => (
+            <CustomerMobileCard customer={customer} />
+          )}
+          pagination={{
+            result,
+            onPageChange: setPage,
+            itemLabel: 'khách hàng',
+          }}
+        />
+      </TableSection>
 
       {/* Bulk Action Dialogs */}
       <AdaptiveSheet
@@ -743,6 +448,6 @@ export function CustomerList({
           </div>
         </div>
       </AdaptiveSheet>
-    </div>
+    </PageLayout>
   );
 }

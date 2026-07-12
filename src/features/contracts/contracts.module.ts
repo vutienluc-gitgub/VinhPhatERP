@@ -80,3 +80,36 @@ export function renderTemplate(
     return value != null ? value : match;
   });
 }
+
+// ── UI Messages ──────────────────────────────────────────────────────────────
+
+export const CONTRACT_MESSAGES = {
+  TITLE: 'Hợp đồng',
+  SUBTITLE: 'Quản lý hợp đồng đối tác',
+  NEW_BUTTON: 'Tạo hợp đồng mới',
+  KPI_TOTAL: 'Tổng hợp đồng',
+  KPI_TOTAL_DESC: 'Tất cả hợp đồng trong hệ thống',
+  KPI_SIGNED: 'Đã ký',
+  KPI_SIGNED_DESC: 'Hợp đồng đã được ký kết',
+  KPI_PENDING: 'Chờ xử lý',
+  KPI_PENDING_DESC: 'Nháp / Đã gửi',
+  FILTER_SEARCH: 'Tìm kiếm',
+  FILTER_SEARCH_PLACEHOLDER: 'Số hợp đồng, tên đối tác...',
+  FILTER_STATUS: 'Trạng thái',
+  FILTER_TYPE: 'Loại hợp đồng',
+  FILTER_DATE_FROM: 'Từ ngày',
+  FILTER_DATE_TO: 'Đến ngày',
+  EMPTY_FILTER_TITLE: 'Không tìm thấy hợp đồng',
+  EMPTY_FILTER_DESC: 'Vui lòng thử điều chỉnh lại bộ lọc.',
+  EMPTY_TITLE: 'Chưa có hợp đồng nào',
+  EMPTY_DESC: 'Nhấn nút tạo hợp đồng mới để bắt đầu.',
+  ERROR_LOAD: 'Lỗi tải dữ liệu: ',
+  TAX_CODE_LABEL: 'MST: ',
+  COL_CONTRACT_NUMBER: 'Số hợp đồng',
+  COL_TYPE: 'Loại',
+  COL_PARTY_A: 'Bên A (Đối tác)',
+  COL_STATUS: 'Trạng thái',
+  COL_CREATED_AT: 'Ngày tạo',
+  COL_ACTIONS: 'Thao tác',
+  ACTION_VIEW_DETAILS: 'Xem chi tiết',
+} as const;

@@ -1,176 +1,125 @@
-import dayjs from 'dayjs';
+import { useState } from 'react';
 
 import {
-  DataTable,
-  Icon,
-  Badge,
-  type BadgeVariant,
-  type DataTableColumn,
-  ActionBar,
+  DataTableAdvanced,
+  KpiCard,
+  AddButton,
+  FilterBar,
+  type FilterFieldConfig,
+  PageLayout,
+  PageHeader,
+  TableSection,
 } from '@/shared/components';
-import type { ActionConfig } from '@/shared/components';
-import { MoneyText } from '@/shared/value';
-import { DYEING_ORDER_STATUSES } from '@/schema/dyeing-order.schema';
+import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
+import { useDyeingOrderList } from '@/application/production';
 
-import type { DyeingOrder } from './types';
+import type { DyeingOrder, DyeingOrderFilter } from './types';
+import { DYEING_ORDER_MESSAGES as MSG } from './dyeing-orders.constants';
+import { useDyeingOrderColumns } from './hooks/useDyeingOrderColumns';
+import { DyeingOrderMobileCard } from './components/DyeingOrderMobileCard';
 
 type DyeingOrderListProps = {
-  data: DyeingOrder[];
-  isLoading: boolean;
   onView: (id: string) => void;
-  onEdit: (order: DyeingOrder) => void;
+  onEdit: (order: DyeingOrder | null) => void;
 };
 
-function getStatusVariant(status: string): BadgeVariant {
-  switch (status) {
-    case 'draft':
-      return 'gray';
-    case 'sent':
-      return 'info';
-    case 'in_progress':
-      return 'warning';
-    case 'completed':
-      return 'success';
-    case 'cancelled':
-      return 'danger';
-    default:
-      return 'gray';
-  }
-}
+const filterSchema: FilterFieldConfig[] = [
+  {
+    key: 'search',
+    type: 'search',
+    label: MSG.FILTER_SEARCH_LABEL,
+    placeholder: MSG.FILTER_SEARCH_PLACEHOLDER,
+  },
+];
 
-export function DyeingOrderList({
-  data,
-  isLoading,
-  onView,
-  onEdit,
-}: DyeingOrderListProps) {
-  const columns: DataTableColumn<DyeingOrder>[] = [
-    {
-      header: 'Mã lệnh',
-      id: 'dyeing_order_number',
-      sortable: true,
-      cell: (row: DyeingOrder) => (
-        <div className="flex flex-col">
-          <span className="font-bold text-primary">
-            {row.dyeing_order_number}
-          </span>
-          <span className="text-[0.7rem] text-muted">
-            {row.order_date ? dayjs(row.order_date).format('DD/MM/YYYY') : '—'}
-          </span>
-        </div>
-      ),
-    },
-    {
-      header: 'Nhà nhuộm',
-      id: 'suppliers',
-      sortable: true,
-      accessor: (row: DyeingOrder) => row.suppliers?.name,
-      cell: (row: DyeingOrder) => (
-        <div className="flex flex-col">
-          <span className="font-medium">{row.suppliers?.name ?? '—'}</span>
-          <span className="text-[0.7rem] text-muted uppercase tracking-wider">
-            {row.suppliers?.code ?? '—'}
-          </span>
-        </div>
-      ),
-    },
-    {
-      header: 'Trạng thái',
-      id: 'status',
-      sortable: true,
-      cell: (row: DyeingOrder) => (
-        <Badge variant={getStatusVariant(row.status)}>
-          {DYEING_ORDER_STATUSES[row.status]?.label ?? row.status}
-        </Badge>
-      ),
-    },
-    {
-      header: 'Đơn giá (kg)',
-      id: 'unit_price_per_kg',
-      sortable: true,
-      className: 'text-right',
-      cell: (row: DyeingOrder) => (
-        <span className="tabular-nums font-medium">
-          <MoneyText value={row.unit_price_per_kg} />
-        </span>
-      ),
-    },
-    {
-      header: 'Trả hàng (DK)',
-      id: 'expected_return_date',
-      sortable: true,
-      className: 'max-sm:hidden',
-      cell: (row: DyeingOrder) => (
-        <div className="flex items-center gap-1.5 text-muted">
-          <Icon name="Calendar" size={16} />
-          <span>
-            {row.expected_return_date
-              ? dayjs(row.expected_return_date).format('DD/MM/YYYY')
-              : '—'}
-          </span>
-        </div>
-      ),
-    },
-    {
-      header: '',
-      className: 'w-10 text-right',
-      cell: (row: DyeingOrder) => (
-        <ActionBar
-          actions={
-            [
-              row.status === 'draft'
-                ? {
-                    icon: 'Pencil',
-                    onClick: () => onEdit(row),
-                    title: 'Sửa',
-                  }
-                : {
-                    icon: 'Eye',
-                    onClick: () => onView(row.id),
-                    title: 'Xem',
-                  },
-            ] as ActionConfig[]
-          }
-        />
-      ),
-    },
-  ];
+export function DyeingOrderList({ onView, onEdit }: DyeingOrderListProps) {
+  const {
+    filters: filter,
+    setFilter: setFilterValue,
+    clearFilters,
+    hasActiveFilter,
+  } = useUrlFilterState(['search']);
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading } = useDyeingOrderList(
+    filter as DyeingOrderFilter,
+    page,
+  );
+
+  const totalCount = data?.total ?? 0;
+  const inProgressCount =
+    data?.data.filter((o) => o.status === 'in_progress').length ?? 0;
+  const draftCount = data?.data.filter((o) => o.status === 'draft').length ?? 0;
+
+  const columns = useDyeingOrderColumns({ onView, onEdit });
 
   return (
-    <DataTable
-      data={data}
-      columns={columns}
-      isLoading={isLoading}
-      rowKey={(row) => row.id}
-      onRowClick={(row) => onView(row.id)}
-      emptyStateTitle="Chưa có lệnh nhuộm nào."
-      renderMobileCard={(row: DyeingOrder) => (
-        <div className="mobile-card">
-          <div className="flex justify-between items-start mb-2">
-            <div>
-              <div className="font-bold text-primary">
-                {row.dyeing_order_number}
-              </div>
-              <div className="text-xs text-muted">{row.suppliers?.name}</div>
-            </div>
-            <Badge variant={getStatusVariant(row.status)}>
-              {DYEING_ORDER_STATUSES[row.status]?.label}
-            </Badge>
-          </div>
-          <div className="flex justify-between items-end mt-3 border-t border-border pt-2">
-            <div className="text-[0.7rem] text-muted flex items-center gap-1">
-              <Icon name="Calendar" size={16} />
-              {row.order_date
-                ? dayjs(row.order_date).format('DD/MM/YYYY')
-                : '—'}
-            </div>
-            <div className="font-bold text-sm">
-              <MoneyText value={row.unit_price_per_kg} />
-              /kg
-            </div>
-          </div>
-        </div>
-      )}
-    />
+    <PageLayout>
+      <PageHeader
+        title={MSG.PAGE_TITLE}
+        subtitle={MSG.PAGE_SUBTITLE}
+        actions={<AddButton onClick={() => onEdit(null)} label={MSG.BTN_NEW} />}
+      />
+
+      {/* KPI Dashboard */}
+      <div className="kpi-section kpi-grid px-4 sm:px-6 lg:px-8 mt-4">
+        <KpiCard
+          label={MSG.STAT_TOTAL}
+          value={totalCount}
+          icon="Layers"
+          variant="primary"
+        />
+        <KpiCard
+          label={MSG.STAT_IN_PROGRESS}
+          value={inProgressCount}
+          icon="Loader2"
+          variant="warning"
+        />
+        <KpiCard
+          label={MSG.STAT_DRAFT}
+          value={draftCount}
+          icon="Pencil"
+          variant="secondary"
+        />
+      </div>
+
+      {/* Filters */}
+      <FilterBar
+        schema={filterSchema}
+        value={filter}
+        onChange={(key, val) => {
+          setPage(1);
+          setFilterValue(key, val as string | undefined);
+        }}
+        onClear={
+          hasActiveFilter
+            ? () => {
+                clearFilters();
+                setPage(1);
+              }
+            : undefined
+        }
+      />
+
+      {/* Main Content View */}
+      <TableSection>
+        <DataTableAdvanced
+          data={data?.data ?? []}
+          columns={columns}
+          isLoading={isLoading}
+          rowKey={(row) => row.id}
+          onRowClick={(row) => onView(row.id)}
+          emptyStateTitle={MSG.EMPTY_STATE_TITLE}
+          emptyStateIcon="FileText"
+          renderMobileCard={(row: DyeingOrder) => (
+            <DyeingOrderMobileCard order={row} />
+          )}
+          pagination={{
+            result: data,
+            onPageChange: setPage,
+          }}
+        />
+      </TableSection>
+    </PageLayout>
   );
 }

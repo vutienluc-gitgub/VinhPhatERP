@@ -1,0 +1,84 @@
+import { Controller, useWatch } from 'react-hook-form';
+import type { UseFormReturn } from 'react-hook-form';
+
+import type { OrdersFormValues } from '@/schema/order.schema';
+import { MoneyInput } from '@/shared/value';
+import { ORDER_MESSAGES as MSG } from '@/features/orders/orders.constants';
+
+const UNIT_LABELS: Record<string, string> = {
+  m: 'm',
+  kg: 'kg',
+};
+
+type ItemFieldsProps = {
+  control: UseFormReturn<OrdersFormValues>['control'];
+  index: number;
+  register: UseFormReturn<OrdersFormValues>['register'];
+  errors: UseFormReturn<OrdersFormValues>['formState']['errors'];
+};
+
+export function ItemQuantityFields({
+  control,
+  index,
+  register,
+  errors,
+}: ItemFieldsProps) {
+  const unit =
+    useWatch({
+      control,
+      name: `items.${index}.unit`,
+    }) ?? 'm';
+  const unitLabel = UNIT_LABELS[unit] ?? unit;
+
+  return (
+    <>
+      <div className="form-field">
+        <label htmlFor={`items.${index}.quantity`}>
+          {MSG.FIELD_QUANTITY} ({unitLabel}){' '}
+          <span className="field-required">*</span>
+        </label>
+        <input
+          id={`items.${index}.quantity`}
+          className={`field-input${errors.items?.[index]?.quantity ? ' border-danger' : ''}`}
+          type="number"
+          step="0.001"
+          min="0"
+          placeholder="0"
+          {...register(`items.${index}.quantity`, { valueAsNumber: true })}
+        />
+        {errors.items?.[index]?.quantity && (
+          <span className="field-error">
+            {errors.items[index]?.quantity?.message}
+          </span>
+        )}
+      </div>
+
+      <div className="form-field">
+        <label htmlFor={`items.${index}.unitPrice`}>
+          {MSG.FIELD_PRICE} (đ/{unitLabel}){' '}
+          <span className="field-required">*</span>
+        </label>
+        <Controller
+          name={`items.${index}.unitPrice` as const}
+          control={control}
+          render={({ field }) => (
+            <MoneyInput
+              id={`items.${index}.unitPrice`}
+              className={`field-input${errors.items?.[index]?.unitPrice ? ' border-danger' : ''}`}
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              placeholder="0"
+              suffix={` đ/${unitLabel}`}
+            />
+          )}
+        />
+        {errors.items?.[index]?.unitPrice && (
+          <span className="field-error">
+            {errors.items[index]?.unitPrice?.message}
+          </span>
+        )}
+      </div>
+    </>
+  );
+}

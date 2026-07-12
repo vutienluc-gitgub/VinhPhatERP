@@ -1,13 +1,13 @@
 import { useMemo, useState } from 'react';
 
-import { Pagination } from '@/shared/components/Pagination';
 import {
-  Button,
   Icon,
-  Badge,
-  DataTable,
+  DataTableAdvanced,
   ViewToggle,
   type ViewMode,
+  PageLayout,
+  PageHeader,
+  TableSection,
 } from '@/shared/components';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 import { AnomalyLegend } from '@/shared/components/roll-grid';
@@ -19,8 +19,6 @@ import {
 import { formatQuantity } from '@/shared/value/core/formatter';
 import { useRawFabricExport } from '@/application/inventory';
 import { StatWidget } from '@/shared/components/StatWidget';
-import { getRollStatusVariant } from '@/shared/utils/status-variant';
-import { ROLL_STATUS_LABELS } from '@/schema/raw-fabric.schema';
 
 import { ActionMenu } from './ActionMenu';
 import { FilterBar } from './FilterBar';
@@ -31,6 +29,9 @@ import type {
   RollStatus,
 } from './types';
 import { DEFAULT_FILTER_STATE, type FilterState } from './helpers';
+import { RAW_FABRIC_MESSAGES as MSG } from './raw-fabric.constants';
+import { RawFabricMobileCard } from './components/RawFabricMobileCard';
+import { useRawFabricColumns } from './hooks/useRawFabricColumns';
 
 type RawFabricListProps = {
   onEdit: (roll: RawFabricRoll) => void;
@@ -112,7 +113,7 @@ export function RawFabricList({
   const groupedRolls = useMemo(() => {
     const map = new Map<string, RawFabricRoll[]>();
     rolls.forEach((roll) => {
-      const key = roll.lot_number || 'KHÔNG CÓ LÔ';
+      const key = roll.lot_number || MSG.LBL_NO_LOT;
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(roll);
     });
@@ -136,39 +137,44 @@ export function RawFabricList({
     });
   }, [rolls]);
 
+  const columns = useRawFabricColumns({ onEdit });
+
   return (
-    <div className="panel-card card-flush">
-      {/* Action bar */}
-      <div className="card-header-area">
-        <div className="flex items-center gap-4">
-          <ViewToggle value={viewMode} onChange={setViewMode} />
-          <ActionMenu
-            onNew={onNew}
-            onBulkNew={onBulkNew}
-            onExport={() => void handleExportExcel()}
-            isExporting={isExporting}
-          />
-        </div>
-      </div>
+    <PageLayout>
+      <PageHeader
+        title={MSG.PAGE_TITLE}
+        subtitle={MSG.PAGE_SUBTITLE}
+        actions={
+          <div className="flex items-center gap-4">
+            <ViewToggle value={viewMode} onChange={setViewMode} />
+            <ActionMenu
+              onNew={onNew}
+              onBulkNew={onBulkNew}
+              onExport={() => void handleExportExcel()}
+              isExporting={isExporting}
+            />
+          </div>
+        }
+      />
 
       {/* KPI Dashboard */}
       {stats && (
-        <div className="kpi-section kpi-grid">
+        <div className="kpi-section kpi-grid px-4 sm:px-6 lg:px-8 mt-4">
           <StatWidget
-            title="Tổng số cuộn"
+            title={MSG.STAT_TOTAL_ROLLS}
             icon="Box"
             value={formatQuantity(stats.totalRolls, 0)}
-            subtitle="Cuộn đang trong kho"
+            subtitle={MSG.STAT_TOTAL_ROLLS_DESC}
             color="primary"
             onClick={() => {
               handleClearFilter();
             }}
           />
           <StatWidget
-            title="Tổng chiều dài"
+            title={MSG.STAT_TOTAL_LENGTH}
             icon="Ruler"
             value={`${formatQuantity(stats.totalLengthM, 0)}m`}
-            subtitle="Cuộn đang trong kho"
+            subtitle={MSG.STAT_TOTAL_LENGTH_DESC}
             color="success"
             onClick={() => {
               handleFilterChange({
@@ -178,10 +184,10 @@ export function RawFabricList({
             }}
           />
           <StatWidget
-            title="Trọng lượng tịnh"
+            title={MSG.STAT_TOTAL_WEIGHT}
             icon="Scale"
             value={`${formatQuantity(stats.totalWeightKg, 0)}kg`}
-            subtitle="Trọng lượng tịnh thực tế"
+            subtitle={MSG.STAT_TOTAL_WEIGHT_DESC}
             color="amber"
             legend={
               viewMode === 'grid' && rolls.length > 0 ? (
@@ -199,7 +205,7 @@ export function RawFabricList({
       )}
 
       {/* Filters */}
-      <div className="card-filter-section p-4 border-b border-border">
+      <div className="w-full px-4 sm:px-6 lg:px-8 mt-2 pb-4 border-b border-border">
         <FilterBar
           value={filterState}
           onChange={handleFilterChange}
@@ -209,202 +215,105 @@ export function RawFabricList({
       </div>
 
       {error && (
-        <div className="p-4">
+        <div className="px-4 sm:px-6 lg:px-8 mt-4">
           <p className="error-inline">
-            Lỗi tải dữ liệu:{' '}
+            {MSG.ERR_LOAD}{' '}
             {error instanceof Error ? error.message : String(error)}
           </p>
         </div>
       )}
       {exportError && (
-        <div className="p-4 pt-0">
-          <p className="error-inline">Lỗi xuất Excel: {exportError}</p>
+        <div className="px-4 sm:px-6 lg:px-8 mt-4 pt-0">
+          <p className="error-inline">
+            {MSG.ERR_EXPORT} {exportError}
+          </p>
         </div>
       )}
 
       {/* Main Content View */}
-      {viewMode === 'table' ? (
-        <DataTable
-          data={rolls}
-          isLoading={isLoading}
-          rowKey={(r) => r.id}
-          onRowClick={(r) => onEdit(r)}
-          emptyStateTitle={
-            hasFilter
-              ? 'Không tìm thấy cuộn vải phù hợp'
-              : 'Chưa có cuộn vải nào'
-          }
-          emptyStateIcon={hasFilter ? 'Search' : 'Layers'}
-          columns={[
-            {
-              header: 'Mã cuộn',
-              id: 'roll_number',
-              sortable: true,
-              cell: (r) => (
-                <span className="font-bold text-primary">{r.roll_number}</span>
-              ),
-            },
-            {
-              header: 'Số lô',
-              id: 'lot_number',
-              sortable: true,
-              cell: (r) => (
-                <span className="font-medium text-muted">
-                  {r.lot_number || '—'}
-                </span>
-              ),
-            },
-            {
-              header: 'Loại vải / Màu',
-              id: 'fabric_type',
-              sortable: true,
-              cell: (r) => (
-                <div className="flex flex-col">
-                  <span className="font-medium">{r.fabric_type}</span>
-                  <span className="text-xs text-muted">{r.color_name}</span>
-                </div>
-              ),
-            },
-            {
-              header: 'Khối lượng',
-              id: 'weight_kg',
-              sortable: true,
-              className: 'text-right',
-              cell: (r) => (
-                <span className="font-medium">
-                  {formatQuantity(r.weight_kg)}
-                  <span className="text-xs ml-1 text-muted">kg</span>
-                </span>
-              ),
-            },
-            {
-              header: 'Chiều dài',
-              id: 'length_m',
-              sortable: true,
-              className: 'text-right',
-              cell: (r) => (
-                <span className="font-medium text-success">
-                  {formatQuantity(r.length_m)}
-                  <span className="text-xs ml-1 text-muted">m</span>
-                </span>
-              ),
-            },
-            {
-              header: 'Trạng thái',
-              id: 'status',
-              sortable: true,
-              cell: (r) => (
-                <Badge variant={getRollStatusVariant(r.status)}>
-                  {ROLL_STATUS_LABELS[r.status]}
-                </Badge>
-              ),
-            },
-            {
-              header: 'Thao tác',
-              className: 'text-right',
-              onCellClick: () => {},
-              cell: (r) => (
-                <button className="btn-icon" onClick={() => onEdit(r)}>
-                  <Icon name="Pencil" size={16} />
-                </button>
-              ),
-            },
-          ]}
-          renderMobileCard={(r) => (
-            <div className="mobile-card">
-              <div className="mobile-card-header">
-                <span className="mobile-card-title">{r.roll_number}</span>
-                <Badge variant={getRollStatusVariant(r.status)}>
-                  {ROLL_STATUS_LABELS[r.status]}
-                </Badge>
+      <TableSection>
+        {viewMode === 'table' ? (
+          <DataTableAdvanced
+            data={rolls}
+            isLoading={isLoading}
+            rowKey={(r) => r.id}
+            columns={columns}
+            onRowClick={(r) => onEdit(r)}
+            renderMobileCard={(r) => <RawFabricMobileCard roll={r} />}
+            emptyStateTitle={
+              hasFilter
+                ? MSG.EMPTY_STATE_FILTER_TITLE
+                : MSG.EMPTY_STATE_DEFAULT_TITLE
+            }
+            emptyStateDescription={
+              hasFilter
+                ? MSG.EMPTY_STATE_FILTER_DESC
+                : MSG.EMPTY_STATE_DEFAULT_DESC
+            }
+            emptyStateIcon={hasFilter ? 'Search' : 'Layers'}
+            emptyStateActionLabel={hasFilter ? MSG.LBL_CLEAR_FILTER : undefined}
+            onEmptyStateAction={hasFilter ? handleClearFilter : undefined}
+            pagination={{
+              result,
+              onPageChange: setPage,
+            }}
+          />
+        ) : (
+          <div className="p-4 flex flex-col gap-6 overflow-x-hidden">
+            {isLoading ? (
+              <div className="flex-center py-20">
+                <div className="spinner" />
               </div>
-              <div className="mobile-card-body">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm font-medium">{r.fabric_type}</span>
-                  <span className="text-xs text-muted">
-                    Lô: {r.lot_number || '—'}
-                  </span>
+            ) : rolls.length === 0 ? (
+              <div className="empty-state py-20">
+                <div className="empty-icon">
+                  <Icon name={hasFilter ? 'Search' : 'Layers'} size={48} />
                 </div>
-                <div className="grid grid-cols-2 gap-4 mt-2">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase text-muted">
-                      Khối lượng
-                    </span>
-                    <span className="font-bold text-sm">{r.weight_kg} kg</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase text-muted">
-                      Chiều dài
-                    </span>
-                    <span className="font-bold text-sm text-success">
-                      {r.length_m} m
-                    </span>
-                  </div>
-                </div>
+                <p>
+                  {hasFilter
+                    ? MSG.EMPTY_STATE_FILTER_DESC
+                    : MSG.EMPTY_STATE_DEFAULT_DESC}
+                </p>
+                {hasFilter && (
+                  <button
+                    className="btn-secondary mt-4 flex items-center gap-2"
+                    onClick={handleClearFilter}
+                  >
+                    <Icon name="X" size={16} />
+                    {MSG.LBL_CLEAR_FILTER}
+                  </button>
+                )}
               </div>
-            </div>
-          )}
-        />
-      ) : (
-        // overflow-x-hidden to prevent horizontal scroll on mobile (Requirement 6.3)
-        <div className="card-table-section p-4 flex flex-col gap-6 overflow-x-hidden">
-          {isLoading ? (
-            <div className="flex-center py-20">
-              <div className="spinner" />
-            </div>
-          ) : rolls.length === 0 ? (
-            <div className="empty-state py-20">
-              <div className="empty-icon">
-                <Icon name={hasFilter ? 'Search' : 'Layers'} size={48} />
-              </div>
-              <p>
-                {hasFilter
-                  ? 'Không tìm thấy cuộn vải phù hợp.'
-                  : 'Chưa có cuộn vải nào.'}
-              </p>
-              {/* Requirement 4.5: show clear filter button in empty state when filter is active */}
-              {hasFilter && (
-                <Button
-                  variant="secondary"
-                  leftIcon="X"
-                  className="btn mt-4"
-                  onClick={handleClearFilter}
-                >
-                  Xóa bộ lọc
-                </Button>
-              )}
-            </div>
-          ) : (
-            groupedRolls.map((group, index) => (
-              <LotMatrixCard
-                key={group.lot}
-                title={group.lot}
-                lotNumber={group.lot !== 'KHÔNG CÓ LÔ' ? group.lot : undefined}
-                colorName={group.colorName || undefined}
-                expectedRollsCount={group.rolls.length}
-                standardWeightKg={group.medianWeight}
-                lotIndex={index + 1}
-                totalLots={groupedRolls.length}
-                rolls={group.rolls.map((r) => ({
-                  id: r.id,
-                  roll_number: r.roll_number,
-                  weight_kg: r.weight_kg ?? undefined,
-                  status: r.status,
-                }))}
-                mode="view"
-                onRollPress={(roll) => {
-                  const original = rolls.find((r) => r.id === roll.id);
-                  if (original) onEdit(original);
-                }}
-              />
-            ))
-          )}
-        </div>
-      )}
-
-      <div className="p-4">
-        <Pagination result={result} onPageChange={setPage} />
-      </div>
-    </div>
+            ) : (
+              groupedRolls.map((group, index) => (
+                <LotMatrixCard
+                  key={group.lot}
+                  title={group.lot}
+                  lotNumber={
+                    group.lot !== MSG.LBL_NO_LOT ? group.lot : undefined
+                  }
+                  colorName={group.colorName || undefined}
+                  expectedRollsCount={group.rolls.length}
+                  standardWeightKg={group.medianWeight}
+                  lotIndex={index + 1}
+                  totalLots={groupedRolls.length}
+                  rolls={group.rolls.map((r) => ({
+                    id: r.id,
+                    roll_number: r.roll_number,
+                    weight_kg: r.weight_kg ?? undefined,
+                    status: r.status,
+                  }))}
+                  mode="view"
+                  onRollPress={(roll) => {
+                    const original = rolls.find((r) => r.id === roll.id);
+                    if (original) onEdit(original);
+                  }}
+                />
+              ))
+            )}
+          </div>
+        )}
+      </TableSection>
+    </PageLayout>
   );
 }

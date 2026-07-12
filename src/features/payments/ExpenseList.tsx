@@ -2,44 +2,28 @@ import { useState } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
-  Icon,
-  Badge,
-  type BadgeVariant,
-  DataTable,
+  DataTableAdvanced,
   AddButton,
-  ActionBar,
   FilterBar,
   type FilterFieldConfig,
+  PageLayout,
+  PageHeader,
+  FilterSection,
+  TableSection,
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
-import { MoneyCell, MoneyText } from '@/shared/value';
 import { useDeleteExpense, useExpenseList } from '@/application/payments';
 
 import { EXPENSE_CATEGORIES, EXPENSE_CATEGORY_LABELS } from './payments.module';
-import type { Expense, ExpenseCategory, ExpensesFilter } from './types';
+import type { Expense, ExpensesFilter } from './types';
+import { useExpenseColumns } from './hooks/useExpenseColumns';
+import { ExpenseMobileCard } from './components/ExpenseMobileCard';
+import { EXPENSE_MESSAGES as MSG } from './payments.constants';
 
 type ExpenseListProps = {
   onEdit: (expense: Expense) => void;
   onNew: () => void;
 };
-
-function getCategoryVariant(category: ExpenseCategory): BadgeVariant {
-  switch (category) {
-    case 'salary':
-      return 'info';
-    case 'yarn_purchase':
-    case 'weaving_cost':
-    case 'dyeing_cost':
-      return 'warning';
-    case 'logistics':
-      return 'purple';
-    case 'supplier_payment':
-    case 'equipment':
-      return 'danger';
-    default:
-      return 'gray';
-  }
-}
 
 export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
   const { filters, setFilter, clearFilters } = useUrlFilterState([
@@ -63,13 +47,13 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
     {
       key: 'search',
       type: 'search',
-      label: 'Tìm kiếm',
-      placeholder: 'Số phiếu, mô tả...',
+      label: MSG.FILTER_SEARCH_LABEL,
+      placeholder: MSG.FILTER_SEARCH_PLACEHOLDER,
     },
     {
       key: 'category',
       type: 'combobox',
-      label: 'Danh mục',
+      label: MSG.FILTER_CATEGORY,
       options: EXPENSE_CATEGORIES.map((c) => ({
         value: c,
         label: EXPENSE_CATEGORY_LABELS[c],
@@ -78,7 +62,7 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
     {
       key: 'expense_date', // Used merely for identification, date_range fields use keyFrom/keyTo
       type: 'date_range',
-      label: 'Thời gian chi',
+      label: MSG.FILTER_DATE,
       keyFrom: 'fromDate',
       keyTo: 'toDate',
     },
@@ -91,7 +75,7 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
 
   async function handleDelete(expense: Expense) {
     const ok = await confirm({
-      message: `Xoà phiếu chi "${expense.expense_number}"? Số dư tài khoản sẽ được cập nhật lại.`,
+      message: MSG.DELETE_CONFIRM(expense.expense_number),
       variant: 'danger',
     });
     if (!ok) return;
@@ -105,196 +89,80 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
     filters.toDate
   );
 
-  return (
-    <div className="panel-card card-flush">
-      {/* Header */}
-      <div className="card-header-area">
-        <span className="font-bold text-lg">Phiếu Chi</span>
-        <AddButton onClick={onNew} label="Tạo phiếu chi" />
-      </div>
+  const columns = useExpenseColumns({
+    onEdit,
+    handleDelete,
+    isDeleting: deleteMutation.isPending,
+  });
 
-      {/* Filters (Config-Driven) */}
-      <FilterBar
-        schema={filterSchema}
-        value={filters}
-        onChange={handleFilterChange}
-        onClear={() => {
-          clearFilters();
-          setPage(1);
-        }}
+  return (
+    <PageLayout>
+      <PageHeader
+        title={MSG.TITLE}
+        subtitle={MSG.SUBTITLE}
+        actions={<AddButton onClick={onNew} label={MSG.BTN_ADD} />}
       />
 
-      {/* Error */}
+      <FilterSection>
+        <FilterBar
+          schema={filterSchema}
+          value={filters}
+          onChange={handleFilterChange}
+          onClear={() => {
+            clearFilters();
+            setPage(1);
+          }}
+        />
+      </FilterSection>
+
       {error && (
         <div className="p-4">
           <p className="error-inline">
-            Lỗi tải dữ liệu:{' '}
+            {MSG.ERROR_LOAD}
             {error instanceof Error ? error.message : String(error)}
           </p>
         </div>
       )}
 
-      {/* Table & Cards */}
-      <DataTable
-        data={expenses}
-        isLoading={isLoading}
-        rowKey={(exp) => exp.id}
-        emptyStateTitle={
-          hasFilter ? 'Không tìm thấy phiếu chi' : 'Chưa có phiếu chi nào'
-        }
-        emptyStateDescription={
-          hasFilter
-            ? 'Thử điều chỉnh bộ lọc.'
-            : 'Nhấn "Tạo phiếu chi" để bắt đầu ghi nhận chi phí.'
-        }
-        emptyStateIcon={hasFilter ? 'Search' : 'ReceiptText'}
-        emptyStateActionLabel={!hasFilter ? '+ Tạo phiếu chi' : undefined}
-        onEmptyStateAction={!hasFilter ? onNew : undefined}
-        columns={[
-          {
-            header: 'Số phiếu / Ngày',
-            id: 'expense_number',
-            sortable: true,
-            cell: (exp) => (
-              <div className="flex flex-col">
-                <span className="font-bold text-primary">
-                  {exp.expense_number}
-                </span>
-                <span className="text-xs text-muted">{exp.expense_date}</span>
-              </div>
-            ),
-          },
-          {
-            header: 'Danh mục',
-            id: 'category',
-            sortable: true,
-            cell: (exp) => (
-              <Badge variant={getCategoryVariant(exp.category)}>
-                {EXPENSE_CATEGORY_LABELS[exp.category]}
-              </Badge>
-            ),
-          },
-          {
-            header: 'Mô tả',
-            id: 'description',
-            sortable: true,
-            cell: (exp) => (
-              <div className="flex flex-col">
-                <span>{exp.description}</span>
-                {exp.suppliers?.name && (
-                  <span className="text-xs text-muted">
-                    NCC: {exp.suppliers.name}
-                  </span>
-                )}
-              </div>
-            ),
-          },
-          {
-            header: 'Số tiền',
-            id: 'amount',
-            sortable: true,
-            className: 'text-right',
-            cell: (exp) => <MoneyCell value={exp.amount} bold tone="danger" />,
-          },
-          {
-            header: 'Tài khoản',
-            id: 'payment_accounts',
-            sortable: true,
-            accessor: (exp) => exp.payment_accounts?.name,
-            className: 'text-muted text-sm',
-            cell: (exp) => exp.payment_accounts?.name ?? '—',
-          },
-          {
-            header: 'Thao tác',
-            className: 'text-right',
-            onCellClick: () => {},
-            cell: (exp) => (
-              <ActionBar
-                actions={[
-                  {
-                    icon: 'Pencil',
-                    onClick: () => onEdit(exp),
-                    title: 'Sửa',
-                  },
-                  {
-                    icon: 'Trash2',
-                    onClick: () => handleDelete(exp),
-                    title: 'Xóa',
-                    variant: 'danger',
-                    disabled: deleteMutation.isPending,
-                  },
-                ]}
-              />
-            ),
-          },
-        ]}
-        renderMobileCard={(exp) => (
-          <div className="mobile-card">
-            <div className="mobile-card-header">
-              <div className="flex flex-col">
-                <span className="mobile-card-title">{exp.expense_number}</span>
-                <span className="text-xs text-muted">{exp.expense_date}</span>
-              </div>
-              <span className="font-bold text-danger text-lg">
-                <MoneyText value={exp.amount} tone="danger" />
-              </span>
-            </div>
-            <div className="mobile-card-body space-y-2">
-              <div className="flex items-center gap-2">
-                <Badge variant={getCategoryVariant(exp.category)}>
-                  {EXPENSE_CATEGORY_LABELS[exp.category]}
-                </Badge>
-                {exp.suppliers?.name && (
-                  <span className="text-xs text-muted">
-                    {exp.suppliers.name}
-                  </span>
-                )}
-              </div>
-              {exp.description && (
-                <p className="text-sm text-muted">{exp.description}</p>
-              )}
-              <div className="text-xs text-muted">
-                Tài khoản: {exp.payment_accounts?.name ?? '—'}
-              </div>
-              <div className="flex gap-2 pt-2 border-t border-border/10">
-                <button
-                  className="btn-secondary flex-1 text-primary"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit(exp);
-                  }}
-                >
-                  <Icon name="Pencil" size={16} /> Sửa
-                </button>
-                <button
-                  className="btn-secondary flex-1 text-danger border-danger/20"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(exp);
-                  }}
-                  disabled={deleteMutation.isPending}
-                >
-                  <Icon name="Trash2" size={16} /> Xóa
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        pagination={{
-          result,
-          onPageChange: setPage,
-          itemLabel: 'phiếu chi',
-        }}
-      />
-
       {deleteMutation.error && (
-        <p className="error-inline-sm">
-          Lỗi:{' '}
-          {deleteMutation.error instanceof Error
-            ? deleteMutation.error.message
-            : String(deleteMutation.error)}
-        </p>
+        <div className="p-4 pt-0">
+          <p className="error-inline-sm">
+            {MSG.ERROR_DELETE}
+            {deleteMutation.error instanceof Error
+              ? deleteMutation.error.message
+              : String(deleteMutation.error)}
+          </p>
+        </div>
       )}
-    </div>
+
+      <TableSection>
+        <DataTableAdvanced
+          data={expenses}
+          isLoading={isLoading}
+          rowKey={(exp) => exp.id}
+          emptyStateTitle={hasFilter ? MSG.EMPTY_TITLE_FILTER : MSG.EMPTY_TITLE}
+          emptyStateDescription={
+            hasFilter ? MSG.EMPTY_DESC_FILTER : MSG.EMPTY_DESC
+          }
+          emptyStateIcon={hasFilter ? 'Search' : 'ReceiptText'}
+          emptyStateActionLabel={!hasFilter ? MSG.EMPTY_ACTION : undefined}
+          onEmptyStateAction={!hasFilter ? onNew : undefined}
+          columns={columns}
+          renderMobileCard={(exp) => (
+            <ExpenseMobileCard
+              expense={exp}
+              onEdit={onEdit}
+              handleDelete={handleDelete}
+              isDeleting={deleteMutation.isPending}
+            />
+          )}
+          pagination={{
+            result,
+            onPageChange: setPage,
+            itemLabel: MSG.PAGINATION_LABEL,
+          }}
+        />
+      </TableSection>
+    </PageLayout>
   );
 }

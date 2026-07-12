@@ -7,6 +7,12 @@ import {
   FilterBar,
   type FilterFieldConfig,
   KpiCard,
+  KpiGrid,
+  PageLayout,
+  PageHeader,
+  KPISection,
+  FilterSection,
+  TableSection,
 } from '@/shared/components';
 import {
   useDeleteFabricCatalog,
@@ -125,44 +131,46 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
   });
 
   return (
-    <div className="panel-card card-flush flex flex-col h-full min-h-0">
+    <PageLayout>
       {/* Action bar */}
-      <div className="card-header-area">
-        <AddButton onClick={onNew} label={LABELS.ADD_NEW} />
-      </div>
+      <PageHeader
+        title="Vải"
+        subtitle="Quản lý danh mục vải"
+        actions={<AddButton onClick={onNew} label={LABELS.ADD_NEW} />}
+      />
 
       {/* KPI Dashboard */}
-      <div className="kpi-section kpi-grid">
-        <KpiCard
-          label={LABELS.TOTAL_CATALOGS}
-          value={data?.total ?? 0}
-          icon="Layers"
-          variant="primary"
-          formatMode="number"
-          footer={LABELS.TOTAL_CATALOGS_DESC}
-        />
-        <KpiCard
-          label={LABELS.ACTIVE}
-          value={activeCount}
-          icon="Activity"
-          variant="success"
-          formatMode="number"
-          footer={LABELS.ACTIVE_DESC}
-        />
-        <KpiCard
-          label={LABELS.MAIN_COMPOSITION}
-          value="Cotton/Pol"
-          icon="Zap"
-          variant="secondary"
-          footer={LABELS.MAIN_COMPOSITION_DESC}
-        />
-      </div>
+      <KPISection>
+        <KpiGrid>
+          <KpiCard
+            label={LABELS.TOTAL_CATALOGS}
+            value={data?.total ?? 0}
+            icon="Layers"
+            variant="primary"
+            formatMode="number"
+            footer={LABELS.TOTAL_CATALOGS_DESC}
+          />
+          <KpiCard
+            label={LABELS.ACTIVE}
+            value={activeCount}
+            icon="Activity"
+            variant="success"
+            formatMode="number"
+            footer={LABELS.ACTIVE_DESC}
+          />
+          <KpiCard
+            label={LABELS.MAIN_COMPOSITION}
+            value="Cotton/Pol"
+            icon="Zap"
+            variant="secondary"
+            footer={LABELS.MAIN_COMPOSITION_DESC}
+          />
+        </KpiGrid>
+      </KPISection>
 
-      {/* Filters (Config-Driven) */}
-      <div className="flex flex-wrap items-start gap-3 px-4 py-3 border-b border-border/50 overflow-visible">
+      {/* Filter Area (Config-Driven) */}
+      <FilterSection>
         <FilterBar
-          size="compact"
-          variant="inline"
           schema={filterSchema}
           value={filters}
           onChange={handleFilterChange}
@@ -171,41 +179,43 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
             setPage(1);
           }}
         />
-      </div>
+      </FilterSection>
 
       {/* Table (DataTableAdvanced) */}
-      <DataTableAdvanced
-        storageKey="fabric-catalog-cols"
-        className="flex-1 min-h-0"
-        data={catalogs}
-        isLoading={isLoading}
-        rowKey={(c) => c.id}
-        onRowClick={onEdit}
-        emptyStateTitle={
-          hasActiveFilter ? LABELS.EMPTY_SEARCH : LABELS.EMPTY_LIST
-        }
-        emptyStateIcon={hasActiveFilter ? 'Search' : 'Layers'}
-        emptyStateActionLabel={
-          !hasActiveFilter ? LABELS.ADD_NEW_BTN : undefined
-        }
-        onEmptyStateAction={!hasActiveFilter ? onNew : undefined}
-        columns={columns}
-        exportFileName="danh_muc_loai_vai"
-        renderMobileCard={(c) => (
-          <FabricCatalogMobileCard
-            catalog={c}
-            onEdit={onEdit}
-            onDelete={handleDelete}
-            onShowQR={() => setQrCatalog(c)}
-            isDeleting={deleteMutation.isPending}
-          />
-        )}
-        pagination={{
-          result: data,
-          onPageChange: setPage,
-          itemLabel: LABELS.ITEM_LABEL,
-        }}
-      />
+      <TableSection>
+        <DataTableAdvanced
+          storageKey="fabric-catalog-cols"
+          className="flex-1 min-h-0"
+          data={catalogs}
+          isLoading={isLoading}
+          rowKey={(c) => c.id}
+          onRowClick={onEdit}
+          emptyStateTitle={
+            hasActiveFilter ? LABELS.EMPTY_SEARCH : LABELS.EMPTY_LIST
+          }
+          emptyStateIcon={hasActiveFilter ? 'Search' : 'Layers'}
+          emptyStateActionLabel={
+            !hasActiveFilter ? LABELS.ADD_NEW_BTN : undefined
+          }
+          onEmptyStateAction={!hasActiveFilter ? onNew : undefined}
+          columns={columns}
+          exportFileName="danh_muc_loai_vai"
+          renderMobileCard={(c) => (
+            <FabricCatalogMobileCard
+              catalog={c}
+              onEdit={onEdit}
+              onDelete={handleDelete}
+              onShowQR={() => setQrCatalog(c)}
+              isDeleting={deleteMutation.isPending}
+            />
+          )}
+          pagination={{
+            result: data,
+            onPageChange: setPage,
+            itemLabel: LABELS.ITEM_LABEL,
+          }}
+        />
+      </TableSection>
 
       {qrCatalog && (
         <FabricSampleQRModal
@@ -213,6 +223,6 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
           onClose={() => setQrCatalog(null)}
         />
       )}
-    </div>
+    </PageLayout>
   );
 }
