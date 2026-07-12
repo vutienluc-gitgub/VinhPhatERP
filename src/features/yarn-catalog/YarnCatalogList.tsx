@@ -1,4 +1,11 @@
-import { AddButton, FilterBar } from '@/shared/components';
+import {
+  AddButton,
+  FilterBar,
+  PageLayout,
+  PageHeader,
+  FilterSection,
+  TableSection,
+} from '@/shared/components';
 import { DataTableAdvanced } from '@/shared/components/DataTableAdvanced';
 
 import type { YarnCatalog } from './types';
@@ -34,28 +41,28 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
   const tableColumns = useYarnCatalogColumns(onEdit, handleDelete, isDeleting);
 
   return (
-    <div
-      className="panel-card card-flush"
-      aria-label={YARN_CATALOG_MESSAGES.ARIA_LIST_CONTAINER}
-    >
-      {/* Action bar */}
-      <div className="card-header-area">
-        <AddButton
-          onClick={onNew}
-          label={YARN_CATALOG_MESSAGES.BTN_ADD}
-          aria-label={YARN_CATALOG_MESSAGES.ARIA_ADD_NEW}
-        />
-      </div>
+    <PageLayout aria-label={YARN_CATALOG_MESSAGES.ARIA_LIST_CONTAINER}>
+      <PageHeader
+        title="Sợi"
+        subtitle="Quản lý danh mục sợi"
+        actions={
+          <AddButton
+            onClick={onNew}
+            label={YARN_CATALOG_MESSAGES.BTN_ADD}
+            aria-label={YARN_CATALOG_MESSAGES.ARIA_ADD_NEW}
+          />
+        }
+      />
 
       {/* Filters (Config-Driven) */}
-      <div aria-label={YARN_CATALOG_MESSAGES.ARIA_FILTER_BAR}>
+      <FilterSection aria-label={YARN_CATALOG_MESSAGES.ARIA_FILTER_BAR}>
         <FilterBar
           schema={YARN_CATALOG_FILTER_SCHEMA}
           value={filters}
           onChange={handleFilterChange}
           onClear={handleClearFilters}
         />
-      </div>
+      </FilterSection>
 
       {/* Error Output */}
       <div aria-live="polite" aria-atomic="true">
@@ -80,7 +87,7 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
       </div>
 
       {/* Table & Cards */}
-      <div aria-label={YARN_CATALOG_MESSAGES.ARIA_DATA_TABLE}>
+      <TableSection aria-label={YARN_CATALOG_MESSAGES.ARIA_DATA_TABLE}>
         <DataTableAdvanced
           data={catalogs}
           isLoading={isLoading}
@@ -117,7 +124,7 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
             itemLabel: YARN_CATALOG_MESSAGES.PAGINATION_LABEL,
           }}
         />
-      </div>
-    </div>
+      </TableSection>
+    </PageLayout>
   );
 }

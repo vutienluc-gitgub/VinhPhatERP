@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
-import type { UseFormWatch } from 'react-hook-form';
+import { useFieldArray, useForm, Controller } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
 import { useAuth } from '@/shared/hooks/useAuth';
@@ -15,10 +14,8 @@ import {
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
 import { useStepper } from '@/shared/hooks/useStepper';
-import { useAutoSave, loadDraft, clearDraft } from '@/shared/hooks/useAutoSave';
+import { loadDraft, clearDraft } from '@/shared/hooks/useAutoSave';
 import DraftBanner from '@/shared/components/DraftBanner';
-import SaveStatus from '@/shared/components/SaveStatus';
-import { MoneyInput, MoneyText } from '@/shared/value';
 import {
   useCreateOrderV2,
   isCreditWarning,
@@ -36,45 +33,25 @@ import {
   ORDER_TYPE_OPTIONS,
 } from '@/schema/order.schema';
 import type { OrdersFormValues } from '@/schema/order.schema';
-import { calculateOrderTotal } from '@/domain/orders';
 import { getErrorMessage } from '@/shared/utils/error';
 
 import { CreditOverrideDialog } from './CreditOverrideDialog';
 import { TradingItemRow } from './components/TradingItemRow';
+import { ProductionItemRow } from './components/ProductionItemRow';
+import {
+  AutoSaveSubscriber,
+  LineTotals,
+  DRAFT_KEY,
+} from './components/OrderFormHelpers';
 import type { Order } from './types';
-
-const DRAFT_KEY = 'order-draft';
-
-/**
- * Isolated sub-component that subscribes to ALL form values for auto-save.
- * By extracting this, the re-renders caused by watch() are confined here
- * and do NOT propagate to the main OrderForm tree.
- */
-function AutoSaveSubscriber({
-  watch,
-}: {
-  watch: UseFormWatch<OrdersFormValues>;
-}) {
-  const formValues = watch();
-  const { status: saveStatus, lastSavedAt } = useAutoSave({
-    key: DRAFT_KEY,
-    data: formValues,
-    delay: 800,
-  });
-  return <SaveStatus status={saveStatus} lastSavedAt={lastSavedAt} />;
-}
-
-const UNIT_LABELS: Record<string, string> = {
-  m: 'm',
-  kg: 'kg',
-};
+import { ORDER_MESSAGES as MSG } from './orders.constants';
 
 const UNIT_COMBO_OPTIONS = UNIT_OPTIONS.map((opt) => ({
   value: opt.value,
   label: opt.label,
 }));
 
-type OrderFormProps = {
+export type OrderFormProps = {
   order: Order | null;
   onClose: () => void;
 };
@@ -106,98 +83,6 @@ function orderToFormValues(order: Order): OrdersFormValues {
       unitPrice: Number(it.unit_price),
     })),
   };
-}
-
-/* ── Realtime totals ── */
-
-function LineTotals({
-  control,
-}: {
-  control: ReturnType<typeof useForm<OrdersFormValues>>['control'];
-}) {
-  const items = useWatch({
-    control,
-    name: 'items',
-  });
-  const total = calculateOrderTotal(items);
-  return (
-    <div className="text-right font-semibold text-base py-2 border-t-2 border-border mt-3 flex items-center justify-end gap-1">
-      Tổng cộng: <MoneyText value={total} suffix="đ" />
-    </div>
-  );
-}
-
-/* ── Quantity + Unit Price with dynamic unit label ── */
-
-type ItemFieldsProps = {
-  control: ReturnType<typeof useForm<OrdersFormValues>>['control'];
-  index: number;
-  register: ReturnType<typeof useForm<OrdersFormValues>>['register'];
-  errors: ReturnType<typeof useForm<OrdersFormValues>>['formState']['errors'];
-};
-
-function ItemQuantityFields({
-  control,
-  index,
-  register,
-  errors,
-}: ItemFieldsProps) {
-  const unit =
-    useWatch({
-      control,
-      name: `items.${index}.unit`,
-    }) ?? 'm';
-  const unitLabel = UNIT_LABELS[unit] ?? unit;
-
-  return (
-    <>
-      <div className="form-field">
-        <label htmlFor={`items.${index}.quantity`}>
-          Số lượng ({unitLabel}) <span className="field-required">*</span>
-        </label>
-        <input
-          id={`items.${index}.quantity`}
-          className={`field-input${errors.items?.[index]?.quantity ? ' border-danger' : ''}`}
-          type="number"
-          step="0.001"
-          min="0"
-          placeholder="0"
-          {...register(`items.${index}.quantity`, { valueAsNumber: true })}
-        />
-        {errors.items?.[index]?.quantity && (
-          <span className="field-error">
-            {errors.items[index].quantity.message}
-          </span>
-        )}
-      </div>
-
-      <div className="form-field">
-        <label htmlFor={`items.${index}.unitPrice`}>
-          Đơn giá (đ/{unitLabel}) <span className="field-required">*</span>
-        </label>
-        <Controller
-          name={`items.${index}.unitPrice` as const}
-          control={control}
-          render={({ field }) => (
-            <MoneyInput
-              id={`items.${index}.unitPrice`}
-              className={`field-input${errors.items?.[index]?.unitPrice ? ' border-danger' : ''}`}
-              value={field.value}
-              onChange={field.onChange}
-              onBlur={field.onBlur}
-              placeholder="0"
-              suffix={` đ/${unitLabel}`}
-            />
-          )}
-        />
-        {errors.items?.[index]?.unitPrice && (
-          <span className="field-error">
-            {errors.items[index].unitPrice.message}
-          </span>
-        )}
-      </div>
-    </>
-  );
 }
 
 export function OrderForm({ order, onClose }: OrderFormProps) {
@@ -281,11 +166,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
     },
     onCancel: () => {
       if (isDirty) {
-        if (
-          !window.confirm(
-            'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
-          )
-        ) {
+        if (!window.confirm(MSG.UNSAVED_WARNING)) {
           return false;
         }
       }
@@ -296,11 +177,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
 
   const handleCancel = useCallback(() => {
     if (isDirty) {
-      if (
-        !window.confirm(
-          'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
-        )
-      ) {
+      if (!window.confirm(MSG.UNSAVED_WARNING)) {
         return false;
       }
     }
@@ -390,7 +267,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
         open={true}
         onClose={handleCancel}
         title={
-          isEditing ? `Sửa đơn: ${order.order_number}` : 'Tạo đơn hàng mới'
+          isEditing ? `${MSG.TITLE_EDIT}${order.order_number}` : MSG.TITLE_NEW
         }
         stepInfo={{
           current: stepper.currentStep,
@@ -413,7 +290,8 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
 
           {mutationError && (
             <p className="error-inline mb-4">
-              Lỗi: {getErrorMessage(mutationError)}
+              {MSG.ERROR_PREFIX}
+              {getErrorMessage(mutationError)}
             </p>
           )}
 
@@ -423,7 +301,9 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
               <div className="form-grid">
                 <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
-                    <label htmlFor="orderNumber">Số đơn hàng</label>
+                    <label htmlFor="orderNumber">
+                      {MSG.FIELD_ORDER_NUMBER}
+                    </label>
                     {isEditing ? (
                       <input
                         id="orderNumber"
@@ -437,7 +317,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                         id="orderNumber"
                         className="field-input italic bg-[var(--surface-disabled)] text-[var(--text-tertiary)]"
                         type="text"
-                        value="Tự động"
+                        value={MSG.AUTO_NUMBER}
                         readOnly
                         disabled
                       />
@@ -446,7 +326,8 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
 
                   <div className="form-field">
                     <label htmlFor="orderType">
-                      Loại đơn hàng <span className="field-required">*</span>
+                      {MSG.FIELD_ORDER_TYPE}{' '}
+                      <span className="field-required">*</span>
                     </label>
                     <Controller
                       name="orderType"
@@ -482,7 +363,8 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                 <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="orderDate">
-                      Ngày đặt hàng <span className="field-required">*</span>
+                      {MSG.FIELD_ORDER_DATE}{' '}
+                      <span className="field-required">*</span>
                     </label>
                     <input
                       id="orderDate"
@@ -501,7 +383,8 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                 <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="customerId">
-                      Khách hàng <span className="field-required">*</span>
+                      {MSG.FIELD_CUSTOMER}{' '}
+                      <span className="field-required">*</span>
                     </label>
                     <Controller
                       name="customerId"
@@ -512,7 +395,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                             options={customerOptions}
                             value={field.value}
                             onChange={field.onChange}
-                            placeholder="— Chọn khách hàng —"
+                            placeholder={MSG.PLACEHOLDER_CUSTOMER}
                             hasError={!!errors.customerId}
                           />
                         );
@@ -526,7 +409,9 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                   </div>
 
                   <div className="form-field">
-                    <label htmlFor="deliveryDate">Ngày giao dự kiến</label>
+                    <label htmlFor="deliveryDate">
+                      {MSG.FIELD_DELIVERY_DATE}
+                    </label>
                     <input
                       id="deliveryDate"
                       className={`field-input${errors.deliveryDate ? ' border-danger' : ''}`}
@@ -542,12 +427,12 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                 </div>
 
                 <div className="form-field">
-                  <label htmlFor="notes">Ghi chú đơn hàng</label>
+                  <label htmlFor="notes">{MSG.FIELD_NOTES}</label>
                   <textarea
                     id="notes"
                     className="field-textarea"
                     rows={3}
-                    placeholder="Ghi chú về đơn hàng..."
+                    placeholder={MSG.PLACEHOLDER_NOTES}
                     {...register('notes')}
                   />
                 </div>
@@ -558,7 +443,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
             <div className={stepper.currentStep === 1 ? 'block' : 'hidden'}>
               <div className="form-field">
                 <label>
-                  Dòng hàng <span className="field-required">*</span>
+                  {MSG.SECTION_ITEMS} <span className="field-required">*</span>
                 </label>
                 {errors.items?.root && (
                   <span className="field-error block mb-2">
@@ -590,123 +475,20 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                     }
 
                     return (
-                      <div key={field.id} className="form-item-box">
-                        <div className="flex justify-between items-center mb-3 pb-2 border-b border-border">
-                          <span className="text-sm font-semibold text-muted">
-                            Dòng Hàng #{index + 1}
-                          </span>
-                          {fields.length > 1 && (
-                            <button
-                              className="btn-icon danger"
-                              type="button"
-                              title="Xóa dòng"
-                              onClick={() => remove(index)}
-                            >
-                              Xóa ✕
-                            </button>
-                          )}
-                        </div>
-
-                        <div className="form-grid">
-                          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                            <div className="form-field">
-                              <label htmlFor={`items.${index}.fabricType`}>
-                                Loại vải{' '}
-                                <span className="field-required">*</span>
-                              </label>
-                              <Controller
-                                name={`items.${index}.fabricType` as const}
-                                control={control}
-                                render={({ field }) => (
-                                  <Combobox
-                                    options={fabricComboOptions}
-                                    value={field.value}
-                                    onChange={(val) => {
-                                      field.onChange(val);
-                                      const selected = fabricOptions.find(
-                                        (f) => f.name === val,
-                                      );
-                                      if (selected?.unit) {
-                                        setValue(
-                                          `items.${index}.unit`,
-                                          selected.unit as 'm' | 'kg',
-                                        );
-                                      }
-                                    }}
-                                    placeholder="Chọn hoặc nhập loại vải"
-                                    hasError={
-                                      !!errors.items?.[index]?.fabricType
-                                    }
-                                  />
-                                )}
-                              />
-                              {errors.items?.[index]?.fabricType && (
-                                <span className="field-error">
-                                  {errors.items[index].fabricType.message}
-                                </span>
-                              )}
-                            </div>
-
-                            <div className="form-field">
-                              <label htmlFor={`items.${index}.colorName`}>
-                                Màu
-                              </label>
-                              <Controller
-                                name={`items.${index}.colorName` as const}
-                                control={control}
-                                render={({ field }) => (
-                                  <Combobox
-                                    options={colorComboOptions}
-                                    value={field.value ?? ''}
-                                    onChange={field.onChange}
-                                    placeholder="Chọn hoặc nhập màu..."
-                                  />
-                                )}
-                              />
-                            </div>
-                          </div>
-
-                          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))]">
-                            <div className="form-field">
-                              <label htmlFor={`items.${index}.colorCode`}>
-                                Mã màu
-                              </label>
-                              <input
-                                id={`items.${index}.colorCode`}
-                                className="field-input"
-                                type="text"
-                                placeholder="VD: TC-01"
-                                {...register(`items.${index}.colorCode`)}
-                              />
-                            </div>
-                            <div className="form-field">
-                              <label htmlFor={`items.${index}.unit`}>
-                                Đơn vị
-                              </label>
-                              <Controller
-                                name={`items.${index}.unit` as const}
-                                control={control}
-                                render={({ field }) => (
-                                  <Combobox
-                                    options={UNIT_COMBO_OPTIONS}
-                                    value={field.value}
-                                    onChange={field.onChange}
-                                  />
-                                )}
-                              />
-                            </div>
-                          </div>
-
-                          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))]">
-                            <ItemQuantityFields
-                              control={control}
-                              index={index}
-                              register={register}
-                              errors={errors}
-                            />
-                          </div>
-                        </div>
-                      </div>
+                      <ProductionItemRow
+                        key={field.id}
+                        index={index}
+                        control={control}
+                        setValue={setValue}
+                        errors={errors as Record<string, unknown>}
+                        register={register}
+                        fabricComboOptions={fabricComboOptions}
+                        fabricOptions={fabricOptions}
+                        colorComboOptions={colorComboOptions}
+                        unitComboOptions={UNIT_COMBO_OPTIONS}
+                        onRemove={() => remove(index)}
+                        canRemove={fields.length > 1}
+                      />
                     );
                   })}
                 </div>
@@ -723,8 +505,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                     });
                   }}
                 >
-                  {' '}
-                  + Thêm dòng hàng mới
+                  {MSG.BTN_ADD_ITEM}
                 </Button>
 
                 <LineTotals control={control} />
@@ -735,7 +516,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
             stepper={stepper}
             onCancel={handleCancel}
             isPending={isPending}
-            submitLabel={isEditing ? 'Lưu thay đổi' : 'Tạo đơn mới'}
+            submitLabel={isEditing ? MSG.BTN_SAVE : MSG.BTN_CREATE}
           >
             <AutoSaveSubscriber watch={watch} />
           </StepperFooter>

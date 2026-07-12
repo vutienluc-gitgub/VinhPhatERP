@@ -11,6 +11,9 @@ import {
   FilterBar,
   type FilterFieldConfig,
   KpiCard,
+  PageLayout,
+  PageHeader,
+  TableSection,
 } from '@/shared/components';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
@@ -36,6 +39,7 @@ import {
 } from './FinishedFabricColumns';
 import type { FinishedFabricFilter, FinishedFabricRoll } from './types';
 import { groupRollsByLot } from './finished-fabric.utils';
+import { FINISHED_FABRIC_MESSAGES as MSG } from './finished-fabric.constants';
 
 type FinishedFabricListProps = {
   onEdit: (roll: FinishedFabricRoll) => void;
@@ -50,13 +54,13 @@ const FILTER_SCHEMA: FilterFieldConfig[] = [
   {
     key: 'fabric_type',
     type: 'search',
-    label: 'Loại vải',
-    placeholder: 'Tìm loại vải...',
+    label: MSG.FILTER_FABRIC_LABEL,
+    placeholder: MSG.FILTER_FABRIC_PLACEHOLDER,
   },
   {
     key: 'status',
     type: 'combobox',
-    label: 'Trạng thái',
+    label: MSG.FILTER_STATUS_LABEL,
     options: ROLL_STATUSES.map((s) => ({
       value: s,
       label: ROLL_STATUS_LABELS[s],
@@ -65,7 +69,7 @@ const FILTER_SCHEMA: FilterFieldConfig[] = [
   {
     key: 'quality_grade',
     type: 'combobox',
-    label: 'Chất lượng',
+    label: MSG.FILTER_QUALITY_LABEL,
     options: QUALITY_GRADES.map((g) => ({
       value: g,
       label: QUALITY_GRADE_LABELS[g],
@@ -101,7 +105,7 @@ export function FinishedFabricList({
     async (roll: FinishedFabricRoll) => {
       if (!canDeleteRoll(roll.status)) return;
       const ok = await confirm({
-        message: `Xóa cuộn "${roll.roll_number}"? Hành động này không thể hoàn tác.`,
+        message: MSG.CONFIRM_DELETE_MSG(roll.roll_number),
         variant: 'danger',
       });
       if (!ok) return;
@@ -141,164 +145,182 @@ export function FinishedFabricList({
   }
 
   return (
-    <div className="panel-card card-flush">
-      {/* Action bar */}
-      <div className="card-header-area">
-        <div className="flex items-center gap-4">
-          <ViewToggle value={viewMode} onChange={setViewMode} />
+    <PageLayout>
+      <PageHeader
+        title={MSG.PAGE_TITLE}
+        subtitle={MSG.PAGE_SUBTITLE}
+        actions={
+          <div className="flex items-center gap-4">
+            <ViewToggle value={viewMode} onChange={setViewMode} />
 
-          <div className="flex gap-2">
-            <AddButton onClick={onNew} label="Nhập mới" />
-            <Button
-              variant="secondary"
-              leftIcon="Zap"
-              className="btn-standard"
-              type="button"
-              onClick={onBulkNew}
-            >
-              Nhập mẻ
-            </Button>
-            <div className="w-px h-6 bg-border mx-1" />
-            <Button
-              variant="secondary"
-              leftIcon="FileSpreadsheet"
-              className="btn-standard"
-              type="button"
-              onClick={handleExportExcel}
-              disabled={isExporting}
-            >
-              {isExporting ? 'Đang xuất...' : 'Xuất Excel'}
-            </Button>
+            <div className="flex gap-2">
+              <AddButton onClick={onNew} label={MSG.BTN_NEW} />
+              <Button
+                variant="secondary"
+                leftIcon="Zap"
+                className="btn-standard"
+                type="button"
+                onClick={onBulkNew}
+              >
+                {MSG.BTN_BULK_NEW}
+              </Button>
+              <div className="w-px h-6 bg-border mx-1" />
+              <Button
+                variant="secondary"
+                leftIcon="FileSpreadsheet"
+                className="btn-standard"
+                type="button"
+                onClick={handleExportExcel}
+                disabled={isExporting}
+              >
+                {isExporting ? 'Đang xuất...' : MSG.BTN_EXPORT}
+              </Button>
+            </div>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* KPI Dashboard */}
       {(stats || isStatsLoading) && (
-        <div className="kpi-section kpi-grid">
+        <div className="kpi-section kpi-grid px-4 sm:px-6 lg:px-8 mt-4">
           <KpiCard
-            label="Tổng thành phẩm"
+            label={MSG.STAT_TOTAL_ROLLS}
             value={stats?.totalRolls ?? 0}
             icon="Package"
             variant="primary"
             formatMode="number"
-            footer="Cuộn đã hoàn tất công đoạn nhuộm"
+            footer={MSG.STAT_TOTAL_ROLLS_DESC}
             isLoading={isStatsLoading}
           />
           <KpiCard
-            label="Tổng chiều dài"
+            label={MSG.STAT_TOTAL_LENGTH}
             value={stats ? `${formatQuantity(stats.totalLengthM, 1)} m` : ''}
             icon="Ruler"
             variant="success"
-            footer="Đã kiểm tra chất lượng (QC)"
+            footer={MSG.STAT_TOTAL_LENGTH_DESC}
             isLoading={isStatsLoading}
           />
           <KpiCard
-            label="Tổng khối lượng"
+            label={MSG.STAT_TOTAL_WEIGHT}
             value={stats ? `${formatQuantity(stats.totalWeightKg, 1)} kg` : ''}
             icon="Weight"
             variant="warning"
-            footer="Trọng lượng tịnh xuất kho"
+            footer={MSG.STAT_TOTAL_WEIGHT_DESC}
             isLoading={isStatsLoading}
           />
         </div>
       )}
 
-      {/* Filters (Config-Driven) */}
+      {/* Filters */}
       <FilterBar
         schema={FILTER_SCHEMA}
         value={filters}
         onChange={handleFilterChange}
-        onClear={() => {
-          clearFilters();
-          setPage(1);
-        }}
+        onClear={
+          hasActiveFilter
+            ? () => {
+                clearFilters();
+                setPage(1);
+              }
+            : undefined
+        }
       />
 
       {error && (
-        <div className="p-4">
+        <div className="px-4 sm:px-6 lg:px-8 mt-4">
           <p className="error-inline">
-            Lỗi tải dữ liệu:{' '}
+            {MSG.ERR_LOAD}{' '}
             {error instanceof Error ? error.message : String(error)}
           </p>
         </div>
       )}
       {exportError && (
-        <div className="p-4 pt-0">
-          <p className="error-inline">Lỗi xuất Excel: {exportError}</p>
+        <div className="px-4 sm:px-6 lg:px-8 mt-4 pt-0">
+          <p className="error-inline">
+            {MSG.ERR_EXPORT} {exportError}
+          </p>
         </div>
       )}
 
       {/* Main Content View */}
-      {viewMode === 'grid' ? (
-        <div className="card-table-section p-4 flex flex-col gap-6">
-          {isLoading ? (
-            <TableSkeleton columns={5} rows={5} />
-          ) : rolls.length === 0 ? (
-            <div className="empty-state py-20">
-              <div className="empty-icon">
-                <Icon name="Package" size={48} />
+      <TableSection>
+        {viewMode === 'grid' ? (
+          <div className="p-4 flex flex-col gap-6">
+            {isLoading ? (
+              <TableSkeleton columns={5} rows={5} />
+            ) : rolls.length === 0 ? (
+              <div className="empty-state py-20">
+                <div className="empty-icon">
+                  <Icon name="Package" size={48} />
+                </div>
+                <p>{MSG.EMPTY_STATE_DEFAULT_TITLE}</p>
               </div>
-              <p>Chưa có cuộn thành phẩm nào.</p>
-            </div>
-          ) : (
-            groupedRolls.map((group) => (
-              <LotMatrixCard
-                key={group.lot}
-                title={group.lot}
-                lotNumber={group.lot !== 'KHÔNG CÓ LÔ' ? group.lot : undefined}
-                colorName={group.colorName || undefined}
-                expectedRollsCount={group.rolls.length}
-                rolls={group.rolls.map((r) => ({
-                  id: r.id,
-                  roll_number: r.roll_number,
-                  weight_kg: r.weight_kg ?? undefined,
-                  status: r.status,
-                  raw_roll_number: r.raw_roll_number ?? undefined,
-                  image_url: r.image_url ?? undefined,
-                }))}
-                standardWeightKg={group.standardWeightKg}
-                mode="view"
-                onRollPress={(roll) => {
-                  const original = rolls.find((r) => r.id === roll.id);
-                  if (original) onEdit(original);
-                }}
-              />
-            ))
-          )}
-        </div>
-      ) : (
-        <DataTableAdvanced
-          data={rolls}
-          isLoading={isLoading}
-          rowKey={(r) => r.id}
-          onRowClick={(r) => {
-            if (canEditRoll(r.status)) onEdit(r);
-          }}
-          emptyStateTitle={
-            hasActiveFilter
-              ? 'Không tìm thấy cuộn thành phẩm'
-              : 'Chưa có cuộn thành phẩm nào'
-          }
-          emptyStateIcon="Package"
-          emptyStateActionLabel={!hasActiveFilter ? '+ Nhập mới' : undefined}
-          onEmptyStateAction={!hasActiveFilter ? onNew : undefined}
-          columns={columns}
-          exportFileName="danh_sach_thanh_pham"
-          renderMobileCard={(r) =>
-            renderFinishedFabricMobileCard(r, {
-              onTrace,
-              onEdit,
-              handleDelete,
-            })
-          }
-          pagination={{
-            result,
-            onPageChange: setPage,
-            itemLabel: 'cuộn',
-          }}
-        />
-      )}
-    </div>
+            ) : (
+              groupedRolls.map((group) => (
+                <LotMatrixCard
+                  key={group.lot}
+                  title={group.lot}
+                  lotNumber={
+                    group.lot !== MSG.LBL_NO_LOT ? group.lot : undefined
+                  }
+                  colorName={group.colorName || undefined}
+                  expectedRollsCount={group.rolls.length}
+                  rolls={group.rolls.map((r) => ({
+                    id: r.id,
+                    roll_number: r.roll_number,
+                    weight_kg: r.weight_kg ?? undefined,
+                    status: r.status,
+                    raw_roll_number: r.raw_roll_number ?? undefined,
+                    image_url: r.image_url ?? undefined,
+                  }))}
+                  standardWeightKg={group.standardWeightKg}
+                  mode="view"
+                  onRollPress={(roll) => {
+                    const original = rolls.find((r) => r.id === roll.id);
+                    if (original) onEdit(original);
+                  }}
+                />
+              ))
+            )}
+          </div>
+        ) : (
+          <DataTableAdvanced
+            data={rolls}
+            isLoading={isLoading}
+            rowKey={(r) => r.id}
+            onRowClick={(r) => {
+              if (canEditRoll(r.status)) onEdit(r);
+            }}
+            emptyStateTitle={
+              hasActiveFilter
+                ? MSG.EMPTY_STATE_FILTER_TITLE
+                : MSG.EMPTY_STATE_DEFAULT_TITLE
+            }
+            emptyStateIcon="Package"
+            emptyStateDescription={
+              !hasActiveFilter ? MSG.EMPTY_STATE_DEFAULT_DESC : undefined
+            }
+            emptyStateActionLabel={
+              !hasActiveFilter ? `+ ${MSG.BTN_NEW}` : undefined
+            }
+            onEmptyStateAction={!hasActiveFilter ? onNew : undefined}
+            columns={columns}
+            exportFileName="danh_sach_thanh_pham"
+            renderMobileCard={(r) =>
+              renderFinishedFabricMobileCard(r, {
+                onTrace,
+                onEdit,
+                handleDelete,
+              })
+            }
+            pagination={{
+              result,
+              onPageChange: setPage,
+              itemLabel: 'cuộn',
+            }}
+          />
+        )}
+      </TableSection>
+    </PageLayout>
   );
 }

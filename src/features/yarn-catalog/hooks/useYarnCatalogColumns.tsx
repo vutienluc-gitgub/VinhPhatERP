@@ -189,7 +189,6 @@ export function useYarnCatalogColumns(
         },
       }),
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onEdit, isDeleting],
+    [columnHelper, onEdit, onDelete, isDeleting],
   );
 }

@@ -4,33 +4,26 @@ import { useNavigate } from 'react-router-dom';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
-  Badge,
-  DataTable,
+  DataTableAdvanced,
   AddButton,
-  ActionBar,
   FilterBar,
   type FilterFieldConfig,
-  FadeUp,
-  LiveIndicator,
+  PageLayout,
+  PageHeader,
+  KPISection,
+  FilterSection,
+  TableSection,
 } from '@/shared/components';
-import type { ActionConfig } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
 import { useDeleteOrder, useOrderList } from '@/application/orders';
-import {
-  ORDER_STATUS_LABELS,
-  ORDER_STATUS_BADGE_VARIANTS,
-  ORDER_TYPE_OPTIONS,
-} from '@/schema/order.schema';
+import { ORDER_STATUS_LABELS, ORDER_TYPE_OPTIONS } from '@/schema/order.schema';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { useAuth } from '@/shared/hooks/useAuth';
-import { isOrderEditable } from '@/domain/orders/OrderStateMachine';
 
 import type { Order, OrdersFilter } from './types';
-import {
-  daysUntilDelivery,
-  calculateOrderKPIs,
-  calculateBalanceDue,
-} from './utils';
+import { calculateOrderKPIs } from './utils';
+import { useOrderColumns } from './hooks/useOrderColumns';
+import { OrderMobileCard } from './components/OrderMobileCard';
 
 const filterSchema: FilterFieldConfig[] = [
   {
@@ -108,94 +101,103 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
 
   const hasFilter = !!(filters.search || filters.status || filters.orderType);
 
+  const columns = useOrderColumns({
+    isAdmin,
+    onEdit,
+    onView,
+    handleDelete,
+  });
+
   return (
-    <div className="panel-card card-flush">
-      {/* Action bar */}
-      <div className="card-header-area">
-        <LiveIndicator label="Trực tiếp" />
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => navigate('/orders/progress')}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors"
+    <PageLayout>
+      <PageHeader
+        title="Đơn hàng"
+        subtitle="Quản lý đơn hàng"
+        actions={
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate('/orders/progress')}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors"
+            >
+              <Icon name="BarChart3" size={14} />
+              Tiến độ SX
+            </button>
+            <AddButton onClick={onNew} label="Tạo đơn hàng" />
+          </div>
+        }
+      />
+
+      <KPISection>
+        <div className="kpi-grid">
+          <div
+            className={`kpi-card-premium ${pendingReviewCount > 0 ? 'kpi-warning' : 'kpi-primary'}`}
           >
-            <Icon name="BarChart3" size={14} />
-            Tiến độ SX
-          </button>
-          <AddButton onClick={onNew} label="Tạo đơn hàng" />
-        </div>
-      </div>
-
-      {/* 📊 KPI Dashboard - Premium Visuals */}
-      <div className="kpi-section kpi-grid">
-        <div
-          className={`kpi-card-premium ${pendingReviewCount > 0 ? 'kpi-warning' : 'kpi-primary'}`}
-        >
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Yêu cầu chờ duyệt</p>
-              <p className="kpi-value">{pendingReviewCount}</p>
-            </div>
-            <div className="kpi-icon-box">
-              <Icon name="Bell" size={32} />
-            </div>
-          </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Yêu cầu từ Customer Portal
-          </div>
-        </div>
-
-        <div className="kpi-card-premium kpi-success">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Doanh thu dự kiến</p>
-              <div className="flex items-baseline gap-1">
-                <MoneyText
-                  value={totalRevenue}
-                  className="kpi-value"
-                  suffix=""
-                  compact
-                />
-                <span className="text-lg font-bold opacity-80">đ</span>
+            <div className="kpi-overlay" />
+            <div className="kpi-content">
+              <div className="kpi-info">
+                <p className="kpi-label">Yêu cầu chờ duyệt</p>
+                <p className="kpi-value">{pendingReviewCount}</p>
+              </div>
+              <div className="kpi-icon-box">
+                <Icon name="Bell" size={32} />
               </div>
             </div>
-            <div className="kpi-icon-box">
-              <Icon name="Banknote" size={32} />
+            <div className="kpi-footer text-xs opacity-80 italic">
+              Yêu cầu từ Customer Portal
             </div>
           </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Tổng giá trị đơn hiển thị
-          </div>
-        </div>
 
-        <div className="kpi-card-premium kpi-danger">
-          <div className="kpi-overlay" />
-          <div className="kpi-content">
-            <div className="kpi-info">
-              <p className="kpi-label">Tổng công nợ</p>
-              <div className="flex items-baseline gap-1">
-                <MoneyText
-                  value={totalDebt}
-                  className="kpi-value"
-                  suffix=""
-                  compact
-                />
-                <span className="text-lg font-bold opacity-80">đ</span>
+          <div className="kpi-card-premium kpi-success">
+            <div className="kpi-overlay" />
+            <div className="kpi-content">
+              <div className="kpi-info">
+                <p className="kpi-label">Doanh thu dự kiến</p>
+                <div className="flex items-baseline gap-1">
+                  <MoneyText
+                    value={totalRevenue}
+                    className="kpi-value"
+                    suffix=""
+                    compact
+                  />
+                  <span className="text-lg font-bold opacity-80">đ</span>
+                </div>
+              </div>
+              <div className="kpi-icon-box">
+                <Icon name="Banknote" size={32} />
               </div>
             </div>
-            <div className="kpi-icon-box">
-              <Icon name="AlertCircle" size={32} strokeWidth={2} />
+            <div className="kpi-footer text-xs opacity-80 italic">
+              Tổng giá trị đơn hiển thị
             </div>
           </div>
-          <div className="kpi-footer text-xs opacity-80 italic">
-            Số tiền khách còn nợ
+
+          <div className="kpi-card-premium kpi-danger">
+            <div className="kpi-overlay" />
+            <div className="kpi-content">
+              <div className="kpi-info">
+                <p className="kpi-label">Tổng công nợ</p>
+                <div className="flex items-baseline gap-1">
+                  <MoneyText
+                    value={totalDebt}
+                    className="kpi-value"
+                    suffix=""
+                    compact
+                  />
+                  <span className="text-lg font-bold opacity-80">đ</span>
+                </div>
+              </div>
+              <div className="kpi-icon-box">
+                <Icon name="AlertCircle" size={32} strokeWidth={2} />
+              </div>
+            </div>
+            <div className="kpi-footer text-xs opacity-80 italic">
+              Số tiền khách còn nợ
+            </div>
           </div>
         </div>
-      </div>
+      </KPISection>
 
-      {/* Filter Bar (Config-Driven) */}
-      <FadeUp delay={0.1}>
+      <FilterSection>
         <FilterBar
           schema={filterSchema}
           value={filters}
@@ -205,9 +207,8 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
             setPage(1);
           }}
         />
-      </FadeUp>
+      </FilterSection>
 
-      {/* Error State */}
       {error && (
         <div className="p-4">
           <p className="error-inline">
@@ -217,9 +218,8 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
         </div>
       )}
 
-      {/* 📑 Data Table / List */}
-      <FadeUp delay={0.2}>
-        <DataTable
+      <TableSection>
+        <DataTableAdvanced
           data={orders}
           isLoading={isLoading}
           rowKey={(o) => o.id}
@@ -235,194 +235,15 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           emptyStateIcon={hasFilter ? 'Search' : 'Package'}
           emptyStateActionLabel={!hasFilter ? '+ Tạo đơn hàng' : undefined}
           onEmptyStateAction={!hasFilter ? onNew : undefined}
-          columns={[
-            {
-              header: 'Số đơn / Khách hàng',
-              id: 'order_number',
-              sortable: true,
-              cell: (order) => (
-                <div className="flex flex-col">
-                  <span className="font-bold text-primary">
-                    {order.order_number}
-                  </span>
-                  <span className="text-sm">
-                    {order.customers?.name ?? '—'}
-                    {order.customers?.code && (
-                      <span className="text-xs text-muted ml-1 italic">
-                        ({order.customers.code})
-                      </span>
-                    )}
-                  </span>
-                </div>
-              ),
-            },
-            {
-              header: 'Ngày đặt',
-              id: 'order_date',
-              sortable: true,
-              className: 'text-muted text-sm',
-              cell: (order) => order.order_date,
-            },
-            {
-              header: 'Dự kiến giao',
-              id: 'delivery_date',
-              sortable: true,
-              cell: (order) => {
-                const due = daysUntilDelivery(order.delivery_date);
-                return (
-                  <div className="flex flex-col">
-                    <span className="text-sm">
-                      {order.delivery_date ?? '—'}
-                    </span>
-                    {due && (
-                      <span
-                        className={`text-[10px] font-bold uppercase ${due.urgent ? 'text-danger animate-pulse' : 'text-muted'}`}
-                      >
-                        {due.text}
-                      </span>
-                    )}
-                  </div>
-                );
-              },
-            },
-            {
-              header: 'Tổng tiền',
-              id: 'total_amount',
-              sortable: true,
-              className: 'text-right text-right tabular-nums font-medium',
-              cell: (order) => (
-                <MoneyText value={order.total_amount} suffix="đ" />
-              ),
-            },
-            {
-              header: 'Còn nợ',
-              id: 'paid_amount',
-              sortable: true,
-              accessor: (order) => calculateBalanceDue(order),
-              className: 'text-right text-right tabular-nums font-bold',
-              cell: (order) => {
-                const balanceDue = calculateBalanceDue(order);
-                return (
-                  <MoneyText
-                    value={balanceDue}
-                    className={balanceDue > 0 ? 'text-danger' : 'text-success'}
-                    suffix="đ"
-                  />
-                );
-              },
-            },
-            {
-              header: 'Trạng thái',
-              id: 'status',
-              sortable: true,
-              cell: (order) => (
-                <Badge
-                  variant={ORDER_STATUS_BADGE_VARIANTS[order.status] ?? 'gray'}
-                >
-                  {ORDER_STATUS_LABELS[order.status]}
-                </Badge>
-              ),
-            },
-            {
-              header: 'Thao tác',
-              className: 'text-right',
-              onCellClick: () => {}, // prevent row click
-              cell: (order) => (
-                <ActionBar
-                  actions={
-                    [
-                      isOrderEditable(order.status, isAdmin)
-                        ? {
-                            icon: 'Edit3',
-                            onClick: () => onEdit(order),
-                          }
-                        : null,
-                      order.status === 'draft'
-                        ? {
-                            icon: 'Trash2',
-                            onClick: () => handleDelete(order),
-                            variant: 'danger',
-                          }
-                        : null,
-                      !isOrderEditable(order.status, isAdmin) ||
-                      order.status !== 'draft'
-                        ? {
-                            icon: 'Eye',
-                            onClick: () => onView(order),
-                          }
-                        : null,
-                    ].filter(Boolean) as ActionConfig[]
-                  }
-                />
-              ),
-            },
-          ]}
-          renderMobileCard={(order) => {
-            const due = daysUntilDelivery(order.delivery_date);
-            const balanceDue = calculateBalanceDue(order);
-            return (
-              <div className="mobile-card">
-                <div className="mobile-card-header border-b border-border/10 pb-2 mb-2">
-                  <span className="font-bold text-primary">
-                    {order.order_number}
-                  </span>
-                  <Badge
-                    variant={
-                      ORDER_STATUS_BADGE_VARIANTS[order.status] ?? 'gray'
-                    }
-                  >
-                    {ORDER_STATUS_LABELS[order.status]}
-                  </Badge>
-                </div>
-                <div className="mobile-card-body space-y-2">
-                  <div className="flex justify-between items-start">
-                    <span className="text-sm font-bold">
-                      {order.customers?.name}
-                    </span>
-                    <span className="text-xs text-muted">
-                      {order.order_date}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 pt-2">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] uppercase text-muted">
-                        Tổng tiền
-                      </span>
-                      <MoneyText
-                        value={order.total_amount}
-                        className="text-sm font-medium"
-                        suffix="đ"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] uppercase text-muted">
-                        Còn nợ
-                      </span>
-                      <MoneyText
-                        value={balanceDue}
-                        className={`text-sm font-bold ${balanceDue > 0 ? 'text-danger' : 'text-success'}`}
-                        suffix="đ"
-                      />
-                    </div>
-                  </div>
-                  {due && (
-                    <div
-                      className={`mt-2 p-1.5 rounded text-[10px] font-bold text-center uppercase ${due.urgent ? 'bg-danger/10 text-danger' : 'bg-surface-subtle text-muted'}`}
-                    >
-                      Giao hàng: {due.text} ({order.delivery_date})
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          }}
+          columns={columns}
+          renderMobileCard={(order) => <OrderMobileCard order={order} />}
           pagination={{
             result,
             onPageChange: setPage,
             itemLabel: 'đơn hàng',
           }}
         />
-      </FadeUp>
-    </div>
+      </TableSection>
+    </PageLayout>
   );
 }
