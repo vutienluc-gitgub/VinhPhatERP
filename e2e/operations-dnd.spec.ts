@@ -12,6 +12,7 @@ import dotenv from 'dotenv';
 
 const thisFile = fileURLToPath(import.meta.url);
 const thisDir = path.dirname(thisFile);
+dotenv.config({ path: path.resolve(thisDir, '../.env.test.local') });
 dotenv.config({ path: path.resolve(thisDir, '../.env.local') });
 dotenv.config({ path: path.resolve(thisDir, '../.env') });
 
