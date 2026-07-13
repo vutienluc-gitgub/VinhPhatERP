@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import toast from 'react-hot-toast';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
@@ -12,6 +11,8 @@ import {
   PageLayout,
   PageHeader,
   TableSection,
+  KpiCard,
+  ErrorInline,
 } from '@/shared/components';
 import {
   useWorkOrders,
@@ -51,7 +52,7 @@ export function WorkOrderList({
   const [completeWoId, setCompleteWoId] = useState<string | null>(null);
   const [actualYieldM, setActualYieldM] = useState<number | ''>('');
 
-  const { data, isLoading } = useWorkOrders(
+  const { data, isLoading, error } = useWorkOrders(
     filter,
     page,
     viewMode === 'kanban' ? 100 : 20,
@@ -112,10 +113,23 @@ export function WorkOrderList({
 
   const handleStart = async (id: string) => {
     const ok = await confirm({
-      message: 'Bắt đầu lệnh dệt này?',
+      message: MSG.CONFIRM_START,
       variant: 'danger',
     });
-    if (ok) startMutation.mutate(id);
+    if (ok) {
+      try {
+        await startMutation.mutateAsync(id);
+      } catch (err) {
+        const errMessage = err instanceof Error ? err.message : String(err);
+        await confirm({
+          title: 'Lỗi',
+          message: `${MSG.ERR_TRANSITION_FAILED}${errMessage}`,
+          variant: 'danger',
+          cancelLabel: 'Đóng',
+          confirmLabel: '',
+        });
+      }
+    }
   };
 
   const handleStatusChange = async (
@@ -126,15 +140,15 @@ export function WorkOrderList({
     try {
       if (currentWO.status === 'draft' && newStatus === 'yarn_issued') {
         const ok = await confirm({
-          message: 'Xác nhận xuất sợi cho lệnh dệt này?',
+          message: MSG.CONFIRM_YARN_ISSUE,
         });
-        if (ok) issueYarnMutation.mutate(id);
+        if (ok) await issueYarnMutation.mutateAsync(id);
       } else if (
         (currentWO.status === 'draft' || currentWO.status === 'yarn_issued') &&
         newStatus === 'in_progress'
       ) {
-        const ok = await confirm({ message: 'Bắt đầu sản xuất lệnh dệt này?' });
-        if (ok) startMutation.mutate(id);
+        const ok = await confirm({ message: MSG.CONFIRM_PRODUCE });
+        if (ok) await startMutation.mutateAsync(id);
       } else if (
         currentWO.status === 'in_progress' &&
         newStatus === 'completed'
@@ -143,14 +157,22 @@ export function WorkOrderList({
         setActualYieldM(currentWO.target_quantity);
       } else {
         await confirm({
-          message: 'Trạng thái chuyển đổi không hợp lệ hoặc chưa được hỗ trợ.',
-          title: 'Không thể chuyển đổi',
+          message: MSG.ERR_INVALID_TRANSITION,
+          title: MSG.ERR_INVALID_TRANSITION_TITLE,
+          variant: 'danger',
+          cancelLabel: 'Đóng',
+          confirmLabel: '',
         });
       }
     } catch (e) {
-      toast.error(
-        e instanceof Error ? e.message : 'Có lỗi xảy ra khi chuyển trạng thái',
-      );
+      const errMessage = e instanceof Error ? e.message : String(e);
+      await confirm({
+        title: 'Lỗi',
+        message: `${MSG.ERR_TRANSITION_FAILED}${errMessage}`,
+        variant: 'danger',
+        cancelLabel: 'Đóng',
+        confirmLabel: '',
+      });
     }
   };
 
@@ -163,9 +185,14 @@ export function WorkOrderList({
       });
       setCompleteWoId(null);
     } catch (e) {
-      toast.error(
-        e instanceof Error ? e.message : 'Có lỗi xảy ra khi hoàn thành lệnh',
-      );
+      const errMessage = e instanceof Error ? e.message : String(e);
+      await confirm({
+        title: 'Lỗi',
+        message: `${MSG.ERR_COMPLETE_FAILED}${errMessage}`,
+        variant: 'danger',
+        cancelLabel: 'Đóng',
+        confirmLabel: '',
+      });
     }
   };
 
@@ -209,29 +236,31 @@ export function WorkOrderList({
         }
       />
 
-      <div className="stats-grid-premium px-4 sm:px-6 lg:px-8 mt-4">
-        <div className="stat-item-premium">
-          <div className="stat-icon-wrapper bg-[rgba(11,107,203,0.1)] text-[var(--primary)]">
-            <Icon name="Layers" size={24} />
-          </div>
-          <div className="stat-content-premium">
-            <p>{MSG.KPI_TOTAL}</p>
-            <p>{data?.count ?? 0}</p>
-          </div>
-        </div>
-
-        <div className="stat-item-premium">
-          <div className="stat-icon-wrapper bg-[rgba(234,179,8,0.1)] text-warning">
-            <Icon name="PlayCircle" size={24} />
-          </div>
-          <div className="stat-content-premium">
-            <p>{MSG.KPI_IN_PROGRESS}</p>
-            <p>{orders.filter((wo) => wo.status === 'in_progress').length}</p>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 sm:px-6 lg:px-8 mt-4">
+        <KpiCard
+          label={MSG.KPI_TOTAL}
+          value={data?.count ?? 0}
+          icon="Layers"
+          variant="primary"
+          formatMode="number"
+        />
+        <KpiCard
+          label={MSG.KPI_IN_PROGRESS}
+          value={orders.filter((wo) => wo.status === 'in_progress').length}
+          icon="PlayCircle"
+          variant="warning"
+          formatMode="number"
+        />
       </div>
 
       <TableSection>
+        {error && (
+          <div className="p-4">
+            <ErrorInline>
+              {error instanceof Error ? error.message : String(error)}
+            </ErrorInline>
+          </div>
+        )}
         <div className="w-full px-4 sm:px-6 lg:px-8 mt-2 pb-4 border-b border-border flex flex-col gap-4">
           <FilterBar
             schema={filterSchema}
@@ -302,29 +331,29 @@ export function WorkOrderList({
       <AdaptiveSheet
         open={!!completeWoId}
         onClose={() => setCompleteWoId(null)}
-        title="Báo cáo sản lượng hoàn thành"
+        title={MSG.MODAL_COMPLETE_TITLE}
         maxWidth={400}
       >
         <div className="p-4 space-y-4">
           <div className="form-field">
             <label className="field-label">
-              Sản lượng thực tế (mét) <span className="text-danger">*</span>
+              {MSG.MODAL_COMPLETE_ACTUAL_YIELD}{' '}
+              <span className="text-danger">*</span>
             </label>
             <input
               type="number"
               className="field-input"
               value={actualYieldM}
               onChange={(e) => setActualYieldM(Number(e.target.value))}
-              placeholder="Nhập số mét vải mộc thực tế thu được"
+              placeholder={MSG.MODAL_COMPLETE_PLACEHOLDER}
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Sản lượng này sẽ được dùng để tính toán hao hụt thực tế so với mục
-              tiêu.
+              {MSG.MODAL_COMPLETE_DESC}
             </p>
           </div>
           <div className="flex gap-2 justify-end pt-4">
             <Button variant="secondary" onClick={() => setCompleteWoId(null)}>
-              Hủy
+              {MSG.BTN_CANCEL}
             </Button>
             <Button
               variant="primary"
@@ -332,8 +361,8 @@ export function WorkOrderList({
               disabled={completeMutation.isPending || !actualYieldM}
             >
               {completeMutation.isPending
-                ? 'Đang xử lý...'
-                : 'Xác nhận hoàn thành'}
+                ? MSG.BTN_PROCESSING
+                : MSG.BTN_CONFIRM_COMPLETE}
             </Button>
           </div>
         </div>

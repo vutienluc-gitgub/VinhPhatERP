@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
+import { PageLayout } from '@/shared/components';
 
 import { DyeingOrderList } from './DyeingOrderList';
 import { DyeingOrderForm } from './DyeingOrderForm';
@@ -20,7 +21,7 @@ export function DyeingOrdersPage() {
 
   if (selectedId) {
     return (
-      <div className="page-container">
+      <PageLayout>
         <DyeingOrderDetail
           orderId={selectedId}
           onBack={() => setSelectedId(null)}
@@ -37,7 +38,7 @@ export function DyeingOrdersPage() {
         />
 
         <ContextualGuide activeGuides={activeGuides} />
-      </div>
+      </PageLayout>
     );
   }
 

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-import { Icon, Badge, type BadgeVariant } from '@/shared/components';
+import { Icon, Badge } from '@/shared/components';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { MoneyText } from '@/shared/value';
 import { DYEING_ORDER_STATUSES } from '@/schema/dyeing-order.schema';
@@ -13,29 +13,16 @@ import {
 import { sumBy } from '@/shared/utils/array.util';
 
 import type { DyeingOrder } from './types';
+import {
+  DYEING_ORDER_MESSAGES as MSG,
+  getStatusVariant,
+} from './dyeing-orders.constants';
 
 type DyeingOrderDetailProps = {
   orderId: string;
   onBack: () => void;
   onEdit: (order: DyeingOrder) => void;
 };
-
-function getStatusVariant(status: string): BadgeVariant {
-  switch (status) {
-    case 'draft':
-      return 'gray';
-    case 'sent':
-      return 'info';
-    case 'in_progress':
-      return 'warning';
-    case 'completed':
-      return 'success';
-    case 'cancelled':
-      return 'danger';
-    default:
-      return 'gray';
-  }
-}
 
 export function DyeingOrderDetail({
   orderId,
@@ -49,44 +36,57 @@ export function DyeingOrderDetail({
   const confirm = useConfirm();
 
   if (isLoading)
-    return (
-      <div className="p-10 text-center text-muted">Dang tai chi tiet...</div>
-    );
+    return <div className="p-10 text-center text-muted">{MSG.ERR_LOAD}</div>;
   if (error || !order)
     return (
-      <div className="p-10 text-center text-danger">
-        Khong tim thay lenh nhuom.
-      </div>
+      <div className="p-10 text-center text-danger">{MSG.ERR_NOT_FOUND}</div>
     );
 
   const handleSend = async () => {
     const ok = await confirm.confirm({
-      message:
-        'X\u00e1c nh\u1eadn g\u1edfi l\u1ec7nh nhu\u1ed9m n\u00e0y \u0111i nh\u00e0 cung c\u1ea5p?',
+      message: MSG.CONFIRM_SEND_MSG,
     });
-    if (ok) sendMutation.mutate(orderId);
+    if (!ok) return;
+    try {
+      await sendMutation.mutateAsync(orderId);
+    } catch (err) {
+      await confirm.alert(
+        `${MSG.ERR_SEND} ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
   };
 
   const handleDelete = async () => {
     const ok = await confirm.confirm({
-      message: 'Ban co chac chan muon xoa lenh nhuom nay?',
+      message: MSG.CONFIRM_DELETE_MSG,
       variant: 'danger',
     });
-    if (ok) {
-      deleteMutation.mutate(orderId, { onSuccess: onBack });
+    if (!ok) return;
+    try {
+      await deleteMutation.mutateAsync(orderId);
+      onBack();
+    } catch (err) {
+      await confirm.alert(
+        `${MSG.ERR_DELETE} ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   };
 
   const handleComplete = async () => {
     const today = new Date().toISOString().slice(0, 10);
     const ok = await confirm.confirm({
-      message: 'Linh vai thanh pham va hoan tat lenh nhuom nay?',
+      message: MSG.CONFIRM_COMPLETE_MSG,
     });
-    if (ok) {
-      completeMutation.mutate({
+    if (!ok) return;
+    try {
+      await completeMutation.mutateAsync({
         id: orderId,
         actualReturnDate: today,
       });
+    } catch (err) {
+      await confirm.alert(
+        `${MSG.ERR_COMPLETE} ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   };
 
@@ -96,7 +96,7 @@ export function DyeingOrderDetail({
       <div className="card-header-area border-b border-border flex flex-col sm:flex-row gap-4">
         <div className="flex items-center gap-3 flex-1">
           <button className="btn-secondary" onClick={onBack}>
-            <Icon name="ArrowLeft" size={16} /> Quay lai
+            <Icon name="ArrowLeft" size={16} /> {MSG.BTN_BACK}
           </button>
           <div className="flex-1">
             <span className="font-bold text-lg flex items-center gap-2">
@@ -117,7 +117,7 @@ export function DyeingOrderDetail({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 bg-surface/50 p-4 rounded-xl">
           <div>
             <label className="text-xs font-bold text-muted uppercase block mb-1">
-              Ngay gui
+              {MSG.LBL_DATE}
             </label>
             <div className="font-semibold">
               {dayjs(order.order_date).format('DD/MM/YYYY')}
@@ -125,7 +125,13 @@ export function DyeingOrderDetail({
           </div>
           <div>
             <label className="text-xs font-bold text-muted uppercase block mb-1">
-              DK tra hang
+              {MSG.LBL_NOTE}
+            </label>
+            <div className="font-semibold">{order.notes || '—'}</div>
+          </div>
+          <div>
+            <label className="text-xs font-bold text-muted uppercase block mb-1">
+              {MSG.COL_RETURN_DATE}
             </label>
             <div className="font-semibold">
               {order.expected_return_date
@@ -135,7 +141,7 @@ export function DyeingOrderDetail({
           </div>
           <div>
             <label className="text-xs font-bold text-muted uppercase block mb-1">
-              Don gia nhuộm
+              {MSG.COL_PRICE}
             </label>
             <div className="font-semibold text-primary">
               <MoneyText value={order.unit_price_per_kg} />
@@ -155,22 +161,21 @@ export function DyeingOrderDetail({
           {order.status === 'draft' && (
             <>
               <button className="btn-secondary" onClick={() => onEdit(order)}>
-                <Icon name="Pencil" size={16} /> Chinh sua
+                <Icon name="Pencil" size={16} /> {MSG.BTN_EDIT}
               </button>
               <button
                 className="btn-primary"
                 onClick={handleSend}
                 disabled={sendMutation.isPending}
               >
-                <Icon name="Send" size={16} />{' '}
-                {sendMutation.isPending ? 'Dang gui...' : 'Gui nhuom'}
+                <Icon name="Send" size={16} /> {MSG.BTN_SEND}
               </button>
               <button
-                className="btn-secondary text-danger"
+                className="btn-secondary text-danger hover:bg-danger/5"
                 onClick={handleDelete}
                 disabled={deleteMutation.isPending}
               >
-                <Icon name="Trash2" size={16} /> Xoa
+                <Icon name="Trash2" size={16} /> {MSG.BTN_DELETE}
               </button>
             </>
           )}
@@ -181,10 +186,7 @@ export function DyeingOrderDetail({
               onClick={handleComplete}
               disabled={completeMutation.isPending}
             >
-              <Icon name="CheckCircle" size={16} />{' '}
-              {completeMutation.isPending
-                ? 'Dang xu ly...'
-                : 'Nhan hang & Hoan tat'}
+              <Icon name="CheckCircle2" size={16} /> {MSG.BTN_COMPLETE}
             </button>
           )}
 
@@ -194,7 +196,7 @@ export function DyeingOrderDetail({
               window.open(`/print/dyeing-order/${orderId}`, '_blank')
             }
           >
-            <Icon name="Printer" size={16} /> In Phieu
+            <Icon name="Printer" size={16} /> {MSG.BTN_PRINT}
           </button>
         </div>
 
@@ -202,7 +204,7 @@ export function DyeingOrderDetail({
         {order.notes && (
           <div className="mb-8 p-3 bg-surface border border-border rounded-lg text-sm">
             <span className="font-bold text-muted uppercase text-[0.7rem] block mb-1">
-              Ghi chu chung
+              {MSG.LBL_NOTE}
             </span>
             {order.notes}
           </div>
@@ -210,7 +212,7 @@ export function DyeingOrderDetail({
 
         {/* Items Table */}
         <h4 className="flex items-center gap-2 mb-4 text-sm font-bold uppercase tracking-wider text-muted">
-          <Icon name="List" size={16} /> Danh sach cay vai (
+          <Icon name="List" size={16} /> {MSG.TITLE_ITEMS} (
           {order.dyeing_order_items?.length || 0})
         </h4>
         <div className="data-table-wrap">
@@ -218,11 +220,11 @@ export function DyeingOrderDetail({
             <thead>
               <tr>
                 <th className="w-10">#</th>
-                <th>Ma cay vai</th>
-                <th>Loai vai</th>
-                <th className="text-right">Trong luong (kg)</th>
-                <th>Mau nhuom</th>
-                <th className="max-sm:hidden">Ghi chu item</th>
+                <th>{MSG.COL_ITEM_ROLL}</th>
+                <th>{MSG.COL_ITEM_TYPE}</th>
+                <th className="text-right">{MSG.COL_ITEM_WEIGHT}</th>
+                <th>{MSG.COL_ITEM_COLOR}</th>
+                <th className="max-sm:hidden">{MSG.COL_ITEM_NOTE}</th>
               </tr>
             </thead>
             <tbody>
@@ -255,7 +257,7 @@ export function DyeingOrderDetail({
               ))}
               <tr className="bg-surface/50 font-bold">
                 <td colSpan={3} className="text-right">
-                  Tong cong
+                  {MSG.LBL_TOTAL}
                 </td>
                 <td className="text-right tabular-nums">
                   {sumBy(

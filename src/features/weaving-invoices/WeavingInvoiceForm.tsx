@@ -33,6 +33,7 @@ import { PasteExcelParser } from './components/PasteExcelParser';
 import { BulkRollStation } from './components/BulkRollStation';
 import { useWeavingInvoiceCalculator } from './hooks/useWeavingInvoiceCalculator';
 import type { WeavingInvoice } from './types';
+import { WEAVING_INVOICE_MESSAGES as MSG } from './weaving-invoices.constants';
 
 const DRAFT_KEY = 'weaving-invoice-draft';
 
@@ -123,11 +124,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
     },
     onCancel: () => {
       if (isDirty) {
-        if (
-          !window.confirm(
-            'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
-          )
-        ) {
+        if (!window.confirm(MSG.UNSAVED_WARNING)) {
           return false;
         }
       }
@@ -138,11 +135,7 @@ export function WeavingInvoiceForm({ invoice, onClose }: Props) {
 
   const handleCancel = useCallback(() => {
     if (isDirty) {
-      if (
-        !window.confirm(
-          'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
-        )
-      ) {
+      if (!window.confirm(MSG.UNSAVED_WARNING)) {
         return false;
       }
     }

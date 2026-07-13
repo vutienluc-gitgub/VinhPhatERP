@@ -2,54 +2,26 @@ import { useState, type ReactNode } from 'react';
 
 import {
   Icon,
-  Badge,
-  Button,
   DataTable,
   PageLayout,
   PageHeader,
   TableSection,
+  ErrorInline,
 } from '@/shared/components';
 import { useConfirm } from '@/shared/hooks/useConfirm';
 import type { MachineSpecification } from '@/schema/yarn-engineering.schema';
-import { MACHINE_TYPES } from '@/schema/yarn-engineering.schema';
 import {
   useMachineSpecsAdmin,
   useToggleMachineSpecStatus,
 } from '@/features/looms/hooks/useMachineSpecsAdmin';
+import { LOOM_MESSAGES as MSG } from '@/features/looms/loom.constants';
+import { useMachineSpecColumns } from '@/features/looms/hooks/useMachineSpecColumns';
 
 import { MachineSpecForm } from './MachineSpecForm';
-
-function StatusBadge({ isActive }: { isActive: boolean | undefined }) {
-  return (
-    <Badge
-      className={
-        isActive
-          ? 'bg-emerald-100 text-emerald-800'
-          : 'bg-gray-100 text-gray-800'
-      }
-    >
-      {isActive ? 'Đang sử dụng' : 'Đã ẩn'}
-    </Badge>
-  );
-}
-
-function SourceTypeBadge({ sourceType }: { sourceType: string | undefined }) {
-  if (sourceType === 'auto_generated') {
-    return (
-      <span className="inline-flex items-center rounded-sm bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-        AUTO
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex items-center rounded-sm bg-purple-50 px-1.5 py-0.5 text-[10px] font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10">
-      MANUAL
-    </span>
-  );
-}
+import { MachineSpecMobileCard } from './MachineSpecMobileCard';
 
 export function MachineSpecList({ tabs }: { tabs?: ReactNode }) {
-  const { data: machineSpecs, isLoading } = useMachineSpecsAdmin();
+  const { data: machineSpecs, isLoading, error } = useMachineSpecsAdmin();
   const toggleStatusMutation = useToggleMachineSpecStatus();
   const { confirm } = useConfirm();
 
@@ -65,30 +37,48 @@ export function MachineSpecList({ tabs }: { tabs?: ReactNode }) {
   const handleToggleStatus = async (record: MachineSpecification) => {
     const isActivating = !record.is_active;
     const isConfirmed = await confirm({
-      title: isActivating ? 'Khôi phục cấu hình' : 'Ẩn cấu hình',
+      title: isActivating
+        ? MSG.CONFIRM_SPEC_RESTORE_TITLE
+        : MSG.CONFIRM_SPEC_HIDE_TITLE,
       message: isActivating
-        ? 'Bạn có chắc chắn muốn khôi phục cấu hình máy dệt này?'
-        : 'Cấu hình này sẽ bị ẩn khỏi các danh sách chọn. Bạn có chắc chắn?',
-      confirmLabel: isActivating ? 'Khôi phục' : 'Ẩn',
-      cancelLabel: 'Hủy',
+        ? MSG.CONFIRM_SPEC_RESTORE_MSG
+        : MSG.CONFIRM_SPEC_HIDE_MSG,
+      confirmLabel: isActivating
+        ? MSG.CONFIRM_SPEC_RESTORE_BTN
+        : MSG.CONFIRM_SPEC_HIDE_BTN,
+      cancelLabel: MSG.BTN_CANCEL,
       variant: isActivating ? 'default' : 'danger',
     });
+
     if (isConfirmed && record.id) {
-      toggleStatusMutation.mutate({ id: record.id, isActive: isActivating });
+      try {
+        await toggleStatusMutation.mutateAsync({
+          id: record.id,
+          isActive: isActivating,
+        });
+      } catch (err) {
+        const errMessage = err instanceof Error ? err.message : String(err);
+        await confirm({
+          title: 'Lỗi',
+          message: `${MSG.ERR_SPEC_TOGGLE}${errMessage}`,
+          variant: 'danger',
+          cancelLabel: 'Đóng',
+          confirmLabel: '',
+        });
+      }
     }
   };
 
-  const getTypeLabel = (val?: string | null) => {
-    if (!val) return 'Không xác định';
-    const found = MACHINE_TYPES.find((t) => t.value === val);
-    return found ? found.label : val;
-  };
+  const columns = useMachineSpecColumns({
+    onEdit: handleEdit,
+    onToggleStatus: handleToggleStatus,
+  });
 
   return (
     <PageLayout>
       <PageHeader
-        title="Cấu hình máy dệt"
-        subtitle="Quản lý cấu hình Master Data kỹ thuật cho quá trình sản xuất"
+        title={MSG.SPEC_PAGE_TITLE}
+        subtitle={MSG.SPEC_PAGE_SUBTITLE}
         actions={
           <button
             type="button"
@@ -99,123 +89,29 @@ export function MachineSpecList({ tabs }: { tabs?: ReactNode }) {
             }}
           >
             <Icon name="Plus" size={18} />
-            Thêm cấu hình
+            {MSG.BTN_SPEC_CREATE}
           </button>
         }
       />
       {tabs}
       <TableSection>
-        <DataTable
-          data={machineSpecs || []}
-          isLoading={isLoading}
-          rowKey={(item) => item.id || Math.random().toString()}
-          renderMobileCard={(item) => (
-            <div className="p-4 bg-white rounded-lg border border-gray-200">
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <div className="font-semibold">{item.code || '-'}</div>
-                  <div className="text-sm text-gray-500">
-                    {getTypeLabel(item.machine_type)}
-                  </div>
-                </div>
-                <StatusBadge isActive={item.is_active} />
-              </div>
-              <div className="text-sm mt-2 flex gap-4">
-                <span>
-                  {item.diameter}" - {item.gauge ? `${item.gauge}G` : '?G'}
-                </span>
-                <span>{item.feeder_count || '-'} F</span>
-              </div>
-              <div className="mt-3 flex justify-end gap-2">
-                <Button variant="secondary" onClick={() => handleEdit(item)}>
-                  Sửa
-                </Button>
-              </div>
-            </div>
-          )}
-          columns={[
-            {
-              header: 'Mã cấu hình',
-              id: 'code',
-              cell: (item) => (
-                <div>
-                  <div className="font-medium text-primary">
-                    {item.code || '-'}
-                  </div>
-                  <div className="text-xs text-text-tertiary flex gap-1 mt-1">
-                    <SourceTypeBadge sourceType={item.source_type} />
-                  </div>
-                </div>
-              ),
-            },
-            {
-              header: 'Loại máy',
-              id: 'machine_type',
-              cell: (item) => getTypeLabel(item.machine_type),
-            },
-            {
-              header: 'Kích thước & Kim',
-              id: 'diameter',
-              cell: (item) => (
-                <span>
-                  {item.diameter}" - {item.gauge ? `${item.gauge}G` : '?G'}
-                </span>
-              ),
-            },
-            {
-              header: 'Feeder',
-              id: 'feeder_count',
-              cell: (item) => `${item.feeder_count || '-'} F`,
-            },
-            {
-              header: 'Hãng / Nhóm',
-              id: 'manufacturer',
-              cell: (item) => (
-                <div className="text-sm">
-                  <div>{item.manufacturer || '-'}</div>
-                  <div className="text-text-tertiary text-xs">
-                    {item.machine_family || '-'}
-                  </div>
-                </div>
-              ),
-            },
-            {
-              header: 'Trạng thái',
-              id: 'is_active',
-              cell: (item) => <StatusBadge isActive={item.is_active} />,
-            },
-            {
-              header: '',
-              id: 'actions',
-              className: 'w-24 text-right',
-              cell: (item) => (
-                <div className="flex items-center justify-end gap-2">
-                  <button
-                    type="button"
-                    className="p-1.5 text-text-secondary hover:text-primary transition-colors"
-                    onClick={() => handleEdit(item)}
-                    title="Sửa cấu hình"
-                  >
-                    <Icon name="edit" className="w-4 h-4" />
-                  </button>
-                  <button
-                    type="button"
-                    className={`p-1.5 transition-colors ${item.is_active ? 'text-red-500 hover:bg-red-50' : 'text-emerald-600 hover:bg-emerald-50'} rounded`}
-                    onClick={() => handleToggleStatus(item)}
-                    title={
-                      item.is_active ? 'Ẩn cấu hình' : 'Khôi phục cấu hình'
-                    }
-                  >
-                    <Icon
-                      name={item.is_active ? 'trash-2' : 'refresh-cw'}
-                      className="w-4 h-4"
-                    />
-                  </button>
-                </div>
-              ),
-            },
-          ]}
-        />
+        {error ? (
+          <div className="p-4">
+            <ErrorInline>
+              {error instanceof Error ? error.message : String(error)}
+            </ErrorInline>
+          </div>
+        ) : (
+          <DataTable
+            data={machineSpecs || []}
+            isLoading={isLoading}
+            rowKey={(item) => item.id || Math.random().toString()}
+            renderMobileCard={(item) => (
+              <MachineSpecMobileCard item={item} onEdit={handleEdit} />
+            )}
+            columns={columns}
+          />
+        )}
 
         {isModalOpen && (
           <MachineSpecForm

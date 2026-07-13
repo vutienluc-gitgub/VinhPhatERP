@@ -1,0 +1,20 @@
+export const BOM_MESSAGES = {
+  EMPTY_TITLE: 'Chưa có công thức định mức (BOM) nào',
+  EMPTY_DESC: 'Nhấn "+ Tạo bản nháp" để bắt đầu xây dựng BOM.',
+  NOT_FOUND_TITLE: 'Không tìm thấy công thức định mức (BOM)',
+  NOT_FOUND_DESC: 'Vui lòng thử điều chỉnh lại bộ lọc.',
+  BTN_ADD: '+ Tạo bản nháp',
+  LOAD_ERROR: 'Lỗi tải dữ liệu',
+  DELETE_ERROR: 'Lỗi xóa',
+  EXPORT_FILENAME: 'Danh_Muc_BOM',
+  PAGINATION_LABEL: 'BOM',
+  ARIA_LIST_CONTAINER: 'Danh sách định mức BOM',
+  ARIA_ADD_NEW: 'Tạo bản nháp BOM mới',
+  ARIA_FILTER_BAR: 'Bộ lọc danh sách BOM',
+  ARIA_DATA_TABLE: 'Bảng dữ liệu BOM',
+
+  KPI_TOTAL: 'Tổng số định mức',
+  KPI_TOTAL_DESC: 'Tất cả thẻ định mức',
+  KPI_APPROVED: 'Đang áp dụng',
+  KPI_APPROVED_DESC: 'BOM đã duyệt',
+} as const;

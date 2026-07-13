@@ -5,33 +5,14 @@ import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 import { FabricVariantList } from './FabricVariantList';
 import { FabricCategoryBadge } from './components/FabricCategoryBadge';
 import { getStatusVariant } from './fabric-catalog.helpers';
-import { LABELS } from './fabric-catalog.constants';
 
 type FabricCatalogDetailProps = {
   catalog: FabricCatalog;
-  onEdit: () => void;
-  onBack: () => void;
 };
 
-export function FabricCatalogDetail({
-  catalog,
-  onEdit,
-  onBack,
-}: FabricCatalogDetailProps) {
+export function FabricCatalogDetail({ catalog }: FabricCatalogDetailProps) {
   return (
     <div className="panel-card card-flush">
-      {/* Back + Header */}
-      <div className="card-header-area">
-        <button className="btn-secondary" onClick={onBack}>
-          <Icon name="ArrowLeft" size={16} />
-          {LABELS.BACK_TO_LIST}
-        </button>
-        <button className="btn-secondary" onClick={onEdit}>
-          <Icon name="Pencil" size={16} />
-          {LABELS.EDIT}
-        </button>
-      </div>
-
       {/* Master Info */}
       <div className="p-5 border-b border-border">
         <div className="flex items-start gap-4">

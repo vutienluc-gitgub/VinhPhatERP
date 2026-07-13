@@ -1,13 +1,11 @@
-import {
-  Icon,
-  Badge,
-  type BadgeVariant,
-  DataTable,
-  ActionBar,
-} from '@/shared/components';
+import type { CellContext } from '@tanstack/react-table';
+
+import { Icon, Badge, type BadgeVariant, ActionBar } from '@/shared/components';
+import { DataTableAdvanced } from '@/shared/components/DataTableAdvanced';
 import type { ActionConfig } from '@/shared/components';
 import { BOM_STATUS_LABELS } from '@/schema/bom.schema';
 
+import { BOM_MESSAGES } from './bom.constants';
 import { BomTemplate, BomStatus } from './types';
 
 interface BomListProps {
@@ -43,114 +41,132 @@ export function BomList({
   onCreate,
 }: BomListProps) {
   return (
-    <DataTable
+    <DataTableAdvanced
       data={boms}
       isLoading={isLoading}
       rowKey={(bom) => bom.id}
       onRowClick={(bom) => onSelect(bom)}
       emptyStateTitle={
-        hasFilter
-          ? 'Không tìm thấy công thức định mức (BOM)'
-          : 'Chưa có công thức định mức (BOM) nào'
+        hasFilter ? BOM_MESSAGES.NOT_FOUND_TITLE : BOM_MESSAGES.EMPTY_TITLE
       }
       emptyStateDescription={
-        hasFilter
-          ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
-          : 'Nhấn "Tạo bản nháp" để bắt đầu xây dựng BOM.'
+        hasFilter ? BOM_MESSAGES.NOT_FOUND_DESC : BOM_MESSAGES.EMPTY_DESC
       }
       emptyStateIcon={hasFilter ? 'Search' : 'FileText'}
-      emptyStateActionLabel={!hasFilter ? '+ Tạo bản nháp' : undefined}
+      emptyStateActionLabel={!hasFilter ? BOM_MESSAGES.BTN_ADD : undefined}
       onEmptyStateAction={!hasFilter && onCreate ? onCreate : undefined}
+      exportFileName={BOM_MESSAGES.EXPORT_FILENAME}
       columns={[
         {
           header: 'Mã BOM / Tên Công Thức',
           id: 'code',
-          sortable: true,
-          cell: (bom) => (
-            <div className="flex flex-col">
-              <span className="font-bold text-primary">{bom.code}</span>
-              <span className="text-xs text-muted truncate max-w-[200px]">
-                {bom.name}
-              </span>
-            </div>
-          ),
+          enableSorting: true,
+          cell: ({ row }: CellContext<BomTemplate, unknown>) => {
+            const bom = row.original;
+            return (
+              <div className="flex flex-col">
+                <span className="font-bold text-primary">{bom.code}</span>
+                <span className="text-xs text-muted truncate max-w-[200px]">
+                  {bom.name}
+                </span>
+              </div>
+            );
+          },
         },
         {
           header: 'Sản Phẩm Mục Tiêu',
           id: 'fabric_name',
-          sortable: true,
-          accessor: (bom) => bom.fabric_catalogs?.name || '',
-          cell: (bom) => (
-            <div className="flex flex-col">
-              <span className="font-medium">
-                {bom.fabric_catalogs?.name || '---'}
-              </span>
-              {bom.target_width_cm && (
-                <span className="text-xs text-muted">
-                  Khổ: {bom.target_width_cm}cm
+          enableSorting: true,
+          accessorFn: (bom) => bom.fabric_catalogs?.name || '',
+          cell: ({ row }: CellContext<BomTemplate, unknown>) => {
+            const bom = row.original;
+            return (
+              <div className="flex flex-col">
+                <span className="font-medium">
+                  {bom.fabric_catalogs?.name || '---'}
                 </span>
-              )}
-            </div>
-          ),
+                {bom.target_width_cm && (
+                  <span className="text-xs text-muted">
+                    Khổ: {bom.target_width_cm}cm
+                  </span>
+                )}
+              </div>
+            );
+          },
         },
         {
           header: 'Phiên Bản',
           id: 'active_version',
-          sortable: true,
-          cell: (bom) => (
-            <span className="font-medium text-sm">v{bom.active_version}</span>
-          ),
+          enableSorting: true,
+          cell: ({ row }: CellContext<BomTemplate, unknown>) => {
+            const bom = row.original;
+            return (
+              <Badge variant="gray" className="font-mono text-xs">
+                v{bom.active_version}
+              </Badge>
+            );
+          },
         },
         {
           header: 'Trạng Thái',
           id: 'status',
-          sortable: true,
-          cell: (bom) => (
-            <Badge variant={getStatusVariant(bom.status)}>
-              {BOM_STATUS_LABELS[bom.status] || bom.status}
-            </Badge>
-          ),
+          enableSorting: true,
+          cell: ({ row }: CellContext<BomTemplate, unknown>) => {
+            const bom = row.original;
+            return (
+              <Badge variant={getStatusVariant(bom.status)}>
+                {BOM_STATUS_LABELS[bom.status as BomStatus]}
+              </Badge>
+            );
+          },
         },
         {
-          header: 'Người Tạo',
-          id: 'created_by',
-          sortable: true,
-          accessor: (bom) => bom.created_by_profile?.full_name || '',
-          className: 'text-muted text-sm text-sm',
-          cell: (bom) => bom.created_by_profile?.full_name || 'N/A',
+          header: 'Cập Nhật',
+          id: 'updated_at',
+          enableSorting: true,
+          cell: ({ row }: CellContext<BomTemplate, unknown>) => {
+            const bom = row.original;
+            return (
+              <div className="flex flex-col text-sm">
+                <span>
+                  {new Date(bom.updated_at).toLocaleDateString('vi-VN')}
+                </span>
+                <span className="text-xs text-muted">
+                  bởi {bom.created_by_profile?.full_name || '---'}
+                </span>
+              </div>
+            );
+          },
         },
         {
-          header: 'Thao tác',
-          className: 'text-right',
-          onCellClick: () => {},
-          cell: (bom) => (
-            <ActionBar
-              actions={
-                [
-                  {
-                    icon: 'Eye',
-                    onClick: () => onSelect(bom),
-                    title: 'Chi tiết',
-                  },
-                  bom.status === 'draft'
-                    ? {
-                        icon: 'Pencil',
-                        onClick: () => onEdit(bom),
-                        title: 'Sửa bản nháp',
-                      }
-                    : null,
-                  bom.status === 'approved'
-                    ? {
-                        icon: 'AlertTriangle',
-                        onClick: () => onDeprecate(bom),
-                        title: 'Báo phế',
-                        variant: 'danger',
-                      }
-                    : null,
-                ].filter(Boolean) as ActionConfig[]
-              }
-            />
-          ),
+          id: 'actions',
+          header: '',
+          cell: ({ row }: CellContext<BomTemplate, unknown>) => {
+            const bom = row.original;
+            const actions: ActionConfig[] = [];
+            if (bom.status === 'draft') {
+              actions.push({
+                icon: 'Pencil',
+                title: 'Chỉnh sửa',
+                onClick: () => onEdit(bom),
+              });
+            }
+            if (bom.status === 'approved') {
+              actions.push({
+                icon: 'FilePlus',
+                title: 'Tạo bản mới (Revise)',
+                onClick: () => onEdit(bom),
+              });
+              actions.push({
+                icon: 'XCircle',
+                title: 'Báo phế',
+                variant: 'danger',
+                onClick: () => onDeprecate(bom),
+              });
+            }
+            if (actions.length === 0) return null;
+            return <ActionBar actions={actions} />;
+          },
         },
       ]}
       renderMobileCard={(bom) => (

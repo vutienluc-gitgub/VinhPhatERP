@@ -9,6 +9,8 @@ import {
   PageHeader,
   TableSection,
   Icon,
+  KpiCard,
+  ErrorInline,
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import {
@@ -47,20 +49,47 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
 
   async function handleConfirm(inv: WeavingInvoice) {
     const ok = await confirm({
-      message: `Xác nhận phiếu "${inv.invoice_number}"? Hệ thống sẽ tự động nhập ${inv.weaving_invoice_rolls?.length ?? '?'} cuộn vào kho vải mộc.`,
+      message: MSG.CONFIRM_MSG(
+        inv.invoice_number,
+        inv.weaving_invoice_rolls?.length ?? 0,
+      ),
       variant: 'danger',
     });
     if (!ok) return;
-    confirmMutation.mutate(inv.id);
+
+    try {
+      await confirmMutation.mutateAsync(inv.id);
+    } catch (err) {
+      const errMessage = err instanceof Error ? err.message : String(err);
+      await confirm({
+        title: 'Lỗi',
+        message: `${MSG.ERR_CONFIRM}${errMessage}`,
+        variant: 'danger',
+        cancelLabel: 'Đóng',
+        confirmLabel: '',
+      });
+    }
   }
 
   async function handleDelete(inv: WeavingInvoice) {
     const ok = await confirm({
-      message: `Xóa phiếu nháp "${inv.invoice_number}"?`,
+      message: MSG.DELETE_MSG(inv.invoice_number),
       variant: 'danger',
     });
     if (!ok) return;
-    deleteMutation.mutate(inv.id);
+
+    try {
+      await deleteMutation.mutateAsync(inv.id);
+    } catch (err) {
+      const errMessage = err instanceof Error ? err.message : String(err);
+      await confirm({
+        title: 'Lỗi',
+        message: `${MSG.ERR_DELETE}${errMessage}`,
+        variant: 'danger',
+        cancelLabel: 'Đóng',
+        confirmLabel: '',
+      });
+    }
   }
 
   const hasFilter = !!(filters.search || filters.status);
@@ -77,9 +106,9 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
       type: 'combobox',
       label: MSG.FILTER_STATUS_LABEL,
       options: [
-        { value: 'draft', label: 'Nháp' },
-        { value: 'confirmed', label: 'Đã xác nhận' },
-        { value: 'paid', label: 'Đã thanh toán' },
+        { value: 'draft', label: MSG.STATUS_DRAFT },
+        { value: 'confirmed', label: MSG.STATUS_CONFIRMED },
+        { value: 'paid', label: MSG.STATUS_PAID },
       ],
     },
   ];
@@ -114,44 +143,39 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
         }
       />
 
-      <div className="stats-grid-premium px-4 sm:px-6 lg:px-8 mt-4">
-        <div className="stat-item-premium">
-          <div className="stat-icon-wrapper bg-[rgba(11,107,203,0.1)] text-[var(--primary)]">
-            <Icon name="Package" size={24} />
-          </div>
-          <div className="stat-content-premium">
-            <p>{MSG.KPI_TOTAL_TITLE}</p>
-            <p>{result?.total ?? 0}</p>
-          </div>
-        </div>
-
-        <div className="stat-item-premium">
-          <div className="stat-icon-wrapper bg-[rgba(234,179,8,0.1)] text-warning">
-            <Icon name="Clock" size={24} />
-          </div>
-          <div className="stat-content-premium">
-            <p>{MSG.KPI_DRAFT_TITLE}</p>
-            <p>{invoices.filter((inv) => inv.status === 'draft').length}</p>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 sm:px-6 lg:px-8 mt-4">
+        <KpiCard
+          label={MSG.KPI_TOTAL_TITLE}
+          value={result?.total ?? 0}
+          icon="Package"
+          variant="primary"
+          formatMode="number"
+        />
+        <KpiCard
+          label={MSG.KPI_DRAFT_TITLE}
+          value={invoices.filter((inv) => inv.status === 'draft').length}
+          icon="Clock"
+          variant="warning"
+          formatMode="number"
+        />
       </div>
 
       <TableSection>
         {error && (
           <div className="p-4">
-            <p className="error-inline">
+            <ErrorInline>
               {MSG.ERR_LOAD}{' '}
               {error instanceof Error ? error.message : String(error)}
-            </p>
+            </ErrorInline>
           </div>
         )}
         {confirmMutation.error && (
           <div className="p-4">
-            <p className="error-inline">
+            <ErrorInline>
               {confirmMutation.error instanceof Error
                 ? confirmMutation.error.message
                 : String(confirmMutation.error)}
-            </p>
+            </ErrorInline>
           </div>
         )}
 

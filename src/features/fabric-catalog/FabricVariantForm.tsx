@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef } from 'react';
+import toast from 'react-hot-toast';
 import {
   useForm,
   Controller,
@@ -14,6 +15,7 @@ import {
   useCreateFabricVariant,
   useUpdateFabricVariant,
 } from '@/application/settings';
+import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { useFormAutoSave, useStepper } from '@/shared/hooks';
 import {
   fabricVariantSchema,
@@ -142,6 +144,7 @@ export function FabricVariantForm({
   const isEditing = variant !== null;
   const createMutation = useCreateFabricVariant();
   const updateMutation = useUpdateFabricVariant();
+  const confirm = useConfirm();
 
   const formMethods = useForm<FabricVariantFormValues>({
     resolver: zodResolver(fabricVariantSchema),
@@ -348,8 +351,11 @@ export function FabricVariantForm({
         });
         clearDraft();
       }
+      toast.success(isEditing ? 'Cập nhật thành công' : 'Thêm mới thành công');
       onClose();
     } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      await confirm.alert('Lỗi: ' + message);
       console.error('[FabricVariantForm] submit error:', err);
     }
   }

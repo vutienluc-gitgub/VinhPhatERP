@@ -15,6 +15,13 @@ export const YARN_CATALOG_MESSAGES = {
   ARIA_ADD_NEW: 'Thêm loại sợi mới',
   ARIA_FILTER_BAR: 'Bộ lọc danh sách',
   ARIA_DATA_TABLE: 'Bảng dữ liệu mã sợi',
+
+  KPI_TOTAL: 'Tổng mã sợi',
+  KPI_TOTAL_DESC: 'Trong danh mục hệ thống',
+  KPI_COLOR: 'Màu sắc',
+  KPI_COLOR_DESC: 'Đa dạng phân loại màu',
+  KPI_ACTIVE: 'Đang hoạt động',
+  KPI_ACTIVE_DESC: 'Sẵn dụng cho nghiệp vụ',
 } as const;
 
 export const YARN_CATALOG_FILTER_SCHEMA: FilterFieldConfig[] = [

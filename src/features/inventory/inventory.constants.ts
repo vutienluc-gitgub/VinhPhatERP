@@ -1,0 +1,47 @@
+export const INVENTORY_MESSAGES = {
+  PAGE_TITLE: 'Tồn kho',
+  PAGE_SUBTITLE: 'Quản lý tồn kho sợi, mộc, thành phẩm và phân tích tuổi kho.',
+
+  BTN_ADJUSTMENT: 'Lập phiếu điều chỉnh',
+  BTN_HISTORY: 'Lịch sử điều chỉnh',
+
+  TAB_YARN: 'Sợi (Yarn)',
+  TAB_RAW: 'Vải mộc',
+  TAB_FINISHED: 'Thành phẩm',
+  TAB_AGING: 'Tồn lâu (Aging)',
+  TAB_HISTORY: 'Lịch sử điều chỉnh',
+
+  LBL_YARN_IN_STOCK: 'Sợi Tồn kho (thực tế)',
+  LBL_YARN_TOTAL: 'Tổng SL tồn (kiện)',
+  LBL_YARN_WEIGHT: 'Tổng Trọng lượng (kg)',
+  LBL_RAW_ROLLS: 'Vải Mộc (Rolls)',
+  LBL_RAW_TOTAL: 'Tổng Cuộn Mộc',
+  LBL_RAW_LENGTH: 'Tổng mét mộc',
+  LBL_FIN_ROLLS: 'Thành Phẩm (Rolls)',
+  LBL_FIN_TOTAL: 'Tổng Cuộn TP',
+  LBL_FIN_LENGTH: 'Tổng mét TP',
+
+  COL_ROLL_CODE: 'Mã cuộn',
+  COL_TYPE: 'Loại',
+  COL_FABRIC: 'Loại vải',
+  COL_COLOR: 'Màu',
+  COL_LOCATION: 'Vị trí',
+  COL_AGE_DAYS: 'Ngày tồn',
+  COL_SEVERITY: 'Mức',
+  COL_QUALITY: 'Chất lượng',
+  COL_ROLL_COUNT: 'Cuộn',
+  COL_LENGTH: 'Dài (m)',
+  COL_WEIGHT: 'Nặng (kg)',
+  COL_LOT: 'Lô / Màu',
+
+  ERR_LOAD_AGING: 'Không thể tải danh sách tồn lâu:',
+  ERR_LOAD_RAW: 'Không thể tải tồn vải mộc:',
+  ERR_LOAD_FIN: 'Không thể tải tồn thành phẩm:',
+
+  VAL_RAW: 'Mộc',
+  VAL_FIN: 'TP',
+  VAL_RAW_FULL: 'Vải mộc',
+  VAL_FIN_FULL: 'Thành phẩm',
+  VAL_TOTAL_LENGTH: 'Tổng dài',
+  VAL_TOTAL_WEIGHT: 'Trọng lượng',
+};

@@ -54,7 +54,7 @@ export function WorkOrderMobileCard({
             </span>
           </div>
           <div className="flex flex-col text-right">
-            <span className="text-xs text-muted">Đơn giá dệt</span>
+            <span className="text-xs text-muted">{MSG.COL_PRICE}</span>
             <span className="font-medium">
               <MoneyText value={wo.weaving_unit_price} />
               đ/m
@@ -98,7 +98,7 @@ export function WorkOrderMobileCard({
               }}
               disabled={isStarting}
             >
-              Bắt đầu
+              {MSG.BTN_START_SHORT}
             </Button>
           )}
         </div>

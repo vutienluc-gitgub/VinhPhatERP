@@ -10,6 +10,8 @@ import {
   TableSection,
   Pagination,
   Icon,
+  KpiCard,
+  ErrorInline,
 } from '@/shared/components';
 import { useDeleteLoom, useLoomList } from '@/application/settings';
 import type { LoomStatus, LoomType } from '@/schema/loom.schema';
@@ -74,7 +76,7 @@ export function LoomList({ onEdit, onNew, tabs }: LoomListProps) {
     [filters.search, filters.status, filters.loom_type],
   );
 
-  const { data, isLoading } = useLoomList(apiFilters, page);
+  const { data, isLoading, error } = useLoomList(apiFilters, page);
   const deleteMutation = useDeleteLoom();
   const { confirm } = useConfirm();
 
@@ -104,7 +106,19 @@ export function LoomList({ onEdit, onNew, tabs }: LoomListProps) {
         variant: 'danger',
       });
       if (!ok) return;
-      deleteMutation.mutate(loom.id);
+
+      try {
+        await deleteMutation.mutateAsync(loom.id);
+      } catch (err) {
+        const errMessage = err instanceof Error ? err.message : String(err);
+        await confirm({
+          title: 'Lỗi',
+          message: `Không thể xóa máy dệt. ${errMessage}`,
+          variant: 'danger',
+          cancelLabel: 'Đóng',
+          confirmLabel: '', // Hide confirm button basically or just ok
+        });
+      }
     },
     [confirm, deleteMutation],
   );
@@ -126,46 +140,35 @@ export function LoomList({ onEdit, onNew, tabs }: LoomListProps) {
         }
       />
 
-      <div className="stats-grid-premium px-4 sm:px-6 lg:px-8 mt-4">
-        <div className="stat-item-premium">
-          <div className="stat-icon-wrapper bg-[rgba(11,107,203,0.1)] text-[var(--primary)]">
-            <Icon name="Cog" size={24} />
-          </div>
-          <div className="stat-content-premium">
-            <p>{MSG.KPI_TOTAL}</p>
-            <p>{data?.total ?? 0}</p>
-          </div>
-        </div>
-
-        <div className="stat-item-premium">
-          <div className="stat-icon-wrapper bg-[rgba(10,128,92,0.1)] text-[var(--success)]">
-            <Icon name="Activity" size={24} />
-          </div>
-          <div className="stat-content-premium">
-            <p>{MSG.KPI_RUNNING}</p>
-            <p>{runningCount}</p>
-          </div>
-        </div>
-
-        <div className="stat-item-premium">
-          <div className="stat-icon-wrapper bg-[rgba(99,102,241,0.1)] text-indigo-500">
-            <Icon name="Coffee" size={24} />
-          </div>
-          <div className="stat-content-premium">
-            <p>{MSG.KPI_IDLE}</p>
-            <p>{idleCount}</p>
-          </div>
-        </div>
-
-        <div className="stat-item-premium">
-          <div className="stat-icon-wrapper bg-[rgba(239,68,68,0.1)] text-[var(--danger)]">
-            <Icon name="AlertTriangle" size={24} />
-          </div>
-          <div className="stat-content-premium">
-            <p>{MSG.KPI_BREAKDOWN}</p>
-            <p>{breakdownCount}</p>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 sm:px-6 lg:px-8 mt-4">
+        <KpiCard
+          label={MSG.KPI_TOTAL}
+          value={data?.total ?? 0}
+          icon="Cog"
+          variant="primary"
+          formatMode="number"
+        />
+        <KpiCard
+          label={MSG.KPI_RUNNING}
+          value={runningCount}
+          icon="Activity"
+          variant="success"
+          formatMode="number"
+        />
+        <KpiCard
+          label={MSG.KPI_IDLE}
+          value={idleCount}
+          icon="Coffee"
+          variant="secondary"
+          formatMode="number"
+        />
+        <KpiCard
+          label={MSG.KPI_BREAKDOWN}
+          value={breakdownCount}
+          icon="AlertTriangle"
+          variant="danger"
+          formatMode="number"
+        />
       </div>
       {tabs}
       <TableSection>
@@ -183,7 +186,11 @@ export function LoomList({ onEdit, onNew, tabs }: LoomListProps) {
         </div>
 
         <div className="p-4">
-          {isLoading ? (
+          {error ? (
+            <ErrorInline>
+              {error instanceof Error ? error.message : String(error)}
+            </ErrorInline>
+          ) : isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div
