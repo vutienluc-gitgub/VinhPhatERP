@@ -115,7 +115,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
     formState: { isSubmitting, isDirty },
   } = methods;
 
-  const { confirm } = useConfirm();
+  const { confirm, alert } = useConfirm();
 
   const handleCancel = useCallback(() => {
     if (isDirty) {
@@ -190,11 +190,13 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
       } else {
         await createMutation.mutateAsync(values);
       }
+      toast.success(isEditing ? 'Cập nhật thành công' : 'Thêm mới thành công');
       onClose();
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : FORM_MESSAGES.genericError;
-      toast.error(msg);
+      void alert('Lỗi: ' + msg);
+      console.error('[YarnCatalogSubmitError]', err);
     }
   }
 

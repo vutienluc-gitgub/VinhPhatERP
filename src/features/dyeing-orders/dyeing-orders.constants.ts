@@ -21,7 +21,34 @@ export const DYEING_ORDER_MESSAGES = {
 
   BTN_EDIT: 'Sửa',
   BTN_VIEW: 'Xem',
+  BTN_DELETE: 'Xóa',
+  BTN_BACK: 'Quay lại',
+  BTN_SEND: 'Gửi đi',
+  BTN_COMPLETE: 'Hoàn tất',
+  BTN_PRINT: 'In phiếu',
+
+  ERR_LOAD: 'Đang tải chi tiết...',
+  ERR_NOT_FOUND: 'Không tìm thấy lệnh nhuộm.',
+  ERR_DELETE: 'Không thể xoá lệnh nhuộm.',
+  ERR_SEND: 'Không thể gửi lệnh nhuộm.',
+  ERR_COMPLETE: 'Không thể hoàn tất lệnh nhuộm.',
+
+  CONFIRM_SEND_MSG: 'Xác nhận gởi lệnh nhuộm này đi nhà cung cấp?',
+  CONFIRM_DELETE_MSG: 'Bạn có chắc chắn muốn xóa lệnh nhuộm này?',
+  CONFIRM_COMPLETE_MSG: 'Lĩnh vải thành phẩm và hoàn tất lệnh nhuộm này?',
+
+  LBL_DATE: 'Ngày',
+  LBL_NOTE: 'Ghi chú',
+  LBL_TOTAL: 'Tổng',
+  TITLE_ITEMS: 'Danh sách cây vải',
+
+  COL_ITEM_ROLL: 'Mã cây vải',
+  COL_ITEM_TYPE: 'Loại vải',
+  COL_ITEM_WEIGHT: 'Trọng lượng (kg)',
+  COL_ITEM_COLOR: 'Màu nhuộm',
+  COL_ITEM_NOTE: 'Ghi chú item',
 };
+
 import { type BadgeVariant } from '@/shared/components';
 
 export function getStatusVariant(status: string): BadgeVariant {

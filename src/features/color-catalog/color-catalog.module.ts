@@ -1,7 +1,6 @@
 import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
-
 export const colorCatalogFeature: FeatureDefinition = {
   key: 'color-catalog',
   route: '/color-catalog',

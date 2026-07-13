@@ -24,9 +24,29 @@ export const WORK_ORDER_MESSAGES = {
   COL_LOOM: 'Máy dệt',
   COL_STATUS: 'Trạng Thái',
   COL_START: 'Bắt Đầu',
+  COL_PRICE: 'Đơn giá dệt',
+  COL_ACTIONS: 'Thao tác',
   BTN_VIEW: 'Chi tiết',
   BTN_EDIT: 'Sửa lệnh',
   BTN_START: 'Bắt đầu sản xuất',
+  BTN_START_SHORT: 'Bắt đầu',
+  CONFIRM_START: 'Bắt đầu lệnh dệt này?',
+  CONFIRM_YARN_ISSUE: 'Xác nhận xuất sợi cho lệnh dệt này?',
+  CONFIRM_PRODUCE: 'Bắt đầu sản xuất lệnh dệt này?',
+  ERR_INVALID_TRANSITION:
+    'Trạng thái chuyển đổi không hợp lệ hoặc chưa được hỗ trợ.',
+  ERR_INVALID_TRANSITION_TITLE: 'Không thể chuyển đổi',
+  ERR_TRANSITION_FAILED: 'Có lỗi xảy ra khi chuyển trạng thái: ',
+  ERR_COMPLETE_FAILED: 'Có lỗi xảy ra khi hoàn thành lệnh: ',
+  MODAL_COMPLETE_TITLE: 'Báo cáo sản lượng hoàn thành',
+  MODAL_COMPLETE_ACTUAL_YIELD: 'Sản lượng thực tế (mét)',
+  MODAL_COMPLETE_PLACEHOLDER: 'Nhập số mét vải mộc thực tế thu được',
+  MODAL_COMPLETE_DESC:
+    'Sản lượng này sẽ được dùng để tính toán hao hụt thực tế so với mục tiêu.',
+  BTN_CANCEL: 'Hủy',
+  BTN_CONFIRM_COMPLETE: 'Xác nhận hoàn thành',
+  BTN_PROCESSING: 'Đang xử lý...',
+  UNSAVED_WARNING: 'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
 };
 
 export function getStatusVariant(status: WorkOrderStatus): BadgeVariant {

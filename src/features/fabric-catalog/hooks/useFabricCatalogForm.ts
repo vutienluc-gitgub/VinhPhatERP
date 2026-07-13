@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import toast from 'react-hot-toast';
 
 import {
   useCreateFabricCatalog,
@@ -205,6 +206,7 @@ export function useFabricCatalogForm(
       } else {
         await createMutation.mutateAsync(values);
       }
+      toast.success(isEditing ? 'Cập nhật thành công' : 'Thêm mới thành công');
       onClose();
     } catch (err) {
       // Error shown via mutationError below
@@ -234,8 +236,10 @@ export function useFabricCatalogForm(
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(publicUrl);
+      toast.success('Đã sao chép liên kết');
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
+      toast.error('Lỗi sao chép: ' + message);
       console.error('[CopyLinkError]', message);
     }
   };

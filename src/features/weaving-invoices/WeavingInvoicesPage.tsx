@@ -5,6 +5,7 @@ import { useWeavingInvoice } from '@/application/production';
 import type { WeavingInvoice } from './types';
 import { WeavingInvoiceForm } from './WeavingInvoiceForm';
 import { WeavingInvoiceList } from './WeavingInvoiceList';
+import { WEAVING_INVOICE_MESSAGES as MSG } from './weaving-invoices.constants';
 
 function WeavingInvoiceFormWrapper({
   invoiceId,
@@ -23,7 +24,7 @@ function WeavingInvoiceFormWrapper({
         <div className="bg-white p-6 rounded-xl shadow-xl flex items-center space-x-3">
           <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           <span className="text-sm font-medium text-slate-700">
-            Đang tải dữ liệu phiếu...
+            {MSG.LOADING_INVOICE}
           </span>
         </div>
       </div>

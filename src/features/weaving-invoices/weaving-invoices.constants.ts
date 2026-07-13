@@ -22,11 +22,22 @@ export const WEAVING_INVOICE_MESSAGES = {
   COL_AMOUNT: 'Thành tiền',
   COL_PAID: 'Đã trả',
   COL_STATUS: 'Trạng thái',
+  COL_ACTIONS: 'Thao tác',
   BTN_EDIT: 'Sửa',
   BTN_CONFIRM: 'Xác nhận & nhập kho',
   BTN_DELETE: 'Xóa',
   BTN_LOOKUP: 'Tra cứu QR & in hóa đơn',
   ERR_LOAD: 'Lỗi tải dữ liệu:',
+  ERR_CONFIRM: 'Lỗi xác nhận phiếu. ',
+  ERR_DELETE: 'Lỗi xóa phiếu. ',
+  CONFIRM_MSG: (no: string, count: number) =>
+    `Xác nhận phiếu "${no}"? Hệ thống sẽ tự động nhập ${count} cuộn vào kho vải mộc.`,
+  DELETE_MSG: (no: string) => `Xóa phiếu nháp "${no}"?`,
+  STATUS_DRAFT: 'Nháp',
+  STATUS_CONFIRMED: 'Đã xác nhận',
+  STATUS_PAID: 'Đã thanh toán',
+  UNSAVED_WARNING: 'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
+  LOADING_INVOICE: 'Đang tải dữ liệu phiếu...',
 };
 
 export function getStatusVariant(status: string): BadgeVariant {

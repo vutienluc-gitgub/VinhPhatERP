@@ -17,11 +17,12 @@ import {
   PageLayout,
   PageHeader,
   TableSection,
+  KpiCard,
+  ErrorInline,
 } from '@/shared/components';
 // eslint-disable-next-line boundaries/dependencies
 import { ChatDrawer } from '@/features/chat/ChatDrawer';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
-import { MoneyText } from '@/shared/value';
 import {
   useConfirmShipment,
   useDeleteShipment,
@@ -156,7 +157,12 @@ export function ShipmentList() {
       variant: 'danger',
     });
     if (!ok) return;
-    deleteMutation.mutate(id);
+
+    try {
+      await deleteMutation.mutateAsync(id);
+    } catch (error) {
+      await showAlert(`Không thể xóa phiếu xuất. ${getErrorMessage(error)}`);
+    }
   }
 
   async function handleExportPdf(
@@ -230,38 +236,28 @@ export function ShipmentList() {
       />
 
       {/* Stats Section */}
-      <div className="stats-grid-premium px-4 sm:px-6 lg:px-8 mt-4">
-        <div className="stat-item-premium">
-          <div className="stat-icon-wrapper bg-[rgba(11,107,203,0.1)] text-[var(--primary)]">
-            <Icon name="Truck" size={24} />
-          </div>
-          <div className="stat-content-premium">
-            <p>{MSG.STAT_COUNT_TITLE}</p>
-            <p>{shipments.length}</p>
-          </div>
-        </div>
-
-        <div className="stat-item-premium">
-          <div className="stat-icon-wrapper bg-[rgba(10,128,92,0.1)] text-[var(--success)]">
-            <Icon name="Banknote" size={24} />
-          </div>
-          <div className="stat-content-premium">
-            <p>{MSG.STAT_COST_TITLE}</p>
-            <p>
-              <MoneyText value={sumBy(shipments, calcShipmentCost)} /> đ
-            </p>
-          </div>
-        </div>
-
-        <div className="stat-item-premium">
-          <div className="stat-icon-wrapper bg-[rgba(245,158,11,0.1)] text-[#f59e0b]">
-            <Icon name="Clock" size={24} />
-          </div>
-          <div className="stat-content-premium">
-            <p>{MSG.STAT_PENDING_TITLE}</p>
-            <p>{preparingCount}</p>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-4 sm:px-6 lg:px-8 mt-4">
+        <KpiCard
+          label={MSG.STAT_COUNT_TITLE}
+          value={shipments.length}
+          icon="Truck"
+          variant="primary"
+          formatMode="number"
+        />
+        <KpiCard
+          label={MSG.STAT_COST_TITLE}
+          value={sumBy(shipments, calcShipmentCost)}
+          icon="Banknote"
+          variant="success"
+          formatMode="currency"
+        />
+        <KpiCard
+          label={MSG.STAT_PENDING_TITLE}
+          value={preparingCount}
+          icon="Clock"
+          variant="warning"
+          formatMode="number"
+        />
       </div>
 
       <div className="w-full px-4 sm:px-6 lg:px-8 mt-2 pb-4 border-b border-border flex flex-col gap-4">
@@ -282,30 +278,29 @@ export function ShipmentList() {
         />
       </div>
 
-      {error && (
-        <div className="px-4 sm:px-6 lg:px-8 mt-4">
-          <p className="error-inline">
-            {MSG.ERR_LOAD} {getErrorMessage(error)}
-          </p>
-        </div>
-      )}
-
-      {(confirmMutation.error ||
-        deleteMutation.error ||
-        exportPdfMutation.error) && (
-        <div className="px-4 sm:px-6 lg:px-8 mt-4">
-          <p className="error-inline-sm">
-            {MSG.ERR_GENERIC}{' '}
-            {getErrorMessage(
-              confirmMutation.error ||
-                deleteMutation.error ||
-                exportPdfMutation.error,
-            )}
-          </p>
-        </div>
-      )}
-
       <TableSection>
+        {error && (
+          <div className="px-4 sm:px-6 lg:px-8 mt-4">
+            <ErrorInline>
+              {MSG.ERR_LOAD} {getErrorMessage(error)}
+            </ErrorInline>
+          </div>
+        )}
+
+        {(confirmMutation.error ||
+          deleteMutation.error ||
+          exportPdfMutation.error) && (
+          <div className="px-4 sm:px-6 lg:px-8 mt-4">
+            <ErrorInline>
+              {MSG.ERR_GENERIC}{' '}
+              {getErrorMessage(
+                confirmMutation.error ||
+                  deleteMutation.error ||
+                  exportPdfMutation.error,
+              )}
+            </ErrorInline>
+          </div>
+        )}
         <DataTableAdvanced
           data={shipments}
           isLoading={isLoading}

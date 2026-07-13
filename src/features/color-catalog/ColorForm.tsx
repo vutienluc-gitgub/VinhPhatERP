@@ -4,9 +4,12 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { Button } from '@/shared/components';
+import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { colorSchema, colorDefaultValues } from '@/schema/color.schema';
 import type { ColorFormValues, ColorRow } from '@/schema/color.schema';
 import { useColorMutations } from '@/application/color-catalog';
+
+import { COLOR_CATALOG_MESSAGES as MSG } from './color-catalog.constants';
 
 type ColorFormProps = {
   initialData: ColorRow | null;
@@ -16,6 +19,7 @@ type ColorFormProps = {
 export function ColorForm({ initialData, onClose }: ColorFormProps) {
   const isEditing = !!initialData;
   const { upsertMutation } = useColorMutations();
+  const confirm = useConfirm();
 
   const {
     register,
@@ -52,11 +56,13 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
   const onSubmit = async (values: ColorFormValues) => {
     try {
       await upsertMutation.mutateAsync(values);
-      toast.success(isEditing ? 'Cập nhật thành công' : 'Thêm mới thành công');
+      toast.success(
+        isEditing ? MSG.MSG_UPDATE_SUCCESS : MSG.MSG_CREATE_SUCCESS,
+      );
       onClose();
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      toast.error('Có lỗi xảy ra: ' + message);
+      await confirm.alert(MSG.MSG_SAVE_ERROR + message);
     }
   };
 
@@ -68,40 +74,38 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
     >
       <div className="form-field">
         <label htmlFor="code">
-          Mã màu <span className="field-required">*</span>
+          {MSG.LBL_CODE} <span className="field-required">*</span>
         </label>
         <input
           id="code"
           type="text"
           className={`field-input ${errors.code ? 'border-danger' : ''}`}
-          placeholder="VD: RD-02"
+          placeholder={MSG.PH_CODE}
           readOnly={isEditing}
           {...register('code')}
         />
         {errors.code && <p className="field-error">{errors.code.message}</p>}
         {isEditing && (
-          <p className="field-hint text-xs mt-1">
-            Mã màu không thể thay đổi sau khi tạo
-          </p>
+          <p className="field-hint text-xs mt-1">{MSG.HINT_CODE_READONLY}</p>
         )}
       </div>
 
       <div className="form-field">
         <label htmlFor="name">
-          Tên màu <span className="field-required">*</span>
+          {MSG.LBL_NAME} <span className="field-required">*</span>
         </label>
         <input
           id="name"
           type="text"
           className={`field-input ${errors.name ? 'border-danger' : ''}`}
-          placeholder="VD: Đỏ đô (Maroon)"
+          placeholder={MSG.PH_NAME}
           {...register('name')}
         />
         {errors.name && <p className="field-error">{errors.name.message}</p>}
       </div>
 
       <div className="form-field">
-        <label htmlFor="trend_year">Năm xu hướng</label>
+        <label htmlFor="trend_year">{MSG.LBL_TREND}</label>
         <input
           id="trend_year"
           type="number"
@@ -114,16 +118,16 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
       </div>
 
       <div className="form-field">
-        <label htmlFor="color_group">Nhóm màu</label>
+        <label htmlFor="color_group">{MSG.LBL_GROUP}</label>
         <select
           id="color_group"
           className={`field-select ${errors.color_group ? 'border-danger' : ''}`}
           {...register('color_group')}
         >
-          <option value="">-- Chọn nhóm màu --</option>
-          <option value="Màu Đậm">Màu Đậm</option>
-          <option value="Màu Trung">Màu Trung</option>
-          <option value="Màu Lợt">Màu Lợt</option>
+          <option value="">-- {MSG.TAB_NONE} --</option>
+          <option value="Màu Đậm">{MSG.TAB_DARK}</option>
+          <option value="Màu Trung">{MSG.TAB_MIDDLE}</option>
+          <option value="Màu Lợt">{MSG.TAB_LIGHT}</option>
         </select>
         {errors.color_group && (
           <p className="field-error">{errors.color_group.message}</p>
@@ -131,12 +135,12 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
       </div>
 
       <div className="form-field">
-        <label htmlFor="note">Ghi chú</label>
+        <label htmlFor="note">{MSG.LBL_NOTE}</label>
         <textarea
           id="note"
           className="field-textarea"
           rows={3}
-          placeholder="Thông tin thêm..."
+          placeholder={MSG.PH_NOTE}
           {...register('note')}
         />
       </div>
@@ -148,7 +152,7 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
           onClick={onClose}
           disabled={upsertMutation.isPending}
         >
-          Hủy
+          {MSG.BTN_CANCEL}
         </Button>
         <Button
           variant="primary"
@@ -156,10 +160,10 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
           disabled={upsertMutation.isPending}
         >
           {upsertMutation.isPending
-            ? 'Đang lưu...'
+            ? MSG.BTN_SAVING
             : isEditing
-              ? 'Cập nhật'
-              : 'Thêm mới'}
+              ? MSG.BTN_SAVE
+              : MSG.BTN_CREATE}
         </Button>
       </div>
     </form>

@@ -7,6 +7,11 @@ import {
   FilterBar,
   KpiCard,
   KpiGrid,
+  PageLayout,
+  PageHeader,
+  FilterSection,
+  KPISection,
+  TableSection,
   type FilterFieldConfig,
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
@@ -22,6 +27,7 @@ import { BOM_STATUSES, BOM_STATUS_LABELS } from '@/schema/bom.schema';
 
 import { BomList } from './BomList';
 import type { BomFilter, BomTemplate } from './types';
+import { BOM_MESSAGES } from './bom.constants';
 
 type ActionSheetState =
   | { type: 'idle' }
@@ -132,43 +138,51 @@ export function BomListPage() {
   const handleEdit = (bom: BomTemplate) => navigate(`/bom/${bom.id}/edit`);
 
   return (
-    <div className="page-container">
-      <div className="panel-card card-flush">
-        {/* Header */}
-        <div className="card-header-area">
+    <PageLayout aria-label={BOM_MESSAGES.ARIA_LIST_CONTAINER}>
+      <PageHeader
+        title="Định mức (BOM)"
+        subtitle="Quản lý thẻ định mức BOM"
+        actions={
           <AddButton
             onClick={() => navigate('/bom/create')}
-            label="Tạo bản nháp"
+            label={BOM_MESSAGES.BTN_ADD}
+            aria-label={BOM_MESSAGES.ARIA_ADD_NEW}
           />
-        </div>
+        }
+      />
 
-        {/* KPI */}
-        <KpiGrid className="kpi-section">
+      {/* KPI */}
+      <KPISection>
+        <KpiGrid>
           <KpiCard
             variant="primary"
-            label="Tổng số định mức"
+            label={BOM_MESSAGES.KPI_TOTAL}
             value={boms.length}
             icon="Layers"
-            footer="Tất cả thẻ định mức"
+            footer={BOM_MESSAGES.KPI_TOTAL_DESC}
           />
           <KpiCard
             variant="success"
-            label="Đang áp dụng"
+            label={BOM_MESSAGES.KPI_APPROVED}
             value={boms.filter((b) => b.status === 'approved').length}
             icon="CheckCircle"
-            footer="BOM đã duyệt"
+            footer={BOM_MESSAGES.KPI_APPROVED_DESC}
           />
         </KpiGrid>
+      </KPISection>
 
-        {/* Filters */}
+      {/* Filters */}
+      <FilterSection aria-label={BOM_MESSAGES.ARIA_FILTER_BAR}>
         <FilterBar
           schema={filterSchema}
           value={filter}
           onChange={handleFilterChange}
           onClear={clearFilters}
         />
+      </FilterSection>
 
-        {/* Table */}
+      {/* Table */}
+      <TableSection aria-label={BOM_MESSAGES.ARIA_DATA_TABLE}>
         <BomList
           boms={boms}
           isLoading={isLoading}
@@ -178,11 +192,11 @@ export function BomListPage() {
           onDeprecate={(bom) => openDeprecateSheet(bom.id, bom.code)}
           onCreate={() => navigate('/bom/create')}
         />
+      </TableSection>
 
-        {/* Action Sheet */}
-        {renderActionSheet()}
-      </div>
-    </div>
+      {/* Action Sheet */}
+      {renderActionSheet()}
+    </PageLayout>
   );
 
   function renderActionSheet() {

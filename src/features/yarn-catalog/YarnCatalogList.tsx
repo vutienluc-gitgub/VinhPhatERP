@@ -5,6 +5,9 @@ import {
   PageHeader,
   FilterSection,
   TableSection,
+  KPISection,
+  KpiGrid,
+  KpiCard,
 } from '@/shared/components';
 import { DataTableAdvanced } from '@/shared/components/DataTableAdvanced';
 
@@ -53,6 +56,39 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
           />
         }
       />
+
+      <KPISection>
+        <KpiGrid>
+          <KpiCard
+            label={YARN_CATALOG_MESSAGES.KPI_TOTAL}
+            value={catalogs.length}
+            icon="Layers"
+            variant="primary"
+            formatMode="number"
+            footer={YARN_CATALOG_MESSAGES.KPI_TOTAL_DESC}
+          />
+          <KpiCard
+            label={YARN_CATALOG_MESSAGES.KPI_COLOR}
+            value={
+              Array.from(new Set(catalogs.map((i) => i.color_name))).filter(
+                Boolean,
+              ).length
+            }
+            icon="Palette"
+            variant="success"
+            formatMode="number"
+            footer={YARN_CATALOG_MESSAGES.KPI_COLOR_DESC}
+          />
+          <KpiCard
+            label={YARN_CATALOG_MESSAGES.KPI_ACTIVE}
+            value={catalogs.filter((i) => i.status === 'active').length}
+            icon="CheckCircle"
+            variant="secondary"
+            formatMode="number"
+            footer={YARN_CATALOG_MESSAGES.KPI_ACTIVE_DESC}
+          />
+        </KpiGrid>
+      </KPISection>
 
       {/* Filters (Config-Driven) */}
       <FilterSection aria-label={YARN_CATALOG_MESSAGES.ARIA_FILTER_BAR}>

@@ -18,13 +18,13 @@ export function FabricCatalogPage() {
   }
 
   return (
-    <div className="page-container">
+    <>
       <FabricCatalogList
         onEdit={(c) => navigate(`${ROUTE_FABRIC_CATALOG}/${c.id}`)}
         onNew={openCreate}
       />
 
       {showForm && <FabricCatalogForm catalog={null} onClose={closeForm} />}
-    </div>
+    </>
   );
 }

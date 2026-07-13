@@ -94,7 +94,7 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
 
   const { data, isLoading } = useFabricCatalogList(apiFilters, page);
   const deleteMutation = useDeleteFabricCatalog();
-  const { confirm } = useConfirm();
+  const { confirm, alert } = useConfirm();
 
   const catalogs = useMemo(() => data?.data ?? [], [data?.data]);
   const activeCount = useMemo(
@@ -112,10 +112,12 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
         if (!ok) return;
         await deleteMutation.mutateAsync(catalog.id);
       } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        await alert(`${LABELS.ERROR_DELETE} ${msg}`);
         console.error('[DeleteFabricCatalogError]', err);
       }
     },
-    [confirm, deleteMutation],
+    [confirm, alert, deleteMutation],
   );
 
   function handleFilterChange(key: string, value: string | undefined) {
@@ -134,8 +136,8 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
     <PageLayout>
       {/* Action bar */}
       <PageHeader
-        title="Vải"
-        subtitle="Quản lý danh mục vải"
+        title={LABELS.PAGE_TITLE}
+        subtitle={LABELS.PAGE_SUBTITLE}
         actions={<AddButton onClick={onNew} label={LABELS.ADD_NEW} />}
       />
 

@@ -33,6 +33,7 @@ import {
 import type { WorkOrder } from './types';
 import { WorkOrderYarnTable } from './WorkOrderYarnTable';
 import { YarnAvailabilityWarning } from './components/YarnAvailabilityWarning';
+import { WORK_ORDER_MESSAGES as MSG } from './work-orders.constants';
 
 const DRAFT_KEY = 'work-order-draft';
 
@@ -195,11 +196,7 @@ export function WorkOrderForm({
 
   const handleCancel = useCallback(() => {
     if (isDirty) {
-      if (
-        !window.confirm(
-          'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
-        )
-      ) {
+      if (!window.confirm(MSG.UNSAVED_WARNING)) {
         return false;
       }
     }

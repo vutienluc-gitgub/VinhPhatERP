@@ -124,7 +124,7 @@ export function useWorkOrderColumns({
       },
       {
         id: 'actions',
-        header: 'Thao tác',
+        header: MSG.COL_ACTIONS,
         meta: { align: 'right' },
         cell: ({ row }) => {
           const wo = row.original;

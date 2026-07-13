@@ -18,4 +18,31 @@ export const LOOM_MESSAGES = {
   PAGINATION_LABEL: 'máy dệt',
   CONFIRM_DELETE_MSG: (name: string) =>
     `Xóa máy dệt "${name}"? Hành động này không thể hoàn tác.`,
+  SPEC_PAGE_TITLE: 'Cấu hình máy dệt',
+  SPEC_PAGE_SUBTITLE:
+    'Quản lý cấu hình Master Data kỹ thuật cho quá trình sản xuất',
+  BTN_SPEC_CREATE: 'Thêm cấu hình',
+  BTN_SPEC_EDIT: 'Sửa',
+  BTN_SPEC_EDIT_TOOLTIP: 'Sửa cấu hình',
+  BTN_SPEC_RESTORE: 'Khôi phục cấu hình',
+  BTN_SPEC_HIDE: 'Ẩn cấu hình',
+  CONFIRM_SPEC_RESTORE_TITLE: 'Khôi phục cấu hình',
+  CONFIRM_SPEC_HIDE_TITLE: 'Ẩn cấu hình',
+  CONFIRM_SPEC_RESTORE_MSG:
+    'Bạn có chắc chắn muốn khôi phục cấu hình máy dệt này?',
+  CONFIRM_SPEC_HIDE_MSG:
+    'Cấu hình này sẽ bị ẩn khỏi các danh sách chọn. Bạn có chắc chắn?',
+  CONFIRM_SPEC_RESTORE_BTN: 'Khôi phục',
+  CONFIRM_SPEC_HIDE_BTN: 'Ẩn',
+  BTN_CANCEL: 'Hủy',
+  COL_SPEC_CODE: 'Mã cấu hình',
+  COL_SPEC_TYPE: 'Loại máy',
+  COL_SPEC_SIZE: 'Kích thước & Kim',
+  COL_SPEC_FEEDER: 'Feeder',
+  COL_SPEC_MANUFACTURER: 'Hãng / Nhóm',
+  COL_SPEC_STATUS: 'Trạng thái',
+  ERR_SPEC_TOGGLE: 'Không thể thay đổi trạng thái. ',
+  ERR_UNKNOWN_TYPE: 'Không xác định',
+  STATUS_ACTIVE: 'Đang sử dụng',
+  STATUS_INACTIVE: 'Đã ẩn',
 };
