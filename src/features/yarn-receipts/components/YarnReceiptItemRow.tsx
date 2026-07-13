@@ -1,4 +1,4 @@
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
 import { Combobox } from '@/shared/components/Combobox';
 import { MoneyInput, QuantityInput } from '@/shared/value';
@@ -7,13 +7,14 @@ import {
   ORIGIN_OPTIONS,
   ORIGIN_PLACEHOLDER,
 } from '@/shared/constants/origin.constants';
-import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
-
-const YARN_UNIT_OPTIONS = [
-  { value: 'kg', label: 'kg' },
-  { value: 'cuộn', label: 'cuộn' },
-  { value: 'tấn', label: 'tấn' },
-];
+import {
+  ITEM_ROW_LABELS as L,
+  YARN_UNIT_OPTIONS,
+} from '@/features/yarn-receipts/yarn-receipts.constants';
+import {
+  useYarnReceiptItemRow,
+  parseNullableNumber,
+} from '@/features/yarn-receipts/hooks/useYarnReceiptItemRow';
 
 type ComboboxOption = { value: string; label: string; code?: string };
 
@@ -43,26 +44,20 @@ export function YarnReceiptItemRow({
   colorComboboxOptions,
   yarnCatalogs,
 }: YarnReceiptItemRowProps) {
-  const {
-    control,
-    register,
-    setValue,
-    formState: { errors },
-  } = useFormContext<YarnReceiptsFormValues>();
-
-  const itemErrors = errors.items?.[index];
+  const { control, register, itemErrors, handleYarnTypeChange } =
+    useYarnReceiptItemRow(index, yarnCatalogs);
 
   return (
     <div className="form-item-box">
       <div className="flex justify-between items-center mb-2">
         <span className="text-[0.85rem] font-semibold text-muted">
-          Dòng {index + 1}
+          {L.ROW} {index + 1}
         </span>
         {canRemove && onRemove && (
           <button
             className="btn-icon danger text-[0.85rem]"
             type="button"
-            title="Xóa dòng"
+            title={L.DELETE_ROW}
             onClick={onRemove}
           >
             ✕
@@ -73,7 +68,7 @@ export function YarnReceiptItemRow({
       <div className="form-grid form-grid-auto">
         <div className="form-field">
           <label htmlFor={`items.${index}.yarnType`}>
-            Loại sợi <span className="field-required">*</span>
+            {L.YARN_TYPE} <span className="field-required">*</span>
           </label>
           <Controller
             name={`items.${index}.yarnType` as const}
@@ -82,28 +77,8 @@ export function YarnReceiptItemRow({
               <Combobox
                 options={yarnCatalogOptions}
                 value={field.value}
-                onChange={(val) => {
-                  field.onChange(val);
-                  const cat = yarnCatalogs.find((c) => c.name === val);
-                  if (cat) {
-                    setValue(`items.${index}.yarnCatalogId`, cat.id);
-                    setValue(`items.${index}.colorName`, cat.color_name ?? '');
-                    setValue(
-                      `items.${index}.composition`,
-                      cat.composition ?? '',
-                    );
-                    setValue(
-                      `items.${index}.tensileStrength`,
-                      cat.tensile_strength ?? '',
-                    );
-                    setValue(`items.${index}.origin`, cat.origin ?? '');
-                    setValue(`items.${index}.grade`, cat.grade ?? '');
-                    setValue(`items.${index}.unit`, cat.unit ?? 'kg');
-                  } else {
-                    setValue(`items.${index}.yarnCatalogId`, '');
-                  }
-                }}
-                placeholder="Chọn hoặc nhập loại sợi..."
+                onChange={(val) => handleYarnTypeChange(val, field.onChange)}
+                placeholder={L.YARN_TYPE_PLACEHOLDER}
                 hasError={!!itemErrors?.yarnType}
               />
             )}
@@ -114,7 +89,7 @@ export function YarnReceiptItemRow({
         </div>
 
         <div className="form-field">
-          <label htmlFor={`items.${index}.colorName`}>Màu sợi</label>
+          <label htmlFor={`items.${index}.colorName`}>{L.COLOR}</label>
           <Controller
             name={`items.${index}.colorName` as const}
             control={control}
@@ -123,7 +98,7 @@ export function YarnReceiptItemRow({
                 options={colorComboboxOptions}
                 value={field.value ?? ''}
                 onChange={field.onChange}
-                placeholder="Chọn hoặc nhập màu..."
+                placeholder={L.COLOR_PLACEHOLDER}
               />
             )}
           />
@@ -133,7 +108,7 @@ export function YarnReceiptItemRow({
       <div className="form-grid form-grid-auto">
         <div className="form-field">
           <label htmlFor={`items.${index}.quantity`}>
-            Số lượng <span className="field-required">*</span>
+            {L.QUANTITY} <span className="field-required">*</span>
           </label>
           <Controller
             name={`items.${index}.quantity` as const}
@@ -157,7 +132,7 @@ export function YarnReceiptItemRow({
 
         <div className="form-field">
           <label htmlFor={`items.${index}.unitPrice`}>
-            Đơn giá <span className="field-required">*</span>
+            {L.UNIT_PRICE} <span className="field-required">*</span>
           </label>
           <Controller
             name={`items.${index}.unitPrice` as const}
@@ -181,23 +156,23 @@ export function YarnReceiptItemRow({
 
       <div className="form-grid form-grid-auto">
         <div className="form-field">
-          <label htmlFor={`items.${index}.lotNumber`}>Số lô (Lot)</label>
+          <label htmlFor={`items.${index}.lotNumber`}>{L.LOT_NUMBER}</label>
           <input
             id={`items.${index}.lotNumber`}
             className="field-input"
             type="text"
-            placeholder="VD: LOT-2026-03-A"
+            placeholder={L.LOT_NUMBER_PLACEHOLDER}
             {...register(`items.${index}.lotNumber` as const)}
           />
         </div>
 
         <div className="form-field">
-          <label htmlFor={`items.${index}.grade`}>Phân loại (Grade)</label>
+          <label htmlFor={`items.${index}.grade`}>{L.GRADE}</label>
           <input
             id={`items.${index}.grade`}
             className="field-input"
             type="text"
-            placeholder="VD: A, B..."
+            placeholder={L.GRADE_PLACEHOLDER}
             {...register(`items.${index}.grade` as const)}
           />
         </div>
@@ -205,7 +180,7 @@ export function YarnReceiptItemRow({
 
       <div className="form-grid form-grid-auto">
         <div className="form-field">
-          <label htmlFor={`items.${index}.unit`}>Đơn vị</label>
+          <label htmlFor={`items.${index}.unit`}>{L.UNIT}</label>
           <Controller
             name={`items.${index}.unit` as const}
             control={control}
@@ -214,19 +189,21 @@ export function YarnReceiptItemRow({
                 options={YARN_UNIT_OPTIONS}
                 value={field.value}
                 onChange={field.onChange}
-                placeholder="Chọn..."
+                placeholder={L.UNIT_PLACEHOLDER}
               />
             )}
           />
         </div>
 
         <div className="form-field">
-          <label htmlFor={`items.${index}.tensileStrength`}>Cường lực</label>
+          <label htmlFor={`items.${index}.tensileStrength`}>
+            {L.TENSILE_STRENGTH}
+          </label>
           <input
             id={`items.${index}.tensileStrength`}
             className="field-input"
             type="text"
-            placeholder="VD: 18 cN/tex"
+            placeholder={L.TENSILE_STRENGTH_PLACEHOLDER}
             {...register(`items.${index}.tensileStrength` as const)}
           />
         </div>
@@ -234,12 +211,12 @@ export function YarnReceiptItemRow({
 
       <div className="form-grid form-grid-auto">
         <div className="form-field">
-          <label htmlFor={`items.${index}.composition`}>Thành phần</label>
+          <label htmlFor={`items.${index}.composition`}>{L.COMPOSITION}</label>
           <input
             id={`items.${index}.composition`}
             className="field-input"
             type="text"
-            placeholder="VD: 100% Cotton"
+            placeholder={L.COMPOSITION_PLACEHOLDER}
             {...register(`items.${index}.composition` as const)}
           />
         </div>
@@ -265,34 +242,34 @@ export function YarnReceiptItemRow({
 
       <div className="form-grid form-grid-auto">
         <div className="form-field">
-          <label htmlFor={`items.${index}.dtex`}>DTEX/F</label>
+          <label htmlFor={`items.${index}.dtex`}>{L.DTEX}</label>
           <input
             id={`items.${index}.dtex`}
             className="field-input"
             type="text"
-            placeholder="VD: 333dtex/96f"
+            placeholder={L.DTEX_PLACEHOLDER}
             {...register(`items.${index}.dtex` as const)}
           />
         </div>
 
         <div className="form-field">
-          <label htmlFor={`items.${index}.twist`}>Twist (Xoắn)</label>
+          <label htmlFor={`items.${index}.twist`}>{L.TWIST}</label>
           <input
             id={`items.${index}.twist`}
             className="field-input"
             type="text"
-            placeholder="VD: Z, S"
+            placeholder={L.TWIST_PLACEHOLDER}
             {...register(`items.${index}.twist` as const)}
           />
         </div>
 
         <div className="form-field">
-          <label htmlFor={`items.${index}.machineNo`}>Machine No</label>
+          <label htmlFor={`items.${index}.machineNo`}>{L.MACHINE_NO}</label>
           <input
             id={`items.${index}.machineNo`}
             className="field-input"
             type="text"
-            placeholder="VD: B755"
+            placeholder={L.MACHINE_NO_PLACEHOLDER}
             {...register(`items.${index}.machineNo` as const)}
           />
         </div>
@@ -301,7 +278,7 @@ export function YarnReceiptItemRow({
       {/* ── Thông tin từ tem nhãn nhà sản xuất ── */}
       <div className="form-grid form-grid-auto">
         <div className="form-field">
-          <label htmlFor={`items.${index}.netWeight`}>N.W (KL tịnh)</label>
+          <label htmlFor={`items.${index}.netWeight`}>{L.NET_WEIGHT}</label>
           <Controller
             name={`items.${index}.netWeight` as const}
             control={control}
@@ -312,7 +289,7 @@ export function YarnReceiptItemRow({
                 value={field.value}
                 onChange={(val) => field.onChange(val ?? null)}
                 onBlur={field.onBlur}
-                placeholder="VD: 27.0"
+                placeholder={L.NET_WEIGHT_PLACEHOLDER}
                 decimals={4}
               />
             )}
@@ -323,7 +300,7 @@ export function YarnReceiptItemRow({
         </div>
 
         <div className="form-field">
-          <label htmlFor={`items.${index}.grossWeight`}>G.W (KL gộp)</label>
+          <label htmlFor={`items.${index}.grossWeight`}>{L.GROSS_WEIGHT}</label>
           <Controller
             name={`items.${index}.grossWeight` as const}
             control={control}
@@ -334,7 +311,7 @@ export function YarnReceiptItemRow({
                 value={field.value}
                 onChange={(val) => field.onChange(val ?? null)}
                 onBlur={field.onBlur}
-                placeholder="VD: 31.0"
+                placeholder={L.GROSS_WEIGHT_PLACEHOLDER}
                 decimals={4}
               />
             )}
@@ -349,33 +326,29 @@ export function YarnReceiptItemRow({
 
       <div className="form-grid form-grid-auto">
         <div className="form-field">
-          <label htmlFor={`items.${index}.serialNumber`}>Serial Number</label>
+          <label htmlFor={`items.${index}.serialNumber`}>
+            {L.SERIAL_NUMBER}
+          </label>
           <input
             id={`items.${index}.serialNumber`}
             className="field-input"
             type="text"
-            placeholder="VD: 4610037442 DYA5-DA"
+            placeholder={L.SERIAL_NUMBER_PLACEHOLDER}
             {...register(`items.${index}.serialNumber` as const)}
           />
         </div>
 
         <div className="form-field">
-          <label htmlFor={`items.${index}.productionWeek`}>
-            Tuần SX (Week)
-          </label>
+          <label htmlFor={`items.${index}.productionWeek`}>{L.PROD_WEEK}</label>
           <input
             id={`items.${index}.productionWeek`}
             className="field-input"
             type="number"
             min={1}
             max={53}
-            placeholder="VD: 8"
+            placeholder={L.PROD_WEEK_PLACEHOLDER}
             {...register(`items.${index}.productionWeek` as const, {
-              setValueAs: (v: string) => {
-                if (v === '' || v === null || v === undefined) return null;
-                const n = Number(v);
-                return Number.isNaN(n) ? null : n;
-              },
+              setValueAs: parseNullableNumber,
             })}
           />
           {itemErrors?.productionWeek && (
@@ -386,12 +359,12 @@ export function YarnReceiptItemRow({
         </div>
 
         <div className="form-field">
-          <label htmlFor={`items.${index}.dist`}>Dist</label>
+          <label htmlFor={`items.${index}.dist`}>{L.DIST}</label>
           <input
             id={`items.${index}.dist`}
             className="field-input"
             type="text"
-            placeholder="VD: A, B..."
+            placeholder={L.DIST_PLACEHOLDER}
             {...register(`items.${index}.dist` as const)}
           />
         </div>
@@ -400,19 +373,17 @@ export function YarnReceiptItemRow({
       {/* ── Quy cách đóng gói ── */}
       <div className="form-grid form-grid-auto">
         <div className="form-field">
-          <label htmlFor={`items.${index}.conesPerBox`}>Côn/thùng</label>
+          <label htmlFor={`items.${index}.conesPerBox`}>
+            {L.CONES_PER_BOX}
+          </label>
           <input
             id={`items.${index}.conesPerBox`}
             className={`field-input${itemErrors?.conesPerBox ? ' border-danger' : ''}`}
             type="number"
             min={1}
-            placeholder="VD: 18"
+            placeholder={L.CONES_PER_BOX_PLACEHOLDER}
             {...register(`items.${index}.conesPerBox` as const, {
-              setValueAs: (v: string) => {
-                if (v === '' || v === null || v === undefined) return null;
-                const n = Number(v);
-                return Number.isNaN(n) ? null : n;
-              },
+              setValueAs: parseNullableNumber,
             })}
           />
           {itemErrors?.conesPerBox && (
@@ -423,19 +394,15 @@ export function YarnReceiptItemRow({
         </div>
 
         <div className="form-field">
-          <label htmlFor={`items.${index}.boxCount`}>Số thùng</label>
+          <label htmlFor={`items.${index}.boxCount`}>{L.BOX_COUNT}</label>
           <input
             id={`items.${index}.boxCount`}
             className={`field-input${itemErrors?.boxCount ? ' border-danger' : ''}`}
             type="number"
             min={1}
-            placeholder="VD: 10"
+            placeholder={L.BOX_COUNT_PLACEHOLDER}
             {...register(`items.${index}.boxCount` as const, {
-              setValueAs: (v: string) => {
-                if (v === '' || v === null || v === undefined) return null;
-                const n = Number(v);
-                return Number.isNaN(n) ? null : n;
-              },
+              setValueAs: parseNullableNumber,
             })}
           />
           {itemErrors?.boxCount && (
@@ -444,12 +411,12 @@ export function YarnReceiptItemRow({
         </div>
 
         <div className="form-field">
-          <label htmlFor={`items.${index}.boxNo`}>Mã thùng (Box No)</label>
+          <label htmlFor={`items.${index}.boxNo`}>{L.BOX_NO}</label>
           <input
             id={`items.${index}.boxNo`}
             className="field-input"
             type="text"
-            placeholder="VD: 19"
+            placeholder={L.BOX_NO_PLACEHOLDER}
             {...register(`items.${index}.boxNo` as const)}
           />
         </div>
@@ -457,14 +424,12 @@ export function YarnReceiptItemRow({
 
       <div className="form-grid">
         <div className="form-field">
-          <label htmlFor={`items.${index}.notes`}>
-            Ghi chú (Tự động điền khi quét Barcode)
-          </label>
+          <label htmlFor={`items.${index}.notes`}>{L.NOTES}</label>
           <input
             id={`items.${index}.notes`}
             className="field-input"
             type="text"
-            placeholder="VD: Q'TY: 6 cuộn | Twist: Z | Machine: B755"
+            placeholder={L.NOTES_PLACEHOLDER}
             {...register(`items.${index}.notes` as const)}
           />
         </div>

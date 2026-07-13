@@ -11,6 +11,7 @@ const thisFile = fileURLToPath(import.meta.url);
 const thisDir = path.dirname(thisFile);
 
 // Load env files so we get Supabase URL/keys
+dotenv.config({ path: path.resolve(thisDir, '../.env.test.local') });
 dotenv.config({ path: path.resolve(thisDir, '../.env.local') });
 dotenv.config({ path: path.resolve(thisDir, '../.env') });
 
