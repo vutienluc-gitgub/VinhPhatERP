@@ -46,7 +46,7 @@ export function AppLauncher() {
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-haspopup="true"
-        title="Trình khởi chạy ứng dụng"
+        title={APP_SHELL_LABELS.APP_LAUNCHER_TITLE}
       >
         <Icon name="LayoutGrid" size={20} strokeWidth={1.5} />
       </button>

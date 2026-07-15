@@ -8,6 +8,8 @@ import {
 import { MoneyText } from '@/shared/value';
 import { sumBy } from '@/shared/utils/array.util';
 
+import { REPORT_LABELS } from './reports.constants';
+
 type OverdueSectionProps = {
   data: OverdueOrderRow[];
   isLoading: boolean;
@@ -19,21 +21,21 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
 
   const columns: DataTableColumn<OverdueOrderRow>[] = [
     {
-      header: 'Đơn hàng',
+      header: REPORT_LABELS.COL_ORDER,
       cell: (r) => <span className="font-bold">{r.order_number}</span>,
     },
     {
-      header: 'Khách hàng',
+      header: REPORT_LABELS.COL_CUSTOMER,
       cell: (r) => r.customer_name,
       className: 'max-sm:hidden text-muted text-sm',
     },
     {
-      header: 'Hạn giao',
+      header: REPORT_LABELS.COL_DELIVERY_DATE,
       cell: (r) => r.delivery_date,
       className: 'text-muted text-sm',
     },
     {
-      header: 'Trễ',
+      header: REPORT_LABELS.COL_LATE,
       cell: (r) => (
         <span
           className={
@@ -42,13 +44,13 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
               : 'text-warning font-medium'
           }
         >
-          {r.days_overdue} ngày
+          {r.days_overdue} {REPORT_LABELS.DAYS}
         </span>
       ),
       className: 'text-right',
     },
     {
-      header: 'Tổng tiền',
+      header: REPORT_LABELS.COL_TOTAL_AMOUNT,
       cell: (r) => (
         <>
           <MoneyText value={r.total_amount} />đ
@@ -57,7 +59,7 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
       className: 'text-right max-sm:hidden text-muted text-sm',
     },
     {
-      header: 'Còn nợ',
+      header: REPORT_LABELS.COL_BALANCE_DUE,
       cell: (r) => (
         <>
           <MoneyText value={r.balance_due} />đ
@@ -70,26 +72,28 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
   return (
     <div className="panel-card card-flush">
       <div className="card-header-area">
-        <span className="font-bold text-lg">Đơn hàng trễ hạn</span>
+        <span className="font-bold text-lg">
+          {REPORT_LABELS.OVERDUE_SECTION_TITLE}
+        </span>
       </div>
 
       <KpiGrid className="px-5 py-4">
         <KpiCard
-          label="Tổng đơn trễ"
+          label={REPORT_LABELS.OVERDUE_TOTAL_ORDERS}
           value={data.length}
           icon="AlertTriangle"
           variant={data.length > 0 ? 'danger' : 'success'}
           isLoading={isLoading}
         />
         <KpiCard
-          label="Trễ > 7 ngày"
+          label={REPORT_LABELS.OVERDUE_SEVERE}
           value={severeCount}
           icon="Clock"
           variant={severeCount > 0 ? 'danger' : 'success'}
           isLoading={isLoading}
         />
         <KpiCard
-          label="Tổng nợ trễ"
+          label={REPORT_LABELS.OVERDUE_TOTAL_DEBT}
           value={totalBalance}
           formatMode="currency"
           icon="Wallet"
@@ -103,8 +107,8 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
         columns={columns}
         isLoading={isLoading}
         rowKey={(r) => r.order_id}
-        emptyStateTitle="Tuyệt vời! Không có đơn trễ hạn."
-        emptyStateDescription="Tất cả các đơn hàng đều đang trong tiến độ giao hàng đúng hạn."
+        emptyStateTitle={REPORT_LABELS.OVERDUE_EMPTY_TITLE}
+        emptyStateDescription={REPORT_LABELS.OVERDUE_EMPTY_DESC}
         emptyStateIcon="PartyPopper"
         renderMobileCard={(r) => (
           <div
@@ -117,12 +121,14 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
                   r.days_overdue > 7 ? 'text-danger font-bold' : 'text-warning'
                 }
               >
-                {r.days_overdue} ngày
+                {r.days_overdue} {REPORT_LABELS.DAYS}
               </span>
             </div>
             <div className="text-xs text-muted mb-2">{r.customer_name}</div>
             <div className="flex justify-between items-center border-t pt-2 mt-2">
-              <span className="text-[10px] text-muted uppercase">Nợ:</span>
+              <span className="text-[10px] text-muted uppercase">
+                {REPORT_LABELS.DEBT_LABEL}
+              </span>
               <span className="font-bold text-danger">
                 <MoneyText value={r.balance_due} />đ
               </span>

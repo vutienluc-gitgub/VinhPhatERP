@@ -22,6 +22,8 @@ import {
 } from '@/application/crm';
 import { linkProfileToEmployee } from '@/api';
 
+import { EMPLOYEE_LABELS, EMPLOYEE_MESSAGES } from './employees.constants';
+
 interface EmployeeFormProps {
   open: boolean;
   onClose: () => void;
@@ -31,11 +33,11 @@ interface EmployeeFormProps {
 const STATUS_OPTIONS = [
   {
     value: 'active',
-    label: 'Hoạt động',
+    label: EMPLOYEE_LABELS.STATUS_ACTIVE,
   },
   {
     value: 'inactive',
-    label: 'Ngừng hoạt động',
+    label: EMPLOYEE_LABELS.STATUS_INACTIVE,
   },
 ];
 
@@ -102,12 +104,10 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
               try {
                 await linkProfileToEmployee(employee.id, linkedProfileId);
               } catch (_err) {
-                toast.error(
-                  'Lưu hồ sơ thành công nhưng lỗi khi liên kết tài khoản',
-                );
+                toast.error(EMPLOYEE_MESSAGES.FORM_LINK_WARN);
               }
             }
-            toast.success('Cập nhật nhân viên thành công');
+            toast.success(EMPLOYEE_MESSAGES.FORM_UPDATE_SUCCESS);
             onClose();
           },
           onError: (error) => {
@@ -127,16 +127,14 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
               try {
                 await linkProfileToEmployee(newEmp.id, linkedProfileId);
               } catch (_err) {
-                toast.error(
-                  'Lưu hồ sơ thành công nhưng lỗi khi liên kết tài khoản',
-                );
+                toast.error(EMPLOYEE_MESSAGES.FORM_LINK_WARN);
               }
             }
-            toast.success('Thêm nhân viên thành công');
+            toast.success(EMPLOYEE_MESSAGES.FORM_ADD_SUCCESS);
             onClose();
           },
           onError: (error) => {
-            toast.error(error.message || 'Có lỗi xảy ra');
+            toast.error(error.message || EMPLOYEE_MESSAGES.FORM_ERROR);
           },
         },
       );
@@ -145,7 +143,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
 
   const onInvalid = (errors: unknown) => {
     console.error('Form validation failed:', errors);
-    toast.error('Vui lòng kiểm tra lại thông tin nhập hợp lệ');
+    toast.error(EMPLOYEE_MESSAGES.FORM_INVALID);
   };
 
   const isPending =
@@ -161,7 +159,11 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
     <AdaptiveSheet
       open={open}
       onClose={onClose}
-      title={isEditing ? 'Cập nhật nhân viên' : 'Thêm nhân viên mới'}
+      title={
+        isEditing
+          ? EMPLOYEE_LABELS.FORM_EDIT_TITLE
+          : EMPLOYEE_LABELS.FORM_ADD_TITLE
+      }
       footer={
         <>
           <Button
@@ -170,7 +172,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
             onClick={onClose}
             disabled={isPending}
           >
-            Hủy
+            {EMPLOYEE_LABELS.BTN_CANCEL}
           </Button>
           <Button
             variant="primary"
@@ -178,7 +180,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
             form="employee-form"
             isLoading={isPending}
           >
-            Lưu nhân viên
+            {EMPLOYEE_LABELS.BTN_SAVE}
           </Button>
         </>
       }
@@ -198,12 +200,13 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
         <div className="form-grid">
           <div className="form-field">
             <label>
-              Họ tên <span className="field-required">*</span>
+              {EMPLOYEE_LABELS.TABLE_NAME}{' '}
+              <span className="field-required">*</span>
             </label>
             <input
               {...form.register('name')}
               className={`field-input${form.formState.errors.name ? ' border-danger' : ''}`}
-              placeholder="Nhập họ tên"
+              placeholder={EMPLOYEE_LABELS.FORM_NAME_PLACEHOLDER}
               disabled={isPending}
             />
             {form.formState.errors.name && (
@@ -214,11 +217,11 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
           </div>
 
           <div className="form-field">
-            <label>Số điện thoại</label>
+            <label>{EMPLOYEE_LABELS.TABLE_PHONE}</label>
             <input
               {...form.register('phone')}
               className="field-input"
-              placeholder="Ví dụ: 0912345678"
+              placeholder={EMPLOYEE_LABELS.FORM_PHONE_PLACEHOLDER}
               type="tel"
               disabled={isPending}
               onKeyDown={(e) => {
@@ -252,7 +255,8 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
 
           <div className="form-field">
             <label>
-              Vai trò <span className="field-required">*</span>
+              {EMPLOYEE_LABELS.TABLE_ROLE}{' '}
+              <span className="field-required">*</span>
             </label>
             <Combobox
               options={roleOptions}
@@ -274,7 +278,8 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
 
           <div className="form-field">
             <label>
-              Trạng thái <span className="field-required">*</span>
+              {EMPLOYEE_LABELS.TABLE_STATUS}{' '}
+              <span className="field-required">*</span>
             </label>
             <Combobox
               options={STATUS_OPTIONS}

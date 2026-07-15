@@ -2,11 +2,10 @@ import { Link } from 'react-router-dom';
 
 import { Icon } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
-import {
-  DASHBOARD_LABELS,
-  ORDER_STATUS_LABELS,
-} from '@/shared/constants/ui.constants';
+import { ORDER_STATUS_LABELS } from '@/shared/constants/ui.constants';
 import type { RecentOrder } from '@/application/analytics';
+
+import { DASHBOARD_LABELS } from './dashboard.constants';
 
 type RecentOrdersCardProps = {
   orders: RecentOrder[];

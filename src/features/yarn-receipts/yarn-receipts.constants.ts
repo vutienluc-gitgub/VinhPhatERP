@@ -58,7 +58,9 @@ export const FORM_LABELS = {
   addItemRow: '+ Thêm dòng sợi',
   scanBarcode: 'Quét Barcode',
   scanningBarcode: 'Đang tra cứu API...',
+  notes: 'Ghi chú',
   notesPlaceholder: 'Ghi chú về phiếu nhập...',
+  supplierPlaceholder: '— Chọn nhà cung cấp —',
   update: 'Cập nhật',
   create: 'Tạo phiếu',
 };
@@ -73,3 +75,36 @@ export const FORM_MESSAGES = {
 
 /** Sample barcode for dev/demo — will be used as prompt default value */
 export const DEV_SAMPLE_BARCODE = '2510-F000016';
+
+export const MODAL_LABELS = {
+  barcodeTitle: 'Barcode Truy xuất Lô',
+  qrTitle: 'QR Code Truy xuất Lô',
+  receiptNumber: 'Số phiếu',
+  supplier: 'Nhà cung cấp',
+  receiptDate: 'Ngày nhập',
+  yarnType: 'Loại sợi',
+  lotNumber: 'Mã lô',
+  quantity: 'Số lượng',
+  packaging: 'Đóng gói',
+  print: 'In',
+  close: 'Đóng',
+  noItems: 'Không có dòng hàng nào',
+};
+
+export const LIST_LABELS = {
+  COL_RECEIPT_DATE: 'Ngày nhập',
+  COL_SUPPLIER: 'Nhà cung cấp',
+  COL_UNIT_PRICE: 'Đơn giá',
+  COL_TOTAL_AMOUNT: 'Tổng tiền',
+};
+
+export const LOGISTICS_LABELS = {
+  title: 'Thông tin Vận chuyển & Chi phí',
+  vehicleInfo: 'Thông tin xe / Tài xế',
+  vehicleInfoPlaceholder: 'VD: Xe 51C-123.45, Tài xế Hải',
+  additionalFees:
+    'Các khoản phí khác (Sẽ được phân bổ vào Giá vốn / Landed Cost)',
+  feeNamePlaceholder: 'Tên loại phí (VD: Cước vận chuyển)',
+  addFeeBtn: '+ Thêm chi phí',
+  notes: 'Ghi chú',
+};

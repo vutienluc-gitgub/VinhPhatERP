@@ -38,7 +38,9 @@ export function AgingMobileCard({ roll }: { roll: AgingRoll }) {
           )}
           <div className="flex items-center gap-1.5 text-xs bg-surface-subtle px-2 py-1 rounded border border-border/50">
             <Icon name="Clock" size={14} className="text-orange-500/70" />
-            <span className="font-bold">{roll.age_days} ngày</span>
+            <span className="font-bold">
+              {roll.age_days} {MSG.DAYS}
+            </span>
           </div>
         </div>
       </div>

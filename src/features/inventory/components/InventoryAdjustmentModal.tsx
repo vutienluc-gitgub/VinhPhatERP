@@ -8,6 +8,7 @@ import {
   type InventoryAdjustmentFormValues,
 } from '@/schema/inventory.schema';
 import { useAdjustInventory } from '@/application/inventory';
+import { INVENTORY_MESSAGES } from '@/features/inventory/inventory.constants';
 
 type Props = {
   isOpen: boolean;
@@ -71,12 +72,12 @@ export function InventoryAdjustmentModal({ isOpen, onClose }: Props) {
     <AdaptiveSheet
       open={isOpen}
       onClose={onClose}
-      title="Điều chỉnh tồn kho"
+      title={INVENTORY_MESSAGES.MODAL_ADJUSTMENT_TITLE}
       maxWidth="600px"
       footer={
         <div className="flex items-center justify-end gap-3 w-full">
           <Button type="button" variant="ghost" onClick={onClose}>
-            Hủy
+            {INVENTORY_MESSAGES.BTN_CANCEL}
           </Button>
           <Button
             type="submit"
@@ -87,7 +88,7 @@ export function InventoryAdjustmentModal({ isOpen, onClose }: Props) {
             {isPending && (
               <Icon name="Loader2" className="animate-spin mr-2" size={16} />
             )}
-            Xác nhận
+            {INVENTORY_MESSAGES.BTN_SAVE}
           </Button>
         </div>
       }
@@ -105,18 +106,26 @@ export function InventoryAdjustmentModal({ isOpen, onClose }: Props) {
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Loại hàng (*)</label>
+            <label className="text-sm font-medium">
+              {INVENTORY_MESSAGES.LBL_ITEM_TYPE}
+            </label>
             <select
               {...form.register('itemType')}
               className="w-full input-field"
             >
-              <option value="raw_fabric">Vải mộc</option>
-              <option value="finished_fabric">Vải thành phẩm</option>
-              <option value="yarn">Sợi</option>
+              <option value="raw_fabric">
+                {INVENTORY_MESSAGES.OPT_RAW_FABRIC}
+              </option>
+              <option value="finished_fabric">
+                {INVENTORY_MESSAGES.OPT_FINISHED_FABRIC}
+              </option>
+              <option value="yarn">{INVENTORY_MESSAGES.OPT_YARN}</option>
             </select>
           </div>
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Mã cuộn / lô (ID) (*)</label>
+            <label className="text-sm font-medium">
+              {INVENTORY_MESSAGES.LBL_ITEM_ID}
+            </label>
             <input
               {...form.register('referenceId')}
               className="w-full input-field"
@@ -126,34 +135,52 @@ export function InventoryAdjustmentModal({ isOpen, onClose }: Props) {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium">Lý do điều chỉnh (*)</label>
+          <label className="text-sm font-medium">
+            {INVENTORY_MESSAGES.LBL_ADJUST_REASON}
+          </label>
           <select
             {...form.register('adjustmentType')}
             className="w-full input-field"
           >
-            <option value="PHYSICAL_COUNT">Kiểm kê thực tế</option>
-            <option value="DAMAGE">Hàng hỏng / Rách</option>
-            <option value="QUALITY_REJECTION">Lỗi chất lượng</option>
-            <option value="SAMPLE_USAGE">Cắt mẫu</option>
-            <option value="PRODUCTION_CONSUMPTION">Tiêu hao sản xuất</option>
+            <option value="PHYSICAL_COUNT">
+              {INVENTORY_MESSAGES.OPT_REASON_PHYSICAL_COUNT}
+            </option>
+            <option value="DAMAGE">
+              {INVENTORY_MESSAGES.OPT_REASON_DAMAGE}
+            </option>
+            <option value="QUALITY_REJECTION">
+              {INVENTORY_MESSAGES.OPT_REASON_QUALITY_REJECTION}
+            </option>
+            <option value="SAMPLE_USAGE">
+              {INVENTORY_MESSAGES.OPT_REASON_SAMPLE_USAGE}
+            </option>
+            <option value="PRODUCTION_CONSUMPTION">
+              {INVENTORY_MESSAGES.OPT_REASON_PRODUCTION_CONSUMPTION}
+            </option>
             <option value="SYSTEM_CORRECTION">
-              Điều chỉnh sai sót hệ thống
+              {INVENTORY_MESSAGES.REASON_SYSTEM_CORRECTION}
             </option>
           </select>
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium">Hình thức (*)</label>
+          <label className="text-sm font-medium">
+            {INVENTORY_MESSAGES.LBL_ADJUST_TYPE}
+          </label>
           <select {...form.register('mode')} className="w-full input-field">
-            <option value="quick">Điều chỉnh nhanh (+ / -)</option>
-            <option value="physical">Kiểm đếm vật lý (Actual vs System)</option>
+            <option value="quick">{INVENTORY_MESSAGES.OPT_TYPE_QUICK}</option>
+            <option value="physical">
+              {INVENTORY_MESSAGES.OPT_TYPE_PHYSICAL}
+            </option>
           </select>
         </div>
 
         {mode === 'physical' ? (
           <div className="grid grid-cols-2 gap-4 bg-surface-subtle p-3 rounded">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Tồn hệ thống</label>
+              <label className="text-sm font-medium">
+                {INVENTORY_MESSAGES.LBL_SYS_STOCK}
+              </label>
               <input
                 type="number"
                 step="0.01"
@@ -162,7 +189,9 @@ export function InventoryAdjustmentModal({ isOpen, onClose }: Props) {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Tồn thực tế</label>
+              <label className="text-sm font-medium">
+                {INVENTORY_MESSAGES.LBL_ACTUAL_STOCK}
+              </label>
               <input
                 type="number"
                 step="0.01"
@@ -171,7 +200,9 @@ export function InventoryAdjustmentModal({ isOpen, onClose }: Props) {
               />
             </div>
             <div className="col-span-2 text-right">
-              <span className="text-xs text-muted">Chênh lệch: </span>
+              <span className="text-xs text-muted">
+                {INVENTORY_MESSAGES.LBL_DIFF}{' '}
+              </span>
               <span
                 className={`font-bold ${form.watch('adjustmentQty') > 0 ? 'text-emerald-600' : 'text-red-600'}`}
               >
@@ -183,7 +214,7 @@ export function InventoryAdjustmentModal({ isOpen, onClose }: Props) {
         ) : (
           <div className="space-y-1.5">
             <label className="text-sm font-medium">
-              Số lượng điều chỉnh (*)
+              {INVENTORY_MESSAGES.LBL_ADJUST_QTY}
             </label>
             <div className="relative">
               <input
@@ -198,7 +229,9 @@ export function InventoryAdjustmentModal({ isOpen, onClose }: Props) {
         )}
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium">Diễn giải / Ghi chú (*)</label>
+          <label className="text-sm font-medium">
+            {INVENTORY_MESSAGES.LBL_NOTES}
+          </label>
           <input
             {...form.register('reason')}
             className="w-full input-field"

@@ -2,7 +2,11 @@ import { useMemo } from 'react';
 import DOMPurify from 'dompurify';
 
 import { Icon, useConfirm, Badge, ActionMenu } from '@/shared/components';
-import { CONTRACT_TYPE_LABELS, type ContractTemplate } from '@/schema';
+import {
+  CONTRACT_TYPE_LABELS,
+  CONTRACT_TEMPLATE_LABELS,
+  type ContractTemplate,
+} from '@/schema';
 
 // ── Props ────────────────────────────────────────────────────────────────────
 
@@ -87,33 +91,34 @@ export function TemplateCard({
         <ActionMenu
           items={[
             {
-              label: 'Xem / Chỉnh sửa',
+              label: CONTRACT_TEMPLATE_LABELS.MENU_EDIT,
               icon: 'Eye',
               iconClass: 'text-blue-500',
               onClick: () => onEdit(template),
             },
             {
-              label: 'Nhân bản mẫu',
+              label: CONTRACT_TEMPLATE_LABELS.MENU_DUPLICATE,
               icon: 'Copy',
               onClick: () => onDuplicate(template),
             },
             {
-              label: template.is_active ? 'Tạm dừng mẫu' : 'Kích hoạt mẫu',
+              label: template.is_active
+                ? CONTRACT_TEMPLATE_LABELS.MENU_PAUSE
+                : CONTRACT_TEMPLATE_LABELS.MENU_ACTIVATE,
               icon: template.is_active ? 'PauseCircle' : 'PlayCircle',
               separated: true,
               onClick: () => onToggleActive(template),
             },
             {
-              label: 'Xóa mẫu',
+              label: CONTRACT_TEMPLATE_LABELS.MENU_DELETE,
               icon: 'Trash2',
               danger: true,
               onClick: async () => {
                 const isConfirmed = await confirm({
-                  title: 'Xóa mẫu hợp đồng',
-                  message:
-                    'Bạn có chắc chắn muốn xóa mẫu hợp đồng này không? Hành động này không thể hoàn tác.',
-                  confirmLabel: 'Xóa',
-                  cancelLabel: 'Hủy',
+                  title: CONTRACT_TEMPLATE_LABELS.CONFIRM_DELETE_TITLE,
+                  message: CONTRACT_TEMPLATE_LABELS.CONFIRM_DELETE_MSG,
+                  confirmLabel: CONTRACT_TEMPLATE_LABELS.BTN_DELETE,
+                  cancelLabel: CONTRACT_TEMPLATE_LABELS.BTN_CANCEL,
                   variant: 'danger',
                 });
                 if (isConfirmed) {
@@ -143,7 +148,7 @@ export function TemplateCard({
             />
           ) : (
             <p className="text-[11px] leading-relaxed text-muted/80 font-medium italic select-none">
-              Chưa có cấu hình nội dung.
+              {CONTRACT_TEMPLATE_LABELS.NO_CONTENT}
             </p>
           )}
 
@@ -158,7 +163,7 @@ export function TemplateCard({
           >
             <span className="bg-surface px-4 py-2 rounded-xl shadow-xl border border-border/50 text-xs font-bold text-primary flex items-center gap-2">
               <Icon name="Eye" size={14} />
-              XEM CHI TIẾT
+              {CONTRACT_TEMPLATE_LABELS.VIEW_DETAIL}
             </span>
           </button>
         </div>
@@ -169,10 +174,13 @@ export function TemplateCard({
         <div className="flex flex-col gap-1 w-full">
           <div className="flex items-center justify-between gap-3 w-full">
             <Badge variant={template.is_active ? 'success' : 'gray'}>
-              {template.is_active ? 'Đang hoạt động' : 'Tạm dừng'}
+              {template.is_active
+                ? CONTRACT_TEMPLATE_LABELS.STATUS_ACTIVE
+                : CONTRACT_TEMPLATE_LABELS.STATUS_PAUSED}
             </Badge>
             <p className="text-xs font-medium text-muted whitespace-nowrap">
-              Cập nhật: {formattedDate}
+              {CONTRACT_TEMPLATE_LABELS.UPDATED_AT}
+              {formattedDate}
             </p>
           </div>
         </div>

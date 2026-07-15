@@ -236,13 +236,17 @@ export function RFQCreate() {
                     />
                   </th>
                   <th className="px-4 py-3 text-left font-medium">
-                    Mã PR / Yêu cầu
+                    {RFQ_LABELS.COL_PR_CODE}
                   </th>
                   <th className="px-4 py-3 text-left font-medium">
-                    Map Vật tư (Bắt buộc)
+                    {RFQ_LABELS.COL_MAP_MATERIAL}
                   </th>
-                  <th className="px-4 py-3 text-left font-medium">Quy cách</th>
-                  <th className="px-4 py-3 text-right font-medium">S.Lượng</th>
+                  <th className="px-4 py-3 text-left font-medium">
+                    {RFQ_LABELS.COL_MATERIAL_SPEC}
+                  </th>
+                  <th className="px-4 py-3 text-right font-medium">
+                    {RFQ_LABELS.COL_QTY}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/50">

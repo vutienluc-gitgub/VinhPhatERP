@@ -2,6 +2,7 @@ import { useFieldArray, useFormContext } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
 import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
+import { LOGISTICS_LABELS as L } from '@/features/yarn-receipts/yarn-receipts.constants';
 
 type StepLogisticsInfoProps = {
   hidden: boolean;
@@ -25,18 +26,16 @@ export function StepLogisticsInfo({ hidden }: StepLogisticsInfoProps) {
 
   return (
     <div className={hidden ? 'hidden' : 'block'}>
-      <h3 className="text-lg font-semibold mb-4 text-foreground">
-        Thông tin Vận chuyển & Chi phí
-      </h3>
+      <h3 className="text-lg font-semibold mb-4 text-foreground">{L.title}</h3>
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-lg p-4">
         <div className="form-grid">
           <div className="form-field">
-            <label htmlFor="vehicleInfo">Thông tin xe / Tài xế</label>
+            <label htmlFor="vehicleInfo">{L.vehicleInfo}</label>
             <input
               id="vehicleInfo"
               className={`field-input${errors.vehicleInfo ? ' border-danger' : ''}`}
               type="text"
-              placeholder="VD: Xe 51C-123.45, Tài xế Hải"
+              placeholder={L.vehicleInfoPlaceholder}
               {...register('vehicleInfo')}
             />
             {errors.vehicleInfo && (
@@ -45,16 +44,14 @@ export function StepLogisticsInfo({ hidden }: StepLogisticsInfoProps) {
           </div>
 
           <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-[var(--border)]">
-            <label className="text-sm font-medium">
-              Các khoản phí khác (Sẽ được phân bổ vào Giá vốn / Landed Cost)
-            </label>
+            <label className="text-sm font-medium">{L.additionalFees}</label>
             {feeFields.map((field, index) => (
               <div key={field.id} className="flex items-start gap-2">
                 <div className="flex-1">
                   <input
                     className={`field-input${errors.additionalFees?.[index]?.name ? ' border-danger' : ''}`}
                     type="text"
-                    placeholder="Tên loại phí (VD: Cước vận chuyển)"
+                    placeholder={L.feeNamePlaceholder}
                     {...register(`additionalFees.${index}.name`)}
                   />
                   {errors.additionalFees?.[index]?.name && (
@@ -90,7 +87,7 @@ export function StepLogisticsInfo({ hidden }: StepLogisticsInfoProps) {
               onClick={() => appendFee({ name: '', amount: 0 })}
               className="text-[0.8rem] py-1.5 px-3 self-start mt-1"
             >
-              + Thêm chi phí
+              {L.addFeeBtn}
             </Button>
           </div>
         </div>

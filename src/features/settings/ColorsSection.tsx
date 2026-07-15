@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
-import { Button, Badge } from '@/shared/components';
+import { Button, Badge, EmptyState } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Icon } from '@/shared/components/Icon';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
-import { EmptyState } from '@/shared/components/EmptyState';
 import { getColorHex } from '@/schema/color.schema';
 import type { ColorRow } from '@/schema/color.schema';
 import { useColorMutations, useColors } from '@/application/settings';
 import { TabSwitcher, type TabItem } from '@/shared/components/TabSwitcher';
 
+import { SETTINGS_LABELS } from './settings.constants';
 import { ColorForm } from './ColorForm';
 
 export function ColorsSection() {
@@ -38,14 +38,13 @@ export function ColorsSection() {
   };
 
   const handleDelete = async (code: string) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa màu này?')) return;
+    if (!window.confirm(SETTINGS_LABELS.COLOR_DELETE_CONFIRM)) return;
     try {
       await deleteMutation.mutateAsync(code);
-      toast.success('Đã xóa màu thành công');
-    } catch (error) {
+      toast.success(SETTINGS_LABELS.COLOR_DELETE_SUCCESS);
+    } catch (error: unknown) {
       toast.error(
-        'Lỗi khi xóa: ' +
-          (error instanceof Error ? error.message : String(error)),
+        `${SETTINGS_LABELS.COLOR_DELETE_ERROR} ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   };
@@ -55,63 +54,83 @@ export function ColorsSection() {
   const tabItems: TabItem<'all' | 'dark' | 'middle' | 'light' | 'none'>[] = [
     {
       key: 'all' as const,
-      label: 'Tất cả',
+      label: SETTINGS_LABELS.COLOR_FILTER_ALL,
       badge: list.length,
     },
     {
       key: 'dark' as const,
-      label: 'Đậm',
-      badge: list.filter((c) => c.color_group === 'Màu Đậm').length,
+      label: SETTINGS_LABELS.COLOR_FILTER_DARK,
+      badge: list.filter(
+        (c) => c.color_group === SETTINGS_LABELS.COLOR_GROUP_DARK,
+      ).length,
     },
     {
       key: 'middle' as const,
-      label: 'Trung',
-      badge: list.filter((c) => c.color_group === 'Màu Trung').length,
+      label: SETTINGS_LABELS.COLOR_FILTER_MID,
+      badge: list.filter(
+        (c) => c.color_group === SETTINGS_LABELS.COLOR_GROUP_MID,
+      ).length,
     },
     {
       key: 'light' as const,
-      label: 'Lợt',
-      badge: list.filter((c) => c.color_group === 'Màu Lợt').length,
+      label: SETTINGS_LABELS.COLOR_FILTER_LIGHT,
+      badge: list.filter(
+        (c) => c.color_group === SETTINGS_LABELS.COLOR_GROUP_LIGHT,
+      ).length,
     },
     {
       key: 'none' as const,
-      label: 'Khác',
+      label: SETTINGS_LABELS.COLOR_FILTER_OTHER,
       badge: list.filter((c) => !c.color_group).length,
     },
   ].filter((t) => t.key === 'all' || (t.badge && t.badge > 0));
 
   const filteredItems = list.filter((c) => {
     if (activeTab === 'all') return true;
-    if (activeTab === 'dark') return c.color_group === 'Màu Đậm';
-    if (activeTab === 'middle') return c.color_group === 'Màu Trung';
-    if (activeTab === 'light') return c.color_group === 'Màu Lợt';
+    if (activeTab === 'dark')
+      return c.color_group === SETTINGS_LABELS.COLOR_GROUP_DARK;
+    if (activeTab === 'middle')
+      return c.color_group === SETTINGS_LABELS.COLOR_GROUP_MID;
+    if (activeTab === 'light')
+      return c.color_group === SETTINGS_LABELS.COLOR_GROUP_LIGHT;
     if (activeTab === 'none') return !c.color_group;
     return true;
   });
 
   const groups = [
     {
-      title: 'Màu Đậm',
-      items: filteredItems.filter((c) => c.color_group === 'Màu Đậm'),
+      title: SETTINGS_LABELS.COLOR_GROUP_DARK,
+      items: filteredItems.filter(
+        (c) => c.color_group === SETTINGS_LABELS.COLOR_GROUP_DARK,
+      ),
     },
     {
-      title: 'Màu Trung',
-      items: filteredItems.filter((c) => c.color_group === 'Màu Trung'),
+      title: SETTINGS_LABELS.COLOR_GROUP_MID,
+      items: filteredItems.filter(
+        (c) => c.color_group === SETTINGS_LABELS.COLOR_GROUP_MID,
+      ),
     },
     {
-      title: 'Màu Lợt',
-      items: filteredItems.filter((c) => c.color_group === 'Màu Lợt'),
+      title: SETTINGS_LABELS.COLOR_GROUP_LIGHT,
+      items: filteredItems.filter(
+        (c) => c.color_group === SETTINGS_LABELS.COLOR_GROUP_LIGHT,
+      ),
     },
     {
-      title: 'Chưa phân nhóm',
-      items: filteredItems.filter((c) => !c.color_group),
+      title: SETTINGS_LABELS.COLOR_GROUP_UNGROUPED,
+      items: filteredItems.filter(
+        (c) =>
+          c.color_group !== SETTINGS_LABELS.COLOR_GROUP_DARK &&
+          c.color_group !== SETTINGS_LABELS.COLOR_GROUP_MID &&
+          c.color_group !== SETTINGS_LABELS.COLOR_GROUP_LIGHT,
+      ),
     },
   ].filter((g) => g.items.length > 0);
   return (
     <div className="panel-card card-flush">
       {/* Header */}
       <div className="card-header-area">
-        <span className="font-bold text-lg">Danh mục màu sắc</span>
+        <span className="font-bold text-lg">{SETTINGS_LABELS.COLOR_TITLE}</span>
         <Button
           variant="primary"
           leftIcon="Plus"
@@ -138,9 +157,9 @@ export function ColorsSection() {
         <div className="py-16">
           <EmptyState
             icon="Palette"
-            title="Chưa có màu sắc nào"
-            description="Bấm Thêm màu để tạo màu mới dùng chung cho toàn hệ thống."
-            actionLabel="Thêm màu đầu tiên"
+            title={SETTINGS_LABELS.COLOR_EMPTY_TITLE}
+            description={SETTINGS_LABELS.COLOR_EMPTY_DESC}
+            actionLabel={SETTINGS_LABELS.COLOR_EMPTY_ACTION}
             actionClick={handleCreate}
           />
         </div>
@@ -213,7 +232,7 @@ export function ColorsSection() {
                     <button
                       type="button"
                       className="btn-icon"
-                      title="Chỉnh sửa"
+                      title={SETTINGS_LABELS.COLOR_EDIT_TOOLTIP}
                       onClick={() => handleEdit(item)}
                     >
                       <Icon name="Edit3" size={16} />
@@ -221,7 +240,7 @@ export function ColorsSection() {
                     <button
                       type="button"
                       className="btn-icon danger"
-                      title="Xóa màu"
+                      title={SETTINGS_LABELS.COLOR_DELETE_TOOLTIP}
                       disabled={deleteMutation.isPending}
                       onClick={() => handleDelete(item.code)}
                     >
@@ -239,7 +258,9 @@ export function ColorsSection() {
         open={showForm}
         onClose={handleClose}
         title={
-          editingColor ? `Chỉnh sửa: ${editingColor.name}` : 'Thêm màu mới'
+          editingColor
+            ? `${SETTINGS_LABELS.COLOR_MODAL_EDIT} ${editingColor.name}`
+            : SETTINGS_LABELS.COLOR_MODAL_NEW
         }
       >
         <ColorForm initialData={editingColor} onClose={handleClose} />

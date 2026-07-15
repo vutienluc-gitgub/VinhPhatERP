@@ -16,6 +16,8 @@ import {
 } from '@/application/shipments';
 import { getErrorMessage } from '@/shared/utils/error';
 
+import { SHIPPING_RATE_LABELS } from './shipping-rates.constants';
+
 type Props = {
   item: ShippingRate | null;
   onClose: () => void;
@@ -71,12 +73,13 @@ export function ShippingRateForm({ item, onClose }: Props) {
         {/* Name */}
         <div className="form-field">
           <label>
-            Tên bảng giá <span className="field-required">*</span>
+            {SHIPPING_RATE_LABELS.FORM_NAME}{' '}
+            <span className="field-required">*</span>
           </label>
           <input
             className={`field-input${errors.name ? ' border-danger' : ''}`}
             {...register('name')}
-            placeholder="VD: Tuyến HCM - Bình Dương"
+            placeholder={SHIPPING_RATE_LABELS.PLACEHOLDER_NAME}
           />
           {errors.name && <p className="field-error">{errors.name.message}</p>}
         </div>
@@ -84,12 +87,13 @@ export function ShippingRateForm({ item, onClose }: Props) {
         {/* Area */}
         <div className="form-field">
           <label>
-            Khu vực giao <span className="field-required">*</span>
+            {SHIPPING_RATE_LABELS.FORM_AREA}{' '}
+            <span className="field-required">*</span>
           </label>
           <input
             className={`field-input${errors.destinationArea ? ' border-danger' : ''}`}
             {...register('destinationArea')}
-            placeholder="VD: Bình Dương"
+            placeholder={SHIPPING_RATE_LABELS.PLACEHOLDER_AREA}
           />
           {errors.destinationArea && (
             <p className="field-error">{errors.destinationArea.message}</p>
@@ -98,7 +102,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
 
         {/* Rate per trip */}
         <div className="form-field">
-          <label>Giá cố định/chuyến (VNĐ)</label>
+          <label>{SHIPPING_RATE_LABELS.FORM_RATE_TRIP}</label>
           <Controller
             name="ratePerTrip"
             control={control}
@@ -109,7 +113,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
                 onChange={field.onChange}
                 onBlur={field.onBlur}
                 placeholder="0"
-                suffix=" đ/chuyến"
+                suffix={SHIPPING_RATE_LABELS.SUFFIX_TRIP}
               />
             )}
           />
@@ -120,7 +124,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
 
         {/* Rate per meter */}
         <div className="form-field">
-          <label>Giá theo mét (VNĐ/m)</label>
+          <label>{SHIPPING_RATE_LABELS.FORM_RATE_METER}</label>
           <Controller
             name="ratePerMeter"
             control={control}
@@ -131,7 +135,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
                 onChange={field.onChange}
                 onBlur={field.onBlur}
                 placeholder="0"
-                suffix=" đ/m"
+                suffix={SHIPPING_RATE_LABELS.SUFFIX_METER}
               />
             )}
           />
@@ -142,7 +146,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
 
         {/* Rate per kg */}
         <div className="form-field">
-          <label>Giá theo kg (VNĐ/kg)</label>
+          <label>{SHIPPING_RATE_LABELS.FORM_RATE_KG}</label>
           <Controller
             name="ratePerKg"
             control={control}
@@ -153,7 +157,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
                 onChange={field.onChange}
                 onBlur={field.onBlur}
                 placeholder="0"
-                suffix=" đ/kg"
+                suffix={SHIPPING_RATE_LABELS.SUFFIX_KG}
               />
             )}
           />
@@ -165,7 +169,8 @@ export function ShippingRateForm({ item, onClose }: Props) {
         {/* Loading fee */}
         <div className="form-field">
           <label>
-            Phí bốc xếp (VNĐ) <span className="field-required">*</span>
+            {SHIPPING_RATE_LABELS.FORM_LOADING_FEE}{' '}
+            <span className="field-required">*</span>
           </label>
           <Controller
             name="loadingFee"
@@ -177,7 +182,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
                 onChange={(v) => field.onChange(v ?? 0)}
                 onBlur={field.onBlur}
                 placeholder="0"
-                suffix=" đ"
+                suffix={SHIPPING_RATE_LABELS.SUFFIX_VND}
               />
             )}
           />
@@ -188,7 +193,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
 
         {/* Min charge */}
         <div className="form-field">
-          <label>Phí tối thiểu (VNĐ)</label>
+          <label>{SHIPPING_RATE_LABELS.FORM_MIN_CHARGE}</label>
           <Controller
             name="minCharge"
             control={control}
@@ -199,7 +204,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
                 onChange={(v) => field.onChange(v ?? 0)}
                 onBlur={field.onBlur}
                 placeholder="0"
-                suffix=" đ"
+                suffix={SHIPPING_RATE_LABELS.SUFFIX_VND}
               />
             )}
           />
@@ -210,7 +215,7 @@ export function ShippingRateForm({ item, onClose }: Props) {
 
         {/* Active status */}
         <div className="form-field">
-          <label>Trạng thái</label>
+          <label>{SHIPPING_RATE_LABELS.FORM_STATUS}</label>
           <Controller
             name="isActive"
             control={control}
@@ -219,11 +224,11 @@ export function ShippingRateForm({ item, onClose }: Props) {
                 options={[
                   {
                     value: 'true',
-                    label: 'Đang dùng',
+                    label: SHIPPING_RATE_LABELS.STATUS_ACTIVE,
                   },
                   {
                     value: 'false',
-                    label: 'Ngừng dùng',
+                    label: SHIPPING_RATE_LABELS.STATUS_INACTIVE,
                   },
                 ]}
                 value={String(field.value)}
@@ -236,31 +241,38 @@ export function ShippingRateForm({ item, onClose }: Props) {
 
       {/* Notes */}
       <div className="form-field mt-4">
-        <label>Ghi chú</label>
+        <label>{SHIPPING_RATE_LABELS.FORM_NOTES}</label>
         <textarea
           className="field-textarea"
           rows={2}
           {...register('notes')}
-          placeholder="Ghi chú thêm..."
+          placeholder={SHIPPING_RATE_LABELS.PLACEHOLDER_NOTES}
         />
       </div>
 
       {/* Error display */}
       {mutationError && (
         <p className="error-inline mt-4">
-          Lỗi: {getErrorMessage(mutationError)}
+          {SHIPPING_RATE_LABELS.ERROR_PREFIX} {getErrorMessage(mutationError)}
         </p>
       )}
 
       {/* Footer is handled by AdaptiveSheet via portal props, but we keep buttons for convenience if not using footer prop */}
       <div className="modal-footer mt-6 p-0 border-none">
-        <CancelButton onClick={onClose} label="Hủy" />
+        <CancelButton
+          onClick={onClose}
+          label={SHIPPING_RATE_LABELS.BTN_CANCEL}
+        />
         <button
           className="primary-button btn-standard"
           type="submit"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Đang lưu...' : item ? 'Cập nhật' : 'Tạo mới'}
+          {isSubmitting
+            ? SHIPPING_RATE_LABELS.BTN_SAVING
+            : item
+              ? SHIPPING_RATE_LABELS.BTN_UPDATE
+              : SHIPPING_RATE_LABELS.BTN_CREATE}
         </button>
       </div>
     </form>

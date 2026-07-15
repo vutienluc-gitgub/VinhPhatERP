@@ -12,20 +12,7 @@ import {
 } from '@/schema/permissions.schema';
 
 import { usePermissionMatrix } from './usePermissionMatrix';
-
-const MESSAGES = {
-  TITLE: 'Phân quyền chi tiết',
-  SUBTITLE: 'Cấu hình quyền truy cập cho tất cả vai trò',
-  ADMIN_NOTE: 'Admin luôn có toàn quyền và không thể chỉnh sửa.',
-  SAVE_SUCCESS: 'Đã lưu phân quyền thành công!',
-  BTN_SAVE: 'Lưu thay đổi',
-  BTN_UNDO: 'Hoàn tác',
-  EMPTY: 'Chưa có quyền nào được cấu hình.',
-  BTN_RETRY: 'Thử lại',
-  SEARCH_PLACEHOLDER: 'Tìm kiếm quyền...',
-  HEADER_PERMISSION: 'Quyền / Chức năng',
-  DIRTY_MESSAGE: (count: number) => `Có ${count} thay đổi chưa lưu`,
-} as const;
+import { SETTINGS_LABELS } from './settings.constants';
 
 interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   indeterminate?: boolean;
@@ -78,8 +65,12 @@ export function PermissionMatrixForm() {
         <div className="flex items-center gap-3 mb-6">
           <PanelIcon name="ShieldCheck" color="indigo" />
           <div>
-            <span className="font-bold text-lg block">{MESSAGES.TITLE}</span>
-            <span className="text-xs text-muted">{MESSAGES.SUBTITLE}</span>
+            <span className="font-bold text-lg block">
+              {SETTINGS_LABELS.PERM_TITLE}
+            </span>
+            <span className="text-xs text-muted">
+              {SETTINGS_LABELS.PERM_SUBTITLE}
+            </span>
           </div>
         </div>
         <div className="flex flex-col gap-4">
@@ -121,7 +112,7 @@ export function PermissionMatrixForm() {
           {errDetail instanceof Error ? errDetail.message : String(errDetail)}
         </p>
         <Button variant="outline" className="mt-4 mx-auto" onClick={handleUndo}>
-          {MESSAGES.BTN_RETRY}
+          {SETTINGS_LABELS.PERM_BTN_RETRY}
         </Button>
       </div>
     );
@@ -135,7 +126,7 @@ export function PermissionMatrixForm() {
           size={48}
           className="mx-auto text-muted mb-2"
         />
-        <p className="text-sm text-muted">{MESSAGES.EMPTY}</p>
+        <p className="text-sm text-muted">{SETTINGS_LABELS.PERM_EMPTY}</p>
       </div>
     );
   }
@@ -148,8 +139,12 @@ export function PermissionMatrixForm() {
         <div className="flex items-center gap-3">
           <PanelIcon name="ShieldCheck" color="indigo" />
           <div>
-            <span className="font-bold text-lg block">{MESSAGES.TITLE}</span>
-            <span className="text-xs text-muted">{MESSAGES.SUBTITLE}</span>
+            <span className="font-bold text-lg block">
+              {SETTINGS_LABELS.PERM_TITLE}
+            </span>
+            <span className="text-xs text-muted">
+              {SETTINGS_LABELS.PERM_SUBTITLE}
+            </span>
           </div>
         </div>
       </div>
@@ -164,14 +159,14 @@ export function PermissionMatrixForm() {
               strokeWidth={2}
               className="text-muted shrink-0"
             />
-            <span>{MESSAGES.ADMIN_NOTE}</span>
+            <span>{SETTINGS_LABELS.PERM_ADMIN_NOTE}</span>
           </div>
 
           <div className="perm-search-wrapper ml-auto w-full md:w-auto">
             <Icon name="Search" size={16} className="perm-search-icon" />
             <input
               type="text"
-              placeholder={MESSAGES.SEARCH_PLACEHOLDER}
+              placeholder={SETTINGS_LABELS.PERM_SEARCH_PLACEHOLDER}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="perm-search-input"
@@ -183,7 +178,7 @@ export function PermissionMatrixForm() {
         {saveSuccess && (
           <div className="success-inline">
             <Icon name="CheckCircle2" size={16} strokeWidth={2} />
-            {MESSAGES.SAVE_SUCCESS}
+            {SETTINGS_LABELS.PERM_SAVE_SUCCESS}
           </div>
         )}
 
@@ -193,7 +188,7 @@ export function PermissionMatrixForm() {
             <thead>
               <tr>
                 <th className="sticky-col min-w-[240px]">
-                  {MESSAGES.HEADER_PERMISSION}
+                  {SETTINGS_LABELS.PERM_HEADER_PERMISSION}
                 </th>
                 {CONFIGURABLE_ROLES.map((role) => {
                   const state = roleCheckStates[role] || {
@@ -325,7 +320,7 @@ export function PermissionMatrixForm() {
           <div className="flex items-center gap-2 text-white">
             <Icon name="AlertCircle" size={18} className="text-amber-400" />
             <span className="text-sm font-semibold">
-              {MESSAGES.DIRTY_MESSAGE(dirtyCount)}
+              {SETTINGS_LABELS.PERM_DIRTY_MESSAGE(dirtyCount)}
             </span>
           </div>
           <div className="flex gap-3">
@@ -336,7 +331,7 @@ export function PermissionMatrixForm() {
               disabled={isSaving}
               onClick={handleUndo}
             >
-              {MESSAGES.BTN_UNDO}
+              {SETTINGS_LABELS.PERM_BTN_UNDO}
             </Button>
             <Button
               variant="primary"
@@ -346,7 +341,7 @@ export function PermissionMatrixForm() {
               isLoading={isSaving}
               onClick={handleSave}
             >
-              {MESSAGES.BTN_SAVE}
+              {SETTINGS_LABELS.PERM_BTN_SAVE}
             </Button>
           </div>
         </div>

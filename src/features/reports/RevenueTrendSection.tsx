@@ -9,6 +9,8 @@ import { FabricRevenueChart } from '@/features/reports/FabricRevenueChart';
 import { PaymentMethodChart } from '@/features/reports/PaymentMethodChart';
 import { sumBy } from '@/shared/utils/array.util';
 
+import { REPORT_LABELS } from './reports.constants';
+
 type RevenueTrendSectionProps = {
   monthlyData: MonthlyRevenueRow[];
   fabricData: RevenueByFabricRow[];
@@ -29,13 +31,6 @@ function computeGrowth(
     label: pct >= 0 ? `+${pct}%` : `${pct}%`,
   };
 }
-
-const PAYMENT_METHOD_LABELS: Record<string, string> = {
-  bank_transfer: 'Chuyển khoản',
-  cash: 'Tiền mặt',
-  card: 'Quẹt thẻ',
-  debt: 'Ghi nợ',
-};
 
 export function RevenueTrendSection({
   monthlyData,
@@ -60,19 +55,22 @@ export function RevenueTrendSection({
   const paymentMethods = Array.from(methodMap.entries())
     .sort((a, b) => b[1] - a[1])
     .map(([method, total]) => ({
-      label: PAYMENT_METHOD_LABELS[method.toLowerCase()] ?? method,
+      label:
+        REPORT_LABELS.PAYMENT_METHOD_LABELS[method.toLowerCase()] ?? method,
       value: total,
     }));
 
   return (
     <div className="panel-card card-flush">
       <div className="card-header-area">
-        <span className="font-bold text-lg">Doanh thu & Thu tiền</span>
+        <span className="font-bold text-lg">
+          {REPORT_LABELS.TREND_SECTION_TITLE}
+        </span>
       </div>
 
       <KpiGrid className="px-5 py-4">
         <KpiCard
-          label="Tổng doanh thu"
+          label={REPORT_LABELS.REV_TOTAL}
           value={totalRevenue}
           formatMode="currency"
           icon="TrendingUp"
@@ -80,17 +78,17 @@ export function RevenueTrendSection({
           isLoading={isLoading}
         />
         <KpiCard
-          label="Đã thu"
+          label={REPORT_LABELS.REV_PAID}
           value={totalCollected}
           formatMode="currency"
           icon="CheckCircle"
           variant="success"
-          footer={`${collectionRate}% tỷ lệ thu hồi`}
+          footer={`${collectionRate}% ${REPORT_LABELS.TREND_RECOVERY_RATE}`}
           isLoading={isLoading}
         />
         {growth && (
           <KpiCard
-            label="Tăng trưởng"
+            label={REPORT_LABELS.TREND_GROWTH}
             value={growth.label}
             icon={growth.pct >= 0 ? 'ArrowUpCircle' : 'ArrowDownCircle'}
             variant={growth.pct >= 0 ? 'success' : 'danger'}
@@ -98,7 +96,7 @@ export function RevenueTrendSection({
           />
         )}
         <KpiCard
-          label="Phải thu"
+          label={REPORT_LABELS.TREND_RECEIVABLE}
           value={totalRevenue - totalCollected}
           formatMode="currency"
           icon="Clock"
@@ -110,7 +108,7 @@ export function RevenueTrendSection({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-5">
         <div className="card-sub-section">
           <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-4 border-b pb-1">
-            Doanh thu theo tháng
+            {REPORT_LABELS.TREND_MONTHLY_CHART}
           </p>
           <RevenueBarChart data={monthlyData} isLoading={isLoading} />
         </div>
@@ -118,7 +116,7 @@ export function RevenueTrendSection({
         {fabricData.length > 0 && (
           <div className="card-sub-section">
             <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-4 border-b pb-1">
-              Cơ cấu loại vải (Top 10)
+              {REPORT_LABELS.TREND_FABRIC_CHART}
             </p>
             <FabricRevenueChart data={fabricData} isLoading={isLoading} />
           </div>
@@ -129,9 +127,11 @@ export function RevenueTrendSection({
         <div className="mt-4">
           <div className="px-5 py-2 bg-surface-subtle border-y border-border">
             <p className="text-[10px] font-bold text-muted uppercase tracking-widest">
-              THU TIỀN
+              {REPORT_LABELS.TREND_COLLECTION_EYEBROW}
             </p>
-            <p className="text-xs font-bold">Phân bổ phương thức thanh toán</p>
+            <p className="text-xs font-bold">
+              {REPORT_LABELS.TREND_COLLECTION_TITLE}
+            </p>
           </div>
           <div className="px-5 py-4">
             <PaymentMethodChart data={paymentMethods} isLoading={isLoading} />

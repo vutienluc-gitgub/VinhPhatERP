@@ -13,7 +13,6 @@ import { useChatNotifications, useTotalUnread } from '@/application/chat';
 import { ChatInboxDrawer } from '@/features/chat/ChatInboxDrawer';
 import { getNavigationItems, hasAccess } from '@/app/router/routes';
 import type { NavigationItem } from '@/app/router/routes';
-import type { UserRole } from '@/shared/types/database.models';
 import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
 import { Icon } from '@/shared/components/Icon';
 import {
@@ -23,7 +22,7 @@ import {
 import { GROUP_LABELS } from '@/shared/constants/navigation';
 import { GuideCommandPalette } from '@/features/guide-system/components/GuideCommandPalette';
 import { GreigeCalculatorModal } from '@/features/costing/components/GreigeCalculatorModal';
-import { APP_SHELL_LABELS } from '@/shared/constants/layout';
+import { APP_SHELL_LABELS, USER_ROLE_LABELS } from '@/shared/constants/layout';
 
 import { MobileMoreDrawer } from './MobileMoreDrawer';
 import { NotificationBell } from './NotificationBell';
@@ -34,16 +33,6 @@ function getCurrentItem(pathname: string) {
     item.path === '/' ? pathname === '/' : pathname.startsWith(item.path),
   );
 }
-
-const roleLabel: Record<UserRole, string> = {
-  admin: 'Admin',
-  manager: 'Manager',
-  staff: 'Staff',
-  driver: 'Tài xế',
-  viewer: 'Viewer',
-  sale: 'Sale',
-  customer: 'Khách hàng',
-};
 
 /** Paths của các tab cố định ở bottom nav (mobile). */
 const BOTTOM_TAB_PATHS = [
@@ -333,7 +322,7 @@ export function AppShell() {
                       {profile.full_name || profile.id}
                     </span>
                     <span className="status-pill">
-                      {roleLabel[profile.role] ?? profile.role}
+                      {USER_ROLE_LABELS[profile.role] ?? profile.role}
                     </span>
                   </div>
                   <div className="user-dropdown-divider" />

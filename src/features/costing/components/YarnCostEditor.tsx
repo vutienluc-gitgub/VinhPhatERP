@@ -1,5 +1,6 @@
 import { MoneyText } from '@/shared/value';
 import type { CostingYarnItem } from '@/features/costing/types/greige-costing.type';
+import { COSTING_LABELS } from '@/features/costing/costing.constants';
 
 interface YarnCostEditorProps {
   items: CostingYarnItem[];
@@ -12,7 +13,7 @@ export function YarnCostEditor({ items, onChange }: YarnCostEditorProps) {
   return (
     <div className="space-y-3">
       <h4 className="text-sm font-semibold mb-2">
-        Đơn giá sợi thành phần (VNĐ/kg)
+        {COSTING_LABELS.YARN_COST_TITLE}
       </h4>
       {items.map((item) => (
         <div
@@ -25,7 +26,9 @@ export function YarnCostEditor({ items, onChange }: YarnCostEditorProps) {
               {item.yarn_name}
             </p>
             <p className="text-xs text-info mt-1">
-              Định mức: {item.consumption_kg_per_m.toFixed(3)} kg/m
+              {COSTING_LABELS.CONSUMPTION}
+              {item.consumption_kg_per_m.toFixed(3)}
+              {COSTING_LABELS.KG_PER_M}
             </p>
           </div>
 
@@ -42,7 +45,7 @@ export function YarnCostEditor({ items, onChange }: YarnCostEditorProps) {
                   });
                 }}
               />
-              Ghi đè giá thủ công
+              {COSTING_LABELS.OVERRIDE_PRICE_MANUAL}
             </label>
 
             {item.is_override ? (
@@ -53,7 +56,7 @@ export function YarnCostEditor({ items, onChange }: YarnCostEditorProps) {
                 onChange={(e) =>
                   onChange(item.id, { override_price: Number(e.target.value) })
                 }
-                placeholder="Nhập giá mới..."
+                placeholder={COSTING_LABELS.ENTER_NEW_PRICE}
                 min="0"
               />
             ) : (

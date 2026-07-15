@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Icon, Button } from '@/shared/components';
+import { CONTRACT_TEMPLATE_LABELS } from '@/schema';
 import type { ContractType } from '@/schema';
 
 // ── Props ────────────────────────────────────────────────────────────────────
@@ -46,7 +47,7 @@ export function NewTemplateMenu({ onSelect }: NewTemplateMenuProps) {
         onClick={() => setOpen((v) => !v)}
       >
         <Icon name="Plus" size={20} />
-        TẠO MẪU MỚI
+        {CONTRACT_TEMPLATE_LABELS.MENU_CREATE_NEW}
         <div
           className={`ml-1 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
         >
@@ -64,7 +65,7 @@ export function NewTemplateMenu({ onSelect }: NewTemplateMenuProps) {
             <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 group-hover:bg-surface/20 group-hover:text-surface transition-colors">
               <Icon name="BadgeDollarSign" size={16} />
             </div>
-            Bản mẫu Bán hàng
+            {CONTRACT_TEMPLATE_LABELS.MENU_SALE_TEMPLATE}
           </button>
           <button
             type="button"
@@ -74,7 +75,7 @@ export function NewTemplateMenu({ onSelect }: NewTemplateMenuProps) {
             <div className="p-2 rounded-lg bg-blue-500/10 text-blue-600 group-hover:bg-surface/20 group-hover:text-surface transition-colors">
               <Icon name="ShoppingCart" size={16} />
             </div>
-            Bản mẫu Mua hàng
+            {CONTRACT_TEMPLATE_LABELS.MENU_PURCHASE_TEMPLATE}
           </button>
         </div>
       )}

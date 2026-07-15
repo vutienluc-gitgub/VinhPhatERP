@@ -18,6 +18,7 @@ import {
 } from '@/application/inventory';
 import type { InventoryBreakdownRow, AgingRoll } from '@/application/inventory';
 import type { YarnAvailability } from '@/api/yarn-reservation.api';
+import { INVENTORY_MESSAGES } from '@/features/inventory/inventory.constants';
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 
@@ -287,8 +288,10 @@ export function InventoryPage() {
 
         {isLoading && (
           <div className="panel-card p-12 flex flex-col items-center gap-3">
-            <div className="spinner" />
-            <p className="text-muted text-sm">Đang tải dữ liệu tồn kho...</p>
+            <div className="spinner text-primary" />
+            <p className="text-muted text-sm">
+              {INVENTORY_MESSAGES.LOADING_DATA}
+            </p>
           </div>
         )}
       </div>

@@ -11,6 +11,10 @@ import { YarnCostEditor } from '@/features/costing/components/YarnCostEditor';
 import { CostBreakdownTable } from '@/features/costing/components/CostBreakdownTable';
 import { CostEstimationHistoryTable } from '@/features/costing/components/CostEstimationHistoryTable';
 import { MoneyText } from '@/shared/value';
+import {
+  COSTING_LABELS,
+  COSTING_MESSAGES,
+} from '@/features/costing/costing.constants';
 
 interface GreigeCalculatorModalProps {
   open: boolean;
@@ -91,7 +95,7 @@ export function GreigeCalculatorModal({
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (error) {
       console.error('Failed to save simulation:', error);
-      alert('Có lỗi xảy ra khi lưu snapshot giả lập trên Cloud.');
+      alert(COSTING_MESSAGES.SAVE_ERROR);
     } finally {
       setIsSaving(false);
     }
@@ -137,14 +141,14 @@ export function GreigeCalculatorModal({
           <div className="flex items-center gap-2 text-primary-strong">
             <Icon name="Calculator" size={20} />
             <h2 id="modal-title" className="text-lg font-bold">
-              Máy tính Giá Vải Mộc (Costing Studio)
+              {COSTING_LABELS.MODAL_TITLE}
             </h2>
           </div>
           <button
             type="button"
             className="p-1.5 text-muted hover:text-foreground hover:bg-border/50 rounded transition-colors"
             onClick={onClose}
-            aria-label="Đóng"
+            aria-label={COSTING_LABELS.BTN_CLOSE}
           >
             <Icon name="X" size={18} />
           </button>
@@ -154,7 +158,7 @@ export function GreigeCalculatorModal({
           {/* Section 1: Choose BOM */}
           <div className="mb-6">
             <label className="block text-sm font-semibold mb-2">
-              1. Chọn Định mức (BOM)
+              {COSTING_LABELS.STEP_1_BOM}
             </label>
             <select
               className="field-input w-full text-sm font-medium"
@@ -162,7 +166,7 @@ export function GreigeCalculatorModal({
               onChange={(e) => setSelectedBomId(e.target.value)}
               disabled={isBomListLoading}
             >
-              <option value="">-- Chọn BOM đã duyệt để giả lập --</option>
+              <option value="">{COSTING_LABELS.BOM_PLACEHOLDER}</option>
               {bomList?.map((bom) => (
                 <option key={bom.id} value={bom.id}>
                   [{bom.code}] {bom.name}
@@ -171,7 +175,7 @@ export function GreigeCalculatorModal({
             </select>
             {isLoadingBom && (
               <p className="text-xs text-primary mt-2 animate-pulse">
-                Đang tải chi tiết BOM và giá sợi mới nhất...
+                {COSTING_LABELS.LOADING_BOM}
               </p>
             )}
           </div>
@@ -186,7 +190,7 @@ export function GreigeCalculatorModal({
                 }`}
                 onClick={() => setActiveTab('simulation')}
               >
-                Giả lập giá (Simulator)
+                {COSTING_LABELS.TAB_SIMULATOR}
               </button>
               <button
                 className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
@@ -196,7 +200,7 @@ export function GreigeCalculatorModal({
                 }`}
                 onClick={() => setActiveTab('history')}
               >
-                Lịch sử (Snapshots)
+                {COSTING_LABELS.TAB_HISTORY}
               </button>
             </div>
           )}
@@ -206,7 +210,9 @@ export function GreigeCalculatorModal({
             <div className="mb-6 space-y-4 animate-in fade-in slide-in-from-bottom-2">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="form-field">
-                  <label className="text-xs">Đơn giá dệt</label>
+                  <label className="text-xs">
+                    {COSTING_LABELS.WEAVING_PRICE}
+                  </label>
                   <div className="flex">
                     <input
                       type="number"
@@ -234,7 +240,7 @@ export function GreigeCalculatorModal({
                   </div>
                 </div>
                 <div className="form-field">
-                  <label className="text-xs">Hao hụt chuẩn (%)</label>
+                  <label className="text-xs">{COSTING_LABELS.LOSS_PCT}</label>
                   <input
                     type="number"
                     className="field-input text-sm"
@@ -247,7 +253,9 @@ export function GreigeCalculatorModal({
                   />
                 </div>
                 <div className="form-field">
-                  <label className="text-xs">Biên Lợi Nhuận (%)</label>
+                  <label className="text-xs">
+                    {COSTING_LABELS.PROFIT_MARGIN_PCT}
+                  </label>
                   <input
                     type="number"
                     className="field-input text-sm text-success font-bold"
@@ -282,14 +290,16 @@ export function GreigeCalculatorModal({
                 <div className="w-full md:w-[250px] flex flex-col gap-4">
                   <div className="p-4 bg-primary/10 border border-primary/30 rounded-xl">
                     <p className="text-xs font-semibold text-primary/80 uppercase tracking-wider mb-1">
-                      Giá Bán Đề Xuất
+                      {COSTING_LABELS.SUGGESTED_PRICE}
                     </p>
                     <div className="text-2xl font-black text-primary-strong">
                       <MoneyText
                         value={Math.round(result.suggestedPricePerM)}
                       />{' '}
                       đ
-                      <span className="text-sm font-normal text-muted">/m</span>
+                      <span className="text-sm font-normal text-muted">
+                        /{COSTING_LABELS.UNIT_PRICE.split('/')[1]}
+                      </span>
                     </div>
                   </div>
 
@@ -305,7 +315,9 @@ export function GreigeCalculatorModal({
                         size={16}
                         className={isSaving ? 'animate-spin' : ''}
                       />
-                      {isSaving ? 'Đang lưu...' : 'Lưu Snapshot lên Cloud'}
+                      {isSaving
+                        ? COSTING_LABELS.BTN_SAVING
+                        : COSTING_LABELS.BTN_SAVE_SNAPSHOT}
                     </button>
                     <button
                       type="button"
@@ -313,13 +325,13 @@ export function GreigeCalculatorModal({
                       className="btn btn-primary w-full py-2.5 flex items-center justify-center gap-2"
                     >
                       <Icon name="Factory" size={16} />
-                      Tạo Lệnh Sản Xuất
+                      {COSTING_LABELS.BTN_CREATE_WORK_ORDER}
                     </button>
                   </div>
 
                   {saveSuccess && (
                     <p className="text-xs text-success text-center">
-                      Đã lưu snapshot thành công!
+                      {COSTING_MESSAGES.SAVE_SUCCESS}
                     </p>
                   )}
                 </div>

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { ContractForm } from '@/features/contracts/ContractForm';
 import { usePreviewIdFromUrl } from '@/shared/hooks/usePreviewIdFromUrl';
+import { SUPPLIER_LABELS as L } from '@/features/procurement/procurement.constants';
 
 import { SupplierForm } from './SupplierForm';
 import { SuppliersList } from './SuppliersList';
@@ -45,7 +46,7 @@ export function SuppliersPage() {
       <AdaptiveSheet
         open={!!contractSupplier}
         onClose={() => setContractSupplier(null)}
-        title="Tạo hợp đồng"
+        title={L.CREATE_CONTRACT_TITLE}
       >
         {contractSupplier && (
           <ContractForm

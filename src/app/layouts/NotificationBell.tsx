@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 
 import { supabase } from '@/services/supabase/client';
 import { Icon } from '@/shared/components';
+import { NOTIFICATION_BELL_LABELS } from '@/shared/constants/layout';
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
@@ -49,7 +50,10 @@ export function NotificationBell() {
             payload.new.status === 'pending_review'
           ) {
             toast.success(
-              `Có yêu cầu đặt hàng mới mã ${payload.new.order_number}!`,
+              NOTIFICATION_BELL_LABELS.NEW_ORDER_TOAST.replace(
+                '{orderNumber}',
+                payload.new.order_number,
+              ),
               { icon: '🔔' },
             );
           }
@@ -116,7 +120,7 @@ export function NotificationBell() {
             <div className="flex items-center gap-2 text-text">
               <Icon name="Bell" size={14} strokeWidth={2} />
               <h3 className="font-bold text-xs uppercase m-0 tracking-wider">
-                Thông báo mới
+                {NOTIFICATION_BELL_LABELS.TITLE}
               </h3>
             </div>
             <button
@@ -132,7 +136,7 @@ export function NotificationBell() {
             {pendingOrders.length === 0 ? (
               <div className="py-8 px-4 text-center text-muted flex flex-col items-center gap-2">
                 <Icon name="CheckCircle2" size={24} className="opacity-50" />
-                <p className="text-sm">Bạn không có thông báo mới nào</p>
+                <p className="text-sm">{NOTIFICATION_BELL_LABELS.EMPTY}</p>
               </div>
             ) : (
               <div className="flex flex-col">
@@ -151,19 +155,21 @@ export function NotificationBell() {
                     </div>
                     <div className="flex-1 min-w-0 pr-2">
                       <p className="text-sm font-bold leading-tight mb-1 uppercase tracking-wide">
-                        Yêu cầu đặt hàng chờ duyệt
+                        {NOTIFICATION_BELL_LABELS.NEW_ORDER_WAITING}
                       </p>
                       <p className="text-[13px] text-muted leading-relaxed line-clamp-3">
-                        Khoảng{' '}
+                        {NOTIFICATION_BELL_LABELS.TIME_PREFIX}{' '}
                         {/* eslint-disable-next-line no-restricted-syntax */}
                         {new Date(order.created_at).toLocaleString(
                           'vi-VN',
                         )} -{' '}
                         {order.customer?.name
-                          ? `Khách hàng ${order.customer.name}`
-                          : 'Một khách hàng'}{' '}
-                        vừa tạo yêu cầu đặt hàng mã {order.order_number}. Vui
-                        lòng kiểm tra và duyệt!
+                          ? `${NOTIFICATION_BELL_LABELS.CUSTOMER_PREFIX} ${order.customer.name}`
+                          : NOTIFICATION_BELL_LABELS.UNKNOWN_CUSTOMER}{' '}
+                        {NOTIFICATION_BELL_LABELS.ORDER_DESC.replace(
+                          '{orderNumber}',
+                          order.order_number,
+                        )}
                       </p>
                     </div>
                   </button>
@@ -182,7 +188,8 @@ export function NotificationBell() {
                 }}
                 className="text-xs font-semibold text-text hover:text-primary transition-colors inline-flex items-center gap-1"
               >
-                Xem thêm <Icon name="ChevronRight" size={14} />
+                {NOTIFICATION_BELL_LABELS.SEE_MORE}{' '}
+                <Icon name="ChevronRight" size={14} />
               </button>
             </div>
           )}

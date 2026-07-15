@@ -11,6 +11,7 @@ import {
 import { Button } from '@/shared/components';
 import { MoneyInput, QuantityInput, MoneyText } from '@/shared/value';
 import { formatQuantity } from '@/shared/value/core/formatter';
+import { SUPPLIER_LABELS as L } from '@/features/procurement/procurement.constants';
 
 type Props = {
   supplierId: string;
@@ -55,30 +56,30 @@ export function SupplierPriceList({ supplierId }: Props) {
         supplierId,
         priceData: values,
       });
-      toast.success('Lưu báo giá thành công');
+      toast.success(L.MSG_SAVE_SUCCESS);
       setIsAdding(false);
       reset();
     } catch (_error) {
-      toast.error('Có lỗi xảy ra khi lưu báo giá');
+      toast.error(L.MSG_SAVE_ERROR);
     }
   };
 
   if (isLoading)
     return (
-      <div className="p-4 text-center text-muted">Đang tải báo giá...</div>
+      <div className="p-4 text-center text-muted">{L.LOADING_PRICE_LIST}</div>
     );
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="font-semibold text-lg m-0">Bảng giá hiệu lực</h3>
+        <h3 className="font-semibold text-lg m-0">{L.EFFECTIVE_PRICE_LIST}</h3>
         {!isAdding && (
           <Button
             type="button"
             variant="secondary"
             onClick={() => setIsAdding(true)}
           >
-            + Thêm báo giá mới
+            {L.BTN_ADD_PRICE}
           </Button>
         )}
       </div>
@@ -91,13 +92,13 @@ export function SupplierPriceList({ supplierId }: Props) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="form-field">
               <label>
-                Mã nguyên liệu <span className="text-red-500">*</span>
+                {L.LBL_MATERIAL_CODE} <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 className="field-input"
                 {...register('material_id')}
-                placeholder="VD: Sợi Cotton"
+                placeholder={L.MATERIAL_CODE_PLACEHOLDER}
               />
               {errors.material_id && (
                 <span className="text-red-500 text-xs">
@@ -107,7 +108,7 @@ export function SupplierPriceList({ supplierId }: Props) {
             </div>
             <div className="form-field">
               <label>
-                Đơn giá <span className="text-red-500">*</span>
+                {L.LBL_UNIT_PRICE} <span className="text-red-500">*</span>
               </label>
               <Controller
                 name="unit_price"
@@ -123,16 +124,16 @@ export function SupplierPriceList({ supplierId }: Props) {
               />
             </div>
             <div className="form-field">
-              <label>Đơn vị</label>
+              <label>{L.LBL_UNIT}</label>
               <select className="field-input" {...register('uom')}>
                 <option value="kg">kg</option>
-                <option value="cây">cây</option>
-                <option value="mét">mét</option>
-                <option value="cuộn">cuộn</option>
+                <option value="cây">{L.OPT_UNIT_CAY}</option>
+                <option value="mét">{L.OPT_UNIT_MET}</option>
+                <option value="cuộn">{L.OPT_UNIT_CUON}</option>
               </select>
             </div>
             <div className="form-field">
-              <label>MOQ</label>
+              <label>{L.LBL_MOQ}</label>
               <Controller
                 name="moq"
                 control={control}
@@ -148,7 +149,7 @@ export function SupplierPriceList({ supplierId }: Props) {
               />
             </div>
             <div className="form-field">
-              <label>Lead Time (ngày)</label>
+              <label>{L.LBL_LEAD_TIME}</label>
               <input
                 type="number"
                 className="field-input"
@@ -165,14 +166,14 @@ export function SupplierPriceList({ supplierId }: Props) {
                 reset();
               }}
             >
-              Hủy
+              {L.BTN_CANCEL}
             </Button>
             <Button
               type="submit"
               variant="primary"
               disabled={isSubmitting || upsertMutation.isPending}
             >
-              Lưu báo giá
+              {L.BTN_SAVE_PRICE}
             </Button>
           </div>
         </form>
@@ -180,7 +181,7 @@ export function SupplierPriceList({ supplierId }: Props) {
 
       {prices.length === 0 && !isAdding && (
         <div className="text-center py-8 text-muted border border-dashed rounded-lg">
-          Chưa có báo giá nào được khai báo cho nhà cung cấp này.
+          {L.EMPTY_PRICE_LIST}
         </div>
       )}
 
@@ -190,14 +191,16 @@ export function SupplierPriceList({ supplierId }: Props) {
             <thead>
               <tr className="bg-surface-subtle">
                 <th className="px-4 py-3 font-semibold text-sm">
-                  Mã nguyên liệu
+                  {L.LBL_MATERIAL_CODE}
                 </th>
                 <th className="px-4 py-3 font-semibold text-sm text-right">
-                  Đơn giá
+                  {L.LBL_UNIT_PRICE}
                 </th>
-                <th className="px-4 py-3 font-semibold text-sm">Đơn vị</th>
+                <th className="px-4 py-3 font-semibold text-sm">
+                  {L.LBL_UNIT}
+                </th>
                 <th className="px-4 py-3 font-semibold text-sm text-right">
-                  MOQ
+                  {L.LBL_MOQ}
                 </th>
                 <th className="px-4 py-3 font-semibold text-sm text-right">
                   Lead Time
@@ -221,7 +224,7 @@ export function SupplierPriceList({ supplierId }: Props) {
                     {p.moq > 0 ? formatQuantity(p.moq, 0) : '—'}
                   </td>
                   <td className="px-4 py-3 text-sm text-right">
-                    {p.lead_time_days} ngày
+                    {p.lead_time_days} {L.DAYS}
                   </td>
                 </tr>
               ))}

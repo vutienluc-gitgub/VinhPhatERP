@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Button, ClearFilterButton } from '@/shared/components';
 import type { ReportsFilter } from '@/api/reports.api';
 
+import { REPORT_LABELS } from './reports.constants';
+
 type ReportsFilterBarProps = {
   filter: ReportsFilter;
   onChange: (filter: ReportsFilter) => void;
@@ -54,7 +56,9 @@ export function ReportsFilterBar({ filter, onChange }: ReportsFilterBarProps) {
     >
       <div className="filter-compact-premium">
         <div className="filter-field">
-          <label htmlFor="rpt-date-from">Từ ngày</label>
+          <label htmlFor="rpt-date-from">
+            {REPORT_LABELS.FILTER_FROM_DATE}
+          </label>
           <input
             id="rpt-date-from"
             className="field-input"
@@ -65,7 +69,7 @@ export function ReportsFilterBar({ filter, onChange }: ReportsFilterBarProps) {
         </div>
 
         <div className="filter-field">
-          <label htmlFor="rpt-date-to">Đến ngày</label>
+          <label htmlFor="rpt-date-to">{REPORT_LABELS.FILTER_TO_DATE}</label>
           <input
             id="rpt-date-to"
             className="field-input"
@@ -82,11 +86,14 @@ export function ReportsFilterBar({ filter, onChange }: ReportsFilterBarProps) {
             className="min-h-[42px] px-6 flex items-center gap-2 flex-1 sm:flex-none justify-center"
             type="submit"
           >
-            Áp dụng
+            {REPORT_LABELS.FILTER_APPLY}
           </Button>
 
           {hasCustomFilter && (
-            <ClearFilterButton onClick={handleClear} label="Đặt lại" />
+            <ClearFilterButton
+              onClick={handleClear}
+              label={REPORT_LABELS.FILTER_RESET}
+            />
           )}
         </div>
       </div>

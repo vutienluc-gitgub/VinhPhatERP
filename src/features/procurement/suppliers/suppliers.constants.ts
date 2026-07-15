@@ -34,4 +34,6 @@ export const SUPPLIER_LIST_LABELS = {
   ERROR_PREFIX: 'Lỗi:',
   NOT_AVAILABLE: '—',
   CONTACT_PERSON_PREFIX: 'NLH:',
+  LBL_OTD: 'OTD:',
+  LBL_RATING: 'Đánh giá:',
 };

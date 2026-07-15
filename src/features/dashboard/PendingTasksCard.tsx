@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom';
 
 import { Icon, Badge } from '@/shared/components';
 import type { PendingTask } from '@/application/analytics';
-import { DASHBOARD_LABELS } from '@/shared/constants/ui.constants';
 
+import { DASHBOARD_LABELS } from './dashboard.constants';
 import styles from './PendingTasksCard.module.css';
 
 type PendingTasksCardProps = {

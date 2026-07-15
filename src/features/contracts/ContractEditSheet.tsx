@@ -5,6 +5,7 @@ import { Button, AdaptiveSheet } from '@/shared/components';
 
 import { updateContractInputSchema } from './contracts.module';
 import type { Contract, UpdateContractInput } from './contracts.module';
+import { CONTRACT_LABELS } from './contracts.constants';
 
 type ContractEditSheetProps = {
   open: boolean;
@@ -55,7 +56,7 @@ export function ContractEditSheet({
     <AdaptiveSheet
       open={open}
       onClose={handleClose}
-      title="Chỉnh sửa hợp đồng"
+      title={CONTRACT_LABELS.EDIT_TITLE}
       maxWidth={640}
       footer={
         <div className="flex gap-3 justify-end">
@@ -64,24 +65,27 @@ export function ContractEditSheet({
             onClick={handleClose}
             disabled={isLoading}
           >
-            Thoát
+            {CONTRACT_LABELS.BTN_EXIT}
           </Button>
           <Button
             variant="primary"
             onClick={() => void handleSubmit(onSave)()}
             isLoading={isLoading}
           >
-            Lưu thay đổi
+            {CONTRACT_LABELS.BTN_SAVE}
           </Button>
         </div>
       }
     >
       <div className="form-grid">
-        <p className="text-sm font-semibold text-muted mb-2">Thông tin Bên A</p>
+        <p className="text-sm font-semibold text-muted mb-2">
+          {CONTRACT_LABELS.PARTY_A_INFO}
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
             <label>
-              Tên bên A <span className="field-required">*</span>
+              {CONTRACT_LABELS.PARTY_A_NAME}{' '}
+              <span className="field-required">*</span>
             </label>
             <input
               type="text"
@@ -93,7 +97,7 @@ export function ContractEditSheet({
             )}
           </div>
           <div className="form-field">
-            <label>MST bên A</label>
+            <label>{CONTRACT_LABELS.PARTY_A_TAX}</label>
             <input
               type="text"
               className="field-input"
@@ -102,7 +106,7 @@ export function ContractEditSheet({
           </div>
         </div>
         <div className="form-field">
-          <label>Địa chỉ bên A</label>
+          <label>{CONTRACT_LABELS.PARTY_A_ADDRESS}</label>
           <input
             type="text"
             className="field-input"
@@ -111,7 +115,7 @@ export function ContractEditSheet({
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
-            <label>Người đại diện bên A</label>
+            <label>{CONTRACT_LABELS.PARTY_A_REP}</label>
             <input
               type="text"
               className="field-input"
@@ -119,7 +123,7 @@ export function ContractEditSheet({
             />
           </div>
           <div className="form-field">
-            <label>Chức vụ</label>
+            <label>{CONTRACT_LABELS.PARTY_A_TITLE}</label>
             <input
               type="text"
               className="field-input"
@@ -129,12 +133,13 @@ export function ContractEditSheet({
         </div>
 
         <p className="text-sm font-semibold text-muted mb-2 mt-2">
-          Thông tin Bên B (Vĩnh Phát)
+          {CONTRACT_LABELS.PARTY_B_INFO}
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
             <label>
-              Tên bên B <span className="field-required">*</span>
+              {CONTRACT_LABELS.PARTY_B_NAME}{' '}
+              <span className="field-required">*</span>
             </label>
             <input
               type="text"
@@ -146,7 +151,7 @@ export function ContractEditSheet({
             )}
           </div>
           <div className="form-field">
-            <label>MST bên B</label>
+            <label>{CONTRACT_LABELS.PARTY_B_TAX}</label>
             <input
               type="text"
               className="field-input"
@@ -155,7 +160,7 @@ export function ContractEditSheet({
           </div>
         </div>
         <div className="form-field">
-          <label>Địa chỉ bên B</label>
+          <label>{CONTRACT_LABELS.PARTY_B_ADDRESS}</label>
           <input
             type="text"
             className="field-input"
@@ -164,7 +169,7 @@ export function ContractEditSheet({
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
-            <label>Người đại diện bên B</label>
+            <label>{CONTRACT_LABELS.PARTY_B_REP}</label>
             <input
               type="text"
               className="field-input"
@@ -172,7 +177,7 @@ export function ContractEditSheet({
             />
           </div>
           <div className="form-field">
-            <label>Tài khoản ngân hàng</label>
+            <label>{CONTRACT_LABELS.PARTY_B_BANK}</label>
             <input
               type="text"
               className="field-input"
@@ -181,19 +186,21 @@ export function ContractEditSheet({
           </div>
         </div>
 
-        <p className="text-sm font-semibold text-muted mb-2 mt-2">Điều khoản</p>
+        <p className="text-sm font-semibold text-muted mb-2 mt-2">
+          {CONTRACT_LABELS.TERMS_SECTION}
+        </p>
         <div className="form-field">
-          <label>Điều khoản thanh toán</label>
+          <label>{CONTRACT_LABELS.PAYMENT_TERM}</label>
           <input
             type="text"
             className="field-input"
-            placeholder="VD: Thanh toán 30 ngày sau khi giao hàng"
+            placeholder={CONTRACT_LABELS.PAYMENT_TERM_PLACEHOLDER}
             {...register('payment_term')}
           />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
-            <label>Ngày hiệu lực</label>
+            <label>{CONTRACT_LABELS.EFFECTIVE_DATE}</label>
             <input
               type="date"
               className="field-input"
@@ -201,7 +208,7 @@ export function ContractEditSheet({
             />
           </div>
           <div className="form-field">
-            <label>Ngày hết hạn</label>
+            <label>{CONTRACT_LABELS.EXPIRY_DATE}</label>
             <input
               type="date"
               className="field-input"
@@ -210,7 +217,7 @@ export function ContractEditSheet({
           </div>
         </div>
         <div className="form-field">
-          <label>Ghi chú</label>
+          <label>{CONTRACT_LABELS.NOTES}</label>
           <textarea
             className="field-textarea"
             rows={3}

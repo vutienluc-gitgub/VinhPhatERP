@@ -23,6 +23,7 @@ import {
   useConfirmYarnReceipt,
 } from '@/application/inventory';
 import { DOC_STATUS_LABELS } from '@/schema/yarn-receipt.schema';
+import { LIST_LABELS as MSG } from '@/features/yarn-receipts/yarn-receipts.constants';
 
 import type { DocStatus, YarnReceipt, YarnReceiptsFilter } from './types';
 import { getReceiptUnitPriceDisplay, getReceiptAvgUnitPrice } from './utils';
@@ -346,26 +347,32 @@ export function YarnReceiptList({
               </div>
               <div className="mobile-card-body space-y-2">
                 <div className="flex flex-col">
-                  <span className="text-xs text-muted">Nhà cung cấp</span>
+                  <span className="text-xs text-muted">{MSG.COL_SUPPLIER}</span>
                   <span className="font-medium">{r.suppliers?.name}</span>
                 </div>
                 <div className="grid grid-cols-2 gap-4 pb-2 border-b border-border/10">
                   <div className="flex flex-col gap-2">
                     <div className="flex flex-col">
-                      <span className="text-xs text-muted">Ngày nhập</span>
+                      <span className="text-xs text-muted">
+                        {MSG.COL_RECEIPT_DATE}
+                      </span>
                       <span className="font-medium text-sm">
                         {r.receipt_date}
                       </span>
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-xs text-muted">Đơn giá</span>
+                      <span className="text-xs text-muted">
+                        {MSG.COL_UNIT_PRICE}
+                      </span>
                       <span className="font-medium text-sm">
                         {getReceiptUnitPriceDisplay(r)}
                       </span>
                     </div>
                   </div>
                   <div className="flex flex-col text-right justify-end">
-                    <span className="text-xs text-muted">Tổng tiền</span>
+                    <span className="text-xs text-muted">
+                      {MSG.COL_TOTAL_AMOUNT}
+                    </span>
                     <span className="font-bold text-primary">
                       <MoneyText value={r.total_amount ?? 0} />
                     </span>

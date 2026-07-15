@@ -8,6 +8,8 @@ import {
 } from '@/shared/components';
 import { sumBy } from '@/shared/utils/array.util';
 
+import { REPORT_LABELS } from './reports.constants';
+
 type InventorySectionProps = {
   data: InventorySummary | undefined;
   isLoading: boolean;
@@ -22,33 +24,35 @@ export function InventorySection({ data, isLoading }: InventorySectionProps) {
   return (
     <div className="panel-card card-flush">
       <div className="card-header-area">
-        <span className="font-bold text-lg">Cơ cấu kho hiện tại</span>
+        <span className="font-bold text-lg">
+          {REPORT_LABELS.INVENTORY_SECTION_TITLE}
+        </span>
       </div>
 
       <KpiGrid className="px-5 py-4">
         <KpiCard
-          label="Cuộn mộc"
+          label={REPORT_LABELS.RAW_ROLLS}
           value={rawRolls}
           icon="Layers"
           variant="primary"
           isLoading={isLoading}
         />
         <KpiCard
-          label="Mét mộc"
+          label={REPORT_LABELS.RAW_LENGTH}
           value={formatNumber(rawLength)}
           icon="Hash"
           variant="primary"
           isLoading={isLoading}
         />
         <KpiCard
-          label="Cuộn TP"
+          label={REPORT_LABELS.FINISH_ROLLS}
           value={finishedRolls}
           icon="Check"
           variant="success"
           isLoading={isLoading}
         />
         <KpiCard
-          label="Mét TP"
+          label={REPORT_LABELS.FINISH_LENGTH}
           value={formatNumber(finishedLength)}
           icon="Hash"
           variant="success"
@@ -58,14 +62,14 @@ export function InventorySection({ data, isLoading }: InventorySectionProps) {
 
       <div className="space-y-4">
         <InventoryTable
-          title="Vải mộc"
-          eyebrow="RAW FABRIC"
+          title={REPORT_LABELS.RAW_FABRIC_TITLE}
+          eyebrow={REPORT_LABELS.RAW_FABRIC_EYEBROW}
           rows={data?.raw ?? []}
           isLoading={isLoading}
         />
         <InventoryTable
-          title="Vải thành phẩm"
-          eyebrow="FINISHED FABRIC"
+          title={REPORT_LABELS.FINISH_FABRIC_TITLE}
+          eyebrow={REPORT_LABELS.FINISH_FABRIC_EYEBROW}
           rows={data?.finished ?? []}
           isLoading={isLoading}
         />
@@ -101,12 +105,12 @@ function InventoryTable({
 
   const columns: DataTableColumn<InventoryItem>[] = [
     {
-      header: 'Loại vải',
+      header: REPORT_LABELS.COL_FABRIC_TYPE,
       cell: (r) => <span className="font-bold">{r.fabric_type}</span>,
-      footer: 'Tổng cộng',
+      footer: REPORT_LABELS.TOTAL,
     },
     {
-      header: 'Màu',
+      header: REPORT_LABELS.COL_COLOR,
       cell: (r) => (
         <span>
           {r.color_name ?? '—'}
@@ -120,24 +124,24 @@ function InventoryTable({
       className: 'max-sm:hidden text-muted text-sm',
     },
     {
-      header: 'Phân loại',
+      header: REPORT_LABELS.COL_QUALITY_GRADE,
       cell: (r) => r.quality_grade ?? '—',
       className: 'text-muted text-sm max-sm:hidden',
     },
     {
-      header: 'Cuộn',
+      header: REPORT_LABELS.COL_ROLL_COUNT,
       cell: (r) => r.roll_count,
       footer: totalRolls,
       className: 'text-right',
     },
     {
-      header: 'Mét',
+      header: REPORT_LABELS.COL_LENGTH_M,
       cell: (r) => formatNumber(r.total_length_m),
       footer: formatNumber(totalLength),
       className: 'text-right font-medium',
     },
     {
-      header: 'Kg',
+      header: REPORT_LABELS.COL_WEIGHT_KG,
       cell: (r) => formatNumber(r.total_weight_kg),
       footer: formatNumber(totalWeight),
       className: 'text-right max-sm:hidden text-muted text-sm',

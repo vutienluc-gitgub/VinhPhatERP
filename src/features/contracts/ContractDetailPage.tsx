@@ -15,6 +15,7 @@ import {
 
 import { CONTRACT_TYPE_LABELS } from './contracts.module';
 import type { UpdateContractInput } from './contracts.module';
+import { CONTRACT_LABELS, CONTRACT_MESSAGES } from './contracts.constants';
 import { ContractStatusBadge } from './ContractStatusBadge';
 import { ContractPreview } from './ContractPreview';
 import { ContractCancelSheet } from './ContractCancelSheet';
@@ -23,7 +24,8 @@ import { ContractLinkOrderSheet } from './ContractLinkOrderSheet';
 import { ContractEditSheet } from './ContractEditSheet';
 import { ContractAuditTimeline } from './ContractAuditTimeline';
 import { ContractLinkedOrders } from './ContractLinkedOrders';
-import { formatContractDate } from './contracts.utils';
+import { ContractDetailSummary } from './components/ContractDetailSummary';
+import { ContractLifecycleMetadata } from './components/ContractLifecycleMetadata';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -61,7 +63,7 @@ export function ContractDetailPage({
   if (isLoading) {
     return (
       <div className="panel-card">
-        <p className="table-empty">Đang tải...</p>
+        <p className="table-empty">{CONTRACT_MESSAGES.LOADING}</p>
       </div>
     );
   }
@@ -70,7 +72,8 @@ export function ContractDetailPage({
     return (
       <div className="panel-card">
         <p className="error-inline">
-          Lỗi: {error instanceof Error ? error.message : String(error)}
+          {CONTRACT_MESSAGES.ERROR}:{' '}
+          {error instanceof Error ? error.message : String(error)}
         </p>
       </div>
     );
@@ -79,7 +82,7 @@ export function ContractDetailPage({
   if (!contract) {
     return (
       <div className="panel-card">
-        <p className="table-empty">Không tìm thấy hợp đồng.</p>
+        <p className="table-empty">{CONTRACT_MESSAGES.NO_DATA}</p>
       </div>
     );
   }
@@ -94,7 +97,7 @@ export function ContractDetailPage({
 
   async function handleSend() {
     const ok = await confirm({
-      message: 'Xác nhận đã gửi hợp đồng cho đối tác?',
+      message: CONTRACT_MESSAGES.CONFIRM_SEND,
     });
     if (!ok) return;
     statusMutation.mutate(
@@ -102,7 +105,7 @@ export function ContractDetailPage({
         id: contractId,
         status: 'sent',
       },
-      { onSuccess: () => toast.success('Đã cập nhật trạng thái: Đã gửi') },
+      { onSuccess: () => toast.success(CONTRACT_MESSAGES.TOAST_SENT) },
     );
   }
 
@@ -116,7 +119,7 @@ export function ContractDetailPage({
       {
         onSuccess: () => {
           setShowCancel(false);
-          toast.success('Đã huỷ hợp đồng');
+          toast.success(CONTRACT_MESSAGES.TOAST_CANCELLED);
         },
       },
     );
@@ -132,7 +135,7 @@ export function ContractDetailPage({
       {
         onSuccess: () => {
           setShowSign(false);
-          toast.success('Đã xác nhận hợp đồng đã ký');
+          toast.success(CONTRACT_MESSAGES.TOAST_SIGNED);
         },
       },
     );
@@ -164,7 +167,7 @@ export function ContractDetailPage({
 
   async function handleUnlinkOrder(orderId: string, orderNumber: string) {
     const ok = await confirm({
-      message: `Hủy liên kết đơn hàng ${orderNumber}?`,
+      message: `${CONTRACT_MESSAGES.CONFIRM_UNLINK} ${orderNumber}?`,
       variant: 'danger',
     });
     if (!ok) return;
@@ -183,7 +186,7 @@ export function ContractDetailPage({
         <div className="p-5">
           <div className="flex items-center gap-3 mb-4 flex-wrap">
             <Button variant="secondary" leftIcon="ArrowLeft" onClick={onBack}>
-              Quay lại
+              {CONTRACT_LABELS.BTN_BACK}
             </Button>
             <div className="flex-1 min-w-0">
               <h3 className="m-0 font-mono text-lg">
@@ -196,95 +199,13 @@ export function ContractDetailPage({
             <ContractStatusBadge status={contract.status} />
           </div>
 
-          {/* Info grid */}
-          <div className="dashboard-summary-row mb-4">
-            <div>
-              <div className="text-muted text-sm summary-label">Bên A</div>
-              <div className="font-medium">{contract.party_a_name}</div>
-              {contract.party_a_tax_code && (
-                <div className="text-xs text-muted">
-                  MST: {contract.party_a_tax_code}
-                </div>
-              )}
-            </div>
-            <div>
-              <div className="text-muted text-sm summary-label">
-                Người đại diện A
-              </div>
-              <div>{contract.party_a_representative ?? '—'}</div>
-              {contract.party_a_title && (
-                <div className="text-xs text-muted">
-                  {contract.party_a_title}
-                </div>
-              )}
-            </div>
-            <div>
-              <div className="text-muted text-sm summary-label">
-                Ngày hiệu lực
-              </div>
-              <div>{formatContractDate(contract.effective_date)}</div>
-            </div>
-            <div>
-              <div className="text-muted text-sm summary-label">
-                Ngày hết hạn
-              </div>
-              <div>{formatContractDate(contract.expiry_date)}</div>
-            </div>
-            <div>
-              <div className="text-muted text-sm summary-label">
-                Điều khoản TT
-              </div>
-              <div>{contract.payment_term ?? '—'}</div>
-            </div>
-          </div>
+          <ContractDetailSummary contract={contract} />
 
-          {/* Lifecycle metadata */}
-          {(contract.sent_at ||
-            contract.signed_at ||
-            contract.cancelled_at) && (
-            <div className="info-box mb-4 text-sm space-y-1">
-              {contract.sent_at && (
-                <p>
-                  <span className="font-medium">Đã gửi:</span>{' '}
-                  {formatContractDate(contract.sent_at)}
-                </p>
-              )}
-              {contract.signed_at && (
-                <p>
-                  <span className="font-medium">Đã ký:</span>{' '}
-                  {formatContractDate(contract.signed_at)}
-                </p>
-              )}
-              {contract.cancelled_at && (
-                <p>
-                  <span className="font-medium">Đã huỷ:</span>{' '}
-                  {formatContractDate(contract.cancelled_at)}
-                  {contract.cancel_reason && (
-                    <span className="text-muted">
-                      {' '}
-                      — {contract.cancel_reason}
-                    </span>
-                  )}
-                </p>
-              )}
-              {contract.signed_file_url && (
-                <p>
-                  <a
-                    href={contract.signed_file_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary underline"
-                  >
-                    Xem file hợp đồng đã ký
-                  </a>
-                </p>
-              )}
-            </div>
-          )}
+          <ContractLifecycleMetadata contract={contract} />
 
           {contract.notes && (
             <div className="info-box mb-4">
-              <strong>Ghi chú:</strong> {contract.notes}
+              <strong>{CONTRACT_LABELS.NOTES}:</strong> {contract.notes}
             </div>
           )}
 
@@ -296,7 +217,7 @@ export function ContractDetailPage({
                 leftIcon="Pencil"
                 onClick={() => setShowEdit(true)}
               >
-                Chỉnh sửa
+                {CONTRACT_LABELS.BTN_EDIT}
               </Button>
             )}
             {canSend && (
@@ -306,7 +227,7 @@ export function ContractDetailPage({
                 onClick={() => void handleSend()}
                 isLoading={statusMutation.isPending && !showCancel && !showSign}
               >
-                Gửi hợp đồng
+                {CONTRACT_LABELS.BTN_SEND}
               </Button>
             )}
             {canSign && (
@@ -315,7 +236,7 @@ export function ContractDetailPage({
                 leftIcon="CheckCircle"
                 onClick={() => setShowSign(true)}
               >
-                Xác nhận đã ký
+                {CONTRACT_LABELS.BTN_SIGN}
               </Button>
             )}
             <Button
@@ -324,7 +245,7 @@ export function ContractDetailPage({
               onClick={() => void handleExportPdf()}
               isLoading={exportPdfMutation.isPending}
             >
-              Xuất PDF
+              {CONTRACT_LABELS.BTN_EXPORT_PDF}
             </Button>
             {canLinkOrder && (
               <Button
@@ -332,7 +253,7 @@ export function ContractDetailPage({
                 leftIcon="Link"
                 onClick={() => setShowLinkOrder(true)}
               >
-                Liên kết đơn hàng
+                {CONTRACT_LABELS.BTN_LINK_ORDER}
               </Button>
             )}
             {canCancel && (
@@ -342,14 +263,14 @@ export function ContractDetailPage({
                 onClick={() => setShowCancel(true)}
                 className="text-danger"
               >
-                Hủy hợp đồng
+                {CONTRACT_LABELS.BTN_CANCEL}
               </Button>
             )}
           </div>
 
           {statusMutation.error && (
             <p className="error-inline text-sm mt-2">
-              Lỗi:{' '}
+              {CONTRACT_MESSAGES.ERROR}:{' '}
               {statusMutation.error instanceof Error
                 ? statusMutation.error.message
                 : String(statusMutation.error)}
@@ -375,7 +296,7 @@ export function ContractDetailPage({
         <div className="px-5 pb-5">
           <h4 className="mb-3 flex items-center gap-2">
             <Icon name="FileText" size={16} />
-            Xem trước nội dung hợp đồng
+            {CONTRACT_LABELS.PREVIEW_CONTENT}
           </h4>
           <ContractPreview
             content={contract.content}

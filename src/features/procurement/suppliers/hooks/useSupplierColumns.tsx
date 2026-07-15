@@ -83,10 +83,10 @@ export function useSupplierColumns({
         return (
           <div className="flex flex-col text-sm">
             <span className="font-medium text-emerald-600">
-              OTD: {supplier.on_time_rate ?? 0}%
+              {SUPPLIER_LIST_LABELS.LBL_OTD} {supplier.on_time_rate ?? 0}%
             </span>
             <span className="text-xs text-muted">
-              Đánh giá: {supplier.rating ?? 0}/5.0
+              {SUPPLIER_LIST_LABELS.LBL_RATING} {supplier.rating ?? 0}/5.0
             </span>
           </div>
         );

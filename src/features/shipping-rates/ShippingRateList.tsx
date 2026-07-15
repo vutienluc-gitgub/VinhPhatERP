@@ -18,6 +18,7 @@ import {
 } from '@/application/shipments';
 
 import type { ShippingRate, ShippingRateFilter } from './types';
+import { SHIPPING_RATE_LABELS } from './shipping-rates.constants';
 
 type Props = {
   onEdit: (item: ShippingRate) => void;
@@ -27,13 +28,21 @@ type Props = {
 function rateDescription(item: ShippingRate): string {
   const parts: string[] = [];
   if (item.rate_per_trip != null)
-    parts.push(`${formatQuantity(item.rate_per_trip, 0)}đ/chuyến`);
+    parts.push(
+      `${formatQuantity(item.rate_per_trip, 0)}${SHIPPING_RATE_LABELS.SUFFIX_TRIP.trim()}`,
+    );
   if (item.rate_per_meter != null)
-    parts.push(`${formatQuantity(item.rate_per_meter, 0)}đ/m`);
+    parts.push(
+      `${formatQuantity(item.rate_per_meter, 0)}${SHIPPING_RATE_LABELS.SUFFIX_METER.trim()}`,
+    );
   if (item.rate_per_kg != null)
-    parts.push(`${formatQuantity(item.rate_per_kg, 0)}đ/kg`);
+    parts.push(
+      `${formatQuantity(item.rate_per_kg, 0)}${SHIPPING_RATE_LABELS.SUFFIX_KG.trim()}`,
+    );
   if (item.loading_fee > 0)
-    parts.push(`Bốc xếp: ${formatQuantity(item.loading_fee, 0)}đ`);
+    parts.push(
+      `${SHIPPING_RATE_LABELS.TEXT_LOADING_FEE}: ${formatQuantity(item.loading_fee, 0)}${SHIPPING_RATE_LABELS.SUFFIX_VND.trim()}`,
+    );
   return parts.length > 0 ? parts.join(' · ') : '—';
 }
 
@@ -55,8 +64,8 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
     {
       key: 'query',
       type: 'search',
-      label: 'Tìm kiếm',
-      placeholder: 'Tên hoặc khu vực...',
+      label: SHIPPING_RATE_LABELS.SEARCH_LABEL,
+      placeholder: SHIPPING_RATE_LABELS.SEARCH_PLACEHOLDER,
     },
   ];
 
@@ -66,7 +75,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
 
   async function handleDelete(item: ShippingRate) {
     const ok = await confirm({
-      message: `Xoá bảng giá "${item.name}"?`,
+      message: `${SHIPPING_RATE_LABELS.CONFIRM_DELETE} "${item.name}"?`,
       variant: 'danger',
     });
     if (!ok) return;
@@ -79,7 +88,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
     <div className="panel-card card-flush">
       {/* Action bar */}
       <div className="card-header-area">
-        <AddButton onClick={onNew} label="Thêm bảng giá" />
+        <AddButton onClick={onNew} label={SHIPPING_RATE_LABELS.BTN_ADD} />
       </div>
 
       {/* Filters */}
@@ -94,7 +103,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
       {error && (
         <div className="p-4">
           <p className="error-inline">
-            Lỗi tải dữ liệu:{' '}
+            {SHIPPING_RATE_LABELS.ERROR_LOAD}
             {error instanceof Error ? error.message : String(error)}
           </p>
         </div>
@@ -108,32 +117,34 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
         onRowClick={(item) => onEdit(item)}
         emptyStateTitle={
           hasFilter
-            ? 'Không tìm thấy bảng giá phù hợp'
-            : 'Chưa có bảng giá cước nào'
+            ? SHIPPING_RATE_LABELS.EMPTY_TITLE_SEARCH
+            : SHIPPING_RATE_LABELS.EMPTY_TITLE
         }
         emptyStateDescription={
           hasFilter
-            ? 'Thử điều chỉnh bộ lọc.'
-            : 'Bấm "+ Thêm bảng giá" để tạo giá cước vận chuyển.'
+            ? SHIPPING_RATE_LABELS.EMPTY_DESC_SEARCH
+            : SHIPPING_RATE_LABELS.EMPTY_DESC
         }
         emptyStateIcon={hasFilter ? 'Search' : 'Truck'}
-        emptyStateActionLabel={!hasFilter ? '+ Thêm bảng giá' : undefined}
+        emptyStateActionLabel={
+          !hasFilter ? `+ ${SHIPPING_RATE_LABELS.BTN_ADD}` : undefined
+        }
         onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={[
           {
-            header: 'Tên bảng giá',
+            header: SHIPPING_RATE_LABELS.TITLE_NAME,
             cell: (item) => (
               <span className="font-bold text-primary">{item.name}</span>
             ),
           },
           {
-            header: 'Khu vực',
+            header: SHIPPING_RATE_LABELS.TITLE_AREA,
             cell: (item) => (
               <span className="font-medium">{item.destination_area}</span>
             ),
           },
           {
-            header: 'Giá cước',
+            header: SHIPPING_RATE_LABELS.TITLE_RATE,
             cell: (item) => (
               <span className="text-sm text-muted">
                 {rateDescription(item)}
@@ -141,7 +152,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
             ),
           },
           {
-            header: 'Phí tối thiểu',
+            header: SHIPPING_RATE_LABELS.TITLE_MIN_CHARGE,
             cell: (item) => (
               <span className="font-medium">
                 {item.min_charge > 0 ? (
@@ -155,15 +166,17 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
             ),
           },
           {
-            header: 'Trạng thái',
+            header: SHIPPING_RATE_LABELS.TITLE_STATUS,
             cell: (item) => (
               <Badge variant={getStatusVariant(item.is_active)}>
-                {item.is_active ? 'Đang dùng' : 'Ngừng'}
+                {item.is_active
+                  ? SHIPPING_RATE_LABELS.STATUS_ACTIVE
+                  : SHIPPING_RATE_LABELS.STATUS_INACTIVE}
               </Badge>
             ),
           },
           {
-            header: 'Thao tác',
+            header: SHIPPING_RATE_LABELS.TITLE_ACTIONS,
             className: 'text-right',
             onCellClick: () => {},
             cell: (item) => (
@@ -172,14 +185,14 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
                   {
                     icon: 'Pencil',
                     onClick: () => onEdit(item),
-                    title: 'Sửa',
+                    title: SHIPPING_RATE_LABELS.BTN_EDIT,
                   },
                   {
                     icon: 'Trash2',
                     onClick: () => {
                       void handleDelete(item);
                     },
-                    title: 'Xoá',
+                    title: SHIPPING_RATE_LABELS.BTN_DELETE,
                     variant: 'danger',
                     disabled: deleteMutation.isPending,
                   },
@@ -193,17 +206,23 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
             <div className="mobile-card-header">
               <span className="mobile-card-title">{item.name}</span>
               <Badge variant={getStatusVariant(item.is_active)}>
-                {item.is_active ? 'Đang dùng' : 'Ngừng'}
+                {item.is_active
+                  ? SHIPPING_RATE_LABELS.STATUS_ACTIVE
+                  : SHIPPING_RATE_LABELS.STATUS_INACTIVE}
               </Badge>
             </div>
             <div className="mobile-card-body space-y-2">
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="flex flex-col">
-                  <span className="text-xs text-muted">Khu vực</span>
+                  <span className="text-xs text-muted">
+                    {SHIPPING_RATE_LABELS.TITLE_AREA}
+                  </span>
                   <span className="font-bold">{item.destination_area}</span>
                 </div>
                 <div className="flex flex-col text-right">
-                  <span className="text-xs text-muted">Phí tối thiểu</span>
+                  <span className="text-xs text-muted">
+                    {SHIPPING_RATE_LABELS.TITLE_MIN_CHARGE}
+                  </span>
                   <span className="font-medium">
                     {item.min_charge > 0 ? (
                       <MoneyText value={item.min_charge} />
@@ -222,7 +241,8 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
                     onEdit(item);
                   }}
                 >
-                  <Icon name="Pencil" size={16} /> Sửa
+                  <Icon name="Pencil" size={16} />{' '}
+                  {SHIPPING_RATE_LABELS.BTN_EDIT}
                 </button>
                 <button
                   className="btn-secondary text-danger border-danger/20 px-3"
@@ -242,7 +262,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
 
       {deleteMutation.error && (
         <p className="error-inline-sm">
-          Lỗi:{' '}
+          {SHIPPING_RATE_LABELS.ERROR_PREFIX}
           {deleteMutation.error instanceof Error
             ? deleteMutation.error.message
             : String(deleteMutation.error)}

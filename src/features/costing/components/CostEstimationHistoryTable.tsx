@@ -3,6 +3,7 @@ import type { CostingSimulationState } from '@/features/costing/types/greige-cos
 import { Icon } from '@/shared/components/Icon';
 import { Badge } from '@/shared/components/Badge';
 import { MoneyText } from '@/shared/value';
+import { COSTING_LABELS } from '@/features/costing/costing.constants';
 
 interface CostEstimationHistoryTableProps {
   referenceType: string;
@@ -26,7 +27,7 @@ export function CostEstimationHistoryTable({
     return (
       <div className="flex flex-col items-center justify-center py-8 text-muted">
         <div className="spinner mb-2" />
-        <p className="text-sm">Đang tải lịch sử tính giá...</p>
+        <p className="text-sm">{COSTING_LABELS.LOADING_HISTORY}</p>
       </div>
     );
   }
@@ -35,7 +36,7 @@ export function CostEstimationHistoryTable({
     return (
       <div className="flex flex-col items-center justify-center py-8 text-muted">
         <Icon name="History" size={40} className="mb-2 opacity-30" />
-        <p className="text-sm">Chưa có lịch sử tính giá (snapshot) nào.</p>
+        <p className="text-sm">{COSTING_LABELS.EMPTY_HISTORY}</p>
       </div>
     );
   }
@@ -45,12 +46,12 @@ export function CostEstimationHistoryTable({
       <table className="data-table">
         <thead>
           <tr>
-            <th>Phiên bản</th>
-            <th>Ngày lưu</th>
-            <th className="text-right">Tiền sợi</th>
-            <th className="text-right">Giá mộc tổng</th>
-            <th className="text-right">Giá đề xuất</th>
-            <th className="text-right">Thao tác</th>
+            <th>{COSTING_LABELS.COL_VERSION}</th>
+            <th>{COSTING_LABELS.COL_DATE}</th>
+            <th className="text-right">{COSTING_LABELS.COL_YARN}</th>
+            <th className="text-right">{COSTING_LABELS.COL_TOTAL_GREIGE}</th>
+            <th className="text-right">{COSTING_LABELS.COL_SUGGESTED}</th>
+            <th className="text-right">{COSTING_LABELS.COL_ACTIONS}</th>
           </tr>
         </thead>
         <tbody>
@@ -61,7 +62,11 @@ export function CostEstimationHistoryTable({
                 <td>
                   <div className="flex items-center gap-2">
                     <span className="font-bold">v{record.version}</span>
-                    {isCurrent && <Badge variant="info">Đang chọn</Badge>}
+                    {isCurrent && (
+                      <Badge variant="info">
+                        {COSTING_LABELS.BADGE_CURRENT}
+                      </Badge>
+                    )}
                   </div>
                 </td>
                 <td className="text-muted text-sm">
@@ -88,8 +93,8 @@ export function CostEstimationHistoryTable({
                     }
                     title={
                       record.simulation_state
-                        ? 'Phục hồi tham số từ phiên bản này'
-                        : 'Không có dữ liệu tham số để phục hồi'
+                        ? COSTING_LABELS.TITLE_RESTORE
+                        : COSTING_LABELS.TITLE_NO_RESTORE
                     }
                   >
                     <Icon name="RefreshCcw" size={16} />

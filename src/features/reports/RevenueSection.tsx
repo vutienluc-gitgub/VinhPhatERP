@@ -9,6 +9,8 @@ import {
 import { MoneyText } from '@/shared/value';
 import { sumBy } from '@/shared/utils/array.util';
 
+import { REPORT_LABELS } from './reports.constants';
+
 type RevenueSectionProps = {
   data: RevenueRow[];
   isLoading: boolean;
@@ -21,34 +23,34 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
 
   const columns: DataTableColumn<RevenueRow>[] = [
     {
-      header: 'Đơn hàng',
+      header: REPORT_LABELS.COL_ORDER,
       cell: (r) => <span className="font-bold">{r.order_number}</span>,
-      footer: 'Tổng cộng',
+      footer: REPORT_LABELS.TOTAL,
     },
     {
-      header: 'Khách hàng',
+      header: REPORT_LABELS.COL_CUSTOMER,
       cell: (r) => r.customer_name,
       className: 'max-sm:hidden text-muted text-sm',
     },
     {
-      header: 'Ngày đặt',
+      header: REPORT_LABELS.COL_ORDER_DATE,
       cell: (r) => r.order_date,
       className: 'text-muted text-sm',
     },
     {
-      header: 'Tổng tiền',
+      header: REPORT_LABELS.COL_TOTAL_AMOUNT,
       cell: (r) => <MoneyText value={r.total_amount} />,
       footer: <MoneyText value={totalRevenue} />,
       className: 'text-right font-medium',
     },
     {
-      header: 'Đã thu',
+      header: REPORT_LABELS.COL_PAID_AMOUNT,
       cell: (r) => <MoneyText value={r.paid_amount} />,
       footer: <MoneyText value={totalPaid} />,
       className: 'text-right text-success',
     },
     {
-      header: 'Còn nợ',
+      header: REPORT_LABELS.COL_BALANCE_DUE,
       cell: (r) => <MoneyText value={r.balance_due} />,
       footer: <MoneyText value={totalBalance} />,
       className: 'text-right font-bold text-warning',
@@ -58,12 +60,14 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
   return (
     <div className="panel-card card-flush">
       <div className="card-header-area">
-        <span className="font-bold text-lg">Phân tích dòng tiền</span>
+        <span className="font-bold text-lg">
+          {REPORT_LABELS.REVENUE_SECTION_TITLE}
+        </span>
       </div>
 
       <KpiGrid className="px-5 py-4">
         <KpiCard
-          label="Tổng doanh thu"
+          label={REPORT_LABELS.REV_TOTAL}
           value={totalRevenue}
           formatMode="currency"
           icon="TrendingUp"
@@ -71,7 +75,7 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
           isLoading={isLoading}
         />
         <KpiCard
-          label="Đã thu"
+          label={REPORT_LABELS.REV_PAID}
           value={totalPaid}
           formatMode="currency"
           icon="CheckCircle"
@@ -79,7 +83,7 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
           isLoading={isLoading}
         />
         <KpiCard
-          label="Còn nợ"
+          label={REPORT_LABELS.REV_BALANCE}
           value={totalBalance}
           formatMode="currency"
           icon="Wallet"
@@ -87,7 +91,7 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
           isLoading={isLoading}
         />
         <KpiCard
-          label="Số đơn hàng"
+          label={REPORT_LABELS.REV_ORDER_COUNT}
           value={data.length}
           icon="Package"
           variant="secondary"
@@ -109,13 +113,13 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
             <div className="text-sm text-muted mb-2">{r.customer_name}</div>
             <div className="grid grid-cols-2 gap-2 text-xs border-t pt-2">
               <div>
-                <p className="opacity-70">Tổng tiền</p>
+                <p className="opacity-70">{REPORT_LABELS.COL_TOTAL_AMOUNT}</p>
                 <p className="font-bold">
                   <MoneyText value={r.total_amount} />đ
                 </p>
               </div>
               <div className="text-right">
-                <p className="opacity-70">Còn nợ</p>
+                <p className="opacity-70">{REPORT_LABELS.COL_BALANCE_DUE}</p>
                 <p className="font-bold text-warning">
                   <MoneyText value={r.balance_due} />đ
                 </p>

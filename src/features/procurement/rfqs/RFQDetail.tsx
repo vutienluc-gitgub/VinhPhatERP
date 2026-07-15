@@ -150,7 +150,9 @@ export function RFQDetail() {
             </div>
             {rfq.notes && (
               <div className="mt-6 pt-4 border-t border-border">
-                <p className="text-sm font-medium mb-2">Ghi chú:</p>
+                <p className="text-sm font-medium mb-2">
+                  {RFQ_LABELS.LBL_NOTES}
+                </p>
                 <p className="text-sm text-muted whitespace-pre-wrap">
                   {rfq.notes}
                 </p>

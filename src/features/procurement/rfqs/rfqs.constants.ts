@@ -38,7 +38,11 @@ export const RFQ_LABELS = {
   COL_DEADLINE: 'Hạn chót',
   COL_STATUS: 'Trạng thái',
   COL_CREATED_AT: 'Ngày tạo',
+  COL_PR_CODE: 'Mã PR / Yêu cầu',
   COL_ACTIONS: 'Thao tác',
+  COL_MAP_MATERIAL: 'Map Vật tư (Bắt buộc)',
+  COL_MATERIAL_SPEC: 'Quy cách',
+  COL_QTY: 'S.Lượng',
 
   /* ── Actions ── */
   ACTION_VIEW: 'Chi tiết',

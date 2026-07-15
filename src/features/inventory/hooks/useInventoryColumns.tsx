@@ -38,7 +38,9 @@ export const useAgingColumns = (): DataTableColumn<AgingRoll>[] => [
   {
     header: MSG.COL_AGE_DAYS,
     cell: (r) => (
-      <span className="font-bold tabular-nums">{r.age_days} ngày</span>
+      <span className="font-bold tabular-nums">
+        {r.age_days} {MSG.DAYS}
+      </span>
     ),
     className: 'text-right',
   },

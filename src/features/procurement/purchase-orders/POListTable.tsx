@@ -98,7 +98,9 @@ export function POListTable({
       },
       {
         id: 'actions',
-        header: () => <div className="text-right">Thao tác</div>,
+        header: () => (
+          <div className="text-right">{PO_CONSTANTS.COL_ACTIONS}</div>
+        ),
         meta: { className: 'text-right' },
         cell: ({ row }) => {
           const po = row.original;
@@ -172,7 +174,9 @@ export function POListTable({
                 </div>
 
                 <div className="flex items-center gap-2 pt-2 border-t border-border/10">
-                  <span className="text-xs text-muted w-14">Tiến độ:</span>
+                  <span className="text-xs text-muted w-14">
+                    {PO_CONSTANTS.COL_PROGRESS}:
+                  </span>
                   <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div
                       className={`h-full transition-all ${p >= 100 ? 'bg-green-500' : p > 0 ? 'bg-orange-400' : 'bg-gray-300'}`}
