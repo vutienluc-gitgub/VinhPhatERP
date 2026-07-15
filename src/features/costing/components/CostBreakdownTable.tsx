@@ -1,5 +1,6 @@
 import { MoneyText } from '@/shared/value';
 import type { CostBreakdownItem } from '@/features/costing/types/greige-costing.type';
+import { COSTING_LABELS } from '@/features/costing/costing.constants';
 
 interface CostBreakdownTableProps {
   breakdown: CostBreakdownItem[];
@@ -15,14 +16,18 @@ export function CostBreakdownTable({
   return (
     <div className="bg-surface rounded border border-border/50 overflow-hidden">
       <div className="px-4 py-2 bg-muted/20 border-b border-border/50 text-sm font-semibold">
-        Cơ cấu giá vốn
+        {COSTING_LABELS.COST_STRUCTURE}
       </div>
       <table className="w-full text-sm">
         <thead className="text-muted text-xs text-left">
           <tr>
-            <th className="p-3 font-normal">Thành phần</th>
-            <th className="p-3 font-normal text-right">Tỷ lệ</th>
-            <th className="p-3 font-normal text-right">Giá trị (VNĐ)</th>
+            <th className="p-3 font-normal">{COSTING_LABELS.COMPONENT}</th>
+            <th className="p-3 font-normal text-right">
+              {COSTING_LABELS.PERCENTAGE}
+            </th>
+            <th className="p-3 font-normal text-right">
+              {COSTING_LABELS.VALUE_VND}
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border/30">
@@ -40,7 +45,7 @@ export function CostBreakdownTable({
         </tbody>
         <tfoot className="bg-muted/10 font-bold">
           <tr>
-            <td className="p-3">Tổng giá vốn (Total Cost)</td>
+            <td className="p-3">{COSTING_LABELS.TOTAL_COST}</td>
             <td className="p-3 text-right">100%</td>
             <td className="p-3 text-right text-primary">
               <MoneyText value={totalCost} />

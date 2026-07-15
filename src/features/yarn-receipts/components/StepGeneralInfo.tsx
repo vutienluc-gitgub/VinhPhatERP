@@ -82,7 +82,7 @@ export function StepGeneralInfo({
                 options={supplierOptions}
                 value={field.value}
                 onChange={field.onChange}
-                placeholder="— Chọn nhà cung cấp —"
+                placeholder={formLabels.supplierPlaceholder}
                 hasError={!!errors.supplierId}
               />
             )}
@@ -115,7 +115,7 @@ export function StepGeneralInfo({
         </div>
 
         <div className="form-field">
-          <label htmlFor="notes">Ghi chú</label>
+          <label htmlFor="notes">{formLabels.notes}</label>
           <textarea
             id="notes"
             className="field-textarea"

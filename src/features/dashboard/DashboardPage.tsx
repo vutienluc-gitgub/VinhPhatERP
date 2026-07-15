@@ -14,6 +14,7 @@ import {
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 
+import { DASHBOARD_LABELS } from './dashboard.constants';
 import { RevenueOverviewCard } from './RevenueOverviewCard';
 import { SpendingOverviewCard } from './SpendingOverviewCard';
 import { CashFlowCard } from './CashFlowCard';
@@ -43,7 +44,7 @@ export function DashboardPage() {
     <div className="page-container">
       <div className="flex items-center justify-between mb-4">
         <h1 className="sr-only">Dashboard</h1>
-        <LiveIndicator label="Đang cập nhật" />
+        <LiveIndicator label={DASHBOARD_LABELS.LIVE_UPDATE} />
         <Button
           id="dashboard-new-order"
           variant="primary"
@@ -51,8 +52,12 @@ export function DashboardPage() {
           onClick={() => navigate('/orders/new')}
           className="rounded-xl px-4 ml-auto"
         >
-          <span className="hidden sm:inline">Tạo đơn mới</span>
-          <span className="sm:hidden">Thêm</span>
+          <span className="hidden sm:inline">
+            {DASHBOARD_LABELS.BTN_NEW_ORDER}
+          </span>
+          <span className="sm:hidden">
+            {DASHBOARD_LABELS.BTN_NEW_ORDER_SHORT}
+          </span>
         </Button>
       </div>
 
@@ -106,29 +111,33 @@ export function DashboardPage() {
         <div className="col-span-12 lg:col-span-8 flex flex-col gap-6">
           <KpiGrid>
             <KpiCard
-              label="Đang xử lý"
+              label={DASHBOARD_LABELS.KPI_PROCESSING}
               value={stats?.activeOrders ?? 0}
               icon="Package"
               variant="primary"
               isLoading={statsLoading}
             />
             <KpiCard
-              label="Trễ hạn"
+              label={DASHBOARD_LABELS.KPI_OVERDUE}
               value={stats?.overdueOrders ?? 0}
               icon="TriangleAlert"
               variant={stats?.overdueOrders ? 'danger' : 'success'}
               isLoading={statsLoading}
-              footer={stats?.overdueOrders ? 'Cần xử lý ngay' : 'Đúng tiến độ'}
+              footer={
+                stats?.overdueOrders
+                  ? DASHBOARD_LABELS.KPI_OVERDUE_ACTION
+                  : DASHBOARD_LABELS.KPI_ON_TIME
+              }
             />
             <KpiCard
-              label="Tổng công nợ"
+              label={DASHBOARD_LABELS.KPI_TOTAL_DEBT}
               value={stats ? formatCompactCurrency(stats.totalDebt) : '—'}
               icon="Wallet"
               variant={stats && stats.totalDebt > 0 ? 'danger' : 'success'}
               isLoading={statsLoading}
             />
             <KpiCard
-              label="Thu 7 ngày qua"
+              label={DASHBOARD_LABELS.KPI_RECENT_PAYMENT}
               value={stats ? formatCompactCurrency(stats.recentPayments) : '—'}
               icon="CircleCheck"
               variant="success"
@@ -138,21 +147,21 @@ export function DashboardPage() {
 
           <KpiGrid>
             <KpiCard
-              label="Đơn nháp"
+              label={DASHBOARD_LABELS.KPI_DRAFT}
               value={stats?.draftOrders ?? 0}
               icon="FileText"
               variant="secondary"
               isLoading={statsLoading}
             />
             <KpiCard
-              label="Chờ giao"
+              label={DASHBOARD_LABELS.KPI_PENDING_SHIP}
               value={stats?.pendingShipments ?? 0}
               icon="Truck"
               variant="warning"
               isLoading={statsLoading}
             />
             <KpiCard
-              label="Tỷ lệ chốt"
+              label={DASHBOARD_LABELS.KPI_CONVERSION}
               value={
                 stats?.conversionRate != null ? `${stats.conversionRate}%` : '—'
               }
@@ -161,7 +170,7 @@ export function DashboardPage() {
               isLoading={statsLoading}
             />
             <KpiCard
-              label="BG sắp hết hạn"
+              label={DASHBOARD_LABELS.KPI_EXPIRING_QUOTE}
               value={stats?.expiringQuotations ?? 0}
               icon="Clock"
               variant={stats?.expiringQuotations ? 'danger' : 'secondary'}

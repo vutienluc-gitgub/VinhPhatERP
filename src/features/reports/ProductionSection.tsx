@@ -10,6 +10,8 @@ import {
 } from '@/shared/components';
 import { sumBy, maxBy } from '@/shared/utils/array.util';
 
+import { REPORT_LABELS } from './reports.constants';
+
 type ProductionSectionProps = {
   efficiencyData: ProductionEfficiencyRow[];
   onTimeData: OnTimeDeliveryRow[];
@@ -92,23 +94,23 @@ export function ProductionSection({
 
   const columns: DataTableColumn<StageSummary>[] = [
     {
-      header: 'Công đoạn',
+      header: REPORT_LABELS.COL_STAGE,
       cell: (st) => (
         <span className="font-bold">{STAGE_LABELS[st.stage] ?? st.stage}</span>
       ),
     },
     {
-      header: 'Đơn',
+      header: REPORT_LABELS.COL_ORDERS,
       cell: (st) => st.totalOrders,
       className: 'text-right',
     },
     {
-      header: 'Đúng hạn',
+      header: REPORT_LABELS.COL_ON_TIME,
       cell: (st) => <span className="text-success">{st.onTimeCount}</span>,
       className: 'text-right',
     },
     {
-      header: 'Trễ',
+      header: REPORT_LABELS.COL_LATE,
       cell: (st) => (
         <span className={st.lateCount > 0 ? 'text-danger' : ''}>
           {st.lateCount}
@@ -117,7 +119,7 @@ export function ProductionSection({
       className: 'text-right',
     },
     {
-      header: '% Trễ',
+      header: REPORT_LABELS.COL_LATE_PCT,
       cell: (st) => (
         <span
           className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
@@ -134,7 +136,7 @@ export function ProductionSection({
       className: 'text-right',
     },
     {
-      header: 'TB trễ (ngày)',
+      header: REPORT_LABELS.PROD_AVG_LATE,
       cell: (st) => formatNum(st.avgDeviation),
       className: 'text-right max-sm:hidden',
     },
@@ -143,12 +145,14 @@ export function ProductionSection({
   return (
     <div className="panel-card card-flush">
       <div className="card-header-area">
-        <span className="font-bold text-lg">Sản xuất & Giao hàng</span>
+        <span className="font-bold text-lg">
+          {REPORT_LABELS.PRODUCTION_SECTION_TITLE}
+        </span>
       </div>
 
       <KpiGrid className="px-5 py-4">
         <KpiCard
-          label="Giao đúng hạn"
+          label={REPORT_LABELS.PROD_ON_TIME}
           value={`${onTimePct}%`}
           icon="CheckCircle"
           variant={
@@ -157,7 +161,7 @@ export function ProductionSection({
           isLoading={isLoading}
         />
         <KpiCard
-          label="TB trễ (ngày)"
+          label={REPORT_LABELS.PROD_AVG_LATE}
           value={formatNum(avgOverallDeviation)}
           icon="Clock"
           variant={avgOverallDeviation <= 2 ? 'success' : 'danger'}
@@ -165,16 +169,16 @@ export function ProductionSection({
         />
         {worstStage && (
           <KpiCard
-            label="Mắc xích yếu"
+            label={REPORT_LABELS.PROD_WEAK_LINK}
             value={STAGE_LABELS[worstStage.stage] ?? worstStage.stage}
             icon="Search"
             variant="danger"
-            footer={`${worstStage.latePct}% đơn bị trễ`}
+            footer={`${worstStage.latePct}% ${REPORT_LABELS.PROD_LATE_PCT}`}
             isLoading={isLoading}
           />
         )}
         <KpiCard
-          label="Đơn theo dõi"
+          label={REPORT_LABELS.PROD_TRACKED}
           value={totalDeliveries}
           icon="List"
           variant="secondary"
@@ -202,20 +206,20 @@ export function ProductionSection({
                       : 'bg-success/10 text-success border-success/20'
                 }`}
               >
-                {st.latePct}% Trễ
+                {st.latePct}% {REPORT_LABELS.COL_LATE}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2 text-center mt-3 border-t pt-2 text-[10px] text-muted">
               <div>
-                <p>Tổng đơn</p>
+                <p>{REPORT_LABELS.TOTAL_ORDERS}</p>
                 <p className="font-bold text-text">{st.totalOrders}</p>
               </div>
               <div>
-                <p>Đúng hạn</p>
+                <p>{REPORT_LABELS.COL_ON_TIME}</p>
                 <p className="font-bold text-success">{st.onTimeCount}</p>
               </div>
               <div>
-                <p>Trễ hạn</p>
+                <p>{REPORT_LABELS.LATE_ORDERS}</p>
                 <p className="font-bold text-danger">{st.lateCount}</p>
               </div>
             </div>

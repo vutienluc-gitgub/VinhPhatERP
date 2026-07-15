@@ -12,6 +12,7 @@ import { useSupplierCategories } from '@/application/crm';
 import { Button } from '@/shared/components/Button';
 import { Combobox } from '@/shared/components/Combobox';
 import { Icon } from '@/shared/components/Icon';
+import { SUPPLIER_LABELS as L } from '@/features/procurement/procurement.constants';
 
 /* ── Types ── */
 
@@ -105,13 +106,15 @@ export function QuickSupplierForm({
     <div className="border-[1.5px] border-primary rounded-lg p-3 bg-[rgba(11,107,203,0.03)]">
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
-        <span className="text-sm font-bold text-primary">+ Tao NCC nhanh</span>
+        <span className="text-sm font-bold text-primary">
+          {L.QUICK_CREATE_TITLE}
+        </span>
         <Button
           variant="ghost"
           size="icon"
           type="button"
           onClick={onCancel}
-          aria-label="Dong"
+          aria-label={L.BTN_CLOSE}
           className="min-h-[44px] min-w-[44px]"
         >
           <Icon name="x" size={16} />
@@ -132,7 +135,7 @@ export function QuickSupplierForm({
           {/* Ma NCC + Danh muc */}
           <div className="grid grid-cols-2 gap-2">
             <div className="form-field">
-              <label className="text-xs">Ma NCC</label>
+              <label className="text-xs">{L.COL_CODE}</label>
               <input
                 className={`field-input${errors.code ? ' border-danger' : ''}`}
                 type="text"
@@ -141,7 +144,7 @@ export function QuickSupplierForm({
               />
             </div>
             <div className="form-field">
-              <label className="text-xs">Danh muc</label>
+              <label className="text-xs">{L.COL_CATEGORY}</label>
               <Controller
                 name="category"
                 control={control}
@@ -152,7 +155,7 @@ export function QuickSupplierForm({
                     onChange={field.onChange}
                     onBlur={field.onBlur}
                     hasError={!!errors.category}
-                    placeholder="Chọn danh mục..."
+                    placeholder={L.PLACEHOLDER_CATEGORY}
                   />
                 )}
               />
@@ -162,12 +165,12 @@ export function QuickSupplierForm({
           {/* Ten NCC */}
           <div className="form-field">
             <label className="text-xs">
-              Ten NCC <span className="field-required">*</span>
+              {L.COL_NAME} <span className="field-required">*</span>
             </label>
             <input
               className={`field-input${errors.name ? ' border-danger' : ''}`}
               type="text"
-              placeholder="VD: Cong ty TNHH ABC"
+              placeholder={L.PLACEHOLDER_NAME}
               autoFocus
               {...register('name')}
             />
@@ -178,11 +181,11 @@ export function QuickSupplierForm({
 
           {/* SDT */}
           <div className="form-field">
-            <label className="text-xs">SDT</label>
+            <label className="text-xs">{L.COL_PHONE}</label>
             <input
               className="field-input"
               type="tel"
-              placeholder="VD: 0901 234 567"
+              placeholder={L.PLACEHOLDER_PHONE}
               {...register('phone')}
             />
           </div>
@@ -196,7 +199,7 @@ export function QuickSupplierForm({
               onClick={onCancel}
               disabled={isPending}
             >
-              Huy
+              {L.BTN_CANCEL}
             </Button>
             <Button
               variant="primary"
@@ -204,7 +207,7 @@ export function QuickSupplierForm({
               type="submit"
               isLoading={isPending}
             >
-              Tao NCC
+              {L.BTN_CREATE}
             </Button>
           </div>
         </div>

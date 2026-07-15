@@ -84,6 +84,19 @@ export const PO_CONSTANTS = {
   STATUS_REJECTED: 'Từ chối',
   STATUS_CANCELLED: 'Đã huỷ',
 
+  // Timeline
+  TIMELINE_DRAFT: 'Nháp',
+  TIMELINE_PENDING: 'Chờ duyệt',
+  TIMELINE_APPROVED: 'Đã duyệt',
+  TIMELINE_SENT: 'Đã gửi NCC',
+  TIMELINE_CONFIRMED: 'NCC Xác nhận',
+  TIMELINE_RECEIVING: 'Đang nhập kho',
+  TIMELINE_COMPLETED: 'Hoàn tất',
+  TIMELINE_TITLE: 'Tiến trình xử lý (Lifecycle)',
+  TIMELINE_REQUEST_CHANGES: 'Yêu cầu sửa đổi (Request Changes)',
+  TIMELINE_REJECTED: 'Đã từ chối (Rejected)',
+  TIMELINE_CANCELLED: 'Đã hủy (Cancelled)',
+
   // Create Page
   CREATE_PAGE_TITLE: 'Tạo Đơn Đặt Hàng',
   SECTION_GENERAL: 'Thông tin chung',
@@ -195,4 +208,32 @@ export const PO_CONSTANTS = {
   GR_MSG_ERROR: 'Có lỗi xảy ra khi nhập kho',
   GR_ALL_RECEIVED: 'Tất cả mặt hàng đã được nhập đủ.',
   GR_ERROR_LABEL: 'Lỗi',
+
+  // Print Template
+  TPL_COMPANY_NAME: 'CÔNG TY CỔ PHẦN DỆT MAY VĨNH PHÁT',
+  TPL_COMPANY_ADDRESS:
+    'Địa chỉ: Lô A2, Đường số 3, KCN Hải Sơn, Đức Hòa, Long An',
+  TPL_COMPANY_CONTACT: 'Điện thoại: +84 272 377 8888 | MST: 1234567890',
+  TPL_QR_HINT: 'Quét xác thực',
+  TPL_DOC_TITLE: 'Đơn Đặt Hàng / Purchase Order',
+  TPL_SUPPLIER_SECTION: 'Thông tin Nhà cung cấp / Supplier Info',
+  TPL_ORDER_SECTION: 'Thông tin Đơn hàng / Order Info',
+  TPL_COL_NO: 'STT',
+  TPL_COL_CODE: 'Mã nguyên liệu',
+  TPL_COL_NAME: 'Tên nguyên liệu',
+  TPL_TOTAL_AMOUNT_TEXT: 'Tổng tiền thanh toán (Bằng chữ):',
+  TPL_NOTE_SECTION: 'Ghi chú đơn hàng:',
+  TPL_VAT_NOTE:
+    'Lưu ý: Giá trị trên chưa bao gồm các khoản thuế hoặc chiết khấu khác ngoại trừ đã nêu trên.',
+  TPL_SIGN_CREATOR: 'Người lập biểu',
+  TPL_SIGN_MANAGER: 'Trưởng phòng mua hàng',
+  TPL_SIGN_DIRECTOR: 'Ban Giám Đốc',
+  TPL_SIGN_INTERNAL_NOTE: 'Phê duyệt nội bộ',
+  TPL_SIGN_APPROVED: 'Đã Duyệt Điện Tử',
+  TPL_SIGN_PENDING: 'Chờ ký duyệt',
+  TPL_SIGN_BUYER: 'Đại diện Người mua',
+  TPL_SIGN_SUPPLIER: 'Đại diện Nhà cung cấp',
+  TPL_SIGN_NOTE: '(Ký, đóng dấu và ghi rõ họ tên)',
+  TPL_FOOTER_NOTE:
+    'Đơn đặt hàng điện tử này được tạo tự động bởi Hệ thống ERP VinhPhat - Version 2.0.0',
 };

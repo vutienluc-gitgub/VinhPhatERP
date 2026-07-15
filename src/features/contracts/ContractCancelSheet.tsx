@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Button, AdaptiveSheet } from '@/shared/components';
+
+import { CONTRACT_LABELS } from './contracts.constants';
 
 type ContractCancelSheetProps = {
   open: boolean;
@@ -16,56 +18,43 @@ export function ContractCancelSheet({
   isLoading,
 }: ContractCancelSheetProps) {
   const [reason, setReason] = useState('');
-  const [touched, setTouched] = useState(false);
-  const hasError = touched && !reason.trim();
 
-  function handleSubmit() {
-    setTouched(true);
-    if (!reason.trim()) return;
-    onConfirm(reason.trim());
-  }
-
-  function handleClose() {
-    setReason('');
-    setTouched(false);
-    onClose();
-  }
+  useEffect(() => {
+    if (open) {
+      setReason('');
+    }
+  }, [open]);
 
   return (
     <AdaptiveSheet
       open={open}
-      onClose={handleClose}
-      title="Hủy hợp đồng"
+      onClose={onClose}
+      title={CONTRACT_LABELS.CANCEL_TITLE}
+      maxWidth={480}
       footer={
         <div className="flex gap-3 justify-end">
-          <Button
-            variant="secondary"
-            onClick={handleClose}
-            disabled={isLoading}
-          >
-            Thoát
+          <Button variant="secondary" onClick={onClose} disabled={isLoading}>
+            {CONTRACT_LABELS.BTN_CANCEL_ACTION}
           </Button>
-          <Button variant="danger" onClick={handleSubmit} isLoading={isLoading}>
-            Xác nhận huỷ
+          <Button
+            variant="primary"
+            className="btn-danger"
+            onClick={() => onConfirm(reason)}
+            isLoading={isLoading}
+          >
+            {CONTRACT_LABELS.BTN_CONFIRM_CANCEL}
           </Button>
         </div>
       }
     >
-      <div className="form-field">
-        <label>
-          Lý do huỷ <span className="field-required">*</span>
-        </label>
+      <div className="p-1">
         <textarea
-          className={`field-textarea${hasError ? ' border-danger' : ''}`}
-          rows={4}
-          placeholder="Nhập lý do huỷ hợp đồng..."
+          className="field-textarea"
+          rows={3}
+          placeholder={CONTRACT_LABELS.CANCEL_REASON_PLACEHOLDER}
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          onBlur={() => setTouched(true)}
         />
-        {hasError && (
-          <span className="field-error">Vui lòng nhập lý do huỷ hợp đồng.</span>
-        )}
       </div>
     </AdaptiveSheet>
   );

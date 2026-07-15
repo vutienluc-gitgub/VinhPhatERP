@@ -1,9 +1,5 @@
 import { Icon } from '@/shared/components/Icon';
-
-const PROMO_MESSAGES = {
-  TITLE: 'Nâng cấp tính năng AI',
-  BTN_UPGRADE: 'Nâng cấp ngay',
-};
+import { PROMO_MESSAGES } from '@/shared/constants/layout';
 
 export function SidebarPromo() {
   return (

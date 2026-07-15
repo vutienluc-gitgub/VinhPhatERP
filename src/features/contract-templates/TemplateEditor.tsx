@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { TEMPLATE_PLACEHOLDERS } from '@/schema';
+import { TEMPLATE_PLACEHOLDERS, CONTRACT_TEMPLATE_LABELS } from '@/schema';
 import type { ContractTemplate, ContractType } from '@/schema';
 import { Icon, Button } from '@/shared/components';
 import { contractTemplateEditorSchema } from '@/schema/contract-template.schema';
@@ -75,11 +75,12 @@ export function TemplateEditor({
           />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-amber-800">
-              {template ? 'Lưu thay đổi mẫu văn bản' : 'Tạo mới mẫu văn bản'}
+              {template
+                ? CONTRACT_TEMPLATE_LABELS.CONFIRM_SAVE_TITLE
+                : CONTRACT_TEMPLATE_LABELS.CONFIRM_CREATE_TITLE}
             </p>
             <p className="text-xs text-amber-700 mt-1">
-              Bạn có chắc chắn muốn lưu mẫu này không? Những bản in tiếp theo sẽ
-              sử dụng nội dung mới.
+              {CONTRACT_TEMPLATE_LABELS.CONFIRM_SAVE_MSG}
             </p>
             <div className="flex gap-2 mt-3">
               <Button
@@ -89,7 +90,9 @@ export function TemplateEditor({
                 onClick={() => void handleConfirm()}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Đang lưu...' : 'Xác nhận lưu'}
+                {isSubmitting
+                  ? CONTRACT_TEMPLATE_LABELS.BTN_SAVING
+                  : CONTRACT_TEMPLATE_LABELS.BTN_CONFIRM_SAVE}
               </Button>
               <Button
                 variant="secondary"
@@ -98,7 +101,7 @@ export function TemplateEditor({
                 onClick={handleCancelConfirm}
                 disabled={isSubmitting}
               >
-                Hủy
+                {CONTRACT_TEMPLATE_LABELS.BTN_CANCEL}
               </Button>
             </div>
           </div>
@@ -110,7 +113,8 @@ export function TemplateEditor({
           {/* Template name */}
           <div className="form-field">
             <label htmlFor="template-name">
-              Tên mẫu <span className="field-required">*</span>
+              {CONTRACT_TEMPLATE_LABELS.TEMPLATE_NAME}{' '}
+              <span className="field-required">*</span>
             </label>
             <input
               id="template-name"
@@ -125,7 +129,7 @@ export function TemplateEditor({
 
           {/* Placeholder reference */}
           <div className="form-field">
-            <label>Placeholders có sẵn</label>
+            <label>{CONTRACT_TEMPLATE_LABELS.AVAILABLE_PLACEHOLDERS}</label>
             <div className="flex flex-wrap gap-1.5 p-3 rounded-lg border border-border bg-surface-subtle">
               {TEMPLATE_PLACEHOLDERS.map((p) => (
                 <span
@@ -138,15 +142,15 @@ export function TemplateEditor({
               ))}
             </div>
             <p className="text-xs text-muted mt-1">
-              Sao chép placeholder vào nội dung để tự động điền dữ liệu khi tạo
-              hợp đồng.
+              {CONTRACT_TEMPLATE_LABELS.PLACEHOLDER_HINT}
             </p>
           </div>
 
           {/* Content editor */}
           <div className="form-field">
             <label htmlFor="template-content">
-              Nội dung HTML <span className="field-required">*</span>
+              {CONTRACT_TEMPLATE_LABELS.HTML_CONTENT}{' '}
+              <span className="field-required">*</span>
             </label>
             <textarea
               id="template-content"
@@ -168,14 +172,14 @@ export function TemplateEditor({
             onClick={onCancel}
             disabled={isSubmitting}
           >
-            Hủy
+            {CONTRACT_TEMPLATE_LABELS.BTN_CANCEL}
           </Button>
           <Button
             variant="primary"
             type="submit"
             disabled={isSubmitting || !isDirty || showConfirm}
           >
-            Lưu thay đổi
+            {CONTRACT_TEMPLATE_LABELS.BTN_SAVE}
           </Button>
         </div>
       </form>

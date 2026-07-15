@@ -24,6 +24,7 @@ import { ProductionSection } from './ProductionSection';
 import { ReportsFilterBar } from './ReportsFilter';
 import { RevenueSection } from './RevenueSection';
 import { RevenueTrendSection } from './RevenueTrendSection';
+import { REPORT_LABELS } from './reports.constants';
 
 function defaultDateFrom(): string {
   const d = new Date();
@@ -40,27 +41,27 @@ type Tab = 'overview' | 'revenue' | 'debt' | 'production' | 'inventory';
 const BASE_TABS: TabItem<Tab>[] = [
   {
     key: 'overview',
-    label: 'Tổng quan CEO',
+    label: REPORT_LABELS.TAB_OVERVIEW,
     icon: <Icon name="BarChart3" size={16} />,
   },
   {
     key: 'revenue',
-    label: 'Doanh thu',
+    label: REPORT_LABELS.TAB_REVENUE,
     icon: <Icon name="TrendingUp" size={16} />,
   },
   {
     key: 'debt',
-    label: 'Công nợ',
+    label: REPORT_LABELS.TAB_DEBT,
     icon: <Icon name="Wallet" size={16} />,
   },
   {
     key: 'production',
-    label: 'Sản xuất',
+    label: REPORT_LABELS.TAB_PRODUCTION,
     icon: <Icon name="Factory" size={16} />,
   },
   {
     key: 'inventory',
-    label: 'Tồn kho',
+    label: REPORT_LABELS.TAB_INVENTORY,
     icon: <Icon name="Box" size={16} />,
   },
 ];
@@ -110,9 +111,11 @@ export function ReportsPage() {
         <div className="card-header-area">
           <div className="card-header-row">
             <div>
-              <h3 className="text-lg font-bold m-0 mb-1">Báo cáo CEO</h3>
+              <h3 className="text-lg font-bold m-0 mb-1">
+                {REPORT_LABELS.PAGE_TITLE}
+              </h3>
               <p className="text-muted text-sm text-[0.82rem] m-0">
-                Phân tích hoạt động kinh doanh đa chiều theo thời gian cụ thể
+                {REPORT_LABELS.PAGE_DESC}
               </p>
             </div>
           </div>

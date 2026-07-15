@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useMemo } from 'react';
-import { useFieldArray, useForm, useWatch, Controller } from 'react-hook-form';
+import { useFieldArray, useForm, Controller } from 'react-hook-form';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { StepperFooter } from '@/shared/components/StepperFooter';
@@ -13,29 +13,28 @@ import {
   useColorOptions,
   toColorComboboxOptions,
 } from '@/shared/hooks/useColorOptions';
-import { MoneyText } from '@/shared/value';
 import {
   useCreateQuotation,
   useUpdateQuotation,
 } from '@/application/quotations';
 import {
-  calculateQuotationTotals,
   DISCOUNT_TYPE_OPTIONS,
   emptyQuotationItem,
   quotationsDefaultValues,
   quotationsSchema,
-  UNIT_OPTIONS,
   VAT_RATE_OPTIONS,
 } from '@/schema/quotation.schema';
 import type { QuotationsFormValues } from '@/schema/quotation.schema';
 import { getErrorMessage } from '@/shared/utils/error';
 
-import type { DiscountType, Quotation } from './types';
-
-const UNIT_LABELS: Record<string, string> = {
-  m: 'm',
-  kg: 'kg',
-};
+import type { Quotation } from './types';
+import {
+  QUOTATION_LABELS,
+  QUOTATION_PLACEHOLDERS,
+  QUOTATION_MESSAGES,
+} from './quotations.constants';
+import { QuotationSummary } from './components/QuotationSummary';
+import { QuotationItemRow } from './components/QuotationItemRow';
 
 const DISCOUNT_OPTIONS = DISCOUNT_TYPE_OPTIONS.map((opt) => ({
   value: opt.value,
@@ -44,11 +43,6 @@ const DISCOUNT_OPTIONS = DISCOUNT_TYPE_OPTIONS.map((opt) => ({
 
 const VAT_OPTIONS = VAT_RATE_OPTIONS.map((opt) => ({
   value: String(opt.value),
-  label: opt.label,
-}));
-
-const UNIT_COMBO_OPTIONS = UNIT_OPTIONS.map((opt) => ({
-  value: opt.value,
   label: opt.label,
 }));
 
@@ -84,148 +78,6 @@ function quotationToFormValues(q: Quotation): QuotationsFormValues {
   };
 }
 
-/* ── Realtime totals ── */
-
-function TotalsSummary({
-  control,
-}: {
-  control: ReturnType<typeof useForm<QuotationsFormValues>>['control'];
-}) {
-  const items = useWatch({
-    control,
-    name: 'items',
-  });
-  const discountType = useWatch({
-    control,
-    name: 'discountType',
-  }) as DiscountType;
-  const discountValue =
-    useWatch({
-      control,
-      name: 'discountValue',
-    }) ?? 0;
-  const vatRate =
-    useWatch({
-      control,
-      name: 'vatRate',
-    }) ?? 10;
-
-  const totals = calculateQuotationTotals(
-    items ?? [],
-    discountType,
-    Number(discountValue),
-    Number(vatRate),
-  );
-
-  return (
-    <div className="border-t-2 border-border py-3 flex flex-col gap-1.5 text-[0.92rem]">
-      <div className="flex justify-between">
-        <span>Tạm tính:</span>
-        <span>
-          <MoneyText value={totals.subtotal} />
-        </span>
-      </div>
-      {totals.discountAmount > 0 && (
-        <div className="flex justify-between text-danger">
-          <span>Chiết khấu:</span>
-          <span>
-            -<MoneyText value={totals.discountAmount} />
-          </span>
-        </div>
-      )}
-      <div className="flex justify-between">
-        <span>Trước VAT:</span>
-        <span>
-          <MoneyText value={totals.totalBeforeVat} />
-        </span>
-      </div>
-      {totals.vatAmount > 0 && (
-        <div className="flex justify-between">
-          <span>VAT ({vatRate}%):</span>
-          <span>
-            +<MoneyText value={totals.vatAmount} />
-          </span>
-        </div>
-      )}
-      <div className="flex justify-between font-bold text-[1.05rem] border-t border-border pt-2">
-        <span>Tổng cộng:</span>
-        <span>
-          <MoneyText value={totals.totalAmount} />
-        </span>
-      </div>
-    </div>
-  );
-}
-
-/* ── Quantity + Unit Price fields ── */
-
-type ItemFieldsProps = {
-  control: ReturnType<typeof useForm<QuotationsFormValues>>['control'];
-  index: number;
-  register: ReturnType<typeof useForm<QuotationsFormValues>>['register'];
-  errors: ReturnType<
-    typeof useForm<QuotationsFormValues>
-  >['formState']['errors'];
-};
-
-function ItemQuantityFields({
-  control,
-  index,
-  register,
-  errors,
-}: ItemFieldsProps) {
-  const unit =
-    useWatch({
-      control,
-      name: `items.${index}.unit`,
-    }) ?? 'm';
-  const unitLabel = UNIT_LABELS[unit] ?? unit;
-
-  return (
-    <>
-      <div className="form-field">
-        <label htmlFor={`items.${index}.quantity`}>
-          Số lượng ({unitLabel}) <span className="field-required">*</span>
-        </label>
-        <input
-          id={`items.${index}.quantity`}
-          className={`field-input${errors.items?.[index]?.quantity ? ' border-danger' : ''}`}
-          type="number"
-          step="0.001"
-          min="0"
-          placeholder="0"
-          {...register(`items.${index}.quantity`, { valueAsNumber: true })}
-        />
-        {errors.items?.[index]?.quantity && (
-          <span className="field-error">
-            {errors.items[index].quantity.message}
-          </span>
-        )}
-      </div>
-
-      <div className="form-field">
-        <label htmlFor={`items.${index}.unitPrice`}>
-          Đơn giá (đ/{unitLabel}) <span className="field-required">*</span>
-        </label>
-        <input
-          id={`items.${index}.unitPrice`}
-          className={`field-input${errors.items?.[index]?.unitPrice ? ' border-danger' : ''}`}
-          type="number"
-          step="1"
-          min="0"
-          placeholder="0"
-          {...register(`items.${index}.unitPrice`, { valueAsNumber: true })}
-        />
-        {errors.items?.[index]?.unitPrice && (
-          <span className="field-error">
-            {errors.items[index].unitPrice.message}
-          </span>
-        )}
-      </div>
-    </>
-  );
-}
-
 export function QuotationForm({
   quotation,
   initialData,
@@ -236,7 +88,7 @@ export function QuotationForm({
   const updateMutation = useUpdateQuotation();
   const { data: customers = [] } = useActiveCustomers();
   const { data: fabricOptions = [] } = useFabricCatalogOptions();
-  const { data: colorOptions = [] } = useColorOptions();
+  const { data: colorOptionsData = [] } = useColorOptions();
 
   const customerOptions = useMemo(
     () =>
@@ -256,6 +108,11 @@ export function QuotationForm({
         code: f.code,
       })),
     [fabricOptions],
+  );
+
+  const colorOptions = useMemo(
+    () => toColorComboboxOptions(colorOptionsData),
+    [colorOptionsData],
   );
 
   const {
@@ -327,8 +184,8 @@ export function QuotationForm({
       onClose={onClose}
       title={
         isEditing
-          ? `Sửa báo giá: ${quotation.quotation_number}`
-          : 'Tạo báo giá mới'
+          ? `${QUOTATION_LABELS.EDIT_QUOTATION}: ${quotation.quotation_number}`
+          : QUOTATION_LABELS.NEW_QUOTATION
       }
       maxWidth={780}
       stepInfo={{ current: stepper.currentStep, total: stepper.totalSteps }}
@@ -337,7 +194,9 @@ export function QuotationForm({
           stepper={stepper}
           onCancel={onClose}
           isPending={isPending}
-          submitLabel={isEditing ? 'Cập nhật' : 'Tạo báo giá'}
+          submitLabel={
+            isEditing ? QUOTATION_LABELS.BTN_UPDATE : QUOTATION_LABELS.BTN_SAVE
+          }
           formId="quotation-form"
         />
       }
@@ -350,17 +209,18 @@ export function QuotationForm({
       >
         {mutationError && (
           <p className="error-inline mb-4">
-            Lỗi: {getErrorMessage(mutationError)}
+            {QUOTATION_MESSAGES.ERROR_PREFIX} {getErrorMessage(mutationError)}
           </p>
         )}
 
         <div className="form-grid">
           {/* STEP 1: THÔNG TIN CƠ BẢN */}
           <div className={stepper.currentStep === 0 ? 'block' : 'hidden'}>
-            {/* Row 1: So BG + Ngay BG */}
             <div className="form-grid sm:grid-cols-2">
               <div className="form-field">
-                <label htmlFor="quotationNumber">Số báo giá</label>
+                <label htmlFor="quotationNumber">
+                  {QUOTATION_LABELS.QUOTATION_NUMBER}
+                </label>
                 {isEditing ? (
                   <input
                     id="quotationNumber"
@@ -374,7 +234,7 @@ export function QuotationForm({
                     id="quotationNumber"
                     className="field-input italic text-[var(--text-tertiary)]"
                     type="text"
-                    value="Tự động"
+                    value={QUOTATION_PLACEHOLDERS.AUTO_NUMBER}
                     readOnly
                     disabled
                   />
@@ -383,7 +243,8 @@ export function QuotationForm({
 
               <div className="form-field">
                 <label htmlFor="quotationDate">
-                  Ngày báo giá <span className="field-required">*</span>
+                  {QUOTATION_LABELS.QUOTATION_DATE}{' '}
+                  <span className="field-required">*</span>
                 </label>
                 <input
                   id="quotationDate"
@@ -399,11 +260,11 @@ export function QuotationForm({
               </div>
             </div>
 
-            {/* Row 2: Khach hang + Het hieu luc */}
             <div className="form-grid sm:grid-cols-2">
               <div className="form-field">
                 <label htmlFor="customerId">
-                  Khách hàng <span className="field-required">*</span>
+                  {QUOTATION_LABELS.CUSTOMER}{' '}
+                  <span className="field-required">*</span>
                 </label>
                 <Controller
                   name="customerId"
@@ -414,7 +275,7 @@ export function QuotationForm({
                         options={customerOptions}
                         value={field.value}
                         onChange={field.onChange}
-                        placeholder="— Chọn khách hàng —"
+                        placeholder={QUOTATION_PLACEHOLDERS.SELECT_CUSTOMER}
                         hasError={!!errors.customerId}
                       />
                     );
@@ -428,7 +289,9 @@ export function QuotationForm({
               </div>
 
               <div className="form-field">
-                <label htmlFor="validUntil">Hiệu lực đến</label>
+                <label htmlFor="validUntil">
+                  {QUOTATION_LABELS.VALID_UNTIL}
+                </label>
                 <input
                   id="validUntil"
                   className={`field-input${errors.validUntil ? ' border-danger' : ''}`}
@@ -446,10 +309,10 @@ export function QuotationForm({
 
           {/* STEP 2: DÒNG HÀNG */}
           <div className={stepper.currentStep === 1 ? 'block' : 'hidden'}>
-            {/* Line items */}
             <div className="form-field">
               <label>
-                Dòng hàng <span className="field-required">*</span>
+                {QUOTATION_LABELS.LINE_ITEMS}{' '}
+                <span className="field-required">*</span>
               </label>
               {errors.items?.root && (
                 <span className="field-error mb-2 block">
@@ -459,167 +322,18 @@ export function QuotationForm({
 
               <div className="flex flex-col gap-3">
                 {fields.map((field, index) => (
-                  <div
+                  <QuotationItemRow
                     key={field.id}
-                    className="border border-border rounded-lg p-3 bg-surface"
-                  >
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-[0.85rem] font-bold text-muted uppercase tracking-wider">
-                        Dòng {index + 1}
-                      </span>
-                      <button
-                        className="btn-icon text-danger"
-                        type="button"
-                        title="Xóa dòng"
-                        onClick={() => remove(index)}
-                      >
-                        <Icon name="X" size={16} />
-                      </button>
-                    </div>
-
-                    <div className="form-grid form-grid-2">
-                      <div className="form-field">
-                        <label htmlFor={`items.${index}.fabricType`}>
-                          Loại vải <span className="field-required">*</span>
-                        </label>
-                        <Controller
-                          name={`items.${index}.fabricType` as const}
-                          control={control}
-                          render={({ field }) => {
-                            return (
-                              <Combobox
-                                options={fabricComboOptions}
-                                value={field.value}
-                                onChange={(val) => {
-                                  field.onChange(val);
-                                  // Auto-fill unit from catalog
-                                  const selected = fabricOptions.find(
-                                    (f) => f.name === val,
-                                  );
-                                  if (selected?.unit) {
-                                    setValue(
-                                      `items.${index}.unit`,
-                                      selected.unit as 'm' | 'kg',
-                                    );
-                                  }
-                                }}
-                                placeholder="Chọn hoặc nhập loại vải"
-                                hasError={!!errors.items?.[index]?.fabricType}
-                              />
-                            );
-                          }}
-                        />
-                        {errors.items?.[index]?.fabricType && (
-                          <span className="field-error">
-                            {errors.items[index].fabricType.message}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="form-field">
-                        <label htmlFor={`items.${index}.colorName`}>Màu</label>
-                        <Controller
-                          name={`items.${index}.colorName` as const}
-                          control={control}
-                          render={({ field }) => (
-                            <Combobox
-                              options={toColorComboboxOptions(colorOptions)}
-                              value={field.value ?? ''}
-                              onChange={field.onChange}
-                              placeholder="Chọn hoặc nhập màu..."
-                            />
-                          )}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-grid form-grid-2">
-                      <div className="form-field">
-                        <label htmlFor={`items.${index}.colorCode`}>
-                          Mã màu
-                        </label>
-                        <input
-                          id={`items.${index}.colorCode`}
-                          className="field-input"
-                          type="text"
-                          placeholder="VD: TC-01"
-                          {...register(`items.${index}.colorCode`)}
-                        />
-                      </div>
-
-                      <div className="form-grid form-grid-2">
-                        <div className="form-field">
-                          <label htmlFor={`items.${index}.widthCm`}>
-                            Khổ vải (cm)
-                          </label>
-                          <input
-                            id={`items.${index}.widthCm`}
-                            className="field-input"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            placeholder="150"
-                            {...register(`items.${index}.widthCm`, {
-                              valueAsNumber: true,
-                            })}
-                          />
-                        </div>
-                        <div className="form-field">
-                          <label htmlFor={`items.${index}.unit`}>Đơn vị</label>
-                          <Controller
-                            name={`items.${index}.unit` as const}
-                            control={control}
-                            render={({ field }) => (
-                              <Combobox
-                                options={UNIT_COMBO_OPTIONS}
-                                value={field.value}
-                                onChange={field.onChange}
-                              />
-                            )}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="form-grid form-grid-2">
-                      <ItemQuantityFields
-                        control={control}
-                        index={index}
-                        register={register}
-                        errors={errors}
-                      />
-                    </div>
-
-                    <div className="form-grid form-grid-2">
-                      <div className="form-field">
-                        <label htmlFor={`items.${index}.leadTimeDays`}>
-                          Thời gian SX (ngày)
-                        </label>
-                        <input
-                          id={`items.${index}.leadTimeDays`}
-                          className="field-input"
-                          type="number"
-                          min="0"
-                          placeholder="15"
-                          {...register(`items.${index}.leadTimeDays`, {
-                            valueAsNumber: true,
-                          })}
-                        />
-                      </div>
-                      <div className="form-field">
-                        <label htmlFor={`items.${index}.notes`}>
-                          Ghi chú dòng
-                        </label>
-                        <input
-                          id={`items.${index}.notes`}
-                          className="field-input"
-                          type="text"
-                          placeholder="Ghi chú..."
-                          {...register(`items.${index}.notes`)}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                    index={index}
+                    control={control}
+                    register={register}
+                    errors={errors}
+                    setValue={setValue}
+                    remove={remove}
+                    fabricComboOptions={fabricComboOptions}
+                    fabricOptions={fabricOptions}
+                    colorOptions={colorOptions}
+                  />
                 ))}
               </div>
 
@@ -628,17 +342,18 @@ export function QuotationForm({
                 type="button"
                 onClick={() => append({ ...emptyQuotationItem })}
               >
-                <Icon name="Plus" size={16} /> Thêm dòng hàng
+                <Icon name="Plus" size={16} /> {QUOTATION_LABELS.ADD_ITEM}
               </button>
             </div>
           </div>
 
           {/* STEP 3: CHIẾT KHẤU & VAT */}
           <div className={stepper.currentStep === 2 ? 'block' : 'hidden'}>
-            {/* Discount + VAT */}
             <div className="form-grid sm:grid-cols-2">
               <div className="form-field">
-                <label htmlFor="discountType">Loại chiết khấu</label>
+                <label htmlFor="discountType">
+                  {QUOTATION_LABELS.DISCOUNT_TYPE}
+                </label>
                 <Controller
                   name="discountType"
                   control={control}
@@ -653,7 +368,9 @@ export function QuotationForm({
               </div>
 
               <div className="form-field">
-                <label htmlFor="discountValue">Giá trị chiết khấu</label>
+                <label htmlFor="discountValue">
+                  {QUOTATION_LABELS.DISCOUNT_VALUE}
+                </label>
                 <input
                   id="discountValue"
                   className="field-input"
@@ -667,7 +384,7 @@ export function QuotationForm({
             </div>
 
             <div className="form-field">
-              <label htmlFor="vatRate">Thuế VAT</label>
+              <label htmlFor="vatRate">{QUOTATION_LABELS.VAT_RATE}</label>
               <Controller
                 name="vatRate"
                 control={control}
@@ -681,45 +398,46 @@ export function QuotationForm({
               />
             </div>
 
-            {/* Totals summary */}
-            <TotalsSummary control={control} />
+            <QuotationSummary control={control} />
           </div>
 
           {/* STEP 4: ĐIỀU KHOẢN */}
           <div className={stepper.currentStep === 3 ? 'block' : 'hidden'}>
-            {/* Terms */}
             <div className="form-grid sm:grid-cols-2">
               <div className="form-field">
-                <label htmlFor="deliveryTerms">Điều kiện giao hàng</label>
+                <label htmlFor="deliveryTerms">
+                  {QUOTATION_LABELS.DELIVERY_TERMS}
+                </label>
                 <textarea
                   id="deliveryTerms"
                   className="field-textarea"
                   rows={2}
-                  placeholder="VD: Giao tại kho khách..."
+                  placeholder={QUOTATION_PLACEHOLDERS.DELIVERY_TERMS}
                   {...register('deliveryTerms')}
                 />
               </div>
 
               <div className="form-field">
-                <label htmlFor="paymentTerms">Điều kiện thanh toán</label>
+                <label htmlFor="paymentTerms">
+                  {QUOTATION_LABELS.PAYMENT_TERMS}
+                </label>
                 <textarea
                   id="paymentTerms"
                   className="field-textarea"
                   rows={2}
-                  placeholder="VD: Thanh toán 50% trước..."
+                  placeholder={QUOTATION_PLACEHOLDERS.PAYMENT_TERMS}
                   {...register('paymentTerms')}
                 />
               </div>
             </div>
 
-            {/* Notes */}
             <div className="form-field mt-4">
-              <label htmlFor="notes">Ghi chú</label>
+              <label htmlFor="notes">{QUOTATION_LABELS.NOTES}</label>
               <textarea
                 id="notes"
                 className="field-textarea"
                 rows={2}
-                placeholder="Ghi chú về báo giá..."
+                placeholder={QUOTATION_PLACEHOLDERS.NOTES}
                 {...register('notes')}
               />
             </div>

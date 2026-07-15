@@ -1,4 +1,5 @@
 import { Icon } from '@/shared/components';
+import { PO_CONSTANTS } from '@/features/procurement/purchase-orders/purchase-orders.constants';
 
 interface POTimelineProps {
   status: string;
@@ -6,13 +7,13 @@ interface POTimelineProps {
 
 export function POTimeline({ status }: POTimelineProps) {
   const steps = [
-    { id: 'draft', label: 'Nháp' },
-    { id: 'pending_approval', label: 'Chờ duyệt' },
-    { id: 'approved', label: 'Đã duyệt' },
-    { id: 'sent', label: 'Đã gửi NCC' },
-    { id: 'supplier_confirmed', label: 'NCC Xác nhận' },
-    { id: 'receiving', label: 'Đang nhập kho' },
-    { id: 'completed', label: 'Hoàn tất' },
+    { id: 'draft', label: PO_CONSTANTS.TIMELINE_DRAFT },
+    { id: 'pending_approval', label: PO_CONSTANTS.TIMELINE_PENDING },
+    { id: 'approved', label: PO_CONSTANTS.TIMELINE_APPROVED },
+    { id: 'sent', label: PO_CONSTANTS.TIMELINE_SENT },
+    { id: 'supplier_confirmed', label: PO_CONSTANTS.TIMELINE_CONFIRMED },
+    { id: 'receiving', label: PO_CONSTANTS.TIMELINE_RECEIVING },
+    { id: 'completed', label: PO_CONSTANTS.TIMELINE_COMPLETED },
   ];
 
   // Map sub-statuses to main steps
@@ -25,7 +26,7 @@ export function POTimeline({ status }: POTimelineProps) {
       <div className="flex items-center gap-4 py-4 px-6 bg-amber-50 border border-amber-200 rounded-xl shadow-sm mb-6 text-amber-700">
         <Icon name="AlertCircle" size={24} className="text-amber-500" />
         <span className="font-semibold text-lg">
-          Yêu cầu sửa đổi (Request Changes)
+          {PO_CONSTANTS.TIMELINE_REQUEST_CHANGES}
         </span>
       </div>
     );
@@ -35,7 +36,9 @@ export function POTimeline({ status }: POTimelineProps) {
     return (
       <div className="flex items-center gap-4 py-4 px-6 bg-red-50 border border-red-200 rounded-xl shadow-sm mb-6 text-red-700">
         <Icon name="XCircle" size={24} className="text-red-500" />
-        <span className="font-semibold text-lg">Đã từ chối (Rejected)</span>
+        <span className="font-semibold text-lg">
+          {PO_CONSTANTS.TIMELINE_REJECTED}
+        </span>
       </div>
     );
   }
@@ -43,7 +46,9 @@ export function POTimeline({ status }: POTimelineProps) {
     return (
       <div className="flex items-center gap-4 py-4 px-6 bg-gray-50 border border-gray-200 rounded-xl shadow-sm mb-6 text-gray-700">
         <Icon name="Slash" size={24} className="text-gray-500" />
-        <span className="font-semibold text-lg">Đã hủy (Cancelled)</span>
+        <span className="font-semibold text-lg">
+          {PO_CONSTANTS.TIMELINE_CANCELLED}
+        </span>
       </div>
     );
   }
@@ -54,7 +59,7 @@ export function POTimeline({ status }: POTimelineProps) {
   return (
     <div className="bg-surface border border-border rounded-xl p-6 shadow-sm mb-6 overflow-hidden">
       <h3 className="font-semibold text-lg border-b border-border pb-3 mb-8 m-0">
-        Tiến trình xử lý (Lifecycle)
+        {PO_CONSTANTS.TIMELINE_TITLE}
       </h3>
       <div className="flex items-center justify-between relative px-4 md:px-16">
         <div className="absolute left-14 right-14 top-5 h-1.5 bg-gray-100 -z-10 rounded-full"></div>

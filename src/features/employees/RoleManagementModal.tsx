@@ -14,6 +14,8 @@ import {
   useDeleteCompanyRole,
 } from '@/application/crm';
 
+import { EMPLOYEE_LABELS, EMPLOYEE_MESSAGES } from './employees.constants';
+
 interface RoleManagementModalProps {
   open: boolean;
   onClose: () => void;
@@ -23,9 +25,9 @@ const roleFormSchema = z.object({
   code: z
     .string()
     .trim()
-    .min(1, 'Vui lòng nhập mã vai trò')
-    .regex(/^[a-z0-9_]+$/, 'Mã chỉ chứa chữ thường, số và dấu gạch dưới'),
-  name: z.string().trim().min(1, 'Vui lòng nhập tên hiển thị'),
+    .min(1, EMPLOYEE_LABELS.ROLE_VALIDATION_CODE_EMPTY)
+    .regex(/^[a-z0-9_]+$/, EMPLOYEE_LABELS.ROLE_VALIDATION_CODE_REGEX),
+  name: z.string().trim().min(1, EMPLOYEE_LABELS.ROLE_VALIDATION_NAME_EMPTY),
 });
 
 type RoleFormValues = z.infer<typeof roleFormSchema>;
@@ -64,7 +66,7 @@ export function RoleManagementModal({
   const handleCreate = form.handleSubmit((values) => {
     createMutation.mutate(values, {
       onSuccess: () => {
-        toast.success('Đã thêm vai trò mới');
+        toast.success(EMPLOYEE_MESSAGES.ROLE_ADD_SUCCESS);
         resetForm();
       },
       onError: (err) => toast.error(err.message),
@@ -73,14 +75,14 @@ export function RoleManagementModal({
 
   async function handleUpdate(id: string) {
     if (!editRoleName.trim()) {
-      toast.error('Tên vai trò không được để trống');
+      toast.error(EMPLOYEE_MESSAGES.ROLE_EMPTY_NAME);
       return;
     }
     updateMutation.mutate(
       { id, data: { name: editRoleName.trim() } },
       {
         onSuccess: () => {
-          toast.success('Đã cập nhật vai trò');
+          toast.success(EMPLOYEE_MESSAGES.ROLE_UPDATE_SUCCESS);
           resetForm();
         },
         onError: (err) => toast.error(err.message),
@@ -90,15 +92,15 @@ export function RoleManagementModal({
 
   async function handleDelete(id: string, name: string) {
     const ok = await confirm({
-      title: 'Xóa vai trò',
+      title: EMPLOYEE_LABELS.DELETE_ROLE_TITLE,
       message: `Bạn có chắc chắn muốn xóa vai trò "${name}"?`,
-      confirmLabel: 'Xóa',
-      cancelLabel: 'Hủy',
+      confirmLabel: EMPLOYEE_LABELS.BTN_DELETE,
+      cancelLabel: EMPLOYEE_LABELS.BTN_CANCEL,
       variant: 'danger',
     });
     if (ok) {
       deleteMutation.mutate(id, {
-        onSuccess: () => toast.success('Đã xóa vai trò'),
+        onSuccess: () => toast.success(EMPLOYEE_MESSAGES.ROLE_DELETE_SUCCESS),
         onError: (err) => toast.error(err.message),
       });
     }
@@ -108,10 +110,10 @@ export function RoleManagementModal({
     <AdaptiveSheet
       open={open}
       onClose={onClose}
-      title="Quản lý vai trò (Dynamic Roles)"
+      title={EMPLOYEE_LABELS.ROLE_MODAL_TITLE}
       footer={
         <Button variant="secondary" onClick={onClose} disabled={isPending}>
-          Đóng
+          {EMPLOYEE_LABELS.BTN_CANCEL}
         </Button>
       }
     >
@@ -145,7 +147,7 @@ export function RoleManagementModal({
                 <input
                   {...form.register('code')}
                   className={`field-input text-sm ${form.formState.errors.code ? 'border-danger' : ''}`}
-                  placeholder="VD: ketoan"
+                  placeholder={EMPLOYEE_LABELS.ROLE_FORM_CODE_PLACEHOLDER}
                   disabled={isPending}
                 />
                 {form.formState.errors.code && (
@@ -161,7 +163,7 @@ export function RoleManagementModal({
                 <input
                   {...form.register('name')}
                   className={`field-input text-sm ${form.formState.errors.name ? 'border-danger' : ''}`}
-                  placeholder="VD: Kế toán"
+                  placeholder={EMPLOYEE_LABELS.ROLE_FORM_NAME_PLACEHOLDER}
                   disabled={isPending}
                 />
                 {form.formState.errors.name && (
@@ -179,7 +181,7 @@ export function RoleManagementModal({
                 disabled={isPending}
                 type="button"
               >
-                Hủy
+                {EMPLOYEE_LABELS.BTN_CANCEL}
               </Button>
               <Button
                 size="sm"
@@ -187,7 +189,7 @@ export function RoleManagementModal({
                 type="submit"
                 isLoading={createMutation.isPending}
               >
-                Lưu
+                {EMPLOYEE_LABELS.BTN_SAVE}
               </Button>
             </div>
           </form>
@@ -199,12 +201,12 @@ export function RoleManagementModal({
           rowKey={(r) => r.id}
           columns={[
             {
-              header: 'Mã',
+              header: EMPLOYEE_LABELS.ROLE_TABLE_CODE,
               id: 'code',
               cell: (r) => <span className="font-mono text-xs">{r.code}</span>,
             },
             {
-              header: 'Tên hiển thị',
+              header: EMPLOYEE_LABELS.ROLE_TABLE_NAME,
               id: 'name',
               cell: (r) => {
                 if (editingId === r.id) {
@@ -231,7 +233,7 @@ export function RoleManagementModal({
               },
             },
             {
-              header: 'Thao tác',
+              header: EMPLOYEE_LABELS.ROLE_TABLE_ACTIONS,
               className: 'text-right',
               cell: (r) => {
                 if (r.is_system) {
@@ -270,7 +272,7 @@ export function RoleManagementModal({
                     actions={[
                       {
                         icon: 'Pencil',
-                        title: 'Sửa',
+                        title: EMPLOYEE_LABELS.BTN_EDIT,
                         onClick: () => {
                           setEditingId(r.id);
                           setEditRoleName(r.name);
@@ -279,7 +281,7 @@ export function RoleManagementModal({
                       },
                       {
                         icon: 'Trash2',
-                        title: 'Xóa',
+                        title: EMPLOYEE_LABELS.BTN_DELETE,
                         variant: 'danger',
                         onClick: () => handleDelete(r.id, r.name),
                         disabled: deleteMutation.isPending,

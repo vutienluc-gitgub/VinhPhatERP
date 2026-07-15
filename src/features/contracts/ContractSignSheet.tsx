@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Button, AdaptiveSheet } from '@/shared/components';
+
+import { CONTRACT_LABELS } from './contracts.constants';
 
 type ContractSignSheetProps = {
   open: boolean;
@@ -17,47 +19,41 @@ export function ContractSignSheet({
 }: ContractSignSheetProps) {
   const [fileUrl, setFileUrl] = useState('');
 
-  function handleClose() {
-    setFileUrl('');
-    onClose();
-  }
+  useEffect(() => {
+    if (open) {
+      setFileUrl('');
+    }
+  }, [open]);
 
   return (
     <AdaptiveSheet
       open={open}
-      onClose={handleClose}
-      title="Xác nhận hợp đồng đã ký"
+      onClose={onClose}
+      title={CONTRACT_LABELS.SIGN_TITLE}
+      maxWidth={480}
       footer={
         <div className="flex gap-3 justify-end">
-          <Button
-            variant="secondary"
-            onClick={handleClose}
-            disabled={isLoading}
-          >
-            Thoát
+          <Button variant="secondary" onClick={onClose} disabled={isLoading}>
+            {CONTRACT_LABELS.BTN_CLOSE}
           </Button>
           <Button
-            variant="success"
+            variant="primary"
             onClick={() => onConfirm(fileUrl.trim() || undefined)}
             isLoading={isLoading}
           >
-            Xác nhận đã ký
+            {CONTRACT_LABELS.BTN_CONFIRM}
           </Button>
         </div>
       }
     >
-      <div className="form-field">
-        <label>URL file hợp đồng đã ký (tuỳ chọn)</label>
+      <div className="p-1">
         <input
-          type="text"
+          type="url"
           className="field-input"
-          placeholder="https://..."
+          placeholder={CONTRACT_LABELS.SIGN_FILE_URL_PLACEHOLDER}
           value={fileUrl}
           onChange={(e) => setFileUrl(e.target.value)}
         />
-        <p className="field-hint text-xs text-muted mt-1">
-          Đính kèm link file scan hợp đồng đã ký nếu có.
-        </p>
       </div>
     </AdaptiveSheet>
   );

@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import type { NavigationItem } from '@/app/router/routes';
 import { Icon } from '@/shared/components/Icon';
 import { GROUP_LABEL_MAP, GROUP_ORDER } from '@/shared/constants/navigation';
+import { DRAWER_LABELS } from '@/shared/constants/layout';
 
 const removeAccents = (str: string) => {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -99,7 +100,7 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
         className="drawer-sheet drawer-sheet--full"
         role="dialog"
         aria-modal="true"
-        aria-label="Tất cả module"
+        aria-label={DRAWER_LABELS.MODAL_ARIA}
       >
         <div className="drawer-handle" />
 
@@ -109,7 +110,7 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
           <input
             type="text"
             className="drawer-search-input"
-            placeholder="Tìm module..."
+            placeholder={DRAWER_LABELS.SEARCH_PLACEHOLDER}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             autoFocus
@@ -119,7 +120,7 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
               type="button"
               className="drawer-search-clear"
               onClick={() => setSearch('')}
-              aria-label="Xóa tìm kiếm"
+              aria-label={DRAWER_LABELS.CLEAR_SEARCH_ARIA}
             >
               <Icon name="X" size={14} strokeWidth={2} />
             </button>
@@ -128,9 +129,7 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
 
         {/* Content */}
         <div className="drawer-content">
-          {noResults && (
-            <p className="drawer-empty">Không tìm thấy module nào</p>
-          )}
+          {noResults && <p className="drawer-empty">{DRAWER_LABELS.EMPTY}</p>}
 
           {/* Grouped items (Hiển thị nhóm trước) */}
           {grouped.groups.map((g) => (
@@ -145,7 +144,7 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
           {/* Ungrouped items (Hiển thị các mục Khác ở cuối) */}
           {grouped.ungrouped.length > 0 && (
             <div className="drawer-section">
-              <p className="drawer-title">Khác</p>
+              <p className="drawer-title">{DRAWER_LABELS.OTHER_GROUP}</p>
               {grouped.ungrouped.map((item) => (
                 <DrawerNavItem key={item.path} item={item} onClose={onClose} />
               ))}

@@ -49,7 +49,7 @@ export function ContractTemplatesPage() {
       base: {
         ...template,
         id: '',
-        name: `${template.name} (Bản sao)`,
+        name: `${template.name} ${CONTRACT_TEMPLATE_LABELS.DUPLICATE_SUFFIX}`,
       },
     });
   }
@@ -102,7 +102,7 @@ export function ContractTemplatesPage() {
                 variant="ghost"
                 size="icon"
                 onClick={handleClose}
-                title="Quay lại"
+                title={CONTRACT_TEMPLATE_LABELS.BTN_BACK}
                 leftIcon="ArrowLeft"
               />
               <span className="font-bold text-lg">
@@ -139,10 +139,10 @@ export function ContractTemplatesPage() {
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
         <div className="fade-up">
           <h1 className="text-2xl md:text-3xl font-extrabold text-text tracking-tight">
-            Quản lý mẫu văn bản
+            {CONTRACT_TEMPLATE_LABELS.TITLE}
           </h1>
           <p className="text-muted text-xs md:text-sm mt-1">
-            Thiết lập mẫu hợp đồng tiêu chuẩn để tự động hoá quy trình ký kết
+            {CONTRACT_TEMPLATE_LABELS.DESCRIPTION}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-surface p-2 rounded-2xl shadow-sm border border-border w-full md:w-auto overflow-visible">
@@ -183,7 +183,7 @@ export function ContractTemplatesPage() {
                     type: (val || 'all') as 'all' | ContractType,
                   }))
                 }
-                placeholder="Phân loại"
+                placeholder={CONTRACT_TEMPLATE_LABELS.FILTER_TYPE}
                 className="border-none bg-surface-hover w-full min-w-0"
               />
             </div>

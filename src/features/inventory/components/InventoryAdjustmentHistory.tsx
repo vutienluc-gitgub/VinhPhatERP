@@ -1,6 +1,7 @@
 import { DataTable, Badge, type DataTableColumn } from '@/shared/components';
 import { useInventoryAdjustmentHistory } from '@/application/inventory';
 import type { InventoryAdjustment as BaseInventoryAdjustment } from '@/domain/inventory/inventory.types';
+import { INVENTORY_MESSAGES as MSG } from '@/features/inventory/inventory.constants';
 
 // Extend the type since generated types are not updated yet
 type InventoryAdjustment = BaseInventoryAdjustment & {
@@ -12,31 +13,32 @@ type InventoryAdjustment = BaseInventoryAdjustment & {
 
 const ADJUSTMENT_COLUMNS: DataTableColumn<InventoryAdjustment>[] = [
   {
-    header: 'Ngày',
+    header: MSG.COL_ADJUST_DATE,
     cell: (r) => new Date(r.adjustment_date).toLocaleDateString('vi-VN'),
   },
   {
-    header: 'Loại hàng',
+    header: MSG.COL_ADJUST_ITEM_TYPE,
     cell: (r) => {
       if (r.item_type === 'raw_fabric')
-        return <Badge variant="gray">Vải mộc</Badge>;
+        return <Badge variant="gray">{MSG.VAL_RAW_FULL}</Badge>;
       if (r.item_type === 'finished_fabric')
-        return <Badge variant="info">Thành phẩm</Badge>;
-      if (r.item_type === 'yarn') return <Badge variant="warning">Sợi</Badge>;
+        return <Badge variant="info">{MSG.VAL_FIN_FULL}</Badge>;
+      if (r.item_type === 'yarn')
+        return <Badge variant="warning">{MSG.OPT_YARN}</Badge>;
       return <Badge>{r.item_type}</Badge>;
     },
   },
   {
-    header: 'Lý do',
+    header: MSG.COL_ADJUST_REASON,
     cell: (r) => {
       const type = r.adjustment_type as string;
       const map: Record<string, string> = {
-        PHYSICAL_COUNT: 'Kiểm kê',
-        DAMAGE: 'Hàng hỏng',
-        QUALITY_REJECTION: 'Lỗi chất lượng',
-        SAMPLE_USAGE: 'Cắt mẫu',
-        PRODUCTION_CONSUMPTION: 'Tiêu hao SX',
-        SYSTEM_CORRECTION: 'Sửa lỗi HT',
+        PHYSICAL_COUNT: MSG.REASON_PHYSICAL_COUNT,
+        DAMAGE: MSG.REASON_DAMAGE,
+        QUALITY_REJECTION: MSG.REASON_QUALITY_REJECTION,
+        SAMPLE_USAGE: MSG.REASON_SAMPLE_USAGE,
+        PRODUCTION_CONSUMPTION: MSG.REASON_PRODUCTION_CONSUMPTION,
+        SYSTEM_CORRECTION: MSG.REASON_SYSTEM_CORRECTION,
       };
       return (
         <div className="flex flex-col">
@@ -49,12 +51,12 @@ const ADJUSTMENT_COLUMNS: DataTableColumn<InventoryAdjustment>[] = [
     },
   },
   {
-    header: 'Trước ĐC',
+    header: MSG.COL_ADJUST_BEFORE,
     cell: (r) => <span className="text-muted">{r.before_qty ?? 0}</span>,
     className: 'text-right max-sm:hidden',
   },
   {
-    header: 'Mức ĐC',
+    header: MSG.COL_ADJUST_QTY,
     cell: (r) => {
       const isPos = r.adjustment_qty > 0;
       return (
@@ -69,12 +71,12 @@ const ADJUSTMENT_COLUMNS: DataTableColumn<InventoryAdjustment>[] = [
     className: 'text-right',
   },
   {
-    header: 'Sau ĐC',
+    header: MSG.COL_ADJUST_AFTER,
     cell: (r) => <span className="font-bold">{r.after_qty ?? 0}</span>,
     className: 'text-right max-sm:hidden',
   },
   {
-    header: 'Trạng thái',
+    header: MSG.COL_ADJUST_STATUS,
     cell: (r) => (
       <Badge variant={r.status === 'APPROVED' ? 'success' : 'gray'}>
         {r.status || 'APPROVED'}
@@ -90,7 +92,8 @@ export function InventoryAdjustmentHistory() {
     return (
       <div className="p-4">
         <p className="error-inline">
-          Lỗi: {error instanceof Error ? error.message : String(error)}
+          {MSG.ERR_ADJUST_HIST}{' '}
+          {error instanceof Error ? error.message : String(error)}
         </p>
       </div>
     );
@@ -102,8 +105,8 @@ export function InventoryAdjustmentHistory() {
       columns={ADJUSTMENT_COLUMNS}
       isLoading={isLoading}
       rowKey={(r) => r.id}
-      emptyStateTitle="Chưa có lịch sử điều chỉnh"
-      emptyStateDescription="Mọi giao dịch điều chỉnh số lượng tồn kho sẽ hiển thị tại đây."
+      emptyStateTitle={MSG.EMPTY_ADJUST_HIST_TITLE}
+      emptyStateDescription={MSG.EMPTY_ADJUST_HIST_DESC}
       emptyStateIcon="History"
       renderMobileCard={(r) => (
         <div className="p-4 border border-border rounded shadow-sm">

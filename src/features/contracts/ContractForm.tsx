@@ -14,6 +14,7 @@ import {
 } from '@/application/contracts';
 
 import { CONTRACT_TYPE_LABELS, CONTRACT_TYPES } from './contracts.module';
+import { CONTRACT_LABELS, CONTRACT_MESSAGES } from './contracts.constants';
 
 const TYPE_OPTIONS = CONTRACT_TYPES.map((t) => ({
   value: t,
@@ -25,9 +26,9 @@ const TYPE_OPTIONS = CONTRACT_TYPES.map((t) => ({
 const contractFormSchema = z
   .object({
     source_type: z.enum(['order', 'customer', 'supplier']),
-    source_id: z.string().min(1, 'Vui lòng chọn nguồn'),
+    source_id: z.string().min(1, CONTRACT_MESSAGES.ERR_SELECT_SOURCE),
     type: z.enum(CONTRACT_TYPES, {
-      required_error: 'Vui lòng chọn loại hợp đồng',
+      required_error: CONTRACT_MESSAGES.ERR_SELECT_TYPE,
     }),
     effective_date: z.string().optional(),
     expiry_date: z.string().optional(),
@@ -42,7 +43,7 @@ const contractFormSchema = z
       return true;
     },
     {
-      message: 'Ngày hết hạn phải sau ngày hiệu lực',
+      message: CONTRACT_MESSAGES.ERR_DATE_RANGE,
       path: ['expiry_date'],
     },
   );
@@ -64,15 +65,15 @@ type ContractFormProps = {
 const SOURCE_TYPE_OPTIONS = [
   {
     value: 'order',
-    label: 'Đơn hàng',
+    label: CONTRACT_LABELS.ORDER,
   },
   {
     value: 'customer',
-    label: 'Khách hàng',
+    label: CONTRACT_LABELS.CUSTOMER,
   },
   {
     value: 'supplier',
-    label: 'Nhà cung cấp',
+    label: CONTRACT_LABELS.SUPPLIER,
   },
 ];
 
@@ -135,11 +136,18 @@ export function ContractForm({
         setPendingValues(values);
         return;
       }
-      toast.success(`Tạo hợp đồng ${result.contractNumber} thành công`);
+      toast.success(
+        CONTRACT_MESSAGES.TOAST_CREATED_SUCCESS.replace(
+          '{number}',
+          result.contractNumber,
+        ),
+      );
       onSuccess(result.contractId);
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : (String(err) ?? 'Có lỗi xảy ra'),
+        err instanceof Error
+          ? err.message
+          : (String(err) ?? CONTRACT_MESSAGES.SOMETHING_WENT_WRONG),
       );
     }
   }
@@ -148,7 +156,12 @@ export function ContractForm({
     if (!pendingValues) return;
     try {
       const result = await generateMutation.mutateAsync(pendingValues);
-      toast.success(`Tạo hợp đồng ${result.contractNumber} thành công`);
+      toast.success(
+        CONTRACT_MESSAGES.TOAST_CREATED_SUCCESS.replace(
+          '{number}',
+          result.contractNumber,
+        ),
+      );
       setWarning(null);
       setPendingValues(null);
       onSuccess(result.contractId);
@@ -156,7 +169,9 @@ export function ContractForm({
       setWarning(null);
       setPendingValues(null);
       toast.error(
-        err instanceof Error ? err.message : (String(err) ?? 'Có lỗi xảy ra'),
+        err instanceof Error
+          ? err.message
+          : (String(err) ?? CONTRACT_MESSAGES.SOMETHING_WENT_WRONG),
       );
     }
   }
@@ -174,7 +189,7 @@ export function ContractForm({
                 className="btn-primary text-sm py-1.5 px-3"
                 onClick={() => void handleConfirmWarning()}
               >
-                Tạo hợp đồng mới
+                {CONTRACT_LABELS.BTN_CREATE_NEW}
               </button>
               <button
                 type="button"
@@ -184,7 +199,7 @@ export function ContractForm({
                   setPendingValues(null);
                 }}
               >
-                Hủy
+                {CONTRACT_LABELS.BTN_CANCEL_ACTION}
               </button>
             </div>
           </div>
@@ -195,7 +210,7 @@ export function ContractForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
             <label>
-              Nguồn <span className="field-required">*</span>
+              {CONTRACT_LABELS.SOURCE} <span className="field-required">*</span>
             </label>
             <Controller
               name="source_type"
@@ -212,10 +227,10 @@ export function ContractForm({
           <div className="form-field">
             <label>
               {sourceType === 'order'
-                ? 'Đơn hàng'
+                ? CONTRACT_LABELS.ORDER
                 : sourceType === 'customer'
-                  ? 'Khách hàng'
-                  : 'Nhà cung cấp'}{' '}
+                  ? CONTRACT_LABELS.CUSTOMER
+                  : CONTRACT_LABELS.SUPPLIER}{' '}
               <span className="field-required">*</span>
             </label>
             <Controller
@@ -238,7 +253,8 @@ export function ContractForm({
 
         <div className="form-field">
           <label>
-            Loại hợp đồng <span className="field-required">*</span>
+            {CONTRACT_LABELS.CONTRACT_TYPE}{' '}
+            <span className="field-required">*</span>
           </label>
           <Controller
             name="type"
@@ -259,7 +275,7 @@ export function ContractForm({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="form-field">
-            <label>Ngày hiệu lực</label>
+            <label>{CONTRACT_LABELS.EFFECTIVE_DATE}</label>
             <input
               type="date"
               className={`field-input${errors.effective_date ? ' border-danger' : ''}`}
@@ -267,7 +283,7 @@ export function ContractForm({
             />
           </div>
           <div className="form-field">
-            <label>Ngày hết hạn</label>
+            <label>{CONTRACT_LABELS.EXPIRY_DATE}</label>
             <input
               type="date"
               className={`field-input${errors.expiry_date ? ' border-danger' : ''}`}
@@ -280,21 +296,21 @@ export function ContractForm({
         </div>
 
         <div className="form-field">
-          <label>Điều khoản thanh toán</label>
+          <label>{CONTRACT_LABELS.PAYMENT_TERM}</label>
           <input
             type="text"
             className="field-input"
-            placeholder="VD: Thanh toán 30 ngày sau khi giao hàng"
+            placeholder={CONTRACT_LABELS.PAYMENT_TERM_PLACEHOLDER}
             {...register('payment_term')}
           />
         </div>
 
         <div className="form-field">
-          <label>Ghi chú</label>
+          <label>{CONTRACT_LABELS.NOTES}</label>
           <textarea
             className="field-textarea"
             rows={3}
-            placeholder="Ghi chú thêm..."
+            placeholder={CONTRACT_LABELS.NOTES_PLACEHOLDER}
             {...register('notes')}
           />
         </div>
@@ -307,14 +323,16 @@ export function ContractForm({
           onClick={onCancel}
           disabled={isSubmitting}
         >
-          Hủy
+          {CONTRACT_LABELS.BTN_CANCEL_ACTION}
         </button>
         <button
           type="submit"
           className="btn-primary"
           disabled={isSubmitting || !!warning}
         >
-          {isSubmitting ? 'Đang tạo...' : 'Tạo hợp đồng'}
+          {isSubmitting
+            ? CONTRACT_LABELS.BTN_CREATING
+            : CONTRACT_LABELS.BTN_CREATE}
         </button>
       </div>
     </form>

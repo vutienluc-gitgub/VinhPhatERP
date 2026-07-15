@@ -5,6 +5,7 @@ import type { YarnAvailability } from '@/api/yarn-reservation.api';
 import { Badge } from '@/shared/components';
 import type { BadgeVariant } from '@/shared/components';
 import { WeightText } from '@/shared/value';
+import { INVENTORY_MESSAGES as MSG } from '@/features/inventory/inventory.constants';
 
 type StockHealth = {
   label: string;
@@ -33,7 +34,7 @@ function getAvailablePct(row: YarnAvailability): number {
 
 export const YARN_INVENTORY_COLUMNS: ColumnDef<YarnAvailability, unknown>[] = [
   {
-    header: 'Mã sợi',
+    header: MSG.LBL_YARN_CODE,
     id: 'code',
     accessorKey: 'code',
     cell: ({ row }) => (
@@ -41,27 +42,27 @@ export const YARN_INVENTORY_COLUMNS: ColumnDef<YarnAvailability, unknown>[] = [
     ),
   },
   {
-    header: 'Tên sợi',
+    header: MSG.LBL_YARN_NAME,
     id: 'name',
     accessorKey: 'name',
     cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
   },
   {
-    header: 'Màu sắc',
+    header: MSG.LBL_YARN_COLOR,
     id: 'color_name',
     accessorKey: 'color_name',
     cell: ({ row }) => row.original.color_name || '—',
     meta: { className: 'max-sm:hidden' },
   },
   {
-    header: 'Tổng tồn (kg)',
+    header: MSG.LBL_YARN_TOTAL_KG,
     id: 'total_stock_qty',
     accessorKey: 'total_stock_qty',
     cell: ({ row }) => <WeightText value={row.original.total_stock_qty} />,
     meta: { className: 'text-right max-sm:hidden text-slate-600' },
   },
   {
-    header: 'Đã giữ (kg)',
+    header: MSG.LBL_YARN_RESERVED_KG,
     id: 'reserved_qty',
     accessorKey: 'reserved_qty',
     cell: ({ row }) => (
@@ -79,7 +80,7 @@ export const YARN_INVENTORY_COLUMNS: ColumnDef<YarnAvailability, unknown>[] = [
     meta: { className: 'text-right max-sm:hidden' },
   },
   {
-    header: 'Khả dụng (Available)',
+    header: MSG.LBL_YARN_AVAILABLE,
     id: 'available_qty',
     accessorKey: 'available_qty',
     meta: { className: 'w-[180px]' },
@@ -129,7 +130,7 @@ export function YarnInventoryMobileCard({ row }: { row: YarnAvailability }) {
       </div>
       <div className="mobile-card-body space-y-3">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted">Màu:</span>
+          <span className="text-xs text-muted">{MSG.LBL_COLOR}</span>
           <span className="text-xs font-medium">{row.color_name || '—'}</span>
         </div>
 
@@ -143,7 +144,7 @@ export function YarnInventoryMobileCard({ row }: { row: YarnAvailability }) {
         <div className="grid grid-cols-3 gap-2 text-center bg-surface-subtle/50 p-2 rounded-lg border border-border/30">
           <div>
             <p className="text-[9px] uppercase text-muted font-bold mb-0.5">
-              Tổng
+              {MSG.LBL_SHORT_TOTAL}
             </p>
             <WeightText
               value={row.total_stock_qty}
@@ -156,7 +157,7 @@ export function YarnInventoryMobileCard({ row }: { row: YarnAvailability }) {
           </div>
           <div>
             <p className="text-[9px] uppercase text-red-400 font-bold mb-0.5">
-              Giữ chỗ
+              {MSG.LBL_SHORT_RESERVED}
             </p>
             <WeightText
               value={row.reserved_qty}
@@ -169,7 +170,7 @@ export function YarnInventoryMobileCard({ row }: { row: YarnAvailability }) {
           </div>
           <div>
             <p className="text-[9px] uppercase text-emerald-600 font-bold mb-0.5">
-              Khả dụng
+              {MSG.LBL_SHORT_AVAILABLE}
             </p>
             <WeightText
               value={row.available_qty}

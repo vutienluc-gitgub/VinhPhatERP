@@ -21,10 +21,11 @@ import {
 
 import { EmployeeForm } from './EmployeeForm';
 import { RoleManagementModal } from './RoleManagementModal';
+import { EMPLOYEE_LABELS, EMPLOYEE_MESSAGES } from './employees.constants';
 
 const STATUS_LABELS: Record<string, string> = {
-  active: 'Hoạt động',
-  inactive: 'Ngừng hoạt động',
+  active: EMPLOYEE_LABELS.STATUS_ACTIVE,
+  inactive: EMPLOYEE_LABELS.STATUS_INACTIVE,
 };
 
 export function EmployeeListPage() {
@@ -57,13 +58,13 @@ export function EmployeeListPage() {
     {
       key: 'query',
       type: 'search',
-      label: 'Tìm kiếm',
-      placeholder: 'Tên, mã, SĐT...',
+      label: EMPLOYEE_LABELS.FILTER_SEARCH,
+      placeholder: EMPLOYEE_LABELS.FILTER_SEARCH_PLACEHOLDER,
     },
     {
       key: 'role',
       type: 'combobox',
-      label: 'Vai trò',
+      label: EMPLOYEE_LABELS.FILTER_ROLE,
       options: roleOptions,
     },
   ];
@@ -96,10 +97,10 @@ export function EmployeeListPage() {
 
   async function handleDeactivate(employee: Employee) {
     const ok = await confirm({
-      title: 'Ngừng hoạt động nhân viên?',
-      message: `Bạn có chắc chắn muốn vô hiệu hóa nhân viên "${employee.name}"? Có thể mở lại sau.`,
-      confirmLabel: 'Ngừng hoạt động',
-      cancelLabel: 'Hủy',
+      title: EMPLOYEE_LABELS.DEACTIVATE_TITLE,
+      message: EMPLOYEE_LABELS.DEACTIVATE_MESSAGE(employee.name),
+      confirmLabel: EMPLOYEE_LABELS.BTN_DEACTIVATE,
+      cancelLabel: EMPLOYEE_LABELS.BTN_CANCEL,
       variant: 'danger',
     });
     if (ok) deactivateMutation.mutate(employee.id);
@@ -108,9 +109,7 @@ export function EmployeeListPage() {
   if (isError) {
     return (
       <div className="panel-card">
-        <p className="error-inline">
-          Đã xảy ra lỗi khi tải danh sách nhân viên.
-        </p>
+        <p className="error-inline">{EMPLOYEE_MESSAGES.LOAD_ERROR}</p>
       </div>
     );
   }
@@ -121,13 +120,16 @@ export function EmployeeListPage() {
         {/* Header Area */}
         <div className="card-header-area flex items-center justify-between">
           <div className="flex gap-2">
-            <AddButton onClick={handleCreate} label="Thêm mới" />
+            <AddButton
+              onClick={handleCreate}
+              label={EMPLOYEE_LABELS.BTN_CREATE}
+            />
             <Button
               variant="secondary"
               onClick={() => setIsRoleModalOpen(true)}
             >
-              <Icon name="Settings" size={16} className="mr-2" /> Quản lý vai
-              trò
+              <Icon name="Settings" size={16} className="mr-2" />{' '}
+              {EMPLOYEE_LABELS.BTN_MANAGE_ROLE}
             </Button>
           </div>
         </div>
@@ -138,7 +140,7 @@ export function EmployeeListPage() {
             <div className="kpi-overlay" />
             <div className="kpi-content">
               <div className="kpi-info">
-                <p className="kpi-label">Tổng nhân viên</p>
+                <p className="kpi-label">{EMPLOYEE_LABELS.KPI_TOTAL}</p>
                 <p className="kpi-value">{employees?.length ?? 0}</p>
               </div>
               <div className="kpi-icon-box">
@@ -146,7 +148,7 @@ export function EmployeeListPage() {
               </div>
             </div>
             <div className="kpi-footer text-xs opacity-80 italic">
-              Thuộc các phòng ban
+              {EMPLOYEE_LABELS.KPI_TOTAL_SUB}
             </div>
           </div>
 
@@ -154,7 +156,7 @@ export function EmployeeListPage() {
             <div className="kpi-overlay" />
             <div className="kpi-content">
               <div className="kpi-info">
-                <p className="kpi-label">Đang hoạt động</p>
+                <p className="kpi-label">{EMPLOYEE_LABELS.KPI_ACTIVE}</p>
                 <p className="kpi-value">
                   {employees?.filter((e) => e.status === 'active').length ?? 0}
                 </p>
@@ -164,7 +166,7 @@ export function EmployeeListPage() {
               </div>
             </div>
             <div className="kpi-footer text-xs opacity-80 italic">
-              Người dùng kích hoạt
+              {EMPLOYEE_LABELS.KPI_ACTIVE_SUB}
             </div>
           </div>
 
@@ -172,7 +174,7 @@ export function EmployeeListPage() {
             <div className="kpi-overlay" />
             <div className="kpi-content">
               <div className="kpi-info">
-                <p className="kpi-label">Kinh doanh (Sales)</p>
+                <p className="kpi-label">{EMPLOYEE_LABELS.KPI_SALES}</p>
                 <p className="kpi-value">
                   {employees?.filter((e) => e.role === 'sales').length ?? 0}
                 </p>
@@ -182,7 +184,7 @@ export function EmployeeListPage() {
               </div>
             </div>
             <div className="kpi-footer text-xs opacity-80 italic">
-              Nhân viên kinh doanh
+              {EMPLOYEE_LABELS.KPI_SALES_SUB}
             </div>
           </div>
 
@@ -190,7 +192,7 @@ export function EmployeeListPage() {
             <div className="kpi-overlay" />
             <div className="kpi-content">
               <div className="kpi-info">
-                <p className="kpi-label">Tài xế (Driver)</p>
+                <p className="kpi-label">{EMPLOYEE_LABELS.KPI_DRIVER}</p>
                 <p className="kpi-value">
                   {employees?.filter((e) => e.role === 'driver').length ?? 0}
                 </p>
@@ -200,7 +202,7 @@ export function EmployeeListPage() {
               </div>
             </div>
             <div className="kpi-footer text-xs opacity-80 italic">
-              Nhân viên giao nhận
+              {EMPLOYEE_LABELS.KPI_DRIVER_SUB}
             </div>
           </div>
         </div>
@@ -226,20 +228,20 @@ export function EmployeeListPage() {
           onRowClick={handleEdit}
           emptyStateTitle={
             filterValues.query || filterValues.role
-              ? 'Không tìm thấy nhân viên'
-              : 'Chưa có dữ liệu nhân viên'
+              ? EMPLOYEE_LABELS.EMPTY_SEARCH_TITLE
+              : EMPLOYEE_LABELS.EMPTY_DATA_TITLE
           }
           emptyStateDescription={
             filterValues.query || filterValues.role
-              ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
-              : 'Hãy thêm nhân viên mới để bắt đầu quản lý.'
+              ? EMPLOYEE_LABELS.EMPTY_SEARCH_DESC
+              : EMPLOYEE_LABELS.EMPTY_DATA_DESC
           }
           emptyStateIcon={
             filterValues.query || filterValues.role ? 'Search' : 'Users'
           }
           emptyStateActionLabel={
             !(filterValues.query || filterValues.role)
-              ? '+ Thêm nhân viên'
+              ? EMPLOYEE_LABELS.EMPTY_ACTION
               : undefined
           }
           onEmptyStateAction={
@@ -249,7 +251,7 @@ export function EmployeeListPage() {
           }
           columns={[
             {
-              header: 'Mã NV',
+              header: EMPLOYEE_LABELS.TABLE_CODE,
               id: 'code',
               sortable: true,
               cell: (emp) => (
@@ -257,20 +259,20 @@ export function EmployeeListPage() {
               ),
             },
             {
-              header: 'Họ tên',
+              header: EMPLOYEE_LABELS.TABLE_NAME,
               id: 'name',
               sortable: true,
               cell: (emp) => <span className="font-bold">{emp.name}</span>,
             },
             {
-              header: 'SĐT',
+              header: EMPLOYEE_LABELS.TABLE_PHONE,
               id: 'phone',
               sortable: true,
               className: 'text-sm font-medium',
               cell: (emp) => emp.phone || '—',
             },
             {
-              header: 'Vai trò',
+              header: EMPLOYEE_LABELS.TABLE_ROLE,
               id: 'role',
               sortable: true,
               cell: (emp) => (
@@ -280,7 +282,7 @@ export function EmployeeListPage() {
               ),
             },
             {
-              header: 'Trạng thái',
+              header: EMPLOYEE_LABELS.TABLE_STATUS,
               id: 'status',
               sortable: true,
               cell: (emp) => (
@@ -290,7 +292,7 @@ export function EmployeeListPage() {
               ),
             },
             {
-              header: 'Thao tác',
+              header: EMPLOYEE_LABELS.TABLE_ACTIONS,
               className: 'text-right',
               onCellClick: () => {},
               cell: (emp) => (
@@ -300,13 +302,13 @@ export function EmployeeListPage() {
                       {
                         icon: 'Pencil',
                         onClick: () => handleEdit(emp),
-                        title: 'Sửa',
+                        title: EMPLOYEE_LABELS.BTN_EDIT,
                       },
                       emp.status === 'active'
                         ? {
                             icon: 'UserX',
                             onClick: () => void handleDeactivate(emp),
-                            title: 'Ngừng hoạt động',
+                            title: EMPLOYEE_LABELS.BTN_DEACTIVATE,
                             variant: 'danger',
                             disabled: deactivateMutation.isPending,
                           }
@@ -328,7 +330,9 @@ export function EmployeeListPage() {
               <div className="mobile-card-body">
                 <p className="font-bold text-lg">{emp.name}</p>
                 <div className="mobile-card-row">
-                  <span className="label">Liên hệ:</span>
+                  <span className="label">
+                    {EMPLOYEE_LABELS.TABLE_MOBILE_CONTACT}
+                  </span>
                   <span className="value">{emp.phone || '—'}</span>
                 </div>
                 <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/10">

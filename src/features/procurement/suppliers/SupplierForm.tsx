@@ -20,6 +20,7 @@ import {
 } from '@/schema/supplier.schema';
 import type { SupplierFormValues } from '@/schema/supplier.schema';
 import { getErrorMessage } from '@/shared/utils/error';
+import { SUPPLIER_LABELS as L } from '@/features/procurement/procurement.constants';
 
 import { SupplierPriceList } from './SupplierPriceList';
 import type { Supplier } from './types';
@@ -111,7 +112,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
     <AdaptiveSheet
       open
       onClose={onClose}
-      title={isEditing ? `Sửa NCC: ${supplier.name}` : 'Thêm nhà cung cấp mới'}
+      title={isEditing ? `${L.EDIT_TITLE}: ${supplier.name}` : L.CREATE_TITLE}
       footer={
         <div className="mt-6 pt-4 border-t border-border flex flex-col-reverse sm:flex-row sm:justify-end gap-3 w-full">
           <Button
@@ -121,7 +122,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
             disabled={isPending}
             className="w-full sm:w-auto justify-center"
           >
-            Hủy
+            {L.BTN_CANCEL}
           </Button>
           <Button
             variant="primary"
@@ -130,22 +131,22 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
             isLoading={isPending}
             className="w-full sm:w-auto justify-center"
           >
-            {isEditing ? 'Cập nhật' : 'Tạo mới'}
+            {isEditing ? L.BTN_UPDATE : L.BTN_CREATE}
           </Button>
         </div>
       }
     >
       {mutationError && (
         <p className="field-error mb-4">
-          Lỗi: {getErrorMessage(mutationError)}
+          {L.ERR_PREFIX} {getErrorMessage(mutationError)}
         </p>
       )}
 
       {isEditing && (
         <TabSwitcher
           tabs={[
-            { key: 'info', label: 'Thông tin chung' },
-            { key: 'prices', label: 'Báo giá (Price List)' },
+            { key: 'info', label: L.TAB_INFO },
+            { key: 'prices', label: L.TAB_PRICES },
           ]}
           active={activeTab}
           onChange={setActiveTab}
@@ -160,13 +161,13 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="form-field">
                 <label htmlFor="code">
-                  Mã NCC <span className="field-required">*</span>
+                  {L.COL_CODE} <span className="field-required">*</span>
                 </label>
                 <input
                   id="code"
                   type="text"
                   className={`field-input${errors.code ? ' border-danger' : ''}`}
-                  placeholder="VD: NCC-001"
+                  placeholder={L.PLACEHOLDER_CODE}
                   readOnly={!isEditing}
                   {...register('code')}
                 />
@@ -177,13 +178,13 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
 
               <div className="form-field">
                 <label htmlFor="name">
-                  Tên nhà cung cấp <span className="field-required">*</span>
+                  {L.COL_NAME} <span className="field-required">*</span>
                 </label>
                 <input
                   id="name"
                   type="text"
                   className={`field-input${errors.name ? ' border-danger' : ''}`}
-                  placeholder="VD: Công ty TNHH ABC"
+                  placeholder={L.PLACEHOLDER_NAME}
                   {...register('name')}
                 />
                 {errors.name && (
@@ -195,12 +196,12 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
             {/* Điện thoại + Email */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="form-field">
-                <label htmlFor="phone">Số điện thoại</label>
+                <label htmlFor="phone">{L.COL_PHONE}</label>
                 <input
                   id="phone"
                   type="tel"
                   className={`field-input${errors.phone ? ' border-danger' : ''}`}
-                  placeholder="VD: 0901 234 567"
+                  placeholder={L.PLACEHOLDER_PHONE}
                   {...register('phone')}
                 />
                 {errors.phone && (
@@ -209,12 +210,12 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
               </div>
 
               <div className="form-field">
-                <label htmlFor="email">Email</label>
+                <label htmlFor="email">{L.COL_EMAIL}</label>
                 <input
                   id="email"
                   type="email"
                   className={`field-input${errors.email ? ' border-danger' : ''}`}
-                  placeholder="VD: supplier@example.com"
+                  placeholder={L.PLACEHOLDER_EMAIL}
                   {...register('email')}
                 />
                 {errors.email && (
@@ -225,12 +226,12 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
 
             {/* Địa chỉ */}
             <div className="form-field">
-              <label htmlFor="address">Địa chỉ</label>
+              <label htmlFor="address">{L.COL_ADDRESS}</label>
               <input
                 id="address"
                 type="text"
                 className="field-input"
-                placeholder="VD: 123 Đường Lê Lợi, Q.1, TP.HCM"
+                placeholder={L.PLACEHOLDER_ADDRESS}
                 {...register('address')}
               />
             </div>
@@ -238,12 +239,12 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
             {/* Mã số thuế + Người liên hệ */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="form-field">
-                <label htmlFor="tax_code">Mã số thuế</label>
+                <label htmlFor="tax_code">{L.COL_TAX_CODE}</label>
                 <input
                   id="tax_code"
                   type="text"
                   className={`field-input${errors.tax_code ? ' border-danger' : ''}`}
-                  placeholder="VD: 0312345678"
+                  placeholder={L.PLACEHOLDER_TAX_CODE}
                   {...register('tax_code')}
                 />
                 {errors.tax_code && (
@@ -252,12 +253,12 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
               </div>
 
               <div className="form-field">
-                <label htmlFor="contact_person">Người liên hệ</label>
+                <label htmlFor="contact_person">{L.COL_CONTACT}</label>
                 <input
                   id="contact_person"
                   type="text"
                   className="field-input"
-                  placeholder="VD: Nguyễn Văn A"
+                  placeholder={L.PLACEHOLDER_CONTACT}
                   {...register('contact_person')}
                 />
               </div>
@@ -267,7 +268,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="form-field">
                 <label htmlFor="category">
-                  Danh mục <span className="field-required">*</span>
+                  {L.COL_CATEGORY} <span className="field-required">*</span>
                 </label>
                 <Controller
                   name="category"
@@ -287,7 +288,7 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
               </div>
 
               <div className="form-field">
-                <label htmlFor="status">Trạng thái</label>
+                <label htmlFor="status">{L.COL_STATUS}</label>
                 <Controller
                   name="status"
                   control={control}
@@ -304,12 +305,12 @@ export function SupplierForm({ supplier, onClose }: SupplierFormProps) {
 
             {/* Ghi chú */}
             <div className="form-field">
-              <label htmlFor="notes">Ghi chú</label>
+              <label htmlFor="notes">{L.COL_NOTES}</label>
               <textarea
                 id="notes"
                 className="field-input"
                 rows={3}
-                placeholder="Ghi chú nội bộ về nhà cung cấp..."
+                placeholder={L.PLACEHOLDER_NOTES}
                 {...register('notes')}
               />
             </div>

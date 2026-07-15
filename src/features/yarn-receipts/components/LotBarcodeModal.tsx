@@ -8,22 +8,9 @@ import { openPrintWindow } from '@/shared/lib/print-template.engine';
 import { LOT_TAG_CSS } from '@/shared/lib/print-template.css';
 import { formatPackaging } from '@/shared/utils/packaging.util';
 import type { YarnReceipt } from '@/features/yarn-receipts/types';
+import { MODAL_LABELS as LABELS } from '@/features/yarn-receipts/yarn-receipts.constants';
 
 /* ── Constants ── */
-
-const LABELS = {
-  title: 'Barcode Truy xuất Lô',
-  receiptNumber: 'Số phiếu',
-  supplier: 'Nhà cung cấp',
-  receiptDate: 'Ngày nhập',
-  yarnType: 'Loại sợi',
-  lotNumber: 'Mã lô',
-  quantity: 'Số lượng',
-  packaging: 'Đóng gói',
-  print: 'In Barcode',
-  close: 'Đóng',
-  noItems: 'Không có dòng hàng nào',
-} as const;
 
 type LotBarcodeModalProps = {
   receipt: YarnReceipt;
@@ -46,7 +33,7 @@ export function LotBarcodeModal({ receipt, onClose }: LotBarcodeModalProps) {
     <AdaptiveSheet
       open={true}
       onClose={onClose}
-      title={`${LABELS.title} — ${receipt.receipt_number}`}
+      title={`${LABELS.barcodeTitle} — ${receipt.receipt_number}`}
       maxWidth={520}
       footer={
         <>

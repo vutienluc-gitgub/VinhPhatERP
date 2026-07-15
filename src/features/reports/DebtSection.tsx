@@ -9,6 +9,8 @@ import {
 import { MoneyText } from '@/shared/value';
 import { sumBy } from '@/shared/utils/array.util';
 
+import { REPORT_LABELS } from './reports.constants';
+
 type DebtSectionProps = {
   data: DebtByCustomerRow[];
   isLoading: boolean;
@@ -22,34 +24,34 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
 
   const columns: DataTableColumn<DebtByCustomerRow>[] = [
     {
-      header: 'Khách hàng',
+      header: REPORT_LABELS.COL_CUSTOMER,
       cell: (r) => <span className="font-bold">{r.customer_name}</span>,
-      footer: `Tổng (${customerCount})`,
+      footer: `${REPORT_LABELS.TOTAL} (${customerCount})`,
     },
     {
-      header: 'Mã KH',
+      header: REPORT_LABELS.COL_CUSTOMER_CODE,
       cell: (r) => r.customer_code || '—',
       className: 'max-sm:hidden text-muted text-sm',
     },
     {
-      header: 'Số đơn',
+      header: REPORT_LABELS.COL_TOTAL_ORDERS,
       cell: (r) => r.total_orders,
       className: 'text-right max-sm:hidden',
     },
     {
-      header: 'Tổng tiền',
+      header: REPORT_LABELS.COL_TOTAL_AMOUNT,
       cell: (r) => <MoneyText value={r.total_amount} />,
       footer: <MoneyText value={totalAmount} />,
       className: 'text-right max-sm:hidden font-medium',
     },
     {
-      header: 'Đã thu',
+      header: REPORT_LABELS.COL_PAID_AMOUNT,
       cell: (r) => <MoneyText value={r.paid_amount} />,
       footer: <MoneyText value={totalPaid} />,
       className: 'text-right max-sm:hidden text-success',
     },
     {
-      header: 'Còn nợ',
+      header: REPORT_LABELS.COL_BALANCE_DUE,
       cell: (r) => <MoneyText value={r.balance_due} />,
       footer: <MoneyText value={totalDebt} />,
       className: 'text-right font-bold text-danger',
@@ -59,12 +61,14 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
   return (
     <div className="panel-card card-flush">
       <div className="card-header-area">
-        <span className="font-bold text-lg">Dư nợ khách hàng</span>
+        <span className="font-bold text-lg">
+          {REPORT_LABELS.DEBT_SECTION_TITLE}
+        </span>
       </div>
 
       <KpiGrid className="px-5 py-4">
         <KpiCard
-          label="Tổng công nợ"
+          label={REPORT_LABELS.TOTAL_DEBT}
           value={totalDebt}
           formatMode="currency"
           icon="Wallet"
@@ -72,7 +76,7 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
           isLoading={isLoading}
         />
         <KpiCard
-          label="Khách còn nợ"
+          label={REPORT_LABELS.CUSTOMER_OWE}
           value={customerCount}
           icon="Users"
           variant="warning"
@@ -98,13 +102,13 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs border-t pt-2">
               <div>
-                <p className="opacity-70">Tổng tiền</p>
+                <p className="opacity-70">{REPORT_LABELS.COL_TOTAL_AMOUNT}</p>
                 <p className="font-medium">
                   <MoneyText value={r.total_amount} />đ
                 </p>
               </div>
               <div className="text-right">
-                <p className="opacity-70">Số đơn</p>
+                <p className="opacity-70">{REPORT_LABELS.COL_TOTAL_ORDERS}</p>
                 <p className="font-medium">{r.total_orders}</p>
               </div>
             </div>

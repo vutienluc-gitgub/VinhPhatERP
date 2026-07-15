@@ -4,6 +4,8 @@ import { Button, AdaptiveSheet } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import { useAvailableOrders } from '@/application/contracts';
 
+import { CONTRACT_LABELS } from './contracts.constants';
+
 type ContractLinkOrderSheetProps = {
   open: boolean;
   onClose: () => void;
@@ -41,7 +43,7 @@ export function ContractLinkOrderSheet({
     <AdaptiveSheet
       open={open}
       onClose={handleClose}
-      title="Liên kết đơn hàng"
+      title={CONTRACT_LABELS.LINK_ORDER_TITLE}
       footer={
         <div className="flex gap-3 justify-end">
           <Button
@@ -49,35 +51,34 @@ export function ContractLinkOrderSheet({
             onClick={handleClose}
             disabled={isLoading}
           >
-            Thoát
+            {CONTRACT_LABELS.BTN_CLOSE}
           </Button>
           <Button
             variant="primary"
             onClick={handleSubmit}
             isLoading={isLoading}
           >
-            Liên kết
+            {CONTRACT_LABELS.BTN_LINK}
           </Button>
         </div>
       }
     >
       <div className="form-field">
         <label>
-          Đơn hàng <span className="field-required">*</span>
+          {CONTRACT_LABELS.ORDER} <span className="field-required">*</span>
         </label>
         <Combobox
           options={orderOptions}
           value={selectedOrderId}
           onChange={(val) => setSelectedOrderId(val as string)}
-          placeholder="Tìm kiếm số đơn hàng hoặc tên khách hàng..."
+          placeholder={CONTRACT_LABELS.LINK_ORDER_SELECT}
           hasError={hasError}
         />
         {hasError && (
-          <span className="field-error">Vui lòng chọn đơn hàng.</span>
+          <span className="field-error">
+            {CONTRACT_LABELS.LINK_ORDER_SELECT}
+          </span>
         )}
-        <p className="field-hint text-xs text-muted mt-1">
-          Chỉ hiển thị đơn hàng chưa bị huỷ và chưa được liên kết.
-        </p>
       </div>
     </AdaptiveSheet>
   );
