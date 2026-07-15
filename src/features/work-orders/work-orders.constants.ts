@@ -47,6 +47,104 @@ export const WORK_ORDER_MESSAGES = {
   BTN_CONFIRM_COMPLETE: 'Xác nhận hoàn thành',
   BTN_PROCESSING: 'Đang xử lý...',
   UNSAVED_WARNING: 'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
+
+  // WorkOrderYarnTable
+  YARN_TABLE_TITLE: 'Phân bổ sợi',
+  BTN_ADD_YARN: 'Thêm sợi',
+  COL_YARN_TYPE: 'Loại sợi',
+  COL_BOM_PCT: '% BOM',
+  COL_REQUIRED_KG: 'Cần (kg)',
+  PLACEHOLDER_SELECT_YARN: 'Chọn sợi...',
+  LOCKED_YARN_TOOLTIP: 'Đã xuất kho, không thể xoá',
+  YARN_TABLE_TOTAL: 'TỔNG:',
+  YARN_TABLE_HINT:
+    '* Enter ở cột KG dòng cuối để thêm dòng mới. Mũi tên Lên/Xuống để di chuyển nhanh.',
+  LOCKED_YARN_EXPORTED: 'Đã xuất:',
+
+  // WorkOrderForm
+  FORM_CREATE_TITLE: 'Kiến tạo Lệnh Sản Xuất Mới',
+  FORM_EDIT_TITLE: 'Chỉnh sửa Lệnh Sản Xuất',
+  LABEL_WO_NUMBER: 'Mã Lệnh Sản Xuất',
+  LABEL_ORDER_LINK: 'Liên kết Đơn Hàng (ĐH)',
+  LABEL_SUPPLIER: 'Đối tác dệt gia công',
+  LABEL_LOOM: 'Máy dệt dự kiến (Điều độ)',
+  LABEL_START_DATE: 'Ngày bắt đầu dự kiến',
+  LABEL_BOM_TEMPLATE: 'Công thức BOM định mức',
+  LABEL_WEAVING_PRICE: 'Đơn giá gia công (đ/m)',
+  LABEL_TARGET_QTY: 'Sản lượng mục tiêu',
+  LABEL_TARGET_WEIGHT: 'Khối lượng dự kiến (kg)',
+  LABEL_NOTES: 'Ghi chú sản xuất',
+
+  PLACEHOLDER_WO_NUMBER: 'Ví dụ: WO-2024-001',
+  PLACEHOLDER_ORDER: '— Sản xuất dự trữ (Không ĐH) —',
+  HINT_ORDER: 'Chọn đơn hàng nếu sản xuất theo yêu cầu (MTO)',
+  PLACEHOLDER_SUPPLIER: '— Chọn nhà dệt —',
+  PLACEHOLDER_LOOM_EMPTY: '— Nhà dệt này chưa có máy —',
+  PLACEHOLDER_LOOM: '— Chọn máy dệt —',
+  PLACEHOLDER_LOOM_DISABLED: '— Chọn nhà dệt trước —',
+  PLACEHOLDER_BOM: '— Chọn công thức dệt —',
+  PLACEHOLDER_PRICE: 'Ví dụ: 3.500',
+  HINT_TARGET_WEIGHT: 'Tự tính từ BOM nếu trống',
+  PLACEHOLDER_NOTES: 'Hướng dẫn kỹ thuật hoặc ghi chú đặc biệt cho xưởng...',
+
+  BTN_SUBMIT_CREATE: 'Xác nhận Lệnh Sản Xuất',
+  BTN_SUBMIT_UPDATE: 'Cập nhật Lệnh Sản Xuất',
+
+  // WorkOrderList Common
+  ERR_TITLE: 'Lỗi',
+  BTN_CLOSE: 'Đóng',
+  VIEW_KANBAN: 'Kanban',
+  VIEW_TABLE: 'Danh sách',
+
+  // WorkOrderDetail
+  LOADING_DETAIL: 'Đang tải chi tiết lệnh...',
+  ERR_NOT_FOUND: 'Lệnh sản xuất không tồn tại hoặc bạn không có quyền xem.',
+
+  // Timeline
+  TIMELINE_STEP_1_TITLE: 'Khởi tạo lệnh dệt',
+  TIMELINE_STEP_2_TITLE: 'Đang dệt mộc',
+  TIMELINE_STEP_2_WAITING: 'Chờ bắt đầu sản xuất',
+  TIMELINE_STEP_3_TITLE: 'Hoàn thành KCS',
+  TIMELINE_STEP_3_PENDING: 'Chưa có thông số nghiệm thu',
+  TIMELINE_STEP_CANCELLED: 'Lệnh đã bị huỷ',
+
+  // Buttons
+  BTN_BACK: 'Quay lại',
+  BTN_YARN_ISSUE: 'Xuất kho sợi',
+  BTN_START_WEAVING: 'Bắt đầu dệt',
+  BTN_COMPLETE_WEAVING: 'Hoàn thành dệt',
+
+  // Sections
+  SECTION_REQUIREMENTS: 'Nhu cầu & Xuất kho sợi',
+  SECTION_REQUIREMENTS_EMPTY: 'Chưa có dữ liệu tính toán nhu cầu sợi.',
+  SECTION_TARGETS: 'Mục tiêu sản xuất',
+  SECTION_RESULTS: 'Kết quả thực tế',
+  SECTION_RESULTS_WAITING: 'Đang đợi kết quả từ xưởng dệt...',
+  SECTION_ISSUE_HISTORY: 'Lịch sử xuất kho sợi',
+
+  // Table headers
+  COL_COLOR_CODE: 'Mã màu',
+  COL_ALLOCATED: 'Đã xuất',
+  COL_RECEIPT: 'Phiếu nhập',
+  COL_YARN_SUPPLIER: 'NCC sợi',
+  COL_LOT: 'Lô (Lot)',
+  COL_QTY_KG: 'Số lượng (kg)',
+  COL_ISSUE_DATE: 'Ngày xuất',
+
+  // Labels
+  LABEL_TARGET_FABRIC: 'Vải mục tiêu',
+  LABEL_CREATED_AT: 'Ngày tạo lệnh',
+  LABEL_LOSS_PCT: 'Hao hụt (%)',
+  LABEL_LINKED_ORDER: 'Đơn hàng liên kết',
+  LABEL_ORDER_NONE: 'Sản xuất dự trữ',
+  LABEL_WEAVER: 'Đối tác dệt',
+  LABEL_DETAIL_LOOM: 'Máy dệt',
+  LABEL_DETAIL_WEAVING_PRICE: 'Đơn giá dệt',
+  LABEL_TOTAL_FEE: 'Tổng phí dự kiến',
+  LABEL_TARGET_M: 'Tổng mét mục tiêu',
+  LABEL_YIELD_M: 'Sản lượng mộc thu được',
+  LABEL_YIELD_RATE: 'Hiệu suất (Yield Rate)',
+  LABEL_TOTAL: 'TỔNG CỘNG:',
 };
 
 export function getStatusVariant(status: WorkOrderStatus): BadgeVariant {

@@ -47,6 +47,42 @@ export const DYEING_ORDER_MESSAGES = {
   COL_ITEM_WEIGHT: 'Trọng lượng (kg)',
   COL_ITEM_COLOR: 'Màu nhuộm',
   COL_ITEM_NOTE: 'Ghi chú item',
+
+  // Form Basic Info
+  FORM_TITLE_EDIT: 'Sửa lệnh nhuộm',
+  FORM_TITLE_CREATE: 'Tạo lệnh nhuộm mới',
+  BTN_SUBMIT_EDIT: 'Cập nhật',
+  BTN_SUBMIT_CREATE: 'Tạo lệnh nhuộm',
+  SECTION_BASIC_INFO: 'Thông tin chung',
+  LBL_ORDER_NUMBER: 'Mã lệnh',
+  LBL_AUTO: 'Tự động',
+  LBL_SUPPLIER: 'Nhà nhuộm',
+  PLACEHOLDER_SUPPLIER: 'Chọn nhà nhuộm...',
+  LBL_ORDER_DATE: 'Ngày gởi',
+  LBL_RETURN_DATE: 'Hẹn trả hàng',
+  LBL_UNIT_PRICE: 'Đơn giá (đ/kg)',
+
+  // Form Items Section
+  SECTION_ITEMS: 'Danh sách cây vải',
+  BTN_ADD_ITEM: 'Thêm cây vải',
+  LBL_BATCH_IMPORT: 'Nhập theo lô vải mộc',
+  PLACEHOLDER_BATCH: 'Chọn lô — tự động thêm toàn bộ cuộn...',
+  BTN_ADD_ROLLS: 'Thêm {count} cuộn',
+  BTN_ADD: 'Thêm',
+  LBL_RAW_ROLL: 'Cây vải mộc',
+  PLACEHOLDER_RAW_ROLL: 'Chọn cây vải...',
+  LBL_TARGET_COLOR: 'Màu nhuộm mục tiêu',
+  PLACEHOLDER_TARGET_COLOR: 'Tên màu...',
+  LBL_WEIGHT: 'Trọng lượng (kg)',
+  LBL_LENGTH: 'Chiều dài (m)',
+  LBL_ITEM_NOTE: 'Ghi chú item',
+  LBL_TOTAL_WEIGHT: 'Tổng trọng lượng:',
+
+  // Global Notes
+  LBL_GLOBAL_NOTE: 'Ghi chú chung',
+  PLACEHOLDER_GLOBAL_NOTE: 'Nội dung ghi chú nếu có...',
+
+  LBL_WO_LINK: 'Mã Lệnh SX',
 };
 
 import { type BadgeVariant } from '@/shared/components';

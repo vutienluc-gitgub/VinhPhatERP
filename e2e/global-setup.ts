@@ -163,7 +163,7 @@ async function globalSetup(_config: FullConfig) {
 
   // Navigate 1 lần để init script chạy và localStorage được persist
   const page = await context.newPage();
-  await page.goto('http://localhost:5173/', { waitUntil: 'domcontentloaded' });
+  await page.goto('http://localhost:5174/', { waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(500);
 
   fs.mkdirSync(path.dirname(STORAGE_PATH), { recursive: true });

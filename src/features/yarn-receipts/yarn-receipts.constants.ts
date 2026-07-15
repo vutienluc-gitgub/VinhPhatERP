@@ -48,3 +48,28 @@ export const ITEM_ROW_LABELS = {
   ROW: 'Dòng',
   DELETE_ROW: 'Xóa dòng',
 };
+
+export const FORM_LABELS = {
+  receiptNumber: 'Số phiếu',
+  receiptNumberAuto: 'Tự động',
+  receiptDate: 'Ngày nhập',
+  supplier: 'Nhà cung cấp',
+  createSupplier: '+ Tạo NCC mới',
+  addItemRow: '+ Thêm dòng sợi',
+  scanBarcode: 'Quét Barcode',
+  scanningBarcode: 'Đang tra cứu API...',
+  notesPlaceholder: 'Ghi chú về phiếu nhập...',
+  update: 'Cập nhật',
+  create: 'Tạo phiếu',
+};
+
+export const FORM_MESSAGES = {
+  genericError: 'Có lỗi xảy ra',
+  scanError: 'Lỗi quét mã',
+  scanSuccess: 'Bóc tách Barcode thành công!',
+  errorPrefix: 'Lỗi:',
+  unsavedConfirm: 'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
+};
+
+/** Sample barcode for dev/demo — will be used as prompt default value */
+export const DEV_SAMPLE_BARCODE = '2510-F000016';

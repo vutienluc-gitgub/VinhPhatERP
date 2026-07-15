@@ -71,3 +71,12 @@ class StandardLogger {
 }
 
 export const logger = new StandardLogger();
+
+// Convenience export for error logging
+export const logError = (
+  message: string,
+  error?: unknown,
+  context?: LogContext,
+) => {
+  logger.error(message, error, context);
+};

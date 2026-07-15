@@ -24,6 +24,10 @@ import {
 import { sumBy } from '@/shared/utils/array.util';
 
 import { ShipmentRollPicker, type AvailableRoll } from './ShipmentRollPicker';
+import {
+  SHIPMENT_FORM_MESSAGES as MSG,
+  AD_HOC_SHIPMENT_LABELS as FIELD_MSG,
+} from './shipments.constants';
 
 type ShipmentFormProps = {
   orderId: string;
@@ -212,18 +216,18 @@ export function ShipmentForm({
 
   async function onSubmit(values: ShipmentsFormValues) {
     if (!isTrading && selectedRollIds.size === 0) {
-      toast.error('Vui lòng chọn ít nhất một cuộn vải để xuất.');
+      toast.error(MSG.SELECT_ROLL_REQUIRED);
       return;
     }
 
     try {
       await createMutation.mutateAsync(values);
-      toast.success('Tạo phiếu xuất thành công');
+      toast.success(MSG.CREATE_SUCCESS);
       reset();
       setSelectedRollIds(new Set());
       onClose();
     } catch {
-      toast.error('Có lỗi xảy ra khi tạo phiếu xuất');
+      toast.error(MSG.CREATE_ERROR);
     }
   }
 
@@ -231,7 +235,7 @@ export function ShipmentForm({
     <AdaptiveSheet
       open={true}
       onClose={onClose}
-      title={`Tạo phiếu xuất — ${orderNumber}`}
+      title={MSG.TITLE(orderNumber)}
       footer={
         <>
           <Button
@@ -240,7 +244,7 @@ export function ShipmentForm({
             onClick={onClose}
             disabled={isSubmitting || createMutation.isPending}
           >
-            Hủy
+            {MSG.CANCEL}
           </Button>
           <Button
             variant="primary"
@@ -255,8 +259,13 @@ export function ShipmentForm({
             }
           >
             {createMutation.isPending
-              ? 'Đang lưu...'
-              : `Tạo phiếu xuất (${isTrading ? (tradingItemsSummary?.count || 0) + ' dòng' : selectedRollIds.size + ' cuộn'})`}
+              ? MSG.SAVING
+              : MSG.CREATE_BTN(
+                  isTrading
+                    ? tradingItemsSummary?.count || 0
+                    : selectedRollIds.size,
+                  isTrading,
+                )}
           </Button>
         </>
       }
@@ -275,17 +284,18 @@ export function ShipmentForm({
           {/* Shipment number + date */}
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
-              <label>Số phiếu xuất</label>
+              <label>{FIELD_MSG.SHIPMENT_NUMBER}</label>
               <input
                 className="field-input italic bg-[var(--surface-disabled)] text-[var(--text-tertiary)]"
-                value="Tự động"
+                value={MSG.AUTO_NUMBER}
                 readOnly
                 disabled
               />
             </div>
             <div className="form-field">
               <label>
-                Ngày giao <span className="field-required">*</span>
+                {FIELD_MSG.SHIPMENT_DATE}{' '}
+                <span className="field-required">*</span>
               </label>
               <input
                 className={`field-input${errors.shipmentDate ? ' border-danger' : ''}`}
@@ -301,7 +311,7 @@ export function ShipmentForm({
           {/* Employee & Delivery address */}
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
-              <label>Nhân viên kho</label>
+              <label>{FIELD_MSG.EMPLOYEE}</label>
               <Controller
                 name="employeeId"
                 control={control}
@@ -323,7 +333,7 @@ export function ShipmentForm({
               />
             </div>
             <div className="form-field">
-              <label>Địa chỉ giao</label>
+              <label>{FIELD_MSG.DELIVERY_ADDRESS}</label>
               <input
                 className="field-input"
                 {...register('deliveryAddress')}
@@ -335,7 +345,7 @@ export function ShipmentForm({
           {/* Delivery staff + vehicle */}
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
-              <label>Nhân viên giao hàng</label>
+              <label>{FIELD_MSG.DELIVERY_STAFF}</label>
               <Controller
                 name="deliveryStaffId"
                 control={control}
@@ -357,7 +367,7 @@ export function ShipmentForm({
               />
             </div>
             <div className="form-field">
-              <label>Biển số xe</label>
+              <label>{FIELD_MSG.VEHICLE_INFO}</label>
               <input
                 className="field-input"
                 {...register('vehicleInfo')}
@@ -369,7 +379,7 @@ export function ShipmentForm({
           {/* Shipping rate + cost */}
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
-              <label>Bảng giá cước</label>
+              <label>{FIELD_MSG.SHIPPING_RATE}</label>
               <Controller
                 name="shippingRateId"
                 control={control}
@@ -384,7 +394,7 @@ export function ShipmentForm({
               />
             </div>
             <div className="form-field">
-              <label>Chi phí vận chuyển (VNĐ)</label>
+              <label>{FIELD_MSG.SHIPPING_COST}</label>
               <input
                 className="field-input"
                 type="number"
@@ -397,7 +407,7 @@ export function ShipmentForm({
           {/* Loading fee */}
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
-              <label>Phí bốc xếp (VNĐ)</label>
+              <label>{FIELD_MSG.LOADING_FEE}</label>
               <input
                 className="field-input"
                 type="number"
@@ -411,15 +421,15 @@ export function ShipmentForm({
           {/* ─── Roll Picker Grid ─── */}
           <div className="form-field">
             <label className="m-0 mb-2 block">
-              {isTrading ? 'Dòng hàng xuất kho' : 'Chọn cuộn xuất kho'}{' '}
+              {isTrading ? MSG.TRADING_ITEM_LABEL : MSG.SELECT_ROLL_LABEL}{' '}
               <span className="field-required">*</span>
             </label>
 
             {isTrading ? (
               <div className="rounded-xl border border-slate-200 p-4 space-y-3">
                 <div className="flex items-center justify-between text-sm text-slate-500 mb-2">
-                  <span>Hàng hóa từ đơn thương mại</span>
-                  <Badge variant="info">Đã trừ kho tự động</Badge>
+                  <span>{MSG.TRADING_FROM_ORDER}</span>
+                  <Badge variant="info">{MSG.TRADING_AUTO_DEDUCT}</Badge>
                 </div>
                 {tradingItemsSummary?.items.map((item) => (
                   <div
@@ -452,7 +462,7 @@ export function ShipmentForm({
             {!isTrading && selectedRollsSummary.count > 0 && (
               <div className="mt-3 px-4 py-3 rounded-[var(--radius)] bg-[#ecfdf5] border border-[#a7f3d0] flex justify-between items-center flex-wrap gap-2">
                 <span className="text-[0.85rem] font-semibold text-[#065f46]">
-                  ✓ {selectedRollsSummary.count} cuộn đã chọn
+                  {MSG.ROLL_SELECTED(selectedRollsSummary.count)}
                 </span>
                 <span className="text-[0.85rem] text-[#047857]">
                   Tổng: {selectedRollsSummary.totalWeight.toFixed(1)} kg
@@ -467,7 +477,7 @@ export function ShipmentForm({
               tradingItemsSummary.count > 0 && (
                 <div className="mt-3 px-4 py-3 rounded-[var(--radius)] bg-[#ecfdf5] border border-[#a7f3d0] flex justify-between items-center flex-wrap gap-2">
                   <span className="text-[0.85rem] font-semibold text-[#065f46]">
-                    Tổng cộng: {tradingItemsSummary.count} dòng hàng
+                    {MSG.TOTAL_TRADING(tradingItemsSummary.count)}
                   </span>
                   <span className="text-[0.85rem] text-[#047857]">
                     {tradingItemsSummary.totalWeight > 0 &&

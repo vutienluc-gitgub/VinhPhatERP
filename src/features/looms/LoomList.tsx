@@ -112,10 +112,10 @@ export function LoomList({ onEdit, onNew, tabs }: LoomListProps) {
       } catch (err) {
         const errMessage = err instanceof Error ? err.message : String(err);
         await confirm({
-          title: 'Lỗi',
-          message: `Không thể xóa máy dệt. ${errMessage}`,
+          title: MSG.ERR_TITLE,
+          message: `${MSG.ERR_DELETE_LOOM}${errMessage}`,
           variant: 'danger',
-          cancelLabel: 'Đóng',
+          cancelLabel: MSG.BTN_CLOSE,
           confirmLabel: '', // Hide confirm button basically or just ok
         });
       }

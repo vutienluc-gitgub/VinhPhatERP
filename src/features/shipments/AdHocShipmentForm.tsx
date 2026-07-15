@@ -20,29 +20,10 @@ import {
   AdHocShipmentItemsTable,
   AD_HOC_SHIPMENT_MESSAGES as MESSAGES,
 } from './AdHocShipmentItemsTable';
-
-const AD_HOC_SHIPMENT_LABELS = {
-  SHIPMENT_NUMBER: 'Số phiếu xuất',
-  SHIPMENT_DATE: 'Ngày giao',
-  CUSTOMER: 'Khách hàng',
-  EMPLOYEE: 'Nhân viên kho',
-  DELIVERY_ADDRESS: 'Địa chỉ giao',
-  DELIVERY_STAFF: 'Nhân viên giao hàng',
-  VEHICLE_INFO: 'Biển số xe',
-  SHIPPING_RATE: 'Bảng giá cước',
-  SHIPPING_COST: 'Chi phí vận chuyển (VNĐ)',
-  LOADING_FEE: 'Phí bốc xếp (VNĐ)',
-  NOTES: 'Ghi chú',
-  PURPOSE: 'Mục đích xuất',
-};
-
-const PURPOSE_OPTIONS = [
-  { value: 'Hàng bán lẻ', label: 'Hàng bán lẻ' },
-  { value: 'Hàng mẫu', label: 'Hàng mẫu' },
-  { value: 'Đền bù lỗi', label: 'Đền bù lỗi' },
-  { value: 'Tiêu hao nội bộ', label: 'Tiêu hao nội bộ' },
-  { value: 'Khác', label: 'Khác' },
-];
+import {
+  AD_HOC_SHIPMENT_LABELS,
+  AD_HOC_PURPOSE_OPTIONS,
+} from './shipments.constants';
 
 type AdHocShipmentFormProps = {
   onClose: () => void;
@@ -199,7 +180,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                     <span className="field-required">*</span>
                   </label>
                   <select className="field-input" {...register('purpose')}>
-                    {PURPOSE_OPTIONS.map((opt) => (
+                    {AD_HOC_PURPOSE_OPTIONS.map((opt) => (
                       <option key={opt.value} value={opt.value}>
                         {opt.label}
                       </option>

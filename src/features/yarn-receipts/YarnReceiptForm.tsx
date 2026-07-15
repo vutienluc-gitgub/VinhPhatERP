@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useMemo, useRef, useEffect, useCallback } from 'react';
 import { useFieldArray, useForm, FormProvider } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import type { Control } from 'react-hook-form';
@@ -21,7 +21,6 @@ import {
   useUpdateYarnReceipt,
   useYarnCatalogOptions,
 } from '@/application/inventory';
-import { fetchYarnSpecsFromVendorApi } from '@/api/vendor-integration.api';
 import {
   emptyYarnReceiptItem,
   yarnReceiptsDefaultValues,
@@ -29,6 +28,12 @@ import {
 } from '@/schema/yarn-receipt.schema';
 import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
 import { getErrorMessage } from '@/shared/utils/error';
+import { useYarnBarcodeScanner } from '@/features/yarn-receipts/hooks/useYarnBarcodeScanner';
+import {
+  FORM_LABELS,
+  FORM_MESSAGES,
+} from '@/features/yarn-receipts/yarn-receipts.constants';
+import { receiptToFormValues } from '@/features/yarn-receipts/utils';
 
 import type { YarnReceipt } from './types';
 import { YarnReceiptItemRow } from './components/YarnReceiptItemRow';
@@ -36,76 +41,10 @@ import { StepGeneralInfo } from './components/StepGeneralInfo';
 import { StepLogisticsInfo } from './components/StepLogisticsInfo';
 import { useYarnReceiptTotal } from './hooks/useYarnReceiptTotal';
 
-/* ── Constants ── */
-
-const FORM_LABELS = {
-  receiptNumber: 'Số phiếu',
-  receiptNumberAuto: 'Tự động',
-  receiptDate: 'Ngày nhập',
-  supplier: 'Nhà cung cấp',
-  createSupplier: '+ Tạo NCC mới',
-  addItemRow: '+ Thêm dòng sợi',
-  scanBarcode: 'Quét Barcode',
-  scanningBarcode: 'Đang tra cứu API...',
-  notesPlaceholder: 'Ghi chú về phiếu nhập...',
-  update: 'Cập nhật',
-  create: 'Tạo phiếu',
-} as const;
-
-const FORM_MESSAGES = {
-  genericError: 'Có lỗi xảy ra',
-  scanError: 'Lỗi quét mã',
-  scanSuccess: 'Bóc tách Barcode thành công!',
-  errorPrefix: 'Lỗi:',
-  unsavedConfirm: 'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
-} as const;
-
-/** Sample barcode for dev/demo — will be used as prompt default value */
-const DEV_SAMPLE_BARCODE = '2510-F000016';
-
-type YarnReceiptFormProps = {
+export type YarnReceiptFormProps = {
   receipt: YarnReceipt | null;
   onClose: () => void;
 };
-
-function receiptToFormValues(receipt: YarnReceipt): YarnReceiptsFormValues {
-  return {
-    receiptNumber: receipt.receipt_number,
-    supplierId: receipt.supplier_id,
-    receiptDate: receipt.receipt_date,
-    vehicleInfo: receipt.vehicle_info ?? '',
-    additionalFees: Array.isArray(receipt.additional_fees)
-      ? (receipt.additional_fees as { name: string; amount: number }[])
-      : [],
-    notes: receipt.notes ?? '',
-    items: (receipt.yarn_receipt_items ?? []).map((it) => ({
-      yarnCatalogId: it.yarn_catalog_id ?? '',
-      yarnType: it.yarn_type ?? '',
-      colorName: it.color_name ?? '',
-      quantity: Number(it.quantity) || 0,
-      unitPrice: Number(it.unit_price) || 0,
-      lotNumber: it.lot_number ?? '',
-      grade: it.grade ?? '',
-      unit: it.unit ?? 'kg',
-      tensileStrength: it.tensile_strength ?? '',
-      composition: it.composition ?? '',
-      origin: it.origin ?? '',
-      notes: it.notes ?? '',
-      dtex: it.dtex ?? '',
-      twist: it.twist ?? '',
-      machineNo: it.machine_no ?? '',
-      netWeight: it.net_weight != null ? Number(it.net_weight) : null,
-      grossWeight: it.gross_weight != null ? Number(it.gross_weight) : null,
-      serialNumber: it.serial_number ?? '',
-      productionWeek:
-        it.production_week != null ? Number(it.production_week) : null,
-      dist: it.dist ?? '',
-      conesPerBox: it.cones_per_box != null ? Number(it.cones_per_box) : null,
-      boxCount: it.box_count != null ? Number(it.box_count) : null,
-      boxNo: it.box_no ?? '',
-    })),
-  };
-}
 
 /* ── Realtime totals sub-component ── */
 function LineTotals({ control }: { control: Control<YarnReceiptsFormValues> }) {
@@ -124,8 +63,6 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
   const { data: suppliers = [] } = useActiveSuppliers();
   const { data: yarnCatalogs = [] } = useYarnCatalogOptions();
   const { data: colorOptions = [] } = useColorOptions();
-  const [isScanning, setIsScanning] = useState(false);
-  const [showScanner, setShowScanner] = useState(false);
 
   const methods = useForm<YarnReceiptsFormValues>({
     resolver: zodResolver(yarnReceiptsSchema),
@@ -198,6 +135,14 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
     name: 'items',
   });
 
+  const {
+    isScanning,
+    showScanner,
+    setShowScanner,
+    processBarcode,
+    handleManualBarcode,
+  } = useYarnBarcodeScanner({ getValues, append, update });
+
   async function onSubmit(values: YarnReceiptsFormValues) {
     // Guard bằng ref để tránh stale closure khi stepper vừa next()
     if (stepRef.current !== stepper.totalSteps - 1) return;
@@ -219,47 +164,6 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
       toast.error(msg);
     }
   }
-
-  const handleManualBarcode = () => {
-    const code = window.prompt(
-      `Nhập mã Barcode (thử: ${DEV_SAMPLE_BARCODE}):`,
-      DEV_SAMPLE_BARCODE,
-    );
-    if (!code) return;
-    processBarcode(code);
-  };
-
-  const processBarcode = async (code: string) => {
-    setShowScanner(false);
-    setIsScanning(true);
-    try {
-      const parsedData = await fetchYarnSpecsFromVendorApi(code);
-      const items = getValues('items');
-      const lastIndex = items.length - 1;
-      const lastItem = items[lastIndex];
-
-      const isLastItemEmpty =
-        lastItem && !lastItem.yarnType && lastItem.quantity === 0;
-
-      if (isLastItemEmpty) {
-        update(lastIndex, {
-          ...emptyYarnReceiptItem,
-          ...parsedData,
-        });
-      } else {
-        append({
-          ...emptyYarnReceiptItem,
-          ...parsedData,
-        });
-      }
-      toast.success(FORM_MESSAGES.scanSuccess);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : FORM_MESSAGES.scanError;
-      toast.error(msg);
-    } finally {
-      setIsScanning(false);
-    }
-  };
 
   const mutationError = isEditing ? updateMutation.error : createMutation.error;
   const isPending =

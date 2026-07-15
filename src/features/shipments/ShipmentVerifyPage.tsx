@@ -5,29 +5,12 @@ import { formatQuantity } from '@/shared/value/core/formatter';
 import { fetchPublicShipmentSummary } from '@/api/verify.api';
 import type { PublicShipmentSummary } from '@/api/verify.api';
 
-const STATUS_LABELS: Record<string, string> = {
-  draft: 'Nháp',
-  confirmed: 'Đã xác nhận',
-  shipped: 'Đang giao',
-  delivered: 'Đã giao',
-  cancelled: 'Đã huỷ',
-};
-
-const JOURNEY_LABELS: Record<string, string> = {
-  pending_pickup: 'Chờ lấy hàng',
-  picked_up: 'Đã lấy hàng',
-  in_transit: 'Đang trên đường',
-  arrived: 'Đã đến nơi',
-  delivered_confirmed: 'Đã giao - Xác nhận',
-};
-
-const JOURNEY_ORDER = [
-  'pending_pickup',
-  'picked_up',
-  'in_transit',
-  'arrived',
-  'delivered_confirmed',
-];
+import {
+  VERIFY_PAGE_MESSAGES as MSG,
+  VERIFY_STATUS_LABELS,
+  VERIFY_JOURNEY_LABELS,
+  VERIFY_JOURNEY_ORDER,
+} from './shipments.constants';
 
 function formatDate(value: string | null | undefined): string {
   if (!value) return '—';
@@ -70,7 +53,7 @@ export function ShipmentVerifyPage() {
         setLoading(false);
       })
       .catch((err: unknown) => {
-        setError(err instanceof Error ? err.message : 'Có lỗi xảy ra');
+        setError(err instanceof Error ? err.message : MSG.ERROR_GENERIC);
         setLoading(false);
       });
   }, [shipmentNumber]);
@@ -79,7 +62,7 @@ export function ShipmentVerifyPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f0f5fb]">
         <div className="text-[var(--text-secondary)] text-sm animate-pulse">
-          Đang tải...
+          {MSG.LOADING}
         </div>
       </div>
     );
@@ -90,18 +73,17 @@ export function ShipmentVerifyPage() {
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#f0f5fb] gap-3 p-6">
         <div className="text-4xl">🔍</div>
         <h1 className="font-bold text-lg text-[var(--text-primary)]">
-          Không tìm thấy phiếu
+          {MSG.NOT_FOUND_TITLE}
         </h1>
         <p className="text-sm text-[var(--text-secondary)] text-center">
-          Mã phiếu <strong>{shipmentNumber}</strong> không tồn tại hoặc đã bị
-          xoá.
+          {MSG.NOT_FOUND_DESC(shipmentNumber!)}
         </p>
       </div>
     );
   }
 
   const currentJourneyIdx = shipment.journey_status
-    ? JOURNEY_ORDER.indexOf(shipment.journey_status)
+    ? VERIFY_JOURNEY_ORDER.indexOf(shipment.journey_status)
     : -1;
 
   const isDelivered =
@@ -118,18 +100,18 @@ export function ShipmentVerifyPage() {
         <div className="bg-white rounded-2xl shadow-sm border border-[#dce6f0] overflow-hidden">
           <div className="bg-[#0f3460] px-5 py-4">
             <div className="text-xs text-[#8eb8e5] font-semibold uppercase tracking-widest mb-1">
-              VinhPhat — Chứng từ giao hàng
+              {MSG.DOC_TITLE}
             </div>
             <div className="text-white text-2xl font-bold tracking-tight">
               {shipment.shipment_number}
             </div>
             <div className="text-[#b8d4f0] text-sm mt-1">
-              Ngày giao: {formatDate(shipment.shipment_date)}
+              {MSG.DELIVERY_DATE} {formatDate(shipment.shipment_date)}
             </div>
           </div>
           <div className="px-5 py-3 flex items-center justify-between">
             <span className="text-xs text-[var(--text-secondary)]">
-              Trạng thái
+              {MSG.STATUS_LBL}
             </span>
             <span
               className={`text-xs font-bold px-3 py-1 rounded-full ${
@@ -140,7 +122,7 @@ export function ShipmentVerifyPage() {
                     : 'bg-gray-100 text-gray-600'
               }`}
             >
-              {STATUS_LABELS[shipment.status] ?? shipment.status}
+              {VERIFY_STATUS_LABELS[shipment.status] ?? shipment.status}
             </span>
           </div>
         </div>
@@ -148,7 +130,7 @@ export function ShipmentVerifyPage() {
         {/* Customer info */}
         <div className="bg-white rounded-2xl shadow-sm border border-[#dce6f0] px-5 py-4 flex flex-col gap-2">
           <div className="text-xs font-bold uppercase text-[#0f3460] tracking-wider mb-1">
-            Thông tin giao hàng
+            {MSG.DELIVERY_INFO}
           </div>
           <div className="flex items-start gap-3 text-sm">
             <span className="text-lg leading-none">👤</span>
@@ -171,7 +153,7 @@ export function ShipmentVerifyPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-[#dce6f0] overflow-hidden">
             <div className="px-5 py-3 border-b border-[#f0f5fb]">
               <span className="text-xs font-bold uppercase text-[#0f3460] tracking-wider">
-                Danh sách hàng ({shipment.item_count} dòng)
+                {MSG.ITEM_LIST(shipment.item_count)}
               </span>
             </div>
             <div className="divide-y divide-[#f0f5fb]">
@@ -201,10 +183,10 @@ export function ShipmentVerifyPage() {
         {shipment.journey_status && (
           <div className="bg-white rounded-2xl shadow-sm border border-[#dce6f0] px-5 py-4">
             <div className="text-xs font-bold uppercase text-[#0f3460] tracking-wider mb-3">
-              Hành trình giao hàng
+              {MSG.JOURNEY_TITLE}
             </div>
             <div className="flex flex-col gap-2">
-              {JOURNEY_ORDER.map((step, idx) => {
+              {VERIFY_JOURNEY_ORDER.map((step, idx) => {
                 const isDone = idx <= currentJourneyIdx;
                 const isCurrent = step === shipment.journey_status;
                 const log = shipment.journey_logs.find(
@@ -225,7 +207,7 @@ export function ShipmentVerifyPage() {
                       <div
                         className={`text-sm ${isCurrent ? 'font-bold text-[#0f3460]' : isDone ? 'text-[var(--text-primary)]' : 'text-[var(--text-tertiary)]'}`}
                       >
-                        {JOURNEY_LABELS[step] ?? step}
+                        {VERIFY_JOURNEY_LABELS[step] ?? step}
                       </div>
                       {log && (
                         <div className="text-xs text-[var(--text-tertiary)]">
@@ -244,7 +226,7 @@ export function ShipmentVerifyPage() {
         {shipment.customer_signature_url && (
           <div className="bg-white rounded-2xl shadow-sm border border-[#dce6f0] px-5 py-4">
             <div className="text-xs font-bold uppercase text-[#0f3460] tracking-wider mb-3">
-              Chữ ký xác nhận nhận hàng
+              {MSG.SIGNATURE_TITLE}
             </div>
             <div className="border border-[#dce6f0] rounded-xl overflow-hidden bg-[#f8fbff]">
               <img
@@ -255,7 +237,7 @@ export function ShipmentVerifyPage() {
             </div>
             {shipment.signed_at && (
               <p className="text-xs text-[var(--text-tertiary)] mt-2 text-center">
-                Ký lúc: {formatDateTime(shipment.signed_at)}
+                {MSG.SIGNED_AT} {formatDateTime(shipment.signed_at)}
               </p>
             )}
           </div>
@@ -263,9 +245,9 @@ export function ShipmentVerifyPage() {
 
         {/* Footer */}
         <p className="text-center text-[10px] text-[var(--text-tertiary)] pb-4">
-          Trang xác minh chứng từ — VinhPhat ERP
+          {MSG.FOOTER_TEXT}
           <br />
-          Chỉ xem, không cần đăng nhập
+          {MSG.FOOTER_SUBTEXT}
         </p>
       </div>
     </div>

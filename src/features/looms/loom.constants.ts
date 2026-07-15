@@ -45,4 +45,17 @@ export const LOOM_MESSAGES = {
   ERR_UNKNOWN_TYPE: 'Không xác định',
   STATUS_ACTIVE: 'Đang sử dụng',
   STATUS_INACTIVE: 'Đã ẩn',
+  ERR_TITLE: 'Lỗi',
+  ERR_DELETE_LOOM: 'Không thể xóa máy dệt. ',
+  BTN_CLOSE: 'Đóng',
+
+  // Form strings
+  FORM_TITLE_EDIT: (name: string) => `Sửa: ${name}`,
+  FORM_TITLE_CREATE: 'Thêm máy dệt',
+  BTN_SUBMIT_EDIT: 'Cập nhật',
+  BTN_SUBMIT_CREATE: 'Thêm máy dệt',
+  ERR_FORM_PREFIX: 'Lỗi: ',
+  WARN_TECH_LOCKED_TITLE: 'Máy đang HOẠT ĐỘNG!',
+  WARN_TECH_LOCKED_DESC:
+    'Không thể sửa đổi thông số kỹ thuật (Loại máy, số kim, v.v.) để tránh sai lệch dữ liệu sản xuất. Hãy chuyển trạng thái sang "Bảo trì" hoặc "Ngừng dùng" nếu muốn chỉnh sửa.',
 };
