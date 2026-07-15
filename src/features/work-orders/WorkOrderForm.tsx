@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import type { UseFormWatch } from 'react-hook-form';
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 
@@ -303,7 +304,7 @@ export function WorkOrderForm({
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       console.error('Failed to save work order:', error);
-      alert('Co loi xay ra: ' + message);
+      toast.error(message);
     }
   };
 
@@ -314,9 +315,7 @@ export function WorkOrderForm({
     <AdaptiveSheet
       open={true}
       onClose={handleCancel}
-      title={
-        isEditing ? 'Chỉnh sửa Lệnh Sản Xuất' : 'Kiến tạo Lệnh Sản Xuất Mới'
-      }
+      title={isEditing ? MSG.FORM_EDIT_TITLE : MSG.FORM_CREATE_TITLE}
       stepInfo={{
         current: stepper.currentStep,
         total: stepper.totalSteps,
@@ -345,7 +344,8 @@ export function WorkOrderForm({
             <div className="form-grid">
               <div className="form-field">
                 <label>
-                  Mã Lệnh Sản Xuất <span className="field-required">*</span>
+                  {MSG.LABEL_WO_NUMBER}{' '}
+                  <span className="field-required">*</span>
                 </label>
                 <input
                   {...register('work_order_number')}
@@ -353,7 +353,7 @@ export function WorkOrderForm({
                     register('work_order_number').ref(e);
                     firstInputRef.current = e;
                   }}
-                  placeholder="Ví dụ: WO-2024-001"
+                  placeholder={MSG.PLACEHOLDER_WO_NUMBER}
                   className={`field-input${errors.work_order_number ? ' border-danger' : ''}`}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
@@ -370,7 +370,7 @@ export function WorkOrderForm({
               </div>
 
               <div className="form-field">
-                <label>Liên kết Đơn Hàng (ĐH)</label>
+                <label>{MSG.LABEL_ORDER_LINK}</label>
                 <Controller
                   name="order_id"
                   control={control}
@@ -379,14 +379,12 @@ export function WorkOrderForm({
                       options={orderOptions}
                       value={field.value ?? ''}
                       onChange={field.onChange}
-                      placeholder="— Sản xuất dự trữ (Không ĐH) —"
+                      placeholder={MSG.PLACEHOLDER_ORDER}
                       hasError={!!errors.order_id}
                     />
                   )}
                 />
-                <span className="field-hint">
-                  Chọn đơn hàng nếu sản xuất theo yêu cầu (MTO)
-                </span>
+                <span className="field-hint">{MSG.HINT_ORDER}</span>
                 {errors.order_id && (
                   <span className="field-error">{errors.order_id.message}</span>
                 )}
@@ -394,7 +392,7 @@ export function WorkOrderForm({
 
               <div className="form-field">
                 <label>
-                  Đối tác dệt gia công <span className="field-required">*</span>
+                  {MSG.LABEL_SUPPLIER} <span className="field-required">*</span>
                 </label>
                 <Controller
                   name="supplier_id"
@@ -408,7 +406,7 @@ export function WorkOrderForm({
                         // Reset loom_id if supplier changes
                         setValue('loom_id', '');
                       }}
-                      placeholder="— Chọn nhà dệt —"
+                      placeholder={MSG.PLACEHOLDER_SUPPLIER}
                       hasError={!!errors.supplier_id}
                     />
                   )}
@@ -421,7 +419,7 @@ export function WorkOrderForm({
               </div>
 
               <div className="form-field">
-                <label>Máy dệt dự kiến (Điều độ)</label>
+                <label>{MSG.LABEL_LOOM}</label>
                 <Controller
                   name="loom_id"
                   control={control}
@@ -433,9 +431,9 @@ export function WorkOrderForm({
                       placeholder={
                         selectedSupplierId
                           ? loomOptions.length === 0
-                            ? '— Nhà dệt này chưa có máy —'
-                            : '— Chọn máy dệt —'
-                          : '— Chọn nhà dệt trước —'
+                            ? MSG.PLACEHOLDER_LOOM_EMPTY
+                            : MSG.PLACEHOLDER_LOOM
+                          : MSG.PLACEHOLDER_LOOM_DISABLED
                       }
                       hasError={!!errors.loom_id}
                       disabled={!selectedSupplierId}
@@ -448,7 +446,7 @@ export function WorkOrderForm({
               </div>
 
               <div className="form-field">
-                <label>Ngày bắt đầu dự kiến</label>
+                <label>{MSG.LABEL_START_DATE}</label>
                 <input
                   type="date"
                   {...register('start_date')}
@@ -463,7 +461,7 @@ export function WorkOrderForm({
             <div className="form-grid">
               <div className="form-field">
                 <label>
-                  Công thức BOM định mức{' '}
+                  {MSG.LABEL_BOM_TEMPLATE}{' '}
                   <span className="field-required">*</span>
                 </label>
                 <Controller
@@ -474,7 +472,7 @@ export function WorkOrderForm({
                       options={bomOptions}
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder="— Chọn công thức dệt —"
+                      placeholder={MSG.PLACEHOLDER_BOM}
                       hasError={!!errors.bom_template_id}
                     />
                   )}
@@ -487,7 +485,7 @@ export function WorkOrderForm({
               </div>
 
               <div className="form-field">
-                <label>Đơn giá gia công (đ/m)</label>
+                <label>{MSG.LABEL_WEAVING_PRICE}</label>
                 <Controller
                   name="weaving_unit_price"
                   control={control}
@@ -497,7 +495,7 @@ export function WorkOrderForm({
                       value={field.value}
                       onChange={field.onChange}
                       onBlur={field.onBlur}
-                      placeholder="Ví dụ: 3.500"
+                      placeholder={MSG.PLACEHOLDER_PRICE}
                       suffix=" đ/m"
                     />
                   )}
@@ -512,7 +510,8 @@ export function WorkOrderForm({
               <div className="form-grid grid-cols-3">
                 <div className="form-field col-span-2">
                   <label>
-                    Sản lượng mục tiêu <span className="field-required">*</span>
+                    {MSG.LABEL_TARGET_QTY}{' '}
+                    <span className="field-required">*</span>
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -551,7 +550,7 @@ export function WorkOrderForm({
                 </div>
 
                 <div className="form-field">
-                  <label>Khối lượng dự kiến (kg)</label>
+                  <label>{MSG.LABEL_TARGET_WEIGHT}</label>
                   <input
                     type="number"
                     step="0.01"
@@ -559,7 +558,7 @@ export function WorkOrderForm({
                     className={`field-input${errors.target_weight_kg ? ' border-danger' : ''}`}
                   />
                   <span className="field-hint whitespace-nowrap">
-                    Tự tính từ BOM nếu trống
+                    {MSG.HINT_TARGET_WEIGHT}
                   </span>
                   {errors.target_weight_kg && (
                     <span className="field-error">
@@ -570,11 +569,11 @@ export function WorkOrderForm({
               </div>
 
               <div className="form-field">
-                <label>Ghi chú sản xuất</label>
+                <label>{MSG.LABEL_NOTES}</label>
                 <textarea
                   {...register('notes')}
                   rows={2}
-                  placeholder="Hướng dẫn kỹ thuật hoặc ghi chú đặc biệt cho xưởng..."
+                  placeholder={MSG.PLACEHOLDER_NOTES}
                   className="field-textarea"
                 />
               </div>
@@ -597,7 +596,7 @@ export function WorkOrderForm({
           onCancel={handleCancel}
           isPending={isPending}
           submitLabel={
-            isEditing ? 'Cập nhật Lệnh Sản Xuất' : 'Xác nhận Lệnh Sản Xuất'
+            isEditing ? MSG.BTN_SUBMIT_UPDATE : MSG.BTN_SUBMIT_CREATE
           }
         >
           <AutoSaveSubscriber watch={watch} />

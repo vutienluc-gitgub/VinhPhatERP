@@ -43,4 +43,36 @@ export const FINISHED_FABRIC_MESSAGES = {
 
   CONFIRM_DELETE_MSG: (num: string) =>
     `Xóa cuộn "${num}"? Hành động này không thể hoàn tác.`,
+
+  // FORM MESSAGES & LABELS
+  FORM_TITLE_EDIT: 'Sửa cuộn:',
+  FORM_TITLE_NEW: 'Nhập cuộn vải thành phẩm',
+  ERR_UNSAVED: 'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
+  LBL_LOT_NUMBER: 'Số lô (Lot number)',
+  LBL_LOT_AUTO_HINT: 'Tự động tạo từ Cuộn mộc + Nhà nhuộm + Ngày hoàn thành.',
+  LBL_LOT_MANUAL_HINT: 'Nhóm các cuộn cùng lô sản xuất.',
+  LBL_ROLL_NUMBER: 'Mã cuộn',
+  LBL_FABRIC_TYPE: 'Loại vải',
+  LBL_COLOR_NAME: 'Màu vải',
+  LBL_COLOR_CODE: 'Mã màu',
+  LBL_WIDTH_CM: 'Khổ vải (cm)',
+  LBL_LENGTH_M: 'Độ dài (m)',
+  LBL_WEIGHT_KG: 'Trọng lượng (kg)',
+  LBL_PRODUCTION_DATE: 'Ngày hoàn thành',
+  LBL_QUALITY_GRADE: 'Chất lượng',
+  LBL_STATUS: 'Trạng thái',
+  LBL_WAREHOUSE_LOCATION: 'Vị trí kho',
+  LBL_NOTES: 'Ghi chú',
+  LBL_RAW_ROLL: 'Cuộn mộc gốc (Tùy chọn)',
+  HINT_RAW_ROLL:
+    'Nếu cuộn này được nhuộm từ một cuộn mộc có sẵn, chọn mã mộc gốc để truy vết.',
+  LBL_DYEING_PARTNER: 'Nhà nhuộm',
+  BTN_NEW_PARTNER: '+ Tạo đối tác mới',
+  BTN_SAVE_EDIT: 'Lưu thay đổi',
+  BTN_SAVE_NEW: 'Nhập kho',
+  ERR_PREFIX: 'Lỗi:',
+  LBL_UNVERIFIED: 'Chưa kiểm định',
+  VAL_CHOOSE_DYER: '— Chọn nhà nhuộm —',
+  VAL_CHOOSE_RAW: '— Tìm mã mộc —',
+  PLACEHOLDER_COLOR: 'Chọn hoặc nhập màu...',
 };

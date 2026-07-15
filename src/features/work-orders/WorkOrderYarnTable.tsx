@@ -17,6 +17,8 @@ import {
 import { formatQuantity } from '@/shared/utils/format';
 import type { CreateWorkOrderInput } from '@/schema/work-order.schema';
 
+import { WORK_ORDER_MESSAGES as MSG } from './work-orders.constants';
+
 interface WorkOrderYarnTableProps {
   control: Control<CreateWorkOrderInput>;
   register: UseFormRegister<CreateWorkOrderInput>;
@@ -49,7 +51,7 @@ export function WorkOrderYarnTable({
     <div className="panel-card card-flush mt-4">
       <div className="card-header-area">
         <div className="flex justify-between items-center">
-          <h4 className="text-sm font-bold">Phân bổ sợi</h4>
+          <h4 className="text-sm font-bold">{MSG.YARN_TABLE_TITLE}</h4>
           <button
             type="button"
             className="btn-secondary flex items-center gap-1.5"
@@ -62,7 +64,7 @@ export function WorkOrderYarnTable({
             }
           >
             <Icon name="Plus" size={16} />
-            Thêm sợi
+            {MSG.BTN_ADD_YARN}
           </button>
         </div>
       </div>
@@ -71,9 +73,9 @@ export function WorkOrderYarnTable({
         <table className="data-table table-sm">
           <thead>
             <tr>
-              <th className="w-[45%]">Loại sợi</th>
-              <th className="text-right w-[20%]">% BOM</th>
-              <th className="text-right w-[25%]">Cần (kg)</th>
+              <th className="w-[45%]">{MSG.COL_YARN_TYPE}</th>
+              <th className="text-right w-[20%]">{MSG.COL_BOM_PCT}</th>
+              <th className="text-right w-[25%]">{MSG.COL_REQUIRED_KG}</th>
               <th className="w-[10%]" />
             </tr>
           </thead>
@@ -94,7 +96,7 @@ export function WorkOrderYarnTable({
                           options={yarnComboOptions}
                           value={comboField.value}
                           onChange={comboField.onChange}
-                          placeholder="Chọn sợi..."
+                          placeholder={MSG.PLACEHOLDER_SELECT_YARN}
                           disabled={isLocked}
                         />
                       )}
@@ -102,7 +104,8 @@ export function WorkOrderYarnTable({
                     {isLocked && (
                       <div className="text-xs text-success mt-1 flex items-center gap-1 font-medium">
                         <Icon name="CheckCircle2" size={12} />
-                        Đã xuất: {formatQuantity(allocatedKg, 2)} kg
+                        {MSG.LOCKED_YARN_EXPORTED}{' '}
+                        {formatQuantity(allocatedKg, 2)} kg
                       </div>
                     )}
                   </td>
@@ -182,7 +185,7 @@ export function WorkOrderYarnTable({
                       <button
                         type="button"
                         className="btn-icon text-muted cursor-not-allowed opacity-50 block mx-auto"
-                        title="Đã xuất kho, không thể xoá"
+                        title={MSG.LOCKED_YARN_TOOLTIP}
                         disabled
                       >
                         <Icon name="Lock" size={16} />
@@ -203,7 +206,7 @@ export function WorkOrderYarnTable({
           </tbody>
           <tfoot>
             <tr className="font-bold">
-              <td className="text-right">TỔNG:</td>
+              <td className="text-right">{MSG.YARN_TABLE_TOTAL}</td>
               <td className="text-right">
                 {calcTotalBomRatio(watch('yarn_requirements') || []).toFixed(1)}
                 %
@@ -221,8 +224,7 @@ export function WorkOrderYarnTable({
       </div>
 
       <div className="px-4 py-2 text-xs text-muted border-t border-border">
-        * Enter ở cột KG dòng cuối để thêm dòng mới. Mũi tên Lên/Xuống để di
-        chuyển nhanh.
+        {MSG.YARN_TABLE_HINT}
       </div>
     </div>
   );

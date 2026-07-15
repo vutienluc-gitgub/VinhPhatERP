@@ -5,7 +5,7 @@ test('Icon debug', async ({ page }) => {
   page.on('console', (msg) => logs.push(msg.text()));
   page.on('pageerror', (err) => logs.push(`PAGE ERROR: ${err.message}`));
 
-  await page.goto('http://localhost:5173/production/finished-fabric');
+  await page.goto('/production/finished-fabric');
   await page.waitForTimeout(3000);
 
   console.log(

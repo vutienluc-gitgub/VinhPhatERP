@@ -1,4 +1,5 @@
 import { formatCurrency } from '@/shared/utils/format';
+import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
 
 import type { YarnReceipt } from './types';
 
@@ -48,4 +49,45 @@ export function getReceiptAvgUnitPrice(receipt: YarnReceipt): number | null {
   }
 
   return prices.reduce((sum, p) => sum + p, 0) / prices.length;
+}
+
+export function receiptToFormValues(
+  receipt: YarnReceipt,
+): YarnReceiptsFormValues {
+  return {
+    receiptNumber: receipt.receipt_number,
+    supplierId: receipt.supplier_id,
+    receiptDate: receipt.receipt_date,
+    vehicleInfo: receipt.vehicle_info ?? '',
+    additionalFees: Array.isArray(receipt.additional_fees)
+      ? (receipt.additional_fees as { name: string; amount: number }[])
+      : [],
+    notes: receipt.notes ?? '',
+    items: (receipt.yarn_receipt_items ?? []).map((it) => ({
+      yarnCatalogId: it.yarn_catalog_id ?? '',
+      yarnType: it.yarn_type ?? '',
+      colorName: it.color_name ?? '',
+      quantity: Number(it.quantity) || 0,
+      unitPrice: Number(it.unit_price) || 0,
+      lotNumber: it.lot_number ?? '',
+      grade: it.grade ?? '',
+      unit: it.unit ?? 'kg',
+      tensileStrength: it.tensile_strength ?? '',
+      composition: it.composition ?? '',
+      origin: it.origin ?? '',
+      notes: it.notes ?? '',
+      dtex: it.dtex ?? '',
+      twist: it.twist ?? '',
+      machineNo: it.machine_no ?? '',
+      netWeight: it.net_weight != null ? Number(it.net_weight) : null,
+      grossWeight: it.gross_weight != null ? Number(it.gross_weight) : null,
+      serialNumber: it.serial_number ?? '',
+      productionWeek:
+        it.production_week != null ? Number(it.production_week) : null,
+      dist: it.dist ?? '',
+      conesPerBox: it.cones_per_box != null ? Number(it.cones_per_box) : null,
+      boxCount: it.box_count != null ? Number(it.box_count) : null,
+      boxNo: it.box_no ?? '',
+    })),
+  };
 }

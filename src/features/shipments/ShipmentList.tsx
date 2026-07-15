@@ -1,5 +1,6 @@
 import { lazy, Suspense, useState } from 'react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const AdHocShipmentForm = lazy(() =>
   import('./AdHocShipmentForm').then((m) => ({
@@ -160,6 +161,7 @@ export function ShipmentList() {
 
     try {
       await deleteMutation.mutateAsync(id);
+      toast.success(MSG.DELETE_SUCCESS);
     } catch (error) {
       await showAlert(`Không thể xóa phiếu xuất. ${getErrorMessage(error)}`);
     }

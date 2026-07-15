@@ -21,6 +21,7 @@ import { LoomFormStep1General } from './components/LoomFormStep1General';
 import { LoomFormStep2Capacity } from './components/LoomFormStep2Capacity';
 import { LoomFormStep3Specs } from './components/LoomFormStep3Specs';
 import { LoomFormStep4Other } from './components/LoomFormStep4Other';
+import { LOOM_MESSAGES as MSG } from './loom.constants';
 import type { LoomWithSupplier } from './types';
 
 type LoomFormProps = {
@@ -147,7 +148,7 @@ export function LoomForm({ loom, onClose }: LoomFormProps) {
     <AdaptiveSheet
       open={true}
       onClose={onClose}
-      title={isEditing ? `Sửa: ${loom.name}` : 'Thêm máy dệt'}
+      title={isEditing ? MSG.FORM_TITLE_EDIT(loom.name) : MSG.FORM_TITLE_CREATE}
       maxWidth={720}
       stepInfo={{ current: stepper.currentStep, total: stepper.totalSteps }}
       footer={
@@ -155,14 +156,15 @@ export function LoomForm({ loom, onClose }: LoomFormProps) {
           stepper={stepper}
           onCancel={onClose}
           isPending={isPending}
-          submitLabel={isEditing ? 'Cập nhật' : 'Thêm máy dệt'}
+          submitLabel={isEditing ? MSG.BTN_SUBMIT_EDIT : MSG.BTN_SUBMIT_CREATE}
           formId="loom-form"
         />
       }
     >
       {mutationError && (
         <p className="error-inline mb-4">
-          Lỗi: {getErrorMessage(mutationError)}
+          {MSG.ERR_FORM_PREFIX}
+          {getErrorMessage(mutationError)}
         </p>
       )}
 
@@ -172,11 +174,9 @@ export function LoomForm({ loom, onClose }: LoomFormProps) {
             <Icon name="AlertTriangle" size={16} />
           </div>
           <div>
-            <strong>Máy đang HOẠT ĐỘNG!</strong>
+            <strong>{MSG.WARN_TECH_LOCKED_TITLE}</strong>
             <br />
-            Không thể sửa đổi thông số kỹ thuật (Loại máy, số kim, v.v.) để
-            tránh sai lệch dữ liệu sản xuất. Hãy chuyển trạng thái sang "Bảo
-            trì" hoặc "Ngừng dùng" nếu muốn chỉnh sửa.
+            {MSG.WARN_TECH_LOCKED_DESC}
           </div>
         </div>
       )}

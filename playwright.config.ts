@@ -1,12 +1,16 @@
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+
 // Load env files in priority order
-dotenv.config({ path: path.resolve(__dirname, '.env.test.local') });
-dotenv.config({ path: path.resolve(__dirname, '.env.local') });
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config({ path: path.resolve(dirname, '.env.test.local') });
+dotenv.config({ path: path.resolve(dirname, '.env.local') });
+dotenv.config({ path: path.resolve(dirname, '.env') });
 
 export default defineConfig({
   testDir: './e2e',

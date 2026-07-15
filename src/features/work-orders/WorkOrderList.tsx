@@ -122,10 +122,10 @@ export function WorkOrderList({
       } catch (err) {
         const errMessage = err instanceof Error ? err.message : String(err);
         await confirm({
-          title: 'Lỗi',
+          title: MSG.ERR_TITLE,
           message: `${MSG.ERR_TRANSITION_FAILED}${errMessage}`,
           variant: 'danger',
-          cancelLabel: 'Đóng',
+          cancelLabel: MSG.BTN_CLOSE,
           confirmLabel: '',
         });
       }
@@ -160,17 +160,17 @@ export function WorkOrderList({
           message: MSG.ERR_INVALID_TRANSITION,
           title: MSG.ERR_INVALID_TRANSITION_TITLE,
           variant: 'danger',
-          cancelLabel: 'Đóng',
+          cancelLabel: MSG.BTN_CLOSE,
           confirmLabel: '',
         });
       }
     } catch (e) {
       const errMessage = e instanceof Error ? e.message : String(e);
       await confirm({
-        title: 'Lỗi',
+        title: MSG.ERR_TITLE,
         message: `${MSG.ERR_TRANSITION_FAILED}${errMessage}`,
         variant: 'danger',
-        cancelLabel: 'Đóng',
+        cancelLabel: MSG.BTN_CLOSE,
         confirmLabel: '',
       });
     }
@@ -187,10 +187,10 @@ export function WorkOrderList({
     } catch (e) {
       const errMessage = e instanceof Error ? e.message : String(e);
       await confirm({
-        title: 'Lỗi',
+        title: MSG.ERR_TITLE,
         message: `${MSG.ERR_COMPLETE_FAILED}${errMessage}`,
         variant: 'danger',
-        cancelLabel: 'Đóng',
+        cancelLabel: MSG.BTN_CLOSE,
         confirmLabel: '',
       });
     }
@@ -215,13 +215,13 @@ export function WorkOrderList({
                 className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'kanban' ? 'bg-white shadow text-primary' : 'text-slate-600 hover:text-slate-900'}`}
                 onClick={() => setViewMode('kanban')}
               >
-                Kanban
+                {MSG.VIEW_KANBAN}
               </button>
               <button
                 className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'table' ? 'bg-white shadow text-primary' : 'text-slate-600 hover:text-slate-900'}`}
                 onClick={() => setViewMode('table')}
               >
-                Danh sách
+                {MSG.VIEW_TABLE}
               </button>
             </div>
             <button

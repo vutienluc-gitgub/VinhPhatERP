@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
@@ -59,13 +60,14 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
 
     try {
       await confirmMutation.mutateAsync(inv.id);
+      toast.success(MSG.CONFIRM_SUCCESS);
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : String(err);
       await confirm({
-        title: 'Lỗi',
+        title: MSG.ERR_TITLE,
         message: `${MSG.ERR_CONFIRM}${errMessage}`,
         variant: 'danger',
-        cancelLabel: 'Đóng',
+        cancelLabel: MSG.BTN_CLOSE,
         confirmLabel: '',
       });
     }
@@ -80,13 +82,14 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
 
     try {
       await deleteMutation.mutateAsync(inv.id);
+      toast.success(MSG.DELETE_SUCCESS);
     } catch (err) {
       const errMessage = err instanceof Error ? err.message : String(err);
       await confirm({
-        title: 'Lỗi',
+        title: MSG.ERR_TITLE,
         message: `${MSG.ERR_DELETE}${errMessage}`,
         variant: 'danger',
-        cancelLabel: 'Đóng',
+        cancelLabel: MSG.BTN_CLOSE,
         confirmLabel: '',
       });
     }

@@ -150,7 +150,7 @@ export function DyeingOrderDetail({
           </div>
           <div>
             <label className="text-xs font-bold text-muted uppercase block mb-1">
-              Ma Lenh SX
+              {MSG.LBL_WO_LINK}
             </label>
             <div className="font-semibold">{order.work_order_id || '—'}</div>
           </div>
