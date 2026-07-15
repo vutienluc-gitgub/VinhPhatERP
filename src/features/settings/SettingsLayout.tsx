@@ -101,10 +101,21 @@ export function SettingsLayout() {
         {isLoading && <SettingsSkeleton />}
 
         {loadError && !isLoading && (
-          <p className="error-inline">
-            {SETTINGS_MESSAGES.LOAD_ERROR}{' '}
-            {loadError instanceof Error ? loadError.message : String(loadError)}
-          </p>
+          <div className="flex flex-col gap-3 items-start">
+            <p className="error-inline m-0">
+              {SETTINGS_MESSAGES.LOAD_ERROR}{' '}
+              {loadError instanceof Error
+                ? loadError.message
+                : String(loadError)}
+            </p>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg text-sm font-medium transition-colors"
+            >
+              Thử lại
+            </button>
+          </div>
         )}
 
         {!isLoading && !loadError && <Outlet />}
