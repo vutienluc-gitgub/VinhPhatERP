@@ -33,59 +33,7 @@ const STATUS_OPTIONS = FABRIC_VARIANT_STATUSES.map((s) => ({
   label: FABRIC_VARIANT_STATUS_LABELS[s],
 }));
 
-const LABELS = {
-  COLOR_SECTION: 'Màu sắc',
-  COLOR_NAME: 'Tên màu',
-  COLOR_HEX: 'Mã hex',
-  SPEC_SECTION: 'Quy cách thực tế (sau nhuộm)',
-  ACTUAL_WIDTH: 'Khổ thực tế (cm)',
-  ACTUAL_GSM: 'K/L thực tế (gsm)',
-  SHRINK_WARP: 'Rút dọc (%)',
-  SHRINK_WEFT: 'Rút ngang (%)',
-  UOM_SECTION: 'Đơn vị tính & Quy đổi',
-  BASE_UOM: 'Đơn vị cơ sở',
-  CONVERSION_RATE: 'Hệ số quy đổi (mét/kg)',
-  SOURCING_SECTION: 'Truy xuất nguồn',
-  LOT_NUMBER: 'Số lô nhuộm',
-  SKU: 'SKU',
-  BARCODE: 'Barcode',
-  MOQ: 'MOQ (kg tối thiểu)',
-  PRICE_SECTION: 'Giá & Trạng thái',
-  PURCHASE_PRICE: 'Giá nhập (VNĐ/kg)',
-  SELLING_PRICE: 'Giá bán (VNĐ/kg)',
-  STATUS: 'Trạng thái',
-  NOTES: 'Ghi chú',
-  CANCEL: 'Hủy',
-  UPDATE: 'Cập nhật',
-  ADD: 'Thêm biến thể',
-  EDIT_TITLE: 'Sửa biến thể',
-  ADD_TITLE: 'Thêm biến thể',
-  SAVING_DRAFT: 'Đang lưu nháp...',
-  SAVED_DRAFT: 'Lưu nháp lần cuối',
-  AUTO_CALC: 'Tự tính: 1000 / (GSM x Khổ_m)',
-  ERROR_PREFIX: 'Lỗi:',
-  PUBLIC_SECTION: 'Hiển thị công khai',
-  PUBLIC_DESC:
-    'Cho phép biến thể này hiển thị trên trang công khai cho khách hàng xem.',
-  PUBLIC_ON: 'Công khai',
-  PUBLIC_OFF: 'Ẩn',
-};
-
-const MESSAGES = {
-  PLACEHOLDER_COLOR: 'VD: Đen, Trắng, Navy...',
-  PLACEHOLDER_HEX: '#000000',
-  PLACEHOLDER_WIDTH: 'VD: 150',
-  PLACEHOLDER_GSM: 'VD: 175',
-  PLACEHOLDER_SHRINK_WARP: 'VD: 3.5',
-  PLACEHOLDER_SHRINK_WEFT: 'VD: 2.0',
-  PLACEHOLDER_LOT: 'VD: L2026-W20',
-  PLACEHOLDER_SKU: 'VD: 11070011.BLACK.L01',
-  PLACEHOLDER_BARCODE: 'Mã vạch quét kho',
-  PLACEHOLDER_MOQ: 'VD: 300',
-  PLACEHOLDER_PURCHASE: 'VD: 85000',
-  PLACEHOLDER_SELLING: 'VD: 120000',
-  PLACEHOLDER_NOTES: 'Ghi chú thêm...',
-};
+import { LABELS } from './fabric-catalog.constants';
 
 type FabricVariantFormProps = {
   variant: FabricVariant | null;
@@ -230,7 +178,7 @@ export function FabricVariantForm({
             if (!hexPattern.test(values.color_hex)) {
               formMethods.setError('color_hex', {
                 type: 'pattern',
-                message: 'Mã hex không hợp lệ (VD: #000000)',
+                message: LABELS.VARIANT_VAL_ERR_HEX,
               });
               document.getElementById('fv-color-hex')?.focus();
               return false;
@@ -242,7 +190,7 @@ export function FabricVariantForm({
             if (values.actual_gsm <= 0) {
               formMethods.setError('actual_gsm', {
                 type: 'min',
-                message: 'GSM phải lớn hơn 0',
+                message: LABELS.VARIANT_VAL_ERR_GSM,
               });
               document.getElementById('fv-actual-gsm')?.focus();
               return false;
@@ -250,7 +198,7 @@ export function FabricVariantForm({
             if (values.actual_width_cm <= 0) {
               formMethods.setError('actual_width_cm', {
                 type: 'min',
-                message: 'Khổ phải lớn hơn 0',
+                message: LABELS.VARIANT_VAL_ERR_WIDTH,
               });
               document.getElementById('fv-actual-width')?.focus();
               return false;
@@ -268,7 +216,7 @@ export function FabricVariantForm({
             ) {
               formMethods.setError('shrinkage_rate_warp', {
                 type: 'range',
-                message: 'Rút dọc phải từ 0-100%',
+                message: LABELS.VARIANT_VAL_ERR_WARP,
               });
               document.getElementById('fv-shrink-warp')?.focus();
               return false;
@@ -285,7 +233,7 @@ export function FabricVariantForm({
             ) {
               formMethods.setError('shrinkage_rate_weft', {
                 type: 'range',
-                message: 'Rút ngang phải từ 0-100%',
+                message: LABELS.VARIANT_VAL_ERR_WEFT,
               });
               document.getElementById('fv-shrink-weft')?.focus();
               return false;
@@ -351,11 +299,15 @@ export function FabricVariantForm({
         });
         clearDraft();
       }
-      toast.success(isEditing ? 'Cập nhật thành công' : 'Thêm mới thành công');
+      toast.success(
+        isEditing
+          ? LABELS.VARIANT_SUCCESS_UPDATE
+          : LABELS.VARIANT_SUCCESS_CREATE,
+      );
       onClose();
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      await confirm.alert('Lỗi: ' + message);
+      await confirm.alert(`${LABELS.ERROR_PREFIX} ${message}`);
       console.error('[FabricVariantForm] submit error:', err);
     }
   }
@@ -370,8 +322,8 @@ export function FabricVariantForm({
       onClose={onClose}
       title={
         isEditing
-          ? `${LABELS.EDIT_TITLE}: ${variant.variant_code}`
-          : `${LABELS.ADD_TITLE} — ${parentCode}`
+          ? `${LABELS.VARIANT_EDIT_TITLE}: ${variant.variant_code}`
+          : `${LABELS.VARIANT_ADD_TITLE} — ${parentCode}`
       }
       footer={
         <>
@@ -391,7 +343,7 @@ export function FabricVariantForm({
               onClick={stepper.prev}
               disabled={isPending}
             >
-              Quay lại
+              {LABELS.VARIANT_STEP_BACK}
             </Button>
           )}
 
@@ -402,7 +354,7 @@ export function FabricVariantForm({
               form="fabric-variant-form"
               isLoading={isPending}
             >
-              {isEditing ? LABELS.UPDATE : LABELS.ADD}
+              {isEditing ? LABELS.UPDATE : LABELS.VARIANT_ADD}
             </Button>
           ) : (
             <Button
@@ -414,7 +366,9 @@ export function FabricVariantForm({
               }
               isLoading={stepper.isValidating}
             >
-              {stepper.isValidating ? 'Đang kiểm tra...' : 'Tiếp tục'}
+              {stepper.isValidating
+                ? LABELS.VARIANT_STEP_VALIDATING
+                : LABELS.VARIANT_STEP_CONTINUE}
             </Button>
           )}
         </>
@@ -422,17 +376,20 @@ export function FabricVariantForm({
     >
       <div className="flex items-center justify-between mb-4">
         <div className="text-sm font-medium text-muted">
-          Bước {stepper.currentStep + 1} / {stepper.totalSteps}
+          {LABELS.VARIANT_STEP_TITLE.replace(
+            '{current}',
+            String(stepper.currentStep + 1),
+          ).replace('{total}', String(stepper.totalSteps))}
         </div>
         <div className="flex gap-2">
           {status === 'saving' && (
             <span className="text-xs text-muted italic">
-              {LABELS.SAVING_DRAFT}
+              {LABELS.VARIANT_SAVING_DRAFT}
             </span>
           )}
           {status === 'saved' && (
             <span className="text-xs text-emerald-600 italic">
-              {LABELS.SAVED_DRAFT}: {lastSavedTimeText}
+              {LABELS.VARIANT_SAVED_DRAFT}: {lastSavedTimeText}
             </span>
           )}
         </div>
@@ -455,19 +412,19 @@ export function FabricVariantForm({
             <>
               <fieldset className="form-section">
                 <legend className="form-section-title">
-                  {LABELS.COLOR_SECTION}
+                  {LABELS.VARIANT_COLOR_SECTION}
                 </legend>
                 <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="fv-color-name">
-                      {LABELS.COLOR_NAME}{' '}
+                      {LABELS.VARIANT_COLOR_NAME}{' '}
                       <span className="field-required">*</span>
                     </label>
                     <input
                       id="fv-color-name"
                       className={`field-input${errors.color_name ? ' border-danger' : ''}`}
                       type="text"
-                      placeholder={MESSAGES.PLACEHOLDER_COLOR}
+                      placeholder={LABELS.VARIANT_PLACEHOLDER_COLOR}
                       {...register('color_name')}
                     />
                     {errors.color_name && (
@@ -478,13 +435,15 @@ export function FabricVariantForm({
                   </div>
 
                   <div className="form-field">
-                    <label htmlFor="fv-color-hex">{LABELS.COLOR_HEX}</label>
+                    <label htmlFor="fv-color-hex">
+                      {LABELS.VARIANT_COLOR_HEX}
+                    </label>
                     <div className="flex gap-2 items-center">
                       <input
                         id="fv-color-hex"
                         className={`field-input flex-1${errors.color_hex ? ' border-danger' : ''}`}
                         type="text"
-                        placeholder={MESSAGES.PLACEHOLDER_HEX}
+                        placeholder={LABELS.VARIANT_PLACEHOLDER_HEX}
                         {...register('color_hex')}
                       />
                       {watch('color_hex') &&
@@ -508,12 +467,12 @@ export function FabricVariantForm({
 
               <fieldset className="form-section">
                 <legend className="form-section-title">
-                  {LABELS.SPEC_SECTION}
+                  {LABELS.VARIANT_SPEC_SECTION}
                 </legend>
                 <div className="form-grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="fv-actual-width">
-                      {LABELS.ACTUAL_WIDTH}
+                      {LABELS.VARIANT_ACTUAL_WIDTH}
                     </label>
                     <input
                       id="fv-actual-width"
@@ -521,7 +480,7 @@ export function FabricVariantForm({
                       type="number"
                       step="0.1"
                       min="0"
-                      placeholder={MESSAGES.PLACEHOLDER_WIDTH}
+                      placeholder={LABELS.VARIANT_PLACEHOLDER_WIDTH}
                       {...register('actual_width_cm', { valueAsNumber: true })}
                     />
                     {errors.actual_width_cm && (
@@ -532,14 +491,16 @@ export function FabricVariantForm({
                   </div>
 
                   <div className="form-field">
-                    <label htmlFor="fv-actual-gsm">{LABELS.ACTUAL_GSM}</label>
+                    <label htmlFor="fv-actual-gsm">
+                      {LABELS.VARIANT_ACTUAL_GSM}
+                    </label>
                     <input
                       id="fv-actual-gsm"
                       className={`field-input${errors.actual_gsm ? ' border-danger' : ''}`}
                       type="number"
                       step="1"
                       min="0"
-                      placeholder={MESSAGES.PLACEHOLDER_GSM}
+                      placeholder={LABELS.VARIANT_PLACEHOLDER_GSM}
                       {...register('actual_gsm', { valueAsNumber: true })}
                     />
                     {errors.actual_gsm && (
@@ -550,7 +511,9 @@ export function FabricVariantForm({
                   </div>
 
                   <div className="form-field">
-                    <label htmlFor="fv-shrink-warp">{LABELS.SHRINK_WARP}</label>
+                    <label htmlFor="fv-shrink-warp">
+                      {LABELS.VARIANT_SHRINK_WARP}
+                    </label>
                     <input
                       id="fv-shrink-warp"
                       className={`field-input${errors.shrinkage_rate_warp ? ' border-danger' : ''}`}
@@ -558,7 +521,7 @@ export function FabricVariantForm({
                       step="0.1"
                       min="0"
                       max="100"
-                      placeholder={MESSAGES.PLACEHOLDER_SHRINK_WARP}
+                      placeholder={LABELS.VARIANT_PLACEHOLDER_SHRINK_WARP}
                       {...register('shrinkage_rate_warp', {
                         valueAsNumber: true,
                       })}
@@ -566,7 +529,9 @@ export function FabricVariantForm({
                   </div>
 
                   <div className="form-field">
-                    <label htmlFor="fv-shrink-weft">{LABELS.SHRINK_WEFT}</label>
+                    <label htmlFor="fv-shrink-weft">
+                      {LABELS.VARIANT_SHRINK_WEFT}
+                    </label>
                     <input
                       id="fv-shrink-weft"
                       className={`field-input${errors.shrinkage_rate_weft ? ' border-danger' : ''}`}
@@ -574,7 +539,7 @@ export function FabricVariantForm({
                       step="0.1"
                       min="0"
                       max="100"
-                      placeholder={MESSAGES.PLACEHOLDER_SHRINK_WEFT}
+                      placeholder={LABELS.VARIANT_PLACEHOLDER_SHRINK_WEFT}
                       {...register('shrinkage_rate_weft', {
                         valueAsNumber: true,
                       })}
@@ -585,11 +550,11 @@ export function FabricVariantForm({
 
               <fieldset className="form-section">
                 <legend className="form-section-title">
-                  {LABELS.UOM_SECTION}
+                  {LABELS.VARIANT_UOM_SECTION}
                 </legend>
                 <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
-                    <label>{LABELS.BASE_UOM}</label>
+                    <label>{LABELS.VARIANT_BASE_UOM}</label>
                     <Controller
                       name="base_uom"
                       control={control}
@@ -606,7 +571,7 @@ export function FabricVariantForm({
 
                   <div className="form-field">
                     <label htmlFor="fv-conversion-rate">
-                      {LABELS.CONVERSION_RATE}
+                      {LABELS.VARIANT_CONVERSION_RATE}
                     </label>
                     <input
                       id="fv-conversion-rate"
@@ -617,7 +582,7 @@ export function FabricVariantForm({
                       {...register('conversion_rate', { valueAsNumber: true })}
                     />
                     <span className="text-xs text-muted italic">
-                      {LABELS.AUTO_CALC}
+                      {LABELS.VARIANT_AUTO_CALC}
                     </span>
                   </div>
                 </div>
@@ -629,51 +594,51 @@ export function FabricVariantForm({
             <>
               <fieldset className="form-section">
                 <legend className="form-section-title">
-                  {LABELS.SOURCING_SECTION}
+                  {LABELS.VARIANT_SOURCING_SECTION}
                 </legend>
                 <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
-                    <label htmlFor="fv-lot">{LABELS.LOT_NUMBER}</label>
+                    <label htmlFor="fv-lot">{LABELS.VARIANT_LOT_NUMBER}</label>
                     <input
                       id="fv-lot"
                       className="field-input"
                       type="text"
-                      placeholder={MESSAGES.PLACEHOLDER_LOT}
+                      placeholder={LABELS.VARIANT_PLACEHOLDER_LOT}
                       {...register('lot_number')}
                     />
                   </div>
 
                   <div className="form-field">
-                    <label htmlFor="fv-sku">{LABELS.SKU}</label>
+                    <label htmlFor="fv-sku">{LABELS.VARIANT_SKU}</label>
                     <input
                       id="fv-sku"
                       className="field-input"
                       type="text"
-                      placeholder={MESSAGES.PLACEHOLDER_SKU}
+                      placeholder={LABELS.VARIANT_PLACEHOLDER_SKU}
                       {...register('sku')}
                     />
                   </div>
 
                   <div className="form-field">
-                    <label htmlFor="fv-barcode">{LABELS.BARCODE}</label>
+                    <label htmlFor="fv-barcode">{LABELS.VARIANT_BARCODE}</label>
                     <input
                       id="fv-barcode"
                       className="field-input"
                       type="text"
-                      placeholder={MESSAGES.PLACEHOLDER_BARCODE}
+                      placeholder={LABELS.VARIANT_PLACEHOLDER_BARCODE}
                       {...register('barcode')}
                     />
                   </div>
 
                   <div className="form-field">
-                    <label htmlFor="fv-moq">{LABELS.MOQ}</label>
+                    <label htmlFor="fv-moq">{LABELS.VARIANT_MOQ}</label>
                     <input
                       id="fv-moq"
                       className={`field-input${errors.moq ? ' border-danger' : ''}`}
                       type="number"
                       step="1"
                       min="0"
-                      placeholder={MESSAGES.PLACEHOLDER_MOQ}
+                      placeholder={LABELS.VARIANT_PLACEHOLDER_MOQ}
                       {...register('moq', { valueAsNumber: true })}
                     />
                   </div>
@@ -682,12 +647,12 @@ export function FabricVariantForm({
 
               <fieldset className="form-section">
                 <legend className="form-section-title">
-                  {LABELS.PRICE_SECTION}
+                  {LABELS.VARIANT_PRICE_SECTION}
                 </legend>
                 <div className="form-grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="fv-purchase-price">
-                      {LABELS.PURCHASE_PRICE}
+                      {LABELS.VARIANT_PURCHASE_PRICE}
                     </label>
                     <input
                       id="fv-purchase-price"
@@ -695,14 +660,14 @@ export function FabricVariantForm({
                       type="number"
                       step="100"
                       min="0"
-                      placeholder={MESSAGES.PLACEHOLDER_PURCHASE}
+                      placeholder={LABELS.VARIANT_PLACEHOLDER_PURCHASE}
                       {...register('purchase_price', { valueAsNumber: true })}
                     />
                   </div>
 
                   <div className="form-field">
                     <label htmlFor="fv-selling-price">
-                      {LABELS.SELLING_PRICE}
+                      {LABELS.VARIANT_SELLING_PRICE}
                     </label>
                     <input
                       id="fv-selling-price"
@@ -710,7 +675,7 @@ export function FabricVariantForm({
                       type="number"
                       step="100"
                       min="0"
-                      placeholder={MESSAGES.PLACEHOLDER_SELLING}
+                      placeholder={LABELS.VARIANT_PLACEHOLDER_SELLING}
                       {...register('selling_price', { valueAsNumber: true })}
                     />
                   </div>
@@ -734,12 +699,12 @@ export function FabricVariantForm({
               </fieldset>
 
               <div className="form-field">
-                <label htmlFor="fv-notes">{LABELS.NOTES}</label>
+                <label htmlFor="fv-notes">{LABELS.NOTES_LABEL}</label>
                 <textarea
                   id="fv-notes"
                   className="field-textarea"
                   rows={2}
-                  placeholder={MESSAGES.PLACEHOLDER_NOTES}
+                  placeholder={LABELS.NOTES_PLACEHOLDER}
                   {...register('notes')}
                 />
               </div>
@@ -748,10 +713,10 @@ export function FabricVariantForm({
               <div className="public-toggle-section">
                 <div className="public-toggle-section__text">
                   <p className="public-toggle-section__title">
-                    {LABELS.PUBLIC_SECTION}
+                    {LABELS.VARIANT_PUBLIC_SECTION}
                   </p>
                   <p className="public-toggle-section__desc">
-                    {LABELS.PUBLIC_DESC}
+                    {LABELS.VARIANT_PUBLIC_DESC}
                   </p>
                 </div>
                 <div className="public-toggle-section__controls">

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 
+import { UNPAID_DOCS_MESSAGES as MSG } from '@/features/payments/payments.constants';
 import { useUnpaidDocuments } from '@/application/payments';
 import { sumBy } from '@/shared/utils/array.util';
 import type { UnpaidDocument } from '@/domain/payments/types';
@@ -36,8 +37,8 @@ export function useGroupedUnpaidDocuments(supplierId: string) {
           title: doc.document_number,
           subtitle:
             doc.document_type === 'weaving_invoice'
-              ? 'Phiếu dệt'
-              : 'Phiếu nhập sợi',
+              ? MSG.DOC_WEAVING
+              : MSG.DOC_YARN,
           date: doc.document_date,
           remaining: doc.remaining_amount,
           paid_amount: doc.paid_amount,
@@ -53,8 +54,8 @@ export function useGroupedUnpaidDocuments(supplierId: string) {
       result.push({
         isGroup: true,
         id: `fabric_group_${dateStr}`,
-        title: `Mua vải thành phẩm (${docs.length} cuộn)`,
-        subtitle: 'Phiếu mua vải',
+        title: MSG.DOC_FABRIC(docs.length),
+        subtitle: MSG.DOC_FABRIC_SUB,
         date: dateStr,
         remaining: totalRemaining,
         paid_amount: totalPaid,

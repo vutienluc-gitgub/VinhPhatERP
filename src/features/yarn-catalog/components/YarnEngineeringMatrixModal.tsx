@@ -16,6 +16,7 @@ import {
   useMachineSpecs,
   useUpsertYarnKnittingEngineering,
 } from '@/features/yarn-catalog/hooks/useYarnEngineering';
+import { YARN_CATALOG_MESSAGES as MSG } from '@/features/yarn-catalog/yarn-catalog.constants';
 
 type YarnEngineeringMatrixModalProps = {
   isOpen: boolean;
@@ -81,7 +82,7 @@ export function YarnEngineeringMatrixModal({
         const parts = [diameterStr, gaugeStr, m.machine_family].filter(Boolean);
         return {
           value: m.id as string,
-          label: parts.length > 0 ? parts.join(' - ') : 'Cấu hình trống',
+          label: parts.length > 0 ? parts.join(' - ') : MSG.VAL_EMPTY_CONFIG,
         };
       });
   }, [machineSpecs]);
@@ -95,16 +96,15 @@ export function YarnEngineeringMatrixModal({
     <AdaptiveSheet
       open={isOpen}
       onClose={onClose}
-      title={
-        editingRecord ? 'Cập nhật cấu hình máy dệt' : 'Thêm cấu hình máy dệt'
-      }
+      title={editingRecord ? MSG.MATRIX_TITLE_EDIT : MSG.MATRIX_TITLE_NEW}
     >
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full">
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
           <div className="form-grid">
             <div className="form-field">
               <label>
-                Kiểu dệt <span className="field-required">*</span>
+                {MSG.MATRIX_LBL_STRUCTURE}{' '}
+                <span className="field-required">*</span>
               </label>
               <Controller
                 name="fabric_structure_id"
@@ -126,7 +126,8 @@ export function YarnEngineeringMatrixModal({
 
             <div className="form-field">
               <label>
-                Cấu hình máy <span className="field-required">*</span>
+                {MSG.MATRIX_LBL_MACHINE}{' '}
+                <span className="field-required">*</span>
               </label>
               <Controller
                 name="machine_spec_id"
@@ -148,7 +149,7 @@ export function YarnEngineeringMatrixModal({
 
             <div className="form-field">
               <label>
-                Mức độ tương thích <span className="field-required">*</span>
+                {MSG.MATRIX_LBL_LEVEL} <span className="field-required">*</span>
               </label>
               <select
                 className="field-input"
@@ -166,17 +167,17 @@ export function YarnEngineeringMatrixModal({
             </div>
 
             <div className="form-field">
-              <label>Kiểu cấp sợi (Feeding Type)</label>
+              <label>{MSG.MATRIX_LBL_FEEDING}</label>
               <select className="field-input" {...register('feeding_type')}>
-                <option value="">Chưa xác định</option>
-                <option value="positive">Tích cực (Positive)</option>
-                <option value="negative">Tiêu cực (Negative)</option>
-                <option value="auto">Tự động (Auto)</option>
+                <option value="">{MSG.MATRIX_VAL_UNKNOWN}</option>
+                <option value="positive">{MSG.MATRIX_VAL_POSITIVE}</option>
+                <option value="negative">{MSG.MATRIX_VAL_NEGATIVE}</option>
+                <option value="auto">{MSG.MATRIX_VAL_AUTO}</option>
               </select>
             </div>
 
             <div className="form-field">
-              <label>Tốc độ (RPM) khuyên dùng</label>
+              <label>{MSG.MATRIX_LBL_REC_RPM}</label>
               <input
                 className="field-input"
                 type="number"
@@ -188,7 +189,7 @@ export function YarnEngineeringMatrixModal({
             </div>
 
             <div className="form-field">
-              <label>Tốc độ (RPM) tối đa</label>
+              <label>{MSG.MATRIX_LBL_MAX_RPM}</label>
               <input
                 className="field-input"
                 type="number"
@@ -197,7 +198,7 @@ export function YarnEngineeringMatrixModal({
             </div>
 
             <div className="form-field">
-              <label>Hiệu suất kỳ vọng (0-1)</label>
+              <label>{MSG.MATRIX_LBL_EFFICIENCY}</label>
               <input
                 className="field-input"
                 type="number"
@@ -207,7 +208,7 @@ export function YarnEngineeringMatrixModal({
             </div>
 
             <div className="form-field">
-              <label>Tỷ lệ hao hụt dự kiến (0-1)</label>
+              <label>{MSG.MATRIX_LBL_WASTE}</label>
               <input
                 className="field-input"
                 type="number"
@@ -217,7 +218,7 @@ export function YarnEngineeringMatrixModal({
             </div>
 
             <div className="form-field">
-              <label>Sức căng khuyên dùng</label>
+              <label>{MSG.MATRIX_LBL_TENSION}</label>
               <input
                 className="field-input"
                 placeholder="VD: 12 - 15 cN"
@@ -226,7 +227,7 @@ export function YarnEngineeringMatrixModal({
             </div>
 
             <div className="form-field">
-              <label>Stitch Length khuyên dùng (mm)</label>
+              <label>{MSG.MATRIX_LBL_STITCH}</label>
               <input
                 className="field-input"
                 type="number"
@@ -245,7 +246,9 @@ export function YarnEngineeringMatrixModal({
                 className="field-checkbox"
                 {...register('need_special_feeder')}
               />
-              <span className="text-sm font-medium">Cần Feeder đặc biệt</span>
+              <span className="text-sm font-medium">
+                {MSG.MATRIX_LBL_SPECIAL_FEEDER}
+              </span>
             </label>
 
             <label className="inline-flex items-center gap-2 cursor-pointer">
@@ -255,13 +258,13 @@ export function YarnEngineeringMatrixModal({
                 {...register('need_lycra_attachment')}
               />
               <span className="text-sm font-medium">
-                Cần đính kèm Lycra (Spandex)
+                {MSG.MATRIX_LBL_LYCRA}
               </span>
             </label>
           </div>
 
           <div className="form-field">
-            <label>Ghi chú sản xuất</label>
+            <label>{MSG.MATRIX_LBL_NOTES}</label>
             <textarea
               className="field-input"
               rows={3}
@@ -272,10 +275,10 @@ export function YarnEngineeringMatrixModal({
 
         <div className="border-t border-border p-4 bg-surface flex justify-end gap-3 shrink-0">
           <Button type="button" variant="secondary" onClick={onClose}>
-            Hủy
+            {MSG.BTN_CANCEL}
           </Button>
           <Button type="submit" isLoading={isSubmitting}>
-            Lưu cấu hình
+            {MSG.MATRIX_BTN_SAVE}
           </Button>
         </div>
       </form>

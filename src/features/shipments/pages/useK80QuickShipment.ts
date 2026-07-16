@@ -18,6 +18,7 @@ import {
   K80_PRINT_LAYOUT_LABELS as LABELS,
   K80_QUICK_PRINT_LABELS,
 } from '@/features/shipments/components/quick-print/k80-quick-print.constants';
+import { QUICK_SHIPMENT_MESSAGES as MSG } from '@/features/shipments/shipments.constants';
 
 export type ColumnState = {
   id: string;
@@ -209,7 +210,7 @@ export function useK80QuickShipment() {
     }
 
     const exportColumns: ExportColumn[] = printData.columns.map((c, i) => ({
-      label: c.fabricCode || `Mã vải ${i + 1}`,
+      label: c.fabricCode || MSG.FABRIC_CODE(i + 1),
       key: c.id,
       align: 'right',
       width: 15,
@@ -229,7 +230,7 @@ export function useK80QuickShipment() {
     const totalRollsRow: Record<string, string | number> = {};
     printData.columns.forEach((c) => {
       totalRollsRow[c.id] =
-        c.weights.length > 0 ? `${c.weights.length} Cuộn` : '';
+        c.weights.length > 0 ? MSG.ROLL_COUNT(c.weights.length) : '';
     });
     dataRows.push(totalRollsRow);
 
@@ -285,7 +286,7 @@ export function useK80QuickShipment() {
       try {
         await createMutation.mutateAsync({
           shipmentNumber: ticketNumber,
-          purpose: 'Hàng bán lẻ',
+          purpose: MSG.PURPOSE_RETAIL,
           syncDebt: false,
           customerId,
           shipmentDate: date,

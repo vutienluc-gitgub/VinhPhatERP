@@ -13,7 +13,7 @@ import {
 import { sumBy } from '@/shared/utils/array.util';
 
 import { useScanRoll } from './useScanRoll';
-import { AD_HOC_SHIPMENT_MESSAGES } from './AdHocShipmentItemsTable';
+import { AD_HOC_SHIPMENT_MESSAGES } from './shipments.constants';
 
 function computeShippingCost(
   rate: ShippingRate | undefined,

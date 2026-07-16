@@ -11,6 +11,7 @@ import {
   type ShipmentsFormValues,
 } from '@/schema/shipment.schema';
 import type { AvailableRoll } from '@/features/shipments/ShipmentRollPicker';
+import { FLEET_MESSAGES as MSG } from '@/features/shipments/shipments.constants';
 
 /* ── Types ── */
 
@@ -116,25 +117,14 @@ export function useFleetCommander(availableRolls: AvailableRoll[]) {
   const checkConstraints = useCallback(
     (rollId: string, targetTruckId: string): ConstraintResult => {
       const truck = trucks.find((t) => t.id === targetTruckId);
-      if (!truck)
-        return {
-          allowed: false,
-          reason: 'Xe không tồn tại',
-        };
+      if (!truck) return { allowed: false, reason: MSG.ERR_TRUCK_NOT_FOUND };
 
       const roll = availableRolls.find((r) => r.id === rollId);
-      if (!roll)
-        return {
-          allowed: false,
-          reason: 'Cuộn không tồn tại',
-        };
+      if (!roll) return { allowed: false, reason: MSG.ERR_ROLL_NOT_FOUND };
 
       // [Khắc nghiệt 1] - Không cho phép bốc cuộn rác (Grade C) lên xe gây sai lệch trọng lượng
       if (rollToGrade(roll) === 'C') {
-        return {
-          allowed: false,
-          reason: 'Cuộn Grade C: Mất thông tin trọng lượng! Vui lòng cân lại.',
-        };
+        return { allowed: false, reason: MSG.ERR_ROLL_GRADE_C };
       }
 
       const truckRolls = fleet.find((t) => t.id === targetTruckId)?.rolls || [];
@@ -145,7 +135,7 @@ export function useFleetCommander(availableRolls: AvailableRoll[]) {
         if (anchorFabricType && roll.fabric_type !== anchorFabricType) {
           return {
             allowed: false,
-            reason: `Chặn ghép lô: Mâu thuẫn chất liệu. Xe ${truck.plate} đang chuyên chở lô ${anchorFabricType}.`,
+            reason: MSG.ERR_MATERIAL_CONFLICT(truck.plate, anchorFabricType),
           };
         }
       }
@@ -155,7 +145,7 @@ export function useFleetCommander(availableRolls: AvailableRoll[]) {
       if (currentCount >= truck.maxSlots) {
         return {
           allowed: false,
-          reason: `Xe ${truck.plate} đã đầy (${truck.maxSlots} cuộn)`,
+          reason: MSG.ERR_TRUCK_FULL(truck.plate, truck.maxSlots),
         };
       }
 
@@ -168,16 +158,13 @@ export function useFleetCommander(availableRolls: AvailableRoll[]) {
       if (currentWeight + rollWeight > truck.maxWeightKg) {
         return {
           allowed: false,
-          reason: `Vượt quá tải trọng của xe ${truck.plate} (${truck.maxWeightKg} kg)`,
+          reason: MSG.ERR_WEIGHT_LIMIT(truck.plate, truck.maxWeightKg),
         };
       }
 
       // Rule 5: Reserved roll cannot be moved
       if (roll.status === 'reserved') {
-        return {
-          allowed: false,
-          reason: 'Cuộn này đã bị khóa (reserved)',
-        };
+        return { allowed: false, reason: MSG.ERR_ROLL_RESERVED };
       }
 
       return { allowed: true };
@@ -245,7 +232,7 @@ export function useFleetCommander(availableRolls: AvailableRoll[]) {
         .sort((a, b) => (b.weight_kg ?? 0) - (a.weight_kg ?? 0));
 
       if (rollsToAssign.length === 0) {
-        toast('Không có cuộn tiêu chuẩn nào khả dụng để tự xếp.', {
+        toast(MSG.ERR_NO_VALID_ROLLS, {
           icon: 'ℹ️',
         });
         return prev;
@@ -294,12 +281,10 @@ export function useFleetCommander(availableRolls: AvailableRoll[]) {
       }
 
       if (assignedCount > 0) {
-        toast.success(
-          `Thuật toán đã xếp thành công ${assignedCount} cuộn vải!`,
-        );
+        toast.success(MSG.MSG_AUTO_SUCCESS(assignedCount));
         return nextMap;
       } else {
-        toast('Sức chứa của đoàn xe không đủ để nhét thêm cuộn nào.', {
+        toast(MSG.ERR_FLEET_FULL, {
           icon: '⚠️',
         });
         return prev;
@@ -317,7 +302,7 @@ export function useFleetCommander(availableRolls: AvailableRoll[]) {
       // Tìm các xe có được gán cuộn vải
       const activeTrucks = fleet.filter((truck) => truck.rolls.length > 0);
       if (activeTrucks.length === 0) {
-        toast.error('Chưa có xe nào được phân công tải trọng.');
+        toast.error(MSG.ERR_NO_TRUCKS_ASSIGNED);
         return;
       }
 
@@ -346,18 +331,15 @@ export function useFleetCommander(availableRolls: AvailableRoll[]) {
           successCount++;
         }
 
-        toast.success(
-          `Đã chốt phát lệnh thành công ${successCount} chuyến xe!`,
-          {
-            duration: 4000,
-            icon: '🚀',
-          },
-        );
+        toast.success(MSG.MSG_DISPATCH_SUCCESS(successCount), {
+          duration: 4000,
+          icon: '🚀',
+        });
 
         // Clear the board (Reset Assignments) sau khi xuất kho thành công
         setAssignments(new Map());
       } catch (_e) {
-        toast.error('Có lỗi xảy ra trong lúc phát lệnh. Xin thử lại.');
+        toast.error(MSG.ERR_DISPATCH_FAIL);
       } finally {
         setIsCommitting(false);
       }

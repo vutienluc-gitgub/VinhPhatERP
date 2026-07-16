@@ -46,8 +46,8 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
   return (
     <PageLayout aria-label={YARN_CATALOG_MESSAGES.ARIA_LIST_CONTAINER}>
       <PageHeader
-        title="Sợi"
-        subtitle="Quản lý danh mục sợi"
+        title={YARN_CATALOG_MESSAGES.PAGE_TITLE}
+        subtitle={YARN_CATALOG_MESSAGES.PAGE_SUBTITLE}
         actions={
           <AddButton
             onClick={onNew}

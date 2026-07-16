@@ -5,6 +5,8 @@ import { LotMatrixCard } from '@/shared/components/roll-grid';
 import type { RollMatrixItem } from '@/shared/components/roll-grid';
 import { sumBy } from '@/shared/utils/array.util';
 
+import { ROLL_PICKER_MESSAGES as MSG } from './shipments.constants';
+
 /** Shape of a roll from the available rolls API */
 type AvailableRoll = {
   id: string;
@@ -122,9 +124,7 @@ export function ShipmentRollPicker({
           size={32}
           className="mx-auto text-slate-300 mb-2"
         />
-        <p className="text-sm text-slate-500">
-          Không có cuộn thành phẩm nào sẵn sàng để xuất.
-        </p>
+        <p className="text-slate-500 font-medium">{MSG.EMPTY_ROLLS}</p>
       </div>
     );
   }
@@ -134,11 +134,14 @@ export function ShipmentRollPicker({
       {/* Summary bar */}
       <div className="flex items-center justify-between px-1">
         <span className="text-xs text-slate-500">
-          {availableRolls.length} cuộn có sẵn • Nhấn để chọn/bỏ chọn
+          {MSG.AVAILABLE_ROLLS(availableRolls.length)}
         </span>
         {totalSelected > 0 && (
           <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-            {totalSelected} cuộn • {totalSelectedWeight.toFixed(1)} kg
+            {MSG.SELECTED_SUMMARY(
+              totalSelected,
+              totalSelectedWeight.toFixed(1),
+            )}
           </span>
         )}
       </div>

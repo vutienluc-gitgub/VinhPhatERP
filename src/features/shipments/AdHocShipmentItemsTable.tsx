@@ -9,28 +9,12 @@ import { Combobox } from '@/shared/components/Combobox';
 import { MoneyText } from '@/shared/value';
 import type { AdHocShipmentFormValues } from '@/schema/shipment.schema';
 
+import { AD_HOC_SHIPMENT_MESSAGES } from './shipments.constants';
+
 const UNIT_OPTIONS = [
   { value: 'kg', label: 'kg' },
   { value: 'm', label: 'm' },
 ];
-
-export const AD_HOC_SHIPMENT_MESSAGES = {
-  TITLE: 'Tạo phiếu xuất kho thủ công',
-  SUBTITLE:
-    'Phiếu xuất không gắn đơn hàng — tự nhập loại vải, số lượng, đơn giá.',
-  CANCEL: 'Hủy',
-  SAVING: 'Đang lưu...',
-  CREATE: 'Tạo phiếu xuất',
-  SUCCESS: 'Tạo phiếu xuất thủ công thành công',
-  ERROR: 'Có lỗi xảy ra khi tạo phiếu xuất',
-  ADD_ROW: 'Thêm dòng hàng',
-  AT_LEAST_ONE: 'Phải có ít nhất 1 dòng hàng',
-  SUMMARY_LINES: 'dòng hàng',
-  SUMMARY_TOTAL: 'Tổng tiền hàng',
-  SCAN_PROMPT: 'Quét hoặc nhập mã cuộn vải (ví dụ: R001):',
-  SCAN_SUCCESS: 'Đã điền thông tin cuộn vải',
-  SCAN_ERROR: 'Không tìm thấy cuộn vải với mã:',
-} as const;
 
 type AdHocShipmentItemsTableProps = {
   form: UseFormReturn<AdHocShipmentFormValues>;
@@ -64,7 +48,8 @@ export function AdHocShipmentItemsTable({
     <div className="form-field">
       <div className="flex items-center justify-between mb-2">
         <label className="m-0">
-          Dòng hàng xuất kho <span className="field-required">*</span>
+          {AD_HOC_SHIPMENT_MESSAGES.LBL_TRADING_ITEMS}{' '}
+          <span className="field-required">*</span>
         </label>
         <button
           type="button"
@@ -80,11 +65,17 @@ export function AdHocShipmentItemsTable({
         {/* Table header */}
         <div className="grid grid-cols-[30px_1fr_100px_70px_120px_130px_40px] gap-0 bg-[var(--surface-secondary)] border-b border-[var(--border)] px-3 py-2 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
           <span className="text-center">#</span>
-          <span>Loại vải</span>
-          <span className="text-right">Số lượng</span>
-          <span className="text-center">ĐV</span>
-          <span className="text-right">Đơn giá (đ/kg)</span>
-          <span className="text-right">Thành tiền</span>
+          <span>{AD_HOC_SHIPMENT_MESSAGES.COL_FABRIC}</span>
+          <span className="text-right">{AD_HOC_SHIPMENT_MESSAGES.COL_QTY}</span>
+          <span className="text-center">
+            {AD_HOC_SHIPMENT_MESSAGES.COL_UNIT}
+          </span>
+          <span className="text-right">
+            {AD_HOC_SHIPMENT_MESSAGES.COL_PRICE}
+          </span>
+          <span className="text-right">
+            {AD_HOC_SHIPMENT_MESSAGES.COL_TOTAL}
+          </span>
           <span />
         </div>
 
@@ -106,7 +97,7 @@ export function AdHocShipmentItemsTable({
                   );
                   if (barcode) onScanRow(index, barcode);
                 }}
-                title="Quét mã cuộn"
+                title={AD_HOC_SHIPMENT_MESSAGES.TITLE_SCAN}
               >
                 <Icon name="ScanLine" size={16} />
               </button>
@@ -198,7 +189,7 @@ export function AdHocShipmentItemsTable({
                 type="button"
                 className="btn-icon text-[var(--text-tertiary)] hover:text-[var(--danger)]"
                 onClick={() => onRemoveRow(index)}
-                title="Xóa dòng"
+                title={AD_HOC_SHIPMENT_MESSAGES.TITLE_DELETE}
               >
                 <Icon name="Trash2" size={14} />
               </button>
@@ -208,8 +199,9 @@ export function AdHocShipmentItemsTable({
 
         {fields.length === 0 && (
           <div className="text-center py-8 text-[var(--text-tertiary)] text-sm">
-            Chưa có dòng hàng. Bấm &quot;{AD_HOC_SHIPMENT_MESSAGES.ADD_ROW}
-            &quot; để thêm.
+            {AD_HOC_SHIPMENT_MESSAGES.EMPTY_ITEMS} &quot;
+            {AD_HOC_SHIPMENT_MESSAGES.ADD_ROW}
+            &quot; {AD_HOC_SHIPMENT_MESSAGES.EMPTY_ITEMS_ACTION}
           </div>
         )}
       </div>

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { TabSwitcher, Icon } from '@/shared/components';
 import type { TabItem } from '@/shared/components';
 import { useProgressBoard } from '@/application/orders';
+import { ORDER_MESSAGES } from '@/features/orders/orders.constants';
 
 import { ProgressAuditLogView } from './ProgressAuditLog';
 import { ProgressBoard } from './ProgressBoard';
@@ -13,17 +14,17 @@ type Tab = 'dashboard' | 'board' | 'audit';
 const BASE_TABS: TabItem<Tab>[] = [
   {
     key: 'dashboard',
-    label: 'Tổng quan',
+    label: ORDER_MESSAGES.PROG_TAB_DASHBOARD,
     icon: <Icon name="LayoutDashboard" size={16} />,
   },
   {
     key: 'board',
-    label: 'Bảng tiến độ',
+    label: ORDER_MESSAGES.PROG_TAB_BOARD,
     icon: <Icon name="Kanban" size={16} />,
   },
   {
     key: 'audit',
-    label: 'Nhật ký',
+    label: ORDER_MESSAGES.PROG_TAB_AUDIT,
     icon: <Icon name="History" size={16} />,
   },
 ];
@@ -50,7 +51,9 @@ export function OrderProgressPage() {
       <div className="panel-card card-flush">
         <div className="card-header-area">
           <div className="card-header-row">
-            <h3 className="text-lg font-bold m-0">Tiến độ Sản xuất</h3>
+            <h3 className="text-lg font-bold m-0">
+              {ORDER_MESSAGES.PROG_PAGE_TITLE}
+            </h3>
           </div>
         </div>
 

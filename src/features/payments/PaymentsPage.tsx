@@ -6,6 +6,10 @@ import { TabSwitcher, Icon } from '@/shared/components';
 import type { TabItem } from '@/shared/components';
 
 import { AccountForm } from './AccountForm';
+import {
+  PAYMENTS_PAGE_TABS as TABS,
+  PAYMENTS_PAGE_MESSAGES as MSG,
+} from './payments.constants';
 import { AccountList } from './AccountList';
 import { CashFlowDashboard } from './CashFlowDashboard';
 import { DebtSummary } from './DebtSummary';
@@ -26,32 +30,32 @@ type Tab =
 const BASE_TABS: TabItem<Tab>[] = [
   {
     key: 'cashflow',
-    label: 'Dòng tiền',
+    label: TABS.CASH_FLOW,
     icon: <Icon name="LineChart" size={16} />,
   },
   {
     key: 'payments',
-    label: 'Phiếu thu',
+    label: TABS.RECEIPTS,
     icon: <Icon name="Receipt" size={16} />,
   },
   {
     key: 'expenses',
-    label: 'Phiếu chi',
+    label: TABS.EXPENSES,
     icon: <Icon name="CreditCard" size={16} />,
   },
   {
     key: 'customer-debt',
-    label: 'Công nợ KH',
+    label: TABS.CUSTOMER_DEBTS,
     icon: <Icon name="Users" size={16} />,
   },
   {
     key: 'supplier-debt',
-    label: 'Công nợ NCC',
+    label: TABS.SUPPLIER_DEBTS,
     icon: <Icon name="Truck" size={16} />,
   },
   {
     key: 'accounts',
-    label: 'Tài khoản',
+    label: TABS.ACCOUNTS,
     icon: <Icon name="Wallet" size={16} />,
   },
 ];
@@ -87,7 +91,7 @@ export function PaymentsPage() {
       <div className="panel-card card-flush">
         <div className="card-header-area">
           <div className="card-header-row">
-            <h3 className="text-lg font-bold m-0">Quản lý Tiền tệ</h3>
+            <h3 className="text-lg font-bold m-0">{MSG.TITLE}</h3>
           </div>
         </div>
         <div className="px-5 pb-4 pt-3">

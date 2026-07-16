@@ -12,6 +12,7 @@ import { useEmployees, useActiveSuppliers } from '@/application/crm';
 import { useCreateExpense, useUpdateExpense } from '@/application/payments';
 import { getErrorMessage } from '@/shared/utils/error';
 
+import { EXPENSE_FORM_MESSAGES as MSG } from './payments.constants';
 import {
   EXPENSE_CATEGORIES,
   EXPENSE_CATEGORY_LABELS,
@@ -69,7 +70,7 @@ export function ExpenseForm({
       accounts.map((a) => ({
         value: a.id,
         // eslint-disable-next-line no-restricted-syntax
-        label: `${a.name} (${formatCurrency(a.current_balance)} đ)`,
+        label: MSG.ACCOUNT_LABEL(a.name, formatCurrency(a.current_balance)),
       })),
     [accounts],
   );

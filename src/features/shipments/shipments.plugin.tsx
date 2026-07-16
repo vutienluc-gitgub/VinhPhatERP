@@ -1,4 +1,5 @@
 import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
+import { PLUGIN_MESSAGES as MSG } from '@/features/shipments/shipments.constants';
 
 /**
  * Shipments Plugin (Level 9 Architecture)
@@ -6,10 +7,9 @@ import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
  */
 export const shipmentsPlugin: FeaturePlugin = {
   key: 'shipments',
-  label: 'Giao hàng',
+  label: MSG.LABEL,
   shortLabel: 'Ship',
-  description:
-    'Quản lý quy trình đóng gói và giao nhận hàng hóa tới khách hàng.',
+  description: MSG.DESC,
   icon: 'Truck',
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'warehouse',

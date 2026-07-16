@@ -1,7 +1,10 @@
 import { MoneyCell } from '@/shared/value';
 import { useDebtSummary } from '@/application/payments';
 
-import { DEBT_LABELS } from './payments.constants';
+import {
+  DEBT_LABELS,
+  DEBT_SUMMARY_MESSAGES as MSG,
+} from './payments.constants';
 import {
   DebtTablePanel,
   DebtMobileCard,
@@ -30,7 +33,7 @@ export function DebtSummary() {
       rowKey={(d) => d.customer_id}
       columns={[
         {
-          header: 'Khách hàng',
+          header: MSG.COL_CUSTOMER,
           id: 'customer_name',
           sortable: true,
           accessor: (d) => d.customer_name,
@@ -49,7 +52,7 @@ export function DebtSummary() {
           ),
         },
         {
-          header: 'Số đơn',
+          header: MSG.COL_DOCS,
           id: 'order_count',
           sortable: true,
           className: 'text-right',
@@ -70,7 +73,7 @@ export function DebtSummary() {
           cell: (d) => <MoneyCell value={d.total_paid} bold tone="success" />,
         },
         {
-          header: 'Còn nợ',
+          header: MSG.COL_DEBT,
           id: 'balance_due',
           sortable: true,
           className: 'text-right',
@@ -88,7 +91,7 @@ export function DebtSummary() {
           countUnit={L.docUnit}
           totalLabel={L.totalLabel}
           paidLabel={L.paidLabel}
-          countLabel="Số đơn"
+          countLabel={MSG.COL_DOCS}
           progressLabel={L.progressLabel}
         />
       )}

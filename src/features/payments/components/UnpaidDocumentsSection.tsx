@@ -5,6 +5,7 @@ import { MoneyText } from '@/shared/value';
 import { sumBy } from '@/shared/utils/array.util';
 import type { ExpenseFormValues } from '@/features/payments/payments.module';
 import { useGroupedUnpaidDocuments } from '@/features/payments/hooks/useGroupedUnpaidDocuments';
+import { UNPAID_DOCS_MESSAGES as MSG } from '@/features/payments/payments.constants';
 
 /** Type cho 1 allocation item trong form */
 type AllocationItem = ExpenseFormValues['allocations'][number];
@@ -34,7 +35,7 @@ export function UnpaidDocumentsSection({
   return (
     <div className="form-field col-span-full mt-4">
       <label className="text-sm font-semibold mb-2 block">
-        Đối trừ công nợ (Tự động tính vào số tiền chi)
+        {MSG.DEDUCT_DEBT}
       </label>
       <div className="bg-[var(--surface-sunken)] p-3 rounded-md border border-[var(--border-subtle)] space-y-2 max-h-64 overflow-y-auto">
         {groupedDocs.map((group) => {
@@ -95,7 +96,7 @@ export function UnpaidDocumentsSection({
                 <div className="font-medium">{group.title}</div>
                 <div className="text-xs text-[var(--text-tertiary)]">
                   {group.subtitle}
-                  {' - '} Ngày:{' '}
+                  {' - '} {MSG.LBL_DATE}{' '}
                   {new Date(group.date).toLocaleDateString('vi-VN')}
                 </div>
               </div>
@@ -105,7 +106,7 @@ export function UnpaidDocumentsSection({
                 </div>
                 {group.paid_amount > 0 && (
                   <div className="text-xs text-[var(--text-tertiary)]">
-                    Đã thanh toán: <MoneyText value={group.paid_amount} />
+                    {MSG.LBL_PAID} <MoneyText value={group.paid_amount} />
                   </div>
                 )}
               </div>

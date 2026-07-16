@@ -231,7 +231,7 @@ export function ShipmentVerifyPage() {
             <div className="border border-[#dce6f0] rounded-xl overflow-hidden bg-[#f8fbff]">
               <img
                 src={shipment.customer_signature_url}
-                alt="Chữ ký khách hàng"
+                alt={MSG.ALT_SIGNATURE}
                 className="w-full max-h-32 object-contain"
               />
             </div>

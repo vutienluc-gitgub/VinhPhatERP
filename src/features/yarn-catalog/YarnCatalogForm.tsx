@@ -24,6 +24,7 @@ import type { YarnCatalogFormValues } from '@/schema/yarn-catalog.schema';
 import { getErrorMessage } from '@/shared/utils/error';
 import { extractFormErrorMessage } from '@/shared/utils/form';
 
+import { YARN_CATALOG_MESSAGES as MSG } from './yarn-catalog.constants';
 import type { YarnCatalog } from './types';
 import { StepGeneralInfo } from './components/StepGeneralInfo';
 import { StepTechnicalSpecs } from './components/StepTechnicalSpecs';
@@ -32,8 +33,8 @@ import { StepKnittingEngineering } from './components/StepKnittingEngineering';
 import { useYarnNameGenerator } from './hooks/useYarnNameGenerator';
 
 const FORM_MESSAGES = {
-  genericError: 'Có lỗi xảy ra',
-  unsavedConfirm: 'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
+  genericError: MSG.ERROR_GENERIC,
+  unsavedConfirm: MSG.UNSAVED_WARNING,
 };
 
 const STEP_1_FIELDS: (keyof YarnCatalogFormValues)[] = [
@@ -120,10 +121,10 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
   const handleCancel = useCallback(() => {
     if (isDirty) {
       void confirm({
-        title: 'Chưa lưu',
+        title: MSG.UNSAVED_TITLE,
         message: FORM_MESSAGES.unsavedConfirm,
-        cancelLabel: 'Tiếp tục chỉnh sửa',
-        confirmLabel: 'Đóng',
+        cancelLabel: MSG.BTN_CONTINUE_EDIT,
+        confirmLabel: MSG.BTN_CLOSE,
         variant: 'danger',
       }).then((confirmed) => {
         if (confirmed) onClose();
@@ -190,12 +191,14 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
       } else {
         await createMutation.mutateAsync(values);
       }
-      toast.success(isEditing ? 'Cập nhật thành công' : 'Thêm mới thành công');
+      toast.success(
+        isEditing ? MSG.MSG_UPDATE_SUCCESS : MSG.MSG_CREATE_SUCCESS,
+      );
       onClose();
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : FORM_MESSAGES.genericError;
-      void alert('Lỗi: ' + msg);
+      void alert(MSG.ERROR_PREFIX + msg);
       console.error('[YarnCatalogSubmitError]', err);
     }
   }
@@ -208,7 +211,11 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
     <AdaptiveSheet
       open={true}
       onClose={handleCancel}
-      title={isEditing ? `Sửa: ${catalog.name}` : 'Thêm loại sợi'}
+      title={
+        isEditing
+          ? `${MSG.FORM_TITLE_EDIT} ${catalog.name}`
+          : MSG.FORM_TITLE_NEW
+      }
       stepInfo={{
         current: stepper.currentStep,
         total: stepper.totalSteps,
@@ -217,7 +224,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
     >
       {mutationError && (
         <p className="error-inline mb-4" role="alert">
-          Lỗi: {getErrorMessage(mutationError)}
+          {MSG.ERROR_PREFIX} {getErrorMessage(mutationError)}
         </p>
       )}
 
@@ -277,7 +284,7 @@ export function YarnCatalogForm({ catalog, onClose }: YarnCatalogFormProps) {
             stepper={stepper}
             onCancel={handleCancel}
             isPending={isPending}
-            submitLabel={isEditing ? 'Cập nhật' : 'Thêm loại sợi'}
+            submitLabel={isEditing ? MSG.BTN_UPDATE : MSG.BTN_CREATE}
           />
         </form>
       </FormProvider>

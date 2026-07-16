@@ -15,6 +15,7 @@ import {
 import { LengthText, WeightText, QuantityText } from '@/shared/value';
 
 import type { Order, OrderItem } from './types';
+import { ORDER_MESSAGES } from './orders.constants';
 
 type ReserveRollsPanelProps = {
   order: Order;
@@ -97,7 +98,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
     <AdaptiveSheet
       open={true}
       onClose={onClose}
-      title={`🔒 Giữ cuộn — ${order.order_number}`}
+      title={`${ORDER_MESSAGES.RES_TITLE}${order.order_number}`}
     >
       <div className="flex flex-col gap-4">
         {/* Order items as filter tabs */}
@@ -110,7 +111,9 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                 className={`reserve-item-tab ${selectedItem?.id === item.id ? 'active' : ''}`}
                 onClick={() => setSelectedItem(item)}
               >
-                <span className="reserve-tab-label">Dòng {idx + 1}</span>
+                <span className="reserve-tab-label">
+                  {ORDER_MESSAGES.RES_TAB_PREFIX} {idx + 1}
+                </span>
                 <span className="reserve-tab-detail">
                   {item.fabric_type}
                   {item.color_name ? ` · ${item.color_name}` : ''}
@@ -135,7 +138,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
               <span> · {selectedItem.color_name}</span>
             )}
             <span className="text-muted text-sm">
-              — Cần:{' '}
+              {ORDER_MESSAGES.RES_REQUIRED}{' '}
               <QuantityText
                 value={selectedItem.quantity}
                 suffix={selectedItem.unit}
@@ -148,19 +151,25 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
         {/* Reserved rolls summary */}
         <div className="reserve-summary">
           <div className="reserve-summary-item">
-            <span className="reserve-summary-label">Đã giữ</span>
+            <span className="reserve-summary-label">
+              {ORDER_MESSAGES.RES_SUM_RESERVED}
+            </span>
             <span className="reserve-summary-value">
-              {reservedRolls.length} cuộn
+              {reservedRolls.length}
             </span>
           </div>
           <div className="reserve-summary-item">
-            <span className="reserve-summary-label">Tổng dài</span>
+            <span className="reserve-summary-label">
+              {ORDER_MESSAGES.RES_SUM_LENGTH}
+            </span>
             <span className="reserve-summary-value">
               <LengthText value={reservedLengthM} suffix="m" />
             </span>
           </div>
           <div className="reserve-summary-item">
-            <span className="reserve-summary-label">Tổng nặng</span>
+            <span className="reserve-summary-label">
+              {ORDER_MESSAGES.RES_SUM_WEIGHT}
+            </span>
             <span className="reserve-summary-value">
               <WeightText value={reservedWeightKg} suffix="kg" />
             </span>
@@ -171,17 +180,17 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
         {reservedRolls.length > 0 && (
           <div>
             <h4 className="text-[0.88rem] mb-2">
-              Cuộn đang giữ ({reservedRolls.length})
+              {ORDER_MESSAGES.RES_RESERVED_LIST_TITLE} ({reservedRolls.length})
             </h4>
             <div className="data-table-wrap">
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>Mã cuộn</th>
-                    <th>Loại vải</th>
-                    <th>Dài</th>
-                    <th>Nặng</th>
-                    <th>CL</th>
+                    <th>{ORDER_MESSAGES.RES_COL_ROLL}</th>
+                    <th>{ORDER_MESSAGES.RES_COL_FABRIC}</th>
+                    <th>{ORDER_MESSAGES.RES_COL_LENGTH}</th>
+                    <th>{ORDER_MESSAGES.RES_COL_WEIGHT}</th>
+                    <th>{ORDER_MESSAGES.RES_COL_GRADE}</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -218,8 +227,8 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                           disabled={pendingRollIds.has(roll.id)}
                         >
                           {pendingRollIds.has(roll.id)
-                            ? 'Dang xu ly...'
-                            : 'Bo giu'}
+                            ? ORDER_MESSAGES.RES_BTN_PROCESSING
+                            : ORDER_MESSAGES.RES_BTN_UNRESERVE}
                         </Button>
                       </td>
                     </tr>
@@ -233,7 +242,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
         {/* Available rolls to reserve */}
         <div>
           <h4 className="text-[0.88rem] mb-2">
-            Cuộn khả dụng
+            {ORDER_MESSAGES.RES_AVAILABLE_LIST_TITLE}
             {selectedItem && (
               <span className="text-muted text-sm">
                 {' '}
@@ -244,23 +253,32 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
           </h4>
 
           {loadingAvailable || loadingReserved ? (
-            <p className="table-empty">Đang tải...</p>
+            <p className="table-empty">{ORDER_MESSAGES.PROG_LOADING}</p>
           ) : filteredAvailable.length === 0 ? (
             <p className="table-empty">
-              Không có cuộn nào khả dụng
-              {selectedItem ? ` cho "${selectedItem.fabric_type}"` : ''}.
+              {ORDER_MESSAGES.RES_EMPTY_AVAILABLE}
+              {selectedItem
+                ? ` ${ORDER_MESSAGES.RES_FOR} "${selectedItem.fabric_type}"`
+                : ''}
+              .
             </p>
           ) : (
             <div className="data-table-wrap">
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>Mã cuộn</th>
-                    <th className="max-sm:hidden">Màu</th>
-                    <th>Dài</th>
-                    <th>Nặng</th>
-                    <th className="max-sm:hidden">CL</th>
-                    <th className="max-sm:hidden">Vị trí</th>
+                    <th>{ORDER_MESSAGES.RES_COL_ROLL}</th>
+                    <th className="max-sm:hidden">
+                      {ORDER_MESSAGES.RES_COL_COLOR}
+                    </th>
+                    <th>{ORDER_MESSAGES.RES_COL_LENGTH}</th>
+                    <th>{ORDER_MESSAGES.RES_COL_WEIGHT}</th>
+                    <th className="max-sm:hidden">
+                      {ORDER_MESSAGES.RES_COL_GRADE}
+                    </th>
+                    <th className="max-sm:hidden">
+                      {ORDER_MESSAGES.RES_COL_LOCATION}
+                    </th>
                     <th></th>
                   </tr>
                 </thead>
@@ -301,8 +319,8 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                           disabled={pendingRollIds.has(roll.id)}
                         >
                           {pendingRollIds.has(roll.id)
-                            ? 'Dang xu ly...'
-                            : 'Giu'}
+                            ? ORDER_MESSAGES.RES_BTN_PROCESSING
+                            : ORDER_MESSAGES.RES_BTN_RESERVE}
                         </button>
                       </td>
                     </tr>
@@ -315,7 +333,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
 
         {(reserveMutation.error || unreserveMutation.error) && (
           <p className="error-inline mt-3">
-            Lỗi:{' '}
+            {ORDER_MESSAGES.ERROR_PREFIX}{' '}
             {(() => {
               const err = reserveMutation.error ?? unreserveMutation.error;
               return err instanceof Error ? err.message : String(err);
@@ -332,7 +350,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
           type="button"
           onClick={onClose}
         >
-          Đóng
+          {ORDER_MESSAGES.RES_BTN_CLOSE}
         </Button>
       </div>
     </AdaptiveSheet>

@@ -4,6 +4,7 @@ import { ComboboxField } from '@/shared/components/ComboboxField';
 import type { YarnCatalogFormValues } from '@/schema/yarn-catalog.schema';
 import { YARN_CERTIFICATION_OPTIONS } from '@/shared/constants/yarn-classification';
 import { YARN_CATALOG_STATUS_LABELS } from '@/schema/yarn-catalog.schema';
+import { YARN_CATALOG_MESSAGES as MSG } from '@/features/yarn-catalog/yarn-catalog.constants';
 
 const UNIT_OPTIONS = [
   { value: 'kg', label: 'kg' },
@@ -34,7 +35,7 @@ export function StepAdditionalInfo({ hidden }: StepAdditionalInfoProps) {
     <div className={hidden ? 'hidden' : 'block'}>
       <div className="form-grid">
         <fieldset className="form-section">
-          <legend className="form-section-title">Chứng chỉ quốc tế</legend>
+          <legend className="form-section-title">{MSG.SECTION_CERT}</legend>
           <div className="flex flex-wrap gap-3">
             {YARN_CERTIFICATION_OPTIONS.map((cert) => {
               const isChecked = currentCerts.includes(cert.value);
@@ -62,11 +63,13 @@ export function StepAdditionalInfo({ hidden }: StepAdditionalInfoProps) {
         </fieldset>
 
         <fieldset className="form-section">
-          <legend className="form-section-title">Thông tin bổ sung</legend>
+          <legend className="form-section-title">
+            {MSG.SECTION_ADDITIONAL}
+          </legend>
 
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))]">
             <div className="form-field">
-              <label htmlFor="lot_no">Mã lô (Lot No)</label>
+              <label htmlFor="lot_no">{MSG.LBL_LOT_NO}</label>
               <input
                 id="lot_no"
                 className="field-input"
@@ -77,7 +80,7 @@ export function StepAdditionalInfo({ hidden }: StepAdditionalInfoProps) {
             </div>
 
             <div className="form-field">
-              <label htmlFor="grade">Phân loại (Grade)</label>
+              <label htmlFor="grade">{MSG.LBL_GRADE}</label>
               <input
                 id="grade"
                 className="field-input"
@@ -91,16 +94,16 @@ export function StepAdditionalInfo({ hidden }: StepAdditionalInfoProps) {
               name="unit"
               control={control}
               options={UNIT_OPTIONS}
-              label="Đơn vị *"
+              label={MSG.LBL_UNIT}
               hasError={!!errors.unit}
-              placeholder="Chọn..."
+              placeholder={MSG.PLACEHOLDER_SELECT}
             />
 
             <ComboboxField
               name="status"
               control={control}
               options={STATUS_OPTIONS}
-              label="Trạng thái"
+              label={MSG.LBL_STATUS}
               hasError={!!errors.status}
             />
           </div>
@@ -110,12 +113,12 @@ export function StepAdditionalInfo({ hidden }: StepAdditionalInfoProps) {
           )}
 
           <div className="form-field">
-            <label htmlFor="notes">Ghi chú</label>
+            <label htmlFor="notes">{MSG.LBL_NOTES}</label>
             <textarea
               id="notes"
               className="field-textarea"
               rows={2}
-              placeholder="Ghi chú về loại sợi..."
+              placeholder={MSG.PLACEHOLDER_NOTES}
               {...register('notes')}
             />
           </div>

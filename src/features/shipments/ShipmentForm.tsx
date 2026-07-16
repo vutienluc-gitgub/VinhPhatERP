@@ -273,7 +273,7 @@ export function ShipmentForm({
       <form id="shipment-form" onSubmit={handleSubmit(onSubmit)}>
         {createMutation.error && (
           <p className="error-inline mb-4">
-            Lỗi:{' '}
+            {MSG.ERR_TITLE}{' '}
             {createMutation.error instanceof Error
               ? createMutation.error.message
               : String(createMutation.error)}
@@ -326,7 +326,7 @@ export function ShipmentForm({
                       options={empOptions}
                       value={field.value || ''}
                       onChange={field.onChange}
-                      placeholder="— Kho xuất —"
+                      placeholder={MSG.PLACEHOLDER_WAREHOUSE}
                     />
                   );
                 }}
@@ -337,7 +337,7 @@ export function ShipmentForm({
               <input
                 className="field-input"
                 {...register('deliveryAddress')}
-                placeholder="Địa chỉ giao hàng..."
+                placeholder={MSG.PLACEHOLDER_DELIVERY_ADDR}
               />
             </div>
           </div>
@@ -360,7 +360,7 @@ export function ShipmentForm({
                       options={staffOptions}
                       value={field.value || ''}
                       onChange={field.onChange}
-                      placeholder="— Chưa phân công —"
+                      placeholder={MSG.PLACEHOLDER_STAFF}
                     />
                   );
                 }}
@@ -388,7 +388,7 @@ export function ShipmentForm({
                     options={shippingRateOptions}
                     value={field.value}
                     onChange={field.onChange}
-                    placeholder="— Không áp dụng —"
+                    placeholder={MSG.PLACEHOLDER_NO_APPLY}
                   />
                 )}
               />
@@ -441,7 +441,7 @@ export function ShipmentForm({
                         {item.fabric_type}
                       </div>
                       <div className="text-xs text-slate-500">
-                        {item.color_name || 'Mộc (Raw)'}
+                        {item.color_name || MSG.COLOR_RAW}
                       </div>
                     </div>
                     <div className="font-medium text-sm text-right">
@@ -465,7 +465,9 @@ export function ShipmentForm({
                   {MSG.ROLL_SELECTED(selectedRollsSummary.count)}
                 </span>
                 <span className="text-[0.85rem] text-[#047857]">
-                  Tổng: {selectedRollsSummary.totalWeight.toFixed(1)} kg
+                  {MSG.TOTAL_WEIGHT(
+                    selectedRollsSummary.totalWeight.toFixed(1),
+                  )}
                   {selectedRollsSummary.totalLength > 0 &&
                     ` • ${selectedRollsSummary.totalLength.toFixed(1)} m`}
                 </span>

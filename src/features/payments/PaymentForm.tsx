@@ -9,6 +9,7 @@ import { createPaymentsSchema } from '@/schema/payment.schema';
 import { MoneyText, MoneyInput } from '@/shared/value';
 import { useCreatePayment } from '@/application/payments';
 
+import { PAYMENT_FORM_MESSAGES as MSG } from './payments.constants';
 import {
   PAYMENT_METHOD_LABELS,
   paymentsDefaultValues,
@@ -69,7 +70,7 @@ export function PaymentForm({
         }
       >
         <div className="p-4 bg-[var(--surface-success)] text-[var(--success-strong)] rounded text-[0.9rem] border border-[var(--success)] text-center">
-          ✅ Đơn hàng đã được thanh toán đầy đủ.
+          {MSG.SUCCESS_FULLY_PAID}
         </div>
       </AdaptiveSheet>
     );

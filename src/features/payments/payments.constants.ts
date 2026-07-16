@@ -201,3 +201,100 @@ export const PAYMENT_LIST_MESSAGES = {
   LBL_DATE_PREFIX: 'Ngày: ',
   BTN_DELETE: 'Xóa phiếu',
 } as const;
+
+export const PAYMENTS_PAGE_TABS = {
+  CASH_FLOW: 'Dòng tiền',
+  RECEIPTS: 'Phiếu thu',
+  EXPENSES: 'Phiếu chi',
+  CUSTOMER_DEBTS: 'Công nợ KH',
+  SUPPLIER_DEBTS: 'Công nợ NCC',
+  ACCOUNTS: 'Tài khoản',
+};
+
+export const PAYMENTS_PAGE_MESSAGES = {
+  TITLE: 'Quản lý Tiền tệ',
+};
+
+export const PAYMENT_FORM_MESSAGES = {
+  SUCCESS_FULLY_PAID: '✅ Đơn hàng đã được thanh toán đầy đủ.',
+};
+
+export const EXPENSE_FORM_MESSAGES = {
+  ACCOUNT_LABEL: (name: string, balance: string) => `${name} (${balance} đ)`,
+};
+
+export const DEBTS_PAGE_TABS = {
+  CUSTOMER: 'Công nợ Khách hàng',
+  SUPPLIER: 'Công nợ Nhà cung cấp',
+};
+
+export const DEBTS_PAGE_MESSAGES = {
+  TITLE: 'Quản lý Công nợ',
+};
+
+export const CASH_FLOW_MESSAGES = {
+  COL_DATE: 'Ngày',
+  COL_INFLOW: 'Thu vào',
+  COL_OUTFLOW: 'Chi ra',
+  COL_NET: 'Chênh lệch',
+  COL_RECEIPTS: 'Số phiếu thu',
+  COL_EXPENSES: 'Số phiếu chi',
+  COL_CATEGORY: 'Danh mục',
+  COL_VOUCHERS: 'Số phiếu',
+  COL_TOTAL: 'Tổng tiền',
+  COL_RATIO: 'Tỉ trọng',
+
+  TITLE: 'Dòng tiền',
+  LBL_FROM_DATE: 'Từ ngày',
+  LBL_TO_DATE: 'Đến ngày',
+
+  SUM_INFLOW: 'Tổng thu',
+  SUM_OUTFLOW: 'Tổng chi',
+  SUM_NET: 'Chênh lệch',
+  SUM_BALANCE: 'Số dư tài khoản',
+  TREND_POSITIVE: 'Dương',
+  TREND_NEGATIVE: 'Âm',
+
+  SEC_EXPENSE_BY_CAT: 'Chi phí theo danh mục',
+  EMPTY_EXPENSE_TITLE: 'Không có chi phí',
+  EMPTY_EXPENSE_DESC: 'Chưa có phiếu chi nào trong khoảng thời gian này.',
+  LBL_VOUCHER_COUNT: (count: number) => `${count} phiếu`,
+
+  SEC_DAILY_DETAIL: 'Chi tiết theo ngày',
+  EMPTY_DAILY_TITLE: 'Không có giao dịch',
+  EMPTY_DAILY_DESC: 'Chưa có giao dịch nào trong khoảng thời gian này.',
+};
+
+export const UNPAID_DOCS_MESSAGES = {
+  DEDUCT_DEBT: 'Đối trừ công nợ (Tự động tính vào số tiền chi)',
+  LBL_DATE: 'Ngày:',
+  LBL_PAID: 'Đã thanh toán:',
+  DOC_WEAVING: 'Phiếu dệt',
+  DOC_YARN: 'Phiếu nhập sợi',
+  DOC_FABRIC: (count: number) => `Mua vải thành phẩm (${count} cuộn)`,
+  DOC_FABRIC_SUB: 'Phiếu mua vải',
+};
+
+export const DEBT_SUMMARY_MESSAGES = {
+  COL_CUSTOMER: 'Khách hàng',
+  COL_SUPPLIER: 'Nhà cung cấp',
+  COL_DOCS: 'Số đơn',
+  COL_VOUCHERS: 'Số phiếu',
+  COL_DEBT: 'Còn nợ',
+  BTN_PAY: 'Thanh toán',
+  ERR_PREFIX: 'Lỗi: ',
+};
+
+export const PAYMENTS_MODULE_MESSAGES = {
+  TITLE: 'Tài chính & Thanh toán',
+  DESC: 'Quản lý thu chi, công nợ nhà cung cấp, nhật ký thanh toán và tài khoản ngân hàng.',
+  LBL_FUND: 'Số dư quỹ',
+  VAL_FUND: '1.5 tỷ',
+  LBL_EXPENSE: 'Chi tháng này',
+  VAL_EXPENSE: '450 triệu',
+  FEAT_1: 'Quản lý đa tài khoản.',
+  FEAT_2: 'Theo dõi chi phí sản xuất.',
+  FEAT_3: 'Đối soát công nợ tự động.',
+  ROADMAP_1: 'Tích hợp cổng thanh toán API.',
+  ROADMAP_2: 'Báo cáo lưu chuyển tiền tệ chi tiết.',
+};

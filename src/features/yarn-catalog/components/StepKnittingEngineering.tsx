@@ -14,6 +14,7 @@ import {
   useYarnKnittingEngineering,
   useDeleteYarnKnittingEngineering,
 } from '@/features/yarn-catalog/hooks/useYarnEngineering';
+import { YARN_CATALOG_MESSAGES as MSG } from '@/features/yarn-catalog/yarn-catalog.constants';
 
 import { YarnEngineeringMatrixModal } from './YarnEngineeringMatrixModal';
 
@@ -44,10 +45,10 @@ export function StepKnittingEngineering({
 
   const handleDelete = async (id: string) => {
     const isConfirmed = await confirm({
-      title: 'Xóa cấu hình',
-      message: 'Bạn có chắc chắn muốn xóa cấu hình máy dệt này?',
-      confirmLabel: 'Xóa',
-      cancelLabel: 'Hủy',
+      title: MSG.CONFIRM_DEL_MATRIX_TITLE,
+      message: MSG.CONFIRM_DEL_MATRIX_DESC,
+      confirmLabel: MSG.BTN_DELETE,
+      cancelLabel: MSG.BTN_CANCEL,
       variant: 'danger',
     });
     if (isConfirmed) {
@@ -69,21 +70,19 @@ export function StepKnittingEngineering({
   return (
     <div className={hidden ? 'hidden' : 'block'}>
       <fieldset className="form-section min-h-[300px]">
-        <legend className="form-section-title">
-          Kỹ thuật dệt (Engineering Matrix)
-        </legend>
+        <legend className="form-section-title">{MSG.SECTION_KNITTING}</legend>
 
         {!isEditing ? (
           <EmptyState
             icon="alert-circle"
-            title="Sợi chưa được lưu"
-            description="Bạn cần lưu Thông tin Sợi này trước khi có thể cấu hình Kỹ thuật dệt (Machine Spec)."
+            title={MSG.EMPTY_KNITTING_TITLE}
+            description={MSG.EMPTY_KNITTING_DESC}
           />
         ) : (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-medium text-text-secondary">
-                Danh sách cấu hình máy dệt
+                {MSG.LBL_KNITTING_LIST}
               </h3>
               <button
                 type="button"
@@ -94,7 +93,7 @@ export function StepKnittingEngineering({
                 }}
               >
                 <Icon name="plus" className="w-4 h-4 mr-1.5" />
-                Thêm cấu hình
+                {MSG.BTN_ADD_KNITTING}
               </button>
             </div>
 
@@ -103,13 +102,13 @@ export function StepKnittingEngineering({
                 data={matrixItems || []}
                 isLoading={isLoading}
                 rowKey={(item) => item.id || Math.random().toString()}
-                emptyStateTitle="Chưa có cấu hình"
-                emptyStateDescription="Chưa có cấu hình máy dệt nào được thiết lập."
+                emptyStateTitle={MSG.EMPTY_MATRIX_TITLE}
+                emptyStateDescription={MSG.EMPTY_MATRIX_DESC}
                 renderMobileCard={(item) => (
                   <div className="p-4 bg-white rounded-lg border border-gray-200">
                     <div className="flex justify-between items-start mb-2">
                       <div className="font-semibold">
-                        {item.fabric_structure?.name || 'Không rõ'}
+                        {item.fabric_structure?.name || MSG.VAL_UNKNOWN}
                       </div>
                       <Badge
                         className={getLevelColor(item.compatibility_level)}
@@ -142,16 +141,16 @@ export function StepKnittingEngineering({
                 )}
                 columns={[
                   {
-                    header: 'Kiểu dệt',
+                    header: MSG.MATRIX_LBL_STRUCTURE,
                     id: 'structure',
                     cell: (item) => (
                       <span className="font-medium">
-                        {item.fabric_structure?.name || 'Không rõ'}
+                        {item.fabric_structure?.name || MSG.VAL_UNKNOWN}
                       </span>
                     ),
                   },
                   {
-                    header: 'Cấu hình máy',
+                    header: MSG.MATRIX_LBL_MACHINE,
                     id: 'machine',
                     cell: (item) => {
                       const diameter = item.machine_spec?.diameter
@@ -163,12 +162,12 @@ export function StepKnittingEngineering({
                       const family = item.machine_spec?.machine_family || '';
                       return (
                         [diameter, gauge, family].filter(Boolean).join(' - ') ||
-                        'Cấu hình trống'
+                        MSG.VAL_EMPTY_CONFIG
                       );
                     },
                   },
                   {
-                    header: 'Mức độ',
+                    header: MSG.COL_LEVEL,
                     id: 'level',
                     cell: (item) => (
                       <Badge
@@ -179,7 +178,7 @@ export function StepKnittingEngineering({
                     ),
                   },
                   {
-                    header: 'RPM',
+                    header: MSG.COL_RPM,
                     id: 'rpm',
                     cell: (item) =>
                       item.recommended_rpm
@@ -187,7 +186,7 @@ export function StepKnittingEngineering({
                         : '-',
                   },
                   {
-                    header: 'Thao tác',
+                    header: MSG.COL_ACTIONS,
                     id: 'actions',
                     className: 'text-right',
                     cell: (item) => (
@@ -212,10 +211,7 @@ export function StepKnittingEngineering({
                 ]}
               />
             </div>
-            <p className="text-xs text-text-tertiary">
-              Cấu hình này sẽ được sử dụng để gợi ý máy dệt và thiết lập thông
-              số tự động trên ứng dụng MES.
-            </p>
+            <p className="text-xs text-text-tertiary">{MSG.MATRIX_HINT}</p>
           </div>
         )}
 

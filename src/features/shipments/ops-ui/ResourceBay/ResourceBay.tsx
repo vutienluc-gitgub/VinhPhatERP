@@ -4,6 +4,7 @@ import { clsx } from 'clsx';
 import { useTapToMove } from '@/features/shipments/ops-ui/hooks/useTapToMove';
 import { getEntityGradeStyles } from '@/features/shipments/ops-ui/utils/gradeColor';
 import { ResourceBayProps } from '@/features/shipments/ops-ui/ResourceBay/resourceBay.types';
+import { RESOURCE_BAY_LABELS as MSG } from '@/features/shipments/shipments.constants';
 
 export function ResourceBay({
   id,
@@ -72,8 +73,8 @@ export function ResourceBay({
           )}
         >
           <div className="text-right hidden sm:block">
-            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Sức chứa (Slot)
+            <span className="text-slate-400 font-medium">
+              {MSG.SLOT_CAPACITY}
             </span>
             <span
               className={clsx(
@@ -113,8 +114,8 @@ export function ResourceBay({
                 getEntityGradeStyles('GHOST'),
               )}
             >
-              <span className="text-[10px] font-bold tracking-widest opacity-40 uppercase">
-                Trống
+              <span className="text-sm font-medium tracking-wider">
+                {MSG.EMPTY}
               </span>
             </div>
           ),

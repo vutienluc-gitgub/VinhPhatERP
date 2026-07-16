@@ -7,6 +7,7 @@ import {
   ORIGIN_PLACEHOLDER,
 } from '@/shared/constants/origin.constants';
 import type { YarnCatalogFormValues } from '@/schema/yarn-catalog.schema';
+import { YARN_CATALOG_MESSAGES as MSG } from '@/features/yarn-catalog/yarn-catalog.constants';
 
 type StepGeneralInfoProps = {
   hidden: boolean;
@@ -24,12 +25,12 @@ export function StepGeneralInfo({ hidden, isEditing }: StepGeneralInfoProps) {
     <div className={hidden ? 'hidden' : 'block'}>
       <div className="form-grid">
         <fieldset className="form-section">
-          <legend className="form-section-title">Thông tin chung</legend>
+          <legend className="form-section-title">{MSG.SECTION_GENERAL}</legend>
 
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="code">
-                Mã sợi <span className="field-required">*</span>
+                {MSG.LBL_CODE} <span className="field-required">*</span>
               </label>
               <input
                 id="code"
@@ -46,7 +47,7 @@ export function StepGeneralInfo({ hidden, isEditing }: StepGeneralInfoProps) {
 
             <div className="form-field">
               <label htmlFor="name">
-                Tên loại sợi <span className="field-required">*</span>
+                {MSG.LBL_NAME} <span className="field-required">*</span>
               </label>
               <input
                 id="name"
@@ -64,7 +65,7 @@ export function StepGeneralInfo({ hidden, isEditing }: StepGeneralInfoProps) {
 
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
-              <label htmlFor="composition">Thành phần</label>
+              <label htmlFor="composition">{MSG.LBL_COMPOSITION}</label>
               <input
                 id="composition"
                 className="field-input"

@@ -2,6 +2,7 @@ import {
   useProgressDashboard,
   useUpdateStageStatus,
 } from '@/application/orders';
+import { ORDER_MESSAGES } from '@/features/orders/orders.constants';
 
 import { OpsLevelPath } from './OpsLevelPath';
 import { ProgressExpBar } from './ProgressExpBar';
@@ -35,7 +36,7 @@ export function ProgressDashboard() {
   if (isLoading) {
     return (
       <div className="panel-card">
-        <p className="table-empty">Đang tải...</p>
+        <p className="table-empty">{ORDER_MESSAGES.PROG_LOADING}</p>
       </div>
     );
   }
@@ -53,26 +54,34 @@ export function ProgressDashboard() {
       <div className="dashboard-summary-row">
         <div className="dashboard-stat-card dashboard-stat-danger">
           <span className="dashboard-stat-number">{overdue.length}</span>
-          <span className="dashboard-stat-label">Trễ hạn</span>
+          <span className="dashboard-stat-label">
+            {ORDER_MESSAGES.PROG_OVERDUE}
+          </span>
         </div>
         <div className="dashboard-stat-card dashboard-stat-success">
           <span className="dashboard-stat-number">{readyToShip.length}</span>
-          <span className="dashboard-stat-label">Sẵn sàng giao</span>
+          <span className="dashboard-stat-label">
+            {ORDER_MESSAGES.PROG_READY_TO_SHIP}
+          </span>
         </div>
         <div className="dashboard-stat-card dashboard-stat-primary">
           <span className="dashboard-stat-number">{inProgress.length}</span>
-          <span className="dashboard-stat-label">Đang sản xuất</span>
+          <span className="dashboard-stat-label">
+            {ORDER_MESSAGES.PROG_IN_PROGRESS}
+          </span>
         </div>
         <div className="dashboard-stat-card border-[#9ca3af44] bg-[rgba(156,163,175,0.05)]">
           <span className="dashboard-stat-number">{waitingToStart.length}</span>
-          <span className="dashboard-stat-label">Chờ sản xuất</span>
+          <span className="dashboard-stat-label">
+            {ORDER_MESSAGES.PROG_WAITING}
+          </span>
         </div>
       </div>
 
       {/* Overdue section */}
       {overdue.length > 0 && (
         <DashboardSection
-          title="Đơn trễ hạn"
+          title={ORDER_MESSAGES.PROG_SECTION_OVERDUE}
           orders={overdue}
           variant="danger"
           updateMutation={updateMutation}
@@ -82,7 +91,7 @@ export function ProgressDashboard() {
       {/* Ready to ship section */}
       {readyToShip.length > 0 && (
         <DashboardSection
-          title="Sẵn sàng giao hàng"
+          title={ORDER_MESSAGES.PROG_SECTION_READY}
           orders={readyToShip}
           variant="success"
           updateMutation={updateMutation}
@@ -92,7 +101,7 @@ export function ProgressDashboard() {
       {/* In progress section */}
       {inProgress.length > 0 && (
         <DashboardSection
-          title="Đang sản xuất"
+          title={ORDER_MESSAGES.PROG_IN_PROGRESS}
           orders={inProgress}
           variant="primary"
           updateMutation={updateMutation}
@@ -102,7 +111,7 @@ export function ProgressDashboard() {
       {/* Waiting to start section */}
       {waitingToStart.length > 0 && (
         <DashboardSection
-          title="Chờ bắt đầu sản xuất"
+          title={ORDER_MESSAGES.PROG_SECTION_WAITING}
           orders={waitingToStart}
           variant="muted"
           updateMutation={updateMutation}
@@ -114,7 +123,7 @@ export function ProgressDashboard() {
         inProgress.length === 0 &&
         waitingToStart.length === 0 && (
           <div className="panel-card">
-            <p className="table-empty">Không có đơn hàng nào đang hoạt động.</p>
+            <p className="table-empty">{ORDER_MESSAGES.PROG_EMPTY_ACTIVE}</p>
           </div>
         )}
     </div>
@@ -184,7 +193,8 @@ function DashboardSection({
                       }
                     >
                       {order.deliveryDate}
-                      {daysOverdue > 0 && ` (trễ ${daysOverdue} ngày)`}
+                      {daysOverdue > 0 &&
+                        ` (${ORDER_MESSAGES.PROG_LATE_DAYS} ${daysOverdue} ${ORDER_MESSAGES.PROG_LATE_SUFFIX})`}
                     </span>
                   )}
                 </div>
