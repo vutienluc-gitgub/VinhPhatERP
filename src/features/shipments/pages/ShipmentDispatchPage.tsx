@@ -9,6 +9,7 @@ import { ShipmentRollBlock } from '@/features/shipments/components/ops/ShipmentR
 import { TruckBay } from '@/features/shipments/components/ops/TruckBay';
 import { DispatchConfirmSheet } from '@/features/shipments/components/ops/DispatchConfirmSheet';
 import { sumBy } from '@/shared/utils/array.util';
+import { DISPATCH_PAGE_MESSAGES as MSG } from '@/features/shipments/shipments.constants';
 
 /**
  * ShipmentDispatchPage — Tactical Ops UI for dispatching rolls to trucks.
@@ -70,9 +71,10 @@ export function ShipmentDispatchPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <span className="text-sm text-muted animate-pulse">
-          Đang tải dữ liệu...
-        </span>
+        <div className="flex flex-col items-center gap-2 text-slate-500">
+          <Icon name="Loader2" className="w-8 h-8 animate-spin" />
+          <p>{MSG.LOADING}</p>
+        </div>
       </div>
     );
   }
@@ -84,25 +86,28 @@ export function ShipmentDispatchPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl bg-slate-900 p-5 sm:p-6 text-white shadow-xl">
           <div>
             <h1 className="text-xl sm:text-2xl font-black uppercase tracking-wider text-emerald-400">
-              Sa Bàn Điều Phối Giao Hàng
+              {MSG.TITLE}
             </h1>
-            <p className="mt-1 text-sm text-slate-400">
-              Kéo thả cuộn vải vào xe tải - hoặc Nhấn chọn rồi Nhấn đích.
-            </p>
+            <p className="mt-1 text-sm text-slate-400">{MSG.SUBTITLE}</p>
           </div>
           <div className="flex gap-6 text-right">
             <div>
               <span className="block text-[10px] uppercase tracking-wider text-slate-400">
                 Kho
               </span>
-              <span className="text-lg font-bold">{poolStats.count} cuộn</span>
+              <span className="text-lg font-bold">
+                {MSG.COUNT_ROLLS(poolStats.count)}
+              </span>
             </div>
             <div>
               <span className="block text-[10px] uppercase tracking-wider text-slate-400">
-                Đã xếp
+                {MSG.LBL_ASSIGNED}
               </span>
               <span className="text-lg font-bold text-emerald-400">
-                {totalAssigned.count} cuộn · {totalAssigned.kg.toFixed(1)} kg
+                {MSG.ASSIGNED_SUMMARY(
+                  totalAssigned.count,
+                  totalAssigned.kg.toFixed(1),
+                )}
               </span>
             </div>
             <div className="pl-4 border-l border-slate-700 flex items-center gap-3">
@@ -113,7 +118,7 @@ export function ShipmentDispatchPage() {
                 className="bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border-transparent"
               >
                 <Icon name="Wand2" size={16} className="mr-2" />
-                Tự xếp xe
+                {MSG.BTN_AUTO_ASSIGN}
               </Button>
               <Button
                 variant="primary"
@@ -126,11 +131,11 @@ export function ShipmentDispatchPage() {
                 }
               >
                 {isCommitting ? (
-                  <span className="animate-pulse">Đang xử lý...</span>
+                  <span className="animate-pulse">{MSG.BTN_PROCESSING}</span>
                 ) : (
                   <>
                     <Icon name="Send" size={16} className="mr-2" />
-                    Phát Lệnh
+                    {MSG.BTN_DISPATCH}
                   </>
                 )}
               </Button>
@@ -145,7 +150,7 @@ export function ShipmentDispatchPage() {
             <div className="flex items-center gap-2 px-1">
               <Icon name="PackageOpen" className="h-5 w-5 text-indigo-500" />
               <h2 className="text-lg font-extrabold uppercase text-slate-800">
-                Kho Trung Chuyển ({poolStats.count})
+                {MSG.POOL_TITLE(poolStats.count)}
               </h2>
             </div>
 
@@ -156,7 +161,7 @@ export function ShipmentDispatchPage() {
                     name="PackageOpen"
                     className="h-8 w-8 mb-2 opacity-40"
                   />
-                  <span className="text-sm">Đã xếp hết cuộn vào xe</span>
+                  <span className="text-sm">{MSG.POOL_EMPTY}</span>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-3">

@@ -141,14 +141,15 @@ export function ShipmentList() {
         await exportShipmentToPdf(confirmedShipment);
       } catch (pdfError) {
         await showAlert(
-          `Phiếu ${confirmedShipment.shipment_number} đã được xác nhận nhưng không thể mở trình in PDF. ${getErrorMessage(pdfError)}`,
-          'Đã xác nhận shipment',
+          MSG.ERR_PDF_OPEN(
+            confirmedShipment.shipment_number,
+            getErrorMessage(pdfError),
+          ),
+          MSG.ERR_PDF_OPEN_TITLE,
         );
       }
     } catch (error) {
-      await showAlert(
-        `Không thể xác nhận phiếu xuất. ${getErrorMessage(error)}`,
-      );
+      await showAlert(MSG.ERR_CONFIRM(getErrorMessage(error)));
     }
   }
 
@@ -163,7 +164,7 @@ export function ShipmentList() {
       await deleteMutation.mutateAsync(id);
       toast.success(MSG.DELETE_SUCCESS);
     } catch (error) {
-      await showAlert(`Không thể xóa phiếu xuất. ${getErrorMessage(error)}`);
+      await showAlert(MSG.ERR_DELETE(getErrorMessage(error)));
     }
   }
 
@@ -175,7 +176,7 @@ export function ShipmentList() {
       await exportPdfMutation.mutateAsync({ shipmentId: shipment.id, format });
     } catch (error) {
       await showAlert(
-        `Không thể tạo phiếu PDF cho ${shipment.shipment_number}. ${getErrorMessage(error)}`,
+        MSG.ERR_PDF_CREATE(shipment.shipment_number, getErrorMessage(error)),
       );
     }
   }

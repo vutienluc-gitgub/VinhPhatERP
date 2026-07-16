@@ -10,6 +10,7 @@ import {
 } from '@/application/payments';
 import { sumBy } from '@/shared/utils/array.util';
 
+import { CASH_FLOW_MESSAGES as MSG } from './payments.constants';
 import { EXPENSE_CATEGORY_LABELS } from './payments.module';
 import type { CashFlowRow, ExpenseByCategoryRow } from './types';
 
@@ -55,13 +56,13 @@ export function CashFlowDashboard() {
     () => [
       {
         accessorKey: 'period',
-        header: 'Ngày',
+        header: MSG.COL_DATE,
         meta: { className: 'text-muted text-sm' },
         cell: ({ getValue }) => getValue<string>(),
       },
       {
         accessorKey: 'total_inflow',
-        header: 'Thu vào',
+        header: MSG.COL_INFLOW,
         meta: { className: 'text-right' },
         cell: ({ getValue }) => {
           const v = getValue<number>();
@@ -74,7 +75,7 @@ export function CashFlowDashboard() {
       },
       {
         accessorKey: 'total_outflow',
-        header: 'Chi ra',
+        header: MSG.COL_OUTFLOW,
         meta: { className: 'text-right' },
         cell: ({ getValue }) => {
           const v = getValue<number>();
@@ -87,7 +88,7 @@ export function CashFlowDashboard() {
       },
       {
         accessorKey: 'net_flow',
-        header: 'Chênh lệch',
+        header: MSG.COL_NET,
         meta: { className: 'text-right' },
         cell: ({ getValue }) => {
           const v = getValue<number>();
@@ -103,7 +104,7 @@ export function CashFlowDashboard() {
       },
       {
         accessorKey: 'inflow_count',
-        header: 'Số phiếu thu',
+        header: MSG.COL_RECEIPTS,
         meta: { className: 'text-right' },
         cell: ({ getValue }) => (
           <span className="font-medium">{getValue<number>()}</span>
@@ -111,7 +112,7 @@ export function CashFlowDashboard() {
       },
       {
         accessorKey: 'outflow_count',
-        header: 'Số phiếu chi',
+        header: MSG.COL_EXPENSES,
         meta: { className: 'text-right' },
         cell: ({ getValue }) => (
           <span className="font-medium">{getValue<number>()}</span>
@@ -126,13 +127,13 @@ export function CashFlowDashboard() {
     () => [
       {
         accessorKey: 'category',
-        header: 'Danh mục',
+        header: MSG.COL_CATEGORY,
         cell: ({ getValue }) =>
           EXPENSE_CATEGORY_LABELS[getValue<ExpenseByCategoryRow['category']>()],
       },
       {
         accessorKey: 'expense_count',
-        header: 'Số phiếu',
+        header: MSG.COL_VOUCHERS,
         meta: { className: 'text-right' },
         cell: ({ getValue }) => (
           <span className="text-right tabular-nums">{getValue<number>()}</span>
@@ -140,7 +141,7 @@ export function CashFlowDashboard() {
       },
       {
         accessorKey: 'total_amount',
-        header: 'Tổng tiền',
+        header: MSG.COL_TOTAL,
         meta: { className: 'text-right' },
         cell: ({ getValue }) => (
           <MoneyCell value={getValue<number>()} tone="danger" bold />
@@ -148,7 +149,7 @@ export function CashFlowDashboard() {
       },
       {
         id: 'share',
-        header: 'Tỉ trọng',
+        header: MSG.COL_RATIO,
         meta: { className: 'text-right' },
         cell: ({ row }) =>
           totalOutflow > 0
@@ -162,13 +163,13 @@ export function CashFlowDashboard() {
   return (
     <div className="panel-card card-flush">
       <div className="card-header-area">
-        <span className="font-bold text-lg">Dòng tiền</span>
+        <span className="font-bold text-lg">{MSG.TITLE}</span>
       </div>
 
       {/* Date range filter */}
       <div className="filter-bar card-filter-section">
         <div className="filter-field">
-          <label htmlFor="cf-from">Từ ngày</label>
+          <label htmlFor="cf-from">{MSG.LBL_FROM_DATE}</label>
           <input
             id="cf-from"
             className="field-input"
@@ -178,7 +179,7 @@ export function CashFlowDashboard() {
           />
         </div>
         <div className="filter-field">
-          <label htmlFor="cf-to">Đến ngày</label>
+          <label htmlFor="cf-to">{MSG.LBL_TO_DATE}</label>
           <input
             id="cf-to"
             className="field-input"
@@ -195,7 +196,7 @@ export function CashFlowDashboard() {
         <div className="p-4">
           <KpiGrid>
             <KpiCard
-              label="Tổng thu"
+              label={MSG.SUM_INFLOW}
               value={totalInflow}
               formatMode="currency"
               icon="TrendingUp"
@@ -203,7 +204,7 @@ export function CashFlowDashboard() {
               isLoading={isLoading}
             />
             <KpiCard
-              label="Tổng chi"
+              label={MSG.SUM_OUTFLOW}
               value={totalOutflow}
               formatMode="currency"
               icon="TrendingDown"
@@ -211,17 +212,19 @@ export function CashFlowDashboard() {
               isLoading={isLoading}
             />
             <KpiCard
-              label="Chênh lệch"
+              label={MSG.SUM_NET}
               value={Math.abs(netFlow)}
               formatMode="currency"
               icon="Activity"
               variant={netFlow >= 0 ? 'success' : 'danger'}
-              trendValue={netFlow >= 0 ? 'Dương' : 'Âm'}
+              trendValue={
+                netFlow >= 0 ? MSG.TREND_POSITIVE : MSG.TREND_NEGATIVE
+              }
               trendDirection={netFlow >= 0 ? 'up' : 'down'}
               isLoading={isLoading}
             />
             <KpiCard
-              label="Số dư tài khoản"
+              label={MSG.SUM_BALANCE}
               value={totalAccountBalance}
               formatMode="currency"
               icon="Wallet"
@@ -234,7 +237,7 @@ export function CashFlowDashboard() {
         {/* Chi phí theo danh mục */}
         <div className="px-4 pb-4">
           <h4 className="text-[0.92rem] font-semibold mb-3">
-            Chi phí theo danh mục
+            {MSG.SEC_EXPENSE_BY_CAT}
           </h4>
           <DataTableAdvanced
             data={expenseBreakdown}
@@ -243,8 +246,8 @@ export function CashFlowDashboard() {
             skeletonRows={5}
             rowKey={(r) => r.category}
             exportFileName={`chi-phi-danh-muc_${fromDate}_${toDate}`}
-            emptyStateTitle="Không có chi phí"
-            emptyStateDescription="Chưa có phiếu chi nào trong khoảng thời gian này."
+            emptyStateTitle={MSG.EMPTY_EXPENSE_TITLE}
+            emptyStateDescription={MSG.EMPTY_EXPENSE_DESC}
             emptyStateIcon="ReceiptText"
             renderMobileCard={(row) => (
               <div className="flex items-center justify-between py-1">
@@ -252,8 +255,8 @@ export function CashFlowDashboard() {
                   <span className="font-semibold text-sm">
                     {EXPENSE_CATEGORY_LABELS[row.category]}
                   </span>
-                  <span className="text-xs text-muted">
-                    {row.expense_count} phiếu
+                  <span className="text-muted text-sm tabular-nums ml-2">
+                    {MSG.LBL_VOUCHER_COUNT(row.expense_count)}
                   </span>
                 </div>
                 <span className="numeric-debt text-sm font-bold">
@@ -267,7 +270,7 @@ export function CashFlowDashboard() {
         {/* Chi tiết theo ngày */}
         <div className="px-4 pb-6">
           <h4 className="text-[0.92rem] font-semibold mb-3">
-            Chi tiết theo ngày
+            {MSG.SEC_DAILY_DETAIL}
           </h4>
           <DataTableAdvanced
             data={activeCashFlow}
@@ -276,8 +279,8 @@ export function CashFlowDashboard() {
             skeletonRows={8}
             rowKey={(r) => r.period}
             exportFileName={`dong-tien_${fromDate}_${toDate}`}
-            emptyStateTitle="Không có giao dịch"
-            emptyStateDescription="Chưa có giao dịch nào trong khoảng thời gian này."
+            emptyStateTitle={MSG.EMPTY_DAILY_TITLE}
+            emptyStateDescription={MSG.EMPTY_DAILY_DESC}
             emptyStateIcon="LineChart"
             renderMobileCard={(row) => (
               <div className="flex items-center justify-between py-1">

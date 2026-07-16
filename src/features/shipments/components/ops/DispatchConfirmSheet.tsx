@@ -7,6 +7,7 @@ import { Combobox } from '@/shared/components/Combobox';
 import { useOrderList } from '@/shared/hooks/useFormOptions';
 import type { TruckSlot } from '@/features/shipments/ops-engine/useFleetCommander';
 import { sumBy } from '@/shared/utils/array.util';
+import { DISPATCH_CONFIRM_MESSAGES as MSG } from '@/features/shipments/shipments.constants';
 
 interface DispatchConfirmSheetProps {
   isOpen: boolean;
@@ -31,13 +32,13 @@ export function DispatchConfirmSheet({
 
   const handleConfirm = async () => {
     if (!selectedOrderId) {
-      toast.error('Vui lòng chọn đơn hàng mục tiêu.');
+      toast.error(MSG.ERR_NO_ORDER);
       return;
     }
 
     const order = orders.find((o) => o.id === selectedOrderId);
     if (!order || !order.customer_id) {
-      toast.error('Không tìm thấy thông tin khách hàng cho đơn này.');
+      toast.error(MSG.ERR_NO_CUSTOMER);
       return;
     }
 
@@ -46,7 +47,7 @@ export function DispatchConfirmSheet({
 
   const orderOptions = orders.map((o) => ({
     value: o.id,
-    label: `${o.order_number} - ${o.customers?.name || 'Khách lẻ'}`,
+    label: `${o.order_number} - ${o.customers?.name || MSG.LBL_RETAIL_CUST}`,
   }));
 
   const totalRolls = sumBy(activeTrucks, (t) => t.rolls.length);
@@ -54,32 +55,28 @@ export function DispatchConfirmSheet({
   if (!isOpen) return null;
 
   return (
-    <AdaptiveSheet
-      open={isOpen}
-      onClose={onClose}
-      title="Xác nhận phát lệnh giao hàng"
-    >
+    <AdaptiveSheet open={isOpen} onClose={onClose} title={MSG.TITLE}>
       <div className="flex flex-col gap-4 p-4">
         <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-lg text-sm">
-          <p className="font-bold mb-1 text-amber-900">
-            Xác nhận thông tin chuyến đi
-          </p>
-          <p>
-            Bạn đang lên lịch phát lệnh cho <b>{activeTrucks.length}</b> xe chở
-            tổng cộng <b>{totalRolls}</b> cuộn vải. Vui lòng chỉ định{' '}
-            <b>Đơn hàng</b> mà các xe này đang thi hành.
+          <h3 className="text-lg font-bold text-slate-800 mb-2">
+            {MSG.HEADING}
+          </h3>
+          <p className="text-sm text-slate-600">
+            {MSG.DESC_PART_1} <b>{activeTrucks.length}</b> {MSG.DESC_PART_2}{' '}
+            <b>{totalRolls}</b> {MSG.DESC_PART_3} <b>{MSG.DESC_PART_4}</b>{' '}
+            {MSG.DESC_PART_5}
           </p>
         </div>
 
         <div className="form-field mt-2">
-          <label className="font-medium text-slate-700 block mb-2">
-            Chọn đơn hàng xuất <span className="text-rose-500">*</span>
+          <label className="form-label block text-slate-700">
+            {MSG.LBL_ORDER} <span className="text-rose-500">*</span>
           </label>
           <Combobox
             options={orderOptions}
             value={selectedOrderId}
             onChange={setSelectedOrderId}
-            placeholder="— Tìm theo mã đơn / tên khách —"
+            placeholder={MSG.PLC_ORDER}
           />
         </div>
 
@@ -93,14 +90,14 @@ export function DispatchConfirmSheet({
           }}
         >
           <Button variant="secondary" onClick={onClose} disabled={isCommitting}>
-            Hủy
+            {MSG.BTN_CANCEL}
           </Button>
           <Button
             variant="primary"
             onClick={handleConfirm}
             disabled={isCommitting || !selectedOrderId}
           >
-            {isCommitting ? 'Đang phát lệnh...' : 'Chốt Lệnh Ngay'}
+            {isCommitting ? MSG.BTN_COMMITTING : MSG.BTN_COMMIT}
           </Button>
         </div>
       </div>

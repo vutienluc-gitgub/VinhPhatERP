@@ -13,4 +13,4 @@ files.forEach(f => {
   content = content.replace(/from '\.\.\/yarn-catalog\.constants';/g, "from '@/features/yarn-catalog/yarn-catalog.constants';");
   fs.writeFileSync(f, content);
 });
-console.log('Done');
+console.log('Done fix_imports.cjs');

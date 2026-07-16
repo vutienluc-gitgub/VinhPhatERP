@@ -10,7 +10,10 @@ import {
   classifyDebtRisk,
 } from '@/domain/payments';
 import type { DebtRiskTier } from '@/domain/payments';
-import { DEBT_RISK_TIER_BADGE } from '@/features/payments/payments.constants';
+import {
+  DEBT_RISK_TIER_BADGE,
+  DEBT_SUMMARY_MESSAGES as MSG,
+} from '@/features/payments/payments.constants';
 
 // ── Shared type for any debt row ────────────────────────────────────────────
 
@@ -68,7 +71,8 @@ export function DebtTablePanel<T extends DebtRowBase>({
     return (
       <div className="p-4">
         <p className="error-inline">
-          Lỗi: {error instanceof Error ? error.message : String(error)}
+          {MSG.ERR_PREFIX}{' '}
+          {error instanceof Error ? error.message : String(error)}
         </p>
       </div>
     );
@@ -221,7 +225,7 @@ export function DebtMobileCard({
               }}
               disabled={balanceDue <= 0}
             >
-              Thanh toán
+              <span>{MSG.BTN_PAY}</span>
             </Button>
           </div>
         )}

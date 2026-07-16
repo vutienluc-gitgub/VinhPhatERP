@@ -2,7 +2,10 @@ import { MoneyCell } from '@/shared/value';
 import { useSupplierDebt } from '@/application/payments';
 import { Button } from '@/shared/components';
 
-import { DEBT_LABELS } from './payments.constants';
+import {
+  DEBT_LABELS,
+  DEBT_SUMMARY_MESSAGES as MSG,
+} from './payments.constants';
 import {
   DebtTablePanel,
   DebtMobileCard,
@@ -35,7 +38,7 @@ export function SupplierDebtSummary({
       rowKey={(d) => d.supplier_id}
       columns={[
         {
-          header: 'Nhà cung cấp',
+          header: MSG.COL_SUPPLIER,
           id: 'supplier_name',
           sortable: true,
           accessor: (d) => d.supplier_name,
@@ -50,7 +53,7 @@ export function SupplierDebtSummary({
           ),
         },
         {
-          header: 'Số phiếu',
+          header: MSG.COL_VOUCHERS,
           id: 'document_count',
           sortable: true,
           className: 'text-right',
@@ -71,7 +74,7 @@ export function SupplierDebtSummary({
           cell: (d) => <MoneyCell value={d.total_paid} bold tone="success" />,
         },
         {
-          header: 'Còn nợ',
+          header: MSG.COL_DEBT,
           id: 'balance_due',
           sortable: true,
           className: 'text-right',
@@ -92,7 +95,7 @@ export function SupplierDebtSummary({
                 }}
                 disabled={d.balance_due <= 0}
               >
-                Thanh toán
+                {MSG.BTN_PAY}
               </Button>
             </div>
           ),
@@ -109,7 +112,7 @@ export function SupplierDebtSummary({
           countUnit={L.docUnit}
           totalLabel={L.totalLabel}
           paidLabel={L.paidLabel}
-          countLabel="Số phiếu"
+          countLabel={MSG.COL_VOUCHERS}
           progressLabel={L.progressLabel}
           onPay={() => onPay?.(d.supplier_id)}
         />

@@ -20,6 +20,8 @@ import {
   paymentsSchema,
 } from '@/schema/payment.schema';
 
+import { PAYMENTS_MODULE_MESSAGES as MSG } from './payments.constants';
+
 export {
   ACCOUNT_TYPES,
   ACCOUNT_TYPE_LABELS,
@@ -44,30 +46,22 @@ export type {
 export const paymentsFeature: FeatureDefinition = {
   key: 'payments',
   route: '/payments',
-  title: 'Tài chính & Thanh toán',
+  title: MSG.TITLE,
   badge: 'Critical',
-  description:
-    'Quản lý thu chi, công nợ nhà cung cấp, nhật ký thanh toán và tài khoản ngân hàng.',
+  description: MSG.DESC,
   summary: [
     {
-      label: 'Số dư quỹ',
-      value: '1.5 tỷ',
+      label: MSG.LBL_FUND,
+      value: MSG.VAL_FUND,
     },
     {
-      label: 'Chi tháng này',
-      value: '450 triệu',
+      label: MSG.LBL_EXPENSE,
+      value: MSG.VAL_EXPENSE,
     },
   ],
-  highlights: [
-    'Quản lý đa tài khoản.',
-    'Theo dõi chi phí sản xuất.',
-    'Đối soát công nợ tự động.',
-  ],
+  highlights: [MSG.FEAT_1, MSG.FEAT_2, MSG.FEAT_3],
   entities: ['payments', 'payment_accounts', 'expenses'],
-  nextMilestones: [
-    'Tích hợp cổng thanh toán API.',
-    'Báo cáo lưu chuyển tiền tệ chi tiết.',
-  ],
+  nextMilestones: [MSG.ROADMAP_1, MSG.ROADMAP_2],
 };
 
 export default createModule(paymentsFeature);

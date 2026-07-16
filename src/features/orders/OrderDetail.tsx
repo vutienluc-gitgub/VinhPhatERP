@@ -31,6 +31,7 @@ import { ChatWidget } from '@/features/chat';
 
 import { OrderAuditLogViewer } from './OrderAuditLogViewer';
 import type { Order } from './types';
+import { ORDER_MESSAGES as MSG } from './orders.constants';
 
 type OrderDetailProps = {
   orderId: string;
@@ -73,21 +74,22 @@ export function OrderDetail({
   if (isLoading)
     return (
       <div className="panel-card">
-        <p className="table-empty">Đang tải...</p>
+        <p className="table-empty">{MSG.PROG_LOADING}</p>
       </div>
     );
   if (error)
     return (
       <div className="panel-card">
         <p className="error-inline">
-          Lỗi: {error instanceof Error ? error.message : String(error)}
+          {MSG.ERROR_PREFIX}
+          {error instanceof Error ? error.message : String(error)}
         </p>
       </div>
     );
   if (!order)
     return (
       <div className="panel-card">
-        <p className="table-empty">Không tìm thấy đơn hàng.</p>
+        <p className="table-empty">{MSG.ERR_NOT_FOUND}</p>
       </div>
     );
 
@@ -101,9 +103,7 @@ export function OrderDetail({
   async function handleConfirm() {
     const isTrading = order?.order_type === 'trading';
     const ok = await confirm({
-      message: isTrading
-        ? 'Xác nhận đơn hàng thương mại? Hệ thống sẽ tự động trừ kho cho các dòng hàng.'
-        : 'Xác nhận đơn hàng? Hệ thống sẽ tạo 7 công đoạn tiến độ tự động.',
+      message: isTrading ? MSG.CONFIRM_TRADING : MSG.CONFIRM_PRODUCTION,
     });
     if (!ok) return;
 
@@ -117,9 +117,7 @@ export function OrderDetail({
   async function handleCancel() {
     const isTrading = order?.order_type === 'trading';
     const ok = await confirm({
-      message: isTrading
-        ? 'Hủy đơn thương mại? Hệ thống sẽ hoàn trả tồn kho đã trừ.'
-        : 'Hủy đơn hàng này?',
+      message: isTrading ? MSG.CONFIRM_CANCEL_TRADING : MSG.CONFIRM_CANCEL,
       variant: 'danger',
     });
     if (!ok) return;
@@ -132,14 +130,14 @@ export function OrderDetail({
   }
 
   async function handleComplete() {
-    const ok = await confirm({ message: 'Hoàn thành đơn hàng?' });
+    const ok = await confirm({ message: MSG.CONFIRM_COMPLETE });
     if (!ok) return;
     completeMutation.mutate(orderId);
   }
 
   async function handleApprove() {
     const ok = await confirm({
-      message: 'Chấp nhận đơn yêu cầu này và chuyển thành đơn nháp?',
+      message: MSG.CONFIRM_APPROVE_REQ,
     });
     if (!ok) return;
     approveMutation.mutate(orderId);
@@ -147,7 +145,7 @@ export function OrderDetail({
 
   async function handleReject() {
     const ok = await confirm({
-      message: 'Từ chối đơn yêu cầu này?',
+      message: MSG.CONFIRM_REJECT_REQ,
       variant: 'danger',
     });
     if (!ok) return;
@@ -160,7 +158,7 @@ export function OrderDetail({
       <div className="p-5">
         <div className="flex items-center gap-3 mb-4">
           <Button variant="secondary" leftIcon="ArrowLeft" onClick={onBack}>
-            Quay lại
+            {MSG.BTN_BACK}
           </Button>
           <div className="flex-1">
             <div className="flex items-center gap-2">
@@ -168,7 +166,7 @@ export function OrderDetail({
               <Badge variant="gray">
                 {ORDER_TYPE_LABELS[
                   order.order_type as keyof typeof ORDER_TYPE_LABELS
-                ] ?? 'Sản xuất'}
+                ] ?? MSG.TYPE_PRODUCTION}
               </Badge>
             </div>
             <span className="text-muted text-sm">
@@ -183,27 +181,37 @@ export function OrderDetail({
         {/* Info grid */}
         <div className="dashboard-summary-row mb-4">
           <div>
-            <div className="text-muted text-sm summary-label">Ngày đặt</div>
+            <div className="text-muted text-sm summary-label">
+              {MSG.LBL_ORDER_DATE}
+            </div>
             <div>{order.order_date}</div>
           </div>
           <div>
-            <div className="text-muted text-sm summary-label">Ngày giao</div>
+            <div className="text-muted text-sm summary-label">
+              {MSG.LBL_DELIVERY_DATE}
+            </div>
             <div>{order.delivery_date ?? '—'}</div>
           </div>
           <div>
-            <div className="text-muted text-sm summary-label">Tổng tiền</div>
+            <div className="text-muted text-sm summary-label">
+              {MSG.LBL_TOTAL_AMOUNT}
+            </div>
             <div className="summary-value">
               <MoneyText value={order.total_amount} suffix="đ" />
             </div>
           </div>
           <div>
-            <div className="text-muted text-sm summary-label">Đã thu</div>
+            <div className="text-muted text-sm summary-label">
+              {MSG.LBL_PAID_AMOUNT}
+            </div>
             <div className="summary-value text-[var(--success)]">
               <MoneyText value={order.paid_amount} suffix="đ" />
             </div>
           </div>
           <div>
-            <div className="text-muted text-sm summary-label">Còn nợ</div>
+            <div className="text-muted text-sm summary-label">
+              {MSG.LBL_BALANCE_DUE}
+            </div>
             <div
               className={`summary-value${balanceDue > 0 ? ' summary-value--danger' : ''}`}
             >
@@ -214,7 +222,7 @@ export function OrderDetail({
 
         {order.notes && (
           <div className="info-box mb-4">
-            <strong>Ghi chú:</strong> {order.notes}
+            <strong>{MSG.LBL_NOTES_PREFIX}</strong> {order.notes}
           </div>
         )}
 
@@ -222,7 +230,7 @@ export function OrderDetail({
         {order.total_amount > 0 && (
           <div className="mb-4">
             <div className="flex justify-between text-xs mb-1">
-              <span>Thanh toán</span>
+              <span>{MSG.LBL_PAYMENT_PROGRESS}</span>
               <span>{paymentPct}%</span>
             </div>
             <div className="h-2 bg-border rounded">
@@ -244,7 +252,7 @@ export function OrderDetail({
                 onClick={handleApprove}
                 isLoading={approveMutation.isPending}
               >
-                Duyệt yêu cầu
+                {MSG.BTN_APPROVE_REQ}
               </Button>
               <Button
                 variant="secondary"
@@ -253,7 +261,7 @@ export function OrderDetail({
                 isLoading={rejectMutation.isPending}
                 className="text-danger"
               >
-                Từ chối
+                {MSG.BTN_REJECT_REQ}
               </Button>
             </>
           )}
@@ -265,7 +273,7 @@ export function OrderDetail({
                 leftIcon="Pencil"
                 onClick={() => onEdit(order)}
               >
-                Sửa đơn
+                {MSG.BTN_EDIT}
               </Button>
               {order.status === 'draft' && (
                 <Button
@@ -278,8 +286,8 @@ export function OrderDetail({
                   }
                 >
                   {order.order_type === 'trading'
-                    ? 'Xác nhận & Trừ kho'
-                    : 'Xác nhận đơn'}
+                    ? MSG.BTN_CONFIRM_TRADING
+                    : MSG.BTN_CONFIRM}
                 </Button>
               )}
             </>
@@ -291,21 +299,21 @@ export function OrderDetail({
                 leftIcon="Lock"
                 onClick={() => onReserveRolls(order)}
               >
-                Giữ cuộn
+                {MSG.RES_BTN_RESERVE}
               </Button>
               <Button
                 variant="primary"
                 leftIcon="Package"
                 onClick={() => onCreateShipment(order)}
               >
-                Tạo phiếu xuất
+                {MSG.BTN_SHIP}
               </Button>
               <Button
                 variant="outline"
                 leftIcon="CircleDollarSign"
                 onClick={() => onCreatePayment(order)}
               >
-                Thu tiền
+                {MSG.BTN_PAY}
               </Button>
             </>
           )}
@@ -318,7 +326,7 @@ export function OrderDetail({
               onClick={handleComplete}
               isLoading={completeMutation.isPending}
             >
-              Hoàn thành
+              {MSG.BTN_COMPLETE}
             </Button>
           )}
           {order.status !== 'cancelled' && (
@@ -327,7 +335,7 @@ export function OrderDetail({
               leftIcon="FileText"
               onClick={() => onCreateContract(order)}
             >
-              Tạo hợp đồng
+              {MSG.BTN_CONTRACT}
             </Button>
           )}
           {order.status !== 'cancelled' && order.status !== 'completed' && (
@@ -338,14 +346,14 @@ export function OrderDetail({
               isLoading={cancelMutation.isPending}
               className="text-danger"
             >
-              Hủy đơn
+              {MSG.BTN_CANCEL}
             </Button>
           )}
         </div>
 
         {actionError && (
           <p className="error-inline text-sm">
-            Lỗi:{' '}
+            {MSG.ERROR_PREFIX}{' '}
             {actionError instanceof Error
               ? actionError.message
               : String(actionError)}
@@ -355,21 +363,23 @@ export function OrderDetail({
 
       {/* Order items table */}
       <div className="px-5 pb-5">
-        <h4 className="mb-3">Dòng hàng ({items.length})</h4>
+        <h4 className="mb-3">
+          {MSG.SECTION_ITEMS} ({items.length})
+        </h4>
         <div className="data-table-wrap">
           {items.length === 0 ? (
-            <p className="table-empty">Chưa có dòng hàng.</p>
+            <p className="table-empty">{MSG.EMPTY_ITEMS}</p>
           ) : (
             <table className="data-table">
               <thead>
                 <tr>
                   <th>#</th>
-                  {order.order_type === 'trading' && <th>Nguồn</th>}
-                  <th>Loại vải</th>
-                  <th>Màu</th>
-                  <th className="text-right">Số lượng</th>
-                  <th className="text-right">Đơn giá (đ)</th>
-                  <th className="text-right">Thành tiền (đ)</th>
+                  {order.order_type === 'trading' && <th>{MSG.COL_SOURCE}</th>}
+                  <th>{MSG.TYPE_FABRIC}</th>
+                  <th>{MSG.FIELD_COLOR}</th>
+                  <th className="text-right">{MSG.FIELD_QUANTITY}</th>
+                  <th className="text-right">{MSG.COL_PRICE}</th>
+                  <th className="text-right">{MSG.COL_AMOUNT}</th>
                 </tr>
               </thead>
               <tbody>
@@ -386,7 +396,7 @@ export function OrderDetail({
                             <Badge variant="info">
                               {category
                                 ? PRODUCT_CATEGORY_LABELS[category]
-                                : 'Vải'}
+                                : MSG.TYPE_FABRIC}
                             </Badge>
                           </td>
                         )}
@@ -417,7 +427,7 @@ export function OrderDetail({
                     colSpan={order.order_type === 'trading' ? 6 : 5}
                     className="text-right font-bold"
                   >
-                    Tổng cộng
+                    {MSG.TXT_TOTAL}
                   </td>
                   <td className="text-right tabular-nums font-bold">
                     <MoneyText value={order.total_amount} suffix="đ" />
@@ -432,7 +442,7 @@ export function OrderDetail({
       {/* Production progress timeline */}
       {progressStages.length > 0 && (
         <div className="px-5 pb-5">
-          <h4 className="mb-3">Tiến độ sản xuất</h4>
+          <h4 className="mb-3">{MSG.PROG_TIMELINE_TITLE}</h4>
           <ProgressTimeline
             stages={progressStages}
             readonly={
@@ -450,7 +460,7 @@ export function OrderDetail({
         entityType="order"
         entityId={orderId}
         title={order.order_number}
-        subtitle={`Đơn hàng ${ORDER_TYPE_LABELS[order.order_type as keyof typeof ORDER_TYPE_LABELS]}`}
+        subtitle={`${MSG.PAGE_TITLE} ${ORDER_TYPE_LABELS[order.order_type as keyof typeof ORDER_TYPE_LABELS]}`}
       />
     </div>
   );

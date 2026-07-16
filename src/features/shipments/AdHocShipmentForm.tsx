@@ -14,14 +14,14 @@ import {
   useActiveCustomerOptions,
 } from '@/application/shipments';
 import type { AdHocShipmentFormValues } from '@/schema/shipment.schema';
+import { Icon } from '@/shared/components/Icon';
 
 import { useAdHocShipmentForm } from './useAdHocShipmentForm';
+import { AdHocShipmentItemsTable } from './AdHocShipmentItemsTable';
 import {
-  AdHocShipmentItemsTable,
   AD_HOC_SHIPMENT_MESSAGES as MESSAGES,
-} from './AdHocShipmentItemsTable';
-import {
-  AD_HOC_SHIPMENT_LABELS,
+  AD_HOC_SHIPMENT_LABELS as LABELS,
+  SHIPMENT_FORM_MESSAGES,
   AD_HOC_PURPOSE_OPTIONS,
 } from './shipments.constants';
 
@@ -48,7 +48,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
   );
   const createMutation = useCreateAdHocShipment();
 
-  const [shipmentNumber] = useState('Tự động');
+  const [shipmentNumber] = useState(SHIPMENT_FORM_MESSAGES.AUTO_NUMBER);
 
   const {
     form,
@@ -142,14 +142,14 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
         )}
 
         <div className="space-y-8 pb-8">
-          {/* ─── THÔNG TIN CHUNG ─── */}
-          <section>
-            <h3 className="text-lg font-semibold mb-4 text-[var(--text)]">
-              Thông tin chung
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+              <Icon name="FileText" className="w-5 h-5 text-indigo-500" />
+              {LABELS.SEC_GENERAL}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
               <div className="form-field">
-                <label>{AD_HOC_SHIPMENT_LABELS.SHIPMENT_NUMBER}</label>
+                <label>{LABELS.SHIPMENT_NUMBER}</label>
                 <input
                   className="field-input italic bg-[var(--surface-disabled)] text-[var(--text-tertiary)]"
                   value={shipmentNumber}
@@ -161,7 +161,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="form-field">
                   <label>
-                    {AD_HOC_SHIPMENT_LABELS.SHIPMENT_DATE}{' '}
+                    {LABELS.SHIPMENT_DATE}{' '}
                     <span className="field-required">*</span>
                   </label>
                   <input
@@ -176,8 +176,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
 
                 <div className="form-field">
                   <label>
-                    {AD_HOC_SHIPMENT_LABELS.PURPOSE}{' '}
-                    <span className="field-required">*</span>
+                    {LABELS.PURPOSE} <span className="field-required">*</span>
                   </label>
                   <select className="field-input" {...register('purpose')}>
                     {AD_HOC_PURPOSE_OPTIONS.map((opt) => (
@@ -194,8 +193,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
 
               <div className="form-field">
                 <label>
-                  {AD_HOC_SHIPMENT_LABELS.CUSTOMER}{' '}
-                  <span className="field-required">*</span>
+                  {LABELS.CUSTOMER} <span className="field-required">*</span>
                 </label>
                 <Controller
                   name="customerId"
@@ -205,7 +203,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                       options={customerComboOptions}
                       value={field.value || ''}
                       onChange={field.onChange}
-                      placeholder="— Chọn khách hàng —"
+                      placeholder={LABELS.PLC_CUSTOMER}
                     />
                   )}
                 />
@@ -221,24 +219,24 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                     className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
                     {...register('syncDebt')}
                   />
-                  <span className="text-sm font-medium">
-                    Ghi nhận vào công nợ khách hàng (tự động tạo nợ)
+                  <span className="text-sm font-medium text-slate-700">
+                    {LABELS.CHK_DEBT}
                   </span>
                 </label>
               </div>
             </div>
-          </section>
+          </div>
 
           <hr className="border-t border-dashed border-[var(--border)]" />
 
-          {/* ─── GIAO VẬN & CHI PHÍ ─── */}
-          <section>
-            <h3 className="text-lg font-semibold mb-4 text-[var(--text)]">
-              Giao vận & Chi phí
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+              <Icon name="Truck" className="w-5 h-5 text-indigo-500" />
+              {LABELS.SEC_LOGISTICS}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
               <div className="form-field">
-                <label>{AD_HOC_SHIPMENT_LABELS.EMPLOYEE}</label>
+                <label>{LABELS.EMPLOYEE}</label>
                 <Controller
                   name="employeeId"
                   control={control}
@@ -253,7 +251,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                         options={empOptions}
                         value={field.value || ''}
                         onChange={field.onChange}
-                        placeholder="— Kho xuất —"
+                        placeholder={LABELS.PLC_WAREHOUSE}
                       />
                     );
                   }}
@@ -261,7 +259,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
               </div>
 
               <div className="form-field">
-                <label>{AD_HOC_SHIPMENT_LABELS.DELIVERY_STAFF}</label>
+                <label>{LABELS.DELIVERY_STAFF}</label>
                 <Controller
                   name="deliveryStaffId"
                   control={control}
@@ -276,7 +274,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                         options={staffOptions}
                         value={field.value || ''}
                         onChange={field.onChange}
-                        placeholder="— Chưa phân công —"
+                        placeholder={LABELS.PLC_STAFF}
                       />
                     );
                   }}
@@ -284,16 +282,16 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
               </div>
 
               <div className="form-field">
-                <label>{AD_HOC_SHIPMENT_LABELS.DELIVERY_ADDRESS}</label>
+                <label>{LABELS.DELIVERY_ADDRESS}</label>
                 <input
                   className="field-input"
                   {...register('deliveryAddress')}
-                  placeholder="Địa chỉ giao hàng..."
+                  placeholder={LABELS.PLC_ADDRESS}
                 />
               </div>
 
               <div className="form-field">
-                <label>{AD_HOC_SHIPMENT_LABELS.VEHICLE_INFO}</label>
+                <label>{LABELS.VEHICLE_INFO}</label>
                 <input
                   className="field-input"
                   {...register('vehicleInfo')}
@@ -302,7 +300,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
               </div>
 
               <div className="form-field">
-                <label>{AD_HOC_SHIPMENT_LABELS.SHIPPING_RATE}</label>
+                <label>{LABELS.SHIPPING_RATE}</label>
                 <Controller
                   name="shippingRateId"
                   control={control}
@@ -311,7 +309,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                       options={shippingRateOptions}
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder="— Không áp dụng —"
+                      placeholder={LABELS.PLC_NO_APPLY}
                     />
                   )}
                 />
@@ -319,7 +317,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="form-field">
-                  <label>{AD_HOC_SHIPMENT_LABELS.SHIPPING_COST}</label>
+                  <label>{LABELS.SHIPPING_COST}</label>
                   <input
                     className="field-input"
                     type="number"
@@ -328,7 +326,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                   />
                 </div>
                 <div className="form-field">
-                  <label>{AD_HOC_SHIPMENT_LABELS.LOADING_FEE}</label>
+                  <label>{LABELS.LOADING_FEE}</label>
                   <input
                     className="field-input"
                     type="number"
@@ -339,22 +337,22 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
               </div>
 
               <div className="form-field md:col-span-2">
-                <label>{AD_HOC_SHIPMENT_LABELS.NOTES}</label>
+                <label>{LABELS.NOTES}</label>
                 <input
                   className="field-input"
                   {...register('notes')}
-                  placeholder="Ghi chú nội bộ..."
+                  placeholder={LABELS.PLC_NOTES}
                 />
               </div>
             </div>
-          </section>
+          </div>
 
           <hr className="border-t border-dashed border-[var(--border)]" />
 
-          {/* ─── CHI TIẾT HÀNG HOÁ ─── */}
-          <section>
-            <h3 className="text-lg font-semibold mb-4 text-[var(--text)]">
-              Chi tiết hàng hoá <span className="field-required">*</span>
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+              <Icon name="Package" className="w-5 h-5 text-indigo-500" />
+              {LABELS.SEC_DETAILS} <span className="field-required">*</span>
             </h3>
             <div className="w-full overflow-x-auto pb-4">
               <AdHocShipmentItemsTable
@@ -371,7 +369,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                 onScanRow={handleScanRow}
               />
             </div>
-          </section>
+          </div>
         </div>
       </form>
     </AdaptiveSheet>

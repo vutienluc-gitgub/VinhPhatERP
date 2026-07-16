@@ -1,6 +1,7 @@
 import { Icon } from '@/shared/components/Icon';
 import { LABEL_ORIGIN } from '@/shared/constants/origin.constants';
 import type { YarnCatalog } from '@/features/yarn-catalog/types';
+import { YARN_CATALOG_MESSAGES as MSG } from '@/features/yarn-catalog/yarn-catalog.constants';
 
 import { YarnColorBadge } from './YarnColorBadge';
 import { YarnStatusBadge } from './YarnStatusBadge';
@@ -30,7 +31,7 @@ export function YarnCatalogMobileCard({
       <div className="mobile-card-body space-y-2">
         <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
           <div className="flex flex-col">
-            <span className="text-xs text-muted">Thành phần</span>
+            <span className="text-xs text-muted">{MSG.LBL_COMPOSITION}</span>
             <span className="font-medium">{c.composition ?? '—'}</span>
           </div>
           <div className="flex flex-col">
@@ -38,7 +39,7 @@ export function YarnCatalogMobileCard({
             <span className="font-medium">{c.origin ?? '—'}</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-xs text-muted">Mã lô / Loại</span>
+            <span className="text-xs text-muted">{MSG.LBL_LOT_GRADE}</span>
             <div className="flex items-center gap-2">
               <span className="font-mono text-primary">{c.lot_no}</span>
               {c.grade && (
@@ -49,7 +50,7 @@ export function YarnCatalogMobileCard({
             </div>
           </div>
           <div className="flex flex-col">
-            <span className="text-xs text-muted">Đơn vị</span>
+            <span className="text-xs text-muted">{MSG.LBL_UNIT}</span>
             <span className="font-medium">{c.unit}</span>
           </div>
         </div>
@@ -67,7 +68,7 @@ export function YarnCatalogMobileCard({
               onEdit(c);
             }}
           >
-            <Icon name="Pencil" size={16} /> Sửa
+            <Icon name="Pencil" size={16} /> {MSG.BTN_EDIT}
           </button>
           <button
             className="btn-secondary text-danger px-3"

@@ -15,6 +15,7 @@ import {
   SPUN_YARN_CATEGORIES,
   YARN_INTERMINGLE_OPTIONS,
 } from '@/shared/constants/yarn-classification';
+import { YARN_CATALOG_MESSAGES as MSG } from '@/features/yarn-catalog/yarn-catalog.constants';
 
 type StepTechnicalSpecsProps = {
   hidden: boolean;
@@ -35,14 +36,14 @@ export function StepTechnicalSpecs({
     <div className={hidden ? 'hidden' : 'block'}>
       <div className="form-grid">
         <fieldset className="form-section">
-          <legend className="form-section-title">Phân loại kỹ thuật</legend>
+          <legend className="form-section-title">{MSG.SECTION_TECH}</legend>
 
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
             <ComboboxField
               name="category"
               control={control}
               options={YARN_CATEGORY_OPTIONS}
-              label="Chất liệu (Level 1)"
+              label={MSG.LBL_CATEGORY}
               allowInput
               placeholder="VD: Polyester, Cotton..."
             />
@@ -50,7 +51,7 @@ export function StepTechnicalSpecs({
               name="yarn_type"
               control={control}
               options={YARN_TYPE_OPTIONS}
-              label="Loại sợi (Level 2)"
+              label={MSG.LBL_YARN_TYPE}
               allowInput
               placeholder="VD: DTY, FDY, CM..."
             />
@@ -63,7 +64,7 @@ export function StepTechnicalSpecs({
                   name="count_ne"
                   control={control}
                   options={YARN_NE_COUNT_OPTIONS}
-                  label="Chi số (Ne)"
+                  label={MSG.LBL_COUNT_NE}
                   allowInput
                   placeholder="VD: Ne 30"
                 />
@@ -71,7 +72,7 @@ export function StepTechnicalSpecs({
                   name="spinning_method"
                   control={control}
                   options={YARN_SPINNING_METHOD_OPTIONS}
-                  label="Phương pháp kéo sợi"
+                  label={MSG.LBL_SPINNING}
                   allowInput
                   placeholder="VD: Ring Spun"
                 />
@@ -82,7 +83,7 @@ export function StepTechnicalSpecs({
                   name="denier"
                   control={control}
                   options={YARN_DENIER_OPTIONS}
-                  label="Denier"
+                  label={MSG.LBL_DENIER}
                   allowInput
                   placeholder="VD: 150D"
                 />
@@ -90,14 +91,14 @@ export function StepTechnicalSpecs({
                   name="filament_count"
                   control={control}
                   options={YARN_FILAMENT_OPTIONS}
-                  label="Filament"
+                  label={MSG.LBL_FILAMENT}
                   allowInput
                   placeholder="VD: 48F"
                 />
               </>
             )}
             <div className="form-field">
-              <label htmlFor="tensile_strength">Cường lực</label>
+              <label htmlFor="tensile_strength">{MSG.LBL_TENSILE}</label>
               <input
                 id="tensile_strength"
                 className="field-input"
@@ -113,7 +114,7 @@ export function StepTechnicalSpecs({
               name="twist_type"
               control={control}
               options={YARN_TWIST_TYPE_OPTIONS}
-              label="Hướng xoắn / Kiểu xoắn"
+              label={MSG.LBL_TWIST}
               allowInput
               placeholder="VD: S-Twist"
             />
@@ -124,14 +125,14 @@ export function StepTechnicalSpecs({
                   className="field-checkbox"
                   {...register('is_fancy')}
                 />
-                <span>Sợi Fancy (Slub, Injection...)</span>
+                <span>{MSG.LBL_FANCY}</span>
               </label>
             </div>
           </div>
 
           {watchedIsFancy && (
             <div className="form-field">
-              <label htmlFor="fancy_details">Chi tiết Fancy</label>
+              <label htmlFor="fancy_details">{MSG.LBL_FANCY_DETAIL}</label>
               <input
                 id="fancy_details"
                 className="field-input"
@@ -144,14 +145,14 @@ export function StepTechnicalSpecs({
         </fieldset>
 
         <fieldset className="form-section">
-          <legend className="form-section-title">Hiệu ứng & Màu sắc</legend>
+          <legend className="form-section-title">{MSG.SECTION_EFFECT}</legend>
 
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
             <ComboboxField
               name="finish"
               control={control}
               options={YARN_FINISH_OPTIONS}
-              label="Finish (Bề mặt)"
+              label={MSG.LBL_FINISH}
               allowInput
               placeholder="VD: Semi Dull"
             />
@@ -159,7 +160,7 @@ export function StepTechnicalSpecs({
               name="color_status"
               control={control}
               options={YARN_COLOR_STATUS_OPTIONS}
-              label="Trạng thái màu"
+              label={MSG.LBL_COLOR_STATUS}
               allowInput
               placeholder="VD: Raw White"
             />
@@ -167,12 +168,12 @@ export function StepTechnicalSpecs({
               name="color_name"
               control={control}
               options={colorComboboxOptions}
-              label="Màu mặc định"
+              label={MSG.LBL_COLOR_NAME}
               placeholder="Chọn hoặc nhập màu..."
             />
             {!isSpunYarn && (
               <div className="form-field">
-                <label htmlFor="intermingle">Độ đan gút (Intermingle)</label>
+                <label htmlFor="intermingle">{MSG.LBL_INTERMINGLE}</label>
                 <ComboboxField
                   name="intermingle"
                   control={control}

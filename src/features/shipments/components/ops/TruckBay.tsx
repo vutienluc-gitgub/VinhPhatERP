@@ -4,6 +4,7 @@ import { Icon } from '@/shared/components/Icon';
 import { ResourceBay } from '@/features/shipments/ops-ui';
 import type { TruckSlot } from '@/features/shipments/ops-engine/useFleetCommander';
 import { sumBy } from '@/shared/utils/array.util';
+import { DISPATCH_CONFIRM_MESSAGES as MSG } from '@/features/shipments/shipments.constants';
 
 interface TruckBayProps {
   truck: TruckSlot;
@@ -20,7 +21,11 @@ export function TruckBay({ truck, children }: TruckBayProps) {
     <ResourceBay
       id={truck.id}
       title={truck.plate}
-      subtitle={`Tài xế: ${truck.driver} - Tải trọng: ${currentWeight.toFixed(1)} / ${truck.maxWeightKg} kg`}
+      subtitle={MSG.TRUCK_BAY_SUBTITLE(
+        truck.driver,
+        currentWeight.toFixed(1),
+        truck.maxWeightKg,
+      )}
       icon={<Icon name="Truck" size={24} />}
       maxSlots={truck.maxSlots}
       usedSlots={truck.rolls.length}

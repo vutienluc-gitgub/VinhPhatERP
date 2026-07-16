@@ -8,18 +8,22 @@ import { useDebtAging } from '@/application/reports/useDebtAging';
 
 import { DebtSummary } from './DebtSummary';
 import { SupplierDebtSummary } from './SupplierDebtSummary';
+import {
+  DEBTS_PAGE_TABS as TABS,
+  DEBTS_PAGE_MESSAGES as MSG,
+} from './payments.constants';
 
 type DebtTab = 'customer' | 'supplier';
 
-const TABS: TabItem<DebtTab>[] = [
+const TABS_CONFIG: TabItem<DebtTab>[] = [
   {
     key: 'customer',
-    label: 'Công nợ Khách hàng',
+    label: TABS.CUSTOMER,
     icon: <Icon name="Users" size={16} />,
   },
   {
     key: 'supplier',
-    label: 'Công nợ Nhà cung cấp',
+    label: TABS.SUPPLIER,
     icon: <Icon name="Building2" size={16} />,
   },
 ];
@@ -33,13 +37,13 @@ export function DebtsPage() {
       <div className="panel-card card-flush mb-6">
         <div className="card-header-area">
           <div className="card-header-row">
-            <h3 className="text-lg font-bold m-0">Quản lý Công nợ</h3>
+            <h3 className="text-lg font-bold m-0">{MSG.TITLE}</h3>
           </div>
         </div>
 
         <div className="px-5 pb-4 pt-3">
           <TabSwitcher
-            tabs={TABS}
+            tabs={TABS_CONFIG}
             active={activeTab}
             onChange={setActiveTab}
             variant="premium"

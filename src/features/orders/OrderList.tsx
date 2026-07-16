@@ -24,18 +24,19 @@ import type { Order, OrdersFilter } from './types';
 import { calculateOrderKPIs } from './utils';
 import { useOrderColumns } from './hooks/useOrderColumns';
 import { OrderMobileCard } from './components/OrderMobileCard';
+import { ORDER_MESSAGES as MSG } from './orders.constants';
 
 const filterSchema: FilterFieldConfig[] = [
   {
     key: 'search',
     type: 'search',
-    label: 'Tìm kiếm',
-    placeholder: 'Mã đơn, tên khách hàng...',
+    label: MSG.SEARCH_LABEL,
+    placeholder: MSG.SEARCH_PLACEHOLDER,
   },
   {
     key: 'status',
     type: 'combobox',
-    label: 'Trạng thái',
+    label: MSG.PROG_FILTER_STATUS,
     options: Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => ({
       value,
       label,
@@ -44,7 +45,7 @@ const filterSchema: FilterFieldConfig[] = [
   {
     key: 'orderType',
     type: 'combobox',
-    label: 'Loại đơn',
+    label: MSG.FIELD_ORDER_TYPE,
     options: ORDER_TYPE_OPTIONS.map((opt) => ({
       value: opt.value,
       label: opt.label,
@@ -88,11 +89,11 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
 
   async function handleDelete(order: Order) {
     if (order.status !== 'draft') {
-      await showAlert('Chỉ có thể xoá đơn hàng ở trạng thái Nháp.');
+      await showAlert(MSG.ERR_DELETE_ONLY_DRAFT);
       return;
     }
     const ok = await confirm({
-      message: `Xóa đơn hàng "${order.order_number}"? Hành động này không thể hoàn tác.`,
+      message: MSG.CONFIRM_DELETE.replace('{0}', order.order_number),
       variant: 'danger',
     });
     if (!ok) return;
@@ -111,8 +112,8 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
   return (
     <PageLayout>
       <PageHeader
-        title="Đơn hàng"
-        subtitle="Quản lý đơn hàng"
+        title={MSG.PAGE_TITLE}
+        subtitle={MSG.PAGE_SUBTITLE}
         actions={
           <div className="flex items-center gap-2">
             <button
@@ -120,9 +121,9 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors"
             >
               <Icon name="BarChart3" size={14} />
-              Tiến độ SX
+              {MSG.BTN_PROGRESS}
             </button>
-            <AddButton onClick={onNew} label="Tạo đơn hàng" />
+            <AddButton onClick={onNew} label={MSG.BTN_CREATE_ORDER} />
           </div>
         }
       />
@@ -135,7 +136,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
             <div className="kpi-overlay" />
             <div className="kpi-content">
               <div className="kpi-info">
-                <p className="kpi-label">Yêu cầu chờ duyệt</p>
+                <p className="kpi-label">{MSG.KPI_PENDING_APPROVAL}</p>
                 <p className="kpi-value">{pendingReviewCount}</p>
               </div>
               <div className="kpi-icon-box">
@@ -143,7 +144,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               </div>
             </div>
             <div className="kpi-footer text-xs opacity-80 italic">
-              Yêu cầu từ Customer Portal
+              {MSG.KPI_PENDING_DESC}
             </div>
           </div>
 
@@ -151,7 +152,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
             <div className="kpi-overlay" />
             <div className="kpi-content">
               <div className="kpi-info">
-                <p className="kpi-label">Doanh thu dự kiến</p>
+                <p className="kpi-label">{MSG.KPI_EXPECTED_REVENUE}</p>
                 <div className="flex items-baseline gap-1">
                   <MoneyText
                     value={totalRevenue}
@@ -167,7 +168,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               </div>
             </div>
             <div className="kpi-footer text-xs opacity-80 italic">
-              Tổng giá trị đơn hiển thị
+              {MSG.KPI_REVENUE_DESC}
             </div>
           </div>
 
@@ -175,7 +176,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
             <div className="kpi-overlay" />
             <div className="kpi-content">
               <div className="kpi-info">
-                <p className="kpi-label">Tổng công nợ</p>
+                <p className="kpi-label">{MSG.KPI_TOTAL_DEBT}</p>
                 <div className="flex items-baseline gap-1">
                   <MoneyText
                     value={totalDebt}
@@ -191,7 +192,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               </div>
             </div>
             <div className="kpi-footer text-xs opacity-80 italic">
-              Số tiền khách còn nợ
+              {MSG.KPI_DEBT_DESC}
             </div>
           </div>
         </div>
@@ -212,7 +213,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
       {error && (
         <div className="p-4">
           <p className="error-inline">
-            Lỗi tải dữ liệu:{' '}
+            {MSG.ERR_LOAD_DATA}{' '}
             {error instanceof Error ? error.message : String(error)}
           </p>
         </div>
@@ -225,22 +226,22 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           rowKey={(o) => o.id}
           onRowClick={onView}
           emptyStateTitle={
-            hasFilter ? 'Không tìm thấy đơn hàng' : 'Chưa có đơn hàng nào'
+            hasFilter ? MSG.EMPTY_SEARCH_TITLE : MSG.EMPTY_NO_DATA_TITLE
           }
           emptyStateDescription={
-            hasFilter
-              ? 'Hãy thử thay đổi điều kiện lọc.'
-              : 'Nhấn nút tạo đơn để bắt đầu.'
+            hasFilter ? MSG.EMPTY_SEARCH_DESC : MSG.EMPTY_NO_DATA_DESC
           }
           emptyStateIcon={hasFilter ? 'Search' : 'Package'}
-          emptyStateActionLabel={!hasFilter ? '+ Tạo đơn hàng' : undefined}
+          emptyStateActionLabel={
+            !hasFilter ? MSG.BTN_CREATE_ORDER_PLUS : undefined
+          }
           onEmptyStateAction={!hasFilter ? onNew : undefined}
           columns={columns}
           renderMobileCard={(order) => <OrderMobileCard order={order} />}
           pagination={{
             result,
             onPageChange: setPage,
-            itemLabel: 'đơn hàng',
+            itemLabel: MSG.PAGINATION_LABEL,
           }}
         />
       </TableSection>
