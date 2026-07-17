@@ -35,6 +35,9 @@ export const COSTING_LABELS = {
   BADGE_CURRENT: 'Đang chọn',
   TITLE_RESTORE: 'Phục hồi tham số từ phiên bản này',
   TITLE_NO_RESTORE: 'Không có dữ liệu tham số để phục hồi',
+  CURRENCY_SYMBOL: 'đ',
+  YARN_PREFIX: 'Sợi ',
+  WEAVING_COST_LABEL: 'Công dệt',
 } as const;
 
 export const COSTING_MESSAGES = {

@@ -18,7 +18,7 @@ import {
 } from '@/application/shipments';
 
 import type { ShippingRate, ShippingRateFilter } from './types';
-import { SHIPPING_RATE_LABELS } from './shipping-rates.constants';
+import { SHIPPING_RATE_LABELS as MSG } from './shipping-rates.constants';
 
 type Props = {
   onEdit: (item: ShippingRate) => void;
@@ -29,19 +29,17 @@ function rateDescription(item: ShippingRate): string {
   const parts: string[] = [];
   if (item.rate_per_trip != null)
     parts.push(
-      `${formatQuantity(item.rate_per_trip, 0)}${SHIPPING_RATE_LABELS.SUFFIX_TRIP.trim()}`,
+      `${formatQuantity(item.rate_per_trip, 0)}${MSG.SUFFIX_TRIP.trim()}`,
     );
   if (item.rate_per_meter != null)
     parts.push(
-      `${formatQuantity(item.rate_per_meter, 0)}${SHIPPING_RATE_LABELS.SUFFIX_METER.trim()}`,
+      `${formatQuantity(item.rate_per_meter, 0)}${MSG.SUFFIX_METER.trim()}`,
     );
   if (item.rate_per_kg != null)
-    parts.push(
-      `${formatQuantity(item.rate_per_kg, 0)}${SHIPPING_RATE_LABELS.SUFFIX_KG.trim()}`,
-    );
+    parts.push(`${formatQuantity(item.rate_per_kg, 0)}${MSG.SUFFIX_KG.trim()}`);
   if (item.loading_fee > 0)
     parts.push(
-      `${SHIPPING_RATE_LABELS.TEXT_LOADING_FEE}: ${formatQuantity(item.loading_fee, 0)}${SHIPPING_RATE_LABELS.SUFFIX_VND.trim()}`,
+      `${MSG.TEXT_LOADING_FEE}: ${formatQuantity(item.loading_fee, 0)}${MSG.SUFFIX_VND.trim()}`,
     );
   return parts.length > 0 ? parts.join(' · ') : '—';
 }
@@ -64,8 +62,8 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
     {
       key: 'query',
       type: 'search',
-      label: SHIPPING_RATE_LABELS.SEARCH_LABEL,
-      placeholder: SHIPPING_RATE_LABELS.SEARCH_PLACEHOLDER,
+      label: MSG.SEARCH_LABEL,
+      placeholder: MSG.SEARCH_PLACEHOLDER,
     },
   ];
 
@@ -75,7 +73,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
 
   async function handleDelete(item: ShippingRate) {
     const ok = await confirm({
-      message: `${SHIPPING_RATE_LABELS.CONFIRM_DELETE} "${item.name}"?`,
+      message: `${MSG.CONFIRM_DELETE} "${item.name}"?`,
       variant: 'danger',
     });
     if (!ok) return;
@@ -88,7 +86,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
     <div className="panel-card card-flush">
       {/* Action bar */}
       <div className="card-header-area">
-        <AddButton onClick={onNew} label={SHIPPING_RATE_LABELS.BTN_ADD} />
+        <AddButton onClick={onNew} label={MSG.BTN_ADD} />
       </div>
 
       {/* Filters */}
@@ -103,7 +101,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
       {error && (
         <div className="p-4">
           <p className="error-inline">
-            {SHIPPING_RATE_LABELS.ERROR_LOAD}
+            {MSG.ERROR_LOAD}
             {error instanceof Error ? error.message : String(error)}
           </p>
         </div>
@@ -115,36 +113,28 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
         isLoading={isLoading}
         rowKey={(item) => item.id}
         onRowClick={(item) => onEdit(item)}
-        emptyStateTitle={
-          hasFilter
-            ? SHIPPING_RATE_LABELS.EMPTY_TITLE_SEARCH
-            : SHIPPING_RATE_LABELS.EMPTY_TITLE
-        }
+        emptyStateTitle={hasFilter ? MSG.EMPTY_TITLE_SEARCH : MSG.EMPTY_TITLE}
         emptyStateDescription={
-          hasFilter
-            ? SHIPPING_RATE_LABELS.EMPTY_DESC_SEARCH
-            : SHIPPING_RATE_LABELS.EMPTY_DESC
+          hasFilter ? MSG.EMPTY_DESC_SEARCH : MSG.EMPTY_DESC
         }
         emptyStateIcon={hasFilter ? 'Search' : 'Truck'}
-        emptyStateActionLabel={
-          !hasFilter ? `+ ${SHIPPING_RATE_LABELS.BTN_ADD}` : undefined
-        }
+        emptyStateActionLabel={!hasFilter ? `+ ${MSG.BTN_ADD}` : undefined}
         onEmptyStateAction={!hasFilter ? onNew : undefined}
         columns={[
           {
-            header: SHIPPING_RATE_LABELS.TITLE_NAME,
+            header: MSG.TITLE_NAME,
             cell: (item) => (
               <span className="font-bold text-primary">{item.name}</span>
             ),
           },
           {
-            header: SHIPPING_RATE_LABELS.TITLE_AREA,
+            header: MSG.TITLE_AREA,
             cell: (item) => (
               <span className="font-medium">{item.destination_area}</span>
             ),
           },
           {
-            header: SHIPPING_RATE_LABELS.TITLE_RATE,
+            header: MSG.TITLE_RATE,
             cell: (item) => (
               <span className="text-sm text-muted">
                 {rateDescription(item)}
@@ -152,12 +142,13 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
             ),
           },
           {
-            header: SHIPPING_RATE_LABELS.TITLE_MIN_CHARGE,
+            header: MSG.TITLE_MIN_CHARGE,
             cell: (item) => (
               <span className="font-medium">
                 {item.min_charge > 0 ? (
                   <>
-                    <MoneyText value={item.min_charge} />đ
+                    <MoneyText value={item.min_charge} />
+                    {MSG.CURRENCY_SYMBOL}
                   </>
                 ) : (
                   '—'
@@ -166,17 +157,15 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
             ),
           },
           {
-            header: SHIPPING_RATE_LABELS.TITLE_STATUS,
+            header: MSG.TITLE_STATUS,
             cell: (item) => (
               <Badge variant={getStatusVariant(item.is_active)}>
-                {item.is_active
-                  ? SHIPPING_RATE_LABELS.STATUS_ACTIVE
-                  : SHIPPING_RATE_LABELS.STATUS_INACTIVE}
+                {item.is_active ? MSG.STATUS_ACTIVE : MSG.STATUS_INACTIVE}
               </Badge>
             ),
           },
           {
-            header: SHIPPING_RATE_LABELS.TITLE_ACTIONS,
+            header: MSG.TITLE_ACTIONS,
             className: 'text-right',
             onCellClick: () => {},
             cell: (item) => (
@@ -185,14 +174,14 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
                   {
                     icon: 'Pencil',
                     onClick: () => onEdit(item),
-                    title: SHIPPING_RATE_LABELS.BTN_EDIT,
+                    title: MSG.BTN_EDIT,
                   },
                   {
                     icon: 'Trash2',
                     onClick: () => {
                       void handleDelete(item);
                     },
-                    title: SHIPPING_RATE_LABELS.BTN_DELETE,
+                    title: MSG.BTN_DELETE,
                     variant: 'danger',
                     disabled: deleteMutation.isPending,
                   },
@@ -206,26 +195,25 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
             <div className="mobile-card-header">
               <span className="mobile-card-title">{item.name}</span>
               <Badge variant={getStatusVariant(item.is_active)}>
-                {item.is_active
-                  ? SHIPPING_RATE_LABELS.STATUS_ACTIVE
-                  : SHIPPING_RATE_LABELS.STATUS_INACTIVE}
+                {item.is_active ? MSG.STATUS_ACTIVE : MSG.STATUS_INACTIVE}
               </Badge>
             </div>
             <div className="mobile-card-body space-y-2">
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="flex flex-col">
-                  <span className="text-xs text-muted">
-                    {SHIPPING_RATE_LABELS.TITLE_AREA}
-                  </span>
+                  <span className="text-xs text-muted">{MSG.TITLE_AREA}</span>
                   <span className="font-bold">{item.destination_area}</span>
                 </div>
                 <div className="flex flex-col text-right">
                   <span className="text-xs text-muted">
-                    {SHIPPING_RATE_LABELS.TITLE_MIN_CHARGE}
+                    {MSG.TITLE_MIN_CHARGE}
                   </span>
                   <span className="font-medium">
                     {item.min_charge > 0 ? (
-                      <MoneyText value={item.min_charge} />
+                      <>
+                        <MoneyText value={item.min_charge} />
+                        {MSG.CURRENCY_SYMBOL}
+                      </>
                     ) : (
                       '—'
                     )}
@@ -241,8 +229,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
                     onEdit(item);
                   }}
                 >
-                  <Icon name="Pencil" size={16} />{' '}
-                  {SHIPPING_RATE_LABELS.BTN_EDIT}
+                  <Icon name="Pencil" size={16} /> {MSG.BTN_EDIT}
                 </button>
                 <button
                   className="btn-secondary text-danger border-danger/20 px-3"
@@ -262,7 +249,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
 
       {deleteMutation.error && (
         <p className="error-inline-sm">
-          {SHIPPING_RATE_LABELS.ERROR_PREFIX}
+          {MSG.ERROR_PREFIX}
           {deleteMutation.error instanceof Error
             ? deleteMutation.error.message
             : String(deleteMutation.error)}

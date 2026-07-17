@@ -40,4 +40,24 @@ export const SHIPPING_RATE_LABELS = {
   PLACEHOLDER_AREA: 'VD: Bình Dương',
   PLACEHOLDER_NOTES: 'Ghi chú thêm...',
   TEXT_LOADING_FEE: 'Bốc xếp',
+
+  MODULE_TITLE: 'Cấu hình Phí Ship',
+  MODULE_DESC:
+    'Quản lý bảng giá vận chuyển theo vùng miền, khối lượng và đơn vị vận chuyển.',
+  REGION_PRICE_LABEL: 'Vùng giá',
+  REGION_PRICE_VALUE: '63 tỉnh',
+  SHIPPING_PARTNER_LABEL: 'Đối tác vận chuyển',
+  FEATURE_AUTO_CALC: 'Tự động tính phí vận chuyển.',
+  FEATURE_SURCHARGE: 'Quản lý phụ phí vùng sâu.',
+  FEATURE_HISTORY: 'Lịch sử thay đổi giá.',
+  MILESTONE_API: 'Tự động cập nhật bảng giá từ API đối tác.',
+  PLUGIN_LABEL: 'Bảng phí Ship',
+  PLUGIN_SHORT_LABEL: 'Phí Ship',
+  PLUGIN_DESC:
+    'Cấu hình đơn giá vận chuyển cho các khu vực và đối tác khác nhau.',
+
+  PAGE_TITLE_ADD: 'Thêm bảng giá cước',
+  PAGE_TITLE_EDIT: 'Sửa bảng giá cước',
+
+  CURRENCY_SYMBOL: 'đ',
 } as const;

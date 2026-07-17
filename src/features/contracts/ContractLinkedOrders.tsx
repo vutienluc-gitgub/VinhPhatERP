@@ -1,6 +1,7 @@
 import { Button, Icon } from '@/shared/components';
 
 import { formatContractDate } from './contracts.utils';
+import { CONTRACT_MESSAGES as MSG } from './contracts.constants';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -32,23 +33,23 @@ export function ContractLinkedOrders({
     <div className="px-5 pb-5">
       <h4 className="mb-3 flex items-center gap-2">
         <Icon name="Link" size={16} />
-        Đơn hàng liên kết ({orders.length})
+        {MSG.TITLE_LINKED_ORDERS(orders.length)}
       </h4>
       {isLoading ? (
-        <p className="table-empty text-sm">Đang tải...</p>
+        <p className="table-empty text-sm">{MSG.MSG_LOADING}</p>
       ) : orders.length === 0 ? (
-        <p className="table-empty text-sm">
-          Chưa có đơn hàng nào được liên kết.
-        </p>
+        <p className="table-empty text-sm">{MSG.MSG_NO_LINKED_ORDERS}</p>
       ) : (
         <div className="data-table-wrap">
           <table className="data-table">
             <thead>
               <tr>
-                <th>Số đơn hàng</th>
-                <th>Trạng thái</th>
-                <th>Ngày liên kết</th>
-                {canLinkOrder && <th className="text-right">Thao tác</th>}
+                <th>{MSG.COL_ORDER_NUMBER}</th>
+                <th>{MSG.COL_ORDER_STATUS}</th>
+                <th>{MSG.COL_LINK_DATE}</th>
+                {canLinkOrder && (
+                  <th className="text-right">{MSG.COL_ACTIONS}</th>
+                )}
               </tr>
             </thead>
             <tbody>

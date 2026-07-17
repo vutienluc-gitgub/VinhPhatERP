@@ -1,5 +1,7 @@
 import { useRef, useEffect } from 'react';
 
+import { CONTRACT_MESSAGES as MSG } from './contracts.constants';
+
 interface ContractPreviewProps {
   content: string;
   contractNumber?: string;
@@ -73,16 +75,15 @@ export function ContractPreview({
     <div className="flex flex-col gap-2 w-full">
       {contractNumber && (
         <p className="text-xs text-slate-500 font-mono">
-          Số hợp đồng: {contractNumber}
+          {MSG.LBL_CONTRACT_NUMBER}
+          {contractNumber}
         </p>
       )}
       <div className="w-full overflow-x-auto rounded-lg border border-slate-200 bg-slate-100">
         <iframe
           ref={iframeRef}
           srcDoc={wrappedContent}
-          title={
-            contractNumber ? `Hợp đồng ${contractNumber}` : 'Xem trước hợp đồng'
-          }
+          title={MSG.LBL_CONTRACT_PREVIEW(contractNumber)}
           sandbox="allow-same-origin"
           className="w-full border-0 min-h-[600px]"
         />

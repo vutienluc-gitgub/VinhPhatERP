@@ -296,7 +296,9 @@ export function GreigeCalculatorModal({
                       <MoneyText
                         value={Math.round(result.suggestedPricePerM)}
                       />{' '}
-                      đ
+                      <span className="font-semibold">
+                        {COSTING_LABELS.CURRENCY_SYMBOL}
+                      </span>
                       <span className="text-sm font-normal text-muted">
                         /{COSTING_LABELS.UNIT_PRICE.split('/')[1]}
                       </span>

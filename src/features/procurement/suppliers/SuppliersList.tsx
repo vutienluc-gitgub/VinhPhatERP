@@ -162,8 +162,8 @@ export function SuppliersList({
   return (
     <PageLayout>
       <PageHeader
-        title="Nhà cung cấp"
-        subtitle="Quản lý nhà cung cấp"
+        title={SUPPLIER_LIST_LABELS.TITLE}
+        subtitle={SUPPLIER_LIST_LABELS.SUBTITLE}
         actions={
           <AddButton
             onClick={onNew}

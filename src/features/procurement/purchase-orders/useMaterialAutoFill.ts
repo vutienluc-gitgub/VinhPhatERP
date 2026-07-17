@@ -12,6 +12,8 @@ import { PO_CONSTANTS } from '@/features/procurement/purchase-orders/purchase-or
 import { fetchYarnCatalogOptions } from '@/api/yarn-catalog.api';
 import { fetchFabricCatalogOptions } from '@/api/fabric-catalog.api';
 
+import { PO_CONSTANTS as MSG } from './purchase-orders.constants';
+
 export type GlobalMaterialOption = {
   id: string;
   name: string;
@@ -134,10 +136,7 @@ export function useMaterialAutoFill({
           );
         }
       } else {
-        toast(
-          `Không tìm thấy giá hợp đồng cho ${materialId}. Vui lòng nhập giá thủ công.`,
-          { icon: 'ℹ️' },
-        );
+        toast(MSG.ERR_NO_CONTRACT_PRICE(materialId), { icon: 'ℹ️' });
       }
     } catch (error) {
       console.error('[useMaterialAutoFill] Failed to fetch price', error);

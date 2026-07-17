@@ -151,7 +151,7 @@ export function DyeingOrderForm({
     }
     return Array.from(lots.entries()).map(([lot, info]) => ({
       value: lot,
-      label: `Lô ${lot} — ${info.count} cuộn, ${info.totalKg.toFixed(1)} kg`,
+      label: MSG.LBL_LOT_SUMMARY(lot, info.count, info.totalKg),
     }));
   }, [availableRolls]);
 

@@ -13,6 +13,8 @@ import {
   supplierSchema,
 } from '@/schema/supplier.schema';
 
+import { SUPPLIER_LIST_LABELS as MSG } from './suppliers.constants';
+
 export {
   SUPPLIER_STATUSES,
   SUPPLIER_STATUS_LABELS,
@@ -25,28 +27,23 @@ export type { SupplierFormValues } from '@/schema/supplier.schema';
 export const suppliersFeature: FeatureDefinition = {
   key: 'suppliers',
   route: '/suppliers',
-  title: 'Nhà cung cấp',
+  title: MSG.MODULE_TITLE,
   badge: 'Core',
-  description:
-    'Quản lý thông tin đối tác cung ứng, phân loại nhóm hàng và đánh giá chất lượng.',
+  description: MSG.MODULE_DESC,
   summary: [
     {
-      label: 'Tổng đối tác',
+      label: MSG.KPI_PARTNERS,
       value: '45',
     },
     {
-      label: 'Nhóm vật tư',
+      label: MSG.KPI_CATEGORIES,
       value: '12',
     },
   ],
-  highlights: [
-    'Phân loại NCC Sợi/Hóa chất/Phụ kiện.',
-    'Quản lý công nợ NCC tập trung.',
-    'Theo dõi đánh giá định kỳ.',
-  ],
+  highlights: [MSG.HIGHLIGHT_CAT, MSG.HIGHLIGHT_DEBT, MSG.HIGHLIGHT_RATING],
   entities: ['suppliers'],
   nextMilestones: [
-    'Tích hợp portal cho NCC.',
+    MSG.MILESTONE_PORTAL,
     'Theo doi lead time va do tin cay nha cung cap.',
   ],
 };
@@ -54,9 +51,9 @@ export const suppliersFeature: FeatureDefinition = {
 export const suppliersPlugin: FeaturePlugin = {
   key: 'suppliers',
   route: 'suppliers',
-  label: 'Nhà cung cấp',
+  label: MSG.PLUGIN_LABEL,
   shortLabel: 'NCC',
-  description: 'Tra cứu và quản lý danh sách nhà cung cấp, đối tác gia công.',
+  description: MSG.PLUGIN_DESC,
   icon: 'Handshake',
   requiredRoles: ['admin', 'manager'],
   group: 'master-data',

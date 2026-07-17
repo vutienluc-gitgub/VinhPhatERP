@@ -18,6 +18,8 @@ import { Icon } from '@/shared/components/Icon';
 import { MoneyText } from '@/shared/value';
 import type { CreateOrderError } from '@/application/orders';
 
+import { ORDER_MESSAGES as MSG } from './orders.constants';
+
 interface CreditOverrideDialogProps {
   open: boolean;
   code: CreateOrderError['code'];
@@ -63,20 +65,18 @@ export function CreditOverrideDialog({
           <div className="credit-dialog__title-block">
             <h2 className="credit-dialog__title">
               {isOverdue
-                ? 'Cảnh báo: Nợ quá hạn'
-                : 'Cảnh báo: Vượt hạn mức tín dụng'}
+                ? MSG.OVERRIDE_TITLE_OVERDUE
+                : MSG.OVERRIDE_TITLE_LIMIT}
             </h2>
             <p className="credit-dialog__subtitle">
-              {isOverdue
-                ? 'Khách hàng đang có công nợ quá hạn chưa thanh toán'
-                : 'Đơn hàng sẽ đẩy công nợ khách vượt quá hạn mức cho phép'}
+              {isOverdue ? MSG.OVERRIDE_SUB_OVERDUE : MSG.OVERRIDE_SUB_LIMIT}
             </p>
           </div>
 
           <button
             className="credit-dialog__close"
             onClick={onCancel}
-            aria-label="Đóng"
+            aria-label={MSG.OVERRIDE_CLOSE}
           >
             <Icon name="X" size={20} />
           </button>
@@ -91,7 +91,9 @@ export function CreditOverrideDialog({
             <div className="credit-dialog__stats">
               {detail.overdueDebt !== undefined && (
                 <div className="credit-dialog__stat credit-dialog__stat--danger">
-                  <span className="credit-dialog__stat-label">Nợ quá hạn</span>
+                  <span className="credit-dialog__stat-label">
+                    {MSG.OVERRIDE_STAT_OVERDUE}
+                  </span>
                   <span className="credit-dialog__stat-value">
                     {VND(detail.overdueDebt)}
                   </span>
@@ -100,7 +102,7 @@ export function CreditOverrideDialog({
               {detail.currentDebt !== undefined && (
                 <div className="credit-dialog__stat">
                   <span className="credit-dialog__stat-label">
-                    Công nợ hiện tại
+                    {MSG.OVERRIDE_STAT_CURRENT}
                   </span>
                   <span className="credit-dialog__stat-value">
                     {VND(detail.currentDebt)}
@@ -110,7 +112,7 @@ export function CreditOverrideDialog({
               {detail.orderTotal !== undefined && (
                 <div className="credit-dialog__stat">
                   <span className="credit-dialog__stat-label">
-                    Giá trị đơn mới
+                    {MSG.OVERRIDE_STAT_NEW}
                   </span>
                   <span className="credit-dialog__stat-value">
                     {VND(detail.orderTotal)}
@@ -120,7 +122,7 @@ export function CreditOverrideDialog({
               {detail.projectedDebt !== undefined && (
                 <div className="credit-dialog__stat credit-dialog__stat--warning">
                   <span className="credit-dialog__stat-label">
-                    Dự kiến công nợ sau tạo đơn
+                    {MSG.OVERRIDE_STAT_PROJECTED}
                   </span>
                   <span className="credit-dialog__stat-value">
                     {VND(detail.projectedDebt)}
@@ -130,7 +132,7 @@ export function CreditOverrideDialog({
               {detail.creditLimit !== undefined && (
                 <div className="credit-dialog__stat credit-dialog__stat--muted">
                   <span className="credit-dialog__stat-label">
-                    Hạn mức tín dụng
+                    {MSG.OVERRIDE_STAT_LIMIT}
                   </span>
                   <span className="credit-dialog__stat-value">
                     {VND(detail.creditLimit)}
@@ -143,19 +145,11 @@ export function CreditOverrideDialog({
           {/* Quyền override */}
           {canOverride ? (
             <div className="credit-dialog__override-notice">
-              <p>
-                <strong>Bạn có quyền Manager/Admin.</strong> Bạn có thể xác nhận
-                tiếp tục tạo đơn. Thao tác này sẽ được ghi vào nhật ký kiểm
-                toán.
-              </p>
+              <p>{MSG.OVERRIDE_MSG_ADMIN_ONLY}</p>
             </div>
           ) : (
             <div className="credit-dialog__no-override-notice">
-              <p>
-                Bạn không có quyền bỏ qua cảnh báo này. Vui lòng liên hệ{' '}
-                <strong>Manager</strong> để được xác nhận trước khi tạo đơn
-                hàng.
-              </p>
+              <p>{MSG.OVERRIDE_MSG_SALE_ONLY}</p>
             </div>
           )}
         </div>
@@ -167,7 +161,7 @@ export function CreditOverrideDialog({
             onClick={onCancel}
             disabled={isLoading}
           >
-            Hủy bỏ
+            {MSG.OVERRIDE_BTN_CANCEL}
           </button>
 
           {canOverride && (
@@ -179,10 +173,10 @@ export function CreditOverrideDialog({
               {isLoading ? (
                 <>
                   <span className="btn__spinner" />
-                  Đang xử lý...
+                  {MSG.PROG_LOADING}
                 </>
               ) : (
-                'Xác nhận tiếp tục (Override)'
+                MSG.OVERRIDE_BTN_CONFIRM
               )}
             </button>
           )}

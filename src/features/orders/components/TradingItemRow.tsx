@@ -10,8 +10,9 @@
 import { Controller } from 'react-hook-form';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 
+import { ORDER_MESSAGES } from '@/features/orders/orders.constants';
 import { Combobox } from '@/shared/components/Combobox';
-import { Badge } from '@/shared/components/Badge';
+import { Badge, Icon } from '@/shared/components';
 import { MoneyInput } from '@/shared/value';
 import { formatQuantity } from '@/shared/utils/format';
 import { PRODUCT_CATEGORY_OPTIONS } from '@/schema/order.schema';
@@ -62,19 +63,21 @@ export function TradingItemRow({
     <div className="form-item-box">
       <div className="flex justify-between items-center mb-3 pb-2 border-b border-border">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-muted">
-            Dòng Hàng #{index + 1}
+          <span className="font-medium text-sm">
+            {ORDER_MESSAGES.ITEM_ROW_PREFIX}
+            {index + 1}
           </span>
-          <Badge variant="info">Thương mại</Badge>
+          <Badge variant="info">{ORDER_MESSAGES.BADGE_TRADING}</Badge>
         </div>
         {canRemove && (
           <button
             className="btn-icon danger"
             type="button"
-            title="Xóa dòng"
+            title={ORDER_MESSAGES.BTN_REMOVE_TITLE}
             onClick={onRemove}
           >
-            Xóa
+            <Icon name="Trash2" size={16} />
+            {ORDER_MESSAGES.BTN_REMOVE.replace(' ✕', '')}
           </button>
         )}
       </div>
@@ -84,7 +87,8 @@ export function TradingItemRow({
         <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
           <div className="form-field">
             <label>
-              Loại sản phẩm <span className="field-required">*</span>
+              {ORDER_MESSAGES.FIELD_PRODUCT_CATEGORY}{' '}
+              <span className="field-required">*</span>
             </label>
             <Controller
               name={`items.${index}.productCategory`}
@@ -108,7 +112,8 @@ export function TradingItemRow({
 
           <div className="form-field">
             <label>
-              Chọn từ kho <span className="field-required">*</span>
+              {ORDER_MESSAGES.FIELD_STOCK_SOURCE}{' '}
+              <span className="field-required">*</span>
             </label>
             <Controller
               name={`items.${index}.sourceStockId`}
@@ -123,8 +128,8 @@ export function TradingItemRow({
                   }}
                   placeholder={
                     productCategory === 'yarn'
-                      ? 'Chọn loại sợi...'
-                      : 'Chọn cuộn vải...'
+                      ? ORDER_MESSAGES.PLACEHOLDER_SELECT_YARN
+                      : ORDER_MESSAGES.PLACEHOLDER_SELECT_FABRIC
                   }
                   hasError={!!itemErrors?.sourceStockId}
                 />
@@ -144,9 +149,7 @@ export function TradingItemRow({
         {productCategory === 'yarn' && (
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
-              <label htmlFor={`items.${index}.sourceLotNumber`}>
-                Số lô (Lot)
-              </label>
+              <label>{ORDER_MESSAGES.FIELD_LOT}</label>
               {lotOptions.length > 0 ? (
                 <Controller
                   name={`items.${index}.sourceLotNumber`}
@@ -156,7 +159,7 @@ export function TradingItemRow({
                       options={lotOptions}
                       value={field.value ?? ''}
                       onChange={field.onChange}
-                      placeholder="Chọn lô..."
+                      placeholder={ORDER_MESSAGES.PLACEHOLDER_LOT}
                     />
                   )}
                 />
@@ -171,7 +174,7 @@ export function TradingItemRow({
               )}
             </div>
             <div className="form-field">
-              <label>Tên sợi (tự động)</label>
+              <label>{ORDER_MESSAGES.FIELD_AUTO_YARN_NAME}</label>
               <input
                 className="field-input bg-[var(--surface-disabled)]"
                 type="text"
@@ -186,7 +189,7 @@ export function TradingItemRow({
         {productCategory !== 'yarn' && (
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
-              <label>Loại vải</label>
+              <label>{ORDER_MESSAGES.FIELD_FABRIC_TYPE}</label>
               <input
                 className="field-input bg-[var(--surface-disabled)]"
                 type="text"
@@ -195,7 +198,7 @@ export function TradingItemRow({
               />
             </div>
             <div className="form-field">
-              <label>Màu</label>
+              <label>{ORDER_MESSAGES.FIELD_COLOR}</label>
               <input
                 className="field-input bg-[var(--surface-disabled)]"
                 type="text"
@@ -223,8 +226,9 @@ export function TradingItemRow({
             />
             {isOverStock && (
               <span className="field-error">
-                Vượt quá tồn kho khả dụng ({formatQuantity(stockInfo?.max ?? 0)}
-                )
+                {ORDER_MESSAGES.ERR_STOCK_EXCEEDED(
+                  formatQuantity(stockInfo?.max ?? 0),
+                )}
               </span>
             )}
             {itemErrors?.quantity && (
@@ -233,8 +237,9 @@ export function TradingItemRow({
           </div>
 
           <div className="form-field">
-            <label htmlFor={`items.${index}.unitPrice`}>
-              Đơn giá (đ) <span className="field-required">*</span>
+            <label>
+              {ORDER_MESSAGES.FIELD_PRICE} (đ){' '}
+              <span className="field-required">*</span>
             </label>
             <Controller
               name={`items.${index}.unitPrice`}

@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 
+import { PO_CONSTANTS } from '@/features/procurement/purchase-orders/purchase-orders.constants';
 import { Button, Icon } from '@/shared/components';
 import type {
   PurchaseOrder,
@@ -22,7 +23,7 @@ export function POGoodsReceiptsList({
     <div className="bg-surface border border-border rounded-xl shadow-sm overflow-hidden mt-6">
       <div className="p-4 border-b border-border bg-gray-50/50">
         <h3 className="font-semibold text-lg m-0">
-          Lịch sử Nhập Kho (Goods Receipts)
+          {PO_CONSTANTS.GR_HISTORY_TITLE}
         </h3>
       </div>
       {receipts.length === 0 ? (
@@ -31,11 +32,10 @@ export function POGoodsReceiptsList({
             <Icon name="PackageOpen" size={40} />
           </div>
           <h4 className="text-xl font-bold text-gray-800 mb-2">
-            Chưa có phiếu nhập kho
+            {PO_CONSTANTS.GR_EMPTY_TITLE}
           </h4>
           <p className="text-base text-gray-500 max-w-md mb-8">
-            Đơn hàng này chưa có dữ liệu nhập kho. Hãy tạo phiếu nhập kho khi
-            hàng được giao đến để ghi nhận công nợ và tồn kho.
+            {PO_CONSTANTS.GR_EMPTY_DESC}
           </p>
           {(po.status === 'approved' || po.status === 'partial_received') && (
             <Button
@@ -44,8 +44,8 @@ export function POGoodsReceiptsList({
               className="shadow-sm px-6"
               onClick={onOpenForm}
             >
-              <Icon name="Plus" size={20} className="mr-2" /> Tạo phiếu nhập kho
-              ngay
+              <Icon name="Plus" size={20} className="mr-2" />{' '}
+              {PO_CONSTANTS.GR_BTN_CREATE}
             </Button>
           )}
         </div>
@@ -61,7 +61,8 @@ export function POGoodsReceiptsList({
                     {gr.receipt_code}
                   </span>
                   <span className="text-sm text-muted">
-                    Ngày nhập: {dayjs(gr.received_date).format('DD/MM/YYYY')}
+                    {PO_CONSTANTS.GR_DATE_PREFIX}{' '}
+                    {dayjs(gr.received_date).format('DD/MM/YYYY')}
                   </span>
                 </div>
                 <div className="text-sm">

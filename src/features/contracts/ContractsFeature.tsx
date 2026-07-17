@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 
 import { ContractsPage } from './ContractsPage';
+import { CONTRACT_MESSAGES as MSG } from './contracts.constants';
 import { ContractDetailPage } from './ContractDetailPage';
 import { ContractForm } from './ContractForm';
 
@@ -35,7 +36,7 @@ export function ContractsFeature() {
       <AdaptiveSheet
         open={showForm}
         onClose={() => setShowForm(false)}
-        title="Tạo hợp đồng mới"
+        title={MSG.CREATE_NEW_CONTRACT_TITLE}
       >
         {showForm && (
           <ContractForm
