@@ -122,4 +122,25 @@ export const RFQ_LABELS = {
 
   /* ── Pagination ── */
   PAGINATION_ITEM: 'yêu cầu',
+
+  /* ── Module ── */
+  MODULE_TITLE: 'Yêu cầu Báo giá (RFQ)',
+  MODULE_DESC:
+    'Quản lý các yêu cầu thu mua, tạo QR Code và nhận báo giá từ Nhà cung cấp.',
+  KPI_OPEN_RFQ: 'RFQ Đang mở',
+  HIGHLIGHT_QR: 'Tích hợp QR Code.',
+  HIGHLIGHT_SCORING: 'Chấm điểm NCC tự động.',
+  MILESTONE_ZALO: 'Kết nối Zalo ZNS để gửi RFQ',
+  PLUGIN_LABEL: 'Yêu cầu Báo giá',
+  PLUGIN_DESC: 'Tạo RFQ và so sánh giá',
+
+  /* ── Missing from UI ── */
+  TXT_SELECTED: 'đã chọn',
+  TXT_LOADING_LIST: 'Đang tải danh sách...',
+  PLACEHOLDER_SELECT_MATERIAL: 'Chọn mã vật tư...',
+  TXT_MAP_REQUIRED: 'Vui lòng chọn mục này để map vật tư',
+  TXT_LOADING_MATERIAL: 'Đang tải vật tư...',
+  TXT_NO_MATERIAL: 'Không có vật tư nào.',
+  BTN_DOWNLOAD_QR: 'Tải mã QR',
+  LBL_DEADLINE_SHORT: 'Hạn: ',
 };

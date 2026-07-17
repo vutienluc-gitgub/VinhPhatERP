@@ -236,4 +236,27 @@ export const PO_CONSTANTS = {
   TPL_SIGN_NOTE: '(Ký, đóng dấu và ghi rõ họ tên)',
   TPL_FOOTER_NOTE:
     'Đơn đặt hàng điện tử này được tạo tự động bởi Hệ thống ERP VinhPhat - Version 2.0.0',
+
+  // POGoodsReceiptsList
+  GR_HISTORY_TITLE: 'Lịch sử Nhập Kho (Goods Receipts)',
+  GR_EMPTY_TITLE: 'Chưa có phiếu nhập kho',
+  GR_EMPTY_DESC:
+    'Đơn hàng này chưa có dữ liệu nhập kho. Hãy tạo phiếu nhập kho khi hàng được giao đến để ghi nhận công nợ và tồn kho.',
+  GR_BTN_CREATE: 'Tạo phiếu nhập kho',
+  GR_DATE_PREFIX: 'Ngày nhập: ',
+
+  // Module
+  MODULE_TITLE: 'Đơn Đặt Hàng (PO)',
+  MODULE_DESC: 'Quản lý đơn đặt hàng mua nguyên liệu từ Nhà cung cấp.',
+  KPI_PENDING_APPROVAL: 'PO chờ duyệt',
+  KPI_DELIVERING: 'Đang giao',
+  FEATURE_LIFECYCLE:
+    'Quản lý vòng đời PO: Nháp -> Duyệt -> Đang giao -> Hoàn tất.',
+  FEATURE_BLOCK_GR: 'Chặn nhập kho khi không có PO hoặc vượt quá số lượng đặt.',
+  FEATURE_SYNC: 'Tự động đồng bộ với hệ thống kho và công nợ NCC.',
+  MILESTONE_EMAIL: 'Tích hợp gửi PO qua Email/Zalo.',
+
+  // useMaterialAutoFill
+  ERR_NO_CONTRACT_PRICE: (materialId: string) =>
+    `Không tìm thấy giá hợp đồng cho ${materialId}. Vui lòng nhập giá thủ công.`,
 };

@@ -4,43 +4,43 @@ import { createModule } from '@/core/registry/moduleRegistry';
 import { formatCurrency } from '@/shared/utils/format';
 import type { ShippingRateFormValues } from '@/schema/shipping-rate.schema';
 
+import { SHIPPING_RATE_LABELS as MSG } from './shipping-rates.constants';
+
 export { formatCurrency };
 export type { ShippingRateFormValues };
 
 export const shippingRatesFeature: FeatureDefinition = {
   key: 'shipping-rates',
   route: '/shipping-rates',
-  title: 'Cấu hình Phí Ship',
+  title: MSG.MODULE_TITLE,
   badge: 'Cost',
-  description:
-    'Quản lý bảng giá vận chuyển theo vùng miền, khối lượng và đơn vị vận chuyển.',
+  description: MSG.MODULE_DESC,
   summary: [
     {
-      label: 'Vùng giá',
-      value: '63 tỉnh',
+      label: MSG.REGION_PRICE_LABEL,
+      value: MSG.REGION_PRICE_VALUE,
     },
     {
-      label: 'Đối tác vận chuyển',
+      label: MSG.SHIPPING_PARTNER_LABEL,
       value: '5',
     },
   ],
   highlights: [
-    'Tự động tính phí vận chuyển.',
-    'Quản lý phụ phí vùng sâu.',
-    'Lịch sử thay đổi giá.',
+    MSG.FEATURE_AUTO_CALC,
+    MSG.FEATURE_SURCHARGE,
+    MSG.FEATURE_HISTORY,
   ],
   entities: ['shipping_rates'],
-  nextMilestones: ['Tự động cập nhật bảng giá từ API đối tác.'],
+  nextMilestones: [MSG.MILESTONE_API],
 };
 
 export const shippingRatesPlugin: FeaturePlugin = {
   key: 'shipping-rates',
   route: 'shipping-rates',
-  label: 'Bảng phí Ship',
-  shortLabel: 'Phí Ship',
-  description:
-    'Cấu hình đơn giá vận chuyển cho các khu vực và đối tác khác nhau.',
-  icon: 'BadgeDollarSign',
+  label: MSG.PLUGIN_LABEL,
+  shortLabel: MSG.PLUGIN_SHORT_LABEL,
+  description: MSG.PLUGIN_DESC,
+  icon: 'Truck',
   requiredRoles: ['admin', 'manager'],
   group: 'finance',
   order: 110,

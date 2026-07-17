@@ -256,7 +256,7 @@ export function RFQList() {
               <p className="font-medium text-sm line-clamp-1">{rfq.title}</p>
               <div className="flex items-center justify-between text-xs text-muted">
                 <span>
-                  Hạn:{' '}
+                  {RFQ_LABELS.LBL_DEADLINE_SHORT}
                   {rfq.deadline_date
                     ? dayjs(rfq.deadline_date).format('DD/MM/YYYY')
                     : 'N/A'}

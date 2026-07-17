@@ -102,6 +102,17 @@ export const PR_LABELS = {
 
   /* ── Pagination ── */
   PAGINATION_ITEM: 'yêu cầu',
+
+  /* ── Module Definition ── */
+  MODULE_TITLE: 'Yêu cầu mua hàng (PR)',
+  MODULE_DESC: 'Quản lý các yêu cầu mua vật tư từ nội bộ (Kho, Sản xuất).',
+  MODULE_SHORT_LABEL: 'PR',
+  MODULE_LABEL: 'Yêu cầu mua hàng',
+  PLUGIN_DESC: 'Quản lý nhu cầu mua vật tư',
+  KPI_PENDING: 'PR Chờ xử lý',
+  HIGHLIGHT_CENTRALIZED: 'Quản lý nhu cầu tập trung.',
+  HIGHLIGHT_AUTO_RFQ: 'Chuyển đổi PR sang RFQ tự động.',
+  MILESTONE_ZALO: 'Duyệt PR qua Zalo',
 };
 
 export const UOM_OPTIONS = [

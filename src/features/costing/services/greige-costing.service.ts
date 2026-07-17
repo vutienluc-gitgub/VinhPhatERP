@@ -1,3 +1,4 @@
+import { COSTING_LABELS } from '@/features/costing/costing.constants';
 import { fetchBomById } from '@/api/bom.api';
 import { fetchLatestYarnPrices } from '@/api/yarn-receipts.api';
 import { calculateGreigeCostEstimation } from '@/domain/production/ProductionDomain';
@@ -78,7 +79,7 @@ export class GreigeCostingService {
       if (cost > 0) {
         breakdown.push({
           key: `yarn_${item.yarn_catalog_id}`,
-          label: `Sợi ${item.yarn_code}`,
+          label: `${COSTING_LABELS.YARN_PREFIX}${item.yarn_code}`,
           amount: cost,
           percentage: 0, // calculated later
           type: 'yarn',
@@ -103,7 +104,7 @@ export class GreigeCostingService {
     if (estimation.processingCost > 0) {
       breakdown.push({
         key: 'processing',
-        label: 'Công dệt',
+        label: COSTING_LABELS.WEAVING_COST_LABEL,
         amount: estimation.processingCost,
         percentage: 0,
         type: 'processing',

@@ -127,13 +127,13 @@ export function RFQDetail() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               <div>
                 <p className="text-xs text-muted mb-1 font-medium uppercase tracking-wider">
-                  Mã RFQ
+                  {RFQ_LABELS.COL_RFQ_CODE}
                 </p>
                 <p className="font-semibold text-primary">{rfq.rfq_code}</p>
               </div>
               <div>
                 <p className="text-xs text-muted mb-1 font-medium uppercase tracking-wider">
-                  Ngày tạo
+                  {RFQ_LABELS.COL_CREATED_AT}
                 </p>
                 <p className="font-medium">
                   {dayjs(rfq.created_at).format('DD/MM/YYYY')}
@@ -182,13 +182,13 @@ export function RFQDetail() {
                         #
                       </th>
                       <th className="px-4 py-3 text-left font-medium text-muted">
-                        Vật tư
+                        {RFQ_LABELS.COL_MATERIAL}
                       </th>
                       <th className="px-4 py-3 text-left font-medium text-muted">
-                        Quy cách
+                        {RFQ_LABELS.COL_MATERIAL_SPEC}
                       </th>
-                      <th className="px-4 py-3 text-right font-medium text-muted">
-                        Số lượng
+                      <th className="py-3 px-4 font-semibold text-right">
+                        {RFQ_LABELS.COL_QTY}
                       </th>
                     </tr>
                   </thead>
@@ -196,13 +196,13 @@ export function RFQDetail() {
                     {isLoadingItems ? (
                       <tr>
                         <td colSpan={4} className="p-4 text-center text-muted">
-                          Đang tải vật tư...
+                          {RFQ_LABELS.TXT_LOADING_MATERIAL}
                         </td>
                       </tr>
                     ) : items.length === 0 ? (
                       <tr>
                         <td colSpan={4} className="p-4 text-center text-muted">
-                          Không có vật tư nào.
+                          {RFQ_LABELS.TXT_NO_MATERIAL}
                         </td>
                       </tr>
                     ) : (
@@ -278,8 +278,8 @@ export function RFQDetail() {
                   }
                 }}
               >
-                <Icon name="Download" size={16} className="mr-2" />
-                Tải mã QR
+                <Icon name="Download" size={16} className="mr-2" />{' '}
+                {RFQ_LABELS.BTN_DOWNLOAD_QR}
               </Button>
 
               <h2 className="text-sm font-bold uppercase tracking-wider text-muted mt-6 mb-4 border-b border-border pb-2">

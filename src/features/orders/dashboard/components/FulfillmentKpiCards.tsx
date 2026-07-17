@@ -4,6 +4,7 @@
 import { Icon } from '@/shared/components';
 import { formatQuantity } from '@/shared/utils/format';
 import type { FulfillmentSummary } from '@/api/order-fulfillment.api';
+import { ORDER_MESSAGES as MSG } from '@/features/orders/orders.constants';
 
 interface FulfillmentKpiCardsProps {
   summary: FulfillmentSummary;
@@ -25,25 +26,26 @@ export function FulfillmentKpiCards({
 }: FulfillmentKpiCardsProps) {
   const cards: KpiCardData[] = [
     {
-      label: 'Tổng ĐH đang xử lý',
+      label: MSG.DASH_KPI_TOTAL_PROC,
       value: summary.totalOrders,
-      subtitle: `${summary.fulfilledOrders} đã giao đủ`,
+      subtitle: `${summary.fulfilledOrders} ${MSG.DASH_KPI_FULFILLED}`,
       icon: 'Package',
       color: 'text-blue-600',
       bgColor: 'bg-blue-50 border-blue-100',
     },
     {
-      label: 'Đã hoàn thành SX',
+      label: MSG.DASH_KPI_PROD_DONE,
       value: summary.fulfilledOrders,
-      subtitle: `/${summary.totalOrders} đơn hàng`,
+      subtitle: `/${summary.totalOrders} ${MSG.DASH_KPI_ORDERS}`,
       icon: 'CircleCheck',
       color: 'text-emerald-600',
       bgColor: 'bg-emerald-50 border-emerald-100',
     },
     {
-      label: 'Trễ hạn giao',
+      label: MSG.DASH_KPI_LATE_DELIV,
       value: summary.overdueOrders,
-      subtitle: summary.overdueOrders > 0 ? 'Cần xử lý gấp' : 'Tốt',
+      subtitle:
+        summary.overdueOrders > 0 ? MSG.DASH_KPI_URGENT : MSG.DASH_KPI_GOOD,
       icon: 'Clock',
       color: summary.overdueOrders > 0 ? 'text-red-600' : 'text-zinc-500',
       bgColor:
@@ -52,7 +54,7 @@ export function FulfillmentKpiCards({
           : 'bg-zinc-50 border-zinc-100',
     },
     {
-      label: 'Tỉ lệ hoàn thành TB',
+      label: MSG.DASH_KPI_AVG_PCT,
       value: `${summary.avgFulfillmentPct}%`,
       subtitle: `${formatQuantity(summary.totalProducedM)}m / ${formatQuantity(summary.totalTargetM)}m`,
       icon: 'TrendingUp',

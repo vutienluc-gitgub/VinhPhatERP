@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 
 import { ShippingRateForm } from './ShippingRateForm';
+import { SHIPPING_RATE_LABELS as MSG } from './shipping-rates.constants';
 import { ShippingRateList } from './ShippingRateList';
 import type { ShippingRate } from './types';
 
@@ -32,7 +33,7 @@ export function ShippingRatesPage() {
       <AdaptiveSheet
         open={showForm}
         onClose={closeForm}
-        title={editItem ? 'Sửa bảng giá cước' : 'Thêm bảng giá cước'}
+        title={editItem ? MSG.PAGE_TITLE_EDIT : MSG.PAGE_TITLE_ADD}
       >
         <ShippingRateForm item={editItem} onClose={closeForm} />
       </AdaptiveSheet>

@@ -13,16 +13,18 @@ import { MoneyInput, QuantityInput, MoneyText } from '@/shared/value';
 import { formatQuantity } from '@/shared/value/core/formatter';
 import { SUPPLIER_LABELS as L } from '@/features/procurement/procurement.constants';
 
+import { SUPPLIER_LIST_LABELS as MSG } from './suppliers.constants';
+
 type Props = {
   supplierId: string;
 };
 
 const priceSchema = z.object({
-  material_id: z.string().min(1, 'Vui lòng nhập mã nguyên liệu'),
-  unit_price: z.number().min(0, 'Đơn giá không hợp lệ'),
-  uom: z.string().min(1, 'Vui lòng chọn đơn vị'),
-  moq: z.number().min(0, 'MOQ không hợp lệ'),
-  lead_time_days: z.number().min(0, 'Thời gian giao hàng không hợp lệ'),
+  material_id: z.string().min(1, MSG.ERR_MATERIAL_REQ),
+  unit_price: z.number().min(0, MSG.ERR_PRICE_INVALID),
+  uom: z.string().min(1, MSG.ERR_UOM_REQ),
+  moq: z.number().min(0, MSG.ERR_MOQ_INVALID),
+  lead_time_days: z.number().min(0, MSG.ERR_LEAD_TIME_INVALID),
 });
 
 type PriceFormValues = z.infer<typeof priceSchema>;
@@ -127,9 +129,9 @@ export function SupplierPriceList({ supplierId }: Props) {
               <label>{L.LBL_UNIT}</label>
               <select className="field-input" {...register('uom')}>
                 <option value="kg">kg</option>
-                <option value="cây">{L.OPT_UNIT_CAY}</option>
-                <option value="mét">{L.OPT_UNIT_MET}</option>
-                <option value="cuộn">{L.OPT_UNIT_CUON}</option>
+                <option value="cây">{MSG.OPT_UNIT_CAY}</option>
+                <option value="mét">{MSG.OPT_UNIT_MET}</option>
+                <option value="cuộn">{MSG.OPT_UNIT_CUON}</option>
               </select>
             </div>
             <div className="form-field">

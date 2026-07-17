@@ -36,4 +36,28 @@ export const SUPPLIER_LIST_LABELS = {
   CONTACT_PERSON_PREFIX: 'NLH:',
   LBL_OTD: 'OTD:',
   LBL_RATING: 'Đánh giá:',
+  SUBTITLE: 'Quản lý nhà cung cấp',
+
+  /* ── Module ── */
+  MODULE_TITLE: 'Nhà cung cấp',
+  MODULE_DESC:
+    'Quản lý thông tin đối tác cung ứng, phân loại nhóm hàng và đánh giá chất lượng.',
+  KPI_PARTNERS: 'Tổng đối tác',
+  KPI_CATEGORIES: 'Nhóm vật tư',
+  HIGHLIGHT_CAT: 'Phân loại NCC Sợi/Hóa chất/Phụ kiện.',
+  HIGHLIGHT_DEBT: 'Quản lý công nợ NCC tập trung.',
+  HIGHLIGHT_RATING: 'Theo dõi đánh giá định kỳ.',
+  MILESTONE_PORTAL: 'Tích hợp portal cho NCC.',
+  PLUGIN_LABEL: 'Nhà cung cấp',
+  PLUGIN_DESC: 'Tra cứu và quản lý danh sách nhà cung cấp, đối tác gia công.',
+
+  /* ── Price List Form ── */
+  ERR_MATERIAL_REQ: 'Vui lòng nhập mã nguyên liệu',
+  ERR_PRICE_INVALID: 'Đơn giá không hợp lệ',
+  ERR_UOM_REQ: 'Vui lòng chọn đơn vị',
+  ERR_MOQ_INVALID: 'MOQ không hợp lệ',
+  ERR_LEAD_TIME_INVALID: 'Thời gian giao hàng không hợp lệ',
+  OPT_UNIT_CAY: 'cây',
+  OPT_UNIT_MET: 'mét',
+  OPT_UNIT_CUON: 'cuộn',
 };

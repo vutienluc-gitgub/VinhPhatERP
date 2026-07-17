@@ -1,6 +1,8 @@
 import { Icon } from '@/shared/components/Icon';
 import { useOrderAuditLogs } from '@/application/orders';
 
+import { ORDER_MESSAGES as MSG } from './orders.constants';
+
 // ── Types ────────────────────────────────────────────────────────────────────
 
 type OrderAuditLogViewerProps = {
@@ -24,28 +26,32 @@ type AuditProfile = {
 // ── Constants ────────────────────────────────────────────────────────────────
 
 const LABELS = {
-  SECTION_TITLE: 'Lịch sử hoạt động',
-  LOADING: 'Đang tải lịch sử...',
-  ERROR: 'Lỗi tải dữ liệu lịch sử',
-  EMPTY: 'Chưa có giao dịch hoạt động nào được ghi nhận.',
-  DEFAULT_ACTOR: 'Hệ thống',
+  SECTION_TITLE: MSG.AUDIT_LOG_TITLE,
+  LOADING: MSG.AUDIT_LOADING,
+  ERROR: MSG.AUDIT_ERROR,
+  EMPTY: MSG.AUDIT_EMPTY,
+  COL_USER: MSG.AUDIT_LBL_USER,
+  COL_ACTION: MSG.AUDIT_LBL_ACTION,
+  COL_TIME: MSG.AUDIT_LBL_TIME,
+  COL_DETAILS: MSG.AUDIT_LBL_DETAILS,
+  DEFAULT_ACTOR: MSG.AUDIT_DEFAULT_ACTOR,
 } as const;
 
 const EVENT_MAP: Record<string, EventConfig> = {
   ORDER_CREATED: {
-    label: 'Tạo đơn hàng',
+    label: MSG.AUDIT_EVENT_ORDER_CREATED,
     icon: 'FilePlus',
     color: 'text-success',
-    detail: 'Khởi tạo đơn hàng',
+    detail: MSG.AUDIT_EVENT_ORDER_CREATED_DETAIL,
   },
   ORDER_REQUEST_CREATED: {
-    label: 'Tạo yêu cầu',
+    label: MSG.AUDIT_EVENT_REQ_CREATED,
     icon: 'FilePlus',
     color: 'text-primary',
-    detail: 'Tạo từ Portal Khách hàng',
+    detail: MSG.AUDIT_EVENT_REQ_CREATED_DETAIL,
   },
   ORDER_STATUS_CHANGED: {
-    label: 'Cập nhật trạng thái',
+    label: MSG.AUDIT_EVENT_STATUS_CHANGED,
     icon: 'RefreshCw',
     color: 'text-warning',
   },

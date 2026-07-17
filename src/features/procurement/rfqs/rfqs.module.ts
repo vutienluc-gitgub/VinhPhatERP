@@ -2,25 +2,26 @@ import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 
+import { RFQ_LABELS as MSG } from './rfqs.constants';
+
 export const rfqsFeature: FeatureDefinition = {
   key: 'sourcing-rfqs',
   route: '/sourcing-rfqs',
-  title: 'Yêu cầu Báo giá (RFQ)',
-  badge: 'Procurement',
-  description:
-    'Quản lý các yêu cầu thu mua, tạo QR Code và nhận báo giá từ Nhà cung cấp.',
-  summary: [{ label: 'RFQ Đang mở', value: '0' }],
-  highlights: ['Tích hợp QR Code.', 'Chấm điểm NCC tự động.'],
+  title: MSG.MODULE_TITLE,
+  badge: 'Sourcing',
+  description: MSG.MODULE_DESC,
+  summary: [{ label: MSG.KPI_OPEN_RFQ, value: '0' }],
+  highlights: [MSG.HIGHLIGHT_QR, MSG.HIGHLIGHT_SCORING],
   entities: ['sourcing_rfqs', 'sourcing_rfq_items'],
-  nextMilestones: ['Kết nối Zalo ZNS để gửi RFQ'],
+  nextMilestones: [MSG.MILESTONE_ZALO],
 };
 
 export const rfqsPlugin: FeaturePlugin = {
   key: 'sourcing-rfqs',
   route: 'sourcing-rfqs',
-  label: 'Yêu cầu Báo giá',
+  label: MSG.PLUGIN_LABEL,
   shortLabel: 'RFQ',
-  description: 'Tạo RFQ và so sánh giá',
+  description: MSG.PLUGIN_DESC,
   icon: 'FileSearch',
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'production',

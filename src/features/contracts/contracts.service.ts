@@ -1,6 +1,7 @@
-import { supabase } from '@/services/supabase/client';
 import { safeUpsertOne } from '@/lib/db-guard';
+import { supabase } from '@/services/supabase/client';
 
+import { CONTRACT_MESSAGES as MSG } from './contracts.constants';
 import type {
   Contract,
   ContractAuditLog,
@@ -162,7 +163,7 @@ export async function updateContract(
   const current = await getContractById(id);
 
   if (current.status === 'signed') {
-    throw new Error('Hợp đồng đã ký không thể chỉnh sửa.');
+    throw new Error(MSG.ERR_SIGNED_NO_EDIT);
   }
 
   const { data: updated, error } = await db
@@ -203,13 +204,11 @@ export async function updateContractStatus(
   const current = await getContractById(id);
 
   if (!validateStatusTransition(current.status, status)) {
-    throw new Error(
-      `Không thể chuyển trạng thái từ "${current.status}" sang "${status}".`,
-    );
+    throw new Error(MSG.ERR_INVALID_TRANSITION(current.status, status));
   }
 
   if (status === 'cancelled' && !meta.cancelReason?.trim()) {
-    throw new Error('Vui lòng nhập lý do huỷ hợp đồng.');
+    throw new Error(MSG.ERR_REASON_REQUIRED);
   }
 
   const now = new Date().toISOString();

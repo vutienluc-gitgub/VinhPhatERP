@@ -83,7 +83,13 @@ export const DYEING_ORDER_MESSAGES = {
   PLACEHOLDER_GLOBAL_NOTE: 'Nội dung ghi chú nếu có...',
 
   LBL_WO_LINK: 'Mã Lệnh SX',
-};
+
+  MODULE_LABEL: 'Lệnh nhuộm',
+  MODULE_SHORT_LABEL: 'Nhuộm',
+  MODULE_DESC: 'Quản lý lệnh nhuộm và theo dõi trả hàng từ nhà nhuộm.',
+  LBL_LOT_SUMMARY: (lot: string, count: number, totalKg: number) =>
+    `Lô ${lot} — ${count} cuộn, ${totalKg.toFixed(1)} kg`,
+} as const;
 
 import { type BadgeVariant } from '@/shared/components';
 

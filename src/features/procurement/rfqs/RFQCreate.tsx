@@ -209,7 +209,7 @@ export function RFQCreate() {
               </p>
             </div>
             <Badge variant="info">
-              {fields.length} / {pendingItems.length} đã chọn
+              {fields.length} / {pendingItems.length} {RFQ_LABELS.TXT_SELECTED}
             </Badge>
           </div>
 
@@ -253,7 +253,7 @@ export function RFQCreate() {
                 {isLoadingItems ? (
                   <tr>
                     <td colSpan={5} className="p-8 text-center text-muted">
-                      Đang tải danh sách...
+                      {RFQ_LABELS.TXT_LOADING_LIST}
                     </td>
                   </tr>
                 ) : pendingItems.length === 0 ? (
@@ -310,7 +310,9 @@ export function RFQCreate() {
                                     options={materialOptions}
                                     value={field.value}
                                     onChange={field.onChange}
-                                    placeholder="Chọn mã vật tư..."
+                                    placeholder={
+                                      RFQ_LABELS.PLACEHOLDER_SELECT_MATERIAL
+                                    }
                                     className={
                                       itemErrors?.material_id
                                         ? 'border-destructive'
@@ -327,7 +329,7 @@ export function RFQCreate() {
                             </div>
                           ) : (
                             <span className="text-muted italic text-xs">
-                              Vui lòng chọn mục này để map vật tư
+                              {RFQ_LABELS.TXT_MAP_REQUIRED}
                             </span>
                           )}
                         </td>
