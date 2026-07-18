@@ -57,6 +57,10 @@ function catalogToFormValues(catalog: FabricCatalog): FabricCatalogFormValues {
     },
     pricing_tiers: [],
     images: [],
+    faq_data: (catalog.faq_data ?? []).map((item) => ({
+      question: item.question ?? '',
+      answer: item.answer ?? '',
+    })),
   };
 
   if (catalog.fabric_type === 'woven') {
@@ -275,7 +279,7 @@ export function useFabricCatalogForm(
       errs.weft_count
     ) {
       setActiveTab('info');
-    } else if (errs.b2b_planner || errs.pricing_tiers) {
+    } else if (errs.b2b_planner || errs.pricing_tiers || errs.faq_data) {
       setActiveTab('public');
     } else if (errs.images) {
       setActiveTab('gallery');

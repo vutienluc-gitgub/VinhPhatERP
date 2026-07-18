@@ -55,6 +55,12 @@ function toDbRow(
     technique: values.technique ?? null,
     stretch_type: values.stretch_type ?? null,
     thickness: values.thickness ?? null,
+    faq_data: (values.faq_data ?? [])
+      .filter((item) => item.question.trim() && item.answer.trim())
+      .map((item) => ({
+        question: item.question.trim(),
+        answer: item.answer.trim(),
+      })),
   };
 
   if (values.fabric_type === 'woven') {

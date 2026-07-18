@@ -502,6 +502,7 @@ export const PUBLIC_PAGE_LABELS = {
   rfqZaloQuick: 'Liên hệ nhanh qua Zalo',
   orOption: 'hoặc',
   fromPrefix: 'Từ',
+  faqTitle: 'FAQ',
 } as const;
 
 export const IMAGE_TYPE_MAP: Record<string, string> = {
@@ -577,3 +578,37 @@ export const PUBLIC_TAB_LABELS = {
   CLEAR_ALL: 'Xóa tất cả (Chung)',
   LAST_UPDATED: 'Cập nhật lần cuối',
 };
+
+export const PUBLIC_FAQ_ITEMS: readonly { question: string; answer: string }[] =
+  [
+    {
+      question: 'Chúng tôi có thể lấy mẫu để tham khảo không?',
+      answer:
+        'Có, 1-2 mẫu sẽ được miễn phí nhưng cước vận chuyển nhanh sẽ được thu.',
+    },
+    {
+      question: 'Bạn có phải là nhà máy hoặc công ty thương mại?',
+      answer:
+        'Chúng tôi là một doanh nghiệp công nghiệp và thương mại tích hợp, tích hợp thiết kế, nghiên cứu và phát triển, sản xuất và bán hàng, chuyên về các loại vải thời trang khác nhau.',
+    },
+    {
+      question: 'MOQ của bạn là gì?',
+      answer:
+        'MOQ phụ thuộc vào sản phẩm và yêu cầu tùy biến. Các mặt hàng có sẵn thường có MOQ thấp hơn, trong khi các đơn đặt hàng tùy chỉnh yêu cầu số lượng cao hơn.',
+    },
+    {
+      question: 'Thời gian thực hiện đơn hàng của bạn là bao lâu?',
+      answer:
+        'Vải có sẵn có thể được vận chuyển trong vòng 3 - 7 ngày, trong khi các đơn đặt hàng tùy chỉnh thường mất 30 - 35 ngày.',
+    },
+    {
+      question: 'Bạn chấp nhận phương thức thanh toán nào?',
+      answer:
+        'Chúng tôi chấp nhận T/T, L/C và các phương thức thanh toán quốc tế phổ biến khác.',
+    },
+    {
+      question: 'Làm thế nào để bạn vận chuyển hàng hóa?',
+      answer:
+        'Bằng đường biển, đường hàng không hoặc chuyển phát nhanh tùy thuộc vào số lượng và yêu cầu của bạn.',
+    },
+  ];

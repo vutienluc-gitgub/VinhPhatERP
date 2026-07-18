@@ -42,6 +42,11 @@ export type FabricCharacteristicNormalized = {
   description: string | null;
 };
 
+export type FabricFAQItem = {
+  question: string;
+  answer: string;
+};
+
 export type FabricCommercial = {
   sample_status: 'AVAILABLE' | 'OUT_OF_STOCK' | 'PREPARING';
   stock_status: 'READY' | 'CUSTOM' | 'OUT_OF_STOCK' | 'COMING_SOON';
@@ -135,6 +140,7 @@ export type FabricCatalog = {
   commercial?: FabricCommercial | null;
   view_count?: number;
   variants?: FabricVariant[];
+  faq_data?: FabricFAQItem[] | null;
 };
 
 export type FabricCatalogFilter = {

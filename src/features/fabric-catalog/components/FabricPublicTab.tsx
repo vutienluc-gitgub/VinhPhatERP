@@ -3,6 +3,7 @@ import { FabricPublicCustomerSection } from './public-tab-sections/FabricPublicC
 import { FabricPublicPlannerSection } from './public-tab-sections/FabricPublicPlannerSection';
 import { FabricPublicPricingSection } from './public-tab-sections/FabricPublicPricingSection';
 import { FabricPublicStatusSection } from './public-tab-sections/FabricPublicStatusSection';
+import { FabricPublicFAQSection } from './public-tab-sections/FabricPublicFAQSection';
 
 type FabricPublicTabProps = {
   publicUrl: string;
@@ -35,6 +36,10 @@ export function FabricPublicTab({
         <div className="h-px bg-slate-100 w-full" />
 
         <FabricPublicCustomerSection />
+
+        <div className="h-px bg-slate-100 w-full" />
+
+        <FabricPublicFAQSection />
       </div>
     </div>
   );

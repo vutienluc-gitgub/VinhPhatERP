@@ -96,6 +96,23 @@ const baseFabricCatalogSchema = z.object({
       }),
     )
     .default([]),
+  faq_data: z
+    .array(
+      z.object({
+        question: z
+          .string()
+          .trim()
+          .min(3, 'Câu hỏi tối thiểu 3 ký tự')
+          .max(120, 'Câu hỏi tối đa 120 ký tự'),
+        answer: z
+          .string()
+          .trim()
+          .min(5, 'Câu trả lời tối thiểu 5 ký tự')
+          .max(1000, 'Câu trả lời tối đa 1000 ký tự'),
+      }),
+    )
+    .max(10, 'Tối đa 10 câu hỏi FAQ')
+    .default([]),
 });
 
 const fabricCatalogUnion = z.discriminatedUnion('fabric_type', [
@@ -210,4 +227,5 @@ export const fabricCatalogDefaultValues: FabricCatalogFormValues = {
   },
   pricing_tiers: [],
   images: [],
+  faq_data: [],
 };
