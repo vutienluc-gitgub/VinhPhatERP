@@ -53,6 +53,8 @@ function toDbRow(
     color: values.color ?? null,
     color_tags: values.color_tags ?? [],
     technique: values.technique ?? null,
+    stretch_type: values.stretch_type ?? null,
+    thickness: values.thickness ?? null,
   };
 
   if (values.fabric_type === 'woven') {
