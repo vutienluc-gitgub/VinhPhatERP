@@ -33,6 +33,12 @@ export interface InquiryRequest {
   leadChannel: LeadChannel;
   leadSource: LeadSource;
   isBatchRequest: boolean;
+  plannerContext?: {
+    weightKg: number;
+    lengthMeters: number | null;
+    estimatedGarments: number;
+    leadTimeDays: number;
+  };
 }
 
 export interface InquiryContextValue {
@@ -41,7 +47,10 @@ export interface InquiryContextValue {
   inquiryRequest: InquiryRequest;
   openInquiry: (
     config: Partial<
-      Pick<InquiryRequest, 'leadChannel' | 'leadSource' | 'isBatchRequest'>
+      Pick<
+        InquiryRequest,
+        'leadChannel' | 'leadSource' | 'isBatchRequest' | 'plannerContext'
+      >
     >,
   ) => void;
   closeInquiry: () => void;

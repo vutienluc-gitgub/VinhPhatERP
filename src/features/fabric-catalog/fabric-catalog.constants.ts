@@ -540,14 +540,20 @@ export const LEAD_TIME_UNIT_MAP: Record<string, string> = {
 };
 
 export const PUBLIC_COMPONENT_LABELS = {
+  B2B_PLANNER_TITLE: 'Dự toán Kế hoạch Sản xuất',
   B2B_PLANNER_DESC: 'Ước tính sản lượng & năng lực cung ứng B2B',
+  B2B_MOQ_CHECKER: 'Kiểm tra MOQ',
+  B2B_LENGTH_CALC: 'Quy đổi Chiều dài Vải',
+  B2B_PROD_ESTIMATOR: 'Ước tính Sản lượng',
   B2B_MOQ_MET: 'Đạt MOQ',
   B2B_MOQ_MIN: 'Tối thiểu {moq}kg',
   B2B_MOQ_NOT_MET: 'Chưa đạt MOQ',
   B2B_MOQ_REQ: 'Cần tối thiểu {moq}kg',
   B2B_SUPPLY_CAP: 'Năng lực cung ứng',
   B2B_LEAD_TIME: 'Giao trong {leadTime} ngày',
+  B2B_EXPECTED_DATE: 'Dự kiến: {date}',
   B2B_CAPACITY_MONTH: 'Năng lực: {capacity} tấn/tháng',
+  B2B_CAPACITY_PCT: 'Chiếm {pct}% công suất',
   B2B_EST_LENGTH: '≈ {lengthMeters} mét',
   B2B_MISSING_DATA: 'Không đủ dữ liệu để tính chiều dài vải.',
   B2B_MISSING_GSM: 'Thiếu GSM.',
@@ -566,6 +572,10 @@ export const PUBLIC_COMPONENT_LABELS = {
   QR_MODAL_NOT_PUBLIC:
     '⚠️ Mẫu vải này <b>chưa được bật Công khai</b>. Khách hàng quét mã QR sẽ không xem được.',
   CURRENCY_VND: 'đ',
+  B2B_INPUT_MODE_WEIGHT: 'Kg',
+  B2B_INPUT_MODE_LENGTH: 'Mét',
+  B2B_INPUT_MODE_GARMENT: 'Số áo',
+  B2B_SYNC_MSG: 'Thông tin được đồng bộ từ Bảng Dự Toán',
 };
 
 export const PUBLIC_TAB_LABELS = {

@@ -27,6 +27,30 @@ export function calculateFabricLength(
 }
 
 /**
+ * Calculates estimated fabric weight from length in meters.
+ * formula: weight (kg) = (length (m) * ((width (cm) / 100) * GSM)) / 1000
+ */
+export function calculateFabricWeightFromLength(
+  lengthMeters: number,
+  gsm: number | null | undefined,
+  widthCm: number | null | undefined,
+): number | null {
+  if (
+    !lengthMeters ||
+    lengthMeters <= 0 ||
+    !gsm ||
+    gsm <= 0 ||
+    !widthCm ||
+    widthCm <= 0
+  ) {
+    return null;
+  }
+  const weight = (lengthMeters * ((widthCm / 100) * gsm)) / 1000;
+  // Round to 1 decimal place to prevent floating point UI bugs
+  return Math.round(weight * 10) / 10;
+}
+
+/**
  * Calculates estimated garment production quantity.
  * formula: quantity = floor(weight (kg) / (avg_consumption_kg * yield_factor))
  */
@@ -48,4 +72,26 @@ export function calculateGarmentProduction(
     weightKg / (avgConsumptionKg * effectiveYieldFactor),
   );
   return quantity;
+}
+
+/**
+ * Calculates estimated fabric weight from garment quantity.
+ * formula: weight (kg) = quantity * avg_consumption_kg * yield_factor
+ */
+export function calculateFabricWeightFromGarments(
+  quantity: number,
+  avgConsumptionKg: number,
+  yieldFactor: number = 1.0,
+): number {
+  if (
+    !quantity ||
+    quantity <= 0 ||
+    !avgConsumptionKg ||
+    avgConsumptionKg <= 0
+  ) {
+    return 0;
+  }
+  const effectiveYieldFactor = yieldFactor > 0 ? yieldFactor : 1.0;
+  const weight = quantity * avgConsumptionKg * effectiveYieldFactor;
+  return Math.round(weight * 10) / 10;
 }

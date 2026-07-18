@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
 import dayjs from 'dayjs';
@@ -13,6 +13,7 @@ import type {
 import { useInquiryCart } from '@/shared/inquiry-cart';
 import {
   PUBLIC_PAGE_LABELS as LABELS,
+  PUBLIC_COMPONENT_LABELS as COMP_LABELS,
   HOTLINE,
 } from '@/features/fabric-catalog/fabric-catalog.constants';
 import type {
@@ -97,6 +98,12 @@ export function PublicInquiryModal({
   const [rfqTicketData, setRfqTicketData] = useState<RFQTicketData | null>(
     null,
   );
+
+  useEffect(() => {
+    if (isInquiryOpen && inquiryRequest.plannerContext) {
+      setRfqQty(String(inquiryRequest.plannerContext.weightKg));
+    }
+  }, [isInquiryOpen, inquiryRequest.plannerContext]);
 
   const rfqMutation = useCreatePublicInquiryRequest();
   const { clearInquiryCart } = useInquiryCart();
@@ -437,6 +444,22 @@ function RFQFormStep({
             </span>
           </div>
         </div>
+        {inquiryRequest.plannerContext && (
+          <div className="mt-2 text-xs text-blue-600 bg-blue-50 p-2 rounded-lg border border-blue-100 flex items-start gap-1.5">
+            <Icon name="Info" className="w-4 h-4 shrink-0" />
+            <div className="flex flex-col">
+              <span className="font-semibold">{COMP_LABELS.B2B_SYNC_MSG}</span>
+              <span className="mt-0.5 opacity-90">
+                - Dự kiến sx: {inquiryRequest.plannerContext.estimatedGarments}{' '}
+                sản phẩm
+              </span>
+              <span className="opacity-90">
+                - Mong muốn giao sau:{' '}
+                {inquiryRequest.plannerContext.leadTimeDays} ngày
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="space-y-1">

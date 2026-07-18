@@ -35,7 +35,10 @@ export function InquiryProvider({ children }: { children: ReactNode }) {
   const openInquiry = useCallback(
     (
       config: Partial<
-        Pick<InquiryRequest, 'leadChannel' | 'leadSource' | 'isBatchRequest'>
+        Pick<
+          InquiryRequest,
+          'leadChannel' | 'leadSource' | 'isBatchRequest' | 'plannerContext'
+        >
       >,
     ) => {
       setInquiryRequest({
@@ -43,6 +46,7 @@ export function InquiryProvider({ children }: { children: ReactNode }) {
         leadChannel: config.leadChannel ?? 'website',
         leadSource: config.leadSource ?? 'unknown',
         isBatchRequest: config.isBatchRequest ?? false,
+        plannerContext: config.plannerContext,
       });
       setIsRFQOpen(true);
     },
