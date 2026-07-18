@@ -8,8 +8,18 @@ import {
   LABELS,
   UNIT_OPTIONS,
   TECHNIQUE_OPTIONS,
+  STRETCH_TYPE_MAP,
+  THICKNESS_MAP,
+  PUBLIC_PAGE_LABELS,
 } from '@/features/fabric-catalog/fabric-catalog.constants';
 import type { FabricCatalog } from '@/features/fabric-catalog/types';
+
+const STRETCH_OPTIONS = Object.entries(STRETCH_TYPE_MAP).map(
+  ([value, label]) => ({ value, label }),
+);
+const THICKNESS_OPTIONS = Object.entries(THICKNESS_MAP).map(
+  ([value, label]) => ({ value, label }),
+);
 
 type FabricInfoTabProps = {
   catalog: FabricCatalog | null;
@@ -203,6 +213,41 @@ export function FabricInfoTab({
                 value={field.value ?? undefined}
                 onChange={(val) => field.onChange(val || null)}
                 placeholder={LABELS.TECHNIQUE_PLACEHOLDER}
+              />
+            )}
+          />
+        </div>
+      </div>
+
+      {/* Stretch + Thickness */}
+      <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+        <div className="form-field">
+          <label>{PUBLIC_PAGE_LABELS.stretch}</label>
+          <Controller
+            name="stretch_type"
+            control={control}
+            render={({ field }) => (
+              <Combobox
+                options={STRETCH_OPTIONS}
+                value={field.value ?? undefined}
+                onChange={(val) => field.onChange(val || null)}
+                placeholder="Chọn..."
+              />
+            )}
+          />
+        </div>
+
+        <div className="form-field">
+          <label>{PUBLIC_PAGE_LABELS.thickness}</label>
+          <Controller
+            name="thickness"
+            control={control}
+            render={({ field }) => (
+              <Combobox
+                options={THICKNESS_OPTIONS}
+                value={field.value ?? undefined}
+                onChange={(val) => field.onChange(val || null)}
+                placeholder="Chọn..."
               />
             )}
           />

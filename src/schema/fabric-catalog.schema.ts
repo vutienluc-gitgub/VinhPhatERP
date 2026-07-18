@@ -35,6 +35,14 @@ const baseFabricCatalogSchema = z.object({
   color: z.string().trim().max(100).optional().nullable(),
   color_tags: z.array(z.string()).default([]),
   technique: z.string().trim().max(100).optional().nullable(),
+  stretch_type: z
+    .enum(['NONE', 'HORIZONTAL', 'VERTICAL', 'TWO_WAY', 'FOUR_WAY'])
+    .nullable()
+    .optional(),
+  thickness: z
+    .enum(['THIN', 'MEDIUM', 'THICK', 'EXTRA_THICK'])
+    .nullable()
+    .optional(),
   b2b_planner: z
     .object({
       minimum_order_qty_kg: z.number().min(0).default(100),
@@ -186,6 +194,8 @@ export const fabricCatalogDefaultValues: FabricCatalogFormValues = {
   color: null,
   color_tags: [],
   technique: null,
+  stretch_type: null,
+  thickness: null,
   b2b_planner: {
     minimum_order_qty_kg: 100,
     lead_time_days: 7,
