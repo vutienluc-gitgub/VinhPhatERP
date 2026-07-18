@@ -2,7 +2,10 @@ import { useFormContext, Controller } from 'react-hook-form';
 
 import { Icon } from '@/shared/components';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
-import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
+import {
+  LABELS,
+  PUBLIC_TAB_LABELS as TAB_LABELS,
+} from '@/features/fabric-catalog/fabric-catalog.constants';
 
 export function FabricPublicCustomerSection() {
   const { control } = useFormContext<FabricCatalogFormValues>();
@@ -11,7 +14,7 @@ export function FabricPublicCustomerSection() {
     <div className="space-y-4 mt-8">
       <div>
         <h3 className="text-lg font-semibold tracking-tight text-slate-900">
-          Trải nghiệm khách hàng
+          {TAB_LABELS.CUSTOMER_EXP}
         </h3>
       </div>
 

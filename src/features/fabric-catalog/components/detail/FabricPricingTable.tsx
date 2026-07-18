@@ -8,6 +8,7 @@ import type {
 } from '@/domain/settings/fabric-catalog.types';
 import {
   PUBLIC_PAGE_LABELS,
+  PUBLIC_COMPONENT_LABELS as COMP_LABELS,
   LABELS,
 } from '@/features/fabric-catalog/fabric-catalog.constants';
 
@@ -85,7 +86,11 @@ export function FabricPricingTable({
                     <td className="p-3 text-right font-semibold text-primary">
                       <MoneyText
                         value={tier.unit_price}
-                        suffix={tier.currency === 'USD' ? ' USD' : ' đ'}
+                        suffix={
+                          tier.currency === 'USD'
+                            ? ' USD'
+                            : ` ${COMP_LABELS.CURRENCY_VND}`
+                        }
                       />
                     </td>
                   </tr>

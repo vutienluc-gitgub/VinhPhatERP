@@ -5,6 +5,7 @@ import { FabricImageGalleryCard } from '@/features/fabric-catalog/components/Fab
 
 export function FabricImageGalleryEditor() {
   const {
+    control,
     fields,
     register,
     isUploading,
@@ -79,7 +80,7 @@ export function FabricImageGalleryEditor() {
       )}
 
       {fields.length > 0 && (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 items-stretch">
+        <div className="flex flex-col gap-4">
           {fields.map((field, index) => (
             <FabricImageGalleryCard
               key={field.id}
@@ -87,13 +88,14 @@ export function FabricImageGalleryEditor() {
               index={index}
               imageUrl={field.image_url}
               altText={field.alt_text}
+              control={control}
               register={register}
               onRemove={handleRemove}
             />
           ))}
 
           {isUploading && uploadingIndex !== null && (
-            <div className="bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center p-6 aspect-[4/3]">
+            <div className="bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center p-6 h-32">
               <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3"></div>
               <span className="text-xs font-semibold text-slate-500">
                 {LABELS.GALLERY_UPLOADING}

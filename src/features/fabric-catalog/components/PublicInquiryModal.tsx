@@ -215,7 +215,7 @@ export function PublicInquiryModal({
         contactEmail: rfqEmail.trim(),
         companyName: rfqCompanyName.trim(),
         requestType:
-          intentMap[inquiryRequest.intent || 'quote'] || 'Yêu cầu báo giá',
+          intentMap[inquiryRequest.intent || 'quote'] || LABELS.rfqRequestLabel,
         date: dayjs().format('DD/MM/YYYY HH:mm'),
         items: ticketItems,
       });
@@ -573,7 +573,7 @@ function RFQSuccessStep({
           onClick={() => rfqTicketData && generateRFQTicketPdf(rfqTicketData)}
         >
           <Icon name="Download" className="w-4 h-4 mr-2" />
-          Tải PDF
+          {LABELS.downloadPdf}
         </Button>
       </div>
     </div>

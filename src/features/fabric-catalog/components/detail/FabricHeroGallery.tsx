@@ -7,7 +7,8 @@ import type {
   FabricImage,
 } from '@/domain/settings/fabric-catalog.types';
 import {
-  PUBLIC_PAGE_LABELS as LABELS,
+  LABELS as GLOBAL_LABELS,
+  PUBLIC_COMPONENT_LABELS as COMP_LABELS,
   IMAGE_TYPE_MAP,
 } from '@/features/fabric-catalog/fabric-catalog.constants';
 
@@ -41,7 +42,10 @@ export function FabricHeroGallery({
       : fabric.image_url);
 
   const displayAltText = activeColorImage
-    ? `Màu ${activeColorName} - ${fabric.name}`
+    ? COMP_LABELS.HERO_COLOR_NAME.replace(
+        '{color}',
+        activeColorName || '',
+      ).replace('{name}', fabric.name || '')
     : galleryImages.length > 0
       ? galleryImages[currentImageIndex]?.alt_text ||
         galleryImages[currentImageIndex]?.caption ||
@@ -65,14 +69,19 @@ export function FabricHeroGallery({
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
             <Icon name="ImageOff" className="w-10 h-10 mb-2 opacity-30" />
-            <span className="text-sm font-medium">{LABELS.noImage}</span>
+            <span className="text-sm font-medium">
+              {GLOBAL_LABELS.PREVIEW_NO_IMAGE}
+            </span>
           </div>
         )}
 
         {(fabric.view_count ?? 0) > 0 && (
           <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-sm">
             <span>🔥</span>
-            Lượt xem: {fabric.view_count ?? 0}
+            {COMP_LABELS.HERO_VIEWS.replace(
+              '{count}',
+              (fabric.view_count ?? 0).toString(),
+            )}
           </div>
         )}
       </div>

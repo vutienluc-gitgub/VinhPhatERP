@@ -3,7 +3,11 @@ import { useFormContext, useFieldArray, Controller } from 'react-hook-form';
 
 import { Button, Icon, Switch } from '@/shared/components';
 import { NumericInput, MoneyInput, MoneyText } from '@/shared/value';
-import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
+import {
+  LABELS,
+  PUBLIC_TAB_LABELS as TAB_LABELS,
+  PUBLIC_COMPONENT_LABELS as COMP_LABELS,
+} from '@/features/fabric-catalog/fabric-catalog.constants';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 import { getLowestPrice } from '@/features/fabric-catalog/fabric-catalog.utils';
 import { useCustomerGroupList } from '@/application/crm/useCustomerGroups';
@@ -76,7 +80,10 @@ export function FabricPublicPricingSection() {
             </div>
             <div className="font-bold text-slate-900 text-lg">
               {lowestPrice !== null ? (
-                <MoneyText value={lowestPrice} suffix={`đ/${unit}`} />
+                <MoneyText
+                  value={lowestPrice}
+                  suffix={` ${COMP_LABELS.CURRENCY_VND}/${unit}`}
+                />
               ) : (
                 '—'
               )}
@@ -166,8 +173,10 @@ export function FabricPublicPricingSection() {
                       <th className="p-3 w-28">{LABELS.PRICING_COL_MAX}</th>
                       <th className="p-3 w-32">{LABELS.PRICING_COL_PRICE}</th>
                       <th className="p-3">{LABELS.PRICING_COL_LABEL}</th>
-                      <th className="p-3 w-24 text-center">Ưu tiên</th>
-                      <th className="p-3 w-52">Nhóm áp dụng</th>
+                      <th className="p-3 w-24 text-center">
+                        {TAB_LABELS.PRIORITY}
+                      </th>
+                      <th className="p-3 w-52">{TAB_LABELS.TARGET_GROUPS}</th>
                       <th className="p-3 w-20 text-center">
                         {LABELS.PRICING_COL_PUBLIC}
                       </th>
@@ -323,7 +332,7 @@ function GroupSelector({ selectedIds, onChange, groups }: GroupSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const displayLabel = useMemo(() => {
-    if (selectedIds.length === 0) return 'Tất cả (Chung)';
+    if (selectedIds.length === 0) return TAB_LABELS.ALL_GENERAL;
     const selectedNames = groups
       .filter((g) => selectedIds.includes(g.id))
       .map((g) => g.code);

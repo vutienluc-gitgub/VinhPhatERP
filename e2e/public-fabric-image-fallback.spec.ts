@@ -48,8 +48,8 @@ test.describe('Public Fabric Detail Page - Image Fallback', () => {
     const fallbackIcon = fallbackContainer.locator('.lucide-image-off');
     await expect(fallbackIcon).toBeVisible({ timeout: 5000 });
 
-    // Đảm bảo text "Chưa có hình ảnh" (LABELS.noImage) hiển thị
-    const fallbackText = fallbackContainer.locator('text="Chưa có hình ảnh"');
+    // Đảm bảo text "Chưa có ảnh" (GLOBAL_LABELS.PREVIEW_NO_IMAGE) hiển thị
+    const fallbackText = fallbackContainer.locator('text="Chưa có ảnh"');
     await expect(fallbackText).toBeVisible();
 
     // 5. Đảm bảo thẻ img gốc có src bị hỏng đã bị xoá khỏi DOM hoặc ẩn đi

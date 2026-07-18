@@ -92,7 +92,9 @@ export function PublicCompareModal({
               </thead>
               <tbody className="divide-y divide-slate-100">
                 <tr>
-                  <td className="p-3 font-medium text-slate-900">Thành phần</td>
+                  <td className="p-3 font-medium text-slate-900">
+                    {LABELS.composition}
+                  </td>
                   {compareList.map((item) => (
                     <td key={item.id} className="p-3">
                       {item.composition || LABELS.na}
@@ -100,7 +102,9 @@ export function PublicCompareModal({
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-3 font-medium text-slate-900">Khổ rộng</td>
+                  <td className="p-3 font-medium text-slate-900">
+                    {LABELS.width}
+                  </td>
                   {compareList.map((item) => (
                     <td key={item.id} className="p-3">
                       {item.target_width_cm
@@ -110,7 +114,9 @@ export function PublicCompareModal({
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-3 font-medium text-slate-900">Định lượng</td>
+                  <td className="p-3 font-medium text-slate-900">
+                    {LABELS.gsm}
+                  </td>
                   {compareList.map((item) => (
                     <td key={item.id} className="p-3">
                       {item.target_gsm ? `${item.target_gsm} gsm` : LABELS.na}
@@ -118,7 +124,9 @@ export function PublicCompareModal({
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-3 font-medium text-slate-900">Co giãn</td>
+                  <td className="p-3 font-medium text-slate-900">
+                    {LABELS.stretch}
+                  </td>
                   {compareList.map((item) => (
                     <td key={item.id} className="p-3">
                       {item.stretch_type
@@ -129,7 +137,9 @@ export function PublicCompareModal({
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-3 font-medium text-slate-900">Độ dày</td>
+                  <td className="p-3 font-medium text-slate-900">
+                    {LABELS.thickness}
+                  </td>
                   {compareList.map((item) => (
                     <td key={item.id} className="p-3">
                       {item.thickness
@@ -176,7 +186,7 @@ export function PublicCompareModal({
                             'vp_fabric_compare',
                             JSON.stringify(updated),
                           );
-                          toast.success('Đã bỏ so sánh.');
+                          toast.success(LABELS.removeCompareSuccess);
                         }}
                         className="text-red-500 hover:text-red-700 font-semibold"
                       >

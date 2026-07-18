@@ -28,7 +28,7 @@ export function PublicStickyCTA({
     const msg = template
       .replace('{code}', fabricCode)
       .replace('{name}', fabricName)
-      .replace('{color}', activeColorName || 'Tất cả màu')
+      .replace('{color}', activeColorName || LABELS.rfqAllColors)
       .replace('{moq}', activeMOQ || 'N/A');
     window.open(
       `https://zalo.me/${HOTLINE}?text=${encodeURIComponent(msg)}`,

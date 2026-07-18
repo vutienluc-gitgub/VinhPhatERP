@@ -25,7 +25,7 @@ export function useFabricGalleryManager() {
       setUploadingIndex(fields.length); // Indicate uploading at the end
       const url = await uploadImageMutation.mutateAsync(file);
       append({
-        id: crypto.randomUUID(),
+        id: '',
         type: 'SWATCH',
         image_url: url,
         display_order: fields.length,
@@ -60,6 +60,7 @@ export function useFabricGalleryManager() {
   const hasApplication = fields.some((f) => f.type === 'APPLICATION');
 
   return {
+    control,
     fields,
     register,
     isUploading: uploadImageMutation.isPending,

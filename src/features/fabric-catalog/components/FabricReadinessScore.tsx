@@ -2,7 +2,10 @@ import { clsx } from 'clsx';
 
 import { Badge, Icon } from '@/shared/components';
 import { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
-import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
+import {
+  LABELS,
+  PUBLIC_COMPONENT_LABELS as COMP_LABELS,
+} from '@/features/fabric-catalog/fabric-catalog.constants';
 import { useFabricReadinessScore } from '@/features/fabric-catalog/hooks/useFabricReadinessScore';
 
 type Props = {
@@ -11,9 +14,13 @@ type Props = {
   lastUpdated?: string | null;
 };
 
-export function FabricReadinessScore({ formValues, isPublic, lastUpdated }: Props) {
+export function FabricReadinessScore({
+  formValues,
+  isPublic,
+  lastUpdated,
+}: Props) {
   const { score, checks } = useFabricReadinessScore(formValues);
-  const passedCount = checks.filter(c => c.passed).length;
+  const passedCount = checks.filter((c) => c.passed).length;
   const totalCount = checks.length;
   const isPerfect = score === 100;
 
@@ -25,7 +32,12 @@ export function FabricReadinessScore({ formValues, isPublic, lastUpdated }: Prop
         : 'text-red-800 bg-red-50 border-red-200';
 
   return (
-    <div className={clsx('flex flex-col xl:flex-row xl:items-center justify-between gap-4 p-4 border rounded-lg mb-6', scoreColor)}>
+    <div
+      className={clsx(
+        'flex flex-col xl:flex-row xl:items-center justify-between gap-4 p-4 border rounded-lg mb-6',
+        scoreColor,
+      )}
+    >
       <div className="flex items-center gap-3">
         <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-sm border font-black text-lg text-slate-700">
           {score}
@@ -45,11 +57,18 @@ export function FabricReadinessScore({ formValues, isPublic, lastUpdated }: Prop
             )}
           </div>
           <div className="text-xs opacity-80 mt-1 flex items-center gap-2">
-            <span>Hoàn thiện: {passedCount}/{totalCount} tiêu chí</span>
+            <span>
+              {COMP_LABELS.READINESS_SCORE.replace(
+                '{passedCount}',
+                passedCount.toString(),
+              ).replace('{totalCount}', totalCount.toString())}
+            </span>
             {isPublic && lastUpdated && (
               <>
                 <span className="w-1 h-1 rounded-full bg-current opacity-50" />
-                <span>{LABELS.SCORE_LAST_UPDATED} {lastUpdated}</span>
+                <span>
+                  {LABELS.SCORE_LAST_UPDATED} {lastUpdated}
+                </span>
               </>
             )}
           </div>
@@ -64,7 +83,7 @@ export function FabricReadinessScore({ formValues, isPublic, lastUpdated }: Prop
               'flex items-center gap-1.5 text-[11px] font-medium px-2 py-1 rounded-full border bg-white shadow-sm',
               check.passed
                 ? 'border-emerald-200 text-emerald-700'
-                : 'border-amber-200 text-amber-700'
+                : 'border-amber-200 text-amber-700',
             )}
           >
             <Icon

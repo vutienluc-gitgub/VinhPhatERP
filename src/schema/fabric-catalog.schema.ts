@@ -68,7 +68,7 @@ const baseFabricCatalogSchema = z.object({
   images: z
     .array(
       z.object({
-        id: z.string().uuid(),
+        id: z.string().uuid().or(z.literal('')),
         variant_id: z.string().nullable().optional(),
         application_id: z.string().nullable().optional(),
         type: z.enum([
