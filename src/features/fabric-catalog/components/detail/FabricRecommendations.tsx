@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Icon } from '@/shared/components';
@@ -7,6 +8,36 @@ import { PUBLIC_PAGE_LABELS as LABELS } from '@/features/fabric-catalog/fabric-c
 interface FabricRecommendationsProps {
   alsoViewed: Partial<FabricCatalog>[] | undefined;
   related: Partial<FabricCatalog>[] | undefined;
+}
+
+function SafeImage({
+  src,
+  alt,
+  className,
+}: {
+  src: string;
+  alt: string;
+  className: string;
+}) {
+  const [error, setError] = useState(false);
+
+  if (error) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gray-50 border border-gray-100">
+        <Icon name="ImageOff" className="w-6 h-6 mb-1 opacity-30" />
+        <span className="text-[10px] font-medium">{LABELS.noImage}</span>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      onError={() => setError(true)}
+      className={className}
+    />
+  );
 }
 
 export function FabricRecommendations({
@@ -33,9 +64,9 @@ export function FabricRecommendations({
                 to={`/p/fabric/${item.slug}`}
                 className="flex flex-col group"
               >
-                <div className="w-full aspect-square rounded-lg bg-gray-100 overflow-hidden mb-1.5 relative">
+                <div className="w-full aspect-square rounded-lg bg-gray-50 overflow-hidden mb-1.5 relative border border-black/5 shadow-sm">
                   {item.image_url ? (
-                    <img
+                    <SafeImage
                       src={item.image_url}
                       alt={item.name || ''}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
@@ -71,9 +102,9 @@ export function FabricRecommendations({
                 to={`/p/fabric/${item.slug}`}
                 className="flex items-center gap-3 group"
               >
-                <div className="w-14 h-14 rounded-lg bg-gray-100 overflow-hidden shrink-0">
+                <div className="w-14 h-14 rounded-lg bg-gray-50 overflow-hidden shrink-0 border border-black/5 shadow-sm">
                   {item.image_url ? (
-                    <img
+                    <SafeImage
                       src={item.image_url}
                       alt={item.name || ''}
                       className="w-full h-full object-cover"

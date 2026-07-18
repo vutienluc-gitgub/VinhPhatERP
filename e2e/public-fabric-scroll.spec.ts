@@ -40,12 +40,13 @@ test.describe('Public Fabric Detail Page - Scroll Regression', () => {
 
     // 2. Tìm container cuộn chính của trang
     const scrollContainer = page
-      .locator('div.h-\\[100dvh\\].overflow-y-auto')
+      .locator('div.h-screen.min-h-\\[100dvh\\].overflow-y-auto')
       .first();
     await expect(scrollContainer).toBeVisible({ timeout: 10_000 });
 
     // 3. Đảm bảo nó có đầy đủ các class chống lock scroll
-    await expect(scrollContainer).toHaveClass(/h-\[100dvh\]/);
+    await expect(scrollContainer).toHaveClass(/h-screen/);
+    await expect(scrollContainer).toHaveClass(/min-h-\[100dvh\]/);
     await expect(scrollContainer).toHaveClass(/overflow-y-auto/);
     await expect(scrollContainer).toHaveClass(/overflow-x-hidden/);
 
@@ -53,6 +54,8 @@ test.describe('Public Fabric Detail Page - Scroll Regression', () => {
     const isScrollable = await scrollContainer.evaluate((el) => {
       const spacer = document.createElement('div');
       spacer.style.height = '2000px'; // Ép chiều cao dài hơn viewport
+      spacer.style.minHeight = '2000px';
+      spacer.style.flexShrink = '0';
       el.appendChild(spacer);
 
       // Kiểm tra xem container có thực sự sinh ra thanh cuộn dọc không
