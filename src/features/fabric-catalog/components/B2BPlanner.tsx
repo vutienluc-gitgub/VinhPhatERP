@@ -3,7 +3,10 @@ import { useState } from 'react';
 import { useGarmentConversionRules } from '@/application/settings/useFabricCatalog';
 import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 import { Badge } from '@/shared/components';
-import { PUBLIC_PAGE_LABELS as LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
+import {
+  PUBLIC_PAGE_LABELS as LABELS,
+  PUBLIC_COMPONENT_LABELS as COMP_LABELS,
+} from '@/features/fabric-catalog/fabric-catalog.constants';
 
 import {
   calculateFabricLength,
@@ -45,7 +48,7 @@ export function B2BPlanner({ fabric }: B2BPlannerProps) {
           Production Planning Calculator
         </h3>
         <p className="text-xs text-muted mt-1">
-          Ước tính sản lượng & năng lực cung ứng B2B
+          {COMP_LABELS.B2B_PLANNER_DESC}
         </p>
       </div>
 
@@ -80,20 +83,20 @@ export function B2BPlanner({ fabric }: B2BPlannerProps) {
                 <div className="flex flex-col">
                   <span className="text-sm font-bold text-emerald-700 flex items-center gap-1.5">
                     <Badge showDot variant="success" className="px-0 py-0" />
-                    Đạt MOQ
+                    {COMP_LABELS.B2B_MOQ_MET}
                   </span>
                   <span className="text-xs text-slate-500 mt-0.5">
-                    Tối thiểu {moq}kg
+                    {COMP_LABELS.B2B_MOQ_MIN.replace('{moq}', moq.toString())}
                   </span>
                 </div>
               ) : (
                 <div className="flex flex-col">
                   <span className="text-sm font-bold text-amber-600 flex items-center gap-1.5">
                     <Badge showDot variant="warning" className="px-0 py-0" />
-                    Chưa đạt MOQ
+                    {COMP_LABELS.B2B_MOQ_NOT_MET}
                   </span>
                   <span className="text-xs text-slate-500 mt-0.5">
-                    Cần tối thiểu {moq}kg
+                    {COMP_LABELS.B2B_MOQ_REQ.replace('{moq}', moq.toString())}
                   </span>
                 </div>
               )
@@ -104,14 +107,20 @@ export function B2BPlanner({ fabric }: B2BPlannerProps) {
 
           <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex flex-col gap-1.5">
             <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
-              Năng lực cung ứng
+              {COMP_LABELS.B2B_SUPPLY_CAP}
             </span>
             <div className="flex flex-col">
               <span className="text-sm font-bold text-slate-800">
-                Giao trong {leadTime} ngày
+                {COMP_LABELS.B2B_LEAD_TIME.replace(
+                  '{leadTime}',
+                  leadTime.toString(),
+                )}
               </span>
               <span className="text-xs text-slate-500 mt-0.5">
-                Năng lực: {capacity} tấn/tháng
+                {COMP_LABELS.B2B_CAPACITY_MONTH.replace(
+                  '{capacity}',
+                  capacity.toString(),
+                )}
               </span>
             </div>
           </div>
@@ -128,15 +137,20 @@ export function B2BPlanner({ fabric }: B2BPlannerProps) {
                 </span>
                 {lengthMeters !== null && (
                   <span className="text-base font-black text-primary">
-                    ≈ {lengthMeters} mét
+                    {COMP_LABELS.B2B_EST_LENGTH.replace(
+                      '{lengthMeters}',
+                      lengthMeters !== null
+                        ? Number(lengthMeters).toFixed(1)
+                        : '',
+                    )}
                   </span>
                 )}
               </div>
               {isMissingSpecs && (
                 <div className="p-2.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-100 text-xs font-medium">
-                  Không đủ dữ liệu để tính chiều dài vải.{' '}
-                  {!fabric.target_gsm && 'Thiếu GSM.'}{' '}
-                  {!fabric.target_width_cm && 'Thiếu Khổ vải.'}
+                  {COMP_LABELS.B2B_MISSING_DATA}{' '}
+                  {!fabric.target_gsm && COMP_LABELS.B2B_MISSING_GSM}{' '}
+                  {!fabric.target_width_cm && COMP_LABELS.B2B_MISSING_WIDTH}
                 </div>
               )}
             </div>

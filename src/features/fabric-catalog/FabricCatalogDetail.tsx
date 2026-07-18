@@ -1,5 +1,6 @@
 import { Badge, Icon } from '@/shared/components';
 import { FABRIC_CATALOG_STATUS_LABELS } from '@/schema/fabric-catalog.schema';
+import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 
 import { FabricVariantList } from './FabricVariantList';
@@ -59,7 +60,7 @@ export function FabricCatalogDetail({ catalog }: FabricCatalogDetailProps) {
             <div className="flex flex-wrap gap-4 mt-3">
               {catalog.target_width_cm !== null && (
                 <div className="text-sm">
-                  <span className="text-muted">Khổ chuẩn: </span>
+                  <span className="text-muted">{LABELS.TARGET_WIDTH} </span>
                   <span className="font-semibold">
                     {catalog.target_width_cm} cm
                   </span>
@@ -67,14 +68,14 @@ export function FabricCatalogDetail({ catalog }: FabricCatalogDetailProps) {
               )}
               {catalog.target_gsm !== null && (
                 <div className="text-sm">
-                  <span className="text-muted">K/L chuẩn: </span>
+                  <span className="text-muted">{LABELS.TARGET_GSM} </span>
                   <span className="font-semibold">
                     {catalog.target_gsm} gsm
                   </span>
                 </div>
               )}
               <div className="text-sm">
-                <span className="text-muted">Đơn vị: </span>
+                <span className="text-muted">{LABELS.UNIT}: </span>
                 <span className="font-semibold">{catalog.unit}</span>
               </div>
             </div>

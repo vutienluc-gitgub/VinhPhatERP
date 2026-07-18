@@ -2,7 +2,10 @@ import { useFormContext, Controller } from 'react-hook-form';
 import dayjs from 'dayjs';
 
 import { Switch, Button, Icon } from '@/shared/components';
-import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
+import {
+  LABELS,
+  PUBLIC_TAB_LABELS as TAB_LABELS,
+} from '@/features/fabric-catalog/fabric-catalog.constants';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 
 type FabricPublicStatusSectionProps = {
@@ -55,7 +58,7 @@ export function FabricPublicStatusSection({
         {/* Info */}
         <div className="space-y-3">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-500">Cập nhật lần cuối</span>
+            <span className="text-slate-500">{TAB_LABELS.LAST_UPDATED}</span>
             <span className="font-medium text-slate-700">
               {updatedAt ? dayjs(updatedAt).format('DD MMM YYYY, HH:mm') : '—'}
             </span>

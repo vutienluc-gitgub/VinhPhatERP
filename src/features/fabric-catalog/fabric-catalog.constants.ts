@@ -43,6 +43,8 @@ export const LABELS = {
   WIDTH: 'Khổ',
   GSM: 'K/L',
   UNIT: 'Đơn vị',
+  TARGET_WIDTH: 'Khổ chuẩn:',
+  TARGET_GSM: 'K/L chuẩn:',
   ACTIONS: 'Thao tác',
   EDIT: 'Chỉnh sửa',
   PRINT_QR: 'In Tem Mẫu',
@@ -371,6 +373,10 @@ export const PUBLIC_PAGE_LABELS = {
   compareEmpty: 'Chọn từ 2 mẫu vải trở lên để tiến hành so sánh.',
   compareLimit: 'Chỉ có thể so sánh tối đa 3 mẫu vải cùng lúc.',
   requestSampleTitle: 'Yêu cầu nhận mẫu vải',
+  validationMissingFields: 'Vui lòng nhập đầy đủ các trường bắt buộc.',
+  sampleSubmitFailed: 'Gửi yêu cầu thất bại:',
+  samplePlaceholderAddress:
+    'Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố',
   requestSampleDesc:
     'Vĩnh Phát hỗ trợ gửi mẫu vải miễn phí (Khổ A4/Bản cắt) cho doanh nghiệp và xưởng may.',
   contactNameLabel: 'Họ và tên người nhận',
@@ -397,6 +403,8 @@ export const PUBLIC_PAGE_LABELS = {
   calculatorMoqWarning:
     '⚠️ Số lượng dưới mức MOQ ({moq} kg) cho biến thể màu này!',
   rfqBtn: 'Yêu cầu báo giá',
+  rfqRequestLabel: 'Yêu cầu báo giá',
+  downloadPdf: 'Tải PDF',
   rfqModalTitle: 'Yêu cầu báo giá chính thức',
   rfqModalDesc:
     'Vui lòng cung cấp thông tin liên hệ và số lượng mong muốn để nhận bảng báo giá chi tiết kèm chiết khấu tốt nhất.',
@@ -419,6 +427,24 @@ export const PUBLIC_PAGE_LABELS = {
   loginToViewPrice: 'Đăng nhập để xem giá sỉ & đại lý',
   wholesaleOnly: 'Dành cho khách hàng sỉ & đại lý',
   loginBtn: 'Đăng nhập B2B',
+  loginTitle: 'Đăng nhập tài khoản B2B',
+  loginDesc:
+    'Nhập email và mật khẩu của bạn để xem bảng giá sỉ và trạng thái tồn kho.',
+  emailLabel: 'Email',
+  passwordLabel: 'Mật khẩu',
+  emailPlaceholder: 'Nhập email...',
+  passwordPlaceholder: 'Nhập mật khẩu...',
+  loginSubmit: 'Đăng nhập',
+  loginPending: 'Đang xác thực...',
+  loginSuccess: 'Đăng nhập thành công!',
+  loginMissingCredentials: 'Vui lòng nhập email và mật khẩu.',
+  loginMissingCaptcha: 'Vui lòng hoàn thành xác thực bảo mật.',
+  loginUnknownError: 'Đã xảy ra lỗi không mong muốn.',
+  authErrorInvalidCredentials: 'Email hoặc mật khẩu không đúng.',
+  authErrorEmailUnconfirmed:
+    'Email chưa được xác nhận. Vui lòng kiểm tra hộp thư.',
+  authErrorTooManyRequests: 'Đăng nhập thất bại. Vui lòng thử lại sau.',
+  authErrorNetwork: 'Không thể kết nối đến máy chủ. Kiểm tra kết nối mạng.',
   logoutBtn: 'Đăng xuất',
   goToPortal: 'Cổng Portal',
   openInErp: 'Mở trong ERP',
@@ -510,4 +536,44 @@ export const LEAD_TIME_UNIT_MAP: Record<string, string> = {
   DAY: 'ngày',
   WEEK: 'tuần',
   MONTH: 'tháng',
+};
+
+export const PUBLIC_COMPONENT_LABELS = {
+  B2B_PLANNER_DESC: 'Ước tính sản lượng & năng lực cung ứng B2B',
+  B2B_MOQ_MET: 'Đạt MOQ',
+  B2B_MOQ_MIN: 'Tối thiểu {moq}kg',
+  B2B_MOQ_NOT_MET: 'Chưa đạt MOQ',
+  B2B_MOQ_REQ: 'Cần tối thiểu {moq}kg',
+  B2B_SUPPLY_CAP: 'Năng lực cung ứng',
+  B2B_LEAD_TIME: 'Giao trong {leadTime} ngày',
+  B2B_CAPACITY_MONTH: 'Năng lực: {capacity} tấn/tháng',
+  B2B_EST_LENGTH: '≈ {lengthMeters} mét',
+  B2B_MISSING_DATA: 'Không đủ dữ liệu để tính chiều dài vải.',
+  B2B_MISSING_GSM: 'Thiếu GSM.',
+  B2B_MISSING_WIDTH: 'Thiếu Khổ vải.',
+  HERO_COLOR_NAME: 'Màu {color} - {name}',
+  HERO_VIEWS: 'Lượt xem: {count}',
+  INVENTORY_STATUS_TITLE: 'Trạng thái kho ({color})',
+  IN_STOCK: 'Sẵn có',
+  OUT_OF_STOCK: 'Hết hàng',
+  READINESS_SCORE: 'Hoàn thiện: {passedCount}/{totalCount} tiêu chí',
+  QR_MODAL_TITLE: 'In Tem Mẫu Vải',
+  QR_MODAL_DOWNLOAD: 'Tải Ảnh',
+  QR_MODAL_CLOSE: 'Đóng',
+  QR_MODAL_PRINT_PREFIX: 'Tem Mẫu - ',
+  QR_MODAL_DOWNLOAD_ERR: 'Lỗi khi tải ảnh tem mẫu.',
+  QR_MODAL_NOT_PUBLIC:
+    '⚠️ Mẫu vải này <b>chưa được bật Công khai</b>. Khách hàng quét mã QR sẽ không xem được.',
+  CURRENCY_VND: 'đ',
+};
+
+export const PUBLIC_TAB_LABELS = {
+  CUSTOMER_EXP: 'Trải nghiệm khách hàng',
+  STOCK_QTY_AVAILABLE: '{stockQty} {unit} có sẵn',
+  PRIORITY: 'Ưu tiên',
+  TARGET_GROUPS: 'Nhóm áp dụng',
+  ALL_GENERAL: 'Tất cả (Chung)',
+  CHOOSE_CUST_GROUP: 'Chọn nhóm khách hàng',
+  CLEAR_ALL: 'Xóa tất cả (Chung)',
+  LAST_UPDATED: 'Cập nhật lần cuối',
 };

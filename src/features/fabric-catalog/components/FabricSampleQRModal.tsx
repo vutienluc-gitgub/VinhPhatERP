@@ -3,6 +3,7 @@ import { toast } from 'react-hot-toast';
 
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { PUBLIC_COMPONENT_LABELS as COMP_LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 import { buildQRPayload } from '@/shared/lib/identifier.service';
 import { openPrintWindow } from '@/shared/lib/print-template.engine';
 import { FABRIC_SAMPLE_HORIZONTAL_CSS } from '@/shared/lib/print-template.css';
@@ -12,13 +13,13 @@ import { drawTagToCanvas } from '@/features/fabric-catalog/fabric-sample-qr.util
 import { QRFabricLabel } from './QRFabricLabel';
 
 const MODAL_LABELS = {
-  title: 'In Tem Mẫu Vải',
+  title: COMP_LABELS.QR_MODAL_TITLE,
   print: 'In Tem',
-  download: 'Tải Ảnh',
-  close: 'Đóng',
-  printTitlePrefix: 'Tem Mẫu - ',
+  download: COMP_LABELS.QR_MODAL_DOWNLOAD,
+  close: COMP_LABELS.QR_MODAL_CLOSE,
+  printTitlePrefix: COMP_LABELS.QR_MODAL_PRINT_PREFIX,
   downloadPrefix: 'Tem_Mau_',
-  downloadError: 'Lỗi khi tải ảnh tem mẫu.',
+  downloadError: COMP_LABELS.QR_MODAL_DOWNLOAD_ERR,
 } as const;
 
 type FabricSampleQRModalProps = {
@@ -107,8 +108,11 @@ export function FabricSampleQRModal({
       <div className="flex flex-col items-center">
         {!catalog.is_public && (
           <div className="w-full mb-4 p-3 bg-warning-50 text-warning-900 border border-warning-200 rounded-md text-sm text-center">
-            ⚠️ Mẫu vải này <b>chưa được bật Công khai</b>. Khách hàng quét mã QR
-            sẽ không xem được.
+            <span
+              dangerouslySetInnerHTML={{
+                __html: COMP_LABELS.QR_MODAL_NOT_PUBLIC,
+              }}
+            />
           </div>
         )}
         <div ref={printAreaRef}>

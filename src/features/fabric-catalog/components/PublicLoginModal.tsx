@@ -28,12 +28,12 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
     e.preventDefault();
 
     if (!email.trim() || !password.trim()) {
-      setServerError('Vui lòng nhập email và mật khẩu.');
+      setServerError(LABELS.loginMissingCredentials);
       return;
     }
 
     if (!captchaToken) {
-      setServerError('Vui lòng hoàn thành xác thực bảo mật.');
+      setServerError(LABELS.loginMissingCaptcha);
       return;
     }
 
@@ -49,14 +49,14 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
         return;
       }
 
-      toast.success('Đăng nhập thành công!');
+      toast.success(LABELS.loginSuccess);
 
       // Invalidates the fabric-catalog queries to reload pricing & stock info
       await queryClient.invalidateQueries({ queryKey: ['fabric-catalog'] });
 
       onClose();
     } catch (_err) {
-      setServerError('Đã xảy ra lỗi không mong muốn.');
+      setServerError(LABELS.loginUnknownError);
       window.turnstile?.reset();
       setCaptchaToken(null);
     } finally {
@@ -83,7 +83,7 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
         <form onSubmit={handleSubmit} className="p-5 flex flex-col gap-4">
           <div className="text-center mb-2">
             <h2 className="text-xl font-bold text-gray-900 mb-1">
-              Đăng nhập tài khoản B2B
+              {LABELS.loginTitle}
             </h2>
             <p className="text-gray-500 text-sm">
               Nhập email và mật khẩu của bạn để xem bảng giá sỉ và trạng thái
@@ -96,13 +96,13 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
               htmlFor="email"
               className="text-sm font-medium text-gray-700"
             >
-              Email
+              {LABELS.emailLabel}
             </label>
             <input
               id="email"
               type="email"
               autoComplete="email"
-              placeholder="Nhập email..."
+              placeholder={LABELS.emailPlaceholder}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
@@ -114,13 +114,13 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
               htmlFor="password"
               className="text-sm font-medium text-gray-700"
             >
-              Mật khẩu
+              {LABELS.passwordLabel}
             </label>
             <input
               id="password"
               type="password"
               autoComplete="current-password"
-              placeholder="Nhập mật khẩu..."
+              placeholder={LABELS.passwordPlaceholder}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
@@ -145,7 +145,7 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
             isLoading={isLoading}
             className="mt-2"
           >
-            {isLoading ? 'Đang xác thực...' : 'Đăng nhập'}
+            {isLoading ? LABELS.loginPending : LABELS.loginSubmit}
           </Button>
         </form>
       </div>
@@ -155,12 +155,11 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
 
 function vietnameseAuthError(message: string): string {
   if (/invalid login credentials/i.test(message))
-    return 'Email hoặc mật khẩu không đúng.';
+    return LABELS.authErrorInvalidCredentials;
   if (/email not confirmed/i.test(message))
-    return 'Email chưa được xác nhận. Vui lòng kiểm tra hộp thư.';
+    return LABELS.authErrorEmailUnconfirmed;
   if (/too many requests/i.test(message))
-    return 'Đăng nhập thất bại. Vui lòng thử lại sau.';
-  if (/network/i.test(message))
-    return 'Không thể kết nối đến máy chủ. Kiểm tra kết nối mạng.';
+    return LABELS.authErrorTooManyRequests;
+  if (/network/i.test(message)) return LABELS.authErrorNetwork;
   return message;
 }

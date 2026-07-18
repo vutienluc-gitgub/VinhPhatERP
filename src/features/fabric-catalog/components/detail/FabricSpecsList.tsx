@@ -5,6 +5,7 @@ import type {
 } from '@/domain/settings/fabric-catalog.types';
 import {
   PUBLIC_PAGE_LABELS as LABELS,
+  PUBLIC_COMPONENT_LABELS as COMP_LABELS,
   STRETCH_TYPE_MAP,
   THICKNESS_MAP,
 } from '@/features/fabric-catalog/fabric-catalog.constants';
@@ -139,7 +140,10 @@ export function FabricSpecsList({
           {canViewInventory && activeVariant && activeVariant.stock_status && (
             <div className="flex flex-col col-span-2 mt-2 pt-2 border-t border-slate-100">
               <span className="text-xs text-muted mb-0.5">
-                Trạng thái kho ({activeVariant.color_name})
+                {COMP_LABELS.INVENTORY_STATUS_TITLE.replace(
+                  '{color}',
+                  activeVariant.color_name,
+                )}
               </span>
               <span
                 className={cn(
@@ -156,8 +160,8 @@ export function FabricSpecsList({
                       .replace('{unit}', fabric.unit || 'kg')
                       .replace('{rolls}', String(activeVariant.roll_count || 0))
                   : activeVariant.stock_status === 'in-stock'
-                    ? 'Sẵn có'
-                    : 'Hết hàng'}
+                    ? COMP_LABELS.IN_STOCK
+                    : COMP_LABELS.OUT_OF_STOCK}
               </span>
             </div>
           )}

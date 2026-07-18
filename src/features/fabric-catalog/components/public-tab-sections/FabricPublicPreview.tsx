@@ -3,7 +3,11 @@ import { useFormContext } from 'react-hook-form';
 import { Icon } from '@/shared/components/Icon';
 import { MoneyText } from '@/shared/value';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
-import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
+import {
+  LABELS,
+  PUBLIC_TAB_LABELS as TAB_LABELS,
+  PUBLIC_COMPONENT_LABELS as COMP_LABELS,
+} from '@/features/fabric-catalog/fabric-catalog.constants';
 
 export function FabricPublicPreview() {
   const { watch } = useFormContext<FabricCatalogFormValues>();
@@ -94,7 +98,10 @@ export function FabricPublicPreview() {
                 </span>
                 <span className="text-xl font-extrabold text-emerald-600 leading-none">
                   {firstTierPrice ? (
-                    <MoneyText value={firstTierPrice} suffix={`đ/${unit}`} />
+                    <MoneyText
+                      value={firstTierPrice}
+                      suffix={` ${COMP_LABELS.CURRENCY_VND}/${unit}`}
+                    />
                   ) : (
                     '—'
                   )}
@@ -116,7 +123,11 @@ export function FabricPublicPreview() {
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
                 <span className="text-xs font-semibold text-slate-700">
                   {stockDisplay === 'status' && LABELS.PREVIEW_STOCK_STATUS}
-                  {stockDisplay === 'quantity' && `${stockQty} ${unit} có sẵn`}
+                  {stockDisplay === 'quantity' &&
+                    TAB_LABELS.STOCK_QTY_AVAILABLE.replace(
+                      '{stockQty}',
+                      stockQty.toString(),
+                    ).replace('{unit}', unit)}
                 </span>
               </div>
             )}

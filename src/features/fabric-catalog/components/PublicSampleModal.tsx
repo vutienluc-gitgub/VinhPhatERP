@@ -38,18 +38,18 @@ export function PublicSampleModal({
   const handleSubmitSampleRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!contactName.trim() || !contactPhone.trim() || !contactAddress.trim()) {
-      toast.error('Vui lòng nhập đầy đủ các trường bắt buộc.');
+      toast.error(LABELS.validationMissingFields);
       return;
     }
     const selectedVariants = isBatchRequest
       ? Object.values(inquiryCart).map((item: InquiryCartItem) => ({
           variant_code: item.code,
-          color_name: item.color_name || 'Tất cả màu',
+          color_name: item.color_name || LABELS.rfqAllColors,
         }))
       : [
           {
             variant_code: fabric.code || '',
-            color_name: activeColorName || 'Tất cả màu',
+            color_name: activeColorName || LABELS.rfqAllColors,
           },
         ];
 
@@ -77,7 +77,7 @@ export function PublicSampleModal({
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      toast.error(`Gửi yêu cầu thất bại: ${msg}`);
+      toast.error(`${LABELS.sampleSubmitFailed} ${msg}`);
     }
   };
 
@@ -108,7 +108,7 @@ export function PublicSampleModal({
           {/* Mẫu vải đang chọn */}
           <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
             <span className="text-[10px] text-muted font-bold block mb-1">
-              MẪU VẢI ĐĂNG KÝ:
+              {LABELS.rfqFabricRequested}
             </span>
             {isBatchRequest ? (
               <div className="space-y-1">
@@ -141,7 +141,7 @@ export function PublicSampleModal({
               value={contactName}
               onChange={(e) => setContactName(e.target.value)}
               className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-primary"
-              placeholder="VD: Nguyễn Văn A"
+              placeholder={LABELS.rfqPlaceholderName}
             />
           </div>
 
@@ -172,7 +172,7 @@ export function PublicSampleModal({
               value={contactAddress}
               onChange={(e) => setContactAddress(e.target.value)}
               className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-primary resize-none"
-              placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"
+              placeholder={LABELS.samplePlaceholderAddress}
             />
           </div>
 
