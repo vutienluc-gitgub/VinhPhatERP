@@ -54,24 +54,67 @@ export function useFabricDisplayLogic(
         ? `${fabric.commercial.lead_time_min}-${fabric.commercial.lead_time_max} ${LEAD_TIME_UNIT_MAP[fabric.commercial.lead_time_unit || 'day'] || fabric.commercial.lead_time_unit}`
         : LABELS.na;
 
-  const handleShare = () => {
+  const handleShare = async () => {
     if (!fabric) return;
-    const shareText = `${fabric.code} | ${fabric.name}\n- Thành phần: ${fabric.composition || 'N/A'}\n- Khổ: ${fabric.target_width_cm || ''}cm\n- Định lượng: ${fabric.target_gsm || ''}gsm\nLink: ${window.location.href}`;
+
+    const lines = [`${fabric.code} | ${fabric.name}`, ''];
+    if (fabric.composition) lines.push(`✓ ${fabric.composition}`);
+    if (fabric.target_width_cm)
+      lines.push(`✓ Khổ: ${fabric.target_width_cm} cm`);
+    if (fabric.target_gsm) lines.push(`✓ Định lượng: ${fabric.target_gsm} gsm`);
+    if (displayMOQ && displayMOQ !== LABELS.na)
+      lines.push(`✓ MOQ: ${displayMOQ}`);
+    if (displayLeadTime && displayLeadTime !== LABELS.na)
+      lines.push(`✓ Lead Time: ${displayLeadTime}`);
+
+    lines.push('');
+    lines.push('👉 Xem đầy đủ thông số, nhận mẫu và báo giá:');
+    lines.push(window.location.href);
+
+    const shareText = lines.join('\n');
+
     if (navigator.share) {
-      navigator
-        .share({
-          title: `${fabric.code} - ${fabric.name}`,
-          text: shareText,
-          url: window.location.href,
-        })
-        .catch((err) => {
-          // If user cancels or browser blocks share sheet, fallback to copy
-          if (err instanceof Error && err.name !== 'AbortError') {
-            console.error('[ShareError]', err);
+      const shareData: ShareData = {
+        title: `${fabric.code} - ${fabric.name}`,
+        text: shareText,
+        url: window.location.href,
+      };
+
+      // Attempt to fetch and attach image thumbnail
+      const targetImageUrl =
+        activeVariant?.public_image_url || fabric.image_url;
+      if (targetImageUrl) {
+        try {
+          const response = await fetch(targetImageUrl);
+          if (response.ok) {
+            const blob = await response.blob();
+            // Determine extension from type, default to jpg
+            const ext = blob.type.split('/')[1] || 'jpg';
+            const shareFile = new File([blob], `${fabric.code}.${ext}`, {
+              type: blob.type,
+            });
+
+            // Check if browser supports sharing files
+            if (
+              navigator.canShare &&
+              navigator.canShare({ files: [shareFile] })
+            ) {
+              shareData.files = [shareFile];
+            }
           }
-          navigator.clipboard.writeText(shareText);
-          toast.success(LABELS.copiedLink);
-        });
+        } catch (e) {
+          console.warn('Failed to fetch image for share:', e);
+        }
+      }
+
+      navigator.share(shareData).catch((err) => {
+        // If user cancels or browser blocks share sheet, fallback to copy
+        if (err instanceof Error && err.name !== 'AbortError') {
+          console.error('[ShareError]', err);
+        }
+        navigator.clipboard.writeText(shareText);
+        toast.success(LABELS.copiedLink);
+      });
     } else {
       navigator.clipboard.writeText(shareText);
       toast.success(LABELS.copiedLink);
