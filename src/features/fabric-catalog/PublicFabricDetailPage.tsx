@@ -21,6 +21,7 @@ import { FabricHeroGallery } from '@/features/fabric-catalog/components/detail/F
 import { FabricPricingTable } from '@/features/fabric-catalog/components/detail/FabricPricingTable';
 import { FabricRecommendations } from '@/features/fabric-catalog/components/detail/FabricRecommendations';
 import { FabricRichContent } from '@/features/fabric-catalog/components/detail/FabricRichContent';
+import { FabricFAQ } from '@/features/fabric-catalog/components/detail/FabricFAQ';
 import { FabricSpecsList } from '@/features/fabric-catalog/components/detail/FabricSpecsList';
 import { FabricStickyCTA } from '@/features/fabric-catalog/components/detail/FabricStickyCTA';
 import { FabricTitleAndBadges } from '@/features/fabric-catalog/components/detail/FabricTitleAndBadges';
@@ -236,6 +237,9 @@ function PublicFabricDetailPageInner() {
 
         {/* Rich Characteristics & Applications */}
         <FabricRichContent fabric={fabric} />
+
+        {/* FAQ Section */}
+        <FabricFAQ faqItems={fabric.faq_data} />
 
         {/* Cross Recommendations & Related Slider */}
         <FabricRecommendations alsoViewed={alsoViewed} related={related} />
