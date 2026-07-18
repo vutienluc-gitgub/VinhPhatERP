@@ -29,9 +29,11 @@ function SpecItem({
   className?: string;
 }) {
   return (
-    <div className={cn('flex flex-col', className)}>
-      <span className="text-xs text-muted mb-0.5">{label}</span>
-      <span className="font-semibold text-gray-800 text-sm">{value}</span>
+    <div className={cn('flex items-baseline gap-1.5', className)}>
+      <span className="text-xs text-muted shrink-0">{label}:</span>
+      <span className="font-semibold text-gray-800 text-sm break-words">
+        {value}
+      </span>
     </div>
   );
 }
@@ -138,12 +140,13 @@ export function FabricSpecsList({
           )}
 
           {canViewInventory && activeVariant && activeVariant.stock_status && (
-            <div className="flex flex-col col-span-2 mt-2 pt-2 border-t border-slate-100">
-              <span className="text-xs text-muted mb-0.5">
+            <div className="flex items-baseline gap-1.5 col-span-2 mt-2 pt-2 border-t border-slate-100">
+              <span className="text-xs text-muted shrink-0">
                 {COMP_LABELS.INVENTORY_STATUS_TITLE.replace(
                   '{color}',
                   activeVariant.color_name,
                 )}
+                :
               </span>
               <span
                 className={cn(

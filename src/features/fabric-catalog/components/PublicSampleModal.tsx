@@ -6,23 +6,18 @@ import { useCreatePublicSampleRequest } from '@/application/settings/useFabricCa
 import type { InquiryCartItem } from '@/shared/inquiry-cart';
 import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 import { useInquiryCart } from '@/shared/inquiry-cart';
+import { useInquiry } from '@/features/fabric-catalog/hooks/useInquiry';
 import { PUBLIC_PAGE_LABELS as LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 
 interface PublicSampleModalProps {
-  isOpen: boolean;
-  onClose: () => void;
   fabric: Partial<FabricCatalog>;
   activeColorName: string | null;
-  isBatchRequest: boolean;
   inquiryCart: Record<string, InquiryCartItem>;
 }
 
 export function PublicSampleModal({
-  isOpen,
-  onClose,
   fabric,
   activeColorName,
-  isBatchRequest,
   inquiryCart,
 }: PublicSampleModalProps) {
   const [contactName, setContactName] = useState('');
@@ -32,8 +27,9 @@ export function PublicSampleModal({
 
   const requestMutation = useCreatePublicSampleRequest();
   const { clearInquiryCart } = useInquiryCart();
+  const { isSampleOpen, closeSample, sampleIsBatch } = useInquiry();
 
-  if (!isOpen) return null;
+  if (!isSampleOpen) return null;
 
   const handleSubmitSampleRequest = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +37,7 @@ export function PublicSampleModal({
       toast.error(LABELS.validationMissingFields);
       return;
     }
-    const selectedVariants = isBatchRequest
+    const selectedVariants = sampleIsBatch
       ? Object.values(inquiryCart).map((item: InquiryCartItem) => ({
           variant_code: item.code,
           color_name: item.color_name || LABELS.rfqAllColors,
@@ -64,7 +60,7 @@ export function PublicSampleModal({
       });
 
       toast.success(LABELS.requestSuccess);
-      onClose();
+      closeSample();
 
       // Clear forms
       setContactName('');
@@ -72,7 +68,7 @@ export function PublicSampleModal({
       setContactAddress('');
       setCompanyName('');
 
-      if (isBatchRequest) {
+      if (sampleIsBatch) {
         clearInquiryCart();
       }
     } catch (err) {
@@ -90,7 +86,7 @@ export function PublicSampleModal({
             {LABELS.requestSampleTitle}
           </h3>
           <button
-            onClick={onClose}
+            onClick={closeSample}
             className="p-1 rounded-full hover:bg-slate-200 text-slate-500"
           >
             <Icon name="X" className="w-5 h-5" />
@@ -110,7 +106,7 @@ export function PublicSampleModal({
             <span className="text-[10px] text-muted font-bold block mb-1">
               {LABELS.rfqFabricRequested}
             </span>
-            {isBatchRequest ? (
+            {sampleIsBatch ? (
               <div className="space-y-1">
                 {Object.values(inquiryCart).map((item: InquiryCartItem) => (
                   <div
@@ -190,7 +186,10 @@ export function PublicSampleModal({
             />
           </div>
 
-          <div className="pt-2">
+          <div className="flex justify-end gap-3 pt-2">
+            <Button type="button" variant="outline" onClick={closeSample}>
+              Hủy
+            </Button>
             <Button
               type="submit"
               variant="primary"

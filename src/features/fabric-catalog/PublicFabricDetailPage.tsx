@@ -10,10 +10,7 @@ import {
   usePublicPricingTiers,
 } from '@/application/settings/useFabricCatalog';
 import { Button, Icon } from '@/shared/components';
-import {
-  trackLeadEvent,
-  getOrCreateSessionId,
-} from '@/shared/services/analytics';
+import { getOrCreateSessionId } from '@/shared/services/analytics';
 import { B2BPlanner } from '@/features/fabric-catalog/components/B2BPlanner';
 import { FabricColorSelector } from '@/features/fabric-catalog/components/detail/FabricColorSelector';
 import { FabricHeaderActions } from '@/features/fabric-catalog/components/detail/FabricHeaderActions';
@@ -191,31 +188,7 @@ function PublicFabricDetailPageInner() {
         )}
 
         {/* B2B Planner Tool */}
-        <div className="bg-white rounded-xl shadow-sm p-4 space-y-4">
-          <div className="border-b border-gray-100 pb-2">
-            <h3 className="text-base font-bold text-gray-900">
-              {LABELS.b2bPlannerTool}
-            </h3>
-          </div>
-
-          <B2BPlanner fabric={fabric} />
-
-          <Button
-            variant="outline"
-            fullWidth
-            onClick={() => {
-              openInquiry({ leadSource: 'planner', leadChannel: 'website' });
-              trackLeadEvent('sticky_cta_click_rfq', {
-                fabricCode: fabric.code,
-                leadSource: 'planner',
-              });
-            }}
-            className="mt-4 text-xs font-semibold"
-          >
-            <Icon name="FileText" className="w-4 h-4 mr-1.5" />
-            {LABELS.rfqBtn}
-          </Button>
-        </div>
+        <B2BPlanner fabric={fabric} activeVariant={activeVariant} />
 
         {/* Specs List */}
         <FabricSpecsList
@@ -289,13 +262,8 @@ function PublicFabricDetailPageInner() {
 
       {/* Sample Request Lead Form Modal */}
       <PublicSampleModal
-        isOpen={false}
-        onClose={() => {
-          /* handled by RFQ context */
-        }}
         fabric={fabric}
         activeColorName={activeColorName}
-        isBatchRequest={false}
         inquiryCart={inquiryCart}
       />
 
