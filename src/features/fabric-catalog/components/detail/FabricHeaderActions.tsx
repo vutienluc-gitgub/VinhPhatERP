@@ -77,18 +77,18 @@ export function FabricHeaderActions({
         {!isAuthenticated ? (
           <button
             onClick={onOpenLogin}
-            className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:bg-primary/5 px-2.5 py-1.5 rounded-lg transition-colors"
+            className="p-1.5 rounded-lg hover:bg-primary/5 transition-colors text-primary"
+            title={LABELS.loginBtn}
           >
-            <Icon name="Lock" className="w-4 h-4" />
-            {LABELS.loginBtn}
+            <Icon name="Lock" className="w-5 h-5" />
           </button>
         ) : (
           <button
             onClick={onSignOut}
-            className="text-xs font-semibold text-red-600 hover:bg-red-50 px-2 py-1.5 rounded-lg transition-colors"
+            className="p-1.5 rounded-lg hover:bg-red-50 transition-colors text-red-600"
             title={LABELS.logoutBtn}
           >
-            <Icon name="LogOut" className="w-4 h-4" />
+            <Icon name="LogOut" className="w-5 h-5" />
           </button>
         )}
       </div>
