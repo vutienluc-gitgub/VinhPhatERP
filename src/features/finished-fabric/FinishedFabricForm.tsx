@@ -59,6 +59,9 @@ function rollToFormValues(roll: FinishedFabricRoll): FinishedFabricFormValues {
     purchase_price: roll.purchase_price
       ? Number(roll.purchase_price)
       : undefined,
+    purchase_price_unit:
+      (roll.purchase_price_unit as 'VND/m' | 'VND/kg') ?? 'VND/kg',
+    document_number: roll.document_number ?? '',
     lot_number: roll.lot_number ?? '',
     fabric_type: roll.fabric_type,
     color_name: roll.color_name ?? '',

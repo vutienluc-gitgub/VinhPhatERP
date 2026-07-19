@@ -38,7 +38,9 @@ export const finishedFabricSchema = z.object({
     .uuid('ID Nhà cung cấp không hợp lệ')
     .nullable()
     .optional(),
+  document_number: z.string().trim().optional().or(z.literal('')),
   purchase_price: optionalPositiveNum,
+  purchase_price_unit: z.enum(['VND/m', 'VND/kg']).default('VND/m'),
   lot_number: z.string().trim().optional().or(z.literal('')),
   fabric_type: z.string().trim().min(2, 'Loại vải không được để trống'),
   color_name: z.string().trim().optional().or(z.literal('')),
@@ -61,7 +63,9 @@ export const finishedFabricDefaults: FinishedFabricFormValues = {
   roll_number: '',
   raw_roll_id: '',
   supplier_id: null,
+  document_number: '',
   purchase_price: undefined,
+  purchase_price_unit: 'VND/m',
   lot_number: '',
   fabric_type: '',
   color_name: '',
@@ -117,7 +121,9 @@ export const bulkFinishedInputSchema = z
       .uuid('ID Nhà cung cấp không hợp lệ')
       .nullable()
       .optional(),
+    document_number: z.string().trim().optional(),
     purchase_price: optionalPositiveNum,
+    purchase_price_unit: z.enum(['VND/m', 'VND/kg']).default('VND/m'),
   })
   .superRefine((values, ctx) => {
     const duplicates = findDuplicateRollNumbers(values.rolls);
@@ -183,6 +189,8 @@ export const bulkFinishedInputDefaults: BulkFinishedInputFormValues = {
   start_number: 1,
   source_type: 'produced',
   supplier_id: null,
+  document_number: '',
   purchase_price: undefined,
+  purchase_price_unit: 'VND/m',
   rolls: [EMPTY_ROLL],
 } as BulkFinishedInputFormValues;

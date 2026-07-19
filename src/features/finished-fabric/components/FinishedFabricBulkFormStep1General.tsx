@@ -62,6 +62,7 @@ export function FinishedFabricBulkFormStep1General({
                   source_type: 'produced',
                   supplier_id: null,
                   purchase_price: undefined,
+                  status: 'in_stock',
                 } as BulkFinishedInputFormValues);
               }}
             />
@@ -78,6 +79,7 @@ export function FinishedFabricBulkFormStep1General({
                 reset({
                   ...control._formValues,
                   source_type: 'purchased',
+                  status: 'pending_qc',
                 } as BulkFinishedInputFormValues);
                 const currentRolls = control._formValues.rolls || [];
                 const updatedRolls = currentRolls.map(
@@ -121,15 +123,36 @@ export function FinishedFabricBulkFormStep1General({
             )}
           </div>
           <div className="form-field">
-            <label htmlFor="bulk_purchase_price">Giá nhập lô (VNĐ)</label>
+            <label htmlFor="bulk_document_number">
+              Số chứng từ (Hóa đơn/Phiếu giao)
+            </label>
             <input
-              id="bulk_purchase_price"
-              className={`field-input${errors.purchase_price ? ' border-danger' : ''}`}
-              type="number"
-              min="0"
-              placeholder="VD: 50000"
-              {...register('purchase_price')}
+              id="bulk_document_number"
+              className="field-input"
+              type="text"
+              placeholder="VD: HD-12345"
+              {...register('document_number')}
             />
+          </div>
+          <div className="form-field">
+            <label htmlFor="bulk_purchase_price">Giá nhập lô</label>
+            <div className="flex">
+              <input
+                id="bulk_purchase_price"
+                className={`field-input rounded-r-none border-r-0 ${errors.purchase_price ? ' border-danger' : ''}`}
+                type="number"
+                min="0"
+                placeholder="VD: 50000"
+                {...register('purchase_price')}
+              />
+              <select
+                className="field-input rounded-l-none bg-muted/50 w-[110px]"
+                {...register('purchase_price_unit')}
+              >
+                <option value="VND/m">VNĐ / Mét</option>
+                <option value="VND/kg">VNĐ / Kg</option>
+              </select>
+            </div>
             {errors.purchase_price && (
               <span className="field-error">
                 {errors.purchase_price.message}
@@ -155,7 +178,10 @@ export function FinishedFabricBulkFormStep1General({
             <span className="field-error">{errors.lot_number.message}</span>
           )}
           <span className="field-hint mt-1 block">
-            Bắt buộc. Hệ thống sẽ đối chiếu với lô cuộn mộc nguồn.
+            {sourceType === 'produced'
+              ? 'Bắt buộc. Hệ thống sẽ đối chiếu với lô cuộn mộc nguồn.'
+              : 'Nhập mã lô của nhà cung cấp hoặc mã lô quản lý nội bộ.'}
+
             {rawRollsForLotLength > 0 && (
               <strong>
                 {' '}

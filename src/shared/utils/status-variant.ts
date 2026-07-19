@@ -7,6 +7,7 @@ import type { RollStatus } from '@/schema/roll.schema';
 
 const ROLL_STATUS_VARIANT_MAP: Record<RollStatus, BadgeVariant> = {
   in_stock: 'success',
+  pending_qc: 'warning',
   reserved: 'info',
   in_process: 'purple',
   shipped: 'gray',
