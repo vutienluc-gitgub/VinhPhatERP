@@ -156,7 +156,7 @@ export function AppShell() {
                   size={20}
                   className="text-primary-strong"
                 />
-                <h1 className="title-premium-gradient text-base font-black tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-r from-primary-strong to-primary">
+                <h1 className="hidden sm:block title-premium-gradient text-base font-black tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-r from-primary-strong to-primary">
                   {APP_SHELL_LABELS.BRAND_NAME}
                 </h1>
               </NavLink>
@@ -165,7 +165,10 @@ export function AppShell() {
             <div className="topbar-divider" />
 
             {/* Breadcrumb */}
-            <nav className="topbar-breadcrumb" aria-label="Breadcrumb">
+            <nav
+              className="hidden sm:flex topbar-breadcrumb"
+              aria-label="Breadcrumb"
+            >
               <NavLink to="/">
                 <Icon name="Home" size={15} strokeWidth={1.5} />
               </NavLink>
@@ -308,10 +311,12 @@ export function AppShell() {
                   aria-haspopup="true"
                 >
                   <span className="user-avatar">{initials}</span>
-                  <span className="user-name">
+                  <span className="hidden sm:block user-name">
                     {profile.full_name || profile.id.slice(0, 8)}
                   </span>
-                  <Icon name="ChevronDown" size={16} strokeWidth={1.5} />
+                  <div className="hidden sm:flex">
+                    <Icon name="ChevronDown" size={16} strokeWidth={1.5} />
+                  </div>
                 </button>
               )}
 

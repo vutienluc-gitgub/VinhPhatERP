@@ -667,7 +667,7 @@ html.fluid .content-shell {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.35rem 0.6rem 0.35rem 0.35rem;
+  padding: 0.35rem; /* mobile: equal padding for just avatar */
   border: 1.5px solid var(--border);
   border-radius: var(--radius-md);
   background: var(--surface-strong);
@@ -675,6 +675,12 @@ html.fluid .content-shell {
   transition:
     border-color 0.15s,
     box-shadow 0.15s;
+}
+
+@media (min-width: 640px) {
+  .user-trigger {
+    padding: 0.35rem 0.6rem 0.35rem 0.35rem;
+  }
 }
 
 .user-trigger:hover {

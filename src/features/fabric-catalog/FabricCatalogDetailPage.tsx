@@ -66,7 +66,7 @@ export function FabricCatalogDetailPage() {
               leftIcon="ArrowLeft"
               onClick={() => navigate(ROUTE_FABRIC_CATALOG)}
             >
-              <span className="hidden sm:inline">{LABELS.BACK}</span>
+              {LABELS.BACK}
             </Button>
             <Button
               variant="primary"
