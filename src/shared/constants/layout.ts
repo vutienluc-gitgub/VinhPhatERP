@@ -54,6 +54,7 @@ export const NOTIFICATION_BELL_LABELS = {
 };
 
 export const DRAWER_LABELS = {
+  HEADER_TITLE: 'Tất cả chức năng',
   SEARCH_PLACEHOLDER: 'Tìm module...',
   EMPTY: 'Không tìm thấy module nào',
   OTHER_GROUP: 'Khác',
