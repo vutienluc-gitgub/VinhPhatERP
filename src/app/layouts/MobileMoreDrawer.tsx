@@ -7,6 +7,8 @@ import { Icon } from '@/shared/components/Icon';
 import { GROUP_LABEL_MAP, GROUP_ORDER } from '@/shared/constants/navigation';
 import { DRAWER_LABELS, QUICK_ACTIONS } from '@/shared/constants/layout';
 
+import styles from './MobileMoreDrawer.module.css';
+
 const removeAccents = (str: string) => {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 };
@@ -22,13 +24,13 @@ const QuickActionItem = memo(
   }) => (
     <NavLink
       to={action.path}
-      className="drawer-quick-action-btn"
+      className={styles.quickActionBtn}
       onClick={onClose}
     >
-      <span className="drawer-quick-action-icon">
+      <span className={styles.quickActionIcon}>
         <Icon name={action.icon} size={24} strokeWidth={1.5} />
       </span>
-      <span className="drawer-quick-action-label">{action.label}</span>
+      <span className={styles.quickActionLabel}>{action.label}</span>
     </NavLink>
   ),
 );
@@ -41,19 +43,19 @@ const DrawerNavItem = memo(
     <NavLink
       to={item.path}
       className={({ isActive }) =>
-        `drawer-list-item${isActive ? ' text-primary bg-primary/10' : ''}`
+        `${styles.listItem}${isActive ? ` ${styles.isActive}` : ''}`
       }
       onClick={onClose}
     >
-      <span className="drawer-list-icon">
+      <span className={styles.listIcon}>
         <Icon name={item.icon ?? 'Component'} size={18} strokeWidth={1.5} />
       </span>
-      <span className="drawer-list-label">{item.label}</span>
+      <span className={styles.listLabel}>{item.label}</span>
       <Icon
         name="ChevronRight"
         size={14}
         strokeWidth={1.5}
-        className="drawer-list-chevron"
+        className={styles.listChevron}
       />
     </NavLink>
   ),
@@ -130,9 +132,9 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
 
   return (
     <>
-      <div className="drawer-overlay" onClick={onClose} aria-hidden="true" />
+      <div className={styles.overlay} onClick={onClose} aria-hidden="true" />
       <div
-        className="drawer-sheet drawer-sheet--full"
+        className={styles.sheet}
         role="dialog"
         aria-modal="true"
         aria-label={DRAWER_LABELS.MODAL_ARIA}
@@ -144,18 +146,18 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
           }),
         }}
       >
-        <div className="drawer-handle" />
+        <div className={styles.handle} />
 
         {/* Header Title */}
-        <p className="drawer-header-title">{DRAWER_LABELS.HEADER_TITLE}</p>
+        <p className={styles.headerTitle}>{DRAWER_LABELS.HEADER_TITLE}</p>
 
         {/* Search */}
-        <div className="drawer-search">
+        <div className={styles.search}>
           <Icon name="Search" size={16} strokeWidth={1.8} />
           <input
             ref={inputRef}
             type="text"
-            className="drawer-search-input"
+            className={styles.searchInput}
             placeholder={DRAWER_LABELS.SEARCH_PLACEHOLDER}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -171,7 +173,7 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
           {search && (
             <button
               type="button"
-              className="drawer-search-clear"
+              className={styles.searchClear}
               onClick={() => setSearch('')}
               aria-label={DRAWER_LABELS.CLEAR_SEARCH_ARIA}
             >
@@ -182,7 +184,7 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
 
         {/* Quick Actions (only when NOT searching) */}
         {!isSearching && (
-          <div className="drawer-quick-actions">
+          <div className={styles.quickActions}>
             {QUICK_ACTIONS.map((action) => (
               <QuickActionItem
                 key={action.path}
@@ -194,14 +196,14 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
         )}
 
         {/* Scrollable Content */}
-        <div className="drawer-content">
-          {noResults && <p className="drawer-empty">{DRAWER_LABELS.EMPTY}</p>}
+        <div className={styles.content}>
+          {noResults && <p className={styles.empty}>{DRAWER_LABELS.EMPTY}</p>}
 
           {/* Grouped items (Inset Grouped Lists) */}
           {grouped.groups.map((g) => (
-            <div key={g.group} className="drawer-section">
-              <p className="drawer-title">{g.label}</p>
-              <div className="drawer-group-block">
+            <div key={g.group} className={styles.section}>
+              <p className={styles.title}>{g.label}</p>
+              <div className={styles.groupBlock}>
                 {g.items.map((item) => (
                   <DrawerNavItem
                     key={item.path}
@@ -215,9 +217,9 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
 
           {/* Ungrouped items */}
           {grouped.ungrouped.length > 0 && (
-            <div className="drawer-section">
-              <p className="drawer-title">{DRAWER_LABELS.OTHER_GROUP}</p>
-              <div className="drawer-group-block">
+            <div className={styles.section}>
+              <p className={styles.title}>{DRAWER_LABELS.OTHER_GROUP}</p>
+              <div className={styles.groupBlock}>
                 {grouped.ungrouped.map((item) => (
                   <DrawerNavItem
                     key={item.path}
