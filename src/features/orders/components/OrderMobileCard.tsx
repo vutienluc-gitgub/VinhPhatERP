@@ -27,9 +27,13 @@ export function OrderMobileCard({ order }: OrderMobileCardProps) {
         </Badge>
       </div>
       <div className="mobile-card-body space-y-2">
-        <div className="flex justify-between items-start">
-          <span className="text-sm font-bold">{order.customers?.name}</span>
-          <span className="text-xs text-muted">{order.order_date}</span>
+        <div className="flex justify-between items-start gap-2">
+          <span className="text-sm font-bold break-words min-w-0 flex-1">
+            {order.customers?.name}
+          </span>
+          <span className="text-xs text-muted shrink-0 text-right">
+            {order.order_date}
+          </span>
         </div>
         <div className="grid grid-cols-2 gap-4 pt-2">
           <div className="flex flex-col">

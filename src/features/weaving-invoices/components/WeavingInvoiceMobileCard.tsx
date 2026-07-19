@@ -37,12 +37,14 @@ export function WeavingInvoiceMobileCard({
         </Badge>
       </div>
       <div className="mobile-card-body space-y-2">
-        <div className="flex justify-between items-start">
-          <div className="flex flex-col">
+        <div className="flex justify-between items-start gap-2">
+          <div className="flex flex-col min-w-0 flex-1">
             <span className="text-xs text-muted">{MSG.COL_SUPPLIER}</span>
-            <span className="font-bold">{inv.suppliers?.name ?? '—'}</span>
+            <span className="font-bold break-words">
+              {inv.suppliers?.name ?? '—'}
+            </span>
           </div>
-          <div className="flex flex-col text-right">
+          <div className="flex flex-col text-right shrink-0">
             <span className="text-xs text-muted">{MSG.COL_FABRIC}</span>
             <span className="font-medium">{inv.fabric_type}</span>
           </div>
