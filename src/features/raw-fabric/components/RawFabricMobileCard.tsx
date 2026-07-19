@@ -18,9 +18,11 @@ export function RawFabricMobileCard({ roll: r }: RawFabricMobileCardProps) {
         </Badge>
       </div>
       <div className="mobile-card-body">
-        <div className="flex justify-between items-center mb-1">
-          <span className="text-sm font-medium">{r.fabric_type}</span>
-          <span className="text-xs text-muted">
+        <div className="flex justify-between items-center mb-1 gap-2">
+          <span className="text-sm font-medium break-words min-w-0 flex-1">
+            {r.fabric_type}
+          </span>
+          <span className="text-xs text-muted shrink-0 text-right">
             {MSG.LBL_LOT} {r.lot_number || '—'}
           </span>
         </div>

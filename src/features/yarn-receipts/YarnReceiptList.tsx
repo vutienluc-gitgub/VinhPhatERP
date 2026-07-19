@@ -346,9 +346,11 @@ export function YarnReceiptList({
                 </Badge>
               </div>
               <div className="mobile-card-body space-y-2">
-                <div className="flex flex-col">
+                <div className="flex flex-col min-w-0">
                   <span className="text-xs text-muted">{MSG.COL_SUPPLIER}</span>
-                  <span className="font-medium">{r.suppliers?.name}</span>
+                  <span className="font-medium break-words">
+                    {r.suppliers?.name}
+                  </span>
                 </div>
                 <div className="grid grid-cols-2 gap-4 pb-2 border-b border-border/10">
                   <div className="flex flex-col gap-2">
