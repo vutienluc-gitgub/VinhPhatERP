@@ -1,6 +1,7 @@
-import { useMemo, useState, useEffect, memo } from 'react';
+import { useMemo, useState, useEffect, memo, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 
+import { useVisualViewport } from '@/shared/hooks/useVisualViewport';
 import type { NavigationItem } from '@/app/router/routes';
 import { Icon } from '@/shared/components/Icon';
 import { GROUP_LABEL_MAP, GROUP_ORDER } from '@/shared/constants/navigation';
@@ -42,6 +43,8 @@ type GroupedItems = {
 
 export function MobileMoreDrawer({ items, onClose }: Props) {
   const [search, setSearch] = useState('');
+  const { isKeyboardOpen, height: vvHeight } = useVisualViewport();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Scroll lock & Escape to close
   useEffect(() => {
@@ -101,6 +104,13 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
         role="dialog"
         aria-modal="true"
         aria-label={DRAWER_LABELS.MODAL_ARIA}
+        style={{
+          paddingBottom: isKeyboardOpen ? '0.5rem' : undefined,
+          ...(isKeyboardOpen && {
+            bottom: 0,
+            maxHeight: vvHeight ? `${vvHeight * 0.95}px` : '75dvh',
+          }),
+        }}
       >
         <div className="drawer-handle" />
 
@@ -108,11 +118,20 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
         <div className="drawer-search">
           <Icon name="Search" size={16} strokeWidth={1.8} />
           <input
+            ref={inputRef}
             type="text"
             className="drawer-search-input"
             placeholder={DRAWER_LABELS.SEARCH_PLACEHOLDER}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            onFocus={() => {
+              setTimeout(() => {
+                inputRef.current?.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'center',
+                });
+              }, 300);
+            }}
             autoFocus
           />
           {search && (
