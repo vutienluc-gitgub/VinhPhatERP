@@ -5,12 +5,37 @@ import { useVisualViewport } from '@/shared/hooks/useVisualViewport';
 import type { NavigationItem } from '@/app/router/routes';
 import { Icon } from '@/shared/components/Icon';
 import { GROUP_LABEL_MAP, GROUP_ORDER } from '@/shared/constants/navigation';
-import { DRAWER_LABELS } from '@/shared/constants/layout';
+import { DRAWER_LABELS, QUICK_ACTIONS } from '@/shared/constants/layout';
 
 const removeAccents = (str: string) => {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 };
 
+/* ── Quick Action Item (Horizontal scroll) ── */
+const QuickActionItem = memo(
+  ({
+    action,
+    onClose,
+  }: {
+    action: (typeof QUICK_ACTIONS)[number];
+    onClose: () => void;
+  }) => (
+    <NavLink
+      to={action.path}
+      className="drawer-quick-action-btn"
+      onClick={onClose}
+    >
+      <span className="drawer-quick-action-icon">
+        <Icon name={action.icon} size={24} strokeWidth={1.5} />
+      </span>
+      <span className="drawer-quick-action-label">{action.label}</span>
+    </NavLink>
+  ),
+);
+
+QuickActionItem.displayName = 'QuickActionItem';
+
+/* ── Navigation Item (Inside inset grouped list) ── */
 const DrawerNavItem = memo(
   ({ item, onClose }: { item: NavigationItem; onClose: () => void }) => (
     <NavLink
@@ -24,6 +49,12 @@ const DrawerNavItem = memo(
         <Icon name={item.icon ?? 'Component'} size={18} strokeWidth={1.5} />
       </span>
       <span className="drawer-list-label">{item.label}</span>
+      <Icon
+        name="ChevronRight"
+        size={14}
+        strokeWidth={1.5}
+        className="drawer-list-chevron"
+      />
     </NavLink>
   ),
 );
@@ -95,6 +126,7 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
   }, [filtered]);
 
   const noResults = filtered.length === 0 && search.trim().length > 0;
+  const isSearching = search.trim().length > 0;
 
   return (
     <>
@@ -114,6 +146,9 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
       >
         <div className="drawer-handle" />
 
+        {/* Header Title */}
+        <p className="drawer-header-title">{DRAWER_LABELS.HEADER_TITLE}</p>
+
         {/* Search */}
         <div className="drawer-search">
           <Icon name="Search" size={16} strokeWidth={1.8} />
@@ -132,7 +167,6 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
                 });
               }, 300);
             }}
-            autoFocus
           />
           {search && (
             <button
@@ -146,27 +180,52 @@ export function MobileMoreDrawer({ items, onClose }: Props) {
           )}
         </div>
 
-        {/* Content */}
+        {/* Quick Actions (only when NOT searching) */}
+        {!isSearching && (
+          <div className="drawer-quick-actions">
+            {QUICK_ACTIONS.map((action) => (
+              <QuickActionItem
+                key={action.path}
+                action={action}
+                onClose={onClose}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Scrollable Content */}
         <div className="drawer-content">
           {noResults && <p className="drawer-empty">{DRAWER_LABELS.EMPTY}</p>}
 
-          {/* Grouped items (Hiển thị nhóm trước) */}
+          {/* Grouped items (Inset Grouped Lists) */}
           {grouped.groups.map((g) => (
             <div key={g.group} className="drawer-section">
               <p className="drawer-title">{g.label}</p>
-              {g.items.map((item) => (
-                <DrawerNavItem key={item.path} item={item} onClose={onClose} />
-              ))}
+              <div className="drawer-group-block">
+                {g.items.map((item) => (
+                  <DrawerNavItem
+                    key={item.path}
+                    item={item}
+                    onClose={onClose}
+                  />
+                ))}
+              </div>
             </div>
           ))}
 
-          {/* Ungrouped items (Hiển thị các mục Khác ở cuối) */}
+          {/* Ungrouped items */}
           {grouped.ungrouped.length > 0 && (
             <div className="drawer-section">
               <p className="drawer-title">{DRAWER_LABELS.OTHER_GROUP}</p>
-              {grouped.ungrouped.map((item) => (
-                <DrawerNavItem key={item.path} item={item} onClose={onClose} />
-              ))}
+              <div className="drawer-group-block">
+                {grouped.ungrouped.map((item) => (
+                  <DrawerNavItem
+                    key={item.path}
+                    item={item}
+                    onClose={onClose}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>
