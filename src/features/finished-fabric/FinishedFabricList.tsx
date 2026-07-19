@@ -7,13 +7,13 @@ import {
   ViewToggle,
   type ViewMode,
   AddButton,
-  Button,
   FilterBar,
   type FilterFieldConfig,
   KpiCard,
   PageLayout,
   PageHeader,
   TableSection,
+  ActionBar,
 } from '@/shared/components';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
@@ -153,28 +153,24 @@ export function FinishedFabricList({
           <div className="flex items-center gap-4">
             <ViewToggle value={viewMode} onChange={setViewMode} />
 
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <AddButton onClick={onNew} label={MSG.BTN_NEW} />
-              <Button
-                variant="secondary"
-                leftIcon="Zap"
-                className="btn-standard"
-                type="button"
-                onClick={onBulkNew}
-              >
-                {MSG.BTN_BULK_NEW}
-              </Button>
-              <div className="w-px h-6 bg-border mx-1" />
-              <Button
-                variant="secondary"
-                leftIcon="FileSpreadsheet"
-                className="btn-standard"
-                type="button"
-                onClick={handleExportExcel}
-                disabled={isExporting}
-              >
-                {isExporting ? 'Đang xuất...' : MSG.BTN_EXPORT}
-              </Button>
+
+              <ActionBar
+                actions={[
+                  {
+                    icon: 'Zap',
+                    title: MSG.BTN_BULK_NEW,
+                    onClick: onBulkNew,
+                  },
+                  {
+                    icon: 'FileSpreadsheet',
+                    title: isExporting ? 'Đang xuất...' : MSG.BTN_EXPORT,
+                    onClick: handleExportExcel,
+                    disabled: isExporting,
+                  },
+                ]}
+              />
             </div>
           </div>
         }
