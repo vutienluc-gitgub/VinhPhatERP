@@ -17,6 +17,7 @@ export const QUALITY_GRADE_LABELS: Record<QualityGrade, string> = {
 
 export const ROLL_STATUSES = [
   'in_stock',
+  'pending_qc',
   'reserved',
   'in_process',
   'shipped',
@@ -27,6 +28,7 @@ export type RollStatus = (typeof ROLL_STATUSES)[number];
 
 export const ROLL_STATUS_LABELS: Record<RollStatus, string> = {
   in_stock: 'Trong kho',
+  pending_qc: 'Chờ kiểm định',
   reserved: 'Đã đặt trước',
   in_process: 'Đang xử lý',
   shipped: 'Đã xuất kho',

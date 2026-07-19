@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -2952,6 +2952,7 @@ export type Database = {
           color_name: string | null;
           composition: string | null;
           created_at: string;
+          document_number: string | null;
           fabric_type: string;
           gsm: number | null;
           id: string;
@@ -2964,6 +2965,7 @@ export type Database = {
           price_tier: Json | null;
           production_date: string | null;
           purchase_price: number | null;
+          purchase_price_unit: string | null;
           quality_grade: string | null;
           raw_roll_id: string | null;
           reserved_for_order_id: string | null;
@@ -2981,6 +2983,7 @@ export type Database = {
           color_name?: string | null;
           composition?: string | null;
           created_at?: string;
+          document_number?: string | null;
           fabric_type: string;
           gsm?: number | null;
           id?: string;
@@ -2993,6 +2996,7 @@ export type Database = {
           price_tier?: Json | null;
           production_date?: string | null;
           purchase_price?: number | null;
+          purchase_price_unit?: string | null;
           quality_grade?: string | null;
           raw_roll_id?: string | null;
           reserved_for_order_id?: string | null;
@@ -3010,6 +3014,7 @@ export type Database = {
           color_name?: string | null;
           composition?: string | null;
           created_at?: string;
+          document_number?: string | null;
           fabric_type?: string;
           gsm?: number | null;
           id?: string;
@@ -3022,6 +3027,7 @@ export type Database = {
           price_tier?: Json | null;
           production_date?: string | null;
           purchase_price?: number | null;
+          purchase_price_unit?: string | null;
           quality_grade?: string | null;
           raw_roll_id?: string | null;
           reserved_for_order_id?: string | null;
@@ -9001,6 +9007,7 @@ export type Database = {
         | 'converted';
       roll_status:
         | 'in_stock'
+        | 'pending_qc'
         | 'reserved'
         | 'in_process'
         | 'shipped'
@@ -9266,6 +9273,7 @@ export const Constants = {
       ],
       roll_status: [
         'in_stock',
+        'pending_qc',
         'reserved',
         'in_process',
         'shipped',
