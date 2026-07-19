@@ -124,6 +124,9 @@ export const bulkFinishedInputSchema = z
     document_number: z.string().trim().optional(),
     purchase_price: optionalPositiveNum,
     purchase_price_unit: z.enum(['VND/m', 'VND/kg']).default('VND/m'),
+    import_from_po: z.boolean().default(false),
+    po_id: z.string().nullable().optional(),
+    po_item_id: z.string().nullable().optional(),
   })
   .superRefine((values, ctx) => {
     const duplicates = findDuplicateRollNumbers(values.rolls);
@@ -192,5 +195,8 @@ export const bulkFinishedInputDefaults: BulkFinishedInputFormValues = {
   document_number: '',
   purchase_price: undefined,
   purchase_price_unit: 'VND/m',
+  import_from_po: false,
+  po_id: null,
+  po_item_id: null,
   rolls: [EMPTY_ROLL],
 } as BulkFinishedInputFormValues;

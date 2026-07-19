@@ -24,6 +24,10 @@ import {
   useRawRollsByLot,
 } from '@/application/inventory';
 import { useFinishedFabricExport } from '@/application/inventory';
+import {
+  usePurchaseOrderList,
+  usePurchaseOrder,
+} from '@/application/purchase-orders/usePurchaseOrders';
 import { formatQuantity } from '@/shared/value/core/formatter';
 import { sumBy } from '@/shared/utils/array.util';
 import {
@@ -231,6 +235,63 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
       })),
     [fabricOptions],
   );
+
+  const importFromPo = useWatch({ control, name: 'import_from_po' });
+  const selectedPoId = useWatch({ control, name: 'po_id' });
+
+  // Fetch PO List (only when source_type is purchased and import_from_po is true)
+  const { data: poList } = usePurchaseOrderList(
+    sourceType === 'purchased' && importFromPo ? { status: 'approved' } : {}, // Or maybe fetch all that are not cancelled?
+  );
+  const poComboOptions = useMemo(() => {
+    return (poList || []).map((po) => ({
+      value: po.id,
+      label: `${po.po_code} - ${po.supplier_name_snapshot || 'No Supplier'}`,
+    }));
+  }, [poList]);
+
+  // Fetch specific PO details
+  const { data: selectedPo } = usePurchaseOrder(
+    importFromPo && selectedPoId ? selectedPoId : undefined,
+  );
+
+  const poItemComboOptions = useMemo(() => {
+    if (!selectedPo?.items) return [];
+    return selectedPo.items.map((item) => {
+      // Find fabric name from fabricOptions if material_id matches
+      const fabric = fabricOptions.find((f) => f.id === item.material_id);
+      const fabricName = fabric ? fabric.name : item.material_id;
+      return {
+        value: item.id,
+        label: `${fabricName} - ${item.ordered_qty} ${item.uom}`,
+        itemDetails: item,
+      };
+    });
+  }, [selectedPo, fabricOptions]);
+
+  const selectedPoItemId = useWatch({ control, name: 'po_item_id' });
+
+  // Autofill form when PO item is selected
+  useEffect(() => {
+    if (importFromPo && selectedPo && selectedPoItemId) {
+      const item = selectedPo.items?.find((i) => i.id === selectedPoItemId);
+      if (item) {
+        // Auto-fill fields
+        setValue('supplier_id', selectedPo.supplier_id);
+        setValue('document_number', selectedPo.po_code);
+
+        // Match fabric_type name
+        const fabric = fabricOptions.find((f) => f.id === item.material_id);
+        if (fabric?.name) {
+          setValue('fabric_type', fabric.name);
+        }
+
+        setValue('purchase_price', Number(item.unit_price) || undefined);
+        const unit = item.uom === 'mét' ? 'VND/m' : 'VND/kg';
+        setValue('purchase_price_unit', unit);
+      }
+    }
+  }, [importFromPo, selectedPo, selectedPoItemId, setValue, fabricOptions]);
 
   const { resolvedStart: _resolvedStart, getRollNumber } = useBulkRollPrefix({
     control,
@@ -458,6 +519,9 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                 qualityOptions={QUALITY_OPTIONS}
                 statusOptions={STATUS_OPTIONS}
                 rawRollsForLotLength={rawRollsForLot.length}
+                poComboOptions={poComboOptions}
+                poItemComboOptions={poItemComboOptions}
+                importFromPo={importFromPo}
               />
 
               <FinishedFabricBulkFormStep1Config

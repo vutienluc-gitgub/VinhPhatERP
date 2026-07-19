@@ -12,6 +12,7 @@ import type {
   BulkFinishedInputFormValues,
   BulkFinishedRollRowInput,
 } from '@/schema/finished-fabric.schema';
+import type { PurchaseOrderItem } from '@/domain/purchase-orders/purchase-order.types';
 
 type FinishedFabricBulkFormStep1GeneralProps = {
   register: UseFormRegister<BulkFinishedInputFormValues>;
@@ -26,6 +27,13 @@ type FinishedFabricBulkFormStep1GeneralProps = {
   qualityOptions: { value: string; label: string }[];
   statusOptions: { value: string; label: string }[];
   rawRollsForLotLength: number;
+  poComboOptions?: { value: string; label: string }[];
+  poItemComboOptions?: {
+    value: string;
+    label: string;
+    itemDetails?: PurchaseOrderItem;
+  }[];
+  importFromPo?: boolean;
 };
 
 export function FinishedFabricBulkFormStep1General({
@@ -41,6 +49,9 @@ export function FinishedFabricBulkFormStep1General({
   qualityOptions,
   statusOptions,
   rawRollsForLotLength,
+  poComboOptions = [],
+  poItemComboOptions = [],
+  importFromPo = false,
 }: FinishedFabricBulkFormStep1GeneralProps) {
   return (
     <fieldset className="bulk-section">
@@ -100,64 +111,129 @@ export function FinishedFabricBulkFormStep1General({
       </div>
 
       {sourceType === 'purchased' && (
-        <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] mb-4 pb-4 border-b border-border bg-[#f8fafc] p-4 rounded-md">
-          <div className="form-field">
-            <label htmlFor="bulk_supplier_id">
-              Nhà cung cấp <span className="field-required">*</span>
-            </label>
-            <Controller
-              name="supplier_id"
-              control={control}
-              render={({ field }) => (
-                <Combobox
-                  options={supplierComboOptions}
-                  value={field.value ?? ''}
-                  onChange={field.onChange}
-                  placeholder="— Chọn nhà cung cấp —"
-                  hasError={!!errors.supplier_id}
-                />
-              )}
-            />
-            {errors.supplier_id && (
-              <span className="field-error">{errors.supplier_id.message}</span>
-            )}
-          </div>
-          <div className="form-field">
-            <label htmlFor="bulk_document_number">
-              Số chứng từ (Hóa đơn/Phiếu giao)
-            </label>
+        <div className="mb-4 pb-4 border-b border-border bg-[#f8fafc] p-4 rounded-md flex flex-col gap-4">
+          <div className="flex items-center gap-2">
             <input
-              id="bulk_document_number"
-              className="field-input"
-              type="text"
-              placeholder="VD: HD-12345"
-              {...register('document_number')}
+              type="checkbox"
+              id="bulk_import_from_po"
+              {...register('import_from_po')}
             />
+            <label
+              htmlFor="bulk_import_from_po"
+              className="font-medium cursor-pointer"
+            >
+              Nhập từ Đơn đặt hàng (PO)
+            </label>
           </div>
-          <div className="form-field">
-            <label htmlFor="bulk_purchase_price">Giá nhập lô</label>
-            <div className="flex">
-              <input
-                id="bulk_purchase_price"
-                className={`field-input rounded-r-none border-r-0 ${errors.purchase_price ? ' border-danger' : ''}`}
-                type="number"
-                min="0"
-                placeholder="VD: 50000"
-                {...register('purchase_price')}
-              />
-              <select
-                className="field-input rounded-l-none bg-muted/50 w-[110px]"
-                {...register('purchase_price_unit')}
-              >
-                <option value="VND/m">VNĐ / Mét</option>
-                <option value="VND/kg">VNĐ / Kg</option>
-              </select>
+
+          {importFromPo && (
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] p-3 bg-white border border-border rounded-md">
+              <div className="form-field">
+                <label>Chọn Đơn đặt hàng</label>
+                <Controller
+                  name="po_id"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={poComboOptions}
+                      value={field.value ?? ''}
+                      onChange={(val) => {
+                        field.onChange(val);
+                        // Reset item selection when PO changes
+                        setValue('po_item_id', null);
+                      }}
+                      placeholder="— Chọn PO —"
+                    />
+                  )}
+                />
+              </div>
+
+              <div className="form-field">
+                <label>Chọn mặt hàng trong PO</label>
+                <Controller
+                  name="po_item_id"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={poItemComboOptions}
+                      value={field.value ?? ''}
+                      onChange={(val) => {
+                        field.onChange(val);
+                      }}
+                      placeholder="— Chọn mặt hàng —"
+                      disabled={
+                        !control._formValues.po_id ||
+                        poItemComboOptions.length === 0
+                      }
+                    />
+                  )}
+                />
+              </div>
             </div>
-            {errors.purchase_price && (
-              <span className="field-error">
-                {errors.purchase_price.message}
-              </span>
-            )}
+          )}
+
+          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+            <div className="form-field">
+              <label htmlFor="bulk_supplier_id">
+                Nhà cung cấp <span className="field-required">*</span>
+              </label>
+              <Controller
+                name="supplier_id"
+                control={control}
+                render={({ field }) => (
+                  <Combobox
+                    options={supplierComboOptions}
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    placeholder="— Chọn nhà cung cấp —"
+                    hasError={!!errors.supplier_id}
+                    disabled={importFromPo}
+                  />
+                )}
+              />
+              {errors.supplier_id && (
+                <span className="field-error">
+                  {errors.supplier_id.message}
+                </span>
+              )}
+            </div>
+            <div className="form-field">
+              <label htmlFor="bulk_document_number">
+                Số chứng từ (Hóa đơn/Phiếu giao)
+              </label>
+              <input
+                id="bulk_document_number"
+                className="field-input"
+                type="text"
+                placeholder="VD: HD-12345"
+                {...register('document_number')}
+              />
+            </div>
+            <div className="form-field">
+              <label htmlFor="bulk_purchase_price">Giá nhập lô</label>
+              <div className="flex">
+                <input
+                  id="bulk_purchase_price"
+                  className={`field-input rounded-r-none border-r-0 ${errors.purchase_price ? ' border-danger' : ''}`}
+                  type="number"
+                  min="0"
+                  placeholder="VD: 50000"
+                  {...register('purchase_price')}
+                />
+                <select
+                  className="field-input rounded-l-none bg-muted/50 w-[110px]"
+                  {...register('purchase_price_unit')}
+                >
+                  <option value="VND/m">VNĐ / Mét</option>
+                  <option value="VND/kg">VNĐ / Kg</option>
+                </select>
+              </div>
+              {errors.purchase_price && (
+                <span className="field-error">
+                  {errors.purchase_price.message}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       )}
