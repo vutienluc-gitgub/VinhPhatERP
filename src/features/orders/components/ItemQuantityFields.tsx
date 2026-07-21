@@ -3,7 +3,7 @@ import type { UseFormReturn } from 'react-hook-form';
 
 import type { OrdersFormValues } from '@/schema/order.schema';
 import { MoneyInput } from '@/shared/value';
-import { ORDER_MESSAGES as MSG } from '@/features/orders/orders.constants';
+import { ORDERS_FORM_LABELS } from '@/features/orders/orders.constants';
 
 const UNIT_LABELS: Record<string, string> = {
   m: 'm',
@@ -34,7 +34,7 @@ export function ItemQuantityFields({
     <>
       <div className="form-field">
         <label htmlFor={`items.${index}.quantity`}>
-          {MSG.FIELD_QUANTITY} ({unitLabel}){' '}
+          {ORDERS_FORM_LABELS.FIELD_QUANTITY} ({unitLabel}){' '}
           <span className="field-required">*</span>
         </label>
         <input
@@ -55,7 +55,7 @@ export function ItemQuantityFields({
 
       <div className="form-field">
         <label htmlFor={`items.${index}.unitPrice`}>
-          {MSG.FIELD_PRICE} (đ/{unitLabel}){' '}
+          {ORDERS_FORM_LABELS.FIELD_PRICE} (đ/{unitLabel}){' '}
           <span className="field-required">*</span>
         </label>
         <Controller

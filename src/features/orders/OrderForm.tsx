@@ -44,7 +44,7 @@ import {
   DRAFT_KEY,
 } from './components/OrderFormHelpers';
 import type { Order } from './types';
-import { ORDER_MESSAGES as MSG } from './orders.constants';
+import { ORDERS_FORM_LABELS } from './orders.constants';
 
 const UNIT_COMBO_OPTIONS = UNIT_OPTIONS.map((opt) => ({
   value: opt.value,
@@ -166,7 +166,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
     },
     onCancel: () => {
       if (isDirty) {
-        if (!window.confirm(MSG.UNSAVED_WARNING)) {
+        if (!window.confirm(ORDERS_FORM_LABELS.UNSAVED_WARNING)) {
           return false;
         }
       }
@@ -177,7 +177,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
 
   const handleCancel = useCallback(() => {
     if (isDirty) {
-      if (!window.confirm(MSG.UNSAVED_WARNING)) {
+      if (!window.confirm(ORDERS_FORM_LABELS.UNSAVED_WARNING)) {
         return false;
       }
     }
@@ -267,7 +267,9 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
         open={true}
         onClose={handleCancel}
         title={
-          isEditing ? `${MSG.TITLE_EDIT}${order.order_number}` : MSG.TITLE_NEW
+          isEditing
+            ? `${ORDERS_FORM_LABELS.TITLE_EDIT}${order.order_number}`
+            : ORDERS_FORM_LABELS.TITLE_NEW
         }
         stepInfo={{
           current: stepper.currentStep,
@@ -290,7 +292,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
 
           {mutationError && (
             <p className="error-inline mb-4">
-              {MSG.ERROR_PREFIX}
+              {ORDERS_FORM_LABELS.ERROR_PREFIX}
               {getErrorMessage(mutationError)}
             </p>
           )}
@@ -302,7 +304,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                 <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="orderNumber">
-                      {MSG.FIELD_ORDER_NUMBER}
+                      {ORDERS_FORM_LABELS.FIELD_ORDER_NUMBER}
                     </label>
                     {isEditing ? (
                       <input
@@ -317,7 +319,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                         id="orderNumber"
                         className="field-input italic bg-[var(--surface-disabled)] text-[var(--text-tertiary)]"
                         type="text"
-                        value={MSG.AUTO_NUMBER}
+                        value={ORDERS_FORM_LABELS.AUTO_NUMBER}
                         readOnly
                         disabled
                       />
@@ -326,7 +328,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
 
                   <div className="form-field">
                     <label htmlFor="orderType">
-                      {MSG.FIELD_ORDER_TYPE}{' '}
+                      {ORDERS_FORM_LABELS.FIELD_ORDER_TYPE}{' '}
                       <span className="field-required">*</span>
                     </label>
                     <Controller
@@ -363,7 +365,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                 <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="orderDate">
-                      {MSG.FIELD_ORDER_DATE}{' '}
+                      {ORDERS_FORM_LABELS.FIELD_ORDER_DATE}{' '}
                       <span className="field-required">*</span>
                     </label>
                     <input
@@ -383,7 +385,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                 <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                   <div className="form-field">
                     <label htmlFor="customerId">
-                      {MSG.FIELD_CUSTOMER}{' '}
+                      {ORDERS_FORM_LABELS.FIELD_CUSTOMER}{' '}
                       <span className="field-required">*</span>
                     </label>
                     <Controller
@@ -395,7 +397,9 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                             options={customerOptions}
                             value={field.value}
                             onChange={field.onChange}
-                            placeholder={MSG.PLACEHOLDER_CUSTOMER}
+                            placeholder={
+                              ORDERS_FORM_LABELS.PLACEHOLDER_CUSTOMER
+                            }
                             hasError={!!errors.customerId}
                           />
                         );
@@ -410,7 +414,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
 
                   <div className="form-field">
                     <label htmlFor="deliveryDate">
-                      {MSG.FIELD_DELIVERY_DATE}
+                      {ORDERS_FORM_LABELS.FIELD_DELIVERY_DATE}
                     </label>
                     <input
                       id="deliveryDate"
@@ -427,12 +431,14 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                 </div>
 
                 <div className="form-field">
-                  <label htmlFor="notes">{MSG.FIELD_NOTES}</label>
+                  <label htmlFor="notes">
+                    {ORDERS_FORM_LABELS.FIELD_NOTES}
+                  </label>
                   <textarea
                     id="notes"
                     className="field-textarea"
                     rows={3}
-                    placeholder={MSG.PLACEHOLDER_NOTES}
+                    placeholder={ORDERS_FORM_LABELS.PLACEHOLDER_NOTES}
                     {...register('notes')}
                   />
                 </div>
@@ -443,7 +449,8 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
             <div className={stepper.currentStep === 1 ? 'block' : 'hidden'}>
               <div className="form-field">
                 <label>
-                  {MSG.SECTION_ITEMS} <span className="field-required">*</span>
+                  {ORDERS_FORM_LABELS.SECTION_ITEMS}{' '}
+                  <span className="field-required">*</span>
                 </label>
                 {errors.items?.root && (
                   <span className="field-error block mb-2">
@@ -505,7 +512,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                     });
                   }}
                 >
-                  {MSG.BTN_ADD_ITEM}
+                  {ORDERS_FORM_LABELS.BTN_ADD_ITEM}
                 </Button>
 
                 <LineTotals control={control} />
@@ -516,7 +523,11 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
             stepper={stepper}
             onCancel={handleCancel}
             isPending={isPending}
-            submitLabel={isEditing ? MSG.BTN_SAVE : MSG.BTN_CREATE}
+            submitLabel={
+              isEditing
+                ? ORDERS_FORM_LABELS.BTN_SAVE
+                : ORDERS_FORM_LABELS.BTN_CREATE
+            }
           >
             <AutoSaveSubscriber watch={watch} />
           </StepperFooter>

@@ -8,7 +8,7 @@ import {
   STAGE_LABELS,
   STAGE_STATUS_LABELS,
 } from '@/schema/order-progress.schema';
-import { ORDER_MESSAGES } from '@/features/orders/orders.constants';
+import { ORDERS_PROG_LABELS } from '@/features/orders/orders.constants';
 
 import type { OrderProgress, StageStatus } from './types';
 
@@ -79,7 +79,7 @@ export function ProgressTimeline({
       {/* Progress bar */}
       <div className="mb-4">
         <div className="flex justify-between text-[0.8rem] mb-1">
-          <span>{ORDER_MESSAGES.PROG_TIMELINE_TITLE}</span>
+          <span>{ORDERS_PROG_LABELS.PROG_TIMELINE_TITLE}</span>
           <span>
             {progressPercent}% ({doneCount}/{totalCount})
           </span>
@@ -182,12 +182,12 @@ export function ProgressTimeline({
                 <div className="flex gap-1.5 text-[0.8rem] text-muted-foreground mt-[2px]">
                   {row.planned_date && (
                     <span>
-                      {ORDER_MESSAGES.PROG_EXPECTED} {row.planned_date}
+                      {ORDERS_PROG_LABELS.PROG_EXPECTED} {row.planned_date}
                     </span>
                   )}
                   {row.actual_date && (
                     <span>
-                      | {ORDER_MESSAGES.PROG_ACTUAL} {row.actual_date}
+                      | {ORDERS_PROG_LABELS.PROG_ACTUAL} {row.actual_date}
                     </span>
                   )}
                 </div>
@@ -206,21 +206,21 @@ export function ProgressTimeline({
                       type="text"
                       value={noteText}
                       onChange={(e) => setNoteText(e.target.value)}
-                      placeholder={ORDER_MESSAGES.PROG_PLACEHOLDER_NOTE}
+                      placeholder={ORDERS_PROG_LABELS.PROG_PLACEHOLDER_NOTE}
                     />
                     <button
                       className="btn-secondary text-[0.78rem]"
                       type="button"
                       onClick={() => handleSaveNote(row)}
                     >
-                      {ORDER_MESSAGES.PROG_BTN_SAVE}
+                      {ORDERS_PROG_LABELS.PROG_BTN_SAVE}
                     </button>
                     <button
                       className="btn-secondary text-[0.78rem]"
                       type="button"
                       onClick={() => setEditingId(null)}
                     >
-                      {ORDER_MESSAGES.PROG_BTN_CANCEL}
+                      {ORDERS_PROG_LABELS.PROG_BTN_CANCEL}
                     </button>
                   </div>
                 )}
@@ -236,8 +236,8 @@ export function ProgressTimeline({
                         disabled={updateMutation.isPending}
                       >
                         {row.status === 'pending'
-                          ? ORDER_MESSAGES.PROG_BTN_START
-                          : ORDER_MESSAGES.PROG_BTN_COMPLETE}
+                          ? ORDERS_PROG_LABELS.PROG_BTN_START
+                          : ORDERS_PROG_LABELS.PROG_BTN_COMPLETE}
                       </button>
                     )}
                     {row.status === 'pending' && (
@@ -247,7 +247,7 @@ export function ProgressTimeline({
                         onClick={() => handleSkip(row)}
                         disabled={updateMutation.isPending}
                       >
-                        {ORDER_MESSAGES.PROG_BTN_SKIP}
+                        {ORDERS_PROG_LABELS.PROG_BTN_SKIP}
                       </button>
                     )}
                     {editingId !== row.id && (
@@ -272,7 +272,7 @@ export function ProgressTimeline({
 
       {updateMutation.error && (
         <p className="text-danger-fg text-[0.85rem] mt-2">
-          {ORDER_MESSAGES.PROG_ERROR_UPDATE}{' '}
+          {ORDERS_PROG_LABELS.PROG_ERROR_UPDATE}{' '}
           {updateMutation.error instanceof Error
             ? updateMutation.error.message
             : String(updateMutation.error)}

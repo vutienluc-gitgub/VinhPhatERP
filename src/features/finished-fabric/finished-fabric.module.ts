@@ -14,6 +14,8 @@ import {
   findDuplicateRollNumbers,
 } from '@/schema/finished-fabric.schema';
 
+import { FINISHED_FABRIC_MODULE_LABELS as MSG } from './finished-fabric.constants';
+
 export {
   QUALITY_GRADES,
   ROLL_STATUSES,
@@ -34,10 +36,9 @@ export type {
 export const finishedFabricFeature: FeatureDefinition = {
   key: 'finished-fabric',
   route: '/finished-fabric',
-  title: 'Vải thành phẩm (Lưu kho)',
+  title: MSG.FEATURE_TITLE,
   badge: 'Beta',
-  description:
-    'Quản lý tồn kho vải đã nhuộm thành phẩm, sẵn sàng giao hàng hoặc xả kho.',
+  description: MSG.FEATURE_DESC,
   summary: [
     {
       label: 'Tổng cây vải',
@@ -63,9 +64,9 @@ export const finishedFabricFeature: FeatureDefinition = {
 export const finishedFabricPlugin: FeaturePlugin = {
   key: 'finished-fabric',
   route: 'finished-fabric',
-  label: 'Kho Thành phẩm',
-  shortLabel: 'Thành phẩm',
-  description: 'Theo dõi tồn kho vải đã nhuộm, nhập kho và xuất kho giao hàng.',
+  label: MSG.PLUGIN_LABEL,
+  shortLabel: MSG.PLUGIN_SHORT_LABEL,
+  description: MSG.PLUGIN_DESC,
   icon: 'Sparkles',
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'warehouse',

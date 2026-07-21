@@ -1,3 +1,10 @@
+import os
+import re
+
+CONSTANTS_FILE = "src/features/orders/orders.constants.ts"
+FEATURES_DIR = "src/features/orders"
+
+NEW_CONSTANTS = """
 export const ORDERS_FORM_LABELS = {
   TITLE_EDIT: 'Sửa đơn: ',
   TITLE_NEW: 'Tạo đơn hàng mới',
@@ -60,12 +67,9 @@ export const ORDERS_LIST_LABELS = {
   EMPTY_NO_DATA_DESC: 'Nhấn nút tạo đơn để bắt đầu.',
   PAGINATION_LABEL: 'đơn hàng',
   ERR_NOT_FOUND: 'Không tìm thấy đơn hàng.',
-  CONFIRM_TRADING:
-    'Xác nhận đơn hàng thương mại? Hệ thống sẽ tự động trừ kho cho các dòng hàng.',
-  CONFIRM_PRODUCTION:
-    'Xác nhận đơn hàng? Hệ thống sẽ tạo 7 công đoạn tiến độ tự động.',
-  CONFIRM_CANCEL_TRADING:
-    'Hủy đơn thương mại? Hệ thống sẽ hoàn trả tồn kho đã trừ.',
+  CONFIRM_TRADING: 'Xác nhận đơn hàng thương mại? Hệ thống sẽ tự động trừ kho cho các dòng hàng.',
+  CONFIRM_PRODUCTION: 'Xác nhận đơn hàng? Hệ thống sẽ tạo 7 công đoạn tiến độ tự động.',
+  CONFIRM_CANCEL_TRADING: 'Hủy đơn thương mại? Hệ thống sẽ hoàn trả tồn kho đã trừ.',
   CONFIRM_CANCEL: 'Hủy đơn hàng này?',
   CONFIRM_COMPLETE: 'Hoàn thành đơn hàng?',
   CONFIRM_APPROVE_REQ: 'Chấp nhận đơn yêu cầu này và chuyển thành đơn nháp?',
@@ -172,8 +176,7 @@ export const ORDERS_RES_LABELS = {
 export const ORDERS_OVERRIDE_LABELS = {
   OVERRIDE_DIALOG_TITLE: 'Xác nhận vượt hạn mức',
   OVERRIDE_DIALOG_WARNING: 'Cảnh báo hạn mức',
-  OVERRIDE_MSG_ADMIN_ONLY:
-    'Bạn có quyền phê duyệt ngoại lệ (Override). Bạn có muốn tiếp tục lưu đơn hàng này?',
+  OVERRIDE_MSG_ADMIN_ONLY: 'Bạn có quyền phê duyệt ngoại lệ (Override). Bạn có muốn tiếp tục lưu đơn hàng này?',
   OVERRIDE_MSG_SALE_ONLY: 'Vui lòng liên hệ Quản lý để xin phê duyệt ngoại lệ.',
   OVERRIDE_BTN_CONFIRM: 'Xác nhận tiếp tục',
   OVERRIDE_BTN_CANCEL: 'Hủy / Quay lại',
@@ -246,8 +249,7 @@ export const ORDERS_AUDIT_LABELS = {
 
 export const ORDERS_MODULE_LABELS = {
   MODULE_TITLE: 'Đơn Hàng & Bán Hàng',
-  MODULE_DESC:
-    'Quản lý đơn đặt hàng, tự động chuyển đổi sang lệnh sản xuất, theo dõi tiến độ và giao hàng.',
+  MODULE_DESC: 'Quản lý đơn đặt hàng, tự động chuyển đổi sang lệnh sản xuất, theo dõi tiến độ và giao hàng.',
   KPI_PENDING_PROD: 'Chờ sản xuất',
   KPI_DELIVERING: 'Đang giao',
   HIGHLIGHT_SO_TO_WO: 'Tự động tạo Lệnh Sản Xuất từ Đơn hàng.',
@@ -256,8 +258,7 @@ export const ORDERS_MODULE_LABELS = {
   PLUGIN_LABEL: 'Đơn hàng',
   PLUGIN_DESC: 'Quản lý đơn hàng, báo giá và bán hàng.',
   PROG_MODULE_TITLE: 'Tiến Độ Sản Xuất',
-  PROG_MODULE_DESC:
-    'Theo dõi và cập nhật tiến độ cho từng đơn hàng theo thời gian thực.',
+  PROG_MODULE_DESC: 'Theo dõi và cập nhật tiến độ cho từng đơn hàng theo thời gian thực.',
   PROG_KPI_DOING: 'Đang thực hiện',
   PROG_HIGHLIGHT_KANBAN: 'Giao diện Kanban trực quan.',
   PROG_HIGHLIGHT_AUTO: 'Tự động chuyển công đoạn.',
@@ -265,3 +266,87 @@ export const ORDERS_MODULE_LABELS = {
   PROG_PLUGIN_LABEL: 'Tiến độ SX',
   PROG_PLUGIN_DESC: 'Theo dõi tiến độ đơn hàng',
 } as const;
+"""
+
+def get_mapping():
+    # Map key to corresponding SCOPE.key
+    mapping = {}
+    sections = [
+        ("ORDERS_FORM_LABELS", r"export const ORDERS_FORM_LABELS = {([^}]+)}"),
+        ("ORDERS_LIST_LABELS", r"export const ORDERS_LIST_LABELS = {([^}]+)}"),
+        ("ORDERS_PROG_LABELS", r"export const ORDERS_PROG_LABELS = {([^}]+)}"),
+        ("ORDERS_RES_LABELS", r"export const ORDERS_RES_LABELS = {([^}]+)}"),
+        ("ORDERS_OVERRIDE_LABELS", r"export const ORDERS_OVERRIDE_LABELS = {([^}]+)}"),
+        ("ORDERS_DASHBOARD_LABELS", r"export const ORDERS_DASHBOARD_LABELS = {([^}]+)}"),
+        ("ORDERS_AUDIT_LABELS", r"export const ORDERS_AUDIT_LABELS = {([^}]+)}"),
+        ("ORDERS_MODULE_LABELS", r"export const ORDERS_MODULE_LABELS = {([^}]+)}")
+    ]
+    for scope, regex in sections:
+        match = re.search(regex, NEW_CONSTANTS)
+        if match:
+            content = match.group(1)
+            keys = re.findall(r"\s*([A-Z0-9_]+):", content)
+            for k in keys:
+                mapping[k] = f"{scope}.{k}"
+    return mapping
+
+def process_files(mapping):
+    scopes_found = set()
+    for root, dirs, files in os.walk(FEATURES_DIR):
+        for file in files:
+            if file.endswith('.tsx') or file.endswith('.ts'):
+                if file == "orders.constants.ts": continue
+                filepath = os.path.join(root, file)
+                with open(filepath, 'r', encoding='utf8') as f:
+                    content = f.read()
+                
+                original_content = content
+                used_scopes = set()
+                has_msg_alias = bool(re.search(r"import\s+\{\s*ORDER_MESSAGES\s+as\s+MSG\s*\}\s+from", content))
+                has_order_messages = "ORDER_MESSAGES" in content
+                
+                if has_msg_alias or has_order_messages:
+                    def replacer(m):
+                        key = m.group(1)
+                        if key in mapping:
+                            scope_key = mapping[key]
+                            scope_name = scope_key.split('.')[0]
+                            used_scopes.add(scope_name)
+                            return scope_key
+                        return m.group(0) # unchanged if not found
+                    
+                    # Replace MSG.xxx -> SCOPE.xxx
+                    if has_msg_alias:
+                        content = re.sub(r"\bMSG\.([A-Z0-9_]+)", replacer, content)
+                    
+                    # Replace ORDER_MESSAGES.xxx -> SCOPE.xxx
+                    if has_order_messages:
+                        content = re.sub(r"ORDER_MESSAGES\.([A-Z0-9_]+)", replacer, content)
+                    
+                    # Replace imports
+                    if used_scopes:
+                        import_regex = r"import\s+\{[^}]*ORDER_MESSAGES[^}]*\}\s+from\s+['\"](.*?)orders\.constants['\"];?"
+                        def import_replacer(m):
+                            path = m.group(1)
+                            imports = ", ".join(sorted(list(used_scopes)))
+                            return f"import {{ {imports} }} from '{path}orders.constants';"
+                        
+                        content = re.sub(import_regex, import_replacer, content)
+                        
+                        import_alias_regex = r"import\s+\{\s*ORDER_MESSAGES\s+as\s+[A-Z_]+\s*\}\s+from\s+['\"](.*?)orders\.constants['\"];?"
+                        def import_alias_replacer(m):
+                            path = m.group(1)
+                            imports = ", ".join(sorted(list(used_scopes)))
+                            return f"import {{ {imports} }} from '{path}orders.constants';"
+                            
+                        content = re.sub(import_alias_regex, import_alias_replacer, content)
+                    
+                    if content != original_content:
+                        with open(filepath, 'w', encoding='utf8') as f:
+                            f.write(content)
+                        print(f"Updated {filepath}")
+
+if __name__ == "__main__":
+    mapping = get_mapping()
+    process_files(mapping)
+    print("Done")

@@ -11,7 +11,7 @@ import type { UseMutationResult } from '@tanstack/react-query';
 import { Combobox } from '@/shared/components/Combobox';
 import { ImagePicker } from '@/shared/components/ImagePicker';
 import type { FinishedFabricFormValues } from '@/schema/finished-fabric.schema';
-import { FINISHED_FABRIC_MESSAGES as MSG } from '@/features/finished-fabric/finished-fabric.constants';
+import { FINISHED_FABRIC_FORM_LABELS as MSG } from '@/features/finished-fabric/finished-fabric.constants';
 
 type FinishedFabricFormStep1GeneralProps = {
   register: UseFormRegister<FinishedFabricFormValues>;

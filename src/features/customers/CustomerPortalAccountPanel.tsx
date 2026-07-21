@@ -9,6 +9,8 @@ import {
 } from '@/application/crm';
 import { useConfirm } from '@/shared/hooks/useConfirm';
 
+import { CUSTOMER_PORTAL_LABELS } from './customers.constants';
+
 interface Props {
   customerId: string;
   customerName: string;
@@ -41,7 +43,12 @@ export function CustomerPortalAccountPanel({
       },
       {
         onSuccess: () => {
-          toast.success(`Tài khoản Portal đã được tạo cho ${customerName}.`);
+          toast.success(
+            CUSTOMER_PORTAL_LABELS.successCreated.replace(
+              '{name}',
+              customerName,
+            ),
+          );
           setShowForm(false);
           setEmail('');
           setPassword('');
@@ -50,7 +57,7 @@ export function CustomerPortalAccountPanel({
           toast.error(
             err instanceof Error
               ? err.message
-              : (String(err) ?? 'Tạo tài khoản thất bại.'),
+              : (String(err) ?? CUSTOMER_PORTAL_LABELS.errorCreateFailed),
           );
         },
       },
@@ -61,10 +68,13 @@ export function CustomerPortalAccountPanel({
     if (!account) return;
 
     const confirmed = await confirm({
-      title: 'Vô hiệu hóa tài khoản',
-      message: `Bạn có chắc chắn muốn vô hiệu hóa tài khoản Portal của ${customerName}?`,
-      confirmLabel: 'Vô hiệu hóa',
-      cancelLabel: 'Hủy',
+      title: CUSTOMER_PORTAL_LABELS.deactivateTitle,
+      message: CUSTOMER_PORTAL_LABELS.deactivateConfirmMsg.replace(
+        '{name}',
+        customerName,
+      ),
+      confirmLabel: CUSTOMER_PORTAL_LABELS.deactivateBtn,
+      cancelLabel: CUSTOMER_PORTAL_LABELS.cancelBtn,
       variant: 'danger',
     });
     if (!confirmed) return;
@@ -76,7 +86,7 @@ export function CustomerPortalAccountPanel({
       },
       {
         onSuccess: () => {
-          toast.success('Tài khoản đã bị vô hiệu hóa.');
+          toast.success(CUSTOMER_PORTAL_LABELS.successDeactivated);
         },
         onError: (err) => {
           toast.error(err instanceof Error ? err.message : String(err));
@@ -95,7 +105,7 @@ export function CustomerPortalAccountPanel({
       },
       {
         onSuccess: () => {
-          toast.success('Tài khoản đã được kích hoạt lại.');
+          toast.success(CUSTOMER_PORTAL_LABELS.successReactivated);
         },
         onError: (err) => {
           toast.error(err instanceof Error ? err.message : String(err));
@@ -108,7 +118,7 @@ export function CustomerPortalAccountPanel({
     return (
       <div className="border border-slate-200 rounded-xl p-3 bg-slate-50 min-h-[90px] flex items-center justify-center">
         <p className="text-xs text-slate-400 italic">
-          Đang kiểm tra tài khoản Portal…
+          {CUSTOMER_PORTAL_LABELS.loadingCheck}
         </p>
       </div>
     );
@@ -134,7 +144,9 @@ export function CustomerPortalAccountPanel({
                 account.is_active ? 'bg-[#16a34a]' : 'bg-slate-400'
               }`}
             />
-            {account.is_active ? 'Hoạt động' : 'Vô hiệu hóa'}
+            {account.is_active
+              ? CUSTOMER_PORTAL_LABELS.statusActive
+              : CUSTOMER_PORTAL_LABELS.statusDeactivated}
           </span>
         </div>
       )}
@@ -145,21 +157,21 @@ export function CustomerPortalAccountPanel({
             {!showForm ? (
               <div className="flex flex-col gap-2">
                 <p className="text-[12px] text-slate-500 italic">
-                  Khách hàng chưa có tài khoản Portal.
+                  {CUSTOMER_PORTAL_LABELS.noAccountMsg}
                 </p>
                 <button
                   type="button"
                   onClick={() => setShowForm(true)}
                   className="btn-secondary btn-sm text-[12px] w-fit font-bold"
                 >
-                  + Tạo tài khoản
+                  {CUSTOMER_PORTAL_LABELS.createAccountBtn}
                 </button>
               </div>
             ) : (
               <div className="space-y-2">
                 <div className="flex flex-col gap-1">
                   <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                    Email
+                    {CUSTOMER_PORTAL_LABELS.emailLabel}
                   </label>
                   <input
                     type="email"
@@ -167,12 +179,12 @@ export function CustomerPortalAccountPanel({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="field-input h-9 text-xs"
-                    placeholder="khachhang@email.com"
+                    placeholder={CUSTOMER_PORTAL_LABELS.emailPlaceholder}
                   />
                 </div>
                 <div className="flex flex-col gap-1">
                   <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                    Mật khẩu
+                    {CUSTOMER_PORTAL_LABELS.passwordLabel}
                   </label>
                   <input
                     type="password"
@@ -181,7 +193,7 @@ export function CustomerPortalAccountPanel({
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="field-input h-9 text-xs"
-                    placeholder="Tối thiểu 8 ký tự"
+                    placeholder={CUSTOMER_PORTAL_LABELS.passwordPlaceholder}
                   />
                 </div>
                 <div className="flex gap-2 pt-1">
@@ -192,14 +204,16 @@ export function CustomerPortalAccountPanel({
                     disabled={loading || !email || password.length < 8}
                     onClick={handleCreate}
                   >
-                    {loading ? 'Đang tạo…' : 'Xác nhận'}
+                    {loading
+                      ? CUSTOMER_PORTAL_LABELS.submitCreating
+                      : CUSTOMER_PORTAL_LABELS.submitConfirm}
                   </Button>
                   <button
                     type="button"
                     onClick={() => setShowForm(false)}
                     className="btn-secondary btn-sm text-[12px]"
                   >
-                    Hủy
+                    {CUSTOMER_PORTAL_LABELS.cancelBtn}
                   </button>
                 </div>
               </div>
@@ -216,7 +230,9 @@ export function CustomerPortalAccountPanel({
                   loading ? 'opacity-50' : 'opacity-100'
                 }`}
               >
-                {loading ? 'Đang xử lý…' : '⊘ Vô hiệu hóa tài khoản'}
+                {loading
+                  ? CUSTOMER_PORTAL_LABELS.actionProcessing
+                  : CUSTOMER_PORTAL_LABELS.actionDeactivate}
               </button>
             ) : (
               <Button
@@ -225,7 +241,9 @@ export function CustomerPortalAccountPanel({
                 onClick={handleReactivate}
                 disabled={loading}
               >
-                {loading ? 'Đang xử lý…' : '↺ Kích hoạt lại'}
+                {loading
+                  ? CUSTOMER_PORTAL_LABELS.actionProcessing
+                  : CUSTOMER_PORTAL_LABELS.actionReactivate}
               </Button>
             )}
           </div>

@@ -38,6 +38,7 @@ import { useAuth } from '@/shared/hooks/useAuth';
 import { useCustomerColumns } from './hooks/useCustomerColumns';
 import { CustomerMobileCard } from './components/CustomerMobileCard';
 import type { Customer, CustomersFilter } from './types';
+import { CUSTOMER_LIST_LABELS } from './customers.constants';
 
 type CustomerListProps = {
   onEdit: (customer: Customer) => void;
@@ -107,13 +108,13 @@ export function CustomerList({
     {
       key: 'query',
       type: 'search',
-      label: 'Tìm kiếm khách hàng',
-      placeholder: 'Tìm theo tên, mã KH, sđt...',
+      label: CUSTOMER_LIST_LABELS.searchLabel,
+      placeholder: CUSTOMER_LIST_LABELS.searchPlaceholder,
     },
     {
       key: 'status',
       type: 'combobox',
-      label: 'Trạng thái',
+      label: CUSTOMER_LIST_LABELS.statusLabel,
       options: [
         {
           value: 'active',
@@ -130,7 +131,7 @@ export function CustomerList({
           {
             key: 'salesperson_id',
             type: 'combobox' as const,
-            label: 'Phụ trách',
+            label: CUSTOMER_LIST_LABELS.salespersonLabel,
             options:
               salesEmployees?.map((emp) => ({
                 value: emp.id,
@@ -184,24 +185,27 @@ export function CustomerList({
   const tabs: TabItem<string>[] = [
     {
       key: 'all',
-      label: 'Tất cả khách hàng',
+      label: CUSTOMER_LIST_LABELS.tabAll,
       icon: <Icon name="Users" size={16} />,
     },
     {
       key: 'mine',
-      label: 'Khách của tôi',
+      label: CUSTOMER_LIST_LABELS.tabMine,
       icon: <Icon name="User" size={16} />,
     },
     {
       key: 'new',
-      label: 'Khách mới tuần này',
+      label: CUSTOMER_LIST_LABELS.tabNew,
       icon: <Icon name="Star" size={16} />,
     },
   ];
 
   async function handleDelete(customer: Customer) {
     const ok = await confirm({
-      message: `Xóa khách hàng "${customer.name}"? Hành động này không thể hoàn tác.`,
+      message: CUSTOMER_LIST_LABELS.deleteConfirmMsg.replace(
+        '{name}',
+        customer.name,
+      ),
       variant: 'danger',
     });
     if (!ok) return;
@@ -212,7 +216,7 @@ export function CustomerList({
     ...(canSelectSalesperson
       ? [
           {
-            label: 'Đổi người phụ trách',
+            label: CUSTOMER_LIST_LABELS.bulkAssignLabel,
             icon: 'UserPlus' as IconName,
             onClick: (rows: Customer[]) => {
               setSelectedBulkCustomers(rows);
@@ -223,7 +227,7 @@ export function CustomerList({
         ]
       : []),
     {
-      label: 'Cập nhật trạng thái',
+      label: CUSTOMER_LIST_LABELS.bulkStatusLabel,
       icon: 'Activity' as IconName,
       onClick: (rows: Customer[]) => {
         setSelectedBulkCustomers(rows);
@@ -232,11 +236,14 @@ export function CustomerList({
       },
     },
     {
-      label: 'Gửi SMS/Email',
+      label: CUSTOMER_LIST_LABELS.bulkEmailLabel,
       icon: 'Mail' as IconName,
       onClick: (rows: Customer[]) => {
         alert(
-          `Tính năng gửi SMS/Email cho ${rows.length} khách hàng đang được phát triển.`,
+          CUSTOMER_LIST_LABELS.bulkEmailDevAlert.replace(
+            '{count}',
+            String(rows.length),
+          ),
         );
       },
     },
@@ -247,10 +254,14 @@ export function CustomerList({
   return (
     <PageLayout>
       <PageHeader
-        title="Danh sách khách hàng"
-        subtitle="Quản lý thông tin khách hàng"
+        title={CUSTOMER_LIST_LABELS.title}
+        subtitle={CUSTOMER_LIST_LABELS.subtitle}
         actions={
-          <AddButton onClick={onNew} label="Thêm khách hàng" icon="UserPlus" />
+          <AddButton
+            onClick={onNew}
+            label={CUSTOMER_LIST_LABELS.addCustomerBtn}
+            icon="UserPlus"
+          />
         }
       />
 
@@ -258,27 +269,27 @@ export function CustomerList({
       <KPISection>
         <KpiGrid>
           <KpiCard
-            label="Tổng khách hàng"
+            label={CUSTOMER_LIST_LABELS.kpiTotal}
             value={result?.total ?? 0}
             icon="Users"
             variant="primary"
-            footer="Cơ sở dữ liệu khách hàng"
+            footer={CUSTOMER_LIST_LABELS.kpiTotalDesc}
           />
 
           <KpiCard
-            label="Đang hoạt động"
+            label={CUSTOMER_LIST_LABELS.kpiActive}
             value={customers.filter((c) => c.status === 'active').length}
             icon="Activity"
             variant="success"
-            footer="Khách hàng có giao dịch"
+            footer={CUSTOMER_LIST_LABELS.kpiActiveDesc}
           />
 
           <KpiCard
-            label="Khách hàng mới"
+            label={CUSTOMER_LIST_LABELS.kpiNew}
             value={`+${customers.length}`}
             icon="Star"
             variant="warning"
-            footer="Đã thêm trong kỳ"
+            footer={CUSTOMER_LIST_LABELS.kpiNewDesc}
           />
         </KpiGrid>
       </KPISection>
@@ -313,20 +324,22 @@ export function CustomerList({
           isLoading={isLoading}
           rowKey={(c) => c.id}
           onRowClick={onEdit}
-          exportFileName="DanhSachKhachHang"
+          exportFileName={CUSTOMER_LIST_LABELS.exportFileName}
           bulkActions={bulkActions}
           emptyStateTitle={
             hasFilter
-              ? 'Không tìm thấy khách hàng'
-              : 'Chưa có thông tin khách hàng'
+              ? CUSTOMER_LIST_LABELS.emptyFilterTitle
+              : CUSTOMER_LIST_LABELS.emptyTitle
           }
           emptyStateDescription={
             hasFilter
-              ? 'Vui lòng thử điều chỉnh lại bộ lọc.'
-              : 'Hãy thêm khách hàng mới để quản lý thông tin.'
+              ? CUSTOMER_LIST_LABELS.emptyFilterDesc
+              : CUSTOMER_LIST_LABELS.emptyDesc
           }
           emptyStateIcon={hasFilter ? 'Search' : 'Users'}
-          emptyStateActionLabel={!hasFilter ? '+ Thêm khách hàng' : undefined}
+          emptyStateActionLabel={
+            !hasFilter ? CUSTOMER_LIST_LABELS.emptyAddBtn : undefined
+          }
           onEmptyStateAction={!hasFilter ? onNew : undefined}
           columns={columns}
           renderMobileCard={(customer) => (
@@ -335,7 +348,7 @@ export function CustomerList({
           pagination={{
             result,
             onPageChange: setPage,
-            itemLabel: 'khách hàng',
+            itemLabel: CUSTOMER_LIST_LABELS.itemLabel,
           }}
         />
       </TableSection>
@@ -344,11 +357,11 @@ export function CustomerList({
       <AdaptiveSheet
         open={bulkAssignOpen}
         onClose={() => setBulkAssignOpen(false)}
-        title="Đổi người phụ trách"
+        title={CUSTOMER_LIST_LABELS.bulkAssignTitle}
         footer={
           <div className="flex justify-end gap-3">
             <Button variant="outline" onClick={() => setBulkAssignOpen(false)}>
-              Hủy
+              {CUSTOMER_LIST_LABELS.cancelBtn}
             </Button>
             <Button
               variant="primary"
@@ -368,19 +381,21 @@ export function CustomerList({
                 );
               }}
             >
-              Xác nhận
+              {CUSTOMER_LIST_LABELS.bulkAssignSubmit}
             </Button>
           </div>
         }
       >
         <div className="flex flex-col gap-4 py-4">
           <p className="text-sm text-muted">
-            Bạn đang chọn {selectedBulkCustomers.length} khách hàng để chuyển
-            người phụ trách.
+            {CUSTOMER_LIST_LABELS.bulkAssignDesc.replace(
+              '{count}',
+              String(selectedBulkCustomers.length),
+            )}
           </p>
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-foreground">
-              Nhân viên phụ trách mới
+              {CUSTOMER_LIST_LABELS.bulkAssignFieldLabel}
             </label>
             <Combobox
               options={
@@ -389,7 +404,7 @@ export function CustomerList({
               }
               value={selectedSalesperson}
               onChange={setSelectedSalesperson}
-              placeholder="Chọn nhân viên..."
+              placeholder={CUSTOMER_LIST_LABELS.bulkAssignPlaceholder}
             />
           </div>
         </div>
@@ -398,11 +413,11 @@ export function CustomerList({
       <AdaptiveSheet
         open={bulkStatusOpen}
         onClose={() => setBulkStatusOpen(false)}
-        title="Cập nhật trạng thái"
+        title={CUSTOMER_LIST_LABELS.bulkStatusTitle}
         footer={
           <div className="flex justify-end gap-3">
             <Button variant="outline" onClick={() => setBulkStatusOpen(false)}>
-              Hủy
+              {CUSTOMER_LIST_LABELS.cancelBtn}
             </Button>
             <Button
               variant="primary"
@@ -422,19 +437,21 @@ export function CustomerList({
                 );
               }}
             >
-              Cập nhật
+              {CUSTOMER_LIST_LABELS.bulkStatusSubmit}
             </Button>
           </div>
         }
       >
         <div className="flex flex-col gap-4 py-4">
           <p className="text-sm text-muted">
-            Bạn đang chọn {selectedBulkCustomers.length} khách hàng để cập nhật
-            trạng thái CRM.
+            {CUSTOMER_LIST_LABELS.bulkStatusDesc.replace(
+              '{count}',
+              String(selectedBulkCustomers.length),
+            )}
           </p>
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-foreground">
-              Trạng thái mới
+              {CUSTOMER_LIST_LABELS.bulkStatusFieldLabel}
             </label>
             <Combobox
               options={[
@@ -443,7 +460,7 @@ export function CustomerList({
               ]}
               value={selectedStatus}
               onChange={setSelectedStatus}
-              placeholder="Chọn trạng thái..."
+              placeholder={CUSTOMER_LIST_LABELS.bulkStatusPlaceholder}
             />
           </div>
         </div>

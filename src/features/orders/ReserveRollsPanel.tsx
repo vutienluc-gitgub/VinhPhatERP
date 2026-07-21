@@ -15,7 +15,11 @@ import {
 import { LengthText, WeightText, QuantityText } from '@/shared/value';
 
 import type { Order, OrderItem } from './types';
-import { ORDER_MESSAGES } from './orders.constants';
+import {
+  ORDERS_FORM_LABELS,
+  ORDERS_PROG_LABELS,
+  ORDERS_RES_LABELS,
+} from './orders.constants';
 
 type ReserveRollsPanelProps = {
   order: Order;
@@ -98,7 +102,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
     <AdaptiveSheet
       open={true}
       onClose={onClose}
-      title={`${ORDER_MESSAGES.RES_TITLE}${order.order_number}`}
+      title={`${ORDERS_RES_LABELS.RES_TITLE}${order.order_number}`}
     >
       <div className="flex flex-col gap-4">
         {/* Order items as filter tabs */}
@@ -112,7 +116,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                 onClick={() => setSelectedItem(item)}
               >
                 <span className="reserve-tab-label">
-                  {ORDER_MESSAGES.RES_TAB_PREFIX} {idx + 1}
+                  {ORDERS_RES_LABELS.RES_TAB_PREFIX} {idx + 1}
                 </span>
                 <span className="reserve-tab-detail">
                   {item.fabric_type}
@@ -138,7 +142,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
               <span> · {selectedItem.color_name}</span>
             )}
             <span className="text-muted text-sm">
-              {ORDER_MESSAGES.RES_REQUIRED}{' '}
+              {ORDERS_RES_LABELS.RES_REQUIRED}{' '}
               <QuantityText
                 value={selectedItem.quantity}
                 suffix={selectedItem.unit}
@@ -152,7 +156,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
         <div className="reserve-summary">
           <div className="reserve-summary-item">
             <span className="reserve-summary-label">
-              {ORDER_MESSAGES.RES_SUM_RESERVED}
+              {ORDERS_RES_LABELS.RES_SUM_RESERVED}
             </span>
             <span className="reserve-summary-value">
               {reservedRolls.length}
@@ -160,7 +164,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
           </div>
           <div className="reserve-summary-item">
             <span className="reserve-summary-label">
-              {ORDER_MESSAGES.RES_SUM_LENGTH}
+              {ORDERS_RES_LABELS.RES_SUM_LENGTH}
             </span>
             <span className="reserve-summary-value">
               <LengthText value={reservedLengthM} suffix="m" />
@@ -168,7 +172,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
           </div>
           <div className="reserve-summary-item">
             <span className="reserve-summary-label">
-              {ORDER_MESSAGES.RES_SUM_WEIGHT}
+              {ORDERS_RES_LABELS.RES_SUM_WEIGHT}
             </span>
             <span className="reserve-summary-value">
               <WeightText value={reservedWeightKg} suffix="kg" />
@@ -180,17 +184,18 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
         {reservedRolls.length > 0 && (
           <div>
             <h4 className="text-[0.88rem] mb-2">
-              {ORDER_MESSAGES.RES_RESERVED_LIST_TITLE} ({reservedRolls.length})
+              {ORDERS_RES_LABELS.RES_RESERVED_LIST_TITLE} (
+              {reservedRolls.length})
             </h4>
             <div className="data-table-wrap">
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>{ORDER_MESSAGES.RES_COL_ROLL}</th>
-                    <th>{ORDER_MESSAGES.RES_COL_FABRIC}</th>
-                    <th>{ORDER_MESSAGES.RES_COL_LENGTH}</th>
-                    <th>{ORDER_MESSAGES.RES_COL_WEIGHT}</th>
-                    <th>{ORDER_MESSAGES.RES_COL_GRADE}</th>
+                    <th>{ORDERS_RES_LABELS.RES_COL_ROLL}</th>
+                    <th>{ORDERS_RES_LABELS.RES_COL_FABRIC}</th>
+                    <th>{ORDERS_RES_LABELS.RES_COL_LENGTH}</th>
+                    <th>{ORDERS_RES_LABELS.RES_COL_WEIGHT}</th>
+                    <th>{ORDERS_RES_LABELS.RES_COL_GRADE}</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -227,8 +232,8 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                           disabled={pendingRollIds.has(roll.id)}
                         >
                           {pendingRollIds.has(roll.id)
-                            ? ORDER_MESSAGES.RES_BTN_PROCESSING
-                            : ORDER_MESSAGES.RES_BTN_UNRESERVE}
+                            ? ORDERS_RES_LABELS.RES_BTN_PROCESSING
+                            : ORDERS_RES_LABELS.RES_BTN_UNRESERVE}
                         </Button>
                       </td>
                     </tr>
@@ -242,7 +247,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
         {/* Available rolls to reserve */}
         <div>
           <h4 className="text-[0.88rem] mb-2">
-            {ORDER_MESSAGES.RES_AVAILABLE_LIST_TITLE}
+            {ORDERS_RES_LABELS.RES_AVAILABLE_LIST_TITLE}
             {selectedItem && (
               <span className="text-muted text-sm">
                 {' '}
@@ -253,12 +258,12 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
           </h4>
 
           {loadingAvailable || loadingReserved ? (
-            <p className="table-empty">{ORDER_MESSAGES.PROG_LOADING}</p>
+            <p className="table-empty">{ORDERS_PROG_LABELS.PROG_LOADING}</p>
           ) : filteredAvailable.length === 0 ? (
             <p className="table-empty">
-              {ORDER_MESSAGES.RES_EMPTY_AVAILABLE}
+              {ORDERS_RES_LABELS.RES_EMPTY_AVAILABLE}
               {selectedItem
-                ? ` ${ORDER_MESSAGES.RES_FOR} "${selectedItem.fabric_type}"`
+                ? ` ${ORDERS_RES_LABELS.RES_FOR} "${selectedItem.fabric_type}"`
                 : ''}
               .
             </p>
@@ -267,17 +272,17 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>{ORDER_MESSAGES.RES_COL_ROLL}</th>
+                    <th>{ORDERS_RES_LABELS.RES_COL_ROLL}</th>
                     <th className="max-sm:hidden">
-                      {ORDER_MESSAGES.RES_COL_COLOR}
+                      {ORDERS_RES_LABELS.RES_COL_COLOR}
                     </th>
-                    <th>{ORDER_MESSAGES.RES_COL_LENGTH}</th>
-                    <th>{ORDER_MESSAGES.RES_COL_WEIGHT}</th>
+                    <th>{ORDERS_RES_LABELS.RES_COL_LENGTH}</th>
+                    <th>{ORDERS_RES_LABELS.RES_COL_WEIGHT}</th>
                     <th className="max-sm:hidden">
-                      {ORDER_MESSAGES.RES_COL_GRADE}
+                      {ORDERS_RES_LABELS.RES_COL_GRADE}
                     </th>
                     <th className="max-sm:hidden">
-                      {ORDER_MESSAGES.RES_COL_LOCATION}
+                      {ORDERS_RES_LABELS.RES_COL_LOCATION}
                     </th>
                     <th></th>
                   </tr>
@@ -319,8 +324,8 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                           disabled={pendingRollIds.has(roll.id)}
                         >
                           {pendingRollIds.has(roll.id)
-                            ? ORDER_MESSAGES.RES_BTN_PROCESSING
-                            : ORDER_MESSAGES.RES_BTN_RESERVE}
+                            ? ORDERS_RES_LABELS.RES_BTN_PROCESSING
+                            : ORDERS_RES_LABELS.RES_BTN_RESERVE}
                         </button>
                       </td>
                     </tr>
@@ -333,7 +338,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
 
         {(reserveMutation.error || unreserveMutation.error) && (
           <p className="error-inline mt-3">
-            {ORDER_MESSAGES.ERROR_PREFIX}{' '}
+            {ORDERS_FORM_LABELS.ERROR_PREFIX}{' '}
             {(() => {
               const err = reserveMutation.error ?? unreserveMutation.error;
               return err instanceof Error ? err.message : String(err);
@@ -350,7 +355,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
           type="button"
           onClick={onClose}
         >
-          {ORDER_MESSAGES.RES_BTN_CLOSE}
+          {ORDERS_RES_LABELS.RES_BTN_CLOSE}
         </Button>
       </div>
     </AdaptiveSheet>

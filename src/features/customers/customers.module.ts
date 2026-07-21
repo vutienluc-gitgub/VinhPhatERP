@@ -2,41 +2,42 @@ import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 
+import { CUSTOMER_MODULE_LABELS } from './customers.constants';
+
 export const customersFeature: FeatureDefinition = {
   key: 'customers',
   route: '/customers',
-  title: 'Khách hàng',
+  title: CUSTOMER_MODULE_LABELS.title,
   badge: 'Stable',
-  description:
-    'Quản lý danh sách khách hàng, hợp đồng, bảng giá và phân hạng đối tác.',
+  description: CUSTOMER_MODULE_LABELS.subTitle,
   summary: [
     {
-      label: 'Tổng khách hàng',
+      label: CUSTOMER_MODULE_LABELS.menuAllCustomers,
       value: '120',
     },
     {
-      label: 'Đang hoạt động',
+      label: CUSTOMER_MODULE_LABELS.menuActiveCustomers,
       value: '98',
     },
   ],
   highlights: [
-    'Phân hạng Gold/Silver/Bronze.',
-    'Cảnh báo hạn mức nợ.',
-    'Theo dõi doanh số luỹ kế.',
+    CUSTOMER_MODULE_LABELS.featureRanking,
+    CUSTOMER_MODULE_LABELS.featureDebtWarning,
+    CUSTOMER_MODULE_LABELS.featureSalesTracking,
   ],
   entities: ['customers'],
   nextMilestones: [
-    'Tính năng CRM chăm sóc khách hàng tự động.',
-    'Portal khách hàng tra cứu đơn hàng.',
+    CUSTOMER_MODULE_LABELS.featureCRM,
+    CUSTOMER_MODULE_LABELS.featurePortal,
   ],
 };
 
 export const customersPlugin: FeaturePlugin = {
   key: 'customers',
   route: 'customers', // keep fallback to avoid errors if any other part expects it
-  label: 'Khách hàng',
+  label: CUSTOMER_MODULE_LABELS.title,
   shortLabel: 'Kinh doanh',
-  description: 'Danh mục khách hàng và quản lý công nợ khách hàng.',
+  description: CUSTOMER_MODULE_LABELS.description,
   icon: 'UserCheck',
   requiredRoles: ['admin', 'manager', 'staff'],
   group: 'sales',

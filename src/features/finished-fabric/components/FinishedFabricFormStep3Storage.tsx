@@ -3,7 +3,7 @@ import type { UseFormRegister, Control } from 'react-hook-form';
 
 import { Combobox } from '@/shared/components/Combobox';
 import type { FinishedFabricFormValues } from '@/schema/finished-fabric.schema';
-import { FINISHED_FABRIC_MESSAGES as MSG } from '@/features/finished-fabric/finished-fabric.constants';
+import { FINISHED_FABRIC_FORM_LABELS as MSG } from '@/features/finished-fabric/finished-fabric.constants';
 
 type FinishedFabricFormStep3StorageProps = {
   register: UseFormRegister<FinishedFabricFormValues>;

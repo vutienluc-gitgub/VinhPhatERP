@@ -39,7 +39,10 @@ import {
 } from './FinishedFabricColumns';
 import type { FinishedFabricFilter, FinishedFabricRoll } from './types';
 import { groupRollsByLot } from './finished-fabric.utils';
-import { FINISHED_FABRIC_MESSAGES as MSG } from './finished-fabric.constants';
+import {
+  FINISHED_FABRIC_PAGE_LABELS as MSG,
+  FINISHED_FABRIC_LIST_LABELS as LIST_MSG,
+} from './finished-fabric.constants';
 
 type FinishedFabricListProps = {
   onEdit: (roll: FinishedFabricRoll) => void;
@@ -54,13 +57,13 @@ const FILTER_SCHEMA: FilterFieldConfig[] = [
   {
     key: 'fabric_type',
     type: 'search',
-    label: MSG.FILTER_FABRIC_LABEL,
-    placeholder: MSG.FILTER_FABRIC_PLACEHOLDER,
+    label: LIST_MSG.FILTER_FABRIC_LABEL,
+    placeholder: LIST_MSG.FILTER_FABRIC_PLACEHOLDER,
   },
   {
     key: 'status',
     type: 'combobox',
-    label: MSG.FILTER_STATUS_LABEL,
+    label: LIST_MSG.FILTER_STATUS_LABEL,
     options: ROLL_STATUSES.map((s) => ({
       value: s,
       label: ROLL_STATUS_LABELS[s],
@@ -69,7 +72,7 @@ const FILTER_SCHEMA: FilterFieldConfig[] = [
   {
     key: 'quality_grade',
     type: 'combobox',
-    label: MSG.FILTER_QUALITY_LABEL,
+    label: LIST_MSG.FILTER_QUALITY_LABEL,
     options: QUALITY_GRADES.map((g) => ({
       value: g,
       label: QUALITY_GRADE_LABELS[g],
@@ -105,7 +108,7 @@ export function FinishedFabricList({
     async (roll: FinishedFabricRoll) => {
       if (!canDeleteRoll(roll.status)) return;
       const ok = await confirm({
-        message: MSG.CONFIRM_DELETE_MSG(roll.roll_number),
+        message: LIST_MSG.CONFIRM_DELETE_MSG.replace('{num}', roll.roll_number),
         variant: 'danger',
       });
       if (!ok) return;
@@ -154,18 +157,18 @@ export function FinishedFabricList({
             <ViewToggle value={viewMode} onChange={setViewMode} />
 
             <div className="flex items-center gap-2 flex-wrap">
-              <AddButton onClick={onNew} label={MSG.BTN_NEW} />
+              <AddButton onClick={onNew} label={LIST_MSG.BTN_NEW} />
 
               <ActionBar
                 actions={[
                   {
                     icon: 'Zap',
-                    title: MSG.BTN_BULK_NEW,
+                    title: LIST_MSG.BTN_BULK_NEW,
                     onClick: onBulkNew,
                   },
                   {
                     icon: 'FileSpreadsheet',
-                    title: isExporting ? 'Đang xuất...' : MSG.BTN_EXPORT,
+                    title: isExporting ? 'Đang xuất...' : LIST_MSG.BTN_EXPORT,
                     onClick: handleExportExcel,
                     disabled: isExporting,
                   },
@@ -225,7 +228,7 @@ export function FinishedFabricList({
       {error && (
         <div className="px-4 sm:px-6 lg:px-8 mt-4">
           <p className="error-inline">
-            {MSG.ERR_LOAD}{' '}
+            {LIST_MSG.ERR_LOAD}{' '}
             {error instanceof Error ? error.message : String(error)}
           </p>
         </div>
@@ -233,7 +236,7 @@ export function FinishedFabricList({
       {exportError && (
         <div className="px-4 sm:px-6 lg:px-8 mt-4 pt-0">
           <p className="error-inline">
-            {MSG.ERR_EXPORT} {exportError}
+            {LIST_MSG.ERR_EXPORT} {exportError}
           </p>
         </div>
       )}
@@ -249,7 +252,7 @@ export function FinishedFabricList({
                 <div className="empty-icon">
                   <Icon name="Package" size={48} />
                 </div>
-                <p>{MSG.EMPTY_STATE_DEFAULT_TITLE}</p>
+                <p>{LIST_MSG.EMPTY_STATE_DEFAULT_TITLE}</p>
               </div>
             ) : (
               groupedRolls.map((group) => (
@@ -257,7 +260,7 @@ export function FinishedFabricList({
                   key={group.lot}
                   title={group.lot}
                   lotNumber={
-                    group.lot !== MSG.LBL_NO_LOT ? group.lot : undefined
+                    group.lot !== LIST_MSG.LBL_NO_LOT ? group.lot : undefined
                   }
                   colorName={group.colorName || undefined}
                   expectedRollsCount={group.rolls.length}
@@ -289,15 +292,15 @@ export function FinishedFabricList({
             }}
             emptyStateTitle={
               hasActiveFilter
-                ? MSG.EMPTY_STATE_FILTER_TITLE
-                : MSG.EMPTY_STATE_DEFAULT_TITLE
+                ? LIST_MSG.EMPTY_STATE_FILTER_TITLE
+                : LIST_MSG.EMPTY_STATE_DEFAULT_TITLE
             }
             emptyStateIcon="Package"
             emptyStateDescription={
-              !hasActiveFilter ? MSG.EMPTY_STATE_DEFAULT_DESC : undefined
+              !hasActiveFilter ? LIST_MSG.EMPTY_STATE_DEFAULT_DESC : undefined
             }
             emptyStateActionLabel={
-              !hasActiveFilter ? `+ ${MSG.BTN_NEW}` : undefined
+              !hasActiveFilter ? `+ ${LIST_MSG.BTN_NEW}` : undefined
             }
             onEmptyStateAction={!hasActiveFilter ? onNew : undefined}
             columns={columns}

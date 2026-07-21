@@ -9,7 +9,7 @@ import {
   daysUntilDelivery,
   calculateBalanceDue,
 } from '@/features/orders/utils';
-import { ORDER_MESSAGES as MSG } from '@/features/orders/orders.constants';
+import { ORDERS_FORM_LABELS } from '@/features/orders/orders.constants';
 
 type OrderMobileCardProps = {
   order: Order;
@@ -38,7 +38,7 @@ export function OrderMobileCard({ order }: OrderMobileCardProps) {
         <div className="grid grid-cols-2 gap-4 pt-2">
           <div className="flex flex-col">
             <span className="text-[10px] uppercase text-muted">
-              {MSG.LBL_TOTAL_AMOUNT}
+              {ORDERS_FORM_LABELS.LBL_TOTAL_AMOUNT}
             </span>
             <MoneyText
               value={order.total_amount}
@@ -48,7 +48,7 @@ export function OrderMobileCard({ order }: OrderMobileCardProps) {
           </div>
           <div className="flex flex-col">
             <span className="text-[10px] uppercase text-muted">
-              {MSG.LBL_BALANCE_DUE}
+              {ORDERS_FORM_LABELS.LBL_BALANCE_DUE}
             </span>
             <MoneyText
               value={balanceDue}
@@ -61,7 +61,7 @@ export function OrderMobileCard({ order }: OrderMobileCardProps) {
           <div
             className={`mt-2 p-1.5 rounded text-[10px] font-bold text-center uppercase ${due.urgent ? 'bg-danger/10 text-danger' : 'bg-surface-subtle text-muted'}`}
           >
-            {MSG.LBL_DELIVERY}
+            {ORDERS_FORM_LABELS.LBL_DELIVERY}
             {due.text} ({order.delivery_date})
           </div>
         )}

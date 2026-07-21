@@ -10,7 +10,7 @@
 import { Controller } from 'react-hook-form';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 
-import { ORDER_MESSAGES } from '@/features/orders/orders.constants';
+import { ORDERS_FORM_LABELS } from '@/features/orders/orders.constants';
 import { Combobox } from '@/shared/components/Combobox';
 import { Badge, Icon } from '@/shared/components';
 import { MoneyInput } from '@/shared/value';
@@ -64,20 +64,20 @@ export function TradingItemRow({
       <div className="flex justify-between items-center mb-3 pb-2 border-b border-border">
         <div className="flex items-center gap-2">
           <span className="font-medium text-sm">
-            {ORDER_MESSAGES.ITEM_ROW_PREFIX}
+            {ORDERS_FORM_LABELS.ITEM_ROW_PREFIX}
             {index + 1}
           </span>
-          <Badge variant="info">{ORDER_MESSAGES.BADGE_TRADING}</Badge>
+          <Badge variant="info">{ORDERS_FORM_LABELS.BADGE_TRADING}</Badge>
         </div>
         {canRemove && (
           <button
             className="btn-icon danger"
             type="button"
-            title={ORDER_MESSAGES.BTN_REMOVE_TITLE}
+            title={ORDERS_FORM_LABELS.BTN_REMOVE_TITLE}
             onClick={onRemove}
           >
             <Icon name="Trash2" size={16} />
-            {ORDER_MESSAGES.BTN_REMOVE.replace(' ✕', '')}
+            {ORDERS_FORM_LABELS.BTN_REMOVE.replace(' ✕', '')}
           </button>
         )}
       </div>
@@ -87,7 +87,7 @@ export function TradingItemRow({
         <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
           <div className="form-field">
             <label>
-              {ORDER_MESSAGES.FIELD_PRODUCT_CATEGORY}{' '}
+              {ORDERS_FORM_LABELS.FIELD_PRODUCT_CATEGORY}{' '}
               <span className="field-required">*</span>
             </label>
             <Controller
@@ -112,7 +112,7 @@ export function TradingItemRow({
 
           <div className="form-field">
             <label>
-              {ORDER_MESSAGES.FIELD_STOCK_SOURCE}{' '}
+              {ORDERS_FORM_LABELS.FIELD_STOCK_SOURCE}{' '}
               <span className="field-required">*</span>
             </label>
             <Controller
@@ -128,8 +128,8 @@ export function TradingItemRow({
                   }}
                   placeholder={
                     productCategory === 'yarn'
-                      ? ORDER_MESSAGES.PLACEHOLDER_SELECT_YARN
-                      : ORDER_MESSAGES.PLACEHOLDER_SELECT_FABRIC
+                      ? ORDERS_FORM_LABELS.PLACEHOLDER_SELECT_YARN
+                      : ORDERS_FORM_LABELS.PLACEHOLDER_SELECT_FABRIC
                   }
                   hasError={!!itemErrors?.sourceStockId}
                 />
@@ -149,7 +149,7 @@ export function TradingItemRow({
         {productCategory === 'yarn' && (
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
-              <label>{ORDER_MESSAGES.FIELD_LOT}</label>
+              <label>{ORDERS_FORM_LABELS.FIELD_LOT}</label>
               {lotOptions.length > 0 ? (
                 <Controller
                   name={`items.${index}.sourceLotNumber`}
@@ -159,7 +159,7 @@ export function TradingItemRow({
                       options={lotOptions}
                       value={field.value ?? ''}
                       onChange={field.onChange}
-                      placeholder={ORDER_MESSAGES.PLACEHOLDER_LOT}
+                      placeholder={ORDERS_FORM_LABELS.PLACEHOLDER_LOT}
                     />
                   )}
                 />
@@ -174,7 +174,7 @@ export function TradingItemRow({
               )}
             </div>
             <div className="form-field">
-              <label>{ORDER_MESSAGES.FIELD_AUTO_YARN_NAME}</label>
+              <label>{ORDERS_FORM_LABELS.FIELD_AUTO_YARN_NAME}</label>
               <input
                 className="field-input bg-[var(--surface-disabled)]"
                 type="text"
@@ -189,7 +189,7 @@ export function TradingItemRow({
         {productCategory !== 'yarn' && (
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
-              <label>{ORDER_MESSAGES.FIELD_FABRIC_TYPE}</label>
+              <label>{ORDERS_FORM_LABELS.FIELD_FABRIC_TYPE}</label>
               <input
                 className="field-input bg-[var(--surface-disabled)]"
                 type="text"
@@ -198,7 +198,7 @@ export function TradingItemRow({
               />
             </div>
             <div className="form-field">
-              <label>{ORDER_MESSAGES.FIELD_COLOR}</label>
+              <label>{ORDERS_FORM_LABELS.FIELD_COLOR}</label>
               <input
                 className="field-input bg-[var(--surface-disabled)]"
                 type="text"
@@ -226,7 +226,7 @@ export function TradingItemRow({
             />
             {isOverStock && (
               <span className="field-error">
-                {ORDER_MESSAGES.ERR_STOCK_EXCEEDED(
+                {ORDERS_FORM_LABELS.ERR_STOCK_EXCEEDED(
                   formatQuantity(stockInfo?.max ?? 0),
                 )}
               </span>
@@ -238,7 +238,7 @@ export function TradingItemRow({
 
           <div className="form-field">
             <label>
-              {ORDER_MESSAGES.FIELD_PRICE} (đ){' '}
+              {ORDERS_FORM_LABELS.FIELD_PRICE} (đ){' '}
               <span className="field-required">*</span>
             </label>
             <Controller
