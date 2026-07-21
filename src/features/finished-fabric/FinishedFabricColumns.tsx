@@ -6,6 +6,7 @@ import { formatQuantity } from '@/shared/value/core/formatter';
 import { getRollStatusVariant } from '@/shared/utils/status-variant';
 import { ROLL_STATUS_LABELS } from '@/schema/finished-fabric.schema';
 
+import { FINISHED_FABRIC_LIST_LABELS as LIST_MSG } from './finished-fabric.constants';
 import {
   canDeleteRoll,
   canEditRoll,
@@ -48,7 +49,7 @@ export function getFinishedFabricColumns(
     },
     {
       accessorKey: 'roll_number',
-      header: 'Mã cuộn',
+      header: LIST_MSG.COL_ROLL_NUMBER,
       cell: ({ row }) => {
         const r = row.original;
         return (
@@ -63,7 +64,7 @@ export function getFinishedFabricColumns(
     },
     {
       accessorKey: 'fabric_type',
-      header: 'Loại vải',
+      header: LIST_MSG.COL_FABRIC_TYPE,
       cell: ({ row }) => row.original.fabric_type,
     },
     {
@@ -98,7 +99,7 @@ export function getFinishedFabricColumns(
     },
     {
       accessorKey: 'weight_kg',
-      header: 'Trọng lượng',
+      header: LIST_MSG.COL_WEIGHT,
       meta: { className: 'text-right' },
       cell: ({ row }) => {
         const r = row.original;
@@ -111,7 +112,7 @@ export function getFinishedFabricColumns(
     },
     {
       accessorKey: 'status',
-      header: 'Trạng thái',
+      header: LIST_MSG.COL_STATUS,
       cell: ({ row }) => {
         const r = row.original;
         return (
@@ -132,7 +133,7 @@ export function getFinishedFabricColumns(
     },
     {
       id: 'actions',
-      header: () => <div className="text-right">Thao tác</div>,
+      header: () => <div className="text-right">{LIST_MSG.COL_ACTIONS}</div>,
       meta: { className: 'text-right' },
       cell: ({ row }) => {
         const r = row.original;
@@ -142,18 +143,18 @@ export function getFinishedFabricColumns(
               {
                 icon: 'Link',
                 onClick: () => actions.onTrace(r),
-                title: 'Truy vết',
+                title: LIST_MSG.BTN_TRACE_TITLE,
               },
               {
                 icon: 'Pencil',
                 onClick: () => actions.onEdit(r),
-                title: editBlockReason(r.status) ?? 'Sửa',
+                title: editBlockReason(r.status) ?? LIST_MSG.BTN_EDIT_TITLE,
                 disabled: !canEditRoll(r.status),
               },
               {
                 icon: 'Trash2',
                 onClick: () => actions.handleDelete(r),
-                title: deleteBlockReason(r.status) ?? 'Xóa',
+                title: deleteBlockReason(r.status) ?? LIST_MSG.BTN_DELETE_TITLE,
                 variant: 'danger',
                 disabled: actions.isDeleting || !canDeleteRoll(r.status),
               },
@@ -219,7 +220,7 @@ export function renderFinishedFabricMobileCard(
             actions.onTrace(r);
           }}
         >
-          <Icon name="Link" size={16} /> Truy vết
+          <Icon name="Link" size={16} /> {LIST_MSG.BTN_TRACE_TITLE}
         </button>
         {canEditRoll(r.status) && (
           <button
@@ -229,7 +230,7 @@ export function renderFinishedFabricMobileCard(
               actions.onEdit(r);
             }}
           >
-            <Icon name="Pencil" size={16} /> Sửa
+            <Icon name="Pencil" size={16} /> {LIST_MSG.BTN_EDIT_TITLE}
           </button>
         )}
         {canDeleteRoll(r.status) && (

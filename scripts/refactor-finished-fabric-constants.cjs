@@ -1,3 +1,9 @@
+const fs = require('fs');
+const path = require('path');
+
+const constantsPath = path.join('src', 'features', 'finished-fabric', 'finished-fabric.constants.ts');
+
+const newConstants = `
 export const FINISHED_FABRIC_PAGE_LABELS = {
   PAGE_TITLE: 'Kho Thành Phẩm',
   PAGE_SUBTITLE: 'Quản lý vải thành phẩm sau khi nhuộm và KCS',
@@ -59,8 +65,7 @@ export const FINISHED_FABRIC_FORM_LABELS = {
   LBL_WAREHOUSE_LOCATION: 'Vị trí kho',
   LBL_NOTES: 'Ghi chú',
   LBL_RAW_ROLL: 'Cuộn mộc gốc (Tùy chọn)',
-  HINT_RAW_ROLL:
-    'Nếu cuộn này được nhuộm từ một cuộn mộc có sẵn, chọn mã mộc gốc để truy vết.',
+  HINT_RAW_ROLL: 'Nếu cuộn này được nhuộm từ một cuộn mộc có sẵn, chọn mã mộc gốc để truy vết.',
   LBL_DYEING_PARTNER: 'Nhà nhuộm',
   BTN_NEW_PARTNER: '+ Tạo đối tác mới',
   BTN_SAVE_EDIT: 'Lưu thay đổi',
@@ -86,14 +91,11 @@ export const FINISHED_FABRIC_BULK_LABELS = {
   IMPORT_SECTION_TITLE: 'Import từ Excel / CSV',
   IMPORT_HINT: 'Header: Mã cuộn, Cuộn mộc, Cân, Dài, CL, Ghi chú.',
   ERR_IMPORT_EMPTY: 'File không có dữ liệu hoặc không đúng định dạng.',
-  ERR_IMPORT_RAW_NOT_FOUND:
-    'Chưa tìm thấy cuộn mộc nào trong lô "{lot}". Hãy kiểm tra lại số lô.',
-  ERR_IMPORT_RAW_MISSING:
-    '{parsedCount} dòng đã nhập. {unresolvedCount} cuộn mộc không tìm thấy trong lô "{lot}": {missing}. Vui lòng chọn lại cuộn mộc cho các dòng này.',
+  ERR_IMPORT_RAW_NOT_FOUND: 'Chưa tìm thấy cuộn mộc nào trong lô "{lot}". Hãy kiểm tra lại số lô.',
+  ERR_IMPORT_RAW_MISSING: '{parsedCount} dòng đã nhập. {unresolvedCount} cuộn mộc không tìm thấy trong lô "{lot}": {missing}. Vui lòng chọn lại cuộn mộc cho các dòng này.',
   ERR_IMPORT_READ: 'Lỗi đọc file: {msg}',
   MANUAL_SECTION_TITLE: 'Nhập số tĩnh từng cuộn thành phẩm',
-  LOT_MATCH_INFO:
-    'Đã ghép {matchedCount} cuộn mộc từ lô. Nhấn nhẹ vào ô để chọn mã cuộn mộc nguồn.',
+  LOT_MATCH_INFO: 'Đã ghép {matchedCount} cuộn mộc từ lô. Nhấn nhẹ vào ô để chọn mã cuộn mộc nguồn.',
   LOT_MATRIX_TITLE: 'Lô {lot} | {count} cuộn TP',
   BTN_ADD_ROW: '+ 1 cuộn',
   ADD_ROW_HINT: 'Gõ số tĩnh -> nhấn Enter để chuyển ô tiếp theo',
@@ -129,39 +131,26 @@ export const FINISHED_FABRIC_BULK_CONFIG_LABELS = {
 } as const;
 
 export const FINISHED_FABRIC_TRACE_LABELS = {
-  TITLE: '🔗 Truy vết nguồn gốc',
-  BTN_CLOSE: 'Đóng',
-  NODE_FINISHED: 'Cuộn thành phẩm',
-  NODE_RAW: 'Cuộn vải mộc',
-  NODE_YARN: 'Phiếu nhập sợi',
-  LBL_LOT: '📦 Lô:',
-  LBL_WEAVER: '🏠 Nhà dệt:',
-  LBL_SUPPLIER: '🏢 NCC sợi:',
-  LBL_STATUS: 'Trạng thái:',
-  LBL_DATE: 'Ngày:',
-  LBL_VALUE: 'Giá trị:',
-  LBL_YARN_LINES: 'dòng sợi',
-  LOADING: 'Đang tải...',
-  EMPTY_RAW: 'Không có liên kết cuộn mộc',
-  EMPTY_YARN: 'Không có liên kết phiếu nhập sợi',
-  STATUS: {
-    in_stock: 'Trong kho',
-    sold: 'Đã bán',
-    reserved: 'Đã giữ',
-    defective: 'Lỗi',
-    draft: 'Nháp',
-    confirmed: 'Đã xác nhận',
-    cancelled: 'Đã hủy',
-  } as Record<string, string>,
-} as const;
-
-export const FINISHED_FABRIC_MODULE_LABELS = {
-  FEATURE_TITLE: 'Vải thành phẩm (Lưu kho)',
-  FEATURE_DESC:
-    'Quản lý tồn kho vải đã nhuộm thành phẩm, sẵn sàng giao hàng hoặc xả kho.',
-  PLUGIN_LABEL: 'Kho Thành phẩm',
-  PLUGIN_SHORT_LABEL: 'Thành phẩm',
-  PLUGIN_DESC: 'Theo dõi tồn kho vải đã nhuộm, nhập kho và xuất kho giao hàng.',
+  TITLE: 'Truy vết Cuộn Thành Phẩm',
+  ROLL_INFO: 'Cuộn TP: {rollNum}',
+  ERR_LOAD: 'Lỗi tải chuỗi truy vết',
+  SECTION_RAW_ROLL: 'Cuộn mộc gốc',
+  NO_RAW_ROLL: 'Không có thông tin cuộn mộc gốc.',
+  RAW_ROLL_CODE: 'Mã cuộn mộc',
+  RAW_FABRIC_TYPE: 'Loại vải mộc',
+  LOT_NUMBER: 'Số lô mộc',
+  WEIGHT: 'Khối lượng mộc',
+  SECTION_DYEING: 'Thông tin Nhuộm (PO Nhuộm)',
+  NO_DYEING: 'Không có thông tin đơn hàng nhuộm.',
+  DYEING_PO: 'Mã PO',
+  DYEING_PARTNER: 'Đối tác',
+  COLOR_TARGET: 'Màu mục tiêu',
+  DYEING_DATE: 'Ngày đặt',
+  SECTION_FINISHED: 'Cuộn Thành Phẩm (Hiện tại)',
+  COLOR_RESULT: 'Màu thực tế',
+  QUALITY: 'Chất lượng',
+  WAREHOUSE: 'Vị trí kho',
+  PROD_DATE: 'Ngày HT',
 } as const;
 
 export const FINISHED_FABRIC_TRANSITIONS_LABELS = {
@@ -172,3 +161,7 @@ export const FINISHED_FABRIC_TRANSITIONS_LABELS = {
   ERR_DAMAGED_DEL: 'Cuộn hư hỏng — không thể xóa, hãy giữ để kiểm tra',
   ERR_WRITTEN_OFF_DEL: 'Cuộn đã xóa sổ — không thể xóa',
 } as const;
+`;
+
+fs.writeFileSync(constantsPath, newConstants, 'utf8');
+console.log('Constants rewritten.');

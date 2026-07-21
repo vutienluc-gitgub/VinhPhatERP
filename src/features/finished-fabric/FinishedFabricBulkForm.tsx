@@ -50,7 +50,10 @@ import type { ParsedRow } from '@/domain/inventory/finished-fabric-import.util';
 import type { FinishedFabricRoll } from './types';
 import { FinishedFabricBulkFormStep1General } from './components/FinishedFabricBulkFormStep1General';
 import { FinishedFabricBulkFormStep1Config } from './components/FinishedFabricBulkFormStep1Config';
-import { FINISHED_FABRIC_MESSAGES as MSG } from './finished-fabric.constants';
+import {
+  FINISHED_FABRIC_BULK_LABELS as MSG,
+  FINISHED_FABRIC_FORM_LABELS as FORM_MSG,
+} from './finished-fabric.constants';
 
 type Props = {
   onClose: () => void;
@@ -77,7 +80,7 @@ function AutoSaveSubscriber({
 }
 
 const QUALITY_OPTIONS = [
-  { value: '', label: 'Chưa kiểm định' },
+  { value: '', label: FORM_MSG.LBL_UNVERIFIED },
   ...QUALITY_GRADES.map((g) => ({
     value: g,
     label: QUALITY_GRADE_LABELS[g],
@@ -154,7 +157,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
     },
     onCancel: () => {
       if (isDirty) {
-        if (!window.confirm(MSG.ERR_UNSAVED)) {
+        if (!window.confirm(FORM_MSG.ERR_UNSAVED)) {
           return false;
         }
       }
@@ -165,7 +168,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
 
   const handleCancel = useCallback(() => {
     if (isDirty) {
-      if (!window.confirm(MSG.ERR_UNSAVED)) {
+      if (!window.confirm(FORM_MSG.ERR_UNSAVED)) {
         return false;
       }
     }
@@ -365,7 +368,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
       }
 
       if (parsed.length === 0) {
-        setImportError('File không có dữ liệu hoặc không đúng định dạng.');
+        setImportError('MSG.ERR_IMPORT_EMPTY');
         return;
       }
 
@@ -404,14 +407,24 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
       );
       if (unresolved.length > 0) {
         setImportError(
-          `${parsed.length} dòng đã nhập. ${unresolved.length} cuộn mộc không tìm thấy trong lô "${lotNumber}": ${unresolved
-            .map((r) => r.raw_roll_number)
-            .join(', ')}. Vui lòng chọn lại cuộn mộc cho các dòng này.`,
+          MSG.ERR_IMPORT_RAW_MISSING.replace(
+            '{parsedCount}',
+            parsed.length.toString(),
+          )
+            .replace('{unresolvedCount}', unresolved.length.toString())
+            .replace('{lot}', lotNumber || '')
+            .replace(
+              '{missing}',
+              unresolved.map((r) => r.raw_roll_number).join(', '),
+            ),
         );
       }
     } catch (err) {
       setImportError(
-        `Lỗi đọc file: ${err instanceof Error ? err.message : String(err)}`,
+        MSG.ERR_IMPORT_READ.replace(
+          '{msg}',
+          err instanceof Error ? err.message : String(err),
+        ),
       );
     }
 
@@ -425,7 +438,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
     <AdaptiveSheet
       open={true}
       onClose={handleCancel}
-      title="Nhập nhanh cuộn vải thành phẩm"
+      title={MSG.FORM_TITLE}
       stepInfo={
         savedRolls
           ? undefined
@@ -440,7 +453,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
       {savedRolls !== null ? (
         <div className="bulk-success">
           <div className="bulk-success-icon">✓</div>
-          <p className="bulk-success-title">Nhập kho thành công</p>
+          <p className="bulk-success-title">{MSG.SUCCESS_TITLE}</p>
           <p className="bulk-success-sub">
             Đã lưu <strong>{savedRolls.length} cuộn</strong> ·{' '}
             <strong>
@@ -451,9 +464,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
               kg
             </strong>
           </p>
-          <p className="bulk-success-hint">
-            Tùy chọn: xuất danh sách vừa nhập ra file
-          </p>
+          <p className="bulk-success-hint">{MSG.SUCCESS_HINT}</p>
           <div className="bulk-success-actions">
             <Button
               variant="secondary"
@@ -462,21 +473,21 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                 exportRollsExcel(savedRolls, 'bien_ban_nhap_kho_tp')
               }
             >
-              <Icon name="FileSpreadsheet" size={16} /> Xuất Excel
+              <Icon name="FileSpreadsheet" size={16} /> {MSG.BTN_EXPORT_EXCEL}
             </Button>
             <Button
               variant="secondary"
               type="button"
               onClick={() => exportRollsPdf(savedRolls, 'bien_ban_nhap_kho_tp')}
             >
-              <Icon name="Printer" size={16} /> Xuất PDF
+              <Icon name="Printer" size={16} /> {MSG.BTN_EXPORT_PDF}
             </Button>
             <button
               className="primary-button btn-standard"
               type="button"
               onClick={onClose}
             >
-              Đóng
+              {MSG.BTN_CLOSE}
             </button>
           </div>
         </div>
@@ -491,7 +502,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
 
           {bulkMutation.error && (
             <p className="error-inline mb-4 whitespace-pre-line">
-              Lỗi:{' '}
+              {MSG.ERR_PREFIX}{' '}
               {bulkMutation.error instanceof Error
                 ? bulkMutation.error.message
                 : String(bulkMutation.error)}
@@ -533,7 +544,7 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
             {/* ── BƯỚC 2: BẢNG NHẬP LIỆU (DATA TABLE) ── */}
             <div className={stepper.currentStep === 1 ? 'block' : 'hidden'}>
               <fieldset className="bulk-section">
-                <legend>Import từ Excel / CSV</legend>
+                <legend>{MSG.IMPORT_SECTION_TITLE}</legend>
                 <div className="flex gap-3 items-center flex-wrap">
                   <input
                     className="field-input text-[0.88rem]"
@@ -543,14 +554,16 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
                     onChange={handleFileImport}
                   />
                   <span className="bulk-hint">
-                    Header: Mã cuộn, Cuộn mộc, Cân, Dài, CL, Ghi chú.
+                    {MSG.IMPORT_HINT}
                     {sourceType === 'produced' &&
                       lotNumber &&
                       rawRollsForLot.length === 0 && (
                         <strong className="error-hint">
                           {' '}
-                          Chưa tìm thấy cuộn mộc nào trong lô "{lotNumber}" —
-                          hãy kiểm tra lại số lô.
+                          {MSG.ERR_IMPORT_RAW_NOT_FOUND.replace(
+                            '{lot}',
+                            lotNumber || '',
+                          )}
                         </strong>
                       )}
                   </span>
@@ -559,17 +572,22 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
               </fieldset>
 
               <fieldset className="bulk-section">
-                <legend>Nhập số tịnh từng cuộn thành phẩm</legend>
+                <legend>{MSG.MANUAL_SECTION_TITLE}</legend>
 
                 {sourceType === 'produced' && rawRollsForLot.length > 0 && (
                   <p className="text-[0.82rem] text-muted-foreground mb-3">
-                    Đã ghép <strong>{rawRollsForLot.length} cuộn mộc</strong> từ
-                    lô. Nhãn nhỏ trong ô = Mã cuộn mộc nguồn.
+                    {MSG.LOT_MATCH_INFO.replace(
+                      '{matchedCount}',
+                      rawRollsForLot.length.toString(),
+                    )}
                   </p>
                 )}
 
                 <LotMatrixCard
-                  title={`Lô ${lotNumber ?? '—'} · ${fields.length} cuộn TP`}
+                  title={MSG.LOT_MATRIX_TITLE.replace(
+                    '{lot}',
+                    lotNumber ?? '—',
+                  ).replace('{count}', fields.length.toString())}
                   lotNumber={lotNumber ?? undefined}
                   rolls={gridRolls}
                   expectedRollsCount={fields.length}
@@ -593,10 +611,10 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
 
                 <div className="flex gap-2 mt-4">
                   <Button variant="secondary" type="button" onClick={addRow}>
-                    + 1 cuộn
+                    {MSG.BTN_ADD_ROW}
                   </Button>
                   <span className="self-center text-[0.78rem] text-muted-foreground">
-                    Gõ số tịnh → nhấn Enter để chuyển ô tiếp theo
+                    {MSG.ADD_ROW_HINT}
                   </span>
                 </div>
               </fieldset>
@@ -606,7 +624,10 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
               onCancel={handleCancel}
               isPending={isPending}
               submitDisabled={!isValid || totalRolls === 0}
-              submitLabel={`Lưu ${totalRolls} cuộn`}
+              submitLabel={MSG.BTN_SUBMIT.replace(
+                '{count}',
+                totalRolls.toString(),
+              )}
             >
               <AutoSaveSubscriber watch={watch} />
             </StepperFooter>

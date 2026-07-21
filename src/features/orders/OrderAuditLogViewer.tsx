@@ -1,7 +1,7 @@
 import { Icon } from '@/shared/components/Icon';
 import { useOrderAuditLogs } from '@/application/orders';
 
-import { ORDER_MESSAGES as MSG } from './orders.constants';
+import { ORDERS_AUDIT_LABELS, ORDERS_LIST_LABELS } from './orders.constants';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -26,32 +26,32 @@ type AuditProfile = {
 // ── Constants ────────────────────────────────────────────────────────────────
 
 const LABELS = {
-  SECTION_TITLE: MSG.AUDIT_LOG_TITLE,
-  LOADING: MSG.AUDIT_LOADING,
-  ERROR: MSG.AUDIT_ERROR,
-  EMPTY: MSG.AUDIT_EMPTY,
-  COL_USER: MSG.AUDIT_LBL_USER,
-  COL_ACTION: MSG.AUDIT_LBL_ACTION,
-  COL_TIME: MSG.AUDIT_LBL_TIME,
-  COL_DETAILS: MSG.AUDIT_LBL_DETAILS,
-  DEFAULT_ACTOR: MSG.AUDIT_DEFAULT_ACTOR,
+  SECTION_TITLE: ORDERS_LIST_LABELS.AUDIT_LOG_TITLE,
+  LOADING: ORDERS_AUDIT_LABELS.AUDIT_LOADING,
+  ERROR: ORDERS_AUDIT_LABELS.AUDIT_ERROR,
+  EMPTY: ORDERS_AUDIT_LABELS.AUDIT_EMPTY,
+  COL_USER: ORDERS_AUDIT_LABELS.AUDIT_LBL_USER,
+  COL_ACTION: ORDERS_AUDIT_LABELS.AUDIT_LBL_ACTION,
+  COL_TIME: ORDERS_AUDIT_LABELS.AUDIT_LBL_TIME,
+  COL_DETAILS: ORDERS_AUDIT_LABELS.AUDIT_LBL_DETAILS,
+  DEFAULT_ACTOR: ORDERS_AUDIT_LABELS.AUDIT_DEFAULT_ACTOR,
 } as const;
 
 const EVENT_MAP: Record<string, EventConfig> = {
   ORDER_CREATED: {
-    label: MSG.AUDIT_EVENT_ORDER_CREATED,
+    label: ORDERS_AUDIT_LABELS.AUDIT_EVENT_ORDER_CREATED,
     icon: 'FilePlus',
     color: 'text-success',
-    detail: MSG.AUDIT_EVENT_ORDER_CREATED_DETAIL,
+    detail: ORDERS_AUDIT_LABELS.AUDIT_EVENT_ORDER_CREATED_DETAIL,
   },
   ORDER_REQUEST_CREATED: {
-    label: MSG.AUDIT_EVENT_REQ_CREATED,
+    label: ORDERS_AUDIT_LABELS.AUDIT_EVENT_REQ_CREATED,
     icon: 'FilePlus',
     color: 'text-primary',
-    detail: MSG.AUDIT_EVENT_REQ_CREATED_DETAIL,
+    detail: ORDERS_AUDIT_LABELS.AUDIT_EVENT_REQ_CREATED_DETAIL,
   },
   ORDER_STATUS_CHANGED: {
-    label: MSG.AUDIT_EVENT_STATUS_CHANGED,
+    label: ORDERS_AUDIT_LABELS.AUDIT_EVENT_STATUS_CHANGED,
     icon: 'RefreshCw',
     color: 'text-warning',
   },

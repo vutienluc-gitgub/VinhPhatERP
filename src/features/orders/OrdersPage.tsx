@@ -12,7 +12,7 @@ import { OrderForm } from './OrderForm';
 import { OrderList } from './OrderList';
 import { ReserveRollsPanel } from './ReserveRollsPanel';
 import type { Order } from './types';
-import { ORDER_MESSAGES as MSG } from './orders.constants';
+import { ORDERS_LIST_LABELS } from './orders.constants';
 
 type View = { mode: 'list' } | { mode: 'detail'; orderId: string };
 
@@ -107,7 +107,7 @@ export function OrdersPage() {
       <AdaptiveSheet
         open={!!contractOrder}
         onClose={() => setContractOrder(null)}
-        title={MSG.BTN_CONTRACT}
+        title={ORDERS_LIST_LABELS.BTN_CONTRACT}
       >
         {contractOrder && (
           <ContractForm

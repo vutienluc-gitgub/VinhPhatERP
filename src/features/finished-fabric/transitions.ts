@@ -1,4 +1,5 @@
 import type { RollStatus } from './types';
+import { FINISHED_FABRIC_TRANSITIONS_LABELS as MSG } from './finished-fabric.constants';
 
 /**
  * Cuộn có thể được chỉnh sửa không?
@@ -23,8 +24,8 @@ export function canDeleteRoll(status: RollStatus): boolean {
  * Lý do không thể chỉnh sửa. Trả về `null` nếu được phép sửa.
  */
 export function editBlockReason(status: RollStatus): string | null {
-  if (status === 'shipped') return 'Cuộn đã xuất kho — không thể chỉnh sửa';
-  if (status === 'written_off') return 'Cuộn đã xóa sổ — không thể chỉnh sửa';
+  if (status === 'shipped') return MSG.ERR_SHIPPED_EDIT;
+  if (status === 'written_off') return MSG.ERR_WRITTEN_OFF_EDIT;
   return null;
 }
 
@@ -32,11 +33,10 @@ export function editBlockReason(status: RollStatus): string | null {
  * Lý do không thể xóa. Trả về `null` nếu được phép xóa.
  */
 export function deleteBlockReason(status: RollStatus): string | null {
-  if (status === 'shipped') return 'Cuộn đã xuất kho — không thể xóa';
-  if (status === 'reserved') return 'Cuộn đang được đặt trước — không thể xóa';
-  if (status === 'damaged')
-    return 'Cuộn hư hỏng — không thể xóa, hãy giữ để kiểm tra';
-  if (status === 'written_off') return 'Cuộn đã xóa sổ — không thể xóa';
+  if (status === 'shipped') return MSG.ERR_SHIPPED_DEL;
+  if (status === 'reserved') return MSG.ERR_RESERVED_DEL;
+  if (status === 'damaged') return MSG.ERR_DAMAGED_DEL;
+  if (status === 'written_off') return MSG.ERR_WRITTEN_OFF_DEL;
   return null;
 }
 

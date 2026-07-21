@@ -3,7 +3,7 @@ import type { UseFormReturn } from 'react-hook-form';
 
 import { Combobox } from '@/shared/components/Combobox';
 import type { OrdersFormValues } from '@/schema/order.schema';
-import { ORDER_MESSAGES as MSG } from '@/features/orders/orders.constants';
+import { ORDERS_FORM_LABELS } from '@/features/orders/orders.constants';
 
 import { ItemQuantityFields } from './ItemQuantityFields';
 
@@ -38,17 +38,17 @@ export function ProductionItemRow({
     <div className="form-item-box">
       <div className="flex justify-between items-center mb-3 pb-2 border-b border-border">
         <span className="text-sm font-semibold text-muted">
-          {MSG.ITEM_ROW_PREFIX}
+          {ORDERS_FORM_LABELS.ITEM_ROW_PREFIX}
           {index + 1}
         </span>
         {canRemove && (
           <button
             className="btn-icon danger"
             type="button"
-            title={MSG.BTN_REMOVE_TITLE}
+            title={ORDERS_FORM_LABELS.BTN_REMOVE_TITLE}
             onClick={onRemove}
           >
-            {MSG.BTN_REMOVE}
+            {ORDERS_FORM_LABELS.BTN_REMOVE}
           </button>
         )}
       </div>
@@ -57,7 +57,8 @@ export function ProductionItemRow({
         <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
           <div className="form-field">
             <label htmlFor={`items.${index}.fabricType`}>
-              {MSG.FIELD_FABRIC_TYPE} <span className="field-required">*</span>
+              {ORDERS_FORM_LABELS.FIELD_FABRIC_TYPE}{' '}
+              <span className="field-required">*</span>
             </label>
             <Controller
               name={`items.${index}.fabricType` as const}
@@ -76,7 +77,7 @@ export function ProductionItemRow({
                       );
                     }
                   }}
-                  placeholder={MSG.PLACEHOLDER_FABRIC}
+                  placeholder={ORDERS_FORM_LABELS.PLACEHOLDER_FABRIC}
                   hasError={!!errors.items?.[index]?.fabricType}
                 />
               )}
@@ -90,7 +91,7 @@ export function ProductionItemRow({
 
           <div className="form-field">
             <label htmlFor={`items.${index}.colorName`}>
-              {MSG.FIELD_COLOR}
+              {ORDERS_FORM_LABELS.FIELD_COLOR}
             </label>
             <Controller
               name={`items.${index}.colorName` as const}
@@ -100,7 +101,7 @@ export function ProductionItemRow({
                   options={colorComboOptions}
                   value={field.value ?? ''}
                   onChange={field.onChange}
-                  placeholder={MSG.PLACEHOLDER_COLOR}
+                  placeholder={ORDERS_FORM_LABELS.PLACEHOLDER_COLOR}
                 />
               )}
             />
@@ -110,18 +111,20 @@ export function ProductionItemRow({
         <div className="form-grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))]">
           <div className="form-field">
             <label htmlFor={`items.${index}.colorCode`}>
-              {MSG.FIELD_COLOR_CODE}
+              {ORDERS_FORM_LABELS.FIELD_COLOR_CODE}
             </label>
             <input
               id={`items.${index}.colorCode`}
               className="field-input"
               type="text"
-              placeholder={MSG.PLACEHOLDER_COLOR_CODE}
+              placeholder={ORDERS_FORM_LABELS.PLACEHOLDER_COLOR_CODE}
               {...register(`items.${index}.colorCode`)}
             />
           </div>
           <div className="form-field">
-            <label htmlFor={`items.${index}.unit`}>{MSG.FIELD_UNIT}</label>
+            <label htmlFor={`items.${index}.unit`}>
+              {ORDERS_FORM_LABELS.FIELD_UNIT}
+            </label>
             <Controller
               name={`items.${index}.unit` as const}
               control={control}

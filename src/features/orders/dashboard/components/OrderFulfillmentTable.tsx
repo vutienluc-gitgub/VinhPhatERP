@@ -4,7 +4,10 @@
 import { useState, useMemo } from 'react';
 
 import { Badge, Icon } from '@/shared/components';
-import { ORDER_MESSAGES as MSG } from '@/features/orders/orders.constants';
+import {
+  ORDERS_DASHBOARD_LABELS,
+  ORDERS_LIST_LABELS,
+} from '@/features/orders/orders.constants';
 import {
   ORDER_STATUS_LABELS,
   ORDER_STATUS_BADGE_VARIANTS,
@@ -106,10 +109,10 @@ export function OrderFulfillmentTable({
   };
 
   const filterButtons: Array<{ key: FilterKey; label: string }> = [
-    { key: 'all', label: MSG.DASH_TAB_ALL },
-    { key: 'in_progress', label: MSG.DASH_TAB_IN_PROGRESS },
-    { key: 'overdue', label: MSG.DASH_TAB_OVERDUE },
-    { key: 'fulfilled', label: MSG.DASH_TAB_FULFILLED },
+    { key: 'all', label: ORDERS_DASHBOARD_LABELS.DASH_TAB_ALL },
+    { key: 'in_progress', label: ORDERS_DASHBOARD_LABELS.DASH_TAB_IN_PROGRESS },
+    { key: 'overdue', label: ORDERS_DASHBOARD_LABELS.DASH_TAB_OVERDUE },
+    { key: 'fulfilled', label: ORDERS_DASHBOARD_LABELS.DASH_TAB_FULFILLED },
   ];
 
   if (isLoading) {
@@ -151,34 +154,38 @@ export function OrderFulfillmentTable({
                 className="text-left py-2.5 px-4 font-semibold cursor-pointer hover:text-zinc-700"
                 onClick={() => handleSort('order_number')}
               >
-                {MSG.DASH_COL_ORDER} <SortIcon field="order_number" />
+                {ORDERS_DASHBOARD_LABELS.DASH_COL_ORDER}{' '}
+                <SortIcon field="order_number" />
               </th>
               <th
                 className="text-left py-2.5 px-4 font-semibold cursor-pointer hover:text-zinc-700"
                 onClick={() => handleSort('customer_name')}
               >
-                {MSG.DASH_COL_CUSTOMER} <SortIcon field="customer_name" />
+                {ORDERS_DASHBOARD_LABELS.DASH_COL_CUSTOMER}{' '}
+                <SortIcon field="customer_name" />
               </th>
               <th className="text-left py-2.5 px-4 font-semibold">
-                {MSG.DASH_COL_STATUS}
+                {ORDERS_DASHBOARD_LABELS.DASH_COL_STATUS}
               </th>
               <th
                 className="text-left py-2.5 px-4 font-semibold cursor-pointer hover:text-zinc-700 min-w-[160px]"
                 onClick={() => handleSort('fulfillment_pct')}
               >
-                {MSG.DASH_COL_PCT} <SortIcon field="fulfillment_pct" />
+                {ORDERS_DASHBOARD_LABELS.DASH_COL_PCT}{' '}
+                <SortIcon field="fulfillment_pct" />
               </th>
               <th className="text-left py-2.5 px-4 font-semibold">
-                {MSG.DASH_COL_WO}
+                {ORDERS_DASHBOARD_LABELS.DASH_COL_WO}
               </th>
               <th className="text-left py-2.5 px-4 font-semibold min-w-[120px]">
-                {MSG.DASH_COL_PROGRESS}
+                {ORDERS_DASHBOARD_LABELS.DASH_COL_PROGRESS}
               </th>
               <th
                 className="text-left py-2.5 px-4 font-semibold cursor-pointer hover:text-zinc-700"
                 onClick={() => handleSort('delivery_date')}
               >
-                {MSG.DASH_COL_DELIVERY} <SortIcon field="delivery_date" />
+                {ORDERS_DASHBOARD_LABELS.DASH_COL_DELIVERY}{' '}
+                <SortIcon field="delivery_date" />
               </th>
             </tr>
           </thead>
@@ -189,7 +196,7 @@ export function OrderFulfillmentTable({
                   colSpan={7}
                   className="text-center py-12 text-zinc-400 italic"
                 >
-                  {MSG.EMPTY_NO_DATA_TITLE}
+                  {ORDERS_LIST_LABELS.EMPTY_NO_DATA_TITLE}
                 </td>
               </tr>
             )}

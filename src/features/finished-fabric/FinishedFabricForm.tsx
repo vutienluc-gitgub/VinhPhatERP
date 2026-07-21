@@ -34,7 +34,7 @@ import { getErrorMessage } from '@/shared/utils/error';
 import { FinishedFabricFormStep3Storage } from './components/FinishedFabricFormStep3Storage';
 import { FinishedFabricFormStep2Specs } from './components/FinishedFabricFormStep2Specs';
 import { FinishedFabricFormStep1General } from './components/FinishedFabricFormStep1General';
-import { FINISHED_FABRIC_MESSAGES as MSG } from './finished-fabric.constants';
+import { FINISHED_FABRIC_FORM_LABELS as MSG } from './finished-fabric.constants';
 import { editBlockReason, getAllowedStatusTransitions } from './transitions';
 import type { FinishedFabricRoll, RollStatus } from './types';
 
@@ -218,7 +218,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
           stepper={stepper}
           onCancel={onClose}
           isPending={isPending}
-          submitLabel={isEditing ? 'Lưu thay đổi' : 'Nhập kho'}
+          submitLabel={isEditing ? MSG.BTN_SAVE_EDIT : MSG.BTN_SAVE_NEW}
           submitDisabled={isLocked}
           formId="finished-fabric-form"
         />

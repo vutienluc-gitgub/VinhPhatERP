@@ -1,6 +1,7 @@
 import type { UseFormRegister, FieldErrors } from 'react-hook-form';
 
 import type { BulkFinishedInputFormValues } from '@/schema/finished-fabric.schema';
+import { FINISHED_FABRIC_BULK_CONFIG_LABELS as MSG } from '@/features/finished-fabric/finished-fabric.constants';
 
 type FinishedFabricBulkFormStep1ConfigProps = {
   register: UseFormRegister<BulkFinishedInputFormValues>;
@@ -13,11 +14,11 @@ export function FinishedFabricBulkFormStep1Config({
 }: FinishedFabricBulkFormStep1ConfigProps) {
   return (
     <fieldset className="bulk-section">
-      <legend>Cấu hình mã cuộn tự động</legend>
+      <legend>{MSG.TITLE_2}</legend>
       <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
         <div className="form-field">
           <label htmlFor="bulk_roll_prefix">
-            Tiền tố mã cuộn <span className="field-required">*</span>
+            {MSG.LBL_PREFIX} <span className="field-required">*</span>
           </label>
           <input
             id="bulk_roll_prefix"
@@ -32,7 +33,7 @@ export function FinishedFabricBulkFormStep1Config({
         </div>
 
         <div className="form-field">
-          <label htmlFor="bulk_start_number">Số bắt đầu</label>
+          <label htmlFor="bulk_start_number">{MSG.LBL_START_NUMBER}</label>
           <input
             id="bulk_start_number"
             className={`field-input${errors.start_number ? ' border-danger' : ''}`}

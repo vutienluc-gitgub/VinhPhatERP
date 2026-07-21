@@ -16,7 +16,10 @@ import {
   type BadgeVariant,
 } from '@/shared/components';
 import { formatCurrencyFull, formatPhoneNumber } from '@/shared/utils/format';
-import { DEPOSIT_FORM_LABELS } from '@/features/customers/customers.constants';
+import {
+  DEPOSIT_FORM_LABELS,
+  CUSTOMER_COLUMNS_LABELS,
+} from '@/features/customers/customers.constants';
 import type { Customer } from '@/features/customers/types';
 
 export const SOURCE_BADGE_VARIANT: Record<string, BadgeVariant> = {
@@ -58,7 +61,7 @@ export function useCustomerColumns({
 }: UseCustomerColumnsProps): ColumnDef<Customer>[] {
   return [
     {
-      header: 'Mã KH',
+      header: CUSTOMER_COLUMNS_LABELS.code,
       id: 'code',
       accessorKey: 'code',
       enableSorting: true,
@@ -67,7 +70,7 @@ export function useCustomerColumns({
       ),
     },
     {
-      header: 'Tên & Địa chỉ',
+      header: CUSTOMER_COLUMNS_LABELS.nameAndAddress,
       id: 'name',
       accessorKey: 'name',
       enableSorting: true,
@@ -84,7 +87,7 @@ export function useCustomerColumns({
       },
     },
     {
-      header: 'Liên hệ',
+      header: CUSTOMER_COLUMNS_LABELS.contact,
       id: 'phone',
       accessorKey: 'phone',
       enableSorting: true,
@@ -102,7 +105,7 @@ export function useCustomerColumns({
             <a
               href={`tel:${cleanPhone}`}
               className="hover:text-primary hover:underline transition-colors font-semibold"
-              title="Gọi điện thoại"
+              title={CUSTOMER_COLUMNS_LABELS.phoneCallTitle}
             >
               {formatPhoneNumber(phone)}
             </a>
@@ -112,7 +115,7 @@ export function useCustomerColumns({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#0068FF] hover:opacity-80 transition-opacity flex items-center justify-center bg-[#0068FF]/10 rounded-full w-5 h-5"
-                title="Nhắn tin Zalo"
+                title={CUSTOMER_COLUMNS_LABELS.zaloMessageTitle}
               >
                 <Icon name="MessageCircle" size={12} />
               </a>
@@ -130,7 +133,7 @@ export function useCustomerColumns({
       cell: (info) => formatCurrencyFull(info.row.original.account_balance),
     },
     {
-      header: 'Nguồn',
+      header: CUSTOMER_COLUMNS_LABELS.source,
       id: 'source',
       accessorKey: 'source',
       enableSorting: true,
@@ -147,7 +150,7 @@ export function useCustomerColumns({
       },
     },
     {
-      header: 'Phễu CRM',
+      header: CUSTOMER_COLUMNS_LABELS.leadStatus,
       id: 'lead_status',
       accessorKey: 'lead_status',
       enableSorting: true,
@@ -165,7 +168,7 @@ export function useCustomerColumns({
       },
     },
     {
-      header: 'Trạng thái',
+      header: CUSTOMER_COLUMNS_LABELS.status,
       id: 'status',
       accessorKey: 'status',
       enableSorting: true,
@@ -182,7 +185,7 @@ export function useCustomerColumns({
       },
     },
     {
-      header: 'Phụ trách',
+      header: CUSTOMER_COLUMNS_LABELS.salesperson,
       id: 'salesperson',
       accessorKey: 'salesperson_id',
       enableSorting: false,
@@ -199,7 +202,7 @@ export function useCustomerColumns({
       },
     },
     {
-      header: 'Thao tác',
+      header: CUSTOMER_COLUMNS_LABELS.actions,
       id: 'actions',
       meta: { className: 'text-right' },
       cell: (info) => {
@@ -210,7 +213,7 @@ export function useCustomerColumns({
               {
                 icon: 'MessageSquare',
                 onClick: () => onChat?.(c),
-                label: 'Nhắn tin',
+                label: CUSTOMER_COLUMNS_LABELS.actionMessage,
               },
               ...(!isSale
                 ? [
@@ -219,26 +222,26 @@ export function useCustomerColumns({
                       onClick: () => {
                         if (onDeposit) onDeposit(c);
                       },
-                      label: 'Nạp tiền',
+                      label: CUSTOMER_COLUMNS_LABELS.actionDeposit,
                     },
                   ]
                 : []),
               {
                 icon: 'FileText',
                 onClick: () => onCreateContract(c),
-                label: 'Tạo hợp đồng',
+                label: CUSTOMER_COLUMNS_LABELS.actionContract,
               },
               {
                 icon: 'Pencil',
                 onClick: () => onEdit(c),
-                label: 'Chỉnh sửa',
+                label: CUSTOMER_COLUMNS_LABELS.actionEdit,
               },
               ...(!isSale
                 ? [
                     {
                       icon: 'Trash2' as const,
                       onClick: () => handleDelete(c),
-                      label: 'Xóa khách hàng',
+                      label: CUSTOMER_COLUMNS_LABELS.actionDelete,
                       danger: true,
                       separated: true,
                       disabled: isDeleting,

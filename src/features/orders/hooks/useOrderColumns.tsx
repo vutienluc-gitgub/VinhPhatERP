@@ -14,7 +14,7 @@ import {
   daysUntilDelivery,
   calculateBalanceDue,
 } from '@/features/orders/utils';
-import { ORDER_MESSAGES as MSG } from '@/features/orders/orders.constants';
+import { ORDERS_LIST_LABELS } from '@/features/orders/orders.constants';
 
 type UseOrderColumnsProps = {
   isAdmin: boolean;
@@ -33,7 +33,7 @@ export function useOrderColumns({
     () => [
       {
         accessorKey: 'order_number',
-        header: MSG.COL_ORDER_CUSTOMER,
+        header: ORDERS_LIST_LABELS.COL_ORDER_CUSTOMER,
         cell: ({ row }) => {
           const order = row.original;
           return (
@@ -55,13 +55,13 @@ export function useOrderColumns({
       },
       {
         accessorKey: 'order_date',
-        header: MSG.COL_ORDER_DATE,
+        header: ORDERS_LIST_LABELS.COL_ORDER_DATE,
         meta: { className: 'text-muted text-sm' },
         cell: ({ row }) => row.original.order_date,
       },
       {
         accessorKey: 'delivery_date',
-        header: MSG.COL_DELIVERY_DATE,
+        header: ORDERS_LIST_LABELS.COL_DELIVERY_DATE,
         cell: ({ row }) => {
           const order = row.original;
           const due = daysUntilDelivery(order.delivery_date);
@@ -81,7 +81,7 @@ export function useOrderColumns({
       },
       {
         accessorKey: 'total_amount',
-        header: MSG.COL_TOTAL,
+        header: ORDERS_LIST_LABELS.COL_TOTAL,
         meta: { className: 'text-right tabular-nums font-medium' },
         cell: ({ row }) => (
           <MoneyText value={row.original.total_amount} suffix="đ" />
@@ -89,7 +89,7 @@ export function useOrderColumns({
       },
       {
         id: 'paid_amount',
-        header: MSG.COL_BALANCE,
+        header: ORDERS_LIST_LABELS.COL_BALANCE,
         accessorFn: (order) => calculateBalanceDue(order),
         meta: { className: 'text-right tabular-nums font-bold' },
         cell: ({ row }) => {
@@ -106,7 +106,7 @@ export function useOrderColumns({
       },
       {
         accessorKey: 'status',
-        header: MSG.COL_STATUS,
+        header: ORDERS_LIST_LABELS.COL_STATUS,
         cell: ({ row }) => {
           const order = row.original;
           return (
@@ -120,7 +120,7 @@ export function useOrderColumns({
       },
       {
         id: 'actions',
-        header: MSG.COL_ACTIONS,
+        header: ORDERS_LIST_LABELS.COL_ACTIONS,
         meta: { className: 'text-right' },
         cell: ({ row }) => {
           const order = row.original;

@@ -6,7 +6,7 @@ import { useAutoSave } from '@/shared/hooks/useAutoSave';
 import SaveStatus from '@/shared/components/SaveStatus';
 import { MoneyText } from '@/shared/value';
 import { calculateOrderTotal } from '@/domain/orders';
-import { ORDER_MESSAGES as MSG } from '@/features/orders/orders.constants';
+import { ORDERS_FORM_LABELS } from '@/features/orders/orders.constants';
 
 export const DRAFT_KEY = 'order-draft';
 
@@ -36,7 +36,7 @@ export function LineTotals({
   const total = calculateOrderTotal(items);
   return (
     <div className="text-right font-semibold text-base py-2 border-t-2 border-border mt-3 flex items-center justify-end gap-1">
-      {MSG.TXT_TOTAL} <MoneyText value={total} suffix="đ" />
+      {ORDERS_FORM_LABELS.TXT_TOTAL} <MoneyText value={total} suffix="đ" />
     </div>
   );
 }

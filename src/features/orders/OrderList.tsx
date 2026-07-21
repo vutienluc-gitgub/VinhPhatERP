@@ -24,19 +24,24 @@ import type { Order, OrdersFilter } from './types';
 import { calculateOrderKPIs } from './utils';
 import { useOrderColumns } from './hooks/useOrderColumns';
 import { OrderMobileCard } from './components/OrderMobileCard';
-import { ORDER_MESSAGES as MSG } from './orders.constants';
+import {
+  ORDERS_DASHBOARD_LABELS,
+  ORDERS_FORM_LABELS,
+  ORDERS_LIST_LABELS,
+  ORDERS_PROG_LABELS,
+} from './orders.constants';
 
 const filterSchema: FilterFieldConfig[] = [
   {
     key: 'search',
     type: 'search',
-    label: MSG.SEARCH_LABEL,
-    placeholder: MSG.SEARCH_PLACEHOLDER,
+    label: ORDERS_LIST_LABELS.SEARCH_LABEL,
+    placeholder: ORDERS_LIST_LABELS.SEARCH_PLACEHOLDER,
   },
   {
     key: 'status',
     type: 'combobox',
-    label: MSG.PROG_FILTER_STATUS,
+    label: ORDERS_PROG_LABELS.PROG_FILTER_STATUS,
     options: Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => ({
       value,
       label,
@@ -45,7 +50,7 @@ const filterSchema: FilterFieldConfig[] = [
   {
     key: 'orderType',
     type: 'combobox',
-    label: MSG.FIELD_ORDER_TYPE,
+    label: ORDERS_FORM_LABELS.FIELD_ORDER_TYPE,
     options: ORDER_TYPE_OPTIONS.map((opt) => ({
       value: opt.value,
       label: opt.label,
@@ -89,11 +94,14 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
 
   async function handleDelete(order: Order) {
     if (order.status !== 'draft') {
-      await showAlert(MSG.ERR_DELETE_ONLY_DRAFT);
+      await showAlert(ORDERS_LIST_LABELS.ERR_DELETE_ONLY_DRAFT);
       return;
     }
     const ok = await confirm({
-      message: MSG.CONFIRM_DELETE.replace('{0}', order.order_number),
+      message: ORDERS_LIST_LABELS.CONFIRM_DELETE.replace(
+        '{0}',
+        order.order_number,
+      ),
       variant: 'danger',
     });
     if (!ok) return;
@@ -112,8 +120,8 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
   return (
     <PageLayout>
       <PageHeader
-        title={MSG.PAGE_TITLE}
-        subtitle={MSG.PAGE_SUBTITLE}
+        title={ORDERS_LIST_LABELS.PAGE_TITLE}
+        subtitle={ORDERS_LIST_LABELS.PAGE_SUBTITLE}
         actions={
           <div className="flex items-center gap-2">
             <button
@@ -121,9 +129,12 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors"
             >
               <Icon name="BarChart3" size={14} />
-              {MSG.BTN_PROGRESS}
+              {ORDERS_LIST_LABELS.BTN_PROGRESS}
             </button>
-            <AddButton onClick={onNew} label={MSG.BTN_CREATE_ORDER} />
+            <AddButton
+              onClick={onNew}
+              label={ORDERS_LIST_LABELS.BTN_CREATE_ORDER}
+            />
           </div>
         }
       />
@@ -136,7 +147,9 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
             <div className="kpi-overlay" />
             <div className="kpi-content">
               <div className="kpi-info">
-                <p className="kpi-label">{MSG.KPI_PENDING_APPROVAL}</p>
+                <p className="kpi-label">
+                  {ORDERS_DASHBOARD_LABELS.KPI_PENDING_APPROVAL}
+                </p>
                 <p className="kpi-value">{pendingReviewCount}</p>
               </div>
               <div className="kpi-icon-box">
@@ -144,7 +157,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               </div>
             </div>
             <div className="kpi-footer text-xs opacity-80 italic">
-              {MSG.KPI_PENDING_DESC}
+              {ORDERS_DASHBOARD_LABELS.KPI_PENDING_DESC}
             </div>
           </div>
 
@@ -152,7 +165,9 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
             <div className="kpi-overlay" />
             <div className="kpi-content">
               <div className="kpi-info">
-                <p className="kpi-label">{MSG.KPI_EXPECTED_REVENUE}</p>
+                <p className="kpi-label">
+                  {ORDERS_DASHBOARD_LABELS.KPI_EXPECTED_REVENUE}
+                </p>
                 <div className="flex items-baseline gap-1">
                   <MoneyText
                     value={totalRevenue}
@@ -168,7 +183,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               </div>
             </div>
             <div className="kpi-footer text-xs opacity-80 italic">
-              {MSG.KPI_REVENUE_DESC}
+              {ORDERS_DASHBOARD_LABELS.KPI_REVENUE_DESC}
             </div>
           </div>
 
@@ -176,7 +191,9 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
             <div className="kpi-overlay" />
             <div className="kpi-content">
               <div className="kpi-info">
-                <p className="kpi-label">{MSG.KPI_TOTAL_DEBT}</p>
+                <p className="kpi-label">
+                  {ORDERS_DASHBOARD_LABELS.KPI_TOTAL_DEBT}
+                </p>
                 <div className="flex items-baseline gap-1">
                   <MoneyText
                     value={totalDebt}
@@ -192,7 +209,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
               </div>
             </div>
             <div className="kpi-footer text-xs opacity-80 italic">
-              {MSG.KPI_DEBT_DESC}
+              {ORDERS_DASHBOARD_LABELS.KPI_DEBT_DESC}
             </div>
           </div>
         </div>
@@ -213,7 +230,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
       {error && (
         <div className="p-4">
           <p className="error-inline">
-            {MSG.ERR_LOAD_DATA}{' '}
+            {ORDERS_LIST_LABELS.ERR_LOAD_DATA}{' '}
             {error instanceof Error ? error.message : String(error)}
           </p>
         </div>
@@ -226,14 +243,18 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           rowKey={(o) => o.id}
           onRowClick={onView}
           emptyStateTitle={
-            hasFilter ? MSG.EMPTY_SEARCH_TITLE : MSG.EMPTY_NO_DATA_TITLE
+            hasFilter
+              ? ORDERS_LIST_LABELS.EMPTY_SEARCH_TITLE
+              : ORDERS_LIST_LABELS.EMPTY_NO_DATA_TITLE
           }
           emptyStateDescription={
-            hasFilter ? MSG.EMPTY_SEARCH_DESC : MSG.EMPTY_NO_DATA_DESC
+            hasFilter
+              ? ORDERS_LIST_LABELS.EMPTY_SEARCH_DESC
+              : ORDERS_LIST_LABELS.EMPTY_NO_DATA_DESC
           }
           emptyStateIcon={hasFilter ? 'Search' : 'Package'}
           emptyStateActionLabel={
-            !hasFilter ? MSG.BTN_CREATE_ORDER_PLUS : undefined
+            !hasFilter ? ORDERS_LIST_LABELS.BTN_CREATE_ORDER_PLUS : undefined
           }
           onEmptyStateAction={!hasFilter ? onNew : undefined}
           columns={columns}
@@ -241,7 +262,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           pagination={{
             result,
             onPageChange: setPage,
-            itemLabel: MSG.PAGINATION_LABEL,
+            itemLabel: ORDERS_LIST_LABELS.PAGINATION_LABEL,
           }}
         />
       </TableSection>

@@ -3,7 +3,10 @@ import {
   STAGE_LABELS,
   STAGE_STATUS_LABELS,
 } from '@/schema/order-progress.schema';
-import { ORDER_MESSAGES } from '@/features/orders/orders.constants';
+import {
+  ORDERS_FORM_LABELS,
+  ORDERS_PROG_LABELS,
+} from '@/features/orders/orders.constants';
 
 import type { ProgressAuditLog, ProgressAuditLogWithOrder } from './types';
 
@@ -35,7 +38,7 @@ export function ProgressAuditLogView({ orderId }: AuditLogProps) {
     return (
       <div className="panel-card">
         <p className="error-inline">
-          {ORDER_MESSAGES.ERROR_PREFIX}{' '}
+          {ORDERS_FORM_LABELS.ERROR_PREFIX}{' '}
           {error instanceof Error ? error.message : String(error)}
         </p>
       </div>
@@ -47,16 +50,16 @@ export function ProgressAuditLogView({ orderId }: AuditLogProps) {
       <div className="card-header-area">
         <span className="font-bold text-lg">
           {orderId
-            ? ORDER_MESSAGES.PROG_AUDIT_LOG_TITLE
-            : ORDER_MESSAGES.PROG_AUDIT_LOG_RECENT}
+            ? ORDERS_PROG_LABELS.PROG_AUDIT_LOG_TITLE
+            : ORDERS_PROG_LABELS.PROG_AUDIT_LOG_RECENT}
         </span>
       </div>
 
       <div style={{ padding: '0 1.25rem 1.25rem' }}>
         {isLoading ? (
-          <p className="table-empty">{ORDER_MESSAGES.PROG_LOADING}</p>
+          <p className="table-empty">{ORDERS_PROG_LABELS.PROG_LOADING}</p>
         ) : logs.length === 0 ? (
-          <p className="table-empty">{ORDER_MESSAGES.PROG_EMPTY_AUDIT}</p>
+          <p className="table-empty">{ORDERS_PROG_LABELS.PROG_EMPTY_AUDIT}</p>
         ) : (
           <div className="audit-log-list">
             {logs.map((log) => (

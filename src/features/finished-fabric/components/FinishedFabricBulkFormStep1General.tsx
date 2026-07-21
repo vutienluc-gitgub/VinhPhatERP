@@ -13,6 +13,7 @@ import type {
   BulkFinishedRollRowInput,
 } from '@/schema/finished-fabric.schema';
 import type { PurchaseOrderItem } from '@/domain/purchase-orders/purchase-order.types';
+import { FINISHED_FABRIC_BULK_CONFIG_LABELS as MSG } from '@/features/finished-fabric/finished-fabric.constants';
 
 type FinishedFabricBulkFormStep1GeneralProps = {
   register: UseFormRegister<BulkFinishedInputFormValues>;
@@ -55,10 +56,9 @@ export function FinishedFabricBulkFormStep1General({
 }: FinishedFabricBulkFormStep1GeneralProps) {
   return (
     <fieldset className="bulk-section">
-      <legend>Thông tin lô & chung</legend>
+      <legend>{MSG.TITLE}</legend>
 
       <div className="form-field mb-4 pb-4 border-b border-border">
-        <label>Nguồn gốc nhập kho</label>
         <div className="flex gap-4 mt-2">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -129,7 +129,7 @@ export function FinishedFabricBulkFormStep1General({
           {importFromPo && (
             <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] p-3 bg-white border border-border rounded-md">
               <div className="form-field">
-                <label>Chọn Đơn đặt hàng</label>
+                <label>{MSG.LBL_DYEING_PO}</label>
                 <Controller
                   name="po_id"
                   control={control}
@@ -142,14 +142,14 @@ export function FinishedFabricBulkFormStep1General({
                         // Reset item selection when PO changes
                         setValue('po_item_id', null);
                       }}
-                      placeholder="— Chọn PO —"
+                      placeholder="{MSG.VAL_CHOOSE_PO}"
                     />
                   )}
                 />
               </div>
 
               <div className="form-field">
-                <label>Chọn mặt hàng trong PO</label>
+                <label>{MSG.LBL_PO_ITEM}</label>
                 <Controller
                   name="po_item_id"
                   control={control}
@@ -160,7 +160,7 @@ export function FinishedFabricBulkFormStep1General({
                       onChange={(val) => {
                         field.onChange(val);
                       }}
-                      placeholder="— Chọn mặt hàng —"
+                      placeholder="{MSG.VAL_CHOOSE_PO_ITEM}"
                       disabled={
                         !control._formValues.po_id ||
                         poItemComboOptions.length === 0
@@ -175,7 +175,8 @@ export function FinishedFabricBulkFormStep1General({
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label htmlFor="bulk_supplier_id">
-                Nhà cung cấp <span className="field-required">*</span>
+                {MSG.LBL_DYEING_PARTNER}{' '}
+                <span className="field-required">*</span>
               </label>
               <Controller
                 name="supplier_id"
@@ -185,7 +186,7 @@ export function FinishedFabricBulkFormStep1General({
                     options={supplierComboOptions}
                     value={field.value ?? ''}
                     onChange={field.onChange}
-                    placeholder="— Chọn nhà cung cấp —"
+                    placeholder="{MSG.VAL_CHOOSE_DYER}"
                     hasError={!!errors.supplier_id}
                     disabled={importFromPo}
                   />
@@ -241,7 +242,7 @@ export function FinishedFabricBulkFormStep1General({
       <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
         <div className="form-field">
           <label htmlFor="bulk_lot_number">
-            Số lô (Lot number) <span className="field-required">*</span>
+            {MSG.LBL_LOT_NUMBER} <span className="field-required">*</span>
           </label>
           <input
             id="bulk_lot_number"
@@ -269,7 +270,7 @@ export function FinishedFabricBulkFormStep1General({
 
         <div className="form-field">
           <label htmlFor="bulk_fabric_type">
-            Loại vải <span className="field-required">*</span>
+            {MSG.LBL_FABRIC_TYPE} <span className="field-required">*</span>
           </label>
           <Controller
             name="fabric_type"
@@ -279,7 +280,7 @@ export function FinishedFabricBulkFormStep1General({
                 options={fabricComboOptions}
                 value={field.value}
                 onChange={field.onChange}
-                placeholder="Chọn loại vải..."
+                placeholder="{MSG.VAL_CHOOSE_FABRIC}"
                 hasError={!!errors.fabric_type}
               />
             )}
@@ -292,7 +293,7 @@ export function FinishedFabricBulkFormStep1General({
 
       <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
         <div className="form-field">
-          <label htmlFor="bulk_color_name">Màu vải</label>
+          <label htmlFor="bulk_color_name">{MSG.LBL_COLOR}</label>
           <Controller
             name="color_name"
             control={control}
@@ -368,7 +369,9 @@ export function FinishedFabricBulkFormStep1General({
         </div>
 
         <div className="form-field">
-          <label htmlFor="bulk_production_date">Ngày hoàn thành</label>
+          <label htmlFor="bulk_production_date">
+            {MSG.LBL_PRODUCTION_DATE}
+          </label>
           <input
             id="bulk_production_date"
             className="field-input"
@@ -379,7 +382,7 @@ export function FinishedFabricBulkFormStep1General({
       </div>
 
       <div className="form-field">
-        <label htmlFor="bulk_warehouse_location">Vị trí kho</label>
+        <label htmlFor="bulk_warehouse_location">{MSG.LBL_WAREHOUSE}</label>
         <input
           id="bulk_warehouse_location"
           className="field-input"

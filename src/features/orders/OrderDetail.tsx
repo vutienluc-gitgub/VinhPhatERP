@@ -31,7 +31,12 @@ import { ChatWidget } from '@/features/chat';
 
 import { OrderAuditLogViewer } from './OrderAuditLogViewer';
 import type { Order } from './types';
-import { ORDER_MESSAGES as MSG } from './orders.constants';
+import {
+  ORDERS_FORM_LABELS,
+  ORDERS_PROG_LABELS,
+  ORDERS_RES_LABELS,
+  ORDERS_LIST_LABELS,
+} from './orders.constants';
 
 type OrderDetailProps = {
   orderId: string;
@@ -74,14 +79,14 @@ export function OrderDetail({
   if (isLoading)
     return (
       <div className="panel-card">
-        <p className="table-empty">{MSG.PROG_LOADING}</p>
+        <p className="table-empty">{ORDERS_PROG_LABELS.PROG_LOADING}</p>
       </div>
     );
   if (error)
     return (
       <div className="panel-card">
         <p className="error-inline">
-          {MSG.ERROR_PREFIX}
+          {ORDERS_FORM_LABELS.ERROR_PREFIX}
           {error instanceof Error ? error.message : String(error)}
         </p>
       </div>
@@ -89,7 +94,7 @@ export function OrderDetail({
   if (!order)
     return (
       <div className="panel-card">
-        <p className="table-empty">{MSG.ERR_NOT_FOUND}</p>
+        <p className="table-empty">{ORDERS_LIST_LABELS.ERR_NOT_FOUND}</p>
       </div>
     );
 
@@ -103,7 +108,9 @@ export function OrderDetail({
   async function handleConfirm() {
     const isTrading = order?.order_type === 'trading';
     const ok = await confirm({
-      message: isTrading ? MSG.CONFIRM_TRADING : MSG.CONFIRM_PRODUCTION,
+      message: isTrading
+        ? ORDERS_LIST_LABELS.CONFIRM_TRADING
+        : ORDERS_LIST_LABELS.CONFIRM_PRODUCTION,
     });
     if (!ok) return;
 
@@ -117,7 +124,9 @@ export function OrderDetail({
   async function handleCancel() {
     const isTrading = order?.order_type === 'trading';
     const ok = await confirm({
-      message: isTrading ? MSG.CONFIRM_CANCEL_TRADING : MSG.CONFIRM_CANCEL,
+      message: isTrading
+        ? ORDERS_LIST_LABELS.CONFIRM_CANCEL_TRADING
+        : ORDERS_LIST_LABELS.CONFIRM_CANCEL,
       variant: 'danger',
     });
     if (!ok) return;
@@ -130,14 +139,14 @@ export function OrderDetail({
   }
 
   async function handleComplete() {
-    const ok = await confirm({ message: MSG.CONFIRM_COMPLETE });
+    const ok = await confirm({ message: ORDERS_LIST_LABELS.CONFIRM_COMPLETE });
     if (!ok) return;
     completeMutation.mutate(orderId);
   }
 
   async function handleApprove() {
     const ok = await confirm({
-      message: MSG.CONFIRM_APPROVE_REQ,
+      message: ORDERS_LIST_LABELS.CONFIRM_APPROVE_REQ,
     });
     if (!ok) return;
     approveMutation.mutate(orderId);
@@ -145,7 +154,7 @@ export function OrderDetail({
 
   async function handleReject() {
     const ok = await confirm({
-      message: MSG.CONFIRM_REJECT_REQ,
+      message: ORDERS_LIST_LABELS.CONFIRM_REJECT_REQ,
       variant: 'danger',
     });
     if (!ok) return;
@@ -158,7 +167,7 @@ export function OrderDetail({
       <div className="p-5">
         <div className="flex items-center gap-3 mb-4">
           <Button variant="secondary" leftIcon="ArrowLeft" onClick={onBack}>
-            {MSG.BTN_BACK}
+            {ORDERS_LIST_LABELS.BTN_BACK}
           </Button>
           <div className="flex-1">
             <div className="flex items-center gap-2">
@@ -166,7 +175,7 @@ export function OrderDetail({
               <Badge variant="gray">
                 {ORDER_TYPE_LABELS[
                   order.order_type as keyof typeof ORDER_TYPE_LABELS
-                ] ?? MSG.TYPE_PRODUCTION}
+                ] ?? ORDERS_LIST_LABELS.TYPE_PRODUCTION}
               </Badge>
             </div>
             <span className="text-muted text-sm">
@@ -182,19 +191,19 @@ export function OrderDetail({
         <div className="dashboard-summary-row mb-4">
           <div>
             <div className="text-muted text-sm summary-label">
-              {MSG.LBL_ORDER_DATE}
+              {ORDERS_LIST_LABELS.LBL_ORDER_DATE}
             </div>
             <div>{order.order_date}</div>
           </div>
           <div>
             <div className="text-muted text-sm summary-label">
-              {MSG.LBL_DELIVERY_DATE}
+              {ORDERS_LIST_LABELS.LBL_DELIVERY_DATE}
             </div>
             <div>{order.delivery_date ?? '—'}</div>
           </div>
           <div>
             <div className="text-muted text-sm summary-label">
-              {MSG.LBL_TOTAL_AMOUNT}
+              {ORDERS_FORM_LABELS.LBL_TOTAL_AMOUNT}
             </div>
             <div className="summary-value">
               <MoneyText value={order.total_amount} suffix="đ" />
@@ -202,7 +211,7 @@ export function OrderDetail({
           </div>
           <div>
             <div className="text-muted text-sm summary-label">
-              {MSG.LBL_PAID_AMOUNT}
+              {ORDERS_LIST_LABELS.LBL_PAID_AMOUNT}
             </div>
             <div className="summary-value text-[var(--success)]">
               <MoneyText value={order.paid_amount} suffix="đ" />
@@ -210,7 +219,7 @@ export function OrderDetail({
           </div>
           <div>
             <div className="text-muted text-sm summary-label">
-              {MSG.LBL_BALANCE_DUE}
+              {ORDERS_FORM_LABELS.LBL_BALANCE_DUE}
             </div>
             <div
               className={`summary-value${balanceDue > 0 ? ' summary-value--danger' : ''}`}
@@ -222,7 +231,7 @@ export function OrderDetail({
 
         {order.notes && (
           <div className="info-box mb-4">
-            <strong>{MSG.LBL_NOTES_PREFIX}</strong> {order.notes}
+            <strong>{ORDERS_LIST_LABELS.LBL_NOTES_PREFIX}</strong> {order.notes}
           </div>
         )}
 
@@ -230,7 +239,7 @@ export function OrderDetail({
         {order.total_amount > 0 && (
           <div className="mb-4">
             <div className="flex justify-between text-xs mb-1">
-              <span>{MSG.LBL_PAYMENT_PROGRESS}</span>
+              <span>{ORDERS_LIST_LABELS.LBL_PAYMENT_PROGRESS}</span>
               <span>{paymentPct}%</span>
             </div>
             <div className="h-2 bg-border rounded">
@@ -252,7 +261,7 @@ export function OrderDetail({
                 onClick={handleApprove}
                 isLoading={approveMutation.isPending}
               >
-                {MSG.BTN_APPROVE_REQ}
+                {ORDERS_LIST_LABELS.BTN_APPROVE_REQ}
               </Button>
               <Button
                 variant="secondary"
@@ -261,7 +270,7 @@ export function OrderDetail({
                 isLoading={rejectMutation.isPending}
                 className="text-danger"
               >
-                {MSG.BTN_REJECT_REQ}
+                {ORDERS_LIST_LABELS.BTN_REJECT_REQ}
               </Button>
             </>
           )}
@@ -273,7 +282,7 @@ export function OrderDetail({
                 leftIcon="Pencil"
                 onClick={() => onEdit(order)}
               >
-                {MSG.BTN_EDIT}
+                {ORDERS_LIST_LABELS.BTN_EDIT}
               </Button>
               {order.status === 'draft' && (
                 <Button
@@ -286,8 +295,8 @@ export function OrderDetail({
                   }
                 >
                   {order.order_type === 'trading'
-                    ? MSG.BTN_CONFIRM_TRADING
-                    : MSG.BTN_CONFIRM}
+                    ? ORDERS_LIST_LABELS.BTN_CONFIRM_TRADING
+                    : ORDERS_LIST_LABELS.BTN_CONFIRM}
                 </Button>
               )}
             </>
@@ -299,21 +308,21 @@ export function OrderDetail({
                 leftIcon="Lock"
                 onClick={() => onReserveRolls(order)}
               >
-                {MSG.RES_BTN_RESERVE}
+                {ORDERS_RES_LABELS.RES_BTN_RESERVE}
               </Button>
               <Button
                 variant="primary"
                 leftIcon="Package"
                 onClick={() => onCreateShipment(order)}
               >
-                {MSG.BTN_SHIP}
+                {ORDERS_LIST_LABELS.BTN_SHIP}
               </Button>
               <Button
                 variant="outline"
                 leftIcon="CircleDollarSign"
                 onClick={() => onCreatePayment(order)}
               >
-                {MSG.BTN_PAY}
+                {ORDERS_LIST_LABELS.BTN_PAY}
               </Button>
             </>
           )}
@@ -326,7 +335,7 @@ export function OrderDetail({
               onClick={handleComplete}
               isLoading={completeMutation.isPending}
             >
-              {MSG.BTN_COMPLETE}
+              {ORDERS_LIST_LABELS.BTN_COMPLETE}
             </Button>
           )}
           {order.status !== 'cancelled' && (
@@ -335,7 +344,7 @@ export function OrderDetail({
               leftIcon="FileText"
               onClick={() => onCreateContract(order)}
             >
-              {MSG.BTN_CONTRACT}
+              {ORDERS_LIST_LABELS.BTN_CONTRACT}
             </Button>
           )}
           {order.status !== 'cancelled' && order.status !== 'completed' && (
@@ -346,14 +355,14 @@ export function OrderDetail({
               isLoading={cancelMutation.isPending}
               className="text-danger"
             >
-              {MSG.BTN_CANCEL}
+              {ORDERS_LIST_LABELS.BTN_CANCEL}
             </Button>
           )}
         </div>
 
         {actionError && (
           <p className="error-inline text-sm">
-            {MSG.ERROR_PREFIX}{' '}
+            {ORDERS_FORM_LABELS.ERROR_PREFIX}{' '}
             {actionError instanceof Error
               ? actionError.message
               : String(actionError)}
@@ -364,22 +373,28 @@ export function OrderDetail({
       {/* Order items table */}
       <div className="px-5 pb-5">
         <h4 className="mb-3">
-          {MSG.SECTION_ITEMS} ({items.length})
+          {ORDERS_FORM_LABELS.SECTION_ITEMS} ({items.length})
         </h4>
         <div className="data-table-wrap">
           {items.length === 0 ? (
-            <p className="table-empty">{MSG.EMPTY_ITEMS}</p>
+            <p className="table-empty">{ORDERS_LIST_LABELS.EMPTY_ITEMS}</p>
           ) : (
             <table className="data-table">
               <thead>
                 <tr>
                   <th>#</th>
-                  {order.order_type === 'trading' && <th>{MSG.COL_SOURCE}</th>}
-                  <th>{MSG.TYPE_FABRIC}</th>
-                  <th>{MSG.FIELD_COLOR}</th>
-                  <th className="text-right">{MSG.FIELD_QUANTITY}</th>
-                  <th className="text-right">{MSG.COL_PRICE}</th>
-                  <th className="text-right">{MSG.COL_AMOUNT}</th>
+                  {order.order_type === 'trading' && (
+                    <th>{ORDERS_LIST_LABELS.COL_SOURCE}</th>
+                  )}
+                  <th>{ORDERS_LIST_LABELS.TYPE_FABRIC}</th>
+                  <th>{ORDERS_FORM_LABELS.FIELD_COLOR}</th>
+                  <th className="text-right">
+                    {ORDERS_FORM_LABELS.FIELD_QUANTITY}
+                  </th>
+                  <th className="text-right">{ORDERS_LIST_LABELS.COL_PRICE}</th>
+                  <th className="text-right">
+                    {ORDERS_LIST_LABELS.COL_AMOUNT}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -396,7 +411,7 @@ export function OrderDetail({
                             <Badge variant="info">
                               {category
                                 ? PRODUCT_CATEGORY_LABELS[category]
-                                : MSG.TYPE_FABRIC}
+                                : ORDERS_LIST_LABELS.TYPE_FABRIC}
                             </Badge>
                           </td>
                         )}
@@ -427,7 +442,7 @@ export function OrderDetail({
                     colSpan={order.order_type === 'trading' ? 6 : 5}
                     className="text-right font-bold"
                   >
-                    {MSG.TXT_TOTAL}
+                    {ORDERS_FORM_LABELS.TXT_TOTAL}
                   </td>
                   <td className="text-right tabular-nums font-bold">
                     <MoneyText value={order.total_amount} suffix="đ" />
@@ -442,7 +457,7 @@ export function OrderDetail({
       {/* Production progress timeline */}
       {progressStages.length > 0 && (
         <div className="px-5 pb-5">
-          <h4 className="mb-3">{MSG.PROG_TIMELINE_TITLE}</h4>
+          <h4 className="mb-3">{ORDERS_PROG_LABELS.PROG_TIMELINE_TITLE}</h4>
           <ProgressTimeline
             stages={progressStages}
             readonly={
@@ -460,7 +475,7 @@ export function OrderDetail({
         entityType="order"
         entityId={orderId}
         title={order.order_number}
-        subtitle={`${MSG.PAGE_TITLE} ${ORDER_TYPE_LABELS[order.order_type as keyof typeof ORDER_TYPE_LABELS]}`}
+        subtitle={`${ORDERS_LIST_LABELS.PAGE_TITLE} ${ORDER_TYPE_LABELS[order.order_type as keyof typeof ORDER_TYPE_LABELS]}`}
       />
     </div>
   );

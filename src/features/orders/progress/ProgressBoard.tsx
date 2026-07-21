@@ -5,7 +5,10 @@ import {
   PRODUCTION_STAGES,
   STAGE_LABELS,
 } from '@/schema/order-progress.schema';
-import { ORDER_MESSAGES } from '@/features/orders/orders.constants';
+import {
+  ORDERS_FORM_LABELS,
+  ORDERS_PROG_LABELS,
+} from '@/features/orders/orders.constants';
 
 import { OpsLevelPath } from './OpsLevelPath';
 import { ProgressExpBar } from './ProgressExpBar';
@@ -39,7 +42,7 @@ function groupByOrder(rows: OrderProgressWithOrder[]): GroupedByOrder[] {
           : (row.orders?.order_number ?? '—'),
         customerName: isStandalone
           ? (row.work_orders?.supplier?.name ??
-            ORDER_MESSAGES.PROG_STANDALONE_WO)
+            ORDERS_PROG_LABELS.PROG_STANDALONE_WO)
           : (row.orders?.customers?.name ?? '—'),
         fabricInfo: isStandalone
           ? (row.work_orders?.bom_template?.name ?? '')
@@ -93,7 +96,7 @@ export function ProgressBoard() {
     return (
       <div className="panel-card">
         <p className="error-inline">
-          {ORDER_MESSAGES.ERROR_PREFIX}{' '}
+          {ORDERS_FORM_LABELS.ERROR_PREFIX}{' '}
           {error instanceof Error ? error.message : String(error)}
         </p>
       </div>
@@ -105,7 +108,7 @@ export function ProgressBoard() {
       {/* Header */}
       <div className="card-header-area">
         <span className="font-bold text-lg">
-          {ORDER_MESSAGES.PROG_BOARD_TITLE}
+          {ORDERS_PROG_LABELS.PROG_BOARD_TITLE}
         </span>
       </div>
 
@@ -113,7 +116,7 @@ export function ProgressBoard() {
       <div className="filter-bar card-filter-section">
         <div className="filter-field">
           <label htmlFor="stage-filter">
-            {ORDER_MESSAGES.PROG_FILTER_STAGE}
+            {ORDERS_PROG_LABELS.PROG_FILTER_STAGE}
           </label>
           <select
             id="stage-filter"
@@ -123,7 +126,7 @@ export function ProgressBoard() {
               setStageFilter(e.target.value as ProductionStage | '')
             }
           >
-            <option value="">{ORDER_MESSAGES.PROG_FILTER_ALL}</option>
+            <option value="">{ORDERS_PROG_LABELS.PROG_FILTER_ALL}</option>
             {PRODUCTION_STAGES.map((s) => (
               <option key={s} value={s}>
                 {STAGE_LABELS[s]}
@@ -134,7 +137,7 @@ export function ProgressBoard() {
 
         <div className="filter-field">
           <label htmlFor="status-filter">
-            {ORDER_MESSAGES.PROG_FILTER_STATUS}
+            {ORDERS_PROG_LABELS.PROG_FILTER_STATUS}
           </label>
           <select
             id="status-filter"
@@ -144,16 +147,16 @@ export function ProgressBoard() {
               setStatusFilter(e.target.value as StageStatus | '')
             }
           >
-            <option value="">{ORDER_MESSAGES.PROG_FILTER_ALL}</option>
+            <option value="">{ORDERS_PROG_LABELS.PROG_FILTER_ALL}</option>
             <option value="pending">
-              {ORDER_MESSAGES.PROG_STATUS_PENDING}
+              {ORDERS_PROG_LABELS.PROG_STATUS_PENDING}
             </option>
             <option value="in_progress">
-              {ORDER_MESSAGES.PROG_STATUS_DOING}
+              {ORDERS_PROG_LABELS.PROG_STATUS_DOING}
             </option>
-            <option value="done">{ORDER_MESSAGES.PROG_STATUS_DONE}</option>
+            <option value="done">{ORDERS_PROG_LABELS.PROG_STATUS_DONE}</option>
             <option value="skipped">
-              {ORDER_MESSAGES.PROG_STATUS_SKIPPED}
+              {ORDERS_PROG_LABELS.PROG_STATUS_SKIPPED}
             </option>
           </select>
         </div>
@@ -167,7 +170,7 @@ export function ProgressBoard() {
               setStatusFilter('');
             }}
           >
-            {ORDER_MESSAGES.PROG_BTN_CLEAR_FILTER}
+            {ORDERS_PROG_LABELS.PROG_BTN_CLEAR_FILTER}
           </button>
         )}
       </div>
@@ -175,12 +178,12 @@ export function ProgressBoard() {
       {/* Board */}
       <div className="px-5 pb-5">
         {isLoading ? (
-          <p className="table-empty">{ORDER_MESSAGES.PROG_LOADING}</p>
+          <p className="table-empty">{ORDERS_PROG_LABELS.PROG_LOADING}</p>
         ) : filtered.length === 0 ? (
           <p className="table-empty">
             {stageFilter || statusFilter
-              ? ORDER_MESSAGES.PROG_EMPTY_FILTER
-              : ORDER_MESSAGES.PROG_EMPTY_CONFIRMED}
+              ? ORDERS_PROG_LABELS.PROG_EMPTY_FILTER
+              : ORDERS_PROG_LABELS.PROG_EMPTY_CONFIRMED}
           </p>
         ) : (
           <div className="flex flex-col gap-4">
@@ -238,7 +241,7 @@ export function ProgressBoard() {
 
       {updateMutation.error && (
         <p className="error-inline text-[0.85rem]">
-          {ORDER_MESSAGES.PROG_ERROR_UPDATE}{' '}
+          {ORDERS_PROG_LABELS.PROG_ERROR_UPDATE}{' '}
           {updateMutation.error instanceof Error
             ? updateMutation.error.message
             : String(updateMutation.error)}

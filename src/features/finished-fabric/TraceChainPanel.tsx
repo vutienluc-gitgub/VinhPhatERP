@@ -3,21 +3,12 @@ import { useTraceChain } from '@/application/inventory';
 import { QUALITY_GRADE_LABELS } from '@/schema/finished-fabric.schema';
 import { formatQuantity, formatCurrency } from '@/shared/value/core/formatter';
 
+import { FINISHED_FABRIC_TRACE_LABELS as MSG } from './finished-fabric.constants';
 import type { FinishedFabricRoll } from './types';
 
 type TraceChainPanelProps = {
   roll: FinishedFabricRoll;
   onClose: () => void;
-};
-
-const STATUS_LABELS: Record<string, string> = {
-  in_stock: 'Trong kho',
-  sold: 'Đã bán',
-  reserved: 'Đã giữ',
-  defective: 'Lỗi',
-  draft: 'Nháp',
-  confirmed: 'Đã xác nhận',
-  cancelled: 'Đã hủy',
 };
 
 function fmtDate(d: string | null): string {
@@ -45,7 +36,7 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
     <AdaptiveSheet
       open={true}
       onClose={onClose}
-      title="🔗 Truy vết nguồn gốc"
+      title="{MSG.TITLE}"
       maxWidth={560}
       footer={
         <button
@@ -53,7 +44,7 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
           type="button"
           onClick={onClose}
         >
-          Đóng
+          {MSG.BTN_CLOSE}
         </button>
       }
     >
@@ -63,7 +54,7 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
         <div className="trace-node trace-node--active">
           <div className="trace-node-icon">🏭</div>
           <div className="trace-node-body">
-            <p className="trace-node-label">Cuộn thành phẩm</p>
+            <p className="trace-node-label">{MSG.NODE_FINISHED}</p>
             <p className="trace-node-title">{roll.roll_number}</p>
             <div className="trace-node-details">
               <span>{roll.fabric_type}</span>
@@ -92,14 +83,14 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
           <div className="trace-node trace-node--loading">
             <div className="trace-node-icon">⏳</div>
             <div className="trace-node-body">
-              <p className="trace-node-label">Đang tải...</p>
+              <p className="trace-node-label">{MSG.LOADING}</p>
             </div>
           </div>
         ) : rawRoll ? (
           <div className="trace-node">
             <div className="trace-node-icon">🧶</div>
             <div className="trace-node-body">
-              <p className="trace-node-label">Cuộn vải mộc</p>
+              <p className="trace-node-label">{MSG.NODE_RAW}</p>
               <p className="trace-node-title">{rawRoll.roll_number}</p>
               <div className="trace-node-details">
                 <span>{rawRoll.fabric_type}</span>
@@ -115,16 +106,18 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
                 <span>{fmtNum(rawRoll.weight_kg, 'kg')}</span>
               </div>
               {rawRoll.lot_number && (
-                <p className="trace-node-meta">📦 Lô: {rawRoll.lot_number}</p>
+                <p className="trace-node-meta">
+                  {MSG.LBL_LOT} {rawRoll.lot_number}
+                </p>
               )}
               {rawRoll.weaving_partner && (
                 <p className="trace-node-meta">
-                  🏠 Nhà dệt: {rawRoll.weaving_partner.name} (
+                  {MSG.LBL_WEAVER} {rawRoll.weaving_partner.name} (
                   {rawRoll.weaving_partner.code})
                 </p>
               )}
               <p className="trace-node-meta">
-                Trạng thái: {STATUS_LABELS[rawRoll.status] ?? rawRoll.status}
+                {MSG.LBL_STATUS} {MSG.STATUS[rawRoll.status] ?? rawRoll.status}
               </p>
             </div>
           </div>
@@ -132,8 +125,8 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
           <div className="trace-node trace-node--empty">
             <div className="trace-node-icon">❓</div>
             <div className="trace-node-body">
-              <p className="trace-node-label">Cuộn vải mộc</p>
-              <p className="trace-node-meta">Không có liên kết cuộn mộc</p>
+              <p className="trace-node-label">{MSG.NODE_RAW}</p>
+              <p className="trace-node-meta">{MSG.EMPTY_RAW}</p>
             </div>
           </div>
         )}
@@ -147,22 +140,28 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
             <div className="trace-node">
               <div className="trace-node-icon">📋</div>
               <div className="trace-node-body">
-                <p className="trace-node-label">Phiếu nhập sợi</p>
+                <p className="trace-node-label">{MSG.NODE_YARN}</p>
                 <p className="trace-node-title">{yarnReceipt.receipt_number}</p>
                 <div className="trace-node-details">
-                  <span>Ngày: {fmtDate(yarnReceipt.receipt_date)}</span>
-                  <span>Giá trị: {fmtCurrency(yarnReceipt.total_amount)}</span>
-                  <span>{yarnReceipt.items_count} dòng sợi</span>
+                  <span>
+                    {MSG.LBL_DATE} {fmtDate(yarnReceipt.receipt_date)}
+                  </span>
+                  <span>
+                    {MSG.LBL_VALUE} {fmtCurrency(yarnReceipt.total_amount)}
+                  </span>
+                  <span>
+                    {yarnReceipt.items_count} {MSG.LBL_YARN_LINES}
+                  </span>
                 </div>
                 {yarnReceipt.supplier && (
                   <p className="trace-node-meta">
-                    🏢 NCC sợi: {yarnReceipt.supplier.name} (
+                    {MSG.LBL_SUPPLIER} {yarnReceipt.supplier.name} (
                     {yarnReceipt.supplier.code})
                   </p>
                 )}
                 <p className="trace-node-meta">
                   Trạng thái:{' '}
-                  {STATUS_LABELS[yarnReceipt.status] ?? yarnReceipt.status}
+                  {MSG.STATUS[yarnReceipt.status] ?? yarnReceipt.status}
                 </p>
               </div>
             </div>
@@ -170,7 +169,7 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
             <div className="trace-node trace-node--empty">
               <div className="trace-node-icon">❓</div>
               <div className="trace-node-body">
-                <p className="trace-node-label">Phiếu nhập sợi</p>
+                <p className="trace-node-label">{MSG.NODE_YARN}</p>
                 <p className="trace-node-meta">
                   Không có liên kết phiếu nhập sợi
                 </p>
