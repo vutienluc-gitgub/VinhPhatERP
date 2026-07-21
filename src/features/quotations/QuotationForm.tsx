@@ -7,6 +7,7 @@ import { StepperFooter } from '@/shared/components/StepperFooter';
 import { useStepper } from '@/shared/hooks/useStepper';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import { Combobox } from '@/shared/components/Combobox';
+import { NumericInput } from '@/shared/value';
 import { Icon } from '@/shared/components/Icon';
 import { useActiveCustomers } from '@/shared/hooks/useActiveCustomers';
 import {
@@ -371,14 +372,20 @@ export function QuotationForm({
                 <label htmlFor="discountValue">
                   {QUOTATION_LABELS.DISCOUNT_VALUE}
                 </label>
-                <input
-                  id="discountValue"
-                  className="field-input"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="0"
-                  {...register('discountValue', { valueAsNumber: true })}
+                <Controller
+                  name="discountValue"
+                  control={control}
+                  render={({ field }) => (
+                    <NumericInput
+                      id="discountValue"
+                      className="field-input"
+                      placeholder="0"
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      formatOptions={{ decimals: 2 }}
+                    />
+                  )}
                 />
               </div>
             </div>

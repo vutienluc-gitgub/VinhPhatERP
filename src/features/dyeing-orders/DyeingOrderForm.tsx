@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useFieldArray, useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { AdaptiveSheet, Icon, Combobox, Button } from '@/shared/components';
+import { MoneyInput } from '@/shared/value';
 import { StepperFooter } from '@/shared/components/StepperFooter';
 import { useStepper } from '@/shared/hooks/useStepper';
 import {
@@ -250,10 +251,17 @@ export function DyeingOrderForm({
               <label className="text-xs font-bold text-muted uppercase">
                 {MSG.LBL_UNIT_PRICE}
               </label>
-              <input
-                type="number"
-                {...register('unit_price_per_kg', { valueAsNumber: true })}
-                className="field-input tabular-nums font-bold"
+              <Controller
+                name="unit_price_per_kg"
+                control={control}
+                render={({ field }) => (
+                  <MoneyInput
+                    className="field-input tabular-nums font-bold"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                  />
+                )}
               />
             </div>
           </div>

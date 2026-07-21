@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-hot-toast';
 
 import { Button, Icon } from '@/shared/components';
+import { MoneyInput } from '@/shared/value';
 import type { PublicRfqDetails } from '@/api/supplier-portal.api';
 
 import {
@@ -188,15 +189,21 @@ export function SupplierQuoteForm({ rfq, onSuccess }: Props) {
                       {SUPPLIER_PORTAL_LABELS.COL_PRICE}
                     </label>
                     <div className="relative">
-                      <input
-                        type="number"
-                        className="field-input w-full pr-12 text-right"
-                        placeholder={SUPPLIER_PORTAL_LABELS.PLACEHOLDER_PRICE}
-                        {...register(`items.${index}.unit_price` as const)}
+                      <Controller
+                        name={`items.${index}.unit_price` as const}
+                        control={control}
+                        render={({ field }) => (
+                          <MoneyInput
+                            className="field-input w-full"
+                            placeholder={
+                              SUPPLIER_PORTAL_LABELS.PLACEHOLDER_PRICE
+                            }
+                            value={field.value}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                          />
+                        )}
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted pointer-events-none">
-                        {SUPPLIER_PORTAL_LABELS.LABEL_CURRENCY}
-                      </span>
                     </div>
                   </div>
 

@@ -4,6 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { Button } from '@/shared/components';
+import { MoneyInput } from '@/shared/value';
 import type { ShippingRate } from '@/shared/hooks/useShippingRateOptions';
 import { useActiveShippingRates } from '@/shared/hooks/useShippingRateOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
@@ -395,11 +396,18 @@ export function ShipmentForm({
             </div>
             <div className="form-field">
               <label>{FIELD_MSG.SHIPPING_COST}</label>
-              <input
-                className="field-input"
-                type="number"
-                {...register('shippingCost', { valueAsNumber: true })}
-                placeholder="0"
+              <Controller
+                name="shippingCost"
+                control={control}
+                render={({ field }) => (
+                  <MoneyInput
+                    className="field-input"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    placeholder="0"
+                  />
+                )}
               />
             </div>
           </div>
@@ -408,11 +416,18 @@ export function ShipmentForm({
           <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             <div className="form-field">
               <label>{FIELD_MSG.LOADING_FEE}</label>
-              <input
-                className="field-input"
-                type="number"
-                {...register('loadingFee', { valueAsNumber: true })}
-                placeholder="0"
+              <Controller
+                name="loadingFee"
+                control={control}
+                render={({ field }) => (
+                  <MoneyInput
+                    className="field-input"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    placeholder="0"
+                  />
+                )}
               />
             </div>
             <div />
