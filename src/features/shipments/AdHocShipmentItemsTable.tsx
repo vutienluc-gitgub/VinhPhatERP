@@ -6,7 +6,7 @@ import {
 
 import { Icon } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
-import { MoneyText } from '@/shared/value';
+import { MoneyInput, MoneyText } from '@/shared/value';
 import type { AdHocShipmentFormValues } from '@/schema/shipment.schema';
 
 import { AD_HOC_SHIPMENT_MESSAGES } from './shipments.constants';
@@ -158,28 +158,38 @@ export function AdHocShipmentItemsTable({
 
             {/* Price per kg */}
             <div className="pr-2">
-              <input
-                className="field-input text-sm text-right"
-                type="number"
-                step="100"
-                placeholder="0"
-                {...register(`items.${index}.pricePerKg`, {
-                  valueAsNumber: true,
-                  onChange: () => onItemFieldChange(index),
-                })}
+              <Controller
+                name={`items.${index}.pricePerKg` as const}
+                control={control}
+                render={({ field }) => (
+                  <MoneyInput
+                    className="field-input text-sm"
+                    placeholder="0"
+                    value={field.value}
+                    onChange={(val) => {
+                      field.onChange(val);
+                      onItemFieldChange(index);
+                    }}
+                    onBlur={field.onBlur}
+                  />
+                )}
               />
             </div>
 
             {/* Total amount */}
             <div className="pr-2">
-              <input
-                className="field-input text-sm text-right font-semibold"
-                type="number"
-                step="100"
-                placeholder="0"
-                {...register(`items.${index}.totalAmount`, {
-                  valueAsNumber: true,
-                })}
+              <Controller
+                name={`items.${index}.totalAmount` as const}
+                control={control}
+                render={({ field }) => (
+                  <MoneyInput
+                    className="field-input text-sm font-semibold"
+                    placeholder="0"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                  />
+                )}
               />
             </div>
 

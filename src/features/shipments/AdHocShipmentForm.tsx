@@ -3,6 +3,7 @@ import { Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { Button } from '@/shared/components';
+import { MoneyInput } from '@/shared/value';
 import { useActiveShippingRates } from '@/shared/hooks/useShippingRateOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
@@ -318,20 +319,34 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="form-field">
                   <label>{LABELS.SHIPPING_COST}</label>
-                  <input
-                    className="field-input"
-                    type="number"
-                    {...register('shippingCost', { valueAsNumber: true })}
-                    placeholder="0"
+                  <Controller
+                    name="shippingCost"
+                    control={control}
+                    render={({ field }) => (
+                      <MoneyInput
+                        className="field-input"
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        placeholder="0"
+                      />
+                    )}
                   />
                 </div>
                 <div className="form-field">
                   <label>{LABELS.LOADING_FEE}</label>
-                  <input
-                    className="field-input"
-                    type="number"
-                    {...register('loadingFee', { valueAsNumber: true })}
-                    placeholder="0"
+                  <Controller
+                    name="loadingFee"
+                    control={control}
+                    render={({ field }) => (
+                      <MoneyInput
+                        className="field-input"
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        placeholder="0"
+                      />
+                    )}
                   />
                 </div>
               </div>
