@@ -8,6 +8,7 @@ import type {
 } from 'react-hook-form';
 
 import { Combobox } from '@/shared/components/Combobox';
+import { MoneyInput } from '@/shared/value';
 import type {
   BulkFinishedInputFormValues,
   BulkFinishedRollRowInput,
@@ -213,13 +214,19 @@ export function FinishedFabricBulkFormStep1General({
             <div className="form-field">
               <label htmlFor="bulk_purchase_price">Giá nhập lô</label>
               <div className="flex">
-                <input
-                  id="bulk_purchase_price"
-                  className={`field-input rounded-r-none border-r-0 ${errors.purchase_price ? ' border-danger' : ''}`}
-                  type="number"
-                  min="0"
-                  placeholder="VD: 50000"
-                  {...register('purchase_price')}
+                <Controller
+                  name="purchase_price"
+                  control={control}
+                  render={({ field }) => (
+                    <MoneyInput
+                      id="bulk_purchase_price"
+                      className={`field-input rounded-r-none border-r-0 ${errors.purchase_price ? ' border-danger' : ''}`}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      placeholder="VD: 50000"
+                    />
+                  )}
                 />
                 <select
                   className="field-input rounded-l-none bg-muted/50 w-[110px]"

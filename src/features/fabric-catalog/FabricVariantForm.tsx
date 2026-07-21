@@ -11,6 +11,7 @@ import {
 import { Button, Switch } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import { MoneyInput } from '@/shared/value';
 import {
   useCreateFabricVariant,
   useUpdateFabricVariant,
@@ -654,14 +655,19 @@ export function FabricVariantForm({
                     <label htmlFor="fv-purchase-price">
                       {LABELS.VARIANT_PURCHASE_PRICE}
                     </label>
-                    <input
-                      id="fv-purchase-price"
-                      className="field-input"
-                      type="number"
-                      step="100"
-                      min="0"
-                      placeholder={LABELS.VARIANT_PLACEHOLDER_PURCHASE}
-                      {...register('purchase_price', { valueAsNumber: true })}
+                    <Controller
+                      name="purchase_price"
+                      control={control}
+                      render={({ field }) => (
+                        <MoneyInput
+                          id="fv-purchase-price"
+                          className="field-input"
+                          placeholder={LABELS.VARIANT_PLACEHOLDER_PURCHASE}
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      )}
                     />
                   </div>
 
@@ -669,14 +675,19 @@ export function FabricVariantForm({
                     <label htmlFor="fv-selling-price">
                       {LABELS.VARIANT_SELLING_PRICE}
                     </label>
-                    <input
-                      id="fv-selling-price"
-                      className="field-input"
-                      type="number"
-                      step="100"
-                      min="0"
-                      placeholder={LABELS.VARIANT_PLACEHOLDER_SELLING}
-                      {...register('selling_price', { valueAsNumber: true })}
+                    <Controller
+                      name="selling_price"
+                      control={control}
+                      render={({ field }) => (
+                        <MoneyInput
+                          id="fv-selling-price"
+                          className="field-input"
+                          placeholder={LABELS.VARIANT_PLACEHOLDER_SELLING}
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      )}
                     />
                   </div>
 
