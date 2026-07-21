@@ -3,6 +3,7 @@ import type { UseFieldArrayRemove, useForm } from 'react-hook-form';
 
 import { Combobox } from '@/shared/components/Combobox';
 import { Icon } from '@/shared/components/Icon';
+import { MoneyInput } from '@/shared/value';
 import { UNIT_OPTIONS } from '@/schema/quotation.schema';
 import type { QuotationsFormValues } from '@/schema/quotation.schema';
 import {
@@ -70,14 +71,19 @@ export function QuotationItemQuantityFields({
           {QUOTATION_LABELS.UNIT_PRICE} (đ/{unitLabel}){' '}
           <span className="field-required">*</span>
         </label>
-        <input
-          id={`items.${index}.unitPrice`}
-          className={`field-input${errors.items?.[index]?.unitPrice ? ' border-danger' : ''}`}
-          type="number"
-          step="1"
-          min="0"
-          placeholder="0"
-          {...register(`items.${index}.unitPrice`, { valueAsNumber: true })}
+        <Controller
+          name={`items.${index}.unitPrice` as const}
+          control={control}
+          render={({ field }) => (
+            <MoneyInput
+              id={`items.${index}.unitPrice`}
+              className={`field-input${errors.items?.[index]?.unitPrice ? ' border-danger' : ''}`}
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              placeholder="0"
+            />
+          )}
         />
         {errors.items?.[index]?.unitPrice && (
           <span className="field-error">
