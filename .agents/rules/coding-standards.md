@@ -99,6 +99,25 @@ When creating or modifying components, follow this strict priority order for sty
 3. **CSS Modules (Priority 3):** Use `.module.css` files ONLY when a component has highly custom, complex layout CSS that would make JSX unreadable. Keep styles scoped to the component.
 4. **Global CSS (Priority 4 - Avoid):** Only use `src/styles/global.css` (or files in `src/styles/*`) for global resets, theme tokens (`:root`), typography, and app-wide structural layouts. Never write component-specific logic here.
 
+### 🚫 Design Token Enforcements (UI Colors)
+
+**DO NOT** use raw/hardcoded Tailwind colors that lack semantic meaning (e.g. `text-gray-900`, `bg-red-100`, `border-blue-500`, `fill-green-600`).
+**DO** use Semantic Design Tokens defined in `src/styles/theme/tokens.css` and mapped in `tailwind.config.js`.
+
+| ❌ Hardcoded (Forbidden) | ✅ Semantic Token (Required)       | Context/Usage                       |
+| ------------------------ | ---------------------------------- | ----------------------------------- |
+| `text-gray-900`          | `text-foreground` / `text-primary` | Main text, titles, standard content |
+| `text-gray-500`          | `text-muted`                       | Secondary text, descriptions        |
+| `bg-gray-100`            | `bg-surface-secondary`             | Subtle container backgrounds        |
+| `text-red-500`           | `text-danger`                      | Error messages, delete actions      |
+| `bg-red-100`             | `bg-danger-soft`                   | Error badges, danger highlights     |
+| `text-green-700`         | `text-success`                     | Success states, active statuses     |
+| `bg-green-100`           | `bg-success-soft`                  | Success badges, positive highlights |
+| `text-blue-600`          | `text-info` / `text-link`          | Information, interactive links      |
+| `border-gray-200`        | `border-default`                   | Standard dividers, borders          |
+
+_Note: Developers should rely on the ESLint rule `no-restricted-syntax` which will flag any usage of non-semantic Tailwind colors during development._
+
 ---
 
 ## Render Safety
@@ -208,6 +227,27 @@ Quick self-check:
 - [ ] Inline styles repeated ≥ 2 times extracted to CSS class
 - [ ] `typecheck` and `lint` pass clean — 0 errors, 0 warnings
 - [ ] `rpc:check` passes — 0 issues
+
+---
+
+## React Hook Form & Input Standards
+
+**When to use `register` (Uncontrolled):**
+
+- Native `<input>` (text, checkbox, radio)
+- Native `<textarea>`
+- Native `<select>`
+- Shadcn `<Input>` and `<Textarea>`
+- Simple native number input (using `valueAsNumber`)
+
+**When to use `Controller` (Controlled):**
+
+- Formatting inputs (`MoneyInput`, `NumericInput`, `WeightInput`, `QuantityInput`)
+- External pickers (`DatePicker`, `Calendar`)
+- Complex selects (`Combobox`, `Command`)
+- Complex UI (`Radix Slider`, `Switch` if missing native ref)
+- ANY component that requires data transformation between DOM and internal state
+- ANY component managing its own complex internal state
 
 ---
 

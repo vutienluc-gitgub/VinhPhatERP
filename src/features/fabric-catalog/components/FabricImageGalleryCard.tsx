@@ -1,4 +1,5 @@
 import type { UseFormRegister, Control } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
 import { Icon } from '@/shared/components';
 import { ComboboxField } from '@/shared/components/ComboboxField';
@@ -7,6 +8,7 @@ import {
   LABELS,
   IMAGE_TYPE_MAP,
 } from '@/features/fabric-catalog/fabric-catalog.constants';
+import { NumericInput } from '@/shared/value';
 
 const IMAGE_TYPES = [
   'SWATCH',
@@ -82,18 +84,18 @@ export function FabricImageGalleryCard({
                 options={COMBOBOX_OPTIONS}
               />
             </div>
-            <div>
-              <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5 block truncate">
-                {LABELS.GALLERY_IMAGE_POS}
-              </label>
-              <input
-                type="number"
-                className="w-full border-slate-200 bg-white text-slate-900 rounded-lg text-xs py-1.5 px-2 focus:ring-1 focus:ring-primary/20 transition-all"
-                {...register(`images.${index}.display_order` as const, {
-                  valueAsNumber: true,
-                })}
-              />
-            </div>
+            <Controller
+              name={`images.${index}.display_order` as const}
+              control={control}
+              render={({ field }) => (
+                <NumericInput
+                  className="w-full border-slate-200 bg-white text-slate-900 rounded-lg text-xs py-1.5 px-2 focus:ring-1 focus:ring-primary/20 transition-all"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                />
+              )}
+            />
           </div>
 
           <div>

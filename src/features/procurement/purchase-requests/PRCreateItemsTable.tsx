@@ -12,6 +12,7 @@ import { Button, Icon, Badge } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import type { PrHeaderFormValues } from '@/schema/purchase-request.schema';
 import { useYarnCatalogOptions } from '@/shared/hooks/useYarnCatalogOptions';
+import { QuantityInput } from '@/shared/value';
 
 import { PR_LABELS, UOM_OPTIONS } from './purchase-requests.constants';
 
@@ -146,22 +147,20 @@ export function PRCreateItemsTable({
                       {...register(`items.${index}.material_specs`)}
                     />
                   </td>
-                  <td className="px-3 py-2">
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      className={`field-input text-sm${itemErrors?.qty_required ? ' border-danger' : ''}`}
-                      {...register(`items.${index}.qty_required`, {
-                        valueAsNumber: true,
-                      })}
-                    />
-                    {itemErrors?.qty_required && (
-                      <span className="field-error text-xs">
-                        {itemErrors.qty_required.message}
-                      </span>
+                  <Controller
+                    name={`items.${index}.qty_required`}
+                    control={control}
+                    render={({ field }) => (
+                      <QuantityInput
+                        step="0.01"
+                        min="0"
+                        className={`field-input text-sm${itemErrors?.qty_required ? ' border-danger' : ''}`}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
                     )}
-                  </td>
+                  />
                   <td className="px-3 py-2">
                     <Controller
                       name={`items.${index}.uom`}

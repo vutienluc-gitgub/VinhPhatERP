@@ -16,6 +16,7 @@ import {
 import { useUpsertMachineSpec } from '@/features/looms/hooks/useMachineSpecsAdmin';
 import { useAutoGenerateMachineSpecCode } from '@/features/looms/hooks/useAutoGenerateMachineSpecCode';
 import { useTenantData } from '@/shared/hooks/useTenant';
+import { LengthInput, NumericInput, QuantityInput } from '@/shared/value';
 
 type MachineSpecFormProps = {
   isOpen: boolean;
@@ -126,50 +127,46 @@ export function MachineSpecForm({
               )}
             </div>
 
-            <div className="form-field">
-              <label>
-                Diameter (inch) <span className="field-required">*</span>
-              </label>
-              <input
-                className="field-input"
-                type="number"
-                step="0.1"
-                {...register('diameter', { valueAsNumber: true })}
-              />
-              {errors.diameter && (
-                <ErrorInline>{errors.diameter.message}</ErrorInline>
+            <Controller
+              name="diameter"
+              control={control}
+              render={({ field }) => (
+                <LengthInput
+                  className="field-input"
+                  step="0.1"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                />
               )}
-            </div>
+            />
 
-            <div className="form-field">
-              <label>Gauge (G)</label>
-              <input
-                className="field-input"
-                type="number"
-                step="0.1"
-                {...register('gauge', {
-                  valueAsNumber: true,
-                  setValueAs: (v) => (v === '' || isNaN(v) ? null : v),
-                })}
-              />
-              {errors.gauge && (
-                <ErrorInline>{errors.gauge.message}</ErrorInline>
+            <Controller
+              name="gauge"
+              control={control}
+              render={({ field }) => (
+                <NumericInput
+                  className="field-input"
+                  step="0.1"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                />
               )}
-            </div>
+            />
 
-            <div className="form-field">
-              <label>
-                Feeder Count <span className="field-required">*</span>
-              </label>
-              <input
-                className="field-input"
-                type="number"
-                {...register('feeder_count', { valueAsNumber: true })}
-              />
-              {errors.feeder_count && (
-                <ErrorInline>{errors.feeder_count.message}</ErrorInline>
+            <Controller
+              name="feeder_count"
+              control={control}
+              render={({ field }) => (
+                <QuantityInput
+                  className="field-input"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                />
               )}
-            </div>
+            />
 
             <div className="form-field md:col-span-2">
               <label>

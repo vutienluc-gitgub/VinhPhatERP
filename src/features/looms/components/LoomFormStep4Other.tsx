@@ -1,7 +1,8 @@
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 
 import { Icon } from '@/shared/components';
 import type { LoomFormValues } from '@/schema/loom.schema';
+import { NumericInput } from '@/shared/value';
 
 type Props = {
   isTechnicalLocked: boolean;
@@ -9,6 +10,7 @@ type Props = {
 
 export function LoomFormStep4Other({ isTechnicalLocked }: Props) {
   const {
+    control,
     register,
     formState: { errors },
   } = useFormContext<LoomFormValues>();
@@ -20,28 +22,24 @@ export function LoomFormStep4Other({ isTechnicalLocked }: Props) {
         Thông tin khác
       </h3>
       <div className="form-grid">
-        <div className="form-field">
-          <label htmlFor="loom-year">Năm sản xuất</label>
-          <input
-            id="loom-year"
-            className={`field-input${errors.year_manufactured ? ' border-danger' : ''}`}
-            type="number"
-            step="1"
-            min="1950"
-            max="2100"
-            placeholder="VD: 2020"
-            disabled={isTechnicalLocked}
-            {...register('year_manufactured', {
-              setValueAs: (v) =>
-                v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-            })}
-          />
-          {errors.year_manufactured && (
-            <span className="field-error">
-              {errors.year_manufactured.message}
-            </span>
+        <Controller
+          name="year_manufactured"
+          control={control}
+          render={({ field }) => (
+            <NumericInput
+              id="loom-year"
+              className={`field-input${errors.year_manufactured ? ' border-danger' : ''}`}
+              step="1"
+              min="1950"
+              max="2100"
+              placeholder="VD: 2020"
+              disabled={isTechnicalLocked}
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
           )}
-        </div>
+        />
         <div className="form-field">
           <label htmlFor="loom-notes">Ghi chú</label>
           <textarea

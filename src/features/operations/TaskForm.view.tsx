@@ -8,6 +8,7 @@ import {
   tasksDefaultValues,
 } from '@/schema/tasks.schema';
 import type { Task } from '@/domain/operations/types';
+import { NumericInput } from '@/shared/value';
 
 import { useTaskFormOptions } from './hooks/useTaskFormOptions';
 import { OPERATIONS_MESSAGES } from './constants';
@@ -247,29 +248,33 @@ export function TaskFormView({
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="form-field">
-          <label className="text-sm font-medium text-zinc-700 mb-1 block">
-            Giờ dự kiến (h)
-          </label>
-          <input
-            {...register('estimated_hours', { valueAsNumber: true })}
-            type="number"
-            step="0.5"
-            className="field-input"
-          />
-        </div>
+        <Controller
+          name="estimated_hours"
+          control={control}
+          render={({ field }) => (
+            <NumericInput
+              step="0.5"
+              className="field-input"
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
+          )}
+        />
 
-        <div className="form-field">
-          <label className="text-sm font-medium text-zinc-700 mb-1 block">
-            Giờ thực tế (h)
-          </label>
-          <input
-            {...register('actual_hours', { valueAsNumber: true })}
-            type="number"
-            step="0.5"
-            className="field-input"
-          />
-        </div>
+        <Controller
+          name="actual_hours"
+          control={control}
+          render={({ field }) => (
+            <NumericInput
+              step="0.5"
+              className="field-input"
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
+          )}
+        />
       </div>
 
       <div className="pt-4 flex justify-between items-center border-t border-zinc-100">

@@ -1,6 +1,6 @@
 import { useRef, useCallback, useState, useEffect, useMemo } from 'react';
 import { clsx } from 'clsx';
-import { useWatch } from 'react-hook-form';
+import { useWatch, Controller } from 'react-hook-form';
 import type {
   UseFieldArrayReturn,
   UseFormRegister,
@@ -16,6 +16,7 @@ import {
   QUALITY_GRADE_LABELS,
 } from '@/schema/weaving-invoice.schema';
 import { checkIsRollScanned } from '@/features/weaving-invoices/hooks/useWeavingInvoiceCalculator';
+import { WeightInput, QuantityInput } from '@/shared/value';
 
 /* ── Types ── */
 
@@ -131,21 +132,6 @@ export function BulkRollStation({
   );
 
   // Handle "Enter" on weight_kg input => confirm & move to next
-  const handleWeightKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        // Combo animation
-        setComboCount((c) => c + 1);
-        // Move to next roll
-        if (activeIndex < fields.length - 1) {
-          onActiveIndexChange(activeIndex + 1);
-        }
-      }
-    },
-    [activeIndex, fields.length, onActiveIndexChange],
-  );
-
   // Reset combo when user pauses
   useEffect(() => {
     if (comboCount === 0) return;
@@ -243,44 +229,41 @@ export function BulkRollStation({
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="form-field">
-                  <label className="text-sm font-bold">
-                    Khối lượng (kg) <span className="field-required">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    min="0.1"
-                    className={clsx(
-                      'field-input text-xl font-black h-14 text-center tabular-nums',
-                      errors.rolls?.[activeIndex]?.weight_kg && 'border-danger',
-                    )}
-                    placeholder="0.0"
-                    {...register(`rolls.${activeIndex}.weight_kg`)}
-                    ref={(el) => {
-                      register(`rolls.${activeIndex}.weight_kg`).ref(el);
-                      weightInputRef.current = el;
-                    }}
-                    onKeyDown={handleWeightKeyDown}
-                  />
-                  {errors.rolls?.[activeIndex]?.weight_kg && (
-                    <span className="field-error">
-                      {errors.rolls[activeIndex]?.weight_kg?.message}
-                    </span>
+                <Controller
+                  name={`rolls.${activeIndex}.weight_kg`}
+                  control={control}
+                  render={({ field }) => (
+                    <WeightInput
+                      step="0.1"
+                      min="0.1"
+                      className={clsx(
+                        'field-input text-xl font-black h-14 text-center tabular-nums',
+                        errors.rolls?.[activeIndex]?.weight_kg &&
+                          'border-danger',
+                      )}
+                      placeholder="0.0"
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                    />
                   )}
-                </div>
+                />
 
-                <div className="form-field">
-                  <label className="text-sm font-bold">Dài (m)</label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    className="field-input text-lg h-14 text-center tabular-nums"
-                    placeholder="—"
-                    {...register(`rolls.${activeIndex}.length_m`)}
-                  />
-                </div>
+                <Controller
+                  name={`rolls.${activeIndex}.length_m`}
+                  control={control}
+                  render={({ field }) => (
+                    <QuantityInput
+                      step="0.1"
+                      min="0"
+                      className="field-input text-lg h-14 text-center tabular-nums"
+                      placeholder="—"
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                    />
+                  )}
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-3">

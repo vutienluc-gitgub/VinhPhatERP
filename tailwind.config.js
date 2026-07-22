@@ -4,34 +4,62 @@ export default {
   theme: {
     extend: {
       colors: {
+        background: 'var(--background)',
+        card: 'var(--card)',
         primary: {
           DEFAULT: 'var(--primary)',
           strong: 'var(--primary-strong)',
+          hover: 'var(--primary-hover)',
         },
+        secondary: 'var(--secondary)',
         accent: 'var(--accent)',
-        success: 'var(--success)',
-        danger: 'var(--danger)',
+        success: {
+          DEFAULT: 'var(--success)',
+          strong: 'var(--success-strong)',
+          soft: 'var(--success-soft)',
+        },
+        danger: {
+          DEFAULT: 'var(--danger)',
+          strong: 'var(--danger-strong)',
+          soft: 'var(--danger-soft)',
+        },
         warning: {
           DEFAULT: 'var(--warning)',
           strong: 'var(--warning-strong)',
+          soft: 'var(--warning-soft)',
         },
-        info: 'var(--info)',
-        muted: 'var(--muted)',
+        info: {
+          DEFAULT: 'var(--info)',
+          strong: 'var(--info-strong)',
+          soft: 'var(--info-soft)',
+        },
+        muted: {
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--text-muted-foreground)',
+        },
         surface: {
           DEFAULT: 'var(--surface)',
+          secondary: 'var(--surface-secondary)',
           strong: 'var(--surface-strong)',
           subtle: 'var(--surface-subtle)',
           hover: 'var(--surface-hover)',
           selected: 'var(--surface-selected)',
           disabled: 'var(--surface-disabled)',
         },
-        border: 'var(--border)',
+        border: {
+          DEFAULT: 'var(--border-default)',
+          muted: 'var(--border-muted)',
+          focus: 'var(--border-focus)',
+          danger: 'var(--border-danger)',
+        },
         input: {
           DEFAULT: 'var(--input)',
           border: 'var(--input-border)',
           focus: 'var(--input-focus-ring)',
         },
         label: 'var(--text-label)',
+        foreground: 'var(--foreground)',
+        link: 'var(--link)',
       },
       borderRadius: {
         sm: 'var(--radius-sm)',
@@ -52,7 +80,7 @@ export default {
     },
     {
       pattern:
-        /^(bg|text|border)-(primary|success|warning|danger|info|muted|surface)$/,
+        /^(bg|text|border)-(primary|secondary|accent|success|warning|danger|info|muted|surface|background|card|foreground)(-[a-z]+)?$/,
       variants: ['hover', 'focus', 'active', 'group-hover'],
     },
     'bg-[var(--surface-subtle)]',

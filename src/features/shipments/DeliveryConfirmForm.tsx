@@ -11,7 +11,7 @@ import {
   deliveryConfirmDefaultValues,
   type DeliveryConfirmFormValues,
 } from '@/schema/shipment.schema';
-import { MoneyText } from '@/shared/value';
+import { NumericInput } from '@/shared/value';
 
 import {
   SHIPMENT_FORM_MESSAGES,
@@ -137,25 +137,22 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
               {MSG.LBL_DRIVER_FEE}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="form-field mb-0">
-                <label className="form-label" htmlFor="driverCommission">
-                  {MSG.LBL_FEE_AMOUNT}
-                </label>
-                <input
-                  id="driverCommission"
-                  className="field-input"
-                  type="number"
-                  min={0}
-                  step={10000}
-                  {...register('driverCommission', { valueAsNumber: true })}
-                  placeholder="0"
-                />
-                {commission > 0 && (
-                  <p className="text-xs text-[var(--success)] mt-1">
-                    = <MoneyText value={commission} /> VND
-                  </p>
+              <Controller
+                name="driverCommission"
+                control={control}
+                render={({ field }) => (
+                  <NumericInput
+                    id="driverCommission"
+                    className="field-input"
+                    min={0}
+                    step={10000}
+                    placeholder="0"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                  />
                 )}
-              </div>
+              />
 
               <div className="form-field mb-0">
                 <label className="form-label">{MSG.LBL_BANK_ACCOUNT}</label>

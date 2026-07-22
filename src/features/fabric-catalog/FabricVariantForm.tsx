@@ -11,7 +11,13 @@ import {
 import { Button, Switch } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
-import { MoneyInput } from '@/shared/value';
+import {
+  MoneyInput,
+  LengthInput,
+  DensityInput,
+  PercentageInput,
+  NumericInput,
+} from '@/shared/value';
 import {
   useCreateFabricVariant,
   useUpdateFabricVariant,
@@ -471,81 +477,75 @@ export function FabricVariantForm({
                   {LABELS.VARIANT_SPEC_SECTION}
                 </legend>
                 <div className="form-grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
-                  <div className="form-field">
-                    <label htmlFor="fv-actual-width">
-                      {LABELS.VARIANT_ACTUAL_WIDTH}
-                    </label>
-                    <input
-                      id="fv-actual-width"
-                      className={`field-input${errors.actual_width_cm ? ' border-danger' : ''}`}
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      placeholder={LABELS.VARIANT_PLACEHOLDER_WIDTH}
-                      {...register('actual_width_cm', { valueAsNumber: true })}
-                    />
-                    {errors.actual_width_cm && (
-                      <span className="field-error">
-                        {errors.actual_width_cm.message}
-                      </span>
+                  <Controller
+                    name="actual_width_cm"
+                    control={control}
+                    render={({ field }) => (
+                      <LengthInput
+                        id="fv-actual-width"
+                        className={`field-input${errors.actual_width_cm ? ' border-danger' : ''}`}
+                        step="0.1"
+                        min="0"
+                        placeholder={LABELS.VARIANT_PLACEHOLDER_WIDTH}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
                     )}
-                  </div>
+                  />
 
-                  <div className="form-field">
-                    <label htmlFor="fv-actual-gsm">
-                      {LABELS.VARIANT_ACTUAL_GSM}
-                    </label>
-                    <input
-                      id="fv-actual-gsm"
-                      className={`field-input${errors.actual_gsm ? ' border-danger' : ''}`}
-                      type="number"
-                      step="1"
-                      min="0"
-                      placeholder={LABELS.VARIANT_PLACEHOLDER_GSM}
-                      {...register('actual_gsm', { valueAsNumber: true })}
-                    />
-                    {errors.actual_gsm && (
-                      <span className="field-error">
-                        {errors.actual_gsm.message}
-                      </span>
+                  <Controller
+                    name="actual_gsm"
+                    control={control}
+                    render={({ field }) => (
+                      <DensityInput
+                        id="fv-actual-gsm"
+                        className={`field-input${errors.actual_gsm ? ' border-danger' : ''}`}
+                        step="1"
+                        min="0"
+                        placeholder={LABELS.VARIANT_PLACEHOLDER_GSM}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
                     )}
-                  </div>
+                  />
 
-                  <div className="form-field">
-                    <label htmlFor="fv-shrink-warp">
-                      {LABELS.VARIANT_SHRINK_WARP}
-                    </label>
-                    <input
-                      id="fv-shrink-warp"
-                      className={`field-input${errors.shrinkage_rate_warp ? ' border-danger' : ''}`}
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      max="100"
-                      placeholder={LABELS.VARIANT_PLACEHOLDER_SHRINK_WARP}
-                      {...register('shrinkage_rate_warp', {
-                        valueAsNumber: true,
-                      })}
-                    />
-                  </div>
+                  <Controller
+                    name="shrinkage_rate_warp"
+                    control={control}
+                    render={({ field }) => (
+                      <PercentageInput
+                        id="fv-shrink-warp"
+                        className={`field-input${errors.shrinkage_rate_warp ? ' border-danger' : ''}`}
+                        step="0.1"
+                        min="0"
+                        max="100"
+                        placeholder={LABELS.VARIANT_PLACEHOLDER_SHRINK_WARP}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
+                    )}
+                  />
 
-                  <div className="form-field">
-                    <label htmlFor="fv-shrink-weft">
-                      {LABELS.VARIANT_SHRINK_WEFT}
-                    </label>
-                    <input
-                      id="fv-shrink-weft"
-                      className={`field-input${errors.shrinkage_rate_weft ? ' border-danger' : ''}`}
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      max="100"
-                      placeholder={LABELS.VARIANT_PLACEHOLDER_SHRINK_WEFT}
-                      {...register('shrinkage_rate_weft', {
-                        valueAsNumber: true,
-                      })}
-                    />
-                  </div>
+                  <Controller
+                    name="shrinkage_rate_weft"
+                    control={control}
+                    render={({ field }) => (
+                      <PercentageInput
+                        id="fv-shrink-weft"
+                        className={`field-input${errors.shrinkage_rate_weft ? ' border-danger' : ''}`}
+                        step="0.1"
+                        min="0"
+                        max="100"
+                        placeholder={LABELS.VARIANT_PLACEHOLDER_SHRINK_WEFT}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
+                    )}
+                  />
                 </div>
               </fieldset>
 
@@ -570,22 +570,21 @@ export function FabricVariantForm({
                     />
                   </div>
 
-                  <div className="form-field">
-                    <label htmlFor="fv-conversion-rate">
-                      {LABELS.VARIANT_CONVERSION_RATE}
-                    </label>
-                    <input
-                      id="fv-conversion-rate"
-                      className="field-input field-input--readonly"
-                      type="number"
-                      step="0.001"
-                      readOnly
-                      {...register('conversion_rate', { valueAsNumber: true })}
-                    />
-                    <span className="text-xs text-muted italic">
-                      {LABELS.VARIANT_AUTO_CALC}
-                    </span>
-                  </div>
+                  <Controller
+                    name="conversion_rate"
+                    control={control}
+                    render={({ field }) => (
+                      <PercentageInput
+                        id="fv-conversion-rate"
+                        className="field-input field-input--readonly"
+                        step="0.001"
+                        readOnly
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
+                    )}
+                  />
                 </div>
               </fieldset>
             </>
@@ -631,18 +630,22 @@ export function FabricVariantForm({
                     />
                   </div>
 
-                  <div className="form-field">
-                    <label htmlFor="fv-moq">{LABELS.VARIANT_MOQ}</label>
-                    <input
-                      id="fv-moq"
-                      className={`field-input${errors.moq ? ' border-danger' : ''}`}
-                      type="number"
-                      step="1"
-                      min="0"
-                      placeholder={LABELS.VARIANT_PLACEHOLDER_MOQ}
-                      {...register('moq', { valueAsNumber: true })}
-                    />
-                  </div>
+                  <Controller
+                    name="moq"
+                    control={control}
+                    render={({ field }) => (
+                      <NumericInput
+                        id="fv-moq"
+                        className={`field-input${errors.moq ? ' border-danger' : ''}`}
+                        step="1"
+                        min="0"
+                        placeholder={LABELS.VARIANT_PLACEHOLDER_MOQ}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
+                    )}
+                  />
                 </div>
               </fieldset>
 

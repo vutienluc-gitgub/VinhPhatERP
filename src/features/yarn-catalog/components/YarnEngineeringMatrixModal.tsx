@@ -17,6 +17,7 @@ import {
   useUpsertYarnKnittingEngineering,
 } from '@/features/yarn-catalog/hooks/useYarnEngineering';
 import { YARN_CATALOG_MESSAGES as MSG } from '@/features/yarn-catalog/yarn-catalog.constants';
+import { NumericInput, WeightInput, LengthInput } from '@/shared/value';
 
 type YarnEngineeringMatrixModalProps = {
   isOpen: boolean;
@@ -176,46 +177,59 @@ export function YarnEngineeringMatrixModal({
               </select>
             </div>
 
-            <div className="form-field">
-              <label>{MSG.MATRIX_LBL_REC_RPM}</label>
-              <input
-                className="field-input"
-                type="number"
-                {...register('recommended_rpm', { valueAsNumber: true })}
-              />
-              {errors.recommended_rpm && (
-                <ErrorInline>{errors.recommended_rpm.message}</ErrorInline>
+            <Controller
+              name="recommended_rpm"
+              control={control}
+              render={({ field }) => (
+                <NumericInput
+                  className="field-input"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                />
               )}
-            </div>
+            />
 
-            <div className="form-field">
-              <label>{MSG.MATRIX_LBL_MAX_RPM}</label>
-              <input
-                className="field-input"
-                type="number"
-                {...register('max_rpm', { valueAsNumber: true })}
-              />
-            </div>
+            <Controller
+              name="max_rpm"
+              control={control}
+              render={({ field }) => (
+                <NumericInput
+                  className="field-input"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                />
+              )}
+            />
 
-            <div className="form-field">
-              <label>{MSG.MATRIX_LBL_EFFICIENCY}</label>
-              <input
-                className="field-input"
-                type="number"
-                step="0.01"
-                {...register('expected_efficiency', { valueAsNumber: true })}
-              />
-            </div>
+            <Controller
+              name="expected_efficiency"
+              control={control}
+              render={({ field }) => (
+                <NumericInput
+                  className="field-input"
+                  step="0.01"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                />
+              )}
+            />
 
-            <div className="form-field">
-              <label>{MSG.MATRIX_LBL_WASTE}</label>
-              <input
-                className="field-input"
-                type="number"
-                step="0.01"
-                {...register('expected_waste_pct', { valueAsNumber: true })}
-              />
-            </div>
+            <Controller
+              name="expected_waste_pct"
+              control={control}
+              render={({ field }) => (
+                <WeightInput
+                  className="field-input"
+                  step="0.01"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                />
+              )}
+            />
 
             <div className="form-field">
               <label>{MSG.MATRIX_LBL_TENSION}</label>
@@ -226,17 +240,19 @@ export function YarnEngineeringMatrixModal({
               />
             </div>
 
-            <div className="form-field">
-              <label>{MSG.MATRIX_LBL_STITCH}</label>
-              <input
-                className="field-input"
-                type="number"
-                step="0.01"
-                {...register('recommended_stitch_length', {
-                  valueAsNumber: true,
-                })}
-              />
-            </div>
+            <Controller
+              name="recommended_stitch_length"
+              control={control}
+              render={({ field }) => (
+                <LengthInput
+                  className="field-input"
+                  step="0.01"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                />
+              )}
+            />
           </div>
 
           <div className="flex space-x-6">

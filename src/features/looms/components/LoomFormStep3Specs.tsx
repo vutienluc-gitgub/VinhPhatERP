@@ -1,7 +1,8 @@
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 
 import { Icon } from '@/shared/components';
 import type { LoomFormValues } from '@/schema/loom.schema';
+import { NumericInput, WeightInput } from '@/shared/value';
 
 type Props = {
   isTechnicalLocked: boolean;
@@ -9,6 +10,7 @@ type Props = {
 
 export function LoomFormStep3Specs({ isTechnicalLocked }: Props) {
   const {
+    control,
     register,
     formState: { errors },
   } = useFormContext<LoomFormValues>();
@@ -20,45 +22,41 @@ export function LoomFormStep3Specs({ isTechnicalLocked }: Props) {
         Thông số kỹ thuật chi tiết
       </h3>
       <div className="form-grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
-        <div className="form-field">
-          <label htmlFor="loom-feeders">Feeders (đầu sợi)</label>
-          <input
-            id="loom-feeders"
-            className={`field-input${errors.feeders ? ' border-danger' : ''}`}
-            type="number"
-            step="1"
-            min="0"
-            placeholder="VD: 96"
-            disabled={isTechnicalLocked}
-            {...register('feeders', {
-              setValueAs: (v) =>
-                v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-            })}
-          />
-          {errors.feeders && (
-            <span className="field-error">{errors.feeders.message}</span>
+        <Controller
+          name="feeders"
+          control={control}
+          render={({ field }) => (
+            <NumericInput
+              id="loom-feeders"
+              className={`field-input${errors.feeders ? ' border-danger' : ''}`}
+              step="1"
+              min="0"
+              placeholder="VD: 96"
+              disabled={isTechnicalLocked}
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
           )}
-        </div>
+        />
 
-        <div className="form-field">
-          <label htmlFor="loom-needles">Kim (Needles)</label>
-          <input
-            id="loom-needles"
-            className={`field-input${errors.needles ? ' border-danger' : ''}`}
-            type="number"
-            step="1"
-            min="0"
-            placeholder="VD: 2816"
-            disabled={isTechnicalLocked}
-            {...register('needles', {
-              setValueAs: (v) =>
-                v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-            })}
-          />
-          {errors.needles && (
-            <span className="field-error">{errors.needles.message}</span>
+        <Controller
+          name="needles"
+          control={control}
+          render={({ field }) => (
+            <NumericInput
+              id="loom-needles"
+              className={`field-input${errors.needles ? ' border-danger' : ''}`}
+              step="1"
+              min="0"
+              placeholder="VD: 2816"
+              disabled={isTechnicalLocked}
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
           )}
-        </div>
+        />
 
         <div className="form-field">
           <label htmlFor="loom-gsm">GSM Range</label>
@@ -90,25 +88,23 @@ export function LoomFormStep3Specs({ isTechnicalLocked }: Props) {
           )}
         </div>
 
-        <div className="form-field">
-          <label htmlFor="loom-motor">Công suất motor (kW)</label>
-          <input
-            id="loom-motor"
-            className={`field-input${errors.motor_power_kw ? ' border-danger' : ''}`}
-            type="number"
-            step="0.1"
-            min="0"
-            placeholder="VD: 5.5"
-            disabled={isTechnicalLocked}
-            {...register('motor_power_kw', {
-              setValueAs: (v) =>
-                v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-            })}
-          />
-          {errors.motor_power_kw && (
-            <span className="field-error">{errors.motor_power_kw.message}</span>
+        <Controller
+          name="motor_power_kw"
+          control={control}
+          render={({ field }) => (
+            <NumericInput
+              id="loom-motor"
+              className={`field-input${errors.motor_power_kw ? ' border-danger' : ''}`}
+              step="0.1"
+              min="0"
+              placeholder="VD: 5.5"
+              disabled={isTechnicalLocked}
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
           )}
-        </div>
+        />
 
         <div className="form-field">
           <label htmlFor="loom-voltage">Điện áp</label>
@@ -125,25 +121,23 @@ export function LoomFormStep3Specs({ isTechnicalLocked }: Props) {
           )}
         </div>
 
-        <div className="form-field">
-          <label htmlFor="loom-weight">Trọng lượng (kg)</label>
-          <input
-            id="loom-weight"
-            className={`field-input${errors.weight_kg ? ' border-danger' : ''}`}
-            type="number"
-            step="1"
-            min="0"
-            placeholder="VD: 4200"
-            disabled={isTechnicalLocked}
-            {...register('weight_kg', {
-              setValueAs: (v) =>
-                v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-            })}
-          />
-          {errors.weight_kg && (
-            <span className="field-error">{errors.weight_kg.message}</span>
+        <Controller
+          name="weight_kg"
+          control={control}
+          render={({ field }) => (
+            <WeightInput
+              id="loom-weight"
+              className={`field-input${errors.weight_kg ? ' border-danger' : ''}`}
+              step="1"
+              min="0"
+              placeholder="VD: 4200"
+              disabled={isTechnicalLocked}
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
           )}
-        </div>
+        />
       </div>
     </section>
   );

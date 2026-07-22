@@ -3,7 +3,7 @@ import { useFieldArray, useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { AdaptiveSheet, Icon, Combobox, Button } from '@/shared/components';
-import { MoneyInput } from '@/shared/value';
+import { MoneyInput, WeightInput, LengthInput } from '@/shared/value';
 import { StepperFooter } from '@/shared/components/StepperFooter';
 import { useStepper } from '@/shared/hooks/useStepper';
 import {
@@ -388,32 +388,32 @@ export function DyeingOrderForm({
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[10px] font-bold text-muted uppercase">
-                        {MSG.LBL_WEIGHT}
-                      </label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        {...register(`items.${index}.weight_kg`, {
-                          valueAsNumber: true,
-                        })}
-                        className="field-input h-10 tabular-nums"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[10px] font-bold text-muted uppercase">
-                        {MSG.LBL_LENGTH}
-                      </label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        {...register(`items.${index}.length_m`, {
-                          valueAsNumber: true,
-                        })}
-                        className="field-input h-10 tabular-nums"
-                      />
-                    </div>
+                    <Controller
+                      name={`items.${index}.weight_kg`}
+                      control={control}
+                      render={({ field }) => (
+                        <WeightInput
+                          step="0.01"
+                          className="field-input h-10 tabular-nums"
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      )}
+                    />
+                    <Controller
+                      name={`items.${index}.length_m`}
+                      control={control}
+                      render={({ field }) => (
+                        <LengthInput
+                          step="0.1"
+                          className="field-input h-10 tabular-nums"
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      )}
+                    />
                   </div>
 
                   <div className="flex flex-col gap-1">

@@ -155,6 +155,19 @@ module.exports = {
     ],
 
     // ========================
+    // 🎨 UI DESIGN TOKENS
+    // ========================
+    'no-restricted-syntax': [
+      'warn',
+      {
+        selector:
+          "JSXAttribute[name.name='className'] Literal[value=/.*(?:^|\\s)(text|bg|border)-(gray|red|blue|green|yellow|orange|purple|pink|indigo|slate|emerald|teal|amber|rose)-\\d{3}(?:\\s|$).*/]",
+        message:
+          '🚨 Không sử dụng Hardcoded Tailwind Colors (VD: text-gray-900, bg-red-100). BẮT BUỘC dùng Semantic Tokens (VD: text-muted, bg-danger-soft, text-primary, bg-surface) theo chuẩn Design System.',
+      },
+    ],
+
+    // ========================
     // 🧠 NAMING CONVENTION
     // ========================
     '@typescript-eslint/naming-convention': [

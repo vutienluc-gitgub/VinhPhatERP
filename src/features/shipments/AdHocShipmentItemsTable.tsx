@@ -6,7 +6,7 @@ import {
 
 import { Icon } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
-import { MoneyInput, MoneyText } from '@/shared/value';
+import { MoneyInput, MoneyText, QuantityInput } from '@/shared/value';
 import type { AdHocShipmentFormValues } from '@/schema/shipment.schema';
 
 import { AD_HOC_SHIPMENT_MESSAGES } from './shipments.constants';
@@ -129,18 +129,20 @@ export function AdHocShipmentItemsTable({
             </div>
 
             {/* Quantity */}
-            <div className="pr-2">
-              <input
-                className={`field-input text-sm text-right ${errors.items?.[index]?.quantity ? 'border-danger' : ''}`}
-                type="number"
-                step="0.1"
-                placeholder="0"
-                {...register(`items.${index}.quantity`, {
-                  valueAsNumber: true,
-                  onChange: () => onItemFieldChange(index),
-                })}
-              />
-            </div>
+            <Controller
+              name={`items.${index}.quantity`}
+              control={control}
+              render={({ field }) => (
+                <QuantityInput
+                  className={`field-input text-sm text-right ${errors.items?.[index]?.quantity ? 'border-danger' : ''}`}
+                  step="0.1"
+                  placeholder="0"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                />
+              )}
+            />
 
             {/* Unit */}
             <div className="pr-2">

@@ -4,6 +4,7 @@ import { Icon } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import type { LoomFormValues } from '@/schema/loom.schema';
 import { LOOM_STATUS_LABELS, LOOM_STATUSES } from '@/schema/loom.schema';
+import { LengthInput, NumericInput, WeightInput } from '@/shared/value';
 
 const STATUS_OPTIONS = LOOM_STATUSES.map((s) => ({
   value: s,
@@ -22,7 +23,6 @@ export function LoomFormStep2Capacity({
   loadingSuppliers,
 }: Props) {
   const {
-    register,
     control,
     formState: { errors },
   } = useFormContext<LoomFormValues>();
@@ -78,91 +78,77 @@ export function LoomFormStep2Capacity({
         </div>
 
         <div className="form-grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] mt-4">
-          <div className="form-field">
-            <label htmlFor="loom-width">Khổ dệt tối đa (cm)</label>
-            <input
-              id="loom-width"
-              className={`field-input${errors.max_width_cm ? ' border-danger' : ''}`}
-              type="number"
-              step="0.1"
-              min="0"
-              placeholder="VD: 360"
-              disabled={isTechnicalLocked}
-              {...register('max_width_cm', {
-                setValueAs: (v) =>
-                  v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-              })}
-            />
-            {errors.max_width_cm && (
-              <span className="field-error">{errors.max_width_cm.message}</span>
+          <Controller
+            name="max_width_cm"
+            control={control}
+            render={({ field }) => (
+              <LengthInput
+                id="loom-width"
+                className={`field-input${errors.max_width_cm ? ' border-danger' : ''}`}
+                step="0.1"
+                min="0"
+                placeholder="VD: 360"
+                disabled={isTechnicalLocked}
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+              />
             )}
-          </div>
+          />
 
-          <div className="form-field">
-            <label htmlFor="loom-speed">Tốc độ (vòng/phút)</label>
-            <input
-              id="loom-speed"
-              className={`field-input${errors.max_speed_rpm ? ' border-danger' : ''}`}
-              type="number"
-              step="1"
-              min="0"
-              placeholder="VD: 600"
-              disabled={isTechnicalLocked}
-              {...register('max_speed_rpm', {
-                setValueAs: (v) =>
-                  v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-              })}
-            />
-            {errors.max_speed_rpm && (
-              <span className="field-error">
-                {errors.max_speed_rpm.message}
-              </span>
+          <Controller
+            name="max_speed_rpm"
+            control={control}
+            render={({ field }) => (
+              <NumericInput
+                id="loom-speed"
+                className={`field-input${errors.max_speed_rpm ? ' border-danger' : ''}`}
+                step="1"
+                min="0"
+                placeholder="VD: 600"
+                disabled={isTechnicalLocked}
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+              />
             )}
-          </div>
+          />
 
-          <div className="form-field">
-            <label htmlFor="loom-capacity">Công suất (m/ngày)</label>
-            <input
-              id="loom-capacity"
-              className={`field-input${errors.daily_capacity_m ? ' border-danger' : ''}`}
-              type="number"
-              step="0.1"
-              min="0"
-              placeholder="VD: 200"
-              disabled={isTechnicalLocked}
-              {...register('daily_capacity_m', {
-                setValueAs: (v) =>
-                  v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-              })}
-            />
-            {errors.daily_capacity_m && (
-              <span className="field-error">
-                {errors.daily_capacity_m.message}
-              </span>
+          <Controller
+            name="daily_capacity_m"
+            control={control}
+            render={({ field }) => (
+              <NumericInput
+                id="loom-capacity"
+                className={`field-input${errors.daily_capacity_m ? ' border-danger' : ''}`}
+                step="0.1"
+                min="0"
+                placeholder="VD: 200"
+                disabled={isTechnicalLocked}
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+              />
             )}
-          </div>
+          />
 
-          <div className="form-field">
-            <label htmlFor="loom-capacity-kg">Công suất (kg/ngày)</label>
-            <input
-              id="loom-capacity-kg"
-              className={`field-input${errors.daily_capacity_kg ? ' border-danger' : ''}`}
-              type="number"
-              step="0.1"
-              min="0"
-              placeholder="VD: 180"
-              disabled={isTechnicalLocked}
-              {...register('daily_capacity_kg', {
-                setValueAs: (v) =>
-                  v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-              })}
-            />
-            {errors.daily_capacity_kg && (
-              <span className="field-error">
-                {errors.daily_capacity_kg.message}
-              </span>
+          <Controller
+            name="daily_capacity_kg"
+            control={control}
+            render={({ field }) => (
+              <WeightInput
+                id="loom-capacity-kg"
+                className={`field-input${errors.daily_capacity_kg ? ' border-danger' : ''}`}
+                step="0.1"
+                min="0"
+                placeholder="VD: 180"
+                disabled={isTechnicalLocked}
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+              />
             )}
-          </div>
+          />
         </div>
       </div>
     </section>

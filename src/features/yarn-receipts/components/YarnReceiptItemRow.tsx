@@ -1,7 +1,7 @@
 import { Controller } from 'react-hook-form';
 
 import { Combobox } from '@/shared/components/Combobox';
-import { MoneyInput, QuantityInput } from '@/shared/value';
+import { MoneyInput, QuantityInput, NumericInput } from '@/shared/value';
 import {
   LABEL_ORIGIN,
   ORIGIN_OPTIONS,
@@ -11,10 +11,7 @@ import {
   ITEM_ROW_LABELS as L,
   YARN_UNIT_OPTIONS,
 } from '@/features/yarn-receipts/yarn-receipts.constants';
-import {
-  useYarnReceiptItemRow,
-  parseNullableNumber,
-} from '@/features/yarn-receipts/hooks/useYarnReceiptItemRow';
+import { useYarnReceiptItemRow } from '@/features/yarn-receipts/hooks/useYarnReceiptItemRow';
 
 type ComboboxOption = { value: string; label: string; code?: string };
 
@@ -338,25 +335,22 @@ export function YarnReceiptItemRow({
           />
         </div>
 
-        <div className="form-field">
-          <label htmlFor={`items.${index}.productionWeek`}>{L.PROD_WEEK}</label>
-          <input
-            id={`items.${index}.productionWeek`}
-            className="field-input"
-            type="number"
-            min={1}
-            max={53}
-            placeholder={L.PROD_WEEK_PLACEHOLDER}
-            {...register(`items.${index}.productionWeek` as const, {
-              setValueAs: parseNullableNumber,
-            })}
-          />
-          {itemErrors?.productionWeek && (
-            <span className="field-error">
-              {itemErrors.productionWeek.message}
-            </span>
+        <Controller
+          name={`items.${index}.productionWeek` as const}
+          control={control}
+          render={({ field }) => (
+            <NumericInput
+              id={`items.${index}.productionWeek`}
+              className="field-input"
+              min={1}
+              max={53}
+              placeholder={L.PROD_WEEK_PLACEHOLDER}
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
           )}
-        </div>
+        />
 
         <div className="form-field">
           <label htmlFor={`items.${index}.dist`}>{L.DIST}</label>
@@ -372,43 +366,37 @@ export function YarnReceiptItemRow({
 
       {/* ── Quy cách đóng gói ── */}
       <div className="form-grid form-grid-auto">
-        <div className="form-field">
-          <label htmlFor={`items.${index}.conesPerBox`}>
-            {L.CONES_PER_BOX}
-          </label>
-          <input
-            id={`items.${index}.conesPerBox`}
-            className={`field-input${itemErrors?.conesPerBox ? ' border-danger' : ''}`}
-            type="number"
-            min={1}
-            placeholder={L.CONES_PER_BOX_PLACEHOLDER}
-            {...register(`items.${index}.conesPerBox` as const, {
-              setValueAs: parseNullableNumber,
-            })}
-          />
-          {itemErrors?.conesPerBox && (
-            <span className="field-error">
-              {itemErrors.conesPerBox.message}
-            </span>
+        <Controller
+          name={`items.${index}.conesPerBox` as const}
+          control={control}
+          render={({ field }) => (
+            <NumericInput
+              id={`items.${index}.conesPerBox`}
+              className={`field-input${itemErrors?.conesPerBox ? ' border-danger' : ''}`}
+              min={1}
+              placeholder={L.CONES_PER_BOX_PLACEHOLDER}
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
           )}
-        </div>
+        />
 
-        <div className="form-field">
-          <label htmlFor={`items.${index}.boxCount`}>{L.BOX_COUNT}</label>
-          <input
-            id={`items.${index}.boxCount`}
-            className={`field-input${itemErrors?.boxCount ? ' border-danger' : ''}`}
-            type="number"
-            min={1}
-            placeholder={L.BOX_COUNT_PLACEHOLDER}
-            {...register(`items.${index}.boxCount` as const, {
-              setValueAs: parseNullableNumber,
-            })}
-          />
-          {itemErrors?.boxCount && (
-            <span className="field-error">{itemErrors.boxCount.message}</span>
+        <Controller
+          name={`items.${index}.boxCount` as const}
+          control={control}
+          render={({ field }) => (
+            <QuantityInput
+              id={`items.${index}.boxCount`}
+              className={`field-input${itemErrors?.boxCount ? ' border-danger' : ''}`}
+              min={1}
+              placeholder={L.BOX_COUNT_PLACEHOLDER}
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
           )}
-        </div>
+        />
 
         <div className="form-field">
           <label htmlFor={`items.${index}.boxNo`}>{L.BOX_NO}</label>

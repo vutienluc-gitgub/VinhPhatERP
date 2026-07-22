@@ -2,7 +2,7 @@ import { Controller, useWatch } from 'react-hook-form';
 import type { UseFormReturn } from 'react-hook-form';
 
 import type { OrdersFormValues } from '@/schema/order.schema';
-import { MoneyInput } from '@/shared/value';
+import { MoneyInput, QuantityInput } from '@/shared/value';
 import { ORDERS_FORM_LABELS } from '@/features/orders/orders.constants';
 
 const UNIT_LABELS: Record<string, string> = {
@@ -20,7 +20,6 @@ type ItemFieldsProps = {
 export function ItemQuantityFields({
   control,
   index,
-  register,
   errors,
 }: ItemFieldsProps) {
   const unit =
@@ -32,26 +31,22 @@ export function ItemQuantityFields({
 
   return (
     <>
-      <div className="form-field">
-        <label htmlFor={`items.${index}.quantity`}>
-          {ORDERS_FORM_LABELS.FIELD_QUANTITY} ({unitLabel}){' '}
-          <span className="field-required">*</span>
-        </label>
-        <input
-          id={`items.${index}.quantity`}
-          className={`field-input${errors.items?.[index]?.quantity ? ' border-danger' : ''}`}
-          type="number"
-          step="0.001"
-          min="0"
-          placeholder="0"
-          {...register(`items.${index}.quantity`, { valueAsNumber: true })}
-        />
-        {errors.items?.[index]?.quantity && (
-          <span className="field-error">
-            {errors.items[index]?.quantity?.message}
-          </span>
+      <Controller
+        name={`items.${index}.quantity`}
+        control={control}
+        render={({ field }) => (
+          <QuantityInput
+            id={`items.${index}.quantity`}
+            className={`field-input${errors.items?.[index]?.quantity ? ' border-danger' : ''}`}
+            step="0.001"
+            min="0"
+            placeholder="0"
+            value={field.value}
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+          />
         )}
-      </div>
+      />
 
       <div className="form-field">
         <label htmlFor={`items.${index}.unitPrice`}>
