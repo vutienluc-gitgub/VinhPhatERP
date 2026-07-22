@@ -43,6 +43,12 @@
 
   --shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
 
+  /* ── Input & Form ───────────────────────────────────────────── */
+  --input: #1b314b;
+  --input-border: rgba(255, 255, 255, 0.1);
+  --input-focus-ring: rgba(var(--brand-rgb), 0.4);
+  --text-label: #a8b3c4;
+
   --auth-accent: #4a8fd4;
   --auth-accent-strong: #7ab3e8;
   --auth-accent-rgb: 74, 143, 212;

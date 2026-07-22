@@ -26,6 +26,12 @@ export default {
           disabled: 'var(--surface-disabled)',
         },
         border: 'var(--border)',
+        input: {
+          DEFAULT: 'var(--input)',
+          border: 'var(--input-border)',
+          focus: 'var(--input-focus-ring)',
+        },
+        label: 'var(--text-label)',
       },
       borderRadius: {
         sm: 'var(--radius-sm)',
