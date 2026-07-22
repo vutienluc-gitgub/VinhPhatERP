@@ -176,7 +176,7 @@ export const Combobox = memo(function Combobox({
     return (
       <div className={`relative ${className}`} ref={containerRef}>
         <div
-          className={`${boxClass} flex items-center p-0${hasError ? ' border-danger' : ''}${disabled ? ' opacity-50' : ''} ${minHeightClass}`}
+          className={`${boxClass} flex items-center !p-0 ${hasError ? 'border-danger' : ''} ${disabled ? 'opacity-50' : ''} ${minHeightClass}`}
         >
           <input
             id={id}

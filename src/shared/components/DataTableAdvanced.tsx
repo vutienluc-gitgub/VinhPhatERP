@@ -457,7 +457,7 @@ function DataTableAdvancedInner<TData>({
           <Button
             variant="outline"
             size="icon"
-            leftIcon="FileDown"
+            leftIcon="FileSpreadsheet"
             onClick={handleExportExcel}
             className="w-9 h-9"
             title={TABLE_LABELS.EXPORT_EXCEL}
