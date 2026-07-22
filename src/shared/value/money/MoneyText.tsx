@@ -24,9 +24,9 @@ export function MoneyText({
   const toneClass = {
     default: '',
     muted: 'text-muted text-sm',
-    success: 'text-emerald-600 font-medium',
-    danger: 'text-rose-600 font-medium',
-    warning: 'text-amber-600 font-medium',
+    success: 'text-success font-medium',
+    danger: 'text-danger font-medium',
+    warning: 'text-[var(--warning)] font-medium',
   }[tone];
 
   return <span className={cn(toneClass, className)}>{text}</span>;
