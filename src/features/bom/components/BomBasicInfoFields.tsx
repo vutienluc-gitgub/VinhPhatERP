@@ -2,6 +2,7 @@ import { useFormContext, Controller } from 'react-hook-form';
 
 import { Combobox } from '@/shared/components/Combobox';
 import type { BomTemplateFormData } from '@/schema/bom.schema';
+import { LengthInput, DensityInput, WeightInput } from '@/shared/value';
 
 interface BomBasicInfoFieldsProps {
   fabricOptions: { value: string; label: string; code: string }[];
@@ -74,37 +75,43 @@ export function BomBasicInfoFields({ fabricOptions }: BomBasicInfoFieldsProps) {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
-        <div className="form-field">
-          <label>Khổ vải (cm)</label>
-          <input
-            type="number"
-            {...register('target_width_cm', {
-              setValueAs: (v) => (v === '' || isNaN(v) ? null : Number(v)),
-            })}
-            className="field-input"
-          />
-        </div>
-        <div className="form-field">
-          <label>Định lượng (gsm)</label>
-          <input
-            type="number"
-            {...register('target_gsm', {
-              setValueAs: (v) => (v === '' || isNaN(v) ? null : Number(v)),
-            })}
-            className="field-input"
-          />
-        </div>
-        <div className="form-field">
-          <label>Hao hụt mặc định (%)</label>
-          <input
-            type="number"
-            step="0.01"
-            {...register('standard_loss_pct', {
-              setValueAs: (v) => (v === '' || isNaN(v) ? null : Number(v)),
-            })}
-            className="field-input"
-          />
-        </div>
+        <Controller
+          name="target_width_cm"
+          control={control}
+          render={({ field }) => (
+            <LengthInput
+              className="field-input"
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
+          )}
+        />
+        <Controller
+          name="target_gsm"
+          control={control}
+          render={({ field }) => (
+            <DensityInput
+              className="field-input"
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
+          )}
+        />
+        <Controller
+          name="standard_loss_pct"
+          control={control}
+          render={({ field }) => (
+            <WeightInput
+              step="0.01"
+              className="field-input"
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
+          )}
+        />
         <div className="form-field">
           <label>Ghi chú</label>
           <input

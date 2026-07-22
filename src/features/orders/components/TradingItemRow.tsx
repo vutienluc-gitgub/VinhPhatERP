@@ -13,8 +13,8 @@ import type { Control, UseFormSetValue } from 'react-hook-form';
 import { ORDERS_FORM_LABELS } from '@/features/orders/orders.constants';
 import { Combobox } from '@/shared/components/Combobox';
 import { Badge, Icon } from '@/shared/components';
-import { MoneyInput } from '@/shared/value';
-import { formatQuantity } from '@/shared/utils/format';
+import { MoneyInput, QuantityInput } from '@/shared/value';
+import {} from '@/shared/utils/format';
 import { PRODUCT_CATEGORY_OPTIONS } from '@/schema/order.schema';
 import type { OrdersFormValues, ProductCategory } from '@/schema/order.schema';
 import { useTradingItemStock } from '@/features/orders/hooks/useTradingItemStock';
@@ -211,30 +211,22 @@ export function TradingItemRow({
 
         {/* Row 4: Quantity + Unit Price */}
         <div className="form-grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))]">
-          <div className="form-field">
-            <label htmlFor={`items.${index}.quantity`}>
-              Số lượng <span className="field-required">*</span>
-            </label>
-            <input
-              id={`items.${index}.quantity`}
-              className={`field-input${itemErrors?.quantity ? ' border-danger' : ''}`}
-              type="number"
-              step="0.001"
-              min="0"
-              placeholder="0"
-              {...register(`items.${index}.quantity`, { valueAsNumber: true })}
-            />
-            {isOverStock && (
-              <span className="field-error">
-                {ORDERS_FORM_LABELS.ERR_STOCK_EXCEEDED(
-                  formatQuantity(stockInfo?.max ?? 0),
-                )}
-              </span>
+          <Controller
+            name={`items.${index}.quantity`}
+            control={control}
+            render={({ field }) => (
+              <QuantityInput
+                id={`items.${index}.quantity`}
+                className={`field-input${itemErrors?.quantity ? ' border-danger' : ''}`}
+                step="0.001"
+                min="0"
+                placeholder="0"
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+              />
             )}
-            {itemErrors?.quantity && (
-              <span className="field-error">{itemErrors.quantity.message}</span>
-            )}
-          </div>
+          />
 
           <div className="form-field">
             <label>

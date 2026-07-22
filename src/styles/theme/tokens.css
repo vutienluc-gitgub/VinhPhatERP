@@ -31,28 +31,57 @@
   --primary-strong: rgb(var(--brand-strong-rgb));
   --accent: rgb(var(--accent-rgb));
 
-  /* ── Surface & Layout ──────────────────────────────────────── */
+  /* ── Surface ────────────────────────────────────────────────── */
+  --background: #f8f9fa; /* main app background */
   --surface: rgba(255, 255, 255, 0.86);
+  --surface-secondary: #f4f6f8;
   --surface-strong: #ffffff;
   --surface-hover: rgba(var(--brand-rgb), 0.05);
   --surface-selected: rgba(var(--brand-rgb), 0.08);
   --surface-subtle: rgba(var(--base-rgb), 0.03);
   --surface-disabled: rgba(var(--base-rgb), 0.04);
+  --card: #ffffff;
+
+  /* ── Border ─────────────────────────────────────────────────── */
   --border: rgba(var(--base-rgb), 0.1);
+  --border-default: rgba(var(--base-rgb), 0.15);
+  --border-muted: rgba(var(--base-rgb), 0.08);
+  --border-focus: rgba(var(--brand-rgb), 0.3);
+  --border-danger: rgba(var(--danger-rgb), 0.3);
 
   /* ── Text ───────────────────────────────────────────────────── */
   --text: rgb(var(--base-rgb));
-  --muted: #5c6f88;
-  --text-tertiary: #8899aa;
+  --foreground: rgb(var(--base-rgb));
+  --text-primary: rgb(var(--base-rgb));
+  --text-secondary: #5c6f88;
+  --text-muted: #5c6f88;
+  --text-muted-foreground: #8899aa;
+  --text-disabled: #8899aa;
+  --text-inverse: #ffffff;
 
-  /* ── Status Colors ─────────────────────────────────────────── */
+  /* ── Semantic Colors ───────────────────────────────────────── */
   --warning: #d97706;
   --warning-strong: #b45309;
+  --warning-soft: #fef3c7;
+
   --danger: #c0392b;
+  --danger-strong: #922b21;
+  --danger-soft: #fadbd8;
   --danger-rgb: 192, 57, 43;
+
   --success: #0a805c;
+  --success-strong: #086146;
+  --success-soft: #d1f2e6;
   --success-rgb: 10, 128, 92;
+
   --info: rgb(var(--brand-rgb));
+  --info-strong: rgb(var(--brand-strong-rgb));
+  --info-soft: rgba(var(--brand-rgb), 0.1);
+
+  /* ── Interactive ───────────────────────────────────────────── */
+  --link: rgb(var(--brand-rgb));
+  --primary-hover: rgb(var(--brand-strong-rgb));
+  --secondary: #5c6f88;
 
   /* ── Elevation & Shape ─────────────────────────────────────── */
   --shadow: 0 16px 40px rgba(var(--base-rgb), 0.08);
@@ -63,9 +92,9 @@
 
   /* ── Input & Form ───────────────────────────────────────────── */
   --input: #ffffff;
-  --input-border: rgba(var(--base-rgb), 0.15);
-  --input-focus-ring: rgba(var(--brand-rgb), 0.2);
-  --text-label: #5c6f88;
+  --input-border: var(--border-default);
+  --input-focus-ring: var(--border-focus);
+  --text-label: var(--text-secondary);
 
   /* ── Auth Page Accent (Login / Register) ────────────────────── */
   --auth-accent: rgb(var(--brand-rgb));

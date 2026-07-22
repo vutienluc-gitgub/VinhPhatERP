@@ -1,0 +1,1187 @@
+{
+  "rhfViolations": [
+    {
+      "file": "features/bom/components/BomBasicInfoFields.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/color-catalog/ColorForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/contracts/ContractForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/crm/components/CreateLeadModal.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/customer-portal/orders/OrderRequestModal.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/customers/CustomerForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/customers/DepositForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/dyeing-orders/DyeingOrderForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/fabric-catalog/components/FabricAdminTab.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/fabric-catalog/components/FabricImageGalleryCard.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/fabric-catalog/components/public-tab-sections/FabricPublicPricingSection.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/fabric-catalog/FabricVariantForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/finished-fabric/components/FinishedFabricBulkFormStep1General.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/finished-fabric/components/FinishedFabricFormStep2Specs.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/finished-fabric/components/FinishedFabricFormStep3Storage.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/looms/components/LoomFormStep1General.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/looms/components/LoomFormStep3Specs.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/looms/components/LoomFormStep4Other.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/looms/components/MachineSpecForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/operations/TaskForm.view.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/orders/components/ProductionItemRow.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/orders/components/TradingItemRow.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/orders/OrderForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/payments/AccountForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/payments/ExpenseForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/payments/PaymentForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POGeneralInfoCard.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POItemsTable.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/procurement/purchase-requests/PRCreate.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/procurement/purchase-requests/PRCreateItemsTable.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/procurement/suppliers/QuickSupplierForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/procurement/suppliers/SupplierForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/procurement/suppliers/SupplierPriceList.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/quotations/components/QuotationItemRow.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/quotations/QuotationForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/raw-fabric/components/RawFabricBulkFormStep1General.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/raw-fabric/components/RawFabricFormStep1General.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/raw-fabric/components/RawFabricFormStep2Storage.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/recurring-transactions/RecurringTransactionForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/settings/ColorForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/shipments/AdHocShipmentForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/shipments/AdHocShipmentItemsTable.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/shipments/DeliveryConfirmForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/shipments/ShipmentForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/shipping-rates/ShippingRateForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/supplier-portal/SupplierQuoteForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/weaving-invoices/components/BulkRollStation.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/weaving-invoices/components/WeavingInvoiceFormStep1General.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/work-orders/WorkOrderForm.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/yarn-catalog/components/StepAdditionalInfo.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/yarn-catalog/components/StepTechnicalSpecs.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/yarn-catalog/components/YarnEngineeringMatrixModal.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/yarn-receipts/components/StepGeneralInfo.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    },
+    {
+      "file": "features/yarn-receipts/components/YarnReceiptItemRow.tsx",
+      "type": "Uses register instead of Controller for semantic input"
+    }
+  ],
+  "uiColorViolations": [
+    {
+      "file": "app/router/GlobalErrorElement.tsx",
+      "match": "bg-red-100"
+    },
+    {
+      "file": "app/router/GlobalErrorElement.tsx",
+      "match": "text-red-600"
+    },
+    {
+      "file": "app/router/GlobalErrorElement.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "app/router/GlobalErrorElement.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "app/router/GlobalErrorElement.tsx",
+      "match": "text-red-800"
+    },
+    {
+      "file": "app/router/GlobalErrorElement.tsx",
+      "match": "bg-blue-600"
+    },
+    {
+      "file": "app/router/GlobalErrorElement.tsx",
+      "match": "text-gray-700"
+    },
+    {
+      "file": "components/ui/ModuleErrorBoundary.tsx",
+      "match": "text-red-800"
+    },
+    {
+      "file": "components/ui/ModuleErrorBoundary.tsx",
+      "match": "bg-red-600"
+    },
+    {
+      "file": "features/chat/UnifiedFeedPage.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/contract-templates/NewTemplateMenu.tsx",
+      "match": "bg-blue-600"
+    },
+    {
+      "file": "features/contract-templates/NewTemplateMenu.tsx",
+      "match": "bg-blue-500"
+    },
+    {
+      "file": "features/crm/components/LeadCard.tsx",
+      "match": "text-purple-600"
+    },
+    {
+      "file": "features/crm/components/LeadContextualActions.tsx",
+      "match": "bg-blue-100"
+    },
+    {
+      "file": "features/crm/components/LeadContextualActions.tsx",
+      "match": "text-blue-700"
+    },
+    {
+      "file": "features/crm/components/LeadContextualActions.tsx",
+      "match": "text-blue-900"
+    },
+    {
+      "file": "features/crm/components/LeadContextualActions.tsx",
+      "match": "text-blue-700"
+    },
+    {
+      "file": "features/crm/components/LeadContextualActions.tsx",
+      "match": "bg-blue-600"
+    },
+    {
+      "file": "features/crm/components/LeadRfqDetail.tsx",
+      "match": "text-indigo-600"
+    },
+    {
+      "file": "features/customer-portal/quotations/PortalQuotationDetail.tsx",
+      "match": "text-blue-900"
+    },
+    {
+      "file": "features/customer-portal/quotations/PortalQuotationDetail.tsx",
+      "match": "text-blue-800"
+    },
+    {
+      "file": "features/customer-portal/quotations/PortalQuotationDetail.tsx",
+      "match": "text-red-600"
+    },
+    {
+      "file": "features/customer-portal/quotations/PortalQuotationDetail.tsx",
+      "match": "text-green-700"
+    },
+    {
+      "file": "features/customer-portal/quotations/PortalQuotationDetail.tsx",
+      "match": "bg-green-500"
+    },
+    {
+      "file": "features/customer-portal/quotations/PortalQuotationDetail.tsx",
+      "match": "text-blue-800"
+    },
+    {
+      "file": "features/fabric-catalog/components/B2BPlanner.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/B2BPlanner.tsx",
+      "match": "bg-blue-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/B2BPlanner.tsx",
+      "match": "text-indigo-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricColorSelector.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricColorSelector.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricColorSelector.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricFAQ.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricFAQ.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricFAQ.tsx",
+      "match": "text-gray-700"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricHeaderActions.tsx",
+      "match": "bg-green-100"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricHeaderActions.tsx",
+      "match": "bg-red-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricHeaderActions.tsx",
+      "match": "text-red-600"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricHeroGallery.tsx",
+      "match": "text-gray-400"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricPricingTable.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricPricingTable.tsx",
+      "match": "text-blue-400"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricPricingTable.tsx",
+      "match": "text-blue-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricPricingTable.tsx",
+      "match": "text-blue-600"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricRecommendations.tsx",
+      "match": "text-gray-400"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricRecommendations.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricRecommendations.tsx",
+      "match": "text-gray-400"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricRecommendations.tsx",
+      "match": "text-gray-950"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricRecommendations.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricRecommendations.tsx",
+      "match": "text-gray-400"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricRecommendations.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricRecommendations.tsx",
+      "match": "text-gray-400"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricRichContent.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricRichContent.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricRichContent.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricRichContent.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricSpecsList.tsx",
+      "match": "text-gray-800"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricSpecsList.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricSpecsList.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/detail/FabricTitleAndBadges.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/FabricImageGalleryCard.tsx",
+      "match": "text-red-600"
+    },
+    {
+      "file": "features/fabric-catalog/components/FabricImageGalleryEditor.tsx",
+      "match": "text-yellow-800"
+    },
+    {
+      "file": "features/fabric-catalog/components/InquiryCartDrawer.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/InquiryCartDrawer.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/InquiryCartDrawer.tsx",
+      "match": "bg-indigo-600"
+    },
+    {
+      "file": "features/fabric-catalog/components/public-tab-sections/FabricPublicFAQSection.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/public-tab-sections/FabricPublicFAQSection.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/public-tab-sections/FabricPublicFAQSection.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/public-tab-sections/FabricPublicFAQSection.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/public-tab-sections/FabricPublicPlannerSection.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/public-tab-sections/FabricPublicPricingSection.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/public-tab-sections/FabricPublicSeoSection.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicCompareModal.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicCompareModal.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicFabricDetailSkeleton.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicFabricDetailSkeleton.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicFabricDetailSkeleton.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicFabricDetailSkeleton.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicFabricDetailSkeleton.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicFabricDetailSkeleton.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicFabricDetailSkeleton.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicFabricDetailSkeleton.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicFabricDetailSkeleton.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicFabricDetailSkeleton.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicInquiryModal.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicInquiryModal.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicInquiryModal.tsx",
+      "match": "text-blue-600"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicInquiryModal.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicInquiryModal.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicLoginModal.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicLoginModal.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicLoginModal.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicLoginModal.tsx",
+      "match": "text-gray-700"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicLoginModal.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicLoginModal.tsx",
+      "match": "text-gray-700"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicLoginModal.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicLoginModal.tsx",
+      "match": "text-red-600"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicSampleModal.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicSampleModal.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicSampleModal.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicSampleModal.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/fabric-catalog/components/PublicStickyCTA.tsx",
+      "match": "bg-gray-100"
+    },
+    {
+      "file": "features/fabric-catalog/PublicFabricDetailPage.tsx",
+      "match": "text-gray-800"
+    },
+    {
+      "file": "features/fabric-catalog/PublicFabricDetailPage.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/inventory/components/InventoryAdjustmentModal.tsx",
+      "match": "text-red-600"
+    },
+    {
+      "file": "features/inventory/components/YarnInventoryColumns.tsx",
+      "match": "text-red-600"
+    },
+    {
+      "file": "features/inventory/components/YarnInventoryColumns.tsx",
+      "match": "text-red-400"
+    },
+    {
+      "file": "features/inventory/components/YarnInventoryColumns.tsx",
+      "match": "text-red-600"
+    },
+    {
+      "file": "features/inventory/components/YarnInventoryColumns.tsx",
+      "match": "text-red-600"
+    },
+    {
+      "file": "features/looms/components/LoomCompactCard.tsx",
+      "match": "bg-blue-500"
+    },
+    {
+      "file": "features/looms/components/LoomCompactCard.tsx",
+      "match": "bg-blue-500"
+    },
+    {
+      "file": "features/looms/components/LoomCompactCard.tsx",
+      "match": "bg-indigo-500"
+    },
+    {
+      "file": "features/looms/components/LoomFormStep1General.tsx",
+      "match": "text-indigo-500"
+    },
+    {
+      "file": "features/looms/components/LoomFormStep3Specs.tsx",
+      "match": "text-blue-500"
+    },
+    {
+      "file": "features/looms/components/LoomFormStep4Other.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/looms/components/MachineSpecMobileCard.tsx",
+      "match": "text-blue-700"
+    },
+    {
+      "file": "features/looms/components/MachineSpecMobileCard.tsx",
+      "match": "text-purple-700"
+    },
+    {
+      "file": "features/looms/components/MachineSpecMobileCard.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/operations/components/MiniCalendar.tsx",
+      "match": "bg-indigo-500"
+    },
+    {
+      "file": "features/operations/components/TaskCard.tsx",
+      "match": "text-indigo-600"
+    },
+    {
+      "file": "features/operations/components/TaskCard.tsx",
+      "match": "text-indigo-600"
+    },
+    {
+      "file": "features/operations/components/TaskCard.tsx",
+      "match": "bg-indigo-500"
+    },
+    {
+      "file": "features/operations/TaskForm.view.tsx",
+      "match": "text-red-600"
+    },
+    {
+      "file": "features/orders/dashboard/components/OrderFulfillmentTable.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/orders/OrderList.tsx",
+      "match": "text-indigo-600"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POApprovalHistory.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POApprovalHistory.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POApprovalHistory.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POApprovalHistory.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POApprovalHistory.tsx",
+      "match": "text-gray-700"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POApproveModal.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POApproveModal.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POApproveModal.tsx",
+      "match": "text-gray-600"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POApproveModal.tsx",
+      "match": "text-gray-700"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POGoodsReceiptsList.tsx",
+      "match": "text-gray-400"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POGoodsReceiptsList.tsx",
+      "match": "text-gray-800"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POGoodsReceiptsList.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POGoodsReceiptsList.tsx",
+      "match": "text-green-600"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POInfoCard.tsx",
+      "match": "text-red-700"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POMaterialsTable.tsx",
+      "match": "text-gray-800"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POMaterialsTable.tsx",
+      "match": "text-gray-400"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POMaterialsTable.tsx",
+      "match": "text-gray-700"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POMaterialsTable.tsx",
+      "match": "bg-gray-100"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/PORejectModal.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/PORejectModal.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/PORejectModal.tsx",
+      "match": "text-gray-600"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/PORejectModal.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTemplate.tsx",
+      "match": "text-gray-800"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTemplate.tsx",
+      "match": "text-gray-400"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTemplate.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTemplate.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTemplate.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTemplate.tsx",
+      "match": "text-gray-900"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTemplate.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTemplate.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTemplate.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTemplate.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTemplate.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTemplate.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTemplate.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTemplate.tsx",
+      "match": "text-gray-400"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTimeline.tsx",
+      "match": "text-red-700"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTimeline.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTimeline.tsx",
+      "match": "text-gray-700"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTimeline.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/detail/POTimeline.tsx",
+      "match": "bg-gray-100"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POAttachmentsCard.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POAttachmentsCard.tsx",
+      "match": "text-gray-400"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POGeneralInfoCard.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POGeneralInfoCard.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POGeneralInfoCard.tsx",
+      "match": "bg-gray-100"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POGeneralInfoCard.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POGeneralInfoCard.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POItemsTable.tsx",
+      "match": "text-gray-600"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POItemsTable.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POItemsTable.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POItemsTable.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POItemsTable.tsx",
+      "match": "text-gray-400"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POItemsTable.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POItemsTable.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POItemsTable.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POItemsTable.tsx",
+      "match": "text-gray-800"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POItemsTable.tsx",
+      "match": "text-gray-400"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POItemsTable.tsx",
+      "match": "text-gray-400"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POItemsTable.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POPaymentPanel.tsx",
+      "match": "text-gray-600"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POPaymentPanel.tsx",
+      "match": "text-gray-800"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POPaymentPanel.tsx",
+      "match": "text-gray-600"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POPaymentPanel.tsx",
+      "match": "text-gray-800"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POPaymentPanel.tsx",
+      "match": "text-gray-600"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POPaymentPanel.tsx",
+      "match": "text-gray-800"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POPaymentPanel.tsx",
+      "match": "text-gray-800"
+    },
+    {
+      "file": "features/procurement/purchase-orders/components/POPaymentPanel.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/GoodsReceiptForm.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/GoodsReceiptForm.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/GoodsReceiptForm.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/GoodsReceiptForm.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/GoodsReceiptForm.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/POCreatePage.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/procurement/purchase-orders/POCreatePage.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/procurement/purchase-orders/POCreatePage.tsx",
+      "match": "bg-gray-100"
+    },
+    {
+      "file": "features/procurement/purchase-orders/PODetailPage.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/procurement/purchase-orders/PODetailPage.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/procurement/purchase-orders/PODetailPage.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/procurement/purchase-orders/PODetailPage.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/procurement/purchase-orders/PODetailPage.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/procurement/purchase-orders/PODetailPage.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/procurement/purchase-orders/PODetailPage.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/purchase-orders/POListTable.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/procurement/purchase-orders/POListTable.tsx",
+      "match": "bg-gray-200"
+    },
+    {
+      "file": "features/procurement/suppliers/SupplierPriceList.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/suppliers/SupplierPriceList.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/procurement/suppliers/SupplierPriceList.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/settings/CompanySettingsForm.tsx",
+      "match": "bg-blue-500"
+    },
+    {
+      "file": "features/settings/CompanySettingsForm.tsx",
+      "match": "bg-purple-500"
+    },
+    {
+      "file": "features/settings/ProductionSettingsForm.tsx",
+      "match": "bg-indigo-500"
+    },
+    {
+      "file": "features/settings/SettingsLayout.tsx",
+      "match": "bg-red-100"
+    },
+    {
+      "file": "features/settings/UiSettingsForm.tsx",
+      "match": "bg-pink-500"
+    },
+    {
+      "file": "features/shipments/AdHocShipmentForm.tsx",
+      "match": "text-indigo-500"
+    },
+    {
+      "file": "features/shipments/AdHocShipmentForm.tsx",
+      "match": "text-indigo-500"
+    },
+    {
+      "file": "features/shipments/AdHocShipmentForm.tsx",
+      "match": "text-indigo-500"
+    },
+    {
+      "file": "features/shipments/components/quick-print/K80PrintLayout.tsx",
+      "match": "text-gray-500"
+    },
+    {
+      "file": "features/shipments/pages/K80QuickShipmentPage.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/shipments/pages/K80QuickShipmentPage.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/shipments/pages/ShipmentDispatchPage.tsx",
+      "match": "text-indigo-500"
+    },
+    {
+      "file": "features/supplier-portal/SupplierQuotePage.tsx",
+      "match": "text-blue-200"
+    },
+    {
+      "file": "features/weaving-invoices/components/BulkRollStation.tsx",
+      "match": "bg-indigo-100"
+    },
+    {
+      "file": "features/weaving-invoices/components/WeavingInvoiceFormStep2Rolls.tsx",
+      "match": "text-red-600"
+    },
+    {
+      "file": "features/weaving-invoices/InvoiceSearchPage.tsx",
+      "match": "text-red-800"
+    },
+    {
+      "file": "features/weaving-invoices/InvoiceSearchPage.tsx",
+      "match": "text-red-600"
+    },
+    {
+      "file": "features/weaving-invoices/InvoiceSearchPage.tsx",
+      "match": "text-red-600"
+    },
+    {
+      "file": "features/weaving-invoices/InvoiceSearchPage.tsx",
+      "match": "text-red-700"
+    },
+    {
+      "file": "features/weaving-invoices/PublicInvoiceDetailPage.tsx",
+      "match": "text-blue-600"
+    },
+    {
+      "file": "features/weaving-invoices/PublicInvoiceDetailPage.tsx",
+      "match": "text-indigo-700"
+    },
+    {
+      "file": "features/weaving-invoices/PublicInvoiceDetailPage.tsx",
+      "match": "text-blue-600"
+    },
+    {
+      "file": "features/work-orders/components/WorkOrderKanbanBoard.tsx",
+      "match": "text-indigo-600"
+    },
+    {
+      "file": "features/work-orders/components/WorkOrderKanbanBoard.tsx",
+      "match": "text-indigo-600"
+    },
+    {
+      "file": "features/work-orders/components/YarnIssueModal.tsx",
+      "match": "text-blue-800"
+    },
+    {
+      "file": "features/work-orders/components/YarnIssueModal.tsx",
+      "match": "text-red-700"
+    },
+    {
+      "file": "features/yarn-catalog/components/StepKnittingEngineering.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "features/yarn-catalog/components/StepKnittingEngineering.tsx",
+      "match": "text-red-500"
+    },
+    {
+      "file": "shared/components/TagInput.tsx",
+      "match": "text-red-600"
+    },
+    {
+      "file": "shared/components/TagInput.tsx",
+      "match": "text-red-500"
+    }
+  ],
+  "uiSubmitViolations": []
+}

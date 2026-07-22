@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-hot-toast';
 
 import { Button, Icon } from '@/shared/components';
-import { MoneyInput } from '@/shared/value';
+import { MoneyInput, QuantityInput } from '@/shared/value';
 import type { PublicRfqDetails } from '@/api/supplier-portal.api';
 
 import {
@@ -207,18 +207,19 @@ export function SupplierQuoteForm({ rfq, onSuccess }: Props) {
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-700">
-                      {SUPPLIER_PORTAL_LABELS.COL_QTY_OFFERED} (
-                      {originalItem.uom})
-                    </label>
-                    <input
-                      type="number"
-                      className="field-input w-full"
-                      placeholder={SUPPLIER_PORTAL_LABELS.PLACEHOLDER_QTY}
-                      {...register(`items.${index}.qty_offered` as const)}
-                    />
-                  </div>
+                  <Controller
+                    name={`items.${index}.qty_offered` as const}
+                    control={control}
+                    render={({ field }) => (
+                      <QuantityInput
+                        className="field-input w-full"
+                        placeholder={SUPPLIER_PORTAL_LABELS.PLACEHOLDER_QTY}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
+                    )}
+                  />
 
                   <div className="sm:col-span-2 space-y-1.5">
                     <label className="text-xs font-semibold text-slate-700">

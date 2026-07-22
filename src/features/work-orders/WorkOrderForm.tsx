@@ -12,7 +12,7 @@ import {
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { StepperFooter } from '@/shared/components/StepperFooter';
 import { Combobox } from '@/shared/components/Combobox';
-import { MoneyInput } from '@/shared/value';
+import { MoneyInput, QuantityInput, WeightInput } from '@/shared/value';
 import DraftBanner from '@/shared/components/DraftBanner';
 import SaveStatus from '@/shared/components/SaveStatus';
 import { useAutoSave, loadDraft, clearDraft } from '@/shared/hooks/useAutoSave';
@@ -20,7 +20,6 @@ import { useStepper } from '@/shared/hooks/useStepper';
 import {
   useCreateWorkOrder,
   useUpdateWorkOrder,
-  useUnitOptions,
   useWorkOrderRequirements,
 } from '@/application/production';
 import { useLoomOptions } from '@/application/settings/useLooms';
@@ -79,7 +78,7 @@ export function WorkOrderForm({
     category: 'GREIGE',
     status: 'active',
   });
-  const { data: units = [] } = useUnitOptions();
+
   const { data: looms = [] } = useLoomOptions();
 
   const orderOptions = useMemo(
@@ -110,15 +109,6 @@ export function WorkOrderForm({
     [boms],
   );
 
-  const unitOptions = useMemo(
-    () =>
-      units.map((u) => ({
-        value: u,
-        label: u,
-      })),
-    [units],
-  );
-
   // Fetch existing requirements if editing
   const { data: initialRequirements = [] } = useWorkOrderRequirements(
     initialData?.id || '',
@@ -138,7 +128,7 @@ export function WorkOrderForm({
     watch,
     setValue,
     reset,
-    formState: { errors, isValid, isSubmitting, isDirty },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<CreateWorkOrderInput>({
     resolver: zodResolver(createWorkOrderSchema),
     defaultValues: initialData
@@ -513,35 +503,19 @@ export function WorkOrderForm({
                     {MSG.LABEL_TARGET_QTY}{' '}
                     <span className="field-required">*</span>
                   </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      step="0.01"
-                      {...register('target_quantity', {
-                        valueAsNumber: true,
-                      })}
-                      className={`field-input flex-1${errors.target_quantity ? ' border-danger' : ''}`}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          if (isValid) handleSubmit(onSubmit)();
-                        }
-                      }}
-                    />
-                    <div className="w-[100px]">
-                      <Controller
-                        name="target_unit"
-                        control={control}
-                        render={({ field }) => (
-                          <Combobox
-                            options={unitOptions}
-                            value={field.value}
-                            onChange={field.onChange}
-                          />
-                        )}
+                  <Controller
+                    name="target_quantity"
+                    control={control}
+                    render={({ field }) => (
+                      <QuantityInput
+                        step="0.01"
+                        className={`field-input flex-1${errors.target_quantity ? ' border-danger' : ''}`}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
                       />
-                    </div>
-                  </div>
+                    )}
+                  />
                   {errors.target_quantity && (
                     <span className="field-error">
                       {errors.target_quantity.message}
@@ -549,23 +523,19 @@ export function WorkOrderForm({
                   )}
                 </div>
 
-                <div className="form-field">
-                  <label>{MSG.LABEL_TARGET_WEIGHT}</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    {...register('target_weight_kg', { valueAsNumber: true })}
-                    className={`field-input${errors.target_weight_kg ? ' border-danger' : ''}`}
-                  />
-                  <span className="field-hint whitespace-nowrap">
-                    {MSG.HINT_TARGET_WEIGHT}
-                  </span>
-                  {errors.target_weight_kg && (
-                    <span className="field-error">
-                      {errors.target_weight_kg.message}
-                    </span>
+                <Controller
+                  name="target_weight_kg"
+                  control={control}
+                  render={({ field }) => (
+                    <WeightInput
+                      step="0.01"
+                      className={`field-input${errors.target_weight_kg ? ' border-danger' : ''}`}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                    />
                   )}
-                </div>
+                />
               </div>
 
               <div className="form-field">

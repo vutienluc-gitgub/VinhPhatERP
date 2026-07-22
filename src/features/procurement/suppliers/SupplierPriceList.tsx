@@ -9,7 +9,12 @@ import {
   useUpsertSupplierPrice,
 } from '@/application/crm';
 import { Button } from '@/shared/components';
-import { MoneyInput, QuantityInput, MoneyText } from '@/shared/value';
+import {
+  MoneyInput,
+  QuantityInput,
+  MoneyText,
+  NumericInput,
+} from '@/shared/value';
 import { formatQuantity } from '@/shared/value/core/formatter';
 import { SUPPLIER_LABELS as L } from '@/features/procurement/procurement.constants';
 
@@ -150,14 +155,18 @@ export function SupplierPriceList({ supplierId }: Props) {
                 )}
               />
             </div>
-            <div className="form-field">
-              <label>{L.LBL_LEAD_TIME}</label>
-              <input
-                type="number"
-                className="field-input"
-                {...register('lead_time_days', { valueAsNumber: true })}
-              />
-            </div>
+            <Controller
+              name="lead_time_days"
+              control={control}
+              render={({ field }) => (
+                <NumericInput
+                  className="field-input"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                />
+              )}
+            />
           </div>
           <div className="flex justify-end gap-2 mt-2">
             <Button

@@ -4,6 +4,7 @@ import { Icon } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 import type { LoomFormValues } from '@/schema/loom.schema';
 import { LOOM_TYPE_LABELS, LOOM_TYPES } from '@/schema/loom.schema';
+import { LengthInput, NumericInput } from '@/shared/value';
 
 const TYPE_OPTIONS = LOOM_TYPES.map((t) => ({
   value: t,
@@ -57,47 +58,41 @@ export function LoomFormStep1General({
         </div>
 
         <div className="form-grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] mt-4">
-          <div className="form-field">
-            <label htmlFor="loom-diameter">Đường kính (inch)</label>
-            <input
-              id="loom-diameter"
-              className={`field-input${errors.diameter_inch ? ' border-danger' : ''}`}
-              type="number"
-              step="0.1"
-              min="0"
-              placeholder="VD: 32"
-              disabled={isTechnicalLocked}
-              {...register('diameter_inch', {
-                setValueAs: (v) =>
-                  v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-              })}
-            />
-            {errors.diameter_inch && (
-              <span className="field-error">
-                {errors.diameter_inch.message}
-              </span>
+          <Controller
+            name="diameter_inch"
+            control={control}
+            render={({ field }) => (
+              <LengthInput
+                id="loom-diameter"
+                className={`field-input${errors.diameter_inch ? ' border-danger' : ''}`}
+                step="0.1"
+                min="0"
+                placeholder="VD: 32"
+                disabled={isTechnicalLocked}
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+              />
             )}
-          </div>
+          />
 
-          <div className="form-field">
-            <label htmlFor="loom-gauge">Gauge (mật độ kim)</label>
-            <input
-              id="loom-gauge"
-              className={`field-input${errors.gauge ? ' border-danger' : ''}`}
-              type="number"
-              step="1"
-              min="0"
-              placeholder="VD: 28"
-              disabled={isTechnicalLocked}
-              {...register('gauge', {
-                setValueAs: (v) =>
-                  v === '' || Number.isNaN(Number(v)) ? null : Number(v),
-              })}
-            />
-            {errors.gauge && (
-              <span className="field-error">{errors.gauge.message}</span>
+          <Controller
+            name="gauge"
+            control={control}
+            render={({ field }) => (
+              <NumericInput
+                id="loom-gauge"
+                className={`field-input${errors.gauge ? ' border-danger' : ''}`}
+                step="1"
+                min="0"
+                placeholder="VD: 28"
+                disabled={isTechnicalLocked}
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+              />
             )}
-          </div>
+          />
         </div>
 
         {/* Mã máy auto-generated */}

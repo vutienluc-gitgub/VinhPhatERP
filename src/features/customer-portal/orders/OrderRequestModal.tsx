@@ -12,6 +12,7 @@ import {
 import { orderRequestFormSchema } from '@/schema/order-request.schema';
 import type { OrderRequestFormValues } from '@/schema/order-request.schema';
 import type { PortalOrderItem } from '@/domain/portal/types';
+import { QuantityInput } from '@/shared/value';
 
 type RequestFormValues = OrderRequestFormValues;
 
@@ -273,24 +274,19 @@ export function OrderRequestModal({
                   </div>
 
                   <div className="form-grid form-grid-2 mb-3">
-                    <div className="form-field">
-                      <label>
-                        Số lượng <span className="field-required">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        className={`field-input${errors.items?.[index]?.quantity ? ' border-danger' : ''}`}
-                        {...register(`items.${index}.quantity`, {
-                          valueAsNumber: true,
-                        })}
-                      />
-                      {errors.items?.[index]?.quantity && (
-                        <p className="field-error">
-                          {errors.items[index]?.quantity?.message}
-                        </p>
+                    <Controller
+                      name={`items.${index}.quantity`}
+                      control={control}
+                      render={({ field }) => (
+                        <QuantityInput
+                          min="1"
+                          className={`field-input${errors.items?.[index]?.quantity ? ' border-danger' : ''}`}
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
                       )}
-                    </div>
+                    />
                     <div className="form-field">
                       <label>Đơn vị</label>
                       <Controller

@@ -3,7 +3,12 @@ import type { UseFieldArrayRemove, useForm } from 'react-hook-form';
 
 import { Combobox } from '@/shared/components/Combobox';
 import { Icon } from '@/shared/components/Icon';
-import { MoneyInput } from '@/shared/value';
+import {
+  MoneyInput,
+  QuantityInput,
+  LengthInput,
+  NumericInput,
+} from '@/shared/value';
 import { UNIT_OPTIONS } from '@/schema/quotation.schema';
 import type { QuotationsFormValues } from '@/schema/quotation.schema';
 import {
@@ -33,7 +38,6 @@ type ItemFieldsProps = {
 export function QuotationItemQuantityFields({
   control,
   index,
-  register,
   errors,
 }: ItemFieldsProps) {
   const unit =
@@ -45,26 +49,22 @@ export function QuotationItemQuantityFields({
 
   return (
     <>
-      <div className="form-field">
-        <label htmlFor={`items.${index}.quantity`}>
-          {QUOTATION_LABELS.QUANTITY} ({unitLabel}){' '}
-          <span className="field-required">*</span>
-        </label>
-        <input
-          id={`items.${index}.quantity`}
-          className={`field-input${errors.items?.[index]?.quantity ? ' border-danger' : ''}`}
-          type="number"
-          step="0.001"
-          min="0"
-          placeholder="0"
-          {...register(`items.${index}.quantity`, { valueAsNumber: true })}
-        />
-        {errors.items?.[index]?.quantity && (
-          <span className="field-error">
-            {errors.items[index].quantity.message}
-          </span>
+      <Controller
+        name={`items.${index}.quantity`}
+        control={control}
+        render={({ field }) => (
+          <QuantityInput
+            id={`items.${index}.quantity`}
+            className={`field-input${errors.items?.[index]?.quantity ? ' border-danger' : ''}`}
+            step="0.001"
+            min="0"
+            placeholder="0"
+            value={field.value}
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+          />
         )}
-      </div>
+      />
 
       <div className="form-field">
         <label htmlFor={`items.${index}.unitPrice`}>
@@ -208,22 +208,22 @@ export function QuotationItemRow({
         </div>
 
         <div className="form-grid form-grid-2">
-          <div className="form-field">
-            <label htmlFor={`items.${index}.widthCm`}>
-              {QUOTATION_LABELS.WIDTH}
-            </label>
-            <input
-              id={`items.${index}.widthCm`}
-              className="field-input"
-              type="number"
-              step="0.01"
-              min="0"
-              placeholder={QUOTATION_PLACEHOLDERS.WIDTH}
-              {...register(`items.${index}.widthCm`, {
-                valueAsNumber: true,
-              })}
-            />
-          </div>
+          <Controller
+            name={`items.${index}.widthCm`}
+            control={control}
+            render={({ field }) => (
+              <LengthInput
+                id={`items.${index}.widthCm`}
+                className="field-input"
+                step="0.01"
+                min="0"
+                placeholder={QUOTATION_PLACEHOLDERS.WIDTH}
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+              />
+            )}
+          />
           <div className="form-field">
             <label htmlFor={`items.${index}.unit`}>
               {QUOTATION_LABELS.UNIT}
@@ -253,21 +253,21 @@ export function QuotationItemRow({
       </div>
 
       <div className="form-grid form-grid-2">
-        <div className="form-field">
-          <label htmlFor={`items.${index}.leadTimeDays`}>
-            {QUOTATION_LABELS.LEAD_TIME}
-          </label>
-          <input
-            id={`items.${index}.leadTimeDays`}
-            className="field-input"
-            type="number"
-            min="0"
-            placeholder="15"
-            {...register(`items.${index}.leadTimeDays`, {
-              valueAsNumber: true,
-            })}
-          />
-        </div>
+        <Controller
+          name={`items.${index}.leadTimeDays`}
+          control={control}
+          render={({ field }) => (
+            <NumericInput
+              id={`items.${index}.leadTimeDays`}
+              className="field-input"
+              min="0"
+              placeholder="15"
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
+          )}
+        />
         <div className="form-field">
           <label htmlFor={`items.${index}.notes`}>
             {QUOTATION_LABELS.NOTES_LINE}

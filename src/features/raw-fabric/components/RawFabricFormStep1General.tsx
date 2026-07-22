@@ -4,6 +4,7 @@ import type { UseFormRegister, Control, FieldErrors } from 'react-hook-form';
 import { Combobox } from '@/shared/components/Combobox';
 import type { RawFabricFormValues } from '@/schema/raw-fabric.schema';
 import { RAW_FABRIC_MESSAGES as MSG } from '@/features/raw-fabric/raw-fabric.constants';
+import { LengthInput, WeightInput } from '@/shared/value';
 
 type RawFabricFormStep1GeneralProps = {
   register: UseFormRegister<RawFabricFormValues>;
@@ -101,55 +102,58 @@ export function RawFabricFormStep1General({
       </div>
 
       <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-        <div className="form-field">
-          <label htmlFor="width_cm">{MSG.LBL_WIDTH_CM}</label>
-          <input
-            id="width_cm"
-            className={`field-input${errors.width_cm ? ' border-danger' : ''}`}
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="VD: 150"
-            {...register('width_cm')}
-          />
-          {errors.width_cm && (
-            <span className="field-error">{errors.width_cm.message}</span>
+        <Controller
+          name="width_cm"
+          control={control}
+          render={({ field }) => (
+            <LengthInput
+              id="width_cm"
+              className={`field-input${errors.width_cm ? ' border-danger' : ''}`}
+              step="0.01"
+              min="0"
+              placeholder="VD: 150"
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
           )}
-        </div>
+        />
 
-        <div className="form-field">
-          <label htmlFor="length_m">{MSG.LBL_LENGTH_M}</label>
-          <input
-            id="length_m"
-            className={`field-input${errors.length_m ? ' border-danger' : ''}`}
-            type="number"
-            step="0.001"
-            min="0"
-            placeholder="VD: 50"
-            {...register('length_m')}
-          />
-          {errors.length_m && (
-            <span className="field-error">{errors.length_m.message}</span>
+        <Controller
+          name="length_m"
+          control={control}
+          render={({ field }) => (
+            <LengthInput
+              id="length_m"
+              className={`field-input${errors.length_m ? ' border-danger' : ''}`}
+              step="0.001"
+              min="0"
+              placeholder="VD: 50"
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
           )}
-        </div>
+        />
       </div>
 
       <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-        <div className="form-field">
-          <label htmlFor="weight_kg">{MSG.LBL_WEIGHT_KG}</label>
-          <input
-            id="weight_kg"
-            className={`field-input${errors.weight_kg ? ' border-danger' : ''}`}
-            type="number"
-            step="0.001"
-            min="0"
-            placeholder="VD: 25.5"
-            {...register('weight_kg')}
-          />
-          {errors.weight_kg && (
-            <span className="field-error">{errors.weight_kg.message}</span>
+        <Controller
+          name="weight_kg"
+          control={control}
+          render={({ field }) => (
+            <WeightInput
+              id="weight_kg"
+              className={`field-input${errors.weight_kg ? ' border-danger' : ''}`}
+              step="0.001"
+              min="0"
+              placeholder="VD: 25.5"
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
           )}
-        </div>
+        />
 
         <div className="form-field">
           <label htmlFor="production_date">{MSG.LBL_PRODUCTION_DATE}</label>

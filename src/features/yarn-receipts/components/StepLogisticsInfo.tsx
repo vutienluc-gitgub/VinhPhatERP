@@ -1,8 +1,9 @@
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useFieldArray, useFormContext, Controller } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
 import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
 import { LOGISTICS_LABELS as L } from '@/features/yarn-receipts/yarn-receipts.constants';
+import { QuantityInput } from '@/shared/value';
 
 type StepLogisticsInfoProps = {
   hidden: boolean;
@@ -60,17 +61,20 @@ export function StepLogisticsInfo({ hidden }: StepLogisticsInfoProps) {
                     </span>
                   )}
                 </div>
-                <div className="w-[140px]">
-                  <input
-                    className={`field-input text-right${errors.additionalFees?.[index]?.amount ? ' border-danger' : ''}`}
-                    type="number"
-                    min="0"
-                    placeholder="0"
-                    {...register(`additionalFees.${index}.amount`, {
-                      valueAsNumber: true,
-                    })}
-                  />
-                </div>
+                <Controller
+                  name={`additionalFees.${index}.amount`}
+                  control={control}
+                  render={({ field }) => (
+                    <QuantityInput
+                      className={`field-input text-right${errors.additionalFees?.[index]?.amount ? ' border-danger' : ''}`}
+                      min="0"
+                      placeholder="0"
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                    />
+                  )}
+                />
                 <Button
                   variant="danger"
                   type="button"

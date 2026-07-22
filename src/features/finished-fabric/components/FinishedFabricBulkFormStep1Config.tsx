@@ -1,7 +1,13 @@
-import type { UseFormRegister, FieldErrors } from 'react-hook-form';
+import {
+  useFormContext,
+  type UseFormRegister,
+  type FieldErrors,
+} from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
 import type { BulkFinishedInputFormValues } from '@/schema/finished-fabric.schema';
 import { FINISHED_FABRIC_BULK_CONFIG_LABELS as MSG } from '@/features/finished-fabric/finished-fabric.constants';
+import { NumericInput } from '@/shared/value';
 
 type FinishedFabricBulkFormStep1ConfigProps = {
   register: UseFormRegister<BulkFinishedInputFormValues>;
@@ -12,6 +18,8 @@ export function FinishedFabricBulkFormStep1Config({
   register,
   errors,
 }: FinishedFabricBulkFormStep1ConfigProps) {
+  const { control } = useFormContext();
+
   return (
     <fieldset className="bulk-section">
       <legend>{MSG.TITLE_2}</legend>
@@ -32,20 +40,21 @@ export function FinishedFabricBulkFormStep1Config({
           )}
         </div>
 
-        <div className="form-field">
-          <label htmlFor="bulk_start_number">{MSG.LBL_START_NUMBER}</label>
-          <input
-            id="bulk_start_number"
-            className={`field-input${errors.start_number ? ' border-danger' : ''}`}
-            type="number"
-            min="1"
-            step="1"
-            {...register('start_number')}
-          />
-          {errors.start_number && (
-            <span className="field-error">{errors.start_number.message}</span>
+        <Controller
+          name="start_number"
+          control={control}
+          render={({ field }) => (
+            <NumericInput
+              id="bulk_start_number"
+              className={`field-input${errors.start_number ? ' border-danger' : ''}`}
+              min="1"
+              step="1"
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
           )}
-        </div>
+        />
       </div>
     </fieldset>
   );

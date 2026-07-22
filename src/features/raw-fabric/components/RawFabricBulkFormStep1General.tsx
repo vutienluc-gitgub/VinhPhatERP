@@ -9,6 +9,7 @@ import type {
 import { Combobox } from '@/shared/components/Combobox';
 import type { BulkInputFormValues } from '@/schema/raw-fabric.schema';
 import { RAW_FABRIC_MESSAGES as MSG } from '@/features/raw-fabric/raw-fabric.constants';
+import { LengthInput } from '@/shared/value';
 
 type RawFabricBulkFormStep1GeneralProps = {
   register: UseFormRegister<BulkInputFormValues>;
@@ -121,21 +122,22 @@ export function RawFabricBulkFormStep1General({
       </div>
 
       <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-        <div className="form-field">
-          <label htmlFor="bulk_width_cm">{MSG.LBL_WIDTH_CM}</label>
-          <input
-            id="bulk_width_cm"
-            className={`field-input${errors.width_cm ? ' border-danger' : ''}`}
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="VD: 150"
-            {...register('width_cm')}
-          />
-          {errors.width_cm && (
-            <span className="field-error">{errors.width_cm.message}</span>
+        <Controller
+          name="width_cm"
+          control={control}
+          render={({ field }) => (
+            <LengthInput
+              id="bulk_width_cm"
+              className={`field-input${errors.width_cm ? ' border-danger' : ''}`}
+              step="0.01"
+              min="0"
+              placeholder="VD: 150"
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
           )}
-        </div>
+        />
 
         <div className="form-field">
           <label htmlFor="bulk_quality_grade">Chất lượng mặc định</label>

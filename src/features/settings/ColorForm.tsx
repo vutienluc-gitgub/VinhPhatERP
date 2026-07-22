@@ -1,12 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { Button } from '@/shared/components';
 import { colorSchema, colorDefaultValues } from '@/schema/color.schema';
 import type { ColorFormValues, ColorRow } from '@/schema/color.schema';
 import { useColorMutations } from '@/application/settings';
+import { NumericInput } from '@/shared/value';
 
 import { SETTINGS_LABELS } from './settings.constants';
 
@@ -21,6 +22,7 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors },
@@ -114,20 +116,19 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
         {errors.name && <p className="field-error">{errors.name.message}</p>}
       </div>
 
-      <div className="form-field">
-        <label htmlFor="trend_year">
-          {SETTINGS_LABELS.COLOR_FORM_TREND_YEAR_LABEL || 'Năm xu hướng'}
-        </label>
-        <input
-          id="trend_year"
-          type="number"
-          className={`field-input ${errors.trend_year ? 'border-danger' : ''}`}
-          {...register('trend_year', { valueAsNumber: true })}
-        />
-        {errors.trend_year && (
-          <p className="field-error">{errors.trend_year.message}</p>
+      <Controller
+        name="trend_year"
+        control={control}
+        render={({ field }) => (
+          <NumericInput
+            id="trend_year"
+            className={`field-input ${errors.trend_year ? 'border-danger' : ''}`}
+            value={field.value}
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+          />
         )}
-      </div>
+      />
 
       <div className="form-field">
         <label htmlFor="color_group">

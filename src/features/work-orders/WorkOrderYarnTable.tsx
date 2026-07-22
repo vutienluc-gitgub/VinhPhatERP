@@ -16,6 +16,7 @@ import {
 } from '@/shared/utils/yarn-requirement.util';
 import { formatQuantity } from '@/shared/utils/format';
 import type { CreateWorkOrderInput } from '@/schema/work-order.schema';
+import { NumericInput, WeightInput } from '@/shared/value';
 
 import { WORK_ORDER_MESSAGES as MSG } from './work-orders.constants';
 
@@ -27,7 +28,6 @@ interface WorkOrderYarnTableProps {
 
 export function WorkOrderYarnTable({
   control,
-  register,
   watch,
 }: WorkOrderYarnTableProps) {
   const { fields, append, remove } = useFieldArray({
@@ -109,77 +109,35 @@ export function WorkOrderYarnTable({
                       </div>
                     )}
                   </td>
-                  <td>
-                    <input
-                      type="number"
-                      step="0.1"
-                      {...register(`yarn_requirements.${index}.bom_ratio_pct`, {
-                        valueAsNumber: true,
-                      })}
-                      className="field-input text-right"
-                      placeholder="%"
-                      onKeyDown={(e) => {
-                        if (e.key === 'ArrowDown') {
-                          e.preventDefault();
-                          const next = document.getElementsByName(
-                            `yarn_requirements.${index + 1}.bom_ratio_pct`,
-                          )[0];
-                          if (next) (next as HTMLInputElement).focus();
-                        }
-                        if (e.key === 'ArrowUp') {
-                          e.preventDefault();
-                          const prev = document.getElementsByName(
-                            `yarn_requirements.${index - 1}.bom_ratio_pct`,
-                          )[0];
-                          if (prev) (prev as HTMLInputElement).focus();
-                        }
-                      }}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      step="0.01"
-                      {...register(`yarn_requirements.${index}.required_kg`, {
-                        valueAsNumber: true,
-                      })}
-                      className="field-input text-right font-bold text-primary"
-                      placeholder="kg"
-                      min={allocatedKg > 0 ? allocatedKg : 0}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          if (index === fields.length - 1) {
-                            append({
-                              yarn_catalog_id: '',
-                              bom_ratio_pct: 0,
-                              required_kg: 0,
-                            });
-                            setTimeout(() => {
-                              const next = document.getElementsByName(
-                                `yarn_requirements.${index + 1}.bom_ratio_pct`,
-                              )[0];
-                              if (next) (next as HTMLInputElement).focus();
-                            }, 10);
-                          }
-                        }
-                        if (e.key === 'ArrowDown') {
-                          e.preventDefault();
-                          const next = document.getElementsByName(
-                            `yarn_requirements.${index + 1}.required_kg`,
-                          )[0];
-                          if (next) (next as HTMLInputElement).focus();
-                        }
-                        if (e.key === 'ArrowUp') {
-                          e.preventDefault();
-                          const prev = document.getElementsByName(
-                            `yarn_requirements.${index - 1}.required_kg`,
-                          )[0];
-                          if (prev) (prev as HTMLInputElement).focus();
-                        }
-                      }}
-                    />
-                  </td>
+                  <Controller
+                    name={`yarn_requirements.${index}.bom_ratio_pct`}
+                    control={control}
+                    render={({ field }) => (
+                      <NumericInput
+                        step="0.1"
+                        className="field-input text-right"
+                        placeholder="%"
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name={`yarn_requirements.${index}.required_kg`}
+                    control={control}
+                    render={({ field }) => (
+                      <WeightInput
+                        step="0.01"
+                        className="field-input text-right font-bold text-primary"
+                        placeholder="kg"
+                        min={allocatedKg > 0 ? allocatedKg : 0}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
+                    )}
+                  />
                   <td className="text-center">
                     {isLocked ? (
                       <button
