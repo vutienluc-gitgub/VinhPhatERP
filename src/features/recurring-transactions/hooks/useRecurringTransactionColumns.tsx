@@ -71,7 +71,7 @@ export function useRecurringTransactionColumns({
         className: 'text-right',
         cell: (tx: RecurringTransaction) => (
           <span className="font-bold text-text">
-            <MoneyText value={tx.amount} />đ
+            <MoneyText value={tx.amount} />
           </span>
         ),
       },
