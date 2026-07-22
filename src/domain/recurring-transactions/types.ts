@@ -30,9 +30,20 @@ export interface RecurringTransaction {
   payment_accounts?: { name: string } | null;
 }
 
+export type RecurringQuickFilter =
+  | 'all'
+  | 'overdue'
+  | 'today'
+  | '7days'
+  | 'active';
+
+export type RecurringStatusFilter = 'active' | 'paused';
+
 export interface RecurringTransactionFilter {
   search?: string;
   category?: ExpenseCategory;
   frequency?: RecurringFrequency;
   isActive?: boolean;
+  status?: RecurringStatusFilter;
+  quickFilter?: RecurringQuickFilter;
 }
