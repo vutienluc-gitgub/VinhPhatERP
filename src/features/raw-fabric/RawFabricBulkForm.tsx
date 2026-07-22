@@ -380,18 +380,18 @@ export function RawFabricBulkForm({ onClose }: Props) {
             <Button
               variant="secondary"
               type="button"
+              leftIcon="FileSpreadsheet"
               onClick={() => exportExcel(savedRolls, 'bien_ban_nhap_kho')}
             >
-              {' '}
-              📊 Xuất Excel
+              Xuất Excel
             </Button>
             <Button
               variant="secondary"
               type="button"
+              leftIcon="FileText"
               onClick={() => exportPdf(savedRolls, 'bien_ban_nhap_kho')}
             >
-              {' '}
-              🖨 Xuất PDF
+              Xuất PDF
             </Button>
             <button
               className="primary-button btn-standard"

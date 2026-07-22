@@ -4,7 +4,6 @@ import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import type { UseFormWatch } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
-import { Icon } from '@/shared/components/Icon';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { StepperFooter } from '@/shared/components/StepperFooter';
 import {
@@ -469,18 +468,20 @@ export function FinishedFabricBulkForm({ onClose }: Props) {
             <Button
               variant="secondary"
               type="button"
+              leftIcon="FileSpreadsheet"
               onClick={() =>
                 exportRollsExcel(savedRolls, 'bien_ban_nhap_kho_tp')
               }
             >
-              <Icon name="FileSpreadsheet" size={16} /> {MSG.BTN_EXPORT_EXCEL}
+              {MSG.BTN_EXPORT_EXCEL}
             </Button>
             <Button
               variant="secondary"
               type="button"
+              leftIcon="FileText"
               onClick={() => exportRollsPdf(savedRolls, 'bien_ban_nhap_kho_tp')}
             >
-              <Icon name="Printer" size={16} /> {MSG.BTN_EXPORT_PDF}
+              {MSG.BTN_EXPORT_PDF}
             </Button>
             <button
               className="primary-button btn-standard"

@@ -93,7 +93,11 @@ export function ActionMenu({
             disabled={isExporting}
             aria-label="Thêm hành động"
           >
-            <Icon name="MoreHorizontal" size={20} />
+            {isExporting ? (
+              <Icon name="Loader2" size={20} className="animate-spin" />
+            ) : (
+              <Icon name="MoreHorizontal" size={20} />
+            )}
           </button>
 
           {open && (
@@ -118,12 +122,7 @@ export function ActionMenu({
                 }}
                 disabled={isExporting}
               >
-                {isExporting ? (
-                  <Icon name="Loader2" size={16} className="animate-spin" />
-                ) : (
-                  <Icon name="FileSpreadsheet" size={16} />
-                )}
-                Xuất Excel
+                <Icon name="FileSpreadsheet" size={16} /> Xuất Excel
               </button>
             </div>
           )}
