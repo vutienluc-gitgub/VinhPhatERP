@@ -56,10 +56,10 @@ const VARIANT_CLASSES: Record<NonNullable<ButtonProps['variant']>, string> = {
 };
 
 const SIZE_CLASSES: Record<NonNullable<ButtonProps['size']>, string> = {
-  sm: 'px-3 py-1.5 text-xs rounded-sm min-h-[36px] gap-1.5',
-  md: 'px-4 py-2.5 text-sm rounded-lg min-h-[44px] gap-2',
-  lg: 'px-6 py-3.5 text-base rounded-lg min-h-[52px] gap-2.5',
-  icon: 'p-2.5 rounded-lg aspect-square min-h-[44px] min-w-[44px]',
+  sm: 'px-4 py-2 text-xs rounded-sm min-h-[36px] gap-1.5',
+  md: 'px-5 py-3 text-sm rounded-sm min-h-[44px] gap-2',
+  lg: 'px-6 py-3.5 text-base rounded-sm min-h-[52px] gap-2.5',
+  icon: 'p-2.5 rounded-sm aspect-square min-h-[44px] min-w-[44px]',
 };
 
 /** Icon sizes follow icon-system rules: Small=16, Default=20 */

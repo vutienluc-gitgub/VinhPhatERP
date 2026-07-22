@@ -18,8 +18,20 @@ import {
   AdaptiveSheet,
   AddButton,
   ActionMenu,
+  Input,
 } from '@/shared/components';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
+import type { IconName } from '@/shared/components/Icon';
+
+function getGroupIcon(code: string): IconName {
+  const c = code.toLowerCase();
+  if (c.includes('vip')) return 'Star';
+  if (c.includes('xuong')) return 'Factory';
+  if (c.includes('dai_ly') || c.includes('daily')) return 'Store';
+  if (c.includes('le') || c.includes('retail')) return 'ShoppingCart';
+  if (c.includes('local')) return 'Shirt';
+  return 'Users';
+}
 
 const groupFormSchema = z.object({
   code: z
@@ -183,18 +195,18 @@ export function CustomerGroupList() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Search and Action Bar */}
-      <div className="flex flex-col sm:flex-row justify-between gap-3 items-stretch sm:items-center">
+      <div className="flex flex-col sm:flex-row justify-between gap-4 items-stretch sm:items-center">
         <div className="relative flex-1 max-w-md">
           <input
             type="text"
             placeholder={CUSTOMER_GROUP_LABELS.searchPlaceholder}
-            className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm bg-white"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border bg-surface text-text text-sm transition-all focus:outline-none focus:ring-2 focus:ring-input-focus focus:border-primary border-border placeholder:text-muted"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <span className="absolute left-3 top-2.5 text-slate-400">
+          <span className="absolute left-3.5 top-3 text-muted">
             <Icon name="Search" size={18} />
           </span>
         </div>
@@ -207,68 +219,86 @@ export function CustomerGroupList() {
 
       {/* List / Grid layout */}
       {filteredGroups.length === 0 ? (
-        <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 text-slate-400 text-sm">
-          {CUSTOMER_GROUP_LABELS.noGroups}
+        <div className="py-16 px-6 text-center bg-surface-strong rounded-2xl border border-border flex flex-col items-center justify-center gap-3">
+          <div className="p-4 bg-surface-subtle rounded-full text-muted mb-2">
+            <Icon name="Users" size={32} />
+          </div>
+          <h3 className="text-lg font-bold text-text">
+            Chưa có nhóm khách hàng
+          </h3>
+          <p className="text-sm text-muted max-w-sm mb-3">
+            Tạo nhóm để phân loại và quản lý khách hàng hiệu quả hơn.
+          </p>
+          <Button variant="outline" onClick={handleOpenCreate} leftIcon="Plus">
+            {CUSTOMER_GROUP_LABELS.createBtn}
+          </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredGroups.map((group) => (
-            <div
-              key={group.id}
-              className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-slate-200 transition-all"
-            >
-              <div className="space-y-3">
-                <div className="flex justify-between items-start">
-                  <div className="space-y-1">
-                    <span className="text-[10px] uppercase font-extrabold tracking-widest text-[#0f3460] bg-slate-100 rounded px-2 py-0.5">
-                      {group.code}
-                    </span>
-                    <h4 className="font-bold text-slate-800 text-sm md:text-base">
-                      {group.name}
-                    </h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filteredGroups.map((group) => {
+            const groupIcon = getGroupIcon(group.code);
+            return (
+              <div
+                key={group.id}
+                className="bg-surface-strong p-5 rounded-2xl border border-border shadow-sm flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 hover:shadow-md hover:border-primary/40 group"
+              >
+                <div className="space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-2">
+                      <span className="text-[10px] uppercase font-extrabold tracking-widest text-primary bg-primary/10 border border-primary/20 rounded px-2 py-0.5 inline-flex items-center gap-1.5">
+                        <Icon name={groupIcon} size={12} />
+                        {group.code}
+                      </span>
+                      <h4 className="font-bold text-text text-sm md:text-base group-hover:text-primary transition-colors">
+                        {group.name}
+                      </h4>
+                    </div>
+
+                    <ActionMenu
+                      items={[
+                        {
+                          label: CUSTOMER_GROUP_LABELS.editBtn,
+                          icon: 'Edit',
+                          onClick: () => handleOpenEdit(group),
+                        },
+                        {
+                          label: CUSTOMER_GROUP_LABELS.deleteBtn,
+                          icon: 'Trash2',
+                          onClick: () => handleDelete(group),
+                          danger: true,
+                        },
+                      ]}
+                    />
                   </div>
 
-                  <ActionMenu
-                    items={[
-                      {
-                        label: CUSTOMER_GROUP_LABELS.editBtn,
-                        icon: 'Edit',
-                        onClick: () => handleOpenEdit(group),
-                      },
-                      {
-                        label: CUSTOMER_GROUP_LABELS.deleteBtn,
-                        icon: 'Trash2',
-                        onClick: () => handleDelete(group),
-                        danger: true,
-                      },
-                    ]}
-                  />
+                  <p className="text-xs text-muted line-clamp-2 h-8">
+                    {group.description || '—'}
+                  </p>
                 </div>
 
-                <p className="text-xs text-slate-500 line-clamp-2 h-8">
-                  {group.description || '—'}
-                </p>
+                <div className="flex justify-between items-center mt-4 pt-4 border-t border-border">
+                  <span className="text-[10px] text-muted font-semibold">
+                    {CUSTOMER_GROUP_LABELS.updatePrefix}{' '}
+                    {new Date(group.updated_at).toLocaleDateString('vi-VN')}
+                  </span>
+                  <span
+                    className={`text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1.5 ${
+                      group.status === 'active'
+                        ? 'bg-success/10 text-success border border-success/20'
+                        : 'bg-surface-subtle text-muted border border-border'
+                    }`}
+                  >
+                    {group.status === 'active' && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-success"></span>
+                    )}
+                    {group.status === 'active'
+                      ? CUSTOMER_GROUP_LABELS.statusActive
+                      : CUSTOMER_GROUP_LABELS.statusInactive}
+                  </span>
+                </div>
               </div>
-
-              <div className="flex justify-between items-center mt-4 pt-3 border-t border-slate-50">
-                <span className="text-[10px] text-slate-400 font-semibold">
-                  {CUSTOMER_GROUP_LABELS.updatePrefix}{' '}
-                  {new Date(group.updated_at).toLocaleDateString('vi-VN')}
-                </span>
-                <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    group.status === 'active'
-                      ? 'bg-green-50 text-green-700 border border-green-200'
-                      : 'bg-slate-100 text-slate-500 border border-slate-200'
-                  }`}
-                >
-                  {group.status === 'active'
-                    ? CUSTOMER_GROUP_LABELS.statusActive
-                    : CUSTOMER_GROUP_LABELS.statusInactive}
-                </span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -282,86 +312,60 @@ export function CustomerGroupList() {
             : CUSTOMER_GROUP_LABELS.createBtn
         }
       >
-        <form onSubmit={handleSubmit(handleSave)} className="p-6 space-y-5">
+        <form onSubmit={handleSubmit(handleSave)} className="p-6 space-y-6">
           {/* Group Code */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">
-              {CUSTOMER_GROUP_LABELS.codeLabel}
-            </label>
-            <input
-              type="text"
-              placeholder={CUSTOMER_GROUP_LABELS.codePlaceholder}
-              disabled={!!editGroup}
-              className={`w-full px-3 py-2 rounded-xl border text-sm font-bold tracking-wide focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white bg-slate-50 uppercase ${
-                errors.code
-                  ? 'border-red-500 ring-1 ring-red-500'
-                  : 'border-slate-200'
-              }`}
-              {...register('code')}
-            />
-            {errors.code && (
-              <span className="text-xs font-semibold text-red-600">
-                {errors.code.message}
-              </span>
-            )}
-          </div>
+          <Input
+            label={CUSTOMER_GROUP_LABELS.codeLabel}
+            placeholder={CUSTOMER_GROUP_LABELS.codePlaceholder}
+            disabled={!!editGroup}
+            className="uppercase font-bold tracking-wide"
+            error={errors.code?.message}
+            description="Viết liền, không dấu."
+            {...register('code')}
+          />
 
           {/* Group Name */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">
-              {CUSTOMER_GROUP_LABELS.nameLabel}
-            </label>
-            <input
-              type="text"
-              placeholder={CUSTOMER_GROUP_LABELS.namePlaceholder}
-              className={`w-full px-3 py-2 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white bg-slate-50 ${
-                errors.name
-                  ? 'border-red-500 ring-1 ring-red-500'
-                  : 'border-slate-200'
-              }`}
-              {...register('name')}
-            />
-            {errors.name && (
-              <span className="text-xs font-semibold text-red-600">
-                {errors.name.message}
-              </span>
-            )}
-          </div>
+          <Input
+            label={CUSTOMER_GROUP_LABELS.nameLabel}
+            placeholder={CUSTOMER_GROUP_LABELS.namePlaceholder}
+            error={errors.name?.message}
+            {...register('name')}
+          />
 
           {/* Description */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+            <label className="text-xs font-bold text-label uppercase tracking-wider">
               {CUSTOMER_GROUP_LABELS.descriptionLabel}
             </label>
             <textarea
               placeholder={CUSTOMER_GROUP_LABELS.descriptionPlaceholder}
               rows={3}
-              className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white bg-slate-50 resize-none"
+              className="w-full px-3 py-2 rounded-xl border bg-input text-text text-sm transition-all placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-input-focus focus:border-primary border-input-border resize-none"
               {...register('description')}
             />
           </div>
 
           {/* Status selection */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+            <label className="text-xs font-bold text-label uppercase tracking-wider">
               {CUSTOMER_GROUP_LABELS.statusLabel}
             </label>
             <div className="flex gap-4">
-              <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none">
+              <label className="flex items-center gap-2 text-sm font-semibold text-text cursor-pointer select-none">
                 <input
                   type="radio"
                   value="active"
-                  className="accent-primary"
+                  className="accent-primary w-4 h-4"
                   {...register('status')}
                   onChange={() => setValue('status', 'active')}
                 />
                 <span>{CUSTOMER_GROUP_LABELS.statusActive}</span>
               </label>
-              <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none">
+              <label className="flex items-center gap-2 text-sm font-semibold text-text cursor-pointer select-none">
                 <input
                   type="radio"
                   value="inactive"
-                  className="accent-primary"
+                  className="accent-primary w-4 h-4"
                   {...register('status')}
                   onChange={() => setValue('status', 'inactive')}
                 />
