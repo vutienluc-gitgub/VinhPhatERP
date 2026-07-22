@@ -27,6 +27,8 @@ const TABLE = 'recurring_transactions';
 export async function fetchRecurringTransactions(
   filters: RecurringTransactionFilter = {},
 ): Promise<RecurringTransaction[]> {
+  const today = new Date().toISOString().slice(0, 10);
+
   let query = untypedDb
     .from(TABLE)
     .select(
@@ -47,6 +49,33 @@ export async function fetchRecurringTransactions(
   if (filters.search?.trim()) {
     const term = filters.search.trim();
     query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
+  }
+
+  // Status filter: 'active' = is_active + not overdue, 'paused' = !is_active
+  if (filters.status === 'active') {
+    query = query.eq('is_active', true).gte('next_run_date', today);
+  } else if (filters.status === 'paused') {
+    query = query.eq('is_active', false);
+  }
+
+  // Quick filter: date-range conditions on next_run_date
+  if (filters.quickFilter && filters.quickFilter !== 'all') {
+    const qf = filters.quickFilter;
+    if (qf === 'overdue') {
+      query = query.eq('is_active', true).lt('next_run_date', today);
+    } else if (qf === 'today') {
+      query = query.eq('is_active', true).eq('next_run_date', today);
+    } else if (qf === '7days') {
+      const sevenDaysLater = new Date();
+      sevenDaysLater.setDate(sevenDaysLater.getDate() + 7);
+      const futureDate = sevenDaysLater.toISOString().slice(0, 10);
+      query = query
+        .eq('is_active', true)
+        .gte('next_run_date', today)
+        .lte('next_run_date', futureDate);
+    } else if (qf === 'active') {
+      query = query.eq('is_active', true);
+    }
   }
 
   const { data, error } = await query;

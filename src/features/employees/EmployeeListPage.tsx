@@ -69,6 +69,27 @@ export function EmployeeListPage() {
     },
   ];
 
+  const kpiStats = useMemo(() => {
+    if (!employees) return { total: 0, active: 0, sales: 0, driver: 0 };
+
+    let active = 0;
+    let sales = 0;
+    let driver = 0;
+
+    for (const emp of employees) {
+      if (emp.status === 'active') active++;
+      if (emp.role === 'sales') sales++;
+      if (emp.role === 'driver') driver++;
+    }
+
+    return {
+      total: employees.length,
+      active,
+      sales,
+      driver,
+    };
+  }, [employees]);
+
   function handleFilterChange(key: string, value: string | undefined) {
     setFilterValues((prev) => ({
       ...prev,
@@ -141,7 +162,7 @@ export function EmployeeListPage() {
             <div className="kpi-content">
               <div className="kpi-info">
                 <p className="kpi-label">{EMPLOYEE_LABELS.KPI_TOTAL}</p>
-                <p className="kpi-value">{employees?.length ?? 0}</p>
+                <p className="kpi-value">{kpiStats.total}</p>
               </div>
               <div className="kpi-icon-box">
                 <Icon name="Users" size={32} />
@@ -157,9 +178,7 @@ export function EmployeeListPage() {
             <div className="kpi-content">
               <div className="kpi-info">
                 <p className="kpi-label">{EMPLOYEE_LABELS.KPI_ACTIVE}</p>
-                <p className="kpi-value">
-                  {employees?.filter((e) => e.status === 'active').length ?? 0}
-                </p>
+                <p className="kpi-value">{kpiStats.active}</p>
               </div>
               <div className="kpi-icon-box">
                 <Icon name="Activity" size={32} />
@@ -175,9 +194,7 @@ export function EmployeeListPage() {
             <div className="kpi-content">
               <div className="kpi-info">
                 <p className="kpi-label">{EMPLOYEE_LABELS.KPI_SALES}</p>
-                <p className="kpi-value">
-                  {employees?.filter((e) => e.role === 'sales').length ?? 0}
-                </p>
+                <p className="kpi-value">{kpiStats.sales}</p>
               </div>
               <div className="kpi-icon-box">
                 <Icon name="Briefcase" size={32} />
@@ -193,9 +210,7 @@ export function EmployeeListPage() {
             <div className="kpi-content">
               <div className="kpi-info">
                 <p className="kpi-label">{EMPLOYEE_LABELS.KPI_DRIVER}</p>
-                <p className="kpi-value">
-                  {employees?.filter((e) => e.role === 'driver').length ?? 0}
-                </p>
+                <p className="kpi-value">{kpiStats.driver}</p>
               </div>
               <div className="kpi-icon-box">
                 <Icon name="Truck" size={32} />

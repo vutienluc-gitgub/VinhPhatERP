@@ -22,8 +22,15 @@ import {
   EXPENSE_CATEGORY_LABELS,
   EXPENSE_CATEGORIES,
 } from '@/schema/payment.schema';
+import type { ExpenseCategory } from '@/schema/payment.schema';
 import { isDue } from '@/domain/recurring-transactions';
-import type { RecurringTransaction } from '@/domain/recurring-transactions/types';
+import type {
+  RecurringTransaction,
+  RecurringTransactionFilter,
+  RecurringQuickFilter,
+  RecurringStatusFilter,
+  RecurringFrequency,
+} from '@/domain/recurring-transactions/types';
 import { calculateRecurringMetrics } from '@/domain/recurring-transactions';
 import { getErrorMessage } from '@/shared/utils/error';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
@@ -32,7 +39,6 @@ import type { FilterFieldConfig } from '@/shared/components';
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 
-import { useRecurringTransactionFilter } from './hooks/useRecurringTransactionFilter';
 import { useRecurringTransactionColumns } from './hooks/useRecurringTransactionColumns';
 import {
   RECURRING_LABELS,
@@ -52,6 +58,50 @@ const FILTER_KEYS = [
   'quick_filter',
 ] as const;
 
+const VALID_QUICK_FILTERS = new Set<RecurringQuickFilter>([
+  'all',
+  'overdue',
+  'today',
+  '7days',
+  'active',
+]);
+const VALID_STATUS_FILTERS = new Set<RecurringStatusFilter>([
+  'active',
+  'paused',
+]);
+
+/** Map URL string params → typed RecurringTransactionFilter for API query. */
+function mapUrlToFilter(
+  filters: Record<string, string | undefined>,
+  debouncedSearch: string | undefined,
+): RecurringTransactionFilter {
+  const result: RecurringTransactionFilter = {};
+
+  if (debouncedSearch?.trim()) {
+    result.search = debouncedSearch.trim();
+  }
+  if (filters.category) {
+    result.category = filters.category as ExpenseCategory;
+  }
+  if (filters.frequency) {
+    result.frequency = filters.frequency as RecurringFrequency;
+  }
+  if (
+    filters.status &&
+    VALID_STATUS_FILTERS.has(filters.status as RecurringStatusFilter)
+  ) {
+    result.status = filters.status as RecurringStatusFilter;
+  }
+  if (
+    filters.quick_filter &&
+    VALID_QUICK_FILTERS.has(filters.quick_filter as RecurringQuickFilter)
+  ) {
+    result.quickFilter = filters.quick_filter as RecurringQuickFilter;
+  }
+
+  return result;
+}
+
 export function RecurringTransactionsPage() {
   const { filters, setFilter, clearFilters, hasActiveFilter } =
     useUrlFilterState(FILTER_KEYS, {
@@ -60,11 +110,17 @@ export function RecurringTransactionsPage() {
   const debouncedSearch = useDebouncedValue(filters.search, 300);
   const { activeGuides } = useContextualGuide('RecurringTransactions');
 
+  // Map URL string params → typed filter for server-side query
+  const serverFilter = useMemo(
+    () => mapUrlToFilter(filters, debouncedSearch),
+    [filters, debouncedSearch],
+  );
+
   const {
     data: transactions = [],
     isLoading,
     error,
-  } = useRecurringTransactionList();
+  } = useRecurringTransactionList(serverFilter);
 
   const deleteMutation = useDeleteRecurringTransaction();
   const toggleMutation = useToggleRecurringTransaction();
@@ -79,13 +135,6 @@ export function RecurringTransactionsPage() {
   const metrics = useMemo(
     () => calculateRecurringMetrics(transactions),
     [transactions],
-  );
-
-  // Client-side filtering
-  const filteredData = useRecurringTransactionFilter(
-    transactions,
-    filters,
-    debouncedSearch,
   );
 
   const dueCount = useMemo(
@@ -280,7 +329,7 @@ export function RecurringTransactionsPage() {
 
           {/* Data Table */}
           <DataTable
-            data={filteredData}
+            data={transactions}
             isLoading={isLoading}
             rowKey={(tx) => tx.id}
             emptyStateTitle={
