@@ -20,7 +20,11 @@ type AdHocShipmentItemsTableProps = {
   form: UseFormReturn<AdHocShipmentFormValues>;
   fieldArray: UseFieldArrayReturn<AdHocShipmentFormValues, 'items', 'id'>;
   itemsSummary: { count: number; totalQty: number; totalAmount: number };
-  onItemFieldChange: (index: number) => void;
+  onItemFieldChange: (
+    index: number,
+    changedField?: 'quantity' | 'pricePerKg',
+    newValue?: number | null,
+  ) => void;
   onAddRow: () => void;
   onRemoveRow: (index: number) => void;
   onScanRow: (index: number, barcode: string) => void;
@@ -138,7 +142,10 @@ export function AdHocShipmentItemsTable({
                   step="0.1"
                   placeholder="0"
                   value={field.value}
-                  onChange={field.onChange}
+                  onChange={(val) => {
+                    field.onChange(val);
+                    onItemFieldChange(index, 'quantity', val);
+                  }}
                   onBlur={field.onBlur}
                 />
               )}
@@ -170,7 +177,7 @@ export function AdHocShipmentItemsTable({
                     value={field.value}
                     onChange={(val) => {
                       field.onChange(val);
-                      onItemFieldChange(index);
+                      onItemFieldChange(index, 'pricePerKg', val);
                     }}
                     onBlur={field.onBlur}
                   />
@@ -231,7 +238,7 @@ export function AdHocShipmentItemsTable({
           </span>
           <span className="text-[0.85rem] font-bold text-[#047857]">
             {AD_HOC_SHIPMENT_MESSAGES.SUMMARY_TOTAL}:{' '}
-            <MoneyText value={itemsSummary.totalAmount} />đ
+            <MoneyText value={itemsSummary.totalAmount} />
           </span>
         </div>
       )}

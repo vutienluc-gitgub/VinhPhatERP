@@ -75,14 +75,24 @@ export function useAdHocShipmentForm(shippingRates: ShippingRate[]) {
 
   // Auto-compute total for each item when quantity or price changes
   const handleItemFieldChange = useCallback(
-    (index: number) => {
-      const items = watchedItems ?? [];
+    (
+      index: number,
+      changedField?: 'quantity' | 'pricePerKg',
+      newValue?: number | null,
+    ) => {
+      const items = form.getValues('items') ?? [];
       const item = items[index];
       if (!item) return;
-      const total = (item.quantity || 0) * (item.pricePerKg || 0);
+
+      const qty =
+        changedField === 'quantity' ? newValue || 0 : item.quantity || 0;
+      const price =
+        changedField === 'pricePerKg' ? newValue || 0 : item.pricePerKg || 0;
+
+      const total = qty * price;
       setValue(`items.${index}.totalAmount`, Math.round(total));
     },
-    [watchedItems, setValue],
+    [form, setValue],
   );
 
   // Auto-compute shipping cost when rate changes
