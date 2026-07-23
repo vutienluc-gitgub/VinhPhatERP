@@ -12,5 +12,9 @@ interface PageLayoutProps {
  * Đảm bảo layout đồng nhất (Level 3 Architecture).
  */
 export function PageLayout({ children, className }: PageLayoutProps) {
-  return <div className={cn('flex flex-col gap-6', className)}>{children}</div>;
+  return (
+    <div className={cn('flex flex-col gap-6 min-w-0', className)}>
+      {children}
+    </div>
+  );
 }
