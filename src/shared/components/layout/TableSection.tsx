@@ -11,5 +11,5 @@ interface TableSectionProps {
  * Khu vực chứa bảng dữ liệu (Level 3 Architecture).
  */
 export function TableSection({ children, className }: TableSectionProps) {
-  return <div className={cn('flex-1', className)}>{children}</div>;
+  return <div className={cn('flex-1 min-w-0', className)}>{children}</div>;
 }

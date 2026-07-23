@@ -294,7 +294,7 @@ export function CustomerList({
       </KPISection>
 
       {/* Tabs / Saved Views */}
-      <div className="pb-2">
+      <div className="pb-2 min-w-0">
         <TabSwitcher
           tabs={tabs}
           active={activeTab === 'custom' ? 'all' : activeTab}
