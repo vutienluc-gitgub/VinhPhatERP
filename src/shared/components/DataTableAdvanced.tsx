@@ -421,7 +421,7 @@ function DataTableAdvancedInner<TData>({
   const selectedCount = table.getSelectedRowModel().rows.length;
 
   return (
-    <div className={clsx('flex flex-col gap-4', className)}>
+    <div className={clsx('flex flex-col gap-4 min-w-0', className)}>
       {/* Floating Bulk Actions Toolbar */}
       {bulkActions && bulkActions.length > 0 && (
         <BulkActionsFloatingBar
@@ -435,7 +435,7 @@ function DataTableAdvancedInner<TData>({
       )}
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 min-w-0">
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted">
             {TABLE_LABELS.DISPLAY_LABEL}

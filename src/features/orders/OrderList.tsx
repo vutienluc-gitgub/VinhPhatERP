@@ -3,17 +3,17 @@ import { useNavigate } from 'react-router-dom';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
-  Icon,
   DataTableAdvanced,
-  AddButton,
   FilterBar,
   type FilterFieldConfig,
   PageLayout,
   PageHeader,
+  PageActions,
   KPISection,
   TableSection,
+  KpiCard,
+  KpiGrid,
 } from '@/shared/components';
-import { MoneyText } from '@/shared/value';
 import { useDeleteOrder, useOrderList } from '@/application/orders';
 import { ORDER_STATUS_LABELS, ORDER_TYPE_OPTIONS } from '@/schema/order.schema';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
@@ -122,96 +122,56 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
         title={ORDERS_LIST_LABELS.PAGE_TITLE}
         subtitle={ORDERS_LIST_LABELS.PAGE_SUBTITLE}
         actions={
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => navigate('/orders/progress')}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors"
-            >
-              <Icon name="BarChart3" size={14} />
-              {ORDERS_LIST_LABELS.BTN_PROGRESS}
-            </button>
-            <AddButton
-              onClick={onNew}
-              label={ORDERS_LIST_LABELS.BTN_CREATE_ORDER}
-            />
-          </div>
+          <PageActions
+            actions={[
+              {
+                id: 'progress',
+                label: ORDERS_LIST_LABELS.BTN_PROGRESS,
+                icon: 'BarChart3',
+                priority: 'secondary',
+                onClick: () => navigate('/orders/progress'),
+              },
+              {
+                id: 'create',
+                label: ORDERS_LIST_LABELS.BTN_CREATE_ORDER,
+                icon: 'Plus',
+                priority: 'primary',
+                onClick: onNew,
+              },
+            ]}
+          />
         }
       />
 
       <KPISection>
-        <div className="kpi-grid">
-          <div
-            className={`kpi-card-premium ${pendingReviewCount > 0 ? 'kpi-warning' : 'kpi-primary'}`}
-          >
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">
-                  {ORDERS_DASHBOARD_LABELS.KPI_PENDING_APPROVAL}
-                </p>
-                <p className="kpi-value">{pendingReviewCount}</p>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="Bell" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              {ORDERS_DASHBOARD_LABELS.KPI_PENDING_DESC}
-            </div>
-          </div>
+        <KpiGrid>
+          <KpiCard
+            label={ORDERS_DASHBOARD_LABELS.KPI_PENDING_APPROVAL}
+            value={pendingReviewCount}
+            icon="Bell"
+            variant={pendingReviewCount > 0 ? 'warning' : 'primary'}
+            footer={ORDERS_DASHBOARD_LABELS.KPI_PENDING_DESC}
+            formatMode="number"
+          />
 
-          <div className="kpi-card-premium kpi-success">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">
-                  {ORDERS_DASHBOARD_LABELS.KPI_EXPECTED_REVENUE}
-                </p>
-                <div className="flex items-baseline gap-1">
-                  <MoneyText
-                    value={totalRevenue}
-                    className="kpi-value"
-                    suffix=""
-                    compact
-                  />
-                  <span className="text-lg font-bold opacity-80">đ</span>
-                </div>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="Banknote" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              {ORDERS_DASHBOARD_LABELS.KPI_REVENUE_DESC}
-            </div>
-          </div>
+          <KpiCard
+            label={ORDERS_DASHBOARD_LABELS.KPI_EXPECTED_REVENUE}
+            value={totalRevenue}
+            icon="Banknote"
+            variant="success"
+            footer={ORDERS_DASHBOARD_LABELS.KPI_REVENUE_DESC}
+            formatMode="currency"
+          />
 
-          <div className="kpi-card-premium kpi-danger">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">
-                  {ORDERS_DASHBOARD_LABELS.KPI_TOTAL_DEBT}
-                </p>
-                <div className="flex items-baseline gap-1">
-                  <MoneyText
-                    value={totalDebt}
-                    className="kpi-value"
-                    suffix=""
-                    compact
-                  />
-                  <span className="text-lg font-bold opacity-80">đ</span>
-                </div>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="AlertCircle" size={32} strokeWidth={2} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              {ORDERS_DASHBOARD_LABELS.KPI_DEBT_DESC}
-            </div>
-          </div>
-        </div>
+          <KpiCard
+            label={ORDERS_DASHBOARD_LABELS.KPI_TOTAL_DEBT}
+            value={totalDebt}
+            icon="AlertCircle"
+            variant="danger"
+            footer={ORDERS_DASHBOARD_LABELS.KPI_DEBT_DESC}
+            formatMode="currency"
+          />
+        </KpiGrid>
       </KPISection>
 
       <FilterBar

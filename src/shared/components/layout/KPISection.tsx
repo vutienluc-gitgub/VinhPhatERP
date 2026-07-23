@@ -11,5 +11,5 @@ interface KPISectionProps {
  * Khu vực chứa các thẻ KPI (Level 3 Architecture).
  */
 export function KPISection({ children, className }: KPISectionProps) {
-  return <div className={cn('mb-2', className)}>{children}</div>;
+  return <div className={cn('mb-2 min-w-0', className)}>{children}</div>;
 }

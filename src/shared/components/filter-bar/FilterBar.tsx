@@ -78,8 +78,8 @@ export function FilterBar({
   const hasSecondaryFields = schema.length > 1;
 
   return (
-    <div className={`${containerClasses} ${sizeClasses}`}>
-      <div className="filter-compact-premium overflow-visible items-end">
+    <div className={`${containerClasses} ${sizeClasses} min-w-0`}>
+      <div className="filter-compact-premium overflow-visible items-end min-w-0">
         {schema.map((field, index) => {
           // Hide secondary fields if not expanded
           if (index > 0 && !isExpanded) return null;

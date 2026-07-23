@@ -21,7 +21,12 @@ export function PageHeader({
   className,
 }: PageHeaderProps) {
   return (
-    <div className={cn('flex flex-col gap-4', className)}>
+    <div
+      className={cn(
+        'flex flex-col md:flex-row md:items-center justify-between gap-4 min-w-0',
+        className,
+      )}
+    >
       <div>
         <h1 className="text-xl md:text-2xl font-bold text-foreground">
           {title}
