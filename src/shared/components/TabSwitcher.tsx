@@ -47,7 +47,15 @@ export function TabSwitcher<T extends string>({
   const smItemClass = size === 'sm' ? 'px-2 py-1 text-[11px]' : undefined;
 
   return (
-    <div className={clsx(barClass, smBarClass, className)} role="tablist">
+    <div
+      className={clsx(
+        barClass,
+        smBarClass,
+        'min-w-0 w-full max-w-full',
+        className,
+      )}
+      role="tablist"
+    >
       {tabs.map((tab) => (
         <button
           key={tab.key}

@@ -7,7 +7,6 @@ import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
   DataTableAdvanced,
-  AddButton,
   FilterBar,
   type FilterFieldConfig,
   type IconName,
@@ -20,6 +19,7 @@ import {
   Button,
   PageLayout,
   PageHeader,
+  PageActions,
   KPISection,
   TableSection,
 } from '@/shared/components';
@@ -256,10 +256,16 @@ export function CustomerList({
         title={CUSTOMER_LIST_LABELS.title}
         subtitle={CUSTOMER_LIST_LABELS.subtitle}
         actions={
-          <AddButton
-            onClick={onNew}
-            label={CUSTOMER_LIST_LABELS.addCustomerBtn}
-            icon="UserPlus"
+          <PageActions
+            actions={[
+              {
+                id: 'create',
+                label: CUSTOMER_LIST_LABELS.addCustomerBtn,
+                icon: 'UserPlus',
+                priority: 'primary',
+                onClick: onNew,
+              },
+            ]}
           />
         }
       />

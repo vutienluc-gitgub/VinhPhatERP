@@ -281,7 +281,7 @@ export function AdaptiveSheet({
         {header ? (
           header
         ) : title ? (
-          <div className="modal-header">
+          <div className="modal-header min-w-0">
             <div className="modal-header-content">
               <h3 id={titleId}>{title}</h3>
               {stepInfo && (
@@ -303,9 +303,7 @@ export function AdaptiveSheet({
 
         {/* Sub Header (Sticky under header) */}
         {subHeader && (
-          <div className="modal-subheader">
-            {subHeader}
-          </div>
+          <div className="modal-subheader min-w-0">{subHeader}</div>
         )}
 
         {/* Step Progress Bar */}
@@ -321,7 +319,7 @@ export function AdaptiveSheet({
         )}
 
         {/* Content (scrollable) */}
-        <div className="modal-content">{children}</div>
+        <div className="modal-content min-w-0">{children}</div>
 
         {/* Footer (sticky) */}
         {footer && <div className="modal-footer">{footer}</div>}
