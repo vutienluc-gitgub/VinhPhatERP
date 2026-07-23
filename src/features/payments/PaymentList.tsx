@@ -7,7 +7,6 @@ import {
   type FilterFieldConfig,
   PageLayout,
   PageHeader,
-  FilterSection,
   TableSection,
 } from '@/shared/components';
 import { useDeletePayment, usePaymentList } from '@/application/payments';
@@ -76,17 +75,15 @@ export function PaymentList() {
     <PageLayout>
       <PageHeader title={MSG.TITLE} subtitle={MSG.SUBTITLE} />
 
-      <FilterSection>
-        <FilterBar
-          schema={filterSchema}
-          value={filters}
-          onChange={handleFilterChange}
-          onClear={() => {
-            clearFilters();
-            setPage(1);
-          }}
-        />
-      </FilterSection>
+      <FilterBar
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => {
+          clearFilters();
+          setPage(1);
+        }}
+      />
 
       {error && (
         <div className="p-4">

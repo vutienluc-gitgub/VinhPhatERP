@@ -324,7 +324,6 @@ export function RecurringTransactionsPage() {
             value={filters}
             onChange={setFilter}
             onClear={clearFilters}
-            variant="inline"
           />
 
           {/* Data Table */}

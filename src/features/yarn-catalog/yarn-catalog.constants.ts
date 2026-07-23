@@ -17,7 +17,7 @@ export const YARN_CATALOG_MESSAGES = {
   ARIA_DATA_TABLE: 'Bảng dữ liệu mã sợi',
 
   KPI_TOTAL: 'Tổng mã sợi',
-  KPI_TOTAL_DESC: 'Trong danh mục hệ thống',
+  KPI_TOTAL_DESC: 'Danh mục',
   KPI_COLOR: 'Màu sắc',
   KPI_COLOR_DESC: 'Đa dạng phân loại màu',
   KPI_ACTIVE: 'Đang hoạt động',

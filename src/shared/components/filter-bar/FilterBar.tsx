@@ -4,9 +4,10 @@
  * Lập trình viên chỉ cần truyền file JSON (schema), hệ thống tự render đúng field type.
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { ClearFilterButton } from '@/shared/components/ClearFilterButton';
+import { Icon } from '@/shared/components/Icon';
 
 import { FieldRenderers } from './fieldRenderers';
 import type { FilterBarProps, DateRangeFilterField } from './types';
@@ -39,7 +40,8 @@ function useHasActiveFilter(
  */
 function useContainerClasses(variant: FilterBarProps['variant']): string {
   return useMemo(() => {
-    const baseClasses = 'filter-bar overflow-visible';
+    const baseClasses =
+      'filter-bar overflow-visible sticky top-0 z-20 bg-background';
     if (variant === 'card') {
       return `${baseClasses} card-filter-section p-4 border-b border-border`;
     }
@@ -61,6 +63,7 @@ export function FilterBar({
 }: FilterBarComponentProps) {
   const hasActiveFilter = useHasActiveFilter(schema, value);
   const containerClasses = useContainerClasses(variant);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // A11Y: Generate a unique prefix if not provided to prevent DOM ID clashes
   // when multiple FilterBars are rendered on the same page.
@@ -72,10 +75,15 @@ export function FilterBar({
       ? '[&_.field-input]:min-h-[36px] [&_.field-input]:h-[36px] [&_.table-cell-input]:min-h-[36px] [&_.table-cell-input]:h-[36px]'
       : '';
 
+  const hasSecondaryFields = schema.length > 1;
+
   return (
     <div className={`${containerClasses} ${sizeClasses}`}>
-      <div className="filter-compact-premium overflow-visible">
-        {schema.map((field) => {
+      <div className="filter-compact-premium overflow-visible items-end">
+        {schema.map((field, index) => {
+          // Hide secondary fields if not expanded
+          if (index > 0 && !isExpanded) return null;
+
           const Renderer = FieldRenderers[field.type];
           if (!Renderer) return null;
           return (
@@ -88,6 +96,17 @@ export function FilterBar({
             />
           );
         })}
+
+        {hasSecondaryFields && (
+          <button
+            type="button"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="btn-secondary h-10 flex items-center gap-1 px-3 text-sm font-medium"
+          >
+            <Icon name={isExpanded ? 'ChevronUp' : 'ChevronDown'} size={16} />
+            {isExpanded ? 'Ẩn bộ lọc' : 'Bộ lọc'}
+          </button>
+        )}
 
         {hasActiveFilter && onClear && <ClearFilterButton onClick={onClear} />}
       </div>

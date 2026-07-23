@@ -205,14 +205,12 @@ export function RawFabricList({
       )}
 
       {/* Filters */}
-      <div className="w-full px-4 sm:px-6 lg:px-8 mt-2 pb-4 border-b border-border">
-        <FilterBar
-          value={filterState}
-          onChange={handleFilterChange}
-          fabricTypeOptions={fabricTypeOptions}
-          resultCount={result?.total}
-        />
-      </div>
+      <FilterBar
+        value={filterState}
+        onChange={handleFilterChange}
+        fabricTypeOptions={fabricTypeOptions}
+        resultCount={result?.total}
+      />
 
       {error && (
         <div className="px-4 sm:px-6 lg:px-8 mt-4">

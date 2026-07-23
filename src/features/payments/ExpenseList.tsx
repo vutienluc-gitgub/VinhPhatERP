@@ -8,7 +8,6 @@ import {
   type FilterFieldConfig,
   PageLayout,
   PageHeader,
-  FilterSection,
   TableSection,
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
@@ -103,17 +102,15 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
         actions={<AddButton onClick={onNew} label={MSG.BTN_ADD} />}
       />
 
-      <FilterSection>
-        <FilterBar
-          schema={filterSchema}
-          value={filters}
-          onChange={handleFilterChange}
-          onClear={() => {
-            clearFilters();
-            setPage(1);
-          }}
-        />
-      </FilterSection>
+      <FilterBar
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => {
+          clearFilters();
+          setPage(1);
+        }}
+      />
 
       {error && (
         <div className="p-4">

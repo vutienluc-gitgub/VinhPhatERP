@@ -11,7 +11,6 @@ import {
   PageLayout,
   PageHeader,
   KPISection,
-  FilterSection,
   TableSection,
 } from '@/shared/components';
 import {
@@ -171,17 +170,15 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
       </KPISection>
 
       {/* Filter Area (Config-Driven) */}
-      <FilterSection>
-        <FilterBar
-          schema={filterSchema}
-          value={filters}
-          onChange={handleFilterChange}
-          onClear={() => {
-            clearFilters();
-            setPage(1);
-          }}
-        />
-      </FilterSection>
+      <FilterBar
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => {
+          clearFilters();
+          setPage(1);
+        }}
+      />
 
       {/* Table (DataTableAdvanced) */}
       <TableSection>

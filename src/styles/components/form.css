@@ -280,3 +280,28 @@ fieldset.form-section > legend.form-section-title {
   color: var(--color-amber-800, #92400e);
   font-size: 0.75rem;
 }
+
+/* ---- Misc Form / Inputs (From misc.css) ---- */
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input-wrapper .field-input {
+  padding-right: 2.75rem;
+  border-radius: var(--radius-sm);
+}
+
+.search-input-icon {
+  position: absolute;
+  right: 0.85rem;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.field-hint {
+  font-size: 0.76rem;
+  color: var(--muted);
+  line-height: 1.35;
+}

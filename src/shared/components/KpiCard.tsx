@@ -10,7 +10,8 @@ export type KpiVariant =
   | 'success'
   | 'warning'
   | 'danger'
-  | 'secondary';
+  | 'secondary'
+  | 'info';
 
 interface Props {
   label: string;
