@@ -55,7 +55,7 @@ async function collectRuntimeIssues(page: Page, route: string): Promise<void> {
 
   const firstInteractiveControl = page
     .locator(
-      'main button, main input, main select, main textarea, main [role="button"]',
+      'main button:visible, main input:visible, main select:visible, main textarea:visible, main [role="button"]:visible',
     )
     .first();
   await expect(
