@@ -15,7 +15,6 @@ import {
   PageLayout,
   PageHeader,
   KPISection,
-  FilterSection,
   TableSection,
 } from '@/shared/components';
 import {
@@ -194,28 +193,26 @@ export function SuppliersList({
         </KpiGrid>
       </KPISection>
 
-      <FilterSection>
-        {/* Tabs / Saved Views */}
-        <div className="pb-2">
-          <TabSwitcher
-            tabs={tabs}
-            active={activeTab === 'custom' ? 'all' : activeTab}
-            onChange={handleTabChange}
-            variant="pill"
-          />
-        </div>
-
-        {/* Filter Area (Config-Driven) */}
-        <FilterBar
-          schema={filterSchema}
-          value={filters}
-          onChange={handleFilterChange}
-          onClear={() => {
-            clearFilters();
-            setPage(1);
-          }}
+      {/* Tabs / Saved Views */}
+      <div className="pb-2">
+        <TabSwitcher
+          tabs={tabs}
+          active={activeTab === 'custom' ? 'all' : activeTab}
+          onChange={handleTabChange}
+          variant="pill"
         />
-      </FilterSection>
+      </div>
+
+      {/* Filter Area (Config-Driven) */}
+      <FilterBar
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => {
+          clearFilters();
+          setPage(1);
+        }}
+      />
 
       {error && (
         <div className="p-4">

@@ -182,14 +182,12 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
           </div>
         )}
 
-        <div className="w-full px-4 sm:px-6 lg:px-8 mt-2 pb-4 border-b border-border flex flex-col gap-4">
-          <FilterBar
-            schema={filterSchema}
-            value={filters}
-            onChange={handleFilterChange}
-            onClear={hasFilter ? clearFilters : undefined}
-          />
-        </div>
+        <FilterBar
+          schema={filterSchema}
+          value={filters}
+          onChange={handleFilterChange}
+          onClear={hasFilter ? clearFilters : undefined}
+        />
 
         <DataTableAdvanced
           data={invoices}

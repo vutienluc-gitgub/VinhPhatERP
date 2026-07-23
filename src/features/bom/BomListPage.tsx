@@ -9,7 +9,6 @@ import {
   KpiGrid,
   PageLayout,
   PageHeader,
-  FilterSection,
   KPISection,
   TableSection,
   type FilterFieldConfig,
@@ -172,14 +171,12 @@ export function BomListPage() {
       </KPISection>
 
       {/* Filters */}
-      <FilterSection aria-label={BOM_MESSAGES.ARIA_FILTER_BAR}>
-        <FilterBar
-          schema={filterSchema}
-          value={filter}
-          onChange={handleFilterChange}
-          onClear={clearFilters}
-        />
-      </FilterSection>
+      <FilterBar
+        schema={filterSchema}
+        value={filter}
+        onChange={handleFilterChange}
+        onClear={clearFilters}
+      />
 
       {/* Table */}
       <TableSection aria-label={BOM_MESSAGES.ARIA_DATA_TABLE}>

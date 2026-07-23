@@ -263,23 +263,21 @@ export function ShipmentList() {
         />
       </div>
 
-      <div className="w-full px-4 sm:px-6 lg:px-8 mt-2 pb-4 border-b border-border flex flex-col gap-4">
-        <TabSwitcher
-          tabs={tabsWithBadge}
-          active={filters.status || ''}
-          onChange={(val) => {
-            setPage(1);
-            setFilter('status', val ? val : undefined);
-          }}
-          variant="underline"
-        />
-        <FilterBar
-          schema={filterSchema}
-          value={filters}
-          onChange={handleFilterChange}
-          onClear={hasFilter ? clearFilters : undefined}
-        />
-      </div>
+      <TabSwitcher
+        tabs={tabsWithBadge}
+        active={filters.status || ''}
+        onChange={(val) => {
+          setPage(1);
+          setFilter('status', val ? val : undefined);
+        }}
+        variant="underline"
+      />
+      <FilterBar
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={hasFilter ? clearFilters : undefined}
+      />
 
       <TableSection>
         {error && (

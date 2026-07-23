@@ -3,7 +3,6 @@ import {
   FilterBar,
   PageLayout,
   PageHeader,
-  FilterSection,
   TableSection,
   KPISection,
   KpiGrid,
@@ -91,14 +90,12 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
       </KPISection>
 
       {/* Filters (Config-Driven) */}
-      <FilterSection aria-label={YARN_CATALOG_MESSAGES.ARIA_FILTER_BAR}>
-        <FilterBar
-          schema={YARN_CATALOG_FILTER_SCHEMA}
-          value={filters}
-          onChange={handleFilterChange}
-          onClear={handleClearFilters}
-        />
-      </FilterSection>
+      <FilterBar
+        schema={YARN_CATALOG_FILTER_SCHEMA}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={handleClearFilters}
+      />
 
       {/* Error Output */}
       <div aria-live="polite" aria-atomic="true">

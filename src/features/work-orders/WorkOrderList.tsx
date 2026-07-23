@@ -261,20 +261,18 @@ export function WorkOrderList({
             </ErrorInline>
           </div>
         )}
-        <div className="w-full px-4 sm:px-6 lg:px-8 mt-2 pb-4 border-b border-border flex flex-col gap-4">
-          <FilterBar
-            schema={filterSchema}
-            value={filterBarValue}
-            onChange={handleFilterChange}
-            onClear={() => {
-              setFilter({
-                status: 'all',
-                search: '',
-              });
-              setPage(1);
-            }}
-          />
-        </div>
+        <FilterBar
+          schema={filterSchema}
+          value={filterBarValue}
+          onChange={handleFilterChange}
+          onClear={() => {
+            setFilter({
+              status: 'all',
+              search: '',
+            });
+            setPage(1);
+          }}
+        />
 
         {viewMode === 'kanban' ? (
           <div className="mt-4 p-4">

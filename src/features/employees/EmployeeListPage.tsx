@@ -9,6 +9,8 @@ import {
   Button,
   ActionBar,
   FilterBar,
+  KpiCard,
+  KpiGrid,
   type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
@@ -156,71 +158,36 @@ export function EmployeeListPage() {
         </div>
 
         {/* KPI Dashboard area */}
-        <div className="kpi-section kpi-grid">
-          <div className="kpi-card-premium kpi-primary">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">{EMPLOYEE_LABELS.KPI_TOTAL}</p>
-                <p className="kpi-value">{kpiStats.total}</p>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="Users" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              {EMPLOYEE_LABELS.KPI_TOTAL_SUB}
-            </div>
-          </div>
-
-          <div className="kpi-card-premium kpi-success">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">{EMPLOYEE_LABELS.KPI_ACTIVE}</p>
-                <p className="kpi-value">{kpiStats.active}</p>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="Activity" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              {EMPLOYEE_LABELS.KPI_ACTIVE_SUB}
-            </div>
-          </div>
-
-          <div className="kpi-card-premium kpi-warning">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">{EMPLOYEE_LABELS.KPI_SALES}</p>
-                <p className="kpi-value">{kpiStats.sales}</p>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="Briefcase" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              {EMPLOYEE_LABELS.KPI_SALES_SUB}
-            </div>
-          </div>
-
-          <div className="kpi-card-premium kpi-info">
-            <div className="kpi-overlay" />
-            <div className="kpi-content">
-              <div className="kpi-info">
-                <p className="kpi-label">{EMPLOYEE_LABELS.KPI_DRIVER}</p>
-                <p className="kpi-value">{kpiStats.driver}</p>
-              </div>
-              <div className="kpi-icon-box">
-                <Icon name="Truck" size={32} />
-              </div>
-            </div>
-            <div className="kpi-footer text-xs opacity-80 italic">
-              {EMPLOYEE_LABELS.KPI_DRIVER_SUB}
-            </div>
-          </div>
-        </div>
+        <KpiGrid className="kpi-section">
+          <KpiCard
+            label={EMPLOYEE_LABELS.KPI_TOTAL}
+            value={kpiStats.total}
+            icon="Users"
+            variant="primary"
+            footer={EMPLOYEE_LABELS.KPI_TOTAL_SUB}
+          />
+          <KpiCard
+            label={EMPLOYEE_LABELS.KPI_ACTIVE}
+            value={kpiStats.active}
+            icon="Activity"
+            variant="success"
+            footer={EMPLOYEE_LABELS.KPI_ACTIVE_SUB}
+          />
+          <KpiCard
+            label={EMPLOYEE_LABELS.KPI_SALES}
+            value={kpiStats.sales}
+            icon="Briefcase"
+            variant="warning"
+            footer={EMPLOYEE_LABELS.KPI_SALES_SUB}
+          />
+          <KpiCard
+            label={EMPLOYEE_LABELS.KPI_DRIVER}
+            value={kpiStats.driver}
+            icon="Truck"
+            variant="info"
+            footer={EMPLOYEE_LABELS.KPI_DRIVER_SUB}
+          />
+        </KpiGrid>
 
         {/* Filter Area (Config-Driven) */}
         <FilterBar

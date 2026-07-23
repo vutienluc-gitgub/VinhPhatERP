@@ -11,7 +11,6 @@ import {
   PageLayout,
   PageHeader,
   KPISection,
-  FilterSection,
   TableSection,
 } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
@@ -215,17 +214,15 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
         </div>
       </KPISection>
 
-      <FilterSection>
-        <FilterBar
-          schema={filterSchema}
-          value={filters}
-          onChange={handleFilterChange}
-          onClear={() => {
-            clearFilters();
-            setPage(1);
-          }}
-        />
-      </FilterSection>
+      <FilterBar
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={() => {
+          clearFilters();
+          setPage(1);
+        }}
+      />
 
       {error && (
         <div className="p-4">

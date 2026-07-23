@@ -1,0 +1,308 @@
+/* ============================================================
+   KPI & Stats Dashboard Widgets
+   ============================================================ */
+
+/* ---- Premium UI Components (WOW Factor) ---- */
+.title-premium {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0;
+}
+
+.stats-grid-premium {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: linear-gradient(to bottom, var(--surface-strong), var(--surface));
+  border-bottom: 1px solid var(--border);
+}
+
+.stat-item-premium {
+  background: var(--surface-strong);
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.stat-item-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-icon-wrapper {
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-content-premium p:first-child {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 0.15rem;
+}
+
+.stat-content-premium p:last-child {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+/* Dashboard summary row */
+.dashboard-summary-row {
+  display: grid;
+  /* Auto-fit to screen: creates as many 140px-minimum columns as possible, otherwise wraps */
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.dashboard-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 1rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+}
+
+.dashboard-stat-number {
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.dashboard-stat-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.dashboard-stat-danger .dashboard-stat-number {
+  color: var(--danger);
+}
+
+.dashboard-stat-success .dashboard-stat-number {
+  color: var(--success);
+}
+
+.dashboard-stat-primary .dashboard-stat-number {
+  color: var(--primary);
+}
+
+/* ============================================================
+   Shared KPI Card & Grid
+   ============================================================ */
+
+/* kpi-section: standard wrapper cho mọi KPI dashboard area.
+   Thay thế inline: p-4 md:p-6 bg-surface-subtle border-b border-border
+   Dùng CSS token --kpi-pad để đảm bảo 1 nguồn sự thật duy nhất. */
+:root {
+  --kpi-pad: 1rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --kpi-pad: 1.5rem;
+  }
+}
+
+.kpi-section {
+  padding: var(--kpi-pad);
+  background: var(--surface-subtle);
+  border-bottom: 1px solid var(--border);
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.kpi-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  background: var(--surface-strong);
+  transition:
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+
+.kpi-card:hover {
+  border-color: rgba(var(--brand-rgb), 0.18);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---- KPI Premium Classes ---- */
+.kpi-card-premium {
+  position: relative;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition:
+    transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kpi-card-premium.kpi-primary {
+  border-bottom: 4px solid var(--primary);
+}
+.kpi-card-premium.kpi-primary::after {
+  background: var(--primary);
+}
+
+.kpi-card-premium.kpi-success {
+  border-bottom: 4px solid var(--success);
+}
+.kpi-card-premium.kpi-success::after {
+  background: var(--success);
+}
+
+.kpi-card-premium.kpi-warning {
+  border-bottom: 4px solid var(--warning);
+}
+.kpi-card-premium.kpi-warning::after {
+  background: var(--warning);
+}
+
+.kpi-card-premium.kpi-secondary {
+  border-bottom: 4px solid var(--muted);
+}
+.kpi-card-premium.kpi-secondary::after {
+  background: var(--muted);
+}
+
+.kpi-card-premium.kpi-info {
+  border-bottom: 4px solid var(--info);
+}
+.kpi-card-premium.kpi-info::after {
+  background: var(--info);
+}
+
+.kpi-card-premium.kpi-danger {
+  border-bottom: 4px solid var(--danger);
+}
+.kpi-card-premium.kpi-danger::after {
+  background: var(--danger);
+}
+
+.kpi-card-premium:hover {
+  transform: translateY(-4px);
+  border-color: var(--muted);
+  box-shadow: var(--shadow-lg);
+}
+
+.kpi-card-premium::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-full);
+  filter: blur(40px);
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+/* Old kpi-overlay removed in favor of ::after glow */
+.kpi-overlay {
+  display: none;
+}
+
+.kpi-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  z-index: 1;
+}
+
+.kpi-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.kpi-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.kpi-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.kpi-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-sm);
+  background: rgba(var(--base-rgb), 0.04);
+  color: var(--primary);
+}
+
+.kpi-primary .kpi-icon-box {
+  background: rgba(var(--brand-rgb), 0.1);
+  color: var(--primary);
+}
+
+.kpi-success .kpi-icon-box {
+  background: rgba(var(--success-rgb), 0.1);
+  color: var(--success);
+}
+
+.kpi-warning .kpi-icon-box {
+  background: rgba(var(--warning-rgb, 217, 119, 6), 0.1);
+  color: var(--warning);
+}
+
+.kpi-danger .kpi-icon-box {
+  background: rgba(var(--danger-rgb), 0.1);
+  color: var(--danger);
+}
+
+.kpi-secondary .kpi-icon-box {
+  background: rgba(var(--base-rgb), 0.06);
+  color: var(--muted);
+}
+
+.kpi-info .kpi-icon-box {
+  background: var(--info-soft, rgba(var(--brand-rgb), 0.1));
+  color: var(--info);
+}
+
+.kpi-footer {
+  margin-top: 1.25rem;
+  color: var(--muted);
+  z-index: 1;
+}

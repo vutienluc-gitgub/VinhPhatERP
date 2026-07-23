@@ -6,7 +6,6 @@ import {
   PageLayout,
   PageHeader,
   KPISection,
-  FilterSection,
   TableSection,
   KpiCard,
 } from '@/shared/components';
@@ -145,14 +144,12 @@ export function ContractsPage({ onView, onNew }: ContractsPageProps) {
         </div>
       </KPISection>
 
-      <FilterSection>
-        <FilterBar
-          schema={filterSchema}
-          value={filters}
-          onChange={handleFilterChange}
-          onClear={clearFilters}
-        />
-      </FilterSection>
+      <FilterBar
+        schema={filterSchema}
+        value={filters}
+        onChange={handleFilterChange}
+        onClear={clearFilters}
+      />
 
       {error && (
         <div className="p-4">

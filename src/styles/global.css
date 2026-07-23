@@ -15,7 +15,10 @@
 @import './components/table.css';
 @import './components/badge.css';
 @import './components/card.css';
-@import './components/misc.css';
+@import './components/buttons.css';
+@import './components/tabs.css';
+@import './components/kpi.css';
+@import './components/feedback.css';
 @import './components/perm-matrix.css';
 
 /* Specific Views & Vendors */
