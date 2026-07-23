@@ -51,7 +51,10 @@ export function TabSwitcher<T extends string>({
       className={clsx(
         barClass,
         smBarClass,
-        'min-w-0 w-full max-w-full',
+        variant === 'boxed' || variant === 'underline'
+          ? 'w-full'
+          : 'w-max inline-flex',
+        'min-w-0 max-w-full',
         className,
       )}
       role="tablist"
