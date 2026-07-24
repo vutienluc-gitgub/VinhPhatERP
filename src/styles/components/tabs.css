@@ -40,7 +40,7 @@
 
 /* Tab bar pill */
 .tab-bar-pill {
-  display: flex;
+  display: inline-flex;
   gap: 0.25rem;
   padding: 0.25rem;
   background: var(--surface);

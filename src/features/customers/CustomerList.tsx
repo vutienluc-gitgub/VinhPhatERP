@@ -17,7 +17,6 @@ import {
   AdaptiveSheet,
   Combobox,
   Button,
-  PageLayout,
   PageHeader,
   PageActions,
   KPISection,
@@ -251,7 +250,7 @@ export function CustomerList({
   const hasFilter = hasActiveFilter;
 
   return (
-    <PageLayout>
+    <>
       <PageHeader
         title={CUSTOMER_LIST_LABELS.title}
         subtitle={CUSTOMER_LIST_LABELS.subtitle}
@@ -468,6 +467,6 @@ export function CustomerList({
           </div>
         </div>
       </AdaptiveSheet>
-    </PageLayout>
+    </>
   );
 }
