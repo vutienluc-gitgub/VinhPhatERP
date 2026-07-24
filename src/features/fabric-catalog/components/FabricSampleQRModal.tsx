@@ -8,7 +8,10 @@ import { buildQRPayload } from '@/shared/lib/identifier.service';
 import { openPrintWindow } from '@/shared/lib/print-template.engine';
 import { FABRIC_SAMPLE_HORIZONTAL_CSS } from '@/shared/lib/print-template.css';
 import type { FabricCatalog } from '@/features/fabric-catalog/types';
-import { drawTagToCanvas } from '@/features/fabric-catalog/fabric-sample-qr.utils';
+import {
+  drawTagToCanvas,
+  buildFabricLabelSpecs,
+} from '@/features/fabric-catalog/fabric-sample-qr.utils';
 
 import { QRFabricLabel } from './QRFabricLabel';
 
@@ -72,6 +75,8 @@ export function FabricSampleQRModal({
     name: catalog.name,
   });
 
+  const labelData = buildFabricLabelSpecs(catalog);
+
   return (
     <AdaptiveSheet
       open={true}
@@ -122,8 +127,10 @@ export function FabricSampleQRModal({
             style={{ width: 'fit-content', margin: '0 auto' }}
           >
             <QRFabricLabel
-              code={catalog.code}
-              name={catalog.name}
+              code={labelData.code}
+              name={labelData.name}
+              specs={labelData.specs}
+              footer={labelData.footer}
               qrValue={qrData}
             />
           </div>

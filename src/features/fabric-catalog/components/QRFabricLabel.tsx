@@ -5,8 +5,9 @@ import { QRCodeDisplay } from '@/shared/components/QRCodeDisplay';
 type QRFabricLabelProps = {
   code: string;
   name: string;
+  specs?: string;
+  footer?: string;
   qrValue: string;
-  domain?: string;
   qrSize?: number;
   className?: string;
 };
@@ -29,17 +30,12 @@ const STYLES = {
 export function QRFabricLabel({
   code,
   name,
+  specs,
+  footer = 'Scan for Details',
   qrValue,
-  domain,
   qrSize = 128,
   className = '',
 }: QRFabricLabelProps) {
-  const displayDomain =
-    domain ||
-    (typeof window !== 'undefined'
-      ? window.location.host
-      : 'detmayvinhphat.com');
-
   const containerRef = useRef<HTMLDivElement>(null);
   const [qrImgUrl, setQrImgUrl] = useState<string>('');
 
@@ -119,7 +115,7 @@ export function QRFabricLabel({
             ...STYLES.truncateText,
           }}
         >
-          {code || 'N/A'}
+          {code}
         </div>
         <div
           className="name line-clamp-2"
@@ -136,18 +132,32 @@ export function QRFabricLabel({
             textAlign: 'left',
           }}
         >
-          {name || 'N/A'}
+          {name}
         </div>
+        {specs && (
+          <div
+            className="specs"
+            style={{
+              fontSize: '10px',
+              marginTop: '1.5mm',
+              color: '#444444',
+              ...STYLES.truncateText,
+            }}
+          >
+            {specs}
+          </div>
+        )}
         <div
-          className="domain"
+          className="domain footer"
           style={{
-            fontSize: '8px',
+            fontSize: '9px',
             marginTop: '3mm',
             color: '#666',
+            fontWeight: 600,
             ...STYLES.truncateText,
           }}
         >
-          {displayDomain}
+          {footer}
         </div>
       </div>
     </div>

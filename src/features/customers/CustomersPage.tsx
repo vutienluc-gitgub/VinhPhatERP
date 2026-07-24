@@ -7,6 +7,7 @@ import { ContractForm } from '@/features/contracts/ContractForm';
 import { ChatDrawer } from '@/features/chat/ChatDrawer';
 import { usePreviewIdFromUrl } from '@/shared/hooks/usePreviewIdFromUrl';
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
+import { PageLayout } from '@/shared/components';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 
 import { CUSTOMERS_PAGE_LABELS } from './customers.constants';
@@ -48,31 +49,36 @@ export function CustomersPage() {
   }
 
   return (
-    <div className="page-container space-y-4">
-      {/* Tab Switcher for CRM Modules */}
-      <div className="border-b border-slate-100 pb-2">
-        <TabSwitcher
-          active={activeTab}
-          onChange={setActiveTab}
-          tabs={[
-            { key: 'customers', label: CUSTOMERS_PAGE_LABELS.tabCustomers },
-            { key: 'customer_groups', label: CUSTOMERS_PAGE_LABELS.tabGroups },
-          ]}
-          variant="underline"
-        />
-      </div>
+    <div className="page-container">
+      <PageLayout className="flex-1 h-full">
+        {/* Tab Switcher for CRM Modules */}
+        <div className="border-b border-slate-100 pb-2 min-w-0">
+          <TabSwitcher
+            active={activeTab}
+            onChange={setActiveTab}
+            tabs={[
+              { key: 'customers', label: CUSTOMERS_PAGE_LABELS.tabCustomers },
+              {
+                key: 'customer_groups',
+                label: CUSTOMERS_PAGE_LABELS.tabGroups,
+              },
+            ]}
+            variant="underline"
+          />
+        </div>
 
-      {activeTab === 'customers' && (
-        <CustomerList
-          onEdit={openEdit}
-          onNew={openCreate}
-          onCreateContract={(c) => setContractCustomer(c)}
-          onDeposit={(c) => setDepositCustomer(c)}
-          onChat={(c) => setChatCustomer(c)}
-        />
-      )}
+        {activeTab === 'customers' && (
+          <CustomerList
+            onEdit={openEdit}
+            onNew={openCreate}
+            onCreateContract={(c) => setContractCustomer(c)}
+            onDeposit={(c) => setDepositCustomer(c)}
+            onChat={(c) => setChatCustomer(c)}
+          />
+        )}
 
-      {activeTab === 'customer_groups' && <CustomerGroupList />}
+        {activeTab === 'customer_groups' && <CustomerGroupList />}
+      </PageLayout>
 
       <AdaptiveSheet
         open={showForm && activeTab === 'customers'}

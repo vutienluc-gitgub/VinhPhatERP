@@ -32,6 +32,26 @@ function wrapText(
   return lines;
 }
 
+export function buildFabricLabelSpecs(
+  catalog: Pick<
+    FabricCatalog,
+    'code' | 'name' | 'composition' | 'target_width_cm' | 'target_gsm'
+  >,
+) {
+  const specsParts = [];
+  if (catalog.composition) specsParts.push(catalog.composition);
+  if (catalog.target_width_cm) specsParts.push(`${catalog.target_width_cm}cm`);
+  if (catalog.target_gsm) specsParts.push(`${catalog.target_gsm} GSM`);
+  const specs = specsParts.join(' • ');
+
+  return {
+    code: catalog.code || 'N/A',
+    name: catalog.name || 'N/A',
+    specs,
+    footer: 'Scan for Details',
+  };
+}
+
 export function drawTagToCanvas(
   catalog: FabricCatalog,
   qrCanvasEl: HTMLCanvasElement | null,
@@ -68,19 +88,21 @@ export function drawTagToCanvas(
   const rightX = 295;
   const rightW = w - rightX - 25;
 
+  const labelData = buildFabricLabelSpecs(catalog);
+
   // Draw Code
   ctx.fillStyle = '#000000';
-  ctx.font = 'bold 40px Arial, sans-serif';
+  ctx.font = 'bold 38px Arial, sans-serif';
   ctx.textAlign = 'left';
   ctx.textBaseline = 'top';
-  ctx.fillText(catalog.code || '', rightX, 70);
+  ctx.fillText(labelData.code, rightX, 70);
 
   // Draw Name (up to 2 lines)
   ctx.fillStyle = '#333333';
   ctx.font = '24px Arial, sans-serif';
 
-  const nameLines = wrapText(ctx, catalog.name || '', rightW);
-  let nameY = 135;
+  const nameLines = wrapText(ctx, labelData.name, rightW);
+  let nameY = 120;
   const lineH = 32;
   const maxLines = 2;
   for (let i = 0; i < Math.min(nameLines.length, maxLines); i++) {
@@ -92,12 +114,17 @@ export function drawTagToCanvas(
     nameY += lineH;
   }
 
-  // Draw Domain
-  const displayDomain =
-    typeof window !== 'undefined' ? window.location.host : 'detmayvinhphat.com';
+  // Draw Specs
+  if (labelData.specs) {
+    ctx.fillStyle = '#444444';
+    ctx.font = '20px Arial, sans-serif';
+    ctx.fillText(labelData.specs, rightX, nameY + 5);
+  }
+
+  // Draw Scan For Details
   ctx.fillStyle = '#666666';
-  ctx.font = '18px Arial, sans-serif';
-  ctx.fillText(displayDomain, rightX, 305);
+  ctx.font = 'bold 18px Arial, sans-serif';
+  ctx.fillText(labelData.footer, rightX, 305);
 
   return canvas;
 }
