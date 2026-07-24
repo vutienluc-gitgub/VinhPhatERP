@@ -163,3 +163,35 @@ export const FABRIC_SAMPLE_HORIZONTAL_CSS = `
     text-overflow: ellipsis;
   }
 `;
+
+/** Print CSS for AST-based Labels (Renders full SVG) */
+export const AST_LABEL_CSS = `
+  @page {
+    margin: 0;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #ffffff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+  }
+  .ast-label-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .ast-label-wrapper svg {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain;
+  }
+`;

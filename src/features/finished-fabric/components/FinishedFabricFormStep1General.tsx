@@ -9,7 +9,7 @@ import type {
 import type { UseMutationResult } from '@tanstack/react-query';
 
 import { Combobox } from '@/shared/components/Combobox';
-import { ImagePicker } from '@/shared/components/ImagePicker';
+import { AdvancedImageUploader } from '@/shared/components';
 import type { FinishedFabricFormValues } from '@/schema/finished-fabric.schema';
 import { FINISHED_FABRIC_FORM_LABELS as MSG } from '@/features/finished-fabric/finished-fabric.constants';
 
@@ -50,13 +50,10 @@ export function FinishedFabricFormStep1General({
     <div className="form-grid">
       <div className="form-field">
         <label>Ảnh sản phẩm</label>
-        <ImagePicker
+        <AdvancedImageUploader
           value={currentImageUrl}
-          onUpload={(file) =>
-            uploadImageMutation.mutate(file, {
-              onSuccess: (url) => setValue('image_url', url),
-            })
-          }
+          uploadFn={async (file) => uploadImageMutation.mutateAsync(file)}
+          onSuccess={(url) => setValue('image_url', url)}
           onRemove={() => {
             const currentUrl = currentImageUrl;
             setValue('image_url', null);
@@ -64,14 +61,6 @@ export function FinishedFabricFormStep1General({
               deleteImageMutation.mutate(currentUrl);
             }
           }}
-          isUploading={uploadImageMutation.isPending}
-          error={
-            uploadImageMutation.error instanceof Error
-              ? uploadImageMutation.error.message
-              : uploadImageMutation.error
-                ? String(uploadImageMutation.error)
-                : null
-          }
           disabled={isLocked}
         />
       </div>
