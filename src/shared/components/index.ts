@@ -9,6 +9,16 @@ export { AdaptiveSheet } from './AdaptiveSheet';
 export { Badge } from './Badge';
 export type { BadgeVariant } from './Badge';
 export { Combobox } from './Combobox';
+export { VPCombobox } from './VPCombobox';
+export type { VPComboboxProps, VPComboboxOption } from './VPCombobox';
+export { VPVirtualCombobox } from './VPVirtualCombobox';
+export type {
+  VPVirtualComboboxProps,
+  VPVirtualComboboxOption,
+} from './VPVirtualCombobox';
+export { VPSelect } from './VPSelect';
+export type { VPSelectProps, VPOption } from './VPSelect';
+export * from './pickers';
 export { BasicNumberInput } from './BasicNumberInput';
 export { ConfirmProvider, ConfirmContext, useConfirm } from './ConfirmDialog';
 export { DataTable } from './DataTable';
@@ -16,7 +26,13 @@ export type { Column as DataTableColumn, PaginationConfig } from './DataTable';
 export { DataTableAdvanced } from './DataTableAdvanced';
 export type { DataTableAdvancedProps } from './DataTableAdvanced';
 export { FilterBar } from './filter-bar';
-export type { FilterFieldConfig, DateRangeFilterField } from './filter-bar';
+export type {
+  FilterFieldConfig,
+  FilterFieldType,
+  FilterBarProps,
+  ComboboxFilterField,
+} from './filter-bar';
+export * from './status';
 export { default as DraftBanner } from './DraftBanner';
 export { EmptyState } from './EmptyState';
 export { ErrorBoundary } from './ErrorBoundary';

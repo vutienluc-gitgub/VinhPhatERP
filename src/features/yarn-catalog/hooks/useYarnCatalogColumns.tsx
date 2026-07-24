@@ -9,7 +9,7 @@ import {
 import { LABEL_ORIGIN } from '@/shared/constants/origin.constants';
 import type { YarnCatalog } from '@/features/yarn-catalog/types';
 import { YarnColorBadge } from '@/features/yarn-catalog/components/YarnColorBadge';
-import { YarnStatusBadge } from '@/features/yarn-catalog/components/YarnStatusBadge';
+import { StatusBadge } from '@/shared/components';
 
 export function useYarnCatalogColumns(
   onEdit: (catalog: YarnCatalog) => void,
@@ -145,7 +145,7 @@ export function useYarnCatalogColumns(
         header: 'Trạng thái',
         cell: (info) => {
           const c = info.row.original;
-          return <YarnStatusBadge status={c.status} />;
+          return <StatusBadge domain="YARN" status={c.status} />;
         },
       }),
       columnHelper.accessor('notes', {

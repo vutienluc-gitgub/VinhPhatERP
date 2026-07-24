@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import dayjs from 'dayjs';
 
-import { Button, Badge, Icon } from '@/shared/components';
+import { Button, StatusBadge, Icon } from '@/shared/components';
 import { MoneyText } from '@/shared/value/money/MoneyText';
 import { getErrorMessage } from '@/shared/utils/error';
 import {
@@ -81,17 +81,6 @@ export function RFQQuotesTab({ rfq }: RFQQuotesTabProps) {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'awarded':
-        return <Badge variant="success">{RFQ_LABELS.BADGE_AWARDED}</Badge>;
-      case 'rejected':
-        return <Badge variant="danger">{RFQ_LABELS.BADGE_REJECTED}</Badge>;
-      default:
-        return <Badge variant="warning">{RFQ_LABELS.BADGE_PENDING}</Badge>;
-    }
-  };
-
   return (
     <div className="space-y-6">
       {quotes.map((quote) => {
@@ -113,7 +102,7 @@ export function RFQQuotesTab({ rfq }: RFQQuotesTabProps) {
                   <h3 className="font-bold text-lg text-slate-800">
                     {quote.supplier_name}
                   </h3>
-                  {getStatusBadge(quote.status)}
+                  <StatusBadge domain="RFQ_QUOTE" status={quote.status} />
                 </div>
                 <div className="flex items-center gap-4 text-sm text-slate-600 mt-2">
                   <span className="flex items-center gap-1.5">

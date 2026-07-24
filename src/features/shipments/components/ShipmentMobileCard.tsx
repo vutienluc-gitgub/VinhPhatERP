@@ -109,7 +109,7 @@ export function ShipmentMobileCard({
           <span className="value font-bold text-primary">
             {totalCost ? (
               <>
-                <MoneyText value={totalCost} />đ
+                <MoneyText value={totalCost} />
               </>
             ) : (
               '—'

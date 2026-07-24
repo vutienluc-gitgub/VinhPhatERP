@@ -90,6 +90,10 @@ type ComboboxProps = {
   size?: 'default' | 'compact';
 };
 
+/**
+ * @deprecated Use `VPCombobox` from `@/shared/components/VPCombobox` or `VPSelect` instead.
+ * This component will be removed in the future to standardize with Radix-based UI.
+ */
 export const Combobox = memo(function Combobox({
   options,
   value,
@@ -304,7 +308,9 @@ export const Combobox = memo(function Combobox({
               </span>
             </>
           ) : (
-            <span className="text-muted">{placeholder}</span>
+            <span className="text-muted-foreground font-normal">
+              {placeholder}
+            </span>
           )}
         </span>
         <ChevronDown className="w-4 h-4 text-[var(--text-secondary)] shrink-0 ml-2" />

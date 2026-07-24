@@ -87,6 +87,7 @@ npm run rpc:check    # 0 issues required
 - No cross-feature relative import — use `@/shared/...`
 - No `console.log` debug in committed code (use structured logger)
 - No emoji in source code (documentation is fine)
+- **No hardcoded formatting units** — do not append raw units (e.g., `đ`, `%`) after formatting components like `<MoneyText />` or `<PercentText />`. They already handle suffixes.
 
 ---
 
@@ -236,9 +237,9 @@ Quick self-check:
 
 - Native `<input>` (text, checkbox, radio)
 - Native `<textarea>`
-- Native `<select>`
 - Shadcn `<Input>` and `<Textarea>`
 - Simple native number input (using `valueAsNumber`)
+- _Note:_ Native `<select>` is restricted. Only use for raw HTML uploads, embedded widgets, or specific no-JS requirements.
 
 **When to use `Controller` (Controlled):**
 
@@ -248,6 +249,29 @@ Quick self-check:
 - Complex UI (`Radix Slider`, `Switch` if missing native ref)
 - ANY component that requires data transformation between DOM and internal state
 - ANY component managing its own complex internal state
+
+---
+
+## Dropdown & Select Standards
+
+**1. VPSelect**
+
+- Use when: Options ≤ 30 items (e.g. Page Size, Status, Priority, Language).
+- Foundation: Radix Select -> Shadcn Select -> VPSelect.
+
+**2. VPCombobox**
+
+- Use when: Options > 30 items OR search functionality is required (e.g. CustomerPicker, SupplierPicker).
+- Foundation: Popover + Command (Searchable).
+
+**3. VPVirtualCombobox**
+
+- Use when: Options > 500 items (Big Data).
+- Foundation: TanStack Virtual + VPCombobox.
+
+**4. Native `<select>`**
+
+- Only use when: strict HTML requirements (embedded widget, no-JS fallback). Do not use in standard UI forms.
 
 ---
 

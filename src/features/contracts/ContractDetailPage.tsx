@@ -12,11 +12,11 @@ import {
   useUnlinkOrder,
   useExportContractPdf,
 } from '@/application/contracts';
+import { StatusBadge } from '@/shared/components';
 
 import { CONTRACT_TYPE_LABELS } from './contracts.module';
 import type { UpdateContractInput } from './contracts.module';
 import { CONTRACT_LABELS, CONTRACT_MESSAGES } from './contracts.constants';
-import { ContractStatusBadge } from './ContractStatusBadge';
 import { ContractPreview } from './ContractPreview';
 import { ContractCancelSheet } from './ContractCancelSheet';
 import { ContractSignSheet } from './ContractSignSheet';
@@ -196,7 +196,7 @@ export function ContractDetailPage({
                 {CONTRACT_TYPE_LABELS[contract.type]}
               </span>
             </div>
-            <ContractStatusBadge status={contract.status} />
+            <StatusBadge domain="CONTRACT" status={contract.status} />
           </div>
 
           <ContractDetailSummary contract={contract} />

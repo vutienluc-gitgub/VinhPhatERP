@@ -79,7 +79,7 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
                     {formatDate(order.created_at)}
                   </span>
                   <span className="font-bold text-[0.85rem] shrink-0 tabular-nums">
-                    <MoneyText value={order.total_amount} />đ
+                    <MoneyText value={order.total_amount} />
                   </span>
                 </div>
               </Link>

@@ -60,7 +60,7 @@ export function POInfoCard({ po, creatorProfile }: POInfoCardProps) {
         <div className="col-span-2 mt-2 pt-4 border-t border-border flex justify-between items-center">
           <span className="text-muted font-medium">Tổng tiền:</span>
           <span className="font-bold text-primary text-2xl bg-primary/10 px-4 py-1.5 rounded-lg">
-            <MoneyText value={po.total_amount} /> đ
+            <MoneyText value={po.total_amount} />
           </span>
         </div>
 

@@ -86,7 +86,7 @@ export function useWeavingInvoiceColumns({
         meta: { align: 'right' },
         cell: ({ row }) => (
           <span className="font-bold">
-            <MoneyText value={row.original.total_amount} />đ
+            <MoneyText value={row.original.total_amount} />
           </span>
         ),
       },
@@ -99,7 +99,7 @@ export function useWeavingInvoiceColumns({
           <span
             className={`font-medium ${row.original.paid_amount > 0 ? 'text-success' : 'text-muted'}`}
           >
-            <MoneyText value={row.original.paid_amount} />đ
+            <MoneyText value={row.original.paid_amount} />
           </span>
         ),
       },

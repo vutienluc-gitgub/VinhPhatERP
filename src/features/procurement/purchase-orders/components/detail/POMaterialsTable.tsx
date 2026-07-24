@@ -66,7 +66,7 @@ export function POMaterialsTable({
                     })()}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <MoneyText value={item.unit_price} /> đ
+                    <MoneyText value={item.unit_price} />
                   </td>
                   <td className="px-4 py-3 text-right">
                     {item.ordered_qty} {item.uom}

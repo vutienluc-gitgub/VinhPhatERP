@@ -134,7 +134,7 @@ export function PaymentMethodChart({
             </span>
             {/* Value */}
             <span className="text-[12px] font-bold text-[var(--text)] shrink-0 min-w-[72px] text-right tabular-nums">
-              <MoneyText value={s.value} /> đ
+              <MoneyText value={s.value} />
             </span>
           </div>
         ))}

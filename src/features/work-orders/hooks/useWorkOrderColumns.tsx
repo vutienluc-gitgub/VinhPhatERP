@@ -1,15 +1,11 @@
 import { useMemo } from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 
-import { ActionBar, Badge, type ActionConfig } from '@/shared/components';
+import { ActionBar, type ActionConfig, StatusBadge } from '@/shared/components';
 import { formatQuantity } from '@/shared/utils/format';
 import { MoneyText } from '@/shared/value';
-import { WORK_ORDER_STATUSES } from '@/schema/work-order.schema';
 import type { WorkOrderWithRelations } from '@/features/work-orders/types';
-import {
-  getStatusVariant,
-  WORK_ORDER_MESSAGES as MSG,
-} from '@/features/work-orders/work-orders.constants';
+import { WORK_ORDER_MESSAGES as MSG } from '@/features/work-orders/work-orders.constants';
 
 type UseWorkOrderColumnsProps = {
   onView: (id: string) => void;
@@ -65,7 +61,7 @@ export function useWorkOrderColumns({
             <span className="font-medium">{row.original.supplier?.name}</span>
             <span className="text-xs text-muted">
               <MoneyText value={row.original.weaving_unit_price} />
-              đ/m
+              /m
             </span>
           </div>
         ),
@@ -105,11 +101,8 @@ export function useWorkOrderColumns({
         id: 'status',
         accessorFn: (wo) => wo.status,
         cell: ({ row }) => {
-          const statusConfig = WORK_ORDER_STATUSES[row.original.status];
           return (
-            <Badge variant={getStatusVariant(row.original.status)}>
-              {statusConfig?.label || row.original.status}
-            </Badge>
+            <StatusBadge domain="WORK_ORDER" status={row.original.status} />
           );
         },
       },

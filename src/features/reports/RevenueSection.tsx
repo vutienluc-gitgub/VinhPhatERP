@@ -115,13 +115,13 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
               <div>
                 <p className="opacity-70">{REPORT_LABELS.COL_TOTAL_AMOUNT}</p>
                 <p className="font-bold">
-                  <MoneyText value={r.total_amount} />đ
+                  <MoneyText value={r.total_amount} />
                 </p>
               </div>
               <div className="text-right">
                 <p className="opacity-70">{REPORT_LABELS.COL_BALANCE_DUE}</p>
                 <p className="font-bold text-warning">
-                  <MoneyText value={r.balance_due} />đ
+                  <MoneyText value={r.balance_due} />
                 </p>
               </div>
             </div>

@@ -42,7 +42,7 @@ export function RecurringTransactionMobileCard({
           </div>
         </div>
         <span className="font-bold text-danger text-lg">
-          <MoneyText value={tx.amount} />đ
+          <MoneyText value={tx.amount} />
         </span>
       </div>
       <div className="mobile-card-body space-y-2">

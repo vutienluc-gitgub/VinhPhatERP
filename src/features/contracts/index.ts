@@ -1,7 +1,7 @@
 import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
 
 export * from './ContractPreview';
-export * from './ContractStatusBadge';
+
 export * from './contracts.module';
 
 export const contractsPlugin: FeaturePlugin = {

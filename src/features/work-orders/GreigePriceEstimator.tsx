@@ -187,13 +187,13 @@ export function GreigePriceEstimator({
           <div>
             <p className="text-muted mb-1">Chi phí Sợi (từ phiếu nhập):</p>
             <p className="font-semibold">
-              <MoneyText value={result.directYarnCost} /> đ
+              <MoneyText value={result.directYarnCost} />
             </p>
           </div>
           <div>
             <p className="text-muted mb-1">{processingLabel}:</p>
             <p className="font-semibold">
-              <MoneyText value={result.processingCost} /> đ
+              <MoneyText value={result.processingCost} />
             </p>
           </div>
           <div>
@@ -201,20 +201,20 @@ export function GreigePriceEstimator({
               Chi phí Hao hụt ({standardLossPct}%):
             </p>
             <p className="font-semibold text-danger">
-              <MoneyText value={result.wasteCost} /> đ
+              <MoneyText value={result.wasteCost} />
             </p>
           </div>
           <div>
             <p className="text-muted mb-1">Tổng Giá Vốn:</p>
             <p className="font-bold text-primary">
-              <MoneyText value={result.totalCost} /> đ
+              <MoneyText value={result.totalCost} />
             </p>
           </div>
           <div className="col-span-2 mt-2 pt-2 border-t border-border/50 flex justify-between items-end">
             <div>
               <p className="text-muted mb-1">Giá Bán Khuyến nghị:</p>
               <h4 className="text-lg font-bold text-success">
-                <MoneyText value={result.finalPrice} /> đ
+                <MoneyText value={result.finalPrice} />
               </h4>
             </div>
             {targetQuantity > 0 && (

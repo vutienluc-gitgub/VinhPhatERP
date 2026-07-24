@@ -2,8 +2,6 @@ import { useState, useCallback } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
-  Badge,
-  type BadgeVariant,
   DataTable,
   AddButton,
   Button,
@@ -11,6 +9,7 @@ import {
   FilterBar,
   KpiCard,
   KpiGrid,
+  StatusBadge,
   type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
@@ -22,10 +21,9 @@ import {
   useYarnReceiptList,
   useConfirmYarnReceipt,
 } from '@/application/inventory';
-import { DOC_STATUS_LABELS } from '@/schema/yarn-receipt.schema';
 import { LIST_LABELS as MSG } from '@/features/yarn-receipts/yarn-receipts.constants';
 
-import type { DocStatus, YarnReceipt, YarnReceiptsFilter } from './types';
+import type { YarnReceipt, YarnReceiptsFilter } from './types';
 import { getReceiptUnitPriceDisplay, getReceiptAvgUnitPrice } from './utils';
 import { LotQRModal } from './components/LotQRModal';
 import { LotBarcodeModal } from './components/LotBarcodeModal';
@@ -37,17 +35,6 @@ type YarnReceiptListProps = {
   pendingCount: number;
   supplierCount: number;
 };
-
-function getStatusVariant(status: DocStatus): BadgeVariant {
-  switch (status) {
-    case 'confirmed':
-      return 'success';
-    case 'cancelled':
-      return 'danger';
-    default:
-      return 'warning';
-  }
-}
 
 export function YarnReceiptList({
   onEdit,
@@ -269,13 +256,7 @@ export function YarnReceiptList({
               id: 'status',
               sortable: true,
               cell: (r) => (
-                <Badge variant={getStatusVariant(r.status)}>
-                  {
-                    DOC_STATUS_LABELS[
-                      r.status as keyof typeof DOC_STATUS_LABELS
-                    ]
-                  }
-                </Badge>
+                <StatusBadge domain="YARN_RECEIPT" status={r.status} />
               ),
             },
             {
@@ -337,13 +318,7 @@ export function YarnReceiptList({
             <div className="mobile-card">
               <div className="mobile-card-header">
                 <span className="mobile-card-title">{r.receipt_number}</span>
-                <Badge variant={getStatusVariant(r.status)}>
-                  {
-                    DOC_STATUS_LABELS[
-                      r.status as keyof typeof DOC_STATUS_LABELS
-                    ]
-                  }
-                </Badge>
+                <StatusBadge domain="YARN_RECEIPT" status={r.status} />
               </div>
               <div className="mobile-card-body space-y-2">
                 <div className="flex flex-col min-w-0">

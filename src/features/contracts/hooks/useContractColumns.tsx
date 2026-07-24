@@ -7,7 +7,7 @@ import {
   CONTRACT_MESSAGES as MSG,
 } from '@/features/contracts/contracts.module';
 import type { Contract } from '@/features/contracts/contracts.module';
-import { ContractStatusBadge } from '@/features/contracts/ContractStatusBadge';
+import { StatusBadge } from '@/shared/components';
 import { formatContractDate } from '@/features/contracts/contracts.utils';
 
 type UseContractColumnsProps = {
@@ -58,7 +58,9 @@ export function useContractColumns({
       {
         accessorKey: 'status',
         header: MSG.COL_STATUS,
-        cell: ({ row }) => <ContractStatusBadge status={row.original.status} />,
+        cell: ({ row }) => (
+          <StatusBadge domain="CONTRACT" status={row.original.status} />
+        ),
       },
       {
         accessorKey: 'created_at',

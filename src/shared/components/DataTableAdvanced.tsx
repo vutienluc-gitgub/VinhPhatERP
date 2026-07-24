@@ -15,6 +15,7 @@ import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 
 import { usePersistedColumnVisibility } from '@/shared/hooks/usePersistedColumnVisibility';
+import { TABLE_LABELS } from '@/shared/constants/ui.constants';
 
 import { Icon } from './Icon';
 import type { IconName } from './Icon';
@@ -23,22 +24,9 @@ import { TableSkeleton } from './TableSkeleton';
 import { Button } from './Button';
 import { Pagination } from './Pagination';
 import type { PaginationConfig } from './DataTable';
+import { PageSizeSelect } from './PageSizeSelect';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-
-const TABLE_LABELS = {
-  NO_DATA_TITLE: 'Không tìm thấy dữ liệu',
-  NO_DATA_DESC: 'Không có dữ liệu phù hợp với điều kiện.',
-  SELECTED_SUFFIX: 'đã chọn',
-  CANCEL_SELECTION: 'Hủy chọn',
-  DISPLAY_LABEL: 'Hiển thị:',
-  ROWS_SUFFIX: 'dòng',
-  EXPORT_EXCEL: 'Xuất Excel',
-  SHOW_COLUMNS: 'Hiển thị cột',
-  SHOWING: 'Hiển thị',
-  OF_TOTAL: 'trong tổng số',
-  RECORDS: 'bản ghi',
-} as const;
 
 const CHECKBOX_CLASS =
   'w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer';
@@ -436,22 +424,11 @@ function DataTableAdvancedInner<TData>({
 
       {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted">
-            {TABLE_LABELS.DISPLAY_LABEL}
-          </span>
-          <select
-            className="h-9 px-3 py-1 rounded-lg border border-border bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-            value={table.getState().pagination.pageSize}
-            onChange={(e) => table.setPageSize(Number(e.target.value))}
-          >
-            {PAGE_SIZE_OPTIONS.map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                {pageSize} {TABLE_LABELS.ROWS_SUFFIX}
-              </option>
-            ))}
-          </select>
-        </div>
+        <PageSizeSelect
+          value={table.getState().pagination.pageSize}
+          onValueChange={(val) => table.setPageSize(val)}
+          options={PAGE_SIZE_OPTIONS}
+        />
 
         <div className="flex items-center gap-2">
           <Button

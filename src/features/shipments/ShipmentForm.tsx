@@ -8,8 +8,8 @@ import { MoneyInput } from '@/shared/value';
 import type { ShippingRate } from '@/shared/hooks/useShippingRateOptions';
 import { useActiveShippingRates } from '@/shared/hooks/useShippingRateOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { WarehousePicker } from '@/shared/components/pickers';
 import { Combobox } from '@/shared/components/Combobox';
-import { useEmployees } from '@/shared/hooks/useEmployeeOptions';
 import {
   useAvailableFinishedRolls,
   useCreateShipment,
@@ -76,10 +76,6 @@ export function ShipmentForm({
   const { data: availableRolls = [] } = useAvailableFinishedRolls(orderId);
   const { data: shippingRates = [] } = useActiveShippingRates();
   const { data: deliveryStaff = [] } = useDeliveryStaffList();
-  const { data: warehouseEmployees = [] } = useEmployees({
-    role: 'warehouse',
-    status: 'active',
-  });
   const createMutation = useCreateShipment();
 
   // Selected rolls state (Set of roll IDs)
@@ -316,21 +312,13 @@ export function ShipmentForm({
               <Controller
                 name="employeeId"
                 control={control}
-                render={({ field }) => {
-                  const empOptions = warehouseEmployees.map((emp) => ({
-                    value: emp.id,
-                    label: emp.name,
-                    code: emp.code,
-                  }));
-                  return (
-                    <Combobox
-                      options={empOptions}
-                      value={field.value || ''}
-                      onChange={field.onChange}
-                      placeholder={MSG.PLACEHOLDER_WAREHOUSE}
-                    />
-                  );
-                }}
+                render={({ field }) => (
+                  <WarehousePicker
+                    value={field.value || ''}
+                    onChange={field.onChange}
+                    placeholder={MSG.PLACEHOLDER_WAREHOUSE}
+                  />
+                )}
               />
             </div>
             <div className="form-field">

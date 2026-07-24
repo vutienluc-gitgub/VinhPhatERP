@@ -4,32 +4,16 @@ import { useMemo } from 'react';
 import dayjs from 'dayjs';
 
 import {
-  Badge,
   DataTableAdvanced,
   AddButton,
   Icon,
   ActionMenu,
+  StatusBadge,
 } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
 import type { PurchaseOrder } from '@/domain/purchase-orders';
 
 import { PO_CONSTANTS } from './purchase-orders.constants';
-
-function renderPOStatusBadge(s: string) {
-  if (s === 'draft')
-    return <Badge variant="gray">{PO_CONSTANTS.STATUS_DRAFT}</Badge>;
-  if (s === 'approved')
-    return <Badge variant="info">{PO_CONSTANTS.STATUS_APPROVED}</Badge>;
-  if (s === 'partial_received')
-    return <Badge variant="warning">{PO_CONSTANTS.STATUS_PARTIAL}</Badge>;
-  if (s === 'completed')
-    return <Badge variant="success">{PO_CONSTANTS.STATUS_COMPLETED}</Badge>;
-  if (s === 'rejected')
-    return <Badge variant="danger">{PO_CONSTANTS.STATUS_REJECTED}</Badge>;
-  if (s === 'cancelled')
-    return <Badge variant="danger">{PO_CONSTANTS.STATUS_CANCELLED}</Badge>;
-  return <Badge variant="gray">{s}</Badge>;
-}
 
 export function POListTable({
   data,
@@ -67,34 +51,18 @@ export function POListTable({
         accessorKey: 'total_amount',
         header: PO_CONSTANTS.COL_TOTAL_AMOUNT,
         meta: { className: 'text-right font-medium text-success' },
-        cell: ({ row }) => (
-          <>
-            <MoneyText value={row.original.total_amount} /> đ
-          </>
-        ),
+        cell: ({ row }) => <MoneyText value={row.original.total_amount} />,
       },
       {
         accessorKey: 'status',
         header: PO_CONSTANTS.COL_STATUS,
-        cell: ({ row }) => renderPOStatusBadge(row.original.status),
-      },
-      {
-        accessorKey: 'progress_percentage',
-        header: PO_CONSTANTS.COL_PROGRESS,
-        cell: ({ row }) => {
-          const p = row.original.progress_percentage ?? 0;
-          return (
-            <div className="flex items-center gap-2">
-              <div className="w-24 h-2 bg-gray-200 rounded overflow-hidden">
-                <div
-                  className={`h-full ${p >= 100 ? 'bg-green-500' : p > 0 ? 'bg-orange-400' : 'bg-gray-300'}`}
-                  style={{ width: `${Math.min(100, Math.max(0, p))}%` }}
-                />
-              </div>
-              <span className="text-xs font-medium">{p}%</span>
-            </div>
-          );
-        },
+        cell: ({ row }) => (
+          <StatusBadge
+            domain="PO"
+            status={row.original.status}
+            progress={row.original.progress_percentage}
+          />
+        ),
       },
       {
         id: 'actions',
@@ -144,21 +112,20 @@ export function POListTable({
         isLoading={isLoading}
         onRowClick={(row) => navigate(`/purchase-orders/${row.id}`)}
         renderMobileCard={(po) => {
-          const p = po.progress_percentage ?? 0;
-          const s = po.status;
-
-          const StatusBadge = renderPOStatusBadge(s);
-
           return (
             <div className="mobile-card">
               <div className="mobile-card-header">
                 <span className="mobile-card-title">{po.po_code}</span>
-                {StatusBadge}
+                <StatusBadge
+                  domain="PO"
+                  status={po.status}
+                  progress={po.progress_percentage}
+                />
               </div>
               <div className="mobile-card-body space-y-2">
                 <div className="flex justify-between items-start">
                   <div className="font-bold text-lg text-success">
-                    <MoneyText value={po.total_amount} /> đ
+                    <MoneyText value={po.total_amount} />
                   </div>
                   <div className="text-sm text-muted flex items-center gap-1">
                     <Icon name="Calendar" size={14} />
@@ -179,11 +146,15 @@ export function POListTable({
                   </span>
                   <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div
-                      className={`h-full transition-all ${p >= 100 ? 'bg-green-500' : p > 0 ? 'bg-orange-400' : 'bg-gray-300'}`}
-                      style={{ width: `${Math.min(100, Math.max(0, p))}%` }}
+                      className={`h-full transition-all ${(po.progress_percentage ?? 0) >= 100 ? 'bg-green-500' : (po.progress_percentage ?? 0) > 0 ? 'bg-orange-400' : 'bg-gray-300'}`}
+                      style={{
+                        width: `${Math.min(100, Math.max(0, po.progress_percentage ?? 0))}%`,
+                      }}
                     />
                   </div>
-                  <span className="text-xs font-bold w-8 text-right">{p}%</span>
+                  <span className="text-xs font-bold w-8 text-right">
+                    {po.progress_percentage ?? 0}%
+                  </span>
                 </div>
               </div>
             </div>

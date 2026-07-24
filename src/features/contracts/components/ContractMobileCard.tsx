@@ -4,7 +4,7 @@ import {
   CONTRACT_MESSAGES as MSG,
 } from '@/features/contracts/contracts.module';
 import type { Contract } from '@/features/contracts/contracts.module';
-import { ContractStatusBadge } from '@/features/contracts/ContractStatusBadge';
+import { StatusBadge } from '@/shared/components';
 import { formatContractDate } from '@/features/contracts/contracts.utils';
 
 type ContractMobileCardProps = {
@@ -18,7 +18,7 @@ export function ContractMobileCard({ contract }: ContractMobileCardProps) {
         <span className="mobile-card-title font-mono text-sm">
           {contract.contract_number}
         </span>
-        <ContractStatusBadge status={contract.status} />
+        <StatusBadge domain="CONTRACT" status={contract.status} />
       </div>
       <div className="mobile-card-body space-y-2">
         <p className="font-bold text-base">{contract.party_a_name}</p>

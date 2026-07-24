@@ -5,9 +5,9 @@ import {
   ActionMenu,
   type ActionMenuItem,
 } from '@/shared/components/ActionMenu';
+import { StatusBadge } from '@/shared/components';
 
 import { YarnColorBadge } from './YarnColorBadge';
-import { YarnStatusBadge } from './YarnStatusBadge';
 
 interface YarnCatalogMobileCardProps {
   catalog: YarnCatalog;
@@ -45,7 +45,7 @@ export function YarnCatalogMobileCard({
           <span className="text-sm font-medium truncate">{c.name}</span>
         </div>
         <div className="flex items-center gap-1 shrink-0">
-          <YarnStatusBadge status={c.status} />
+          <StatusBadge domain="YARN" status={c.status} />
           <ActionMenu
             items={menuItems}
             triggerIcon="MoreVertical"

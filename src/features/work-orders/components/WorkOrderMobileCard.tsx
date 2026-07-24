@@ -1,12 +1,8 @@
-import { Badge, Button } from '@/shared/components';
+import { Button, StatusBadge } from '@/shared/components';
 import { formatQuantity } from '@/shared/utils/format';
 import { MoneyText } from '@/shared/value';
-import { WORK_ORDER_STATUSES } from '@/schema/work-order.schema';
 import type { WorkOrderWithRelations } from '@/features/work-orders/types';
-import {
-  getStatusVariant,
-  WORK_ORDER_MESSAGES as MSG,
-} from '@/features/work-orders/work-orders.constants';
+import { WORK_ORDER_MESSAGES as MSG } from '@/features/work-orders/work-orders.constants';
 
 type WorkOrderMobileCardProps = {
   workOrder: WorkOrderWithRelations;
@@ -23,14 +19,11 @@ export function WorkOrderMobileCard({
   onStart,
   isStarting,
 }: WorkOrderMobileCardProps) {
-  const statusConfig = WORK_ORDER_STATUSES[wo.status];
   return (
     <div className="mobile-card">
       <div className="mobile-card-header">
         <span className="mobile-card-title">{wo.work_order_number}</span>
-        <Badge variant={getStatusVariant(wo.status)}>
-          {statusConfig?.label || wo.status}
-        </Badge>
+        <StatusBadge domain="WORK_ORDER" status={wo.status} />
       </div>
       <div className="mobile-card-body space-y-2">
         <div className="flex justify-between items-start gap-2">
@@ -57,7 +50,7 @@ export function WorkOrderMobileCard({
             <span className="text-xs text-muted">{MSG.COL_PRICE}</span>
             <span className="font-medium">
               <MoneyText value={wo.weaving_unit_price} />
-              đ/m
+              /m
             </span>
           </div>
         </div>

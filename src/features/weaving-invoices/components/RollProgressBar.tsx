@@ -57,7 +57,7 @@ export function RollProgressBar({
           <span>
             Thành tiền:{' '}
             <strong className="text-[var(--text-primary)]">
-              <MoneyText value={totalAmount} /> đ
+              <MoneyText value={totalAmount} />
             </strong>
           </span>
         </div>

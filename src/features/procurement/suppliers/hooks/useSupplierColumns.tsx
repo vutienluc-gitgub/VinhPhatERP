@@ -106,7 +106,7 @@ export function useSupplierColumns({
         // We can format it roughly
         return (
           <span className="font-semibold text-primary">
-            <MoneyText value={limit} />đ
+            <MoneyText value={limit} />
           </span>
         );
       },

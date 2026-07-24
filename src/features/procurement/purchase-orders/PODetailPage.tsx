@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-import { Badge, Button } from '@/shared/components';
+import { Button, StatusBadge } from '@/shared/components';
 import { useAuth } from '@/shared/hooks/useAuth';
 import type { PurchaseOrder } from '@/domain/purchase-orders';
 import {
@@ -213,21 +213,7 @@ export function PODetailPage() {
         <div>
           <h1 className="text-2xl font-bold m-0 flex items-center gap-3">
             {PO_CONSTANTS.MSG_PO_DETAIL_TITLE} {po.po_code}
-            <Badge
-              variant={
-                po.status === 'completed'
-                  ? 'success'
-                  : po.status === 'approved'
-                    ? 'info'
-                    : po.status === 'rejected'
-                      ? 'danger'
-                      : po.status === 'pending_approval'
-                        ? 'warning'
-                        : 'gray'
-              }
-            >
-              {po.status}
-            </Badge>
+            <StatusBadge domain="PO" status={po.status} className="ml-2" />
           </h1>
           <p className="text-muted mt-1">
             {PO_CONSTANTS.MSG_SUPPLIER_PREFIX} {po.supplier_name_snapshot}

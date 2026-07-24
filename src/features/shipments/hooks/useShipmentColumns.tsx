@@ -96,7 +96,7 @@ export function useShipmentColumns({
                 <span className="font-medium text-foreground">
                   {totalCost ? (
                     <>
-                      <MoneyText value={totalCost} />đ
+                      <MoneyText value={totalCost} />
                     </>
                   ) : (
                     '—'

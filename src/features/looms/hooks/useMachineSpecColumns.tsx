@@ -5,10 +5,10 @@ import { Icon } from '@/shared/components';
 import type { MachineSpecification } from '@/schema/yarn-engineering.schema';
 import { LOOM_MESSAGES as MSG } from '@/features/looms/loom.constants';
 import {
-  StatusBadge,
   SourceTypeBadge,
   getTypeLabel,
 } from '@/features/looms/components/MachineSpecMobileCard';
+import { StatusBadge } from '@/shared/components';
 
 type UseMachineSpecColumnsProps = {
   onEdit: (item: MachineSpecification) => void;
@@ -73,7 +73,12 @@ export function useMachineSpecColumns({
       {
         header: MSG.COL_SPEC_STATUS,
         id: 'is_active',
-        cell: (item) => <StatusBadge isActive={item.is_active} />,
+        cell: (item) => (
+          <StatusBadge
+            domain="ACTIVE_STATUS"
+            status={item.is_active ? 'active' : 'inactive'}
+          />
+        ),
       },
       {
         header: '',

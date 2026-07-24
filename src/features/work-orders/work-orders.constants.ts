@@ -1,6 +1,3 @@
-import type { BadgeVariant } from '@/shared/components';
-import type { WorkOrderStatus } from '@/features/work-orders/types';
-
 export const WORK_ORDER_MESSAGES = {
   PAGE_TITLE: 'Lệnh sản xuất',
   PAGE_SUBTITLE: 'Quản lý tiến độ và chi tiết các lệnh sản xuất dệt.',
@@ -146,18 +143,3 @@ export const WORK_ORDER_MESSAGES = {
   LABEL_YIELD_RATE: 'Hiệu suất (Yield Rate)',
   LABEL_TOTAL: 'TỔNG CỘNG:',
 };
-
-export function getStatusVariant(status: WorkOrderStatus): BadgeVariant {
-  switch (status) {
-    case 'draft':
-      return 'gray';
-    case 'in_progress':
-      return 'warning';
-    case 'completed':
-      return 'success';
-    case 'cancelled':
-      return 'danger';
-    default:
-      return 'gray';
-  }
-}

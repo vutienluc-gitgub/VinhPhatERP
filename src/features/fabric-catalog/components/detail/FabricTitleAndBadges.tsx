@@ -1,10 +1,5 @@
-import { Icon } from '@/shared/components';
+import { Icon, StatusBadge } from '@/shared/components';
 import { cn } from '@/shared/utils/cn';
-import {
-  StatusBadge,
-  SAMPLE_STATUS_CONFIG,
-  STOCK_STATUS_CONFIG,
-} from '@/shared/components/status-badge';
 import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 import { PUBLIC_PAGE_LABELS as LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 
@@ -60,21 +55,21 @@ export function FabricTitleAndBadges({
             />
             {isSaved ? LABELS.savedInquiryCart : LABELS.saveInquiryCart}
           </button>
+          <StatusBadge
+            domain="FABRIC_STOCK"
+            status={fabric.status ?? 'unknown'}
+          />
         </div>
       </div>
 
       <div className="flex flex-wrap gap-2 mt-3">
         <StatusBadge
-          status={
-            fabric.commercial?.trust_has_sample
-              ? 'AVAILABLE'
-              : fabric.commercial?.sample_status || 'OUT_OF_STOCK'
-          }
-          configMap={SAMPLE_STATUS_CONFIG}
+          domain="FABRIC_SAMPLE"
+          status={fabric.commercial?.trust_has_sample ? 'available' : 'none'}
         />
         <StatusBadge
-          status={fabric.commercial?.stock_status}
-          configMap={STOCK_STATUS_CONFIG}
+          domain="FABRIC_STOCK"
+          status={fabric.commercial?.stock_status || 'OUT_OF_STOCK'}
         />
       </div>
     </div>
