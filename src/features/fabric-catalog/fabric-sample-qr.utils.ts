@@ -32,6 +32,9 @@ function wrapText(
   return lines;
 }
 
+/**
+ * @deprecated Use mapCatalogToFabricLabel in @/features/fabric-catalog/label/mapper instead.
+ */
 export function buildFabricLabelSpecs(
   catalog: Pick<
     FabricCatalog,
@@ -52,6 +55,9 @@ export function buildFabricLabelSpecs(
   };
 }
 
+/**
+ * @deprecated Use Label Engine via LabelRegistry instead. Kept for fallback purposes.
+ */
 export function drawTagToCanvas(
   catalog: FabricCatalog,
   qrCanvasEl: HTMLCanvasElement | null,

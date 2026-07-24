@@ -109,13 +109,7 @@ export function useFabricCatalogForm(
       : fabricCatalogDefaultValues,
   });
 
-  const {
-    handleSubmit,
-    reset,
-    setValue,
-    watch,
-    formState: { isSubmitting },
-  } = methods;
+  const { handleSubmit, reset, setValue, watch } = methods;
 
   useEffect(() => {
     reset(
@@ -218,15 +212,33 @@ export function useFabricCatalogForm(
     }
   }
 
-  const handleDownloadQR = () => {
-    const canvas = document.querySelector(
-      '#qr-container canvas',
-    ) as HTMLCanvasElement;
-    if (canvas) {
+  const handleDownloadQR = async () => {
+    try {
+      const formValues = watch();
+      const mockCatalog = {
+        ...catalog,
+        ...formValues,
+        id: catalog?.id || 'preview',
+      } as FabricCatalog;
+
+      // Lazy import mapper and registry to avoid cycle issues if any, or just import them at top
+      const { mapCatalogToFabricLabel } =
+        await import('@/features/fabric-catalog/label/mapper');
+      const { LabelRegistry, exportSvgToPng } =
+        await import('@/shared/lib/label-engine');
+
+      const labelData = mapCatalogToFabricLabel(mockCatalog);
+      const template = LabelRegistry.get('fabric-80x40');
+
+      const svgString = await template.renderSVG(labelData);
+      const dataUrl = await exportSvgToPng(svgString, 800, 400);
       const link = document.createElement('a');
       link.download = `fabric-${watchCode || 'qr'}.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.href = dataUrl;
       link.click();
+    } catch (err) {
+      toast.error('Lỗi tải ảnh QR');
+      console.error('[DownloadQRError]', err);
     }
   };
 
@@ -289,9 +301,24 @@ export function useFabricCatalogForm(
   };
 
   const mutationError = isEditing ? updateMutation.error : createMutation.error;
-  const isPending =
-    isSubmitting || createMutation.isPending || updateMutation.isPending;
+  const isPending = createMutation.isPending || updateMutation.isPending;
   const publicUrl = `${window.location.origin}/p/fabric/${watchSlug}`;
+
+  // 1. Prepare Model for preview
+  const formValues = watch();
+  const labelData = {
+    code: watchCode || 'N/A',
+    name: watchName || 'N/A',
+    specs: [
+      formValues.composition,
+      formValues.target_width_cm ? `${formValues.target_width_cm}cm` : null,
+      formValues.target_gsm ? `${formValues.target_gsm} GSM` : null,
+    ]
+      .filter(Boolean)
+      .join(' • '),
+    footer: 'Scan for Details',
+    qrValue: publicUrl,
+  };
 
   return {
     methods,
@@ -311,5 +338,6 @@ export function useFabricCatalogForm(
     handleSlugEditStart,
     handleSlugEditCancel,
     onSubmit: handleSubmit(onSubmit, onInvalid),
+    labelData,
   };
 }

@@ -4,16 +4,11 @@ import { toast } from 'react-hot-toast';
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { PUBLIC_COMPONENT_LABELS as COMP_LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
-import { buildQRPayload } from '@/shared/lib/identifier.service';
 import { openPrintWindow } from '@/shared/lib/print-template.engine';
 import { FABRIC_SAMPLE_HORIZONTAL_CSS } from '@/shared/lib/print-template.css';
 import type { FabricCatalog } from '@/features/fabric-catalog/types';
-import {
-  drawTagToCanvas,
-  buildFabricLabelSpecs,
-} from '@/features/fabric-catalog/fabric-sample-qr.utils';
-
-import { QRFabricLabel } from './QRFabricLabel';
+import { mapCatalogToFabricLabel } from '@/features/fabric-catalog/label/mapper';
+import { LabelRegistry, exportSvgToPng } from '@/shared/lib/label-engine';
 
 const MODAL_LABELS = {
   title: COMP_LABELS.QR_MODAL_TITLE,
@@ -35,8 +30,13 @@ export function FabricSampleQRModal({
   onClose,
 }: FabricSampleQRModalProps) {
   const printAreaRef = useRef<HTMLDivElement>(null);
-  const qrWrapperRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  // 1. Prepare Model via Mapper
+  const labelData = mapCatalogToFabricLabel(catalog);
+
+  // 2. Load Template Plugin
+  const template = LabelRegistry.get('fabric-80x40');
 
   const handlePrint = () => {
     openPrintWindow(printAreaRef.current, {
@@ -49,33 +49,24 @@ export function FabricSampleQRModal({
     try {
       setIsDownloading(true);
 
-      const qrCanvasEl = qrWrapperRef.current?.querySelector('canvas');
-      const tagCanvas = drawTagToCanvas(catalog, qrCanvasEl ?? null);
+      // 3. Render purely to SVG string via Engine
+      const svgString = await template.renderSVG(labelData);
 
-      if (!tagCanvas) {
-        toast.error(MODAL_LABELS.downloadError);
-        return;
-      }
+      // 4. Export SVG to PNG independently of DOM
+      // Render at 10x scale for 80x40mm -> 800x400px (approx 254 DPI)
+      const dataUrl = await exportSvgToPng(svgString, 800, 400);
 
-      const dataUrl = tagCanvas.toDataURL('image/png');
       const link = document.createElement('a');
       link.download = `${MODAL_LABELS.downloadPrefix}${catalog.code}.png`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
       toast.error(MODAL_LABELS.downloadError);
-      console.error('[DownloadImageError]', err);
+      console.error('[LabelEngine] Download Error:', err);
     } finally {
       setIsDownloading(false);
     }
-  }, [catalog]);
-
-  const qrData = buildQRPayload('fabric_catalog', catalog.slug || catalog.id, {
-    code: catalog.code,
-    name: catalog.name,
-  });
-
-  const labelData = buildFabricLabelSpecs(catalog);
+  }, [labelData, template, catalog.code]);
 
   return (
     <AdaptiveSheet
@@ -122,17 +113,10 @@ export function FabricSampleQRModal({
         )}
         <div ref={printAreaRef}>
           <div
-            ref={qrWrapperRef}
             className="border border-border rounded-lg overflow-hidden bg-white shadow-sm flex justify-center items-center p-2"
             style={{ width: 'fit-content', margin: '0 auto' }}
           >
-            <QRFabricLabel
-              code={labelData.code}
-              name={labelData.name}
-              specs={labelData.specs}
-              footer={labelData.footer}
-              qrValue={qrData}
-            />
+            {template.renderHTML && template.renderHTML(labelData)}
           </div>
         </div>
       </div>
