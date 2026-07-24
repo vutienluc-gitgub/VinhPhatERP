@@ -1,13 +1,14 @@
-import React from 'react';
+import { LayoutNode } from '@/shared/lib/label-engine/ast/types';
 
 /**
- * Base template definition.
+ * Base template definition using AST Architecture.
  */
 export interface LabelTemplate<TData = unknown> {
   id: string;
   name: string;
   widthMm: number;
   heightMm: number;
-  renderSVG: (data: TData) => Promise<string> | string;
-  renderHTML?: (data: TData) => React.ReactNode;
+  widthPx: number; // e.g. 800
+  heightPx: number; // e.g. 400
+  buildLayout: (data: TData) => LayoutNode;
 }
