@@ -5,7 +5,6 @@ import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { PUBLIC_COMPONENT_LABELS as COMP_LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 import { openPrintWindow } from '@/shared/lib/print-template.engine';
-import { FABRIC_SAMPLE_HORIZONTAL_CSS } from '@/shared/lib/print-template.css';
 import type { FabricCatalog } from '@/features/fabric-catalog/types';
 import { mapCatalogToFabricLabel } from '@/features/fabric-catalog/label/mapper';
 import {
@@ -53,11 +52,31 @@ export function FabricSampleQRModal({
     [layoutTree, template],
   );
 
-  const handlePrint = () => {
-    openPrintWindow(printAreaRef.current, {
-      title: `${MODAL_LABELS.printTitlePrefix}${catalog.code}`,
-      css: FABRIC_SAMPLE_HORIZONTAL_CSS,
-    });
+  const handlePrint = async () => {
+    try {
+      const svgString = await LabelEngine.exportSVG('fabric-80x40', labelData);
+      const tempDiv = document.createElement('div');
+      tempDiv.className = 'ast-label-wrapper';
+      tempDiv.innerHTML = svgString;
+
+      // Define page size dynamically based on template config if needed, but we hardcoded it in AST_LABEL_CSS
+      openPrintWindow(tempDiv, {
+        title: `${MODAL_LABELS.printTitlePrefix}${catalog.code}`,
+        css: `
+          @page { size: ${template.widthMm}mm ${template.heightMm}mm; margin: 0; }
+          html, body { 
+            margin: 0; padding: 0; overflow: hidden; background: #ffffff; 
+            display: flex; justify-content: center; align-items: center; 
+            width: ${template.widthMm}mm; height: ${template.heightMm}mm;
+          }
+          .ast-label-wrapper { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+          .ast-label-wrapper svg { width: 100% !important; height: 100% !important; object-fit: contain; }
+        `,
+      });
+    } catch (err) {
+      toast.error('Lỗi khi mở giao diện in');
+      console.error('[LabelEngine] Print Error:', err);
+    }
   };
 
   const handleDownloadPng = useCallback(async () => {

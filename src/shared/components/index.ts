@@ -59,6 +59,7 @@ export { TimelineProgress } from './TimelineProgress';
 export type { TimelineStep } from './TimelineProgress';
 export * from './EntityLink';
 export { ImagePicker } from './ImagePicker';
+export { AdvancedImageUploader } from './AdvancedImageUploader';
 
 // End of exports
 export * from './layout';

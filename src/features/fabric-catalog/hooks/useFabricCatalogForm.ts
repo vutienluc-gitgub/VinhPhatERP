@@ -17,7 +17,6 @@ import {
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 import type { FabricCatalog } from '@/features/fabric-catalog/types';
 import { openPrintWindow } from '@/shared/lib/print-template.engine';
-import { FABRIC_SAMPLE_HORIZONTAL_CSS } from '@/shared/lib/print-template.css';
 import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 
 type FormTab = 'info' | 'public' | 'gallery' | 'admin';
@@ -246,11 +245,49 @@ export function useFabricCatalogForm(
     }
   };
 
-  const handlePrintQR = () => {
-    openPrintWindow(printAreaRef.current, {
-      title: LABELS.ACTION_PRINT_QR,
-      css: FABRIC_SAMPLE_HORIZONTAL_CSS,
-    });
+  const handlePrintQR = async () => {
+    try {
+      const formValues = watch();
+      const mockCatalog = {
+        ...catalog,
+        ...formValues,
+        id: catalog?.id || 'preview',
+      } as FabricCatalog;
+
+      // Lazy import to avoid cycle issues if any, or just import them at top
+      const { mapCatalogToFabricLabel } =
+        await import('@/features/fabric-catalog/label/mapper');
+      const { LabelEngine, LabelRegistry } =
+        await import('@/shared/lib/label-engine');
+
+      const printLabelData = mapCatalogToFabricLabel(mockCatalog);
+      const template = LabelRegistry.get('fabric-80x40');
+
+      const svgString = await LabelEngine.exportSVG(
+        'fabric-80x40',
+        printLabelData,
+      );
+      const tempDiv = document.createElement('div');
+      tempDiv.className = 'ast-label-wrapper';
+      tempDiv.innerHTML = svgString;
+
+      openPrintWindow(tempDiv, {
+        title: LABELS.ACTION_PRINT_QR,
+        css: `
+          @page { size: ${template.widthMm}mm ${template.heightMm}mm; margin: 0; }
+          html, body { 
+            margin: 0; padding: 0; overflow: hidden; background: #ffffff; 
+            display: flex; justify-content: center; align-items: center; 
+            width: ${template.widthMm}mm; height: ${template.heightMm}mm;
+          }
+          .ast-label-wrapper { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+          .ast-label-wrapper svg { width: 100% !important; height: 100% !important; object-fit: contain; }
+        `,
+      });
+    } catch (err) {
+      toast.error('Lỗi khi mở giao diện in');
+      console.error('[PrintQRError]', err);
+    }
   };
 
   const handleCopyLink = async () => {

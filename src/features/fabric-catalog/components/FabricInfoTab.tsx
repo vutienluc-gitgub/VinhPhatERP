@@ -1,7 +1,7 @@
 import { useFormContext, Controller } from 'react-hook-form';
 import { UseMutationResult } from '@tanstack/react-query';
 
-import { ImagePicker, Combobox, TagInput } from '@/shared/components';
+import { AdvancedImageUploader, Combobox, TagInput } from '@/shared/components';
 import { LengthField, DensityField } from '@/shared/value';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 import {
@@ -51,13 +51,10 @@ export function FabricInfoTab({
       {/* Image */}
       <div className="form-field">
         <label>{LABELS.LABEL_IMAGE}</label>
-        <ImagePicker
+        <AdvancedImageUploader
           value={currentImageUrl}
-          onUpload={(file: File) =>
-            uploadImageMutation.mutateAsync(file, {
-              onSuccess: (url) => setValue('image_url', url),
-            })
-          }
+          uploadFn={async (file) => uploadImageMutation.mutateAsync(file)}
+          onSuccess={(url) => setValue('image_url', url)}
           onRemove={() => {
             const currentUrl = currentImageUrl;
             setValue('image_url', null);
@@ -65,14 +62,6 @@ export function FabricInfoTab({
               deleteImageMutation.mutate(currentUrl);
             }
           }}
-          isUploading={uploadImageMutation.isPending}
-          error={
-            uploadImageMutation.error instanceof Error
-              ? uploadImageMutation.error.message
-              : uploadImageMutation.error
-                ? String(uploadImageMutation.error)
-                : null
-          }
         />
       </div>
 
