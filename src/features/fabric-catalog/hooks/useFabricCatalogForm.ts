@@ -224,14 +224,18 @@ export function useFabricCatalogForm(
       // Lazy import mapper and registry to avoid cycle issues if any, or just import them at top
       const { mapCatalogToFabricLabel } =
         await import('@/features/fabric-catalog/label/mapper');
-      const { LabelRegistry, exportSvgToPng } =
+      const { LabelEngine, LabelRegistry, exportSvgToPng } =
         await import('@/shared/lib/label-engine');
 
       const labelData = mapCatalogToFabricLabel(mockCatalog);
       const template = LabelRegistry.get('fabric-80x40');
 
-      const svgString = await template.renderSVG(labelData);
-      const dataUrl = await exportSvgToPng(svgString, 800, 400);
+      const svgString = await LabelEngine.exportSVG('fabric-80x40', labelData);
+      const dataUrl = await exportSvgToPng(
+        svgString,
+        template.widthPx,
+        template.heightPx,
+      );
       const link = document.createElement('a');
       link.download = `fabric-${watchCode || 'qr'}.png`;
       link.href = dataUrl;
@@ -311,11 +315,13 @@ export function useFabricCatalogForm(
     name: watchName || 'N/A',
     specs: [
       formValues.composition,
-      formValues.target_width_cm ? `${formValues.target_width_cm}cm` : null,
-      formValues.target_gsm ? `${formValues.target_gsm} GSM` : null,
-    ]
-      .filter(Boolean)
-      .join(' • '),
+      [
+        formValues.target_width_cm ? `${formValues.target_width_cm}cm` : null,
+        formValues.target_gsm ? `${formValues.target_gsm} GSM` : null,
+      ]
+        .filter(Boolean)
+        .join(' • '),
+    ].filter(Boolean) as string[],
     footer: 'Scan for Details',
     qrValue: publicUrl,
   };

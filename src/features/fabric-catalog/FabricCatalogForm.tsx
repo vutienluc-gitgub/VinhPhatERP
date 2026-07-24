@@ -1,4 +1,5 @@
 import { FormProvider } from 'react-hook-form';
+import { useMemo } from 'react';
 
 import { AdaptiveSheet, Button, TabSwitcher } from '@/shared/components';
 import { getErrorMessage } from '@/shared/utils/error';
@@ -7,7 +8,11 @@ import {
   useUploadFabricImage,
   useDeleteFabricImage,
 } from '@/application/inventory/useFabricImage';
-import { LabelRegistry } from '@/shared/lib/label-engine';
+import {
+  LabelRegistry,
+  computeLayout,
+  HtmlRenderer,
+} from '@/shared/lib/label-engine';
 
 import { FabricAdminTab } from './components/FabricAdminTab';
 import { FabricPublicTab } from './components/FabricPublicTab';
@@ -65,6 +70,14 @@ export function FabricCatalogForm({
   } = useFabricCatalogForm(catalog, onClose);
 
   const template = LabelRegistry.get('fabric-80x40');
+  const layoutTree = useMemo(
+    () => template.buildLayout(labelData),
+    [template, labelData],
+  );
+  const absoluteNodes = useMemo(
+    () => computeLayout(layoutTree, 0, 0, template.widthPx, template.heightPx),
+    [layoutTree, template],
+  );
 
   return (
     <AdaptiveSheet
@@ -150,7 +163,11 @@ export function FabricCatalogForm({
         </form>
         <div style={{ display: 'none' }}>
           <div ref={printAreaRef}>
-            {template.renderHTML && template.renderHTML(labelData)}
+            <HtmlRenderer
+              nodes={absoluteNodes}
+              widthPx={template.widthPx}
+              heightPx={template.heightPx}
+            />
           </div>
         </div>
       </FormProvider>

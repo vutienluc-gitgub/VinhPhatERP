@@ -6,11 +6,17 @@ import { Fabric80x40Model } from './model';
 export function mapCatalogToFabricLabel(
   catalog: FabricCatalog,
 ): Fabric80x40Model {
-  const specsParts = [];
-  if (catalog.composition) specsParts.push(catalog.composition);
-  if (catalog.target_width_cm) specsParts.push(`${catalog.target_width_cm}cm`);
-  if (catalog.target_gsm) specsParts.push(`${catalog.target_gsm} GSM`);
-  const specs = specsParts.join(' • ');
+  const specs: string[] = [];
+  if (catalog.composition) specs.push(catalog.composition);
+
+  const dimensionalParts = [];
+  if (catalog.target_width_cm)
+    dimensionalParts.push(`${catalog.target_width_cm}cm`);
+  if (catalog.target_gsm) dimensionalParts.push(`${catalog.target_gsm} GSM`);
+
+  if (dimensionalParts.length > 0) {
+    specs.push(dimensionalParts.join(' • '));
+  }
 
   const qrData = buildQRPayload('fabric_catalog', catalog.slug || catalog.id, {
     code: catalog.code,
