@@ -1,23 +1,8 @@
-import { Badge, Button } from '@/shared/components';
+import { Button } from '@/shared/components';
 import type { MachineSpecification } from '@/schema/yarn-engineering.schema';
 import { MACHINE_TYPES } from '@/schema/yarn-engineering.schema';
 import { LOOM_MESSAGES as MSG } from '@/features/looms/loom.constants';
-
-// eslint-disable-next-line react-refresh/only-export-components
-export function StatusBadge({ isActive }: { isActive: boolean | undefined }) {
-  return (
-    <Badge
-      className={
-        isActive
-          ? 'bg-emerald-100 text-emerald-800'
-          : 'bg-gray-100 text-gray-800'
-      }
-    >
-      {isActive ? MSG.STATUS_ACTIVE : MSG.STATUS_INACTIVE}
-    </Badge>
-  );
-}
-
+import { StatusBadge } from '@/shared/components';
 // eslint-disable-next-line react-refresh/only-export-components
 export function SourceTypeBadge({
   sourceType,
@@ -63,7 +48,10 @@ export function MachineSpecMobileCard({
             {getTypeLabel(item.machine_type)}
           </div>
         </div>
-        <StatusBadge isActive={item.is_active} />
+        <StatusBadge
+          domain="ACTIVE_STATUS"
+          status={item.is_active ? 'active' : 'inactive'}
+        />
       </div>
       <div className="text-sm mt-2 flex gap-4">
         <span>

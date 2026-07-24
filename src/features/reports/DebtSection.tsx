@@ -94,7 +94,7 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
             <div className="flex justify-between items-start">
               <span className="font-bold">{r.customer_name}</span>
               <Badge variant="danger">
-                <MoneyText value={r.balance_due} />đ
+                <MoneyText value={r.balance_due} />
               </Badge>
             </div>
             <div className="text-sm text-muted mb-2">
@@ -104,7 +104,7 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
               <div>
                 <p className="opacity-70">{REPORT_LABELS.COL_TOTAL_AMOUNT}</p>
                 <p className="font-medium">
-                  <MoneyText value={r.total_amount} />đ
+                  <MoneyText value={r.total_amount} />
                 </p>
               </div>
               <div className="text-right">

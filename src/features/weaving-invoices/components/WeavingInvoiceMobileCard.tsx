@@ -60,7 +60,7 @@ export function WeavingInvoiceMobileCard({
           <div className="flex flex-col text-center">
             <span className="text-xs text-muted">{MSG.COL_AMOUNT}</span>
             <span className="font-bold text-primary">
-              <MoneyText value={inv.total_amount} />đ
+              <MoneyText value={inv.total_amount} />
             </span>
           </div>
           <div className="flex flex-col text-right">
@@ -68,7 +68,7 @@ export function WeavingInvoiceMobileCard({
             <span
               className={`font-bold ${inv.paid_amount > 0 ? 'text-success' : 'text-muted'}`}
             >
-              <MoneyText value={inv.paid_amount} />đ
+              <MoneyText value={inv.paid_amount} />
             </span>
           </div>
         </div>

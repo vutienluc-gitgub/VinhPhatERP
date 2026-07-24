@@ -49,7 +49,7 @@ export function FabricInfoTab({
   return (
     <>
       {/* Image */}
-      <div className="form-field">
+      <div className="form-field mb-6">
         <label>{LABELS.LABEL_IMAGE}</label>
         <AdvancedImageUploader
           value={currentImageUrl}
@@ -148,7 +148,7 @@ export function FabricInfoTab({
       </div>
 
       {/* Width + GSM */}
-      <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+      <div className="form-grid grid-cols-2">
         <LengthField
           control={control}
           name="target_width_cm"

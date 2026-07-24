@@ -12,6 +12,20 @@ export const UI_LABELS = {
   CLOSE: 'Đóng',
 } as const;
 
+export const TABLE_LABELS = {
+  NO_DATA_TITLE: 'Không tìm thấy dữ liệu',
+  NO_DATA_DESC: 'Không có dữ liệu phù hợp với điều kiện.',
+  SELECTED_SUFFIX: 'đã chọn',
+  CANCEL_SELECTION: 'Hủy chọn',
+  DISPLAY_LABEL: 'Hiển thị:',
+  ROWS_SUFFIX: 'dòng',
+  EXPORT_EXCEL: 'Xuất Excel',
+  SHOW_COLUMNS: 'Hiển thị cột',
+  SHOWING: 'Hiển thị',
+  OF_TOTAL: 'trong tổng số',
+  RECORDS: 'bản ghi',
+} as const;
+
 export const ORDER_STATUS_LABELS: Record<string, string> = {
   draft: 'Nháp',
   pending_review: 'Chờ duyệt',

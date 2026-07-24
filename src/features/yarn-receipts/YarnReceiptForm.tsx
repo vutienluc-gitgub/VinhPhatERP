@@ -51,7 +51,7 @@ function LineTotals({ control }: { control: Control<YarnReceiptsFormValues> }) {
   const total = useYarnReceiptTotal(control);
   return (
     <div className="text-right font-semibold text-base py-2.5 border-t-2 border-[var(--border)] mt-4">
-      Tổng cộng: <MoneyText value={total} /> đ
+      Tổng cộng: <MoneyText value={total} />
     </div>
   );
 }

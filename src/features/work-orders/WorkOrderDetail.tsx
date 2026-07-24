@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-import { Icon } from '@/shared/components/Icon';
-import { Badge } from '@/shared/components/Badge';
+import { Icon, Badge, StatusBadge } from '@/shared/components';
 import {
   TimelineProgress,
   type TimelineStep,
@@ -24,7 +23,6 @@ import {
   useCompleteWorkOrder,
   useYarnIssuesForWorkOrder,
 } from '@/application/production';
-import { WORK_ORDER_STATUSES } from '@/schema/work-order.schema';
 
 import type { WorkOrder } from './types';
 import { YarnIssueModal } from './components/YarnIssueModal';
@@ -34,19 +32,6 @@ interface WorkOrderDetailProps {
   id: string;
   onBack: () => void;
   onEdit: (wo: WorkOrder) => void;
-}
-
-function getStatusVariant(status: string) {
-  switch (status) {
-    case 'completed':
-      return 'success';
-    case 'in_progress':
-      return 'info';
-    case 'cancelled':
-      return 'danger';
-    default:
-      return 'gray';
-  }
 }
 
 export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
@@ -70,8 +55,6 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
       </div>
     );
   if (!wo) return <p className="error-inline p-8">{MSG.ERR_NOT_FOUND}</p>;
-
-  const statusConfig = WORK_ORDER_STATUSES[wo.status];
 
   const timelineSteps: TimelineStep[] = [
     {
@@ -142,9 +125,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
               <div>
                 <span className="font-bold text-lg flex items-center gap-3">
                   {wo.work_order_number}
-                  <Badge variant={getStatusVariant(wo.status)}>
-                    {statusConfig?.label}
-                  </Badge>
+                  <StatusBadge domain="WORK_ORDER" status={wo.status} />
                 </span>
                 {wo.order && (
                   <p className="text-xs text-muted mt-0.5">
@@ -247,7 +228,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                 <label>{MSG.LABEL_DETAIL_WEAVING_PRICE}</label>
                 <p className="font-bold">
                   <MoneyText value={wo.weaving_unit_price} />
-                  đ/m
+                  /m
                 </p>
               </div>
               <div className="form-field">
@@ -256,7 +237,6 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                   <MoneyText
                     value={wo.target_quantity * wo.weaving_unit_price}
                   />
-                  đ
                 </p>
               </div>
             </div>

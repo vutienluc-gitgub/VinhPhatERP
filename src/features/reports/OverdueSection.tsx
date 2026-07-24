@@ -53,7 +53,7 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
       header: REPORT_LABELS.COL_TOTAL_AMOUNT,
       cell: (r) => (
         <>
-          <MoneyText value={r.total_amount} />đ
+          <MoneyText value={r.total_amount} />
         </>
       ),
       className: 'text-right max-sm:hidden text-muted text-sm',
@@ -62,7 +62,7 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
       header: REPORT_LABELS.COL_BALANCE_DUE,
       cell: (r) => (
         <>
-          <MoneyText value={r.balance_due} />đ
+          <MoneyText value={r.balance_due} />
         </>
       ),
       className: 'text-right font-bold text-danger',
@@ -130,7 +130,7 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
                 {REPORT_LABELS.DEBT_LABEL}
               </span>
               <span className="font-bold text-danger">
-                <MoneyText value={r.balance_due} />đ
+                <MoneyText value={r.balance_due} />
               </span>
             </div>
           </div>

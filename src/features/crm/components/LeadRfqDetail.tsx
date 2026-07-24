@@ -58,7 +58,7 @@ export function LeadRfqDetail({ lead, onClose }: LeadRfqDetailProps) {
                 <span className="text-xs font-medium text-amber-600">
                   {item.target_price ? (
                     <>
-                      <MoneyText value={Number(item.target_price)} /> đ
+                      <MoneyText value={Number(item.target_price)} />
                     </>
                   ) : (
                     LEAD_DETAIL_MESSAGES.NOT_AVAILABLE

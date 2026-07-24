@@ -136,10 +136,10 @@ export default function QuotationPrint() {
                     {item.quantity} {item.unit}
                   </td>
                   <td className="text-right">
-                    <MoneyText value={item.unit_price} />đ
+                    <MoneyText value={item.unit_price} />
                   </td>
                   <td className="text-right">
-                    <MoneyText value={item.amount} />đ
+                    <MoneyText value={item.amount} />
                   </td>
                 </tr>
               ))}
@@ -151,7 +151,7 @@ export default function QuotationPrint() {
               </td>
               <td className="text-right">
                 <strong>
-                  <MoneyText value={quotation.subtotal} />đ
+                  <MoneyText value={quotation.subtotal} />
                 </strong>
               </td>
             </tr>
@@ -161,7 +161,7 @@ export default function QuotationPrint() {
                   Chiết khấu:
                 </td>
                 <td className="text-right">
-                  -<MoneyText value={quotation.discount_amount} />đ
+                  -<MoneyText value={quotation.discount_amount} />
                 </td>
               </tr>
             )}
@@ -171,7 +171,7 @@ export default function QuotationPrint() {
                   Thuế GTGT ({quotation.vat_rate}%):
                 </td>
                 <td className="text-right">
-                  <MoneyText value={quotation.vat_amount} />đ
+                  <MoneyText value={quotation.vat_amount} />
                 </td>
               </tr>
             )}
@@ -181,7 +181,7 @@ export default function QuotationPrint() {
               </td>
               <td className="text-right">
                 <strong>
-                  <MoneyText value={quotation.total_amount} /> đ
+                  <MoneyText value={quotation.total_amount} />
                 </strong>
               </td>
             </tr>

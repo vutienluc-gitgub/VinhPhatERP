@@ -286,7 +286,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
             className: 'text-right',
             cell: (q) => (
               <span className="font-bold">
-                <MoneyText value={q.total_amount} />đ
+                <MoneyText value={q.total_amount} />
               </span>
             ),
           },
@@ -371,7 +371,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                       Tổng tiền
                     </span>
                     <span className="font-bold text-lg text-primary">
-                      <MoneyText value={q.total_amount} />đ
+                      <MoneyText value={q.total_amount} />
                     </span>
                   </div>
                   <div className="flex flex-col items-end">
