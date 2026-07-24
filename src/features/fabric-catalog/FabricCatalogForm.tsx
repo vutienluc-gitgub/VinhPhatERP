@@ -7,13 +7,13 @@ import {
   useUploadFabricImage,
   useDeleteFabricImage,
 } from '@/application/inventory/useFabricImage';
+import { LabelRegistry } from '@/shared/lib/label-engine';
 
 import { FabricAdminTab } from './components/FabricAdminTab';
 import { FabricPublicTab } from './components/FabricPublicTab';
 import { FabricInfoTab } from './components/FabricInfoTab';
 import type { FabricCatalog } from './types';
 import { LABELS } from './fabric-catalog.constants';
-import { QRFabricLabel } from './components/QRFabricLabel';
 import { FabricImageGalleryEditor } from './components/FabricImageGalleryEditor';
 import { useFabricCatalogForm } from './hooks/useFabricCatalogForm';
 
@@ -53,8 +53,6 @@ export function FabricCatalogForm({
     isPending,
     mutationError,
     publicUrl,
-    watchCode,
-    watchName,
     isSlugEditing,
     printAreaRef,
     handleDownloadQR,
@@ -63,7 +61,10 @@ export function FabricCatalogForm({
     handleSlugEditStart,
     handleSlugEditCancel,
     onSubmit,
+    labelData,
   } = useFabricCatalogForm(catalog, onClose);
+
+  const template = LabelRegistry.get('fabric-80x40');
 
   return (
     <AdaptiveSheet
@@ -149,11 +150,7 @@ export function FabricCatalogForm({
         </form>
         <div style={{ display: 'none' }}>
           <div ref={printAreaRef}>
-            <QRFabricLabel
-              code={watchCode}
-              name={watchName}
-              qrValue={publicUrl}
-            />
+            {template.renderHTML && template.renderHTML(labelData)}
           </div>
         </div>
       </FormProvider>

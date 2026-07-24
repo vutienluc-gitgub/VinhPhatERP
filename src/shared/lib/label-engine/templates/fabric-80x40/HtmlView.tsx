@@ -1,18 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 
-import { QRCodeDisplay } from '@/shared/components/QRCodeDisplay';
+import { Fabric80x40Model } from '@/features/fabric-catalog/label/model';
 
-type QRFabricLabelProps = {
-  code: string;
-  name: string;
-  specs?: string;
-  footer?: string;
-  qrValue: string;
-  qrSize?: number;
-  className?: string;
-};
-
-// Reusable styling objects to prevent inline style duplication (Coding Standards Rule 21)
 const STYLES = {
   flexCenter: {
     display: 'flex',
@@ -27,30 +16,10 @@ const STYLES = {
   } as const,
 };
 
-export function QRFabricLabel({
-  code,
-  name,
-  specs,
-  footer = 'Scan for Details',
-  qrValue,
-  qrSize = 128,
-  className = '',
-}: QRFabricLabelProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [qrImgUrl, setQrImgUrl] = useState<string>('');
-
-  useEffect(() => {
-    // Convert the rendered canvas to a static image URL so it survives innerHTML copy for printing
-    const canvas = containerRef.current?.querySelector('canvas');
-    if (canvas) {
-      setQrImgUrl(canvas.toDataURL('image/png'));
-    }
-  }, [qrValue, qrSize]);
-
+export function HtmlView({ data }: { data: Fabric80x40Model }) {
   return (
     <div
-      ref={containerRef}
-      className={`label label-container ${className}`} // Added "label" to match print-template.css selector
+      className="label label-container"
       style={{
         width: '80mm',
         height: '40mm',
@@ -65,34 +34,19 @@ export function QRFabricLabel({
     >
       <div
         className="label-left"
-        style={{
-          width: '28mm',
-          ...STYLES.flexCenter,
-        }}
+        style={{ width: '28mm', ...STYLES.flexCenter }}
       >
-        {/* Hidden canvas used for image downloader */}
-        <div style={{ display: 'none' }}>
-          <QRCodeDisplay value={qrValue} size={qrSize} />
-        </div>
-        {/* Visible image tag that is copied to the print window */}
-        {qrImgUrl ? (
-          <img
-            src={qrImgUrl}
-            alt="QR Code"
-            style={{
-              width: '100%',
-              height: '100%',
-              maxWidth: '25mm',
-              maxHeight: '25mm',
-              objectFit: 'contain',
-              display: 'block',
-            }}
-          />
-        ) : (
-          <div
-            style={{ width: '25mm', height: '25mm', background: '#f3f4f6' }}
-          />
-        )}
+        <QRCodeSVG
+          value={data.qrValue}
+          size={95} // ~25mm
+          style={{
+            width: '100%',
+            height: '100%',
+            maxWidth: '25mm',
+            maxHeight: '25mm',
+            display: 'block',
+          }}
+        />
       </div>
       <div
         className="label-right"
@@ -115,7 +69,7 @@ export function QRFabricLabel({
             ...STYLES.truncateText,
           }}
         >
-          {code}
+          {data.code}
         </div>
         <div
           className="name line-clamp-2"
@@ -132,9 +86,9 @@ export function QRFabricLabel({
             textAlign: 'left',
           }}
         >
-          {name}
+          {data.name}
         </div>
-        {specs && (
+        {data.specs && (
           <div
             className="specs"
             style={{
@@ -144,11 +98,11 @@ export function QRFabricLabel({
               ...STYLES.truncateText,
             }}
           >
-            {specs}
+            {data.specs}
           </div>
         )}
         <div
-          className="domain footer"
+          className="footer"
           style={{
             fontSize: '9px',
             marginTop: '3mm',
@@ -157,7 +111,7 @@ export function QRFabricLabel({
             ...STYLES.truncateText,
           }}
         >
-          {footer}
+          {data.footer}
         </div>
       </div>
     </div>
