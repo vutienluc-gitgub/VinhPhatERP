@@ -35,6 +35,7 @@ import { loomPlugin } from '@/features/looms';
 import { chatPlugin } from '@/features/chat';
 import { guidePlugin } from '@/features/guide-system/guide-system.module';
 import { mediaPlugin } from '@/features/media';
+import { approvalPlugin } from '@/features/approval';
 
 /**
  * Plugin Registry — Đăng ký tất cả features vào hệ thống.
@@ -89,6 +90,7 @@ const plugins: FeaturePlugin[] = [
   chatPlugin,
   guidePlugin,
   mediaPlugin,
+  approvalPlugin,
 ];
 
 let pluginsInitialized = false;

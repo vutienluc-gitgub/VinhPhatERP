@@ -90,7 +90,7 @@ export function ColorCatalogPage() {
         actions={<AddButton onClick={handleCreate} label={MSG.BTN_ADD} />}
       />
 
-      <div className="px-4 sm:px-6 lg:px-8 mt-4">
+      <div className="w-full">
         <div className="panel-card card-flush">
           {/* Tabs */}
           <div className="px-4 py-2 border-b border-border bg-surface-subtle">

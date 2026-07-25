@@ -10,85 +10,73 @@ export const fabric80x40Template: LabelTemplate<Fabric80x40Model> = {
   widthPx: 800, // 10 dot/mm
   heightPx: 400,
   buildLayout: (data: Fabric80x40Model): LayoutNode => {
-    // We map data to a Flexbox-like AST Tree
-    const specNodes: LayoutNode[] = [];
-
-    if (Array.isArray(data.specs)) {
-      for (const spec of data.specs) {
-        specNodes.push({
-          type: 'text',
-          text: spec,
-          fontSize: 20,
-        });
-      }
-    } else if (data.specs) {
-      specNodes.push({
-        type: 'text',
-        text: data.specs,
-        fontSize: 20,
-      });
-    }
+    const specsString = Array.isArray(data.specs)
+      ? data.specs.join(' • ')
+      : data.specs || '';
 
     return {
       type: 'row',
       width: '100%',
       height: '100%',
-      padding: 8,
+      padding: 4, // Safe Area offset
       fill: '#ffffff',
-      stroke: '#e2e8f0',
+      stroke: '#000000',
       strokeWidth: 4,
       rx: 16,
+      debug: false, // Set to true to see bounding boxes
       children: [
+        // LEFT COLUMN: Dedicated Scan Zone
         {
-          type: 'row',
-          width: '100%',
+          type: 'column',
+          width: 246,
           height: '100%',
-          gap: 30, // Distance between QR and Text block
-          padding: 7, // padding to align QR correctly
+          justify: 'space-evenly',
+          align: 'center',
           children: [
-            // Left Column: QR Code
+            { type: 'qrcode', value: data.qrValue, size: 200 },
             {
-              type: 'column',
-              width: 250,
-              padding: 60, // Shift QR down a bit
-              children: [
-                {
-                  type: 'qrcode',
-                  value: data.qrValue,
-                  size: 250,
-                },
-              ],
+              type: 'text',
+              text: data.footer || 'Scan for Details',
+              fontSize: 18,
+              fontBold: true,
             },
-            // Right Column: Details
+          ],
+        },
+
+        // VERTICAL DIVIDER
+        { type: 'rect', width: 4, height: '100%', fill: '#000000' },
+
+        // RIGHT COLUMN: Centered Details
+        {
+          type: 'column',
+          flex: 1, // Automatically takes remaining 542px width
+          height: '100%',
+          justify: 'space-evenly',
+          align: 'center',
+          children: [
             {
-              type: 'column',
-              width: 500, // Remaining width
-              gap: 15,
-              padding: 95, // Shift text block down
-              children: [
-                {
-                  type: 'text',
-                  text: data.code,
-                  fontSize: 38,
-                  fontBold: true,
-                },
-                {
-                  type: 'text',
-                  text: data.name || '',
-                  fontSize: 24,
-                  maxWidth: 450,
-                  maxLines: 2,
-                },
-                ...specNodes,
-                // Add an empty text node to act as a spacer to push footer down
-                { type: 'text', text: ' ', fontSize: 10 },
-                {
-                  type: 'text',
-                  text: data.footer,
-                  fontSize: 18,
-                  fontBold: true,
-                },
-              ],
+              type: 'text',
+              text: data.code || 'N/A',
+              fontSize: 60,
+              fontBold: true,
+            },
+            { type: 'rect', width: '100%', height: 3, fill: '#000000' },
+            {
+              type: 'text',
+              text: data.name || 'N/A',
+              fontSize: 34,
+              fontBold: true,
+              maxWidth: 500,
+              maxLines: 2,
+            },
+            { type: 'rect', width: '100%', height: 3, fill: '#000000' },
+            {
+              type: 'text',
+              text: specsString || 'N/A',
+              fontSize: 30,
+              fontBold: true,
+              maxWidth: 500,
+              maxLines: 2,
             },
           ],
         },

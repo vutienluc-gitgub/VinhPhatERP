@@ -1,18 +1,17 @@
 import { LayoutNode, AbsoluteNode } from '@/shared/lib/label-engine/ast/types';
 import {
   wrapText,
-  measureTextWidth,
+  measureText,
 } from '@/shared/lib/label-engine/utils/text-layout';
 
-// Helper to resolve '100%' or numbers
-function resolveDimension(
-  value: number | '100%' | undefined,
-  parentDimension: number,
-  defaultValue: number,
-): number {
-  if (value === '100%') return parentDimension;
-  if (typeof value === 'number') return value;
-  return defaultValue;
+function resolveDim(
+  val: number | '100%' | undefined,
+  parentDim: number,
+  def: number,
+) {
+  if (val === '100%') return parentDim;
+  if (typeof val === 'number') return val;
+  return def;
 }
 
 export function computeLayout(
@@ -30,29 +29,36 @@ export function computeLayout(
       const maxWidth = node.maxWidth || containerWidth;
       const lines = wrapText(node.text, maxWidth, font, node.maxLines);
 
+      const metrics = measureText(lines[0] || 'M', font);
+      const lineHeight = metrics.lineHeight;
+
       let currentY = containerY;
-      const lineHeight = node.fontSize * 1.2; // Approximate line height
 
       for (const line of lines) {
-        const textWidth = measureTextWidth(line, font);
+        const lineMetrics = measureText(line, font);
         let x = containerX;
 
         if (node.align === 'center') {
-          x = containerX + (containerWidth - textWidth) / 2;
+          x = containerX + (containerWidth - lineMetrics.width) / 2;
         } else if (node.align === 'right') {
-          x = containerX + containerWidth - textWidth;
+          x = containerX + containerWidth - lineMetrics.width;
         }
+
+        // baselineY represents the exact baseline for SVG/HTML rendering
+        const baselineY = currentY + lineMetrics.ascent;
 
         result.push({
           type: 'absolute-text',
           text: line,
           x,
           y: currentY,
-          width: textWidth,
-          height: node.fontSize,
+          baselineY,
+          width: lineMetrics.width,
+          height: lineMetrics.height,
           fontSize: node.fontSize,
           fontBold: node.fontBold,
           align: node.align,
+          debug: 'debug' in node ? (node as { debug?: boolean }).debug : false,
         });
 
         currentY += lineHeight;
@@ -64,16 +70,17 @@ export function computeLayout(
       result.push({
         type: 'absolute-qrcode',
         value: node.value,
-        x: containerX,
-        y: containerY,
+        x: containerX + (containerWidth - node.size) / 2, // Default center in cell
+        y: containerY + (containerHeight - node.size) / 2,
         size: node.size,
+        debug: 'debug' in node ? (node as { debug?: boolean }).debug : false,
       });
       break;
     }
 
     case 'rect': {
-      const w = resolveDimension(node.width, containerWidth, containerWidth);
-      const h = resolveDimension(node.height, containerHeight, containerHeight);
+      const w = resolveDim(node.width, containerWidth, containerWidth);
+      const h = resolveDim(node.height, containerHeight, containerHeight);
       result.push({
         type: 'absolute-rect',
         x: containerX,
@@ -84,130 +91,164 @@ export function computeLayout(
         rx: node.rx,
         fill: node.fill,
         stroke: node.stroke,
+        debug: 'debug' in node ? (node as { debug?: boolean }).debug : false,
       });
       break;
     }
 
-    case 'column': {
-      const padding = node.padding || 0;
-      const gap = node.gap || 0;
-      const w = resolveDimension(node.width, containerWidth, containerWidth);
-      const h = resolveDimension(node.height, containerHeight, containerHeight);
-
-      if (node.fill || node.stroke) {
-        result.push({
-          type: 'absolute-rect',
-          x: containerX,
-          y: containerY,
-          width: w,
-          height: h,
-          fill: node.fill,
-          stroke: node.stroke,
-          strokeWidth: node.strokeWidth,
-          rx: node.rx,
-        });
-      }
-
-      let currentY = containerY + padding;
-      const innerX = containerX + padding;
-      const innerW = w - padding * 2;
-
-      for (const child of node.children) {
-        // We need to know the height of the child to increment currentY.
-        // For text, it's (lines * fontSize * 1.2).
-        // For QR, it's size.
-        // This is a simplistic layout engine, so we'll compute it by doing a dry run or estimating.
-        let childHeight = 0;
-        if (child.type === 'qrcode') childHeight = child.size;
-        else if (child.type === 'rect')
-          childHeight = resolveDimension(child.height, h, 0);
-        else if (child.type === 'text') {
-          const font = `${child.fontBold ? 'bold ' : ''}${child.fontSize}px Arial, sans-serif`;
-          const lines = wrapText(
-            child.text,
-            child.maxWidth || innerW,
-            font,
-            child.maxLines,
-          );
-          childHeight = lines.length * child.fontSize * 1.2;
-        } else if (child.type === 'row' || child.type === 'column') {
-          // We don't support deep nested dynamic height perfectly yet without a 2-pass layout,
-          // but we can just resolve its height if it's explicitly set.
-          childHeight = resolveDimension(child.height, h, 0);
-        }
-
-        const childNodes = computeLayout(
-          child,
-          innerX,
-          currentY,
-          innerW,
-          childHeight,
-        );
-        result.push(...childNodes);
-
-        currentY += childHeight + gap;
-      }
-      break;
-    }
-
+    case 'column':
     case 'row': {
-      const padding = node.padding || 0;
+      const isCol = node.type === 'column';
       const gap = node.gap || 0;
-      const w = resolveDimension(node.width, containerWidth, containerWidth);
-      const h = resolveDimension(node.height, containerHeight, containerHeight);
+      const padding = node.padding || 0;
+      const margin = node.margin || 0;
 
-      if (node.fill || node.stroke) {
+      const w = resolveDim(node.width, containerWidth, containerWidth);
+      const h = resolveDim(node.height, containerHeight, containerHeight);
+
+      if (node.fill || node.stroke || node.debug) {
         result.push({
           type: 'absolute-rect',
-          x: containerX,
-          y: containerY,
-          width: w,
-          height: h,
+          x: containerX + margin,
+          y: containerY + margin,
+          width: w - margin * 2,
+          height: h - margin * 2,
           fill: node.fill,
           stroke: node.stroke,
           strokeWidth: node.strokeWidth,
           rx: node.rx,
+          debug: node.debug,
         });
       }
 
-      let currentX = containerX + padding;
-      const innerY = containerY + padding;
-      const innerH = h - padding * 2;
+      const innerX = containerX + margin + padding;
+      const innerY = containerY + margin + padding;
+      const innerW = w - margin * 2 - padding * 2;
+      const innerH = h - margin * 2 - padding * 2;
 
+      let totalFlex = 0;
+      let usedMainSpace = 0;
+      const childSizes: { main: number; cross: number }[] = [];
+
+      // PASS 1: Intrinsic Measurement
       for (const child of node.children) {
-        let childWidth = 0;
-        if (child.type === 'qrcode') childWidth = child.size;
-        else if (child.type === 'rect')
-          childWidth = resolveDimension(child.width, w, 0);
-        else if (child.type === 'text') {
-          const font = `${child.fontBold ? 'bold ' : ''}${child.fontSize}px Arial, sans-serif`;
-          const lines = wrapText(
-            child.text,
-            child.maxWidth || w,
-            font,
-            child.maxLines,
-          );
-          // Width is the max line width
-          let maxW = 0;
-          for (const l of lines) {
-            const lw = measureTextWidth(l, font);
-            if (lw > maxW) maxW = lw;
+        if (child.flex) {
+          totalFlex += child.flex;
+          childSizes.push({ main: 0, cross: 0 });
+        } else {
+          let main = 0;
+          let cross = 0;
+          if (child.type === 'rect') {
+            main = resolveDim(
+              isCol ? child.height : child.width,
+              isCol ? innerH : innerW,
+              0,
+            );
+            cross = resolveDim(
+              isCol ? child.width : child.height,
+              isCol ? innerW : innerH,
+              0,
+            );
+          } else if (child.type === 'qrcode') {
+            main = child.size;
+            cross = child.size;
+          } else if (child.type === 'text') {
+            const font = `${child.fontBold ? 'bold ' : ''}${child.fontSize}px Arial, sans-serif`;
+            const lines = wrapText(
+              child.text,
+              child.maxWidth || (isCol ? innerW : innerW),
+              font,
+              child.maxLines,
+            );
+            let maxW = 0;
+            for (const l of lines) {
+              const lm = measureText(l, font);
+              if (lm.width > maxW) maxW = lm.width;
+            }
+            const metrics = measureText(lines[0] || 'M', font);
+            const totalH = lines.length * metrics.lineHeight;
+            main = isCol ? totalH : maxW;
+            cross = isCol ? maxW : totalH;
+          } else {
+            main = resolveDim(
+              isCol ? child.height : child.width,
+              isCol ? innerH : innerW,
+              0,
+            );
+            cross = resolveDim(
+              isCol ? child.width : child.height,
+              isCol ? innerW : innerH,
+              0,
+            );
           }
-          childWidth = maxW;
-        } else if (child.type === 'row' || child.type === 'column') {
-          childWidth = resolveDimension(child.width, w, 0);
+          childSizes.push({ main, cross });
+          usedMainSpace += main;
+        }
+      }
+
+      const totalGaps = Math.max(0, node.children.length - 1) * gap;
+      usedMainSpace += totalGaps;
+      const availableMainSpace = Math.max(
+        0,
+        (isCol ? innerH : innerW) - usedMainSpace,
+      );
+
+      // PASS 2: Layout & Alignment
+      let currentMain = isCol ? innerY : innerX;
+
+      if (totalFlex === 0 && availableMainSpace > 0) {
+        if (node.justify === 'center') {
+          currentMain += availableMainSpace / 2;
+        } else if (node.justify === 'flex-end') {
+          currentMain += availableMainSpace;
+        } else if (node.justify === 'space-evenly') {
+          currentMain += availableMainSpace / (node.children.length + 1);
+        }
+      }
+
+      for (let i = 0; i < node.children.length; i++) {
+        const child = node.children[i]!;
+        let mainSize = childSizes[i]!.main;
+        const crossSize = childSizes[i]!.cross;
+
+        if (child.flex) {
+          mainSize = (child.flex / totalFlex) * availableMainSpace;
         }
 
-        const childNodes = computeLayout(
-          child,
-          currentX,
-          innerY,
-          childWidth,
-          innerH,
-        );
+        const crossSpace = (isCol ? innerW : innerH) - crossSize;
+        let crossPos = isCol ? innerX : innerY;
+
+        if (node.align === 'center') {
+          crossPos += crossSpace / 2;
+        } else if (node.align === 'flex-end') {
+          crossPos += crossSpace;
+        }
+
+        const childX = isCol ? crossPos : currentMain;
+        const childY = isCol ? currentMain : crossPos;
+
+        const isContainer =
+          child.type === 'row' ||
+          child.type === 'column' ||
+          child.type === 'text';
+        const childW = isCol ? (isContainer ? innerW : crossSize) : mainSize;
+        const childH = isCol ? mainSize : isContainer ? innerH : crossSize;
+
+        const childNodes = computeLayout(child, childX, childY, childW, childH);
         result.push(...childNodes);
 
-        currentX += childWidth + gap;
+        let step = mainSize;
+        if (i < node.children.length - 1) {
+          step += gap;
+          if (totalFlex === 0 && node.justify === 'space-between') {
+            step += availableMainSpace / (node.children.length - 1);
+          }
+        }
+        if (totalFlex === 0 && node.justify === 'space-evenly') {
+          step += availableMainSpace / (node.children.length + 1);
+        }
+
+        currentMain += step;
       }
       break;
     }

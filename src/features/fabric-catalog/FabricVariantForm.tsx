@@ -11,6 +11,7 @@ import {
 import { Button, Switch } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Combobox } from '@/shared/components/Combobox';
+import { Icon } from '@/shared/components/Icon';
 import {
   MoneyInput,
   LengthInput,
@@ -327,10 +328,37 @@ export function FabricVariantForm({
     <AdaptiveSheet
       open={true}
       onClose={onClose}
-      title={
-        isEditing
-          ? `${LABELS.VARIANT_EDIT_TITLE}: ${variant.variant_code}`
-          : `${LABELS.VARIANT_ADD_TITLE} — ${parentCode}`
+      header={
+        <div className="modal-header min-w-0 !pb-3 border-b border-border relative">
+          <div className="modal-header-content flex flex-col items-start w-full pr-8">
+            <h3
+              id="modal-title"
+              className="text-base font-semibold text-foreground"
+            >
+              {isEditing ? LABELS.VARIANT_EDIT_TITLE : LABELS.VARIANT_ADD_TITLE}
+            </h3>
+            <p className="text-sm text-muted mt-0.5">
+              {isEditing ? (
+                <>
+                  <span className="font-medium text-foreground">
+                    {variant.variant_code}
+                  </span>{' '}
+                  • {FABRIC_VARIANT_STATUS_LABELS[variant.status]}
+                </>
+              ) : (
+                parentCode
+              )}
+            </p>
+          </div>
+          <button
+            className="btn-icon absolute right-4 top-4"
+            type="button"
+            onClick={onClose}
+            aria-label={LABELS.CANCEL}
+          >
+            ✕
+          </button>
+        </div>
       }
       footer={
         <>
@@ -382,11 +410,28 @@ export function FabricVariantForm({
       }
     >
       <div className="flex items-center justify-between mb-4">
-        <div className="text-sm font-medium text-muted">
-          {LABELS.VARIANT_STEP_TITLE.replace(
-            '{current}',
-            String(stepper.currentStep + 1),
-          ).replace('{total}', String(stepper.totalSteps))}
+        <div className="flex gap-4">
+          <div
+            className={`flex items-center gap-2 ${stepper.currentStep === 0 ? 'text-primary font-medium' : 'text-muted'}`}
+          >
+            <span
+              className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${stepper.currentStep === 0 ? 'bg-primary text-primary-foreground' : 'bg-muted/20'}`}
+            >
+              1
+            </span>
+            Thông tin
+          </div>
+          <div className="text-muted/30">―</div>
+          <div
+            className={`flex items-center gap-2 ${stepper.currentStep === 1 ? 'text-primary font-medium' : 'text-muted'}`}
+          >
+            <span
+              className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${stepper.currentStep === 1 ? 'bg-primary text-primary-foreground' : 'bg-muted/20'}`}
+            >
+              2
+            </span>
+            Thông số
+          </div>
         </div>
         <div className="flex gap-2">
           {status === 'saving' && (
@@ -417,11 +462,12 @@ export function FabricVariantForm({
         <div className="form-grid">
           {stepper.currentStep === 0 && (
             <>
-              <fieldset className="form-section">
-                <legend className="form-section-title">
+              <div className="mb-4 first:mt-0 mt-6">
+                <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2 border-t border-border pt-4 first:border-0 first:pt-0">
+                  <Icon name="Palette" size={16} />{' '}
                   {LABELS.VARIANT_COLOR_SECTION}
-                </legend>
-                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+                </h4>
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
                   <div className="form-field">
                     <label htmlFor="fv-color-name">
                       {LABELS.VARIANT_COLOR_NAME}{' '}
@@ -429,7 +475,7 @@ export function FabricVariantForm({
                     </label>
                     <input
                       id="fv-color-name"
-                      className={`field-input${errors.color_name ? ' border-danger' : ''}`}
+                      className={`field-input h-9 ${errors.color_name ? ' border-danger' : ''}`}
                       type="text"
                       placeholder={LABELS.VARIANT_PLACEHOLDER_COLOR}
                       {...register('color_name')}
@@ -442,27 +488,31 @@ export function FabricVariantForm({
                   </div>
 
                   <div className="form-field">
-                    <label htmlFor="fv-color-hex">
-                      {LABELS.VARIANT_COLOR_HEX}
-                    </label>
-                    <div className="flex gap-2 items-center">
-                      <input
-                        id="fv-color-hex"
-                        className={`field-input flex-1${errors.color_hex ? ' border-danger' : ''}`}
-                        type="text"
-                        placeholder={LABELS.VARIANT_PLACEHOLDER_HEX}
-                        {...register('color_hex')}
-                      />
+                    <label
+                      htmlFor="fv-color-hex"
+                      className="flex justify-between items-center h-[18px]"
+                    >
+                      <span>{LABELS.VARIANT_COLOR_HEX}</span>
                       {watch('color_hex') &&
                         /^#[0-9a-fA-F]{6}$/.test(watch('color_hex') ?? '') && (
-                          <div
-                            className="w-8 h-8 rounded border border-border shrink-0"
-                            style={{
-                              backgroundColor: watch('color_hex') ?? '',
-                            }}
-                          />
+                          <span className="flex items-center gap-1.5 text-xs font-medium text-foreground">
+                            <span
+                              className="w-3 h-3 rounded-full border border-border"
+                              style={{
+                                backgroundColor: watch('color_hex') ?? '',
+                              }}
+                            />
+                            {watch('color_name') || 'Preview'}
+                          </span>
                         )}
-                    </div>
+                    </label>
+                    <input
+                      id="fv-color-hex"
+                      className={`field-input h-9 ${errors.color_hex ? ' border-danger' : ''}`}
+                      type="text"
+                      placeholder={LABELS.VARIANT_PLACEHOLDER_HEX}
+                      {...register('color_hex')}
+                    />
                     {errors.color_hex && (
                       <span className="field-error">
                         {errors.color_hex.message}
@@ -470,90 +520,110 @@ export function FabricVariantForm({
                     )}
                   </div>
                 </div>
-              </fieldset>
+              </div>
 
-              <fieldset className="form-section">
-                <legend className="form-section-title">
-                  {LABELS.VARIANT_SPEC_SECTION}
-                </legend>
-                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
-                  <Controller
-                    name="actual_width_cm"
-                    control={control}
-                    render={({ field }) => (
-                      <LengthInput
-                        id="fv-actual-width"
-                        className={`field-input${errors.actual_width_cm ? ' border-danger' : ''}`}
-                        step="0.1"
-                        min="0"
-                        placeholder={LABELS.VARIANT_PLACEHOLDER_WIDTH}
-                        value={field.value}
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                      />
-                    )}
-                  />
+              <div className="mb-4 first:mt-0 mt-6">
+                <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2 border-t border-border pt-4 first:border-0 first:pt-0">
+                  <Icon name="Ruler" size={16} /> {LABELS.VARIANT_SPEC_SECTION}
+                </h4>
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3">
+                  <div className="form-field">
+                    <label htmlFor="fv-actual-width">
+                      {LABELS.VARIANT_ACTUAL_WIDTH}
+                    </label>
+                    <Controller
+                      name="actual_width_cm"
+                      control={control}
+                      render={({ field }) => (
+                        <LengthInput
+                          id="fv-actual-width"
+                          className={`field-input h-9 ${errors.actual_width_cm ? ' border-danger' : ''}`}
+                          step="0.1"
+                          min="0"
+                          placeholder={LABELS.VARIANT_PLACEHOLDER_WIDTH}
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      )}
+                    />
+                  </div>
 
-                  <Controller
-                    name="actual_gsm"
-                    control={control}
-                    render={({ field }) => (
-                      <DensityInput
-                        id="fv-actual-gsm"
-                        className={`field-input${errors.actual_gsm ? ' border-danger' : ''}`}
-                        step="1"
-                        min="0"
-                        placeholder={LABELS.VARIANT_PLACEHOLDER_GSM}
-                        value={field.value}
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                      />
-                    )}
-                  />
+                  <div className="form-field">
+                    <label htmlFor="fv-actual-gsm">
+                      {LABELS.VARIANT_ACTUAL_GSM}
+                    </label>
+                    <Controller
+                      name="actual_gsm"
+                      control={control}
+                      render={({ field }) => (
+                        <DensityInput
+                          id="fv-actual-gsm"
+                          className={`field-input h-9 ${errors.actual_gsm ? ' border-danger' : ''}`}
+                          step="1"
+                          min="0"
+                          placeholder={LABELS.VARIANT_PLACEHOLDER_GSM}
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      )}
+                    />
+                  </div>
 
-                  <Controller
-                    name="shrinkage_rate_warp"
-                    control={control}
-                    render={({ field }) => (
-                      <PercentageInput
-                        id="fv-shrink-warp"
-                        className={`field-input${errors.shrinkage_rate_warp ? ' border-danger' : ''}`}
-                        step="0.1"
-                        min="0"
-                        max="100"
-                        placeholder={LABELS.VARIANT_PLACEHOLDER_SHRINK_WARP}
-                        value={field.value}
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                      />
-                    )}
-                  />
+                  <div className="form-field">
+                    <label htmlFor="fv-shrink-warp">
+                      {LABELS.VARIANT_SHRINK_WARP}
+                    </label>
+                    <Controller
+                      name="shrinkage_rate_warp"
+                      control={control}
+                      render={({ field }) => (
+                        <PercentageInput
+                          id="fv-shrink-warp"
+                          className={`field-input h-9 ${errors.shrinkage_rate_warp ? ' border-danger' : ''}`}
+                          step="0.1"
+                          min="0"
+                          max="100"
+                          placeholder={LABELS.VARIANT_PLACEHOLDER_SHRINK_WARP}
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      )}
+                    />
+                  </div>
 
-                  <Controller
-                    name="shrinkage_rate_weft"
-                    control={control}
-                    render={({ field }) => (
-                      <PercentageInput
-                        id="fv-shrink-weft"
-                        className={`field-input${errors.shrinkage_rate_weft ? ' border-danger' : ''}`}
-                        step="0.1"
-                        min="0"
-                        max="100"
-                        placeholder={LABELS.VARIANT_PLACEHOLDER_SHRINK_WEFT}
-                        value={field.value}
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                      />
-                    )}
-                  />
+                  <div className="form-field">
+                    <label htmlFor="fv-shrink-weft">
+                      {LABELS.VARIANT_SHRINK_WEFT}
+                    </label>
+                    <Controller
+                      name="shrinkage_rate_weft"
+                      control={control}
+                      render={({ field }) => (
+                        <PercentageInput
+                          id="fv-shrink-weft"
+                          className={`field-input h-9 ${errors.shrinkage_rate_weft ? ' border-danger' : ''}`}
+                          step="0.1"
+                          min="0"
+                          max="100"
+                          placeholder={LABELS.VARIANT_PLACEHOLDER_SHRINK_WEFT}
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      )}
+                    />
+                  </div>
                 </div>
-              </fieldset>
+              </div>
 
-              <fieldset className="form-section">
-                <legend className="form-section-title">
-                  {LABELS.VARIANT_UOM_SECTION}
-                </legend>
-                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+              <div className="mb-4 first:mt-0 mt-6">
+                <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2 border-t border-border pt-4 first:border-0 first:pt-0">
+                  <Icon name="Scale" size={16} /> {LABELS.VARIANT_UOM_SECTION}
+                </h4>
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
                   <div className="form-field">
                     <label>{LABELS.VARIANT_BASE_UOM}</label>
                     <Controller
@@ -570,38 +640,36 @@ export function FabricVariantForm({
                     />
                   </div>
 
-                  <Controller
-                    name="conversion_rate"
-                    control={control}
-                    render={({ field }) => (
-                      <PercentageInput
-                        id="fv-conversion-rate"
-                        className="field-input field-input--readonly"
-                        step="0.001"
-                        readOnly
-                        value={field.value}
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                      />
-                    )}
-                  />
+                  <div className="form-field">
+                    <label>Quy đổi</label>
+                    <div className="flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-surface-disabled text-sm">
+                      <span className="font-medium text-muted">
+                        1 {watch('base_uom')} =
+                      </span>
+                      <span className="font-bold text-foreground">
+                        {watch('conversion_rate') ?? 0}
+                      </span>
+                      <span className="text-muted">m</span>
+                    </div>
+                  </div>
                 </div>
-              </fieldset>
+              </div>
             </>
           )}
 
           {stepper.currentStep === 1 && (
             <>
-              <fieldset className="form-section">
-                <legend className="form-section-title">
+              <div className="mb-4 first:mt-0 mt-6">
+                <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2 border-t border-border pt-4 first:border-0 first:pt-0">
+                  <Icon name="Barcode" size={16} />{' '}
                   {LABELS.VARIANT_SOURCING_SECTION}
-                </legend>
-                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+                </h4>
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
                   <div className="form-field">
                     <label htmlFor="fv-lot">{LABELS.VARIANT_LOT_NUMBER}</label>
                     <input
                       id="fv-lot"
-                      className="field-input"
+                      className="field-input h-9"
                       type="text"
                       placeholder={LABELS.VARIANT_PLACEHOLDER_LOT}
                       {...register('lot_number')}
@@ -612,7 +680,7 @@ export function FabricVariantForm({
                     <label htmlFor="fv-sku">{LABELS.VARIANT_SKU}</label>
                     <input
                       id="fv-sku"
-                      className="field-input"
+                      className="field-input h-9"
                       type="text"
                       placeholder={LABELS.VARIANT_PLACEHOLDER_SKU}
                       {...register('sku')}
@@ -623,37 +691,41 @@ export function FabricVariantForm({
                     <label htmlFor="fv-barcode">{LABELS.VARIANT_BARCODE}</label>
                     <input
                       id="fv-barcode"
-                      className="field-input"
+                      className="field-input h-9"
                       type="text"
                       placeholder={LABELS.VARIANT_PLACEHOLDER_BARCODE}
                       {...register('barcode')}
                     />
                   </div>
 
-                  <Controller
-                    name="moq"
-                    control={control}
-                    render={({ field }) => (
-                      <NumericInput
-                        id="fv-moq"
-                        className={`field-input${errors.moq ? ' border-danger' : ''}`}
-                        step="1"
-                        min="0"
-                        placeholder={LABELS.VARIANT_PLACEHOLDER_MOQ}
-                        value={field.value}
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                      />
-                    )}
-                  />
+                  <div className="form-field">
+                    <label htmlFor="fv-moq">{LABELS.VARIANT_MOQ}</label>
+                    <Controller
+                      name="moq"
+                      control={control}
+                      render={({ field }) => (
+                        <NumericInput
+                          id="fv-moq"
+                          className={`field-input h-9 ${errors.moq ? ' border-danger' : ''}`}
+                          step="1"
+                          min="0"
+                          placeholder={LABELS.VARIANT_PLACEHOLDER_MOQ}
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      )}
+                    />
+                  </div>
                 </div>
-              </fieldset>
+              </div>
 
-              <fieldset className="form-section">
-                <legend className="form-section-title">
+              <div className="mb-4 first:mt-0 mt-6">
+                <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2 border-t border-border pt-4 first:border-0 first:pt-0">
+                  <Icon name="BadgeDollarSign" size={16} />{' '}
                   {LABELS.VARIANT_PRICE_SECTION}
-                </legend>
-                <div className="form-grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
+                </h4>
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3">
                   <div className="form-field">
                     <label htmlFor="fv-purchase-price">
                       {LABELS.VARIANT_PURCHASE_PRICE}
@@ -664,7 +736,7 @@ export function FabricVariantForm({
                       render={({ field }) => (
                         <MoneyInput
                           id="fv-purchase-price"
-                          className="field-input"
+                          className="field-input h-9"
                           placeholder={LABELS.VARIANT_PLACEHOLDER_PURCHASE}
                           value={field.value}
                           onChange={field.onChange}
@@ -684,7 +756,7 @@ export function FabricVariantForm({
                       render={({ field }) => (
                         <MoneyInput
                           id="fv-selling-price"
-                          className="field-input"
+                          className="field-input h-9"
                           placeholder={LABELS.VARIANT_PLACEHOLDER_SELLING}
                           value={field.value}
                           onChange={field.onChange}
@@ -710,7 +782,7 @@ export function FabricVariantForm({
                     />
                   </div>
                 </div>
-              </fieldset>
+              </div>
 
               <div className="form-field">
                 <label htmlFor="fv-notes">{LABELS.NOTES_LABEL}</label>
