@@ -1,21 +1,30 @@
 // 1. Layout Node Types (Input to Layout Engine)
-export type TextLayoutNode = {
+
+export type FlexAlign = 'flex-start' | 'center' | 'flex-end';
+export type FlexJustify = FlexAlign | 'space-between' | 'space-evenly';
+
+export type BaseLayoutNode = {
+  flex?: number;
+  margin?: number;
+};
+
+export type TextLayoutNode = BaseLayoutNode & {
   type: 'text';
   text: string;
   fontSize: number;
   fontBold?: boolean;
   maxWidth?: number; // For wrapping
   maxLines?: number;
-  align?: 'left' | 'center' | 'right'; // Defaults to left
+  align?: 'left' | 'center' | 'right'; // Horizontal text alignment
 };
 
-export type QrLayoutNode = {
+export type QrLayoutNode = BaseLayoutNode & {
   type: 'qrcode';
   value: string;
   size: number;
 };
 
-export type RectLayoutNode = {
+export type RectLayoutNode = BaseLayoutNode & {
   type: 'rect';
   width: number | '100%'; // '100%' means full width of parent
   height: number | '100%'; // '100%' means full height of parent
@@ -26,10 +35,11 @@ export type RectLayoutNode = {
 };
 
 // Simplified Flexbox Containers
-export type ColumnLayoutNode = {
-  type: 'column';
+export type FlexContainerProps = BaseLayoutNode & {
   gap?: number;
   padding?: number;
+  justify?: FlexJustify;
+  align?: FlexAlign;
   children: LayoutNode[];
   width?: number | '100%';
   height?: number | '100%';
@@ -37,20 +47,15 @@ export type ColumnLayoutNode = {
   stroke?: string;
   strokeWidth?: number;
   rx?: number;
+  debug?: boolean; // Visual debug outline
 };
 
-export type RowLayoutNode = {
+export type ColumnLayoutNode = FlexContainerProps & {
+  type: 'column';
+};
+
+export type RowLayoutNode = FlexContainerProps & {
   type: 'row';
-  gap?: number;
-  padding?: number;
-  alignItems?: 'flex-start' | 'center' | 'flex-end'; // Defaults to flex-start
-  children: LayoutNode[];
-  width?: number | '100%';
-  height?: number | '100%';
-  fill?: string;
-  stroke?: string;
-  strokeWidth?: number;
-  rx?: number;
 };
 
 export type LayoutNode =
@@ -66,11 +71,13 @@ export type AbsoluteTextNode = {
   text: string;
   x: number;
   y: number; // Top-Left Y coordinate
+  baselineY: number; // Exact baseline Y coordinate for perfect alignment
   width: number;
   height: number;
   fontSize: number;
   fontBold?: boolean;
   align?: 'left' | 'center' | 'right';
+  debug?: boolean;
 };
 
 export type AbsoluteQrNode = {
@@ -79,6 +86,7 @@ export type AbsoluteQrNode = {
   x: number;
   y: number;
   size: number;
+  debug?: boolean;
 };
 
 export type AbsoluteRectNode = {
@@ -91,6 +99,7 @@ export type AbsoluteRectNode = {
   rx?: number;
   fill?: string;
   stroke?: string;
+  debug?: boolean; // Outline container in red if true
 };
 
 export type AbsoluteNode = AbsoluteTextNode | AbsoluteQrNode | AbsoluteRectNode;

@@ -21,23 +21,53 @@ function getCanvasContext(): CanvasRenderingContext2D {
   return cachedContext;
 }
 
+export type TextMeasurement = {
+  width: number;
+  height: number;
+  ascent: number;
+  descent: number;
+  lineHeight: number;
+};
+
 /**
- * Measure the width of a text string given a CSS font string.
- * @param text The text to measure.
- * @param font The CSS font string (e.g. '24px Arial').
+ * Measure text using real font metrics.
  */
-export function measureTextWidth(text: string, font: string): number {
+export function measureText(text: string, font: string): TextMeasurement {
   const ctx = getCanvasContext();
   ctx.font = font;
-  return ctx.measureText(text).width;
+  const metrics = ctx.measureText(text);
+
+  // Use actual bounding box or fallback to font size estimation
+  const fontSizeMatch = font.match(/(\d+)px/);
+  const fontSize = fontSizeMatch?.[1] ? parseInt(fontSizeMatch[1], 10) : 16;
+
+  // 'M' provides a good baseline for ascent if actual metrics are missing
+  const mMetrics = ctx.measureText('M');
+  const ascent =
+    metrics.actualBoundingBoxAscent ||
+    metrics.fontBoundingBoxAscent ||
+    mMetrics.actualBoundingBoxAscent ||
+    fontSize * 0.8;
+
+  const descent =
+    metrics.actualBoundingBoxDescent ||
+    metrics.fontBoundingBoxDescent ||
+    fontSize * 0.2;
+
+  const height = ascent + descent;
+  const lineHeight = height * 1.2;
+
+  return {
+    width: metrics.width,
+    height,
+    ascent,
+    descent,
+    lineHeight,
+  };
 }
 
 /**
  * Wrap a text string into multiple lines based on a maximum pixel width.
- * @param text The text to wrap.
- * @param maxWidth The maximum width in pixels.
- * @param font The CSS font string (e.g. '24px Arial').
- * @param maxLines Optional limit on the number of lines to return. If text exceeds maxLines, the last line gets an ellipsis.
  */
 export function wrapText(
   text: string,
@@ -63,7 +93,7 @@ export function wrapText(
       currentLine = word;
 
       if (maxLines && lines.length === maxLines) {
-        break; // Stop processing further if we hit max lines early (this will be handled by ellipsis below)
+        break;
       }
     } else {
       currentLine = testLine;
@@ -77,12 +107,10 @@ export function wrapText(
   // Handle truncation if it exceeds maxLines
   if (maxLines && lines.length >= maxLines) {
     const finalLines = lines.slice(0, maxLines);
-
-    // Check if we need to append ellipsis to the last line
     const processedTextLength = finalLines.join(' ').length;
+
     if (processedTextLength < text.length) {
       let lastLine = finalLines[maxLines - 1] || '';
-      // Make room for ellipsis
       while (
         lastLine.length > 0 &&
         ctx.measureText(lastLine + '...').width > maxWidth

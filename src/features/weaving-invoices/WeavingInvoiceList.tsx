@@ -146,13 +146,14 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
         }
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 sm:px-6 lg:px-8 mt-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard
           label={MSG.KPI_TOTAL_TITLE}
           value={result?.total ?? 0}
           icon="Package"
           variant="primary"
           formatMode="number"
+          isLoading={isLoading}
         />
         <KpiCard
           label={MSG.KPI_DRAFT_TITLE}
@@ -160,6 +161,7 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
           icon="Clock"
           variant="warning"
           formatMode="number"
+          isLoading={isLoading}
         />
       </div>
 

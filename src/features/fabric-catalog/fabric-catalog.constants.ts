@@ -299,7 +299,7 @@ export const LABELS = {
   VARIANT_VAL_ERR_WEFT: 'Rút ngang phải từ 0-100%',
   VARIANT_SUCCESS_UPDATE: 'Cập nhật thành công',
   VARIANT_SUCCESS_CREATE: 'Thêm mới thành công',
-  VARIANT_STEP_CONTINUE: 'Tiếp tục',
+  VARIANT_STEP_CONTINUE: 'Tiếp theo',
   VARIANT_STEP_VALIDATING: 'Đang kiểm tra...',
   VARIANT_STEP_BACK: 'Quay lại',
   VARIANT_STEP_TITLE: 'Bước {current} / {total}',

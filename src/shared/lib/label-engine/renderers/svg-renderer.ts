@@ -18,27 +18,34 @@ export async function renderSVG(
   };
 
   for (const node of nodes) {
+    if (node.debug) {
+      if (node.type === 'absolute-text') {
+        content += `  <rect x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" fill="rgba(255,0,0,0.05)" stroke="red" stroke-width="1" stroke-dasharray="2,2" />\n`;
+        content += `  <line x1="${node.x}" y1="${node.baselineY}" x2="${node.x + node.width}" y2="${node.baselineY}" stroke="blue" stroke-width="1" />\n`;
+      } else if (node.type === 'absolute-qrcode') {
+        content += `  <rect x="${node.x}" y="${node.y}" width="${node.size}" height="${node.size}" fill="rgba(255,0,0,0.05)" stroke="red" stroke-width="1" stroke-dasharray="2,2" />\n`;
+      } else if (node.type === 'absolute-rect') {
+        content += `  <rect x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" fill="none" stroke="red" stroke-width="1" stroke-dasharray="2,2" />\n`;
+      }
+    }
+
     switch (node.type) {
       case 'absolute-text': {
         const weight = node.fontBold ? 'bold' : 'normal';
-        // Y in AST is Top-Left, SVG text Y is baseline. Shift by font size (approx 80-90%).
-        const baselineY = node.y + node.fontSize * 0.9;
-
-        // Alignment handling
-        let anchor = 'start';
-        if (node.align === 'center') anchor = 'middle';
-        else if (node.align === 'right') anchor = 'end';
-
-        content += `  <text x="${node.x}" y="${baselineY}" text-anchor="${anchor}" style="font: ${weight} ${node.fontSize}px Arial, sans-serif; fill: #000;">${escapeHtml(node.text)}</text>\n`;
+        // X is already calculated as the top-left boundary of the text block by layout-engine
+        content += `  <text x="${node.x}" y="${node.baselineY}" text-anchor="start" style="font: ${weight} ${node.fontSize}px Arial, sans-serif; fill: #000;">${escapeHtml(node.text)}</text>\n`;
         break;
       }
 
       case 'absolute-rect': {
-        const fill = node.fill || 'none';
-        const stroke = node.stroke || 'none';
+        const fill = node.fill && node.fill !== 'none' ? node.fill : 'none';
+        const stroke =
+          node.stroke && node.stroke !== 'none' ? node.stroke : 'none';
         const strokeWidth = node.strokeWidth || 0;
         const rx = node.rx || 0;
-        content += `  <rect x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" rx="${rx}" />\n`;
+        if (fill !== 'none' || stroke !== 'none') {
+          content += `  <rect x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" rx="${rx}" />\n`;
+        }
         break;
       }
 
