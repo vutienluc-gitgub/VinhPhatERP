@@ -9,6 +9,7 @@ import {
   ApprovalSnapshotData,
   ApprovalHistory,
   ApprovalOutboxEvent,
+  ApprovalCondition,
 } from '@/domains/approval/models/types';
 
 import { OutboxWorker } from './outbox-worker';
@@ -65,7 +66,7 @@ export class ApprovalEngine {
     const steps: (Partial<ApprovalStep> & { id: string })[] = [];
     const validWs = workflowSteps.filter((ws) =>
       ExpressionEvaluator.evaluate(
-        ws.conditions as Record<string, unknown>,
+        ws.conditions as unknown as ApprovalCondition,
         snapshotData.document || {},
       ),
     );
