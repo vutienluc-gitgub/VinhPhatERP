@@ -1,7 +1,11 @@
 import { memo } from 'react';
 import type { ReactNode } from 'react';
 
-import { formatCurrency, formatQuantity } from '@/shared/value/core/formatter';
+import {
+  formatCurrency,
+  formatQuantity,
+  formatValue,
+} from '@/shared/value/core/formatter';
 
 import { Icon, type IconName } from './Icon';
 
@@ -53,10 +57,10 @@ export const KpiCard = memo(function KpiCard({
       >
         <div className="flex justify-between items-start">
           <div className="space-y-3">
-            <div className="h-3 w-20 bg-border/50 rounded" />
-            <div className="h-8 w-28 bg-border/50 rounded" />
+            <div className="h-3 w-20 bg-surface-secondary rounded" />
+            <div className="h-8 w-28 bg-surface-secondary rounded" />
           </div>
-          <div className="w-12 h-12 bg-border/50 rounded-xl" />
+          <div className="w-12 h-12 bg-surface-secondary rounded-xl" />
         </div>
       </div>
     );
@@ -71,7 +75,7 @@ export const KpiCard = memo(function KpiCard({
       // eslint-disable-next-line no-restricted-syntax
       displayValue = formatCurrency(value, { compact: false });
     } else if (formatMode === 'percent') {
-      displayValue = `${value}%`;
+      displayValue = formatValue(value, { suffix: '%' });
     }
   }
 

@@ -10,6 +10,7 @@ import {
   KpiCard,
   ErrorInline,
 } from '@/shared/components';
+import { formatQuantity } from '@/shared/value/core/formatter';
 import {
   useRawFabricInventory,
   useFinishedFabricInventory,
@@ -222,7 +223,7 @@ export function InventoryPage() {
         }
       />
 
-      <div className="flex flex-col gap-6 w-full px-4 sm:px-6 lg:px-8 mt-4">
+      <div className="flex flex-col gap-6 w-full">
         {hasError && (
           <ErrorInline>
             Lỗi tải dữ liệu:{' '}
@@ -230,42 +231,28 @@ export function InventoryPage() {
           </ErrorInline>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          <div className="col-span-full md:col-span-2">
-            <KpiCard
-              label={MSG.LBL_YARN_IN_STOCK}
-              value={yarnStats?.totalAvailableKg ?? 0}
-              icon="Box"
-              variant="primary"
-              formatMode="number"
-            />
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <KpiCard
+            label={MSG.LBL_YARN_IN_STOCK}
+            value={yarnStats?.totalAvailableKg ?? 0}
+            icon="Box"
+            variant="primary"
+            formatMode="number"
+          />
           <KpiCard
             label={MSG.LBL_RAW_ROLLS}
             value={rawStats?.totalRolls ?? 0}
+            footer={`${MSG.LBL_RAW_LENGTH}: ${formatQuantity(rawStats?.totalLengthM ?? 0)} m`}
             icon="Layers"
             variant="success"
             formatMode="number"
           />
           <KpiCard
-            label={MSG.LBL_RAW_LENGTH}
-            value={rawStats?.totalLengthM ?? 0}
-            icon="Ruler"
-            variant="warning"
-            formatMode="number"
-          />
-          <KpiCard
             label={MSG.LBL_FIN_ROLLS}
             value={finishedStats?.totalRolls ?? 0}
+            footer={`${MSG.LBL_FIN_LENGTH}: ${formatQuantity(finishedStats?.totalLengthM ?? 0)} m`}
             icon="Package"
             variant="primary"
-            formatMode="number"
-          />
-          <KpiCard
-            label={MSG.LBL_FIN_LENGTH}
-            value={finishedStats?.totalLengthM ?? 0}
-            icon="CheckCheck"
-            variant="success"
             formatMode="number"
           />
         </div>
