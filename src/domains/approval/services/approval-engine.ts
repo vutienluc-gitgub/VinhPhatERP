@@ -1,6 +1,9 @@
 import { ApprovalRepository } from '@/domains/approval/repositories/approval-repository';
 import { WorkflowRepository } from '@/domains/approval/repositories/workflow-repository';
-import { ExpressionEvaluator } from '@/domains/approval/utils/expression-evaluator';
+import {
+  ExpressionEvaluator,
+  ApprovalCondition,
+} from '@/domains/approval/utils/expression-evaluator';
 import { APPROVAL_STATUS } from '@/domains/approval/models/constants';
 import {
   ApprovalRequest,
@@ -9,7 +12,6 @@ import {
   ApprovalSnapshotData,
   ApprovalHistory,
   ApprovalOutboxEvent,
-  ApprovalCondition,
 } from '@/domains/approval/models/types';
 
 import { OutboxWorker } from './outbox-worker';
