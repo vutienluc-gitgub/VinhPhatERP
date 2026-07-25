@@ -63,10 +63,9 @@ export class ApprovalEngine {
     };
 
     const steps: (Partial<ApprovalStep> & { id: string })[] = [];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const validWs = workflowSteps.filter((ws) =>
       ExpressionEvaluator.evaluate(
-        ws.conditions as unknown as any,
+        ws.conditions as Record<string, unknown>,
         snapshotData.document || {},
       ),
     );
