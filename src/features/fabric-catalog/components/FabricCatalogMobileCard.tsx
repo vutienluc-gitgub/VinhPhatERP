@@ -44,8 +44,10 @@ export function FabricCatalogMobileCard({
       <div className="mobile-card-body space-y-2">
         <p className="font-bold text-sm">{c.name}</p>
         <p className="text-xs text-muted italic">
-          {c.composition_tags?.length
-            ? c.composition_tags.join(', ')
+          {c.composition_parts?.length
+            ? c.composition_parts
+                .map((p) => `${p.percentage}% ${p.fiber}`)
+                .join(', ')
             : c.composition || LABELS.NA}
         </p>
         {(c.target_width_cm || c.target_gsm) && (

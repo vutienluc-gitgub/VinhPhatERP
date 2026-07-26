@@ -21,7 +21,17 @@ const baseFabricCatalogSchema = z.object({
     .min(2, 'Tên tối thiểu 2 ký tự')
     .max(200, 'Tên tối đa 200 ký tự'),
   composition: z.string().trim().max(200).optional().or(z.literal('')),
-  composition_tags: z.array(z.string()).default([]),
+  composition_parts: z
+    .array(
+      z.object({
+        fiber: z.string().min(1, 'Chọn loại sợi'),
+        percentage: z
+          .number()
+          .min(1, 'Tỷ lệ phải > 0')
+          .max(100, 'Tỷ lệ tối đa 100'),
+      }),
+    )
+    .default([]),
   unit: z.string().trim().min(1, 'Chọn đơn vị').max(20).default('kg'),
   category_id: z.string().uuid('Chọn danh mục hợp lệ').optional().nullable(),
   target_width_cm: z.number().min(0).optional().nullable(),
@@ -193,7 +203,7 @@ export const fabricCatalogDefaultValues: FabricCatalogFormValues = {
   code: '',
   name: '',
   composition: '',
-  composition_tags: [],
+  composition_parts: [],
   target_width_cm: null,
   target_gsm: null,
   category_id: null,

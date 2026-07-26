@@ -20,14 +20,18 @@ export function LengthField<TFieldValues extends FieldValues>({
   ...rest
 }: LengthFieldProps<TFieldValues>) {
   return (
-    <NumericField
-      formatOptions={{
-        decimals: 2,
-        suffix,
-        prefix,
-      }}
-      allowNegative={allowNegative}
-      {...rest}
-    />
+    <div className="flex items-center gap-2 w-full">
+      <NumericField
+        formatOptions={{
+          decimals: 2,
+          prefix,
+        }}
+        allowNegative={allowNegative}
+        {...rest}
+      />
+      {suffix && (
+        <span className="text-muted text-sm whitespace-nowrap">{suffix}</span>
+      )}
+    </div>
   );
 }

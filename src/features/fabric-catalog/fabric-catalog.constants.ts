@@ -250,6 +250,8 @@ export const LABELS = {
   WIDTH_PLACEHOLDER: 'VD: 160',
   GSM_PLACEHOLDER: 'VD: 250',
   TECHNIQUE_PLACEHOLDER: 'Chọn kỹ thuật dệt...',
+  STRETCH_PLACEHOLDER: 'Chọn độ co giãn...',
+  THICKNESS_PLACEHOLDER: 'Chọn độ dày...',
   COMBOBOX_DEFAULT_PLACEHOLDER: 'Chọn...',
   // Variant Form
   VARIANT_COLOR_SECTION: 'Màu sắc',

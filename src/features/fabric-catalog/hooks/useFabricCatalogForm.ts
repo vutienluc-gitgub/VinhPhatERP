@@ -27,7 +27,7 @@ function catalogToFormValues(catalog: FabricCatalog): FabricCatalogFormValues {
     code: catalog.code,
     name: catalog.name,
     composition: catalog.composition ?? '',
-    composition_tags: catalog.composition_tags ?? [],
+    composition_parts: catalog.composition_parts ?? [],
     target_width_cm: catalog.target_width_cm,
     target_gsm: catalog.target_gsm,
     unit: catalog.unit,

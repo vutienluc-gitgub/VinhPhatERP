@@ -20,14 +20,18 @@ export function DensityField<TFieldValues extends FieldValues>({
   ...rest
 }: DensityFieldProps<TFieldValues>) {
   return (
-    <NumericField
-      formatOptions={{
-        decimals: 0,
-        suffix,
-        prefix,
-      }}
-      allowNegative={allowNegative}
-      {...rest}
-    />
+    <div className="flex items-center gap-2 w-full">
+      <NumericField
+        formatOptions={{
+          decimals: 0,
+          prefix,
+        }}
+        allowNegative={allowNegative}
+        {...rest}
+      />
+      {suffix && (
+        <span className="text-muted text-sm whitespace-nowrap">{suffix}</span>
+      )}
+    </div>
   );
 }

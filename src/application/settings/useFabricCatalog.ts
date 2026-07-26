@@ -39,7 +39,7 @@ function toDbRow(
     code: values.code.trim(),
     name: values.name.trim(),
     composition: values.composition?.trim() || null,
-    composition_tags: values.composition_tags ?? [],
+    composition_parts: values.composition_parts ?? [],
     target_width_cm: values.target_width_cm ?? null,
     target_gsm: values.target_gsm ?? null,
     unit: values.unit.trim(),
