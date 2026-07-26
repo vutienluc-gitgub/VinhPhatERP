@@ -75,7 +75,9 @@ export function useFabricCatalogColumns({
         accessorKey: 'composition',
         header: LABELS.COMPOSITION,
         cell: ({ row }) => {
-          const tags = row.original.composition_tags;
+          const tags = row.original.composition_parts?.map(
+            (p) => `${p.percentage}% ${p.fiber}`,
+          );
           const fallback = row.original.composition;
           const displayValue =
             tags && tags.length > 0 ? tags.join(', ') : fallback;

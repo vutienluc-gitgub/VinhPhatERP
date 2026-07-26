@@ -13,6 +13,7 @@ import {
   computeLayout,
   HtmlRenderer,
 } from '@/shared/lib/label-engine';
+import { FABRIC_CATALOG_STATUS_LABELS } from '@/schema/fabric-catalog.schema';
 
 import { FabricAdminTab } from './components/FabricAdminTab';
 import { FabricPublicTab } from './components/FabricPublicTab';
@@ -82,9 +83,35 @@ export function FabricCatalogForm({
   return (
     <AdaptiveSheet
       open={true}
+      size="lg"
       onClose={onClose}
       title={
-        isEditing ? `${LABELS.EDIT_TITLE}: ${catalog?.name}` : LABELS.ADD_NEW
+        <div className="flex flex-col gap-1.5 mt-1">
+          <div>
+            {isEditing
+              ? `${LABELS.EDIT_TITLE}: ${catalog?.name}`
+              : LABELS.ADD_NEW}
+          </div>
+          {isEditing && catalog && (
+            <div className="flex items-center gap-2 text-xs font-normal text-muted-foreground mt-0.5">
+              <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600 font-medium">
+                {catalog.code}
+              </span>
+              {catalog.category_id && (
+                <>
+                  <span>•</span>
+                  <span>
+                    {categoryOptions.find(
+                      (c) => c.value === catalog.category_id,
+                    )?.label || 'Không phân nhóm'}
+                  </span>
+                </>
+              )}
+              <span>•</span>
+              <span>{FABRIC_CATALOG_STATUS_LABELS[catalog.status]}</span>
+            </div>
+          )}
+        </div>
       }
       footer={
         <>

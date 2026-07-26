@@ -99,7 +99,7 @@ export type FabricCatalog = {
   code: string;
   name: string;
   composition: string | null;
-  composition_tags: string[] | null;
+  composition_parts: { fiber: string; percentage: number }[] | null;
   target_width_cm: number | null;
   target_gsm: number | null;
   unit: string;

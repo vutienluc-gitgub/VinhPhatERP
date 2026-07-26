@@ -46,12 +46,16 @@ export function FabricCatalogDetail({ catalog }: FabricCatalogDetailProps) {
                 <FabricCategoryBadge category={catalog.category} />
               </div>
             )}
-            {(catalog.composition_tags?.length
-              ? catalog.composition_tags.join(', ')
+            {(catalog.composition_parts?.length
+              ? catalog.composition_parts
+                  .map((p) => `${p.percentage}% ${p.fiber}`)
+                  .join(', ')
               : catalog.composition) && (
               <p className="text-sm">
-                {catalog.composition_tags?.length
-                  ? catalog.composition_tags.join(', ')
+                {catalog.composition_parts?.length
+                  ? catalog.composition_parts
+                      .map((p) => `${p.percentage}% ${p.fiber}`)
+                      .join(', ')
                   : catalog.composition}
               </p>
             )}
