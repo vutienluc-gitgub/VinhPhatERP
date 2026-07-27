@@ -82,7 +82,7 @@ export function LeadCard({ lead, onClick }: LeadCardProps) {
       <div className="flex items-center justify-between mt-2 pt-2 border-t border-border border-dashed text-[11px] text-muted-subtle">
         <span>{timeAgo}</span>
         {lead.score > 0 && (
-          <span className="flex items-center gap-1 text-amber-600 font-medium">
+          <span className="flex items-center gap-1 text-warning font-medium">
             <Icon name="Flame" size={12} />
             {lead.score} điểm
           </span>

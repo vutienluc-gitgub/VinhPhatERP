@@ -30,16 +30,16 @@ export function FulfillmentKpiCards({
       value: summary.totalOrders,
       subtitle: `${summary.fulfilledOrders} ${ORDERS_DASHBOARD_LABELS.DASH_KPI_FULFILLED}`,
       icon: 'Package',
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50 border-blue-100',
+      color: 'text-info',
+      bgColor: 'bg-blue-50 border-info',
     },
     {
       label: ORDERS_DASHBOARD_LABELS.DASH_KPI_PROD_DONE,
       value: summary.fulfilledOrders,
       subtitle: `/${summary.totalOrders} ${ORDERS_DASHBOARD_LABELS.DASH_KPI_ORDERS}`,
       icon: 'CircleCheck',
-      color: 'text-emerald-600',
-      bgColor: 'bg-emerald-50 border-emerald-100',
+      color: 'text-success',
+      bgColor: 'bg-emerald-50 border-success',
     },
     {
       label: ORDERS_DASHBOARD_LABELS.DASH_KPI_LATE_DELIV,
@@ -49,10 +49,10 @@ export function FulfillmentKpiCards({
           ? ORDERS_DASHBOARD_LABELS.DASH_KPI_URGENT
           : ORDERS_DASHBOARD_LABELS.DASH_KPI_GOOD,
       icon: 'Clock',
-      color: summary.overdueOrders > 0 ? 'text-red-600' : 'text-zinc-500',
+      color: summary.overdueOrders > 0 ? 'text-danger' : 'text-zinc-500',
       bgColor:
         summary.overdueOrders > 0
-          ? 'bg-red-50 border-red-100'
+          ? 'bg-red-50 border-danger'
           : 'bg-zinc-50 border-zinc-100',
     },
     {

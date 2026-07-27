@@ -33,7 +33,7 @@ export function LeadRfqDetail({ lead, onClose }: LeadRfqDetailProps) {
   return (
     <section>
       <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-        <Icon name="FileText" size={16} className="text-indigo-600" />
+        <Icon name="FileText" size={16} className="text-info" />
         {LEAD_DETAIL_MESSAGES.RFQ_DETAIL_TITLE}
       </h3>
       <div className="bg-surface border border-border rounded-lg p-4 space-y-3">
@@ -55,7 +55,7 @@ export function LeadRfqDetail({ lead, onClose }: LeadRfqDetailProps) {
                 <span className="text-xs text-muted">
                   {LEAD_DETAIL_MESSAGES.EXPECTED_PRICE}
                 </span>
-                <span className="text-xs font-medium text-amber-600">
+                <span className="text-xs font-medium text-warning">
                   {item.target_price ? (
                     <>
                       <MoneyText value={Number(item.target_price)} />

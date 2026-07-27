@@ -23,17 +23,17 @@ export function FabricColorSelector({
   return (
     <div className="bg-white rounded-xl shadow-sm p-4">
       <div className="flex flex-col gap-1 mb-3">
-        <h3 className="text-base font-bold text-gray-900">
+        <h3 className="text-base font-bold text-foreground">
           {LABELS.colorSectionTitle}
         </h3>
         {activeColorName && (
           <div className="flex items-center gap-2 text-xs text-muted mt-0.5">
             <span>{LABELS.colorViewing}</span>
-            <span className="font-semibold text-gray-900">
+            <span className="font-semibold text-primary">
               {activeColorName}
             </span>
             {activeVariant?.color_code && (
-              <span className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-[10px] font-mono">
+              <span className="bg-surface-secondary text-secondary px-1.5 py-0.5 rounded text-[10px] font-mono">
                 {activeVariant.color_standard}: {activeVariant.color_code}
               </span>
             )}
@@ -54,13 +54,13 @@ export function FabricColorSelector({
               'w-10 h-10 rounded-full border-2 transition-all shadow-sm flex items-center justify-center relative',
               activeColorName === v.color_name
                 ? 'border-primary ring-2 ring-primary/20 scale-110'
-                : 'border-gray-200 hover:border-gray-300',
+                : 'border-default hover:border-muted',
             )}
             style={{ backgroundColor: v.color_hex || '#ccc' }}
             title={v.color_name}
           >
             {!v.color_hex && (
-              <span className="text-[10px] text-gray-500 font-medium">
+              <span className="text-[10px] text-muted font-medium">
                 {LABELS.na}
               </span>
             )}

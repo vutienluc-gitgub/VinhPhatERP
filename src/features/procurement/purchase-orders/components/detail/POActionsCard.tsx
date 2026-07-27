@@ -97,7 +97,7 @@ export function POActionsCard({
                 {PO_CONSTANTS.APPROVAL_APPROVE}
               </Button>
             ) : (
-              <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-100 flex gap-2">
+              <div className="text-sm text-warning bg-amber-50 p-3 rounded-lg border border-warning flex gap-2">
                 <Icon
                   name="AlertCircle"
                   size={16}

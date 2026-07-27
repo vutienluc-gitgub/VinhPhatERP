@@ -15,7 +15,7 @@ export function ActivityFeed({
           <span
             className={cn(
               'h-8 w-8 shrink-0 rounded-full text-white text-xs font-semibold flex items-center justify-center',
-              a.avatarColor ?? 'bg-indigo-600',
+              a.avatarColor ?? 'bg-info-soft',
             )}
           >
             {a.actor.slice(0, 1).toUpperCase()}

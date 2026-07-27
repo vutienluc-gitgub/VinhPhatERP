@@ -42,7 +42,7 @@ const ADJUSTMENT_COLUMNS: DataTableColumn<InventoryAdjustment>[] = [
       };
       return (
         <div className="flex flex-col">
-          <span className="font-bold text-slate-800">{map[type] || type}</span>
+          <span className="font-bold text-primary">{map[type] || type}</span>
           <span className="text-xs text-muted truncate max-w-[200px]">
             {r.reason}
           </span>
@@ -60,9 +60,7 @@ const ADJUSTMENT_COLUMNS: DataTableColumn<InventoryAdjustment>[] = [
     cell: (r) => {
       const isPos = r.adjustment_qty > 0;
       return (
-        <span
-          className={`font-bold ${isPos ? 'text-emerald-600' : 'text-red-600'}`}
-        >
+        <span className={`font-bold ${isPos ? 'text-success' : 'text-danger'}`}>
           {isPos ? '+' : ''}
           {r.adjustment_qty}
         </span>
@@ -113,7 +111,7 @@ export function InventoryAdjustmentHistory() {
           <div className="flex justify-between items-center mb-2">
             <span className="font-bold text-sm">{r.adjustment_type}</span>
             <span
-              className={`font-bold ${r.adjustment_qty > 0 ? 'text-emerald-600' : 'text-red-600'}`}
+              className={`font-bold ${r.adjustment_qty > 0 ? 'text-success' : 'text-danger'}`}
             >
               {r.adjustment_qty > 0 ? '+' : ''}
               {r.adjustment_qty}

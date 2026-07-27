@@ -23,7 +23,7 @@ function SafeImage({
 
   if (error) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-gray-50 border border-gray-100">
+      <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground bg-gray-50 border border-default">
         <Icon name="ImageOff" className="w-6 h-6 mb-1 opacity-30" />
         <span className="text-[10px] font-medium">{LABELS.noImage}</span>
       </div>
@@ -54,7 +54,7 @@ export function FabricRecommendations({
       {/* Collaborative Recommendations ("Khách hàng khác cũng xem") */}
       {hasAlsoViewed && (
         <div className="bg-white rounded-xl shadow-sm p-4">
-          <h3 className="text-base font-bold text-gray-900 mb-3 border-b border-gray-100 pb-2">
+          <h3 className="text-base font-bold text-foreground mb-3 border-b border-default pb-2">
             {LABELS.alsoViewedProducts}
           </h3>
           <div className="grid grid-cols-3 gap-3 pt-1">
@@ -72,12 +72,12 @@ export function FabricRecommendations({
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
                       {LABELS.noImageIcon}
                     </div>
                   )}
                 </div>
-                <span className="font-semibold text-gray-950 text-xs truncate group-hover:text-primary transition-colors">
+                <span className="font-semibold text-muted text-xs truncate group-hover:text-primary transition-colors">
                   {item.code}
                 </span>
                 <span className="text-[10px] text-muted truncate">
@@ -92,7 +92,7 @@ export function FabricRecommendations({
       {/* Related Products Section */}
       {hasRelated && (
         <div className="bg-white rounded-xl shadow-sm p-4">
-          <h3 className="text-base font-bold text-gray-900 mb-3 border-b border-gray-100 pb-2">
+          <h3 className="text-base font-bold text-foreground mb-3 border-b border-default pb-2">
             {LABELS.relatedProducts}
           </h3>
           <div className="space-y-3 pt-1">
@@ -110,20 +110,20 @@ export function FabricRecommendations({
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                       {LABELS.noImageIcon}
                     </div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-gray-900 text-sm truncate group-hover:text-primary transition-colors">
+                  <p className="font-semibold text-primary text-sm truncate group-hover:text-primary transition-colors">
                     {item.code}
                   </p>
                   <p className="text-xs text-muted truncate">{item.name}</p>
                 </div>
                 <Icon
                   name="ChevronRight"
-                  className="w-4 h-4 text-gray-400 group-hover:text-primary"
+                  className="w-4 h-4 text-muted-foreground group-hover:text-primary"
                 />
               </Link>
             ))}

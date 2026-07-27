@@ -65,7 +65,7 @@ export function useShipmentColumns({
                   • {MSG.LBL_ORDER}: {s.orders.order_number}
                 </>
               ) : (
-                <span className="ml-1 text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">
+                <span className="ml-1 text-[10px] font-bold uppercase tracking-wider text-warning bg-amber-50 px-1.5 py-0.5 rounded-full">
                   {MSG.LBL_MANUAL}
                 </span>
               )}
@@ -128,10 +128,10 @@ export function useShipmentColumns({
           return (
             <div className="flex bg-transparent w-full group cursor-default">
               <div className="flex flex-col items-center mr-3 mt-1 shrink-0">
-                <div className="w-2.5 h-2.5 rounded-full bg-slate-300 ring-2 ring-slate-100 dark:ring-slate-800" />
-                <div className="w-[1.5px] h-[22px] bg-slate-200 border-l border-dashed border-slate-300 dark:border-slate-600 my-0.5" />
+                <div className="w-2.5 h-2.5 rounded-full bg-surface-strong ring-2 ring-slate-100 dark:ring-slate-800" />
+                <div className="w-[1.5px] h-[22px] bg-surface-secondary border-l border-dashed border-muted dark:border-focus my-0.5" />
                 <div
-                  className={`w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-800 ${isCompleted ? 'bg-success' : s.status === 'preparing' ? 'bg-slate-300' : 'bg-orange-500 animate-pulse'}`}
+                  className={`w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-800 ${isCompleted ? 'bg-success' : s.status === 'preparing' ? 'bg-surface-strong' : 'bg-warning-soft animate-pulse'}`}
                 />
               </div>
               <div className="flex w-[220px] flex-col justify-between py-[1px]">

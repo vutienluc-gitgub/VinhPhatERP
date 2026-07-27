@@ -313,7 +313,7 @@ export function YarnIssueModal({
           ) : (
             <div className="flex flex-col gap-4">
               {/* Info banner */}
-              <div className="flex items-start gap-2 p-3 rounded-lg bg-blue-50 border border-blue-200 text-sm text-blue-800">
+              <div className="flex items-start gap-2 p-3 rounded-lg bg-blue-50 border border-info text-sm text-info">
                 <Icon name="Info" size={18} className="mt-0.5 shrink-0" />
                 <p>
                   He thong da tu dong phan bo theo FIFO (lo cu nhat uu tien).
@@ -335,7 +335,7 @@ export function YarnIssueModal({
           )}
 
           {error && (
-            <div className="mt-4 p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
+            <div className="mt-4 p-3 rounded-lg bg-red-50 border border-danger text-sm text-danger">
               <Icon name="AlertCircle" size={16} className="inline mr-1" />
               {error}
             </div>

@@ -421,15 +421,15 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Nhóm khách hàng (Many-to-Many Tags / Checkbox toggles) */}
           <div className="form-field">
-            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-2">
+            <span className="text-xs font-bold text-muted uppercase tracking-wider block mb-2">
               {CUSTOMER_FORM_LABELS.groupsLabel}
             </span>
             {groupsList.length === 0 ? (
-              <span className="text-xs text-slate-400 italic">
+              <span className="text-xs text-muted-foreground italic">
                 {CUSTOMER_FORM_LABELS.noGroups}
               </span>
             ) : (
-              <div className="flex flex-wrap gap-2 p-3.5 bg-slate-50 rounded-xl border border-slate-200 h-full min-h-[90px] content-start">
+              <div className="flex flex-wrap gap-2 p-3.5 bg-slate-50 rounded-xl border border-default h-full min-h-[90px] content-start">
                 {groupsList
                   .filter(
                     (g) =>
@@ -453,7 +453,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer h-fit ${
                           isSelected
                             ? 'bg-primary/10 border-primary text-primary'
-                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                            : 'bg-white border-default text-muted hover:bg-slate-50'
                         }`}
                       >
                         <span>{isSelected ? '✓' : '+'}</span>
@@ -470,7 +470,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
 
           {/* Tài khoản Customer Portal */}
           <div className="form-field">
-            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-2">
+            <span className="text-xs font-bold text-muted uppercase tracking-wider block mb-2">
               {CUSTOMER_FORM_LABELS.portalLabel}
             </span>
             {isEditing ? (
@@ -479,7 +479,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
                 customerName={customer.name}
               />
             ) : (
-              <div className="border border-dashed border-slate-200 bg-slate-50/50 rounded-xl p-4 min-h-[90px] flex items-center justify-center text-center text-xs text-slate-400 italic">
+              <div className="border border-dashed border-default bg-slate-50/50 rounded-xl p-4 min-h-[90px] flex items-center justify-center text-center text-xs text-muted-foreground italic">
                 {CUSTOMER_FORM_LABELS.portalPending}
               </div>
             )}
@@ -488,8 +488,8 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
       </div>
 
       {isEditing && (
-        <div className="mt-8 pt-6 border-t border-slate-200">
-          <h3 className="text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider">
+        <div className="mt-8 pt-6 border-t border-default">
+          <h3 className="text-sm font-bold text-foreground mb-4 uppercase tracking-wider">
             {CUSTOMER_FORM_LABELS.timelineLabel}
           </h3>
           <CustomerTimeline customerId={customer.id} />

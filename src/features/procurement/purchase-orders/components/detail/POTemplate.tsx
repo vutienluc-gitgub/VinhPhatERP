@@ -32,7 +32,7 @@ export function POTemplate({
   return (
     <div
       id="po-print-template"
-      className="p-8 bg-white text-gray-800 text-sm font-sans relative"
+      className="p-8 bg-white text-primary text-sm font-sans relative"
       style={{ width: '210mm', minHeight: '297mm', boxSizing: 'border-box' }}
     >
       <style>{`
@@ -74,7 +74,7 @@ export function POTemplate({
         </div>
         <div className="flex flex-col items-end">
           <QRCodeSVG value={poUrl} size={64} />
-          <span className="text-[10px] text-gray-400 mt-1">
+          <span className="text-[10px] text-muted-foreground mt-1">
             {PO_CONSTANTS.TPL_QR_HINT}
           </span>
         </div>
@@ -82,18 +82,18 @@ export function POTemplate({
 
       {/* Title */}
       <div className="text-center mb-8">
-        <h1 className="font-bold text-2xl text-gray-900 m-0 uppercase">
+        <h1 className="font-bold text-2xl text-foreground m-0 uppercase">
           {PO_CONSTANTS.TPL_DOC_TITLE}
         </h1>
-        <p className="text-gray-500 font-semibold mt-1">
+        <p className="text-muted font-semibold mt-1">
           {PO_CONSTANTS.COL_PO_CODE}: {po.po_code}
         </p>
       </div>
 
       {/* Info Sections */}
-      <div className="grid grid-cols-2 gap-8 mb-6 border border-gray-200 p-4 rounded-xl">
+      <div className="grid grid-cols-2 gap-8 mb-6 border border-default p-4 rounded-xl">
         <div>
-          <h3 className="font-bold text-gray-900 border-b border-gray-200 pb-1 mb-2 uppercase text-xs">
+          <h3 className="font-bold text-foreground border-b border-default pb-1 mb-2 uppercase text-xs">
             {PO_CONSTANTS.TPL_SUPPLIER_SECTION}
           </h3>
           <p className="m-0">
@@ -116,7 +116,7 @@ export function POTemplate({
           </p>
         </div>
         <div>
-          <h3 className="font-bold text-gray-900 border-b border-gray-200 pb-1 mb-2 uppercase text-xs">
+          <h3 className="font-bold text-foreground border-b border-default pb-1 mb-2 uppercase text-xs">
             {PO_CONSTANTS.TPL_ORDER_SECTION}
           </h3>
           <p className="m-0">
@@ -142,28 +142,28 @@ export function POTemplate({
 
       {/* Materials Table */}
       <div className="mb-6">
-        <table className="w-full border-collapse border border-gray-200 text-xs">
+        <table className="w-full border-collapse border border-default text-xs">
           <thead>
             <tr className="bg-gray-50">
-              <th className="border border-gray-200 p-2 text-center w-10">
+              <th className="border border-default p-2 text-center w-10">
                 {PO_CONSTANTS.TPL_COL_NO}
               </th>
-              <th className="border border-gray-200 p-2 text-left">
+              <th className="border border-default p-2 text-left">
                 {PO_CONSTANTS.TPL_COL_CODE}
               </th>
-              <th className="border border-gray-200 p-2 text-left">
+              <th className="border border-default p-2 text-left">
                 {PO_CONSTANTS.TPL_COL_NAME}
               </th>
-              <th className="border border-gray-200 p-2 text-center w-16">
+              <th className="border border-default p-2 text-center w-16">
                 {PO_CONSTANTS.COL_UOM}
               </th>
-              <th className="border border-gray-200 p-2 text-right w-20">
+              <th className="border border-default p-2 text-right w-20">
                 {PO_CONSTANTS.COL_QTY}
               </th>
-              <th className="border border-gray-200 p-2 text-right w-24">
+              <th className="border border-default p-2 text-right w-24">
                 {PO_CONSTANTS.COL_UNIT_PRICE}
               </th>
-              <th className="border border-gray-200 p-2 text-right w-28">
+              <th className="border border-default p-2 text-right w-28">
                 {PO_CONSTANTS.COL_LINE_TOTAL}
               </th>
             </tr>
@@ -173,23 +173,23 @@ export function POTemplate({
               const detail = getMaterialDetail(item.material_id);
               return (
                 <tr key={item.id}>
-                  <td className="border border-gray-200 p-2 text-center">
+                  <td className="border border-default p-2 text-center">
                     {index + 1}
                   </td>
-                  <td className="border border-gray-200 p-2 font-mono">
+                  <td className="border border-default p-2 font-mono">
                     {detail.code}
                   </td>
-                  <td className="border border-gray-200 p-2">{detail.name}</td>
-                  <td className="border border-gray-200 p-2 text-center uppercase">
+                  <td className="border border-default p-2">{detail.name}</td>
+                  <td className="border border-default p-2 text-center uppercase">
                     {item.uom || 'kg'}
                   </td>
-                  <td className="border border-gray-200 p-2 text-right">
+                  <td className="border border-default p-2 text-right">
                     {formatValue(item.ordered_qty)}
                   </td>
-                  <td className="border border-gray-200 p-2 text-right">
+                  <td className="border border-default p-2 text-right">
                     {formatValue(item.unit_price)} {currency}
                   </td>
-                  <td className="border border-gray-200 p-2 text-right font-medium">
+                  <td className="border border-default p-2 text-right font-medium">
                     {formatValue(item.ordered_qty * item.unit_price)} {currency}
                   </td>
                 </tr>
@@ -202,19 +202,19 @@ export function POTemplate({
       {/* Summary calculations */}
       <div className="flex justify-between items-start mb-12">
         <div className="w-1/2">
-          <p className="text-xs text-gray-500 italic">
+          <p className="text-xs text-muted italic">
             * {PO_CONSTANTS.TPL_VAT_NOTE}
           </p>
         </div>
-        <div className="w-5/12 border border-gray-200 rounded-xl p-3 bg-gray-50 text-xs">
-          <div className="flex justify-between py-1 border-b border-gray-200">
+        <div className="w-5/12 border border-default rounded-xl p-3 bg-gray-50 text-xs">
+          <div className="flex justify-between py-1 border-b border-default">
             <span>{PO_CONSTANTS.SUBTOTAL}:</span>
             <span className="font-semibold">
               {formatValue(po.total_amount - (po.shipping_fee ?? 0))} {currency}
             </span>
           </div>
           {(po.vat_rate ?? 0) > 0 && (
-            <div className="flex justify-between py-1 border-b border-gray-200">
+            <div className="flex justify-between py-1 border-b border-default">
               <span>
                 {PO_CONSTANTS.VAT_RATE.replace('(%)', `(${po.vat_rate}%)`)}:
               </span>
@@ -228,7 +228,7 @@ export function POTemplate({
             </div>
           )}
           {(po.shipping_fee ?? 0) > 0 && (
-            <div className="flex justify-between py-1 border-b border-gray-200">
+            <div className="flex justify-between py-1 border-b border-default">
               <span>{PO_CONSTANTS.SHIPPING_FEE}:</span>
               <span className="font-semibold">
                 {formatValue(po.shipping_fee ?? 0)} {currency}
@@ -250,8 +250,8 @@ export function POTemplate({
           <span className="font-bold text-xs uppercase block mb-12">
             {PO_CONSTANTS.TPL_SIGN_CREATOR}
           </span>
-          <div className="h-0.5 w-32 bg-gray-200 mx-auto mb-1"></div>
-          <span className="text-xs text-gray-500">
+          <div className="h-0.5 w-32 bg-surface-secondary mx-auto mb-1"></div>
+          <span className="text-xs text-muted">
             {creatorProfile?.name || 'N/A'}
           </span>
         </div>
@@ -259,8 +259,8 @@ export function POTemplate({
           <span className="font-bold text-xs uppercase block mb-12">
             {PO_CONSTANTS.TPL_SIGN_MANAGER}
           </span>
-          <div className="h-0.5 w-32 bg-gray-200 mx-auto mb-1"></div>
-          <span className="text-xs text-gray-500">
+          <div className="h-0.5 w-32 bg-surface-secondary mx-auto mb-1"></div>
+          <span className="text-xs text-muted">
             {PO_CONSTANTS.TPL_SIGN_INTERNAL_NOTE}
           </span>
         </div>
@@ -268,8 +268,8 @@ export function POTemplate({
           <span className="font-bold text-xs uppercase block mb-12">
             {PO_CONSTANTS.TPL_SIGN_DIRECTOR}
           </span>
-          <div className="h-0.5 w-32 bg-gray-200 mx-auto mb-1"></div>
-          <span className="text-xs text-gray-500">
+          <div className="h-0.5 w-32 bg-surface-secondary mx-auto mb-1"></div>
+          <span className="text-xs text-muted">
             {po.status === 'approved' || po.status === 'completed'
               ? PO_CONSTANTS.TPL_SIGN_APPROVED
               : PO_CONSTANTS.TPL_SIGN_PENDING}
@@ -278,7 +278,7 @@ export function POTemplate({
       </div>
 
       {/* Footer info */}
-      <div className="border-t border-gray-200 mt-20 pt-4 text-center text-[10px] text-gray-400">
+      <div className="border-t border-default mt-20 pt-4 text-center text-[10px] text-muted-foreground">
         {PO_CONSTANTS.TPL_FOOTER_NOTE}
       </div>
     </div>

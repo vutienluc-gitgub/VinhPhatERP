@@ -122,7 +122,7 @@ export function PasteExcelParser({
 
       {/* Paste area */}
       {showPasteArea && (
-        <div className="rounded-xl border border-dashed border-indigo-300 bg-indigo-50/30 p-4">
+        <div className="rounded-xl border border-dashed border-info bg-indigo-50/30 p-4">
           <p className="text-sm text-[var(--text-secondary)] mb-2">
             Dán dữ liệu từ Excel (2-3 cột: Mã cuộn, KG, Dài m). Mỗi dòng 1 cuộn.
           </p>
@@ -152,7 +152,7 @@ export function PasteExcelParser({
 
       {/* Auto-generate */}
       {showAutoGen && (
-        <div className="rounded-xl border border-dashed border-amber-300 bg-amber-50/30 p-4">
+        <div className="rounded-xl border border-dashed border-warning bg-amber-50/30 p-4">
           <p className="text-sm text-[var(--text-secondary)] mb-3">
             Tự động sinh mã cuộn liên tiếp. Bạn chỉ cần điền số KG sau.
           </p>

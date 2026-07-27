@@ -23,7 +23,7 @@ export function RollProgressBar({
       className={clsx(
         'rounded-2xl border p-4 transition-all duration-500',
         isComplete
-          ? 'bg-emerald-50 border-emerald-300'
+          ? 'bg-emerald-50 border-success'
           : 'bg-[var(--surface-raised)] border-[var(--border)]',
       )}
     >
@@ -33,7 +33,7 @@ export function RollProgressBar({
           <span
             className={clsx(
               'text-2xl font-black tabular-nums transition-colors',
-              isComplete ? 'text-emerald-600' : 'text-[var(--text-primary)]',
+              isComplete ? 'text-success' : 'text-[var(--text-primary)]',
             )}
           >
             {scanned}

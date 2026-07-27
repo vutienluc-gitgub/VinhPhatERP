@@ -27,14 +27,14 @@ export function POGoodsReceiptsList({
         </h3>
       </div>
       {receipts.length === 0 ? (
-        <div className="p-16 flex flex-col items-center justify-center text-center bg-gray-50/50 border-2 border-dashed border-gray-200 rounded-xl m-4">
-          <div className="w-20 h-20 rounded-full bg-white shadow-sm flex items-center justify-center mb-5 text-gray-400">
+        <div className="p-16 flex flex-col items-center justify-center text-center bg-gray-50/50 border-2 border-dashed border-default rounded-xl m-4">
+          <div className="w-20 h-20 rounded-full bg-white shadow-sm flex items-center justify-center mb-5 text-muted-foreground">
             <Icon name="PackageOpen" size={40} />
           </div>
-          <h4 className="text-xl font-bold text-gray-800 mb-2">
+          <h4 className="text-xl font-bold text-foreground mb-2">
             {PO_CONSTANTS.GR_EMPTY_TITLE}
           </h4>
-          <p className="text-base text-gray-500 max-w-md mb-8">
+          <p className="text-base text-muted max-w-md mb-8">
             {PO_CONSTANTS.GR_EMPTY_DESC}
           </p>
           {(po.status === 'approved' || po.status === 'partial_received') && (
@@ -72,7 +72,7 @@ export function POGoodsReceiptsList({
                       className="flex justify-between py-1 border-b border-border/50 last:border-0"
                     >
                       <span>Ref ID: {item.po_item_id}</span>
-                      <span className="font-medium text-green-600">
+                      <span className="font-medium text-success">
                         +{item.received_qty}
                       </span>
                     </div>

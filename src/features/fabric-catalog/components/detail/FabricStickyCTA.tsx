@@ -23,7 +23,7 @@ const VARIANT_CLASSES: Record<CTAButtonConfig['variant'], string> = {
   secondary:
     'flex-[2] flex flex-col items-center justify-center gap-1 bg-[#0068ff]/10 hover:bg-[#0068ff]/20 text-[#0068ff] border border-[#0068ff]/20 py-2.5 px-2 rounded-xl transition-colors',
   tertiary:
-    'flex-1 flex flex-col items-center justify-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2.5 px-2 rounded-xl transition-colors',
+    'flex-1 flex flex-col items-center justify-center gap-1 bg-surface-secondary hover:bg-surface-secondary text-primary py-2.5 px-2 rounded-xl transition-colors',
 };
 
 export function FabricStickyCTA({
@@ -64,26 +64,26 @@ export function FabricStickyCTA({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-4px_12px_-1px_rgba(0,0,0,0.08)] z-40">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-default shadow-[0_-4px_12px_-1px_rgba(0,0,0,0.08)] z-40">
       {/* Value Bar */}
-      <div className="flex items-center justify-center gap-4 px-3 py-1.5 bg-slate-50 border-b border-slate-100 max-w-md mx-auto">
-        <div className="flex items-center gap-1 text-[10px] text-slate-600">
-          <Icon name="Package" className="w-3 h-3 text-slate-400" />
+      <div className="flex items-center justify-center gap-4 px-3 py-1.5 bg-slate-50 border-b border-default max-w-md mx-auto">
+        <div className="flex items-center gap-1 text-[10px] text-muted">
+          <Icon name="Package" className="w-3 h-3 text-muted-foreground" />
           <span className="font-semibold">MOQ:</span>
-          <span className="font-bold text-slate-800">{displayMOQ}</span>
+          <span className="font-bold text-primary">{displayMOQ}</span>
         </div>
-        <div className="w-px h-3 bg-slate-200" />
-        <div className="flex items-center gap-1 text-[10px] text-slate-600">
-          <Icon name="Clock" className="w-3 h-3 text-slate-400" />
+        <div className="w-px h-3 bg-surface-secondary" />
+        <div className="flex items-center gap-1 text-[10px] text-muted">
+          <Icon name="Clock" className="w-3 h-3 text-muted-foreground" />
           <span className="font-semibold">Lead:</span>
-          <span className="font-bold text-slate-800">{displayLeadTime}</span>
+          <span className="font-bold text-primary">{displayLeadTime}</span>
         </div>
         {lowestPrice !== null && (
           <>
-            <div className="w-px h-3 bg-slate-200" />
-            <div className="flex items-center gap-1 text-[10px] text-slate-600">
-              <Icon name="Tag" className="w-3 h-3 text-slate-400" />
-              <span className="font-bold text-emerald-700">
+            <div className="w-px h-3 bg-surface-secondary" />
+            <div className="flex items-center gap-1 text-[10px] text-muted">
+              <Icon name="Tag" className="w-3 h-3 text-muted-foreground" />
+              <span className="font-bold text-success">
                 {LABELS.fromPrefix} <MoneyText value={lowestPrice} />
                 /kg
               </span>

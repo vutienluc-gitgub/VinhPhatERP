@@ -14,10 +14,12 @@ export function UnitSection() {
   } = useFormContext<FabricCatalogFormValues>();
 
   return (
-    <fieldset className="border border-slate-200 p-4 rounded-md mb-6 relative mt-4">
-      <legend className="text-sm font-semibold px-2 text-slate-700">
-        Quy đổi
-      </legend>
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-lg font-semibold tracking-tight text-foreground">
+          Quy đổi
+        </h3>
+      </div>
       <div className="form-grid sm:grid-cols-2">
         <div className="form-field">
           <label htmlFor="fc-unit">
@@ -41,6 +43,6 @@ export function UnitSection() {
           )}
         </div>
       </div>
-    </fieldset>
+    </div>
   );
 }

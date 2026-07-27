@@ -71,7 +71,7 @@ export function ShipmentDispatchPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="flex flex-col items-center gap-2 text-slate-500">
+        <div className="flex flex-col items-center gap-2 text-muted">
           <Icon name="Loader2" className="w-8 h-8 animate-spin" />
           <p>{MSG.LOADING}</p>
         </div>
@@ -83,16 +83,16 @@ export function ShipmentDispatchPage() {
     <TacticalBoard onMoveComplete={handleMoveComplete}>
       <div className="flex flex-col gap-6 p-4 sm:p-6">
         {/* ── HEADER ── */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl bg-slate-900 p-5 sm:p-6 text-white shadow-xl">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl bg-surface-strong p-5 sm:p-6 text-white shadow-xl">
           <div>
-            <h1 className="text-xl sm:text-2xl font-black uppercase tracking-wider text-emerald-400">
+            <h1 className="text-xl sm:text-2xl font-black uppercase tracking-wider text-success">
               {MSG.TITLE}
             </h1>
-            <p className="mt-1 text-sm text-slate-400">{MSG.SUBTITLE}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{MSG.SUBTITLE}</p>
           </div>
           <div className="flex gap-6 text-right">
             <div>
-              <span className="block text-[10px] uppercase tracking-wider text-slate-400">
+              <span className="block text-[10px] uppercase tracking-wider text-muted-foreground">
                 Kho
               </span>
               <span className="text-lg font-bold">
@@ -100,22 +100,22 @@ export function ShipmentDispatchPage() {
               </span>
             </div>
             <div>
-              <span className="block text-[10px] uppercase tracking-wider text-slate-400">
+              <span className="block text-[10px] uppercase tracking-wider text-muted-foreground">
                 {MSG.LBL_ASSIGNED}
               </span>
-              <span className="text-lg font-bold text-emerald-400">
+              <span className="text-lg font-bold text-success">
                 {MSG.ASSIGNED_SUMMARY(
                   totalAssigned.count,
                   totalAssigned.kg.toFixed(1),
                 )}
               </span>
             </div>
-            <div className="pl-4 border-l border-slate-700 flex items-center gap-3">
+            <div className="pl-4 border-l border-focus flex items-center gap-3">
               <Button
                 variant="secondary"
                 onClick={autoOptimizeFleet}
                 disabled={isCommitting || unassignedRolls.length === 0}
-                className="bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border-transparent"
+                className="bg-surface-strong text-muted hover:bg-surface-strong hover:text-white border-transparent"
               >
                 <Icon name="Wand2" size={16} className="mr-2" />
                 {MSG.BTN_AUTO_ASSIGN}
@@ -126,7 +126,7 @@ export function ShipmentDispatchPage() {
                 disabled={isCommitting || totalAssigned.count === 0}
                 className={
                   totalAssigned.count > 0
-                    ? 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/30'
+                    ? 'bg-info-soft hover:bg-info-soft shadow-indigo-600/30'
                     : ''
                 }
               >
@@ -148,15 +148,15 @@ export function ShipmentDispatchPage() {
           {/* LEFT: POOL */}
           <div className="lg:col-span-5 xl:col-span-4 flex flex-col gap-4">
             <div className="flex items-center gap-2 px-1">
-              <Icon name="PackageOpen" className="h-5 w-5 text-indigo-500" />
-              <h2 className="text-lg font-extrabold uppercase text-slate-800">
+              <Icon name="PackageOpen" className="h-5 w-5 text-info" />
+              <h2 className="text-lg font-extrabold uppercase text-foreground">
                 {MSG.POOL_TITLE(poolStats.count)}
               </h2>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-surface p-4 shadow-sm max-h-[70vh] overflow-y-auto">
+            <div className="rounded-2xl border border-default bg-surface p-4 shadow-sm max-h-[70vh] overflow-y-auto">
               {unassignedRolls.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
                   <Icon
                     name="PackageOpen"
                     className="h-8 w-8 mb-2 opacity-40"

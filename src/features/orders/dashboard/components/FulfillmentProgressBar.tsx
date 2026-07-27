@@ -16,10 +16,10 @@ export function FulfillmentProgressBar({
   const isOverHalf = value >= 50;
 
   const barColor = isComplete
-    ? 'bg-emerald-500'
+    ? 'bg-success-soft'
     : isOverHalf
-      ? 'bg-blue-500'
-      : 'bg-amber-500';
+      ? 'bg-info-soft'
+      : 'bg-warning-soft';
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
@@ -32,10 +32,10 @@ export function FulfillmentProgressBar({
       <span
         className={`text-xs font-bold tabular-nums min-w-[40px] text-right ${
           isComplete
-            ? 'text-emerald-600'
+            ? 'text-success'
             : isOverHalf
-              ? 'text-blue-600'
-              : 'text-amber-600'
+              ? 'text-info'
+              : 'text-warning'
         }`}
       >
         {value.toFixed(1)}%

@@ -82,7 +82,7 @@ export function useSupplierColumns({
         const supplier = row.original;
         return (
           <div className="flex flex-col text-sm">
-            <span className="font-medium text-emerald-600">
+            <span className="font-medium text-success">
               {SUPPLIER_LIST_LABELS.LBL_OTD} {supplier.on_time_rate ?? 0}%
             </span>
             <span className="text-xs text-muted">

@@ -46,14 +46,14 @@ export function PublicCompareModal({
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-3 animate-fade-in">
       <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] shadow-2xl flex flex-col overflow-hidden">
-        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
-          <h3 className="font-bold text-gray-900 flex items-center gap-2">
+        <div className="p-4 border-b border-default flex justify-between items-center bg-slate-50">
+          <h3 className="font-bold text-foreground flex items-center gap-2">
             <Icon name="Scale" className="w-5 h-5 text-primary" />
             {LABELS.compareTitle} ({compareList.length}/3)
           </h3>
           <button
             onClick={onClose}
-            className="p-1 rounded-full hover:bg-slate-200 text-slate-500"
+            className="p-1 rounded-full hover:bg-surface-secondary text-muted"
           >
             <Icon name="X" className="w-5 h-5" />
           </button>
@@ -61,14 +61,14 @@ export function PublicCompareModal({
 
         <div className="flex-1 overflow-x-auto p-4">
           {compareList.length < 2 ? (
-            <div className="text-center py-16 text-slate-400 text-sm">
+            <div className="text-center py-16 text-muted-foreground text-sm">
               {LABELS.compareEmpty}
             </div>
           ) : (
-            <table className="w-full border-collapse text-left text-xs text-slate-700 min-w-[500px]">
+            <table className="w-full border-collapse text-left text-xs text-secondary min-w-[500px]">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50">
-                  <th className="p-3 font-semibold text-slate-900 w-1/4">
+                <tr className="border-b border-default bg-slate-50">
+                  <th className="p-3 font-semibold text-foreground w-1/4">
                     Thông số
                   </th>
                   {compareList.map((item) => (
@@ -92,7 +92,7 @@ export function PublicCompareModal({
               </thead>
               <tbody className="divide-y divide-slate-100">
                 <tr>
-                  <td className="p-3 font-medium text-slate-900">
+                  <td className="p-3 font-medium text-primary">
                     {LABELS.composition}
                   </td>
                   {compareList.map((item) => (
@@ -102,7 +102,7 @@ export function PublicCompareModal({
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-3 font-medium text-slate-900">
+                  <td className="p-3 font-medium text-primary">
                     {LABELS.width}
                   </td>
                   {compareList.map((item) => (
@@ -114,9 +114,7 @@ export function PublicCompareModal({
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-3 font-medium text-slate-900">
-                    {LABELS.gsm}
-                  </td>
+                  <td className="p-3 font-medium text-primary">{LABELS.gsm}</td>
                   {compareList.map((item) => (
                     <td key={item.id} className="p-3">
                       {item.target_gsm ? `${item.target_gsm} gsm` : LABELS.na}
@@ -124,7 +122,7 @@ export function PublicCompareModal({
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-3 font-medium text-slate-900">
+                  <td className="p-3 font-medium text-primary">
                     {LABELS.stretch}
                   </td>
                   {compareList.map((item) => (
@@ -137,7 +135,7 @@ export function PublicCompareModal({
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-3 font-medium text-slate-900">
+                  <td className="p-3 font-medium text-primary">
                     {LABELS.thickness}
                   </td>
                   {compareList.map((item) => (
@@ -149,30 +147,30 @@ export function PublicCompareModal({
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-3 font-medium text-slate-900">MOQ</td>
+                  <td className="p-3 font-medium text-primary">MOQ</td>
                   {compareList.map((item) => (
                     <td
                       key={item.id}
-                      className="p-3 font-semibold text-slate-900"
+                      className="p-3 font-semibold text-primary"
                     >
                       {item.moq}
                     </td>
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-3 font-medium text-slate-900">
+                  <td className="p-3 font-medium text-primary">
                     Thời gian giao
                   </td>
                   {compareList.map((item) => (
                     <td
                       key={item.id}
-                      className="p-3 font-semibold text-slate-900"
+                      className="p-3 font-semibold text-primary"
                     >
                       {item.lead_time}
                     </td>
                   ))}
                 </tr>
-                <tr className="border-t border-slate-200">
+                <tr className="border-t border-default">
                   <td className="p-3"></td>
                   {compareList.map((item) => (
                     <td key={item.id} className="p-3">
@@ -188,7 +186,7 @@ export function PublicCompareModal({
                           );
                           toast.success(LABELS.removeCompareSuccess);
                         }}
-                        className="text-red-500 hover:text-red-700 font-semibold"
+                        className="text-danger hover:text-danger font-semibold"
                       >
                         Xóa
                       </button>
@@ -201,7 +199,7 @@ export function PublicCompareModal({
         </div>
 
         {compareList.length > 0 && (
-          <div className="p-4 border-t border-gray-100 flex justify-end gap-2 bg-slate-50">
+          <div className="p-4 border-t border-default flex justify-end gap-2 bg-slate-50">
             <Button variant="outline" onClick={clearCompare}>
               {LABELS.clearAll}
             </Button>

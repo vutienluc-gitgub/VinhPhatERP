@@ -29,18 +29,18 @@ export function MoneyStat({
 
   const bgClass = {
     default: 'bg-[var(--surface)] border-[var(--border)]',
-    primary: 'bg-indigo-50 border-indigo-100',
-    success: 'bg-emerald-50 border-emerald-100',
-    danger: 'bg-rose-50 border-rose-100',
-    warning: 'bg-amber-50 border-amber-100',
+    primary: 'bg-indigo-50 border-info',
+    success: 'bg-emerald-50 border-success',
+    danger: 'bg-rose-50 border-danger',
+    warning: 'bg-amber-50 border-warning',
   }[tone];
 
   const iconColorClass = {
-    default: 'text-slate-500 bg-slate-100',
-    primary: 'text-indigo-600 bg-indigo-100',
-    success: 'text-emerald-600 bg-emerald-100',
-    danger: 'text-rose-600 bg-rose-100',
-    warning: 'text-amber-600 bg-amber-100',
+    default: 'text-muted bg-surface-secondary',
+    primary: 'text-info bg-info-soft',
+    success: 'text-success bg-success-soft',
+    danger: 'text-danger bg-danger-soft',
+    warning: 'text-warning bg-warning-soft',
   }[tone];
 
   return (
@@ -48,7 +48,7 @@ export function MoneyStat({
       className={cn('rounded-xl border p-5 flex flex-col', bgClass, className)}
     >
       <div className="flex justify-between items-start mb-2">
-        <span className="text-sm font-medium text-slate-600">{title}</span>
+        <span className="text-sm font-medium text-muted">{title}</span>
         {icon && (
           <div className={cn('p-2 rounded-lg', iconColorClass)}>
             <Icon name={icon} size={20} />
@@ -57,10 +57,10 @@ export function MoneyStat({
       </div>
 
       <div className="flex items-baseline gap-1 mt-1">
-        <span className="text-2xl font-bold tracking-tight text-slate-900 tabular-nums">
+        <span className="text-2xl font-bold tracking-tight text-primary tabular-nums">
           {text}
         </span>
-        <span className="text-sm font-semibold text-slate-500">đ</span>
+        <span className="text-sm font-semibold text-muted">đ</span>
       </div>
 
       {(trend !== undefined || subtitle) && (
@@ -70,8 +70,8 @@ export function MoneyStat({
               className={cn(
                 'flex items-center font-medium',
                 trendDirection === 'up' || trend > 0
-                  ? 'text-emerald-600'
-                  : 'text-rose-600',
+                  ? 'text-success'
+                  : 'text-danger',
               )}
             >
               <Icon
@@ -86,7 +86,7 @@ export function MoneyStat({
               {Math.abs(trend)}%
             </span>
           )}
-          {subtitle && <span className="text-slate-500">{subtitle}</span>}
+          {subtitle && <span className="text-muted">{subtitle}</span>}
         </div>
       )}
     </div>

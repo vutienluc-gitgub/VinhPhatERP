@@ -120,12 +120,12 @@ function PublicFabricDetailPageInner() {
           name="MessageCircleWarning"
           className="w-16 h-16 text-warning mb-4 opacity-50"
         />
-        <h1 className="text-xl font-bold text-gray-800 mb-2">
+        <h1 className="text-xl font-bold text-foreground mb-2">
           {LABELS.notFound}
         </h1>
         <p className="text-muted mb-2">{LABELS.notFoundDesc}</p>
         {isError && error instanceof Error && (
-          <p className="text-xs text-red-500 mb-6 font-mono break-all">
+          <p className="text-xs text-danger mb-6 font-mono break-all">
             {error.message}
           </p>
         )}

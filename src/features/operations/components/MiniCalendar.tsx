@@ -44,15 +44,15 @@ export function MiniCalendar({
               className={cn(
                 'aspect-square rounded-md flex items-center justify-center text-xs relative cursor-default transition-colors',
                 isToday
-                  ? 'bg-indigo-600 text-white font-semibold'
+                  ? 'bg-info-soft text-white font-semibold'
                   : hl
-                    ? 'bg-indigo-50 text-indigo-700 font-medium'
+                    ? 'bg-indigo-50 text-info font-medium'
                     : 'text-zinc-700 hover:bg-zinc-100',
               )}
             >
               {d}
               {hl && !isToday && (
-                <span className="absolute bottom-1 h-1 w-1 rounded-full bg-indigo-500" />
+                <span className="absolute bottom-1 h-1 w-1 rounded-full bg-info-soft" />
               )}
             </div>
           );

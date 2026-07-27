@@ -11,7 +11,7 @@ export function SourceTypeBadge({
 }) {
   if (sourceType === 'auto_generated') {
     return (
-      <span className="inline-flex items-center rounded-sm bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+      <span className="inline-flex items-center rounded-sm bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-info ring-1 ring-inset ring-blue-700/10">
         AUTO
       </span>
     );
@@ -40,11 +40,11 @@ export function MachineSpecMobileCard({
   onEdit,
 }: MachineSpecMobileCardProps) {
   return (
-    <div className="p-4 bg-white rounded-lg border border-gray-200">
+    <div className="p-4 bg-white rounded-lg border border-default">
       <div className="flex justify-between items-start mb-2">
         <div>
           <div className="font-semibold">{item.code || '-'}</div>
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-muted">
             {getTypeLabel(item.machine_type)}
           </div>
         </div>

@@ -203,17 +203,17 @@ export function CreateLeadModal({
 
         {/* Smart Duplicate Detection Alert */}
         {hasDuplicates && !selectedCustomerId && (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+          <div className="rounded-xl border border-warning bg-amber-50 p-4">
             <div className="flex items-start gap-3">
               <Icon
                 name="AlertCircle"
-                className="h-5 w-5 text-amber-600 mt-0.5 shrink-0"
+                className="h-5 w-5 text-warning mt-0.5 shrink-0"
               />
               <div className="flex-1">
-                <h4 className="text-sm font-bold text-amber-800">
+                <h4 className="text-sm font-bold text-warning-strong">
                   Phát hiện dữ liệu trùng lặp
                 </h4>
-                <p className="text-sm text-amber-700 mt-1">
+                <p className="text-sm text-warning-strong mt-1">
                   Thông tin này đã tồn tại trong hệ thống. Bạn có muốn liên kết
                   với khách hàng cũ không?
                 </p>
@@ -222,18 +222,18 @@ export function CreateLeadModal({
                   {duplicates.customers.map((c) => (
                     <div
                       key={c.id}
-                      className="flex items-center justify-between bg-white p-3 rounded-lg border border-amber-100 shadow-sm"
+                      className="flex items-center justify-between bg-white p-3 rounded-lg border border-warning shadow-sm"
                     >
                       <div className="flex items-center gap-2">
                         <Icon
                           name="Building2"
-                          className="h-4 w-4 text-amber-600"
+                          className="h-4 w-4 text-warning"
                         />
                         <div>
-                          <p className="text-sm font-bold text-slate-800">
+                          <p className="text-sm font-bold text-primary">
                             {c.name}
                           </p>
-                          <p className="text-xs text-slate-500">
+                          <p className="text-xs text-muted">
                             Khách hàng chính thức
                           </p>
                         </div>
@@ -254,17 +254,17 @@ export function CreateLeadModal({
                   {duplicates.leads.map((l) => (
                     <div
                       key={l.id}
-                      className="flex items-center gap-2 bg-white/60 p-3 rounded-lg border border-amber-100"
+                      className="flex items-center gap-2 bg-white/60 p-3 rounded-lg border border-warning"
                     >
                       <Icon
                         name="UserCircle2"
-                        className="h-4 w-4 text-amber-600"
+                        className="h-4 w-4 text-warning"
                       />
                       <div>
-                        <p className="text-sm font-medium text-slate-700">
+                        <p className="text-sm font-medium text-secondary">
                           {l.customer_name}
                         </p>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-muted">
                           Lead tiềm năng (chưa chuyển đổi)
                         </p>
                       </div>
@@ -277,14 +277,14 @@ export function CreateLeadModal({
         )}
 
         {selectedCustomerId && (
-          <div className="rounded-xl border border-teal-200 bg-teal-50 p-4 flex items-center justify-between">
+          <div className="rounded-xl border border-success bg-teal-50 p-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Icon name="Building2" className="h-5 w-5 text-teal-600" />
+              <Icon name="Building2" className="h-5 w-5 text-success" />
               <div>
-                <p className="text-sm font-bold text-teal-800">
+                <p className="text-sm font-bold text-success">
                   Đã chọn liên kết khách hàng
                 </p>
-                <p className="text-xs text-teal-700">
+                <p className="text-xs text-success">
                   Lead này sẽ được gắn vào hồ sơ khách hàng đã chọn.
                 </p>
               </div>

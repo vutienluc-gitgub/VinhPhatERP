@@ -60,7 +60,7 @@ export function FinanceSettingsForm() {
     <div className="panel-card card-flush">
       <div className="card-header-area">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-success-soft/10 text-success flex items-center justify-center shrink-0">
             <Icon name="Wallet" size={20} strokeWidth={1.5} />
           </div>
           <span className="font-bold text-lg">

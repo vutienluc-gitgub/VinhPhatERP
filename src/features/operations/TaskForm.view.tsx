@@ -285,7 +285,7 @@ export function TaskFormView({
               type="button"
               onClick={onDelete}
               disabled={isPending}
-              className="text-red-600 hover:bg-red-50 hover:text-red-700 border-red-100"
+              className="text-danger hover:bg-red-50 hover:text-danger border-danger"
             >
               Xóa Task
             </Button>

@@ -26,10 +26,10 @@ export function FabricReadinessScore({
 
   const scoreColor =
     score >= 80
-      ? 'text-emerald-800 bg-emerald-50 border-emerald-200'
+      ? 'text-success bg-emerald-50 border-success'
       : score >= 50
-        ? 'text-amber-800 bg-amber-50 border-amber-200'
-        : 'text-red-800 bg-red-50 border-red-200';
+        ? 'text-warning-strong bg-amber-50 border-warning'
+        : 'text-danger bg-red-50 border-danger';
 
   return (
     <div
@@ -39,14 +39,14 @@ export function FabricReadinessScore({
       )}
     >
       <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-sm border font-black text-lg text-slate-700">
+        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-sm border font-black text-lg text-secondary">
           {score}
         </div>
         <div>
           <div className="font-bold text-sm flex items-center gap-2">
             {LABELS.SCORE_TITLE}
             {isPerfect && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-success-soft text-success">
                 100%
               </span>
             )}
@@ -82,14 +82,14 @@ export function FabricReadinessScore({
             className={clsx(
               'flex items-center gap-1.5 text-[11px] font-medium px-2 py-1 rounded-full border bg-white shadow-sm',
               check.passed
-                ? 'border-emerald-200 text-emerald-700'
-                : 'border-amber-200 text-amber-700',
+                ? 'border-success text-success'
+                : 'border-warning text-warning-strong',
             )}
           >
             <Icon
               name={check.passed ? 'Check' : 'TriangleAlert'}
               size={12}
-              className={check.passed ? 'text-emerald-500' : 'text-amber-500'}
+              className={check.passed ? 'text-success' : 'text-warning'}
             />
             <span>{check.label}</span>
           </div>

@@ -49,7 +49,7 @@ export function useWeavingInvoiceColumns({
         header: MSG.COL_SUPPLIER,
         cell: ({ row }) => (
           <div className="flex flex-col">
-            <span className="font-bold text-slate-800">
+            <span className="font-bold text-primary">
               {row.original.suppliers?.name ?? '—'}
             </span>
             {row.original.suppliers?.code && (

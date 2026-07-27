@@ -117,14 +117,14 @@ export function ShipmentRollPicker({
   if (groups.length === 0) {
     return (
       <div
-        className={`rounded-xl border-2 border-dashed border-slate-200 p-8 text-center ${className ?? ''}`}
+        className={`rounded-xl border-2 border-dashed border-default p-8 text-center ${className ?? ''}`}
       >
         <Icon
           name="PackageOpen"
           size={32}
-          className="mx-auto text-slate-300 mb-2"
+          className="mx-auto text-muted mb-2"
         />
-        <p className="text-slate-500 font-medium">{MSG.EMPTY_ROLLS}</p>
+        <p className="text-muted font-medium">{MSG.EMPTY_ROLLS}</p>
       </div>
     );
   }
@@ -133,11 +133,11 @@ export function ShipmentRollPicker({
     <div className={`space-y-3 ${className ?? ''}`}>
       {/* Summary bar */}
       <div className="flex items-center justify-between px-1">
-        <span className="text-xs text-slate-500">
+        <span className="text-xs text-muted">
           {MSG.AVAILABLE_ROLLS(availableRolls.length)}
         </span>
         {totalSelected > 0 && (
-          <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+          <span className="text-xs font-bold text-success bg-emerald-50 px-2 py-0.5 rounded-full">
             {MSG.SELECTED_SUMMARY(
               totalSelected,
               totalSelectedWeight.toFixed(1),

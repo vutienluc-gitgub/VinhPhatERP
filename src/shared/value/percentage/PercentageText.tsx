@@ -23,8 +23,8 @@ export function PercentageText({
   const variantClass = {
     primary: 'text-primary font-semibold',
     secondary: 'text-muted text-sm',
-    success: 'text-emerald-600 font-medium',
-    danger: 'text-rose-600 font-medium',
+    success: 'text-success font-medium',
+    danger: 'text-danger font-medium',
     default: '',
   }[variant];
 

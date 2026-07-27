@@ -47,13 +47,13 @@ function formatQty(qty: number | null | undefined): string {
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
   draft: {
     label: 'Nháp (Chưa xác nhận)',
-    className: 'bg-amber-100 text-amber-700',
+    className: 'bg-warning-soft text-warning-strong',
   },
   confirmed: {
     label: 'Đã xác nhận & Nhập kho',
-    className: 'bg-blue-100 text-blue-700',
+    className: 'bg-info-soft text-info',
   },
-  paid: { label: 'Đã thanh toán', className: 'bg-green-100 text-green-700' },
+  paid: { label: 'Đã thanh toán', className: 'bg-success-soft text-success' },
 };
 
 export function PublicInvoiceDetailPage() {
@@ -156,20 +156,20 @@ export function PublicInvoiceDetailPage() {
     return (
       <div className="min-h-screen bg-[#f0f5fb] flex items-center justify-center p-6">
         <div className="max-w-4xl w-full bg-white rounded-3xl shadow-xl p-8 space-y-6">
-          <div className="h-8 bg-slate-200 rounded-lg w-1/3 animate-pulse" />
+          <div className="h-8 bg-surface-secondary rounded-lg w-1/3 animate-pulse" />
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <div className="h-4 bg-slate-200 rounded w-3/4 animate-pulse" />
-              <div className="h-4 bg-slate-200 rounded w-1/2 animate-pulse" />
+              <div className="h-4 bg-surface-secondary rounded w-3/4 animate-pulse" />
+              <div className="h-4 bg-surface-secondary rounded w-1/2 animate-pulse" />
             </div>
             <div className="space-y-2">
-              <div className="h-4 bg-slate-200 rounded w-2/3 animate-pulse" />
-              <div className="h-4 bg-slate-200 rounded w-1/3 animate-pulse" />
+              <div className="h-4 bg-surface-secondary rounded w-2/3 animate-pulse" />
+              <div className="h-4 bg-surface-secondary rounded w-1/3 animate-pulse" />
             </div>
           </div>
-          <div className="h-40 bg-slate-100 rounded-xl animate-pulse" />
+          <div className="h-40 bg-surface-secondary rounded-xl animate-pulse" />
           <div className="flex justify-end">
-            <div className="h-10 bg-slate-200 rounded-lg w-32 animate-pulse" />
+            <div className="h-10 bg-surface-secondary rounded-lg w-32 animate-pulse" />
           </div>
         </div>
       </div>
@@ -200,7 +200,7 @@ export function PublicInvoiceDetailPage() {
 
   const statusInfo = STATUS_LABELS[invoice.status] ?? {
     label: invoice.status,
-    className: 'bg-slate-100 text-slate-700',
+    className: 'bg-surface-secondary text-secondary',
   };
 
   const totalLengthM = calculateTotalLength(invoice.items);
@@ -226,7 +226,7 @@ export function PublicInvoiceDetailPage() {
                 '_blank',
               );
             }}
-            className="flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-blue-600"
+            className="flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-info"
             aria-label="Chia sẻ hóa đơn qua Zalo"
           >
             <span>💬 Zalo</span>
@@ -237,7 +237,7 @@ export function PublicInvoiceDetailPage() {
             onClick={() => {
               window.location.href = `mailto:?subject=Tra cứu Hóa đơn dệt gia công ${invoice.invoice_number}&body=Xem hóa đơn dệt gia công số ${invoice.invoice_number} tại địa chỉ: ${lookupUrl}`;
             }}
-            className="flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-slate-700"
+            className="flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-secondary"
             aria-label="Chia sẻ hóa đơn qua Email"
           >
             <Icon name="Mail" size={14} />
@@ -247,7 +247,7 @@ export function PublicInvoiceDetailPage() {
           {/* Nút Copy Link */}
           <button
             onClick={handleCopyLink}
-            className="flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-emerald-700"
+            className="flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-success"
             aria-label="Sao chép liên kết tra cứu hóa đơn"
           >
             <Icon name="Copy" size={14} />
@@ -258,7 +258,7 @@ export function PublicInvoiceDetailPage() {
           {isShareSupported && (
             <button
               onClick={handleNativeShare}
-              className="flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-indigo-700"
+              className="flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-info"
               aria-label="Mở khay chia sẻ hệ thống"
             >
               <Icon name="Share2" size={14} />
@@ -285,7 +285,7 @@ export function PublicInvoiceDetailPage() {
         <div className="h-1 bg-gradient-to-r from-[#0f3460] to-[#3da5e0] -mt-8 -mx-8 md:-mt-12 md:-mx-12 mb-8 md:mb-12 rounded-t-3xl print:hidden" />
 
         {/* Invoice Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start gap-6 border-b border-slate-100 pb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-6 border-b border-default pb-8">
           <div>
             <h1 className="text-2xl md:text-3xl font-extrabold text-[#0f3460] tracking-tight uppercase print:text-xl">
               Hóa đơn dệt gia công
@@ -306,7 +306,7 @@ export function PublicInvoiceDetailPage() {
           </div>
 
           <div className="text-left md:text-right space-y-1">
-            <div className="text-sm font-semibold text-slate-500">
+            <div className="text-sm font-semibold text-muted">
               Số phiếu:{' '}
               <span className="font-extrabold text-[#0f3460] text-lg">
                 {invoice.invoice_number}
@@ -314,13 +314,13 @@ export function PublicInvoiceDetailPage() {
             </div>
             <div className="text-xs text-[var(--text-secondary)]">
               Ngày lập:{' '}
-              <span className="font-bold text-slate-700">
+              <span className="font-bold text-secondary">
                 {formatDate(invoice.invoice_date)}
               </span>
             </div>
             <div className="text-xs text-[var(--text-secondary)]">
               Mã tra cứu:{' '}
-              <span className="font-extrabold text-blue-600 tracking-wider uppercase text-sm select-all">
+              <span className="font-extrabold text-info tracking-wider uppercase text-sm select-all">
                 {lookupCode}
               </span>
             </div>
@@ -328,13 +328,13 @@ export function PublicInvoiceDetailPage() {
         </div>
 
         {/* Seller & Buyer Details */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-8 border-b border-slate-100">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-8 border-b border-default">
           {/* Seller / Weaver */}
           <div className="space-y-2">
             <h3 className="text-xs font-extrabold text-[#0f3460] uppercase tracking-wider">
               Đơn vị sản xuất (Bên nhận gia công)
             </h3>
-            <div className="text-sm font-bold text-slate-800">
+            <div className="text-sm font-bold text-primary">
               {invoice.supplier_name}
             </div>
             <div className="text-xs text-[var(--text-secondary)]">
@@ -376,7 +376,7 @@ export function PublicInvoiceDetailPage() {
             <span className="text-[10px] md:text-xs text-[var(--text-secondary)] uppercase font-semibold block">
               Loại vải gia công
             </span>
-            <span className="font-extrabold text-sm md:text-base text-slate-800 block truncate">
+            <span className="font-extrabold text-sm md:text-base text-primary block truncate">
               {invoice.fabric_type}
             </span>
           </div>
@@ -384,7 +384,7 @@ export function PublicInvoiceDetailPage() {
             <span className="text-[10px] md:text-xs text-[var(--text-secondary)] uppercase font-semibold block">
               Đơn giá dệt (kg)
             </span>
-            <span className="font-extrabold text-sm md:text-base text-slate-800 block">
+            <span className="font-extrabold text-sm md:text-base text-primary block">
               {formatMoney(invoice.unit_price_per_kg)}
             </span>
           </div>
@@ -416,8 +416,8 @@ export function PublicInvoiceDetailPage() {
 
         {/* Notes Section */}
         {invoice.notes && (
-          <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 my-8 text-xs text-slate-500 italic print:bg-white print:border-none print:p-0">
-            <span className="font-bold text-slate-700 not-italic block mb-1">
+          <div className="bg-slate-50 border border-default rounded-xl p-4 my-8 text-xs text-muted italic print:bg-white print:border-none print:p-0">
+            <span className="font-bold text-secondary not-italic block mb-1">
               Ghi chú hóa đơn:
             </span>
             {invoice.notes}
@@ -425,20 +425,20 @@ export function PublicInvoiceDetailPage() {
         )}
 
         {/* Validation QR and Digital Signature Block */}
-        <div className="mt-12 pt-8 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div className="mt-12 pt-8 border-t border-default grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           {/* Signatures */}
           <div className="space-y-4 text-center md:text-left">
             <div className="text-xs uppercase font-extrabold text-[#0f3460] tracking-wider">
               Xác thực chữ ký số (Digital Seal)
             </div>
-            <div className="inline-flex flex-col border border-emerald-200 bg-emerald-50/50 rounded-2xl p-4 text-left max-w-sm">
-              <span className="text-emerald-800 font-bold text-xs flex items-center gap-1.5">
+            <div className="inline-flex flex-col border border-success bg-emerald-50/50 rounded-2xl p-4 text-left max-w-sm">
+              <span className="text-success font-bold text-xs flex items-center gap-1.5">
                 <span>✓</span> Chữ ký điện tử hợp lệ
               </span>
-              <span className="text-[10px] text-emerald-600 mt-1">
+              <span className="text-[10px] text-success mt-1">
                 Ký bởi: {invoice.supplier_name}
               </span>
-              <span className="text-[10px] text-emerald-600">
+              <span className="text-[10px] text-success">
                 Chứng thư số hoạt động: Khớp mã với dữ liệu gốc của kho mộc.
               </span>
             </div>
@@ -454,7 +454,7 @@ export function PublicInvoiceDetailPage() {
                 Liên kết bảo mật tới hệ thống VinhPhat ERP
               </span>
             </div>
-            <div className="bg-white p-2 border border-slate-200 rounded-2xl shadow-sm print:p-0 print:border-none">
+            <div className="bg-white p-2 border border-default rounded-2xl shadow-sm print:p-0 print:border-none">
               <QRCodeDisplay value={lookupUrl} size={110} label="" />
             </div>
           </div>

@@ -46,7 +46,7 @@ export function ImageSection({
         }}
       />
       {currentImageUrl && (
-        <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-muted-foreground bg-slate-50/50 p-2.5 rounded-md border border-slate-100">
+        <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-muted-foreground bg-slate-50/50 p-2.5 rounded-md border border-default">
           <div className="flex items-center gap-1.5 text-success font-medium">
             <Icon name="check-circle-2" className="w-3.5 h-3.5" />
             Đã tải ảnh lên

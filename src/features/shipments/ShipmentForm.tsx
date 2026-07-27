@@ -429,21 +429,21 @@ export function ShipmentForm({
             </label>
 
             {isTrading ? (
-              <div className="rounded-xl border border-slate-200 p-4 space-y-3">
-                <div className="flex items-center justify-between text-sm text-slate-500 mb-2">
+              <div className="rounded-xl border border-default p-4 space-y-3">
+                <div className="flex items-center justify-between text-sm text-muted mb-2">
                   <span>{MSG.TRADING_FROM_ORDER}</span>
                   <Badge variant="info">{MSG.TRADING_AUTO_DEDUCT}</Badge>
                 </div>
                 {tradingItemsSummary?.items.map((item) => (
                   <div
                     key={item.id}
-                    className="flex justify-between items-center py-2 border-b border-slate-100 last:border-0"
+                    className="flex justify-between items-center py-2 border-b border-default last:border-0"
                   >
                     <div>
                       <div className="font-semibold text-sm">
                         {item.fabric_type}
                       </div>
-                      <div className="text-xs text-slate-500">
+                      <div className="text-xs text-muted">
                         {item.color_name || MSG.COLOR_RAW}
                       </div>
                     </div>

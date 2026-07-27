@@ -31,7 +31,7 @@ function SpecItem({
   return (
     <div className={cn('flex items-baseline gap-1.5', className)}>
       <span className="text-xs text-muted shrink-0">{label}:</span>
-      <span className="font-semibold text-gray-800 text-sm break-words">
+      <span className="font-semibold text-primary text-sm break-words">
         {value}
       </span>
     </div>
@@ -50,7 +50,7 @@ export function FabricSpecsList({
     <>
       {/* Technical Specifications */}
       <div className="bg-white rounded-xl shadow-sm p-4">
-        <h3 className="text-base font-bold text-gray-900 mb-3 border-b border-gray-100 pb-2">
+        <h3 className="text-base font-bold text-foreground mb-3 border-b border-default pb-2">
           {LABELS.specs}
         </h3>
         <div className="grid grid-cols-2 gap-y-3 gap-x-4">
@@ -117,7 +117,7 @@ export function FabricSpecsList({
 
       {/* Commercial Specifications (MOQ & Lead times) */}
       <div className="bg-white rounded-xl shadow-sm p-4">
-        <h3 className="text-base font-bold text-gray-900 mb-3 border-b border-gray-100 pb-2">
+        <h3 className="text-base font-bold text-foreground mb-3 border-b border-default pb-2">
           {LABELS.specsCommercial}
         </h3>
         <div className="grid grid-cols-2 gap-y-3 gap-x-4">
@@ -140,7 +140,7 @@ export function FabricSpecsList({
           )}
 
           {canViewInventory && activeVariant && activeVariant.stock_status && (
-            <div className="flex items-baseline gap-1.5 col-span-2 mt-2 pt-2 border-t border-slate-100">
+            <div className="flex items-baseline gap-1.5 col-span-2 mt-2 pt-2 border-t border-default">
               <span className="text-xs text-muted shrink-0">
                 {COMP_LABELS.INVENTORY_STATUS_TITLE.replace(
                   '{color}',
@@ -152,8 +152,8 @@ export function FabricSpecsList({
                 className={cn(
                   'font-bold text-sm',
                   activeVariant.stock_status === 'in-stock'
-                    ? 'text-green-600'
-                    : 'text-red-500',
+                    ? 'text-success'
+                    : 'text-danger',
                 )}
               >
                 {activeVariant.stock_status === 'in-stock' &&

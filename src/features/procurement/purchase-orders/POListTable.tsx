@@ -144,9 +144,9 @@ export function POListTable({
                   <span className="text-xs text-muted w-14">
                     {PO_CONSTANTS.COL_PROGRESS}:
                   </span>
-                  <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="flex-1 h-2 bg-surface-secondary rounded-full overflow-hidden">
                     <div
-                      className={`h-full transition-all ${(po.progress_percentage ?? 0) >= 100 ? 'bg-green-500' : (po.progress_percentage ?? 0) > 0 ? 'bg-orange-400' : 'bg-gray-300'}`}
+                      className={`h-full transition-all ${(po.progress_percentage ?? 0) >= 100 ? 'bg-success-soft' : (po.progress_percentage ?? 0) > 0 ? 'bg-warning-soft' : 'bg-surface-strong'}`}
                       style={{
                         width: `${Math.min(100, Math.max(0, po.progress_percentage ?? 0))}%`,
                       }}

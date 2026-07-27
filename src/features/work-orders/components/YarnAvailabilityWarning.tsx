@@ -49,7 +49,7 @@ export function YarnAvailabilityWarning({
 
   if (warnings.length === 0) {
     return (
-      <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
+      <div className="flex items-center gap-2 rounded-lg border border-success bg-emerald-50 px-3 py-2 text-xs text-success">
         <Icon name="CircleCheck" size={14} />
         <span className="font-medium">
           Tồn kho đủ cho tất cả loại sợi yêu cầu
@@ -59,8 +59,8 @@ export function YarnAvailabilityWarning({
   }
 
   return (
-    <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 space-y-2">
-      <div className="flex items-center gap-2 text-xs font-bold text-amber-800">
+    <div className="rounded-lg border border-warning bg-amber-50 p-3 space-y-2">
+      <div className="flex items-center gap-2 text-xs font-bold text-warning-strong">
         <Icon name="TriangleAlert" size={14} />
         <span>Cảnh báo tồn kho không đủ ({warnings.length} loại sợi)</span>
       </div>
@@ -68,7 +68,7 @@ export function YarnAvailabilityWarning({
         {warnings.map((w) => (
           <div
             key={w.yarnName}
-            className="flex items-center justify-between text-[11px] text-amber-700 bg-white/60 rounded-md px-2 py-1.5"
+            className="flex items-center justify-between text-[11px] text-warning-strong bg-white/60 rounded-md px-2 py-1.5"
           >
             <span
               className="font-medium truncate max-w-[200px]"
@@ -78,7 +78,7 @@ export function YarnAvailabilityWarning({
             </span>
             <span className="shrink-0 ml-2">
               Cần <strong>{formatQuantity(w.required)}</strong> — Còn{' '}
-              <strong className={w.available <= 0 ? 'text-red-600' : ''}>
+              <strong className={w.available <= 0 ? 'text-danger' : ''}>
                 {formatQuantity(w.available)}
               </strong>
             </span>

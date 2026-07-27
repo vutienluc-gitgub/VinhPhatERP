@@ -29,12 +29,46 @@ export function BasicInfoSection({
   });
 
   return (
-    <fieldset className="border border-slate-200 p-4 rounded-md mb-6 relative mt-4">
-      <legend className="text-sm font-semibold px-2 text-slate-700">
-        Thông tin chung
-      </legend>
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-lg font-semibold tracking-tight text-foreground">
+          Thông tin chung
+        </h3>
+      </div>
 
       <div className="form-grid sm:grid-cols-2">
+        <div className="form-field sm:col-span-2">
+          <label>
+            {LABELS.FABRIC_TYPE} <span className="field-required">*</span>
+          </label>
+          <div className="flex items-center gap-6 mt-1 mb-2">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                value="knitted"
+                {...register('fabric_type')}
+                className="w-4 h-4 text-primary focus:ring-primary border-muted"
+                disabled={!isEditing}
+              />
+              <span className="text-sm font-medium text-secondary">
+                {LABELS.KNITTED}
+              </span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                value="woven"
+                {...register('fabric_type')}
+                className="w-4 h-4 text-primary focus:ring-primary border-muted"
+                disabled={!isEditing}
+              />
+              <span className="text-sm font-medium text-secondary">
+                {LABELS.WOVEN}
+              </span>
+            </label>
+          </div>
+        </div>
+
         <div className="form-field">
           <label htmlFor="fc-code">
             {LABELS.CODE} <span className="field-required">*</span>
@@ -53,24 +87,6 @@ export function BasicInfoSection({
         </div>
 
         <div className="form-field">
-          <label htmlFor="fc-name">
-            {LABELS.NAME} <span className="field-required">*</span>
-          </label>
-          <input
-            id="fc-name"
-            className={`field-input${errors.name ? ' border-danger' : ''}`}
-            type="text"
-            placeholder={LABELS.NAME_PLACEHOLDER}
-            {...register('name')}
-          />
-          {errors.name && (
-            <span className="field-error">{errors.name.message}</span>
-          )}
-        </div>
-      </div>
-
-      <div className="form-grid sm:grid-cols-2 mt-4">
-        <div className="form-field">
           <label>{LABELS.CATEGORY}</label>
           <Controller
             name="category_id"
@@ -87,6 +103,22 @@ export function BasicInfoSection({
           />
           {errors.category_id && (
             <span className="field-error">{errors.category_id.message}</span>
+          )}
+        </div>
+
+        <div className="form-field">
+          <label htmlFor="fc-name">
+            {LABELS.NAME} <span className="field-required">*</span>
+          </label>
+          <input
+            id="fc-name"
+            className={`field-input${errors.name ? ' border-danger' : ''}`}
+            type="text"
+            placeholder={LABELS.NAME_PLACEHOLDER}
+            {...register('name')}
+          />
+          {errors.name && (
+            <span className="field-error">{errors.name.message}</span>
           )}
         </div>
 
@@ -145,6 +177,6 @@ export function BasicInfoSection({
           </div>
         </div>
       </div>
-    </fieldset>
+    </div>
   );
 }

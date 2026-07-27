@@ -37,27 +37,27 @@ export const COMPATIBILITY_LEVELS = [
   {
     value: 'preferred',
     label: 'Tốt nhất (Preferred)',
-    color: 'bg-emerald-100 text-emerald-800',
+    color: 'bg-success-soft text-success',
   },
   {
     value: 'recommended',
     label: 'Khuyên dùng (Recommended)',
-    color: 'bg-blue-100 text-blue-800',
+    color: 'bg-info-soft text-info',
   },
   {
     value: 'allowed',
     label: 'Có thể dùng (Allowed)',
-    color: 'bg-amber-100 text-amber-800',
+    color: 'bg-warning-soft text-warning-strong',
   },
   {
     value: 'restricted',
     label: 'Hạn chế (Restricted)',
-    color: 'bg-orange-100 text-orange-800',
+    color: 'bg-warning-soft text-warning-strong',
   },
   {
     value: 'forbidden',
     label: 'Cấm (Forbidden)',
-    color: 'bg-red-100 text-red-800',
+    color: 'bg-danger-soft text-danger',
   },
 ] as const;
 

@@ -210,15 +210,15 @@ export function WorkOrderList({
         subtitle={MSG.PAGE_SUBTITLE}
         actions={
           <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex bg-slate-100 p-1 rounded-lg mr-2">
+            <div className="flex bg-surface-secondary p-1 rounded-lg mr-2">
               <button
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'kanban' ? 'bg-white shadow text-primary' : 'text-slate-600 hover:text-slate-900'}`}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'kanban' ? 'bg-white shadow text-primary' : 'text-muted hover:text-primary'}`}
                 onClick={() => setViewMode('kanban')}
               >
                 {MSG.VIEW_KANBAN}
               </button>
               <button
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'table' ? 'bg-white shadow text-primary' : 'text-slate-600 hover:text-slate-900'}`}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'table' ? 'bg-white shadow text-primary' : 'text-muted hover:text-primary'}`}
                 onClick={() => setViewMode('table')}
               >
                 {MSG.VIEW_TABLE}

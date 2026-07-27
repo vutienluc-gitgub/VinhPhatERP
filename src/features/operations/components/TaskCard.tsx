@@ -43,15 +43,15 @@ export const TaskCard = forwardRef(function TaskCard(
       case 'todo':
         return 'border-zinc-200 hover:border-zinc-400 bg-white';
       case 'in_progress':
-        return 'border-indigo-200 hover:border-indigo-400 bg-indigo-50/40';
+        return 'border-info hover:border-info bg-indigo-50/40';
       case 'review':
         return 'border-violet-200 hover:border-violet-400 bg-violet-50/40';
       case 'blocked':
-        return 'border-red-200 hover:border-red-400 bg-red-50/40';
+        return 'border-danger hover:border-danger bg-red-50/40';
       case 'done':
-        return 'border-emerald-200 hover:border-emerald-400 bg-emerald-50/40';
+        return 'border-success hover:border-success bg-emerald-50/40';
       default:
-        return 'border-zinc-200 hover:border-indigo-300 bg-white';
+        return 'border-zinc-200 hover:border-info bg-white';
     }
   };
 
@@ -75,13 +75,13 @@ export const TaskCard = forwardRef(function TaskCard(
             event.stopPropagation();
             onTapMove(task);
           }}
-          className="absolute top-2 right-2 rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-600 opacity-60 hover:opacity-100 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 transition-all"
+          className="absolute top-2 right-2 rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-600 opacity-60 hover:opacity-100 hover:bg-indigo-50 hover:border-info hover:text-info transition-all"
           aria-label="Chuyển trạng thái nhanh"
         >
           →
         </button>
       )}
-      <div className="font-semibold text-zinc-900 leading-snug group-hover:text-indigo-600 mb-2">
+      <div className="font-semibold text-zinc-900 leading-snug group-hover:text-info mb-2">
         {task.title}
       </div>
       <div className="flex items-center gap-1 mb-3 flex-wrap">
@@ -103,7 +103,7 @@ export const TaskCard = forwardRef(function TaskCard(
         <div className="flex items-center gap-1.5">
           {assignee && (
             <div className="flex items-center gap-1">
-              <span className="h-4 w-4 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[8px] font-bold">
+              <span className="h-4 w-4 rounded-full bg-info-soft text-white flex items-center justify-center text-[8px] font-bold">
                 {assignee.name.slice(0, 1)}
               </span>
               <span className="truncate max-w-[70px] font-medium">
@@ -117,7 +117,7 @@ export const TaskCard = forwardRef(function TaskCard(
         </span>
       </div>
       {blockedReason && (
-        <div className="mt-2 rounded-md border border-rose-200 bg-rose-50 px-2 py-1 text-[10px] font-medium text-rose-700">
+        <div className="mt-2 rounded-md border border-danger bg-rose-50 px-2 py-1 text-[10px] font-medium text-danger">
           {blockedReason}
         </div>
       )}

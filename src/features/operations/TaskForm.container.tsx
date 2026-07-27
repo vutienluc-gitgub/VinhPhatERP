@@ -107,7 +107,7 @@ export function TaskFormContainer({ task, onClose }: TaskFormContainerProps) {
   if (isLoadingData) {
     return (
       <div className="p-8 flex flex-col items-center justify-center space-y-4">
-        <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-info border-t-indigo-600 rounded-full animate-spin"></div>
         <p className="text-sm text-zinc-500">Đang tải dữ liệu...</p>
       </div>
     );

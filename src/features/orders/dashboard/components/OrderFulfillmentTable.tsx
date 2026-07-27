@@ -118,7 +118,7 @@ export function OrderFulfillmentTable({
   if (isLoading) {
     return (
       <div className="rounded-xl border border-zinc-100 bg-white p-8 flex items-center justify-center">
-        <div className="animate-spin h-6 w-6 border-2 border-indigo-500 border-t-transparent rounded-full" />
+        <div className="animate-spin h-6 w-6 border-2 border-info border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -133,7 +133,7 @@ export function OrderFulfillmentTable({
             onClick={() => setFilter(btn.key)}
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
               filter === btn.key
-                ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                ? 'bg-indigo-50 text-info border border-info'
                 : 'text-zinc-500 hover:bg-zinc-50'
             }`}
           >
@@ -245,7 +245,7 @@ export function OrderFulfillmentTable({
                     <span
                       className={
                         row.is_overdue
-                          ? 'text-red-600 font-bold'
+                          ? 'text-danger font-bold'
                           : 'text-zinc-600'
                       }
                     >
@@ -254,7 +254,7 @@ export function OrderFulfillmentTable({
                         <Icon
                           name="TriangleAlert"
                           size={12}
-                          className="inline ml-1 text-red-500"
+                          className="inline ml-1 text-danger"
                         />
                       )}
                     </span>

@@ -141,8 +141,8 @@ export function POCreatePage() {
     return (
       <div className="page-container p-4 max-w-7xl mx-auto">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="h-64 bg-gray-200 rounded-xl"></div>
+          <div className="h-8 bg-surface-secondary rounded w-1/3"></div>
+          <div className="h-64 bg-surface-secondary rounded-xl"></div>
         </div>
       </div>
     );
@@ -156,7 +156,7 @@ export function POCreatePage() {
             <h1 className="text-2xl font-bold m-0">
               {PO_CONSTANTS.CREATE_PAGE_TITLE}
             </h1>
-            <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md font-medium border border-gray-200">
+            <span className="px-2 py-1 bg-surface-secondary text-muted text-xs rounded-md font-medium border border-default">
               {PO_CONSTANTS.STATUS_DRAFT}
             </span>
           </div>

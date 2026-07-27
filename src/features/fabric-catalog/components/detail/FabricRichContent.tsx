@@ -18,20 +18,20 @@ export function FabricRichContent({ fabric }: FabricRichContentProps) {
       {/* Rich Characteristics */}
       {hasCharacteristics && fabric.characteristics && (
         <div className="bg-white rounded-xl shadow-sm p-4">
-          <h3 className="text-base font-bold text-gray-900 mb-3">
+          <h3 className="text-base font-bold text-foreground mb-3">
             {LABELS.characteristics}
           </h3>
           <div className="space-y-3">
             {fabric.characteristics.map((char) => (
               <div key={char.id} className="flex gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-success flex items-center justify-center shrink-0">
                   <Icon
                     name={(char.icon as IconName) || 'Check'}
                     className="w-5 h-5"
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-semibold text-gray-900">
+                  <h4 className="text-sm font-semibold text-foreground">
                     {char.name}
                   </h4>
                   {char.description && (
@@ -49,7 +49,7 @@ export function FabricRichContent({ fabric }: FabricRichContentProps) {
       {/* Rich Applications */}
       {hasApplications && fabric.applications && (
         <div className="bg-white rounded-xl shadow-sm p-4">
-          <h3 className="text-base font-bold text-gray-900 mb-3">
+          <h3 className="text-base font-bold text-foreground mb-3">
             {LABELS.applications}
           </h3>
           <div className="space-y-3">
@@ -62,7 +62,7 @@ export function FabricRichContent({ fabric }: FabricRichContentProps) {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-semibold text-gray-900">
+                  <h4 className="text-sm font-semibold text-foreground">
                     {app.name}
                   </h4>
                   {app.description && (

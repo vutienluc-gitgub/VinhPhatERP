@@ -99,7 +99,7 @@ export function InventoryAdjustmentModal({ isOpen, onClose }: Props) {
         className="space-y-4 pt-4"
       >
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded text-sm mb-4">
+          <div className="bg-red-50 text-danger p-3 rounded text-sm mb-4">
             {error}
           </div>
         )}
@@ -204,7 +204,7 @@ export function InventoryAdjustmentModal({ isOpen, onClose }: Props) {
                 {INVENTORY_MESSAGES.LBL_DIFF}{' '}
               </span>
               <span
-                className={`font-bold ${form.watch('adjustmentQty') > 0 ? 'text-emerald-600' : 'text-red-600'}`}
+                className={`font-bold ${form.watch('adjustmentQty') > 0 ? 'text-success' : 'text-danger'}`}
               >
                 {form.watch('adjustmentQty') > 0 ? '+' : ''}
                 {form.watch('adjustmentQty')}

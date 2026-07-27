@@ -101,7 +101,7 @@ export function WeavingInvoiceFormStep2Rolls({
         {errors.rolls &&
           Array.isArray(errors.rolls) &&
           errors.rolls.some(Boolean) && (
-            <div className="text-sm font-semibold text-red-600 bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg animate-pulse">
+            <div className="text-sm font-semibold text-danger bg-red-50 border border-danger px-3 py-1.5 rounded-lg animate-pulse">
               {MSG.ERR_ROLLS_INVALID.replace(
                 '{count}',
                 String(errors.rolls.filter(Boolean).length),

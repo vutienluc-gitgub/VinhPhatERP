@@ -38,7 +38,7 @@ export function StageTimeline({
             key={stage}
             title={STAGE_LABELS[stage]}
             className={`h-2 flex-1 rounded-sm transition-colors ${
-              isDone ? 'bg-emerald-500' : 'bg-zinc-200'
+              isDone ? 'bg-success-soft' : 'bg-zinc-200'
             }`}
           />
         );

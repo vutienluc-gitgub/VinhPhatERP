@@ -33,7 +33,7 @@ export function PortalQuotationsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="portal-page-title mb-1">Báo giá</h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted">
             Danh sách các báo giá Vĩnh Phát gửi tới bạn.
           </p>
         </div>
@@ -80,19 +80,19 @@ export function PortalQuotationsPage() {
                           {q.quotation_number}
                         </Link>
                       </td>
-                      <td className="text-slate-500 text-sm">
+                      <td className="text-muted text-sm">
                         {dayjs(q.quotation_date).format('DD/MM/YYYY')}
                       </td>
-                      <td className="text-slate-500 text-sm">
+                      <td className="text-muted text-sm">
                         {q.valid_until ? (
-                          <span className={isExpired ? 'text-red-500' : ''}>
+                          <span className={isExpired ? 'text-danger' : ''}>
                             {dayjs(q.valid_until).format('DD/MM/YYYY')}
                           </span>
                         ) : (
                           '—'
                         )}
                       </td>
-                      <td className="right font-bold text-slate-800">
+                      <td className="right font-bold text-primary">
                         <MoneyText value={q.total_amount} suffix=" đ" />
                       </td>
                       <td>
@@ -145,21 +145,19 @@ export function PortalQuotationsPage() {
                     </span>
                   </div>
                   <div className="flex justify-between items-end">
-                    <div className="text-xs text-slate-500 space-y-0.5">
+                    <div className="text-xs text-muted space-y-0.5">
                       <div>
                         Gửi: {dayjs(q.quotation_date).format('DD/MM/YYYY')}
                       </div>
                       {q.valid_until && (
                         <div
-                          className={
-                            isExpired ? 'text-red-500 font-medium' : ''
-                          }
+                          className={isExpired ? 'text-danger font-medium' : ''}
                         >
                           Hạn: {dayjs(q.valid_until).format('DD/MM/YYYY')}
                         </div>
                       )}
                     </div>
-                    <div className="font-bold text-slate-800">
+                    <div className="font-bold text-primary">
                       <MoneyText value={q.total_amount} suffix=" đ" />
                     </div>
                   </div>

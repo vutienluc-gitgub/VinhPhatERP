@@ -116,8 +116,8 @@ export function CustomerPortalAccountPanel({
 
   if (isFetching || account === undefined) {
     return (
-      <div className="border border-slate-200 rounded-xl p-3 bg-slate-50 min-h-[90px] flex items-center justify-center">
-        <p className="text-xs text-slate-400 italic">
+      <div className="border border-default rounded-xl p-3 bg-slate-50 min-h-[90px] flex items-center justify-center">
+        <p className="text-xs text-muted-foreground italic">
           {CUSTOMER_PORTAL_LABELS.loadingCheck}
         </p>
       </div>
@@ -125,23 +125,23 @@ export function CustomerPortalAccountPanel({
   }
 
   return (
-    <div className="rounded-xl p-3.5 space-y-3.5 border border-slate-200 bg-slate-50 h-full min-h-[90px] flex flex-col justify-between">
+    <div className="rounded-xl p-3.5 space-y-3.5 border border-default bg-slate-50 h-full min-h-[90px] flex flex-col justify-between">
       {/* Header/Status Badge */}
       {account !== null && (
         <div className="flex justify-between items-center">
-          <span className="text-[11px] font-mono text-slate-500 truncate max-w-[140px] md:max-w-[180px]">
+          <span className="text-[11px] font-mono text-muted truncate max-w-[140px] md:max-w-[180px]">
             {account.email}
           </span>
           <span
             className={`text-[10px] font-semibold px-2 py-0.5 rounded-[20px] flex items-center gap-1.5 ${
               account.is_active
                 ? 'bg-[#16a34a]/10 text-[#16a34a]'
-                : 'bg-slate-200 text-slate-500'
+                : 'bg-surface-secondary text-muted'
             }`}
           >
             <span
               className={`w-1.5 h-1.5 rounded-full inline-block ${
-                account.is_active ? 'bg-[#16a34a]' : 'bg-slate-400'
+                account.is_active ? 'bg-[#16a34a]' : 'bg-surface-strong'
               }`}
             />
             {account.is_active
@@ -156,7 +156,7 @@ export function CustomerPortalAccountPanel({
           <>
             {!showForm ? (
               <div className="flex flex-col gap-2">
-                <p className="text-[12px] text-slate-500 italic">
+                <p className="text-[12px] text-muted italic">
                   {CUSTOMER_PORTAL_LABELS.noAccountMsg}
                 </p>
                 <button
@@ -170,7 +170,7 @@ export function CustomerPortalAccountPanel({
             ) : (
               <div className="space-y-2">
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
                     {CUSTOMER_PORTAL_LABELS.emailLabel}
                   </label>
                   <input
@@ -183,7 +183,7 @@ export function CustomerPortalAccountPanel({
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
                     {CUSTOMER_PORTAL_LABELS.passwordLabel}
                   </label>
                   <input

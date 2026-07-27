@@ -318,7 +318,7 @@ export function PermissionMatrixForm() {
       {dirtyCount > 0 && (
         <div className="perm-sticky-bar">
           <div className="flex items-center gap-2 text-white">
-            <Icon name="AlertCircle" size={18} className="text-amber-400" />
+            <Icon name="AlertCircle" size={18} className="text-warning" />
             <span className="text-sm font-semibold">
               {SETTINGS_LABELS.PERM_DIRTY_MESSAGE(dirtyCount)}
             </span>

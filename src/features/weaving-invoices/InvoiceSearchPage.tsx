@@ -166,9 +166,9 @@ export function InvoiceSearchPage() {
 
             {/* Cảnh báo cấu hình Turnstile nghiêm trọng trên Prod */}
             {configError && (
-              <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl text-xs font-bold space-y-1">
+              <div className="bg-red-50 border border-danger text-danger p-4 rounded-xl text-xs font-bold space-y-1">
                 <p>⚠️ CẢNH BÁO BẢO MẬT HỆ THỐNG</p>
-                <p className="font-normal text-red-600">
+                <p className="font-normal text-danger">
                   Hệ thống bảo mật Turnstile chưa được cấu hình Key trên môi
                   trường Production. Vui lòng liên hệ bộ phận Kỹ thuật để thiết
                   lập biến môi trường.
@@ -194,7 +194,7 @@ export function InvoiceSearchPage() {
                   aria-required="true"
                   className={`w-full px-4 py-3 rounded-xl border bg-slate-50 text-[var(--text-primary)] font-semibold text-lg uppercase tracking-wider placeholder:lowercase placeholder:text-sm placeholder:font-normal placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-[#1a6bb5] focus:bg-white transition-all ${
                     errors.lookupCode
-                      ? 'border-red-500 ring-1 ring-red-500'
+                      ? 'border-danger ring-1 ring-red-500'
                       : 'border-[#dce6f0]'
                   }`}
                   ref={(e) => {
@@ -204,12 +204,12 @@ export function InvoiceSearchPage() {
                   }}
                   {...restRegister}
                 />
-                <span className="absolute right-3.5 top-3.5 text-slate-400">
+                <span className="absolute right-3.5 top-3.5 text-muted-foreground">
                   <Icon name="Search" size={20} />
                 </span>
               </div>
               {errors.lookupCode && (
-                <span className="text-xs font-semibold text-red-600">
+                <span className="text-xs font-semibold text-danger">
                   {errors.lookupCode.message}
                 </span>
               )}
@@ -260,7 +260,7 @@ export function InvoiceSearchPage() {
 
             {/* Error alerts */}
             {validationError && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-xs font-semibold flex items-center gap-2">
+              <div className="bg-red-50 border border-danger text-danger px-4 py-3 rounded-xl text-xs font-semibold flex items-center gap-2">
                 <span>⚠️</span>
                 <span>{validationError}</span>
               </div>

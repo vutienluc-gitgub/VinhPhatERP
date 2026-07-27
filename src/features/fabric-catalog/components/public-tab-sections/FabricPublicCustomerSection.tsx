@@ -13,7 +13,7 @@ export function FabricPublicCustomerSection() {
   return (
     <div className="space-y-4 mt-8">
       <div>
-        <h3 className="text-lg font-semibold tracking-tight text-slate-900">
+        <h3 className="text-lg font-semibold tracking-tight text-foreground">
           {TAB_LABELS.CUSTOMER_EXP}
         </h3>
       </div>
@@ -21,7 +21,7 @@ export function FabricPublicCustomerSection() {
       <div className="space-y-6">
         {/* Stock Display Mode - Segmented Control */}
         <div>
-          <label className="text-sm font-medium text-slate-700 block mb-3">
+          <label className="text-sm font-medium text-secondary block mb-3">
             {LABELS.STOCK_DISPLAY_LABEL}
           </label>
           <div className="flex flex-wrap gap-4">
@@ -32,18 +32,14 @@ export function FabricPublicCustomerSection() {
                 render={({ field }) => (
                   <input
                     type="radio"
-                    className="w-4 h-4 rounded-full border-slate-300 text-emerald-600 focus:ring-emerald-600"
+                    className="w-4 h-4 rounded-full border-muted text-success focus:ring-emerald-600"
                     checked={field.value === 'none'}
                     onChange={() => field.onChange('none')}
                   />
                 )}
               />
-              <span className="flex items-center text-sm text-slate-700 group-hover:text-slate-900">
-                <Icon
-                  name="EyeOff"
-                  size={16}
-                  className="text-emerald-500 mr-1.5"
-                />
+              <span className="flex items-center text-sm text-secondary group-hover:text-primary">
+                <Icon name="EyeOff" size={16} className="text-success mr-1.5" />
                 {LABELS.STOCK_DISPLAY_NONE}
               </span>
             </label>
@@ -55,17 +51,17 @@ export function FabricPublicCustomerSection() {
                 render={({ field }) => (
                   <input
                     type="radio"
-                    className="w-4 h-4 rounded-full border-slate-300 text-emerald-600 focus:ring-emerald-600"
+                    className="w-4 h-4 rounded-full border-muted text-success focus:ring-emerald-600"
                     checked={field.value === 'status'}
                     onChange={() => field.onChange('status')}
                   />
                 )}
               />
-              <span className="flex items-center text-sm text-slate-700 group-hover:text-slate-900">
+              <span className="flex items-center text-sm text-secondary group-hover:text-primary">
                 <Icon
                   name="Activity"
                   size={16}
-                  className="text-emerald-500 mr-1.5"
+                  className="text-success mr-1.5"
                 />
                 {LABELS.STOCK_DISPLAY_STATUS}
               </span>
@@ -78,29 +74,25 @@ export function FabricPublicCustomerSection() {
                 render={({ field }) => (
                   <input
                     type="radio"
-                    className="w-4 h-4 rounded-full border-slate-300 text-emerald-600 focus:ring-emerald-600"
+                    className="w-4 h-4 rounded-full border-muted text-success focus:ring-emerald-600"
                     checked={field.value === 'quantity'}
                     onChange={() => field.onChange('quantity')}
                   />
                 )}
               />
-              <span className="flex items-center text-sm text-slate-700 group-hover:text-slate-900">
-                <Icon
-                  name="Hash"
-                  size={16}
-                  className="text-emerald-500 mr-1.5"
-                />
+              <span className="flex items-center text-sm text-secondary group-hover:text-primary">
+                <Icon name="Hash" size={16} className="text-success mr-1.5" />
                 {LABELS.STOCK_DISPLAY_QUANTITY}
               </span>
             </label>
           </div>
         </div>
 
-        <div className="h-px bg-slate-100" />
+        <div className="h-px bg-surface-secondary" />
 
         {/* Trust Signals */}
         <div>
-          <label className="text-sm font-medium text-slate-700 block mb-3">
+          <label className="text-sm font-medium text-secondary block mb-3">
             {LABELS.TRUST_SIGNALS_LABEL}
           </label>
           <div className="flex flex-wrap gap-4">
@@ -111,17 +103,17 @@ export function FabricPublicCustomerSection() {
                 render={({ field }) => (
                   <input
                     type="checkbox"
-                    className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-600"
+                    className="rounded border-muted text-success focus:ring-emerald-600"
                     checked={!!field.value}
                     onChange={(e) => field.onChange(e.target.checked)}
                   />
                 )}
               />
-              <span className="flex items-center text-sm text-slate-700 group-hover:text-slate-900">
+              <span className="flex items-center text-sm text-secondary group-hover:text-primary">
                 <Icon
                   name="FlaskConical"
                   size={16}
-                  className="text-emerald-500 mr-1.5"
+                  className="text-success mr-1.5"
                 />
                 {LABELS.TRUST_HAS_SAMPLE}
               </span>
@@ -134,18 +126,14 @@ export function FabricPublicCustomerSection() {
                 render={({ field }) => (
                   <input
                     type="checkbox"
-                    className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-600"
+                    className="rounded border-muted text-success focus:ring-emerald-600"
                     checked={!!field.value}
                     onChange={(e) => field.onChange(e.target.checked)}
                   />
                 )}
               />
-              <span className="flex items-center text-sm text-slate-700 group-hover:text-slate-900">
-                <Icon
-                  name="Truck"
-                  size={16}
-                  className="text-emerald-500 mr-1.5"
-                />
+              <span className="flex items-center text-sm text-secondary group-hover:text-primary">
+                <Icon name="Truck" size={16} className="text-success mr-1.5" />
                 {LABELS.TRUST_FAST_DELIVERY}
               </span>
             </label>
@@ -157,18 +145,14 @@ export function FabricPublicCustomerSection() {
                 render={({ field }) => (
                   <input
                     type="checkbox"
-                    className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-600"
+                    className="rounded border-muted text-success focus:ring-emerald-600"
                     checked={!!field.value}
                     onChange={(e) => field.onChange(e.target.checked)}
                   />
                 )}
               />
-              <span className="flex items-center text-sm text-slate-700 group-hover:text-slate-900">
-                <Icon
-                  name="Wrench"
-                  size={16}
-                  className="text-emerald-500 mr-1.5"
-                />
+              <span className="flex items-center text-sm text-secondary group-hover:text-primary">
+                <Icon name="Wrench" size={16} className="text-success mr-1.5" />
                 {LABELS.TRUST_TECH_SUPPORT}
               </span>
             </label>

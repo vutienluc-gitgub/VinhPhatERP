@@ -52,7 +52,7 @@ export function TemplateCard({
       {/* Background Accent - isolated to not clip menus */}
       <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
         <div
-          className={`absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full opacity-[0.03] transition-transform group-hover:scale-110 ${isPurchase ? 'bg-blue-600' : 'bg-emerald-600'}`}
+          className={`absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full opacity-[0.03] transition-transform group-hover:scale-110 ${isPurchase ? 'bg-info-soft' : 'bg-success-soft'}`}
         />
       </div>
 
@@ -62,8 +62,8 @@ export function TemplateCard({
           <div
             className={`p-3.5 rounded-2xl shrink-0 transition-transform group-hover:scale-110 duration-300 shadow-sm ${
               isPurchase
-                ? 'bg-blue-500/10 text-blue-600'
-                : 'bg-emerald-500/10 text-emerald-600'
+                ? 'bg-info-soft/10 text-info'
+                : 'bg-success-soft/10 text-success'
             }`}
           >
             <Icon
@@ -80,7 +80,7 @@ export function TemplateCard({
             </h4>
             <div className="flex items-center gap-2 mt-1">
               <span
-                className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-lg ${isPurchase ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}`}
+                className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-lg ${isPurchase ? 'bg-info-soft text-info' : 'bg-success-soft text-success'}`}
               >
                 {typeLabel}
               </span>
@@ -93,7 +93,7 @@ export function TemplateCard({
             {
               label: CONTRACT_TEMPLATE_LABELS.MENU_EDIT,
               icon: 'Eye',
-              iconClass: 'text-blue-500',
+              iconClass: 'text-info',
               onClick: () => onEdit(template),
             },
             {

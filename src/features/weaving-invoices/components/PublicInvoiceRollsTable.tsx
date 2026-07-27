@@ -39,7 +39,7 @@ export function PublicInvoiceRollsTable({
       <div className="overflow-x-auto print:overflow-visible">
         <table className="w-full border-collapse text-left text-xs md:text-sm">
           <thead>
-            <tr className="border-b border-slate-200 text-[10px] uppercase font-bold text-slate-500 bg-slate-50 print:bg-slate-100">
+            <tr className="border-b border-default text-[10px] uppercase font-bold text-muted bg-slate-50 print:bg-surface-secondary">
               <th className="p-3 w-12 text-center">STT</th>
               <th className="p-3">Mã cuộn</th>
               <th className="p-3 text-right">Trọng lượng (KG)</th>
@@ -49,14 +49,16 @@ export function PublicInvoiceRollsTable({
               <th className="p-3">Ghi chú</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 text-slate-700">
+          <tbody className="divide-y divide-slate-100 text-secondary">
             {items.map((item, idx) => (
               <tr
                 key={item.roll_number}
                 className="hover:bg-slate-50/50 transition-colors"
               >
-                <td className="p-3 text-center text-slate-400">{idx + 1}</td>
-                <td className="p-3 font-bold text-slate-800 tracking-wide">
+                <td className="p-3 text-center text-muted-foreground">
+                  {idx + 1}
+                </td>
+                <td className="p-3 font-bold text-primary tracking-wide">
                   {item.roll_number}
                 </td>
                 <td className="p-3 text-right font-bold">
@@ -69,12 +71,12 @@ export function PublicInvoiceRollsTable({
                   <span
                     className={`px-2 py-0.5 rounded font-bold text-[10px] ${
                       item.quality_grade === 'A'
-                        ? 'bg-green-50 text-green-700'
+                        ? 'bg-green-50 text-success'
                         : item.quality_grade === 'B'
-                          ? 'bg-blue-50 text-blue-700'
+                          ? 'bg-blue-50 text-info'
                           : item.quality_grade === 'C'
-                            ? 'bg-amber-50 text-amber-700'
-                            : 'text-slate-400'
+                            ? 'bg-amber-50 text-warning-strong'
+                            : 'text-muted-foreground'
                     }`}
                   >
                     {item.quality_grade ?? '—'}
@@ -83,14 +85,14 @@ export function PublicInvoiceRollsTable({
                 <td className="p-3 truncate max-w-[100px]">
                   {item.warehouse_location || '—'}
                 </td>
-                <td className="p-3 truncate max-w-[120px] text-slate-400 italic">
+                <td className="p-3 truncate max-w-[120px] text-muted-foreground italic">
                   {item.notes || '—'}
                 </td>
               </tr>
             ))}
           </tbody>
           <tfoot>
-            <tr className="border-t-2 border-slate-200 font-bold bg-slate-50/70 text-slate-800">
+            <tr className="border-t-2 border-default font-bold bg-slate-50/70 text-primary">
               <td
                 colSpan={2}
                 className="p-3 text-right uppercase tracking-wider text-[10px] font-bold"

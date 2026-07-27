@@ -117,7 +117,7 @@ export function LotMatrixCard({
             <div className="flex items-center gap-1 ml-2 bg-[var(--surface-subtle)] px-2 py-0.5 rounded text-[10px] border border-border flex-shrink-0">
               <Icon name="Target" size={10} className="text-muted" />
               <span className="text-muted font-medium">Chuẩn:</span>
-              <span className="font-extrabold text-amber-600">
+              <span className="font-extrabold text-warning">
                 {standardWeightKg}kg
               </span>
             </div>

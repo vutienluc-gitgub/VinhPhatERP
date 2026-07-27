@@ -49,7 +49,7 @@ export function FabricPublicFAQSection() {
     <div className="space-y-4 mt-8">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold tracking-tight text-slate-900">
+          <h3 className="text-lg font-semibold tracking-tight text-foreground">
             {FAQ_SECTION_LABELS.title}
           </h3>
           <p className="text-xs text-muted mt-0.5">{FAQ_SECTION_LABELS.desc}</p>
@@ -67,21 +67,16 @@ export function FabricPublicFAQSection() {
       </div>
 
       {typeof faqErrors?.message === 'string' && (
-        <p className="text-xs text-red-500">{faqErrors.message}</p>
+        <p className="text-xs text-danger">{faqErrors.message}</p>
       )}
 
       {isMaxReached && (
-        <p className="text-xs text-amber-600">
-          {FAQ_SECTION_LABELS.maxReached}
-        </p>
+        <p className="text-xs text-warning">{FAQ_SECTION_LABELS.maxReached}</p>
       )}
 
       {fields.length === 0 && (
-        <div className="text-center py-6 bg-slate-50 rounded-lg border border-dashed border-slate-200">
-          <Icon
-            name="HelpCircle"
-            className="w-8 h-8 text-slate-300 mx-auto mb-2"
-          />
+        <div className="text-center py-6 bg-slate-50 rounded-lg border border-dashed border-default">
+          <Icon name="HelpCircle" className="w-8 h-8 text-muted mx-auto mb-2" />
           <p className="text-sm text-muted">{FAQ_SECTION_LABELS.desc}</p>
         </div>
       )}
@@ -97,16 +92,16 @@ export function FabricPublicFAQSection() {
           return (
             <div
               key={field.id}
-              className="bg-slate-50 rounded-lg border border-slate-200 p-4 space-y-3 relative group"
+              className="bg-slate-50 rounded-lg border border-default p-4 space-y-3 relative group"
             >
               <div className="flex items-start justify-between gap-2">
-                <span className="text-xs font-semibold text-slate-500 mt-1">
+                <span className="text-xs font-semibold text-muted mt-1">
                   Q{index + 1}
                 </span>
                 <button
                   type="button"
                   onClick={() => remove(index)}
-                  className="text-slate-400 hover:text-red-500 transition-colors p-1"
+                  className="text-muted-foreground hover:text-danger transition-colors p-1"
                   title={FAQ_SECTION_LABELS.removeTitle}
                 >
                   <Icon name="X" className="w-4 h-4" />
@@ -114,40 +109,40 @@ export function FabricPublicFAQSection() {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-700 block mb-1">
+                <label className="text-xs font-medium text-secondary block mb-1">
                   {FAQ_SECTION_LABELS.questionLabel}
                 </label>
                 <input
                   {...register(`faq_data.${index}.question`)}
                   placeholder={FAQ_SECTION_LABELS.questionPlaceholder}
-                  className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full rounded-md border border-muted px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-success"
                   maxLength={120}
                 />
                 {itemErrors?.question?.message && (
-                  <p className="text-xs text-red-500 mt-1">
+                  <p className="text-xs text-danger mt-1">
                     {itemErrors.question.message}
                   </p>
                 )}
                 {hasDuplicate && (
-                  <p className="text-xs text-amber-600 mt-1">
+                  <p className="text-xs text-warning mt-1">
                     {FAQ_SECTION_LABELS.duplicateWarning}
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="text-xs font-medium text-slate-700 block mb-1">
+                <label className="text-xs font-medium text-secondary block mb-1">
                   {FAQ_SECTION_LABELS.answerLabel}
                 </label>
                 <textarea
                   {...register(`faq_data.${index}.answer`)}
                   placeholder={FAQ_SECTION_LABELS.answerPlaceholder}
                   rows={3}
-                  className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-y"
+                  className="w-full rounded-md border border-muted px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-success resize-y"
                   maxLength={1000}
                 />
                 {itemErrors?.answer?.message && (
-                  <p className="text-xs text-red-500 mt-1">
+                  <p className="text-xs text-danger mt-1">
                     {itemErrors.answer.message}
                   </p>
                 )}
