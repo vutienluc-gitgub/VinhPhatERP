@@ -87,9 +87,9 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden flex flex-col">
-      <div className="p-4 bg-slate-50 border-b border-slate-100">
-        <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+    <div className="bg-white rounded-xl shadow-sm border border-default/60 overflow-hidden flex flex-col">
+      <div className="p-4 bg-slate-50 border-b border-default">
+        <h3 className="text-base font-bold text-foreground flex items-center gap-2">
           {COMP_LABELS.B2B_PLANNER_TITLE}
           <Badge variant="info" className="text-[10px] px-1.5 py-0">
             v2
@@ -103,10 +103,10 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
       <div className="p-4 space-y-5 flex-1">
         {/* Smart Input */}
         <div className="space-y-3">
-          <div className="flex bg-slate-100 p-1 rounded-lg gap-1">
+          <div className="flex bg-surface-secondary p-1 rounded-lg gap-1">
             <button
               onClick={() => handleModeChange('weight')}
-              className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${mode === 'weight' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${mode === 'weight' ? 'bg-white shadow-sm text-primary' : 'text-muted hover:text-secondary'}`}
             >
               <div className="flex items-center justify-center gap-1.5">
                 <Icon name="Scale" className="w-3.5 h-3.5" />
@@ -115,7 +115,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
             </button>
             <button
               onClick={() => handleModeChange('length')}
-              className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${mode === 'length' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${mode === 'length' ? 'bg-white shadow-sm text-primary' : 'text-muted hover:text-secondary'}`}
             >
               <div className="flex items-center justify-center gap-1.5">
                 <Icon name="Ruler" className="w-3.5 h-3.5" />
@@ -124,7 +124,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
             </button>
             <button
               onClick={() => handleModeChange('garment')}
-              className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${mode === 'garment' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${mode === 'garment' ? 'bg-white shadow-sm text-primary' : 'text-muted hover:text-secondary'}`}
             >
               <div className="flex items-center justify-center gap-1.5">
                 <Icon name="Shirt" className="w-3.5 h-3.5" />
@@ -140,10 +140,10 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
                 min="1"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                className="w-full text-sm border border-slate-300 rounded-xl pl-3 pr-12 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white font-bold transition-all"
+                className="w-full text-sm border border-muted rounded-xl pl-3 pr-12 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white font-bold transition-all"
               />
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <span className="text-xs font-bold text-slate-500">
+                <span className="text-xs font-bold text-muted">
                   {mode === 'weight' ? 'kg' : mode === 'length' ? 'm' : 'cái'}
                 </span>
               </div>
@@ -151,7 +151,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
 
             {mode === 'garment' && garmentRules && garmentRules.length > 0 && (
               <select
-                className="flex-1 text-sm border border-slate-300 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white font-medium"
+                className="flex-1 text-sm border border-muted rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white font-medium"
                 value={garmentRuleId}
                 onChange={(e) => setGarmentRuleId(e.target.value)}
               >
@@ -165,7 +165,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
           </div>
 
           {mode !== 'weight' && weightKg > 0 && (
-            <div className="text-xs text-slate-500 font-medium bg-slate-50 px-3 py-2 rounded-lg border border-slate-100 flex items-center justify-between">
+            <div className="text-xs text-muted font-medium bg-slate-50 px-3 py-2 rounded-lg border border-default flex items-center justify-between">
               <span>Khối lượng quy đổi tương đương:</span>
               <span className="font-bold text-primary">{weightKg} kg</span>
             </div>
@@ -174,47 +174,49 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
 
         {/* Phase 2: Inventory & Commercial Validation */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex flex-col justify-between">
+          <div className="p-3 rounded-xl bg-slate-50 border border-default flex flex-col justify-between">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+              <span className="text-[10px] uppercase font-bold text-muted tracking-wider">
                 Tồn kho
               </span>
-              <span className="text-[10px] font-medium text-slate-400">
+              <span className="text-[10px] font-medium text-muted-foreground">
                 Có sẵn: {inventoryAvailableKg}kg
               </span>
             </div>
             {weightKg > 0 ? (
               !needsProduction ? (
                 <div className="flex flex-col">
-                  <span className="text-sm font-bold text-emerald-700 flex items-center gap-1.5">
+                  <span className="text-sm font-bold text-success flex items-center gap-1.5">
                     <Badge showDot variant="success" className="px-0 py-0" />
                     Đủ hàng giao ngay
                   </span>
                 </div>
               ) : (
                 <div className="flex flex-col">
-                  <span className="text-sm font-bold text-amber-600 flex items-center gap-1.5">
+                  <span className="text-sm font-bold text-warning flex items-center gap-1.5">
                     <Badge showDot variant="warning" className="px-0 py-0" />
                     Cần dệt {missingProductionKg}kg
                   </span>
                   {!isMoqMet && (
-                    <span className="text-[10px] text-rose-600 font-medium mt-1">
+                    <span className="text-[10px] text-danger font-medium mt-1">
                       ⚠️ Chưa đạt MOQ dệt ({moq}kg)
                     </span>
                   )}
                 </div>
               )
             ) : (
-              <span className="text-sm font-medium text-slate-400">--</span>
+              <span className="text-sm font-medium text-muted-foreground">
+                --
+              </span>
             )}
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex flex-col justify-between">
-            <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider mb-2">
+          <div className="p-3 rounded-xl bg-slate-50 border border-default flex flex-col justify-between">
+            <span className="text-[10px] uppercase font-bold text-muted tracking-wider mb-2">
               {COMP_LABELS.B2B_SUPPLY_CAP}
             </span>
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-bold text-slate-800">
+              <span className="text-sm font-bold text-primary">
                 {needsProduction
                   ? COMP_LABELS.B2B_EXPECTED_DATE.replace(
                       '{date}',
@@ -226,13 +228,13 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
               {capacityTons > 0 && needsProduction && (
                 <div className="flex flex-col gap-1 mt-1">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-slate-500 font-medium">
+                    <span className="text-[10px] text-muted font-medium">
                       Chiếm {capacityUtilizationPct.toFixed(1)}% năng lực
                     </span>
                   </div>
-                  <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                  <div className="h-1.5 w-full bg-surface-secondary rounded-full overflow-hidden">
                     <div
-                      className="h-full rounded-full transition-all bg-blue-500"
+                      className="h-full rounded-full transition-all bg-info-soft"
                       style={{
                         width: `${Math.min(capacityUtilizationPct, 100)}%`,
                       }}
@@ -246,24 +248,26 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
 
         {/* Phase 2: Delivery Timeline */}
         {weightKg > 0 && needsProduction && deliveryTimeline && (
-          <div className="space-y-2 pt-2 border-t border-slate-100">
-            <span className="text-xs font-bold text-slate-700 block">
+          <div className="space-y-2 pt-2 border-t border-default">
+            <span className="text-xs font-bold text-secondary block">
               Timeline Sản Xuất Dự Kiến
             </span>
             <div className="flex gap-1 h-2 w-full">
               {deliveryTimeline.map((step, idx) => (
                 <div
                   key={idx}
-                  className={`h-full rounded-full ${idx === 0 ? 'bg-indigo-400' : idx === 1 ? 'bg-blue-400' : idx === 2 ? 'bg-sky-400' : 'bg-emerald-400'}`}
+                  className={`h-full rounded-full ${idx === 0 ? 'bg-info-soft' : idx === 1 ? 'bg-info-soft' : idx === 2 ? 'bg-sky-400' : 'bg-success-soft'}`}
                   style={{ width: `${step.percentage}%` }}
                 />
               ))}
             </div>
-            <div className="flex justify-between text-[10px] text-slate-500 font-medium mt-1">
+            <div className="flex justify-between text-[10px] text-muted font-medium mt-1">
               {deliveryTimeline.map((step, idx) => (
                 <div key={idx} className="flex flex-col items-center">
                   <span>{step.step}</span>
-                  <span className="text-slate-400">{step.days} ngày</span>
+                  <span className="text-muted-foreground">
+                    {step.days} ngày
+                  </span>
                 </div>
               ))}
             </div>
@@ -272,36 +276,36 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
 
         {/* Phase 2: Yield Analysis & Roll Estimation */}
         {weightKg > 0 && (
-          <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-              <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-1.5">
+          <div className="grid grid-cols-2 gap-3 pt-2 border-t border-default">
+            <div className="p-3 rounded-xl bg-slate-50 border border-default">
+              <span className="text-[10px] uppercase font-bold text-muted tracking-wider block mb-1.5">
                 Phân Tích Hao Hụt (5%)
               </span>
               <div className="flex justify-between items-center text-xs">
-                <span className="text-slate-600">Vải thực dùng:</span>
+                <span className="text-muted">Vải thực dùng:</span>
                 <span className="font-bold">{netWeightKg.toFixed(1)} kg</span>
               </div>
               <div className="flex justify-between items-center text-xs mt-1">
-                <span className="text-slate-600">Hao hụt ước tính:</span>
-                <span className="font-bold text-rose-500">
+                <span className="text-muted">Hao hụt ước tính:</span>
+                <span className="font-bold text-danger">
                   {wasteKg.toFixed(1)} kg
                 </span>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-              <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-1.5">
+            <div className="p-3 rounded-xl bg-slate-50 border border-default">
+              <span className="text-[10px] uppercase font-bold text-muted tracking-wider block mb-1.5">
                 Quy Đổi Lưu Kho
               </span>
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-500">
+                <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-info">
                   <Icon name="Archive" className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-bold text-slate-800">
+                  <span className="text-sm font-bold text-primary">
                     ≈ {estimatedRolls} Cuộn
                   </span>
-                  <span className="text-[10px] text-slate-500">~20kg/cuộn</span>
+                  <span className="text-[10px] text-muted">~20kg/cuộn</span>
                 </div>
               </div>
             </div>
@@ -310,12 +314,12 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
 
         {/* Estimations */}
         {weightKg > 0 && (
-          <div className="space-y-4 pt-2 border-t border-slate-100">
+          <div className="space-y-4 pt-2 border-t border-default">
             {/* Fabric Length */}
             {mode !== 'length' && (
               <div>
                 <div className="flex justify-between items-end mb-2">
-                  <span className="text-xs font-bold text-slate-700">
+                  <span className="text-xs font-bold text-secondary">
                     {COMP_LABELS.B2B_LENGTH_CALC}
                   </span>
                   {lengthMeters !== null && (
@@ -330,7 +334,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
                   )}
                 </div>
                 {isMissingSpecs && (
-                  <div className="p-2.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-100 text-xs font-medium mt-1">
+                  <div className="p-2.5 rounded-lg bg-rose-50 text-danger border border-danger text-xs font-medium mt-1">
                     {COMP_LABELS.B2B_MISSING_DATA}{' '}
                     {!fabric.target_gsm && COMP_LABELS.B2B_MISSING_GSM}{' '}
                     {!fabric.target_width_cm && COMP_LABELS.B2B_MISSING_WIDTH}
@@ -342,23 +346,23 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
             {/* Garments Production */}
             {estimatedGarments.length > 0 && mode !== 'garment' && (
               <div className="space-y-2">
-                <span className="text-xs font-bold text-slate-700 block">
+                <span className="text-xs font-bold text-secondary block">
                   {COMP_LABELS.B2B_PROD_ESTIMATOR}
                 </span>
                 <div className="grid grid-cols-2 gap-2">
                   {estimatedGarments.map((rule) => (
                     <div
                       key={rule.id}
-                      className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-2"
+                      className="p-2.5 rounded-xl bg-slate-50 border border-default flex items-center gap-2"
                     >
-                      <div className="w-7 h-7 rounded-lg bg-white shadow-sm flex items-center justify-center text-slate-600 border border-slate-100 shrink-0">
+                      <div className="w-7 h-7 rounded-lg bg-white shadow-sm flex items-center justify-center text-muted border border-default shrink-0">
                         {getGarmentIcon(rule.name)}
                       </div>
                       <div className="flex flex-col flex-1 overflow-hidden">
-                        <span className="text-[10px] font-medium text-slate-500 truncate">
+                        <span className="text-[10px] font-medium text-muted truncate">
                           {rule.name}
                         </span>
-                        <span className="text-sm font-bold text-slate-800">
+                        <span className="text-sm font-bold text-primary">
                           ≈ {rule.estimatedQty}
                         </span>
                       </div>
@@ -372,7 +376,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
       </div>
 
       {/* CTA */}
-      <div className="p-4 bg-slate-50 border-t border-slate-100">
+      <div className="p-4 bg-slate-50 border-t border-default">
         <Button
           variant="primary"
           className="w-full font-bold shadow-sm"

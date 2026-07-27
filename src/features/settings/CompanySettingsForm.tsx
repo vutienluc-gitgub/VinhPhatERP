@@ -66,7 +66,7 @@ export function CompanySettingsForm({
       <div className="panel-card card-flush">
         <div className="card-header-area">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-info-soft/10 text-info flex items-center justify-center shrink-0">
               <Icon name="Building2" size={20} strokeWidth={1.5} />
             </div>
             <span className="font-bold text-lg">

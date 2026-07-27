@@ -68,6 +68,8 @@ export function FabricCatalogForm({
     handleSlugEditCancel,
     onSubmit,
     labelData,
+    autoSaveStatus,
+    lastSavedTimeText,
   } = useFabricCatalogForm(catalog, onClose);
 
   const template = LabelRegistry.get('fabric-80x40');
@@ -94,7 +96,7 @@ export function FabricCatalogForm({
           </div>
           {isEditing && catalog && (
             <div className="flex items-center gap-2 text-xs font-normal text-muted-foreground mt-0.5">
-              <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600 font-medium">
+              <span className="font-mono bg-surface-secondary px-1.5 py-0.5 rounded text-muted font-medium">
                 {catalog.code}
               </span>
               {catalog.category_id && (
@@ -114,27 +116,35 @@ export function FabricCatalogForm({
         </div>
       }
       footer={
-        <>
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={onClose}
-            disabled={isPending}
-          >
-            {LABELS.CANCEL}
-          </Button>
-          <Button
-            variant="primary"
-            type="submit"
-            form="fabric-catalog-form"
-            isLoading={isPending}
-          >
-            {isEditing ? LABELS.UPDATE : LABELS.ADD_NEW}
-          </Button>
-        </>
+        <div className="flex items-center justify-between w-full">
+          <div className="text-xs text-muted-foreground ml-2">
+            {autoSaveStatus === 'saving' && 'Đang lưu nháp...'}
+            {autoSaveStatus === 'saved' &&
+              lastSavedTimeText &&
+              `Lưu nháp lần cuối: ${lastSavedTimeText}`}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              type="button"
+              onClick={onClose}
+              disabled={isPending}
+            >
+              {LABELS.CANCEL}
+            </Button>
+            <Button
+              variant="primary"
+              type="submit"
+              form="fabric-catalog-form"
+              isLoading={isPending}
+            >
+              {isEditing ? LABELS.UPDATE : LABELS.ADD_NEW}
+            </Button>
+          </div>
+        </div>
       }
       subHeader={
-        <div className="px-6 py-2 border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-10">
+        <div className="px-6 py-2 border-b border-default bg-white/80 backdrop-blur-md sticky top-0 z-10">
           <TabSwitcher
             tabs={FORM_TABS}
             active={activeTab}

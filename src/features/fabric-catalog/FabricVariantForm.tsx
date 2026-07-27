@@ -440,7 +440,7 @@ export function FabricVariantForm({
             </span>
           )}
           {status === 'saved' && (
-            <span className="text-xs text-emerald-600 italic">
+            <span className="text-xs text-success italic">
               {LABELS.VARIANT_SAVED_DRAFT}: {lastSavedTimeText}
             </span>
           )}

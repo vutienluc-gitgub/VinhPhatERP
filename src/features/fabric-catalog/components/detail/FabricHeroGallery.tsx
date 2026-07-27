@@ -58,7 +58,7 @@ export function FabricHeroGallery({
 
   return (
     <div className="w-full bg-white relative">
-      <div className="w-full aspect-[4/3] bg-slate-100 relative overflow-hidden border border-black/5">
+      <div className="w-full aspect-[4/3] bg-surface-secondary relative overflow-hidden border border-black/5">
         {displayImage && !imageError ? (
           <img
             src={displayImage}
@@ -67,7 +67,7 @@ export function FabricHeroGallery({
             className="w-full h-full object-cover transition-opacity duration-300"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+          <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
             <Icon name="ImageOff" className="w-10 h-10 mb-2 opacity-30" />
             <span className="text-sm font-medium">
               {GLOBAL_LABELS.PREVIEW_NO_IMAGE}
@@ -103,7 +103,7 @@ export function FabricHeroGallery({
                   'relative w-20 h-20 shrink-0 rounded-lg overflow-hidden border-2 transition-all',
                   isActive
                     ? 'border-primary ring-2 ring-primary/20 ring-offset-1'
-                    : 'border-transparent hover:border-slate-300',
+                    : 'border-transparent hover:border-muted',
                 )}
                 title={img.caption || label}
               >

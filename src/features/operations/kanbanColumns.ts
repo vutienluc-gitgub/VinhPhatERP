@@ -20,7 +20,7 @@ export const KANBAN_COLUMNS: ColumnConfig[] = [
   {
     key: 'in_progress',
     label: TASK_STATUS_LABELS.in_progress,
-    tone: 'bg-indigo-100 text-indigo-700',
+    tone: 'bg-info-soft text-info',
     badgeVariant: 'info',
   },
   {
@@ -32,13 +32,13 @@ export const KANBAN_COLUMNS: ColumnConfig[] = [
   {
     key: 'blocked',
     label: TASK_STATUS_LABELS.blocked,
-    tone: 'bg-red-100 text-red-700',
+    tone: 'bg-danger-soft text-danger',
     badgeVariant: 'danger',
   },
   {
     key: 'done',
     label: TASK_STATUS_LABELS.done,
-    tone: 'bg-emerald-100 text-emerald-700',
+    tone: 'bg-success-soft text-success',
     badgeVariant: 'success',
   },
 ];

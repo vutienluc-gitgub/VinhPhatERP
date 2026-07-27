@@ -67,14 +67,14 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-3 animate-fade-in">
       <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
-        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
-          <h3 className="font-bold text-gray-900 flex items-center gap-2">
+        <div className="p-4 border-b border-default flex justify-between items-center bg-slate-50">
+          <h3 className="font-bold text-foreground flex items-center gap-2">
             <Icon name="Lock" className="w-5 h-5 text-primary" />
             {LABELS.loginBtn}
           </h3>
           <button
             onClick={onClose}
-            className="p-1 rounded-full hover:bg-slate-200 text-slate-500"
+            className="p-1 rounded-full hover:bg-surface-secondary text-muted"
           >
             <Icon name="X" className="w-5 h-5" />
           </button>
@@ -82,10 +82,10 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
 
         <form onSubmit={handleSubmit} className="p-5 flex flex-col gap-4">
           <div className="text-center mb-2">
-            <h2 className="text-xl font-bold text-gray-900 mb-1">
+            <h2 className="text-xl font-bold text-foreground mb-1">
               {LABELS.loginTitle}
             </h2>
-            <p className="text-gray-500 text-sm">
+            <p className="text-muted text-sm">
               Nhập email và mật khẩu của bạn để xem bảng giá sỉ và trạng thái
               kho.
             </p>
@@ -94,7 +94,7 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
           <div className="flex flex-col gap-2">
             <label
               htmlFor="email"
-              className="text-sm font-medium text-gray-700"
+              className="text-sm font-medium text-secondary"
             >
               {LABELS.emailLabel}
             </label>
@@ -105,14 +105,14 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
               placeholder={LABELS.emailPlaceholder}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              className="w-full px-4 py-2 bg-gray-50 border border-default rounded-xl text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
             />
           </div>
 
           <div className="flex flex-col gap-2">
             <label
               htmlFor="password"
-              className="text-sm font-medium text-gray-700"
+              className="text-sm font-medium text-secondary"
             >
               {LABELS.passwordLabel}
             </label>
@@ -123,13 +123,13 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
               placeholder={LABELS.passwordPlaceholder}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              className="w-full px-4 py-2 bg-gray-50 border border-default rounded-xl text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
             />
           </div>
 
           {serverError && (
-            <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-center">
-              <p className="text-red-600 text-sm font-medium">{serverError}</p>
+            <div className="p-3 bg-red-50 border border-danger rounded-xl text-center">
+              <p className="text-danger text-sm font-medium">{serverError}</p>
             </div>
           )}
 

@@ -42,14 +42,14 @@ export function POMaterialsTable({
                   key={item.id}
                   className="border-b border-border last:border-0 hover:bg-gray-50/50"
                 >
-                  <td className="px-4 py-3 text-gray-800">
+                  <td className="px-4 py-3 text-primary">
                     {(() => {
                       const mat = globalMaterials.find(
                         (m) => m.id === item.material_id,
                       );
                       if (!mat)
                         return (
-                          <span className="font-medium text-xs text-gray-400 font-mono">
+                          <span className="font-medium text-xs text-muted-foreground font-mono">
                             {item.material_id}
                           </span>
                         );
@@ -71,20 +71,20 @@ export function POMaterialsTable({
                   <td className="px-4 py-3 text-right">
                     {item.ordered_qty} {item.uom}
                   </td>
-                  <td className="px-4 py-3 text-right text-emerald-600 font-semibold">
+                  <td className="px-4 py-3 text-right text-success font-semibold">
                     {item.received_qty} {item.uom}
                   </td>
-                  <td className="px-4 py-3 text-right text-amber-600 font-semibold">
+                  <td className="px-4 py-3 text-right text-warning font-semibold">
                     {item.remaining_qty} {item.uom}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex flex-col gap-1.5 items-end">
-                      <span className="text-xs font-bold text-gray-700">
+                      <span className="text-xs font-bold text-secondary">
                         {percent}%
                       </span>
-                      <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
+                      <div className="w-24 h-2 bg-surface-secondary rounded-full overflow-hidden border border-default">
                         <div
-                          className={`h-full transition-all ${percent === 0 ? 'bg-gray-300' : percent >= 100 ? 'bg-emerald-500' : 'bg-amber-400'}`}
+                          className={`h-full transition-all ${percent === 0 ? 'bg-surface-strong' : percent >= 100 ? 'bg-success-soft' : 'bg-warning-soft'}`}
                           style={{
                             width: `${Math.max(5, Math.min(100, percent))}%`,
                           }}

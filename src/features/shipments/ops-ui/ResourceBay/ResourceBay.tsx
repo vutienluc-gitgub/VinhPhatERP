@@ -34,29 +34,29 @@ export function ResourceBay({
         // Visual Feedback when dragging over
         isOver &&
           !isFull &&
-          'bg-indigo-50/50 border-indigo-400 ring-4 ring-indigo-500/20',
+          'bg-indigo-50/50 border-info ring-4 ring-indigo-500/20',
         // Visual Feedback when something is tapped and looking for a bay
         isBayWaiting &&
           !isFull &&
           !isOver &&
-          'border-indigo-300 border-dashed animate-pulse cursor-pointer',
-        !isOver && !isBayWaiting && 'border-slate-200 bg-surface shadow-sm',
+          'border-info border-dashed animate-pulse cursor-pointer',
+        !isOver && !isBayWaiting && 'border-default bg-surface shadow-sm',
       )}
     >
       {/* BAY HEADER */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {icon && (
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-inner">
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-surface-strong text-white shadow-inner">
               {icon}
             </div>
           )}
           <div className="flex flex-col">
-            <h3 className="text-lg font-black uppercase text-slate-800 line-clamp-1">
+            <h3 className="text-lg font-black uppercase text-foreground line-clamp-1">
               {title}
             </h3>
             {subtitle && (
-              <p className="text-sm font-medium text-slate-500 line-clamp-1">
+              <p className="text-sm font-medium text-muted line-clamp-1">
                 {subtitle}
               </p>
             )}
@@ -67,30 +67,28 @@ export function ResourceBay({
         <div
           className={clsx(
             'flex items-center gap-3 rounded-xl px-4 py-2 border transition-colors',
-            isFull
-              ? 'bg-rose-50 border-rose-100'
-              : 'bg-slate-50 border-slate-100',
+            isFull ? 'bg-rose-50 border-danger' : 'bg-slate-50 border-default',
           )}
         >
           <div className="text-right hidden sm:block">
-            <span className="text-slate-400 font-medium">
+            <span className="text-muted-foreground font-medium">
               {MSG.SLOT_CAPACITY}
             </span>
             <span
               className={clsx(
                 'text-sm font-black',
-                isFull ? 'text-rose-600' : 'text-slate-700',
+                isFull ? 'text-danger' : 'text-secondary',
               )}
             >
               {usedSlots} / {maxSlots}
             </span>
           </div>
           {/* Progress Bar */}
-          <div className="h-8 w-2 rounded-full bg-slate-200 overflow-hidden flex flex-col justify-end">
+          <div className="h-8 w-2 rounded-full bg-surface-secondary overflow-hidden flex flex-col justify-end">
             <div
               className={clsx(
                 'w-full transition-all duration-500',
-                isFull ? 'bg-rose-500' : 'bg-indigo-500',
+                isFull ? 'bg-danger-soft' : 'bg-info-soft',
               )}
               style={{
                 height: `${Math.min(100, (usedSlots / maxSlots) * 100)}%`,

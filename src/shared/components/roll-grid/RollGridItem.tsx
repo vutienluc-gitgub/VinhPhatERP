@@ -47,7 +47,7 @@ function Tooltip({
         className={cn(
           'pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-50',
           'whitespace-nowrap rounded px-2 py-1 text-[10px] font-semibold',
-          'bg-slate-900 text-white shadow-lg',
+          'bg-surface-strong text-white shadow-lg',
           'opacity-0 group-hover/tip:opacity-100 transition-opacity duration-150',
         )}
       >
@@ -127,7 +127,7 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
     const renderIcon = () => {
       if (mode === 'select' && isSelected) {
         return (
-          <span className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-in zoom-in-50 duration-200">
+          <span className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-success-soft rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-in zoom-in-50 duration-200">
             <Icon name="Check" size={14} className="text-white" />
           </span>
         );

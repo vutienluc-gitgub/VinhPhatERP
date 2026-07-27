@@ -23,16 +23,16 @@ export function FabricPublicStatusSection({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+        <h3 className="font-semibold text-foreground flex items-center gap-2">
           {isPublic ? (
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="w-2.5 h-2.5 rounded-full bg-success-soft animate-pulse" />
           ) : (
-            <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
+            <span className="w-2.5 h-2.5 rounded-full bg-surface-strong" />
           )}
           {LABELS.PUBLIC_TITLE}
         </h3>
         <span
-          className={`text-xs font-semibold px-2 py-1 rounded-md ${isPublic ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}
+          className={`text-xs font-semibold px-2 py-1 rounded-md ${isPublic ? 'bg-success-soft text-success' : 'bg-surface-secondary text-muted'}`}
         >
           {isPublic ? 'LIVE' : 'DRAFT'}
         </span>
@@ -41,7 +41,7 @@ export function FabricPublicStatusSection({
       <div className="space-y-5">
         {/* Toggle */}
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-slate-700">
+          <span className="text-sm font-medium text-secondary">
             {LABELS.PUBLIC_DESC}
           </span>
           <Controller
@@ -53,20 +53,20 @@ export function FabricPublicStatusSection({
           />
         </div>
 
-        <div className="h-px bg-slate-100" />
+        <div className="h-px bg-surface-secondary" />
 
         {/* Info */}
         <div className="space-y-3">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-500">{TAB_LABELS.LAST_UPDATED}</span>
-            <span className="font-medium text-slate-700">
+            <span className="text-muted">{TAB_LABELS.LAST_UPDATED}</span>
+            <span className="font-medium text-secondary">
               {updatedAt ? dayjs(updatedAt).format('DD MMM YYYY, HH:mm') : '—'}
             </span>
           </div>
 
           {isPublic && (
             <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-500">Public URL</span>
+              <span className="text-muted">Public URL</span>
               <div className="flex items-center gap-1">
                 <Button
                   type="button"
@@ -75,7 +75,7 @@ export function FabricPublicStatusSection({
                   className="px-2"
                   onClick={() => navigator.clipboard.writeText(publicUrl)}
                 >
-                  <Icon name="Copy" size={14} className="text-slate-500" />
+                  <Icon name="Copy" size={14} className="text-muted" />
                 </Button>
               </div>
             </div>

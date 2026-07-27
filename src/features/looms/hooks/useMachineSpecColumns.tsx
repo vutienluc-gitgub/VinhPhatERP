@@ -99,8 +99,8 @@ export function useMachineSpecColumns({
                 type="button"
                 className={`p-1.5 transition-colors ${
                   item.is_active
-                    ? 'text-red-500 hover:bg-red-50'
-                    : 'text-emerald-600 hover:bg-emerald-50'
+                    ? 'text-danger hover:bg-red-50'
+                    : 'text-success hover:bg-emerald-50'
                 } rounded`}
                 onClick={() => onToggleStatus(item)}
                 title={

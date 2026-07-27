@@ -23,8 +23,8 @@ export function POTimeline({ status }: POTimelineProps) {
 
   if (status === 'request_changes') {
     return (
-      <div className="flex items-center gap-4 py-4 px-6 bg-amber-50 border border-amber-200 rounded-xl shadow-sm mb-6 text-amber-700">
-        <Icon name="AlertCircle" size={24} className="text-amber-500" />
+      <div className="flex items-center gap-4 py-4 px-6 bg-amber-50 border border-warning rounded-xl shadow-sm mb-6 text-warning-strong">
+        <Icon name="AlertCircle" size={24} className="text-warning" />
         <span className="font-semibold text-lg">
           {PO_CONSTANTS.TIMELINE_REQUEST_CHANGES}
         </span>
@@ -34,8 +34,8 @@ export function POTimeline({ status }: POTimelineProps) {
 
   if (status === 'rejected') {
     return (
-      <div className="flex items-center gap-4 py-4 px-6 bg-red-50 border border-red-200 rounded-xl shadow-sm mb-6 text-red-700">
-        <Icon name="XCircle" size={24} className="text-red-500" />
+      <div className="flex items-center gap-4 py-4 px-6 bg-red-50 border border-danger rounded-xl shadow-sm mb-6 text-danger">
+        <Icon name="XCircle" size={24} className="text-danger" />
         <span className="font-semibold text-lg">
           {PO_CONSTANTS.TIMELINE_REJECTED}
         </span>
@@ -44,8 +44,8 @@ export function POTimeline({ status }: POTimelineProps) {
   }
   if (status === 'cancelled') {
     return (
-      <div className="flex items-center gap-4 py-4 px-6 bg-gray-50 border border-gray-200 rounded-xl shadow-sm mb-6 text-gray-700">
-        <Icon name="Slash" size={24} className="text-gray-500" />
+      <div className="flex items-center gap-4 py-4 px-6 bg-gray-50 border border-default rounded-xl shadow-sm mb-6 text-secondary">
+        <Icon name="Slash" size={24} className="text-muted" />
         <span className="font-semibold text-lg">
           {PO_CONSTANTS.TIMELINE_CANCELLED}
         </span>
@@ -62,7 +62,7 @@ export function POTimeline({ status }: POTimelineProps) {
         {PO_CONSTANTS.TIMELINE_TITLE}
       </h3>
       <div className="flex items-center justify-between relative px-4 md:px-16">
-        <div className="absolute left-14 right-14 top-5 h-1.5 bg-gray-100 -z-10 rounded-full"></div>
+        <div className="absolute left-14 right-14 top-5 h-1.5 bg-surface-secondary -z-10 rounded-full"></div>
         <div
           className="absolute left-14 top-5 h-1.5 bg-primary -z-10 transition-all duration-500 rounded-full"
           style={{
@@ -78,12 +78,12 @@ export function POTimeline({ status }: POTimelineProps) {
               className="flex flex-col items-center gap-3 bg-surface px-4"
             >
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${isCompleted ? 'bg-primary border-primary text-white shadow-md' : 'bg-surface border-gray-200 text-gray-400'}`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${isCompleted ? 'bg-primary border-primary text-white shadow-md' : 'bg-surface border-default text-muted-foreground'}`}
               >
                 {isCompleted ? <Icon name="Check" size={20} /> : index + 1}
               </div>
               <span
-                className={`text-sm font-semibold ${isCurrent ? 'text-primary' : isCompleted ? 'text-gray-800' : 'text-gray-400'}`}
+                className={`text-sm font-semibold ${isCurrent ? 'text-primary' : isCompleted ? 'text-primary' : 'text-muted-foreground'}`}
               >
                 {step.label}
               </span>

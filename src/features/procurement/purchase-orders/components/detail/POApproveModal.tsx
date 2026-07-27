@@ -23,14 +23,12 @@ export function POApproveModal({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-xl border border-border p-6 max-w-md w-full space-y-4">
-        <h3 className="font-semibold text-lg text-gray-900 m-0">
+        <h3 className="font-semibold text-lg text-foreground m-0">
           {PO_CONSTANTS.MODAL_APPROVE_TITLE}
         </h3>
-        <p className="text-sm text-gray-500">
-          {PO_CONSTANTS.MODAL_APPROVE_DESC}
-        </p>
+        <p className="text-sm text-muted">{PO_CONSTANTS.MODAL_APPROVE_DESC}</p>
         <div className="form-field">
-          <label className="text-xs font-bold text-gray-600 uppercase tracking-wider">
+          <label className="text-xs font-bold text-muted uppercase tracking-wider">
             {PO_CONSTANTS.MODAL_APPROVE_NOTE_LABEL}
           </label>
           <textarea
@@ -47,11 +45,11 @@ export function POApproveModal({
             id="send-immediately"
             checked={sendImmediately}
             onChange={(e) => setSendImmediately(e.target.checked)}
-            className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+            className="w-4 h-4 text-primary border-muted rounded focus:ring-primary"
           />
           <label
             htmlFor="send-immediately"
-            className="text-sm text-gray-700 select-none cursor-pointer"
+            className="text-sm text-secondary select-none cursor-pointer"
           >
             {PO_CONSTANTS.MODAL_APPROVE_AUTO_SEND}
           </label>

@@ -24,7 +24,7 @@ export function LeadSampleDetail({ lead }: LeadSampleDetailProps) {
   return (
     <section>
       <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-        <Icon name="Package" size={16} className="text-emerald-600" />
+        <Icon name="Package" size={16} className="text-success" />
         {LEAD_DETAIL_MESSAGES.SAMPLE_DETAIL_TITLE}
       </h3>
       <div className="bg-surface border border-border rounded-lg p-4 space-y-3">

@@ -17,8 +17,8 @@ export function LoomFormStep4Other({ isTechnicalLocked }: Props) {
 
   return (
     <section>
-      <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
-        <Icon name="FileText" size={16} className="text-gray-500" />
+      <h3 className="text-sm font-semibold text-foreground dark:text-muted mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+        <Icon name="FileText" size={16} className="text-muted" />
         Thông tin khác
       </h3>
       <div className="form-grid">

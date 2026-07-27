@@ -144,8 +144,8 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
 
         <div className="space-y-8 pb-8">
           <div className="mb-6">
-            <h3 className="text-lg font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
-              <Icon name="FileText" className="w-5 h-5 text-indigo-500" />
+            <h3 className="text-lg font-bold text-foreground mb-4 pb-2 border-b border-default flex items-center gap-2">
+              <Icon name="FileText" className="w-5 h-5 text-info" />
               {LABELS.SEC_GENERAL}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
@@ -220,7 +220,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                     className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
                     {...register('syncDebt')}
                   />
-                  <span className="text-sm font-medium text-slate-700">
+                  <span className="text-sm font-medium text-secondary">
                     {LABELS.CHK_DEBT}
                   </span>
                 </label>
@@ -231,8 +231,8 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
           <hr className="border-t border-dashed border-[var(--border)]" />
 
           <div className="mb-6">
-            <h3 className="text-lg font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
-              <Icon name="Truck" className="w-5 h-5 text-indigo-500" />
+            <h3 className="text-lg font-bold text-foreground mb-4 pb-2 border-b border-default flex items-center gap-2">
+              <Icon name="Truck" className="w-5 h-5 text-info" />
               {LABELS.SEC_LOGISTICS}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
@@ -365,8 +365,8 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
           <hr className="border-t border-dashed border-[var(--border)]" />
 
           <div className="mb-6">
-            <h3 className="text-lg font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
-              <Icon name="Package" className="w-5 h-5 text-indigo-500" />
+            <h3 className="text-lg font-bold text-foreground mb-4 pb-2 border-b border-default flex items-center gap-2">
+              <Icon name="Package" className="w-5 h-5 text-info" />
               {LABELS.SEC_DETAILS} <span className="field-required">*</span>
             </h3>
             <div className="w-full overflow-x-auto pb-4">

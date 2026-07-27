@@ -99,7 +99,7 @@ export function SupplierPriceList({ supplierId }: Props) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="form-field">
               <label>
-                {L.LBL_MATERIAL_CODE} <span className="text-red-500">*</span>
+                {L.LBL_MATERIAL_CODE} <span className="text-danger">*</span>
               </label>
               <input
                 type="text"
@@ -108,14 +108,14 @@ export function SupplierPriceList({ supplierId }: Props) {
                 placeholder={L.MATERIAL_CODE_PLACEHOLDER}
               />
               {errors.material_id && (
-                <span className="text-red-500 text-xs">
+                <span className="text-danger text-xs">
                   {errors.material_id.message}
                 </span>
               )}
             </div>
             <div className="form-field">
               <label>
-                {L.LBL_UNIT_PRICE} <span className="text-red-500">*</span>
+                {L.LBL_UNIT_PRICE} <span className="text-danger">*</span>
               </label>
               <Controller
                 name="unit_price"

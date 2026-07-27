@@ -21,7 +21,7 @@ export function FabricPublicPlannerSection() {
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-lg font-semibold tracking-tight text-slate-900">
+        <h3 className="text-lg font-semibold tracking-tight text-foreground">
           {LABELS.SECTION_PLANNER}
         </h3>
       </div>
@@ -59,7 +59,7 @@ export function FabricPublicPlannerSection() {
           <div className="form-field col-span-2">
             <label
               htmlFor="b2b_planner.origin_country"
-              className="text-sm font-medium text-slate-700 mb-1"
+              className="text-sm font-medium text-secondary mb-1"
             >
               {PUBLIC_PAGE_LABELS.origin}
             </label>
@@ -77,7 +77,7 @@ export function FabricPublicPlannerSection() {
               )}
             />
             {errors.b2b_planner?.origin_country && (
-              <p className="text-xs text-red-500 mt-1">
+              <p className="text-xs text-danger mt-1">
                 {errors.b2b_planner.origin_country.message}
               </p>
             )}
@@ -88,7 +88,7 @@ export function FabricPublicPlannerSection() {
         <div className="pt-2">
           <button
             type="button"
-            className="flex items-center text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+            className="flex items-center text-sm font-medium text-muted hover:text-primary transition-colors"
             onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
           >
             <span>{LABELS.ADVANCED_SETTINGS_TOGGLE}</span>
@@ -102,7 +102,7 @@ export function FabricPublicPlannerSection() {
 
         {/* Advanced View */}
         {isAdvancedOpen && (
-          <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+          <div className="grid grid-cols-2 gap-4 pt-2 border-t border-default">
             <NumericField
               control={control}
               name="b2b_planner.yield_factor"

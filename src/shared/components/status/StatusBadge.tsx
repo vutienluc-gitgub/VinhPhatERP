@@ -42,9 +42,9 @@ export function StatusBadge({
           {badgeNode}
           <span className="text-xs font-medium text-muted">{p}%</span>
         </div>
-        <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+        <div className="w-full h-1.5 bg-surface-secondary rounded-full overflow-hidden">
           <div
-            className={`h-full ${p >= 100 ? 'bg-success' : p > 0 ? 'bg-warning' : 'bg-gray-300'}`}
+            className={`h-full ${p >= 100 ? 'bg-success' : p > 0 ? 'bg-warning' : 'bg-surface-strong'}`}
             style={{ width: `${p}%` }}
           />
         </div>

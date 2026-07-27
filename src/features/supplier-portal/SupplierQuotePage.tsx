@@ -17,9 +17,9 @@ export function SupplierQuotePage() {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="max-w-4xl w-full space-y-6">
-          <div className="h-24 bg-slate-200 rounded-xl animate-pulse" />
-          <div className="h-48 bg-slate-200 rounded-xl animate-pulse" />
-          <div className="h-64 bg-slate-200 rounded-xl animate-pulse" />
+          <div className="h-24 bg-surface-secondary rounded-xl animate-pulse" />
+          <div className="h-48 bg-surface-secondary rounded-xl animate-pulse" />
+          <div className="h-64 bg-surface-secondary rounded-xl animate-pulse" />
         </div>
       </div>
     );
@@ -29,7 +29,7 @@ export function SupplierQuotePage() {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
         <Icon name="XCircle" size={48} className="text-destructive mb-4" />
-        <h2 className="text-lg font-bold text-slate-800 text-center">
+        <h2 className="text-lg font-bold text-foreground text-center">
           {SUPPLIER_PORTAL_LABELS.ERROR_NOT_FOUND}
         </h2>
         <p className="text-muted text-center mt-2 text-sm max-w-md">
@@ -44,10 +44,10 @@ export function SupplierQuotePage() {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
         <div className="bg-white p-8 rounded-2xl shadow-sm border border-border text-center max-w-md w-full">
-          <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-16 h-16 bg-success-soft text-success rounded-full flex items-center justify-center mx-auto mb-6">
             <Icon name="Check" size={32} />
           </div>
-          <h2 className="text-xl font-bold text-slate-800 mb-2">
+          <h2 className="text-xl font-bold text-foreground mb-2">
             {SUPPLIER_PORTAL_LABELS.SUCCESS_TITLE}
           </h2>
           <p className="text-muted text-sm leading-relaxed">
@@ -66,7 +66,7 @@ export function SupplierQuotePage() {
           <h1 className="text-xl md:text-2xl font-bold mb-1">
             {SUPPLIER_PORTAL_LABELS.PAGE_TITLE}
           </h1>
-          <p className="text-blue-200 text-sm">
+          <p className="text-info text-sm">
             {SUPPLIER_PORTAL_LABELS.PAGE_SUBTITLE}
           </p>
         </div>
@@ -97,10 +97,10 @@ export function SupplierQuotePage() {
               <p className="text-xs text-muted mb-1">
                 {SUPPLIER_PORTAL_LABELS.LABEL_TITLE}
               </p>
-              <p className="font-medium text-slate-800">{rfq.title}</p>
+              <p className="font-medium text-primary">{rfq.title}</p>
             </div>
             {rfq.notes && (
-              <div className="md:col-span-2 bg-amber-50 p-3 rounded-lg border border-amber-100 text-amber-900 text-sm whitespace-pre-wrap mt-2">
+              <div className="md:col-span-2 bg-amber-50 p-3 rounded-lg border border-warning text-warning-strong text-sm whitespace-pre-wrap mt-2">
                 <span className="font-semibold block mb-1">
                   {SUPPLIER_PORTAL_LABELS.LABEL_NOTES_FROM_BUYER}
                 </span>

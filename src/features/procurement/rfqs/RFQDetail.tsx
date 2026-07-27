@@ -37,21 +37,21 @@ export function RFQDetail() {
   if (isLoadingRfq) {
     return (
       <div className="page-container pb-8 space-y-6">
-        <div className="h-24 bg-slate-100 rounded-xl animate-pulse" />
-        <div className="h-64 bg-slate-100 rounded-xl animate-pulse" />
+        <div className="h-24 bg-surface-secondary rounded-xl animate-pulse" />
+        <div className="h-64 bg-surface-secondary rounded-xl animate-pulse" />
       </div>
     );
   }
 
   if (rfqError || !rfq) {
     return (
-      <div className="p-12 text-center border-2 border-dashed border-slate-200 rounded-xl mt-8">
+      <div className="p-12 text-center border-2 border-dashed border-default rounded-xl mt-8">
         <Icon
           name="XCircle"
           size={48}
           className="text-destructive mx-auto mb-4"
         />
-        <p className="text-lg font-bold text-slate-800 mb-2">
+        <p className="text-lg font-bold text-primary mb-2">
           {rfqError ? getErrorMessage(rfqError) : RFQ_LABELS.DETAIL_NOT_FOUND}
         </p>
         <Button
@@ -230,7 +230,7 @@ export function RFQDetail() {
             )}
 
             {activeTab === 'suppliers' && (
-              <div className="p-6 text-center text-slate-500">
+              <div className="p-6 text-center text-muted">
                 <RFQQuotesTab rfq={rfq} />
               </div>
             )}

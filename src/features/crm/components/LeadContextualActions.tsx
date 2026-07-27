@@ -45,16 +45,16 @@ export function LeadContextualActions({ lead }: LeadContextualActionsProps) {
 
   if (lead.customer_id) {
     return (
-      <div className="bg-teal-50 border border-teal-100 rounded-xl p-4 flex items-center justify-between">
+      <div className="bg-teal-50 border border-success rounded-xl p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-teal-100 p-2 rounded-lg">
-            <Icon name="Building2" className="h-5 w-5 text-teal-700" />
+          <div className="bg-success-soft p-2 rounded-lg">
+            <Icon name="Building2" className="h-5 w-5 text-success" />
           </div>
           <div>
-            <p className="text-sm font-bold text-teal-900">
+            <p className="text-sm font-bold text-success">
               Đã liên kết Khách hàng
             </p>
-            <p className="text-xs text-teal-700">
+            <p className="text-xs text-success">
               Lead này thuộc về một hồ sơ khách hàng chính thức.
             </p>
           </div>
@@ -62,7 +62,7 @@ export function LeadContextualActions({ lead }: LeadContextualActionsProps) {
         <Button
           variant="secondary"
           onClick={() => navigate(`/app/customers?id=${lead.customer_id}`)}
-          className="bg-white hover:bg-teal-50 text-teal-700 border-teal-200"
+          className="bg-white hover:bg-teal-50 text-success border-success"
         >
           Mở hồ sơ
         </Button>
@@ -72,17 +72,17 @@ export function LeadContextualActions({ lead }: LeadContextualActionsProps) {
 
   if (hasDuplicateCustomer) {
     return (
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-4">
+      <div className="bg-amber-50 border border-warning rounded-xl p-4 space-y-4">
         <div className="flex items-start gap-3">
           <Icon
             name="AlertCircle"
-            className="h-5 w-5 text-amber-600 mt-0.5 shrink-0"
+            className="h-5 w-5 text-warning mt-0.5 shrink-0"
           />
           <div className="flex-1">
-            <h4 className="text-sm font-bold text-amber-800">
+            <h4 className="text-sm font-bold text-warning-strong">
               Phát hiện dữ liệu trùng lặp
             </h4>
-            <p className="text-sm text-amber-700 mt-1">
+            <p className="text-sm text-warning-strong mt-1">
               Số điện thoại/Email của Lead này khớp với khách hàng đã có trên hệ
               thống. Bạn nên liên kết thay vì tạo mới.
             </p>
@@ -94,12 +94,12 @@ export function LeadContextualActions({ lead }: LeadContextualActionsProps) {
             {duplicates.customers.map((c) => (
               <div
                 key={c.id}
-                className="flex items-center justify-between bg-white p-3 rounded-lg border border-amber-100 shadow-sm"
+                className="flex items-center justify-between bg-white p-3 rounded-lg border border-warning shadow-sm"
               >
                 <div className="flex items-center gap-2">
-                  <Icon name="Building2" className="h-4 w-4 text-amber-600" />
+                  <Icon name="Building2" className="h-4 w-4 text-warning" />
                   <div>
-                    <p className="text-sm font-bold text-slate-800">{c.name}</p>
+                    <p className="text-sm font-bold text-primary">{c.name}</p>
                   </div>
                 </div>
                 <Button
@@ -117,7 +117,7 @@ export function LeadContextualActions({ lead }: LeadContextualActionsProps) {
           <div className="flex justify-end">
             <Button
               variant="outline"
-              className="bg-white text-amber-700 border-amber-300 hover:bg-amber-100"
+              className="bg-white text-warning-strong border-warning hover:bg-warning-soft"
               onClick={() => setShowDuplicates(true)}
             >
               Xem khách hàng trùng
@@ -130,16 +130,14 @@ export function LeadContextualActions({ lead }: LeadContextualActionsProps) {
 
   // Unlinked and no duplicates
   return (
-    <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-center justify-between">
+    <div className="bg-blue-50 border border-info rounded-xl p-4 flex items-center justify-between">
       <div className="flex items-center gap-3">
-        <div className="bg-blue-100 p-2 rounded-lg">
-          <Icon name="UserPlus" className="h-5 w-5 text-blue-700" />
+        <div className="bg-info-soft p-2 rounded-lg">
+          <Icon name="UserPlus" className="h-5 w-5 text-info" />
         </div>
         <div>
-          <p className="text-sm font-bold text-blue-900">
-            Lead tiềm năng độc lập
-          </p>
-          <p className="text-xs text-blue-700">
+          <p className="text-sm font-bold text-info">Lead tiềm năng độc lập</p>
+          <p className="text-xs text-info">
             Chưa được liên kết với bất kỳ Khách hàng chính thức nào.
           </p>
         </div>
@@ -148,7 +146,7 @@ export function LeadContextualActions({ lead }: LeadContextualActionsProps) {
         variant="primary"
         isLoading={isPending}
         onClick={() => handleConvert()}
-        className="bg-blue-600 hover:bg-blue-700"
+        className="bg-info-soft hover:bg-info-soft"
       >
         Tạo Khách hàng mới
       </Button>

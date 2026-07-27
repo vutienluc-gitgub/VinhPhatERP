@@ -179,10 +179,10 @@ export function ContractForm({
   return (
     <form id="contract-form" onSubmit={handleSubmit(submitForm)} noValidate>
       {warning && (
-        <div className="mb-4 p-3 rounded-lg border border-amber-200 bg-amber-50 flex gap-3 items-start">
-          <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+        <div className="mb-4 p-3 rounded-lg border border-warning bg-amber-50 flex gap-3 items-start">
+          <AlertTriangle className="w-5 h-5 text-warning shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-amber-800">{warning}</p>
+            <p className="text-sm text-warning-strong">{warning}</p>
             <div className="flex gap-2 mt-3">
               <button
                 type="button"

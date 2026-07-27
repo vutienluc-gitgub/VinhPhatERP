@@ -78,24 +78,24 @@ export function POItemsTable({
 
       <div className="overflow-x-auto overflow-y-auto max-h-[450px]">
         <table className="w-full text-sm text-left relative border-collapse">
-          <thead className="text-xs text-gray-600 bg-gray-50/80 border-b border-border sticky top-0 z-20 backdrop-blur-sm">
+          <thead className="text-xs text-muted bg-gray-50/80 border-b border-border sticky top-0 z-20 backdrop-blur-sm">
             <tr>
               <th className="px-3 py-2.5 font-semibold align-middle w-[40px] text-center">
                 #
               </th>
               <th className="px-2 py-2.5 font-semibold align-middle">
                 {PO_CONSTANTS.COL_MATERIAL}{' '}
-                <span className="text-red-500">*</span>
+                <span className="text-danger">*</span>
               </th>
               <th className="px-2 py-2.5 font-semibold align-middle w-[100px]">
                 {PO_CONSTANTS.COL_UOM}
               </th>
               <th className="px-2 py-2.5 font-semibold align-middle w-[120px] text-right">
-                {PO_CONSTANTS.COL_QTY} <span className="text-red-500">*</span>
+                {PO_CONSTANTS.COL_QTY} <span className="text-danger">*</span>
               </th>
               <th className="px-2 py-2.5 font-semibold align-middle w-[150px] text-right">
                 {PO_CONSTANTS.COL_UNIT_PRICE}{' '}
-                <span className="text-red-500">*</span>
+                <span className="text-danger">*</span>
               </th>
               <th className="px-3 py-2.5 font-semibold align-middle w-[150px] text-right">
                 {PO_CONSTANTS.COL_LINE_TOTAL}
@@ -123,7 +123,7 @@ export function POItemsTable({
                   key={item.id}
                   className="border-b border-border hover:bg-gray-50/50 group"
                 >
-                  <td className="px-3 py-1.5 text-center text-gray-400 align-middle">
+                  <td className="px-3 py-1.5 text-center text-muted-foreground align-middle">
                     {index + 1}
                   </td>
                   <td className="px-2 py-1.5 relative align-middle">
@@ -150,7 +150,7 @@ export function POItemsTable({
                             hasError={!!errors.items?.[index]?.material_id}
                           />
                           {errors.items?.[index]?.material_id && (
-                            <span className="text-[10px] text-red-500 mt-0.5 leading-tight">
+                            <span className="text-[10px] text-danger mt-0.5 leading-tight">
                               {errors.items[index]?.material_id?.message}
                             </span>
                           )}
@@ -194,7 +194,7 @@ export function POItemsTable({
                             }
                           />
                           {errors.items?.[index]?.ordered_qty && (
-                            <span className="text-[10px] text-red-500 mt-0.5 leading-tight text-right">
+                            <span className="text-[10px] text-danger mt-0.5 leading-tight text-right">
                               {errors.items[index]?.ordered_qty?.message}
                             </span>
                           )}
@@ -212,7 +212,7 @@ export function POItemsTable({
                             id={`input-unit_price-${index}`}
                             className={`table-cell-input table-cell-input-numeric ${
                               isPriceHigherThanContract
-                                ? 'border-amber-400 focus:border-amber-500 text-amber-700 bg-amber-50/20 font-semibold'
+                                ? 'border-warning focus:border-warning text-warning-strong bg-amber-50/20 font-semibold'
                                 : ''
                             } ${errors.items?.[index]?.unit_price ? 'border-danger' : ''}`}
                             placeholder="0"
@@ -223,13 +223,13 @@ export function POItemsTable({
                             }
                           />
                           {errors.items?.[index]?.unit_price && (
-                            <span className="text-[10px] text-red-500 mt-0.5 leading-tight text-right">
+                            <span className="text-[10px] text-danger mt-0.5 leading-tight text-right">
                               {errors.items[index]?.unit_price?.message}
                             </span>
                           )}
                           {isPriceHigherThanContract &&
                             !errors.items?.[index]?.unit_price && (
-                              <div className="text-[10px] text-amber-700 flex items-center gap-1 mt-1 bg-amber-50 p-1 rounded border border-amber-200 justify-end font-semibold">
+                              <div className="text-[10px] text-warning-strong flex items-center gap-1 mt-1 bg-amber-50 p-1 rounded border border-warning justify-end font-semibold">
                                 <span>
                                   {PO_CONSTANTS.MSG_PRICE_HIGHER_THAN_CONTRACT}{' '}
                                   (<MoneyText value={contractPrice} />)
@@ -240,7 +240,7 @@ export function POItemsTable({
                       )}
                     />
                   </td>
-                  <td className="px-3 py-1.5 text-right tabular-nums text-gray-800 font-semibold align-middle">
+                  <td className="px-3 py-1.5 text-right tabular-nums text-primary font-semibold align-middle">
                     <MoneyText value={lineTotal} />
                   </td>
                   <td className="px-3 py-1.5 text-center whitespace-nowrap align-middle">
@@ -255,7 +255,7 @@ export function POItemsTable({
                           unit_price: currentItem.unit_price,
                         });
                       }}
-                      className="text-gray-400 hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity p-1 mr-1"
+                      className="text-muted-foreground hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity p-1 mr-1"
                       title={PO_CONSTANTS.BTN_DUPLICATE_ROW}
                     >
                       <Icon name="Copy" size={16} />
@@ -263,7 +263,7 @@ export function POItemsTable({
                     <button
                       type="button"
                       onClick={() => remove(index)}
-                      className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-1"
+                      className="text-muted-foreground hover:text-danger opacity-0 group-hover:opacity-100 transition-opacity p-1"
                       title={PO_CONSTANTS.BTN_DELETE_ROW}
                     >
                       <Icon name="Trash2" size={16} />
@@ -275,7 +275,7 @@ export function POItemsTable({
           </tbody>
         </table>
         {errors.items?.root && (
-          <div className="p-3 text-red-500 text-sm bg-red-50">
+          <div className="p-3 text-danger text-sm bg-red-50">
             {errors.items.root.message}
           </div>
         )}

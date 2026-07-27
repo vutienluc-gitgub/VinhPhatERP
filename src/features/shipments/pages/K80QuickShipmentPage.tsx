@@ -46,8 +46,8 @@ export function K80QuickShipmentPage() {
   return (
     <div className="flex flex-col gap-6 p-4 sm:p-6 pb-20">
       <div className="flex items-center gap-3">
-        <Icon name="Printer" size={24} className="text-emerald-500" />
-        <h1 className="text-2xl font-bold uppercase tracking-wide text-slate-800">
+        <Icon name="Printer" size={24} className="text-success" />
+        <h1 className="text-2xl font-bold uppercase tracking-wide text-foreground">
           {LABELS.PAGE_TITLE}
         </h1>
       </div>
@@ -62,7 +62,7 @@ export function K80QuickShipmentPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="form-field">
                 <label>
-                  {LABELS.CUSTOMER} <span className="text-red-500">*</span>
+                  {LABELS.CUSTOMER} <span className="text-danger">*</span>
                 </label>
                 <Combobox
                   options={customerComboOptions}
@@ -119,7 +119,7 @@ export function K80QuickShipmentPage() {
                     {columns.length > 1 && (
                       <button
                         type="button"
-                        className="text-red-500 hover:text-red-600 p-1 rounded transition-colors"
+                        className="text-danger hover:text-danger p-1 rounded transition-colors"
                         onClick={() => removeColumn(col.id)}
                         title={LABELS.DELETE_COLUMN}
                       >

@@ -16,16 +16,16 @@ function SaaSBadge({ status }: { status: LoomStatus }) {
 
   const styles: Record<string, string> = {
     active:
-      'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 ring-emerald-500/20',
+      'bg-success-soft/10 text-success dark:text-success ring-emerald-500/20',
     maintenance:
-      'bg-amber-500/10 text-amber-700 dark:text-amber-400 ring-amber-500/20',
+      'bg-warning-soft/10 text-warning-strong dark:text-warning ring-amber-500/20',
     inactive:
-      'bg-slate-500/10 text-slate-700 dark:text-slate-400 ring-slate-500/20',
+      'bg-surface-strong/10 text-secondary dark:text-muted-foreground ring-slate-500/20',
   };
   const dotColors: Record<string, string> = {
-    active: 'bg-emerald-500',
-    maintenance: 'bg-amber-500',
-    inactive: 'bg-slate-500',
+    active: 'bg-success-soft',
+    maintenance: 'bg-warning-soft',
+    inactive: 'bg-surface-strong',
   };
 
   const currentStyle = styles[status] || styles.inactive;

@@ -37,11 +37,11 @@ export function PublicStickyCTA({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-3 bg-white border-t border-gray-200 shadow-[0_-4px_12px_-1px_rgba(0,0,0,0.08)] z-40">
+    <div className="fixed bottom-0 left-0 right-0 p-3 bg-white border-t border-default shadow-[0_-4px_12px_-1px_rgba(0,0,0,0.08)] z-40">
       <div className="flex gap-2 max-w-md mx-auto">
         <a
           href={`tel:${HOTLINE}`}
-          className="flex-1 flex flex-col items-center justify-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2.5 px-2 rounded-xl transition-colors"
+          className="flex-1 flex flex-col items-center justify-center gap-1 bg-surface-secondary hover:bg-surface-secondary text-primary py-2.5 px-2 rounded-xl transition-colors"
         >
           <Icon name="Phone" className="w-5 h-5" />
           <span className="text-xs font-semibold">{LABELS.callNow}</span>

@@ -75,7 +75,7 @@ export function POGeneralInfoCard({
           <div className="form-field">
             <label>
               {PO_CONSTANTS.LABEL_SUPPLIER}{' '}
-              <span className="text-red-500">*</span>
+              <span className="text-danger">*</span>
             </label>
             <Controller
               name="supplier_id"
@@ -96,7 +96,7 @@ export function POGeneralInfoCard({
               )}
             />
             {errors.supplier_id && (
-              <span className="text-red-500 text-sm mt-1 block">
+              <span className="text-danger text-sm mt-1 block">
                 {errors.supplier_id.message}
               </span>
             )}
@@ -104,13 +104,13 @@ export function POGeneralInfoCard({
 
           <div className="form-field">
             <label>{PO_CONSTANTS.LABEL_TRADE_TYPE}</label>
-            <div className="flex gap-1 bg-gray-100 p-1 rounded-lg h-9 items-center">
+            <div className="flex gap-1 bg-surface-secondary p-1 rounded-lg h-9 items-center">
               <button
                 type="button"
                 className={`flex-1 py-1 text-xs font-semibold rounded-md transition-all h-7 ${
                   tradeType === 'domestic'
                     ? 'bg-white text-primary shadow-sm border border-black/5'
-                    : 'text-gray-500 hover:text-gray-800'
+                    : 'text-muted hover:text-primary'
                 }`}
                 onClick={() => handleTradeTypeChange('domestic')}
               >
@@ -121,7 +121,7 @@ export function POGeneralInfoCard({
                 className={`flex-1 py-1 text-xs font-semibold rounded-md transition-all h-7 ${
                   tradeType === 'import'
                     ? 'bg-white text-primary shadow-sm border border-black/5'
-                    : 'text-gray-500 hover:text-gray-800'
+                    : 'text-muted hover:text-primary'
                 }`}
                 onClick={() => handleTradeTypeChange('import')}
               >
@@ -160,15 +160,15 @@ export function POGeneralInfoCard({
           <div className="form-field">
             <label>
               {PO_CONSTANTS.LABEL_ORDER_DATE}{' '}
-              <span className="text-red-500">*</span>
+              <span className="text-danger">*</span>
             </label>
             <input
               type="date"
-              className={`field-input h-9 ${errors.order_date ? 'border-danger border-red-500' : ''}`}
+              className={`field-input h-9 ${errors.order_date ? 'border-danger border-danger' : ''}`}
               {...register('order_date')}
             />
             {errors.order_date && (
-              <span className="text-red-500 text-sm mt-1 block">
+              <span className="text-danger text-sm mt-1 block">
                 {errors.order_date.message}
               </span>
             )}

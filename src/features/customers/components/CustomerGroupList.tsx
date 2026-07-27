@@ -188,8 +188,8 @@ export function CustomerGroupList() {
   if (isLoading) {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-10 bg-slate-200 rounded-lg w-1/4" />
-        <div className="h-40 bg-slate-100 rounded-xl" />
+        <div className="h-10 bg-surface-secondary rounded-lg w-1/4" />
+        <div className="h-40 bg-surface-secondary rounded-xl" />
       </div>
     );
   }
@@ -375,7 +375,7 @@ export function CustomerGroupList() {
           </div>
 
           {/* Save buttons */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-default">
             <Button
               type="button"
               variant="secondary"

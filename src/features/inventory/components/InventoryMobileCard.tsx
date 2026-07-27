@@ -20,7 +20,7 @@ export function AgingMobileCard({ roll }: { roll: AgingRoll }) {
       </div>
       <div className="mobile-card-body space-y-3">
         <div className="flex justify-between items-start">
-          <p className="font-bold text-slate-800">{roll.fabric_type}</p>
+          <p className="font-bold text-primary">{roll.fabric_type}</p>
           {roll.warehouse_location && (
             <div className="flex items-center gap-1 text-xs text-muted">
               <Icon name="MapPin" size={14} />
@@ -37,7 +37,7 @@ export function AgingMobileCard({ roll }: { roll: AgingRoll }) {
             </div>
           )}
           <div className="flex items-center gap-1.5 text-xs bg-surface-subtle px-2 py-1 rounded border border-border/50">
-            <Icon name="Clock" size={14} className="text-orange-500/70" />
+            <Icon name="Clock" size={14} className="text-warning/70" />
             <span className="font-bold">
               {roll.age_days} {MSG.DAYS}
             </span>
@@ -72,7 +72,7 @@ export function BreakdownMobileCard({ row }: { row: InventoryBreakdownRow }) {
             <p className="text-[9px] uppercase text-muted font-bold mb-0.5">
               {MSG.COL_ROLL_COUNT}
             </p>
-            <p className="text-sm font-black text-slate-700">
+            <p className="text-sm font-black text-secondary">
               {row.roll_count ?? 0}
             </p>
           </div>
@@ -95,10 +95,10 @@ export function BreakdownMobileCard({ row }: { row: InventoryBreakdownRow }) {
             </p>
             <WeightText
               value={row.total_weight_kg ?? 0}
-              className="text-sm font-black text-slate-700"
+              className="text-sm font-black text-secondary"
               suffix=""
             />
-            <span className="text-[10px] ml-0.5 font-black text-slate-700">
+            <span className="text-[10px] ml-0.5 font-black text-secondary">
               kg
             </span>
           </div>

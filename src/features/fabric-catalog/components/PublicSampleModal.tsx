@@ -80,14 +80,14 @@ export function PublicSampleModal({
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-3 animate-fade-in">
       <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
-          <h3 className="font-bold text-gray-900 flex items-center gap-2">
+        <div className="p-4 border-b border-default flex justify-between items-center bg-slate-50">
+          <h3 className="font-bold text-foreground flex items-center gap-2">
             <Icon name="Package" className="w-5 h-5 text-primary" />
             {LABELS.requestSampleTitle}
           </h3>
           <button
             onClick={closeSample}
-            className="p-1 rounded-full hover:bg-slate-200 text-slate-500"
+            className="p-1 rounded-full hover:bg-surface-secondary text-muted"
           >
             <Icon name="X" className="w-5 h-5" />
           </button>
@@ -102,7 +102,7 @@ export function PublicSampleModal({
           </p>
 
           {/* Mẫu vải đang chọn */}
-          <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+          <div className="bg-slate-50 p-3 rounded-xl border border-default">
             <span className="text-[10px] text-muted font-bold block mb-1">
               {LABELS.rfqFabricRequested}
             </span>
@@ -111,7 +111,7 @@ export function PublicSampleModal({
                 {Object.values(inquiryCart).map((item: InquiryCartItem) => (
                   <div
                     key={item.id}
-                    className="text-xs font-semibold text-slate-800"
+                    className="text-xs font-semibold text-primary"
                   >
                     • {item.code} - {item.name}{' '}
                     {item.color_name && `(${item.color_name})`}
@@ -128,60 +128,60 @@ export function PublicSampleModal({
 
           {/* Name */}
           <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 block">
-              {LABELS.contactNameLabel} <span className="text-red-500">*</span>
+            <label className="text-xs font-bold text-secondary block">
+              {LABELS.contactNameLabel} <span className="text-danger">*</span>
             </label>
             <input
               type="text"
               required
               value={contactName}
               onChange={(e) => setContactName(e.target.value)}
-              className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-primary"
+              className="w-full text-sm border border-default rounded-xl px-3 py-2 focus:outline-none focus:border-primary"
               placeholder={LABELS.rfqPlaceholderName}
             />
           </div>
 
           {/* Phone */}
           <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 block">
-              {LABELS.contactPhoneLabel} <span className="text-red-500">*</span>
+            <label className="text-xs font-bold text-secondary block">
+              {LABELS.contactPhoneLabel} <span className="text-danger">*</span>
             </label>
             <input
               type="tel"
               required
               value={contactPhone}
               onChange={(e) => setContactPhone(e.target.value)}
-              className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-primary"
+              className="w-full text-sm border border-default rounded-xl px-3 py-2 focus:outline-none focus:border-primary"
               placeholder="VD: 0989xxxxxx"
             />
           </div>
 
           {/* Address */}
           <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 block">
+            <label className="text-xs font-bold text-secondary block">
               {LABELS.contactAddressLabel}{' '}
-              <span className="text-red-500">*</span>
+              <span className="text-danger">*</span>
             </label>
             <textarea
               required
               rows={2}
               value={contactAddress}
               onChange={(e) => setContactAddress(e.target.value)}
-              className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-primary resize-none"
+              className="w-full text-sm border border-default rounded-xl px-3 py-2 focus:outline-none focus:border-primary resize-none"
               placeholder={LABELS.samplePlaceholderAddress}
             />
           </div>
 
           {/* Company */}
           <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 block">
+            <label className="text-xs font-bold text-secondary block">
               {LABELS.companyNameLabel}
             </label>
             <input
               type="text"
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
-              className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-primary"
+              className="w-full text-sm border border-default rounded-xl px-3 py-2 focus:outline-none focus:border-primary"
               placeholder="VD: Thời trang Tấn Phát"
             />
           </div>

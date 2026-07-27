@@ -88,37 +88,37 @@ export function POPaymentPanel({
 
         {/* Invoice Financial Breakdown */}
         <div className="bg-gray-50/20 rounded-xl p-4 border border-dashed border-border flex flex-col gap-3.5">
-          <div className="flex justify-between items-center text-sm text-gray-600">
+          <div className="flex justify-between items-center text-sm text-muted">
             <span>{PO_CONSTANTS.SUBTOTAL}</span>
-            <span className="font-semibold tabular-nums text-gray-800">
+            <span className="font-semibold tabular-nums text-primary">
               <MoneyText value={subtotal} /> {watchCurrency}
             </span>
           </div>
 
-          <div className="flex justify-between items-center text-sm text-gray-600">
+          <div className="flex justify-between items-center text-sm text-muted">
             <span>VAT ({watchVatRate}%)</span>
-            <span className="font-semibold tabular-nums text-gray-800">
+            <span className="font-semibold tabular-nums text-primary">
               <MoneyText value={vatAmount} /> {watchCurrency}
             </span>
           </div>
 
-          <div className="flex justify-between items-center text-sm text-gray-600">
+          <div className="flex justify-between items-center text-sm text-muted">
             <span>{PO_CONSTANTS.SHIPPING_FEE}</span>
-            <span className="font-semibold tabular-nums text-gray-800">
+            <span className="font-semibold tabular-nums text-primary">
               <MoneyText value={watchShippingFee} /> {watchCurrency}
             </span>
           </div>
 
-          <div className="border-t border-dashed border-gray-300 pt-3.5">
+          <div className="border-t border-dashed border-muted pt-3.5">
             <div className="flex justify-between items-baseline">
-              <span className="font-bold text-sm text-gray-800 uppercase tracking-wider">
+              <span className="font-bold text-sm text-primary uppercase tracking-wider">
                 {PO_CONSTANTS.GRAND_TOTAL}
               </span>
               <div className="text-right">
                 <span className="text-2xl font-extrabold text-primary tabular-nums">
                   <MoneyText value={totalAmount} />
                 </span>
-                <span className="text-xs font-bold text-gray-500 ml-1.5 uppercase">
+                <span className="text-xs font-bold text-muted ml-1.5 uppercase">
                   {watchCurrency}
                 </span>
               </div>

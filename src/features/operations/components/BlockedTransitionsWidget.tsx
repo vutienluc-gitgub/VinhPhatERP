@@ -148,9 +148,9 @@ export function BlockedTransitionsWidget({
               {recentEvents.map((event) => (
                 <div
                   key={`${event.taskId}-${event.timestamp}`}
-                  className="rounded-lg border border-rose-200/70 bg-rose-50/70 px-3 py-2"
+                  className="rounded-lg border border-danger/70 bg-rose-50/70 px-3 py-2"
                 >
-                  <p className="text-xs font-medium text-rose-700 line-clamp-2">
+                  <p className="text-xs font-medium text-danger line-clamp-2">
                     {event.reason}
                   </p>
                   <p className="mt-1 text-[11px] text-zinc-500">

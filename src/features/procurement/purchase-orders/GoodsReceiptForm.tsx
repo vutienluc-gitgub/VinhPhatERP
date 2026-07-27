@@ -94,7 +94,7 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
           </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-800 text-2xl"
+            className="text-muted hover:text-primary text-2xl"
           >
             &times;
           </button>
@@ -110,7 +110,7 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="form-field">
                 <label>
-                  {PO_CONSTANTS.GR_DATE} <span className="text-red-500">*</span>
+                  {PO_CONSTANTS.GR_DATE} <span className="text-danger">*</span>
                 </label>
                 <input
                   type="date"
@@ -118,7 +118,7 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
                   {...register('received_date')}
                 />
                 {errors.received_date && (
-                  <span className="text-red-500 text-sm mt-1 block">
+                  <span className="text-danger text-sm mt-1 block">
                     {errors.received_date.message}
                   </span>
                 )}
@@ -154,7 +154,7 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
                           </div>
                         </td>
                         <td className="p-3 text-right">{detail.ordered_qty}</td>
-                        <td className="p-3 text-right text-orange-600 font-medium">
+                        <td className="p-3 text-right text-warning font-medium">
                           {detail.remaining_qty}
                         </td>
                         <td className="p-3">
@@ -165,7 +165,7 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
                               field: { value, onChange, onBlur },
                             }) => (
                               <QuantityInput
-                                className={`field-input text-right ${errors.items?.[index]?.received_qty ? 'border-red-500' : ''}`}
+                                className={`field-input text-right ${errors.items?.[index]?.received_qty ? 'border-danger' : ''}`}
                                 value={value}
                                 onChange={onChange}
                                 onBlur={onBlur}
@@ -175,7 +175,7 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
                             )}
                           />
                           {errors.items?.[index]?.received_qty && (
-                            <span className="text-red-500 text-xs mt-1 block">
+                            <span className="text-danger text-xs mt-1 block">
                               {PO_CONSTANTS.GR_ERROR_LABEL}
                             </span>
                           )}
@@ -194,7 +194,7 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
               </table>
             </div>
             {errors.items?.root && (
-              <div className="text-red-500 text-sm">
+              <div className="text-danger text-sm">
                 {errors.items.root.message}
               </div>
             )}

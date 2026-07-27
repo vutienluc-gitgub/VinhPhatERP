@@ -34,7 +34,7 @@ export function UnifiedFeedPage() {
 
   if (status === 'error') {
     return (
-      <div className="p-6 text-center text-red-500">
+      <div className="p-6 text-center text-danger">
         Đã xảy ra lỗi khi tải luồng sự kiện.
       </div>
     );

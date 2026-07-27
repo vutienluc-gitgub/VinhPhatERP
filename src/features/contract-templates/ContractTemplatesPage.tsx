@@ -109,7 +109,7 @@ export function ContractTemplatesPage() {
                 {heading}
                 {isEdit && (
                   <span
-                    className={`ml-3 px-2 py-0.5 rounded-lg text-xs font-bold align-middle ${view.template.type === 'purchase' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}`}
+                    className={`ml-3 px-2 py-0.5 rounded-lg text-xs font-bold align-middle ${view.template.type === 'purchase' ? 'bg-info-soft text-info' : 'bg-success-soft text-success'}`}
                   >
                     {CONTRACT_TYPE_LABELS[view.template.type]}
                   </span>

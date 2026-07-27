@@ -17,8 +17,8 @@ export function LoomFormStep3Specs({ isTechnicalLocked }: Props) {
 
   return (
     <section>
-      <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
-        <Icon name="Settings" size={16} className="text-blue-500" />
+      <h3 className="text-sm font-semibold text-foreground dark:text-muted mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+        <Icon name="Settings" size={16} className="text-info" />
         Thông số kỹ thuật chi tiết
       </h3>
       <div className="form-grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">

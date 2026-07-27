@@ -67,19 +67,19 @@ export function TemplateEditor({
     <div className="flex flex-col gap-4">
       {/* Confirm dialog */}
       {showConfirm && (
-        <div className="p-4 rounded-lg border border-amber-200 bg-amber-50 flex gap-3 items-start">
+        <div className="p-4 rounded-lg border border-warning bg-amber-50 flex gap-3 items-start">
           <Icon
             name="AlertTriangle"
             size={20}
-            className="text-amber-500 shrink-0 mt-0.5"
+            className="text-warning shrink-0 mt-0.5"
           />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-amber-800">
+            <p className="text-sm font-medium text-warning-strong">
               {template
                 ? CONTRACT_TEMPLATE_LABELS.CONFIRM_SAVE_TITLE
                 : CONTRACT_TEMPLATE_LABELS.CONFIRM_CREATE_TITLE}
             </p>
-            <p className="text-xs text-amber-700 mt-1">
+            <p className="text-xs text-warning-strong mt-1">
               {CONTRACT_TEMPLATE_LABELS.CONFIRM_SAVE_MSG}
             </p>
             <div className="flex gap-2 mt-3">

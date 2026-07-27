@@ -32,11 +32,11 @@ export function FabricHeaderActions({
         </h1>
         <div className="flex items-center gap-1.5 ml-1">
           {canViewWholesale ? (
-            <span className="bg-green-100 text-green-700 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide">
+            <span className="bg-success-soft text-success text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide">
               {LABELS.badgeDealer}
             </span>
           ) : (
-            <span className="bg-slate-100 text-slate-600 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide">
+            <span className="bg-surface-secondary text-muted text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide">
               {LABELS.badgePublic}
             </span>
           )}
@@ -45,7 +45,7 @@ export function FabricHeaderActions({
       <div className="flex items-center gap-3">
         <button
           onClick={onOpenCompare}
-          className="relative p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-slate-600"
+          className="relative p-1.5 rounded-lg hover:bg-surface-secondary transition-colors text-muted"
           title={LABELS.compareTitle}
         >
           <Icon name="Scale" className="w-5 h-5" />
@@ -57,19 +57,19 @@ export function FabricHeaderActions({
         </button>
         <button
           onClick={onOpenInquiryCart}
-          className="relative p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-slate-600"
+          className="relative p-1.5 rounded-lg hover:bg-surface-secondary transition-colors text-muted"
           title={LABELS.inquiryCartTitle}
         >
           <Icon name="ShoppingCart" className="w-5 h-5" />
           {inquiryCartCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 bg-danger-soft text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
               {inquiryCartCount}
             </span>
           )}
         </button>
         <button
           onClick={onShare}
-          className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-slate-600"
+          className="p-1.5 rounded-lg hover:bg-surface-secondary transition-colors text-muted"
           title={LABELS.shareTitle}
         >
           <Icon name="Share2" className="w-5 h-5" />
@@ -85,7 +85,7 @@ export function FabricHeaderActions({
         ) : (
           <button
             onClick={onSignOut}
-            className="p-1.5 rounded-lg hover:bg-red-50 transition-colors text-red-600"
+            className="p-1.5 rounded-lg hover:bg-red-50 transition-colors text-danger"
             title={LABELS.logoutBtn}
           >
             <Icon name="LogOut" className="w-5 h-5" />

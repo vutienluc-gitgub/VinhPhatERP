@@ -15,16 +15,16 @@ type StockHealth = {
 
 function getStockHealth(row: YarnAvailability): StockHealth {
   if (row.total_stock_qty === 0) {
-    return { label: 'Empty', variant: 'gray', barColor: 'bg-slate-300' };
+    return { label: 'Empty', variant: 'gray', barColor: 'bg-surface-strong' };
   }
 
   const pct = (row.available_qty / (row.total_stock_qty || 1)) * 100;
 
   if (pct >= 50)
-    return { label: 'OK', variant: 'success', barColor: 'bg-emerald-500' };
+    return { label: 'OK', variant: 'success', barColor: 'bg-success-soft' };
   if (pct >= 10)
-    return { label: 'Low', variant: 'warning', barColor: 'bg-amber-500' };
-  return { label: 'Risk', variant: 'danger', barColor: 'bg-red-500' };
+    return { label: 'Low', variant: 'warning', barColor: 'bg-warning-soft' };
+  return { label: 'Risk', variant: 'danger', barColor: 'bg-danger-soft' };
 }
 
 function getAvailablePct(row: YarnAvailability): number {
@@ -59,14 +59,14 @@ export const YARN_INVENTORY_COLUMNS: ColumnDef<YarnAvailability, unknown>[] = [
     id: 'total_stock_qty',
     accessorKey: 'total_stock_qty',
     cell: ({ row }) => <WeightText value={row.original.total_stock_qty} />,
-    meta: { className: 'text-right max-sm:hidden text-slate-600' },
+    meta: { className: 'text-right max-sm:hidden text-muted' },
   },
   {
     header: MSG.LBL_YARN_RESERVED_KG,
     id: 'reserved_qty',
     accessorKey: 'reserved_qty',
     cell: ({ row }) => (
-      <span className="text-red-600 font-medium">
+      <span className="text-danger font-medium">
         {row.original.reserved_qty > 0 ? (
           <>
             -
@@ -99,7 +99,7 @@ export const YARN_INVENTORY_COLUMNS: ColumnDef<YarnAvailability, unknown>[] = [
               {health.label}
             </Badge>
           </div>
-          <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+          <div className="w-full bg-surface-secondary rounded-full h-1.5 overflow-hidden">
             <div
               className={`h-full ${health.barColor} transition-all`}
               style={{ width: `${pct}%` }}
@@ -134,7 +134,7 @@ export function YarnInventoryMobileCard({ row }: { row: YarnAvailability }) {
           <span className="text-xs font-medium">{row.color_name || '—'}</span>
         </div>
 
-        <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden mt-1">
+        <div className="w-full bg-surface-secondary rounded-full h-1.5 overflow-hidden mt-1">
           <div
             className={`h-full ${health.barColor} transition-all`}
             style={{ width: `${pct}%` }}
@@ -148,36 +148,36 @@ export function YarnInventoryMobileCard({ row }: { row: YarnAvailability }) {
             </p>
             <WeightText
               value={row.total_stock_qty}
-              className="text-sm font-black text-slate-700"
+              className="text-sm font-black text-secondary"
               suffix=""
             />
-            <span className="text-[10px] ml-0.5 font-black text-slate-700">
+            <span className="text-[10px] ml-0.5 font-black text-secondary">
               kg
             </span>
           </div>
           <div>
-            <p className="text-[9px] uppercase text-red-400 font-bold mb-0.5">
+            <p className="text-[9px] uppercase text-danger font-bold mb-0.5">
               {MSG.LBL_SHORT_RESERVED}
             </p>
             <WeightText
               value={row.reserved_qty}
-              className="text-sm font-black text-red-600"
+              className="text-sm font-black text-danger"
               suffix=""
             />
-            <span className="text-[10px] ml-0.5 font-black text-red-600">
+            <span className="text-[10px] ml-0.5 font-black text-danger">
               kg
             </span>
           </div>
           <div>
-            <p className="text-[9px] uppercase text-emerald-600 font-bold mb-0.5">
+            <p className="text-[9px] uppercase text-success font-bold mb-0.5">
               {MSG.LBL_SHORT_AVAILABLE}
             </p>
             <WeightText
               value={row.available_qty}
-              className="text-sm font-black text-emerald-700"
+              className="text-sm font-black text-success"
               suffix=""
             />
-            <span className="text-[10px] ml-0.5 font-black text-emerald-700">
+            <span className="text-[10px] ml-0.5 font-black text-success">
               kg
             </span>
           </div>

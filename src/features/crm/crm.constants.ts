@@ -5,12 +5,12 @@ export const LEAD_STATUS_MAP: Record<
   NEW: {
     label: 'Mới tạo',
     dot: '🔵',
-    colorClass: 'bg-blue-50 text-blue-700 border-blue-100',
+    colorClass: 'bg-blue-50 text-info border-info',
   },
   CONTACTED: {
     label: 'Đã liên hệ',
     dot: '🟡',
-    colorClass: 'bg-amber-50 text-amber-700 border-amber-100',
+    colorClass: 'bg-amber-50 text-warning-strong border-warning',
   },
   SAMPLE_SENT: {
     label: 'Đã gửi mẫu',
@@ -20,7 +20,7 @@ export const LEAD_STATUS_MAP: Record<
   QUOTED: {
     label: 'Đã báo giá',
     dot: '🟠',
-    colorClass: 'bg-orange-50 text-orange-700 border-orange-100',
+    colorClass: 'bg-orange-50 text-warning-strong border-warning',
   },
   NEGOTIATING: {
     label: 'Đang thương lượng',
@@ -30,17 +30,17 @@ export const LEAD_STATUS_MAP: Record<
   WON: {
     label: 'Thành công',
     dot: '🟢',
-    colorClass: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+    colorClass: 'bg-emerald-50 text-success border-success',
   },
   LOST: {
     label: 'Thất bại',
     dot: '🔴',
-    colorClass: 'bg-red-50 text-red-700 border-red-100',
+    colorClass: 'bg-red-50 text-danger border-danger',
   },
   CONVERTED: {
     label: 'Đã chuyển đổi',
     dot: '✅',
-    colorClass: 'bg-teal-50 text-teal-700 border-teal-100',
+    colorClass: 'bg-teal-50 text-success border-success',
   },
 };
 
@@ -48,12 +48,15 @@ export const LEAD_TYPE_MAP: Record<
   string,
   { label: string; colorClass: string }
 > = {
-  RFQ: { label: 'Yêu cầu Báo giá', colorClass: 'bg-blue-100 text-blue-800' },
+  RFQ: { label: 'Yêu cầu Báo giá', colorClass: 'bg-info-soft text-info' },
   SAMPLE: {
     label: 'Yêu cầu Gửi mẫu',
     colorClass: 'bg-purple-100 text-purple-800',
   },
-  CONTACT: { label: 'Liên hệ', colorClass: 'bg-slate-100 text-slate-800' },
+  CONTACT: {
+    label: 'Liên hệ',
+    colorClass: 'bg-surface-secondary text-primary',
+  },
 };
 
 export const ACTIVITY_TYPE_MAP: Record<
@@ -63,12 +66,12 @@ export const ACTIVITY_TYPE_MAP: Record<
   CALL: {
     label: 'Gọi điện',
     icon: 'Phone',
-    colorClass: 'text-blue-600 bg-blue-50',
+    colorClass: 'text-info bg-blue-50',
   },
   NOTE: {
     label: 'Ghi chú',
     icon: 'StickyNote',
-    colorClass: 'text-amber-600 bg-amber-50',
+    colorClass: 'text-warning bg-amber-50',
   },
   EMAIL: {
     label: 'Gửi Email',
@@ -78,22 +81,22 @@ export const ACTIVITY_TYPE_MAP: Record<
   SAMPLE: {
     label: 'Gửi mẫu',
     icon: 'Package',
-    colorClass: 'text-emerald-600 bg-emerald-50',
+    colorClass: 'text-success bg-emerald-50',
   },
   QUOTE: {
     label: 'Báo giá',
     icon: 'FileText',
-    colorClass: 'text-indigo-600 bg-indigo-50',
+    colorClass: 'text-info bg-indigo-50',
   },
   ORDER: {
     label: 'Tạo đơn hàng',
     icon: 'ShoppingCart',
-    colorClass: 'text-green-600 bg-green-50',
+    colorClass: 'text-success bg-green-50',
   },
   SYSTEM: {
     label: 'Hệ thống',
     icon: 'Settings',
-    colorClass: 'text-slate-600 bg-slate-50',
+    colorClass: 'text-muted bg-slate-50',
   },
 };
 

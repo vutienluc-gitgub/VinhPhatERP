@@ -108,8 +108,8 @@ export function LoginForm({
   /* ── Missing Env Guard ─────────────────────────────────── */
   if (!hasSupabaseEnv()) {
     return (
-      <div className="bg-amber-500/10 border border-amber-500/20 p-6 rounded-2xl text-center">
-        <p className="text-amber-500 font-semibold text-sm uppercase tracking-wider mb-2">
+      <div className="bg-warning-soft/10 border border-warning/20 p-6 rounded-2xl text-center">
+        <p className="text-warning font-semibold text-sm uppercase tracking-wider mb-2">
           {AUTH_MESSAGES.missingEnvTitle}
         </p>
         <h2 className="text-xl font-bold text-white mb-4">
@@ -165,7 +165,7 @@ export function LoginForm({
             </label>
           </div>
           {errors.email && (
-            <span className="text-rose-400 text-xs ml-1 font-medium">
+            <span className="text-danger text-xs ml-1 font-medium">
               {errors.email.message}
             </span>
           )}
@@ -196,7 +196,7 @@ export function LoginForm({
             </div>
           )}
           {errors.password && (
-            <span className="text-rose-400 text-xs ml-1 font-medium">
+            <span className="text-danger text-xs ml-1 font-medium">
               {errors.password.message}
             </span>
           )}
@@ -235,8 +235,8 @@ export function LoginForm({
 
       {/* ── Server Error ───────────────────────────────────── */}
       {serverError && (
-        <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-center">
-          <p className="text-rose-400 text-sm font-medium">{serverError}</p>
+        <div className="p-3 bg-danger-soft/10 border border-danger/20 rounded-xl text-center">
+          <p className="text-danger text-sm font-medium">{serverError}</p>
         </div>
       )}
 
@@ -254,7 +254,7 @@ export function LoginForm({
         type="button"
         onClick={handleGoogleLogin}
         disabled={isLocked}
-        className="group relative w-full flex items-center justify-center gap-3 px-4 py-3 bg-white hover:bg-slate-50 text-slate-900 rounded-xl font-semibold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        className="group relative w-full flex items-center justify-center gap-3 px-4 py-3 bg-white hover:bg-slate-50 text-primary rounded-xl font-semibold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
         style={{
           transform: `scale(1)`,
           transition: `transform ${AuthMotion.duration.fast}ms ease`,

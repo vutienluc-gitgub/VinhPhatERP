@@ -197,7 +197,7 @@ export const K80PrintLayout = React.forwardRef<
           </table>
         </>
       ) : (
-        <div className="text-center italic text-gray-500 my-4">
+        <div className="text-center italic text-muted my-4">
           {LABELS.NO_DATA}
         </div>
       )}

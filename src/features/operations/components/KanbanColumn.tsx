@@ -93,19 +93,19 @@ export function KanbanColumn({
   };
 
   const getColumnClasses = () => {
-    if (blockedReason) return 'bg-rose-50/70 border border-rose-200/80';
+    if (blockedReason) return 'bg-rose-50/70 border border-danger/80';
 
     switch (id) {
       case 'todo':
         return 'bg-zinc-50/80 border border-zinc-200/50';
       case 'in_progress':
-        return 'bg-indigo-50/60 border border-indigo-100';
+        return 'bg-indigo-50/60 border border-info';
       case 'review':
         return 'bg-violet-50/60 border border-violet-100';
       case 'blocked':
-        return 'bg-red-50/60 border border-red-100';
+        return 'bg-red-50/60 border border-danger';
       case 'done':
-        return 'bg-emerald-50/60 border border-emerald-100';
+        return 'bg-emerald-50/60 border border-success';
       default:
         return 'bg-zinc-50/80 border border-zinc-100/50';
     }
@@ -132,7 +132,7 @@ export function KanbanColumn({
         className={`flex-1 space-y-3 p-3 rounded-2xl min-h-[500px] transition-colors ${getColumnClasses()}`}
       >
         {blockedReason && (
-          <div className="rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-[11px] font-medium text-rose-700">
+          <div className="rounded-lg border border-danger bg-rose-50 px-2.5 py-1.5 text-[11px] font-medium text-danger">
             {blockedReason}
           </div>
         )}

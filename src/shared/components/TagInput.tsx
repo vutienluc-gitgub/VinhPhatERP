@@ -54,7 +54,7 @@ export function TagInput({
       {value.map((tag, index) => (
         <span
           key={tag}
-          className="inline-flex items-center gap-1 px-2 py-0.5 bg-surface-strong border border-border rounded-full text-sm font-medium text-text transition-colors hover:bg-red-50 hover:border-red-200 hover:text-red-600 group cursor-pointer"
+          className="inline-flex items-center gap-1 px-2 py-0.5 bg-surface-strong border border-border rounded-full text-sm font-medium text-text transition-colors hover:bg-red-50 hover:border-danger hover:text-danger group cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
             handleRemoveTag(index);
@@ -64,7 +64,7 @@ export function TagInput({
           <Icon
             name="X"
             size={12}
-            className="text-muted group-hover:text-red-500"
+            className="text-muted group-hover:text-danger"
           />
         </span>
       ))}

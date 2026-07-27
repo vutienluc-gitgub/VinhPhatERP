@@ -32,12 +32,12 @@ export function POApprovalHistory({ logs }: POApprovalHistoryProps) {
                 className={`w-10 h-10 rounded-full flex items-center justify-center border-2 
                   ${
                     log.action === 'approved'
-                      ? 'bg-green-50 border-green-200 text-green-600'
+                      ? 'bg-green-50 border-success text-success'
                       : log.action === 'rejected'
-                        ? 'bg-red-50 border-red-200 text-red-600'
+                        ? 'bg-red-50 border-danger text-danger'
                         : log.action === 'request_changes'
-                          ? 'bg-amber-50 border-amber-200 text-amber-600'
-                          : 'bg-blue-50 border-blue-200 text-blue-600'
+                          ? 'bg-amber-50 border-warning text-warning'
+                          : 'bg-blue-50 border-info text-info'
                   }`}
               >
                 <Icon
@@ -53,17 +53,17 @@ export function POApprovalHistory({ logs }: POApprovalHistoryProps) {
                   size={20}
                 />
               </div>
-              <div className="w-0.5 h-full bg-gray-200 mt-2"></div>
+              <div className="w-0.5 h-full bg-surface-secondary mt-2"></div>
             </div>
             <div className="flex-1 pb-6">
               <div className="flex justify-between items-start mb-1">
                 <div>
-                  <span className="font-medium text-gray-900">
+                  <span className="font-medium text-primary">
                     {log.profiles?.full_name ||
                       PO_CONSTANTS.APPROVAL_SYSTEM_USER}
                   </span>
-                  <span className="text-gray-500 mx-2">•</span>
-                  <span className="text-sm text-gray-500">
+                  <span className="text-muted mx-2">•</span>
+                  <span className="text-sm text-muted">
                     {format(new Date(log.created_at), 'dd/MM/yyyy HH:mm', {
                       locale: vi,
                     })}
@@ -90,7 +90,7 @@ export function POApprovalHistory({ logs }: POApprovalHistoryProps) {
                 </Badge>
               </div>
               {log.comment && (
-                <div className="mt-2 text-sm text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-100 italic">
+                <div className="mt-2 text-sm text-secondary bg-gray-50 p-3 rounded-lg border border-default italic">
                   "{log.comment}"
                 </div>
               )}

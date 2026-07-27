@@ -57,11 +57,11 @@ export function DispatchConfirmSheet({
   return (
     <AdaptiveSheet open={isOpen} onClose={onClose} title={MSG.TITLE}>
       <div className="flex flex-col gap-4 p-4">
-        <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-lg text-sm">
-          <h3 className="text-lg font-bold text-slate-800 mb-2">
+        <div className="bg-amber-50 border border-warning text-warning-strong p-4 rounded-lg text-sm">
+          <h3 className="text-lg font-bold text-foreground mb-2">
             {MSG.HEADING}
           </h3>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-muted">
             {MSG.DESC_PART_1} <b>{activeTrucks.length}</b> {MSG.DESC_PART_2}{' '}
             <b>{totalRolls}</b> {MSG.DESC_PART_3} <b>{MSG.DESC_PART_4}</b>{' '}
             {MSG.DESC_PART_5}
@@ -69,8 +69,8 @@ export function DispatchConfirmSheet({
         </div>
 
         <div className="form-field mt-2">
-          <label className="form-label block text-slate-700">
-            {MSG.LBL_ORDER} <span className="text-rose-500">*</span>
+          <label className="form-label block text-secondary">
+            {MSG.LBL_ORDER} <span className="text-danger">*</span>
           </label>
           <Combobox
             options={orderOptions}

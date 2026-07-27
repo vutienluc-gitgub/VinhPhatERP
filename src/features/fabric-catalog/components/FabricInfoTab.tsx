@@ -31,14 +31,19 @@ export function FabricInfoTab({
         uploadImageMutation={uploadImageMutation}
         deleteImageMutation={deleteImageMutation}
       />
-      <BasicInfoSection
-        catalog={catalog}
-        categoryOptions={categoryOptions}
-        isEditing={isEditing}
-      />
-      <SpecificationSection />
-      <AttributeSection catalog={catalog} />
-      <UnitSection />
+      <div className="bg-white rounded-2xl border border-default shadow-sm p-6 sm:p-8 space-y-12">
+        <BasicInfoSection
+          catalog={catalog}
+          categoryOptions={categoryOptions}
+          isEditing={isEditing}
+        />
+        <div className="h-px bg-surface-secondary w-full" />
+        <SpecificationSection />
+        <div className="h-px bg-surface-secondary w-full" />
+        <AttributeSection catalog={catalog} />
+        <div className="h-px bg-surface-secondary w-full" />
+        <UnitSection />
+      </div>
     </>
   );
 }

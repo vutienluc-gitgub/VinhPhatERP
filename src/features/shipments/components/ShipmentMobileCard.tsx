@@ -10,27 +10,27 @@ export function ShipmentSaaSBadge({ status }: { status: ShipmentStatus }) {
   const label = SHIPMENT_STATUS_LABELS[status];
 
   const styles: Record<string, string> = {
-    shipped: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 ring-blue-500/20',
+    shipped: 'bg-info-soft/10 text-info dark:text-info ring-blue-500/20',
     delivered:
-      'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 ring-emerald-500/20',
+      'bg-success-soft/10 text-success dark:text-success ring-emerald-500/20',
     partially_returned:
       'bg-purple-500/10 text-purple-700 dark:text-purple-400 ring-purple-500/20',
-    returned: 'bg-red-500/10 text-red-700 dark:text-red-400 ring-red-500/20',
+    returned: 'bg-danger-soft/10 text-danger dark:text-danger ring-red-500/20',
     preparing:
-      'bg-amber-500/10 text-amber-700 dark:text-amber-400 ring-amber-500/20',
+      'bg-warning-soft/10 text-warning-strong dark:text-warning ring-amber-500/20',
   };
   const dotColors: Record<string, string> = {
-    shipped: 'bg-blue-500',
-    delivered: 'bg-emerald-500',
+    shipped: 'bg-info-soft',
+    delivered: 'bg-success-soft',
     partially_returned: 'bg-purple-500',
-    returned: 'bg-red-500',
-    preparing: 'bg-amber-500',
+    returned: 'bg-danger-soft',
+    preparing: 'bg-warning-soft',
   };
 
   const currentStyle =
     styles[status] ||
-    'bg-slate-500/10 text-slate-700 dark:text-slate-400 ring-slate-500/20';
-  const currentDot = dotColors[status] || 'bg-slate-500';
+    'bg-surface-strong/10 text-secondary dark:text-muted-foreground ring-slate-500/20';
+  const currentDot = dotColors[status] || 'bg-surface-strong';
 
   return (
     <span
@@ -78,7 +78,7 @@ export function ShipmentMobileCard({
           <span className="label">{MSG.LBL_ORDER}:</span>
           <span className="value">
             {s.orders?.order_number ?? (
-              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-warning bg-amber-50 px-1.5 py-0.5 rounded-full">
                 {MSG.LBL_MANUAL}
               </span>
             )}

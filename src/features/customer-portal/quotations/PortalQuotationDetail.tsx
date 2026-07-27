@@ -89,7 +89,7 @@ export function PortalQuotationDetail() {
       <div className="mb-6 flex items-center gap-2">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+          className="p-2 hover:bg-surface-secondary rounded-full transition-colors"
         >
           <Icon name="ArrowLeft" size={20} />
         </button>
@@ -108,8 +108,8 @@ export function PortalQuotationDetail() {
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="border-b border-slate-100">
-                  <tr className="text-slate-500 uppercase text-[10px] tracking-wider">
+                <thead className="border-b border-default">
+                  <tr className="text-muted uppercase text-[10px] tracking-wider">
                     <th className="text-left pb-3 font-medium">Sản phẩm</th>
                     <th className="text-center pb-3 font-medium">SL</th>
                     <th className="text-right pb-3 font-medium">Đơn giá</th>
@@ -123,20 +123,20 @@ export function PortalQuotationDetail() {
                       className="group hover:bg-slate-50/50 transition-colors"
                     >
                       <td className="py-4">
-                        <div className="font-semibold text-slate-800">
+                        <div className="font-semibold text-primary">
                           {item.fabric_type}
                         </div>
-                        <div className="text-xs text-slate-500">
+                        <div className="text-xs text-muted">
                           {item.color_name || 'Mộc'}
                         </div>
                       </td>
-                      <td className="py-4 text-center text-slate-600">
+                      <td className="py-4 text-center text-muted">
                         {item.quantity} {item.unit}
                       </td>
-                      <td className="py-4 text-right text-slate-600 font-medium">
+                      <td className="py-4 text-right text-muted font-medium">
                         <MoneyText value={item.unit_price} suffix="" />
                       </td>
-                      <td className="py-4 text-right font-bold text-slate-800">
+                      <td className="py-4 text-right font-bold text-primary">
                         <MoneyText value={item.amount} suffix=" đ" />
                       </td>
                     </tr>
@@ -147,12 +147,12 @@ export function PortalQuotationDetail() {
           </div>
 
           {quotation.notes && (
-            <div className="portal-card p-5 bg-blue-50/30 border-blue-100">
-              <h3 className="text-sm font-bold text-blue-900 mb-2 flex items-center gap-2">
+            <div className="portal-card p-5 bg-blue-50/30 border-info">
+              <h3 className="text-sm font-bold text-info mb-2 flex items-center gap-2">
                 <Icon name="Info" size={16} />
                 Ghi chú / Điều khoản
               </h3>
-              <p className="text-sm text-blue-800 whitespace-pre-wrap">
+              <p className="text-sm text-info whitespace-pre-wrap">
                 {quotation.notes}
               </p>
             </div>
@@ -170,19 +170,19 @@ export function PortalQuotationDetail() {
                 </span>
               </div>
 
-              <div className="h-px bg-slate-100" />
+              <div className="h-px bg-surface-secondary" />
 
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Ngày báo giá</span>
+                  <span className="text-muted">Ngày báo giá</span>
                   <span className="font-medium">
                     {dayjs(quotation.quotation_date).format('DD/MM/YYYY')}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Hiệu lực đến</span>
+                  <span className="text-muted">Hiệu lực đến</span>
                   <span
-                    className={`font-medium ${isExpired ? 'text-red-500' : ''}`}
+                    className={`font-medium ${isExpired ? 'text-danger' : ''}`}
                   >
                     {quotation.valid_until
                       ? dayjs(quotation.valid_until).format('DD/MM/YYYY')
@@ -192,11 +192,11 @@ export function PortalQuotationDetail() {
               </div>
 
               {timeLeft && quotation.status === 'sent' && (
-                <div className="p-3 bg-orange-50 rounded-lg border border-orange-100">
-                  <div className="text-[10px] uppercase tracking-wider text-orange-600 font-bold mb-1">
+                <div className="p-3 bg-orange-50 rounded-lg border border-warning">
+                  <div className="text-[10px] uppercase tracking-wider text-warning font-bold mb-1">
                     Thời gian còn lại
                   </div>
-                  <div className="text-xl font-black text-orange-700 font-mono">
+                  <div className="text-xl font-black text-warning-strong font-mono">
                     {timeLeft}
                   </div>
                 </div>
@@ -215,45 +215,45 @@ export function PortalQuotationDetail() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full text-red-600 border-red-200 hover:bg-red-50"
+                      className="w-full text-danger border-danger hover:bg-red-50"
                       onClick={() => setRejectSheetOpen(true)}
                     >
                       Từ chối báo giá
                     </Button>
-                    <p className="text-[10px] text-slate-400 text-center italic mt-4">
+                    <p className="text-[10px] text-muted-foreground text-center italic mt-4">
                       Cam kết báo giá được bảo lưu trong thời gian hiệu lực.
                     </p>
                   </>
                 ) : quotation.status === 'confirmed' ? (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-5">
-                    <div className="text-green-700 font-bold mb-4 flex items-center gap-2">
+                  <div className="bg-green-50 border border-success rounded-lg p-5">
+                    <div className="text-success font-bold mb-4 flex items-center gap-2">
                       <Icon name="CheckCircle2" size={24} />
                       Đã xác nhận đặt hàng
                     </div>
-                    <div className="relative border-l-2 border-green-200 ml-3 space-y-6">
+                    <div className="relative border-l-2 border-success ml-3 space-y-6">
                       <div className="relative">
-                        <div className="absolute -left-[21px] bg-green-500 w-3 h-3 rounded-full border-4 border-white"></div>
+                        <div className="absolute -left-[21px] bg-success-soft w-3 h-3 rounded-full border-4 border-white"></div>
                         <div className="pl-4">
-                          <h4 className="text-sm font-bold text-slate-800">
+                          <h4 className="text-sm font-bold text-foreground">
                             Báo giá được duyệt
                           </h4>
-                          <p className="text-xs text-slate-500">
+                          <p className="text-xs text-muted">
                             Chờ kinh doanh lên đơn
                           </p>
                         </div>
                       </div>
                       <div className="relative">
-                        <div className="absolute -left-[21px] bg-slate-300 w-3 h-3 rounded-full border-4 border-white"></div>
+                        <div className="absolute -left-[21px] bg-surface-strong w-3 h-3 rounded-full border-4 border-white"></div>
                         <div className="pl-4">
-                          <h4 className="text-sm font-bold text-slate-400">
+                          <h4 className="text-sm font-bold text-muted-foreground">
                             Lên đơn hàng (SO)
                           </h4>
                         </div>
                       </div>
                       <div className="relative">
-                        <div className="absolute -left-[21px] bg-slate-300 w-3 h-3 rounded-full border-4 border-white"></div>
+                        <div className="absolute -left-[21px] bg-surface-strong w-3 h-3 rounded-full border-4 border-white"></div>
                         <div className="pl-4">
-                          <h4 className="text-sm font-bold text-slate-400">
+                          <h4 className="text-sm font-bold text-muted-foreground">
                             Chuẩn bị sản xuất
                           </h4>
                         </div>
@@ -261,7 +261,7 @@ export function PortalQuotationDetail() {
                     </div>
                   </div>
                 ) : (
-                  <div className="p-4 bg-slate-50 rounded-lg text-center font-bold text-slate-500">
+                  <div className="p-4 bg-slate-50 rounded-lg text-center font-bold text-muted">
                     Báo giá này{' '}
                     {quotation.status === 'rejected'
                       ? 'đã bị từ chối'
@@ -301,8 +301,8 @@ export function PortalQuotationDetail() {
           </div>
         }
       >
-        <div className="space-y-4 text-slate-700 py-2">
-          <div className="bg-blue-50 text-blue-800 p-4 rounded-lg flex items-start gap-3">
+        <div className="space-y-4 text-secondary py-2">
+          <div className="bg-blue-50 text-info p-4 rounded-lg flex items-start gap-3">
             <Icon name="Info" size={20} className="mt-0.5 shrink-0" />
             <p className="text-sm">
               Bạn đang xác nhận chuyển đổi báo giá{' '}
@@ -315,10 +315,10 @@ export function PortalQuotationDetail() {
             </p>
           </div>
 
-          <label className="flex items-start gap-3 cursor-pointer p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors mt-6">
+          <label className="flex items-start gap-3 cursor-pointer p-4 border border-default rounded-lg hover:bg-slate-50 transition-colors mt-6">
             <input
               type="checkbox"
-              className="mt-1 w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary"
+              className="mt-1 w-4 h-4 text-primary rounded border-muted focus:ring-primary"
               checked={termsAccepted}
               onChange={(e) => setTermsAccepted(e.target.checked)}
             />
@@ -357,12 +357,12 @@ export function PortalQuotationDetail() {
         }
       >
         <div className="space-y-4 py-2">
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-muted">
             Vui lòng cho chúng tôi biết lý do bạn từ chối báo giá này để Vĩnh
             Phát có thể cải thiện chất lượng dịch vụ:
           </p>
           <textarea
-            className="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none resize-none"
+            className="w-full border border-muted rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none resize-none"
             rows={4}
             placeholder="Ví dụ: Đơn giá cao, thời gian giao hàng lâu..."
             value={rejectReason}

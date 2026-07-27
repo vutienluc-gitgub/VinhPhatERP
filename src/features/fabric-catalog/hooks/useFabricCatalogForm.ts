@@ -15,6 +15,7 @@ import {
   fabricCatalogSchema,
 } from '@/schema/fabric-catalog.schema';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
+import { useFormAutoSave } from '@/shared/hooks';
 import type { FabricCatalog } from '@/features/fabric-catalog/types';
 import { openPrintWindow } from '@/shared/lib/print-template.engine';
 import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
@@ -203,6 +204,7 @@ export function useFabricCatalogForm(
       } else {
         await createMutation.mutateAsync(values);
       }
+      clearDraft();
       toast.success(isEditing ? 'Cập nhật thành công' : 'Thêm mới thành công');
       onClose();
     } catch (err) {
@@ -363,6 +365,18 @@ export function useFabricCatalogForm(
     qrValue: publicUrl,
   };
 
+  const {
+    status: autoSaveStatus,
+    lastSavedTimeText,
+    clearDraft,
+  } = useFormAutoSave({
+    formId:
+      isEditing && catalog
+        ? `fabric-catalog-edit-${catalog.id}`
+        : 'fabric-catalog-new',
+    methods,
+  });
+
   return {
     methods,
     activeTab,
@@ -382,5 +396,7 @@ export function useFabricCatalogForm(
     handleSlugEditCancel,
     onSubmit: handleSubmit(onSubmit, onInvalid),
     labelData,
+    autoSaveStatus,
+    lastSavedTimeText,
   };
 }

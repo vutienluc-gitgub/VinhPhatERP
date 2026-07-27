@@ -65,7 +65,7 @@ export function POInfoCard({ po, creatorProfile }: POInfoCardProps) {
         </div>
 
         {po.status === 'rejected' && po.rejection_reason && (
-          <div className="col-span-2 mt-2 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
+          <div className="col-span-2 mt-2 p-3 bg-red-50 border border-danger text-danger text-sm rounded-lg">
             <span className="font-bold">Lý do từ chối:</span>{' '}
             {po.rejection_reason}
           </div>

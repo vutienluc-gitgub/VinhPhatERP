@@ -111,7 +111,7 @@ export function SettingsLayout() {
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg text-sm font-medium transition-colors"
+              className="px-4 py-2 bg-danger-soft text-danger hover:bg-danger-soft rounded-lg text-sm font-medium transition-colors"
             >
               Thử lại
             </button>

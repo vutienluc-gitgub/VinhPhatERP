@@ -1,25 +1,4 @@
-import { lazy } from 'react';
-
 import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
-
-const ApprovalWorkflowsPage = lazy(() =>
-  import('./ApprovalWorkflowsPage').then((m) => ({
-    default: m.ApprovalWorkflowsPage,
-  })),
-);
-const ApprovalHistoryPage = lazy(() =>
-  import('./ApprovalHistoryPage').then((m) => ({
-    default: m.ApprovalHistoryPage,
-  })),
-);
-const ApprovalPoCPage = lazy(() =>
-  import('./ApprovalPoCPage').then((m) => ({ default: m.ApprovalPoCPage })),
-);
-const WorkflowDesignerPage = lazy(() =>
-  import('./WorkflowDesignerPage').then((m) => ({
-    default: m.WorkflowDesignerPage,
-  })),
-);
 
 export const approvalPlugin: FeaturePlugin = {
   key: 'approval-engine',
@@ -33,19 +12,31 @@ export const approvalPlugin: FeaturePlugin = {
   routes: [
     {
       path: 'system/approval/poc',
-      component: async () => ({ default: ApprovalPoCPage }),
+      component: () =>
+        import('./ApprovalPoCPage').then((m) => ({
+          default: m.ApprovalPoCPage,
+        })),
     },
     {
       path: 'system/approval/workflows',
-      component: async () => ({ default: ApprovalWorkflowsPage }),
+      component: () =>
+        import('./ApprovalWorkflowsPage').then((m) => ({
+          default: m.ApprovalWorkflowsPage,
+        })),
     },
     {
       path: 'system/approval/workflows/designer',
-      component: async () => ({ default: WorkflowDesignerPage }),
+      component: () =>
+        import('./WorkflowDesignerPage').then((m) => ({
+          default: m.WorkflowDesignerPage,
+        })),
     },
     {
       path: 'system/approval/history',
-      component: async () => ({ default: ApprovalHistoryPage }),
+      component: () =>
+        import('./ApprovalHistoryPage').then((m) => ({
+          default: m.ApprovalHistoryPage,
+        })),
     },
   ],
 };

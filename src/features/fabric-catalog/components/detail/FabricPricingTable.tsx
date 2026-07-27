@@ -40,7 +40,7 @@ export function FabricPricingTable({
   return (
     <div className="bg-white rounded-xl shadow-sm p-4">
       <div className="flex justify-between items-end mb-3">
-        <h3 className="text-base font-bold text-gray-900">
+        <h3 className="text-base font-bold text-foreground">
           {PUBLIC_PAGE_LABELS.pricingTierTitle}
         </h3>
         {!canViewWholesale && (
@@ -53,17 +53,17 @@ export function FabricPricingTable({
         )}
       </div>
       {sortedTiers.length > 0 ? (
-        <div className="overflow-hidden border border-slate-100 rounded-xl">
+        <div className="overflow-hidden border border-default rounded-xl">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 font-semibold">
+              <tr className="bg-slate-50 border-b border-default text-muted font-semibold">
                 <th className="p-3">{PUBLIC_PAGE_LABELS.pricingTierColQty}</th>
                 <th className="p-3 text-right">
                   {PUBLIC_PAGE_LABELS.pricingTierColPrice}
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-700">
+            <tbody className="divide-y divide-slate-100 text-secondary">
               {sortedTiers.map((tier) => {
                 const rangeLabel = tier.max_quantity
                   ? PUBLIC_PAGE_LABELS.fromTo
@@ -100,18 +100,18 @@ export function FabricPricingTable({
           </table>
         </div>
       ) : canViewWholesale ? (
-        <div className="p-4 rounded-xl bg-slate-50 text-center border border-dashed border-slate-200">
+        <div className="p-4 rounded-xl bg-slate-50 text-center border border-dashed border-default">
           <p className="text-xs text-muted">
             {PUBLIC_PAGE_LABELS.noPricingTiersDesc}
           </p>
         </div>
       ) : (
-        <div className="p-4 rounded-xl bg-blue-50/50 text-center border border-dashed border-blue-200 flex flex-col items-center justify-center py-6">
-          <Icon name="Lock" className="w-6 h-6 text-blue-400 mb-2" />
-          <p className="text-sm font-medium text-blue-900 mb-1">
+        <div className="p-4 rounded-xl bg-blue-50/50 text-center border border-dashed border-info flex flex-col items-center justify-center py-6">
+          <Icon name="Lock" className="w-6 h-6 text-info mb-2" />
+          <p className="text-sm font-medium text-info mb-1">
             {PUBLIC_PAGE_LABELS.wholesaleOnly}
           </p>
-          <p className="text-xs text-blue-600/80 mb-3 text-center">
+          <p className="text-xs text-info/80 mb-3 text-center">
             {PUBLIC_PAGE_LABELS.loginToViewDiscount}
           </p>
           <Button size="sm" onClick={onOpenLogin}>

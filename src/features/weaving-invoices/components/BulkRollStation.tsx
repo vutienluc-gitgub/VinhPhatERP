@@ -55,13 +55,11 @@ function RollTile({
       className={clsx(
         'flex flex-col items-center justify-center rounded-xl border p-1.5 text-center transition-all duration-200 min-h-[52px] min-w-0',
         isActive &&
-          'ring-2 ring-indigo-500 border-indigo-400 bg-indigo-50 scale-105 z-10 shadow-lg',
-        !isActive &&
-          isScanned &&
-          'bg-emerald-50 border-emerald-300 text-emerald-700',
+          'ring-2 ring-indigo-500 border-info bg-indigo-50 scale-105 z-10 shadow-lg',
+        !isActive && isScanned && 'bg-emerald-50 border-success text-success',
         !isActive &&
           !isScanned &&
-          'bg-[var(--surface-subtle)] border-dashed border-[var(--border)] text-[var(--text-secondary)] hover:border-indigo-300',
+          'bg-[var(--surface-subtle)] border-dashed border-[var(--border)] text-[var(--text-secondary)] hover:border-info',
       )}
     >
       <span className="text-[10px] font-bold truncate w-full">
@@ -150,7 +148,7 @@ export function BulkRollStation({
             <h4 className="text-sm font-bold text-[var(--text-primary)]">
               Xe tải ({fields.length} cuộn)
             </h4>
-            <span className="text-xs font-semibold text-emerald-600 tabular-nums">
+            <span className="text-xs font-semibold text-success tabular-nums">
               {scannedCount} đã nhập
             </span>
           </div>
@@ -188,7 +186,7 @@ export function BulkRollStation({
 
             {/* Header */}
             <div className="flex items-center gap-3 mb-5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-info-soft text-info">
                 <Icon name="ScanBarcode" size={20} />
               </div>
               <div>

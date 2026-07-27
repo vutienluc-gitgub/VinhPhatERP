@@ -67,7 +67,7 @@ export function NumberingSettingsForm() {
     <div className="panel-card card-flush">
       <div className="card-header-area">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-warning-soft/10 text-warning flex items-center justify-center shrink-0">
             <Icon name="Hash" size={20} strokeWidth={1.5} />
           </div>
           <span className="font-bold text-lg">

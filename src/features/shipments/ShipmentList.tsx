@@ -223,7 +223,7 @@ export function ShipmentList() {
               {MSG.BTN_CREATE_MANUAL}
             </button>
             <Link to="/shipments/dispatch">
-              <button className="btn-primary bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 flex items-center gap-2">
+              <button className="btn-primary bg-success-soft hover:bg-success-soft text-white shadow-lg shadow-emerald-600/30 flex items-center gap-2">
                 <Icon name="Navigation" size={18} />
                 {MSG.BTN_DISPATCH_BOARD}
               </button>

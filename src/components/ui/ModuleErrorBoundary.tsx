@@ -27,10 +27,10 @@ export class ModuleErrorBoundary extends Component<Props, State> {
   override render() {
     if (this.state.hasError) {
       return (
-        <div className="p-4 border border-red-200 bg-red-50 text-red-800 rounded-md">
+        <div className="p-4 border border-danger bg-red-50 text-danger rounded-md">
           <p className="font-semibold mb-2">Không thể tải module.</p>
           <button
-            className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+            className="px-3 py-1 bg-danger-soft text-white rounded text-sm hover:bg-danger-soft"
             onClick={() => this.setState({ hasError: false })}
           >
             Thử lại

@@ -169,7 +169,7 @@ export function LoomForm({ loom, onClose }: LoomFormProps) {
       )}
 
       {isTechnicalLocked && (
-        <div className="warning-inline mb-4 text-sm bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 p-3 rounded-lg flex items-start gap-2 border border-amber-200 dark:border-amber-500/20">
+        <div className="warning-inline mb-4 text-sm bg-amber-50 dark:bg-warning-soft/10 text-warning-strong dark:text-warning p-3 rounded-lg flex items-start gap-2 border border-warning dark:border-warning/20">
           <div className="mt-0.5">
             <Icon name="AlertTriangle" size={16} />
           </div>

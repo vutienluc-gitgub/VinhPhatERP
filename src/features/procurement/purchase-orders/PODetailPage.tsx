@@ -186,22 +186,22 @@ export function PODetailPage() {
     return (
       <div className="page-container w-full max-w-[1680px] px-6 py-8 md:px-8 mx-auto space-y-8 animate-pulse">
         <div className="flex items-center justify-between">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="h-10 bg-gray-200 rounded w-24"></div>
+          <div className="h-8 bg-surface-secondary rounded w-1/3"></div>
+          <div className="h-10 bg-surface-secondary rounded w-24"></div>
         </div>
-        <div className="h-32 bg-gray-200 rounded-xl w-full"></div>
+        <div className="h-32 bg-surface-secondary rounded-xl w-full"></div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="h-64 bg-gray-200 rounded-xl lg:col-span-2"></div>
-          <div className="h-64 bg-gray-200 rounded-xl lg:col-span-1"></div>
+          <div className="h-64 bg-surface-secondary rounded-xl lg:col-span-2"></div>
+          <div className="h-64 bg-surface-secondary rounded-xl lg:col-span-1"></div>
         </div>
-        <div className="h-64 bg-gray-200 rounded-xl w-full"></div>
+        <div className="h-64 bg-surface-secondary rounded-xl w-full"></div>
       </div>
     );
   }
 
   if (!po) {
     return (
-      <div className="p-8 text-center text-red-500">
+      <div className="p-8 text-center text-danger">
         {PO_CONSTANTS.MSG_PO_NOT_FOUND}
       </div>
     );

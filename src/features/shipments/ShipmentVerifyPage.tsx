@@ -116,10 +116,10 @@ export function ShipmentVerifyPage() {
             <span
               className={`text-xs font-bold px-3 py-1 rounded-full ${
                 isDelivered
-                  ? 'bg-green-100 text-green-700'
+                  ? 'bg-success-soft text-success'
                   : shipment.status === 'shipped'
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'bg-gray-100 text-gray-600'
+                    ? 'bg-info-soft text-info'
+                    : 'bg-surface-secondary text-muted'
               }`}
             >
               {VERIFY_STATUS_LABELS[shipment.status] ?? shipment.status}

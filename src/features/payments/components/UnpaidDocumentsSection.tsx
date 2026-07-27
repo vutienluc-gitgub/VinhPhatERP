@@ -53,7 +53,7 @@ export function UnpaidDocumentsSection({
             >
               <input
                 type="checkbox"
-                className="w-4 h-4 rounded appearance-none checked:bg-primary border border-gray-300 checked:border-primary shrink-0 relative
+                className="w-4 h-4 rounded appearance-none checked:bg-primary border border-muted checked:border-primary shrink-0 relative
                   after:content-['✓'] after:absolute after:text-[10px] after:text-white after:left-[3px] after:top-[1px] after:opacity-0 checked:after:opacity-100 cursor-pointer"
                 checked={isSelected}
                 onChange={(e) => {

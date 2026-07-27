@@ -13,23 +13,23 @@ export const WORK_ORDER_STATUSES: Record<
 > = {
   draft: {
     label: 'Bản nháp',
-    color: 'bg-slate-100 text-slate-700',
+    color: 'bg-surface-secondary text-secondary',
   },
   yarn_issued: {
     label: 'Đã xuất sợi',
-    color: 'bg-indigo-100 text-indigo-700',
+    color: 'bg-info-soft text-info',
   },
   in_progress: {
     label: 'Đang sản xuất',
-    color: 'bg-blue-100 text-blue-700',
+    color: 'bg-info-soft text-info',
   },
   completed: {
     label: 'Hoàn thành',
-    color: 'bg-emerald-100 text-emerald-700',
+    color: 'bg-success-soft text-success',
   },
   cancelled: {
     label: 'Đã hủy',
-    color: 'bg-rose-100 text-rose-700',
+    color: 'bg-danger-soft text-danger',
   },
 };
 

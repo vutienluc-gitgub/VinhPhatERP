@@ -90,7 +90,7 @@ export function useWorkOrderColumns({
         accessorFn: (wo) => wo.loom?.code,
         cell: ({ row }) => (
           <div className="flex flex-col">
-            <span className="font-medium text-slate-800">
+            <span className="font-medium text-primary">
               {row.original.loom?.code || '—'}
             </span>
           </div>

@@ -32,10 +32,10 @@ interface ColumnDef {
 }
 
 const COLUMNS: ColumnDef[] = [
-  { key: 'draft', label: 'Bản nháp', color: 'bg-slate-100' },
-  { key: 'yarn_issued', label: 'Đã xuất sợi', color: 'bg-indigo-100' },
-  { key: 'in_progress', label: 'Đang sản xuất', color: 'bg-blue-100' },
-  { key: 'completed', label: 'Hoàn thành', color: 'bg-emerald-100' },
+  { key: 'draft', label: 'Bản nháp', color: 'bg-surface-secondary' },
+  { key: 'yarn_issued', label: 'Đã xuất sợi', color: 'bg-info-soft' },
+  { key: 'in_progress', label: 'Đang sản xuất', color: 'bg-info-soft' },
+  { key: 'completed', label: 'Hoàn thành', color: 'bg-success-soft' },
 ];
 
 function KanbanCard({
@@ -90,7 +90,7 @@ function KanbanCard({
       <div className="text-xs space-y-1.5 mb-3">
         <div className="flex justify-between items-center">
           <span className="text-muted-foreground">BOM:</span>
-          <span className="font-medium text-[11px] bg-slate-100 px-1.5 py-0.5 rounded">
+          <span className="font-medium text-[11px] bg-surface-secondary px-1.5 py-0.5 rounded">
             {wo.bom_template?.code} (V{wo.bom_version})
           </span>
         </div>
@@ -105,7 +105,7 @@ function KanbanCard({
         </div>
         <div className="flex justify-between">
           <span className="text-muted-foreground">Mục tiêu:</span>
-          <span className="font-bold text-indigo-600">
+          <span className="font-bold text-info">
             {formatQuantity(wo.target_quantity)} m
           </span>
         </div>
@@ -163,13 +163,13 @@ function DroppableColumn({
 
   return (
     <div
-      className={`flex flex-col rounded-2xl p-3 w-[280px] shrink-0 h-full ${col.color} bg-opacity-40 border border-slate-200/50`}
+      className={`flex flex-col rounded-2xl p-3 w-[280px] shrink-0 h-full ${col.color} bg-opacity-40 border border-default/50`}
     >
       <div className="flex justify-between items-center mb-3 px-1">
-        <h3 className="font-bold text-slate-800 text-[13px] uppercase tracking-wider">
+        <h3 className="font-bold text-foreground text-[13px] uppercase tracking-wider">
           {col.label}
         </h3>
-        <Badge variant="gray" className="bg-white/60 text-slate-600 font-bold">
+        <Badge variant="gray" className="bg-white/60 text-muted font-bold">
           {items.length}
         </Badge>
       </div>
@@ -186,7 +186,7 @@ function DroppableColumn({
           ))}
         </SortableContext>
         {items.length === 0 && (
-          <div className="text-center py-8 text-xs text-slate-400 border-2 border-dashed border-slate-300 rounded-xl m-1 opacity-70">
+          <div className="text-center py-8 text-xs text-muted-foreground border-2 border-dashed border-muted rounded-xl m-1 opacity-70">
             Trống
           </div>
         )}
@@ -295,7 +295,7 @@ export function WorkOrderKanbanBoard({
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Mục tiêu:</span>
-                <span className="font-bold text-indigo-600">
+                <span className="font-bold text-info">
                   {formatQuantity(activeWO.target_quantity)} m
                 </span>
               </div>
