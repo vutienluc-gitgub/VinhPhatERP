@@ -5,7 +5,10 @@ import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 
 import { FabricVariantList } from './FabricVariantList';
 import { FabricCategoryBadge } from './components/FabricCategoryBadge';
-import { getStatusVariant } from './fabric-catalog.helpers';
+import {
+  getStatusVariant,
+  formatCompositionParts,
+} from './fabric-catalog.helpers';
 
 type FabricCatalogDetailProps = {
   catalog: FabricCatalog;
@@ -46,17 +49,15 @@ export function FabricCatalogDetail({ catalog }: FabricCatalogDetailProps) {
                 <FabricCategoryBadge category={catalog.category} />
               </div>
             )}
-            {(catalog.composition_parts?.length
-              ? catalog.composition_parts
-                  .map((p) => `${p.percentage}% ${p.fiber}`)
-                  .join(', ')
-              : catalog.composition) && (
+            {formatCompositionParts(
+              catalog.composition_parts,
+              catalog.composition,
+            ) && (
               <p className="text-sm">
-                {catalog.composition_parts?.length
-                  ? catalog.composition_parts
-                      .map((p) => `${p.percentage}% ${p.fiber}`)
-                      .join(', ')
-                  : catalog.composition}
+                {formatCompositionParts(
+                  catalog.composition_parts,
+                  catalog.composition,
+                )}
               </p>
             )}
 

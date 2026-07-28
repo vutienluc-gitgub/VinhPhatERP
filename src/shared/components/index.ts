@@ -23,6 +23,7 @@ export { BasicNumberInput } from './BasicNumberInput';
 export { ConfirmProvider, ConfirmContext, useConfirm } from './ConfirmDialog';
 export { DataTable } from './DataTable';
 export type { Column as DataTableColumn, PaginationConfig } from './DataTable';
+export { MediaLibraryModal, type MediaItem } from './media/MediaLibraryModal';
 export { DataTableAdvanced } from './DataTableAdvanced';
 export type { DataTableAdvancedProps } from './DataTableAdvanced';
 export { FilterBar } from './filter-bar';

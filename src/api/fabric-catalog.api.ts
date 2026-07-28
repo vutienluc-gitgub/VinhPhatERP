@@ -439,3 +439,26 @@ export async function syncFabricImages(
   });
   if (error) throw error;
 }
+
+export type FabricMediaItem = {
+  id: string;
+  code: string;
+  name: string;
+  image_url: string;
+  updated_at: string;
+};
+
+export async function fetchFabricRecentImages(
+  limit = 50,
+): Promise<FabricMediaItem[]> {
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select('id, code, name, image_url, updated_at')
+    .not('image_url', 'is', null)
+    .order('updated_at', { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+
+  return data as FabricMediaItem[];
+}
