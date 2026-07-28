@@ -20,6 +20,7 @@
 @import './components/kpi.css';
 @import './components/feedback.css';
 @import './components/perm-matrix.css';
+@import './components/switch.css';
 
 /* Specific Views & Vendors */
 @import './dashboard-v3.css';
