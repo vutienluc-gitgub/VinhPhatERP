@@ -3,7 +3,10 @@ import { Badge } from '@/shared/components';
 import { FABRIC_CATALOG_STATUS_LABELS } from '@/schema/fabric-catalog.schema';
 import type { FabricCatalog } from '@/features/fabric-catalog/types';
 import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
-import { getStatusVariant } from '@/features/fabric-catalog/fabric-catalog.helpers';
+import {
+  getStatusVariant,
+  formatCompositionParts,
+} from '@/features/fabric-catalog/fabric-catalog.helpers';
 
 interface FabricCatalogMobileCardProps {
   catalog: FabricCatalog;
@@ -44,11 +47,8 @@ export function FabricCatalogMobileCard({
       <div className="mobile-card-body space-y-2">
         <p className="font-bold text-sm">{c.name}</p>
         <p className="text-xs text-muted italic">
-          {c.composition_parts?.length
-            ? c.composition_parts
-                .map((p) => `${p.percentage}% ${p.fiber}`)
-                .join(', ')
-            : c.composition || LABELS.NA}
+          {formatCompositionParts(c.composition_parts, c.composition) ||
+            LABELS.NA}
         </p>
         {(c.target_width_cm || c.target_gsm) && (
           <div className="text-xs text-muted bg-surface p-2 rounded border border-border">

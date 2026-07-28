@@ -2,7 +2,17 @@ import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { UseMutationResult } from '@tanstack/react-query';
 
-import { AdvancedImageUploader, Icon } from '@/shared/components';
+import {
+  AdvancedImageUploader,
+  Icon,
+  Button,
+  MediaLibraryModal,
+  type MediaItem,
+} from '@/shared/components';
+import {
+  fetchFabricRecentImages,
+  type FabricMediaItem,
+} from '@/api/fabric-catalog.api';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 
@@ -22,6 +32,8 @@ export function ImageSection({
     size: string;
     type: string;
   } | null>(null);
+
+  const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
 
   return (
     <div className="form-field mb-6">
@@ -45,6 +57,21 @@ export function ImageSection({
           }
         }}
       />
+
+      {!currentImageUrl && (
+        <div className="mt-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            leftIcon="Image"
+            onClick={() => setIsMediaModalOpen(true)}
+          >
+            Chọn ảnh từ Thư viện
+          </Button>
+        </div>
+      )}
+
       {currentImageUrl && (
         <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-muted-foreground bg-slate-50/50 p-2.5 rounded-md border border-default">
           <div className="flex items-center gap-1.5 text-success font-medium">
@@ -65,6 +92,27 @@ export function ImageSection({
           )}
         </div>
       )}
+
+      <MediaLibraryModal
+        open={isMediaModalOpen}
+        onOpenChange={setIsMediaModalOpen}
+        queryKey={['fabric-media-library']}
+        queryFn={async () => {
+          const data = await fetchFabricRecentImages(50);
+          return data.map((item: FabricMediaItem) => ({
+            id: item.id,
+            imageUrl: item.image_url,
+            title: `${item.code} | ${item.name}`,
+            subtitle: item.updated_at
+              ? `Cập nhật: ${new Date(item.updated_at).toLocaleDateString('vi-VN')}`
+              : undefined,
+          }));
+        }}
+        onSelect={(item: MediaItem) => {
+          setValue('image_url', item.imageUrl);
+          setFileMeta(null); // Clear file meta if selecting from library
+        }}
+      />
     </div>
   );
 }

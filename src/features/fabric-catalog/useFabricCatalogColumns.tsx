@@ -10,7 +10,10 @@ import {
   PUBLIC_PAGE_LABELS,
   ROUTE_FABRIC_CATALOG,
 } from './fabric-catalog.constants';
-import { getStatusVariant } from './fabric-catalog.helpers';
+import {
+  getStatusVariant,
+  formatCompositionParts,
+} from './fabric-catalog.helpers';
 import type { FabricCatalog } from './types';
 import { FabricCategoryBadge } from './components/FabricCategoryBadge';
 import { ThumbnailCell } from './components/ThumbnailCell';
@@ -75,12 +78,10 @@ export function useFabricCatalogColumns({
         accessorKey: 'composition',
         header: LABELS.COMPOSITION,
         cell: ({ row }) => {
-          const tags = row.original.composition_parts?.map(
-            (p) => `${p.percentage}% ${p.fiber}`,
+          const displayValue = formatCompositionParts(
+            row.original.composition_parts,
+            row.original.composition,
           );
-          const fallback = row.original.composition;
-          const displayValue =
-            tags && tags.length > 0 ? tags.join(', ') : fallback;
           return (
             <span className="text-muted-foreground text-sm">
               {displayValue ?? LABELS.NA}
