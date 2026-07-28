@@ -15,7 +15,7 @@ export function OperationsKpiGrid({
   completionRate,
 }: OperationsKpiGridProps) {
   return (
-    <KpiGrid className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+    <KpiGrid className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 -mt-2">
       <KpiCard
         label={OPERATIONS_MESSAGES.TOTAL_TASK}
         value={totalTasks}

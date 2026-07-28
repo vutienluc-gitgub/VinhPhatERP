@@ -10,6 +10,8 @@ interface BoardTask {
   title: string;
   status: TaskStatus;
   assignee_id?: string | null;
+  priority?: string;
+  due_date?: string | null;
 }
 
 interface TransitionValidation {
@@ -35,6 +37,7 @@ interface UseTaskBoardInteractionsArgs<TTask extends BoardTask> {
   tasks: TTask[];
   search: string;
   assigneeFilter?: string;
+  quickFilter?: string | null;
   columnStatuses: TaskStatus[];
   persistTaskStatus: (taskId: string, nextStatus: TaskStatus) => Promise<void>;
   validateTransition?: (task: TTask, to: TaskStatus) => TransitionValidation;
@@ -67,6 +70,7 @@ export function useTaskBoardInteractions<TTask extends BoardTask>({
   tasks,
   search,
   assigneeFilter,
+  quickFilter,
   columnStatuses,
   persistTaskStatus,
   validateTransition,
@@ -113,9 +117,31 @@ export function useTaskBoardInteractions<TTask extends BoardTask>({
           .includes(search.toLowerCase());
         const matchAssignee =
           !assigneeFilter || task.assignee_id === assigneeFilter;
-        return matchSearch && matchAssignee;
+
+        let matchQuick = true;
+        if (quickFilter) {
+          switch (quickFilter) {
+            case 'today':
+              matchQuick =
+                !!task.due_date &&
+                new Date(task.due_date).toDateString() ===
+                  new Date().toDateString();
+              break;
+            case 'overdue':
+              matchQuick =
+                !!task.due_date &&
+                new Date(task.due_date) < new Date() &&
+                task.status !== 'done';
+              break;
+            case 'urgent':
+              matchQuick = task.priority === 'urgent';
+              break;
+            // 'mine' is handled at component level or mock
+          }
+        }
+        return matchSearch && matchAssignee && matchQuick;
       }),
-    [taskPool, search, assigneeFilter],
+    [taskPool, search, assigneeFilter, quickFilter],
   );
 
   const activeTask = useMemo(

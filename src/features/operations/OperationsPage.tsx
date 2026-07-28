@@ -61,7 +61,11 @@ export function OperationsPage() {
   const [assigneeFilter, setAssigneeFilter] = useState<string | undefined>(
     undefined,
   );
+  const [quickFilter, setQuickFilter] = useState<
+    'today' | 'overdue' | 'urgent' | null
+  >(null);
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
+  const [showMoreDone, setShowMoreDone] = useState(false);
 
   const {
     recentEvents: recentBlockedEvents,
@@ -95,6 +99,7 @@ export function OperationsPage() {
     tasks,
     search,
     assigneeFilter,
+    quickFilter,
     columnStatuses: COLUMN_STATUSES,
     persistTaskStatus: async (taskId, nextStatus) => {
       const currentTask = tasks.find((t) => t.id === taskId);
@@ -170,48 +175,82 @@ export function OperationsPage() {
 
   return (
     <div className="page-container space-y-6 min-h-screen">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="fade-up">
-          <h1 className="text-2xl md:text-3xl font-extrabold text-text tracking-tight">
-            {OPERATIONS_MESSAGES.TITLE}
-          </h1>
-          <p className="text-muted text-xs md:text-sm mt-1">
-            {OPERATIONS_MESSAGES.SUBTITLE}
-          </p>
-        </div>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-surface p-2 rounded-2xl shadow-sm border border-border w-full md:w-auto overflow-hidden">
-          <div className="w-full sm:w-64">
-            <SearchInput
-              placeholder={OPERATIONS_MESSAGES.SEARCH_PLACEHOLDER}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="border-none bg-surface-hover w-full"
-            />
+      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm pb-4 pt-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="fade-up shrink-0">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-text tracking-tight">
+              {OPERATIONS_MESSAGES.TITLE}
+            </h1>
+            <p className="text-muted text-xs md:text-sm mt-1">
+              {OPERATIONS_MESSAGES.SUBTITLE}
+            </p>
           </div>
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <div className="flex-1 sm:w-48 min-w-0">
-              <Combobox
-                options={assigneeOptions}
-                value={assigneeFilter ?? ''}
-                onChange={(val) => setAssigneeFilter(val || undefined)}
-                placeholder={OPERATIONS_MESSAGES.FILTER_ASSIGNEE}
-                className="border-none bg-surface-hover w-full min-w-0"
-              />
+          <div className="flex flex-col gap-3 w-full md:w-auto">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-surface p-2 rounded-2xl shadow-sm border border-border w-full overflow-hidden">
+              <div className="w-full sm:w-[360px]">
+                <SearchInput
+                  placeholder={OPERATIONS_MESSAGES.SEARCH_PLACEHOLDER}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="border-none bg-surface-hover w-full"
+                />
+              </div>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <div className="flex-1 sm:w-48 min-w-0">
+                  <Combobox
+                    options={assigneeOptions}
+                    value={assigneeFilter ?? ''}
+                    onChange={(val) => setAssigneeFilter(val || undefined)}
+                    placeholder={OPERATIONS_MESSAGES.FILTER_ASSIGNEE}
+                    className="border-none bg-surface-hover w-full min-w-0"
+                  />
+                </div>
+                <Button
+                  variant="primary"
+                  leftIcon="Plus"
+                  onClick={() => {
+                    setSelectedTask(null);
+                    setIsFormOpen(true);
+                  }}
+                  className="rounded-xl px-4 whitespace-nowrap"
+                >
+                  <span className="hidden sm:inline">
+                    {OPERATIONS_MESSAGES.CREATE_TASK}
+                  </span>
+                  <span className="sm:hidden">
+                    {OPERATIONS_MESSAGES.ADD_SHORT}
+                  </span>
+                </Button>
+              </div>
             </div>
-            <Button
-              variant="primary"
-              leftIcon="Plus"
-              onClick={() => {
-                setSelectedTask(null);
-                setIsFormOpen(true);
-              }}
-              className="rounded-xl px-4 whitespace-nowrap"
-            >
-              <span className="hidden sm:inline">
-                {OPERATIONS_MESSAGES.CREATE_TASK}
-              </span>
-              <span className="sm:hidden">{OPERATIONS_MESSAGES.ADD_SHORT}</span>
-            </Button>
+
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {(['today', 'overdue', 'urgent'] as const).map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() =>
+                    setQuickFilter((prev) => (prev === filter ? null : filter))
+                  }
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors border ${
+                    quickFilter === filter
+                      ? 'bg-primary text-white border-primary'
+                      : 'bg-surface hover:bg-surface-hover text-muted border-border'
+                  }`}
+                >
+                  {filter === 'today' && 'Hôm nay'}
+                  {filter === 'overdue' && 'Quá hạn'}
+                  {filter === 'urgent' && 'Khẩn cấp'}
+                </button>
+              ))}
+              {quickFilter && (
+                <button
+                  onClick={() => setQuickFilter(null)}
+                  className="text-xs text-muted hover:text-danger underline ml-2 whitespace-nowrap"
+                >
+                  Xóa lọc
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -248,13 +287,17 @@ export function OperationsPage() {
             const colTasks = filteredTasks.filter((t) => t.status === col.key);
 
             // Done column: sort by updated_at DESC (chronological log)
-            const sortedTasks = isDoneColumn
+            let sortedTasks = isDoneColumn
               ? [...colTasks].sort((a, b) => {
                   const dateA = a.updated_at ?? a.created_at ?? '';
                   const dateB = b.updated_at ?? b.created_at ?? '';
                   return dateB.localeCompare(dateA);
                 })
               : colTasks;
+
+            if (isDoneColumn && !showMoreDone && sortedTasks.length > 10) {
+              sortedTasks = sortedTasks.slice(0, 10);
+            }
 
             return (
               <KanbanColumn
@@ -265,9 +308,14 @@ export function OperationsPage() {
                 employees={employees}
                 kpis={kpis}
                 tone={col.tone}
-                count={sortedTasks.length}
+                count={isDoneColumn ? colTasks.length : sortedTasks.length}
                 emptyLabel={OPERATIONS_MESSAGES.DRAG_HERE}
                 disableReorder={isDoneColumn}
+                hasMore={isDoneColumn && !showMoreDone && colTasks.length > 10}
+                onShowMore={
+                  isDoneColumn ? () => setShowMoreDone(true) : undefined
+                }
+                wipLimit={col.key === 'in_progress' ? 10 : undefined}
                 blockedReason={
                   blockedTransition?.targetStatus === col.key
                     ? blockedTransition.reason

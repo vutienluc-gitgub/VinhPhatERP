@@ -10,6 +10,7 @@ import type {
   Employee,
   Kpi,
 } from '@/domain/operations/types';
+import { Icon } from '@/shared/components';
 
 import { SortableTaskCard } from './SortableTaskCard';
 import { TaskCard } from './TaskCard';
@@ -35,6 +36,9 @@ interface KanbanColumnProps {
    * Use for "Done" column where chronological order is enforced.
    */
   disableReorder?: boolean;
+  hasMore?: boolean;
+  onShowMore?: () => void;
+  wipLimit?: number;
 }
 
 export function KanbanColumn({
@@ -52,6 +56,9 @@ export function KanbanColumn({
   count,
   emptyLabel,
   disableReorder = false,
+  hasMore,
+  onShowMore,
+  wipLimit,
 }: KanbanColumnProps) {
   const { setNodeRef } = useDroppable({ id });
 
@@ -93,21 +100,21 @@ export function KanbanColumn({
   };
 
   const getColumnClasses = () => {
-    if (blockedReason) return 'bg-rose-50/70 border border-danger/80';
+    if (blockedReason) return 'bg-rose-100/70 border border-danger/80';
 
     switch (id) {
       case 'todo':
-        return 'bg-zinc-50/80 border border-zinc-200/50';
+        return 'bg-zinc-100/80 border border-zinc-200/50';
       case 'in_progress':
-        return 'bg-indigo-50/60 border border-info';
+        return 'bg-indigo-100/60 border border-info';
       case 'review':
-        return 'bg-violet-50/60 border border-violet-100';
+        return 'bg-violet-100/60 border border-violet-100';
       case 'blocked':
-        return 'bg-red-50/60 border border-danger';
+        return 'bg-red-100/60 border border-danger';
       case 'done':
-        return 'bg-emerald-50/60 border border-success';
+        return 'bg-emerald-100/60 border border-success';
       default:
-        return 'bg-zinc-50/80 border border-zinc-100/50';
+        return 'bg-zinc-100/80 border border-zinc-100/50';
     }
   };
 
@@ -121,9 +128,18 @@ export function KanbanColumn({
           <span className={`h-2 w-2 rounded-full ${tone.split(' ')[0]}`} />
           <span className="text-sm font-bold text-zinc-700">{title}</span>
         </div>
-        <span className="text-xs text-zinc-400 font-bold bg-white px-2 py-0.5 rounded-full border border-zinc-100 shadow-sm">
-          {count}
-        </span>
+        <div
+          className={`text-xs font-bold px-2 py-0.5 rounded-full border shadow-sm flex items-center gap-1 ${
+            wipLimit && count > wipLimit
+              ? 'bg-danger text-white border-danger'
+              : 'text-zinc-400 bg-white border-zinc-100'
+          }`}
+        >
+          {wipLimit && count > wipLimit && (
+            <span className="text-[10px]">⚠</span>
+          )}
+          <span>{wipLimit ? `${count}/${wipLimit}` : count}</span>
+        </div>
       </div>
 
       <div
@@ -138,9 +154,26 @@ export function KanbanColumn({
         )}
         {renderCards()}
         {tasks.length === 0 && (
-          <div className="h-24 flex items-center justify-center text-[11px] text-muted text-center border-2 border-dashed border-border/50 rounded-xl bg-surface/30 italic">
-            {emptyLabel}
+          <div className="h-32 flex flex-col items-center justify-center text-center rounded-xl bg-surface/50 border border-dashed border-border/60">
+            <Icon
+              name="Inbox"
+              className="h-8 w-8 text-zinc-400 mb-2 opacity-80"
+            />
+            <span className="text-xs font-bold text-zinc-500 mb-0.5">
+              No task
+            </span>
+            <span className="text-[11px] text-zinc-400 italic">
+              {emptyLabel}
+            </span>
           </div>
+        )}
+        {hasMore && onShowMore && (
+          <button
+            onClick={onShowMore}
+            className="w-full py-2 text-xs font-semibold text-primary bg-primary/10 hover:bg-primary/20 rounded-xl transition-colors mt-2"
+          >
+            Show more...
+          </button>
         )}
       </div>
     </div>

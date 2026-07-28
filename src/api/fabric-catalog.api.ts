@@ -29,7 +29,17 @@ function transformCategoryRow(row: Record<string, unknown>): FabricCatalog {
     commercial = commercial[0] || null;
   }
 
-  return { ...row, category, commercial } as unknown as FabricCatalog;
+  // Map DB composition_tags to frontend composition_parts
+  const compositionParts = row.composition_tags ?? row.composition_parts;
+  const newRow = {
+    ...row,
+    composition_parts: compositionParts,
+    category,
+    commercial,
+  } as Record<string, unknown>;
+  delete newRow.composition_tags;
+
+  return newRow as unknown as FabricCatalog;
 }
 
 export async function fetchFabricCatalogPaginated(
@@ -111,29 +121,45 @@ export async function createFabricCatalog(
   row: FabricCatalogRow,
 ): Promise<FabricCatalog> {
   const tenantId = await getTenantId();
+
+  const { composition_parts: compositionParts, ...restRow } = row as Record<
+    string,
+    unknown
+  >;
+
   const inserted = await safeUpsertOne({
     table: TABLE,
     data: {
-      ...row,
+      ...restRow,
+      composition_tags: compositionParts,
       tenant_id: tenantId,
     },
     conflictKey: 'id',
   });
-  return inserted as unknown as FabricCatalog;
+  return transformCategoryRow(inserted as Record<string, unknown>);
 }
 
 export async function updateFabricCatalog(
   id: string,
   row: FabricCatalogRow,
 ): Promise<FabricCatalog> {
+  const { composition_parts: compositionParts, ...restRow } = row as Record<
+    string,
+    unknown
+  >;
+  const dbRow = {
+    ...restRow,
+    composition_tags: compositionParts as string[],
+  };
+
   const { data, error } = await supabase
     .from(TABLE)
-    .update(row as Record<string, unknown>)
+    .update(dbRow)
     .eq('id', id)
     .select()
     .single();
   if (error) throw error;
-  return data as unknown as FabricCatalog;
+  return transformCategoryRow(data as Record<string, unknown>);
 }
 
 export async function updateFabricCommercial(
@@ -245,7 +271,16 @@ export async function fetchPublicFabricBasic(
   });
   if (error) throw error;
   if (!data) throw new Error('Không tìm thấy thông tin công khai.');
-  return data as Partial<FabricCatalog>;
+
+  const result = data as Record<string, unknown>;
+  if (
+    result.composition_tags !== undefined &&
+    result.composition_parts === undefined
+  ) {
+    result.composition_parts = result.composition_tags;
+  }
+
+  return result as Partial<FabricCatalog>;
 }
 
 export async function fetchPublicFabricVariants(
@@ -283,7 +318,16 @@ export async function fetchRelatedPublicFabrics(
     },
   );
   if (error) throw error;
-  return (data ?? []) as Partial<FabricCatalog>[];
+
+  return ((data ?? []) as Record<string, unknown>[]).map((row) => {
+    if (
+      row.composition_tags !== undefined &&
+      row.composition_parts === undefined
+    ) {
+      row.composition_parts = row.composition_tags;
+    }
+    return row as Partial<FabricCatalog>;
+  });
 }
 
 export async function fetchAlsoViewedPublicFabrics(
@@ -298,7 +342,16 @@ export async function fetchAlsoViewedPublicFabrics(
     },
   );
   if (error) throw error;
-  return (data ?? []) as Partial<FabricCatalog>[];
+
+  return ((data ?? []) as Record<string, unknown>[]).map((row) => {
+    if (
+      row.composition_tags !== undefined &&
+      row.composition_parts === undefined
+    ) {
+      row.composition_parts = row.composition_tags;
+    }
+    return row as Partial<FabricCatalog>;
+  });
 }
 
 export async function createPublicSampleRequest(payload: {
