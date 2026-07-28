@@ -1,60 +1,79 @@
-import { clsx } from 'clsx';
-import { memo } from 'react';
-import type { ReactNode, HTMLAttributes } from 'react';
+import { type HTMLAttributes } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+
+import { cn } from '@/shared/utils/cn';
 
 import { Icon, type IconName } from './Icon';
 
-export type BadgeVariant =
-  | 'success'
-  | 'warning'
-  | 'danger'
-  | 'info'
-  | 'gray'
-  | 'purple';
+const badgeVariants = cva(
+  'inline-flex items-center justify-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold leading-tight whitespace-nowrap transition-colors',
+  {
+    variants: {
+      variant: {
+        success: 'bg-success-soft text-success',
+        warning: 'bg-warning-soft text-warning',
+        danger: 'bg-danger-soft text-danger',
+        info: 'bg-info-soft text-info',
+        gray: 'bg-surface-secondary text-muted',
+        purple: 'bg-[rgba(155,89,182,0.12)] text-[#7d3c98]', // Có thể thay bằng token nếu đã định nghĩa
+        primary: 'bg-brand-soft text-primary',
+        default: 'bg-surface-secondary text-text',
+      },
+    },
+    defaultVariants: {
+      variant: 'gray',
+    },
+  },
+);
 
-interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  children?: ReactNode;
-  variant?: BadgeVariant;
-  className?: string;
-  icon?: IconName;
-  iconSize?: number;
-  /** (Premium) Hiển thị điểm sáng màu trạng thái */
-  showDot?: boolean;
-}
+export type BadgeVariant = NonNullable<
+  VariantProps<typeof badgeVariants>['variant']
+>;
+
+type BaseProps = Omit<HTMLAttributes<HTMLSpanElement>, 'color'> &
+  VariantProps<typeof badgeVariants>;
+
+export type BadgeProps = BaseProps &
+  (
+    | {
+        icon: IconName;
+        showDot?: never;
+        iconSize?: number;
+      }
+    | {
+        showDot: true;
+        icon?: never;
+        iconSize?: never;
+      }
+    | {
+        icon?: undefined;
+        showDot?: false;
+        iconSize?: never;
+      }
+  );
 
 /**
  * A standardized Badge component for status tags and labels.
- * Uses CSS classes from data-ui.css.
+ * Designed with a type-safe discriminated union for icon/dot mutually exclusive rendering.
  */
-export const Badge = memo(function Badge({
+export function Badge({
   children,
-  variant = 'gray',
+  variant,
   className,
   icon,
   iconSize = 14,
-  showDot = false,
+  showDot,
   ...rest
 }: BadgeProps) {
-  // Điểm sáng trạng thái nay được thiết lập minh bạch qua prop showDot
-  const renderDot = showDot;
-
   return (
-    <span
-      className={clsx(
-        'badge inline-flex items-center gap-1.5',
-        `badge-${variant}`,
-        className,
+    <span className={cn(badgeVariants({ variant, className }))} {...rest}>
+      {icon && <Icon name={icon} size={iconSize} />}
+      {showDot && (
+        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current shadow-[0_0_6px_currentColor]" />
       )}
-      {...rest}
-    >
-      {icon ? (
-        <Icon name={icon} size={iconSize} />
-      ) : renderDot ? (
-        <span className="badge-dot" />
-      ) : null}
       {children}
     </span>
   );
-});
+}
 
 Badge.displayName = 'Badge';
