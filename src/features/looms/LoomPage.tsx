@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 
 import { TabSwitcher } from '@/shared/components/TabSwitcher';
+import { PageLayout } from '@/shared/components';
 
 import { LoomForm } from './LoomForm';
 import { LoomList } from './LoomList';
@@ -45,16 +46,20 @@ export function LoomPage() {
   );
 
   return (
-    <>
-      {activeTab === 'looms' && (
-        <LoomList onEdit={openEdit} onNew={openCreate} tabs={renderTabs()} />
-      )}
+    <div className="page-container">
+      <PageLayout className="flex-1 h-full">
+        {renderTabs()}
 
-      {activeTab === 'machine_specs' && <MachineSpecList tabs={renderTabs()} />}
+        {activeTab === 'looms' && (
+          <LoomList onEdit={openEdit} onNew={openCreate} />
+        )}
+
+        {activeTab === 'machine_specs' && <MachineSpecList />}
+      </PageLayout>
 
       {showForm && activeTab === 'looms' && (
         <LoomForm loom={editItem} onClose={closeForm} />
       )}
-    </>
+    </div>
   );
 }

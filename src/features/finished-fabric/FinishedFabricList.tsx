@@ -10,7 +10,6 @@ import {
   FilterBar,
   type FilterFieldConfig,
   KpiCard,
-  PageLayout,
   PageHeader,
   TableSection,
   ActionBar,
@@ -148,7 +147,7 @@ export function FinishedFabricList({
   }
 
   return (
-    <PageLayout>
+    <>
       <PageHeader
         title={MSG.PAGE_TITLE}
         subtitle={MSG.PAGE_SUBTITLE}
@@ -320,6 +319,6 @@ export function FinishedFabricList({
           />
         )}
       </TableSection>
-    </PageLayout>
+    </>
   );
 }

@@ -1,4 +1,4 @@
-import { Icon, Badge } from '@/shared/components';
+import { Icon, Badge, PhoneContact } from '@/shared/components';
 import { SUPPLIER_STATUS_LABELS } from '@/schema/supplier.schema';
 import type { Supplier } from '@/features/procurement/suppliers/types';
 
@@ -21,8 +21,7 @@ export function SupplierMobileCard({ supplier }: SupplierMobileCardProps) {
         <div className="grid grid-cols-2 gap-2 text-sm">
           {supplier.phone && (
             <div className="flex items-center gap-2 text-muted">
-              <Icon name="Phone" size={16} />
-              <span>{supplier.phone}</span>
+              <PhoneContact phone={supplier.phone} />
             </div>
           )}
           {supplier.contact_person && (

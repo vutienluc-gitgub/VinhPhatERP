@@ -23,6 +23,7 @@
   /* ── Brand Palette (Pepsi-inspired) ────────────────────────── */
   --brand-rgb: 33, 81, 161; /* #2151A1 — Primary blue */
   --brand-strong-rgb: 22, 56, 112; /* #163870 — Darker blue */
+  --brand-zalo-rgb: 0, 104, 255; /* #0068FF — Zalo blue */
   --accent-rgb: 235, 25, 51; /* #EB1933 — Pepsi red */
   --base-rgb: 16, 30, 52; /* #101E34 — Dark navy text */
 

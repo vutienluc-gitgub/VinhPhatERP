@@ -8,7 +8,6 @@ import {
   FilterBar,
   type FilterFieldConfig,
   Button,
-  PageLayout,
   PageHeader,
   TableSection,
   KpiCard,
@@ -204,7 +203,7 @@ export function WorkOrderList({
   });
 
   return (
-    <PageLayout>
+    <>
       <PageHeader
         title={MSG.PAGE_TITLE}
         subtitle={MSG.PAGE_SUBTITLE}
@@ -365,6 +364,6 @@ export function WorkOrderList({
           </div>
         </div>
       </AdaptiveSheet>
-    </PageLayout>
+    </>
   );
 }

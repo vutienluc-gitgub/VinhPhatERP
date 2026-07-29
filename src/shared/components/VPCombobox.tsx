@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/command';
 import { Icon } from '@/shared/components/Icon';
 import { cn } from '@/shared/utils/cn';
+import { formatPhoneNumber } from '@/shared/utils/phone';
 
 export type VPComboboxOption = {
   value: string;
@@ -115,7 +116,7 @@ export function VPCombobox({
                       {(opt.code || opt.phone || opt.desc) && (
                         <span className="text-xs text-muted mt-0.5">
                           {opt.code && `Mã: ${opt.code} `}
-                          {opt.phone && `SĐT: ${opt.phone} `}
+                          {opt.phone && `SĐT: ${formatPhoneNumber(opt.phone)} `}
                           {opt.desc && opt.desc}
                         </span>
                       )}

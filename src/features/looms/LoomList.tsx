@@ -1,11 +1,10 @@
-import { useState, useMemo, useCallback, type ReactNode } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   FilterBar,
   type FilterFieldConfig,
   EmptyState,
-  PageLayout,
   PageHeader,
   TableSection,
   Pagination,
@@ -30,7 +29,6 @@ import { LOOM_MESSAGES as MSG } from './loom.constants';
 type LoomListProps = {
   onEdit: (loom: LoomWithSupplier) => void;
   onNew: () => void;
-  tabs?: ReactNode;
 };
 
 const FILTER_KEYS = ['search', 'status', 'loom_type'] as const;
@@ -62,7 +60,7 @@ const FILTER_SCHEMA: FilterFieldConfig[] = [
   },
 ];
 
-export function LoomList({ onEdit, onNew, tabs }: LoomListProps) {
+export function LoomList({ onEdit, onNew }: LoomListProps) {
   const { filters, setFilter, clearFilters, hasActiveFilter } =
     useUrlFilterState(FILTER_KEYS);
   const [page, setPage] = useState(1);
@@ -124,7 +122,7 @@ export function LoomList({ onEdit, onNew, tabs }: LoomListProps) {
   );
 
   return (
-    <PageLayout>
+    <>
       <PageHeader
         title={MSG.PAGE_TITLE}
         subtitle={MSG.PAGE_SUBTITLE}
@@ -170,7 +168,7 @@ export function LoomList({ onEdit, onNew, tabs }: LoomListProps) {
           formatMode="number"
         />
       </div>
-      {tabs}
+
       <TableSection>
         <div className="w-full px-4 sm:px-6 lg:px-8 mt-2 pb-4 border-b border-border flex flex-col gap-4">
           <FilterBar
@@ -239,6 +237,6 @@ export function LoomList({ onEdit, onNew, tabs }: LoomListProps) {
           </div>
         )}
       </TableSection>
-    </PageLayout>
+    </>
   );
 }

@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 
 import { DataTable } from '@/shared/components/DataTable';
+import { PhoneContact } from '@/shared/components/PhoneContact';
 import type { Column } from '@/shared/components/DataTable';
 import type { CrmLead } from '@/domain/crm/crm.types';
 import {
@@ -46,7 +47,9 @@ export function LeadsList({
       header: CRM_LABELS.LIST_HEADER_CONTACT,
       cell: (item) => (
         <div className="text-sm">
-          <div>{item.phone}</div>
+          <div>
+            <PhoneContact phone={item.phone} />
+          </div>
           {item.email ? <div className="text-muted">{item.email}</div> : null}
         </div>
       ),
@@ -143,7 +146,9 @@ export function LeadsList({
             <div className="flex justify-between items-start mb-2">
               <div>
                 <div className="font-semibold">{item.customer_name}</div>
-                <div className="text-xs text-muted">{item.phone}</div>
+                <div className="text-xs text-muted">
+                  <PhoneContact phone={item.phone} />
+                </div>
               </div>
               {statusMeta ? (
                 <div className="flex items-center gap-1">

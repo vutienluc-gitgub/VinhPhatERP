@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { validatePhone } from '@/shared/utils/phone';
+
 export const SUPPLIER_STATUSES = ['active', 'inactive'] as const;
 
 export const SUPPLIER_STATUS_LABELS: Record<
@@ -23,6 +25,7 @@ export const supplierSchema = z.object({
   phone: z
     .string()
     .regex(/^(\+?[0-9\s\-().]{8,20})?$/, 'Số điện thoại không hợp lệ')
+    .refine(validatePhone, { message: 'Số điện thoại không hợp lệ' })
     .optional()
     .or(z.literal('')),
   email: z.string().email('Email không hợp lệ').or(z.literal('')).optional(),

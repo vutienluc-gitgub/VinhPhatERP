@@ -30,6 +30,8 @@ export interface PaginationConfig<T> {
   result: PaginatedResult<T> | undefined;
   /** Callback when user navigates to a different page */
   onPageChange: (page: number) => void;
+  /** Callback when user changes page size */
+  onPageSizeChange?: (size: number) => void;
   /** Custom label for item count, e.g. "cuộn", "đơn hàng". Default: "mục" */
   itemLabel?: string;
 }

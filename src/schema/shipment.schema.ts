@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { validatePhone } from '@/shared/utils/phone';
+
 export type ShipmentStatus =
   | 'preparing'
   | 'shipped'
@@ -67,7 +69,13 @@ export const shipmentsDefaultValues: ShipmentsFormValues = {
 
 export const deliveryConfirmSchema = z.object({
   receiverName: z.string().trim().min(1, 'Nhập tên người nhận'),
-  receiverPhone: z.string().trim().optional().or(z.literal('')),
+  receiverPhone: z
+    .string()
+    .trim()
+    .regex(/^(\+?[0-9\s\-().]{8,20})?$/, 'Số điện thoại không hợp lệ')
+    .refine(validatePhone, { message: 'Số điện thoại không hợp lệ' })
+    .optional()
+    .or(z.literal('')),
   deliveryProof: z.string().trim().min(1, 'Bắt buộc chụp ảnh biên nhận'),
   notes: z.string().trim().optional().or(z.literal('')),
   driverCommission: z.number().min(0).optional().or(z.literal(0)),

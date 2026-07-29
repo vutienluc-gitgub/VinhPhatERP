@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Icon } from '@/shared/components/Icon';
+import { formatPhoneNumber } from '@/shared/utils/phone';
 import { cn } from '@/shared/utils/cn';
 
 export type VPVirtualComboboxOption = {
@@ -180,7 +181,8 @@ export function VPVirtualCombobox({
                             {(opt.code || opt.phone || opt.desc) && (
                               <span className="text-xs text-muted mt-0.5">
                                 {opt.code && `Mã: ${opt.code} `}
-                                {opt.phone && `SĐT: ${opt.phone} `}
+                                {opt.phone &&
+                                  `SĐT: ${formatPhoneNumber(opt.phone)} `}
                                 {opt.desc && opt.desc}
                               </span>
                             )}

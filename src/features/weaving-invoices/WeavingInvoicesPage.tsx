@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { useWeavingInvoice } from '@/application/production';
+import { PageLayout } from '@/shared/components';
 
 import type { WeavingInvoice } from './types';
 import { WeavingInvoiceForm } from './WeavingInvoiceForm';
@@ -59,14 +60,16 @@ export function WeavingInvoicesPage() {
   }
 
   return (
-    <>
-      <WeavingInvoiceList onNew={openCreate} onEdit={openEdit} />
+    <div className="page-container">
+      <PageLayout className="flex-1 h-full">
+        <WeavingInvoiceList onNew={openCreate} onEdit={openEdit} />
+      </PageLayout>
       {showForm && (
         <WeavingInvoiceFormWrapper
           invoiceId={editInvoiceId}
           onClose={closeForm}
         />
       )}
-    </>
+    </div>
   );
 }

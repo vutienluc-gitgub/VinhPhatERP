@@ -1,7 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 
 import { MoneyText } from '@/shared/value';
-import { Badge, ActionMenu } from '@/shared/components';
+import { Badge, ActionMenu, PhoneContact } from '@/shared/components';
 import { SUPPLIER_STATUS_LABELS } from '@/schema/supplier.schema';
 import { SUPPLIER_LIST_LABELS } from '@/features/procurement/suppliers/suppliers.constants';
 import type { Supplier } from '@/features/procurement/suppliers/types';
@@ -61,7 +61,7 @@ export function useSupplierColumns({
         const supplier = row.original;
         return (
           <div className="flex flex-col text-sm">
-            {supplier.phone && <span>{supplier.phone}</span>}
+            {supplier.phone && <PhoneContact phone={supplier.phone} />}
             {supplier.contact_person && (
               <span className="text-xs">
                 {SUPPLIER_LIST_LABELS.CONTACT_PERSON_PREFIX}{' '}

@@ -1,6 +1,5 @@
 import { CUSTOMER_STATUS_LABELS } from '@/schema/customer.schema';
-import { Badge, Icon } from '@/shared/components';
-import { formatPhoneNumber } from '@/shared/utils/format';
+import { Badge, PhoneContact } from '@/shared/components';
 import type { Customer } from '@/features/customers/types';
 
 type CustomerMobileCardProps = {
@@ -24,32 +23,7 @@ export function CustomerMobileCard({ customer }: CustomerMobileCardProps) {
         <div className="mobile-card-row">
           <span className="label">Liên hệ:</span>
           <span className="value flex items-center gap-2">
-            {(() => {
-              if (!customer.phone) return '—';
-              const cleanPhone = customer.phone.replace(/\D/g, '');
-              const isVietnamZalo =
-                cleanPhone.startsWith('0') && cleanPhone.length === 10;
-              return (
-                <>
-                  <a
-                    href={`tel:${cleanPhone}`}
-                    className="hover:text-primary hover:underline font-semibold"
-                  >
-                    {formatPhoneNumber(customer.phone)}
-                  </a>
-                  {isVietnamZalo && (
-                    <a
-                      href={`https://zalo.me/${cleanPhone}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#0068FF] bg-[#0068FF]/10 rounded-full w-5 h-5 flex items-center justify-center"
-                    >
-                      <Icon name="MessageCircle" size={12} />
-                    </a>
-                  )}
-                </>
-              );
-            })()}
+            <PhoneContact phone={customer.phone} />
           </span>
         </div>
         {customer.address && (

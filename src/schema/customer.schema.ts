@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { validatePhone } from '@/shared/utils/phone';
+
 export const CUSTOMER_SOURCES = [
   'referral',
   'exhibition',
@@ -46,6 +48,7 @@ export const customersSchema = z.object({
     .string()
     .trim()
     .regex(/^(\+?[0-9\s\-().]{8,20})?$/, 'Số điện thoại không hợp lệ')
+    .refine(validatePhone, { message: 'Số điện thoại không hợp lệ' })
     .optional()
     .or(z.literal('')),
   email: z

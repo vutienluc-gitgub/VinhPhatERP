@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { validatePhone } from '@/shared/utils/phone';
+
 /**
  * Schema dang ky workspace moi tren vinhphat.app
  */
@@ -20,7 +22,12 @@ export const tenantRegisterSchema = z
     email: z.string().email('Email khong hop le'),
     password: z.string().min(6, 'Mat khau it nhat 6 ky tu'),
     confirmPassword: z.string(),
-    phone: z.string().optional(),
+    phone: z
+      .string()
+      .regex(/^(\+?[0-9\s\-().]{8,20})?$/, 'So dien thoai khong hop le')
+      .refine(validatePhone, { message: 'So dien thoai khong hop le' })
+      .optional()
+      .or(z.literal('')),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Mat khau xac nhan khong khop',

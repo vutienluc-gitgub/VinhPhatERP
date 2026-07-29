@@ -37,18 +37,7 @@ export function formatQuantity(value: number, decimals = 1): string {
   return coreFormatQuantity(value, decimals);
 }
 
-/**
- * Format a phone number to 4-3-3 chunks for readability in Vietnam.
- * @example formatPhoneNumber('0848587387') // "0848 587 387"
- */
-export function formatPhoneNumber(phone: string | null | undefined): string {
-  if (!phone) return '';
-  const cleaned = phone.replace(/\D/g, '');
-  if (cleaned.length === 10) {
-    return `${cleaned.slice(0, 4)} ${cleaned.slice(4, 7)} ${cleaned.slice(7)}`;
-  }
-  return phone;
-}
+export { formatPhoneNumber } from './phone';
 
 /**
  * Sanitize search keyword to help find phone numbers easily.

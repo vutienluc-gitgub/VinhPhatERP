@@ -1,7 +1,6 @@
 import {
   AddButton,
   FilterBar,
-  PageLayout,
   PageHeader,
   TableSection,
   KPISection,
@@ -43,7 +42,7 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
   const tableColumns = useYarnCatalogColumns(onEdit, handleDelete, isDeleting);
 
   return (
-    <PageLayout aria-label={YARN_CATALOG_MESSAGES.ARIA_LIST_CONTAINER}>
+    <>
       <PageHeader
         title={YARN_CATALOG_MESSAGES.PAGE_TITLE}
         subtitle={YARN_CATALOG_MESSAGES.PAGE_SUBTITLE}
@@ -158,6 +157,6 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
           }}
         />
       </TableSection>
-    </PageLayout>
+    </>
   );
 }

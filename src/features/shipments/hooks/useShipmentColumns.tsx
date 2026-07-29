@@ -5,6 +5,7 @@ import {
   Icon,
   EntityLink,
   ActionBar,
+  PhoneContact,
   type ActionConfig,
 } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
@@ -169,11 +170,11 @@ export function useShipmentColumns({
               <span className="font-semibold text-foreground text-[0.85rem]">
                 {s.delivery_staff.full_name}
               </span>
-              <div className="flex items-center gap-1 mt-1 text-muted-foreground">
-                <Icon name="Phone" size={12} />
-                <span className="text-[0.75rem]">
-                  {s.delivery_staff.phone || MSG.LBL_NO_PHONE}
-                </span>
+              <div className="flex items-center gap-1 mt-1 text-[0.75rem]">
+                <PhoneContact
+                  phone={s.delivery_staff.phone}
+                  fallback={MSG.LBL_NO_PHONE}
+                />
               </div>
             </div>
           );

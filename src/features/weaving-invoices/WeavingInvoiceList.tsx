@@ -6,7 +6,6 @@ import {
   DataTableAdvanced,
   FilterBar,
   type FilterFieldConfig,
-  PageLayout,
   PageHeader,
   TableSection,
   Icon,
@@ -130,7 +129,7 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
   });
 
   return (
-    <PageLayout>
+    <>
       <PageHeader
         title={MSG.PAGE_TITLE}
         subtitle={MSG.PAGE_SUBTITLE}
@@ -221,6 +220,6 @@ export function WeavingInvoiceList({ onNew, onEdit }: Props) {
           }}
         />
       </TableSection>
-    </PageLayout>
+    </>
   );
 }

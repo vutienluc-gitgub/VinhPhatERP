@@ -5,7 +5,6 @@ import {
   DataTableAdvanced,
   AddButton,
   KpiCard,
-  PageLayout,
   PageHeader,
   KPISection,
   TableSection,
@@ -52,7 +51,7 @@ export function AccountList({ onEdit, onNew }: AccountListProps) {
   });
 
   return (
-    <PageLayout>
+    <>
       <PageHeader
         title={MSG.TITLE}
         subtitle={MSG.SUBTITLE}
@@ -138,6 +137,6 @@ export function AccountList({ onEdit, onNew }: AccountListProps) {
           )}
         />
       </TableSection>
-    </PageLayout>
+    </>
   );
 }

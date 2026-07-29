@@ -12,7 +12,6 @@ import {
   KpiGrid,
   TabSwitcher,
   type TabItem,
-  PageLayout,
   PageHeader,
   KPISection,
   TableSection,
@@ -159,7 +158,7 @@ export function SuppliersList({
   });
 
   return (
-    <PageLayout>
+    <>
       <PageHeader
         title={SUPPLIER_LIST_LABELS.TITLE}
         subtitle={SUPPLIER_LIST_LABELS.SUBTITLE}
@@ -257,6 +256,6 @@ export function SuppliersList({
           }}
         />
       </TableSection>
-    </PageLayout>
+    </>
   );
 }

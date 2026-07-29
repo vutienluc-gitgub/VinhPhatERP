@@ -7,6 +7,7 @@ dayjs.locale('vi');
 
 import type { CrmLead } from '@/domain/crm/crm.types';
 import { Icon } from '@/shared/components/Icon';
+import { PhoneContact } from '@/shared/components/PhoneContact';
 import { LEAD_TYPE_MAP } from '@/features/crm/crm.constants';
 
 interface LeadCardProps {
@@ -51,9 +52,8 @@ export function LeadCard({ lead, onClick }: LeadCardProps) {
         </div>
       )}
 
-      <div className="flex items-center gap-1.5 text-xs text-muted mb-3">
-        <Icon name="Phone" size={12} className="shrink-0" />
-        <span>{lead.phone}</span>
+      <div className="flex items-center gap-1.5 text-xs mb-3">
+        <PhoneContact phone={lead.phone} className="text-xs" />
       </div>
 
       {lead.type === 'RFQ' && lead.rfq_detail?.fabric_catalog && (

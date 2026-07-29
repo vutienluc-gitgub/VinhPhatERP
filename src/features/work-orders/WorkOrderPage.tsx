@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+import { PageLayout } from '@/shared/components';
+
 import type { WorkOrderWithRelations } from './types';
 import { WorkOrderDetail } from './WorkOrderDetail';
 import { WorkOrderForm } from './WorkOrderForm';
@@ -63,21 +65,27 @@ export function WorkOrdersPage() {
 
   if (view === 'detail' && selectedId) {
     return (
-      <WorkOrderDetail
-        id={selectedId}
-        onBack={handleBack}
-        onEdit={handleEdit}
-      />
+      <div className="page-container">
+        <PageLayout className="flex-1 h-full">
+          <WorkOrderDetail
+            id={selectedId}
+            onBack={handleBack}
+            onEdit={handleEdit}
+          />
+        </PageLayout>
+      </div>
     );
   }
 
   return (
-    <>
-      <WorkOrderList
-        onView={handleView}
-        onEdit={handleEdit}
-        onCreate={() => setIsFormOpen(true)}
-      />
+    <div className="page-container">
+      <PageLayout className="flex-1 h-full">
+        <WorkOrderList
+          onView={handleView}
+          onEdit={handleEdit}
+          onCreate={() => setIsFormOpen(true)}
+        />
+      </PageLayout>
 
       {/* Work Order Form Modal */}
       {isFormOpen && (
@@ -91,6 +99,6 @@ export function WorkOrdersPage() {
           }}
         />
       )}
-    </>
+    </div>
   );
 }

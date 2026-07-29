@@ -5,7 +5,6 @@ import {
   DataTableAdvanced,
   ViewToggle,
   type ViewMode,
-  PageLayout,
   PageHeader,
   TableSection,
 } from '@/shared/components';
@@ -140,7 +139,7 @@ export function RawFabricList({
   const columns = useRawFabricColumns({ onEdit });
 
   return (
-    <PageLayout>
+    <>
       <PageHeader
         title={MSG.PAGE_TITLE}
         subtitle={MSG.PAGE_SUBTITLE}
@@ -312,6 +311,6 @@ export function RawFabricList({
           </div>
         )}
       </TableSection>
-    </PageLayout>
+    </>
   );
 }

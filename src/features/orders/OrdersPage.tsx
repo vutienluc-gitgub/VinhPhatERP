@@ -6,6 +6,7 @@ import { useGlobalModal } from '@/shared/hooks/useGlobalModal';
 import { ContractForm } from '@/features/contracts/ContractForm';
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
+import { PageLayout } from '@/shared/components';
 
 import { OrderDetail } from './OrderDetail';
 import { OrderForm } from './OrderForm';
@@ -50,41 +51,43 @@ export function OrdersPage() {
 
   return (
     <div className="page-container">
-      {view.mode === 'list' ? (
-        <OrderList
-          onNew={openCreate}
-          onEdit={(order) => {
-            if (order.status === 'draft') openEdit(order);
-            else navigate(`/orders/${order.id}`);
-          }}
-          onView={(order) => navigate(`/orders/${order.id}`)}
-        />
-      ) : (
-        <OrderDetail
-          orderId={view.orderId}
-          onBack={() => navigate('/orders')}
-          onEdit={(order) => {
-            openEdit(order);
-          }}
-          onCreateShipment={(order) =>
-            openModal('SHIPMENT_FORM', {
-              orderId: order.id,
-              customerId: order.customer_id,
-              orderNumber: order.order_number,
-            })
-          }
-          onCreatePayment={(order) =>
-            openModal('PAYMENT_FORM', {
-              orderId: order.id,
-              customerId: order.customer_id,
-              orderNumber: order.order_number,
-              balanceDue: order.total_amount - order.paid_amount,
-            })
-          }
-          onReserveRolls={(order) => setReserveOrder(order)}
-          onCreateContract={(order) => setContractOrder(order)}
-        />
-      )}
+      <PageLayout className="flex-1 h-full">
+        {view.mode === 'list' ? (
+          <OrderList
+            onNew={openCreate}
+            onEdit={(order) => {
+              if (order.status === 'draft') openEdit(order);
+              else navigate(`/orders/${order.id}`);
+            }}
+            onView={(order) => navigate(`/orders/${order.id}`)}
+          />
+        ) : (
+          <OrderDetail
+            orderId={view.orderId}
+            onBack={() => navigate('/orders')}
+            onEdit={(order) => {
+              openEdit(order);
+            }}
+            onCreateShipment={(order) =>
+              openModal('SHIPMENT_FORM', {
+                orderId: order.id,
+                customerId: order.customer_id,
+                orderNumber: order.order_number,
+              })
+            }
+            onCreatePayment={(order) =>
+              openModal('PAYMENT_FORM', {
+                orderId: order.id,
+                customerId: order.customer_id,
+                orderNumber: order.order_number,
+                balanceDue: order.total_amount - order.paid_amount,
+              })
+            }
+            onReserveRolls={(order) => setReserveOrder(order)}
+            onCreateContract={(order) => setContractOrder(order)}
+          />
+        )}
+      </PageLayout>
 
       {/* Order Form */}
       {showForm && (

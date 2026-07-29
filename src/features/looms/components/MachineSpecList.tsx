@@ -1,9 +1,8 @@
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 
 import {
   Icon,
   DataTable,
-  PageLayout,
   PageHeader,
   TableSection,
   ErrorInline,
@@ -20,7 +19,7 @@ import { useMachineSpecColumns } from '@/features/looms/hooks/useMachineSpecColu
 import { MachineSpecForm } from './MachineSpecForm';
 import { MachineSpecMobileCard } from './MachineSpecMobileCard';
 
-export function MachineSpecList({ tabs }: { tabs?: ReactNode }) {
+export function MachineSpecList() {
   const { data: machineSpecs, isLoading, error } = useMachineSpecsAdmin();
   const toggleStatusMutation = useToggleMachineSpecStatus();
   const { confirm } = useConfirm();
@@ -75,7 +74,7 @@ export function MachineSpecList({ tabs }: { tabs?: ReactNode }) {
   });
 
   return (
-    <PageLayout>
+    <>
       <PageHeader
         title={MSG.SPEC_PAGE_TITLE}
         subtitle={MSG.SPEC_PAGE_SUBTITLE}
@@ -93,7 +92,7 @@ export function MachineSpecList({ tabs }: { tabs?: ReactNode }) {
           </button>
         }
       />
-      {tabs}
+
       <TableSection>
         {error ? (
           <div className="p-4">
@@ -121,6 +120,6 @@ export function MachineSpecList({ tabs }: { tabs?: ReactNode }) {
           />
         )}
       </TableSection>
-    </PageLayout>
+    </>
   );
 }

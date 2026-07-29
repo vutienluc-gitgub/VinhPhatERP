@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { PageLayout } from '@/shared/components';
+
 import { RawFabricBulkForm } from './RawFabricBulkForm';
 import { RawFabricForm } from './RawFabricForm';
 import { RawFabricList } from './RawFabricList';
@@ -26,16 +28,18 @@ export function RawFabricPage() {
   }
 
   return (
-    <>
-      <RawFabricList
-        onEdit={openEdit}
-        onNew={openCreate}
-        onBulkNew={() => setShowBulkForm(true)}
-      />
+    <div className="page-container">
+      <PageLayout className="flex-1 h-full">
+        <RawFabricList
+          onEdit={openEdit}
+          onNew={openCreate}
+          onBulkNew={() => setShowBulkForm(true)}
+        />
+      </PageLayout>
       {showForm && <RawFabricForm roll={editRoll} onClose={closeForm} />}
       {showBulkForm && (
         <RawFabricBulkForm onClose={() => setShowBulkForm(false)} />
       )}
-    </>
+    </div>
   );
 }

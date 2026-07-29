@@ -15,7 +15,6 @@ import {
   TabSwitcher,
   type FilterFieldConfig,
   type TabItem,
-  PageLayout,
   PageHeader,
   TableSection,
   KpiCard,
@@ -208,7 +207,7 @@ export function ShipmentList() {
   });
 
   return (
-    <PageLayout>
+    <>
       <PageHeader
         title={MSG.PAGE_TITLE}
         subtitle={MSG.PAGE_SUBTITLE}
@@ -363,6 +362,6 @@ export function ShipmentList() {
           <AdHocShipmentForm onClose={() => setShowAdHocForm(false)} />
         </Suspense>
       )}
-    </PageLayout>
+    </>
   );
 }

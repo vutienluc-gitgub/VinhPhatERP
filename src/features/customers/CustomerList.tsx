@@ -63,6 +63,7 @@ export function CustomerList({
     ]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
   const { profile } = useAuth();
 
   const { canSelectSalesperson, forcedSalespersonId, isSale } =
@@ -78,7 +79,11 @@ export function CustomerList({
     salesperson_id: forcedSalespersonId || filters.salesperson_id,
   } as CustomersFilter;
 
-  const { data: result, isLoading } = useCustomerList(effectiveFilters, page);
+  const { data: result, isLoading } = useCustomerList(
+    effectiveFilters,
+    page,
+    pageSize,
+  );
   const customers = result?.data ?? [];
   const deleteMutation = useDeleteCustomer();
   const bulkUpdateMutation = useBulkUpdateCustomers();
@@ -278,22 +283,25 @@ export function CustomerList({
             icon="Users"
             variant="primary"
             footer={CUSTOMER_LIST_LABELS.kpiTotalDesc}
+            isLoading={isLoading}
           />
 
           <KpiCard
             label={CUSTOMER_LIST_LABELS.kpiActive}
-            value={customers.filter((c) => c.status === 'active').length}
+            value={result?.stats?.active ?? 0}
             icon="Activity"
             variant="success"
             footer={CUSTOMER_LIST_LABELS.kpiActiveDesc}
+            isLoading={isLoading}
           />
 
           <KpiCard
             label={CUSTOMER_LIST_LABELS.kpiNew}
-            value={`+${customers.length}`}
-            icon="Star"
+            value={`+${result?.stats?.new ?? 0}`}
+            icon="UserPlus"
             variant="warning"
             footer={CUSTOMER_LIST_LABELS.kpiNewDesc}
+            isLoading={isLoading}
           />
         </KpiGrid>
       </KPISection>
@@ -350,6 +358,10 @@ export function CustomerList({
           pagination={{
             result,
             onPageChange: setPage,
+            onPageSizeChange: (size) => {
+              setPageSize(size);
+              setPage(1); // Reset to page 1 on page size change
+            },
             itemLabel: CUSTOMER_LIST_LABELS.itemLabel,
           }}
         />
