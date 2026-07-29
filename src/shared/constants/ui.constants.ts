@@ -12,6 +12,14 @@ export const UI_LABELS = {
   CLOSE: 'Đóng',
 } as const;
 
+export const STEPPER_LABELS = {
+  BACK: 'Quay lại',
+  CANCEL: 'Hủy',
+  NEXT: 'Tiếp tục',
+  SUBMITTING: 'Đang lưu...',
+  SUBMIT: 'Lưu',
+} as const;
+
 export const TABLE_LABELS = {
   NO_DATA_TITLE: 'Không tìm thấy dữ liệu',
   NO_DATA_DESC: 'Không có dữ liệu phù hợp với điều kiện.',

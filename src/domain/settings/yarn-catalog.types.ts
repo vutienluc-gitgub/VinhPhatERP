@@ -23,6 +23,7 @@ export type YarnCatalog = {
   count_ne: string | null;
   spinning_method: string | null;
   twist_type: string | null;
+  intermingle: string | null;
   certifications: string[];
   is_fancy: boolean;
   fancy_details: string | null;
@@ -41,4 +42,7 @@ export type YarnCatalogFilter = {
   category?: string;
   yarn_type?: string;
   spinning_method?: string;
+  color_status?: string;
+  finish?: string;
+  denier?: string;
 };

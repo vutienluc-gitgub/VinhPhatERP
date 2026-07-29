@@ -18,6 +18,11 @@ export function useYarnCatalogListPresenter() {
     'status',
     'lot_no',
     'grade',
+    'category',
+    'yarn_type',
+    'color_status',
+    'finish',
+    'denier',
   ]);
   const [page, setPage] = useState(1);
 
@@ -34,7 +39,12 @@ export function useYarnCatalogListPresenter() {
     filters.search ||
     filters.status ||
     filters.lot_no ||
-    filters.grade
+    filters.grade ||
+    filters.category ||
+    filters.yarn_type ||
+    filters.color_status ||
+    filters.finish ||
+    filters.denier
   );
 
   const handleFilterChange = useCallback(

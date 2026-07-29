@@ -2,12 +2,10 @@ import { useMemo } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 
 import { Badge, ActionBar } from '@/shared/components';
-import {
-  getYarnTypeLabel,
-  getYarnCategoryLabel,
-} from '@/shared/constants/yarn-classification';
+import { getYarnCategoryLabel } from '@/shared/constants/yarn-classification';
 import { LABEL_ORIGIN } from '@/shared/constants/origin.constants';
 import type { YarnCatalog } from '@/features/yarn-catalog/types';
+import { formatYarnTechnicalSpecs } from '@/features/yarn-catalog/utils/yarn-format';
 import { YarnColorBadge } from '@/features/yarn-catalog/components/YarnColorBadge';
 import { StatusBadge } from '@/shared/components';
 
@@ -81,26 +79,25 @@ export function useYarnCatalogColumns(
         },
       }),
       columnHelper.accessor('yarn_type', {
-        header: 'Loại sợi (Lv2)',
+        header: 'Chỉ số & Loại sợi',
         cell: (info) => {
-          const c = info.row.original;
-          const label = getYarnTypeLabel(c.yarn_type);
-          const specs = c.denier
-            ? `${c.denier}${c.filament_count ? `/${c.filament_count}` : ''}`
-            : c.count_ne
-              ? `${c.count_ne}${c.spinning_method ? ` · ${c.spinning_method}` : ''}`
-              : null;
+          const { mainText, mainTooltip, subText, subTooltip } =
+            formatYarnTechnicalSpecs(info.row.original);
+
           return (
-            <div className="flex flex-col max-w-[180px]">
+            <div className="flex flex-col max-w-[200px]">
               <span
-                className="text-sm font-medium text-primary truncate"
-                title={label}
+                className="text-sm font-bold text-primary truncate cursor-help whitespace-pre-wrap"
+                title={mainTooltip}
               >
-                {label || '—'}
+                {mainText}
               </span>
-              {specs && (
-                <span className="text-xs text-muted truncate" title={specs}>
-                  {specs}
+              {subText && (
+                <span
+                  className="text-xs text-muted truncate cursor-help whitespace-pre-wrap"
+                  title={subTooltip}
+                >
+                  {subText}
                 </span>
               )}
             </div>

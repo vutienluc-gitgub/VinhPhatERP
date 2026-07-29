@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { Button } from '@/shared/components';
+import { STEPPER_LABELS } from '@/shared/constants/ui.constants';
 
 type StepperType = {
   isFirst: boolean;
@@ -23,7 +24,7 @@ export function StepperFooter({
   stepper,
   onCancel,
   isPending,
-  submitLabel = 'Lưu',
+  submitLabel = STEPPER_LABELS.SUBMIT,
   submitDisabled,
   children,
   formId,
@@ -40,7 +41,7 @@ export function StepperFooter({
               disabled={isPending}
               className="w-full sm:w-auto justify-center"
             >
-              Quay lại
+              {STEPPER_LABELS.BACK}
             </Button>
           )}
           {stepper.isFirst && (
@@ -51,7 +52,7 @@ export function StepperFooter({
               disabled={isPending}
               className="w-full sm:w-auto justify-center"
             >
-              Hủy
+              {STEPPER_LABELS.CANCEL}
             </Button>
           )}
         </div>
@@ -68,7 +69,7 @@ export function StepperFooter({
             disabled={isPending}
             className="w-full sm:w-auto justify-center"
           >
-            Tiếp tục
+            {STEPPER_LABELS.NEXT}
           </Button>
         ) : (
           <Button
@@ -79,7 +80,7 @@ export function StepperFooter({
             disabled={isPending || submitDisabled}
             className="w-full sm:w-auto justify-center"
           >
-            {isPending ? 'Đang lưu...' : submitLabel}
+            {isPending ? STEPPER_LABELS.SUBMITTING : submitLabel}
           </Button>
         )}
       </div>
