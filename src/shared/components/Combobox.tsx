@@ -305,9 +305,7 @@ export const Combobox = memo(function Combobox({
                   className="text-primary flex-shrink-0"
                 />
               )}
-              <span className="text-[var(--text-primary)]">
-                {selectedOption.label}
-              </span>
+              <span className="truncate">{selectedOption.label}</span>
             </>
           ) : (
             <span className="text-muted-foreground font-normal">
@@ -329,7 +327,7 @@ export const Combobox = memo(function Combobox({
               <Search className="w-4 h-4 text-[var(--text-secondary)]" />
               <input
                 type="text"
-                className="w-full text-sm outline-none bg-transparent text-[var(--text-primary)] border-none min-h-[32px]"
+                className="w-full text-sm outline-none bg-transparent border-none min-h-[32px]"
                 placeholder={UI_LABELS.SEARCH_PLACEHOLDER}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}

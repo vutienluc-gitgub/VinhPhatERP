@@ -26,8 +26,14 @@
   --border: rgba(255, 255, 255, 0.12);
 
   --text: #eef7ff;
-  --muted: #94a3b8;
+  --foreground: #eef7ff;
+  --text-primary: #eef7ff;
+  --text-secondary: #94a3b8;
+  --text-muted: #94a3b8;
+  --text-muted-foreground: #94a3b8;
+  --text-disabled: #64748b;
   --text-tertiary: #64748b;
+  --muted: #94a3b8;
 
   --primary: #4a8fd4;
   --primary-strong: #7ab3e8;

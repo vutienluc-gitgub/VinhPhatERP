@@ -7,6 +7,7 @@ import { safeUpsertOne } from '@/lib/db-guard';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
+import { YARN_CATALOG_MESSAGES } from '@/features/yarn-catalog/yarn-catalog.constants';
 
 const TABLE = 'yarn_catalogs';
 
@@ -26,6 +27,11 @@ export async function fetchYarnCatalogPaginated(
     .range(from, to);
 
   if (filters.status) query = query.eq('status', filters.status);
+  if (filters.category) query = query.eq('category', filters.category);
+  if (filters.yarn_type) query = query.eq('yarn_type', filters.yarn_type);
+  if (filters.color_status)
+    query = query.eq('color_status', filters.color_status);
+
   if (filters.search?.trim()) {
     const q = filters.search.trim();
     query = query.or(
@@ -112,7 +118,9 @@ export async function createYarnCatalog(
     .eq('code', row.code)
     .maybeSingle();
   if (existing) {
-    throw new Error(`Mã sợi "${row.code}" đã tồn tại. Vui lòng chọn mã khác.`);
+    throw new Error(
+      YARN_CATALOG_MESSAGES.DUPLICATE_CODE.replace('{code}', row.code),
+    );
   }
 
   const inserted = await safeUpsertOne({

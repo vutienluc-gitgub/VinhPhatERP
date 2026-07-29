@@ -38,6 +38,7 @@ function toDbRow(
     count_ne: values.count_ne?.trim() || null,
     spinning_method: values.spinning_method?.trim() || null,
     twist_type: values.twist_type?.trim() || null,
+    intermingle: values.intermingle?.trim() || null,
     certifications: values.certifications ?? [],
     is_fancy: values.is_fancy ?? false,
     fancy_details: values.fancy_details?.trim() || null,

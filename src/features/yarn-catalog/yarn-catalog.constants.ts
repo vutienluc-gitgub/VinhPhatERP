@@ -1,11 +1,16 @@
 import type { FilterFieldConfig } from '@/shared/components';
+import {
+  YARN_CATEGORIES,
+  YARN_TYPE_OPTIONS,
+  YARN_COLOR_STATUS_OPTIONS,
+} from '@/shared/constants/yarn-classification';
 
 export const YARN_CATALOG_MESSAGES = {
   EMPTY_TITLE: 'Chưa có loại sợi nào',
-  EMPTY_DESC: 'Nhấn "+ Thêm loại sợi" để bắt đầu quản lý danh mục sợi.',
+  EMPTY_DESC: 'Nhấn "Thêm loại sợi" để bắt đầu quản lý danh mục sợi.',
   NOT_FOUND_TITLE: 'Không tìm thấy loại sợi phù hợp',
   NOT_FOUND_DESC: 'Thử điều chỉnh bộ lọc.',
-  BTN_ADD: '+ Thêm loại sợi',
+  BTN_ADD: 'Thêm loại sợi',
   LOAD_ERROR: 'Lỗi tải dữ liệu',
   DELETE_ERROR: 'Lỗi xóa',
   DELETE_CONFIRM: 'Xóa loại sợi "{name}"? Hành động này không thể hoàn tác.',
@@ -34,6 +39,7 @@ export const YARN_CATALOG_MESSAGES = {
   MSG_UPDATE_SUCCESS: 'Cập nhật thành công',
   MSG_CREATE_SUCCESS: 'Thêm mới thành công',
   ERROR_PREFIX: 'Lỗi: ',
+  DUPLICATE_CODE: 'Mã sợi "{code}" đã tồn tại. Vui lòng chọn mã khác.',
   FORM_TITLE_EDIT: 'Sửa:',
   FORM_TITLE_NEW: 'Thêm loại sợi',
   BTN_UPDATE: 'Cập nhật',
@@ -123,6 +129,24 @@ export const YARN_CATALOG_FILTER_SCHEMA: FilterFieldConfig[] = [
     placeholder: 'Tên, mã, thành phần...',
   },
   {
+    key: 'category',
+    type: 'combobox',
+    label: 'Nhóm sợi',
+    options: YARN_CATEGORIES.map((c) => ({ value: c.code, label: c.label })),
+  },
+  {
+    key: 'yarn_type',
+    type: 'combobox',
+    label: 'Loại sợi',
+    options: [...YARN_TYPE_OPTIONS],
+  },
+  {
+    key: 'color_status',
+    type: 'combobox',
+    label: 'Tình trạng màu',
+    options: [...YARN_COLOR_STATUS_OPTIONS],
+  },
+  {
     key: 'status',
     type: 'combobox',
     label: 'Trạng thái',
@@ -136,17 +160,5 @@ export const YARN_CATALOG_FILTER_SCHEMA: FilterFieldConfig[] = [
         label: 'Ngừng dùng',
       },
     ],
-  },
-  {
-    key: 'lot_no',
-    type: 'search',
-    label: 'Mã lô',
-    placeholder: 'Tìm theo lô...',
-  },
-  {
-    key: 'grade',
-    type: 'search',
-    label: 'Phân loại',
-    placeholder: 'Loại A, B...',
   },
 ];
