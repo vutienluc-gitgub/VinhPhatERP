@@ -353,7 +353,12 @@ function DataTableAdvancedInner<TData>({
   const table = useReactTable({
     data,
     columns: finalColumns,
-    state: { sorting, columnVisibility, rowSelection },
+    state: {
+      sorting,
+      columnVisibility,
+      rowSelection,
+    },
+    manualPagination: !!pagination,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
@@ -425,8 +430,16 @@ function DataTableAdvancedInner<TData>({
       {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 min-w-0">
         <PageSizeSelect
-          value={table.getState().pagination.pageSize}
-          onValueChange={(val) => table.setPageSize(val)}
+          value={
+            pagination?.result?.pageSize ?? table.getState().pagination.pageSize
+          }
+          onValueChange={(val) => {
+            if (pagination?.onPageSizeChange) {
+              pagination.onPageSizeChange(val);
+            } else {
+              table.setPageSize(val);
+            }
+          }}
           options={PAGE_SIZE_OPTIONS}
         />
 

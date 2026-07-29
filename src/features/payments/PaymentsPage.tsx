@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useDebtSummary, useSupplierDebt } from '@/application/payments';
 import { countOverdueDebts } from '@/domain/payments';
-import { TabSwitcher, Icon } from '@/shared/components';
+import { TabSwitcher, Icon, PageLayout } from '@/shared/components';
 import type { TabItem } from '@/shared/components';
 
 import { AccountForm } from './AccountForm';
@@ -86,92 +86,94 @@ export function PaymentsPage() {
   const [showAccountForm, setShowAccountForm] = useState(false);
 
   return (
-    <div className="page-container flex flex-col gap-6">
-      {/* Premium Tab Header */}
-      <div className="panel-card card-flush">
-        <div className="card-header-area">
-          <div className="card-header-row">
-            <h3 className="text-lg font-bold m-0">{MSG.TITLE}</h3>
+    <div className="page-container">
+      <PageLayout className="flex flex-col gap-6 flex-1 h-full">
+        {/* Premium Tab Header */}
+        <div className="panel-card card-flush">
+          <div className="card-header-area">
+            <div className="card-header-row">
+              <h3 className="text-lg font-bold m-0">{MSG.TITLE}</h3>
+            </div>
+          </div>
+          <div className="px-5 pb-4 pt-3">
+            <TabSwitcher
+              tabs={tabsWithBadge}
+              active={tab}
+              onChange={setTab}
+              variant="premium"
+            />
           </div>
         </div>
-        <div className="px-5 pb-4 pt-3">
-          <TabSwitcher
-            tabs={tabsWithBadge}
-            active={tab}
-            onChange={setTab}
-            variant="premium"
-          />
-        </div>
-      </div>
 
-      {/* Tab content */}
-      {tab === 'cashflow' && <CashFlowDashboard />}
+        {/* Tab content */}
+        {tab === 'cashflow' && <CashFlowDashboard />}
 
-      {tab === 'payments' && <PaymentList />}
+        {tab === 'payments' && <PaymentList />}
 
-      {tab === 'expenses' && (
-        <>
-          <ExpenseList
-            onEdit={(exp) => {
-              setEditExpense(exp);
-              setShowExpenseForm(true);
-            }}
-            onNew={() => {
-              setEditExpense(null);
-              setPreselectedSupplierId(undefined);
-              setShowExpenseForm(true);
-            }}
-          />
-          {showExpenseForm && (
-            <ExpenseForm
-              expense={editExpense}
-              initialSupplierId={preselectedSupplierId}
-              onClose={() => {
-                setShowExpenseForm(false);
+        {tab === 'expenses' && (
+          <>
+            <ExpenseList
+              onEdit={(exp) => {
+                setEditExpense(exp);
+                setShowExpenseForm(true);
+              }}
+              onNew={() => {
                 setEditExpense(null);
                 setPreselectedSupplierId(undefined);
+                setShowExpenseForm(true);
               }}
             />
-          )}
-        </>
-      )}
+            {showExpenseForm && (
+              <ExpenseForm
+                expense={editExpense}
+                initialSupplierId={preselectedSupplierId}
+                onClose={() => {
+                  setShowExpenseForm(false);
+                  setEditExpense(null);
+                  setPreselectedSupplierId(undefined);
+                }}
+              />
+            )}
+          </>
+        )}
 
-      {tab === 'customer-debt' && <DebtSummary />}
+        {tab === 'customer-debt' && <DebtSummary />}
 
-      {tab === 'supplier-debt' && (
-        <SupplierDebtSummary
-          onPay={(supplierId) => {
-            setTab('expenses');
-            setPreselectedSupplierId(supplierId);
-            setEditExpense(null);
-            setShowExpenseForm(true);
-          }}
-        />
-      )}
-
-      {tab === 'accounts' && (
-        <>
-          <AccountList
-            onEdit={(acc) => {
-              setEditAccount(acc);
-              setShowAccountForm(true);
-            }}
-            onNew={() => {
-              setEditAccount(null);
-              setShowAccountForm(true);
+        {tab === 'supplier-debt' && (
+          <SupplierDebtSummary
+            onPay={(supplierId) => {
+              setTab('expenses');
+              setPreselectedSupplierId(supplierId);
+              setEditExpense(null);
+              setShowExpenseForm(true);
             }}
           />
-          {showAccountForm && (
-            <AccountForm
-              account={editAccount}
-              onClose={() => {
-                setShowAccountForm(false);
+        )}
+
+        {tab === 'accounts' && (
+          <>
+            <AccountList
+              onEdit={(acc) => {
+                setEditAccount(acc);
+                setShowAccountForm(true);
+              }}
+              onNew={() => {
                 setEditAccount(null);
+                setShowAccountForm(true);
               }}
             />
-          )}
-        </>
-      )}
+            {showAccountForm && (
+              <AccountForm
+                account={editAccount}
+                onClose={() => {
+                  setShowAccountForm(false);
+                  setEditAccount(null);
+                }}
+              />
+            )}
+          </>
+        )}
+      </PageLayout>
     </div>
   );
 }

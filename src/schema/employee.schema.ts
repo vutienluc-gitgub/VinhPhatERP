@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { validatePhone } from '@/shared/utils/phone';
+
 export const employeeRoleSchema = z.string();
 export type EmployeeRole = string;
 
@@ -20,7 +22,13 @@ export type Employee = z.infer<typeof employeeSchema>;
 
 export const employeeFormSchema = z.object({
   name: z.string().trim().min(1, 'Vui lòng nhập tên nhân viên'),
-  phone: z.string().trim().optional(),
+  phone: z
+    .string()
+    .trim()
+    .regex(/^(\+?[0-9\s\-().]{8,20})?$/, 'Số điện thoại không hợp lệ')
+    .refine(validatePhone, { message: 'Số điện thoại không hợp lệ' })
+    .optional()
+    .or(z.literal('')),
   role: employeeRoleSchema.describe('Vai trò nhân viên'),
   status: employeeStatusSchema.default('active'),
 });

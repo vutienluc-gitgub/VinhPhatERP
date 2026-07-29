@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { PageLayout } from '@/shared/components';
 import { ContractForm } from '@/features/contracts/ContractForm';
 import { usePreviewIdFromUrl } from '@/shared/hooks/usePreviewIdFromUrl';
 import { SUPPLIER_LABELS as L } from '@/features/procurement/procurement.constants';
@@ -35,11 +36,13 @@ export function SuppliersPage() {
 
   return (
     <div className="page-container">
-      <SuppliersList
-        onEdit={openEdit}
-        onNew={openCreate}
-        onCreateContract={(s) => setContractSupplier(s)}
-      />
+      <PageLayout className="flex-1 h-full">
+        <SuppliersList
+          onEdit={openEdit}
+          onNew={openCreate}
+          onCreateContract={(s) => setContractSupplier(s)}
+        />
+      </PageLayout>
 
       {showForm && <SupplierForm supplier={editSupplier} onClose={closeForm} />}
 

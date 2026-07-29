@@ -6,7 +6,6 @@ import {
   DataTableAdvanced,
   FilterBar,
   type FilterFieldConfig,
-  PageLayout,
   PageHeader,
   PageActions,
   KPISection,
@@ -117,7 +116,7 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
   });
 
   return (
-    <PageLayout>
+    <>
       <PageHeader
         title={ORDERS_LIST_LABELS.PAGE_TITLE}
         subtitle={ORDERS_LIST_LABELS.PAGE_SUBTITLE}
@@ -223,6 +222,6 @@ export function OrderList({ onEdit, onNew, onView }: OrderListProps) {
           }}
         />
       </TableSection>
-    </PageLayout>
+    </>
   );
 }

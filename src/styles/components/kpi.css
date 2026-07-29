@@ -241,6 +241,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  min-width: 0; /* Allow text to shrink — protect icon from being pushed offscreen */
 }
 
 .kpi-label {
@@ -266,6 +267,7 @@
   justify-content: center;
   width: 52px;
   height: 52px;
+  flex-shrink: 0; /* Never compress — prevents icon clipping on narrow viewports */
   border-radius: var(--radius-sm);
   background: rgba(var(--base-rgb), 0.04);
   color: var(--primary);

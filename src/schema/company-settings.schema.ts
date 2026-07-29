@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { validatePhone } from '@/shared/utils/phone';
+
 /* ── Types ── */
 
 export type CompanySettingRow = {
@@ -85,7 +87,13 @@ export const companySettingsSchema = z.object({
   company_name: z.string().trim().min(2, 'Tên công ty tối thiểu 2 ký tự'),
   address: z.string().trim().min(2, 'Nhập địa chỉ'),
   tax_code: z.string().trim().max(20).optional().or(z.literal('')),
-  phone: z.string().trim().max(20).optional().or(z.literal('')),
+  phone: z
+    .string()
+    .trim()
+    .regex(/^(\+?[0-9\s\-().]{8,20})?$/, 'Số điện thoại không hợp lệ')
+    .refine(validatePhone, { message: 'Số điện thoại không hợp lệ' })
+    .optional()
+    .or(z.literal('')),
   email: z
     .string()
     .trim()

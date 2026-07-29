@@ -52,6 +52,7 @@ export type { TabItem } from './TabSwitcher';
 export { Switch } from './Switch';
 export { ViewToggle } from './ViewToggle';
 export type { ViewMode } from './ViewToggle';
+export * from './PhoneContact';
 export { StepperFooter } from './StepperFooter';
 
 export { SearchInput } from './SearchInput';

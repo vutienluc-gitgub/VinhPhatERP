@@ -14,8 +14,9 @@ import {
   ActionMenu,
   type IconName,
   type BadgeVariant,
+  PhoneContact,
 } from '@/shared/components';
-import { formatCurrencyFull, formatPhoneNumber } from '@/shared/utils/format';
+import { formatCurrencyFull } from '@/shared/utils/format';
 import {
   DEPOSIT_FORM_LABELS,
   CUSTOMER_COLUMNS_LABELS,
@@ -93,35 +94,7 @@ export function useCustomerColumns({
       enableSorting: true,
       meta: { className: 'text-sm font-medium' },
       cell: (info) => {
-        const phone = info.row.original.phone;
-        if (!phone) return <span className="text-muted">—</span>;
-
-        const cleanPhone = phone.replace(/\D/g, '');
-        const isVietnamZalo =
-          cleanPhone.startsWith('0') && cleanPhone.length === 10;
-
-        return (
-          <div className="flex items-center gap-2">
-            <a
-              href={`tel:${cleanPhone}`}
-              className="hover:text-primary hover:underline transition-colors font-semibold"
-              title={CUSTOMER_COLUMNS_LABELS.phoneCallTitle}
-            >
-              {formatPhoneNumber(phone)}
-            </a>
-            {isVietnamZalo && (
-              <a
-                href={`https://zalo.me/${cleanPhone}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#0068FF] hover:opacity-80 transition-opacity flex items-center justify-center bg-[#0068FF]/10 rounded-full w-5 h-5"
-                title={CUSTOMER_COLUMNS_LABELS.zaloMessageTitle}
-              >
-                <Icon name="MessageCircle" size={12} />
-              </a>
-            )}
-          </div>
-        );
+        return <PhoneContact phone={info.row.original.phone} />;
       },
     },
     {

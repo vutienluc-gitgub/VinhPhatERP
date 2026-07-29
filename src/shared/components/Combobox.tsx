@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { Search, ChevronDown, Check } from '@/shared/icons';
 import { Icon, type IconName } from '@/shared/components/Icon';
 import { UI_LABELS } from '@/shared/constants/ui.constants';
+import { formatPhoneNumber } from '@/shared/utils/phone';
 
 type ComboboxOptionItemProps = {
   opt: ComboboxOption;
@@ -34,7 +35,8 @@ function ComboboxOptionItem({
           {(opt.code || opt.phone || opt.desc) && (
             <span className="text-xs text-muted mt-0.5">
               {opt.code && `${UI_LABELS.CODE_PREFIX} ${opt.code} `}
-              {opt.phone && `${UI_LABELS.PHONE_PREFIX} ${opt.phone} `}
+              {opt.phone &&
+                `${UI_LABELS.PHONE_PREFIX} ${formatPhoneNumber(opt.phone)} `}
               {opt.desc && opt.desc}
             </span>
           )}

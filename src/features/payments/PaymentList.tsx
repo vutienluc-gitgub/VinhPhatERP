@@ -5,7 +5,6 @@ import {
   DataTableAdvanced,
   FilterBar,
   type FilterFieldConfig,
-  PageLayout,
   PageHeader,
   TableSection,
 } from '@/shared/components';
@@ -72,7 +71,7 @@ export function PaymentList() {
   });
 
   return (
-    <PageLayout>
+    <>
       <PageHeader title={MSG.TITLE} subtitle={MSG.SUBTITLE} />
 
       <FilterBar
@@ -130,6 +129,6 @@ export function PaymentList() {
           }}
         />
       </TableSection>
-    </PageLayout>
+    </>
   );
 }

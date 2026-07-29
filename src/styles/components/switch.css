@@ -7,7 +7,7 @@
 
 /* ── Track ────────────────────────────────────────────────────── */
 .switch-premium-track {
-  background: linear-gradient(135deg, #374151, #4b5563);
+  background: linear-gradient(135deg, var(--text-muted), var(--secondary));
   box-shadow:
     0 10px 25px rgba(0, 0, 0, 0.15),
     inset 0 2px 6px rgba(255, 255, 255, 0.1);
@@ -16,7 +16,7 @@
     box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.switch-premium-track[data-checked='true'] {
+.peer:checked ~ .switch-premium-track {
   background: linear-gradient(
     135deg,
     rgb(var(--brand-rgb)),
@@ -28,7 +28,7 @@
 }
 
 /* Glow aura — only when glow prop is enabled */
-.switch-premium-track[data-checked='true'][data-glow='true'] {
+.peer:checked ~ .switch-premium-track[data-glow='true'] {
   box-shadow:
     0 0 20px rgba(var(--brand-rgb), 0.35),
     0 10px 25px rgba(0, 0, 0, 0.15),
@@ -37,17 +37,23 @@
 
 /* ── Thumb ─────────────────────────────────────────────────────── */
 .switch-premium-thumb {
-  background: radial-gradient(circle at 35% 30%, #ffffff, #f3f4f6);
+  background: radial-gradient(
+    circle at 35% 30%,
+    #ffffff,
+    var(--surface-secondary)
+  );
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.18),
     inset 0 1px 2px rgba(255, 255, 255, 0.8);
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    scale 0.15s ease;
 }
 
-/* Bounce effect on press — target <label> because track has pointer-events:none */
+/* Bounce effect on press — independently scale without overriding transform x */
 label:active .switch-premium-thumb {
-  transform: translateX(var(--thumb-x)) scale(0.92);
+  scale: 0.92;
 }
 
 /* ── Label Text (ON / OFF) ─────────────────────────────────────── */
@@ -65,15 +71,35 @@ label:active .switch-premium-thumb {
     color 0.25s ease;
 }
 
+/* Default state: ON hidden, OFF visible */
+.switch-premium-label-on {
+  opacity: 0;
+}
+.switch-premium-label-off {
+  opacity: 1;
+}
+
+/* Checked state: ON visible, OFF hidden */
+.peer:checked ~ .switch-premium-track .switch-premium-label-on {
+  opacity: 1;
+}
+.peer:checked ~ .switch-premium-track .switch-premium-label-off {
+  opacity: 0;
+}
+
 /* ── Dark Mode Overrides ───────────────────────────────────────── */
 [data-theme='dark'] .switch-premium-track {
-  background: linear-gradient(135deg, #1e293b, #334155);
+  background: linear-gradient(
+    135deg,
+    var(--surface-disabled),
+    var(--border-muted)
+  );
   box-shadow:
     0 10px 25px rgba(0, 0, 0, 0.35),
     inset 0 2px 6px rgba(255, 255, 255, 0.06);
 }
 
-[data-theme='dark'] .switch-premium-track[data-checked='true'] {
+[data-theme='dark'] .peer:checked ~ .switch-premium-track {
   background: linear-gradient(
     135deg,
     rgb(var(--brand-rgb)),
@@ -84,8 +110,7 @@ label:active .switch-premium-thumb {
     inset 0 2px 6px rgba(255, 255, 255, 0.1);
 }
 
-[data-theme='dark']
-  .switch-premium-track[data-checked='true'][data-glow='true'] {
+[data-theme='dark'] .peer:checked ~ .switch-premium-track[data-glow='true'] {
   box-shadow:
     0 0 24px rgba(var(--brand-rgb), 0.45),
     0 10px 25px rgba(0, 0, 0, 0.35),

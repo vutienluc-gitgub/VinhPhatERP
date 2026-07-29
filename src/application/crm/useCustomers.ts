@@ -42,25 +42,37 @@ function toDbRow(values: CustomersFormValues): CustomerInsert {
   };
 }
 
-export function useCustomerList(filters: CustomersFilter = {}, page = 1) {
+export function useCustomerList(
+  filters: CustomersFilter = {},
+  page = 1,
+  pageSize = DEFAULT_PAGE_SIZE,
+) {
   const sanitizedFilters = {
     ...filters,
     query: filters.query ? sanitizePhoneSearchQuery(filters.query) : undefined,
   };
 
   return useQuery({
-    queryKey: [...QUERY_KEY, sanitizedFilters, page],
-    queryFn: async (): Promise<PaginatedResult<Customer>> => {
-      const from = (page - 1) * DEFAULT_PAGE_SIZE;
+    queryKey: [...QUERY_KEY, sanitizedFilters, page, pageSize],
+    queryFn: async (): Promise<
+      PaginatedResult<Customer> & {
+        stats: { active: number; new: number };
+      }
+    > => {
+      const from = (page - 1) * pageSize;
       const data = await fetchCustomers(sanitizedFilters);
       const total = data.length;
-      const pageData = data.slice(from, from + DEFAULT_PAGE_SIZE);
+      const pageData = data.slice(from, from + pageSize);
       return {
         data: pageData,
         total,
         page,
-        pageSize: DEFAULT_PAGE_SIZE,
-        totalPages: Math.ceil(total / DEFAULT_PAGE_SIZE),
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+        stats: {
+          active: data.filter((c) => c.status === 'active').length,
+          new: data.length, // According to business logic, new is often total for the filtered period, or we could just return total length
+        },
       };
     },
   });

@@ -1,4 +1,5 @@
 import { Icon } from '@/shared/components/Icon';
+import { PhoneContact } from '@/shared/components/PhoneContact';
 import type { CrmLead } from '@/domain/crm/crm.types';
 import { LEAD_DETAIL_MESSAGES } from '@/features/crm/crm.constants';
 
@@ -19,15 +20,10 @@ export function LeadContactInfo({ lead }: LeadContactInfoProps) {
             {LEAD_DETAIL_MESSAGES.PHONE}
           </div>
           <div className="font-medium text-sm flex items-center gap-2">
-            {lead.phone ?? LEAD_DETAIL_MESSAGES.NOT_AVAILABLE}
-            {lead.phone && (
-              <a
-                href={`tel:${lead.phone}`}
-                className="text-primary hover:underline text-xs"
-              >
-                {LEAD_DETAIL_MESSAGES.CALL_NOW}
-              </a>
-            )}
+            <PhoneContact
+              phone={lead.phone}
+              fallback={LEAD_DETAIL_MESSAGES.NOT_AVAILABLE}
+            />
           </div>
         </div>
         <div>

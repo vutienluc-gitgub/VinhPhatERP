@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { PageLayout } from '@/shared/components';
+
 import type { YarnCatalog } from './types';
 import { YarnCatalogForm } from './YarnCatalogForm';
 import { YarnCatalogList } from './YarnCatalogList';
@@ -24,9 +26,11 @@ export function YarnCatalogPage() {
   }
 
   return (
-    <>
-      <YarnCatalogList onEdit={openEdit} onNew={openCreate} />
+    <div className="page-container">
+      <PageLayout className="flex-1 h-full">
+        <YarnCatalogList onEdit={openEdit} onNew={openCreate} />
+      </PageLayout>
       {showForm && <YarnCatalogForm catalog={editItem} onClose={closeForm} />}
-    </>
+    </div>
   );
 }

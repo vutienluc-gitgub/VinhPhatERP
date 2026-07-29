@@ -13,6 +13,9 @@ export default {
         },
         secondary: 'var(--secondary)',
         accent: 'var(--accent)',
+        brand: {
+          zalo: 'rgba(var(--brand-zalo-rgb), <alpha-value>)',
+        },
         success: {
           DEFAULT: 'var(--success)',
           strong: 'var(--success-strong)',

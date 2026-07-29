@@ -6,7 +6,6 @@ import {
   AddButton,
   FilterBar,
   type FilterFieldConfig,
-  PageLayout,
   PageHeader,
   TableSection,
 } from '@/shared/components';
@@ -54,7 +53,7 @@ export function DyeingOrderList({ onView, onEdit }: DyeingOrderListProps) {
   const columns = useDyeingOrderColumns({ onView, onEdit });
 
   return (
-    <PageLayout>
+    <>
       <PageHeader
         title={MSG.PAGE_TITLE}
         subtitle={MSG.PAGE_SUBTITLE}
@@ -120,6 +119,6 @@ export function DyeingOrderList({ onView, onEdit }: DyeingOrderListProps) {
           }}
         />
       </TableSection>
-    </PageLayout>
+    </>
   );
 }

@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import React, { useId, forwardRef } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/shared/utils/cn';
@@ -9,8 +9,8 @@ const trackVariants = cva(
   {
     variants: {
       variant: {
-        default: 'h-7 w-12',
-        premium: 'switch-premium-track h-10 w-[72px]',
+        default: 'bg-border peer-checked:bg-primary',
+        premium: 'switch-premium-track',
       },
       size: {
         sm: '',
@@ -50,13 +50,37 @@ const thumbVariants = cva(
     },
     compoundVariants: [
       // Default sizes
-      { variant: 'default', size: 'sm', class: 'top-0.5 left-0.5 h-4 w-4' },
-      { variant: 'default', size: 'md', class: 'top-0.5 left-0.5 h-6 w-6' },
-      { variant: 'default', size: 'lg', class: 'top-1 left-1 h-6 w-6' },
+      {
+        variant: 'default',
+        size: 'sm',
+        class: 'top-0.5 left-0.5 h-4 w-4 peer-checked:translate-x-4',
+      },
+      {
+        variant: 'default',
+        size: 'md',
+        class: 'top-0.5 left-0.5 h-6 w-6 peer-checked:translate-x-5',
+      },
+      {
+        variant: 'default',
+        size: 'lg',
+        class: 'top-1 left-1 h-6 w-6 peer-checked:translate-x-6',
+      },
       // Premium sizes
-      { variant: 'premium', size: 'sm', class: 'top-1 left-1 h-6 w-6' },
-      { variant: 'premium', size: 'md', class: 'top-1 left-1 h-8 w-8' },
-      { variant: 'premium', size: 'lg', class: 'top-1 left-1 h-9 w-9' },
+      {
+        variant: 'premium',
+        size: 'sm',
+        class: 'top-1 left-1 h-6 w-6 peer-checked:translate-x-7',
+      },
+      {
+        variant: 'premium',
+        size: 'md',
+        class: 'top-1 left-1 h-8 w-8 peer-checked:translate-x-8',
+      },
+      {
+        variant: 'premium',
+        size: 'lg',
+        class: 'top-1 left-1 h-9 w-9 peer-checked:translate-x-10',
+      },
     ],
     defaultVariants: {
       variant: 'premium',
@@ -65,32 +89,19 @@ const thumbVariants = cva(
   },
 );
 
-/* ── Thumb translateX offsets (per variant + size) ──────────────── */
-const THUMB_OFFSET: Record<string, string> = {
-  'default-sm': 'translateX(16px)',
-  'default-md': 'translateX(20px)',
-  'default-lg': 'translateX(24px)',
-  'premium-sm': 'translateX(28px)',
-  'premium-md': 'translateX(32px)',
-  'premium-lg': 'translateX(40px)',
-};
-
 /* ── Types ─────────────────────────────────────────────────────── */
 type SwitchVariantProps = VariantProps<typeof trackVariants>;
 
-interface SwitchProps extends SwitchVariantProps {
-  /** Trạng thái bật/tắt */
-  checked: boolean;
+export interface SwitchProps
+  extends
+    Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'onChange'>,
+    SwitchVariantProps {
   /** Callback khi user toggle */
-  onChange: (checked: boolean) => void;
+  onChange?: (checked: boolean) => void;
   /** Nhãn hiển thị bên trái */
   label?: string;
   /** Mô tả phụ bên dưới nhãn */
   description?: string;
-  /** Vô hiệu hóa */
-  disabled?: boolean;
-  /** ID cho testing/accessibility */
-  id?: string;
   /** Hiệu ứng phát sáng khi bật (chỉ premium) */
   glow?: boolean;
   /** Text hiển thị khi bật (chỉ premium) */
@@ -102,131 +113,113 @@ interface SwitchProps extends SwitchVariantProps {
 /**
  * Switch component chuẩn Accessible.
  * Pattern: `<input type="checkbox" role="switch">` nested inside `<label>`.
- * Không dùng `htmlFor` vì input đã nằm bên trong label (implicit association).
+ * Hỗ trợ native ref và state uncontrolled thông qua `peer-checked`.
  *
  * Variants:
  *  - `default` — Switch cơ bản, kích thước nhỏ gọn.
  *  - `premium` — Switch cao cấp với gradient, glow, neumorphism thumb.
- *
- * Sizes: `sm`, `md` (default), `lg`.
  */
-export function Switch({
-  checked,
-  onChange,
-  label,
-  description,
-  disabled = false,
-  id: externalId,
-  variant = 'premium',
-  size = 'md',
-  glow = true,
-  labelOn = 'ON',
-  labelOff = 'OFF',
-}: SwitchProps) {
-  const autoId = useId();
-  const inputId = externalId ?? autoId;
-  const descId = description ? `${inputId}-desc` : undefined;
-  const isPremium = variant === 'premium';
-  const offsetKey = `${variant}-${size}`;
+export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
+  (
+    {
+      onChange,
+      label,
+      description,
+      disabled = false,
+      id: externalId,
+      variant = 'premium',
+      size = 'md',
+      glow = true,
+      labelOn = 'ON',
+      labelOff = 'OFF',
+      className,
+      ...props
+    },
+    ref,
+  ) => {
+    const autoId = useId();
+    const inputId = externalId ?? autoId;
+    const descId = description ? `${inputId}-desc` : undefined;
+    const isPremium = variant === 'premium';
 
-  const thumbTransform = checked ? THUMB_OFFSET[offsetKey] : 'translateX(0)';
-
-  return (
-    <label
-      className={cn(
-        'inline-flex items-start gap-3 select-none',
-        disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
-      )}
-    >
-      {(label || description) && (
-        <div className="flex-1 min-w-0">
-          {label && (
-            <span className="block text-base font-semibold text-text">
-              {label}
-            </span>
-          )}
-          {description && (
-            <span id={descId} className="block text-sm text-muted mt-0.5">
-              {description}
-            </span>
-          )}
-        </div>
-      )}
-
-      <span
-        className={cn('relative inline-flex shrink-0', !isPremium && 'pt-0.5')}
+    return (
+      <label
+        className={cn(
+          'inline-flex items-start gap-3 select-none',
+          disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
+          className,
+        )}
       >
-        <input
-          id={inputId}
-          type="checkbox"
-          role="switch"
-          aria-checked={checked}
-          aria-describedby={descId}
-          checked={checked}
-          disabled={disabled}
-          onChange={(e) => onChange(e.target.checked)}
-          className="sr-only peer"
-        />
+        {(label || description) && (
+          <div className="flex-1 min-w-0">
+            {label && (
+              <span className="block text-base font-semibold text-text">
+                {label}
+              </span>
+            )}
+            {description && (
+              <span id={descId} className="block text-sm text-muted mt-0.5">
+                {description}
+              </span>
+            )}
+          </div>
+        )}
 
-        {/* Track */}
         <span
-          aria-hidden="true"
-          data-checked={checked}
-          data-glow={isPremium && glow}
           className={cn(
-            trackVariants({ variant, size }),
-            /* Default variant: flat color toggle */
-            !isPremium && (checked ? 'bg-primary' : ''),
-            /* Focus ring */
-            'peer-focus-visible:ring-2 peer-focus-visible:ring-primary/50 peer-focus-visible:ring-offset-2',
+            'relative inline-flex shrink-0',
+            !isPremium && 'pt-0.5',
           )}
-          style={
-            /* Default OFF state fallback background */
-            !isPremium && !checked
-              ? { backgroundColor: 'var(--border)' }
-              : undefined
-          }
         >
-          {/* Premium label text inside track */}
-          {isPremium && (labelOn || labelOff) && (
-            <>
-              <span
-                aria-hidden="true"
-                className={cn(
-                  'switch-premium-label left-2.5',
-                  checked ? 'text-white opacity-100' : 'text-white opacity-0',
-                )}
-              >
-                {labelOn}
-              </span>
-              <span
-                aria-hidden="true"
-                className={cn(
-                  'switch-premium-label right-2.5',
-                  !checked
-                    ? 'text-white/80 opacity-100'
-                    : 'text-white opacity-0',
-                )}
-              >
-                {labelOff}
-              </span>
-            </>
-          )}
-        </span>
+          <input
+            id={inputId}
+            type="checkbox"
+            role="switch"
+            aria-describedby={descId}
+            disabled={disabled}
+            ref={ref}
+            onChange={(e) => onChange?.(e.target.checked)}
+            className="sr-only peer"
+            {...props}
+          />
 
-        {/* Thumb */}
-        <span
-          aria-hidden="true"
-          className={thumbVariants({ variant, size })}
-          style={
-            {
-              transform: thumbTransform,
-              /* CSS var consumed by :active scale in switch.css */
-              '--thumb-x': checked ? THUMB_OFFSET[offsetKey] : '0px',
-            } as React.CSSProperties
-          }
-        />
-      </span>
-    </label>
-  );
-}
+          {/* Track */}
+          <span
+            aria-hidden="true"
+            data-glow={isPremium && glow}
+            className={cn(
+              trackVariants({ variant, size }),
+              'peer-focus-visible:ring-2 peer-focus-visible:ring-primary/50 peer-focus-visible:ring-offset-2',
+            )}
+          >
+            {/* Premium label text inside track */}
+            {isPremium && (labelOn || labelOff) && (
+              <>
+                <span
+                  aria-hidden="true"
+                  className="switch-premium-label switch-premium-label-on left-2.5 text-white"
+                >
+                  {labelOn}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="switch-premium-label switch-premium-label-off right-2.5 text-white/80"
+                >
+                  {labelOff}
+                </span>
+              </>
+            )}
+          </span>
+
+          {/* Thumb */}
+          <span
+            aria-hidden="true"
+            className={thumbVariants({ variant, size })}
+          />
+        </span>
+      </label>
+    );
+  },
+);
+
+Switch.displayName = 'Switch';

@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import toast from 'react-hot-toast';
 
 import { Icon } from '@/shared/components';
+import { toTelHref, normalizePhone } from '@/shared/utils/phone';
 import { SignaturePad } from '@/shared/components/SignaturePad';
 import { MoneyText } from '@/shared/value';
 import {
@@ -139,9 +140,10 @@ export function ShipmentCard({
               </div>
               {shipment.customers?.phone && (
                 <a
-                  href={`tel:${shipment.customers.phone}`}
+                  href={toTelHref(normalizePhone(shipment.customers.phone))}
                   onClick={(e) => e.stopPropagation()}
                   className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-[rgba(var(--success-rgb),0.1)] text-[var(--success)] hover:bg-[rgba(var(--success-rgb),0.2)] transition-colors shrink-0"
+                  aria-label={`Gọi ${shipment.customers.phone}`}
                 >
                   <Icon name="Phone" size={18} />
                 </a>

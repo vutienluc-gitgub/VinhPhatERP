@@ -6,7 +6,6 @@ import {
   AddButton,
   FilterBar,
   type FilterFieldConfig,
-  PageLayout,
   PageHeader,
   TableSection,
 } from '@/shared/components';
@@ -95,7 +94,7 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
   });
 
   return (
-    <PageLayout>
+    <>
       <PageHeader
         title={MSG.TITLE}
         subtitle={MSG.SUBTITLE}
@@ -160,6 +159,6 @@ export function ExpenseList({ onEdit, onNew }: ExpenseListProps) {
           }}
         />
       </TableSection>
-    </PageLayout>
+    </>
   );
 }

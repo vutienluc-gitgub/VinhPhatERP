@@ -11,6 +11,7 @@ import {
   FilterBar,
   KpiCard,
   KpiGrid,
+  PhoneContact,
   type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
@@ -251,7 +252,7 @@ export function EmployeeListPage() {
               id: 'phone',
               sortable: true,
               className: 'text-sm font-medium',
-              cell: (emp) => emp.phone || '—',
+              cell: (emp) => <PhoneContact phone={emp.phone} showZalo={true} />,
             },
             {
               header: EMPLOYEE_LABELS.TABLE_ROLE,
@@ -315,7 +316,9 @@ export function EmployeeListPage() {
                   <span className="label">
                     {EMPLOYEE_LABELS.TABLE_MOBILE_CONTACT}
                   </span>
-                  <span className="value">{emp.phone || '—'}</span>
+                  <span className="value flex items-center">
+                    <PhoneContact phone={emp.phone} showZalo={true} />
+                  </span>
                 </div>
                 <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/10">
                   <span className="text-[10px] uppercase font-bold text-muted bg-surface-subtle px-1.5 py-0.5 rounded">

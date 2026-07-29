@@ -8,7 +8,6 @@ import {
   type FilterFieldConfig,
   KpiCard,
   KpiGrid,
-  PageLayout,
   PageHeader,
   KPISection,
   TableSection,
@@ -132,7 +131,7 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
   });
 
   return (
-    <PageLayout>
+    <>
       {/* Action bar */}
       <PageHeader
         title={LABELS.PAGE_TITLE}
@@ -222,6 +221,6 @@ export function FabricCatalogList({ onEdit, onNew }: FabricCatalogListProps) {
           onClose={() => setQrCatalog(null)}
         />
       )}
-    </PageLayout>
+    </>
   );
 }

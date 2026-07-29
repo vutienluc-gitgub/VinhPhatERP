@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { PageLayout } from '@/shared/components';
+
 import { FinishedFabricBulkForm } from './FinishedFabricBulkForm';
 import { FinishedFabricForm } from './FinishedFabricForm';
 import { FinishedFabricList } from './FinishedFabricList';
@@ -28,13 +30,15 @@ export function FinishedFabricPage() {
   }
 
   return (
-    <>
-      <FinishedFabricList
-        onEdit={openEdit}
-        onNew={openCreate}
-        onBulkNew={() => setShowBulkForm(true)}
-        onTrace={(roll) => setTraceRoll(roll)}
-      />
+    <div className="page-container">
+      <PageLayout className="flex-1 h-full">
+        <FinishedFabricList
+          onEdit={openEdit}
+          onNew={openCreate}
+          onBulkNew={() => setShowBulkForm(true)}
+          onTrace={(roll) => setTraceRoll(roll)}
+        />
+      </PageLayout>
       {showForm && <FinishedFabricForm roll={editRoll} onClose={closeForm} />}
       {showBulkForm && (
         <FinishedFabricBulkForm onClose={() => setShowBulkForm(false)} />
@@ -42,6 +46,6 @@ export function FinishedFabricPage() {
       {traceRoll && (
         <TraceChainPanel roll={traceRoll} onClose={() => setTraceRoll(null)} />
       )}
-    </>
+    </div>
   );
 }
