@@ -90,7 +90,7 @@ export const KpiCard = memo(function KpiCard({
     'fade-up',
     `kpi-${variant}`,
     isClickable &&
-      'cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98]',
+      'group cursor-pointer transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98]',
   ]
     .filter(Boolean)
     .join(' ');

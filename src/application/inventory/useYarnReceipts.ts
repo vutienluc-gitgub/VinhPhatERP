@@ -26,10 +26,14 @@ export type { YarnSupplierOption, YarnCatalogOption };
 
 const QUERY_KEY = ['yarn-receipts'] as const;
 
-export function useYarnReceiptList(filters: YarnReceiptsFilter = {}, page = 1) {
+export function useYarnReceiptList(
+  filters: YarnReceiptsFilter = {},
+  page = 1,
+  pageSize?: number,
+) {
   return useQuery({
-    queryKey: [...QUERY_KEY, filters, page],
-    queryFn: () => fetchYarnReceiptsPaginated(filters, page),
+    queryKey: [...QUERY_KEY, filters, page, pageSize],
+    queryFn: () => fetchYarnReceiptsPaginated(filters, page, pageSize),
   });
 }
 

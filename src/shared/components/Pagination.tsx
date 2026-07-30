@@ -1,4 +1,5 @@
 import { Button } from '@/shared/components';
+import { PageSizeSelect } from '@/shared/components/PageSizeSelect';
 import type { PaginatedResult } from '@/shared/types/pagination';
 
 const PAGINATION_LABELS = {
@@ -11,6 +12,7 @@ type PaginationProps<T> = {
   onPageChange: (page: number) => void;
   /** Custom label for total count, e.g. "cuộn", "đơn hàng". Default: "mục" */
   itemLabel?: string;
+  onPageSizeChange?: (size: number) => void;
 };
 
 function formatPaginationText(
@@ -29,16 +31,26 @@ export function Pagination<T>({
   result,
   onPageChange,
   itemLabel,
+  onPageSizeChange,
 }: PaginationProps<T>) {
-  if (!result || result.totalPages <= 1) return null;
+  if (!result || result.total === 0) return null;
 
   const { page, totalPages, total } = result;
 
   return (
     <div className="pagination-bar">
-      <span className="text-sm">
-        {formatPaginationText(page, totalPages, total, itemLabel)}
-      </span>
+      <div className="flex items-center gap-6">
+        <span className="text-sm">
+          {formatPaginationText(page, totalPages, total, itemLabel)}
+        </span>
+        {onPageSizeChange && result.pageSize && (
+          <PageSizeSelect
+            value={result.pageSize}
+            onValueChange={onPageSizeChange}
+            options={[20, 50, 100]}
+          />
+        )}
+      </div>
       <div className="pagination-buttons">
         <Button
           variant="secondary"

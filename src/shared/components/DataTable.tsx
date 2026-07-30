@@ -61,7 +61,11 @@ interface DataTableProps<T> {
   /** Tùy chọn Bật/Tắt tính tự sắp xếp phía Client nếu không cấu hình API Sort (Mặc định: Bật) */
   enableClientSort?: boolean;
   /** Sử dụng giao diện thu gọn, tiết kiệm diện tích */
-  compact?: boolean;
+  density?: 'compact' | 'comfortable';
+  /** Giữ cố định header khi cuộn */
+  stickyHeader?: boolean;
+  /** Thêm sọc vằn (zebra striping) để dễ đọc ngang */
+  striped?: boolean;
   /** Server-side pagination config. When provided, pagination bar is rendered below the table. */
   pagination?: PaginationConfig<T>;
 }
@@ -88,7 +92,9 @@ function DataTableInner<T>({
   sortDirection,
   onSort,
   enableClientSort = true,
-  compact = false,
+  density = 'comfortable',
+  stickyHeader = false,
+  striped = false,
   pagination,
 }: DataTableProps<T>) {
   // --- NATIVE AUTO-SORT LOGIC ---
@@ -161,7 +167,12 @@ function DataTableInner<T>({
     <div className={clsx('card-table-section', className)}>
       {/* Desktop View */}
       <div className="hidden md:block overflow-x-auto">
-        <table className={clsx('data-table', compact && 'data-table-compact')}>
+        <table
+          className={clsx(
+            'data-table',
+            density === 'compact' && 'data-table-compact',
+          )}
+        >
           <thead>
             <tr>
               {columns.map((col, idx) => (
@@ -171,6 +182,8 @@ function DataTableInner<T>({
                     col.className,
                     col.sortable &&
                       'cursor-pointer select-none hover:opacity-80 transition-opacity whitespace-nowrap',
+                    stickyHeader &&
+                      'sticky top-0 z-10 bg-surface-strong shadow-sm',
                   )}
                   onClick={() => {
                     if (col.sortable && col.id) {
@@ -220,8 +233,9 @@ function DataTableInner<T>({
               <tr
                 key={rowKey(item)}
                 className={clsx(
-                  onRowClick &&
-                    'hover:bg-surface-subtle transition-colors cursor-pointer',
+                  'transition-colors duration-150',
+                  striped && 'even:bg-surface-subtle/30',
+                  onRowClick && 'hover:bg-surface-hover cursor-pointer',
                 )}
                 onClick={() => onRowClick?.(item)}
               >
@@ -275,6 +289,7 @@ function DataTableInner<T>({
           result={pagination.result}
           onPageChange={pagination.onPageChange}
           itemLabel={pagination.itemLabel}
+          onPageSizeChange={pagination.onPageSizeChange}
         />
       )}
     </div>

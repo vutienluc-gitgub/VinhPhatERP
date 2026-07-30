@@ -10,6 +10,7 @@ import {
   KpiCard,
   KpiGrid,
   StatusBadge,
+  Icon,
   type FilterFieldConfig,
 } from '@/shared/components';
 import type { ActionConfig } from '@/shared/components';
@@ -20,6 +21,7 @@ import {
   useDeleteYarnReceipt,
   useYarnReceiptList,
   useConfirmYarnReceipt,
+  useActiveSuppliers,
 } from '@/application/inventory';
 import { LIST_LABELS as MSG } from '@/features/yarn-receipts/yarn-receipts.constants';
 
@@ -45,17 +47,26 @@ export function YarnReceiptList({
 }: YarnReceiptListProps) {
   const [filters, setFilters] = useState<YarnReceiptsFilter>({});
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
   const [qrReceipt, setQrReceipt] = useState<YarnReceipt | null>(null);
   const [barcodeReceipt, setBarcodeReceipt] = useState<YarnReceipt | null>(
     null,
   );
 
-  const { data: result, isLoading, error } = useYarnReceiptList(filters, page);
+  const {
+    data: result,
+    isLoading,
+    error,
+  } = useYarnReceiptList(filters, page, pageSize);
   const receipts = result?.data ?? [];
   const deleteMutation = useDeleteYarnReceipt();
   const confirmMutation = useConfirmYarnReceipt();
+  const { data: suppliers } = useActiveSuppliers();
   const { confirm } = useConfirm();
   const { profile } = useAuth();
+
+  const supplierOptions =
+    suppliers?.map((s) => ({ value: s.id, label: s.name })) || [];
 
   const canConfirm = profile?.role === 'admin' || profile?.role === 'manager';
 
@@ -85,6 +96,19 @@ export function YarnReceiptList({
           label: 'Đã huỷ',
         },
       ],
+    },
+    {
+      key: 'supplierId',
+      type: 'combobox',
+      label: 'Nhà cung cấp',
+      options: supplierOptions,
+    },
+    {
+      key: 'date',
+      type: 'date_range',
+      label: 'Ngày nhập',
+      keyFrom: 'dateFrom',
+      keyTo: 'dateTo',
     },
   ];
 
@@ -119,7 +143,13 @@ export function YarnReceiptList({
     }
   }
 
-  const hasFilter = !!(filters.search || filters.status);
+  const hasFilter = !!(
+    filters.search ||
+    filters.status ||
+    filters.supplierId ||
+    filters.dateFrom ||
+    filters.dateTo
+  );
 
   const handleShowQR = useCallback((receipt: YarnReceipt) => {
     setQrReceipt(receipt);
@@ -152,7 +182,12 @@ export function YarnReceiptList({
             label="Phiếu chờ xác nhận"
             value={pendingCount}
             icon="Activity"
-            footer="Yêu cầu kiểm tra & xác nhận"
+            footer={
+              <span className="flex items-center gap-1 group-hover:text-warning-strong transition-colors">
+                Lọc phiếu nháp <Icon name="ArrowRight" size={14} />
+              </span>
+            }
+            onClick={() => handleFilterChange('status', 'draft')}
           />
 
           <KpiCard
@@ -199,6 +234,8 @@ export function YarnReceiptList({
           emptyStateIcon={hasFilter ? 'Search' : 'Package'}
           emptyStateActionLabel={!hasFilter ? '+ Tạo phiếu nhập' : undefined}
           onEmptyStateAction={!hasFilter ? onNew : undefined}
+          stickyHeader={true}
+          striped={true}
           columns={[
             {
               header: 'Số phiếu',
@@ -239,7 +276,7 @@ export function YarnReceiptList({
               accessor: (r) => getReceiptAvgUnitPrice(r),
               className: 'text-right',
               cell: (r) => (
-                <span className="font-medium text-muted">
+                <span className="text-secondary">
                   {getReceiptUnitPriceDisplay(r)}
                 </span>
               ),
@@ -419,6 +456,10 @@ export function YarnReceiptList({
           pagination={{
             result,
             onPageChange: setPage,
+            onPageSizeChange: (size) => {
+              setPageSize(size);
+              setPage(1);
+            },
             itemLabel: 'phiếu nhập',
           }}
         />
