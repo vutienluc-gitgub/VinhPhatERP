@@ -52,6 +52,16 @@ export function POTimeline({ status }: POTimelineProps) {
       </div>
     );
   }
+  if (status === 'supplier_rejected') {
+    return (
+      <div className="flex items-center gap-4 py-4 px-6 bg-red-50 border border-danger rounded-xl shadow-sm mb-6 text-danger">
+        <Icon name="XCircle" size={24} className="text-danger" />
+        <span className="font-semibold text-lg">
+          NCC Từ chối Đơn hàng (Supplier Rejected)
+        </span>
+      </div>
+    );
+  }
 
   let currentIndex = steps.findIndex((s) => s.id === activeStatus);
   if (currentIndex === -1) currentIndex = 0;

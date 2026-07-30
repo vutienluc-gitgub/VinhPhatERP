@@ -1,4 +1,5 @@
 import { Button, Icon } from '@/shared/components';
+import { QRCodeDisplay } from '@/shared/components/QRCodeDisplay';
 import type { PurchaseOrder } from '@/domain/purchase-orders';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { PO_CONSTANTS } from '@/features/procurement/purchase-orders/purchase-orders.constants';
@@ -38,7 +39,7 @@ export function POActionsCard({
   onSendClick,
   onConfirmClick,
 }: POActionsCardProps) {
-  const { user } = useAuth();
+  const { profile } = useAuth();
 
   return (
     <div className="bg-surface border border-border rounded-xl p-6 shadow-sm lg:col-span-1">
@@ -68,9 +69,9 @@ export function POActionsCard({
         </div>
 
         {po.status === 'draft' &&
-          (user?.role === 'admin' ||
-            user?.role === 'manager' ||
-            user?.role === 'staff') && (
+          (profile?.role === 'admin' ||
+            profile?.role === 'manager' ||
+            profile?.role === 'staff') && (
             <div className="mt-1">
               <Button
                 variant="primary"
@@ -126,9 +127,9 @@ export function POActionsCard({
         )}
 
         {po.status === 'approved' &&
-          (user?.role === 'admin' ||
-            user?.role === 'manager' ||
-            user?.role === 'staff') && (
+          (profile?.role === 'admin' ||
+            profile?.role === 'manager' ||
+            profile?.role === 'staff') && (
             <div className="mt-1">
               <Button
                 variant="primary"
@@ -142,19 +143,50 @@ export function POActionsCard({
             </div>
           )}
 
+        {(po.status === 'approved' || po.status === 'sent') &&
+          (profile?.role === 'admin' ||
+            profile?.role === 'manager' ||
+            profile?.role === 'staff') && (
+            <div className="mt-1 border-t border-border pt-3 space-y-3">
+              <Button
+                variant="outline"
+                className="w-full justify-center"
+                onClick={() => {
+                  const url = `${window.location.origin}/po/${po.public_token}`;
+                  navigator.clipboard.writeText(url);
+                  import('react-hot-toast').then((m) =>
+                    m.toast.success('Đã copy link gửi NCC'),
+                  );
+                }}
+              >
+                <Icon name="Link" size={16} className="mr-2" /> Sao chép Link
+                Gửi NCC
+              </Button>
+              {po.public_token && (
+                <div className="flex flex-col items-center gap-2 py-2">
+                  <QRCodeDisplay
+                    value={`${window.location.origin}/po/${po.public_token}`}
+                    size={120}
+                    label="NCC quét mã để xác nhận"
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
         {po.status === 'sent' &&
-          (user?.role === 'admin' ||
-            user?.role === 'manager' ||
-            user?.role === 'staff') && (
+          (profile?.role === 'admin' ||
+            profile?.role === 'manager' ||
+            profile?.role === 'staff') && (
             <div className="mt-1">
               <Button
-                variant="primary"
+                variant="outline"
                 isLoading={isConfirming}
                 onClick={onConfirmClick}
                 className="w-full justify-center"
               >
-                <Icon name="Check" size={16} className="mr-2" />{' '}
-                {PO_CONSTANTS.APPROVAL_NCC_CONFIRM}
+                <Icon name="Check" size={16} className="mr-2" /> Xác nhận thủ
+                công
               </Button>
             </div>
           )}
@@ -165,9 +197,9 @@ export function POActionsCard({
           'supplier_confirmed',
           'partial_received',
         ].includes(po.status) &&
-          (user?.role === 'admin' ||
-            user?.role === 'manager' ||
-            user?.role === 'staff') && (
+          (profile?.role === 'admin' ||
+            profile?.role === 'manager' ||
+            profile?.role === 'staff') && (
             <div className="mt-1 pt-3 border-t border-border">
               <Button
                 variant="primary"

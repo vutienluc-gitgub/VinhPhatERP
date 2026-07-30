@@ -26,7 +26,9 @@ export function POTemplate({
     );
   };
 
-  const poUrl = `${window.location.origin}/purchase-orders/${po.id}`;
+  const poUrl = po.public_token
+    ? `${window.location.origin}/po/${po.public_token}`
+    : `${window.location.origin}/purchase-orders/${po.id}`;
   const currency = po.currency || 'VND';
 
   return (

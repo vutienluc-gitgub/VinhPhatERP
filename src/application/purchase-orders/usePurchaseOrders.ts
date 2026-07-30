@@ -15,6 +15,8 @@ import {
   fetchPurchaseOrderAuditLogs,
   sendPurchaseOrder,
   confirmPurchaseOrder,
+  getPurchaseOrderComments,
+  addPurchaseOrderComment,
 } from '@/api/purchase-orders.api';
 import type {
   PurchaseOrderFormValues,
@@ -196,6 +198,31 @@ export function useCreateGoodsReceipt() {
       void queryClient.invalidateQueries({ queryKey: [...QUERY_KEY, 'list'] });
       void queryClient.invalidateQueries({
         queryKey: [...QUERY_KEY, 'receipts', values.po_id],
+      });
+    },
+  });
+}
+
+export function usePOComments(poId: string | undefined) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'comments', poId],
+    queryFn: () => {
+      if (!poId) throw new Error('Mã đơn hàng không hợp lệ');
+      return getPurchaseOrderComments(poId);
+    },
+    enabled: !!poId,
+  });
+}
+
+export function useAddPOComment() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: (payload: { poId: string; content: string }) =>
+      addPurchaseOrderComment({ ...payload, userId: user!.id }),
+    onSuccess: (_, variables) => {
+      void queryClient.invalidateQueries({
+        queryKey: [...QUERY_KEY, 'comments', variables.poId],
       });
     },
   });

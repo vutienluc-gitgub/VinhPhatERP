@@ -194,7 +194,7 @@ export function POCreatePage() {
             lineTotals={lineTotals}
           />
 
-          <POAttachmentsCard />
+          <POAttachmentsCard form={form} />
         </div>
 
         <div className="lg:col-span-4">

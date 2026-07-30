@@ -2,6 +2,7 @@ import { untypedDb } from '@/services/supabase/client';
 import type {
   PurchaseOrderFormValues,
   GoodsReceiptFormValues,
+  PurchaseOrderComment,
 } from '@/domain/purchase-orders';
 
 export async function fetchPurchaseOrders(filters: {
@@ -209,6 +210,8 @@ export async function confirmPurchaseOrder(poId: string, userId: string) {
     .from('purchase_orders')
     .update({
       status: 'supplier_confirmed',
+      confirmation_method: 'manual',
+      confirmed_at: new Date().toISOString(),
     })
     .eq('id', poId)
     .select()
@@ -222,7 +225,7 @@ export async function confirmPurchaseOrder(poId: string, userId: string) {
     action: 'supplier_confirmed',
     actor_id: userId,
     snapshot: data,
-    comment: 'Nhà cung cấp xác nhận đơn (Supplier Confirmed)',
+    comment: 'Xác nhận thủ công bởi nhân viên ERP (Manual Confirm)',
   });
 
   return data;
@@ -312,4 +315,35 @@ export async function fetchGoodsReceiptsByPo(poId: string) {
 
   if (error) throw error;
   return data;
+}
+
+export async function getPurchaseOrderComments(poId: string) {
+  const { data, error } = await untypedDb
+    .from('purchase_order_comments')
+    .select('*')
+    .eq('purchase_order_id', poId)
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+  return data as PurchaseOrderComment[];
+}
+
+export async function addPurchaseOrderComment(payload: {
+  poId: string;
+  content: string;
+  userId: string;
+}) {
+  const { data, error } = await untypedDb
+    .from('purchase_order_comments')
+    .insert({
+      purchase_order_id: payload.poId,
+      content: payload.content,
+      sender_type: 'erp',
+      sender_id: payload.userId,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as PurchaseOrderComment;
 }

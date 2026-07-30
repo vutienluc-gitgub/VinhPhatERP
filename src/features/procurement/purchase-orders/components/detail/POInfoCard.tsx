@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 
 import { MoneyText } from '@/shared/value';
+import { Icon } from '@/shared/components';
 import type { PurchaseOrder } from '@/domain/purchase-orders';
 
 interface POInfoCardProps {
@@ -68,6 +69,58 @@ export function POInfoCard({ po, creatorProfile }: POInfoCardProps) {
           <div className="col-span-2 mt-2 p-3 bg-red-50 border border-danger text-danger text-sm rounded-lg">
             <span className="font-bold">Lý do từ chối:</span>{' '}
             {po.rejection_reason}
+          </div>
+        )}
+
+        {po.status === 'supplier_rejected' && po.supplier_rejection_reason && (
+          <div className="col-span-2 mt-2 p-3 bg-red-50 border border-danger text-danger text-sm rounded-lg flex items-start gap-3">
+            <div className="bg-danger text-white rounded-full p-1 shrink-0 mt-0.5">
+              <Icon name="X" size={14} />
+            </div>
+            <div>
+              <p className="font-bold text-danger-strong mb-0.5">
+                NCC đã từ chối đơn hàng
+              </p>
+              <p className="text-danger-strong/80 text-xs mb-1">
+                Lúc{' '}
+                {po.confirmed_at
+                  ? dayjs(po.confirmed_at).format('HH:mm - DD/MM/YYYY')
+                  : ''}
+              </p>
+              <p className="font-medium">
+                Lý do: {po.supplier_rejection_reason}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {po.confirmed_at && po.status !== 'supplier_rejected' && (
+          <div className="col-span-2 mt-2 p-3 bg-success-soft border border-success/30 text-sm rounded-lg flex items-start gap-3">
+            <div className="bg-success text-white rounded-full p-1 shrink-0 mt-0.5">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-bold text-success-strong mb-0.5">
+                NCC đã xác nhận đơn hàng
+              </p>
+              <p className="text-success-strong/80 text-xs">
+                Lúc {dayjs(po.confirmed_at).format('HH:mm - DD/MM/YYYY')}
+                {po.confirmation_method === 'portal' &&
+                  ' (qua Cổng thông tin NCC)'}
+                {po.confirmation_method === 'manual' && ' (xác nhận thủ công)'}
+              </p>
+            </div>
           </div>
         )}
       </div>

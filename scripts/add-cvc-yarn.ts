@@ -72,8 +72,9 @@ async function main() {
           );
         }
       }
-    } catch (err: any) {
-      console.error(`Error for tenant ${tenantId}:`, err.message);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`Error for tenant ${tenantId}:`, message);
     }
   }
 }
