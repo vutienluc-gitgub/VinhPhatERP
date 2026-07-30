@@ -27,9 +27,10 @@ export type YarnCatalogOption = {
 export async function fetchYarnReceiptsPaginated(
   filters: YarnReceiptsFilter = {},
   page = 1,
+  pageSize = DEFAULT_PAGE_SIZE,
 ): Promise<PaginatedResult<YarnReceipt>> {
-  const from = (page - 1) * DEFAULT_PAGE_SIZE;
-  const to = from + DEFAULT_PAGE_SIZE - 1;
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
 
   let query = supabase
     .from(HEADER_TABLE)
@@ -71,8 +72,8 @@ export async function fetchYarnReceiptsPaginated(
     data: (data ?? []) as unknown as YarnReceipt[],
     total,
     page,
-    pageSize: DEFAULT_PAGE_SIZE,
-    totalPages: Math.ceil(total / DEFAULT_PAGE_SIZE),
+    pageSize,
+    totalPages: Math.ceil(total / pageSize),
   };
 }
 

@@ -128,20 +128,17 @@ export const Combobox = memo(function Combobox({
   // Đóng khi click ngoài (cần check cả dropdown portal vì nằm ngoài containerRef)
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      if (!isOpen) return;
       const target = event.target as Node;
       const insideContainer = containerRef.current?.contains(target) ?? false;
       const insideDropdown = dropdownRef.current?.contains(target) ?? false;
       if (!insideContainer && !insideDropdown) {
-        if (allowInput && search) {
-          onChange(search);
-        }
         setIsOpen(false);
-        onBlur?.();
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [allowInput, search, onChange, onBlur]);
+  }, [isOpen]);
 
   // Sync search với value khi allowInput
   useEffect(() => {
