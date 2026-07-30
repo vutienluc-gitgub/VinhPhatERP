@@ -7,6 +7,7 @@ export type PurchaseOrderStatus =
   | 'rejected'
   | 'sent'
   | 'supplier_confirmed'
+  | 'supplier_rejected'
   | 'receiving'
   | 'partial_received'
   | 'completed'
@@ -45,6 +46,14 @@ export interface PurchaseOrder {
   priority?: string | null;
   attachments?: string[] | null;
   vat_terms?: string | null;
+
+  // Supplier Portal Fields
+  public_token?: string | null;
+  confirmed_at?: string | null;
+  confirmation_method?: string | null;
+  confirmed_ip?: string | null;
+  confirmed_user_agent?: string | null;
+  supplier_rejection_reason?: string | null;
 
   // From views
   total_ordered_qty?: number;
@@ -90,4 +99,14 @@ export interface GoodsReceiptItem {
   unit_price: number;
   created_at: string;
   tenant_id: string;
+}
+
+export interface PurchaseOrderComment {
+  id: string;
+  purchase_order_id: string;
+  content: string;
+  sender_type: 'erp' | 'supplier';
+  sender_id?: string | null;
+  sender_name?: string | null;
+  created_at: string;
 }

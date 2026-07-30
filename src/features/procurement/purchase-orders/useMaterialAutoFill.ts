@@ -110,8 +110,12 @@ export function useMaterialAutoFill({
       );
 
       if (cached.moq > 0) {
+        const material = globalMaterials.find((m) => m.id === materialId);
+        const displayName = material
+          ? `[${material.code}] ${material.name}`
+          : materialId;
         toast(
-          `${PO_CONSTANTS.LABEL_SUPPLIER} ${PO_CONSTANTS.MSG_MOQ_REQUIRED} ${cached.moq} ${cached.uom} ${PO_CONSTANTS.MSG_FOR_MATERIAL} ${materialId}`,
+          `${PO_CONSTANTS.LABEL_SUPPLIER} ${PO_CONSTANTS.MSG_MOQ_REQUIRED} ${cached.moq} ${cached.uom} ${PO_CONSTANTS.MSG_FOR_MATERIAL} ${displayName}`,
           { icon: 'ℹ️' },
         );
       }
@@ -130,13 +134,21 @@ export function useMaterialAutoFill({
         );
 
         if (priceInfo.moq > 0) {
+          const material = globalMaterials.find((m) => m.id === materialId);
+          const displayName = material
+            ? `[${material.code}] ${material.name}`
+            : materialId;
           toast(
-            `${PO_CONSTANTS.LABEL_SUPPLIER} ${PO_CONSTANTS.MSG_MOQ_REQUIRED} ${priceInfo.moq} ${priceInfo.uom} ${PO_CONSTANTS.MSG_FOR_MATERIAL} ${materialId}`,
+            `${PO_CONSTANTS.LABEL_SUPPLIER} ${PO_CONSTANTS.MSG_MOQ_REQUIRED} ${priceInfo.moq} ${priceInfo.uom} ${PO_CONSTANTS.MSG_FOR_MATERIAL} ${displayName}`,
             { icon: 'ℹ️' },
           );
         }
       } else {
-        toast(MSG.ERR_NO_CONTRACT_PRICE(materialId), { icon: 'ℹ️' });
+        const material = globalMaterials.find((m) => m.id === materialId);
+        const displayName = material
+          ? `[${material.code}] ${material.name}`
+          : materialId;
+        toast(MSG.ERR_NO_CONTRACT_PRICE(displayName), { icon: 'ℹ️' });
       }
     } catch (error) {
       console.error('[useMaterialAutoFill] Failed to fetch price', error);

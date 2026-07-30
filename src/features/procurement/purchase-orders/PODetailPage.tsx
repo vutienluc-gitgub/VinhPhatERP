@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { Button, StatusBadge } from '@/shared/components';
 import { useAuth } from '@/shared/hooks/useAuth';
+import { supabase } from '@/services/supabase/client';
 import type { PurchaseOrder } from '@/domain/purchase-orders';
 import {
   useApprovePurchaseOrder,
@@ -23,6 +25,7 @@ import { POInfoCard } from './components/detail/POInfoCard';
 import { POActionsCard } from './components/detail/POActionsCard';
 import { POMaterialsTable } from './components/detail/POMaterialsTable';
 import { POGoodsReceiptsList } from './components/detail/POGoodsReceiptsList';
+import { POChatWidget } from './components/detail/POChatWidget';
 import { PORejectModal } from './components/detail/PORejectModal';
 import { POApproveModal } from './components/detail/POApproveModal';
 import { POApprovalHistory } from './components/detail/POApprovalHistory';
@@ -32,6 +35,7 @@ import { exportPurchaseOrderPdf } from './utils/exportPOPdf';
 export function PODetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [showGrForm, setShowGrForm] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showApproveModal, setShowApproveModal] = useState(false);
@@ -50,7 +54,7 @@ export function PODetailPage() {
     auditLogsLoading,
   } = usePODetailData(id);
 
-  const { user } = useAuth();
+  const { profile } = useAuth();
   const { data: policies } = useApprovalPolicies();
   const approveMutation = useApprovePurchaseOrder();
   const rejectMutation = useRejectPurchaseOrder();
@@ -59,9 +63,58 @@ export function PODetailPage() {
   const sendMutation = useSendPurchaseOrder();
   const confirmMutation = useConfirmPurchaseOrder();
 
+  // Realtime: auto-refresh when supplier confirms PO via portal
+  useEffect(() => {
+    if (!id) return;
+    const channel = supabase
+      .channel(`po-realtime-${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'purchase_orders',
+          filter: `id=eq.${id}`,
+        },
+        (payload) => {
+          // Invalidate PO query so UI updates automatically
+          queryClient.invalidateQueries({
+            queryKey: ['purchase-orders', 'detail', id],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ['purchase-orders', 'audit-logs', id],
+          });
+
+          // Show toast notification if supplier confirmed
+          if (
+            payload.new.status === 'supplier_confirmed' &&
+            payload.old.status === 'sent'
+          ) {
+            toast.success(
+              `NCC ${payload.new.supplier_name_snapshot ?? ''} đã xác nhận ${payload.new.po_code}`,
+              { icon: '🔔', duration: 6000 },
+            );
+          } else if (
+            payload.new.status === 'supplier_rejected' &&
+            payload.old.status === 'sent'
+          ) {
+            toast.error(
+              `NCC ${payload.new.supplier_name_snapshot ?? ''} đã TỪ CHỐI ${payload.new.po_code}`,
+              { icon: '❌', duration: 8000 },
+            );
+          }
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id, queryClient]);
+
   const canApprove = (() => {
-    if (!user || !policies || !po) return false;
-    const policy = policies.find((p) => p.role === user.role);
+    if (!profile || !policies || !po) return false;
+    const policy = policies.find((p) => p.role === profile.role);
     if (!policy) return false;
     if (policy.max_amount === null || policy.max_amount === undefined)
       return true; // Unlimited
@@ -247,13 +300,19 @@ export function PODetailPage() {
         />
       </div>
 
-      <POMaterialsTable po={po} globalMaterials={globalMaterials} />
-
-      <POGoodsReceiptsList
-        po={po}
-        receipts={receipts}
-        onOpenForm={() => setShowGrForm(true)}
-      />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <POMaterialsTable po={po} globalMaterials={globalMaterials} />
+          <POGoodsReceiptsList
+            po={po}
+            receipts={receipts}
+            onOpenForm={() => setShowGrForm(true)}
+          />
+        </div>
+        <div className="lg:col-span-1">
+          <POChatWidget poId={po.id} />
+        </div>
+      </div>
 
       <POApprovalHistory logs={auditLogs || []} />
 

@@ -34,3 +34,76 @@ export function useSubmitSupplierQuote() {
     },
   });
 }
+
+export function usePublicPoDetails(token: string | null) {
+  return useQuery({
+    queryKey: ['public-po', token],
+    queryFn: () => {
+      if (!token) throw new Error('Mã truy cập không hợp lệ');
+      return import('@/api/supplier-portal.api').then((m) =>
+        m.fetchPublicPoDetails(token),
+      );
+    },
+    enabled: !!token,
+    retry: false,
+  });
+}
+
+export function useConfirmPublicPo() {
+  return useMutation({
+    mutationFn: (
+      payload: import('@/api/supplier-portal.api').ConfirmPublicPoPayload,
+    ) =>
+      import('@/api/supplier-portal.api').then((m) =>
+        m.confirmPublicPo(payload),
+      ),
+    onSuccess: () => {
+      toast.success('Xác nhận Đơn đặt hàng thành công!');
+    },
+    onError: (error: Error) => {
+      toast.error(`Lỗi: ${error.message}`);
+    },
+  });
+}
+
+export function useRejectPublicPo() {
+  return useMutation({
+    mutationFn: (
+      payload: import('@/api/supplier-portal.api').RejectPublicPoPayload,
+    ) =>
+      import('@/api/supplier-portal.api').then((m) =>
+        m.rejectPublicPo(payload),
+      ),
+    onSuccess: () => {
+      toast.success('Đã gửi phản hồi từ chối thành công');
+    },
+    onError: (error: Error) => {
+      toast.error(`Lỗi: ${error.message}`);
+    },
+  });
+}
+
+export function usePublicPoComments(token: string | null) {
+  return useQuery({
+    queryKey: ['public-po-comments', token],
+    queryFn: () => {
+      if (!token) throw new Error('Mã truy cập không hợp lệ');
+      return import('@/api/supplier-portal.api').then((m) =>
+        m.getPublicPoComments(token),
+      );
+    },
+    enabled: !!token,
+  });
+}
+
+export function useAddPublicPoComment() {
+  return useMutation({
+    mutationFn: (payload: { token: string; content: string }) =>
+      import('@/api/supplier-portal.api').then((m) =>
+        m.addPublicPoComment(payload),
+      ),
+    onError: (error: Error) => {
+      toast.error(`Lỗi: ${error.message}`);
+    },
+  });
+}

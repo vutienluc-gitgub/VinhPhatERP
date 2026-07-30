@@ -42,6 +42,12 @@ const SupplierQuotePage = lazy(() =>
   })),
 );
 
+const SupplierPOPage = lazy(() =>
+  import('@/features/supplier-portal/SupplierPOPage').then((m) => ({
+    default: m.SupplierPOPage,
+  })),
+);
+
 export const publicRoutes: RouteObject[] = [
   authRoute,
   {
@@ -75,5 +81,9 @@ export const publicRoutes: RouteObject[] = [
   {
     path: '/rfq/:id',
     element: withSuspense(<SupplierQuotePage />),
+  },
+  {
+    path: '/po/:id',
+    element: withSuspense(<SupplierPOPage />),
   },
 ];
