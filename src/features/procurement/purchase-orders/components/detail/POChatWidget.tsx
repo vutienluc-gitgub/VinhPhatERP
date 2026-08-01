@@ -44,6 +44,9 @@ export function POChatWidget({ poId }: POChatWidgetProps) {
           queryClient.invalidateQueries({
             queryKey: ['purchase-orders', 'comments', poId],
           });
+          queryClient.invalidateQueries({
+            queryKey: ['purchase-orders', 'detail', poId],
+          });
         },
       )
       .subscribe();

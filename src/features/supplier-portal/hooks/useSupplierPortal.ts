@@ -93,6 +93,12 @@ export function usePublicPoComments(token: string | null) {
       );
     },
     enabled: !!token,
+    refetchInterval: () => {
+      return typeof document !== 'undefined' &&
+        document.visibilityState === 'visible'
+        ? 10000
+        : false;
+    },
   });
 }
 
