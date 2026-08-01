@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
-import { supabase } from '@/services/supabase/client';
 import { Icon, Button } from '@/shared/components';
 import {
   usePublicPoComments,
@@ -25,35 +24,6 @@ export function POComments({ token }: POCommentsProps) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [comments]);
-
-  // Realtime subscription
-  useEffect(() => {
-    if (!token) return;
-
-    // Listen to all inserts on purchase_order_comments
-    // We cannot easily filter by token in RLS-bypassed way on client without knowing po.id
-    // But we can filter by po_id if we have it. Since we only have token, we just invalidate on any insert.
-    const channel = supabase
-      .channel(`public-po-comments-${token}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'purchase_order_comments',
-        },
-        () => {
-          queryClient.invalidateQueries({
-            queryKey: ['public-po-comments', token],
-          });
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [token, queryClient]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
