@@ -57,13 +57,40 @@ export function POGoodsReceiptsList({
             ) => (
               <div key={gr.id} className="border border-border rounded-lg p-4">
                 <div className="flex justify-between items-center mb-3">
-                  <span className="font-semibold text-primary">
+                  <span className="font-semibold text-primary flex items-center gap-2">
                     {gr.receipt_code}
+                    {gr.linked_yarn_receipt_id ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-success-soft text-success">
+                        <Icon name="CheckCircle2" size={12} className="mr-1" />
+                        Đã tạo phiếu kho
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-warning-soft text-warning-foreground">
+                        <Icon name="AlertCircle" size={12} className="mr-1" />
+                        Chưa tạo phiếu kho
+                      </span>
+                    )}
                   </span>
-                  <span className="text-sm text-muted">
-                    {PO_CONSTANTS.GR_DATE_PREFIX}{' '}
-                    {dayjs(gr.received_date).format('DD/MM/YYYY')}
-                  </span>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm text-muted">
+                      {PO_CONSTANTS.GR_DATE_PREFIX}{' '}
+                      {dayjs(gr.received_date).format('DD/MM/YYYY')}
+                    </span>
+                    {!gr.linked_yarn_receipt_id && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          window.open(
+                            `/yarn-receipts?fromGoodsReceipt=${gr.id}`,
+                            '_blank',
+                          )
+                        }
+                      >
+                        Tạo phiếu kho
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 <div className="text-sm">
                   {gr.goods_receipt_items?.map((item: GoodsReceiptItem) => (

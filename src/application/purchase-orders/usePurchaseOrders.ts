@@ -17,6 +17,7 @@ import {
   confirmPurchaseOrder,
   getPurchaseOrderComments,
   addPurchaseOrderComment,
+  fetchGoodsReceiptById,
 } from '@/api/purchase-orders.api';
 import type {
   PurchaseOrderFormValues,
@@ -57,6 +58,14 @@ export function useGoodsReceiptsByPo(poId: string | undefined) {
     queryKey: [...QUERY_KEY, 'receipts', poId],
     enabled: !!poId,
     queryFn: () => fetchGoodsReceiptsByPo(poId!),
+  });
+}
+
+export function useGoodsReceipt(grId: string | undefined) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'receipt', grId],
+    enabled: !!grId,
+    queryFn: () => fetchGoodsReceiptById(grId!),
   });
 }
 

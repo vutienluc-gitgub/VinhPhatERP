@@ -319,6 +319,7 @@ export function PODetailPage() {
       {showGrForm && (
         <GoodsReceiptForm
           po={po as PurchaseOrder}
+          globalMaterials={globalMaterials}
           onClose={() => setShowGrForm(false)}
         />
       )}

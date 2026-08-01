@@ -317,6 +317,17 @@ export async function fetchGoodsReceiptsByPo(poId: string) {
   return data;
 }
 
+export async function fetchGoodsReceiptById(grId: string) {
+  const { data, error } = await untypedDb
+    .from('goods_receipts')
+    .select('*, goods_receipt_items(*)')
+    .eq('id', grId)
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
 export async function getPurchaseOrderComments(poId: string) {
   const { data, error } = await untypedDb
     .from('purchase_order_comments')

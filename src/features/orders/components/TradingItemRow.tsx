@@ -176,11 +176,16 @@ export function TradingItemRow({
             <div className="form-field">
               <label>{ORDERS_FORM_LABELS.FIELD_AUTO_YARN_NAME}</label>
               <input
-                className="field-input bg-[var(--surface-disabled)]"
+                className={`field-input bg-[var(--surface-disabled)]${itemErrors?.fabricType ? ' border-danger' : ''}`}
                 type="text"
                 readOnly
                 {...register(`items.${index}.fabricType`)}
               />
+              {itemErrors?.fabricType && (
+                <span className="field-error">
+                  {itemErrors.fabricType.message}
+                </span>
+              )}
             </div>
           </div>
         )}
@@ -191,11 +196,16 @@ export function TradingItemRow({
             <div className="form-field">
               <label>{ORDERS_FORM_LABELS.FIELD_FABRIC_TYPE}</label>
               <input
-                className="field-input bg-[var(--surface-disabled)]"
+                className={`field-input bg-[var(--surface-disabled)]${itemErrors?.fabricType ? ' border-danger' : ''}`}
                 type="text"
                 readOnly
                 {...register(`items.${index}.fabricType`)}
               />
+              {itemErrors?.fabricType && (
+                <span className="field-error">
+                  {itemErrors.fabricType.message}
+                </span>
+              )}
             </div>
             <div className="form-field">
               <label>{ORDERS_FORM_LABELS.FIELD_COLOR}</label>
@@ -211,22 +221,31 @@ export function TradingItemRow({
 
         {/* Row 4: Quantity + Unit Price */}
         <div className="form-grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))]">
-          <Controller
-            name={`items.${index}.quantity`}
-            control={control}
-            render={({ field }) => (
-              <QuantityInput
-                id={`items.${index}.quantity`}
-                className={`field-input${itemErrors?.quantity ? ' border-danger' : ''}`}
-                step="0.001"
-                min="0"
-                placeholder="0"
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-              />
+          <div className="form-field">
+            <label htmlFor={`items.${index}.quantity`}>
+              {ORDERS_FORM_LABELS.FIELD_QUANTITY}{' '}
+              <span className="field-required">*</span>
+            </label>
+            <Controller
+              name={`items.${index}.quantity`}
+              control={control}
+              render={({ field }) => (
+                <QuantityInput
+                  id={`items.${index}.quantity`}
+                  className={`field-input${itemErrors?.quantity ? ' border-danger' : ''}`}
+                  step="0.001"
+                  min="0"
+                  placeholder="0"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                />
+              )}
+            />
+            {itemErrors?.quantity && (
+              <span className="field-error">{itemErrors.quantity.message}</span>
             )}
-          />
+          </div>
 
           <div className="form-field">
             <label>

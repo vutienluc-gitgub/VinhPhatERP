@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 import { useYarnReceipt, useYarnReceiptList } from '@/application/inventory';
 import { sumBy } from '@/shared/utils/array.util';
@@ -8,8 +9,19 @@ import { YarnReceiptForm } from './YarnReceiptForm';
 import { YarnReceiptList } from './YarnReceiptList';
 
 export function YarnReceiptsPage() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const fromGoodsReceiptId = searchParams.get('fromGoodsReceipt');
+
   const [editId, setEditId] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(!!fromGoodsReceiptId);
+
+  useEffect(() => {
+    if (fromGoodsReceiptId) {
+      setShowForm(true);
+      setEditId(null);
+    }
+  }, [fromGoodsReceiptId]);
 
   const { data: editReceipt } = useYarnReceipt(editId ?? undefined);
 
@@ -43,6 +55,10 @@ export function YarnReceiptsPage() {
   function closeForm() {
     setShowForm(false);
     setEditId(null);
+    if (fromGoodsReceiptId) {
+      // Remove query param without full reload
+      navigate('/yarn-receipts', { replace: true });
+    }
   }
 
   return (
@@ -61,6 +77,7 @@ export function YarnReceiptsPage() {
               ? (editReceipt as unknown as YarnReceipt)
               : null
           }
+          fromGoodsReceiptId={fromGoodsReceiptId}
           onClose={closeForm}
         />
       )}
