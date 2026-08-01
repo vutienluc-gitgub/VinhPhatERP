@@ -1,4 +1,5 @@
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
 import toast from 'react-hot-toast';
@@ -17,11 +18,17 @@ import { PO_CONSTANTS } from './purchase-orders.constants';
 
 interface GoodsReceiptFormProps {
   po: PurchaseOrder;
+  globalMaterials?: { id: string; name: string }[];
   onClose: () => void;
 }
 
-export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
+export function GoodsReceiptForm({
+  po,
+  globalMaterials,
+  onClose,
+}: GoodsReceiptFormProps) {
   const createMutation = useCreateGoodsReceipt();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -69,12 +76,33 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
     }
 
     try {
-      await createMutation.mutateAsync(filteredValues);
+      const result = await createMutation.mutateAsync(filteredValues);
       toast.success(PO_CONSTANTS.GR_MSG_SUCCESS);
       onClose();
-    } catch (error) {
+
+      // Simple prompt to ask if they want to create Yarn Receipt (Inventory)
+      if (
+        window.confirm(
+          'Bạn có muốn tạo Phiếu Nhập Kho Sợi (vật lý) cho lô hàng này ngay không?',
+        )
+      ) {
+        const grId =
+          typeof result === 'string'
+            ? result
+            : (result as Record<string, unknown>)?.id;
+        if (grId) {
+          navigate(`/yarn-receipts?fromGoodsReceipt=${grId}`);
+        } else {
+          toast.error('Không tìm thấy ID phiếu nhập kho để chuyển tiếp.');
+        }
+      }
+    } catch (error: unknown) {
       const msg =
-        error instanceof Error ? error.message : PO_CONSTANTS.GR_MSG_ERROR;
+        error instanceof Error
+          ? error.message
+          : typeof error === 'object' && error !== null && 'message' in error
+            ? String((error as { message: string }).message)
+            : PO_CONSTANTS.GR_MSG_ERROR;
       toast.error(msg);
     }
   }
@@ -82,6 +110,12 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
   // Get item details for display
   const getItemDetail = (poItemId: string) => {
     return po.items?.find((it: PurchaseOrderItem) => it.id === poItemId);
+  };
+
+  const getMaterialName = (id: string) => {
+    if (!globalMaterials) return id;
+    const found = globalMaterials.find((m) => m.id === id);
+    return found ? found.name : id;
   };
 
   return (
@@ -146,10 +180,10 @@ export function GoodsReceiptForm({ po, onClose }: GoodsReceiptFormProps) {
                     return (
                       <tr key={field.id} className="hover:bg-gray-50/50">
                         <td className="p-3">
-                          <div className="font-medium">
-                            {detail.material_id}
+                          <div className="font-medium text-sm">
+                            {getMaterialName(detail.material_id)}
                           </div>
-                          <div className="text-xs text-muted">
+                          <div className="text-xs text-muted mt-0.5">
                             Đơn vị: {detail.uom}
                           </div>
                         </td>

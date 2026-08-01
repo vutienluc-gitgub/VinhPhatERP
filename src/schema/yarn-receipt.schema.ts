@@ -87,6 +87,7 @@ export const yarnReceiptsSchema = z.object({
     .default([]),
   notes: z.string().trim().max(500).optional().or(z.literal('')),
   items: z.array(yarnReceiptItemSchema).min(1, 'Phải có ít nhất 1 dòng hàng'),
+  sourceGoodsReceiptId: z.string().uuid().optional().nullable(),
 });
 
 export type YarnReceiptsFormValues = z.infer<typeof yarnReceiptsSchema>;

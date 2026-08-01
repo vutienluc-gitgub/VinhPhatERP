@@ -102,9 +102,15 @@ export function ProductionItemRow({
                   value={field.value ?? ''}
                   onChange={field.onChange}
                   placeholder={ORDERS_FORM_LABELS.PLACEHOLDER_COLOR}
+                  hasError={!!errors.items?.[index]?.colorName}
                 />
               )}
             />
+            {errors.items?.[index]?.colorName && (
+              <span className="field-error">
+                {errors.items[index]?.colorName?.message as string}
+              </span>
+            )}
           </div>
         </div>
 

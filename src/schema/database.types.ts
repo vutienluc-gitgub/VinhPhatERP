@@ -3222,6 +3222,7 @@ export type Database = {
           receipt_code: string;
           received_date: string;
           tenant_id: string;
+          linked_yarn_receipt_id: string | null;
         };
         Insert: {
           client_request_id: string;
@@ -3232,6 +3233,7 @@ export type Database = {
           receipt_code: string;
           received_date: string;
           tenant_id?: string;
+          linked_yarn_receipt_id?: string | null;
         };
         Update: {
           client_request_id?: string;
@@ -3242,6 +3244,7 @@ export type Database = {
           receipt_code?: string;
           received_date?: string;
           tenant_id?: string;
+          linked_yarn_receipt_id?: string | null;
         };
         Relationships: [
           {
@@ -7390,6 +7393,7 @@ export type Database = {
           total_amount: number;
           updated_at: string;
           vehicle_info: string | null;
+          source_goods_receipt_id: string | null;
         };
         Insert: {
           additional_fees?: Json | null;
@@ -7407,6 +7411,7 @@ export type Database = {
           total_amount?: number;
           updated_at?: string;
           vehicle_info?: string | null;
+          source_goods_receipt_id?: string | null;
         };
         Update: {
           additional_fees?: Json | null;
@@ -7424,6 +7429,7 @@ export type Database = {
           total_amount?: number;
           updated_at?: string;
           vehicle_info?: string | null;
+          source_goods_receipt_id?: string | null;
         };
         Relationships: [
           {

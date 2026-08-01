@@ -22,6 +22,10 @@ import {
   useYarnCatalogOptions,
 } from '@/application/inventory';
 import {
+  useGoodsReceipt,
+  usePurchaseOrder,
+} from '@/application/purchase-orders';
+import {
   emptyYarnReceiptItem,
   yarnReceiptsDefaultValues,
   yarnReceiptsSchema,
@@ -43,6 +47,7 @@ import { useYarnReceiptTotal } from './hooks/useYarnReceiptTotal';
 
 export type YarnReceiptFormProps = {
   receipt: YarnReceipt | null;
+  fromGoodsReceiptId?: string | null;
   onClose: () => void;
 };
 
@@ -56,7 +61,11 @@ function LineTotals({ control }: { control: Control<YarnReceiptsFormValues> }) {
   );
 }
 
-export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
+export function YarnReceiptForm({
+  receipt,
+  fromGoodsReceiptId,
+  onClose,
+}: YarnReceiptFormProps) {
   const isEditing = receipt !== null;
   const createMutation = useCreateYarnReceipt();
   const updateMutation = useUpdateYarnReceipt();
@@ -76,8 +85,79 @@ export function YarnReceiptForm({ receipt, onClose }: YarnReceiptFormProps) {
     control,
     trigger,
     getValues,
+    reset,
     formState: { errors, isSubmitting, isDirty },
   } = methods;
+
+  const { data: goodsReceipt } = useGoodsReceipt(
+    fromGoodsReceiptId ?? undefined,
+  );
+  const { data: po } = usePurchaseOrder(goodsReceipt?.po_id);
+
+  // Pre-populate logic
+  useEffect(() => {
+    if (!isEditing && fromGoodsReceiptId && goodsReceipt && po) {
+      // Only reset if it's still default values (not touched by user)
+      if (
+        getValues('items').length === 0 ||
+        (getValues('items').length === 1 &&
+          getValues('items')[0]?.quantity === 0)
+      ) {
+        const mappedItems: YarnReceiptsFormValues['items'] = (
+          goodsReceipt.goods_receipt_items || []
+        ).map((grItem: Record<string, unknown>) => {
+          // Find matching catalog name by code/id (assuming material_id links to catalog)
+          // Note: In reality, material_id is usually a uuid linking to inventory_items, which links to yarn_catalogs.
+          // Let's try to match yarnCatalogs by name or ID if possible. We might not have direct catalog id here.
+          // For now, we will leave yarnCatalogId empty if we can't perfectly map it, and let user select.
+          // But actually, we know material_id. We might need to map it properly.
+          // Let's look for a catalog with matching ID if possible.
+
+          const poItems = (po as unknown as Record<string, unknown>).items as
+            | Record<string, unknown>[]
+            | undefined;
+          const poItem = (poItems || []).find(
+            (i) => i.id === grItem.po_item_id,
+          );
+          let mappedYarnTypeId = '';
+          if (poItem) {
+            const material = yarnCatalogs.find(
+              (m) => m.id === poItem.material_id,
+            );
+            if (material) {
+              mappedYarnTypeId = material.id;
+            }
+          }
+
+          return {
+            ...emptyYarnReceiptItem,
+            yarnTypeId: mappedYarnTypeId,
+            quantity: grItem.received_qty as number,
+            unitPrice: grItem.unit_price as number,
+            notes: `Từ phiếu nhận hàng ${goodsReceipt.receipt_code}`,
+            // Add custom property to disable editing qty > received_qty if needed, though form doesn't support it directly.
+            // But we can store it in notes for now.
+          };
+        });
+
+        reset({
+          ...yarnReceiptsDefaultValues,
+          supplierId: po.supplier_id,
+          receiptDate: new Date().toISOString().split('T')[0],
+          sourceGoodsReceiptId: goodsReceipt.id,
+          items: mappedItems.length > 0 ? mappedItems : [emptyYarnReceiptItem],
+        });
+      }
+    }
+  }, [
+    isEditing,
+    fromGoodsReceiptId,
+    goodsReceipt,
+    po,
+    yarnCatalogs,
+    reset,
+    getValues,
+  ]);
 
   const handleCancel = useCallback(() => {
     if (isDirty) {

@@ -31,22 +31,32 @@ export function ItemQuantityFields({
 
   return (
     <>
-      <Controller
-        name={`items.${index}.quantity`}
-        control={control}
-        render={({ field }) => (
-          <QuantityInput
-            id={`items.${index}.quantity`}
-            className={`field-input${errors.items?.[index]?.quantity ? ' border-danger' : ''}`}
-            step="0.001"
-            min="0"
-            placeholder="0"
-            value={field.value}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-          />
+      <div className="form-field">
+        <label htmlFor={`items.${index}.quantity`}>
+          Số lượng <span className="field-required">*</span>
+        </label>
+        <Controller
+          name={`items.${index}.quantity`}
+          control={control}
+          render={({ field }) => (
+            <QuantityInput
+              id={`items.${index}.quantity`}
+              className={`field-input${errors.items?.[index]?.quantity ? ' border-danger' : ''}`}
+              step="0.001"
+              min="0"
+              placeholder="0"
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+            />
+          )}
+        />
+        {errors.items?.[index]?.quantity && (
+          <span className="field-error">
+            {errors.items[index]?.quantity?.message as string}
+          </span>
         )}
-      />
+      </div>
 
       <div className="form-field">
         <label htmlFor={`items.${index}.unitPrice`}>

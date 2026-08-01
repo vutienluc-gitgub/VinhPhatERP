@@ -89,6 +89,7 @@ export interface GoodsReceipt {
   created_by: string;
   created_at: string;
   tenant_id: string;
+  linked_yarn_receipt_id?: string | null;
 }
 
 export interface GoodsReceiptItem {
