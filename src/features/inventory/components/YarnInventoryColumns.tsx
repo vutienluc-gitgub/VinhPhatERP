@@ -2,7 +2,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 
 import type { YarnAvailability } from '@/api/yarn-reservation.api';
-import { Badge } from '@/shared/components';
+import { Badge, Icon } from '@/shared/components';
 import type { BadgeVariant } from '@/shared/components';
 import { WeightText } from '@/shared/value';
 import { INVENTORY_MESSAGES as MSG } from '@/features/inventory/inventory.constants';
@@ -32,86 +32,111 @@ function getAvailablePct(row: YarnAvailability): number {
   return Math.max(0, Math.min(100, (row.available_qty / total) * 100));
 }
 
-export const YARN_INVENTORY_COLUMNS: ColumnDef<YarnAvailability, unknown>[] = [
-  {
-    header: MSG.LBL_YARN_CODE,
-    id: 'code',
-    accessorKey: 'code',
-    cell: ({ row }) => (
-      <span className="font-bold text-primary">{row.original.code}</span>
-    ),
-  },
-  {
-    header: MSG.LBL_YARN_NAME,
-    id: 'name',
-    accessorKey: 'name',
-    cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
-  },
-  {
-    header: MSG.LBL_YARN_COLOR,
-    id: 'color_name',
-    accessorKey: 'color_name',
-    cell: ({ row }) => row.original.color_name || '—',
-    meta: { className: 'max-sm:hidden' },
-  },
-  {
-    header: MSG.LBL_YARN_TOTAL_KG,
-    id: 'total_stock_qty',
-    accessorKey: 'total_stock_qty',
-    cell: ({ row }) => <WeightText value={row.original.total_stock_qty} />,
-    meta: { className: 'text-right max-sm:hidden text-muted' },
-  },
-  {
-    header: MSG.LBL_YARN_RESERVED_KG,
-    id: 'reserved_qty',
-    accessorKey: 'reserved_qty',
-    cell: ({ row }) => (
-      <span className="text-danger font-medium">
-        {row.original.reserved_qty > 0 ? (
-          <>
-            -
-            <WeightText value={row.original.reserved_qty} />
-          </>
-        ) : (
-          0
-        )}
-      </span>
-    ),
-    meta: { className: 'text-right max-sm:hidden' },
-  },
-  {
-    header: MSG.LBL_YARN_AVAILABLE,
-    id: 'available_qty',
-    accessorKey: 'available_qty',
-    meta: { className: 'w-[180px]' },
-    cell: ({ row }) => {
-      const originalRow = row.original;
-      const health = getStockHealth(originalRow);
-      const pct = getAvailablePct(originalRow);
-
-      return (
-        <div className="flex flex-col gap-1.5 w-full min-w-[140px]">
-          <div className="flex justify-between items-center text-sm">
-            <span className="font-bold">
-              <WeightText value={originalRow.available_qty} suffix="kg" />
-            </span>
-            <Badge variant={health.variant} className="text-[10px]">
-              {health.label}
-            </Badge>
-          </div>
-          <div className="w-full bg-surface-secondary rounded-full h-1.5 overflow-hidden">
-            <div
-              className={`h-full ${health.barColor} transition-all`}
-              style={{ width: `${pct}%` }}
-            />
-          </div>
-        </div>
-      );
+export function useYarnInventoryColumns(
+  onCodeClick?: (row: YarnAvailability) => void,
+): ColumnDef<YarnAvailability, unknown>[] {
+  return [
+    {
+      header: MSG.LBL_YARN_CODE,
+      id: 'code',
+      accessorKey: 'code',
+      cell: ({ row }) => (
+        <button
+          onClick={() => onCodeClick?.(row.original)}
+          className="font-bold text-primary hover:underline text-left"
+          title="Xem thẻ kho"
+        >
+          {row.original.code}
+        </button>
+      ),
     },
-  },
-];
+    {
+      header: MSG.LBL_YARN_NAME,
+      id: 'name',
+      accessorKey: 'name',
+      cell: ({ row }) => (
+        <span className="font-medium">{row.original.name}</span>
+      ),
+    },
+    {
+      header: MSG.LBL_YARN_COLOR,
+      id: 'color_name',
+      accessorKey: 'color_name',
+      cell: ({ row }) => row.original.color_name || '—',
+      meta: { className: 'max-sm:hidden' },
+    },
+    {
+      header: MSG.LBL_YARN_TOTAL_KG,
+      id: 'total_stock_qty',
+      accessorKey: 'total_stock_qty',
+      cell: ({ row }) => <WeightText value={row.original.total_stock_qty} />,
+      meta: { className: 'text-right max-sm:hidden text-muted' },
+    },
+    {
+      header: MSG.LBL_YARN_RESERVED_KG,
+      id: 'reserved_qty',
+      accessorKey: 'reserved_qty',
+      cell: ({ row }) => (
+        <span
+          className={
+            row.original.reserved_qty > 0
+              ? 'text-warning font-medium'
+              : 'text-muted'
+          }
+        >
+          {row.original.reserved_qty > 0 ? (
+            <div className="flex items-center justify-end gap-1">
+              <span>-</span>
+              <WeightText value={row.original.reserved_qty} />
+              <Icon name="lock" size={14} />
+            </div>
+          ) : (
+            '0'
+          )}
+        </span>
+      ),
+      meta: { className: 'text-right max-sm:hidden' },
+    },
+    {
+      header: MSG.LBL_YARN_AVAILABLE,
+      id: 'available_qty',
+      accessorKey: 'available_qty',
+      meta: { className: 'w-[180px]' },
+      cell: ({ row }) => {
+        const originalRow = row.original;
+        const health = getStockHealth(originalRow);
+        const pct = getAvailablePct(originalRow);
 
-export function YarnInventoryMobileCard({ row }: { row: YarnAvailability }) {
+        return (
+          <div className="flex flex-col gap-1.5 w-full min-w-[140px]">
+            <div className="flex justify-between items-center text-sm">
+              <span className="font-bold">
+                <WeightText value={originalRow.available_qty} suffix="kg" />
+              </span>
+              <Badge variant={health.variant} className="text-[10px]">
+                {health.label}
+              </Badge>
+            </div>
+            <div className="w-full bg-surface-secondary rounded-full h-1.5 overflow-hidden">
+              <div
+                className={`h-full ${health.barColor} transition-all`}
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+          </div>
+        );
+      },
+    },
+  ];
+}
+
+export function YarnInventoryMobileCard({
+  row,
+  onCodeClick,
+}: {
+  row: YarnAvailability;
+  onCodeClick?: (row: YarnAvailability) => void;
+}) {
   const health = getStockHealth(row);
   const pct = getAvailablePct(row);
 
@@ -119,7 +144,12 @@ export function YarnInventoryMobileCard({ row }: { row: YarnAvailability }) {
     <div className="mobile-card">
       <div className="mobile-card-header">
         <div className="flex flex-col">
-          <span className="mobile-card-title">{row.code}</span>
+          <button
+            onClick={() => onCodeClick?.(row)}
+            className="mobile-card-title hover:underline text-left text-primary cursor-pointer"
+          >
+            {row.code}
+          </button>
           <span className="text-[10px] text-muted font-bold uppercase">
             {row.name}
           </span>

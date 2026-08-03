@@ -44,17 +44,6 @@ export function InventoryDataGrid<T>({
         emptyStateIcon={emptyStateIcon}
         renderMobileCard={renderMobileCard}
         exportFileName={`Inventory_${title.replace(/\s+/g, '_')}`}
-        pagination={{
-          onPageChange: () => {},
-          itemLabel: 'mặt hàng',
-          result: {
-            data: data,
-            page: 1,
-            pageSize: 20,
-            total: data.length,
-            totalPages: Math.ceil(data.length / 20),
-          },
-        }}
       />
     </div>
   );

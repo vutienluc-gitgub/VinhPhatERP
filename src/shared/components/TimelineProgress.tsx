@@ -15,15 +15,28 @@ export interface TimelineStep {
 interface TimelineProgressProps {
   steps: TimelineStep[];
   className?: string;
+  direction?: 'vertical' | 'horizontal';
 }
 
 /**
  * Premium Timeline Progress Component
  * Displays a vertical step-by-step timeline, perfect for Order tracking and Production flow.
  */
-export function TimelineProgress({ steps, className }: TimelineProgressProps) {
+export function TimelineProgress({
+  steps,
+  className,
+  direction = 'vertical',
+}: TimelineProgressProps) {
   return (
-    <div className={clsx('flex flex-col gap-0 w-full', className)}>
+    <div
+      className={clsx(
+        'flex w-full',
+        direction === 'vertical'
+          ? 'flex-col gap-0'
+          : 'flex-row items-start justify-between gap-4 overflow-x-auto pb-4 scrollbar-none',
+        className,
+      )}
+    >
       {steps.map((step, idx) => {
         const isLast = idx === steps.length - 1;
         const IconName = step.icon ?? 'Circle';
@@ -47,23 +60,37 @@ export function TimelineProgress({ steps, className }: TimelineProgressProps) {
         return (
           <div
             key={step.id}
-            className="relative flex items-start gap-4 group fade-up"
+            className={clsx(
+              'relative group fade-up',
+              direction === 'vertical'
+                ? 'flex items-start gap-4'
+                : 'flex flex-col items-center flex-1 min-w-[140px]',
+            )}
             style={{ animationDelay: `${idx * 0.1}s` }}
           >
             {/* Timeline line connecting steps */}
             {!isLast && (
               <div
                 className={clsx(
-                  'absolute left-4 top-8 bottom-[-16px] w-[2px] -translate-x-1/2 transition-colors duration-500',
+                  'absolute transition-colors duration-500',
+                  direction === 'vertical'
+                    ? 'left-4 top-8 bottom-[-16px] w-[2px] -translate-x-1/2'
+                    : 'top-4 left-[50%] right-[-50%] h-[2px]',
                   step.status === 'current'
-                    ? 'border-l-2 border-dashed border-border bg-transparent'
+                    ? (direction === 'vertical' ? 'border-l-2' : 'border-t-2') +
+                        ' border-dashed border-border bg-transparent'
                     : lineColorClass,
                 )}
               />
             )}
 
             {/* Step Icon Node */}
-            <div className="relative z-10 flex flex-col items-center">
+            <div
+              className={clsx(
+                'relative z-10 flex flex-col items-center',
+                direction === 'horizontal' && 'mb-3',
+              )}
+            >
               <div
                 className={clsx(
                   'w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110',
@@ -81,7 +108,10 @@ export function TimelineProgress({ steps, className }: TimelineProgressProps) {
             {/* Step Content */}
             <div
               className={clsx(
-                'flex-1 mb-6 p-4 rounded-xl border transition-all duration-300',
+                'transition-all duration-300',
+                direction === 'vertical'
+                  ? 'flex-1 mb-6 p-4 rounded-xl border'
+                  : 'flex flex-col items-center text-center p-3 rounded-lg border w-full relative group-hover:shadow-md',
                 step.status === 'completed' &&
                   'bg-success/10 border-success/20',
                 step.status === 'current' &&
@@ -91,8 +121,20 @@ export function TimelineProgress({ steps, className }: TimelineProgressProps) {
                   'bg-transparent border-transparent pt-1 px-0',
               )}
             >
-              <div className="flex justify-between items-start gap-2">
-                <div>
+              <div
+                className={clsx(
+                  'flex',
+                  direction === 'vertical'
+                    ? 'justify-between items-start gap-2'
+                    : 'flex-col items-center gap-1.5',
+                )}
+              >
+                <div
+                  className={clsx(
+                    direction === 'horizontal' &&
+                      'flex flex-col items-center w-full',
+                  )}
+                >
                   <h4
                     className={clsx(
                       'text-sm font-bold m-0',
@@ -107,7 +149,9 @@ export function TimelineProgress({ steps, className }: TimelineProgressProps) {
                   {step.subtitle && (
                     <div
                       className={clsx(
-                        'text-xs mt-1 leading-relaxed',
+                        direction === 'vertical'
+                          ? 'text-xs mt-1 leading-relaxed'
+                          : 'text-[11px] leading-tight mt-1 px-1',
                         step.status === 'pending'
                           ? 'text-muted'
                           : 'text-text/80',
@@ -120,7 +164,10 @@ export function TimelineProgress({ steps, className }: TimelineProgressProps) {
                 {step.date && (
                   <div
                     className={clsx(
-                      'text-[10px] font-semibold uppercase tracking-wider tabular-nums whitespace-nowrap pt-0.5',
+                      'font-semibold uppercase tracking-wider tabular-nums whitespace-nowrap',
+                      direction === 'vertical'
+                        ? 'text-[10px] pt-0.5'
+                        : 'text-[9px] mt-1',
                       step.status === 'pending' ? 'text-muted' : 'text-text/60',
                     )}
                   >
