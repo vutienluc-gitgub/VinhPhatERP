@@ -25,9 +25,10 @@ import { ContextualGuide } from '@/features/guide-system/components/ContextualGu
 
 import { InventoryDataGrid } from './components/InventoryDataGrid';
 import {
-  YARN_INVENTORY_COLUMNS,
+  useYarnInventoryColumns,
   YarnInventoryMobileCard,
 } from './components/YarnInventoryColumns';
+import { YarnStockLedgerModal } from './components/YarnStockLedgerModal';
 import { InventoryAdjustmentModal } from './components/InventoryAdjustmentModal';
 import { InventoryAdjustmentHistory } from './components/InventoryAdjustmentHistory';
 import {
@@ -62,6 +63,7 @@ function InventoryBreakdownTabs({
   agingError,
   criticalCount,
   warningCount,
+  onYarnCodeClick,
 }: {
   yarnData: YarnAvailability[];
   yarnLoading: boolean;
@@ -74,10 +76,12 @@ function InventoryBreakdownTabs({
   agingError: Error | null;
   criticalCount: number;
   warningCount: number;
+  onYarnCodeClick?: (yarn: YarnAvailability) => void;
 }) {
   const [activeTab, setActiveTab] = useState<InventoryTab>('yarn');
   const agingColumns = useAgingColumns();
   const breakdownColumns = useBreakdownColumns();
+  const yarnColumns = useYarnInventoryColumns(onYarnCodeClick);
 
   const tabs = INVENTORY_TABS.map((t) => {
     let badge = 0;
@@ -118,11 +122,13 @@ function InventoryBreakdownTabs({
         <InventoryDataGrid
           title=""
           data={yarnData}
-          columns={YARN_INVENTORY_COLUMNS}
+          columns={yarnColumns}
           isLoading={yarnLoading}
           rowKey={(r) => r.id}
           emptyStateTitle="Không có dữ liệu sợi"
-          renderMobileCard={(r) => <YarnInventoryMobileCard row={r} />}
+          renderMobileCard={(r) => (
+            <YarnInventoryMobileCard row={r} onCodeClick={onYarnCodeClick} />
+          )}
         />
       )}
 
@@ -183,6 +189,8 @@ function InventoryBreakdownTabs({
 
 export function InventoryPage() {
   const [isAdjustModalOpen, setIsAdjustModalOpen] = useState(false);
+  const [selectedYarnForLedger, setSelectedYarnForLedger] =
+    useState<YarnAvailability | null>(null);
 
   const rawQuery = useRawFabricInventory();
   const finishedQuery = useFinishedFabricInventory();
@@ -270,6 +278,7 @@ export function InventoryPage() {
             agingError={agingQuery.error}
             criticalCount={criticalCount}
             warningCount={warningCount}
+            onYarnCodeClick={setSelectedYarnForLedger}
           />
         )}
 
@@ -286,6 +295,12 @@ export function InventoryPage() {
       <InventoryAdjustmentModal
         isOpen={isAdjustModalOpen}
         onClose={() => setIsAdjustModalOpen(false)}
+      />
+
+      <YarnStockLedgerModal
+        yarn={selectedYarnForLedger}
+        isOpen={!!selectedYarnForLedger}
+        onClose={() => setSelectedYarnForLedger(null)}
       />
     </PageLayout>
   );
