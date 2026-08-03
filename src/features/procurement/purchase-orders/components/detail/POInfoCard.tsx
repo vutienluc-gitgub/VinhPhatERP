@@ -3,6 +3,12 @@ import dayjs from 'dayjs';
 import { MoneyText } from '@/shared/value';
 import { Icon } from '@/shared/components';
 import type { PurchaseOrder } from '@/domain/purchase-orders';
+import {
+  purchaseOrderStatus,
+  type POStatus,
+} from '@/features/procurement/purchase-orders/po.status';
+
+import { POSupplierPortalStatus } from './POSupplierPortalStatus';
 
 interface POInfoCardProps {
   po: PurchaseOrder;
@@ -32,8 +38,8 @@ export function POInfoCard({ po, creatorProfile }: POInfoCardProps) {
         </div>
         <div className="flex flex-col">
           <span className="text-xs text-muted">Trạng thái</span>
-          <span className="font-medium text-sm mt-1 capitalize">
-            {po.status}
+          <span className="font-medium text-sm mt-1">
+            {purchaseOrderStatus[po.status as POStatus]?.label || po.status}
           </span>
         </div>
         <div className="flex flex-col">
@@ -58,11 +64,43 @@ export function POInfoCard({ po, creatorProfile }: POInfoCardProps) {
           </span>
         </div>
 
-        <div className="col-span-2 mt-2 pt-4 border-t border-border flex justify-between items-center">
-          <span className="text-muted font-medium">Tổng tiền:</span>
-          <span className="font-bold text-primary text-2xl bg-primary/10 px-4 py-1.5 rounded-lg">
-            <MoneyText value={po.total_amount} />
-          </span>
+        <div className="col-span-2 mt-4 pt-4 border-t border-border space-y-2">
+          {po.subtotal_amount !== undefined && po.subtotal_amount !== null && (
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-muted">Tạm tính:</span>
+              <span className="font-medium">
+                <MoneyText value={po.subtotal_amount} />
+              </span>
+            </div>
+          )}
+          {po.vat_amount !== undefined &&
+            po.vat_amount !== null &&
+            po.vat_amount > 0 && (
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted">
+                  Thuế VAT{po.vat_rate ? ` (${po.vat_rate}%)` : ''}:
+                </span>
+                <span className="font-medium">
+                  <MoneyText value={po.vat_amount} />
+                </span>
+              </div>
+            )}
+          {po.shipping_fee !== undefined &&
+            po.shipping_fee !== null &&
+            po.shipping_fee > 0 && (
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted">Phí vận chuyển:</span>
+                <span className="font-medium">
+                  <MoneyText value={po.shipping_fee} />
+                </span>
+              </div>
+            )}
+          <div className="flex justify-between items-center pt-2">
+            <span className="text-muted font-medium text-base">Tổng tiền:</span>
+            <span className="font-bold text-primary text-2xl bg-primary/10 px-4 py-1.5 rounded-lg">
+              <MoneyText value={po.total_amount} />
+            </span>
+          </div>
         </div>
 
         {po.status === 'rejected' && po.rejection_reason && (
@@ -110,20 +148,25 @@ export function POInfoCard({ po, creatorProfile }: POInfoCardProps) {
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
-            <div>
+            <div className="flex-1">
               <p className="font-bold text-success-strong mb-0.5">
                 NCC đã xác nhận đơn hàng
               </p>
-              <p className="text-success-strong/80 text-xs">
+              <p className="text-success-strong/80 text-xs mb-1">
                 Lúc {dayjs(po.confirmed_at).format('HH:mm - DD/MM/YYYY')}
-                {po.confirmation_method === 'portal' &&
-                  ' (qua Cổng thông tin NCC)'}
-                {po.confirmation_method === 'manual' && ' (xác nhận thủ công)'}
               </p>
+              <div className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-success/20 text-success-strong border border-success/30">
+                Nguồn:{' '}
+                {po.confirmation_method === 'portal'
+                  ? 'Cổng thông tin NCC (Portal)'
+                  : 'Manual (Thủ công)'}
+              </div>
             </div>
           </div>
         )}
       </div>
+
+      <POSupplierPortalStatus po={po} />
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
+import { Link } from 'react-router-dom';
 
+import { QuantityText } from '@/shared/value';
 import { PO_CONSTANTS } from '@/features/procurement/purchase-orders/purchase-orders.constants';
 import { Button, Icon } from '@/shared/components';
 import type {
@@ -58,7 +60,13 @@ export function POGoodsReceiptsList({
               <div key={gr.id} className="border border-border rounded-lg p-4">
                 <div className="flex justify-between items-center mb-3">
                   <span className="font-semibold text-primary flex items-center gap-2">
-                    {gr.receipt_code}
+                    <Link
+                      to={`/goods-receipts/${gr.id}`}
+                      target="_blank"
+                      className="hover:underline text-primary"
+                    >
+                      {gr.receipt_code}
+                    </Link>
                     {gr.linked_yarn_receipt_id ? (
                       <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-success-soft text-success">
                         <Icon name="CheckCircle2" size={12} className="mr-1" />
@@ -99,9 +107,11 @@ export function POGoodsReceiptsList({
                       className="flex justify-between py-1 border-b border-border/50 last:border-0"
                     >
                       <span>Ref ID: {item.po_item_id}</span>
-                      <span className="font-medium text-success">
-                        +{item.received_qty}
-                      </span>
+                      <QuantityText
+                        value={item.received_qty}
+                        prefix="+"
+                        variant="success"
+                      />
                     </div>
                   ))}
                 </div>

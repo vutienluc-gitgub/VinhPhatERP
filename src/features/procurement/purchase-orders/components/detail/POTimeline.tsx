@@ -1,11 +1,23 @@
+import dayjs from 'dayjs';
+
 import { Icon } from '@/shared/components';
 import { PO_CONSTANTS } from '@/features/procurement/purchase-orders/purchase-orders.constants';
 
-interface POTimelineProps {
-  status: string;
+interface AuditLog {
+  action: string;
+  created_at: string;
+  comment?: string;
+  profiles?: {
+    full_name?: string;
+  };
 }
 
-export function POTimeline({ status }: POTimelineProps) {
+interface POTimelineProps {
+  status: string;
+  auditLogs?: AuditLog[];
+}
+
+export function POTimeline({ status, auditLogs = [] }: POTimelineProps) {
   const steps = [
     { id: 'draft', label: PO_CONSTANTS.TIMELINE_DRAFT },
     { id: 'pending_approval', label: PO_CONSTANTS.TIMELINE_PENDING },
@@ -82,10 +94,16 @@ export function POTimeline({ status }: POTimelineProps) {
         {steps.map((step, index) => {
           const isCompleted = index <= currentIndex;
           const isCurrent = index === currentIndex;
+          const log = auditLogs.find(
+            (l) =>
+              l.action === step.id ||
+              (step.id === 'pending_approval' && l.action === 'submitted'),
+          );
+
           return (
             <div
               key={step.id}
-              className="flex flex-col items-center gap-3 bg-surface px-4"
+              className="group relative flex flex-col items-center gap-3 bg-surface px-4 cursor-default"
             >
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${isCompleted ? 'bg-primary border-primary text-white shadow-md' : 'bg-surface border-default text-muted-foreground'}`}
@@ -97,6 +115,25 @@ export function POTimeline({ status }: POTimelineProps) {
               >
                 {step.label}
               </span>
+
+              {log && (
+                <div className="absolute top-12 left-1/2 -translate-x-1/2 w-48 p-2.5 bg-slate-800 text-white text-xs rounded shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50">
+                  <div className="font-semibold mb-1">{step.label}</div>
+                  <div className="text-slate-300 mb-0.5">
+                    Lúc: {dayjs(log.created_at).format('HH:mm - DD/MM/YYYY')}
+                  </div>
+                  <div className="text-slate-300">
+                    Bởi: {log.profiles?.full_name || 'Hệ thống'}
+                  </div>
+                  {log.comment && (
+                    <div className="mt-1 pt-1 border-t border-slate-600 italic">
+                      "{log.comment}"
+                    </div>
+                  )}
+                  {/* Tooltip Arrow */}
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 rotate-45"></div>
+                </div>
+              )}
             </div>
           );
         })}

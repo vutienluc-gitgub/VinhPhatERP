@@ -343,6 +343,7 @@ export async function addPurchaseOrderComment(payload: {
   poId: string;
   content: string;
   userId: string;
+  visibility: 'internal' | 'external';
 }) {
   const { data, error } = await untypedDb
     .from('purchase_order_comments')
@@ -351,6 +352,7 @@ export async function addPurchaseOrderComment(payload: {
       content: payload.content,
       sender_type: 'erp',
       sender_id: payload.userId,
+      visibility: payload.visibility,
     })
     .select()
     .single();

@@ -227,8 +227,11 @@ export function useAddPOComment() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   return useMutation({
-    mutationFn: (payload: { poId: string; content: string }) =>
-      addPurchaseOrderComment({ ...payload, userId: user!.id }),
+    mutationFn: (payload: {
+      poId: string;
+      content: string;
+      visibility: 'internal' | 'external';
+    }) => addPurchaseOrderComment({ ...payload, userId: user!.id }),
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({
         queryKey: [...QUERY_KEY, 'comments', variables.poId],

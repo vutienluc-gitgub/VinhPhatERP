@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
 import { supabase } from '@/services/supabase/client';
-import { Icon, Button } from '@/shared/components';
+import { Icon, Button, TabSwitcher } from '@/shared/components';
 import {
   usePOComments,
   useAddPOComment,
@@ -15,6 +15,9 @@ interface POChatWidgetProps {
 
 export function POChatWidget({ poId }: POChatWidgetProps) {
   const [content, setContent] = useState('');
+  const [activeTab, setActiveTab] = useState<'internal' | 'external'>(
+    'internal',
+  );
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
@@ -61,7 +64,7 @@ export function POChatWidget({ poId }: POChatWidgetProps) {
     if (!content.trim() || addMutation.isPending) return;
 
     addMutation.mutate(
-      { poId, content },
+      { poId, content, visibility: activeTab },
       {
         onSuccess: () => {
           setContent('');
@@ -75,9 +78,29 @@ export function POChatWidget({ poId }: POChatWidgetProps) {
 
   return (
     <div className="bg-surface border border-border rounded-xl flex flex-col h-[600px] overflow-hidden lg:col-span-1 shadow-sm">
-      <div className="bg-surface-secondary p-4 border-b border-border flex items-center gap-2">
-        <Icon name="MessageCircle" className="w-5 h-5 text-primary" />
-        <h3 className="font-semibold m-0">Trao đổi nội bộ & NCC</h3>
+      <div className="bg-surface-secondary px-4 py-2 border-b border-border flex flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <Icon name="MessageCircle" className="w-5 h-5 text-primary" />
+          <h3 className="font-semibold m-0">Trao đổi Đơn hàng</h3>
+        </div>
+        <TabSwitcher<'internal' | 'external'>
+          tabs={[
+            {
+              key: 'internal',
+              label: 'Nội bộ',
+              icon: <Icon name="Lock" size={14} className="mr-1" />,
+            },
+            {
+              key: 'external',
+              label: 'Nhà cung cấp',
+              icon: <Icon name="Globe" size={14} className="mr-1" />,
+            },
+          ]}
+          active={activeTab}
+          onChange={setActiveTab}
+          variant="pill"
+          size="sm"
+        />
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50">
@@ -85,7 +108,11 @@ export function POChatWidget({ poId }: POChatWidgetProps) {
           <div className="flex justify-center py-4">
             <Icon name="Loader2" className="w-6 h-6 animate-spin text-muted" />
           </div>
-        ) : comments.length === 0 ? (
+        ) : comments.filter(
+            (c) =>
+              c.visibility === activeTab ||
+              (!c.visibility && activeTab === 'external'),
+          ).length === 0 ? (
           <div className="text-center py-8 text-muted">
             <Icon
               name="MessageSquare"
@@ -94,38 +121,46 @@ export function POChatWidget({ poId }: POChatWidgetProps) {
             <p className="text-sm">Chưa có trao đổi nào.</p>
           </div>
         ) : (
-          comments.map((comment) => {
-            const isMine = comment.sender_type === 'erp';
-            return (
-              <div
-                key={comment.id}
-                className={`flex flex-col max-w-[85%] ${
-                  isMine ? 'ml-auto items-end' : 'mr-auto items-start'
-                }`}
-              >
+          comments
+            .filter(
+              (c) =>
+                c.visibility === activeTab ||
+                (!c.visibility && activeTab === 'external'),
+            )
+            .map((comment) => {
+              const isMine = comment.sender_type === 'erp';
+              return (
                 <div
-                  className={`px-4 py-2.5 rounded-2xl shadow-sm text-sm ${
-                    isMine
-                      ? 'bg-primary text-primary-foreground rounded-tr-sm'
-                      : 'bg-white border border-border text-foreground rounded-tl-sm'
+                  key={comment.id}
+                  className={`flex flex-col max-w-[85%] ${
+                    isMine ? 'ml-auto items-end' : 'mr-auto items-start'
                   }`}
                 >
-                  <p className="whitespace-pre-wrap break-words">
-                    {comment.content}
-                  </p>
+                  <div
+                    className={`px-4 py-2.5 rounded-2xl shadow-sm text-sm ${
+                      isMine
+                        ? 'bg-primary text-primary-foreground rounded-tr-sm'
+                        : 'bg-white border border-border text-foreground rounded-tl-sm'
+                    }`}
+                  >
+                    <p className="whitespace-pre-wrap break-words">
+                      {comment.content}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-1 text-[11px] text-muted">
+                    <span className="font-medium">
+                      {isMine
+                        ? 'Bạn (ERP)'
+                        : comment.sender_name || 'Nhà cung cấp'}
+                    </span>
+                    <span>•</span>
+                    <span>
+                      {dayjs(comment.created_at).format('HH:mm DD/MM')}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5 mt-1 text-[11px] text-muted">
-                  <span className="font-medium">
-                    {isMine
-                      ? 'Bạn (ERP)'
-                      : comment.sender_name || 'Nhà cung cấp'}
-                  </span>
-                  <span>•</span>
-                  <span>{dayjs(comment.created_at).format('HH:mm DD/MM')}</span>
-                </div>
-              </div>
-            );
-          })
+              );
+            })
         )}
         <div ref={messagesEndRef} />
       </div>

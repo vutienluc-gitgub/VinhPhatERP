@@ -54,6 +54,7 @@ export interface PurchaseOrder {
   confirmed_ip?: string | null;
   confirmed_user_agent?: string | null;
   supplier_rejection_reason?: string | null;
+  supplier_viewed_at?: string | null;
 
   // From views
   total_ordered_qty?: number;
@@ -107,6 +108,7 @@ export interface PurchaseOrderComment {
   purchase_order_id: string;
   content: string;
   sender_type: 'erp' | 'supplier';
+  visibility: 'internal' | 'external';
   sender_id?: string | null;
   sender_name?: string | null;
   created_at: string;
