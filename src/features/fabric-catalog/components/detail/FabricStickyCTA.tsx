@@ -21,7 +21,7 @@ const VARIANT_CLASSES: Record<CTAButtonConfig['variant'], string> = {
   primary:
     'flex-[2] flex flex-col items-center justify-center gap-1 bg-[#0068ff] hover:bg-[#0054cc] text-white py-2.5 px-2 rounded-xl transition-colors shadow-sm shadow-[#0068ff]/30',
   secondary:
-    'flex-[2] flex flex-col items-center justify-center gap-1 bg-[#0068ff]/10 hover:bg-[#0068ff]/20 text-[#0068ff] border border-[#0068ff]/20 py-2.5 px-2 rounded-xl transition-colors',
+    'flex-[2] flex flex-col items-center justify-center gap-1 bg-[#0068ff]/10 hover:bg-[#0068ff]/20 text-[#0068ff] py-2.5 px-2 rounded-xl transition-colors',
   tertiary:
     'flex-1 flex flex-col items-center justify-center gap-1 bg-surface-secondary hover:bg-surface-secondary text-primary py-2.5 px-2 rounded-xl transition-colors',
 };
@@ -64,9 +64,9 @@ export function FabricStickyCTA({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-default shadow-[0_-4px_12px_-1px_rgba(0,0,0,0.08)] z-40">
+    <div className="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-4px_12px_-1px_rgba(0,0,0,0.08)] z-40">
       {/* Value Bar */}
-      <div className="flex items-center justify-center gap-4 px-3 py-1.5 bg-slate-50 border-b border-default max-w-md mx-auto">
+      <div className="flex items-center justify-center gap-4 px-3 py-1.5 bg-surface-secondary max-w-md mx-auto">
         <div className="flex items-center gap-1 text-[10px] text-muted">
           <Icon name="Package" className="w-3 h-3 text-muted-foreground" />
           <span className="font-semibold">MOQ:</span>

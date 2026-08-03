@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Badge, Button, Icon } from '@/shared/components';
+import { Badge, Button, Icon, VPSelect } from '@/shared/components';
 import type {
   FabricCatalog,
   FabricVariant,
@@ -44,7 +44,6 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
     capacityTons,
     capacityUtilizationPct,
     lengthMeters,
-    isMissingSpecs,
     estimatedGarments,
     garmentRules,
     plannerContext,
@@ -87,8 +86,8 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-default/60 overflow-hidden flex flex-col">
-      <div className="p-4 bg-slate-50 border-b border-default">
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col">
+      <div className="p-4 bg-surface-secondary">
         <h3 className="text-base font-bold text-foreground flex items-center gap-2">
           {COMP_LABELS.B2B_PLANNER_TITLE}
           <Badge variant="info" className="text-[10px] px-1.5 py-0">
@@ -133,40 +132,76 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
             </button>
           </div>
 
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <input
-                type="number"
-                min="1"
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                className="w-full text-sm border border-muted rounded-xl pl-3 pr-12 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white font-bold transition-all"
-              />
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <span className="text-xs font-bold text-muted">
-                  {mode === 'weight' ? 'kg' : mode === 'length' ? 'm' : 'cái'}
-                </span>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col justify-center">
+              <span className="text-[10px] uppercase font-bold text-muted tracking-wider block mb-1">
+                {COMP_LABELS.B2B_QUANTITY_INPUT_LABEL}
+              </span>
+              <div className="flex flex-col gap-2">
+                <div className="relative w-full">
+                  <input
+                    type="number"
+                    min="1"
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
+                    className="w-full text-base rounded-xl pl-3 pr-10 py-3.5 focus:outline-none focus:ring-2 focus:ring-primary/20 bg-surface-secondary font-black transition-all"
+                  />
+                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                    <span className="text-sm font-bold text-muted">
+                      {mode === 'weight'
+                        ? 'kg'
+                        : mode === 'length'
+                          ? 'm'
+                          : COMP_LABELS.B2B_UNIT_GARMENT}
+                    </span>
+                  </div>
+                </div>
+
+                {mode === 'garment' &&
+                  garmentRules &&
+                  garmentRules.length > 0 && (
+                    <VPSelect
+                      options={garmentRules.map((r) => ({
+                        value: r.id,
+                        label: r.name,
+                      }))}
+                      value={garmentRuleId}
+                      onValueChange={setGarmentRuleId}
+                      className="w-full bg-surface-secondary border-none h-11 text-sm font-medium rounded-xl"
+                    />
+                  )}
               </div>
             </div>
 
-            {mode === 'garment' && garmentRules && garmentRules.length > 0 && (
-              <select
-                className="flex-1 text-sm border border-muted rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white font-medium"
-                value={garmentRuleId}
-                onChange={(e) => setGarmentRuleId(e.target.value)}
-              >
-                {garmentRules.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.name}
-                  </option>
-                ))}
-              </select>
-            )}
+            <div className="p-3 rounded-xl bg-surface-secondary flex flex-col justify-center">
+              <span className="text-[10px] uppercase font-bold text-muted tracking-wider block mb-1">
+                {mode === 'length'
+                  ? COMP_LABELS.B2B_EQUIVALENT_WEIGHT
+                  : COMP_LABELS.B2B_LENGTH_CALC}
+              </span>
+
+              {mode === 'length' ? (
+                <span className="text-base font-black text-primary truncate">
+                  {weightKg} kg
+                </span>
+              ) : lengthMeters !== null ? (
+                <span className="text-base font-black text-primary truncate">
+                  {COMP_LABELS.B2B_EST_LENGTH.replace(
+                    '{lengthMeters}',
+                    Number(lengthMeters).toFixed(1),
+                  )}
+                </span>
+              ) : (
+                <span className="text-[10px] font-medium text-danger leading-tight">
+                  {COMP_LABELS.B2B_MISSING_DATA}
+                </span>
+              )}
+            </div>
           </div>
 
-          {mode !== 'weight' && weightKg > 0 && (
-            <div className="text-xs text-muted font-medium bg-slate-50 px-3 py-2 rounded-lg border border-default flex items-center justify-between">
-              <span>Khối lượng quy đổi tương đương:</span>
+          {mode === 'garment' && weightKg > 0 && (
+            <div className="text-xs text-muted font-medium bg-surface-secondary px-3 py-2 rounded-lg flex items-center justify-between">
+              <span>{COMP_LABELS.B2B_EQUIVALENT_WEIGHT}</span>
               <span className="font-bold text-primary">{weightKg} kg</span>
             </div>
           )}
@@ -174,13 +209,16 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
 
         {/* Phase 2: Inventory & Commercial Validation */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="p-3 rounded-xl bg-slate-50 border border-default flex flex-col justify-between">
+          <div className="p-3 rounded-xl bg-surface-secondary flex flex-col justify-between">
             <div className="flex justify-between items-center mb-2">
               <span className="text-[10px] uppercase font-bold text-muted tracking-wider">
-                Tồn kho
+                {COMP_LABELS.B2B_INVENTORY_LABEL}
               </span>
               <span className="text-[10px] font-medium text-muted-foreground">
-                Có sẵn: {inventoryAvailableKg}kg
+                {COMP_LABELS.B2B_INVENTORY_AVAILABLE.replace(
+                  '{qty}',
+                  String(inventoryAvailableKg),
+                )}
               </span>
             </div>
             {weightKg > 0 ? (
@@ -188,18 +226,24 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
                 <div className="flex flex-col">
                   <span className="text-sm font-bold text-success flex items-center gap-1.5">
                     <Badge showDot variant="success" className="px-0 py-0" />
-                    Đủ hàng giao ngay
+                    {COMP_LABELS.B2B_ENOUGH_STOCK}
                   </span>
                 </div>
               ) : (
                 <div className="flex flex-col">
                   <span className="text-sm font-bold text-warning flex items-center gap-1.5">
                     <Badge showDot variant="warning" className="px-0 py-0" />
-                    Cần dệt {missingProductionKg}kg
+                    {COMP_LABELS.B2B_NEED_PROD.replace(
+                      '{qty}',
+                      String(missingProductionKg),
+                    )}
                   </span>
                   {!isMoqMet && (
                     <span className="text-[10px] text-danger font-medium mt-1">
-                      ⚠️ Chưa đạt MOQ dệt ({moq}kg)
+                      {COMP_LABELS.B2B_MOQ_WARNING.replace(
+                        '{moq}',
+                        String(moq),
+                      )}
                     </span>
                   )}
                 </div>
@@ -211,7 +255,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
             )}
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-50 border border-default flex flex-col justify-between">
+          <div className="p-3 rounded-xl bg-surface-secondary flex flex-col justify-between">
             <span className="text-[10px] uppercase font-bold text-muted tracking-wider mb-2">
               {COMP_LABELS.B2B_SUPPLY_CAP}
             </span>
@@ -222,14 +266,17 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
                       '{date}',
                       expectedDeliveryDate,
                     )
-                  : 'Giao ngay (24h)'}
+                  : COMP_LABELS.B2B_DELIVERY_NOW}
               </span>
 
               {capacityTons > 0 && needsProduction && (
                 <div className="flex flex-col gap-1 mt-1">
                   <div className="flex justify-between items-center">
                     <span className="text-[10px] text-muted font-medium">
-                      Chiếm {capacityUtilizationPct.toFixed(1)}% năng lực
+                      {COMP_LABELS.B2B_CAPACITY_USAGE.replace(
+                        '{pct}',
+                        capacityUtilizationPct.toFixed(1),
+                      )}
                     </span>
                   </div>
                   <div className="h-1.5 w-full bg-surface-secondary rounded-full overflow-hidden">
@@ -248,9 +295,9 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
 
         {/* Phase 2: Delivery Timeline */}
         {weightKg > 0 && needsProduction && deliveryTimeline && (
-          <div className="space-y-2 pt-2 border-t border-default">
+          <div className="space-y-2 pt-2">
             <span className="text-xs font-bold text-secondary block">
-              Timeline Sản Xuất Dự Kiến
+              {COMP_LABELS.B2B_TIMELINE_TITLE}
             </span>
             <div className="flex gap-1 h-2 w-full">
               {deliveryTimeline.map((step, idx) => (
@@ -266,7 +313,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
                 <div key={idx} className="flex flex-col items-center">
                   <span>{step.step}</span>
                   <span className="text-muted-foreground">
-                    {step.days} ngày
+                    {COMP_LABELS.B2B_DAYS.replace('{days}', String(step.days))}
                   </span>
                 </div>
               ))}
@@ -276,26 +323,26 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
 
         {/* Phase 2: Yield Analysis & Roll Estimation */}
         {weightKg > 0 && (
-          <div className="grid grid-cols-2 gap-3 pt-2 border-t border-default">
-            <div className="p-3 rounded-xl bg-slate-50 border border-default">
+          <div className="grid grid-cols-2 gap-3 pt-2">
+            <div className="p-3 rounded-xl bg-surface-secondary">
               <span className="text-[10px] uppercase font-bold text-muted tracking-wider block mb-1.5">
-                Phân Tích Hao Hụt (5%)
+                {COMP_LABELS.B2B_WASTE_ANALYSIS}
               </span>
               <div className="flex justify-between items-center text-xs">
-                <span className="text-muted">Vải thực dùng:</span>
+                <span className="text-muted">{COMP_LABELS.B2B_NET_FABRIC}</span>
                 <span className="font-bold">{netWeightKg.toFixed(1)} kg</span>
               </div>
               <div className="flex justify-between items-center text-xs mt-1">
-                <span className="text-muted">Hao hụt ước tính:</span>
+                <span className="text-muted">{COMP_LABELS.B2B_EST_WASTE}</span>
                 <span className="font-bold text-danger">
                   {wasteKg.toFixed(1)} kg
                 </span>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-slate-50 border border-default">
+            <div className="p-3 rounded-xl bg-surface-secondary">
               <span className="text-[10px] uppercase font-bold text-muted tracking-wider block mb-1.5">
-                Quy Đổi Lưu Kho
+                {COMP_LABELS.B2B_ROLL_CONVERSION}
               </span>
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-info">
@@ -303,9 +350,14 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm font-bold text-primary">
-                    ≈ {estimatedRolls} Cuộn
+                    {COMP_LABELS.B2B_EST_ROLLS.replace(
+                      '{rolls}',
+                      String(estimatedRolls),
+                    )}
                   </span>
-                  <span className="text-[10px] text-muted">~20kg/cuộn</span>
+                  <span className="text-[10px] text-muted">
+                    {COMP_LABELS.B2B_KG_PER_ROLL}
+                  </span>
                 </div>
               </div>
             </div>
@@ -314,34 +366,8 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
 
         {/* Estimations */}
         {weightKg > 0 && (
-          <div className="space-y-4 pt-2 border-t border-default">
-            {/* Fabric Length */}
-            {mode !== 'length' && (
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <span className="text-xs font-bold text-secondary">
-                    {COMP_LABELS.B2B_LENGTH_CALC}
-                  </span>
-                  {lengthMeters !== null && (
-                    <span className="text-base font-black text-primary">
-                      {COMP_LABELS.B2B_EST_LENGTH.replace(
-                        '{lengthMeters}',
-                        lengthMeters !== null
-                          ? Number(lengthMeters).toFixed(1)
-                          : '',
-                      )}
-                    </span>
-                  )}
-                </div>
-                {isMissingSpecs && (
-                  <div className="p-2.5 rounded-lg bg-rose-50 text-danger border border-danger text-xs font-medium mt-1">
-                    {COMP_LABELS.B2B_MISSING_DATA}{' '}
-                    {!fabric.target_gsm && COMP_LABELS.B2B_MISSING_GSM}{' '}
-                    {!fabric.target_width_cm && COMP_LABELS.B2B_MISSING_WIDTH}
-                  </div>
-                )}
-              </div>
-            )}
+          <div className="space-y-4 pt-2">
+            {/* Fabric Length removed and merged into top grid */}
 
             {/* Garments Production */}
             {estimatedGarments.length > 0 && mode !== 'garment' && (
@@ -353,7 +379,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
                   {estimatedGarments.map((rule) => (
                     <div
                       key={rule.id}
-                      className="p-2.5 rounded-xl bg-slate-50 border border-default flex items-center gap-2"
+                      className="p-2.5 rounded-xl bg-surface-secondary flex items-center gap-2"
                     >
                       <div className="w-7 h-7 rounded-lg bg-white shadow-sm flex items-center justify-center text-muted border border-default shrink-0">
                         {getGarmentIcon(rule.name)}
@@ -376,13 +402,13 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
       </div>
 
       {/* CTA */}
-      <div className="p-4 bg-slate-50 border-t border-default">
+      <div className="p-4 bg-surface-secondary">
         <Button
           variant="primary"
           className="w-full font-bold shadow-sm"
           onClick={handleRequestQuote}
         >
-          Yêu cầu báo giá đơn này
+          {COMP_LABELS.B2B_REQ_QUOTE_BTN}
         </Button>
       </div>
     </div>

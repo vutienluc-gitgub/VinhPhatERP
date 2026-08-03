@@ -77,7 +77,7 @@ export function FabricHeroGallery({
 
         {(fabric.view_count ?? 0) > 0 && (
           <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-sm">
-            <span>🔥</span>
+            <Icon name="Flame" className="w-3.5 h-3.5 text-orange-400" />
             {COMP_LABELS.HERO_VIEWS.replace(
               '{count}',
               (fabric.view_count ?? 0).toString(),

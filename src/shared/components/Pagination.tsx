@@ -1,11 +1,7 @@
 import { Button } from '@/shared/components';
 import { PageSizeSelect } from '@/shared/components/PageSizeSelect';
 import type { PaginatedResult } from '@/shared/types/pagination';
-
-const PAGINATION_LABELS = {
-  pageInfo: (page: number, totalPages: number, total: number) =>
-    `Trang ${page} / ${totalPages} — ${total} mục`,
-} as const;
+import { TABLE_LABELS } from '@/shared/constants/ui.constants';
 
 type PaginationProps<T> = {
   result: PaginatedResult<T> | undefined;
@@ -17,14 +13,15 @@ type PaginationProps<T> = {
 
 function formatPaginationText(
   page: number,
-  totalPages: number,
+  pageSize: number,
   total: number,
   itemLabel?: string,
 ): string {
-  if (itemLabel) {
-    return `Trang ${page} / ${totalPages} — ${total} ${itemLabel}`;
-  }
-  return PAGINATION_LABELS.pageInfo(page, totalPages, total);
+  if (total === 0) return '';
+  const from = (page - 1) * pageSize + 1;
+  const to = Math.min(page * pageSize, total);
+  const label = itemLabel || TABLE_LABELS.RECORDS;
+  return `${TABLE_LABELS.SHOWING} ${from} - ${to} ${TABLE_LABELS.OF_TOTAL} ${total} ${label}`;
 }
 
 export function Pagination<T>({
@@ -35,13 +32,13 @@ export function Pagination<T>({
 }: PaginationProps<T>) {
   if (!result || result.total === 0) return null;
 
-  const { page, totalPages, total } = result;
+  const { page, pageSize, total, totalPages } = result;
 
   return (
-    <div className="pagination-bar">
+    <div className="pagination-bar flex items-center justify-between">
       <div className="flex items-center gap-6">
-        <span className="text-sm">
-          {formatPaginationText(page, totalPages, total, itemLabel)}
+        <span className="text-sm text-muted">
+          {formatPaginationText(page, pageSize, total, itemLabel)}
         </span>
         {onPageSizeChange && result.pageSize && (
           <PageSizeSelect
