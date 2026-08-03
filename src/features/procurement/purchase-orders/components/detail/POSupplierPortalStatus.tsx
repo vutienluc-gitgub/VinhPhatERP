@@ -11,7 +11,7 @@ interface POSupplierPortalStatusProps {
 export function POSupplierPortalStatus({ po }: POSupplierPortalStatusProps) {
   if (!po.public_token) return null;
 
-  const portalUrl = `${window.location.origin}/portal/po/${po.public_token}`;
+  const portalUrl = `${window.location.origin}/po/${po.public_token}`;
 
   const copyLink = () => {
     navigator.clipboard.writeText(portalUrl);

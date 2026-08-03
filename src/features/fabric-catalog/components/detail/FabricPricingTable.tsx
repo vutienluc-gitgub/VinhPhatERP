@@ -56,7 +56,7 @@ export function FabricPricingTable({
         <div className="overflow-hidden border border-default rounded-xl">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-default text-muted font-semibold">
+              <tr className="bg-surface-secondary text-muted font-semibold">
                 <th className="p-3">{PUBLIC_PAGE_LABELS.pricingTierColQty}</th>
                 <th className="p-3 text-right">
                   {PUBLIC_PAGE_LABELS.pricingTierColPrice}
@@ -81,7 +81,7 @@ export function FabricPricingTable({
                       .replace('{unit}', fabric.unit || LABELS.PREVIEW_UNIT_KG);
 
                 return (
-                  <tr key={tier.id} className="hover:bg-slate-50/50">
+                  <tr key={tier.id} className="hover:bg-surface-secondary/50">
                     <td className="p-3 font-medium">{buyLabel}</td>
                     <td className="p-3 text-right font-semibold text-primary">
                       <MoneyText
@@ -100,7 +100,7 @@ export function FabricPricingTable({
           </table>
         </div>
       ) : canViewWholesale ? (
-        <div className="p-4 rounded-xl bg-slate-50 text-center border border-dashed border-default">
+        <div className="p-4 rounded-xl bg-surface-secondary text-center border border-dashed border-default">
           <p className="text-xs text-muted">
             {PUBLIC_PAGE_LABELS.noPricingTiersDesc}
           </p>

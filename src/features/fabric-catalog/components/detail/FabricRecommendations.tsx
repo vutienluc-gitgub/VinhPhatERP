@@ -54,7 +54,7 @@ export function FabricRecommendations({
       {/* Collaborative Recommendations ("Khách hàng khác cũng xem") */}
       {hasAlsoViewed && (
         <div className="bg-white rounded-xl shadow-sm p-4">
-          <h3 className="text-base font-bold text-foreground mb-3 border-b border-default pb-2">
+          <h3 className="text-base font-bold text-foreground mb-3 pb-2">
             {LABELS.alsoViewedProducts}
           </h3>
           <div className="grid grid-cols-3 gap-3 pt-1">
@@ -92,7 +92,7 @@ export function FabricRecommendations({
       {/* Related Products Section */}
       {hasRelated && (
         <div className="bg-white rounded-xl shadow-sm p-4">
-          <h3 className="text-base font-bold text-foreground mb-3 border-b border-default pb-2">
+          <h3 className="text-base font-bold text-foreground mb-3 pb-2">
             {LABELS.relatedProducts}
           </h3>
           <div className="space-y-3 pt-1">
