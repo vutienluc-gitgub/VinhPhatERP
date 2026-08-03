@@ -1,4 +1,5 @@
-import { MoneyText } from '@/shared/value';
+import { MoneyText, QuantityText } from '@/shared/value';
+import { ProgressBar } from '@/shared/components';
 import type {
   PurchaseOrder,
   PurchaseOrderItem,
@@ -34,9 +35,6 @@ export function POMaterialsTable({
           </thead>
           <tbody>
             {po.items?.map((item: PurchaseOrderItem) => {
-              const percent = item.ordered_qty
-                ? Math.round((item.received_qty / item.ordered_qty) * 100)
-                : 0;
               return (
                 <tr
                   key={item.id}
@@ -69,27 +67,31 @@ export function POMaterialsTable({
                     <MoneyText value={item.unit_price} />
                   </td>
                   <td className="px-4 py-3 text-right">
-                    {item.ordered_qty} {item.uom}
+                    <QuantityText
+                      value={item.ordered_qty}
+                      suffix={' ' + item.uom}
+                    />
                   </td>
                   <td className="px-4 py-3 text-right text-success font-semibold">
-                    {item.received_qty} {item.uom}
+                    <QuantityText
+                      value={item.received_qty}
+                      suffix={' ' + item.uom}
+                    />
                   </td>
                   <td className="px-4 py-3 text-right text-warning font-semibold">
-                    {item.remaining_qty} {item.uom}
+                    <QuantityText
+                      value={item.remaining_qty}
+                      suffix={' ' + item.uom}
+                    />
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex flex-col gap-1.5 items-end">
-                      <span className="text-xs font-bold text-secondary">
-                        {percent}%
-                      </span>
-                      <div className="w-24 h-2 bg-surface-secondary rounded-full overflow-hidden border border-default">
-                        <div
-                          className={`h-full transition-all ${percent === 0 ? 'bg-surface-strong' : percent >= 100 ? 'bg-success-soft' : 'bg-warning-soft'}`}
-                          style={{
-                            width: `${Math.max(5, Math.min(100, percent))}%`,
-                          }}
-                        />
-                      </div>
+                    <div className="flex flex-col items-end w-[120px] ml-auto">
+                      <ProgressBar
+                        value={item.received_qty}
+                        max={item.ordered_qty}
+                        showLabel
+                        size="sm"
+                      />
                     </div>
                   </td>
                 </tr>

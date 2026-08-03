@@ -277,7 +277,7 @@ export function PODetailPage() {
         </Button>
       </div>
 
-      <POTimeline status={po.status} />
+      <POTimeline status={po.status} auditLogs={auditLogs || []} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <POInfoCard po={po} creatorProfile={creatorProfile} />

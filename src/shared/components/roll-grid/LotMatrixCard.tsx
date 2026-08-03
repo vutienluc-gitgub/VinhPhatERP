@@ -1,4 +1,5 @@
 import { Icon } from '@/shared/components/Icon';
+import { ProgressBar } from '@/shared/components/ProgressBar';
 import { sumBy } from '@/shared/utils/array.util';
 import { cn } from '@/shared/utils/cn';
 
@@ -151,16 +152,12 @@ export function LotMatrixCard({
                 </span>
               </span>
 
-              {/* Warehouse Progress Bar */}
-              <div className="h-1.5 w-24 bg-[var(--surface-subtle)] rounded-full overflow-hidden flex border border-border/50">
-                <div
-                  className={cn(
-                    'h-full transition-all duration-500',
-                    isCountMatch ? 'bg-success' : 'bg-primary',
-                  )}
-                  style={{
-                    width: `${Math.min(100, (totals.rollCount / Math.max(1, expectedRollsCount)) * 100)}%`,
-                  }}
+              <div className="w-24 mt-1">
+                <ProgressBar
+                  value={totals.rollCount}
+                  max={Math.max(1, expectedRollsCount)}
+                  size="sm"
+                  colorScheme={isCountMatch ? 'success' : 'primary'}
                 />
               </div>
             </div>
