@@ -129,7 +129,6 @@ export function ReportsPage() {
               tabs={tabsWithBadge}
               active={activeTab}
               onChange={setActiveTab}
-              variant="premium"
             />
           </div>
         </div>

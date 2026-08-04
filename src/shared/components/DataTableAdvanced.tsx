@@ -230,63 +230,6 @@ function SortIcon({ direction }: { direction: false | 'asc' | 'desc' }) {
   );
 }
 
-// ─── Sub-component: InlinePagination ──────────────────────────────────────────
-
-interface InlinePaginationProps {
-  pageIndex: number;
-  pageSize: number;
-  pageCount: number;
-  totalItems: number;
-  canPreviousPage: boolean;
-  canNextPage: boolean;
-  onPreviousPage: () => void;
-  onNextPage: () => void;
-}
-
-function InlinePagination({
-  pageIndex,
-  pageSize,
-  pageCount,
-  totalItems,
-  canPreviousPage,
-  canNextPage,
-  onPreviousPage,
-  onNextPage,
-}: InlinePaginationProps) {
-  const from = pageIndex * pageSize + 1;
-  const to = Math.min((pageIndex + 1) * pageSize, totalItems);
-
-  return (
-    <div className="flex items-center justify-between gap-3 mt-2">
-      <div className="text-sm text-muted">
-        {TABLE_LABELS.SHOWING} {from} - {to} {TABLE_LABELS.OF_TOTAL}{' '}
-        {totalItems} {TABLE_LABELS.RECORDS}
-      </div>
-      <div className="flex items-center gap-1">
-        <Button
-          variant="outline"
-          size="icon"
-          className="w-8 h-8 rounded-lg"
-          onClick={onPreviousPage}
-          disabled={!canPreviousPage}
-          leftIcon="ChevronLeft"
-        />
-        <span className="text-sm font-medium px-2">
-          {pageIndex + 1} / {pageCount}
-        </span>
-        <Button
-          variant="outline"
-          size="icon"
-          className="w-8 h-8 rounded-lg"
-          onClick={onNextPage}
-          disabled={!canNextPage}
-          leftIcon="ChevronRight"
-        />
-      </div>
-    </div>
-  );
-}
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 function DataTableAdvancedInner<TData>({
@@ -567,15 +510,15 @@ function DataTableAdvancedInner<TData>({
       ) : (
         data.length > 0 &&
         table.getPageCount() > 1 && (
-          <InlinePagination
-            pageIndex={table.getState().pagination.pageIndex}
-            pageSize={table.getState().pagination.pageSize}
-            pageCount={table.getPageCount()}
-            totalItems={data.length}
-            canPreviousPage={table.getCanPreviousPage()}
-            canNextPage={table.getCanNextPage()}
-            onPreviousPage={() => table.previousPage()}
-            onNextPage={() => table.nextPage()}
+          <Pagination
+            result={{
+              data: [],
+              page: table.getState().pagination.pageIndex + 1,
+              pageSize: table.getState().pagination.pageSize,
+              total: data.length,
+              totalPages: table.getPageCount(),
+            }}
+            onPageChange={(page) => table.setPageIndex(page - 1)}
           />
         )
       )}

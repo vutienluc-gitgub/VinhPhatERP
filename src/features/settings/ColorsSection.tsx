@@ -147,7 +147,6 @@ export function ColorsSection() {
           tabs={tabItems}
           active={activeTab}
           onChange={setActiveTab}
-          variant="pill"
         />
       </div>
 

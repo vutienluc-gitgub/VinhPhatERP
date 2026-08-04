@@ -98,7 +98,6 @@ export function POChatWidget({ poId }: POChatWidgetProps) {
           ]}
           active={activeTab}
           onChange={setActiveTab}
-          variant="pill"
           size="sm"
         />
       </div>

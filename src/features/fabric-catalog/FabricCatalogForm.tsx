@@ -149,7 +149,6 @@ export function FabricCatalogForm({
             tabs={FORM_TABS}
             active={activeTab}
             onChange={setActiveTab}
-            variant="pill"
           />
         </div>
       }

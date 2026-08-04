@@ -107,7 +107,6 @@ export function BlockedTransitionsWidget({
           </div>
           <div className="flex items-center gap-2">
             <TabSwitcher
-              variant="pill"
               size="sm"
               tabs={BLOCKED_WIDGET_TABS}
               active={activeTab}

@@ -146,7 +146,7 @@ export function RFQList() {
                 items={[
                   {
                     icon: 'Eye',
-                    onClick: () => navigate(`/rfqs/${rfq.id}`),
+                    onClick: () => navigate(`/sourcing-rfqs/${rfq.id}`),
                     label: RFQ_LABELS.ACTION_VIEW,
                   },
                   {
@@ -170,7 +170,7 @@ export function RFQList() {
     <div className="panel-card card-flush">
       <div className="card-header-area">
         <AddButton
-          onClick={() => navigate('/rfqs/create')}
+          onClick={() => navigate('/sourcing-rfqs/create')}
           label={RFQ_LABELS.ADD_BUTTON}
           icon="Plus"
         />
@@ -236,15 +236,15 @@ export function RFQList() {
           !hasActiveFilter ? RFQ_LABELS.ADD_BUTTON : undefined
         }
         onEmptyStateAction={
-          !hasActiveFilter ? () => navigate('/rfqs/create') : undefined
+          !hasActiveFilter ? () => navigate('/sourcing-rfqs/create') : undefined
         }
         columns={columns}
         exportFileName="danh_sach_rfq"
-        onRowClick={(row) => navigate(`/rfqs/${row.id}`)}
+        onRowClick={(row) => navigate(`/sourcing-rfqs/${row.id}`)}
         renderMobileCard={(rfq) => (
           <div
             className="mobile-card cursor-pointer"
-            onClick={() => navigate(`/rfqs/${rfq.id}`)}
+            onClick={() => navigate(`/sourcing-rfqs/${rfq.id}`)}
           >
             <div className="mobile-card-header">
               <span className="mobile-card-title">{rfq.rfq_code}</span>

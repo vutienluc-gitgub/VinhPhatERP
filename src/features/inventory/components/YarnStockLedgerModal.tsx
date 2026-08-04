@@ -53,7 +53,6 @@ export function YarnStockLedgerModal({
           ]}
           active={activeTab}
           onChange={(v) => setActiveTab(v as 'receipts' | 'adjustments')}
-          variant="pill"
         />
 
         {activeTab === 'receipts' && (

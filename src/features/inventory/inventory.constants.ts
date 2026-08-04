@@ -37,6 +37,13 @@ export const INVENTORY_MESSAGES = {
   ERR_LOAD_AGING: 'Không thể tải danh sách tồn lâu:',
   ERR_LOAD_RAW: 'Không thể tải tồn vải mộc:',
   ERR_LOAD_FIN: 'Không thể tải tồn thành phẩm:',
+  ERR_DATA_LOAD: 'Lỗi tải dữ liệu:',
+
+  EMPTY_YARN_TITLE: 'Không có dữ liệu sợi',
+  EMPTY_AGING_TITLE: 'Không có cuộn nào tồn kho quá 30 ngày',
+  EMPTY_AGING_DESC: 'Tất cả cuộn đang ở trạng thái lưu thông tốt.',
+  BADGE_CRITICAL: 'cuộn > 90 ngày',
+  BADGE_WARNING: 'cuộn 60–90 ngày',
 
   VAL_RAW: 'Mộc',
   VAL_FIN: 'TP',

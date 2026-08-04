@@ -19,7 +19,6 @@ import {
 } from '@/application/inventory';
 import type { InventoryBreakdownRow, AgingRoll } from '@/application/inventory';
 import type { YarnAvailability } from '@/api/yarn-reservation.api';
-import { INVENTORY_MESSAGES } from '@/features/inventory/inventory.constants';
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 
@@ -94,24 +93,23 @@ function InventoryBreakdownTabs({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-card rounded-lg p-2 border border-border">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b border-default w-full">
         <TabSwitcher
           tabs={tabs}
           active={activeTab}
           onChange={(val) => setActiveTab(val as InventoryTab)}
-          variant="underline"
         />
 
         {activeTab === 'aging' && agingRolls.length > 0 && (
           <div className="flex gap-2 flex-wrap">
             {criticalCount > 0 && (
               <Badge variant="danger" className="text-[10px]">
-                {criticalCount} cuộn &gt; 90 ngày
+                {criticalCount} {MSG.BADGE_CRITICAL}
               </Badge>
             )}
             {warningCount > 0 && (
               <Badge variant="warning" className="text-[10px]">
-                {warningCount} cuộn 60–90 ngày
+                {warningCount} {MSG.BADGE_WARNING}
               </Badge>
             )}
           </div>
@@ -125,7 +123,7 @@ function InventoryBreakdownTabs({
           columns={yarnColumns}
           isLoading={yarnLoading}
           rowKey={(r) => r.id}
-          emptyStateTitle="Không có dữ liệu sợi"
+          emptyStateTitle={MSG.EMPTY_YARN_TITLE}
           renderMobileCard={(r) => (
             <YarnInventoryMobileCard row={r} onCodeClick={onYarnCodeClick} />
           )}
@@ -173,8 +171,8 @@ function InventoryBreakdownTabs({
               columns={agingColumns}
               isLoading={agingLoading}
               rowKey={(r) => r.id}
-              emptyStateTitle="Không có cuộn nào tồn kho quá 30 ngày"
-              emptyStateDescription="Tất cả cuộn đang ở trạng thái lưu thông tốt."
+              emptyStateTitle={MSG.EMPTY_AGING_TITLE}
+              emptyStateDescription={MSG.EMPTY_AGING_DESC}
               emptyStateIcon="CheckCircle"
               renderMobileCard={(r) => <AgingMobileCard roll={r} />}
             />
@@ -198,8 +196,6 @@ export function InventoryPage() {
   const agingQuery = useAgingStock();
   const { activeGuides } = useContextualGuide('Inventory');
 
-  const isLoading =
-    rawQuery.isLoading || finishedQuery.isLoading || yarnQuery.isLoading;
   const hasError = rawQuery.error ?? finishedQuery.error ?? yarnQuery.error;
 
   const rawStats = rawQuery.data?.stats;
@@ -234,7 +230,7 @@ export function InventoryPage() {
       <div className="flex flex-col gap-6 w-full">
         {hasError && (
           <ErrorInline>
-            Lỗi tải dữ liệu:{' '}
+            {MSG.ERR_DATA_LOAD}{' '}
             {hasError instanceof Error ? hasError.message : String(hasError)}
           </ErrorInline>
         )}
@@ -246,6 +242,7 @@ export function InventoryPage() {
             icon="Box"
             variant="primary"
             formatMode="number"
+            isLoading={yarnQuery.isLoading}
           />
           <KpiCard
             label={MSG.LBL_RAW_ROLLS}
@@ -254,6 +251,7 @@ export function InventoryPage() {
             icon="Layers"
             variant="success"
             formatMode="number"
+            isLoading={rawQuery.isLoading}
           />
           <KpiCard
             label={MSG.LBL_FIN_ROLLS}
@@ -262,10 +260,11 @@ export function InventoryPage() {
             icon="Package"
             variant="primary"
             formatMode="number"
+            isLoading={finishedQuery.isLoading}
           />
         </div>
 
-        {!isLoading && !hasError && (
+        {!hasError && (
           <InventoryBreakdownTabs
             yarnData={yarnQuery.data?.breakdownList ?? []}
             yarnLoading={yarnQuery.isLoading}
@@ -280,15 +279,6 @@ export function InventoryPage() {
             warningCount={warningCount}
             onYarnCodeClick={setSelectedYarnForLedger}
           />
-        )}
-
-        {isLoading && (
-          <div className="panel-card p-12 flex flex-col items-center gap-3">
-            <div className="spinner text-primary" />
-            <p className="text-muted text-sm">
-              {INVENTORY_MESSAGES.LOADING_DATA}
-            </p>
-          </div>
         )}
       </div>
 

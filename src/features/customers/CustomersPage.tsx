@@ -63,7 +63,6 @@ export function CustomersPage() {
                 label: CUSTOMERS_PAGE_LABELS.tabGroups,
               },
             ]}
-            variant="underline"
           />
         </div>
 

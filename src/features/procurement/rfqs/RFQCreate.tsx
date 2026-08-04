@@ -104,7 +104,7 @@ export function RFQCreate() {
           values,
           pendingItems,
         });
-        navigate(`/rfqs/${rfq.id}`);
+        navigate(`/sourcing-rfqs/${rfq.id}`);
       } catch (error) {
         console.error('[CreateRFQError]', error);
       }
@@ -119,7 +119,7 @@ export function RFQCreate() {
           <button
             type="button"
             className="p-1.5 rounded-md hover:bg-surface-subtle transition-colors"
-            onClick={() => navigate('/rfqs')}
+            onClick={() => navigate('/sourcing-rfqs')}
           >
             <Icon name="ArrowLeft" size={20} />
           </button>
@@ -356,7 +356,7 @@ export function RFQCreate() {
           <Button
             variant="secondary"
             type="button"
-            onClick={() => navigate('/rfqs')}
+            onClick={() => navigate('/sourcing-rfqs')}
             disabled={isPending}
           >
             {RFQ_LABELS.CANCEL_BUTTON}

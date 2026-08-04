@@ -269,7 +269,6 @@ export function ShipmentList() {
           setPage(1);
           setFilter('status', val ? val : undefined);
         }}
-        variant="underline"
       />
       <FilterBar
         schema={filterSchema}
