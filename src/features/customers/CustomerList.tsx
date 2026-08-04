@@ -312,7 +312,6 @@ export function CustomerList({
           tabs={tabs}
           active={activeTab === 'custom' ? 'all' : activeTab}
           onChange={handleTabChange}
-          variant="pill"
         />
       </div>
 

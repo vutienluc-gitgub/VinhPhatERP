@@ -12,7 +12,6 @@ interface Props<T extends string> {
   tabs: TabItem<T>[];
   active: T;
   onChange: (key: T) => void;
-  variant?: 'boxed' | 'underline' | 'pill' | 'premium';
   /** sm: compact mode for use inside widget headers or tight spaces */
   size?: 'default' | 'sm';
   className?: string;
@@ -22,37 +21,18 @@ export function TabSwitcher<T extends string>({
   tabs,
   active,
   onChange,
-  variant = 'boxed',
   size = 'default',
   className,
 }: Props<T>) {
-  const barClass =
-    variant === 'underline'
-      ? 'tab-bar-underline'
-      : variant === 'pill'
-        ? 'tab-bar-pill'
-        : variant === 'premium'
-          ? 'tab-bar-premium'
-          : 'tab-bar';
-  const itemClass =
-    variant === 'underline'
-      ? 'tab-item-underline'
-      : variant === 'pill'
-        ? 'tab-item-pill'
-        : variant === 'premium'
-          ? 'tab-item-premium'
-          : 'tab-item';
-
   const smBarClass = size === 'sm' ? 'p-0.5' : undefined;
   const smItemClass = size === 'sm' ? 'px-2 py-1 text-[11px]' : undefined;
 
   return (
     <div
       className={clsx(
-        barClass,
+        'tab-bar-underline',
         smBarClass,
-        variant === 'boxed' || variant === 'underline' ? 'w-full' : '',
-        'min-w-0 max-w-full',
+        'w-full min-w-0 max-w-full',
         className,
       )}
       role="tablist"
@@ -64,7 +44,7 @@ export function TabSwitcher<T extends string>({
           role="tab"
           aria-selected={active === tab.key}
           className={clsx(
-            itemClass,
+            'tab-item-underline',
             smItemClass,
             active === tab.key && 'text-primary bg-primary/10',
           )}
@@ -74,7 +54,10 @@ export function TabSwitcher<T extends string>({
           {tab.label}
           {tab.badge !== undefined && tab.badge > 0 && (
             <span
-              className={`tab-badge${active === tab.key ? ' tab-badge--active' : ''}`}
+              className={clsx(
+                'tab-badge',
+                active === tab.key && 'tab-badge--active',
+              )}
             >
               {tab.badge > 99 ? '99+' : tab.badge}
             </span>

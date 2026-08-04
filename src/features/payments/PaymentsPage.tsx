@@ -96,12 +96,7 @@ export function PaymentsPage() {
             </div>
           </div>
           <div className="px-5 pb-4 pt-3">
-            <TabSwitcher
-              tabs={tabsWithBadge}
-              active={tab}
-              onChange={setTab}
-              variant="premium"
-            />
+            <TabSwitcher tabs={tabsWithBadge} active={tab} onChange={setTab} />
           </div>
         </div>
 

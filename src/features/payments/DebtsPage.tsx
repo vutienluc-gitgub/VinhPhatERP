@@ -46,7 +46,6 @@ export function DebtsPage() {
             tabs={TABS_CONFIG}
             active={activeTab}
             onChange={setActiveTab}
-            variant="premium"
           />
         </div>
       </div>

@@ -48,27 +48,28 @@ export function Pagination<T>({
           />
         )}
       </div>
-      <div className="pagination-buttons">
+      <div className="flex items-center gap-2">
         <Button
-          variant="secondary"
-          className="min-h-[44px] min-w-[44px]"
+          variant="outline"
+          size="icon"
+          className="w-8 h-8 rounded-lg"
           type="button"
           disabled={page <= 1}
           onClick={() => onPageChange(page - 1)}
-        >
-          {' '}
-          ←
-        </Button>
+          leftIcon="ChevronLeft"
+        />
+        <span className="text-sm font-medium px-2">
+          {page} / {totalPages}
+        </span>
         <Button
-          variant="secondary"
-          className="min-h-[44px] min-w-[44px]"
+          variant="outline"
+          size="icon"
+          className="w-8 h-8 rounded-lg"
           type="button"
           disabled={page >= totalPages}
           onClick={() => onPageChange(page + 1)}
-        >
-          {' '}
-          →
-        </Button>
+          leftIcon="ChevronRight"
+        />
       </div>
     </div>
   );

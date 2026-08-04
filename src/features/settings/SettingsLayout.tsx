@@ -92,7 +92,6 @@ export function SettingsLayout() {
             tabs={visibleTabs}
             active={activeTab}
             onChange={(key) => navigate(TAB_TO_PATH[key])}
-            variant="premium"
           />
         </div>
       )}

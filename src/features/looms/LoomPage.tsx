@@ -40,7 +40,6 @@ export function LoomPage() {
           { key: 'looms', label: MSG.TAB_LOOMS },
           { key: 'machine_specs', label: MSG.TAB_SPECS },
         ]}
-        variant="underline"
       />
     </div>
   );

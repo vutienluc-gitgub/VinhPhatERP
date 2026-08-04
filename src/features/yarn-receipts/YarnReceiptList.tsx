@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
-  DataTable,
+  DataTableAdvanced,
   AddButton,
   Button,
   ActionBar,
@@ -218,11 +218,12 @@ export function YarnReceiptList({
         )}
 
         {/* Table & Cards */}
-        <DataTable
+        <DataTableAdvanced
           data={receipts}
           isLoading={isLoading}
           rowKey={(r) => r.id}
           onRowClick={(r) => onEdit(r)}
+          exportFileName="Phieu_nhap_soi"
           emptyStateTitle={
             hasFilter ? 'Không tìm thấy phiếu nhập' : 'Chưa có phiếu nhập nào'
           }
@@ -234,121 +235,132 @@ export function YarnReceiptList({
           emptyStateIcon={hasFilter ? 'Search' : 'Package'}
           emptyStateActionLabel={!hasFilter ? '+ Tạo phiếu nhập' : undefined}
           onEmptyStateAction={!hasFilter ? onNew : undefined}
-          stickyHeader={true}
-          striped={true}
           columns={[
             {
               header: 'Số phiếu',
-              id: 'receipt_number',
-              sortable: true,
-              cell: (r) => (
+              accessorKey: 'receipt_number',
+              enableSorting: true,
+              cell: ({ row }) => (
                 <span className="font-bold text-primary">
-                  {r.receipt_number}
+                  {row.original.receipt_number}
                 </span>
               ),
             },
             {
               header: 'Nhà cung cấp',
               id: 'suppliers',
-              sortable: true,
-              accessor: (r) => r.suppliers?.name,
-              cell: (r) => (
+              accessorFn: (r) => r.suppliers?.name,
+              enableSorting: true,
+              cell: ({ row }) => (
                 <div className="flex flex-col">
                   <span className="font-medium">
-                    {r.suppliers?.name ?? '—'}
+                    {row.original.suppliers?.name ?? '—'}
                   </span>
                   <span className="text-xs text-muted">
-                    {r.suppliers?.code}
+                    {row.original.suppliers?.code}
                   </span>
                 </div>
               ),
             },
             {
               header: 'Ngày nhập',
-              id: 'receipt_date',
-              sortable: true,
-              cell: (r) => <span className="text-muted">{r.receipt_date}</span>,
+              accessorKey: 'receipt_date',
+              enableSorting: true,
+              cell: ({ row }) => (
+                <span className="text-muted">{row.original.receipt_date}</span>
+              ),
             },
             {
               header: 'Đơn giá',
               id: 'unit_price',
-              sortable: true,
-              accessor: (r) => getReceiptAvgUnitPrice(r),
-              className: 'text-right',
-              cell: (r) => (
+              accessorFn: (r) => getReceiptAvgUnitPrice(r),
+              enableSorting: true,
+              meta: { className: 'text-right' },
+              cell: ({ row }) => (
                 <span className="text-secondary">
-                  {getReceiptUnitPriceDisplay(r)}
+                  {getReceiptUnitPriceDisplay(row.original)}
                 </span>
               ),
             },
             {
               header: 'Tổng tiền',
-              id: 'total_amount',
-              sortable: true,
-              className: 'text-right',
-              cell: (r) => <MoneyCell value={r.total_amount ?? 0} bold />,
+              accessorKey: 'total_amount',
+              enableSorting: true,
+              meta: { className: 'text-right' },
+              cell: ({ row }) => (
+                <MoneyCell value={row.original.total_amount ?? 0} bold />
+              ),
             },
             {
               header: 'Trạng thái',
-              id: 'status',
-              sortable: true,
-              cell: (r) => (
-                <StatusBadge domain="YARN_RECEIPT" status={r.status} />
+              accessorKey: 'status',
+              enableSorting: true,
+              cell: ({ row }) => (
+                <StatusBadge
+                  domain="YARN_RECEIPT"
+                  status={row.original.status}
+                />
               ),
             },
             {
               header: 'Thao tác',
-              className: 'text-right',
-              onCellClick: () => {},
-              cell: (r) => (
-                <ActionBar
-                  actions={
-                    [
-                      r.status === 'draft' && canConfirm
-                        ? {
-                            icon: 'CheckCircle',
-                            onClick: () => handleConfirmReceipt(r),
-                            title: 'Xác nhận',
-                            disabled: confirmMutation.isPending,
-                          }
-                        : null,
-                      r.status === 'draft'
-                        ? {
-                            icon: 'Pencil',
-                            onClick: () => onEdit(r),
-                            title: 'Sửa',
-                          }
-                        : null,
-                      r.status === 'draft'
-                        ? {
-                            icon: 'Trash2',
-                            onClick: () => handleDelete(r),
-                            title: 'Xóa',
-                            variant: 'danger',
-                            disabled: deleteMutation.isPending,
-                          }
-                        : null,
-                      r.status !== 'draft'
-                        ? {
-                            icon: 'Eye',
-                            onClick: () => onEdit(r),
-                            title: 'Xem',
-                          }
-                        : null,
-                      {
-                        icon: 'QrCode',
-                        onClick: () => handleShowQR(r),
-                        title: 'QR Lô',
-                      },
-                      {
-                        icon: 'Barcode',
-                        onClick: () => handleShowBarcode(r),
-                        title: 'Barcode Lô',
-                      },
-                    ].filter(Boolean) as ActionConfig[]
-                  }
-                />
-              ),
+              id: 'actions',
+              enableSorting: false,
+              meta: { className: 'text-right' },
+              cell: ({ row }) => {
+                const r = row.original;
+                return (
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <ActionBar
+                      actions={
+                        [
+                          r.status === 'draft' && canConfirm
+                            ? {
+                                icon: 'CheckCircle',
+                                onClick: () => handleConfirmReceipt(r),
+                                title: 'Xác nhận',
+                                disabled: confirmMutation.isPending,
+                              }
+                            : null,
+                          r.status === 'draft'
+                            ? {
+                                icon: 'Pencil',
+                                onClick: () => onEdit(r),
+                                title: 'Sửa',
+                              }
+                            : null,
+                          r.status === 'draft'
+                            ? {
+                                icon: 'Trash2',
+                                onClick: () => handleDelete(r),
+                                title: 'Xóa',
+                                variant: 'danger',
+                                disabled: deleteMutation.isPending,
+                              }
+                            : null,
+                          r.status !== 'draft'
+                            ? {
+                                icon: 'Eye',
+                                onClick: () => onEdit(r),
+                                title: 'Xem',
+                              }
+                            : null,
+                          {
+                            icon: 'QrCode',
+                            onClick: () => handleShowQR(r),
+                            title: 'QR Lô',
+                          },
+                          {
+                            icon: 'Barcode',
+                            onClick: () => handleShowBarcode(r),
+                            title: 'Barcode Lô',
+                          },
+                        ].filter(Boolean) as ActionConfig[]
+                      }
+                    />
+                  </div>
+                );
+              },
             },
           ]}
           renderMobileCard={(r) => (

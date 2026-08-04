@@ -57,7 +57,7 @@ export function RFQDetail() {
         <Button
           variant="secondary"
           className="mt-4"
-          onClick={() => navigate('/rfqs')}
+          onClick={() => navigate('/sourcing-rfqs')}
         >
           {RFQ_LABELS.BACK_TO_LIST}
         </Button>
@@ -83,7 +83,7 @@ export function RFQDetail() {
           <button
             type="button"
             className="p-1.5 rounded-md hover:bg-surface-subtle transition-colors"
-            onClick={() => navigate('/rfqs')}
+            onClick={() => navigate('/sourcing-rfqs')}
           >
             <Icon name="ArrowLeft" size={20} />
           </button>

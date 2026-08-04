@@ -93,12 +93,11 @@ export function ColorCatalogPage() {
       <div className="w-full">
         <div className="panel-card card-flush">
           {/* Tabs */}
-          <div className="px-4 py-2 border-b border-border bg-surface-subtle">
+          <div className="px-4 border-b border-border">
             <TabSwitcher
               tabs={tabItems}
               active={activeTab}
               onChange={(val) => setActiveTab(val as ColorTab)}
-              variant="premium"
             />
           </div>
 
