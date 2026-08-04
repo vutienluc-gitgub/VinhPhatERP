@@ -93,7 +93,7 @@ function InventoryBreakdownTabs({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b border-default w-full">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
         <TabSwitcher
           tabs={tabs}
           active={activeTab}

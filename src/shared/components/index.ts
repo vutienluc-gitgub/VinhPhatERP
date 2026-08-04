@@ -83,6 +83,7 @@ export { AdvancedImageUploader } from './AdvancedImageUploader';
 // End of exports
 export * from './layout';
 export { DebtAgingSection } from './DebtAgingSection';
+export * from './DebtDistributionBar';
 export { PrintPreviewBox } from './PrintPreviewBox';
 export * from '@/shared/value';
 

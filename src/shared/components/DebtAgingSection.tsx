@@ -4,9 +4,9 @@ import {
   KpiGrid,
   DataTable,
   type DataTableColumn,
+  DebtDistributionBar,
 } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
-import { formatCurrency } from '@/shared/value/core/formatter';
 import { sumBy } from '@/shared/utils/array.util';
 
 type DebtAgingSectionProps = {
@@ -104,28 +104,27 @@ export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
       </div>
 
       <div className="p-5">
-        <div className="mb-4">
+        <div className="mb-8">
           <p className="text-xs font-bold text-muted uppercase tracking-wider mb-2">
-            Phân bổ tổng nợ: <MoneyText value={totalDebt} />
+            Mới (Level 9 UX Component)
           </p>
-          <div className="flex h-6 rounded-full overflow-hidden border border-border bg-surface shadow-inner">
-            {buckets
-              .filter((b) => b.percent > 0)
-              .map((b) => (
-                <div
-                  key={b.bucket}
-                  // eslint-disable-next-line no-restricted-syntax
-                  title={`${b.label}: ${formatCurrency(b.total)} đ (${b.percent}%)`}
-                  style={{
-                    width: `${b.percent}%`,
-                    background: b.color,
-                  }}
-                  className="flex items-center justify-center text-[10px] text-white font-bold transition-all duration-500"
-                >
-                  {b.percent >= 8 ? `${b.percent}%` : ''}
-                </div>
-              ))}
-          </div>
+          <DebtDistributionBar
+            total={totalDebt}
+            segments={buckets.map((b) => ({
+              key: b.bucket,
+              label: b.label,
+              value: b.total,
+              color: (b.variant === 'secondary' ? 'primary' : b.variant) as
+                | 'success'
+                | 'warning'
+                | 'danger'
+                | 'primary',
+              clickable: true,
+            }))}
+            animated={true}
+            showLegend={true}
+            showTrend={true}
+          />
         </div>
 
         <KpiGrid>

@@ -93,7 +93,7 @@ export function ColorCatalogPage() {
       <div className="w-full">
         <div className="panel-card card-flush">
           {/* Tabs */}
-          <div className="px-4 border-b border-border">
+          <div className="px-4">
             <TabSwitcher
               tabs={tabItems}
               active={activeTab}
