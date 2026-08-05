@@ -304,6 +304,17 @@ export async function fetchMyChatRooms(): Promise<MyChatRoomSummary[]> {
             code: p.po_code,
           });
         });
+      } else if (type === 'supplier') {
+        const { data: suppliers } = await supabase
+          .from('suppliers')
+          .select('id, name, code')
+          .in('id', idArray);
+        suppliers?.forEach((s) => {
+          detailsMap.set(s.id, {
+            name: s.name,
+            code: s.code,
+          });
+        });
       }
     }),
   );

@@ -7,61 +7,11 @@ import React, {
 } from 'react';
 
 import type { ChatMessage } from '@/schema/chat.schema';
-import { CHAT_LABELS, isOptimisticMessage } from '@/schema/chat.schema';
+import { CHAT_LABELS } from '@/schema/chat.schema';
+import { buildMessageGroups } from '@/features/chat/chat.utils';
 import { useAuth } from '@/shared/hooks/useAuth';
 
-import { ChatBubble } from './ChatBubble';
-
-interface MessageGroup {
-  date: string;
-  label: string;
-  messages: ChatMessage[];
-}
-
-function formatDateLabel(isoDate: string): string {
-  const date = new Date(isoDate);
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-
-  const isSameDay = (a: Date, b: Date) =>
-    a.getDate() === b.getDate() &&
-    a.getMonth() === b.getMonth() &&
-    a.getFullYear() === b.getFullYear();
-
-  if (isSameDay(date, today)) return 'Hôm nay';
-  if (isSameDay(date, yesterday)) return 'Hôm qua';
-
-  return new Intl.DateTimeFormat('vi-VN', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-  }).format(date);
-}
-
-function groupMessagesByDate(messages: ChatMessage[]): MessageGroup[] {
-  const groups: MessageGroup[] = [];
-  let currentGroup: MessageGroup | null = null;
-
-  for (const msg of messages) {
-    const dateLabel = formatDateLabel(msg.created_at);
-    const dateKey = msg.created_at.split('T')[0] ?? '';
-
-    if (!currentGroup || currentGroup.date !== dateKey) {
-      currentGroup = {
-        date: dateKey,
-        label: dateLabel,
-        messages: [],
-      };
-      groups.push(currentGroup);
-    }
-    if (currentGroup) {
-      currentGroup.messages.push(msg);
-    }
-  }
-
-  return groups;
-}
+import { MessageCluster } from './MessageCluster';
 
 function DateDivider({ label }: { label: string }) {
   return (
@@ -77,6 +27,7 @@ interface ChatMessageListProps {
   isFetchingNextPage: boolean;
   onLoadMore: () => void;
   isLoading: boolean;
+  onRetry?: (message: ChatMessage) => void;
 }
 
 export const ChatMessageList = React.memo(function ChatMessageList({
@@ -85,66 +36,99 @@ export const ChatMessageList = React.memo(function ChatMessageList({
   isFetchingNextPage,
   onLoadMore,
   isLoading,
+  onRetry,
 }: ChatMessageListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
+
   const [isNearBottom, setIsNearBottom] = useState(true);
+  const [unreadNewCount, setUnreadNewCount] = useState(0);
   const lastMessageCountRef = useRef(0);
 
-  // Track scroll position to detect if user is near bottom
+  // Convert pages (which come with newest-first per page) to a single chronological list (oldest-first)
+  const chronologicalMessages = useMemo(() => {
+    if (!pages || pages.length === 0) return [];
+    // Reverse page list, then reverse each page array to get chronological order [oldest ... newest]
+    return [...pages].reverse().flatMap((page) => [...page].reverse());
+  }, [pages]);
+
+  const messageGroups = useMemo(
+    () => buildMessageGroups(chronologicalMessages, user?.id),
+    [chronologicalMessages, user?.id],
+  );
+
+  // Scroll handler to detect position
   const handleScroll = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
-    const threshold = 100; // pixels from bottom
-    const isBottom =
-      el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
-    setIsNearBottom(isBottom);
+
+    const threshold = 120; // px from bottom
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    const nearBottom = distanceFromBottom < threshold;
+
+    setIsNearBottom(nearBottom);
+
+    // Clear new message counter if user scrolled to bottom
+    if (nearBottom) {
+      setUnreadNewCount(0);
+    }
   }, []);
 
-  // Auto-scroll to bottom when new messages arrive (if user is already near bottom)
-  useEffect(() => {
-    const allMessages = pages?.flat() ?? [];
-    const currentCount = allMessages.length;
+  const scrollToBottom = useCallback((smooth = true) => {
     const el = scrollRef.current;
+    if (!el) return;
+    el.scrollTo({
+      top: el.scrollHeight,
+      behavior: smooth ? 'smooth' : 'auto',
+    });
+    setUnreadNewCount(0);
+  }, []);
 
-    if (el && currentCount > lastMessageCountRef.current && isNearBottom) {
-      // New message arrived and user is near bottom, scroll down
-      el.scrollTop = 0; // Because flex-direction: column-reverse
+  // Handle incoming new messages & auto-scroll
+  useEffect(() => {
+    const currentCount = chronologicalMessages.length;
+    const prevCount = lastMessageCountRef.current;
+
+    if (currentCount > prevCount && prevCount > 0) {
+      const newestMsg = chronologicalMessages[chronologicalMessages.length - 1];
+      const isMine = newestMsg?.sender_id === user?.id;
+
+      if (isMine || isNearBottom) {
+        // Automatically scroll down if user sent it or is near bottom
+        scrollToBottom(true);
+      } else {
+        // Otherwise increment "New Messages" badge
+        setUnreadNewCount((prev) => prev + (currentCount - prevCount));
+      }
     }
 
     lastMessageCountRef.current = currentCount;
-  }, [pages, isNearBottom]);
+  }, [chronologicalMessages, isNearBottom, user?.id, scrollToBottom]);
 
-  // Scroll to bottom on initial load
+  // Initial load scroll to bottom
   useEffect(() => {
-    const el = scrollRef.current;
-    if (el && !isLoading && pages) {
-      el.scrollTop = 0;
+    if (!isLoading && chronologicalMessages.length > 0) {
+      scrollToBottom(false);
     }
-  }, [isLoading, pages]);
+  }, [isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Scroll anchor when fetching older messages
   const handleLoadMore = useCallback(() => {
     if (!isFetchingNextPage && hasNextPage) {
       const el = scrollRef.current;
-      const prevHeight = el?.scrollHeight ?? 0;
+      const prevScrollHeight = el?.scrollHeight ?? 0;
 
       onLoadMore();
 
-      // Scroll anchor: preserve position after prepending older messages
+      // Preserve scroll offset after DOM updates
       requestAnimationFrame(() => {
         if (el) {
-          const newHeight = el.scrollHeight;
-          el.scrollTop = newHeight - prevHeight;
+          const newScrollHeight = el.scrollHeight;
+          el.scrollTop = newScrollHeight - prevScrollHeight;
         }
       });
     }
   }, [isFetchingNextPage, hasNextPage, onLoadMore]);
-
-  const allMessages = useMemo(() => pages?.flat() ?? [], [pages]);
-  const messageGroups = useMemo(
-    () => groupMessagesByDate(allMessages),
-    [allMessages],
-  );
 
   if (isLoading) {
     return (
@@ -154,7 +138,7 @@ export const ChatMessageList = React.memo(function ChatMessageList({
     );
   }
 
-  if (allMessages.length === 0) {
+  if (chronologicalMessages.length === 0) {
     return (
       <div className="chat-message-list">
         <div className="chat-empty-state">
@@ -177,32 +161,84 @@ export const ChatMessageList = React.memo(function ChatMessageList({
   }
 
   return (
-    <div className="chat-message-list" ref={scrollRef} onScroll={handleScroll}>
-      {messageGroups.map((group) => (
-        <React.Fragment key={group.date}>
-          <DateDivider label={group.label} />
-          {group.messages.map((msg) => (
-            <ChatBubble
-              key={msg.id}
-              message={msg}
-              isMine={msg.sender_id === user?.id}
-              isOptimistic={isOptimisticMessage(msg)}
-            />
+    <div className="chat-message-list-viewport">
+      <div
+        className="chat-message-list"
+        ref={scrollRef}
+        onScroll={handleScroll}
+      >
+        {/* Load older messages button at the TOP */}
+        {hasNextPage && (
+          <div className="chat-load-more">
+            <button
+              type="button"
+              className="chat-load-more-btn"
+              onClick={handleLoadMore}
+              disabled={isFetchingNextPage}
+            >
+              {isFetchingNextPage ? (
+                'Đang tải tin nhắn cũ...'
+              ) : (
+                <>
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M12 5v14M5 12l7-7 7 7" />
+                  </svg>
+                  <span>Tải thêm tin nhắn cũ</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
+
+        {/* Message Groups & Clusters in natural chronological order */}
+        <div className="chat-messages-container">
+          {messageGroups.map((group) => (
+            <React.Fragment key={group.date}>
+              <DateDivider label={group.label} />
+              {group.clusters.map((cluster) => (
+                <MessageCluster
+                  key={cluster.id}
+                  cluster={cluster}
+                  onRetry={onRetry}
+                />
+              ))}
+            </React.Fragment>
           ))}
-        </React.Fragment>
-      ))}
-      {hasNextPage ? (
-        <div className="chat-load-more">
-          <button
-            type="button"
-            className="chat-load-more-btn"
-            onClick={handleLoadMore}
-            disabled={isFetchingNextPage}
-          >
-            {isFetchingNextPage ? CHAT_LABELS.LOADING : CHAT_LABELS.LOAD_MORE}
-          </button>
         </div>
-      ) : null}
+      </div>
+
+      {/* Floating Action Button (FAB): New Messages / Scroll to Bottom */}
+      {(!isNearBottom || unreadNewCount > 0) && (
+        <button
+          type="button"
+          className="chat-scroll-bottom-fab"
+          onClick={() => scrollToBottom(true)}
+          aria-label="Cuộn xuống dưới cùng"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+          {unreadNewCount > 0 && (
+            <span className="chat-scroll-bottom-badge">
+              {unreadNewCount} tin nhắn mới
+            </span>
+          )}
+        </button>
+      )}
     </div>
   );
 });
