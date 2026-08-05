@@ -86,6 +86,7 @@ export interface PublicPoDetails {
   notes: string | null;
   confirmed_at: string | null;
   confirmation_method: string | null;
+  attachments?: Array<{ name?: string; url?: string }> | null;
   items: PublicPoItem[];
 }
 

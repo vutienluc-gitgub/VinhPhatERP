@@ -22,7 +22,11 @@ export function PortalRoute() {
     return <Navigate to="/blocked" replace />;
   }
 
-  if (profile?.role !== 'customer') {
+  const isCustomer =
+    profile?.role === 'customer' || profile?.roles?.includes('customer');
+  const isSupplier = profile?.roles?.includes('supplier');
+
+  if (!isCustomer && !isSupplier) {
     return <Navigate to="/unauthorized" replace />;
   }
 

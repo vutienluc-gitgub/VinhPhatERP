@@ -48,16 +48,19 @@ export async function writeAuditLog(
   newValues: Record<string, unknown> | null,
   performedBy: string | null,
 ): Promise<void> {
-  const { error } = await supabase.from('contract_audit_logs').insert({
-    id: crypto.randomUUID(),
-    contract_id: contractId,
-    action,
-    old_values: oldValues as never,
-    new_values: newValues as never,
-    performed_by: performedBy,
-    performed_at: new Date().toISOString(),
+  await safeUpsertOne({
+    table: 'contract_audit_logs',
+    data: {
+      id: crypto.randomUUID(),
+      contract_id: contractId,
+      action,
+      old_values: oldValues as never,
+      new_values: newValues as never,
+      performed_by: performedBy,
+      performed_at: new Date().toISOString(),
+    },
+    conflictKey: 'id',
   });
-  if (error) throw error;
 }
 
 // ── Read operations ──────────────────────────────────────────────────────────

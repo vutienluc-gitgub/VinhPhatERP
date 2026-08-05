@@ -8,6 +8,7 @@ import type {
   LeadStatus,
   ActivityType,
 } from '@/domain/crm/crm.types';
+import { safeUpsertOne } from '@/lib/db-guard';
 
 const LEADS_TABLE = 'crm_leads';
 const ACTIVITIES_TABLE = 'crm_activities';
@@ -113,14 +114,16 @@ export async function createLeadActivity(payload: {
   const { getTenantId } = await import('@/services/supabase/tenant');
   const tenantId = await getTenantId();
 
-  const { error } = await untypedDb.from(ACTIVITIES_TABLE).insert({
-    lead_id: payload.leadId,
-    type: payload.type,
-    description: payload.description,
-    tenant_id: tenantId,
+  await safeUpsertOne({
+    table: ACTIVITIES_TABLE,
+    data: {
+      lead_id: payload.leadId,
+      type: payload.type,
+      description: payload.description,
+      tenant_id: tenantId,
+    },
+    conflictKey: 'id',
   });
-
-  if (error) throw error;
 }
 
 export async function createLead(payload: {
@@ -135,18 +138,16 @@ export async function createLead(payload: {
   const { getTenantId } = await import('@/services/supabase/tenant');
   const tenantId = await getTenantId();
 
-  const { data, error } = await untypedDb
-    .from(LEADS_TABLE)
-    .insert({
+  const data = (await safeUpsertOne({
+    table: LEADS_TABLE,
+    data: {
       ...payload,
       status: 'NEW',
       score: 0,
       tenant_id: tenantId,
-    })
-    .select('id')
-    .single();
-
-  if (error) throw error;
+    },
+    conflictKey: 'id',
+  })) as { id: string };
   return data;
 }
 
@@ -167,9 +168,9 @@ export async function convertLead(payload: {
     const { getTenantId } = await import('@/services/supabase/tenant');
     const tenantId = await getTenantId();
 
-    const { data: cust, error: custError } = await untypedDb
-      .from('customers')
-      .insert({
+    const cust = (await safeUpsertOne({
+      table: 'customers',
+      data: {
         name: lead.customer_name,
         phone: lead.phone,
         email: lead.email,
@@ -177,11 +178,9 @@ export async function convertLead(payload: {
         status: 'active',
         tenant_id: tenantId,
         lead_status: 'opportunity',
-      })
-      .select('id')
-      .single();
-
-    if (custError) throw custError;
+      },
+      conflictKey: 'id',
+    })) as { id: string };
     finalCustomerId = cust.id;
   }
 

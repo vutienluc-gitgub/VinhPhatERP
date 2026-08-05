@@ -199,8 +199,9 @@ export function InvoiceSearchPage() {
                   }`}
                   ref={(e) => {
                     hookFormRef(e);
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (inputRef as any).current = e;
+                    (
+                      inputRef as unknown as React.MutableRefObject<HTMLInputElement | null>
+                    ).current = e;
                   }}
                   {...restRegister}
                 />

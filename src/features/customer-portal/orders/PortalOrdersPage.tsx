@@ -10,6 +10,7 @@ import {
   ORDER_STATUS_BADGE,
   TIMELINE_STEPS,
 } from '@/features/customer-portal/constants';
+import { EmptyState, ErrorInline } from '@/shared/components';
 
 import { OrderRequestModal } from './OrderRequestModal';
 import {
@@ -17,6 +18,23 @@ import {
   getStepStates,
   getMobileStatusLabel,
 } from './order-utils';
+
+const TEXT = {
+  PAGE_TITLE: 'Đơn hàng',
+  BTN_CREATE: 'Tạo yêu cầu',
+  EMPTY_DESC: 'Chưa có đơn hàng nào.',
+  BTN_FIRST_ORDER: 'Tạo yêu cầu đầu tiên',
+  ERR_LOAD: 'Lỗi tải dữ liệu',
+  BTN_PREV: '« Trước',
+  BTN_NEXT: 'Tiếp »',
+  BTN_REORDER: 'Đặt lại',
+  BTN_DETAIL: 'Chi tiết',
+  LABEL_CANCELLED: 'Đơn hàng đã bị hủy',
+  LABEL_PROGRESS: 'Tiến độ:',
+  BTN_EXPAND: '+ {0} sản phẩm khác',
+  BTN_COLLAPSE: 'Thu gọn',
+  LBL_PRODUCTS: 'sản phẩm',
+};
 
 const MAX_PREVIEW_ITEMS = 2;
 
@@ -51,7 +69,7 @@ function HorizontalStepper({ order }: { order: PortalOrder }) {
   return (
     <div>
       <div className="portal-stepper-mobile-status">
-        Tiến độ: {getMobileStatusLabel(order)}
+        {TEXT.LABEL_PROGRESS} {getMobileStatusLabel(order)}
       </div>
       <div className="portal-stepper">
         <div
@@ -124,7 +142,9 @@ function ProductList({ items }: { items: PortalOrderItem[] }) {
           className="portal-items-toggle"
           onClick={() => setExpanded((prev) => !prev)}
         >
-          {expanded ? 'Thu gọn' : `+ ${hiddenCount} sản phẩm khác`}
+          {expanded
+            ? TEXT.BTN_COLLAPSE
+            : TEXT.BTN_EXPAND.replace('{0}', hiddenCount.toString())}
           <Icon name={expanded ? 'ChevronUp' : 'ChevronDown'} size={14} />
         </button>
       )}
@@ -164,7 +184,9 @@ function OrderCard({
           <div className="portal-card-premium-meta">
             <span>{order.order_date}</span>
             <span>·</span>
-            <span>{items.length} sản phẩm</span>
+            <span>
+              {items.length} {TEXT.LBL_PRODUCTS}
+            </span>
           </div>
         </div>
         <div className="portal-card-premium-header-right">
@@ -195,7 +217,7 @@ function OrderCard({
         {isCancelled ? (
           <div className="portal-cancelled-notice">
             <Icon name="XCircle" size={18} />
-            Đơn hàng đã bị hủy
+            {TEXT.LABEL_CANCELLED}
           </div>
         ) : (
           <HorizontalStepper order={order} />
@@ -211,12 +233,12 @@ function OrderCard({
             onClick={() => onReorder(items)}
           >
             <Icon name="RefreshCw" size={14} />
-            Đặt lại
+            {TEXT.BTN_REORDER}
           </button>
         )}
         <Link to={`/portal/orders/${order.id}`} className="portal-btn-detail">
           <Icon name="FileText" size={14} />
-          Chi tiết
+          {TEXT.BTN_DETAIL}
         </Link>
       </div>
     </div>
@@ -245,59 +267,40 @@ export function PortalOrdersPage() {
 
   if (loading)
     return (
-      <div className="portal-loading">
-        <svg
-          width="16"
-          height="16"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-          style={{ animation: 'spin 1s linear infinite' }}
-        >
-          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-        </svg>
-        Đang tải…
+      <div className="portal-section space-y-4">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="h-32 bg-surface animate-pulse rounded-lg border border-default"
+          />
+        ))}
       </div>
     );
 
-  if (error) return <div className="portal-error">{error}</div>;
+  if (error)
+    return (
+      <ErrorInline>
+        {TEXT.ERR_LOAD}: {String(error)}
+      </ErrorInline>
+    );
 
   return (
     <div className="portal-section">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="portal-page-title mb-0">Đơn hàng</h1>
+        <h1 className="portal-page-title mb-0">{TEXT.PAGE_TITLE}</h1>
         <Button variant="primary" onClick={() => setShowRequestModal(true)}>
           <Icon name="Plus" size={16} className="mr-1.5" />
-          Tạo yêu cầu
+          {TEXT.BTN_CREATE}
         </Button>
       </div>
 
       {orders.length === 0 ? (
-        <div className="portal-table-wrap">
-          <div className="portal-empty">
-            <div className="portal-empty-icon">
-              <svg
-                width="40"
-                height="40"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.25"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-            </div>
-            <p className="mb-4">Chưa có đơn hàng nào.</p>
-            <Button variant="outline" onClick={() => setShowRequestModal(true)}>
-              Tạo yêu cầu đầu tiên
-            </Button>
-          </div>
-        </div>
+        <EmptyState
+          description={TEXT.EMPTY_DESC}
+          icon="PackageOpen"
+          actionLabel={TEXT.BTN_FIRST_ORDER}
+          actionClick={() => setShowRequestModal(true)}
+        />
       ) : (
         <>
           <div className="portal-order-card-list">
@@ -311,14 +314,14 @@ export function PortalOrdersPage() {
               onClick={() => setPage(Math.max(0, page - 1))}
               disabled={page === 0}
             >
-              &laquo; Trước
+              {TEXT.BTN_PREV}
             </button>
             <span>Trang {page + 1}</span>
             <button
               onClick={() => setPage(page + 1)}
               disabled={orders.length < PAGE_SIZE}
             >
-              Tiếp &raquo;
+              {TEXT.BTN_NEXT}
             </button>
           </div>
         </>

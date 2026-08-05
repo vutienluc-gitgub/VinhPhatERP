@@ -14,8 +14,7 @@ export function useFabricStructures() {
     queryKey: ['fabric-structures'],
     queryFn: async () => {
       const { data, error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('fabric_structures' as any)
+        .from('fabric_structures')
         .select('*')
         .order('name');
 
@@ -30,8 +29,7 @@ export function useMachineSpecs() {
     queryKey: ['machine-specifications'],
     queryFn: async () => {
       const { data, error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('machine_specifications' as any)
+        .from('machine_specifications')
         .select('*')
         .order('machine_type');
 
@@ -47,8 +45,7 @@ export function useYarnKnittingEngineering(yarnId?: string) {
     enabled: !!yarnId,
     queryFn: async () => {
       const { data, error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('yarn_knitting_engineering' as any)
+        .from('yarn_knitting_engineering')
         .select(
           `
           *,
@@ -107,8 +104,7 @@ export function useDeleteYarnKnittingEngineering() {
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('yarn_knitting_engineering' as any)
+        .from('yarn_knitting_engineering')
         .delete()
         .eq('id', id);
 

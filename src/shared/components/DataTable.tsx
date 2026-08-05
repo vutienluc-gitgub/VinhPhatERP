@@ -3,6 +3,8 @@ import { useMemo, useState, memo } from 'react';
 import type { ReactNode } from 'react';
 
 import type { PaginatedResult } from '@/shared/types/pagination';
+import { TableRowInteraction } from '@/shared/interaction';
+import type { InteractionDomain } from '@/shared/interaction';
 
 import { Icon } from './Icon';
 import { EmptyState } from './EmptyState';
@@ -68,6 +70,8 @@ interface DataTableProps<T> {
   striped?: boolean;
   /** Server-side pagination config. When provided, pagination bar is rendered below the table. */
   pagination?: PaginationConfig<T>;
+  /** DIL Interaction Domain (replaces hardcoded hover indicators) */
+  interactionDomain?: InteractionDomain;
 }
 
 /**
@@ -96,6 +100,7 @@ function DataTableInner<T>({
   stickyHeader = false,
   striped = false,
   pagination,
+  interactionDomain,
 }: DataTableProps<T>) {
   // --- NATIVE AUTO-SORT LOGIC ---
   const [internalSortCol, setInternalSortCol] = useState<string | undefined>();
@@ -230,14 +235,11 @@ function DataTableInner<T>({
           </thead>
           <tbody>
             {ProcessedData.map((item) => (
-              <tr
+              <TableRowInteraction
                 key={rowKey(item)}
-                className={clsx(
-                  'transition-colors duration-150',
-                  striped && 'even:bg-surface-subtle/30',
-                  onRowClick && 'hover:bg-surface-hover cursor-pointer',
-                )}
-                onClick={() => onRowClick?.(item)}
+                interactionDomain={interactionDomain}
+                className={clsx(striped && 'even:bg-surface-subtle/30')}
+                onClick={onRowClick ? () => onRowClick(item) : undefined}
               >
                 {columns.map((col, idx) => (
                   <td
@@ -253,7 +255,7 @@ function DataTableInner<T>({
                     {col.cell(item)}
                   </td>
                 ))}
-              </tr>
+              </TableRowInteraction>
             ))}
           </tbody>
           {hasFooter && (

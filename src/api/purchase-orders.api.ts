@@ -4,6 +4,7 @@ import type {
   GoodsReceiptFormValues,
   PurchaseOrderComment,
 } from '@/domain/purchase-orders';
+import { safeUpsert } from '@/lib/db-guard';
 
 export async function fetchPurchaseOrders(filters: {
   status?: string;
@@ -124,12 +125,16 @@ export async function submitPurchaseOrder(poId: string, userId: string) {
 
   if (error) throw error;
 
-  await untypedDb.from('po_audit_logs').insert({
-    entity_type: 'purchase_order',
-    entity_id: poId,
-    action: 'submitted',
-    actor_id: userId,
-    snapshot: data,
+  await safeUpsert({
+    table: 'po_audit_logs',
+    data: {
+      entity_type: 'purchase_order',
+      entity_id: poId,
+      action: 'submitted',
+      actor_id: userId,
+      snapshot: data,
+    },
+    conflictKey: 'id',
   });
 
   return data;
@@ -157,24 +162,32 @@ export async function approvePurchaseOrder(
   if (error) throw error;
 
   // Insert PO audit log for approval
-  await untypedDb.from('po_audit_logs').insert({
-    entity_type: 'purchase_order',
-    entity_id: poId,
-    action: 'approved',
-    actor_id: userId,
-    snapshot: data,
-    comment,
+  await safeUpsert({
+    table: 'po_audit_logs',
+    data: {
+      entity_type: 'purchase_order',
+      entity_id: poId,
+      action: 'approved',
+      actor_id: userId,
+      snapshot: data,
+      comment,
+    },
+    conflictKey: 'id',
   });
 
   // If send immediately is enabled, insert another audit log for sending
   if (sendImmediately) {
-    await untypedDb.from('po_audit_logs').insert({
-      entity_type: 'purchase_order',
-      entity_id: poId,
-      action: 'sent',
-      actor_id: userId,
-      snapshot: data,
-      comment: 'Tự động gửi khi duyệt (Approved & Sent)',
+    await safeUpsert({
+      table: 'po_audit_logs',
+      data: {
+        entity_type: 'purchase_order',
+        entity_id: poId,
+        action: 'sent',
+        actor_id: userId,
+        snapshot: data,
+        comment: 'Tự động gửi khi duyệt (Approved & Sent)',
+      },
+      conflictKey: 'id',
     });
   }
 
@@ -193,13 +206,17 @@ export async function sendPurchaseOrder(poId: string, userId: string) {
 
   if (error) throw error;
 
-  await untypedDb.from('po_audit_logs').insert({
-    entity_type: 'purchase_order',
-    entity_id: poId,
-    action: 'sent',
-    actor_id: userId,
-    snapshot: data,
-    comment: 'Đã gửi nhà cung cấp (Sent to Supplier)',
+  await safeUpsert({
+    table: 'po_audit_logs',
+    data: {
+      entity_type: 'purchase_order',
+      entity_id: poId,
+      action: 'sent',
+      actor_id: userId,
+      snapshot: data,
+      comment: 'Đã gửi nhà cung cấp (Sent to Supplier)',
+    },
+    conflictKey: 'id',
   });
 
   return data;
@@ -219,13 +236,17 @@ export async function confirmPurchaseOrder(poId: string, userId: string) {
 
   if (error) throw error;
 
-  await untypedDb.from('po_audit_logs').insert({
-    entity_type: 'purchase_order',
-    entity_id: poId,
-    action: 'supplier_confirmed',
-    actor_id: userId,
-    snapshot: data,
-    comment: 'Xác nhận thủ công bởi nhân viên ERP (Manual Confirm)',
+  await safeUpsert({
+    table: 'po_audit_logs',
+    data: {
+      entity_type: 'purchase_order',
+      entity_id: poId,
+      action: 'supplier_confirmed',
+      actor_id: userId,
+      snapshot: data,
+      comment: 'Xác nhận thủ công bởi nhân viên ERP (Manual Confirm)',
+    },
+    conflictKey: 'id',
   });
 
   return data;
@@ -248,13 +269,17 @@ export async function requestChangesPurchaseOrder(
 
   if (error) throw error;
 
-  await untypedDb.from('po_audit_logs').insert({
-    entity_type: 'purchase_order',
-    entity_id: poId,
-    action: 'request_changes',
-    actor_id: userId,
-    snapshot: data,
-    comment: reason,
+  await safeUpsert({
+    table: 'po_audit_logs',
+    data: {
+      entity_type: 'purchase_order',
+      entity_id: poId,
+      action: 'request_changes',
+      actor_id: userId,
+      snapshot: data,
+      comment: reason,
+    },
+    conflictKey: 'id',
   });
 
   return data;
@@ -277,13 +302,17 @@ export async function rejectPurchaseOrder(
 
   if (error) throw error;
 
-  await untypedDb.from('po_audit_logs').insert({
-    entity_type: 'purchase_order',
-    entity_id: poId,
-    action: 'rejected',
-    actor_id: userId,
-    snapshot: data,
-    comment: reason,
+  await safeUpsert({
+    table: 'po_audit_logs',
+    data: {
+      entity_type: 'purchase_order',
+      entity_id: poId,
+      action: 'rejected',
+      actor_id: userId,
+      snapshot: data,
+      comment: reason,
+    },
+    conflictKey: 'id',
   });
 
   return data;
@@ -345,18 +374,17 @@ export async function addPurchaseOrderComment(payload: {
   userId: string;
   visibility: 'internal' | 'external';
 }) {
-  const { data, error } = await untypedDb
-    .from('purchase_order_comments')
-    .insert({
+  const data = (await safeUpsert({
+    table: 'purchase_order_comments',
+    data: {
       purchase_order_id: payload.poId,
       content: payload.content,
       sender_type: 'erp',
       sender_id: payload.userId,
       visibility: payload.visibility,
-    })
-    .select()
-    .single();
+    },
+    conflictKey: 'id',
+  })) as unknown as PurchaseOrderComment[];
 
-  if (error) throw error;
-  return data as PurchaseOrderComment;
+  return data[0] as PurchaseOrderComment;
 }

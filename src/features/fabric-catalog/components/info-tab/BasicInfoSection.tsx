@@ -141,8 +141,9 @@ export function BasicInfoSection({
                 </div>
                 <div className="w-24">
                   <PercentageField
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    name={`composition_parts.${index}.percentage` as any}
+                    name={
+                      `composition_parts.${index}.percentage` as `composition_parts.${number}.percentage`
+                    }
                     control={control}
                     placeholder="%"
                   />

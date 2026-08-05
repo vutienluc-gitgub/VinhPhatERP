@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { Icon } from '@/shared/components';
+import { usePublicRfqDetails } from '@/features/supplier-portal/hooks/useSupplierPortal';
+import { SUPPLIER_PORTAL_LABELS } from '@/features/supplier-portal/supplier-portal.constants';
+import { RFQViewer } from '@/features/supplier-portal/components/RFQViewer';
+import { ChatWidget } from '@/features/chat';
 
-import { usePublicRfqDetails } from './hooks/useSupplierPortal';
-import { SUPPLIER_PORTAL_LABELS } from './supplier-portal.constants';
-import { RFQViewer } from './components/RFQViewer';
-
-export function SupplierQuotePage() {
+export function SupplierRFQDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: rfq, isLoading, error } = usePublicRfqDetails(id ?? null);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -15,10 +15,9 @@ export function SupplierQuotePage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="max-w-4xl w-full space-y-6">
-          <div className="h-24 bg-surface-secondary rounded-xl animate-pulse" />
-          <div className="h-48 bg-surface-secondary rounded-xl animate-pulse" />
-          <div className="h-64 bg-surface-secondary rounded-xl animate-pulse" />
+        <div className="flex flex-col items-center gap-4 text-muted">
+          <Icon name="loader-2" className="w-8 h-8 animate-spin" />
+          <p>Đang tải thông tin yêu cầu báo giá...</p>
         </div>
       </div>
     );
@@ -40,10 +39,15 @@ export function SupplierQuotePage() {
   }
 
   return (
-    <RFQViewer
-      rfq={rfq}
-      isSuccess={isSuccess}
-      onSuccess={() => setIsSuccess(true)}
-    />
+    <>
+      <div className="-m-4 md:-m-8">
+        <RFQViewer
+          rfq={rfq}
+          isSuccess={isSuccess}
+          onSuccess={() => setIsSuccess(true)}
+        />
+      </div>
+      <ChatWidget entityType="quotation" entityId={rfq.id} />
+    </>
   );
 }

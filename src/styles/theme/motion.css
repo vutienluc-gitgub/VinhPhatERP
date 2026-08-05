@@ -1,0 +1,105 @@
+/* ============================================================
+   MOTION TOKENS — Standardized DIL Motion System
+   ============================================================ */
+
+:root {
+  /* Durations */
+  --motion-duration-fast: 120ms;
+  --motion-duration-standard: 180ms;
+  --motion-duration-expressive: 240ms;
+
+  /* Easings */
+  --motion-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --motion-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* Composed Transitions */
+  --transition-fast: var(--motion-duration-fast) var(--motion-ease-out);
+  --transition-standard: var(--motion-duration-standard)
+    var(--motion-ease-in-out);
+  --transition-expressive: var(--motion-duration-expressive)
+    var(--motion-ease-spring);
+}
+
+/* ============================================================
+   ATTENTION ENGINE ANIMATIONS (Phase 1.5)
+   ============================================================ */
+
+/* 1. highlightOnce */
+@keyframes attention-highlight-fade {
+  0% {
+    background-color: rgba(var(--interaction-rgb), 0.15);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+.attention-highlight {
+  animation: attention-highlight-fade var(--attention-duration, 2000ms) ease-out
+    forwards;
+}
+
+/* 2. flashUpdate */
+@keyframes attention-flash {
+  0%,
+  50%,
+  100% {
+    background-color: transparent;
+  }
+  25%,
+  75% {
+    background-color: rgba(var(--interaction-rgb), 0.2);
+  }
+}
+.attention-flash {
+  animation: attention-flash var(--attention-duration, 600ms) ease-in-out
+    forwards;
+}
+
+/* 3. shakeError */
+@keyframes attention-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+.attention-shake {
+  animation: attention-shake var(--attention-duration, 400ms) ease-in-out
+    forwards;
+}
+
+/* 4. pulsePending */
+@keyframes attention-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--interaction-rgb), 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(var(--interaction-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--interaction-rgb), 0);
+  }
+}
+.attention-pulse {
+  animation: attention-pulse-ring 2000ms cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* 5. glowWarning */
+@keyframes attention-glow {
+  0%,
+  100% {
+    box-shadow: inset 2px 0 10px -2px rgba(var(--interaction-rgb), 0.2);
+  }
+  50% {
+    box-shadow: inset 2px 0 15px 2px rgba(var(--interaction-rgb), 0.5);
+  }
+}
+.attention-glow {
+  animation: attention-glow 2000ms ease-in-out infinite;
+}

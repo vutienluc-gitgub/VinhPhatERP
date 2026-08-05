@@ -63,7 +63,7 @@ export function POAttachmentsCard({ form }: POAttachmentsCardProps) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           {attachments.map((url, index) => (
             <div
-              key={index}
+              key={url}
               className="relative group rounded-lg overflow-hidden border border-border aspect-square bg-surface-secondary"
             >
               <img

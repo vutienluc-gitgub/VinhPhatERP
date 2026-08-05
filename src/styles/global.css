@@ -3,6 +3,8 @@
 /* Theme & Base */
 @import './theme/tokens.css';
 @import './theme/dark-mode.css';
+@import './theme/motion.css';
+@import './theme/interaction.css';
 @import './base/reset.css';
 @import './base/animations.css';
 
