@@ -25,22 +25,6 @@ function formatTime(iso: string): string {
   }
 }
 
-function formatFullDateTime(iso: string): string {
-  try {
-    return new Intl.DateTimeFormat('vi-VN', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    }).format(new Date(iso));
-  } catch {
-    return '';
-  }
-}
-
 function renderContent(content: string, mentions?: ChatMention[]) {
   if (!mentions || mentions.length === 0) return <div>{content}</div>;
 
@@ -308,50 +292,6 @@ export const ChatBubble = memo(function ChatBubble({
           {message.content
             ? renderContent(message.content, message.mentions)
             : null}
-
-          {/* Footer: time + status + read receipt */}
-          <div className="chat-bubble-footer">
-            {isOptimistic ? (
-              <span className="chat-bubble-status chat-bubble-status--pending">
-                <svg
-                  width="10"
-                  height="10"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="chat-status-spinner"
-                >
-                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                </svg>
-              </span>
-            ) : null}
-            {isMine && message.read_at && (
-              <span
-                className="chat-bubble-read-receipt"
-                title={`Đã đọc vào ${formatTime(message.read_at)}`}
-              >
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              </span>
-            )}
-            <span
-              className="chat-bubble-time"
-              title={formatFullDateTime(message.created_at)}
-            >
-              {formatTime(message.created_at)}
-            </span>
-          </div>
 
           {/* Error: Retry */}
           {isError && onRetry ? (
