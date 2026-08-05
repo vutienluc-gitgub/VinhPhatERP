@@ -6,10 +6,10 @@ import React, {
   useState,
 } from 'react';
 
-import type { ChatMessage } from '@/schema/chat.schema';
-import { CHAT_LABELS } from '@/schema/chat.schema';
-import { buildMessageGroups } from '@/features/chat/chat.utils';
+import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
 import { useAuth } from '@/shared/hooks/useAuth';
+import { Icon } from '@/shared/components/Icon';
+import { buildMessageGroups } from '@/features/chat/chat.utils';
 
 import { MessageCluster } from './MessageCluster';
 
@@ -28,6 +28,7 @@ interface ChatMessageListProps {
   onLoadMore: () => void;
   isLoading: boolean;
   onRetry?: (message: ChatMessage) => void;
+  onQuoteReply?: (message: ChatMessage) => void;
 }
 
 export const ChatMessageList = React.memo(function ChatMessageList({
@@ -37,6 +38,7 @@ export const ChatMessageList = React.memo(function ChatMessageList({
   onLoadMore,
   isLoading,
   onRetry,
+  onQuoteReply,
 }: ChatMessageListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
@@ -207,6 +209,7 @@ export const ChatMessageList = React.memo(function ChatMessageList({
                   key={cluster.id}
                   cluster={cluster}
                   onRetry={onRetry}
+                  onQuoteReply={onQuoteReply}
                 />
               ))}
             </React.Fragment>
@@ -222,16 +225,7 @@ export const ChatMessageList = React.memo(function ChatMessageList({
           onClick={() => scrollToBottom(true)}
           aria-label="Cuộn xuống dưới cùng"
         >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-          >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
+          <Icon name="ChevronDown" size={16} />
           {unreadNewCount > 0 && (
             <span className="chat-scroll-bottom-badge">
               {unreadNewCount} tin nhắn mới
