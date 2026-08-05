@@ -8,9 +8,14 @@ import {
   type KeyboardEvent,
 } from 'react';
 
-import { CHAT_LABELS, type ChatMention } from '@/schema/chat.schema';
+import {
+  CHAT_LABELS,
+  type ChatMessage,
+  type ChatMention,
+} from '@/schema/chat.schema';
 import { uploadChatImage, uploadChatFile } from '@/shared/lib/chat-storage';
 import { useMentionsSearch, type MentionOption } from '@/application/chat';
+import { Icon } from '@/shared/components/Icon';
 
 interface ChatInputAreaProps {
   onSend: (content: string, mentions?: ChatMention[]) => void;
@@ -20,6 +25,8 @@ interface ChatInputAreaProps {
   disabled?: boolean;
   onTypingStart?: () => void;
   onTypingStop?: () => void;
+  replyingToMessage?: ChatMessage | null;
+  onCancelReply?: () => void;
 }
 
 export function ChatInputArea({
@@ -30,6 +37,8 @@ export function ChatInputArea({
   disabled,
   onTypingStart,
   onTypingStop,
+  replyingToMessage,
+  onCancelReply,
 }: ChatInputAreaProps) {
   const [text, setText] = useState('');
   const [mentions, setMentions] = useState<ChatMention[]>([]);
@@ -38,6 +47,7 @@ export function ChatInputArea({
     query: string;
     startIndex: number;
   } | null>(null);
+  const [selectedMentionIndex, setSelectedMentionIndex] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -97,8 +107,15 @@ export function ChatInputArea({
   );
 
   const handleSend = useCallback(() => {
-    const trimmed = text.trim();
+    let trimmed = text.trim();
     if (!trimmed || disabled || isUploading) return;
+
+    if (replyingToMessage) {
+      const snippet = replyingToMessage.content
+        ? replyingToMessage.content.slice(0, 40)
+        : replyingToMessage.message_type;
+      trimmed = `↩️ "${snippet}"\n${trimmed}`;
+    }
 
     // Filter mentions that actually exist in the text
     const validMentions = mentions.filter((m) => trimmed.includes(m.label));
@@ -108,6 +125,7 @@ export function ChatInputArea({
     setMentions([]);
     setActiveMention(null);
     setShowEmojiPicker(false);
+    onCancelReply?.();
     onTypingStop?.();
 
     if (typingTimeoutRef.current) {
@@ -118,7 +136,16 @@ export function ChatInputArea({
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
     }
-  }, [text, mentions, disabled, isUploading, onSend, onTypingStop]);
+  }, [
+    text,
+    disabled,
+    isUploading,
+    replyingToMessage,
+    mentions,
+    onSend,
+    onCancelReply,
+    onTypingStop,
+  ]);
 
   const clearPreview = useCallback(() => {
     setPreviewUrl(null);
@@ -138,14 +165,68 @@ export function ChatInputArea({
     }
   }, [onTypingStop]);
 
+  const handleSelectMention = useCallback(
+    (option: MentionOption) => {
+      if (!activeMention) return;
+
+      const prefix = option.type === 'document' ? '#' : '@';
+      const mentionText = `${prefix}${option.label}`;
+
+      const before = text.slice(0, activeMention.startIndex);
+      const after = text.slice(
+        activeMention.startIndex + activeMention.query.length + 1,
+      );
+
+      setText(`${before}${mentionText} ${after}`);
+      setMentions((prev) => [...prev, { ...option, label: mentionText }]);
+      setActiveMention(null);
+
+      // Focus back
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 0);
+    },
+    [activeMention, text],
+  );
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
+      if (activeMention && mentionOptions.length > 0) {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          setSelectedMentionIndex((prev) => (prev + 1) % mentionOptions.length);
+          return;
+        }
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          setSelectedMentionIndex(
+            (prev) =>
+              (prev - 1 + mentionOptions.length) % mentionOptions.length,
+          );
+          return;
+        }
+        if (e.key === 'Enter' || e.key === 'Tab') {
+          e.preventDefault();
+          const selectedOption = mentionOptions[selectedMentionIndex];
+          if (selectedOption) {
+            handleSelectMention(selectedOption);
+          }
+          return;
+        }
+      }
+
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         handleSend();
       }
     },
-    [handleSend],
+    [
+      activeMention,
+      mentionOptions,
+      selectedMentionIndex,
+      handleSelectMention,
+      handleSend,
+    ],
   );
 
   const handleInput = useCallback(() => {
@@ -189,27 +270,6 @@ export function ChatInputArea({
     } else {
       setActiveMention(null);
     }
-  };
-
-  const handleSelectMention = (option: MentionOption) => {
-    if (!activeMention) return;
-
-    const prefix = option.type === 'document' ? '#' : '@';
-    const mentionText = `${prefix}${option.label}`;
-
-    const before = text.slice(0, activeMention.startIndex);
-    const after = text.slice(
-      activeMention.startIndex + activeMention.query.length + 1,
-    );
-
-    setText(`${before}${mentionText} ${after}`);
-    setMentions((prev) => [...prev, { ...option, label: mentionText }]);
-    setActiveMention(null);
-
-    // Focus back
-    setTimeout(() => {
-      textareaRef.current?.focus();
-    }, 0);
   };
 
   const processFile = useCallback(
@@ -286,6 +346,29 @@ export function ChatInputArea({
 
   return (
     <div className="chat-input-area-wrapper">
+      {/* Quoted Reply Banner */}
+      {replyingToMessage && (
+        <div className="chat-reply-banner">
+          <div className="chat-reply-banner-content">
+            <div className="chat-reply-banner-header">
+              <Icon name="CornerUpLeft" size={12} />
+              <span>Đang trả lời tin nhắn:</span>
+            </div>
+            <p className="chat-reply-banner-text">
+              {replyingToMessage.content || replyingToMessage.message_type}
+            </p>
+          </div>
+          <button
+            type="button"
+            className="chat-reply-banner-close"
+            onClick={onCancelReply}
+            aria-label="Hủy trả lời"
+          >
+            <Icon name="X" size={14} />
+          </button>
+        </div>
+      )}
+
       {/* Image Preview */}
       {previewUrl && (
         <div className="chat-image-preview">
@@ -302,19 +385,7 @@ export function ChatInputArea({
               onClick={clearPreview}
               aria-label={CHAT_LABELS.CANCEL}
             >
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
+              <Icon name="X" size={12} />
             </button>
           )}
         </div>
@@ -324,19 +395,7 @@ export function ChatInputArea({
       {previewFile && (
         <div className="chat-file-preview">
           <div className="chat-file-preview-icon">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-            </svg>
+            <Icon name="FileText" size={24} />
           </div>
           <div className="chat-file-preview-info">
             <span className="chat-file-preview-name">{previewFile.name}</span>
@@ -353,19 +412,7 @@ export function ChatInputArea({
               onClick={clearPreview}
               aria-label={CHAT_LABELS.CANCEL}
             >
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
+              <Icon name="X" size={12} />
             </button>
           )}
         </div>
@@ -374,10 +421,10 @@ export function ChatInputArea({
       {/* Mentions Popover */}
       {activeMention && mentionOptions.length > 0 && (
         <div className="chat-mentions-popover">
-          {mentionOptions.map((opt) => (
+          {mentionOptions.map((opt, idx) => (
             <button
               key={`${opt.type}-${opt.id}`}
-              className="chat-mention-option"
+              className={`chat-mention-option ${idx === selectedMentionIndex ? 'chat-mention-option--active' : ''}`}
               onClick={() => handleSelectMention(opt)}
             >
               <span className="chat-mention-type">
@@ -451,18 +498,7 @@ export function ChatInputArea({
                 aria-label={CHAT_LABELS.ATTACH_IMAGE}
                 title="Tải lên tệp/hình ảnh"
               >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-                </svg>
+                <Icon name="Paperclip" size={18} />
               </button>
               <input
                 ref={fileInputRef}
@@ -502,21 +538,7 @@ export function ChatInputArea({
             aria-label="Chọn emoji"
             title="Biểu tượng cảm xúc"
           >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-              <line x1="9" y1="9" x2="9.01" y2="9" />
-              <line x1="15" y1="9" x2="15.01" y2="9" />
-            </svg>
+            <Icon name="Smile" size={18} />
           </button>
         </div>
 
@@ -529,19 +551,7 @@ export function ChatInputArea({
             disabled={isInputDisabled || text.trim().length === 0}
             aria-label={CHAT_LABELS.SEND}
           >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="22" y1="2" x2="11" y2="13" />
-              <polygon points="22 2 15 22 11 13 2 9 22 2" />
-            </svg>
+            <Icon name="Send" size={16} />
           </button>
         </div>
       </div>

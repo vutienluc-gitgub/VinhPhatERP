@@ -11,6 +11,7 @@ import {
   useAddReaction,
   useRemoveReaction,
 } from '@/application/chat';
+import { Icon } from '@/shared/components/Icon';
 
 import { ChatImagePreview } from './ChatImagePreview';
 
@@ -65,6 +66,7 @@ interface ChatBubbleProps {
   isMine: boolean;
   isOptimistic?: boolean;
   onRetry?: (message: ChatMessage) => void;
+  onQuoteReply?: (message: ChatMessage) => void;
 }
 
 export const ChatBubble = memo(function ChatBubble({
@@ -72,6 +74,7 @@ export const ChatBubble = memo(function ChatBubble({
   isMine,
   isOptimistic,
   onRetry,
+  onQuoteReply,
 }: ChatBubbleProps) {
   const { profile, user } = useAuth();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -192,6 +195,46 @@ export const ChatBubble = memo(function ChatBubble({
         style={{ position: 'relative' }}
         data-message-id={message.id}
       >
+        {/* Hover Quick Action Bar */}
+        {!isOptimistic && (
+          <div className="chat-bubble-quick-actions">
+            <button
+              type="button"
+              className="chat-quick-action-btn"
+              onClick={() => handleAddReaction('👍')}
+              title="Thích 👍"
+            >
+              👍
+            </button>
+            <button
+              type="button"
+              className="chat-quick-action-btn"
+              onClick={() => handleAddReaction('❤️')}
+              title="Yêu thích ❤️"
+            >
+              ❤️
+            </button>
+            {onQuoteReply && (
+              <button
+                type="button"
+                className="chat-quick-action-btn"
+                onClick={() => onQuoteReply(message)}
+                title="Trả lời tin nhắn"
+              >
+                <Icon name="CornerUpLeft" size={12} />
+              </button>
+            )}
+            <button
+              type="button"
+              className="chat-quick-action-btn"
+              onClick={handleCopyText}
+              title="Sao chép văn bản"
+            >
+              <Icon name="Copy" size={12} />
+            </button>
+          </div>
+        )}
+
         <div
           className={`chat-bubble ${isMine ? 'chat-bubble--mine' : 'chat-bubble--theirs'} ${statusClass}`}
         >
@@ -201,19 +244,7 @@ export const ChatBubble = memo(function ChatBubble({
               className="chat-bubble-pin-indicator"
               title={CHAT_LABELS.PINNED_MESSAGES}
             >
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="12" y1="17" x2="12" y2="22"></line>
-                <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.6V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.6a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
-              </svg>
+              <Icon name="Pin" size={12} />
             </div>
           ) : null}
 
@@ -263,19 +294,7 @@ export const ChatBubble = memo(function ChatBubble({
               className="chat-bubble-file"
             >
               <div className="chat-bubble-file-icon">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                </svg>
+                <Icon name="FileText" size={24} />
               </div>
               <div className="chat-bubble-file-info">
                 <span className="chat-bubble-file-name">
@@ -300,19 +319,7 @@ export const ChatBubble = memo(function ChatBubble({
               className="chat-retry-btn"
               onClick={handleRetry}
             >
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="23 4 23 10 17 10" />
-                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-              </svg>
+              <Icon name="RotateCcw" size={12} />
               {CHAT_LABELS.RETRY}
             </button>
           ) : null}
@@ -341,21 +348,7 @@ export const ChatBubble = memo(function ChatBubble({
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                 title="Thêm reaction"
               >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-                  <line x1="9" y1="9" x2="9.01" y2="9" />
-                  <line x1="15" y1="9" x2="15.01" y2="9" />
-                </svg>
+                <Icon name="Smile" size={14} />
               </button>
             </div>
           )}

@@ -29,3 +29,4 @@ export {
 } from './useChatNotifications';
 
 export { useTotalUnread } from './useTotalUnread';
+export { useChatContext, type ChatEntityContext } from './useChatContext';

@@ -11,6 +11,7 @@ import { ChatBubble } from './ChatBubble';
 interface MessageClusterProps {
   cluster: MessageClusterType;
   onRetry?: (message: ChatMessage) => void;
+  onQuoteReply?: (message: ChatMessage) => void;
 }
 
 function formatClusterTime(iso: string): string {
@@ -34,6 +35,7 @@ function deriveMessageStatus(msg: ChatMessage, isMine: boolean): MessageStatus {
 export const MessageCluster = memo(function MessageCluster({
   cluster,
   onRetry,
+  onQuoteReply,
 }: MessageClusterProps) {
   const { isMine, senderName, messages, timestamp } = cluster;
   const initials = senderName
@@ -75,6 +77,7 @@ export const MessageCluster = memo(function MessageCluster({
               isMine={isMine}
               isOptimistic={msg.status === 'pending'}
               onRetry={onRetry}
+              onQuoteReply={onQuoteReply}
             />
           ))}
         </div>
