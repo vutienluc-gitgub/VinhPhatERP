@@ -24,14 +24,27 @@ export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps = {}) {
     return <Navigate to="/blocked" replace />;
   }
 
-  // Customer role belongs in the portal, not the ERP shell
-  if (profile?.role === 'customer') {
-    return <Navigate to="/portal" replace />;
-  }
+  // If user has employee-level role in legacy enum, allow them into ERP shell
+  const roles: string[] = profile?.roles ?? [];
+  const legacyRole: string = profile?.role ?? '';
+  const isInternalUser = [
+    'admin',
+    'manager',
+    'staff',
+    'sale',
+    'viewer',
+  ].includes(legacyRole);
 
-  // Driver role belongs in the driver portal, not the ERP shell
-  if (profile?.role === 'driver') {
-    return <Navigate to="/driver" replace />;
+  if (!isInternalUser) {
+    if (roles.includes('supplier') || legacyRole === 'supplier') {
+      return <Navigate to="/portal/supplier" replace />;
+    }
+    if (roles.includes('customer') || legacyRole === 'customer') {
+      return <Navigate to="/portal/customer" replace />;
+    }
+    if (roles.includes('driver') || legacyRole === 'driver') {
+      return <Navigate to="/driver" replace />;
+    }
   }
 
   if (allowedRoles && allowedRoles.length > 0) {

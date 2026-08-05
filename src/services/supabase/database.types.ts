@@ -1226,6 +1226,8 @@ export type Database = {
           converted_by: string | null;
           created_at: string;
           customer_id: string | null;
+          supplier_id: string | null;
+          roles: string[];
           customer_name: string;
           email: string | null;
           id: string;
@@ -1247,6 +1249,8 @@ export type Database = {
           converted_by?: string | null;
           created_at?: string;
           customer_id?: string | null;
+          supplier_id?: string | null;
+          roles?: string[];
           customer_name: string;
           email?: string | null;
           id?: string;
@@ -1268,6 +1272,8 @@ export type Database = {
           converted_by?: string | null;
           created_at?: string;
           customer_id?: string | null;
+          supplier_id?: string | null;
+          roles?: string[];
           customer_name?: string;
           email?: string | null;
           id?: string;
@@ -4347,6 +4353,8 @@ export type Database = {
           avatar_url: string | null;
           created_at: string;
           customer_id: string | null;
+          supplier_id: string | null;
+          roles: string[];
           employee_id: string | null;
           full_name: string;
           id: string;
@@ -4361,6 +4369,8 @@ export type Database = {
           avatar_url?: string | null;
           created_at?: string;
           customer_id?: string | null;
+          supplier_id?: string | null;
+          roles?: string[];
           employee_id?: string | null;
           full_name?: string;
           id: string;
@@ -4375,6 +4385,8 @@ export type Database = {
           avatar_url?: string | null;
           created_at?: string;
           customer_id?: string | null;
+          supplier_id?: string | null;
+          roles?: string[];
           employee_id?: string | null;
           full_name?: string;
           id?: string;
@@ -7611,6 +7623,8 @@ export type Database = {
           aging_bucket: string | null;
           balance_due: number | null;
           customer_id: string | null;
+          supplier_id: string | null;
+          roles: string[];
           customer_name: string | null;
           days_since_order: number | null;
           delivery_date: string | null;
@@ -7635,6 +7649,8 @@ export type Database = {
           balance_due: number | null;
           customer_code: string | null;
           customer_id: string | null;
+          supplier_id: string | null;
+          roles: string[];
           customer_name: string | null;
           paid_amount: number | null;
           total_amount: number | null;

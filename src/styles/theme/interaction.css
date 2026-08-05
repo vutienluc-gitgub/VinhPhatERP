@@ -1,0 +1,17 @@
+/* ============================================================
+   INTERACTION TOKENS — DIL Semantic Interactions
+   ============================================================ */
+
+:root {
+  /* Dynamic interaction state variables (applied contextually via inline styles or data-attributes) */
+  --interaction-surface: transparent;
+  --interaction-surface-hover: transparent;
+  --interaction-surface-pressed: transparent;
+  --interaction-surface-selected: transparent;
+
+  --interaction-accent: transparent;
+  --interaction-icon: currentColor;
+
+  --interaction-focus-ring: transparent;
+  --interaction-border: transparent;
+}

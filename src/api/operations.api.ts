@@ -184,19 +184,21 @@ export async function logBlockedTransitionEvent(
   const { data: authData } = await supabase.auth.getUser();
   const userId = authData?.user?.id ?? null;
 
-  const { error } = await supabase.from('business_audit_log').insert({
-    tenant_id: tenantId,
-    entity_type: 'operations_task_board',
-    entity_id: event.taskId,
-    event_type: 'OPS_TASK_TRANSITION_BLOCKED',
-    payload: {
-      ...event,
-      module: 'operations-board',
-    } satisfies Json,
-    user_id: userId,
+  await safeUpsert({
+    table: 'business_audit_log',
+    data: {
+      tenant_id: tenantId,
+      entity_type: 'operations_task_board',
+      entity_id: event.taskId,
+      event_type: 'OPS_TASK_TRANSITION_BLOCKED',
+      payload: {
+        ...event,
+        module: 'operations-board',
+      } satisfies Json,
+      user_id: userId,
+    },
+    conflictKey: 'id',
   });
-
-  if (error) throw error;
 }
 
 /**

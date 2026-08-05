@@ -9,10 +9,8 @@ export function useMachineSpecsAdmin() {
   return useQuery({
     queryKey: ['machine-specs-admin'],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      const { data, error } = await (supabase.from as any)(
-        'machine_specifications',
-      )
+      const { data, error } = await supabase
+        .from('machine_specifications')
         .select('*')
         .order('is_active', { ascending: false })
         .order('diameter', { ascending: true })
@@ -59,8 +57,8 @@ export function useToggleMachineSpecStatus() {
 
   return useMutation({
     mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      const { error } = await (supabase.from as any)('machine_specifications')
+      const { error } = await supabase
+        .from('machine_specifications')
         .update({ is_active: isActive })
         .eq('id', id);
 

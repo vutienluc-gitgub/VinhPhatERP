@@ -3,6 +3,7 @@ import {
   ApprovalWorkflow,
   ApprovalWorkflowStep,
 } from '@/domains/approval/models/types';
+import { safeUpsert } from '@/lib/db-guard';
 
 export class WorkflowRepository {
   static async getActiveWorkflow(
@@ -70,17 +71,14 @@ export class WorkflowRepository {
   static async saveWorkflow(
     workflow: Partial<ApprovalWorkflow> & { id: string },
   ): Promise<ApprovalWorkflow> {
-    const { data, error } = await untypedDb
-      .from('approval_workflows')
-      .upsert(workflow)
-      .select('*')
-      .single();
+    const data = (await safeUpsert({
+      table: 'approval_workflows',
+      data: workflow,
+      conflictKey: 'id',
+    })) as ApprovalWorkflow[];
 
-    if (error)
-      throw new Error(
-        `[WorkflowRepository] saveWorkflow failed: ${error.message}`,
-      );
-    return data as ApprovalWorkflow;
+    if (!data[0]) throw new Error('Failed to save workflow');
+    return data[0];
   }
 
   static async saveWorkflowSteps(
@@ -95,13 +93,11 @@ export class WorkflowRepository {
       .eq('workflow_id', workflowId);
 
     if (steps.length > 0) {
-      const { error } = await untypedDb
-        .from('approval_workflow_steps')
-        .insert(steps);
-      if (error)
-        throw new Error(
-          `[WorkflowRepository] saveWorkflowSteps failed: ${error.message}`,
-        );
+      await safeUpsert({
+        table: 'approval_workflow_steps',
+        data: steps,
+        conflictKey: 'id',
+      });
     }
   }
 }

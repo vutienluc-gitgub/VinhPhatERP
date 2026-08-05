@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export type ConditionOperator =
   | '=='
   | '!='
@@ -62,17 +61,37 @@ export class ExpressionEvaluator {
 
     switch (operator) {
       case '==':
-        return (docValue as any) == (value as any);
+        return docValue == value;
       case '!=':
-        return (docValue as any) != (value as any);
-      case '>':
-        return (docValue as any) > (value as any);
-      case '<':
-        return (docValue as any) < (value as any);
-      case '>=':
-        return (docValue as any) >= (value as any);
-      case '<=':
-        return (docValue as any) <= (value as any);
+        return docValue != value;
+      case '>': {
+        if (typeof docValue === 'number' && typeof value === 'number')
+          return docValue > value;
+        if (typeof docValue === 'string' && typeof value === 'string')
+          return docValue > value;
+        return Number(docValue) > Number(value);
+      }
+      case '<': {
+        if (typeof docValue === 'number' && typeof value === 'number')
+          return docValue < value;
+        if (typeof docValue === 'string' && typeof value === 'string')
+          return docValue < value;
+        return Number(docValue) < Number(value);
+      }
+      case '>=': {
+        if (typeof docValue === 'number' && typeof value === 'number')
+          return docValue >= value;
+        if (typeof docValue === 'string' && typeof value === 'string')
+          return docValue >= value;
+        return Number(docValue) >= Number(value);
+      }
+      case '<=': {
+        if (typeof docValue === 'number' && typeof value === 'number')
+          return docValue <= value;
+        if (typeof docValue === 'string' && typeof value === 'string')
+          return docValue <= value;
+        return Number(docValue) <= Number(value);
+      }
       case 'contains':
         if (typeof docValue === 'string' && typeof value === 'string') {
           return docValue.toLowerCase().includes(value.toLowerCase());

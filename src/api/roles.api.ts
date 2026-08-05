@@ -1,5 +1,6 @@
 import { untypedDb } from '@/services/supabase/untyped';
 import { getTenantId } from '@/services/supabase/tenant';
+import { safeUpsertOne } from '@/lib/db-guard';
 
 export type CompanyRole = {
   id: string;
@@ -43,17 +44,16 @@ export async function createCompanyRole(data: {
     throw new Error(`Mã vai trò "${data.code}" đã tồn tại trong hệ thống`);
   }
 
-  const { data: inserted, error } = await untypedDb
-    .from(TABLE)
-    .insert({
+  const inserted = await safeUpsertOne({
+    table: TABLE,
+    data: {
       ...data,
       is_system: false,
       tenant_id: tenantId,
-    })
-    .select()
-    .single();
+    },
+    conflictKey: 'id',
+  });
 
-  if (error) throw new Error(error.message || 'Lỗi khi tạo vai trò');
   return inserted as CompanyRole;
 }
 
