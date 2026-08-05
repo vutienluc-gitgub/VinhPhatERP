@@ -19,6 +19,7 @@ import { CHAT_LABELS, type ChatMention } from '@/schema/chat.schema';
 import { ChatInputArea } from './components/ChatInputArea';
 import { ChatMessageList } from './components/ChatMessageList';
 import { PinnedMessagesBar } from './components/PinnedMessagesBar';
+import { PresenceIndicator } from './components/PresenceIndicator';
 
 import './chat.css';
 
@@ -185,11 +186,22 @@ export const ChatDrawer = React.memo(function ChatDrawer({
         {/* Header */}
         <div className="chat-header">
           <div className="chat-header-title-section">
-            <div>
+            <div className="chat-header-avatar">
+              {(title ?? 'U')
+                .split(' ')
+                .slice(-2)
+                .map((w) => w[0])
+                .join('')
+                .toUpperCase()}
+            </div>
+            <div className="chat-header-meta">
               <h3 className="chat-header-title">
                 {title ?? CHAT_LABELS.TITLE}
               </h3>
-              {subtitle && <p className="chat-header-subtitle">{subtitle}</p>}
+              <PresenceIndicator
+                presence={typingUsers.length > 0 ? 'typing' : 'online'}
+                subtext={subtitle ? `${subtitle} • Online` : undefined}
+              />
             </div>
           </div>
           <div className="chat-header-actions">
@@ -198,6 +210,7 @@ export const ChatDrawer = React.memo(function ChatDrawer({
               className="chat-search-toggle-btn"
               onClick={() => setSearchQuery(searchQuery ? '' : ' ')}
               aria-label="Tìm kiếm"
+              title="Tìm kiếm tin nhắn"
             >
               <svg
                 width="16"
@@ -218,6 +231,7 @@ export const ChatDrawer = React.memo(function ChatDrawer({
               className="chat-close-btn"
               onClick={onClose}
               aria-label={CHAT_LABELS.CLOSE}
+              title="Đóng"
             >
               <svg
                 width="18"
