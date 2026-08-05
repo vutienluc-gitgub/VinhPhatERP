@@ -45,6 +45,11 @@ export const MessageCluster = memo(function MessageCluster({
         .toUpperCase()
     : 'U';
 
+  const lastMessage = messages[messages.length - 1];
+  const lastStatus: MessageStatus = lastMessage
+    ? deriveMessageStatus(lastMessage, isMine)
+    : 'sent';
+
   return (
     <div
       className={`chat-cluster ${isMine ? 'chat-cluster--mine' : 'chat-cluster--theirs'}`}
@@ -56,62 +61,52 @@ export const MessageCluster = memo(function MessageCluster({
       )}
 
       <div className="chat-cluster-content">
-        {!isMine && (
+        {!isMine && senderName && (
           <div className="chat-cluster-header">
-            {senderName && (
-              <span className="chat-cluster-sender">{senderName}</span>
-            )}
-            <span className="chat-cluster-time">
-              {formatClusterTime(timestamp)}
-            </span>
+            <span className="chat-cluster-sender">{senderName}</span>
           </div>
         )}
 
         <div className="chat-cluster-messages">
-          {messages.map((msg, index) => {
-            const status = deriveMessageStatus(msg, isMine);
-            const isLast = index === messages.length - 1;
-            return (
-              <div key={msg.id} className="chat-cluster-bubble-wrapper">
-                <ChatBubble
-                  message={msg}
-                  isMine={isMine}
-                  isOptimistic={status === 'sending'}
-                  onRetry={onRetry}
-                />
-                {isMine && isLast && (
-                  <div
-                    className={`chat-status-indicator chat-status-indicator--${status}`}
-                  >
-                    {status === 'sending' && (
-                      <span className="chat-status-dot">○</span>
-                    )}
-                    {status === 'sent' && (
-                      <span className="chat-status-check">✓</span>
-                    )}
-                    {status === 'delivered' && (
-                      <span className="chat-status-check">✓✓</span>
-                    )}
-                    {status === 'read' && (
-                      <span className="chat-status-check chat-status-check--read">
-                        ✓✓
-                      </span>
-                    )}
-                    {status === 'failed' && (
-                      <span className="chat-status-error">!</span>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {messages.map((msg) => (
+            <ChatBubble
+              key={msg.id}
+              message={msg}
+              isMine={isMine}
+              isOptimistic={msg.status === 'pending'}
+              onRetry={onRetry}
+            />
+          ))}
         </div>
 
-        {isMine && (
-          <div className="chat-cluster-footer-time">
+        <div className="chat-cluster-meta">
+          <span className="chat-cluster-time">
             {formatClusterTime(timestamp)}
-          </div>
-        )}
+          </span>
+          {isMine && (
+            <span
+              className={`chat-status-indicator chat-status-indicator--${lastStatus}`}
+            >
+              {lastStatus === 'sending' && (
+                <span className="chat-status-dot">○</span>
+              )}
+              {lastStatus === 'sent' && (
+                <span className="chat-status-check">✓</span>
+              )}
+              {lastStatus === 'delivered' && (
+                <span className="chat-status-check">✓✓</span>
+              )}
+              {lastStatus === 'read' && (
+                <span className="chat-status-check chat-status-check--read">
+                  ✓✓
+                </span>
+              )}
+              {lastStatus === 'failed' && (
+                <span className="chat-status-error">!</span>
+              )}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

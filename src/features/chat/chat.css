@@ -307,6 +307,7 @@
 
 .chat-cluster {
   display: flex;
+  align-items: flex-start; /* Top align avatar with top bubble */
   gap: 10px;
   max-width: 100%;
 }
@@ -323,21 +324,21 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--surface-secondary, #e2e8f0);
-  color: var(--text);
+  background: var(--color-primary, #6366f1);
+  color: #ffffff;
   font-weight: 600;
   font-size: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: 0;
 }
 
 .chat-cluster-content {
   display: flex;
   flex-direction: column;
-  max-width: var(--chat-max-width);
+  max-width: 100%;
 }
 
 .chat-cluster--mine .chat-cluster-content {
@@ -358,33 +359,79 @@
   color: var(--text);
 }
 
-.chat-cluster-time {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-}
-
 .chat-cluster-messages {
   display: flex;
   flex-direction: column;
-  gap: var(--chat-gap);
+  gap: 4px; /* Tight, consistent 4px rhythm within cluster */
   width: 100%;
 }
 
-.chat-cluster-bubble-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
+.chat-cluster--mine .chat-cluster-messages {
+  align-items: flex-end;
 }
 
-.chat-cluster--mine .chat-cluster-bubble-wrapper {
-  flex-direction: row-reverse;
+/* ── Chat Bubbles ── */
+
+.chat-bubble-row {
+  display: flex;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.chat-bubble-row--mine {
+  justify-content: flex-end;
+}
+
+.chat-bubble-row--theirs {
+  justify-content: flex-start;
+}
+
+.chat-bubble {
+  min-width: 96px; /* Prevents 2-word messages from awkward vertical wrapping */
+  max-width: 70%; /* Clean, balanced grid max width */
+  padding: 8px 12px;
+  border-radius: 14px;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  word-break: break-word;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.chat-bubble--mine {
+  background: var(--color-primary, #6366f1);
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-bubble--theirs {
+  background: var(--surface-secondary, #f1f5f9);
+  color: var(--text, #0f172a);
+  border-bottom-left-radius: 4px;
+}
+
+.chat-cluster-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  color: var(--text-muted, #94a3b8);
+  margin-top: 4px;
+}
+
+.chat-cluster--mine .chat-cluster-meta {
+  justify-content: flex-end;
+}
+
+.chat-cluster--theirs .chat-cluster-meta {
+  justify-content: flex-start;
+  padding-left: 2px;
 }
 
 .chat-status-indicator {
   font-size: 0.75rem;
   color: var(--text-muted);
-  margin: 0 4px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
 }
 
