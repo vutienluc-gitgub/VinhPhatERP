@@ -24,25 +24,28 @@ export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps = {}) {
     return <Navigate to="/blocked" replace />;
   }
 
-  // If user has employee-level role in legacy enum, allow them into ERP shell
   const roles: string[] = profile?.roles ?? [];
   const legacyRole: string = profile?.role ?? '';
-  const isInternalUser = [
-    'admin',
-    'manager',
-    'staff',
-    'sale',
-    'viewer',
-  ].includes(legacyRole);
+
+  const isSupplier = roles.includes('supplier') || legacyRole === 'supplier';
+  const isCustomer = roles.includes('customer') || legacyRole === 'customer';
+  const isDriver = roles.includes('driver') || legacyRole === 'driver';
+
+  // If user has employee-level role, allow them into ERP shell.
+  // Note: 'viewer' is a read-only role that was previously given to external users.
+  // If they are explicitly a supplier/customer, they are not an internal user despite having 'viewer'.
+  const isInternalUser =
+    ['admin', 'manager', 'staff', 'sale'].includes(legacyRole) ||
+    (legacyRole === 'viewer' && !isSupplier && !isCustomer && !isDriver);
 
   if (!isInternalUser) {
-    if (roles.includes('supplier') || legacyRole === 'supplier') {
+    if (isSupplier) {
       return <Navigate to="/portal/supplier" replace />;
     }
-    if (roles.includes('customer') || legacyRole === 'customer') {
+    if (isCustomer) {
       return <Navigate to="/portal/customer" replace />;
     }
-    if (roles.includes('driver') || legacyRole === 'driver') {
+    if (isDriver) {
       return <Navigate to="/driver" replace />;
     }
   }

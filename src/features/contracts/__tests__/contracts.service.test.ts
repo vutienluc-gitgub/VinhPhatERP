@@ -248,11 +248,15 @@ describe('Metadata transition — Property Tests', () => {
 // ── Task 11.2: Property test — audit log ─────────────────────────────────────
 // Property 9: Moi thay doi noi dung deu co audit log
 
-// Mock safeUpsertOne from db-guard (writeAuditLog uses this instead of direct insert)
-const mockSafeUpsertOne = vi.fn(() => Promise.resolve(null));
+const { mockSafeUpsertOne } = vi.hoisted(() => ({
+  mockSafeUpsertOne: vi.fn((..._args: unknown[]) =>
+    Promise.resolve<unknown>(null),
+  ),
+}));
+
 vi.mock('@/lib/db-guard', () => ({
   safeUpsert: vi.fn(() => Promise.resolve([])),
-  safeUpsertOne: (...args: unknown[]) => mockSafeUpsertOne(...args),
+  safeUpsertOne: mockSafeUpsertOne,
   safeInsert: vi.fn(() => Promise.resolve(null)),
 }));
 
