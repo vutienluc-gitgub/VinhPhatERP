@@ -460,8 +460,8 @@ html.fluid .content-shell {
   padding: 0.35rem 0.7rem;
   margin-bottom: 0.9rem;
   border-radius: 999px;
-  background: rgba(15, 166, 122, 0.12);
-  color: var(--accent);
+  background: var(--info-soft);
+  color: var(--info-strong);
   font-size: 0.8rem;
   font-weight: 700;
 }
