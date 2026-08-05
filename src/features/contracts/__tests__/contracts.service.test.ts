@@ -248,12 +248,20 @@ describe('Metadata transition — Property Tests', () => {
 // ── Task 11.2: Property test — audit log ─────────────────────────────────────
 // Property 9: Moi thay doi noi dung deu co audit log
 
+// Mock safeUpsertOne from db-guard (writeAuditLog uses this instead of direct insert)
+const mockSafeUpsertOne = vi.fn(() => Promise.resolve(null));
+vi.mock('@/lib/db-guard', () => ({
+  safeUpsert: vi.fn(() => Promise.resolve([])),
+  safeUpsertOne: (...args: unknown[]) => mockSafeUpsertOne(...args),
+  safeInsert: vi.fn(() => Promise.resolve(null)),
+}));
+
 describe('Audit log — Property Tests', () => {
   it('writeAuditLog ghi dung params vao contract_audit_logs', async () => {
     const contractId = '00000000-0000-0000-0000-000000000001';
     const performedBy = '00000000-0000-0000-0000-000000000002';
 
-    auditChain['insert'] = vi.fn(() => Promise.resolve({ error: null }));
+    mockSafeUpsertOne.mockClear();
 
     await service.writeAuditLog(
       contractId,
@@ -263,11 +271,15 @@ describe('Audit log — Property Tests', () => {
       performedBy,
     );
 
-    expect(auditChain['insert']).toHaveBeenCalledWith(
+    expect(mockSafeUpsertOne).toHaveBeenCalledWith(
       expect.objectContaining({
-        contract_id: contractId,
-        action: 'updated',
-        performed_by: performedBy,
+        table: 'contract_audit_logs',
+        data: expect.objectContaining({
+          contract_id: contractId,
+          action: 'updated',
+          performed_by: performedBy,
+        }),
+        conflictKey: 'id',
       }),
     );
   });
@@ -308,15 +320,11 @@ describe('Link/Unlink blocked when signed — Property Tests', () => {
       }),
     } as ReturnType<typeof createChainBuilder>;
 
-    // linkOrderToContract upsert
-    linksChain = {
-      ...createChainBuilder({
-        id: 'link1',
-        contract_id: 'c1',
-        order_id: 'o1',
-      }),
-    } as ReturnType<typeof createChainBuilder>;
-    auditChain['insert'] = vi.fn(() => Promise.resolve({ error: null }));
+    // safeUpsertOne will be called twice: once for link, once for audit
+    const linkData = { id: 'link1', contract_id: 'c1', order_id: 'o1' };
+    mockSafeUpsertOne
+      .mockResolvedValueOnce(linkData) // linkOrderToContract upsert
+      .mockResolvedValueOnce(null); // writeAuditLog upsert
 
     const result = await service.linkOrderToContract('c1', 'o1');
     expect(result).toBeTruthy();
