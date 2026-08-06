@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { PortalLayout } from '@/features/portal-shared/components/PortalLayout';
@@ -20,6 +21,7 @@ import './portal.css';
 function PortalLayoutInner() {
   const { profile } = useAuth();
   const { addNotification, setConnectionWarning } = useNotifications();
+  const location = useLocation();
 
   const unreadChatCount = usePortalChatUnread(
     profile?.customer_id ?? undefined,
@@ -65,7 +67,18 @@ function PortalLayoutInner() {
       unreadChatCount={unreadChatCount}
       headerRightActions={<NotificationBadge />}
     >
-      <Outlet />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={location.pathname}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="h-full"
+        >
+          <Outlet />
+        </motion.div>
+      </AnimatePresence>
     </PortalLayout>
   );
 }

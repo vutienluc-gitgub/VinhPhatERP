@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { usePortalShipments } from '@/application/crm/portal';
 import { SHIPMENT_STATUS_LABELS } from '@/features/customer-portal/constants';
-import { EmptyState } from '@/shared/components';
+import { EmptyState, FilterChips } from '@/shared/components';
 
 type FilterStatus = 'ALL' | 'PREPARING' | 'SHIPPED' | 'DELIVERED';
 
@@ -24,31 +24,20 @@ export function PortalShipmentsPage() {
 
   const filterOptions: Array<{ id: FilterStatus; label: string }> = [
     { id: 'ALL', label: 'Tất cả' },
-    { id: 'PREPARING', label: 'Đang chuẩn bị' },
-    { id: 'SHIPPED', label: 'Đã giao' },
-    { id: 'DELIVERED', label: 'Đã nhận' },
+    { id: 'PREPARING', label: SHIPMENT_STATUS_LABELS.preparing },
+    { id: 'SHIPPED', label: SHIPMENT_STATUS_LABELS.shipped },
+    { id: 'DELIVERED', label: SHIPMENT_STATUS_LABELS.delivered },
   ];
 
   return (
     <div className="portal-section">
       <h1 className="portal-page-title">Giao hàng</h1>
 
-      {/* Filter Chips */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 mb-4">
-        {filterOptions.map((opt) => (
-          <button
-            key={opt.id}
-            onClick={() => setActiveFilter(opt.id)}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors whitespace-nowrap ${
-              activeFilter === opt.id
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'bg-surface-secondary text-muted hover:text-foreground'
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
+      <FilterChips
+        options={filterOptions}
+        activeValue={activeFilter}
+        onChange={(val) => setActiveFilter(val as FilterStatus)}
+      />
 
       {filteredShipments.length === 0 ? (
         <EmptyState icon="Truck" description="Chưa có phiếu giao hàng nào." />
@@ -83,14 +72,7 @@ export function PortalShipmentsPage() {
                         {SHIPMENT_STATUS_LABELS[s.status] ?? s.status}
                       </span>
                     </td>
-                    <td
-                      style={{
-                        maxWidth: '200px',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
+                    <td className="max-w-[200px] truncate">
                       {s.delivery_address ?? '—'}
                     </td>
                   </tr>

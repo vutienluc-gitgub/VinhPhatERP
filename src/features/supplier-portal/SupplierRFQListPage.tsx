@@ -12,6 +12,7 @@ import {
   CardTitle,
   TableSkeleton,
   EmptyState,
+  FilterChips,
 } from '@/shared/components';
 import { TableRowInteraction, evaluateInteraction } from '@/shared/interaction';
 import { SUPPLIER_PORTAL_LABELS } from '@/features/supplier-portal/supplier-portal.constants';
@@ -58,7 +59,7 @@ export function SupplierRFQListPage() {
   };
 
   const filterOptions: Array<{ id: FilterStatus; label: string }> = [
-    { id: 'ALL', label: 'Tất cả' },
+    { id: 'ALL', label: TEXT.FILTER_ALL },
     { id: 'OPEN', label: TEXT.RFQ_LIST_STATUS_OPEN },
     { id: 'CLOSED', label: TEXT.RFQ_LIST_STATUS_CLOSED },
   ];
@@ -74,22 +75,11 @@ export function SupplierRFQListPage() {
         </div>
       </div>
 
-      {/* Filter Chips */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
-        {filterOptions.map((opt) => (
-          <button
-            key={opt.id}
-            onClick={() => setActiveFilter(opt.id)}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors whitespace-nowrap ${
-              activeFilter === opt.id
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'bg-surface-secondary text-muted hover:text-foreground'
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
+      <FilterChips
+        options={filterOptions}
+        activeValue={activeFilter}
+        onChange={(val) => setActiveFilter(val as FilterStatus)}
+      />
 
       <Card>
         <CardHeader>

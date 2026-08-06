@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthProvider';
 // eslint-disable-next-line boundaries/dependencies
 import { ChatDrawer } from '@/features/chat/ChatDrawer';
+import { Icon } from '@/shared/components';
 
 // We reuse the CSS from customer-portal for now.
 // Ideally it gets moved to portal-shared/styles/portal.css later.
@@ -109,16 +110,7 @@ export function PortalLayout({
           aria-label="Nhắn tin với nhân viên"
           title="Nhắn tin"
         >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
+          <Icon name="MessageSquare" size={24} strokeWidth={2} />
           {unreadChatCount > 0 && (
             <span className="portal-chat-fab-badge">
               {unreadChatCount > 9 ? '9+' : unreadChatCount}

@@ -54,35 +54,18 @@ export function PortalDebtPage() {
                     <Link to={`/portal/orders/${o.id}`} className="portal-link">
                       {o.order_number}
                     </Link>
-                    <div
-                      style={{
-                        fontSize: '0.75rem',
-                        color: 'var(--muted)',
-                      }}
-                    >
+                    <div className="text-xs text-muted">
                       Giao: {o.due_date ?? '—'}
                     </div>
                   </td>
                   <td className="right">
-                    <div
-                      style={{
-                        fontWeight: 500,
-                        color: 'var(--danger)',
-                      }}
-                    >
+                    <div className="font-medium text-danger">
                       <MoneyText
                         value={o.total_amount - o.paid_amount}
                         suffix=" ₫"
                       />
                     </div>
-                    <div
-                      style={{
-                        fontSize: '0.75rem',
-                        color: 'var(--muted)',
-                      }}
-                    >
-                      còn nợ
-                    </div>
+                    <div className="text-xs text-muted">còn nợ</div>
                   </td>
                 </tr>
               ))}
