@@ -24,6 +24,7 @@ export interface PortalNavItem {
   to: string;
   label: string;
   end?: boolean;
+  icon?: string;
 }
 
 export interface PortalLayoutProps {
@@ -84,7 +85,7 @@ export function PortalLayout({
 
       {/* Nav */}
       <nav className="portal-nav">
-        {navItems.map(({ to, label, end }) => (
+        {navItems.map(({ to, label, end, icon }) => (
           <NavLink
             key={to}
             to={to}
@@ -93,6 +94,7 @@ export function PortalLayout({
               `portal-nav-item${isActive ? ' portal-nav-item--active' : ''}`
             }
           >
+            {icon && <Icon name={icon} className="mr-2 h-4 w-4" />}
             {label}
           </NavLink>
         ))}
