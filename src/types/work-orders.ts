@@ -3,8 +3,7 @@ import type { Database } from '@/schema/database.types';
 export type DBWorkOrderStatus =
   Database['public']['Enums']['work_order_status'];
 
-// We extend the DB status with 'pending_verification' as requested for the Approval Workflow
-export type WorkOrderStatus = DBWorkOrderStatus | 'pending_verification';
+export type WorkOrderStatus = DBWorkOrderStatus;
 
 export type WorkOrderAction =
   | 'start'

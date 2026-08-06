@@ -4,6 +4,7 @@ export type WorkOrderStatus =
   | 'draft'
   | 'yarn_issued'
   | 'in_progress'
+  | 'pending_verification'
   | 'completed'
   | 'cancelled';
 
@@ -22,6 +23,10 @@ export const WORK_ORDER_STATUSES: Record<
   in_progress: {
     label: 'Đang sản xuất',
     color: 'bg-info-soft text-info',
+  },
+  pending_verification: {
+    label: 'Chờ QC xác nhận',
+    color: 'bg-warning-soft text-warning',
   },
   completed: {
     label: 'Hoàn thành',

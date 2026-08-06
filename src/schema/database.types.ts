@@ -9061,6 +9061,7 @@ export type Database = {
         | 'draft'
         | 'yarn_issued'
         | 'in_progress'
+        | 'pending_verification'
         | 'completed'
         | 'cancelled';
     };
@@ -9331,6 +9332,7 @@ export const Constants = {
         'draft',
         'yarn_issued',
         'in_progress',
+        'pending_verification',
         'completed',
         'cancelled',
       ],

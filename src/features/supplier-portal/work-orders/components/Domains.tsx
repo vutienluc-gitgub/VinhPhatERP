@@ -1,6 +1,7 @@
 export { OverviewDomain } from './OverviewDomain';
 export { ProductionDomain } from './ProductionDomain';
 export { MaterialDomain } from './MaterialDomain';
+export { TimelineDomain } from './TimelineDomain';
 
 import { Card } from '@/shared/components/Card';
 import { EmptyState } from '@/shared/components/EmptyState';
@@ -24,18 +25,6 @@ export function DocumentsDomain() {
         icon="file-text"
         title="Tài liệu Kỹ thuật"
         description="Chưa có tài liệu đính kèm (Machine Sheet, Color Card)."
-      />
-    </Card>
-  );
-}
-
-export function TimelineDomain() {
-  return (
-    <Card className="p-6">
-      <EmptyState
-        icon="clock"
-        title="Lịch sử Sự kiện"
-        description="Event Sourcing Timeline sẽ hiển thị tại đây."
       />
     </Card>
   );

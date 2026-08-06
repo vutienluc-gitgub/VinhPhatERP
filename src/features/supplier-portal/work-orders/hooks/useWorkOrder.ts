@@ -35,6 +35,10 @@ export function useWorkOrder(workOrderId: string | undefined) {
     const flags: ExceptionFlag[] = []; // In real app, fetch from DB or derive
 
     // MOCK Backend-Driven State Machine
+    if (status === 'in_progress') {
+      // Mock an exception for demonstration
+      flags.push('machine_breakdown');
+    }
     let availableActions: WorkOrderAction[] = [];
     const capabilities: WorkOrderCapabilities = {
       canView: true,
@@ -45,18 +49,29 @@ export function useWorkOrder(workOrderId: string | undefined) {
       canComment: true,
     };
 
-    if (status === 'yarn_issued') {
+    // Mock 'pending_verification' for Approval Workflow
+    let effectiveStatus: WorkOrderStatus = status as WorkOrderStatus;
+    if (status === 'completed') {
+      effectiveStatus = 'pending_verification';
+    }
+
+    if (effectiveStatus === 'yarn_issued') {
       availableActions = ['start'];
       capabilities.canConfirmMaterials = true;
-    } else if (status === 'in_progress') {
+    } else if (effectiveStatus === 'in_progress') {
       availableActions = ['pause', 'complete'];
       capabilities.canUpdateProduction = true;
       capabilities.canReportComplete = true;
       capabilities.canConfirmMaterials = true;
+    } else if (effectiveStatus === 'pending_verification') {
+      // In pending_verification, Supplier cannot update production anymore, just view
+      capabilities.canUpdateProduction = false;
+      capabilities.canReportComplete = false;
+      capabilities.canConfirmMaterials = false;
     }
 
     return {
-      status: status as WorkOrderStatus,
+      status: effectiveStatus,
       flags,
       availableActions,
       capabilities,

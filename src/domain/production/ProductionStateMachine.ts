@@ -18,6 +18,9 @@ export type WorkOrderTransition =
   | 'issue_yarn'
   | 'start_production'
   | 'complete'
+  | 'report_quality'
+  | 'approve_qc'
+  | 'reject_qc'
   | 'cancel';
 
 export const workOrderStateMachine = new StateMachine<
@@ -28,13 +31,17 @@ export const workOrderStateMachine = new StateMachine<
     draft: ['issue_yarn', 'cancel'],
     yarn_issued: ['start_production', 'cancel'],
     in_progress: ['complete'],
+    pending_verification: ['approve_qc', 'reject_qc'],
     completed: [],
     cancelled: [],
   },
   {
     issue_yarn: 'yarn_issued',
     start_production: 'in_progress',
-    complete: 'completed',
+    complete: 'pending_verification',
+    approve_qc: 'completed',
+    reject_qc: 'in_progress',
+    report_quality: 'in_progress', // just a self transition
     cancel: 'cancelled',
   },
 );
@@ -44,6 +51,9 @@ export const WORK_ORDER_TRANSITION_LABELS: Record<WorkOrderTransition, string> =
     issue_yarn: 'Xuat soi',
     start_production: 'Bat dau san xuat',
     complete: 'Hoan thanh',
+    approve_qc: 'Duyệt QC',
+    reject_qc: 'Từ chối QC',
+    report_quality: 'Báo cáo chất lượng',
     cancel: 'Huy lenh',
   };
 
