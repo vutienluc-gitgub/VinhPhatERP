@@ -10,6 +10,10 @@ export const workOrderStatus = {
     label: 'Đang sản xuất',
     variant: 'warning',
   },
+  pending_verification: {
+    label: 'Chờ QC xác nhận',
+    variant: 'warning',
+  },
   completed: {
     label: 'Hoàn thành',
     variant: 'success',

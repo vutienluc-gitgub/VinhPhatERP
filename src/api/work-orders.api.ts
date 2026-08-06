@@ -472,6 +472,48 @@ export async function cancelWorkOrder(id: string): Promise<WorkOrder> {
   return data as WorkOrder;
 }
 
+export async function verifyWorkOrder(
+  id: string,
+  actualYieldM: number,
+  qcNotes: string,
+): Promise<void> {
+  // Since 'pending_verification' is new, we use untypedDb if types are mismatched,
+  // but we updated types so supabase is fine.
+  const { error } = await supabase
+    .from(TABLE)
+    .update({
+      status: 'completed' as never,
+      actual_yield_m: actualYieldM,
+      notes: qcNotes, // append notes or overwrite. For now overwrite.
+    })
+    .eq('id', id)
+    .eq('status', 'pending_verification' as never); // Only allow verification from pending status
+
+  if (error) {
+    console.error('Failed to verify work order', error);
+    throw error;
+  }
+}
+
+export async function rejectWorkOrder(
+  id: string,
+  reason: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from(TABLE)
+    .update({
+      status: 'in_progress' as never,
+      notes: reason,
+    })
+    .eq('id', id)
+    .eq('status', 'pending_verification' as never);
+
+  if (error) {
+    console.error('Failed to reject work order', error);
+    throw error;
+  }
+}
+
 export async function fetchUnitOptions(): Promise<string[]> {
   const { data, error } = await supabase
     .from('v_available_units')

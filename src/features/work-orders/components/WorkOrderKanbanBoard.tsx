@@ -35,6 +35,11 @@ const COLUMNS: ColumnDef[] = [
   { key: 'draft', label: 'Bản nháp', color: 'bg-surface-secondary' },
   { key: 'yarn_issued', label: 'Đã xuất sợi', color: 'bg-info-soft' },
   { key: 'in_progress', label: 'Đang sản xuất', color: 'bg-info-soft' },
+  {
+    key: 'pending_verification',
+    label: 'Chờ QC xác nhận',
+    color: 'bg-warning-soft',
+  },
   { key: 'completed', label: 'Hoàn thành', color: 'bg-success-soft' },
 ];
 

@@ -15,6 +15,8 @@ import {
   fetchAvailableYarnLots,
   issueYarnLots,
   fetchYarnIssuesForWorkOrder,
+  verifyWorkOrder,
+  rejectWorkOrder,
 } from '@/api/work-orders.api';
 import type {
   WorkOrder,
@@ -122,6 +124,33 @@ export function useCompleteWorkOrder() {
       queryClient.invalidateQueries({ queryKey: ['work_orders'] });
       queryClient.invalidateQueries({ queryKey: ['work_order', variables.id] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
+    },
+  });
+}
+
+export function useVerifyWorkOrder() {
+  const queryClient = useQueryClient();
+  return useMutation<
+    void,
+    PostgrestError,
+    { id: string; actualYieldM: number; qcNotes: string }
+  >({
+    mutationFn: ({ id, actualYieldM, qcNotes }) =>
+      verifyWorkOrder(id, actualYieldM, qcNotes),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['work_orders'] });
+      queryClient.invalidateQueries({ queryKey: ['work_order', variables.id] });
+    },
+  });
+}
+
+export function useRejectWorkOrder() {
+  const queryClient = useQueryClient();
+  return useMutation<void, PostgrestError, { id: string; reason: string }>({
+    mutationFn: ({ id, reason }) => rejectWorkOrder(id, reason),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['work_orders'] });
+      queryClient.invalidateQueries({ queryKey: ['work_order', variables.id] });
     },
   });
 }

@@ -67,15 +67,38 @@ export function WorkOrderWorkspace() {
                     </h1>
                     <Badge
                       variant={
-                        statePayload?.status === 'completed'
+                        statePayload?.status === 'completed' ||
+                        statePayload?.status === 'pending_verification'
                           ? 'success'
                           : statePayload?.status === 'in_progress'
                             ? 'info'
                             : 'default'
                       }
                     >
-                      {statePayload?.status}
+                      {statePayload?.status === 'pending_verification'
+                        ? 'Chờ QC xác nhận'
+                        : statePayload?.status}
                     </Badge>
+                    {statePayload?.flags.map((flag) => (
+                      <Badge
+                        key={flag}
+                        variant="danger"
+                        className="ml-2 animate-pulse"
+                      >
+                        <Icon
+                          name="alert-triangle"
+                          size={12}
+                          className="mr-1"
+                        />
+                        {flag === 'blocked'
+                          ? 'Đình trệ'
+                          : flag === 'waiting_material'
+                            ? 'Chờ vật tư'
+                            : flag === 'waiting_qc'
+                              ? 'Chờ QC'
+                              : 'Lỗi máy'}
+                      </Badge>
+                    ))}
                   </div>
                 </div>
 

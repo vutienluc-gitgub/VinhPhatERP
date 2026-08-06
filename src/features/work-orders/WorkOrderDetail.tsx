@@ -21,11 +21,14 @@ import {
   useWorkOrderRequirements,
   useStartWorkOrder,
   useCompleteWorkOrder,
+  useVerifyWorkOrder,
+  useRejectWorkOrder,
   useYarnIssuesForWorkOrder,
 } from '@/application/production';
 
 import type { WorkOrder } from './types';
 import { YarnIssueModal } from './components/YarnIssueModal';
+import { WorkOrderQCModal } from './components/WorkOrderQCModal';
 import { WORK_ORDER_MESSAGES as MSG } from './work-orders.constants';
 
 interface WorkOrderDetailProps {
@@ -40,12 +43,17 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
     useWorkOrderRequirements(id);
   const startMutation = useStartWorkOrder();
   const completeMutation = useCompleteWorkOrder();
+  const verifyMutation = useVerifyWorkOrder();
+  const rejectMutation = useRejectWorkOrder();
   const { data: yarnIssues } = useYarnIssuesForWorkOrder(id);
   const [showIssueModal, setShowIssueModal] = useState(false);
 
   // Complete Work Order Modal State
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [actualYieldM, setActualYieldM] = useState<number | ''>('');
+
+  // QC Modal State
+  const [showQCModal, setShowQCModal] = useState(false);
 
   if (isLoading)
     return (
@@ -67,14 +75,14 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
     },
     {
       id: 'step-2',
-      title: MSG.TIMELINE_STEP_2_TITLE,
+      title: 'Sản xuất',
       subtitle: wo.supplier?.name
-        ? `${MSG.LABEL_WEAVER}: ${wo.supplier.name}`
-        : MSG.TIMELINE_STEP_2_WAITING,
+        ? `Nhà dệt: ${wo.supplier.name}`
+        : 'Chờ giao việc',
       status:
         wo.status === 'in_progress'
           ? 'current'
-          : wo.status === 'completed'
+          : wo.status === 'pending_verification' || wo.status === 'completed'
             ? 'completed'
             : 'pending',
       date: wo.start_date
@@ -83,11 +91,28 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
       icon: 'Scissors',
     },
     {
+      id: 'step-qc',
+      title: 'Kiểm tra QC',
+      subtitle:
+        wo.status === 'pending_verification'
+          ? 'Đang chờ nội bộ QC duyệt'
+          : wo.status === 'completed'
+            ? 'QC Đã duyệt'
+            : 'Chưa tới hạn',
+      status:
+        wo.status === 'pending_verification'
+          ? 'current'
+          : wo.status === 'completed'
+            ? 'completed'
+            : 'pending',
+      icon: 'Search',
+    },
+    {
       id: 'step-3',
       title: MSG.TIMELINE_STEP_3_TITLE,
       subtitle:
         wo.status === 'completed'
-          ? `Nghiệm thu thực tế: ${wo.actual_yield_m}m mộc`
+          ? `Nghiệm thu: ${wo.actual_yield_m}m`
           : MSG.TIMELINE_STEP_3_PENDING,
       status: wo.status === 'completed' ? 'completed' : 'pending',
       date:
@@ -178,6 +203,16 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                 >
                   <Icon name="CheckCircle" size={16} />
                   {MSG.BTN_COMPLETE_WEAVING}
+                </button>
+              )}
+              {wo.status === 'pending_verification' && (
+                <button
+                  className="btn-warning flex items-center gap-2"
+                  type="button"
+                  onClick={() => setShowQCModal(true)}
+                >
+                  <Icon name="Search" size={16} />
+                  Nghiệm thu QC
                 </button>
               )}
             </div>
@@ -511,6 +546,30 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
           </div>
         </div>
       </AdaptiveSheet>
+
+      {showQCModal && (
+        <WorkOrderQCModal
+          wo={wo}
+          isPending={verifyMutation.isPending || rejectMutation.isPending}
+          onClose={() => setShowQCModal(false)}
+          onApprove={(data) => {
+            verifyMutation.mutate(
+              { id, actualYieldM: data.actualYield, qcNotes: data.qcNotes },
+              {
+                onSuccess: () => setShowQCModal(false),
+              },
+            );
+          }}
+          onReject={(data) => {
+            rejectMutation.mutate(
+              { id, reason: data.qcNotes },
+              {
+                onSuccess: () => setShowQCModal(false),
+              },
+            );
+          }}
+        />
+      )}
     </div>
   );
 }
