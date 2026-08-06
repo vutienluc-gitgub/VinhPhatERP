@@ -9,6 +9,16 @@ import { ChatDrawer } from '@/features/chat/ChatDrawer';
 // Ideally it gets moved to portal-shared/styles/portal.css later.
 import '@/features/customer-portal/portal.css';
 
+/** Extract up to 2 initials from a full name, e.g. "Dương Thị Phi" → "DP" */
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '';
+  const first = parts[0] ?? '';
+  const last = parts[parts.length - 1] ?? '';
+  if (parts.length === 1) return first.charAt(0).toUpperCase();
+  return (first.charAt(0) + last.charAt(0)).toUpperCase();
+}
+
 export interface PortalNavItem {
   to: string;
   label: string;
@@ -58,6 +68,11 @@ export function PortalLayout({
           <span className="portal-brand-sub">{brandSub}</span>
         </div>
         <div className="portal-header-user">
+          {profile?.full_name && (
+            <span className="portal-user-avatar">
+              {getInitials(profile.full_name)}
+            </span>
+          )}
           <span className="portal-username">{profile?.full_name}</span>
           {headerRightActions}
           <button onClick={signOut} className="portal-signout-btn">

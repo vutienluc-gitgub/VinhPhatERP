@@ -1,17 +1,28 @@
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { untypedDb } from '@/services/supabase/client';
 import { MoneyText } from '@/shared/value';
-import { Badge } from '@/shared/components';
+import { Icon, StatCard } from '@/shared/components';
+import { SUPPLIER_PORTAL_LABELS } from '@/features/supplier-portal/supplier-portal.constants';
+
+const TEXT = SUPPLIER_PORTAL_LABELS;
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return TEXT.DASHBOARD_GREETING_MORNING;
+  if (hour < 18) return TEXT.DASHBOARD_GREETING_AFTERNOON;
+  return TEXT.DASHBOARD_GREETING_EVENING;
+}
 
 export function SupplierDashboardPage() {
   const { profile } = useAuth();
   const supplierId = profile?.supplier_id;
 
   // Metric 1: Unpaid Debt
-  const { data: debt } = useQuery({
+  const { data: debt, isLoading: isLoadingDebt } = useQuery({
     queryKey: ['supplier-debt', supplierId],
     queryFn: async () => {
       if (!supplierId) return null;
@@ -30,7 +41,7 @@ export function SupplierDashboardPage() {
   });
 
   // Metric 2: New POs (pending, sent, approved)
-  const { data: newPoCount } = useQuery({
+  const { data: newPoCount, isLoading: isLoadingPo } = useQuery({
     queryKey: ['supplier-new-pos', supplierId],
     queryFn: async () => {
       if (!supplierId) return 0;
@@ -45,7 +56,7 @@ export function SupplierDashboardPage() {
   });
 
   // Metric 3: Delivering POs
-  const { data: deliveringPoCount } = useQuery({
+  const { data: deliveringPoCount, isLoading: isLoadingDelivering } = useQuery({
     queryKey: ['supplier-delivering-pos', supplierId],
     queryFn: async () => {
       if (!supplierId) return 0;
@@ -60,7 +71,7 @@ export function SupplierDashboardPage() {
   });
 
   // Metric 4: New RFQs
-  const { data: newRfqCount } = useQuery({
+  const { data: newRfqCount, isLoading: isLoadingRfq } = useQuery({
     queryKey: ['supplier-new-rfqs'],
     queryFn: async () => {
       const { count } = await untypedDb
@@ -107,141 +118,233 @@ export function SupplierDashboardPage() {
     switch (status) {
       case 'pending':
       case 'sent':
-        return <Badge variant="warning">Mới</Badge>;
+        return (
+          <span className="portal-badge portal-badge--in-progress">
+            {TEXT.DASHBOARD_STATUS_NEW}
+          </span>
+        );
       case 'approved':
       case 'confirmed':
-        return <Badge variant="info">Đang xử lý</Badge>;
+        return (
+          <span className="portal-badge portal-badge--confirmed">
+            {TEXT.DASHBOARD_STATUS_PROCESSING}
+          </span>
+        );
       case 'completed':
-        return <Badge variant="success">Hoàn thành</Badge>;
+        return (
+          <span className="portal-badge portal-badge--completed">
+            {TEXT.DASHBOARD_STATUS_COMPLETED}
+          </span>
+        );
       default:
-        return <Badge variant="default">{status}</Badge>;
+        return <span className="portal-badge">{status}</span>;
     }
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">
-          Xin chào, {profile?.full_name}
-        </h1>
-        <p className="text-muted mt-1">
-          Đây là tổng quan hoạt động cung cấp của bạn.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-surface rounded-xl border border-default p-4 shadow-sm">
-          <div className="text-sm font-medium text-muted">
-            Đơn hàng mới (PO)
-          </div>
-          <div className="text-2xl font-bold text-foreground mt-2">
-            {newPoCount ?? 0}
-          </div>
-          <div className="text-xs text-muted mt-1">Đang chờ bạn xác nhận</div>
+    <div className="portal-section">
+      {/* ── Welcome Banner (Premium gradient - same as Customer Portal) ── */}
+      <div className="bg-gradient-to-br from-[#0f1f3d] to-[#1a3a6e] rounded-[14px] px-6 py-5 text-white flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <p className="m-0 text-[0.78rem] text-white/55 uppercase tracking-[0.06em] font-semibold">
+            {getGreeting()}
+          </p>
+          <p className="mt-1 mb-0 text-[1.15rem] font-bold tracking-[-0.01em]">
+            {profile?.full_name ?? 'Nhà cung cấp'}
+          </p>
         </div>
-
-        <div className="bg-surface rounded-xl border border-default p-4 shadow-sm">
-          <div className="text-sm font-medium text-muted">
-            Báo giá cần phản hồi (RFQ)
-          </div>
-          <div className="text-2xl font-bold text-warning mt-2">
-            {newRfqCount ?? 0}
-          </div>
-          <div className="text-xs text-muted mt-1">Cần xử lý báo giá</div>
-        </div>
-
-        <div className="bg-surface rounded-xl border border-default p-4 shadow-sm">
-          <div className="text-sm font-medium text-muted">Đang giao hàng</div>
-          <div className="text-2xl font-bold text-info mt-2">
-            {deliveringPoCount ?? 0}
-          </div>
-          <div className="text-xs text-muted mt-1">
-            Lô hàng đang được thực hiện
-          </div>
-        </div>
-
-        <div className="bg-surface rounded-xl border border-default p-4 shadow-sm">
-          <div className="text-sm font-medium text-muted">
-            Hóa đơn chờ thanh toán
-          </div>
-          <div className="text-2xl font-bold text-danger mt-2">
-            <MoneyText value={debt?.balance_due ?? 0} />
-          </div>
-          <div className="text-xs text-muted mt-1">Tổng công nợ hiện tại</div>
+        <div className="text-[0.78rem] text-white/50 text-right">
+          <p className="m-0">{TEXT.DASHBOARD_PORTAL_LABEL}</p>
+          <p className="mt-1 mb-0 text-white/30">{TEXT.DASHBOARD_BRAND}</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-surface rounded-xl border border-default p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-foreground mb-4">
-            Đơn hàng gần đây
-          </h2>
-          <div className="text-sm text-muted">
-            <ul className="space-y-3">
-              {recentPos?.length === 0 ? (
-                <li className="text-muted text-center py-4">
-                  Chưa có đơn hàng nào
-                </li>
-              ) : (
-                recentPos?.map(
-                  (po: {
-                    id: string;
-                    po_code: string;
-                    order_date: string;
-                    total_amount: number;
-                    status: string;
-                  }) => (
-                    <li
-                      key={po.id}
-                      className="flex justify-between items-center py-2 border-b border-default last:border-0"
+      {/* ── Stat Cards (4-column grid with StatCard component) ── */}
+      <div
+        className="portal-summary-grid"
+        style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}
+      >
+        <StatCard
+          label={TEXT.DASHBOARD_NEW_PO}
+          value={newPoCount ?? 0}
+          subtext={TEXT.DASHBOARD_NEW_PO_SUB}
+          icon="ShoppingBag"
+          tone="default"
+          isLoading={isLoadingPo}
+          linkTo="/portal/supplier/orders"
+          linkLabel={TEXT.DASHBOARD_VIEW_ALL}
+        />
+        <StatCard
+          label={TEXT.DASHBOARD_NEW_RFQ}
+          value={newRfqCount ?? 0}
+          subtext={TEXT.DASHBOARD_NEW_RFQ_SUB}
+          icon="FileText"
+          tone="warning"
+          isLoading={isLoadingRfq}
+          linkTo="/portal/supplier/quotations"
+          linkLabel={TEXT.DASHBOARD_VIEW_ALL}
+        />
+        <StatCard
+          label={TEXT.DASHBOARD_DELIVERING}
+          value={deliveringPoCount ?? 0}
+          subtext={TEXT.DASHBOARD_DELIVERING_SUB}
+          icon="Truck"
+          tone="success"
+          isLoading={isLoadingDelivering}
+        />
+        <StatCard
+          label={TEXT.DASHBOARD_UNPAID}
+          value={<MoneyText value={debt?.balance_due ?? 0} />}
+          subtext={TEXT.DASHBOARD_UNPAID_SUB}
+          icon="Receipt"
+          tone="danger"
+          isLoading={isLoadingDebt}
+          linkTo="/portal/supplier/debt"
+          linkLabel={TEXT.DASHBOARD_VIEW_DETAIL}
+        />
+      </div>
+
+      {/* ── Recent Lists (2-column layout) ── */}
+      <div
+        style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}
+      >
+        {/* Recent POs */}
+        <div className="portal-card">
+          <div className="portal-card-header">
+            <span>{TEXT.DASHBOARD_RECENT_PO}</span>
+            <Link to="/portal/supplier/orders" className="portal-stat-link">
+              {TEXT.DASHBOARD_VIEW_ALL} &rarr;
+            </Link>
+          </div>
+          <div className="portal-card-body" style={{ padding: 0 }}>
+            {recentPos?.length === 0 ? (
+              <div className="portal-empty">
+                <div className="portal-empty-icon">
+                  <Icon name="Inbox" size={40} />
+                </div>
+                <p style={{ margin: '0 0 0.25rem', fontWeight: 600 }}>
+                  {TEXT.DASHBOARD_RECENT_PO_EMPTY}
+                </p>
+                <p style={{ margin: 0, fontSize: '0.78rem' }}>
+                  {TEXT.DASHBOARD_RECENT_PO_EMPTY_DESC}
+                </p>
+              </div>
+            ) : (
+              recentPos?.map(
+                (po: {
+                  id: string;
+                  po_code: string;
+                  order_date: string;
+                  total_amount: number;
+                  status: string;
+                }) => (
+                  <div
+                    key={po.id}
+                    className="portal-product-item"
+                    style={{ padding: '0.75rem 1.25rem' }}
+                  >
+                    <div
+                      className="portal-product-info"
+                      style={{
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        gap: '0.125rem',
+                      }}
                     >
-                      <div>
-                        <div className="font-medium text-foreground">
-                          {po.po_code}
-                        </div>
-                        <div className="text-xs mt-0.5">
-                          {dayjs(po.order_date).format('DD/MM/YYYY')} -{' '}
-                          <MoneyText value={po.total_amount ?? 0} />
-                        </div>
-                      </div>
-                      {getPoStatusBadge(po.status)}
-                    </li>
-                  ),
-                )
-              )}
-            </ul>
+                      <span
+                        className="portal-product-fabric"
+                        style={{
+                          maxWidth: 'none',
+                          fontWeight: 600,
+                          fontSize: '0.875rem',
+                        }}
+                      >
+                        {po.po_code}
+                      </span>
+                      <span style={{ fontSize: '0.75rem', color: '#647284' }}>
+                        {dayjs(po.order_date).format('DD/MM/YYYY')} —{' '}
+                        <MoneyText value={po.total_amount ?? 0} />
+                      </span>
+                    </div>
+                    {getPoStatusBadge(po.status)}
+                  </div>
+                ),
+              )
+            )}
           </div>
         </div>
 
-        <div className="bg-surface rounded-xl border border-default p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-foreground mb-4">
-            Yêu cầu báo giá mới (RFQ)
-          </h2>
-          <div className="text-sm text-muted">
-            <ul className="space-y-3">
-              {recentRfqs?.length === 0 ? (
-                <li className="text-muted text-center py-4">Chưa có RFQ nào</li>
-              ) : (
-                recentRfqs?.map(
-                  (rfq: { id: string; rfq_code: string; title: string }) => (
-                    <li
-                      key={rfq.id}
-                      className="flex justify-between items-center py-2 border-b border-default last:border-0"
+        {/* Recent RFQs */}
+        <div className="portal-card">
+          <div className="portal-card-header">
+            <span>{TEXT.DASHBOARD_RECENT_RFQ}</span>
+            <Link to="/portal/supplier/quotations" className="portal-stat-link">
+              {TEXT.DASHBOARD_VIEW_ALL} &rarr;
+            </Link>
+          </div>
+          <div className="portal-card-body" style={{ padding: 0 }}>
+            {recentRfqs?.length === 0 ? (
+              <div className="portal-empty">
+                <div className="portal-empty-icon">
+                  <Icon name="FileSearch" size={40} />
+                </div>
+                <p style={{ margin: '0 0 0.25rem', fontWeight: 600 }}>
+                  {TEXT.DASHBOARD_RECENT_RFQ_EMPTY}
+                </p>
+                <p style={{ margin: 0, fontSize: '0.78rem' }}>
+                  {TEXT.DASHBOARD_RECENT_RFQ_EMPTY_DESC}
+                </p>
+              </div>
+            ) : (
+              recentRfqs?.map(
+                (rfq: {
+                  id: string;
+                  rfq_code: string;
+                  title: string;
+                  deadline_date: string;
+                }) => (
+                  <Link
+                    key={rfq.id}
+                    to={`/portal/supplier/quotations/${rfq.id}`}
+                    className="portal-product-item"
+                    style={{
+                      padding: '0.75rem 1.25rem',
+                      textDecoration: 'none',
+                      color: 'inherit',
+                    }}
+                  >
+                    <div
+                      className="portal-product-info"
+                      style={{
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        gap: '0.125rem',
+                      }}
                     >
-                      <div>
-                        <div className="font-medium text-foreground">
-                          {rfq.rfq_code}
-                        </div>
-                        <div className="text-xs mt-0.5 truncate max-w-[200px]">
-                          {rfq.title}
-                        </div>
-                      </div>
-                      <Badge variant="info">Mới</Badge>
-                    </li>
-                  ),
-                )
-              )}
-            </ul>
+                      <span
+                        className="portal-product-fabric"
+                        style={{
+                          maxWidth: 'none',
+                          fontWeight: 600,
+                          fontSize: '0.875rem',
+                        }}
+                      >
+                        {rfq.rfq_code}
+                      </span>
+                      <span
+                        style={{ fontSize: '0.75rem', color: '#647284' }}
+                        className="truncate max-w-[200px]"
+                      >
+                        {rfq.title}
+                      </span>
+                    </div>
+                    <span className="portal-badge portal-badge--info">
+                      {TEXT.DASHBOARD_STATUS_NEW}
+                    </span>
+                  </Link>
+                ),
+              )
+            )}
           </div>
         </div>
       </div>

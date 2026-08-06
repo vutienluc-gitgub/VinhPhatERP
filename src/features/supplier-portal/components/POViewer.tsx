@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import dayjs from 'dayjs';
 
-import { Icon, Button } from '@/shared/components';
+import { Icon, Button, StatusStepper } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
 import type { PublicPoDetails } from '@/api/supplier-portal.api';
+import { SUPPLIER_PORTAL_LABELS } from '@/features/supplier-portal/supplier-portal.constants';
+
+const TEXT = SUPPLIER_PORTAL_LABELS;
 
 export interface POViewerProps {
   po: PublicPoDetails;
@@ -37,29 +40,29 @@ export function POViewer({
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-xl md:text-2xl font-bold mb-1">
-              ĐƠN ĐẶT HÀNG {po.po_code}
+              {TEXT.PO_HEADER_PREFIX} {po.po_code}
             </h1>
-            <p className="text-info text-sm">Vinh Phát Hưng</p>
+            <p className="text-info text-sm">{TEXT.COMPANY_NAME}</p>
           </div>
           <div className="flex items-center gap-4">
             {isConfirmedBySupplier && (
               <div className="bg-success/20 text-success-light px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 print:hidden">
-                <Icon name="CheckCircle" size={16} /> Đã xác nhận
+                <Icon name="CheckCircle" size={16} /> {TEXT.PO_STATUS_CONFIRMED}
               </div>
             )}
             {isRejectedBySupplier && (
               <div className="bg-red-500/20 text-red-200 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 print:hidden">
-                <Icon name="XCircle" size={16} /> Đã từ chối
+                <Icon name="XCircle" size={16} /> {TEXT.PO_STATUS_REJECTED}
               </div>
             )}
             <button
               onClick={() => window.print()}
               className="p-2 bg-white/10 hover:bg-white/20 text-white rounded transition-colors print:hidden flex items-center gap-2"
-              title="In / Tải PDF"
+              title={TEXT.PRINT_BTN}
             >
               <Icon name="Printer" size={20} />
               <span className="hidden sm:inline text-sm font-medium">
-                In đơn hàng
+                {TEXT.PO_PRINT}
               </span>
             </button>
           </div>
@@ -67,6 +70,40 @@ export function POViewer({
       </div>
 
       <div className="max-w-3xl mx-auto p-4 md:p-8 space-y-6 -mt-4">
+        {/* Progress Stepper */}
+        {!isCanceled && !isRejectedBySupplier && (
+          <StatusStepper
+            steps={[
+              {
+                id: 'sent',
+                label: TEXT.STEP_PO_SENT,
+                isCompleted: true,
+                isActive: po.status === 'sent',
+              },
+              {
+                id: 'confirmed',
+                label: TEXT.STEP_PO_CONFIRMED,
+                isCompleted: ['supplier_confirmed', 'completed'].includes(
+                  po.status,
+                ),
+                isActive: po.status === 'supplier_confirmed',
+              },
+              {
+                id: 'delivering',
+                label: TEXT.STEP_PO_DELIVERING,
+                isCompleted: po.status === 'completed',
+                isActive: false,
+              },
+              {
+                id: 'completed',
+                label: TEXT.STEP_PO_COMPLETED,
+                isCompleted: po.status === 'completed',
+                isActive: po.status === 'completed',
+              },
+            ]}
+          />
+        )}
+
         {/* Confirmed banner */}
         {isConfirmedBySupplier && po.confirmed_at && (
           <div className="bg-success-soft border border-success/30 rounded-xl p-4 text-center">
@@ -74,7 +111,7 @@ export function POViewer({
               <Icon name="Check" size={24} />
             </div>
             <h3 className="text-success-strong font-bold text-lg mb-1">
-              Đơn hàng đã được xác nhận
+              {TEXT.PO_CONFIRMED_BANNER}
             </h3>
             <p className="text-success-strong/80 text-sm">
               Lúc {dayjs(po.confirmed_at).format('HH:mm - DD/MM/YYYY')}
@@ -89,7 +126,7 @@ export function POViewer({
               <Icon name="X" size={24} />
             </div>
             <h3 className="text-danger font-bold text-lg mb-2">
-              Bạn đã từ chối đơn hàng này
+              {TEXT.PO_REJECTED_BANNER}
             </h3>
             {po.confirmed_at && (
               <p className="text-danger/70 text-sm">
@@ -103,7 +140,7 @@ export function POViewer({
         {isCanceled && (
           <div className="bg-danger-soft border border-danger/30 rounded-xl p-4 text-center">
             <h3 className="text-danger font-bold text-lg mb-1">
-              Đơn hàng đã bị hủy hoặc từ chối
+              {TEXT.PO_CANCELLED_BANNER}
             </h3>
           </div>
         )}
@@ -111,23 +148,27 @@ export function POViewer({
         {/* PO Info */}
         <div className="bg-white rounded-xl shadow-sm border border-border p-5 md:p-6 relative z-10">
           <h2 className="text-sm font-bold uppercase tracking-wider text-muted mb-4 border-b border-border pb-2">
-            THÔNG TIN CHUNG
+            {TEXT.PO_SECTION_INFO}
           </h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-xs text-muted mb-1">Nhà cung cấp</p>
+              <p className="text-xs text-muted mb-1">
+                {TEXT.PO_LABEL_SUPPLIER}
+              </p>
               <p className="font-semibold text-foreground">
                 {po.supplier_name}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted mb-1">Ngày đặt</p>
+              <p className="text-xs text-muted mb-1">
+                {TEXT.PO_LABEL_ORDER_DATE}
+              </p>
               <p className="font-semibold">
                 {dayjs(po.order_date).format('DD/MM/YYYY')}
               </p>
             </div>
             <div className="col-span-2">
-              <p className="text-xs text-muted mb-1">Tổng cộng (VND)</p>
+              <p className="text-xs text-muted mb-1">{TEXT.PO_LABEL_TOTAL}</p>
               <p className="font-bold text-lg text-primary">
                 <MoneyText value={po.total_amount} />
               </p>
@@ -139,7 +180,7 @@ export function POViewer({
         {po.notes && (
           <div className="bg-white rounded-xl shadow-sm border border-border p-5 md:p-6">
             <h2 className="text-sm font-bold uppercase tracking-wider text-muted mb-4 border-b border-border pb-2">
-              GHI CHÚ TỪ NGƯỜI MUA
+              {TEXT.PO_SECTION_NOTES}
             </h2>
             <p className="whitespace-pre-wrap text-sm">{po.notes}</p>
           </div>
@@ -149,7 +190,7 @@ export function POViewer({
         <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
           <div className="p-5 md:p-6 border-b border-border">
             <h2 className="text-sm font-bold uppercase tracking-wider text-muted">
-              DANH SÁCH MẶT HÀNG
+              {TEXT.PO_SECTION_ITEMS}
             </h2>
           </div>
           <div className="divide-y divide-border">
@@ -170,13 +211,13 @@ export function POViewer({
                 </div>
                 <div className="flex justify-between text-sm text-muted">
                   <span>
-                    Số lượng:{' '}
+                    {TEXT.PO_ITEM_QTY}{' '}
                     <span className="font-medium text-foreground">
                       {item.order_qty} {item.uom}
                     </span>
                   </span>
                   <span>
-                    Đơn giá:{' '}
+                    {TEXT.PO_ITEM_PRICE}{' '}
                     <span className="font-medium text-foreground">
                       <MoneyText value={item.unit_price} />
                     </span>
@@ -193,7 +234,9 @@ export function POViewer({
 
           {Array.isArray(po.attachments) && po.attachments.length > 0 && (
             <div className="p-4 md:p-6 bg-slate-50 border-t border-border">
-              <h3 className="font-semibold text-sm mb-3">Tài liệu đính kèm</h3>
+              <h3 className="font-semibold text-sm mb-3">
+                {TEXT.PO_ATTACHMENTS_TITLE}
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {(po.attachments as Array<{ name?: string; url?: string }>).map(
                   (file, i: number) => (
@@ -205,7 +248,10 @@ export function POViewer({
                       className="flex items-center gap-2 px-3 py-2 bg-white border border-border rounded-lg hover:border-primary transition-colors text-sm"
                     >
                       <Icon name="Paperclip" size={16} className="text-muted" />
-                      <span>{file?.name || `Tài liệu ${i + 1}`}</span>
+                      <span>
+                        {file?.name ||
+                          `${TEXT.PO_ATTACHMENT_FALLBACK} ${i + 1}`}
+                      </span>
                     </a>
                   ),
                 )}
@@ -218,11 +264,10 @@ export function POViewer({
         {isActionable && (
           <div className="bg-white rounded-xl shadow-sm border border-border p-5 md:p-6">
             <h3 className="font-semibold mb-2 text-center">
-              Phản hồi đơn hàng
+              {TEXT.PO_RESPONSE_TITLE}
             </h3>
             <p className="text-sm text-muted mb-5 text-center">
-              Vui lòng kiểm tra kỹ thông tin đơn hàng, số lượng và đơn giá trước
-              khi phản hồi.
+              {TEXT.PO_RESPONSE_DESC}
             </p>
 
             {!showRejectForm ? (
@@ -235,7 +280,7 @@ export function POViewer({
                   isLoading={isConfirming}
                 >
                   <Icon name="CheckCircle" size={20} className="mr-2" />
-                  XÁC NHẬN ĐƠN ĐẶT HÀNG
+                  {TEXT.PO_CONFIRM_BTN}
                 </Button>
                 <Button
                   variant="outline"
@@ -244,7 +289,7 @@ export function POViewer({
                   onClick={() => setShowRejectForm(true)}
                 >
                   <Icon name="XCircle" size={18} className="mr-2" />
-                  Không thể đáp ứng
+                  {TEXT.PO_CANNOT_FULFILL}
                 </Button>
               </div>
             ) : (
@@ -254,14 +299,14 @@ export function POViewer({
                     htmlFor="reject-reason"
                     className="block text-sm font-semibold text-danger mb-2"
                   >
-                    Lý do không thể đáp ứng{' '}
+                    {TEXT.PO_REJECT_REASON_LABEL}{' '}
                     <span className="text-danger">*</span>
                   </label>
                   <textarea
                     id="reject-reason"
                     value={rejectReason}
                     onChange={(e) => setRejectReason(e.target.value)}
-                    placeholder="VD: Không đủ hàng tồn kho, sai giá, sai ngày giao..."
+                    placeholder={TEXT.PO_REJECT_REASON_PLACEHOLDER}
                     rows={3}
                     className="w-full border border-danger/30 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-danger/50 resize-none"
                   />
@@ -275,7 +320,7 @@ export function POViewer({
                       setRejectReason('');
                     }}
                   >
-                    Quay lại
+                    {TEXT.PO_BTN_BACK}
                   </Button>
                   <Button
                     variant="danger"
@@ -285,7 +330,7 @@ export function POViewer({
                     disabled={!rejectReason.trim()}
                   >
                     <Icon name="Send" size={16} className="mr-2" />
-                    Gửi phản hồi
+                    {TEXT.PO_BTN_SEND_RESPONSE}
                   </Button>
                 </div>
               </div>

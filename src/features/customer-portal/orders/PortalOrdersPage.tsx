@@ -38,6 +38,13 @@ const TEXT = {
 
 const MAX_PREVIEW_ITEMS = 2;
 
+type FilterStatus =
+  | 'ALL'
+  | 'CONFIRMED'
+  | 'IN_PROGRESS'
+  | 'COMPLETED'
+  | 'CANCELLED';
+
 /* ── Sub-components ── */
 
 function CheckIcon() {
@@ -254,6 +261,7 @@ export function PortalOrdersPage() {
     null,
   );
   const [showRequestModal, setShowRequestModal] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<FilterStatus>('ALL');
 
   const handleReorder = useCallback((items: PortalOrderItem[]) => {
     setReorderItems(items);
@@ -264,6 +272,23 @@ export function PortalOrdersPage() {
     setShowRequestModal(false);
     setReorderItems(null);
   }, []);
+
+  const filteredOrders = orders.filter((o) => {
+    if (activeFilter === 'ALL') return true;
+    if (activeFilter === 'CONFIRMED') return o.status === 'confirmed';
+    if (activeFilter === 'IN_PROGRESS') return o.status === 'in_progress';
+    if (activeFilter === 'COMPLETED') return o.status === 'completed';
+    if (activeFilter === 'CANCELLED') return o.status === 'cancelled';
+    return true;
+  });
+
+  const filterOptions: Array<{ id: FilterStatus; label: string }> = [
+    { id: 'ALL', label: 'Tất cả' },
+    { id: 'CONFIRMED', label: 'Đã xác nhận' },
+    { id: 'IN_PROGRESS', label: 'Đang sản xuất' },
+    { id: 'COMPLETED', label: 'Hoàn thành' },
+    { id: 'CANCELLED', label: 'Đã hủy' },
+  ];
 
   if (loading)
     return (
@@ -294,7 +319,24 @@ export function PortalOrdersPage() {
         </Button>
       </div>
 
-      {orders.length === 0 ? (
+      {/* Filter Chips */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 mb-4">
+        {filterOptions.map((opt) => (
+          <button
+            key={opt.id}
+            onClick={() => setActiveFilter(opt.id)}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors whitespace-nowrap ${
+              activeFilter === opt.id
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'bg-surface-secondary text-muted hover:text-foreground'
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
+      {filteredOrders.length === 0 ? (
         <EmptyState
           description={TEXT.EMPTY_DESC}
           icon="PackageOpen"
@@ -304,7 +346,7 @@ export function PortalOrdersPage() {
       ) : (
         <>
           <div className="portal-order-card-list">
-            {orders.map((o) => (
+            {filteredOrders.map((o) => (
               <OrderCard key={o.id} order={o} onReorder={handleReorder} />
             ))}
           </div>

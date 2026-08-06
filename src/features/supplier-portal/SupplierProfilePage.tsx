@@ -8,6 +8,9 @@ import { toast } from 'react-hot-toast';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { fetchSupplierById, updateSupplier } from '@/api/suppliers.api';
 import { Button, Icon, Input } from '@/shared/components';
+import { SUPPLIER_PORTAL_LABELS } from '@/features/supplier-portal/supplier-portal.constants';
+
+const TEXT = SUPPLIER_PORTAL_LABELS;
 
 const profileSchema = z.object({
   name: z.string().min(1, 'Tên công ty không được để trống'),
@@ -33,7 +36,7 @@ export function SupplierProfilePage() {
   const { data: supplier, isLoading } = useQuery({
     queryKey: ['supplier-profile', supplierId],
     queryFn: () => {
-      if (!supplierId) throw new Error('Không tìm thấy thông tin nhà cung cấp');
+      if (!supplierId) throw new Error(TEXT.PROFILE_ERROR_NO_SUPPLIER);
       return fetchSupplierById(supplierId);
     },
     enabled: !!supplierId,
@@ -71,7 +74,7 @@ export function SupplierProfilePage() {
 
   const updateMutation = useMutation({
     mutationFn: (data: ProfileFormValues) => {
-      if (!supplierId) throw new Error('Không tìm thấy thông tin nhà cung cấp');
+      if (!supplierId) throw new Error(TEXT.PROFILE_ERROR_NO_SUPPLIER);
       return updateSupplier(supplierId, {
         name: data.name,
         tax_code: data.tax_code || null,
@@ -82,13 +85,13 @@ export function SupplierProfilePage() {
       });
     },
     onSuccess: () => {
-      toast.success('Cập nhật hồ sơ thành công');
+      toast.success(TEXT.PROFILE_UPDATE_SUCCESS);
       queryClient.invalidateQueries({
         queryKey: ['supplier-profile', supplierId],
       });
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Có lỗi xảy ra khi cập nhật hồ sơ');
+      toast.error(error.message || TEXT.PROFILE_UPDATE_ERROR);
     },
   });
 
@@ -110,7 +113,7 @@ export function SupplierProfilePage() {
       <div className="flex items-center gap-2 mb-6">
         <Icon name="UserCircle" className="text-primary w-6 h-6" />
         <h1 className="text-2xl font-bold text-foreground">
-          Hồ sơ nhà cung cấp
+          {TEXT.PROFILE_TITLE}
         </h1>
       </div>
 
@@ -119,11 +122,11 @@ export function SupplierProfilePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-semibold text-foreground">
-                Tên công ty / Nhà cung cấp *
+                {TEXT.PROFILE_LABEL_NAME}
               </label>
               <Input
                 {...register('name')}
-                placeholder="Nhập tên nhà cung cấp"
+                placeholder={TEXT.PROFILE_PLACEHOLDER_NAME}
                 className={errors.name ? 'border-danger' : ''}
               />
               {errors.name && (
@@ -133,35 +136,41 @@ export function SupplierProfilePage() {
 
             <div className="space-y-2">
               <label className="text-sm font-semibold text-foreground">
-                Mã số thuế
-              </label>
-              <Input {...register('tax_code')} placeholder="Nhập mã số thuế" />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-foreground">
-                Người liên hệ
+                {TEXT.PROFILE_LABEL_TAX}
               </label>
               <Input
-                {...register('contact_person')}
-                placeholder="Nhập tên người liên hệ"
+                {...register('tax_code')}
+                placeholder={TEXT.PROFILE_PLACEHOLDER_TAX}
               />
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-semibold text-foreground">
-                Số điện thoại
+                {TEXT.PROFILE_LABEL_CONTACT}
               </label>
-              <Input {...register('phone')} placeholder="Nhập số điện thoại" />
+              <Input
+                {...register('contact_person')}
+                placeholder={TEXT.PROFILE_PLACEHOLDER_CONTACT}
+              />
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-semibold text-foreground">
-                Email
+                {TEXT.PROFILE_LABEL_PHONE}
+              </label>
+              <Input
+                {...register('phone')}
+                placeholder={TEXT.PROFILE_PLACEHOLDER_PHONE}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-foreground">
+                {TEXT.PROFILE_LABEL_EMAIL}
               </label>
               <Input
                 {...register('email')}
-                placeholder="Nhập địa chỉ email"
+                placeholder={TEXT.PROFILE_PLACEHOLDER_EMAIL}
                 className={errors.email ? 'border-danger' : ''}
               />
               {errors.email && (
@@ -171,11 +180,11 @@ export function SupplierProfilePage() {
 
             <div className="space-y-2 md:col-span-2">
               <label className="text-sm font-semibold text-foreground">
-                Địa chỉ
+                {TEXT.PROFILE_LABEL_ADDRESS}
               </label>
               <Input
                 {...register('address')}
-                placeholder="Nhập địa chỉ công ty"
+                placeholder={TEXT.PROFILE_PLACEHOLDER_ADDRESS}
               />
             </div>
           </div>
@@ -193,10 +202,10 @@ export function SupplierProfilePage() {
                     className="animate-spin mr-2"
                     size={18}
                   />
-                  Đang lưu...
+                  {TEXT.PROFILE_SAVING}
                 </>
               ) : (
-                'Lưu thay đổi'
+                TEXT.PROFILE_SAVE
               )}
             </Button>
           </div>

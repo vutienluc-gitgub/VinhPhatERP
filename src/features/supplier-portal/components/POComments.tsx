@@ -7,6 +7,9 @@ import {
   usePublicPoComments,
   useAddPublicPoComment,
 } from '@/features/supplier-portal/hooks/useSupplierPortal';
+import { SUPPLIER_PORTAL_LABELS } from '@/features/supplier-portal/supplier-portal.constants';
+
+const TEXT = SUPPLIER_PORTAL_LABELS;
 
 interface POCommentsProps {
   token: string;
@@ -46,7 +49,7 @@ export function POComments({ token }: POCommentsProps) {
     <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden mt-6 flex flex-col h-[500px]">
       <div className="bg-surface-secondary p-4 border-b border-border flex items-center gap-2">
         <Icon name="message-square" className="w-5 h-5 text-primary" />
-        <h3 className="font-semibold text-lg m-0">Trao đổi với Vinh Phát</h3>
+        <h3 className="font-semibold text-lg m-0">{TEXT.COMMENTS_TITLE}</h3>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -60,10 +63,8 @@ export function POComments({ token }: POCommentsProps) {
               name="message-circle"
               className="w-12 h-12 mx-auto mb-2 opacity-20"
             />
-            <p>Chưa có trao đổi nào.</p>
-            <p className="text-sm">
-              Hãy gửi tin nhắn nếu bạn có thắc mắc về đơn hàng.
-            </p>
+            <p>{TEXT.COMMENTS_EMPTY}</p>
+            <p className="text-sm">{TEXT.COMMENTS_EMPTY_DESC}</p>
           </div>
         ) : (
           comments.map((comment) => {
@@ -88,7 +89,9 @@ export function POComments({ token }: POCommentsProps) {
                 </div>
                 <div className="flex items-center gap-1 mt-1 text-[11px] text-muted">
                   <span className="font-medium">
-                    {isMine ? 'Bạn' : 'Vinh Phát'}
+                    {isMine
+                      ? TEXT.COMMENTS_SENDER_ME
+                      : TEXT.COMMENTS_SENDER_BUYER}
                   </span>
                   <span>•</span>
                   <span>{dayjs(comment.created_at).format('HH:mm')}</span>
@@ -108,7 +111,7 @@ export function POComments({ token }: POCommentsProps) {
           type="text"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Nhập tin nhắn..."
+          placeholder={TEXT.COMMENTS_INPUT_PLACEHOLDER}
           className="flex-1 px-4 py-2 bg-surface-secondary border border-border rounded-full focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
           disabled={addMutation.isPending}
         />

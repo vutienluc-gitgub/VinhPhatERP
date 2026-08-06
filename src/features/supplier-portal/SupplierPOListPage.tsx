@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
@@ -14,28 +15,16 @@ import {
 } from '@/shared/components';
 import { TableRowInteraction, evaluateInteraction } from '@/shared/interaction';
 import { MoneyText } from '@/shared/value';
+import { SUPPLIER_PORTAL_LABELS } from '@/features/supplier-portal/supplier-portal.constants';
 
-const TEXT = {
-  TITLE: 'Đơn đặt hàng (PO)',
-  DESC: 'Quản lý các đơn đặt hàng từ Vĩnh Phát ERP',
-  CARD_TITLE: 'Danh sách đơn hàng',
-  COL_CODE: 'Mã Đơn',
-  COL_DATE: 'Ngày Đặt',
-  COL_EXPECTED: 'Ngày Giao Dự Kiến',
-  COL_TOTAL: 'Tổng Tiền',
-  COL_STATUS: 'Trạng Thái',
-  EMPTY: 'Chưa có đơn đặt hàng nào',
-  STATUS_DRAFT: 'Bản nháp',
-  STATUS_PENDING: 'Chờ duyệt',
-  STATUS_APPROVED: 'Đã duyệt',
-  STATUS_SENT: 'Đã gửi',
-  STATUS_CONFIRMED: 'Đã xác nhận',
-  STATUS_REJECTED: 'Đã từ chối',
-};
+const TEXT = SUPPLIER_PORTAL_LABELS;
+
+type FilterStatus = 'ALL' | 'SENT' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
 
 export function SupplierPOListPage() {
   const { profile } = useAuth();
   const supplierId = profile?.supplier_id;
+  const [activeFilter, setActiveFilter] = useState<FilterStatus>('ALL');
 
   const { data: orders, isLoading } = useQuery({
     queryKey: ['supplier-pos', supplierId],
@@ -53,63 +42,109 @@ export function SupplierPOListPage() {
     enabled: !!supplierId,
   });
 
+  const filteredOrders = orders?.filter((po) => {
+    if (activeFilter === 'ALL') return true;
+    if (activeFilter === 'SENT')
+      return po.status === 'submitted' || po.status === 'pending_approval';
+    if (activeFilter === 'CONFIRMED') return po.status === 'supplier_confirmed';
+    if (activeFilter === 'COMPLETED') return po.status === 'completed';
+    if (activeFilter === 'CANCELLED')
+      return ['cancelled', 'rejected', 'request_changes'].includes(
+        po.status ?? '',
+      );
+    return true;
+  });
+
   const getStatusBadge = (status: string | null) => {
     switch (status) {
       case 'draft':
-        return <Badge variant="gray">{TEXT.STATUS_DRAFT}</Badge>;
+        return <Badge variant="gray">{TEXT.PO_LIST_STATUS_DRAFT}</Badge>;
       case 'pending_approval':
       case 'submitted':
-        return <Badge variant="warning">{TEXT.STATUS_PENDING}</Badge>;
+        return <Badge variant="warning">{TEXT.PO_LIST_STATUS_PENDING}</Badge>;
       case 'completed':
-        return <Badge variant="success">{TEXT.STATUS_APPROVED}</Badge>;
+        return <Badge variant="success">{TEXT.PO_LIST_STATUS_APPROVED}</Badge>;
       case 'sent':
-        return <Badge variant="info">{TEXT.STATUS_SENT}</Badge>;
+        return <Badge variant="info">{TEXT.PO_LIST_STATUS_SENT}</Badge>;
       case 'supplier_confirmed':
-        return <Badge variant="success">{TEXT.STATUS_CONFIRMED}</Badge>;
+        return <Badge variant="success">{TEXT.PO_LIST_STATUS_CONFIRMED}</Badge>;
       case 'cancelled':
       case 'request_changes':
-        return <Badge variant="danger">{TEXT.STATUS_REJECTED}</Badge>;
+        return <Badge variant="danger">{TEXT.PO_LIST_STATUS_REJECTED}</Badge>;
       default:
         return <Badge variant="default">{status}</Badge>;
     }
   };
 
+  const filterOptions: Array<{ id: FilterStatus; label: string }> = [
+    { id: 'ALL', label: 'Tất cả' },
+    { id: 'SENT', label: 'Chờ xác nhận' },
+    { id: 'CONFIRMED', label: 'Đã xác nhận' },
+    { id: 'COMPLETED', label: 'Đã hoàn thành' },
+    { id: 'CANCELLED', label: 'Đã hủy/Từ chối' },
+  ];
+
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{TEXT.TITLE}</h1>
-          <p className="text-muted mt-1">{TEXT.DESC}</p>
+          <h1 className="text-2xl font-bold text-foreground">
+            {TEXT.PO_LIST_TITLE}
+          </h1>
+          <p className="text-muted mt-1">{TEXT.PO_LIST_DESC}</p>
         </div>
+      </div>
+
+      {/* Filter Chips */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+        {filterOptions.map((opt) => (
+          <button
+            key={opt.id}
+            onClick={() => setActiveFilter(opt.id)}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors white-space-nowrap ${
+              activeFilter === opt.id
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'bg-surface-secondary text-muted hover:text-foreground'
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{TEXT.CARD_TITLE}</CardTitle>
+          <CardTitle>{TEXT.PO_LIST_CARD_TITLE}</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <TableSkeleton columns={5} />
-          ) : orders?.length === 0 ? (
-            <EmptyState description={TEXT.EMPTY} />
+          ) : filteredOrders?.length === 0 ? (
+            <EmptyState description={TEXT.PO_LIST_EMPTY} />
           ) : (
             <div className="rounded-md border border-default overflow-hidden">
               <table className="w-full text-sm text-left text-foreground">
                 <thead className="text-xs text-muted bg-surface uppercase border-b border-default">
                   <tr>
-                    <th className="px-6 py-3 font-medium">{TEXT.COL_CODE}</th>
-                    <th className="px-6 py-3 font-medium">{TEXT.COL_DATE}</th>
                     <th className="px-6 py-3 font-medium">
-                      {TEXT.COL_EXPECTED}
+                      {TEXT.PO_LIST_COL_CODE}
+                    </th>
+                    <th className="px-6 py-3 font-medium">
+                      {TEXT.PO_LIST_COL_DATE}
+                    </th>
+                    <th className="px-6 py-3 font-medium">
+                      {TEXT.PO_LIST_COL_EXPECTED}
                     </th>
                     <th className="px-6 py-3 font-medium text-right">
-                      {TEXT.COL_TOTAL}
+                      {TEXT.PO_LIST_COL_TOTAL}
                     </th>
-                    <th className="px-6 py-3 font-medium">{TEXT.COL_STATUS}</th>
+                    <th className="px-6 py-3 font-medium">
+                      {TEXT.PO_LIST_COL_STATUS}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {orders?.map((po, idx) => {
+                  {filteredOrders?.map((po, idx) => {
                     const { intent, attention } = evaluateInteraction(
                       'purchase',
                       po,
