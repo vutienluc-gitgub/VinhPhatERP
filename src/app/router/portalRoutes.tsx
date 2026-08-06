@@ -13,6 +13,48 @@ import { SupplierInvoicesPage } from '@/features/supplier-portal/SupplierInvoice
 import { SupplierDebtPage } from '@/features/supplier-portal/SupplierDebtPage';
 import { SupplierProfilePage } from '@/features/supplier-portal/SupplierProfilePage';
 
+// --- Work Orders ---
+const SupplierWorkOrderListPage = lazy(() =>
+  import('@/features/supplier-portal/work-orders/SupplierWorkOrderListPage').then(
+    (m) => ({ default: m.SupplierWorkOrderListPage }),
+  ),
+);
+const WorkOrderWorkspace = lazy(() =>
+  import('@/features/supplier-portal/work-orders/components/WorkOrderWorkspace').then(
+    (m) => ({ default: m.WorkOrderWorkspace }),
+  ),
+);
+const OverviewDomain = lazy(() =>
+  import('@/features/supplier-portal/work-orders/components/Domains').then(
+    (m) => ({ default: m.OverviewDomain }),
+  ),
+);
+const ProductionDomain = lazy(() =>
+  import('@/features/supplier-portal/work-orders/components/Domains').then(
+    (m) => ({ default: m.ProductionDomain }),
+  ),
+);
+const MaterialDomain = lazy(() =>
+  import('@/features/supplier-portal/work-orders/components/Domains').then(
+    (m) => ({ default: m.MaterialDomain }),
+  ),
+);
+const QualityDomain = lazy(() =>
+  import('@/features/supplier-portal/work-orders/components/Domains').then(
+    (m) => ({ default: m.QualityDomain }),
+  ),
+);
+const DocumentsDomain = lazy(() =>
+  import('@/features/supplier-portal/work-orders/components/Domains').then(
+    (m) => ({ default: m.DocumentsDomain }),
+  ),
+);
+const TimelineDomain = lazy(() =>
+  import('@/features/supplier-portal/work-orders/components/Domains').then(
+    (m) => ({ default: m.TimelineDomain }),
+  ),
+);
+
 const PortalDashboardPage = lazy(() =>
   import('@/features/customer-portal/dashboard/PortalDashboardPage').then(
     (m) => ({ default: m.PortalDashboardPage }),
@@ -144,6 +186,43 @@ export const portalRoutes: RouteObject[] = [
             element: (
               <div className="p-4">Danh sách Giao hàng - Đang xây dựng</div>
             ),
+          },
+          {
+            path: 'work-orders',
+            element: withSuspense(
+              <SupplierWorkOrderListPage />,
+              portalFallback,
+            ),
+          },
+          {
+            path: 'work-orders/:id',
+            element: withSuspense(<WorkOrderWorkspace />, portalFallback),
+            children: [
+              {
+                path: 'overview',
+                element: withSuspense(<OverviewDomain />, portalFallback),
+              },
+              {
+                path: 'production',
+                element: withSuspense(<ProductionDomain />, portalFallback),
+              },
+              {
+                path: 'materials',
+                element: withSuspense(<MaterialDomain />, portalFallback),
+              },
+              {
+                path: 'quality',
+                element: withSuspense(<QualityDomain />, portalFallback),
+              },
+              {
+                path: 'documents',
+                element: withSuspense(<DocumentsDomain />, portalFallback),
+              },
+              {
+                path: 'timeline',
+                element: withSuspense(<TimelineDomain />, portalFallback),
+              },
+            ],
           },
           {
             path: 'profile',
