@@ -12,7 +12,7 @@ type EmptyStateProps = {
   actionIcon?: IconName;
   actionHref?: string;
   actionClick?: () => void;
-  icon?: IconName | string;
+  icon?: IconName;
 };
 
 export const EmptyState = memo(function EmptyState({
@@ -22,20 +22,16 @@ export const EmptyState = memo(function EmptyState({
   actionIcon,
   actionHref,
   actionClick,
-  icon = '📂',
+  icon = 'inbox',
 }: EmptyStateProps) {
-  // Biểu thức regex đơn giản nhận diện tên Icon của Lucide (PascalCase)
-  const isLucideIcon =
-    typeof icon === 'string' && /^[A-Z][a-zA-Z]+$/.test(icon);
-
   return (
-    <div className="py-12 px-6 text-center bg-[var(--surface)] rounded-[var(--radius-sm)]">
-      <div className="text-5xl mb-3 opacity-90 flex justify-center">
-        {isLucideIcon ? <Icon name={icon as IconName} size={48} /> : icon}
+    <div className="py-12 px-6 flex flex-col items-center justify-center text-center bg-[var(--surface)] rounded-[var(--radius-sm)]">
+      <div className="mb-4 opacity-70 flex justify-center">
+        <Icon name={icon as IconName} size={48} strokeWidth={1} />
       </div>
-      <h3 className="m-0 mb-2 font-bold text-text">{title}</h3>
+      <h3 className="m-0 mb-2 font-bold text-foreground text-lg">{title}</h3>
       {description && (
-        <p className="text-muted text-[0.92rem] mb-6 max-w-[400px] mx-auto">
+        <p className="text-muted text-sm mb-6 max-w-[400px] text-center">
           {description}
         </p>
       )}
