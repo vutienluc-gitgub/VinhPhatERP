@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 
 import { usePortalDebt } from '@/application/crm/portal';
 import { MoneyText } from '@/shared/value';
+import { StatCard, EmptyState } from '@/shared/components';
 
 export function PortalDebtPage() {
   const {
@@ -20,25 +21,26 @@ export function PortalDebtPage() {
     <div className="portal-section">
       <h1 className="portal-page-title">Công nợ</h1>
 
+      {/* ── Stat Cards (StatCard Component) ── */}
       <div className="portal-summary-grid">
-        <div className="portal-stat-card">
-          <p className="portal-stat-label">Tổng tiền đơn hàng</p>
-          <p className="portal-stat-value">
-            <MoneyText value={totalAmount} suffix=" ₫" />
-          </p>
-        </div>
-        <div className="portal-stat-card">
-          <p className="portal-stat-label">Đã thanh toán</p>
-          <p className="portal-stat-value portal-stat-value--success">
-            <MoneyText value={paidAmount} suffix=" ₫" />
-          </p>
-        </div>
-        <div className="portal-stat-card">
-          <p className="portal-stat-label">Còn nợ</p>
-          <p className="portal-stat-value portal-stat-value--danger">
-            <MoneyText value={remainingDebt} suffix=" ₫" />
-          </p>
-        </div>
+        <StatCard
+          label="Tổng tiền đơn hàng"
+          value={<MoneyText value={totalAmount} suffix=" ₫" />}
+          icon="TrendingUp"
+          tone="default"
+        />
+        <StatCard
+          label="Đã thanh toán"
+          value={<MoneyText value={paidAmount} suffix=" ₫" />}
+          icon="CheckCircle"
+          tone="success"
+        />
+        <StatCard
+          label="Còn nợ"
+          value={<MoneyText value={remainingDebt} suffix=" ₫" />}
+          icon="Receipt"
+          tone="danger"
+        />
       </div>
 
       {overdueOrders.length > 0 && (
@@ -90,7 +92,10 @@ export function PortalDebtPage() {
       )}
 
       {overdueOrders.length === 0 && remainingDebt === 0 && (
-        <p className="portal-empty">Không có công nợ.</p>
+        <EmptyState
+          icon="CheckCircle2"
+          description="Bạn không có công nợ nào cần thanh toán."
+        />
       )}
     </div>
   );

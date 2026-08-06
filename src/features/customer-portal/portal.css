@@ -89,6 +89,23 @@
   color: #fff;
 }
 
+/* ── User Avatar Badge ── */
+.portal-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
 /* ── Nav ── */
 .portal-nav {
   display: flex;
@@ -193,6 +210,14 @@
   background: linear-gradient(90deg, #0a8060, #34d399);
 }
 
+.portal-stat-card--warning::before {
+  background: linear-gradient(90deg, #d97706, #fbbf24);
+}
+
+.portal-stat-card--info::before {
+  background: linear-gradient(90deg, #0284c7, #38bdf8);
+}
+
 .portal-stat-icon {
   width: 36px;
   height: 36px;
@@ -214,6 +239,16 @@
 .portal-stat-icon--success {
   background: #edfaf4;
   color: #0a8060;
+}
+
+.portal-stat-icon--warning {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.portal-stat-icon--info {
+  background: #f0f9ff;
+  color: #0284c7;
 }
 
 .portal-stat-label {
@@ -238,6 +273,20 @@
 
 .portal-stat-value--success {
   color: #0a8060;
+}
+
+.portal-stat-value--warning {
+  color: #d97706;
+}
+
+.portal-stat-value--info {
+  color: #0284c7;
+}
+
+.portal-stat-subtext {
+  font-size: 0.72rem;
+  color: #647284;
+  margin-top: 0.125rem;
 }
 
 .portal-stat-link {
@@ -1041,4 +1090,52 @@
   justify-content: center;
   box-shadow: 0 0 0 2px #fff;
   transform: translate(15%, -15%);
+}
+
+/* ============================================================
+   A4 Print Engine Stylesheet
+   ============================================================ */
+@media print {
+  /* Hide non-printable portal elements */
+  .portal-header,
+  .portal-nav,
+  .portal-chat-fab,
+  .portal-stepper,
+  .print\:hidden,
+  button,
+  form {
+    display: none !important;
+  }
+
+  body,
+  .portal-shell,
+  .min-h-screen {
+    background: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: auto !important;
+  }
+
+  .portal-content,
+  .max-w-3xl,
+  .max-w-4xl {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .portal-card,
+  .bg-white {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    break-inside: avoid;
+  }
+
+  /* Force page breaks gracefully */
+  h1,
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
 }

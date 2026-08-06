@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -13,23 +14,16 @@ import {
   EmptyState,
 } from '@/shared/components';
 import { TableRowInteraction, evaluateInteraction } from '@/shared/interaction';
+import { SUPPLIER_PORTAL_LABELS } from '@/features/supplier-portal/supplier-portal.constants';
 import type { SourcingRfq } from '@/api/rfqs.api';
 
-const TEXT = {
-  TITLE: 'Yêu cầu báo giá (RFQ)',
-  DESC: 'Danh sách các yêu cầu báo giá từ Vĩnh Phát ERP',
-  CARD_TITLE: 'Danh sách yêu cầu báo giá',
-  COL_CODE: 'Mã RFQ',
-  COL_TITLE: 'Tiêu đề',
-  COL_DEADLINE: 'Hạn chót',
-  COL_STATUS: 'Trạng thái',
-  EMPTY: 'Chưa có yêu cầu báo giá nào',
-  STATUS_OPEN: 'Đang mở',
-  STATUS_CLOSED: 'Đã đóng',
-};
+const TEXT = SUPPLIER_PORTAL_LABELS;
+
+type FilterStatus = 'ALL' | 'OPEN' | 'CLOSED';
 
 export function SupplierRFQListPage() {
   const navigate = useNavigate();
+  const [activeFilter, setActiveFilter] = useState<FilterStatus>('ALL');
 
   const { data: rfqs, isLoading } = useQuery({
     queryKey: ['supplier-rfqs'],
@@ -45,50 +39,88 @@ export function SupplierRFQListPage() {
     },
   });
 
+  const filteredRfqs = rfqs?.filter((rfq: SourcingRfq) => {
+    if (activeFilter === 'ALL') return true;
+    if (activeFilter === 'OPEN') return rfq.status === 'published';
+    if (activeFilter === 'CLOSED') return rfq.status === 'closed';
+    return true;
+  });
+
   const getStatusBadge = (status: string | null) => {
     switch (status) {
       case 'published':
-        return <Badge variant="info">{TEXT.STATUS_OPEN}</Badge>;
+        return <Badge variant="info">{TEXT.RFQ_LIST_STATUS_OPEN}</Badge>;
       case 'closed':
-        return <Badge variant="gray">{TEXT.STATUS_CLOSED}</Badge>;
+        return <Badge variant="gray">{TEXT.RFQ_LIST_STATUS_CLOSED}</Badge>;
       default:
         return <Badge variant="default">{status}</Badge>;
     }
   };
 
+  const filterOptions: Array<{ id: FilterStatus; label: string }> = [
+    { id: 'ALL', label: 'Tất cả' },
+    { id: 'OPEN', label: TEXT.RFQ_LIST_STATUS_OPEN },
+    { id: 'CLOSED', label: TEXT.RFQ_LIST_STATUS_CLOSED },
+  ];
+
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{TEXT.TITLE}</h1>
-          <p className="text-muted mt-1">{TEXT.DESC}</p>
+          <h1 className="text-2xl font-bold text-foreground">
+            {TEXT.RFQ_LIST_TITLE}
+          </h1>
+          <p className="text-muted mt-1">{TEXT.RFQ_LIST_DESC}</p>
         </div>
+      </div>
+
+      {/* Filter Chips */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+        {filterOptions.map((opt) => (
+          <button
+            key={opt.id}
+            onClick={() => setActiveFilter(opt.id)}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors whitespace-nowrap ${
+              activeFilter === opt.id
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'bg-surface-secondary text-muted hover:text-foreground'
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{TEXT.CARD_TITLE}</CardTitle>
+          <CardTitle>{TEXT.RFQ_LIST_CARD_TITLE}</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <TableSkeleton columns={4} />
-          ) : rfqs?.length === 0 ? (
-            <EmptyState description={TEXT.EMPTY} />
+          ) : filteredRfqs?.length === 0 ? (
+            <EmptyState description={TEXT.RFQ_LIST_EMPTY} />
           ) : (
             <div className="rounded-md border border-default overflow-hidden">
               <table className="w-full text-sm text-left text-foreground">
                 <thead className="text-xs text-muted bg-surface uppercase border-b border-default">
                   <tr>
-                    <th className="px-6 py-3 font-medium">{TEXT.COL_CODE}</th>
-                    <th className="px-6 py-3 font-medium">{TEXT.COL_TITLE}</th>
                     <th className="px-6 py-3 font-medium">
-                      {TEXT.COL_DEADLINE}
+                      {TEXT.RFQ_LIST_COL_CODE}
                     </th>
-                    <th className="px-6 py-3 font-medium">{TEXT.COL_STATUS}</th>
+                    <th className="px-6 py-3 font-medium">
+                      {TEXT.RFQ_LIST_COL_TITLE}
+                    </th>
+                    <th className="px-6 py-3 font-medium">
+                      {TEXT.RFQ_LIST_COL_DEADLINE}
+                    </th>
+                    <th className="px-6 py-3 font-medium">
+                      {TEXT.RFQ_LIST_COL_STATUS}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {rfqs?.map((rfq: SourcingRfq) => {
+                  {filteredRfqs?.map((rfq: SourcingRfq) => {
                     const { intent, attention } = evaluateInteraction(
                       'purchase',
                       rfq,

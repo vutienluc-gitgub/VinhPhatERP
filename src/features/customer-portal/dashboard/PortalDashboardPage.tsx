@@ -5,10 +5,18 @@ import { usePortalDebt } from '@/application/crm/portal';
 import { usePortalShipments } from '@/application/crm/portal';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { MoneyText } from '@/shared/value';
+import { Icon, StatCard } from '@/shared/components';
 import {
   ORDER_STATUS_LABELS,
   ORDER_STATUS_BADGE,
 } from '@/features/customer-portal/constants';
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Chào buổi sáng,';
+  if (hour < 18) return 'Chào buổi chiều,';
+  return 'Chào buổi tối,';
+}
 
 export function PortalDashboardPage() {
   const { profile } = useAuth();
@@ -20,11 +28,11 @@ export function PortalDashboardPage() {
 
   return (
     <div className="portal-section">
-      {/* Welcome Banner */}
+      {/* ── Welcome Banner ── */}
       <div className="bg-gradient-to-br from-[#0f1f3d] to-[#1a3a6e] rounded-[14px] px-6 py-5 text-white flex items-center justify-between gap-4 flex-wrap">
         <div>
           <p className="m-0 text-[0.78rem] text-white/55 uppercase tracking-[0.06em] font-semibold">
-            Chào mừng
+            {getGreeting()}
           </p>
           <p className="mt-1 mb-0 text-[1.15rem] font-bold tracking-[-0.01em]">
             {profile?.full_name ?? 'Khách hàng'}
@@ -36,112 +44,52 @@ export function PortalDashboardPage() {
         </div>
       </div>
 
-      {/* Stat Cards */}
+      {/* ── Stat Cards (StatCard Component) ── */}
       <div className="portal-summary-grid">
         {/* Don hang */}
-        <div className="portal-stat-card">
-          <div className="portal-stat-icon">
-            <svg
-              width="18"
-              height="18"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
-          </div>
-          <p className="portal-stat-label">Đơn hàng</p>
-          <p className="portal-stat-value">
-            {ordersLoading ? '…' : orders.length}
-          </p>
-          <Link to="/portal/orders" className="portal-stat-link">
-            Xem tất cả &rarr;
-          </Link>
-        </div>
+        <StatCard
+          label="Đơn hàng"
+          value={orders.length}
+          icon="ShoppingBag"
+          tone="default"
+          isLoading={ordersLoading}
+          linkTo="/portal/orders"
+          linkLabel="Xem tất cả"
+        />
 
         {/* Cong no */}
-        <div className="portal-stat-card portal-stat-card--danger">
-          <div className="portal-stat-icon portal-stat-icon--danger">
-            <svg
-              width="18"
-              height="18"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <p className="portal-stat-label">Công nợ còn lại</p>
-          <p className="portal-stat-value portal-stat-value--danger">
-            {debtLoading ? (
-              '…'
-            ) : (
-              <MoneyText value={remainingDebt} suffix=" đ" />
-            )}
-          </p>
-          <Link to="/portal/debt" className="portal-stat-link">
-            Chi tiết &rarr;
-          </Link>
-        </div>
+        <StatCard
+          label="Công nợ còn lại"
+          value={<MoneyText value={remainingDebt} suffix=" đ" />}
+          icon="Receipt"
+          tone="danger"
+          isLoading={debtLoading}
+          linkTo="/portal/debt"
+          linkLabel="Chi tiết"
+        />
 
         {/* Giao hang */}
-        <div
-          className={`portal-stat-card${latestShipment ? ' portal-stat-card--success' : ''}`}
-        >
-          <div
-            className={`portal-stat-icon${latestShipment ? ' portal-stat-icon--success' : ''}`}
-          >
-            <svg
-              width="18"
-              height="18"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M20 7l-8-4-8 4m16 0v10l-8 4m-8-4V7m8 10l-8-6m8 6l8-6"
-              />
-            </svg>
-          </div>
-          <p className="portal-stat-label">Giao hàng gần nhất</p>
-          {shipmentsLoading ? (
-            <p className="portal-stat-value">…</p>
-          ) : latestShipment ? (
-            <>
-              <p className="portal-stat-value text-base mb-0.5">
+        <StatCard
+          label="Giao hàng gần nhất"
+          value={
+            latestShipment ? (
+              <span className="text-base font-semibold">
                 {latestShipment.shipment_number}
-              </p>
-              <p className="text-[0.75rem] text-[#647284] m-0">
-                {latestShipment.shipment_date}
-              </p>
-            </>
-          ) : (
-            <p className="portal-stat-value text-[0.95rem] text-[#647284]">
-              Chưa có
-            </p>
-          )}
-          <Link to="/portal/shipments" className="portal-stat-link">
-            Xem tất cả &rarr;
-          </Link>
-        </div>
+              </span>
+            ) : (
+              'Chưa có'
+            )
+          }
+          subtext={latestShipment?.shipment_date ?? undefined}
+          icon="Truck"
+          tone={latestShipment ? 'success' : 'default'}
+          isLoading={shipmentsLoading}
+          linkTo="/portal/shipments"
+          linkLabel="Xem tất cả"
+        />
       </div>
 
-      {/* Don hang gan day */}
+      {/* ── Don hang gan day ── */}
       {!ordersLoading && orders.length > 0 && (
         <div className="portal-table-wrap">
           <div className="portal-card-header">
@@ -230,20 +178,7 @@ export function PortalDashboardPage() {
           </div>
           <div className="portal-empty">
             <div className="portal-empty-icon">
-              <svg
-                width="40"
-                height="40"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.25"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
+              <Icon name="Inbox" size={40} />
             </div>
             <p>Chưa có đơn hàng nào.</p>
           </div>

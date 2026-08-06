@@ -9,9 +9,12 @@ import {
   useConfirmPublicPo,
   useRejectPublicPo,
 } from '@/features/supplier-portal/hooks/useSupplierPortal';
+import { SUPPLIER_PORTAL_LABELS } from '@/features/supplier-portal/supplier-portal.constants';
 import { POViewer } from '@/features/supplier-portal/components/POViewer';
 import { POComments } from '@/features/supplier-portal/components/POComments';
 import { ChatWidget } from '@/features/chat';
+
+const TEXT = SUPPLIER_PORTAL_LABELS;
 
 export function SupplierPODetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -46,7 +49,7 @@ export function SupplierPODetailPage() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="flex flex-col items-center gap-4 text-muted">
           <Icon name="loader-2" className="w-8 h-8 animate-spin" />
-          <p>Đang tải thông tin đơn hàng...</p>
+          <p>{TEXT.LOADING_PO}</p>
         </div>
       </div>
     );
@@ -57,10 +60,10 @@ export function SupplierPODetailPage() {
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
         <Icon name="XCircle" size={48} className="text-destructive mb-4" />
         <h2 className="text-lg font-bold text-foreground text-center">
-          Không tìm thấy đơn hàng
+          {TEXT.PO_NOT_FOUND_TITLE}
         </h2>
         <p className="text-muted text-center mt-2 text-sm max-w-md">
-          Đơn hàng không tồn tại hoặc bạn không có quyền truy cập.
+          {TEXT.PO_NOT_FOUND_DESC}
         </p>
       </div>
     );
@@ -112,7 +115,7 @@ function PODetailWithToken({ token }: { token: string }) {
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
         <Icon name="XCircle" size={48} className="text-destructive mb-4" />
         <h2 className="text-lg font-bold text-foreground text-center">
-          Lỗi tải thông tin Đơn hàng
+          {TEXT.PO_LOAD_ERROR_TITLE}
         </h2>
       </div>
     );

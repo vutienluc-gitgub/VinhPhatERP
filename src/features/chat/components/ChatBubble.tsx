@@ -26,7 +26,7 @@ function formatTime(iso: string): string {
   }
 }
 
-function renderContent(content: string, mentions?: ChatMention[]) {
+function renderTextWithMentions(content: string, mentions?: ChatMention[]) {
   if (!mentions || mentions.length === 0) return <div>{content}</div>;
 
   // Escape regex special chars in labels just in case
@@ -59,6 +59,27 @@ function renderContent(content: string, mentions?: ChatMention[]) {
       })}
     </div>
   );
+}
+
+function renderContent(content: string, mentions?: ChatMention[]) {
+  const quoteMatch = content.match(/^↩️ "(.*?)"\n([\s\S]*)$/);
+
+  if (quoteMatch) {
+    const [, quoteText, bodyText] = quoteMatch;
+    return (
+      <div className="chat-bubble-content-with-quote">
+        <div className="chat-bubble-quote-snippet">
+          <Icon name="CornerUpLeft" size={12} />
+          <span className="chat-bubble-quote-text">{quoteText}</span>
+        </div>
+        <div className="chat-bubble-text-body">
+          {renderTextWithMentions(bodyText ?? '', mentions)}
+        </div>
+      </div>
+    );
+  }
+
+  return renderTextWithMentions(content, mentions);
 }
 
 interface ChatBubbleProps {

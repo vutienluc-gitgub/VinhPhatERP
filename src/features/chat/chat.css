@@ -2306,3 +2306,28 @@
   background: var(--surface-hover);
   border-left: 2px solid var(--color-primary, #6366f1);
 }
+
+.chat-bubble-quote-snippet {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  margin-bottom: 6px;
+  background: rgba(0, 0, 0, 0.05);
+  border-left: 3px solid var(--color-primary, #6366f1);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+.chat-bubble--mine .chat-bubble-quote-snippet {
+  background: rgba(255, 255, 255, 0.2);
+  border-left-color: #ffffff;
+  color: #ffffff;
+}
+
+.chat-bubble-quote-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

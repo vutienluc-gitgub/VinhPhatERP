@@ -80,6 +80,11 @@ export * from './EntityLink';
 export { ImagePicker } from './ImagePicker';
 export { AdvancedImageUploader } from './AdvancedImageUploader';
 
+export { StatCard } from './StatCard';
+export type { StatCardProps, StatCardTone } from './StatCard';
+export { StatusStepper } from './StatusStepper';
+export type { StatusStepperProps, StepItem } from './StatusStepper';
+
 // End of exports
 export * from './layout';
 export { DebtAgingSection } from './DebtAgingSection';

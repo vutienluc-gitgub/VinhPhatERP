@@ -6,19 +6,12 @@ import {
   useConfirmPublicPo,
   useRejectPublicPo,
 } from '@/features/supplier-portal/hooks/useSupplierPortal';
+import { SUPPLIER_PORTAL_LABELS } from '@/features/supplier-portal/supplier-portal.constants';
 import { Icon } from '@/shared/components';
 import { POComments } from '@/features/supplier-portal/components/POComments';
 import { POViewer } from '@/features/supplier-portal/components/POViewer';
 
-const TEXT = {
-  NOT_FOUND_TITLE: 'Không tìm thấy thông tin Đơn đặt hàng',
-  NOT_FOUND_DESC:
-    'Liên kết có thể không chính xác hoặc đơn hàng không tồn tại.',
-  CONFIRM_SUCCESS: 'Đã xác nhận đơn hàng thành công',
-  CONFIRM_ERROR: 'Có lỗi xảy ra khi xác nhận đơn hàng',
-  REJECT_SUCCESS: 'Đã từ chối đơn hàng thành công',
-  REJECT_ERROR: 'Có lỗi xảy ra khi từ chối đơn hàng',
-};
+const TEXT = SUPPLIER_PORTAL_LABELS;
 
 export function SupplierPOPage() {
   const { id: token } = useParams<{ id: string }>();
@@ -35,10 +28,10 @@ export function SupplierPOPage() {
     if (!token) return;
     try {
       await confirmMutation.mutateAsync({ token });
-      toast.success(TEXT.CONFIRM_SUCCESS);
+      toast.success(TEXT.PO_CONFIRM_SUCCESS);
       refetch();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : TEXT.CONFIRM_ERROR);
+      toast.error(err instanceof Error ? err.message : TEXT.PO_CONFIRM_ERROR);
       console.error('[ConfirmError]', err);
     }
   };
@@ -47,10 +40,10 @@ export function SupplierPOPage() {
     if (!token || !reason.trim()) return;
     try {
       await rejectMutation.mutateAsync({ token, reason: reason.trim() });
-      toast.success(TEXT.REJECT_SUCCESS);
+      toast.success(TEXT.PO_REJECT_SUCCESS);
       refetch();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : TEXT.REJECT_ERROR);
+      toast.error(err instanceof Error ? err.message : TEXT.PO_REJECT_ERROR);
       console.error('[RejectError]', err);
     }
   };
@@ -72,10 +65,10 @@ export function SupplierPOPage() {
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
         <Icon name="XCircle" size={48} className="text-destructive mb-4" />
         <h2 className="text-lg font-bold text-foreground text-center">
-          {TEXT.NOT_FOUND_TITLE}
+          {TEXT.PO_PUBLIC_NOT_FOUND_TITLE}
         </h2>
         <p className="text-muted text-center mt-2 text-sm max-w-md">
-          {TEXT.NOT_FOUND_DESC}
+          {TEXT.PO_PUBLIC_NOT_FOUND_DESC}
         </p>
       </div>
     );
