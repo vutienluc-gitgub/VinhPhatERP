@@ -9,9 +9,10 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
   TableSkeleton,
+  CardTitle,
   EmptyState,
+  FilterChips,
 } from '@/shared/components';
 import { TableRowInteraction, evaluateInteraction } from '@/shared/interaction';
 import { MoneyText } from '@/shared/value';
@@ -77,11 +78,11 @@ export function SupplierPOListPage() {
   };
 
   const filterOptions: Array<{ id: FilterStatus; label: string }> = [
-    { id: 'ALL', label: 'Tất cả' },
-    { id: 'SENT', label: 'Chờ xác nhận' },
-    { id: 'CONFIRMED', label: 'Đã xác nhận' },
-    { id: 'COMPLETED', label: 'Đã hoàn thành' },
-    { id: 'CANCELLED', label: 'Đã hủy/Từ chối' },
+    { id: 'ALL', label: TEXT.FILTER_ALL },
+    { id: 'SENT', label: TEXT.PO_LIST_STATUS_SENT },
+    { id: 'CONFIRMED', label: TEXT.PO_LIST_STATUS_CONFIRMED },
+    { id: 'COMPLETED', label: TEXT.PO_LIST_STATUS_APPROVED },
+    { id: 'CANCELLED', label: TEXT.PO_LIST_STATUS_REJECTED },
   ];
 
   return (
@@ -95,22 +96,11 @@ export function SupplierPOListPage() {
         </div>
       </div>
 
-      {/* Filter Chips */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
-        {filterOptions.map((opt) => (
-          <button
-            key={opt.id}
-            onClick={() => setActiveFilter(opt.id)}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors white-space-nowrap ${
-              activeFilter === opt.id
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'bg-surface-secondary text-muted hover:text-foreground'
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
+      <FilterChips
+        options={filterOptions}
+        activeValue={activeFilter}
+        onChange={(val) => setActiveFilter(val as FilterStatus)}
+      />
 
       <Card>
         <CardHeader>

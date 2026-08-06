@@ -1,5 +1,6 @@
 export const SUPPLIER_PORTAL_LABELS = {
   // ── Common ──
+  FILTER_ALL: 'Tất cả',
   LOADING: 'Đang tải dữ liệu...',
   COMPANY_NAME: 'Vinh Phát Hưng',
   LINK_INVALID_DESC:
@@ -120,6 +121,8 @@ export const SUPPLIER_PORTAL_LABELS = {
   PO_LIST_STATUS_SENT: 'Đã gửi',
   PO_LIST_STATUS_CONFIRMED: 'Đã xác nhận',
   PO_LIST_STATUS_REJECTED: 'Đã từ chối',
+  PO_LIST_STATUS_COMPLETED: 'Đã hoàn thành',
+  PO_LIST_STATUS_CANCELLED: 'Đã hủy/Từ chối',
 
   // ── RFQ List ──
   RFQ_LIST_TITLE: 'Yêu cầu báo giá (RFQ)',

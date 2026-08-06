@@ -1,9 +1,10 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 import { usePortalQuotations } from '@/application/crm/portal';
 import { MoneyText } from '@/shared/value';
-import { Icon } from '@/shared/components';
+import { Icon, EmptyState, FilterChips } from '@/shared/components';
 import { QUOTATION_STATUS_LABELS } from '@/features/customer-portal/constants';
 
 const STATUS_BADGE: Record<string, string> = {
@@ -14,9 +15,12 @@ const STATUS_BADGE: Record<string, string> = {
   converted: 'portal-badge portal-badge--confirmed',
 };
 
+type FilterStatus = 'ALL' | 'SENT' | 'CONFIRMED' | 'EXPIRED' | 'REJECTED';
+
 export function PortalQuotationsPage() {
   const { quotations, loading, error, page, setPage, PAGE_SIZE } =
     usePortalQuotations();
+  const [activeFilter, setActiveFilter] = useState<FilterStatus>('ALL');
 
   if (loading)
     return (
@@ -28,9 +32,31 @@ export function PortalQuotationsPage() {
 
   if (error) return <div className="portal-error">{error}</div>;
 
+  const filteredQuotations = quotations.filter((q) => {
+    const isExpired = q.valid_until && dayjs().isAfter(dayjs(q.valid_until));
+    const displayStatus =
+      isExpired && q.status === 'sent' ? 'expired' : q.status;
+
+    if (activeFilter === 'ALL') return true;
+    if (activeFilter === 'SENT') return displayStatus === 'sent';
+    if (activeFilter === 'CONFIRMED')
+      return displayStatus === 'confirmed' || displayStatus === 'converted';
+    if (activeFilter === 'EXPIRED') return displayStatus === 'expired';
+    if (activeFilter === 'REJECTED') return displayStatus === 'rejected';
+    return true;
+  });
+
+  const filterOptions: Array<{ id: FilterStatus; label: string }> = [
+    { id: 'ALL', label: 'Tất cả' },
+    { id: 'SENT', label: QUOTATION_STATUS_LABELS.sent },
+    { id: 'CONFIRMED', label: QUOTATION_STATUS_LABELS.confirmed },
+    { id: 'EXPIRED', label: QUOTATION_STATUS_LABELS.expired },
+    { id: 'REJECTED', label: QUOTATION_STATUS_LABELS.rejected },
+  ];
+
   return (
     <div className="portal-section">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="portal-page-title mb-1">Báo giá</h1>
           <p className="text-sm text-muted">
@@ -39,13 +65,19 @@ export function PortalQuotationsPage() {
         </div>
       </div>
 
-      {quotations.length === 0 ? (
+      <FilterChips
+        options={filterOptions}
+        activeValue={activeFilter}
+        onChange={(val) => setActiveFilter(val as FilterStatus)}
+      />
+
+      {filteredQuotations.length === 0 ? (
         <div className="portal-table-wrap">
-          <div className="portal-empty">
-            <div className="portal-empty-icon">
-              <Icon name="FileText" size={48} strokeWidth={1.5} />
-            </div>
-            <p>Hiện chưa có báo giá nào dành cho bạn.</p>
+          <div className="p-8">
+            <EmptyState
+              icon="FileText"
+              description="Hiện chưa có báo giá nào phù hợp."
+            />
           </div>
         </div>
       ) : (
@@ -64,7 +96,7 @@ export function PortalQuotationsPage() {
                 </tr>
               </thead>
               <tbody>
-                {quotations.map((q) => {
+                {filteredQuotations.map((q) => {
                   const isExpired =
                     q.valid_until && dayjs().isAfter(dayjs(q.valid_until));
                   const displayStatus =
@@ -122,7 +154,7 @@ export function PortalQuotationsPage() {
 
           {/* Mobile view */}
           <div className="md:hidden space-y-4 p-3">
-            {quotations.map((q) => {
+            {filteredQuotations.map((q) => {
               const isExpired =
                 q.valid_until && dayjs().isAfter(dayjs(q.valid_until));
               const displayStatus =

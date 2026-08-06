@@ -10,6 +10,8 @@ import {
   CardHeader,
   CardTitle,
   StatCard,
+  EmptyState,
+  FilterChips,
 } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
 import { fetchSupplierDebtTransactions } from '@/api/supplier-debt.api';
@@ -72,7 +74,7 @@ export function SupplierDebtPage() {
   };
 
   const filterOptions: Array<{ id: FilterTxType; label: string }> = [
-    { id: 'ALL', label: 'Tất cả' },
+    { id: 'ALL', label: TEXT.FILTER_ALL },
     { id: 'PURCHASE', label: TEXT.DEBT_TYPE_PURCHASE },
     { id: 'PAYMENT', label: TEXT.DEBT_TYPE_PAYMENT },
     { id: 'ADJUSTMENT', label: TEXT.DEBT_TYPE_ADJUSTMENT },
@@ -114,22 +116,11 @@ export function SupplierDebtPage() {
         />
       </div>
 
-      {/* Filter Chips */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
-        {filterOptions.map((opt) => (
-          <button
-            key={opt.id}
-            onClick={() => setActiveFilter(opt.id)}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors whitespace-nowrap ${
-              activeFilter === opt.id
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'bg-surface-secondary text-muted hover:text-foreground'
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
+      <FilterChips
+        options={filterOptions}
+        activeValue={activeFilter}
+        onChange={setActiveFilter}
+      />
 
       <Card>
         <CardHeader>
@@ -160,14 +151,18 @@ export function SupplierDebtPage() {
               <tbody>
                 {isLoadingTx || isLoadingDebt ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-8 text-muted">
-                      {TEXT.LOADING}
+                    <td colSpan={5} className="p-8">
+                      <div className="space-y-4">
+                        <div className="skeleton-block h-10 w-full" />
+                        <div className="skeleton-block h-10 w-full" />
+                        <div className="skeleton-block h-10 w-full" />
+                      </div>
                     </td>
                   </tr>
                 ) : filteredTransactions?.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-8 text-muted">
-                      {TEXT.DEBT_EMPTY}
+                    <td colSpan={5} className="p-8">
+                      <EmptyState icon="Inbox" description={TEXT.DEBT_EMPTY} />
                     </td>
                   </tr>
                 ) : (

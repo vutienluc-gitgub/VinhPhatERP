@@ -93,3 +93,4 @@ export { PrintPreviewBox } from './PrintPreviewBox';
 export * from '@/shared/value';
 
 export * from '@/shared/value';
+export { FilterChips } from './FilterChips';

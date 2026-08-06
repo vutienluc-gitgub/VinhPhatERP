@@ -3,14 +3,19 @@ import { Link } from 'react-router-dom';
 
 import { usePortalOrders } from '@/application/crm/portal';
 import { MoneyText } from '@/shared/value';
-import { Button, Icon } from '@/shared/components';
+import {
+  Button,
+  Icon,
+  EmptyState,
+  ErrorInline,
+  FilterChips,
+} from '@/shared/components';
 import type { PortalOrder, PortalOrderItem } from '@/domain/portal/types';
 import {
   ORDER_STATUS_LABELS,
   ORDER_STATUS_BADGE,
   TIMELINE_STEPS,
 } from '@/features/customer-portal/constants';
-import { EmptyState, ErrorInline } from '@/shared/components';
 
 import { OrderRequestModal } from './OrderRequestModal';
 import {
@@ -48,18 +53,7 @@ type FilterStatus =
 /* ── Sub-components ── */
 
 function CheckIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
+  return <Icon name="Check" strokeWidth={3} size={16} />;
 }
 
 function HorizontalStepper({ order }: { order: PortalOrder }) {
@@ -108,9 +102,7 @@ function HorizontalStepper({ order }: { order: PortalOrder }) {
               <div className={dotClass}>
                 {state === 'completed' && <CheckIcon />}
                 {state === 'active' && (
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="12" r="5" />
-                  </svg>
+                  <Icon name="Circle" size={12} fill="currentColor" />
                 )}
               </div>
               <span className="portal-stepper-label">{step.label}</span>
@@ -284,10 +276,10 @@ export function PortalOrdersPage() {
 
   const filterOptions: Array<{ id: FilterStatus; label: string }> = [
     { id: 'ALL', label: 'Tất cả' },
-    { id: 'CONFIRMED', label: 'Đã xác nhận' },
-    { id: 'IN_PROGRESS', label: 'Đang sản xuất' },
-    { id: 'COMPLETED', label: 'Hoàn thành' },
-    { id: 'CANCELLED', label: 'Đã hủy' },
+    { id: 'CONFIRMED', label: ORDER_STATUS_LABELS.confirmed },
+    { id: 'IN_PROGRESS', label: ORDER_STATUS_LABELS.in_progress },
+    { id: 'COMPLETED', label: ORDER_STATUS_LABELS.completed },
+    { id: 'CANCELLED', label: ORDER_STATUS_LABELS.cancelled },
   ];
 
   if (loading)
@@ -319,22 +311,11 @@ export function PortalOrdersPage() {
         </Button>
       </div>
 
-      {/* Filter Chips */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 mb-4">
-        {filterOptions.map((opt) => (
-          <button
-            key={opt.id}
-            onClick={() => setActiveFilter(opt.id)}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors whitespace-nowrap ${
-              activeFilter === opt.id
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'bg-surface-secondary text-muted hover:text-foreground'
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
+      <FilterChips
+        options={filterOptions}
+        activeValue={activeFilter}
+        onChange={(val) => setActiveFilter(val as FilterStatus)}
+      />
 
       {filteredOrders.length === 0 ? (
         <EmptyState

@@ -10,6 +10,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  EmptyState,
   SearchInput,
 } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
@@ -96,14 +97,21 @@ export function SupplierInvoicesPage() {
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-8 text-muted">
-                      {TEXT.LOADING}
+                    <td colSpan={5} className="p-8">
+                      <div className="space-y-4">
+                        <div className="skeleton-block h-10 w-full" />
+                        <div className="skeleton-block h-10 w-full" />
+                        <div className="skeleton-block h-10 w-full" />
+                      </div>
                     </td>
                   </tr>
                 ) : filteredInvoices?.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-8 text-muted">
-                      {TEXT.INVOICES_EMPTY}
+                    <td colSpan={5} className="p-8">
+                      <EmptyState
+                        icon="FileText"
+                        description={TEXT.INVOICES_EMPTY}
+                      />
                     </td>
                   </tr>
                 ) : (
