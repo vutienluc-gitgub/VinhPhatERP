@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 
 import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
-import { Combobox } from '@/shared/components/Combobox';
+import { VPCombobox } from '@/shared/components';
 import { useMarkDelivered } from '@/application/shipments';
 import { useActivePaymentAccounts } from '@/shared/hooks/usePaymentAccountOptions';
 import {
@@ -160,7 +160,7 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
                   name="accountId"
                   control={control}
                   render={({ field }) => (
-                    <Combobox
+                    <VPCombobox
                       options={accountOptions}
                       value={field.value || ''}
                       onChange={field.onChange}

@@ -23,7 +23,9 @@ export async function fetchEmployees(filters?: {
   }
   if (filters?.query?.trim()) {
     const q = filters.query.trim();
-    query = query.or(`name.ilike.%${q}%,code.ilike.%${q}%,phone.ilike.%${q}%`);
+    query = query.or(
+      `name.ilike.%${q}%,code.ilike.%${q}%,phone.ilike.%${q}%,email.ilike.%${q}%`,
+    );
   }
 
   const { data, error } = await query;

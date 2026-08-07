@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 
 import { Button, PrintPreviewBox } from '@/shared/components';
 import { Icon } from '@/shared/components/Icon';
-import { Combobox } from '@/shared/components/Combobox';
+import { VPEntityPicker } from '@/shared/components';
 import { K80PrintLayout } from '@/features/shipments/components/quick-print/K80PrintLayout';
 import {
   K80_QUICK_PRINT_LABELS as LABELS,
@@ -64,7 +64,7 @@ export function K80QuickShipmentPage() {
                 <label>
                   {LABELS.CUSTOMER} <span className="text-danger">*</span>
                 </label>
-                <Combobox
+                <VPEntityPicker
                   options={customerComboOptions}
                   value={customerId}
                   onChange={setCustomerId}

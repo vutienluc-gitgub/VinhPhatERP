@@ -65,6 +65,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
         form.reset({
           name: employee.name,
           phone: employee.phone || '',
+          email: employee.email || '',
           role: employee.role,
           status: employee.status,
         });
@@ -249,6 +250,22 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
             {form.formState.errors.phone && (
               <p className="field-error">
                 {form.formState.errors.phone.message}
+              </p>
+            )}
+          </div>
+
+          <div className="form-field">
+            <label>{EMPLOYEE_LABELS.TABLE_EMAIL}</label>
+            <input
+              {...form.register('email')}
+              className={`field-input${form.formState.errors.email ? ' border-danger' : ''}`}
+              placeholder={EMPLOYEE_LABELS.FORM_EMAIL_PLACEHOLDER}
+              type="email"
+              disabled={isPending}
+            />
+            {form.formState.errors.email && (
+              <p className="field-error">
+                {form.formState.errors.email.message}
               </p>
             )}
           </div>

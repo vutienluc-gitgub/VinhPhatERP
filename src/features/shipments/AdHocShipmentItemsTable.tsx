@@ -5,8 +5,8 @@ import {
 } from 'react-hook-form';
 
 import { Icon } from '@/shared/components';
-import { Combobox } from '@/shared/components/Combobox';
 import { MoneyInput, MoneyText, QuantityInput } from '@/shared/value';
+import { VPCombobox, VPSelect } from '@/shared/components';
 import type { AdHocShipmentFormValues } from '@/schema/shipment.schema';
 
 import { AD_HOC_SHIPMENT_MESSAGES } from './shipments.constants';
@@ -44,7 +44,6 @@ export function AdHocShipmentItemsTable({
   fabricOptions,
 }: AdHocShipmentItemsTableProps) {
   const {
-    register,
     formState: { errors },
     control,
   } = form;
@@ -113,15 +112,15 @@ export function AdHocShipmentItemsTable({
                 control={control}
                 name={`items.${index}.fabricType`}
                 render={({ field: { value, onChange, onBlur } }) => (
-                  <Combobox
-                    variant="table-cell"
+                  <VPCombobox
                     options={fabricOptions}
                     value={value}
                     onChange={onChange}
                     onBlur={onBlur}
                     placeholder="VD: Kaki Thun"
-                    allowInput={true}
+                    allowCreatable={true}
                     hasError={!!errors.items?.[index]?.fabricType}
+                    className="border-none rounded-none focus:ring-0 shadow-none h-9 bg-transparent"
                   />
                 )}
               />
@@ -153,16 +152,20 @@ export function AdHocShipmentItemsTable({
 
             {/* Unit */}
             <div className="pr-2">
-              <select
-                className="field-input text-sm text-center"
-                {...register(`items.${index}.unit`)}
-              >
-                {UNIT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+              <Controller
+                name={`items.${index}.unit`}
+                control={control}
+                render={({ field }) => (
+                  <VPSelect
+                    size="sm"
+                    options={UNIT_OPTIONS}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    placeholder="-"
+                    className="border-none rounded-none focus:ring-0 shadow-none bg-transparent"
+                  />
+                )}
+              />
             </div>
 
             {/* Price per kg */}
