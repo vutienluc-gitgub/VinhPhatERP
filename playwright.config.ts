@@ -54,6 +54,6 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev -- --mode test --port 5174',
     url: 'http://localhost:5174',
-    reuseExistingServer: false, // Luôn khởi động server test mới, không xài chung với server dev thật
+    reuseExistingServer: !process.env.CI, // Cho phép dùng lại server test (port 5174) nếu nó đang chạy sót lại
   },
 });

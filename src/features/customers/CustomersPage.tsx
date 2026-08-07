@@ -52,10 +52,11 @@ export function CustomersPage() {
     <div className="page-container">
       <PageLayout className="flex-1 h-full">
         {/* Tab Switcher for CRM Modules */}
-        <div className="border-b border-default pb-2 min-w-0">
+        <div className="pb-2 min-w-0">
           <TabSwitcher
             active={activeTab}
             onChange={setActiveTab}
+            className="!border-b-0"
             tabs={[
               { key: 'customers', label: CUSTOMERS_PAGE_LABELS.tabCustomers },
               {

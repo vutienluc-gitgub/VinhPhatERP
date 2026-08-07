@@ -17,7 +17,7 @@ import {
   CRM_STATUS_ICONS,
 } from '@/schema/customer.schema';
 import type { CustomersFormValues, LeadStatus } from '@/schema/customer.schema';
-import { Combobox } from '@/shared/components/Combobox';
+import { VPSelect, VPEntityPicker } from '@/shared/components';
 import {
   useCreateCustomer,
   useNextCustomerCode,
@@ -335,10 +335,10 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
               name="source"
               control={control}
               render={({ field }) => (
-                <Combobox
+                <VPSelect
                   options={SOURCE_OPTIONS}
                   value={field.value}
-                  onChange={field.onChange}
+                  onValueChange={field.onChange}
                 />
               )}
             />
@@ -350,10 +350,10 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
               name="status"
               control={control}
               render={({ field }) => (
-                <Combobox
+                <VPSelect
                   options={STATUS_OPTIONS}
                   value={field.value}
-                  onChange={field.onChange}
+                  onValueChange={field.onChange}
                 />
               )}
             />
@@ -370,10 +370,10 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
               name="lead_status"
               control={control}
               render={({ field }) => (
-                <Combobox
+                <VPSelect
                   options={LEAD_STATUS_OPTIONS}
                   value={field.value}
-                  onChange={field.onChange}
+                  onValueChange={field.onChange}
                 />
               )}
             />
@@ -387,17 +387,17 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
               name="salesperson_id"
               control={control}
               render={({ field }) => (
-                <Combobox
-                  options={[
-                    { value: '', label: CUSTOMER_FORM_LABELS.unassigned },
-                    ...(salesEmployees?.map((emp) => ({
-                      value: emp.id,
-                      label: `${emp.name} (${emp.code})`,
-                      icon: 'User' as const,
-                    })) ?? []),
-                  ]}
+                <VPEntityPicker
+                  options={
+                    salesEmployees?.map((emp) => ({
+                      id: emp.id,
+                      name: emp.name,
+                      code: emp.code,
+                    })) ?? []
+                  }
                   value={field.value ?? ''}
                   onChange={field.onChange}
+                  placeholder={CUSTOMER_FORM_LABELS.unassigned}
                   disabled={!canAssign}
                 />
               )}
