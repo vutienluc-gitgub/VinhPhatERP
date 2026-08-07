@@ -60,7 +60,7 @@ export function VPCombobox({
   const selectedOption = options.find((opt) => opt.value === value);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={true}>
       <PopoverTrigger asChild>
         <button
           id={id}
@@ -93,7 +93,7 @@ export function VPCombobox({
         </button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-[--radix-popover-trigger-width] p-0"
+        className="w-[var(--radix-popover-trigger-width)] p-0"
         align="start"
       >
         <Command>

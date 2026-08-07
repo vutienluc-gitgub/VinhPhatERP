@@ -2,7 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { AdaptiveSheet, Icon, Combobox, Button } from '@/shared/components';
+import {
+  AdaptiveSheet,
+  Icon,
+  VPVirtualCombobox,
+  VPEntityPicker,
+  Button,
+} from '@/shared/components';
 import { MoneyInput, WeightInput, LengthInput } from '@/shared/value';
 import { StepperFooter } from '@/shared/components/StepperFooter';
 import { useStepper } from '@/shared/hooks/useStepper';
@@ -18,10 +24,13 @@ import {
   useUpdateDyeingOrder,
 } from '@/application/production';
 import { useAvailableRawRolls } from '@/application/inventory';
+import { useColors } from '@/application/color-catalog';
 import { sumBy } from '@/shared/utils/array.util';
 
+import { useRollSelection } from './hooks/useRollSelection';
 import { DYEING_ORDER_MESSAGES as MSG } from './dyeing-orders.constants';
 import type { DyeingOrder } from './types';
+import { RollSelectionDropdown } from './components/RollSelectionDropdown';
 
 type DyeingOrderFormProps = {
   isOpen: boolean;
@@ -39,6 +48,7 @@ export function DyeingOrderForm({
   const updateMutation = useUpdateDyeingOrder();
   const { data: suppliers = [] } = useDyeingSuppliers();
   const { data: availableRolls = [] } = useAvailableRawRolls();
+  const { data: colors = [] } = useColors();
 
   const {
     register,
@@ -117,46 +127,47 @@ export function DyeingOrderForm({
     onCancel: onClose,
   });
 
+  const { unselectedRolls, lotSummary, addLot, validate } = useRollSelection(
+    availableRolls,
+    watchItems,
+    setValue,
+  );
+
   const handleFinalSubmit = (values: DyeingOrderFormValues) => {
     if (!stepper.isLast) return;
+    if (!validate()) return;
     onSubmit(values);
   };
 
   const supplierOptions = suppliers.map((s) => ({
-    value: s.id,
-    label: `${s.name} (${s.code})`,
+    id: s.id,
+    name: s.name,
+    code: s.code || undefined,
   }));
 
-  const rollOptions = availableRolls.map((r) => ({
-    value: r.id,
-    label: `${r.roll_number} - ${r.fabric_type} (${r.weight_kg}kg)`,
-    roll: r,
+  const colorOptions = colors.map((c) => ({
+    code: c.code,
+    name: c.name,
   }));
 
-  // Danh sach lo vai moc doc lap (lot_number != null)
   const lotOptions = useMemo(() => {
-    const lots = new Map<string, { count: number; totalKg: number }>();
-    for (const r of availableRolls) {
-      const lot = r.lot_number as string | null;
-      if (!lot) continue;
-      const existing = lots.get(lot);
-      if (existing) {
-        existing.count += 1;
-        existing.totalKg += r.weight_kg ?? 0;
-      } else {
-        lots.set(lot, {
-          count: 1,
-          totalKg: r.weight_kg ?? 0,
-        });
-      }
-    }
-    return Array.from(lots.entries()).map(([lot, info]) => ({
-      value: lot,
-      label: MSG.LBL_LOT_SUMMARY(lot, info.count, info.totalKg),
-    }));
-  }, [availableRolls]);
+    return Object.entries(lotSummary)
+      .filter(([_, summary]) => !summary.disabled)
+      .map(([lot, summary]) => ({
+        id: lot,
+        name: MSG.LBL_LOT_SUMMARY(
+          lot,
+          summary.remaining,
+          summary.remainingWeight,
+        ),
+      }));
+  }, [lotSummary]);
 
   const [selectedLot, setSelectedLot] = useState<string>('');
+
+  const itemsErrorMessage =
+    errors.items?.root?.message ||
+    (errors.items as unknown as { message?: string })?.message;
 
   return (
     <AdaptiveSheet
@@ -212,11 +223,12 @@ export function DyeingOrderForm({
               <label className="text-xs font-bold text-muted uppercase">
                 {MSG.LBL_SUPPLIER}
               </label>
-              <Combobox
+              <VPEntityPicker
                 options={supplierOptions}
                 value={watch('supplier_id')}
                 onChange={(val) => setValue('supplier_id', val)}
                 placeholder={MSG.PLACEHOLDER_SUPPLIER}
+                variant="standard"
               />
               {errors.supplier_id && (
                 <span className="text-[10px] text-danger mt-1">
@@ -285,6 +297,13 @@ export function DyeingOrderForm({
             </button>
           </div>
 
+          {itemsErrorMessage && (
+            <div className="mb-4 p-3 bg-danger-soft text-danger text-sm rounded-lg flex items-center gap-2">
+              <Icon name="AlertTriangle" size={16} />
+              {itemsErrorMessage}
+            </div>
+          )}
+
           {/* Bulk select by lot */}
           {lotOptions.length > 0 && (
             <div className="mb-4 p-3 bg-primary/5 rounded-lg border border-primary/15">
@@ -293,10 +312,12 @@ export function DyeingOrderForm({
               </label>
               <div className="flex flex-col sm:flex-row gap-2 items-center">
                 <div className="w-full sm:flex-1">
-                  <Combobox
+                  <VPVirtualCombobox<{ id: string; name: string }>
                     options={lotOptions}
                     value={selectedLot}
                     onChange={(val) => setSelectedLot(val)}
+                    getOptionValue={(opt) => opt.id}
+                    getOptionLabel={(opt) => opt.name}
                     placeholder={MSG.PLACEHOLDER_BATCH}
                   />
                 </div>
@@ -305,30 +326,20 @@ export function DyeingOrderForm({
                   className="w-full sm:w-auto py-2 px-3 text-xs whitespace-nowrap flex items-center justify-center gap-1"
                   disabled={!selectedLot}
                   onClick={() => {
-                    const rolls = availableRolls.filter(
-                      (r) => (r.lot_number as string | null) === selectedLot,
-                    );
-                    for (const r of rolls) {
-                      append({
-                        ...emptyDyeingOrderItem,
-                        raw_fabric_roll_id: r.id,
-                        weight_kg: r.weight_kg ?? 0,
-                        length_m: r.length_m ?? 0,
-                      });
-                    }
+                    addLot(selectedLot, (r) => ({
+                      ...emptyDyeingOrderItem,
+                      raw_fabric_roll_id: r.id,
+                      weight_kg: r.weight_kg ?? 0,
+                      length_m: r.length_m ?? 0,
+                    }));
                     setSelectedLot('');
                   }}
                 >
                   <Icon name="PackagePlus" size={16} />
-                  {selectedLot
+                  {selectedLot && lotSummary[selectedLot]
                     ? MSG.BTN_ADD_ROLLS.replace(
                         '{count}',
-                        String(
-                          availableRolls.filter(
-                            (r) =>
-                              (r.lot_number as string | null) === selectedLot,
-                          ).length,
-                        ),
+                        String(lotSummary[selectedLot].remaining),
                       )
                     : MSG.BTN_ADD}
                 </Button>
@@ -352,11 +363,10 @@ export function DyeingOrderForm({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
                   <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-bold text-muted uppercase">
+                    <label className="text-[10px] font-bold text-muted uppercase block mb-1">
                       {MSG.LBL_RAW_ROLL}
                     </label>
-                    <Combobox
-                      options={rollOptions}
+                    <RollSelectionDropdown
                       value={watch(`items.${index}.raw_fabric_roll_id`)}
                       onChange={(val) => {
                         setValue(`items.${index}.raw_fabric_roll_id`, val);
@@ -372,7 +382,9 @@ export function DyeingOrderForm({
                           );
                         }
                       }}
-                      placeholder={MSG.PLACEHOLDER_RAW_ROLL}
+                      unselectedRolls={unselectedRolls}
+                      availableRolls={availableRolls}
+                      error={errors.items?.[index]?.raw_fabric_roll_id?.message}
                     />
                   </div>
 
@@ -380,11 +392,36 @@ export function DyeingOrderForm({
                     <label className="text-[10px] font-bold text-muted uppercase">
                       {MSG.LBL_TARGET_COLOR}
                     </label>
-                    <input
-                      {...register(`items.${index}.color_name`)}
-                      className="field-input h-10"
+                    <VPVirtualCombobox<{ code: string; name: string }>
+                      options={colorOptions}
+                      value={watch(`items.${index}.color_code`) || ''}
+                      onChange={(val) => {
+                        setValue(`items.${index}.color_code`, val);
+                        const selectedColor = colors.find(
+                          (c) => c.code === val,
+                        );
+                        if (selectedColor) {
+                          setValue(
+                            `items.${index}.color_name`,
+                            selectedColor.name,
+                          );
+                        } else {
+                          setValue(`items.${index}.color_name`, '');
+                        }
+                      }}
+                      getOptionValue={(opt) => opt.code}
+                      getOptionLabel={(opt) => opt.name}
                       placeholder={MSG.PLACEHOLDER_TARGET_COLOR}
+                      hasError={
+                        !!errors.items?.[index]?.color_name ||
+                        !!errors.items?.[index]?.color_code
+                      }
                     />
+                    {errors.items?.[index]?.color_name && (
+                      <span className="text-[10px] text-danger mt-1">
+                        {errors.items[index]?.color_name?.message}
+                      </span>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
@@ -392,26 +429,40 @@ export function DyeingOrderForm({
                       name={`items.${index}.weight_kg`}
                       control={control}
                       render={({ field }) => (
-                        <WeightInput
-                          step="0.01"
-                          className="field-input h-10 tabular-nums"
-                          value={field.value}
-                          onChange={field.onChange}
-                          onBlur={field.onBlur}
-                        />
+                        <div className="flex flex-col">
+                          <WeightInput
+                            step="0.01"
+                            className="field-input h-10 tabular-nums"
+                            value={field.value}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                          />
+                          {errors.items?.[index]?.weight_kg && (
+                            <span className="text-[10px] text-danger mt-1">
+                              {errors.items[index]?.weight_kg?.message}
+                            </span>
+                          )}
+                        </div>
                       )}
                     />
                     <Controller
                       name={`items.${index}.length_m`}
                       control={control}
                       render={({ field }) => (
-                        <LengthInput
-                          step="0.1"
-                          className="field-input h-10 tabular-nums"
-                          value={field.value}
-                          onChange={field.onChange}
-                          onBlur={field.onBlur}
-                        />
+                        <div className="flex flex-col">
+                          <LengthInput
+                            step="0.1"
+                            className="field-input h-10 tabular-nums"
+                            value={field.value}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                          />
+                          {errors.items?.[index]?.length_m && (
+                            <span className="text-[10px] text-danger mt-1">
+                              {errors.items[index]?.length_m?.message}
+                            </span>
+                          )}
+                        </div>
                       )}
                     />
                   </div>

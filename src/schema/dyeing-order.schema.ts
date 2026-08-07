@@ -56,16 +56,28 @@ export const dyeingOrderItemSchema = z.object({
 
 export type DyeingOrderItemFormValues = z.infer<typeof dyeingOrderItemSchema>;
 
-export const dyeingOrderSchema = z.object({
-  dyeing_order_number: z.string().optional().default(''),
-  supplier_id: z.string().min(1, 'Chọn nhà nhuộm'),
-  order_date: z.string().min(1, 'Chọn ngày gửi'),
-  expected_return_date: z.string().optional().or(z.literal('')),
-  unit_price_per_kg: z.number().min(0, 'Đơn giá >= 0').default(0),
-  work_order_id: z.string().optional().or(z.literal('')),
-  notes: z.string().max(500).optional().or(z.literal('')),
-  items: z.array(dyeingOrderItemSchema).min(1, 'Phải có ít nhất 1 cây vải'),
-});
+export const dyeingOrderSchema = z
+  .object({
+    dyeing_order_number: z.string().optional().default(''),
+    supplier_id: z.string().min(1, 'Chọn nhà nhuộm'),
+    order_date: z.string().min(1, 'Chọn ngày gửi'),
+    expected_return_date: z.string().optional().or(z.literal('')),
+    unit_price_per_kg: z.number().min(0, 'Đơn giá >= 0').default(0),
+    work_order_id: z.string().optional().or(z.literal('')),
+    notes: z.string().max(500).optional().or(z.literal('')),
+    items: z.array(dyeingOrderItemSchema).min(1, 'Phải có ít nhất 1 cây vải'),
+  })
+  .superRefine((data, ctx) => {
+    const rollIds = data.items.map((i) => i.raw_fabric_roll_id).filter(Boolean);
+    const uniqueRolls = new Set(rollIds);
+    if (uniqueRolls.size !== rollIds.length) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Có cuộn mộc bị chọn trùng lặp, vui lòng kiểm tra lại.',
+        path: ['items'],
+      });
+    }
+  });
 
 export type DyeingOrderFormValues = z.infer<typeof dyeingOrderSchema>;
 

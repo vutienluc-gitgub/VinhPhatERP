@@ -93,8 +93,8 @@ type ComboboxProps = {
 };
 
 /**
- * @deprecated Use `VPCombobox` from `@/shared/components/VPCombobox` or `VPSelect` instead.
- * This component will be removed in the future to standardize with Radix-based UI.
+ * @deprecated Use `VPEntityPicker`, `VPVirtualCombobox`, or `VPAsyncCombobox` instead.
+ * This component is retained for backward compatibility but should not be used in new features.
  */
 export const Combobox = memo(function Combobox({
   options,
@@ -127,7 +127,7 @@ export const Combobox = memo(function Combobox({
 
   // Đóng khi click ngoài (cần check cả dropdown portal vì nằm ngoài containerRef)
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    function handleClickOutside(event: Event) {
       if (!isOpen) return;
       const target = event.target as Node;
       const insideContainer = containerRef.current?.contains(target) ?? false;
@@ -136,8 +136,18 @@ export const Combobox = memo(function Combobox({
         setIsOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('pointerdown', handleClickOutside, {
+      capture: true,
+    });
+    document.addEventListener('focusin', handleClickOutside, { capture: true });
+    return () => {
+      document.removeEventListener('pointerdown', handleClickOutside, {
+        capture: true,
+      });
+      document.removeEventListener('focusin', handleClickOutside, {
+        capture: true,
+      });
+    };
   }, [isOpen]);
 
   // Sync search với value khi allowInput
