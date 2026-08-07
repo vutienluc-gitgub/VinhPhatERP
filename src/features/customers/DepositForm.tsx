@@ -2,8 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
-import { Combobox } from '@/shared/components/Combobox';
-import { Button } from '@/shared/components';
+import { VPSelect, Button } from '@/shared/components';
 import { MoneyInput } from '@/shared/value';
 import { paymentsSchema, paymentsDefaultValues } from '@/schema/payment.schema';
 import type { PaymentsFormValues } from '@/schema/payment.schema';
@@ -126,11 +125,10 @@ export function DepositForm({
                 name="paymentMethod"
                 control={control}
                 render={({ field }) => (
-                  <Combobox
+                  <VPSelect
                     options={DEPOSIT_PAYMENT_METHOD_OPTIONS}
                     value={field.value}
-                    onChange={field.onChange}
-                    hasError={!!errors.paymentMethod}
+                    onValueChange={field.onChange}
                   />
                 )}
               />

@@ -15,7 +15,8 @@ import {
   TabSwitcher,
   type TabItem,
   AdaptiveSheet,
-  Combobox,
+  VPSelect,
+  VPEntityPicker,
   Button,
   PageHeader,
   PageActions,
@@ -312,6 +313,7 @@ export function CustomerList({
           tabs={tabs}
           active={activeTab === 'custom' ? 'all' : activeTab}
           onChange={handleTabChange}
+          className="!border-b-0"
         />
       </div>
 
@@ -410,10 +412,9 @@ export function CustomerList({
             <label className="text-sm font-medium text-foreground">
               {CUSTOMER_LIST_LABELS.bulkAssignFieldLabel}
             </label>
-            <Combobox
+            <VPEntityPicker
               options={
-                salesEmployees?.map((e) => ({ value: e.id, label: e.name })) ||
-                []
+                salesEmployees?.map((e) => ({ id: e.id, name: e.name })) || []
               }
               value={selectedSalesperson}
               onChange={setSelectedSalesperson}
@@ -466,13 +467,13 @@ export function CustomerList({
             <label className="text-sm font-medium text-foreground">
               {CUSTOMER_LIST_LABELS.bulkStatusFieldLabel}
             </label>
-            <Combobox
+            <VPSelect
               options={[
                 { value: 'active', label: CUSTOMER_STATUS_LABELS.active },
                 { value: 'inactive', label: CUSTOMER_STATUS_LABELS.inactive },
               ]}
               value={selectedStatus}
-              onChange={setSelectedStatus}
+              onValueChange={setSelectedStatus}
               placeholder={CUSTOMER_LIST_LABELS.bulkStatusPlaceholder}
             />
           </div>
