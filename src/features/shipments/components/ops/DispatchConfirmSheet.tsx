@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Button } from '@/shared/components';
-import { Combobox } from '@/shared/components/Combobox';
+import { VPCombobox } from '@/shared/components';
 import { useOrderList } from '@/shared/hooks/useFormOptions';
 import type { TruckSlot } from '@/features/shipments/ops-engine/useFleetCommander';
 import { sumBy } from '@/shared/utils/array.util';
@@ -72,7 +72,7 @@ export function DispatchConfirmSheet({
           <label className="form-label block text-secondary">
             {MSG.LBL_ORDER} <span className="text-danger">*</span>
           </label>
-          <Combobox
+          <VPCombobox
             options={orderOptions}
             value={selectedOrderId}
             onChange={setSelectedOrderId}

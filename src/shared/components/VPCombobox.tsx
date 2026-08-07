@@ -39,6 +39,7 @@ export type VPComboboxProps = {
   id?: string;
   searchPlaceholder?: string;
   emptyText?: string;
+  allowCreatable?: boolean;
 };
 
 export function VPCombobox({
@@ -54,10 +55,20 @@ export function VPCombobox({
   id,
   searchPlaceholder = 'Tìm kiếm...',
   emptyText = 'Không có kết quả.',
+  allowCreatable = false,
 }: VPComboboxProps) {
   const [open, setOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
 
+  // If it's a created value not in options, we should still show it.
   const selectedOption = options.find((opt) => opt.value === value);
+  const displayLabel = selectedOption ? selectedOption.label : value;
+
+  const exactMatch = options.some(
+    (opt) => opt.label.toLowerCase() === searchValue.toLowerCase(),
+  );
+  const showCreatable =
+    allowCreatable && searchValue.trim() !== '' && !exactMatch;
 
   return (
     <Popover open={open} onOpenChange={setOpen} modal={true}>
@@ -80,8 +91,8 @@ export function VPCombobox({
                 className="h-4 w-4 animate-spin opacity-50"
               />
             )}
-            {selectedOption ? (
-              <span className="truncate">{selectedOption.label}</span>
+            {value ? (
+              <span className="truncate">{displayLabel}</span>
             ) : (
               <span className="text-muted truncate">{placeholder}</span>
             )}
@@ -97,7 +108,11 @@ export function VPCombobox({
         align="start"
       >
         <Command>
-          <CommandInput placeholder={searchPlaceholder} />
+          <CommandInput
+            placeholder={searchPlaceholder}
+            value={searchValue}
+            onValueChange={setSearchValue}
+          />
           <CommandList>
             <CommandEmpty>{emptyText}</CommandEmpty>
             <CommandGroup>
@@ -130,6 +145,24 @@ export function VPCombobox({
                   </div>
                 </CommandItem>
               ))}
+              {showCreatable && (
+                <CommandItem
+                  value={searchValue}
+                  onSelect={(currentValue) => {
+                    onChange(currentValue);
+                    setOpen(false);
+                    setSearchValue('');
+                  }}
+                >
+                  <div className="flex w-full items-center justify-between">
+                    <span>
+                      Tạo mới:{' '}
+                      <span className="font-semibold">{searchValue}</span>
+                    </span>
+                    <Icon name="Plus" className="h-4 w-4 shrink-0 text-muted" />
+                  </div>
+                </CommandItem>
+              )}
             </CommandGroup>
           </CommandList>
         </Command>

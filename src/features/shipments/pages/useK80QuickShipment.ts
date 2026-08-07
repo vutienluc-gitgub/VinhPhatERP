@@ -44,8 +44,8 @@ export function useK80QuickShipment() {
   const customerComboOptions = useMemo(
     () =>
       customerOptions.map((c) => ({
-        value: c.value,
-        label: c.label,
+        id: c.value,
+        name: c.label,
         code: c.code,
       })),
     [customerOptions],
@@ -79,7 +79,7 @@ export function useK80QuickShipment() {
 
   const printData = useMemo<K80PrintData>(() => {
     const selectedCustomer = customerComboOptions.find(
-      (c) => c.value === customerId,
+      (c) => c.id === customerId,
     );
 
     const parsedColumns: K80ColumnData[] = columns
@@ -119,7 +119,7 @@ export function useK80QuickShipment() {
       printTime: new Date().toLocaleString('vi-VN'),
       printedBy: profile?.full_name || 'ADMIN',
       customerName: selectedCustomer
-        ? selectedCustomer.label
+        ? selectedCustomer.name
         : LABELS.EMPTY_VALUE,
       columns: parsedColumns,
       maxRows,

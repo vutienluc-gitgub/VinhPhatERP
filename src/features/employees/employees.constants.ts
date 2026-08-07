@@ -49,6 +49,7 @@ export const EMPLOYEE_LABELS = {
   TABLE_CODE: 'Mã NV',
   TABLE_NAME: 'Họ tên',
   TABLE_PHONE: 'SĐT',
+  TABLE_EMAIL: 'Email',
   TABLE_ROLE: 'Vai trò',
   TABLE_STATUS: 'Trạng thái',
   TABLE_ACTIONS: 'Thao tác',
@@ -72,6 +73,7 @@ export const EMPLOYEE_LABELS = {
   FORM_EDIT_TITLE: 'Cập nhật nhân viên',
   FORM_NAME_PLACEHOLDER: 'Nhập họ tên',
   FORM_PHONE_PLACEHOLDER: 'Ví dụ: 0912345678',
+  FORM_EMAIL_PLACEHOLDER: 'nhanvien@congty.com',
 
   // Role Management
   ROLE_MODAL_TITLE: 'Quản lý vai trò (Dynamic Roles)',

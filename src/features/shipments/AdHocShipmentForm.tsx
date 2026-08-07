@@ -6,7 +6,7 @@ import { Button } from '@/shared/components';
 import { MoneyInput } from '@/shared/value';
 import { useActiveShippingRates } from '@/shared/hooks/useShippingRateOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
-import { Combobox } from '@/shared/components/Combobox';
+import { VPCombobox, VPEntityPicker, VPSelect } from '@/shared/components';
 import { useEmployees } from '@/shared/hooks/useEmployeeOptions';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
 import {
@@ -82,8 +82,8 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
   const customerComboOptions = useMemo(
     () =>
       customerOptions.map((c) => ({
-        value: c.value,
-        label: c.label,
+        id: c.value,
+        name: c.label,
         code: c.code,
       })),
     [customerOptions],
@@ -179,13 +179,18 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                   <label>
                     {LABELS.PURPOSE} <span className="field-required">*</span>
                   </label>
-                  <select className="field-input" {...register('purpose')}>
-                    {AD_HOC_PURPOSE_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
+                  <Controller
+                    name="purpose"
+                    control={control}
+                    render={({ field }) => (
+                      <VPSelect
+                        options={AD_HOC_PURPOSE_OPTIONS}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        placeholder={LABELS.PURPOSE}
+                      />
+                    )}
+                  />
                   {errors.purpose && (
                     <p className="field-error">{errors.purpose.message}</p>
                   )}
@@ -200,7 +205,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                   name="customerId"
                   control={control}
                   render={({ field }) => (
-                    <Combobox
+                    <VPEntityPicker
                       options={customerComboOptions}
                       value={field.value || ''}
                       onChange={field.onChange}
@@ -243,12 +248,12 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                   control={control}
                   render={({ field }) => {
                     const empOptions = warehouseEmployees.map((emp) => ({
-                      value: emp.id,
-                      label: emp.name,
+                      id: emp.id,
+                      name: emp.name,
                       code: emp.code,
                     }));
                     return (
-                      <Combobox
+                      <VPEntityPicker
                         options={empOptions}
                         value={field.value || ''}
                         onChange={field.onChange}
@@ -266,12 +271,12 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                   control={control}
                   render={({ field }) => {
                     const staffOptions = deliveryStaff.map((staff) => ({
-                      value: staff.id,
-                      label: staff.full_name,
+                      id: staff.id,
+                      name: staff.full_name,
                       phone: staff.phone || undefined,
                     }));
                     return (
-                      <Combobox
+                      <VPEntityPicker
                         options={staffOptions}
                         value={field.value || ''}
                         onChange={field.onChange}
@@ -306,7 +311,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                   name="shippingRateId"
                   control={control}
                   render={({ field }) => (
-                    <Combobox
+                    <VPCombobox
                       options={shippingRateOptions}
                       value={field.value}
                       onChange={field.onChange}

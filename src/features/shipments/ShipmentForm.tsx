@@ -9,7 +9,7 @@ import type { ShippingRate } from '@/shared/hooks/useShippingRateOptions';
 import { useActiveShippingRates } from '@/shared/hooks/useShippingRateOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { WarehousePicker } from '@/shared/components/pickers';
-import { Combobox } from '@/shared/components/Combobox';
+import { VPCombobox, VPEntityPicker } from '@/shared/components';
 import {
   useAvailableFinishedRolls,
   useCreateShipment,
@@ -340,12 +340,12 @@ export function ShipmentForm({
                 control={control}
                 render={({ field }) => {
                   const staffOptions = deliveryStaff.map((staff) => ({
-                    value: staff.id,
-                    label: staff.full_name,
+                    id: staff.id,
+                    name: staff.full_name,
                     phone: staff.phone || undefined,
                   }));
                   return (
-                    <Combobox
+                    <VPEntityPicker
                       options={staffOptions}
                       value={field.value || ''}
                       onChange={field.onChange}
@@ -373,7 +373,7 @@ export function ShipmentForm({
                 name="shippingRateId"
                 control={control}
                 render={({ field }) => (
-                  <Combobox
+                  <VPCombobox
                     options={shippingRateOptions}
                     value={field.value}
                     onChange={field.onChange}

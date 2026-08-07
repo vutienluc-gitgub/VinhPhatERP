@@ -255,6 +255,13 @@ export function EmployeeListPage() {
               cell: (emp) => <PhoneContact phone={emp.phone} showZalo={true} />,
             },
             {
+              header: EMPLOYEE_LABELS.TABLE_EMAIL,
+              id: 'email',
+              sortable: true,
+              className: 'text-sm text-muted',
+              cell: (emp) => emp.email || '—',
+            },
+            {
               header: EMPLOYEE_LABELS.TABLE_ROLE,
               id: 'role',
               sortable: true,

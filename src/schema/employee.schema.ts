@@ -13,6 +13,7 @@ export const employeeSchema = z.object({
   code: z.string(),
   name: z.string().min(1, 'Họ tên là bắt buộc'),
   phone: z.string().nullable().optional(),
+  email: z.string().nullable().optional(),
   role: employeeRoleSchema,
   status: employeeStatusSchema,
   created_at: z.string(),
@@ -29,6 +30,12 @@ export const employeeFormSchema = z.object({
     .refine(validatePhone, { message: 'Số điện thoại không hợp lệ' })
     .optional()
     .or(z.literal('')),
+  email: z
+    .string()
+    .trim()
+    .email('Email không hợp lệ')
+    .optional()
+    .or(z.literal('')),
   role: employeeRoleSchema.describe('Vai trò nhân viên'),
   status: employeeStatusSchema.default('active'),
 });
@@ -38,6 +45,7 @@ export type EmployeeFormValues = z.infer<typeof employeeFormSchema>;
 export const employeeDefaultValues: EmployeeFormValues = {
   name: '',
   phone: '',
+  email: '',
   role: 'warehouse',
   status: 'active',
 };
