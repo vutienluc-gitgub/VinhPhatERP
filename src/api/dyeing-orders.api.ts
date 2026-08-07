@@ -75,7 +75,7 @@ export async function fetchDyeingSuppliers(): Promise<
   const { data, error } = await supabase
     .from('suppliers')
     .select('id, code, name')
-    .eq('category', 'dye')
+    .eq('category', 'OUTSOURCING')
     .eq('status', 'active')
     .order('name');
   if (error) throw error;

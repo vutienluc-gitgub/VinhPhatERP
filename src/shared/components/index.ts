@@ -11,11 +11,17 @@ export type { BadgeVariant } from './Badge';
 export { Combobox } from './Combobox';
 export { VPCombobox } from './VPCombobox';
 export type { VPComboboxProps, VPComboboxOption } from './VPCombobox';
-export { VPVirtualCombobox } from './VPVirtualCombobox';
+export {
+  VPVirtualCombobox,
+  VPAsyncCombobox,
+  VPEntityPicker,
+} from './comboboxes';
 export type {
   VPVirtualComboboxProps,
-  VPVirtualComboboxOption,
-} from './VPVirtualCombobox';
+  VPAsyncComboboxProps,
+  VPEntityPickerProps,
+  EntityOption,
+} from './comboboxes';
 export { VPSelect } from './VPSelect';
 export type { VPSelectProps, VPOption } from './VPSelect';
 export * from './pickers';
