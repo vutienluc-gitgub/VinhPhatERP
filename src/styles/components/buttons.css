@@ -11,7 +11,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--surface-strong);
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-size: 1rem;
   transition: all 120ms ease;
 }

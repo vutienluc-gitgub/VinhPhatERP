@@ -584,7 +584,7 @@
 
 .chat-date-label {
   background: var(--surface-strong);
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-size: 0.75rem;
   font-weight: 500;
   padding: 4px 12px;
@@ -706,7 +706,7 @@
 
 .chat-bubble-time {
   font-size: 0.625rem;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   margin-top: 2px;
   text-align: right;
 }
@@ -725,7 +725,7 @@
 
 .chat-system-msg-text {
   font-size: 0.6875rem;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   background: var(--surface-hover);
   padding: 4px 12px;
   border-radius: 100px;
@@ -818,7 +818,7 @@
 }
 
 .chat-input-field::placeholder {
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
 }
 
 .chat-input-field:disabled {
@@ -868,7 +868,7 @@
   border-radius: 50%;
   background: transparent;
   border: 1px solid var(--border);
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   cursor: pointer;
   flex-shrink: 0;
   transition:
@@ -998,7 +998,7 @@
   border-radius: 50%;
   background: var(--surface-hover);
   border: none;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   cursor: pointer;
   padding: 0;
   margin-left: auto;
@@ -1501,7 +1501,7 @@
 }
 
 .chat-pinned-chevron {
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1691,7 +1691,7 @@
   border: none;
   border-radius: 50%;
   background: transparent;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   cursor: pointer;
   transition:
     background 0.15s,
@@ -1852,7 +1852,7 @@
   border: 1px dashed var(--border);
   border-radius: var(--radius-md);
   background: transparent;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   cursor: pointer;
   transition:
     background 0.15s,
@@ -1862,7 +1862,7 @@
 
 .chat-reaction-add-btn:hover {
   background: var(--surface-hover);
-  border-color: var(--surface-subtle);
+  border-color: var(--muted-foreground);
   color: var(--foreground);
 }
 
@@ -1968,7 +1968,7 @@
 .chat-bubble-file-type {
   display: block;
   font-size: 0.75rem;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   margin-top: 2px;
 }
 
@@ -1998,7 +1998,7 @@
   border: none;
   border-radius: 50%;
   background: transparent;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   cursor: pointer;
   transition:
     background 0.15s,
@@ -2029,7 +2029,7 @@
 }
 
 .chat-search-input::placeholder {
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
 }
 
 .chat-search-clear-btn {
@@ -2041,7 +2041,7 @@
   border: none;
   border-radius: 50%;
   background: transparent;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   cursor: pointer;
   transition:
     background 0.15s,
@@ -2063,7 +2063,7 @@
   padding: 8px 16px;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   background: var(--surface-subtle);
 }
 
@@ -2084,7 +2084,7 @@
 
 .chat-search-result-time {
   font-size: 0.6875rem;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   margin-bottom: 4px;
 }
 
@@ -2099,7 +2099,7 @@
 .chat-search-empty {
   padding: 24px 16px;
   text-align: center;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-size: 0.875rem;
 }
 
@@ -2113,7 +2113,7 @@
   background: var(--surface-subtle);
   border-bottom: 1px solid var(--border);
   font-size: 0.75rem;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
 }
 
 .chat-typing-dots {

@@ -53,7 +53,7 @@
   padding: 0.2rem 0.6rem;
   border-radius: 99px;
   background: var(--surface);
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   border: 1px solid var(--border);
 }
 
@@ -144,7 +144,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
 }
 
 .stat-card .stat-value {
@@ -234,7 +234,7 @@
 
 .bulk-hint {
   font-size: 0.78rem;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-style: italic;
 }
 
@@ -267,7 +267,7 @@
 
 .bulk-success-hint {
   font-size: 0.82rem;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   margin: 0 0 1.5rem;
 }
 
@@ -314,7 +314,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
 }
 
 .reserve-tab-detail {
@@ -325,7 +325,7 @@
 
 .reserve-tab-qty {
   font-size: 0.8rem;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-variant-numeric: tabular-nums;
 }
 
@@ -349,7 +349,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
 }
 
 .reserve-summary-value {
@@ -488,7 +488,7 @@
 }
 
 .mobile-card-row .label {
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-weight: 500;
 }
 
@@ -565,7 +565,7 @@
 .stat-widget-subtitle {
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
 }
 
 /* Mobile: scale down large stat values to prevent horizontal overflow */
@@ -709,7 +709,7 @@
 .field-input::placeholder,
 .field-textarea::placeholder,
 input::placeholder {
-  color: var(--surface-subtle) !important;
+  color: var(--muted-foreground) !important;
   opacity: 1 !important; /* Force high visibility */
 }
 
@@ -776,7 +776,7 @@ select.field-select.h-12 {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   background: rgb(var(--base-rgb), 0.03);
   border-bottom: 2px solid var(--border);
   white-space: nowrap;
@@ -837,7 +837,7 @@ select.field-select.h-12 {
   left: 0.6rem;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   pointer-events: none;
 }
 

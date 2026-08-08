@@ -22,7 +22,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
 }
 
 .filter-bar .field-input,
@@ -154,7 +154,7 @@
 .filter-compact-premium label {
   font-size: 0.75rem;
   margin-bottom: 0.35rem;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-weight: 700;
   display: block;
 }
@@ -191,7 +191,7 @@
 /* ---- Step-based Form (AdaptiveSheet) ---- */
 .sheet-step-indicator {
   font-size: 0.78rem;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-weight: 500;
 }
 
@@ -229,7 +229,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   padding: 0 0.4rem;
   display: flex;
   align-items: center;
@@ -248,7 +248,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   margin: 0;
 }
 
@@ -298,12 +298,12 @@ fieldset.form-section > legend.form-section-title {
 .search-input-icon {
   position: absolute;
   right: 0.85rem;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   pointer-events: none;
 }
 
 .field-hint {
   font-size: 0.76rem;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   line-height: 1.35;
 }

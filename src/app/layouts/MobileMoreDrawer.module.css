@@ -58,7 +58,7 @@
   text-align: center;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   margin: 0 0 0.75rem;
   flex-shrink: 0;
 }
@@ -74,7 +74,7 @@
   border: 1px solid var(--border);
   border-radius: 0.75rem;
   flex-shrink: 0;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
 }
 
 .searchInput {
@@ -87,7 +87,7 @@
 }
 
 .searchInput::placeholder {
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
 }
 
 .searchClear {
@@ -96,7 +96,7 @@
   justify-content: center;
   border: 0;
   background: transparent;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   cursor: pointer;
   padding: 0.125rem;
   border-radius: 50%;
@@ -161,7 +161,7 @@
 .quickActionLabel {
   font-size: 0.6875rem;
   font-weight: 500;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   white-space: nowrap;
   max-width: 72px;
   overflow: hidden;
@@ -180,7 +180,7 @@
 
 .empty {
   text-align: center;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-size: 0.85rem;
   padding: 2rem 0;
 }
@@ -196,7 +196,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
 }
 
 .groupBlock {
@@ -252,7 +252,7 @@
   height: 32px;
   border-radius: 8px;
   background: rgb(var(--brand-rgb), 0.06);
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
 }
 
 .listItem.isActive .listIcon {

@@ -21,7 +21,7 @@
   padding: 0.6rem 0.8rem;
   border: 0;
   background: transparent;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -64,7 +64,7 @@
   padding: 0.5rem 1rem;
   border: 0;
   background: transparent;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -98,7 +98,7 @@
   padding: 0.85rem 0.25rem;
   border: 0;
   background: transparent;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -165,7 +165,7 @@
   padding: 0.5rem 1.25rem;
   border: none;
   background: transparent;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
