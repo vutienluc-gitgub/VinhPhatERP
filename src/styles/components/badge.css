@@ -52,7 +52,7 @@
 
 .roll-status.written_off {
   background: rgb(var(--base-rgb), 0.08);
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
 }
 
 /* Standardized Badge System */
@@ -95,7 +95,7 @@
   font-weight: 800;
   line-height: 1;
   background: rgb(var(--base-rgb), 0.1);
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   transition:
     background 0.15s ease,
     color 0.15s ease;

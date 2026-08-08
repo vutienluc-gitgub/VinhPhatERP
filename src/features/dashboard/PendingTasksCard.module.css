@@ -39,7 +39,7 @@
 .taskItemCount {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-size: 0.85rem;
 }
 
@@ -50,6 +50,6 @@
 .taskEmpty {
   padding: 1.5rem 0.5rem;
   text-align: center;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-size: 0.9rem;
 }

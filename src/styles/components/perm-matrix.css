@@ -282,7 +282,7 @@ p {
   background: var(--surface-subtle);
   border-bottom: 2px solid var(--border);
   font-weight: 600;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   white-space: nowrap;
 }
 
@@ -403,6 +403,6 @@ p {
   left: 10px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   pointer-events: none;
 }

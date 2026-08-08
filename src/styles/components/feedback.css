@@ -47,7 +47,7 @@
   width: max-content;
   white-space: nowrap;
   font-size: 0.78rem;
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-variant-numeric: tabular-nums;
 }
 
@@ -74,12 +74,12 @@
 }
 
 .audit-log-arrow {
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-size: 0.8rem;
 }
 
 .audit-log-notes {
-  color: var(--surface-subtle);
+  color: var(--muted-foreground);
   font-size: 0.8rem;
   font-style: italic;
 }
